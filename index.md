@@ -7,7 +7,7 @@ header:
   # overlay_filter: "0.2"
   # overlay_image: /assets/images/banner.png
   title: ""
-  caption: "A fun after-school STEM club for Years 4–6"
+  # caption: "A fun after-school STEM club for Years 4–6"
   show_overlay_text: false
   show_overlay_excerpt: false
 excerpt: ""
