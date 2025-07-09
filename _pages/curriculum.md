@@ -9,6 +9,23 @@ header:
   show_overlay_text: false
 excerpt: ""
 ---
+<style>
+
+  .page__content {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+
+    .page__content {
+      max-width: none;
+      width: 100%;
+      padding: 0;
+    }
+  
+</style>
 
 Here’s our weekly lesson plan and activities!
 
