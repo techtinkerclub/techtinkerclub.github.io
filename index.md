@@ -18,7 +18,7 @@ excerpt: ""
 
  #main {
     max-width: 100% !important;
-    width: 80%;
+    width: 85%;
     padding-left: 0;
     padding-right: 0;
   }
