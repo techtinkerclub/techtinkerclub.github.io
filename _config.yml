@@ -41,7 +41,7 @@ defaults:
         title: ""
         #overlay_color: "#4ca0b3"
         #overlay_filter: "0.3"
-        overlay_image: /assets/images/banner1600x100.png
+        overlay_image: /assets/images/banner.png
         show_overlay_excerpt: false
         caption: ""
         show_overlay_text: false
