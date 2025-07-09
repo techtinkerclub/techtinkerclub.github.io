@@ -17,6 +17,7 @@ minimal_mistakes_skin: "contrast"
 include:
   - "_pages"
 
+
 logo: "/assets/images/logo300px.png"
 
 # Masthead Navigation
