@@ -18,7 +18,7 @@ excerpt: ""
 
  #main {
     max-width: 100% !important;
-    width: 100%;
+    width: 80%;
     padding-left: 0;
     padding-right: 0;
   }
@@ -47,7 +47,7 @@ excerpt: ""
     .layout-container {
       display: grid;
       grid-template-columns: 1.5fr 2fr 1.5fr;
-      gap: 3rem;
+      gap: 1rem;
       padding: 0 2rem;
     }
 
