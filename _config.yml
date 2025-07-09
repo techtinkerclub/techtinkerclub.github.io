@@ -6,7 +6,7 @@ baseurl: "" # leave this blank for GitHub Pages root
 url: "https://techtinkerclub.github.io"
 repository: techtinkerclub/techtinkerclub.github.io
 
-remote_theme: mmistakes/minimal-mistakes
+theme: null
 plugins:
   - jekyll-feed
   - jekyll-include-cache
