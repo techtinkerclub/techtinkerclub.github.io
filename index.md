@@ -10,7 +10,7 @@ header:
   # caption: "A fun after-school STEM club for Years 4–6"
   show_overlay_text: false
   show_overlay_excerpt: false
-excerpt: ""
+#excerpt: ""
 
 ---
 
