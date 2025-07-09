@@ -16,13 +16,6 @@ excerpt: ""
 
 <style>
 
- #main {
-    max-width: 100% !important;
-    width: 85%;
-    padding-left: 0;
-    padding-right: 0;
-  }
-
   .page__content {
     max-width: 100% !important;
     width: 100% !important;
