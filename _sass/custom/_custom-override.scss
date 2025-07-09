@@ -1,7 +1,9 @@
 .page__hero--overlay {
-  padding-top: 2rem !important;   /* reduce vertical padding */
-  padding-bottom: 2rem !important;
-  min-height: unset !important;   /* override any enforced min height */
-  height: auto !important;        /* ensure it sizes to content */
+  height: 100px !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 
