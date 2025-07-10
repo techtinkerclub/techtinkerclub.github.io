@@ -6,20 +6,35 @@
   justify-content: center;
 }
 
-/* Widen page container on mobile */
+/* Global: Remove width limits */
+.page,
+.page__inner,
+.layout-container,
+.page__content,
+.main-column {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Mobile overrides */
 @media (max-width: 767px) {
   .layout-container {
-    padding-left: 0rem;
-    padding-right: 0rem;
+    display: flex;
+    flex-direction: column;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    gap: 1.5rem;
   }
 
-  .page__content {
-    padding: 0 1.5rem;
+  .page__content,
+  .main-column {
+    padding: 0;
+    text-align: justify;
   }
 
   iframe {
-    max-width: 100%;
-    width: 100%;
+    max-width: 100% !important;
+    width: 100% !important;
+    display: block;
   }
 }
-
