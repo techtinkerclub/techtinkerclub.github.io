@@ -94,7 +94,10 @@ header:
       <h3 style="margin-top: 0;">Upcoming Sessions</h3>
       <div class="calendar-embed">
         <iframe 
-          src="https://calendar.google.com/calendar/embed?src=techtinkerclub%40gmail.com&ctz=Europe%2FLondon&mode=AGENDA"
+          src="https://calendar.google.com/calendar/embed?src=techtinkerclub%40gmail.com&ctz=Europe%2FLondon&mode=AGENDA&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0"
+          style="border: none;" 
+          width="100%" 
+          height="300"
           scrolling="no">
         </iframe>
       </div>
