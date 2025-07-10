@@ -90,7 +90,7 @@ header:
 
   <!-- RIGHT COLUMN: Calendar Embed -->
   <div class="calendar-adjust">
-    <div style="background: #f4f4f4; padding: 1rem; border-radius: 6px;">
+    <div style="background: #f4f4f4; padding: 0; border-radius: 6px;">
       <h3 style="margin-top: 0;">Upcoming Sessions</h3>
       <div class="calendar-embed">
         <iframe 
