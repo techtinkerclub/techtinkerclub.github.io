@@ -9,32 +9,50 @@ header:
 ---
 
 <style>
-  /* Default: Mobile-first layout */
 
-
-  .sidebar-adjust,
-  .main-column,
-  .calendar-adjust {
-    width: 100%;
+  .page__content {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0;
+    padding-right: 0;
   }
-
-  .main-column {
-    text-align: justify;
-  }
-
+  
   .calendar-embed {
+    max-width: 100%;
     overflow: hidden;
-    width: 100%;
   }
 
   .calendar-embed iframe {
     display: block;
     width: 100%;
+    max-width: 100%;
     height: 300px;
     border: none;
-    max-width: 100%;
   }
 
+  @media (min-width: 768px) {
+    .layout-container {
+      display: grid;
+      grid-template-columns: 1.5fr 2fr 1.5fr;
+      gap: 3rem;
+      padding: 0 2rem;
+    }
+
+    .sidebar-adjust,
+    .calendar-adjust {
+      width: 100%;
+    }
+
+    .main-column {
+      text-align: justify;
+    }
+
+    .page__content {
+      max-width: none;
+      width: 100%;
+      padding: 0;
+    }
+  }
 </style>
 
 
