@@ -35,15 +35,6 @@ header:
     max-width: 100%;
   }
 
-  /* Tablet and Desktop layout */
-  @media (min-width: 768px) {
-    .layout-container {
-      display: grid;
-      grid-template-columns: 1.5fr 2fr 1.5fr;
-      gap: 3rem;
-      padding: 0 2rem;
-    }
-  }
 </style>
 
 
