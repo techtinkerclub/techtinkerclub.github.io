@@ -6,4 +6,20 @@
   justify-content: center;
 }
 
+/* Widen page container on mobile */
+@media (max-width: 767px) {
+  .layout-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .page__content {
+    padding: 0 1.5rem;
+  }
+
+  iframe {
+    max-width: 100%;
+    width: 100%;
+  }
+}
 
