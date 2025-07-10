@@ -13,7 +13,8 @@ header:
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding: 0 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 
   .sidebar-adjust,
@@ -42,7 +43,8 @@ header:
       display: grid;
       grid-template-columns: 1.5fr 2fr 1.5fr;
       gap: 3rem;
-      padding: 0 2rem;
+      padding-left: 2rem;
+      padding-right: 2rem;
     }
 
     .sidebar-adjust,
@@ -51,6 +53,7 @@ header:
     }
   }
 </style>
+
 
 <div class="layout-container">
 
