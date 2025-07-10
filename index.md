@@ -43,8 +43,8 @@ header:
       display: grid;
       grid-template-columns: 1.5fr 2fr 1.5fr;
       gap: 3rem;
-      padding-left: 2rem;
-      padding-right: 2rem;
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
     }
 
     .sidebar-adjust,
