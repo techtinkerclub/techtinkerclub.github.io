@@ -47,11 +47,7 @@ header:
       text-align: justify;
     }
 
-    .page__content {
-      max-width: none;
-      width: 100%;
-      padding: 0;
-    }
+
   }
 </style>
 
