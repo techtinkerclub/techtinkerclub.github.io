@@ -3,61 +3,37 @@ layout: splash
 title: ""
 permalink: /
 header:
-  # overlay_color: "#4ca0b3"
-  # overlay_filter: "0.2"
-  # overlay_image: /assets/images/banner.png
   title: ""
-  # caption: "A fun after-school STEM club for Years 4–6"
   show_overlay_text: false
   show_overlay_excerpt: false
-#excerpt: ""
-
 ---
 
 <style>
-
-  .page__content {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 0;
-    padding-right: 0;
+  .layout-container {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1.5fr;
+    gap: 3rem;
+    padding: 0 2rem;
   }
-  
+
+  .sidebar-adjust,
+  .calendar-adjust {
+    width: 100%;
+  }
+
+  .main-column {
+    text-align: justify;
+  }
+
   .calendar-embed {
-    max-width: 100%;
     overflow: hidden;
   }
 
   .calendar-embed iframe {
     display: block;
     width: 100%;
-    max-width: 100%;
     height: 300px;
     border: none;
-  }
-
-  @media (min-width: 768px) {
-    .layout-container {
-      display: grid;
-      grid-template-columns: 1.5fr 2fr 1.5fr;
-      gap: 3rem;
-      padding: 0 2rem;
-    }
-
-    .sidebar-adjust,
-    .calendar-adjust {
-      width: 100%;
-    }
-
-    .main-column {
-      text-align: justify;
-    }
-
-    .page__content {
-      max-width: none;
-      width: 100%;
-      padding: 0;
-    }
   }
 </style>
 
@@ -92,24 +68,21 @@ header:
   We can’t wait to see what you’ll invent!
   {% endcapture %}
 
-<div class="main-column" style="flex: 4 1 1200px; text-align: justify;">
-  {{ main_content | markdownify }}
-</div>
-
+  <div class="main-column">
+    {{ main_content | markdownify }}
+  </div>
 
   <!-- RIGHT COLUMN: Calendar Embed -->
-  <!-- RIGHT COLUMN: Calendar Embed -->
-<div class="calendar-adjust">
-  <div style="background: #f4f4f4; padding: 1rem; border-radius: 6px;">
-    <h3 style="margin-top: 0;">Upcoming Sessions</h3>
-    <div class="calendar-embed">
-      <iframe 
-        src="https://calendar.google.com/calendar/embed?src=techtinkerclub%40gmail.com&ctz=Europe%2FLondon&mode=AGENDA"
-        scrolling="no">
-      </iframe>
+  <div class="calendar-adjust">
+    <div style="background: #f4f4f4; padding: 1rem; border-radius: 6px;">
+      <h3 style="margin-top: 0;">Upcoming Sessions</h3>
+      <div class="calendar-embed">
+        <iframe 
+          src="https://calendar.google.com/calendar/embed?src=techtinkerclub%40gmail.com&ctz=Europe%2FLondon&mode=AGENDA"
+          scrolling="no">
+        </iframe>
+      </div>
     </div>
   </div>
+
 </div>
-
-
-
