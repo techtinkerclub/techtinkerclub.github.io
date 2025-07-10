@@ -9,12 +9,13 @@ header:
 ---
 
 <style>
+  /* Default: Mobile-first layout */
   .layout-container {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0 1rem;
+    max-width: 100%;
   }
 
   .sidebar-adjust,
@@ -29,6 +30,7 @@ header:
 
   .calendar-embed {
     overflow: hidden;
+    width: 100%;
   }
 
   .calendar-embed iframe {
@@ -36,23 +38,20 @@ header:
     width: 100%;
     height: 300px;
     border: none;
+    max-width: 100%;
   }
 
+  /* Tablet and Desktop layout */
   @media (min-width: 768px) {
     .layout-container {
       display: grid;
       grid-template-columns: 1.5fr 2fr 1.5fr;
       gap: 3rem;
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-
-    .sidebar-adjust,
-    .calendar-adjust {
-      width: 100%;
+      padding: 0 2rem;
     }
   }
 </style>
+
 
 
 <div class="layout-container">
