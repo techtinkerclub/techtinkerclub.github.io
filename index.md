@@ -10,13 +10,14 @@ header:
 
 <style>
   .layout-container {
-    display: grid;
-    grid-template-columns: 1.5fr 2fr 1.5fr;
-    gap: 3rem;
-    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0 1rem;
   }
 
   .sidebar-adjust,
+  .main-column,
   .calendar-adjust {
     width: 100%;
   }
@@ -34,6 +35,20 @@ header:
     width: 100%;
     height: 300px;
     border: none;
+  }
+
+  @media (min-width: 768px) {
+    .layout-container {
+      display: grid;
+      grid-template-columns: 1.5fr 2fr 1.5fr;
+      gap: 3rem;
+      padding: 0 2rem;
+    }
+
+    .sidebar-adjust,
+    .calendar-adjust {
+      width: 100%;
+    }
   }
 </style>
 
