@@ -10,13 +10,7 @@ header:
 
 <style>
   /* Default: Mobile-first layout */
-  .layout-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 0 1rem;
-    max-width: 100%;
-  }
+
 
   .sidebar-adjust,
   .main-column,
