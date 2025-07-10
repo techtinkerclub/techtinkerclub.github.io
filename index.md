@@ -13,8 +13,8 @@ header:
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding-left: 0.1rem;
-    padding-right: 0.1rem;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .sidebar-adjust,
