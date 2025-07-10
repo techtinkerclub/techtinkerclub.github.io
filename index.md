@@ -35,7 +35,7 @@ header:
       display: grid;
       grid-template-columns: 1.5fr 2fr 1.5fr;
       gap: 3rem;
-      padding: 0 2rem;
+      padding: 0 0rem;
     }
 
     .sidebar-adjust,
