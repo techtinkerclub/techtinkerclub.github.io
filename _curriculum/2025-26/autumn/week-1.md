@@ -3,7 +3,8 @@ layout: single-no-pager
 title: ""                       # no large page title
 permalink: /curriculum/2025-26/autumn/week-1/
 week: 1
-sidebar: false                  # override collection default → no left menu
+sidebar:                   # override collection default → no left menu
+  nav:
 toc: true
 header:
   overlay_image: /assets/images/banner.png
