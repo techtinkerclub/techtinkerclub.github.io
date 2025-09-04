@@ -2,7 +2,7 @@
 title: "Summer — Integration & Showcase"
 year: "2025-26"
 term: "Summer"
-layout: single
+layout: home
 permalink: /curriculum/2025-26/summer/
 ---
 (Summer intro)
