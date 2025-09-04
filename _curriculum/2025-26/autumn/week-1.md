@@ -6,6 +6,7 @@ header:
   overlay_image: /assets/images/banner.png
   show_overlay_excerpt: false
   show_overlay_text: false
+  sidebar: false
 # toc: true                      # uncomment if you want a mini table-of-contents on the right
 ---
 
