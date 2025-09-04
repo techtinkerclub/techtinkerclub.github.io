@@ -55,6 +55,7 @@ defaults:
       layout: single
       toc: true
       author_profile: false
+      css: "/assets/css/custom.css"
       header:
         overlay_image: /assets/images/banner.png
         show_overlay_excerpt: false
