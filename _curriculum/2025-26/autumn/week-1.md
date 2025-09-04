@@ -1,9 +1,7 @@
 ---
-layout: splash
+layout: single
 title: ""                         # keep empty = no big page title
-permalink: /curriculum/2025-26/autumn/week-1/
-sidebar:
-  nav: "curriculum"
+permalink: /curriculum/2025-26/autumn/week-XX/
 header:
   overlay_image: /assets/images/banner.png
   show_overlay_excerpt: false
@@ -11,7 +9,6 @@ header:
 # toc: true                      # uncomment if you want a mini table-of-contents on the right
 ---
 
-<!-- Optional: an H2 you can keep or delete -->
 ## Week XX — FOCUS_CONCEPT (optional heading)
 
 **Focus Concept:** _e.g., Events & Sequencing_  
@@ -33,10 +30,10 @@ header:
 - _event_, _input_, _output_, _variable_, _loop_, _condition_, _logic_ (AND/OR), _sensor_
 
 ## Resources
-- **Slides:** [link](#)
-- **Worksheet:** [link](#)
-- **Starter code / MakeCode project:** [link](#)
-- **Teacher reference (private):** [link](#)
+- **Slides:** [link](#)  
+- **Worksheet:** [link](#)  
+- **Starter code / MakeCode project:** [link](#)  
+- **Teacher reference (private):** [link](#)  
 
 ## Equipment
 - micro:bit + USB cable(s)  
@@ -66,27 +63,4 @@ header:
 **4) Extensions & Challenge (20–25 min)**  
 - **Level 1 (Access):** core feature works.  
 - **Level 2 (Extend):** extra input/output, thresholds, simple variable.  
-- **Level 3 (Challenge):** add logic/radio/multi-sensor behaviour or custom twist.
-
-**5) Share & Reflect (10 min)**  
-- Pair demo or gallery walk.  
-- 1-minute micro-reflection: “What input did you use? What output? Where did the decision happen?”
-
----
-
-## Assessment (light-touch)
-- Exit check: **Explain your system** as _Input → Process → Output_.  
-- Quick self-tick: ☐ worked ☐ partly ☐ not yet — one sentence: “Next time I’ll…”
-
-## Differentiation
-- **New members:** prebuilt starter, checkpoints, pair programming.  
-- **Returners:** add variables/logic/radio; consider MicroPython version.
-
-## Troubleshooting
-- If ___ doesn’t work, check ___ (port, power, pin, blocks order).  
-- Common gotchas this week: …  
-
----
-
-{% include back-to-autumn.html %}
-
+- **Level 3 (Challenge):** add logic/radio/multi-sensor behaviour or custom
