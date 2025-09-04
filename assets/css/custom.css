@@ -1,1 +1,5 @@
+/* Hide Minimal Mistakes prev/next bar on pages tagged .no-post-nav */
+.no-post-nav .pagination {
+  display: none !important;
+}
 /* Hide the "Recent Posts" block on all pages using layout: home */
