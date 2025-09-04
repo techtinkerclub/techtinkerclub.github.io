@@ -6,39 +6,48 @@ baseurl: "" # leave this blank for GitHub Pages root
 url: "https://techtinkerclub.github.io"
 repository: techtinkerclub/techtinkerclub.github.io
 
+# Theme
 remote_theme: "mmistakes/minimal-mistakes@4.24.0"
 minimal_mistakes_skin: "contrast"
 
+# Plugins (all allowed by GitHub Pages)
 plugins:
   - jekyll-feed
   - jekyll-include-cache
 
+# Include _pages directory in the build
 include:
   - "_pages"
 
+# Logo
 logo: "/assets/images/logo300px.png"
 
 # Masthead Navigation
 header:
   nav: true
 
-# Navigation menus are in /_data/navigation.yml
+# Collections
+collections:
+  curriculum:
+    output: true
+    permalink: /curriculum/:path/
 
+# Defaults
 defaults:
   # A) Normal pages (from /_pages etc.)
   - scope:
       path: ""
       type: "pages"
     values:
-      layout: splash        # homepage and other splash pages
-      css: "/assets/css/custom.css"
+      layout: single
       author_profile: false
+      css: "/assets/css/custom.css"
       header:
         overlay_image: /assets/images/banner.png
         show_overlay_excerpt: false
         show_overlay_text: false
 
-  # B) Curriculum collection pages (from /_curriculum/)
+  # B) Curriculum collection pages (from /_curriculum)
   - scope:
       path: ""
       type: "curriculum"
