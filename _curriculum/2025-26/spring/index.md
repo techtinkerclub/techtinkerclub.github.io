@@ -1,5 +1,5 @@
 ---
-title: "Spring — Tinkercad Design & Circuits"
+title: ""
 year: "2025-26"
 term: "Spring"
 layout: home
