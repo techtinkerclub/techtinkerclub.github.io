@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""                         # keep empty = no big page title
-permalink: /curriculum/2025-26/autumn/week-XX/
+permalink: /curriculum/2025-26/autumn/week-1/
 header:
   overlay_image: /assets/images/banner.png
   show_overlay_excerpt: false
