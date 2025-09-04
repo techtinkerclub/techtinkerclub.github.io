@@ -29,30 +29,30 @@ This term, pupils in Tech Tinker Club will explore how microcontrollers (tiny co
 ---
 
 ## Implementation (How we will do it)
-- **Weekly 90-minute sessions**, every Wednesday from 10 Sept – 17 Dec (13 sessions).  
+- **Weekly 90-minute sessions** throughout the Autumn term.  
 - Each week introduces a **new computing idea** inside a **fun project**.  
-- Projects are designed with **tiers of challenge** so every child can access and extend.
+- Projects are designed with **tiers of challenge** so every child can access and extend.  
+- ⚠️ **Please note:** This is our planned sequence, but plans are made to be flexible — we may adapt activities depending on time, resources, or the group’s interests.
 
 ---
 
 ## Week by Week Overview
 
-| Week | Date | Focus Concept | Mini-Project Example |
-|------|------|---------------|----------------------|
-| 1 | 10 Sept | Intro to club & microcontrollers | Name badge, button icons |
-| 2 | 17 Sept | Events & inputs | Dice roller (shake to roll) |
-| 3 | 24 Sept | Conditionals (if/else) | Reaction timer game |
-| 4 | 1 Oct | Variables & thresholds | Light/temperature monitor |
-| 5 | 8 Oct | Loops (iteration) | Step counter |
-| 6 | 15 Oct | Outputs (servo & buzzer) | Servo dial + alarm |
-| **Half Term** | 29 Oct | ❌ No session | – |
-| 7 | 5 Nov | Mini-project consolidation | Burglar alarm or tilt gadget |
-| 8 | 12 Nov | Data logging | Temperature tracker |
-| 9 | 19 Nov | Radio communication | Wireless message sender |
-| 10 | 26 Nov | Compound logic | Dark + motion alarm |
-| 11 | 3 Dec | Game loops | Score-based button game |
-| 12 | 10 Dec | Integration | Design your own 2-sensor gadget |
-| 13 | 17 Dec | Showcase & reflection | Share favourite projects |
+| Week | Focus Concept | Mini-Project Example |
+|------|---------------|----------------------|
+| 1 | Intro to club & microcontrollers | Name badge, button icons |
+| 2 | Events & inputs | Dice roller (shake to roll) |
+| 3 | Conditionals (if/else) | Reaction timer game |
+| 4 | Variables & thresholds | Light/temperature monitor |
+| 5 | Loops (iteration) | Step counter |
+| 6 | Outputs (servo & buzzer) | Servo dial + alarm |
+| 7 | Mini-project consolidation | Burglar alarm or tilt gadget |
+| 8 | Data logging | Temperature tracker |
+| 9 | Radio communication | Wireless message sender |
+| 10 | Compound logic | Dark + motion alarm |
+| 11 | Game loops | Score-based button game |
+| 12 | Integration | Design your own 2-sensor gadget |
+| 13 | Showcase & reflection | Share favourite projects |
 
 ---
 
