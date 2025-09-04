@@ -5,5 +5,5 @@ term: "Spring"
 layout: single
 permalink: /curriculum/2025-26/spring/
 ---
-(Autumn intro)
+(Spring intro)
 
