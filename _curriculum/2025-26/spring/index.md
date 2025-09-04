@@ -1,7 +1,7 @@
 ---
-title: "Autumn — Micro:bit Foundations"
+title: "Spring — Tinkercad Design & Circuits"
 year: "2025-26"
-term: "Autumn"
+term: "Spring"
 layout: single
 permalink: /curriculum/2025-26/spring/
 ---
