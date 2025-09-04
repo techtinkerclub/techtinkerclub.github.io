@@ -2,7 +2,7 @@
 title: "Spring — Tinkercad Design & Circuits"
 year: "2025-26"
 term: "Spring"
-layout: single
+layout: home
 permalink: /curriculum/2025-26/spring/
 ---
 (Spring intro)
