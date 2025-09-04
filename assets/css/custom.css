@@ -8,3 +8,8 @@
 .layout--home .archive {
   margin-top: 0;
 }
+
+.hide-recent-posts .archive__subtitle,
+.hide-recent-posts .entries {
+  display: none !important;
+}
