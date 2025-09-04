@@ -4,12 +4,14 @@ title: ""                       # no large page title
 permalink: /curriculum/2025-26/autumn/week-1/
 week: 1
 sidebar: false                  # override collection default → no left menu
-toc: false                      # hide right “On this page” box (optional)
+toc: true                       # set to false if you want to hide right-hand TOC
 header:
   overlay_image: /assets/images/banner.png
   show_overlay_excerpt: false
   show_overlay_text: false
 ---
+
+{% include back-to-autumn.html %}
 
 ## Week XX — FOCUS_CONCEPT (optional heading)
 
