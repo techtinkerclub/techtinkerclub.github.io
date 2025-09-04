@@ -8,8 +8,8 @@ header:
   overlay_image: /assets/images/banner.png
   show_overlay_excerpt: false
   show_overlay_text: false
-  toc: true
-  toc_sticky: true
+toc: true
+toc_sticky: true
 ---
 
 {% include back-to-autumn.html %}
