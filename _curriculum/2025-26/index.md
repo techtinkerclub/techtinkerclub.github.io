@@ -1,8 +1,8 @@
 ---
-title: "Curriculum 2025–26"
+title: ""
 year: "2025-26"
 role: "year-hub"
-layout: single
+layout: home-no-posts
 permalink: /curriculum/2025-26/
 ---
 
