@@ -48,3 +48,17 @@ defaults:
 
 markdown: kramdown
 theme: null
+
+collections:
+  curriculum:
+    output: true
+    permalink: /curriculum/:path/
+
+defaults:
+  - scope: { path: "", type: "curriculum" }
+    values:
+      layout: single
+      toc: true
+      sidebar:
+        nav: "curriculum"
+
