@@ -6,19 +6,15 @@ baseurl: "" # leave this blank for GitHub Pages root
 url: "https://techtinkerclub.github.io"
 repository: techtinkerclub/techtinkerclub.github.io
 
-theme: minimal-mistakes-jekyll
-
-# theme: null
+remote_theme: "mmistakes/minimal-mistakes@4.24.0"
+minimal_mistakes_skin: "contrast"
 
 plugins:
   - jekyll-feed
   - jekyll-include-cache
 
-minimal_mistakes_skin: "contrast"
-
 include:
   - "_pages"
-
 
 logo: "/assets/images/logo300px.png"
 
@@ -26,25 +22,35 @@ logo: "/assets/images/logo300px.png"
 header:
   nav: true
 
-navigation: 
-  main: navigation
+# Navigation menus are in /_data/navigation.yml
 
 defaults:
+  # A) Normal pages (from /_pages etc.)
   - scope:
       path: ""
       type: "pages"
     values:
+      layout: splash        # homepage and other splash pages
       css: "/assets/css/custom.css"
-      layout: splash
       author_profile: false
       header:
-        title: ""
-        #overlay_color: "#4ca0b3"
-        #overlay_filter: "0.3"
         overlay_image: /assets/images/banner.png
         show_overlay_excerpt: false
-        caption: ""
         show_overlay_text: false
 
+  # B) Curriculum collection pages (from /_curriculum/)
+  - scope:
+      path: ""
+      type: "curriculum"
+    values:
+      layout: single
+      toc: true
+      author_profile: false
+      header:
+        overlay_image: /assets/images/banner.png
+        show_overlay_excerpt: false
+        show_overlay_text: false
+      sidebar:
+        nav: "curriculum"
+
 markdown: kramdown
-theme: null
