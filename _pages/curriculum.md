@@ -1,5 +1,5 @@
 ---
-layout: home
+layout: home-no-posts
 title: ""
 permalink: /curriculum/
 sidebar:
