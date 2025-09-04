@@ -1,6 +1,6 @@
 ---
 layout: home-no-posts
-title: "Curriculum"
+title: ""
 permalink: /curriculum/
 sidebar:
   nav: "curriculum"
