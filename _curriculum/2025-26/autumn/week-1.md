@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: single-no-pager
 title: ""                       # no large page title
 permalink: /curriculum/2025-26/autumn/week-1/
 week: 1
