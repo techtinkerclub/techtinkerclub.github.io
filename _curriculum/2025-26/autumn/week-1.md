@@ -1,5 +1,5 @@
 ---
-layout: home-no-posts
+layout: splash
 title: ""                         # keep empty = no big page title
 permalink: /curriculum/2025-26/autumn/week-1/
 sidebar:
