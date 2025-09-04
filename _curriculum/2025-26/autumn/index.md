@@ -1,5 +1,5 @@
 ---
-title: "Autumn — Micro:bit Foundations"
+title: ""
 year: "2025-26"
 term: "Autumn"
 layout: home
