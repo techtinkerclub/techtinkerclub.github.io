@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Curriculum"
+title: ""
 permalink: /curriculum/
 sidebar:
   nav: "curriculum"
