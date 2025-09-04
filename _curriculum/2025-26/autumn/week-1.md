@@ -5,6 +5,7 @@ permalink: /curriculum/2025-26/autumn/week-1/
 week: 1
 sidebar: false                  # override collection default → no left menu
 toc: true                       # set to false if you want to hide right-hand TOC
+toc_sticky: true
 header:
   overlay_image: /assets/images/banner.png
   show_overlay_excerpt: false
