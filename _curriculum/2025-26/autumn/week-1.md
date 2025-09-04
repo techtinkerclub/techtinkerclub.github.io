@@ -2,6 +2,7 @@
 layout: single
 title: ""
 permalink: /curriculum/2025-26/autumn/week-1/
+week: 1
 toc: true
 toc_sticky: true
 sidebar:
