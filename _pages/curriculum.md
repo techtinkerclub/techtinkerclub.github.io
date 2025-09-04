@@ -4,6 +4,10 @@ title: "Curriculum"
 permalink: /curriculum/
 sidebar:
   nav: "curriculum"
+header:
+  overlay_image: /assets/images/banner.png
+  show_overlay_excerpt: false
+  show_overlay_text: false
 ---
 
 Welcome to Tech Tinker Club’s curriculum hub. Choose a year/term to explore.
