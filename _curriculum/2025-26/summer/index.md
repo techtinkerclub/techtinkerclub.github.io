@@ -1,5 +1,5 @@
 ---
-title: "Summer — Integration & Showcase"
+title: ""
 year: "2025-26"
 term: "Summer"
 layout: home
