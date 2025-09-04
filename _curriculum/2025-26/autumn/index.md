@@ -38,21 +38,23 @@ This term, pupils in Tech Tinker Club will explore how microcontrollers (tiny co
 
 ## Week by Week Overview
 
-| Week | Focus Concept | Mini-Project Example |
-|------|---------------|----------------------|
-| 1 | Intro to club & microcontrollers | Name badge, button icons |
-| 2 | Events & inputs | Dice roller (shake to roll) |
-| 3 | Conditionals (if/else) | Reaction timer game |
-| 4 | Variables & thresholds | Light/temperature monitor |
-| 5 | Loops (iteration) | Step counter |
-| 6 | Outputs (servo & buzzer) | Servo dial + alarm |
-| 7 | Mini-project consolidation | Burglar alarm or tilt gadget |
-| 8 | Data logging | Temperature tracker |
-| 9 | Radio communication | Wireless message sender |
-| 10 | Compound logic | Dark + motion alarm |
-| 11 | Game loops | Score-based button game |
-| 12 | Integration | Design your own 2-sensor gadget |
-| 13 | Showcase & reflection | Share favourite projects |
+
+| Week | Focus Concept | Mini-Project Example | Resources |
+|------|---------------|----------------------|-----------|
+| [Week 1](/curriculum/2025-26/autumn/week-1/) | Intro to club & microcontrollers | Name badge, button icons | Slides · Worksheet |
+| [Week 2](/curriculum/2025-26/autumn/week-2/) | Events & inputs | Dice roller (shake to roll) | Slides · Worksheet |
+| [Week 3](/curriculum/2025-26/autumn/week-3/) | Conditionals (if/else) | Reaction timer game | Slides · Worksheet |
+| [Week 4](/curriculum/2025-26/autumn/week-4/) | Variables & thresholds | Light/temperature monitor | Slides · Worksheet |
+| [Week 5](/curriculum/2025-26/autumn/week-5/) | Loops (iteration) | Step counter | Slides · Worksheet |
+| [Week 6](/curriculum/2025-26/autumn/week-6/) | Outputs (servo & buzzer) | Servo dial + alarm | Slides · Worksheet |
+| [Week 7](/curriculum/2025-26/autumn/week-7/) | Mini-project consolidation | Burglar alarm or tilt gadget | Slides · Worksheet |
+| [Week 8](/curriculum/2025-26/autumn/week-8/) | Data logging | Temperature tracker | Slides · Worksheet |
+| [Week 9](/curriculum/2025-26/autumn/week-9/) | Radio communication | Wireless message sender | Slides · Worksheet |
+| [Week 10](/curriculum/2025-26/autumn/week-10/) | Compound logic | Dark + motion alarm | Slides · Worksheet |
+| [Week 11](/curriculum/2025-26/autumn/week-11/) | Game loops | Score-based button game | Slides · Worksheet |
+| [Week 12](/curriculum/2025-26/autumn/week-12/) | Integration | Design your own 2-sensor gadget | Slides · Worksheet |
+| [Week 13](/curriculum/2025-26/autumn/week-13/) | Showcase & reflection | Share favourite projects | Slides · Reflection |
+
 
 ---
 
