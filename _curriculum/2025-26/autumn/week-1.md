@@ -1,8 +1,8 @@
 ---
 layout: single
 title: ""                       # no large page title
-permalink: /curriculum/2025-26/autumn/week-XX/
-week: XX
+permalink: /curriculum/2025-26/autumn/week-1/
+week: 1
 sidebar: false                  # override collection default → no left menu
 toc: false                      # hide right “On this page” box (optional)
 header:
