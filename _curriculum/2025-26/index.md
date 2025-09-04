@@ -3,6 +3,7 @@ title: "Curriculum 2025–26"
 year: "2025-26"
 role: "year-hub"
 layout: single
+permalink: /curriculum/2025-26/
 ---
 
 Choose a term:
