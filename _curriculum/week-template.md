@@ -1,8 +1,8 @@
 ---
 layout: single
 title: ""                       # no large page title
-permalink: /curriculum/2025-26/autumn/week-1/
-week: 1
+permalink: /curriculum/2025-26/autumn/week-XX/
+week: XX
 sidebar:  false                 # override collection default → no left menu
 header:
   overlay_image: /assets/images/banner.png
