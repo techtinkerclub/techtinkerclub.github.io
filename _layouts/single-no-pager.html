@@ -5,7 +5,28 @@ layout: default
 {% include page__hero.html %}
 
 <div id="main" role="main">
-  <div class="archive">
-    {{ content }}
-  </div>
+  {%- comment -%}
+  Left sidebar (nav/author). Keep the include so the right sidebar/TOC
+  region is available, but we can pass an empty nav per page to hide menus.
+  {%- endcomment -%}
+  {% include sidebar.html %}
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <div class="page__inner-wrap">
+
+      <section class="page__content" itemprop="text">
+        {%- comment -%}
+        Render the TOC (sticky or not) just like the official single layout.
+        {%- endcomment -%}
+        {% if page.toc %}
+          {% if page.toc_sticky %}{% assign toc_sticky = true %}{% endif %}
+          {% include toc.html %}
+        {% endif %}
+
+        {{ content }}
+      </section>
+
+      {#-- deliberately omit pagination include so no Prev/Next appears --#}
+    </div>
+  </article>
 </div>
