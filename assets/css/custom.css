@@ -1,15 +1,1 @@
 /* Hide the "Recent Posts" block on all pages using layout: home */
-.layout--home .archive__subtitle,
-.layout--home .entries {
-  display: none !important;
-}
-
-/* Optional: tighten spacing under the hero when posts are hidden */
-.layout--home .archive {
-  margin-top: 0;
-}
-
-.hide-recent-posts .archive__subtitle,
-.hide-recent-posts .entries {
-  display: none !important;
-}
