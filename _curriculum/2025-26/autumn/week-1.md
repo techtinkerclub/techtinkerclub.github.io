@@ -5,8 +5,7 @@ permalink: /curriculum/2025-26/autumn/week-1/
 week: 1
 toc: true
 toc_sticky: true
-sidebar:
-  nav:
+sidebar: false
 header:
   overlay_image: /assets/images/banner.png
   show_overlay_excerpt: false
