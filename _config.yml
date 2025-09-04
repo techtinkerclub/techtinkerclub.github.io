@@ -52,7 +52,7 @@ defaults:
       path: ""
       type: "curriculum"
     values:
-      layout: single
+      layout: home
       toc: true
       author_profile: false
       css: "/assets/css/custom.css"
