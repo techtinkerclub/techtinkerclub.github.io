@@ -27,3 +27,15 @@ Welcome to Tech Tinker Club’s curriculum hub. Choose a year/term to explore.
 <p><em>Curriculum collection not found. Try the current year:</em>
   <a href="/curriculum/2025-26/">Curriculum 2025–26</a></p>
 {% endif %}
+
+<h3>Debug</h3>
+{% if site.curriculum %}
+<ul>
+{% for d in site.curriculum %}
+  <li>{{ d.path }} → <code>{{ d.url }}</code> — {{ d.title }}</li>
+{% endfor %}
+</ul>
+{% else %}
+<p><strong>site.curriculum is nil</strong> — check the collections block in _config.yml.</p>
+{% endif %}
+
