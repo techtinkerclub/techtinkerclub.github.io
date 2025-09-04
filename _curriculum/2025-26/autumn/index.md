@@ -1,6 +1,6 @@
 ---
 layout: home-no-posts
-title: "Autumn 2025 — Micro:bit Foundations"
+title: ""
 year: "2025-26"
 term: "Autumn"
 permalink: /curriculum/2025-26/autumn/
