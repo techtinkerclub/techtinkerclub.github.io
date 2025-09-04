@@ -12,3 +12,14 @@ main:
     url: /projects/
   - title: "Tools & Tutorials"
     url: /tools/
+
+curriculum:
+  - title: "Curriculum 2025–26"
+    url: /curriculum/2025-26/
+  - title: "Autumn (Micro:bit)"
+    url: /curriculum/2025-26/autumn/
+  - title: "Spring (Tinkercad)"
+    url: /curriculum/2025-26/spring/
+  - title: "Summer (Integration)"
+    url: /curriculum/2025-26/summer/
+
