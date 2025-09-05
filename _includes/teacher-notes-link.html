@@ -1,12 +1,17 @@
-{% assign repo_url = site.github.repository_url | default: "https://github.com/techtinkerclub/techtinkerclub.github.io" %}
-{% assign branch = site.github.source.branch | default: "main" %}
-{% assign week = include.week | default: 1 %}
-
-{% if jekyll.environment == "development" or site.show_teacher_notes or page.show_teacher_notes %}
-<p>
-  <a href="{{ repo_url }}/blob/{{ branch }}/_teacher_notes/2025-26/autumn/week-{{ week }}-notes.md"
-     class="btn btn--warning">
-    👀 Teacher Notes (private)
-  </a>
-</p>
-{% endif %}
+<div id="teacher-notes-link" style="display:none">
+  <p>
+    <a href="https://github.com/{{ site.repository }}/blob/main/_teacher_notes/2025-26/autumn/week-{{ include.week }}-notes.md"
+       class="btn btn--warning" target="_blank" rel="noopener">
+      👀 Teacher Notes (private)
+    </a>
+  </p>
+</div>
+<script>
+  (function () {
+    var show = /(^|[?&])notes=1([&#]|$)/.test(window.location.search);
+    if (show) {
+      var el = document.getElementById('teacher-notes-link');
+      if (el) el.style.display = 'block';
+    }
+  })();
+</script>
