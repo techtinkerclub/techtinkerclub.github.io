@@ -7,3 +7,21 @@ search: false
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials - comes first
+
+/* ---- Print-to-PDF tidy styles ---- */
+@media print {
+  /* Hide site chrome and buttons on print */
+  .masthead, .page__footer, .pagination, .sidebar, .print-controls,
+  .toc, .page__meta, .page__share { display: none !important; }
+
+  /* Expand content */
+  .page__content, .page__inner-wrap, .archive { width: 100% !important; max-width: none !important; }
+
+  /* Page size and margins (A4-friendly) */
+  @page { size: A4; margin: 12mm; }
+
+  /* Avoid headings sitting at bottom of a page */
+  h1, h2, h3, h4 { page-break-after: avoid; }
+  .page__content > * { page-break-inside: avoid; }
+}
+
