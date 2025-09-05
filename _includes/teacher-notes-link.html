@@ -1,17 +1,56 @@
+{%- assign repo_url = site.github.repository_url | default: "https://github.com/techtinkerclub/techtinkerclub.github.io" -%}
+{%- assign week = include.week | default: 1 -%}
+{%- comment -%}
+If you change your notes path, update this:
+{%- endcomment -%}
+{%- assign notes_path = include.path | default: "_teacher_notes/2025-26/autumn/week-" | append: week | append: "-notes.md" -%}
+
 <div id="teacher-notes-link" style="display:none">
   <p>
-    <a href="https://github.com/{{ site.repository }}/blob/main/_teacher_notes/2025-26/autumn/week-{{ include.week }}-notes.md"
-       class="btn btn--warning" target="_blank" rel="noopener">
+    <a id="teacher-notes-anchor" class="btn btn--warning" target="_blank" rel="noopener">
       👀 Teacher Notes (private)
     </a>
+    <span id="teacher-notes-status" style="margin-left:.5rem;"></span>
   </p>
 </div>
+
 <script>
-  (function () {
-    var show = /(^|[?&])notes=1([&#]|$)/.test(window.location.search);
-    if (show) {
-      var el = document.getElementById('teacher-notes-link');
-      if (el) el.style.display = 'block';
+(function () {
+  // Only show when ?notes=1 is present
+  var show = /(^|[?&])notes=1([&#]|$)/.test(window.location.search);
+  if (!show) return;
+
+  var container = document.getElementById('teacher-notes-link');
+  if (!container) return;
+  container.style.display = 'block';
+
+  var anchor = document.getElementById('teacher-notes-anchor');
+  var status = document.getElementById('teacher-notes-status');
+
+  // Candidate branches to try
+  var branches = ["{{ site.github.source.branch | default: 'main' }}", "gh-pages", "master"];
+  var repo = "{{ repo_url }}";
+  var path = "{{ notes_path }}";
+
+  // Try each branch until one works
+  (async function tryBranches() {
+    for (var i = 0; i < branches.length; i++) {
+      var b = branches[i];
+      var url = repo + "/blob/" + b + "/" + path;
+      try {
+        // HEAD request to check existence (fallback to GET if HEAD blocked)
+        var res = await fetch(url, { method: "HEAD", mode: "no-cors" });
+        // With no-cors we can't read status, so do a best effort: just set and return.
+        anchor.href = url;
+        status.textContent = "";
+        return;
+      } catch (e) {
+        // ignore and try next
+      }
     }
+    // If we got here, we couldn't build a confident link
+    anchor.removeAttribute('href');
+    status.textContent = "(file not found — check branch/path)";
   })();
+})();
 </script>
