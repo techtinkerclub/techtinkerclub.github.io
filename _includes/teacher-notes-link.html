@@ -1,8 +1,12 @@
-{% if jekyll.environment == "development" or site.show_teacher_notes %}
+{% assign repo_url = site.github.repository_url | default: "https://github.com/techtinkerclub/techtinkerclub.github.io" %}
+{% assign branch = site.github.source.branch | default: "main" %}
+{% assign week = include.week | default: 1 %}
+
+{% if jekyll.environment == "development" or site.show_teacher_notes or page.show_teacher_notes %}
 <p>
-  <a href="https://github.com/{{ site.repository }}/_teacher_notes/2025-26/autumn/week-{{ include.week }}-notes.md"
+  <a href="{{ repo_url }}/blob/{{ branch }}/_teacher_notes/2025-26/autumn/week-{{ week }}-notes.md"
      class="btn btn--warning">
-    👀 Teacher Notes (repo)
+    👀 Teacher Notes (private)
   </a>
 </p>
 {% endif %}
