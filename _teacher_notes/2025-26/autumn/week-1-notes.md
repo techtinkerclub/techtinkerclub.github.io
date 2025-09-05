@@ -1,5 +1,6 @@
 ---
-title: "Teacher Notes — Week 1 (Autumn 2025)"
+title: ""
+layout: single
 week: 1
 year: "2025-26"
 term: "Autumn"
