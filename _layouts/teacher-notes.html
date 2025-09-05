@@ -1,1 +1,29 @@
+---
+layout: single
+---
+
+<p><a href="/curriculum/2025-26/autumn/" class="btn btn--primary">← Back to Autumn 2025 Overview</a></p>
+
+<div id="notes-content" style="display:none">
+  {% if page.toc %}{% if page.toc_sticky %}{% assign toc_sticky = true %}{% endif %}{% include toc.html %}{% endif %}
+  {{ content }}
+  {% include print-to-pdf.html %}
+</div>
+
+<div id="notes-locked" style="display:block; padding:1rem; border:1px dashed #aaa; border-radius:8px;">
+  <p><strong>Teacher notes</strong></p>
+  <p>To view this page, add <code>?notes=1</code> to the URL.</p>
+  <p><small>Example: <code>{{ page.url }}?notes=1</code></small></p>
+</div>
+
+<script>
+(function () {
+  var ok = /(^|[?&])notes=1([&#]|$)/.test(window.location.search);
+  var show = document.getElementById('notes-content');
+  var lock = document.getElementById('notes-locked');
+  if (ok) { if (show) show.style.display = 'block'; if (lock) lock.style.display = 'none'; }
+})();
+</script>
+
+<p><a href="/curriculum/2025-26/autumn/" class="btn btn--primary">← Back to Autumn 2025 Overview</a></p>
 
