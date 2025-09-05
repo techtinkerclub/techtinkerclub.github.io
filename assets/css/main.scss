@@ -28,7 +28,8 @@ search: false
 /* --- Fix page and notes titles to left align instead of full-width stretch --- */
 .page__title,
 .page__content h1,
-.page__content h2 {
+.page__content h2,
+.page__content h3 {
   text-align: left !important;
   width: auto !important;
   max-width: 100% !important;
