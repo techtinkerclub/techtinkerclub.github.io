@@ -31,6 +31,9 @@ collections:
   curriculum:
     output: true
     permalink: /curriculum/:path/
+  teacher_notes:
+    output: false      # <-- NEVER published to the live site
+    # (optional) permalink: /teacher-notes/:path/
 
 # Defaults
 defaults:
