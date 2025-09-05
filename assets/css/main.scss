@@ -25,3 +25,13 @@ search: false
   .page__content > * { page-break-inside: avoid; }
 }
 
+/* --- Fix page and notes titles to left align instead of full-width stretch --- */
+.page__title,
+.page__content h1,
+.page__content h2 {
+  text-align: left !important;
+  width: auto !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
