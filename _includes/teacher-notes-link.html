@@ -1,0 +1,8 @@
+{% if jekyll.environment == "development" or site.show_teacher_notes %}
+<p>
+  <a href="https://github.com/{{ site.repository }}/blob/main/_teacher_notes/2025-26/autumn/week-{{ include.week }}-notes.md"
+     class="btn btn--warning">
+    👀 Teacher Notes (repo)
+  </a>
+</p>
+{% endif %}
