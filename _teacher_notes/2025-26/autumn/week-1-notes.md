@@ -6,6 +6,7 @@ term: "Autumn"
 ---
 
 # Teacher Notes — Week 1  
+{% include print-to-pdf.html %}
 **Theme:** Welcome & Micro:bit Basics  
 **Focus Concept:** Events & Sequencing  
 **Mini-Project:** Digital Name Badge  
