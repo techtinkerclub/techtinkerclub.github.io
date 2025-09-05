@@ -18,6 +18,7 @@ plugins:
 # Include _pages directory in the build
 include:
   - "_pages"
+show_teacher_notes: true
 
 # Logo
 logo: "/assets/images/logo300px.png"
