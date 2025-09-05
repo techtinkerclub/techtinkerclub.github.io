@@ -1,6 +1,5 @@
 ---
 title: ""
-layout: single
 week: 1
 year: "2025-26"
 term: "Autumn"
