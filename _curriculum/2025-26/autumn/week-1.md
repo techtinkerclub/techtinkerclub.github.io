@@ -37,8 +37,17 @@ header:
 
 ---
 
-## Key Vocabulary
-_microcontroller_, _input_, _output_, _event_, _sequence_, _program_, _debug_
+## Key Vocabulary & Definitions
+- **Microcontroller** — a tiny computer on a single chip that controls devices.  
+- **Input** — something the micro:bit senses (e.g., button press, light, shake).  
+- **Output** — what the micro:bit does in response (e.g., show LEDs, play sound).  
+- **Event** — something that happens and triggers code (e.g., “on start”, “on button A pressed”).  
+- **Sequence** — a set of steps the computer follows in order.  
+- **Program** — a set of instructions that tells the micro:bit what to do.  
+- **Programming Language** — the special way we write instructions so computers understand them. MakeCode uses **blocks**, but it’s also a programming language.  
+- **IDE (Integrated Development Environment)** — the software we use to write and test programs. For micro:bit we use **MakeCode IDE** in the web browser.  
+- **Simulator** — a tool inside MakeCode that lets you test your program on a “virtual micro:bit” before sending it to the real one.  
+- **Debug** — finding and fixing mistakes in a program.  
 
 ---
 
