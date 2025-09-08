@@ -34,25 +34,26 @@ This page will grow over time — bookmark it!
 
 ## 📚 Tutorials (Step-by-Step)
 
+- [Micro:bit Projects & Ideas](https://microbit.org/projects/make-it-code-it/){:target="_blank" rel="noopener"}
+- [Tinkercad Starter 3D Design](https://www.tinkercad.com/learn/designs){:target="_blank" rel="noopener"}
 - [Tinkercad Starter Circuits](https://www.tinkercad.com/learn/circuits){:target="_blank" rel="noopener"}  
-- [Micro:bit Projects & Ideas](https://microbit.org/projects/make-it-code-it/){:target="_blank" rel="noopener"}  
 
 ---
 
 ## 📖 Free Books & Docs
 
-- **Micro:bit V2 Learning Book** by Cora Young   
+- **Micro:bit V2 Learning Book** - Cora Young   
   [[TTC Sharedrive]](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Arm Academy Micro:course**   
-  [[TTC Sharedrive]](https://code.org/maker/assets/CSF-Booklet-Course-E-July23.pdf){:target="_blank" rel="noopener"}
+  [Github repository]](https://github.com/arm-university/micro-course){:target="_blank" rel="noopener"}
   [[TTC Sharedrive]](https://drive.google.com/file/d/1J0haIpxT91FnPdrZyKiGYsprHya9Q3Nh/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Arm Academy Introduction to computing with micro:bit**   
   [[Github repository]](https://github.com/arm-university/Introduction-to-Computing-with-microbit){:target="_blank" rel="noopener"}
 
 - **micro:bit Physical Computing Fundamentals** - Code.org   
-  [[Code.org]](https://github.com/arm-university/micro-course){:target="_blank" rel="noopener"}
+  [[Code.org]](https://code.org/maker/assets/CSF-Booklet-Course-E-July23.pdf){:target="_blank" rel="noopener"}
   [[TTC Sharedrive]](https://drive.google.com/file/d/1B4Kuq8CdvplmV3JcjlQWNlYLyQ32foIu/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Hello World: Big Book of Computing Content** (Raspberry Pi Foundation)  
@@ -62,6 +63,10 @@ This page will grow over time — bookmark it!
 - **Hello World: Big Book of Pedagogy** (Raspberry Pi Foundation)   
   [[RPI website]](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-pedagogy){:target="_blank" rel="noopener"}
   [[TTC Sharedrive]](https://drive.google.com/file/d/1CsAMgwc0oMCtxVu-nNnNFTI2o6VmF_iS/view?usp=drive_link){:target="_blank" rel="noopener"}
+
+- **Mastering Tinkercad - Student book** - Ed Charlwood  
+  [CADclass.org]](https://www.cadclass.org/pages/tinkercadbook){:target="_blank" rel="noopener"}
+  [[TTC Sharedrive]](https://drive.google.com/file/d/1c0yNEGlk4vJSmzpAin5Frp9Mc-DfZ0JU/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 
 ---
