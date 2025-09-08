@@ -1,60 +1,63 @@
 ---
 layout: single
-title: ""                       # no large page title
-permalink: /curriculum/2025-26/autumn/week-XX/
-week: XX
-sidebar:  false                 # override collection default → no left menu
+title: ""
+permalink: /curriculum/2025-26/autumn/week-WEEK_NUM/
+week: WEEK_NUM
+toc: true
+toc_sticky: true
+sidebar: false
 header:
   overlay_image: /assets/images/banner.png
   show_overlay_excerpt: false
   show_overlay_text: false
-toc: true
-toc_sticky: true
 ---
 
 {% include back-to-autumn.html %}
+{% include teacher-notes-link.html week=WEEK_NUM %}
 
-## Week XX — FOCUS_CONCEPT (optional heading)
+## Week WEEK_NUM — FOCUS_CONCEPT
 
-**Focus Concept:** _e.g., Events & Sequencing_  
-**Mini-Project:** _e.g., Name badge, button icons_
+**Focus Concept:** FOCUS_CONCEPT  
+**Mini-Project:** MINI_PROJECT_TITLE
 
 ---
 
 ## Objectives
-- …
-- …
-- …
-
-## Success Criteria (pupil-friendly)
-- …
-- …
-- …
-
-## Key Vocabulary
-_event_, _input_, _output_, _variable_, _loop_, _condition_, _logic_ (AND/OR), _sensor_
-
-## Resources
-- **Slides:** [link](#)  
-- **Worksheet:** [link](#)  
-- **Starter code / MakeCode project:** [link](#)  
-- **Teacher reference (private):** [link](#)  
-
-## Equipment
-- …
-
-## Safety & Setup Notes
-- …
+- OBJECTIVE 1  
+- OBJECTIVE 2  
+- OBJECTIVE 3  
+- OBJECTIVE 4
 
 ---
 
-## Lesson Plan (≈90 minutes)
-1) Starter / Hook (10)  
-2) Teach / Model (10–15)  
-3) Guided Build (30–35)  
-4) Extensions & Challenge (20–25)  
-5) Share & Reflect (10)
+## Success Criteria (pupil-friendly)
+- I can …  
+- I can …  
+- I can …
+
+---
+
+## Key Vocabulary
+TERM_1, TERM_2, TERM_3, TERM_4
+
+---
+
+## Resources
+- **Slides:** [Week WEEK_NUM Slides](#)  
+- **Worksheet:** [Week WEEK_NUM Worksheet](#)  
+- **Starter code / MakeCode project:** [Link](#)
+
+---
+
+## Equipment
+- LIST THE KIT NEEDED (e.g., micro:bit + USB, servos, buzzers, etc.)
+
+---
+
+## Safety & Setup Notes
+- QUICK SAFETY / SETUP REMINDERS FOR THIS WEEK
 
 ---
 
 {% include back-to-autumn.html %}
+{% include teacher-notes-link.html week=WEEK_NUM %}
