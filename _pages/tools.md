@@ -49,8 +49,8 @@ This page will grow over time — bookmark it!
   [RPI website](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-pedagogy){:target="_blank" rel="noopener"}
   [TTC Sharedrive](https://drive.google.com/file/d/1CsAMgwc0oMCtxVu-nNnNFTI2o6VmF_iS/view?usp=drive_link){:target="_blank" rel="noopener"}
 
-- **Micro:bit Recipes** — ready-made projects  
-  [PDF](/assets/docs/Microbit%20recipes.pdf){:target="_blank" rel="noopener"}
+- **Micro:bit V2 Learning Book by Cora Young**   
+ [TTC Sharedrive](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Micro:bit for Mad Scientists** (fun, quirky projects)  
   [PDF](/assets/docs/Microbit%20for%20mad%20scientists.pdf){:target="_blank" rel="noopener"}
