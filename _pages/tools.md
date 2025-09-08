@@ -42,15 +42,15 @@ This page will grow over time — bookmark it!
 ## 📖 Free Books & Docs
 
 - **Hello World: Big Book of Computing Content** (Raspberry Pi Foundation)  
-  [RPI website](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-content){:target="_blank" rel="noopener"}
-  [TTC Sharedrive](https://drive.google.com/file/d/1SuAj_rpmU2N-0TSW9Vws5-YMHrqSv8N-/view?usp=drive_link){:target="_blank" rel="noopener"}
+  [[RPI website]](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-content){:target="_blank" rel="noopener"}
+  [[TTC Sharedrive]](https://drive.google.com/file/d/1SuAj_rpmU2N-0TSW9Vws5-YMHrqSv8N-/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Hello World: Big Book of Pedagogy**  
-  [RPI website](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-pedagogy){:target="_blank" rel="noopener"}
-  [TTC Sharedrive](https://drive.google.com/file/d/1CsAMgwc0oMCtxVu-nNnNFTI2o6VmF_iS/view?usp=drive_link){:target="_blank" rel="noopener"}
+  [[RPI website]](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-pedagogy){:target="_blank" rel="noopener"}
+  [[TTC Sharedrive]](https://drive.google.com/file/d/1CsAMgwc0oMCtxVu-nNnNFTI2o6VmF_iS/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Micro:bit V2 Learning Book by Cora Young**   
- [TTC Sharedrive](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
+ [[TTC Sharedrive]](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Micro:bit for Mad Scientists** (fun, quirky projects)  
   [PDF](/assets/docs/Microbit%20for%20mad%20scientists.pdf){:target="_blank" rel="noopener"}
