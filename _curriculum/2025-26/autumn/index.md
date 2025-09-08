@@ -41,7 +41,8 @@ This term, pupils in Tech Tinker Club will explore how microcontrollers (tiny co
 
 | Week | Focus Concept | Mini-Project Example | Resources |
 |------|---------------|----------------------|-----------|
-| [Week 1](/curriculum/2025-26/autumn/week-1/) | Intro to club & microcontrollers | Name badge, button icons | Slides · Worksheet |
+| [Week 1](/curriculum/2025-26/autumn/week-1/) | Intro to club & microcontrollers | Name badge, beating heart | [link](https://techtinker.club/curriculum/2025-26/autumn/week-1/#resources)[Text](URL){:target="_blank" rel="noopener"}
+ |
 | [Week 2](/curriculum/2025-26/autumn/week-2/) | Events & inputs | Dice roller (shake to roll) | Slides · Worksheet |
 | [Week 3](/curriculum/2025-26/autumn/week-3/) | Conditionals (if/else) | Reaction timer game | Slides · Worksheet |
 | [Week 4](/curriculum/2025-26/autumn/week-4/) | Variables & thresholds | Light/temperature monitor | Slides · Worksheet |
