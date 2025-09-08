@@ -52,8 +52,6 @@ This page will grow over time — bookmark it!
 - **Micro:bit V2 Learning Book by Cora Young**   
  [[TTC Sharedrive]](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
 
-- **Micro:bit for Mad Scientists** (fun, quirky projects)  
-  [PDF](/assets/docs/Microbit%20for%20mad%20scientists.pdf){:target="_blank" rel="noopener"}
 
 ---
 
@@ -64,7 +62,3 @@ This page will grow over time — bookmark it!
 
 ---
 
-## 🚀 Coming Soon
-- Videos from our sessions.  
-- More step-by-step worksheets.  
-- Links to Tinkercad physics “Sim Lab” examples.
