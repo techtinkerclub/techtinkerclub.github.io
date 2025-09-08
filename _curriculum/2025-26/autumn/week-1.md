@@ -30,7 +30,7 @@ header:
 
 ---
 
-## Success Criteria (pupil-friendly)
+## Success Criteria 
 - I can explain what a microcontroller does (input → process → output).  
 - I can open MakeCode, create a project, and send it to my micro:bit.  
 - I can make my micro:bit display my name and react to button presses.  
@@ -43,7 +43,7 @@ _microcontroller_, _input_, _output_, _event_, _sequence_, _program_, _debug_
 ---
 
 ## Resources
-- **Slides:** [Week 1 Slides](#)  
+- **Microbit V2 Leabing Book - Cora Young:** [link]((https://drive.google.com/drive/folders/1m-vwVw1B2F0EREk_Z_nKliPv-QtUtCMn?usp=sharin).
 - **Worksheet:** [Week 1 Worksheet](#)  
 - **Starter code / MakeCode project:** [link to template](https://makecode.microbit.org/#)
 
