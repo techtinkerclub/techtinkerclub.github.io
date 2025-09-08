@@ -43,9 +43,10 @@ _microcontroller_, _input_, _output_, _event_, _sequence_, _program_, _debug_
 ---
 
 ## Resources
-- **Microbit V2 Leabing Book by Cora Young:** [link](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
+- **Microbit V2 Learning Book by Cora Young:** [link](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
 - **Join Micro:bit Makecode Classroom:** [link](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}  
-- **Micro:bit Makecode:** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"} 
+- **Micro:bit Makecode:** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"}
+- **How to transfer code to the micro:bit :** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 
 ---
 
