@@ -17,53 +17,58 @@ header:
 
 ## Week 2 — Events & Inputs (Digital Dice Roller)
 
-**Focus Concept:** Events trigger code  
-**Mini-Project:** Dice Roller (Button A / Shake)
+**Focus Concept:** Event-driven programming (inputs trigger actions)  
+**Mini-Project:** Dice Roller  
 
 ---
 
 ## Objectives
-- Understand that **events** (button press, shake) start specific blocks of code.  
-- Use **inputs** (buttons, accelerometer/“shake”) to control a program.  
-- Generate a **random number (1–6)** and display it on the LED grid.  
-- Extend with extra events (Button B, A+B) or patterns for dice faces.
+- Explore how **events** (button press, shake) trigger code.  
+- Use **inputs** (buttons, accelerometer) to control outputs on the micro:bit.  
+- Create a **dice roller** that generates a random number.  
+- Extend the project with extra events and outputs (Button B, Shake, dot patterns).  
 
 ---
 
 ## Success Criteria
-- I can explain what an **event** is and give an example (e.g., “on button A pressed”).  
-- I can use **pick random 1–6** and show the result on screen.  
-- I can add another **input** (Button B or Shake) to trigger a different behaviour.
+- I can explain what an **event** is and give an example.  
+- I can use `pick random` to generate a number and display it.  
+- I can add a second input (Button B or Shake) to trigger a different behaviour.  
 
 ---
 
-## Key Vocabulary
-_event_, _input_, _output_, _accelerometer_, _gesture (shake)_, _random_, _sequence_
+## Key Vocabulary & Definitions
+- **Input** — something the micro:bit senses (e.g., button press, shake, light).  
+- **Output** — how the micro:bit responds (e.g., LEDs, sound, text).  
+- **Event** — an action that makes the micro:bit run a block of code (e.g., “on button A pressed”).  
+- **Accelerometer** — a sensor that measures movement or tilt (used for “shake”).  
+- **Random** — an unpredictable number chosen by the computer, like rolling dice.  
+- **Conditional** — code that makes a decision (e.g., “if light < 50, show moon, else show sun”).  
 
 ---
 
 ## Resources
 - **MakeCode (micro:bit):** [Open Editor](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 - **Tutorial: Input Events (Buttons & Shake):** [Getting Started Tutorials](https://makecode.microbit.org/tutorials/getting-started){:target="_blank" rel="noopener"}  
-- **Dice Roller Example (share your own when ready):** [Template / Starter Project](https://makecode.microbit.org/#){:target="_blank" rel="noopener"}  
-- **MakeCode Classroom (join code given in session):** [Join Classroom](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}
+- **Dice Roller Example (share later as starter code):** [Template](https://makecode.microbit.org/#){:target="_blank" rel="noopener"}  
+- **MakeCode Classroom (join code given in session):** [Join Classroom](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}  
 
 ---
 
 ## Equipment
 - BBC micro:bits + USB cables (1 per child or pair).  
 - Chromebooks with internet access.  
-- Optional: speakers/buzzer for a “roll” sound; spare USB hubs.
+- Projector for demo.  
+- Optional: speakers/buzzer for dice “roll” sound.  
 
 ---
 
 ## Safety & Setup Notes
-- Keep micro:bits on the table while “shake” is tested — no throwing.  
-- Use data-capable USB cables; unplug gently from the board.  
-- Share devices and help partners debug respectfully.
+- Remind pupils not to throw micro:bits when testing “shake”.  
+- Handle cables gently — use data cables not charging-only ones.  
+- Work in pairs to share devices and debugging tips.  
 
 ---
 
 {% include back-to-autumn.html %}
 {% include teacher-notes-link.html week=2 %}
-
