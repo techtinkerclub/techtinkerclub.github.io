@@ -46,7 +46,8 @@ This page will grow over time — bookmark it!
   [TTC Sharedrive](https://drive.google.com/file/d/1SuAj_rpmU2N-0TSW9Vws5-YMHrqSv8N-/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Hello World: Big Book of Pedagogy**  
-  [PDF](/assets/docs/Hello_World_The_Big_Book_of_Pedagogy.pdf){:target="_blank" rel="noopener"}
+  [RPI website](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-pedagogy){:target="_blank" rel="noopener"}
+  [TTC Sharedrive](https://drive.google.com/file/d/1CsAMgwc0oMCtxVu-nNnNFTI2o6VmF_iS/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Micro:bit Recipes** — ready-made projects  
   [PDF](/assets/docs/Microbit%20recipes.pdf){:target="_blank" rel="noopener"}
