@@ -45,11 +45,15 @@ This page will grow over time — bookmark it!
   [[TTC Sharedrive]](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Arm Academy Micro:course**   
-  [[Github repository]](https://github.com/arm-university/micro-course){:target="_blank" rel="noopener"}
+  [[TTC Sharedrive]](https://code.org/maker/assets/CSF-Booklet-Course-E-July23.pdf){:target="_blank" rel="noopener"}
   [[TTC Sharedrive]](https://drive.google.com/file/d/1J0haIpxT91FnPdrZyKiGYsprHya9Q3Nh/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Arm Academy Introduction to computing with micro:bit**   
   [[Github repository]](https://github.com/arm-university/Introduction-to-Computing-with-microbit){:target="_blank" rel="noopener"}
+
+  - **micro:bit Physical Computing Fundamentals** - Code.org   
+  [[Code.org]](https://github.com/arm-university/micro-course){:target="_blank" rel="noopener"}
+  [[TTC Sharedrive]](https://drive.google.com/file/d/1B4Kuq8CdvplmV3JcjlQWNlYLyQ32foIu/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Hello World: Big Book of Computing Content** (Raspberry Pi Foundation)  
   [[RPI website]](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-content){:target="_blank" rel="noopener"}
