@@ -44,8 +44,8 @@ _microcontroller_, _input_, _output_, _event_, _sequence_, _program_, _debug_
 
 ## Resources
 - **Microbit V2 Leabing Book by Cora Young:** [link](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
-- **Worksheet:** [Week 1 Worksheet](#)  
-- **Starter code / MakeCode project:** [link to template](https://makecode.microbit.org/#)
+- **Join Micro:bit Makecode Classroom:** [link]([#](https://classroom.microbit.org/join)){:target="_blank" rel="noopener"}  
+- **Micro:bit Makecode:** [link to template](https://makecode.microbit.org){:target="_blank" rel="noopener"} 
 
 ---
 
