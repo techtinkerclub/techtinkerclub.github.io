@@ -51,7 +51,7 @@ This page will grow over time — bookmark it!
 - **Arm Academy Introduction to computing with micro:bit**   
   [[Github repository]](https://github.com/arm-university/Introduction-to-Computing-with-microbit){:target="_blank" rel="noopener"}
 
-  - **micro:bit Physical Computing Fundamentals** - Code.org   
+- **micro:bit Physical Computing Fundamentals** - Code.org   
   [[Code.org]](https://github.com/arm-university/micro-course){:target="_blank" rel="noopener"}
   [[TTC Sharedrive]](https://drive.google.com/file/d/1B4Kuq8CdvplmV3JcjlQWNlYLyQ32foIu/view?usp=drive_link){:target="_blank" rel="noopener"}
 
