@@ -43,7 +43,8 @@ header:
 - **Output** — what the micro:bit does in response (e.g., show LEDs, play sound).  
 - **Event** — something that happens and triggers code (e.g., “on start”, “on button A pressed”).  
 - **Sequence** — a set of steps the computer follows in order.  
-- **Program** — a set of instructions that tells the micro:bit what to do.  
+- **Algorithm** — a step-by-step set of instructions to solve a problem or complete a task.  
+- **Program** — an algorithm that has been written in a way a computer or micro:bit can follow.  
 - **Programming Language** — the special way we write instructions so computers understand them. MakeCode uses **blocks**, but it’s also a programming language.  
 - **IDE (Integrated Development Environment)** — the software we use to write and test programs. For micro:bit we use **MakeCode IDE** in the web browser.  
 - **Simulator** — a tool inside MakeCode that lets you test your program on a “virtual micro:bit” before sending it to the real one.  
