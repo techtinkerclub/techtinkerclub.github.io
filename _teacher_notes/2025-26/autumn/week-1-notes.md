@@ -69,7 +69,7 @@ header:
 
 ## Differentiation
 - **New coders:** provide a partially-completed project in MakeCode (starter blocks already in place).  
-- **Experienced coders:** challenge them with dice roller or animation patterns.  
+- **Experienced coders:** challenge them with showing icons along with names, playing musing in the background, adding little animationes, using inputs etc.  
 - Allow mixed-ability pairing — encourage peer teaching.  
 
 ---
