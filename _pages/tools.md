@@ -55,10 +55,3 @@ This page will grow over time — bookmark it!
 
 ---
 
-## 🛠 Our Own Guides
-
-- [Club Guide: Flashing your first program](/assets/docs/club-guide-first-flash.pdf){:target="_blank" rel="noopener"}  
-- [Club Guide: Debugging checklist](/assets/docs/club-guide-debug.pdf){:target="_blank" rel="noopener"}
-
----
-
