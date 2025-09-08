@@ -43,7 +43,8 @@ header:
 - **Event** — an action that makes the micro:bit run a block of code (e.g., “on button A pressed”).  
 - **Accelerometer** — a sensor that measures movement or tilt (used for “shake”).  
 - **Random** — an unpredictable number chosen by the computer, like rolling dice.  
-- **Conditional** — code that makes a decision (e.g., “if light < 50, show moon, else show sun”).  
+- **Conditional** — code that makes a decision (e.g., “if light < 50, show moon, else show sun”).
+- **Logic** — the set of rules a computer follows to decide what to do. In coding we use conditionals  (logic blocks like **if…then…else**) to check conditions and choose between actions. Logic can also use connectors such as **AND**, **OR**, and **NOT** to combine conditions.  
 
 ---
 
@@ -52,7 +53,8 @@ header:
 - **Tutorial: Input Events (Buttons & Shake):** [Getting Started Tutorials](https://makecode.microbit.org/tutorials/getting-started){:target="_blank" rel="noopener"}
 - **Code.org example:** [Makecode code](https://makecode.microbit.org/_CaK9Lv50rY0c) {:target="_blank" rel="noopener"}
 - **Dice Roller Example (share later as starter code):** [Template](https://makecode.microbit.org/#){:target="_blank" rel="noopener"}  
-- **MakeCode Classroom (join code given in session):** [Join Classroom](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}  
+- **MakeCode Classroom (join code given in session):** [Join Classroom](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}
+- **micro:bit Physical Computing Fundamentals:** [TTC Sharedrive Link](https://drive.google.com/file/d/1B4Kuq8CdvplmV3JcjlQWNlYLyQ32foIu/view?usp=drive_link)
 
 ---
 
