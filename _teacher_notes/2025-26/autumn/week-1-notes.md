@@ -3,6 +3,7 @@ layout: single
 title: ""
 permalink: /teacher-notes/2025-26/autumn/week-1-notes/
 week: 1
+robots: noindex
 toc: true
 toc_sticky: true
 sidebar: false
