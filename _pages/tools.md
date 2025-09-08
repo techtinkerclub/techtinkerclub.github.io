@@ -46,7 +46,7 @@ This page will grow over time — bookmark it!
   [[TTC Sharedrive]](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Arm Academy Micro:course**   
-  [Github repository]](https://github.com/arm-university/micro-course){:target="_blank" rel="noopener"}
+  [[Github repository]](https://github.com/arm-university/micro-course){:target="_blank" rel="noopener"}
   [[TTC Sharedrive]](https://drive.google.com/file/d/1J0haIpxT91FnPdrZyKiGYsprHya9Q3Nh/view?usp=drive_link){:target="_blank" rel="noopener"}
 
 - **Arm Academy Introduction to computing with micro:bit**   
