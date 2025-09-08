@@ -4,8 +4,6 @@ title: ""
 year: "2025-26"
 term: "Autumn"
 permalink: /curriculum/2025-26/autumn/
-toc: true
-toc_sticky: true
 sidebar:
   nav: "curriculum"
 header:
