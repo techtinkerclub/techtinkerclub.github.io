@@ -26,7 +26,7 @@ header:
 - Get to know the club and how we work together.  
 - Understand what a **microcontroller** is and what the **BBC micro:bit** can do.  
 - Explore **MakeCode** (logging in, creating, simulating, downloading, uploading).  
-- Write and test a first program (scrolling name, button icons).
+- Write and test a first program (scrolling name badge).
 
 ---
 
