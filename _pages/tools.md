@@ -35,14 +35,15 @@ This page will grow over time — bookmark it!
 ## 📚 Tutorials (Step-by-Step)
 
 - [Tinkercad Starter Circuits](https://www.tinkercad.com/learn/circuits){:target="_blank" rel="noopener"}  
-- [Micro:bit Projects & Ideas]([https://microbit.org/projects/](https://microbit.org/projects/make-it-code-it/)){:target="_blank" rel="noopener"}  
+- [Micro:bit Projects & Ideas]([https://microbit.org/projects/](https://microbit.org/projects/make-it-code-it/){:target="_blank" rel="noopener"}  
 
 ---
 
 ## 📖 Free Books & Docs
 
 - **Hello World: Big Book of Computing Content** (Raspberry Pi Foundation)  
-  [RPI website PDF](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-content)){:target="_blank" rel="noopener"}
+  [RPI website](https://www.raspberrypi.org/hello-world/issues/the-big-book-of-computing-content){:target="_blank" rel="noopener"}
+  [TTC Sharedrive](https://drive.google.com/drive/folders/1kAFqnoiMIV7PMtSDRQxVrsalvk-1a72G?usp=sharing){:target="_blank" rel="noopener"}
 
 - **Hello World: Big Book of Pedagogy**  
   [PDF](/assets/docs/Hello_World_The_Big_Book_of_Pedagogy.pdf){:target="_blank" rel="noopener"}
