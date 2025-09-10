@@ -13,6 +13,7 @@ header:
 # Tech Tinker Club Curriculum (Years 4–6)
 
 **Intent (Why we do it)**    
+  
 Tech Tinker Club exists to spark curiosity and confidence in STEM through **hands-on, real-world projects**. We do our best allign to the school’s Computing, Science and D&T curricula while giving children extended time to **design, make, code, test and iterate**. Mixed-age sessions (Y4–Y6) are deliberately **tiered** so beginners succeed quickly and returning members are challenged.
 
 **Core Objectives**
