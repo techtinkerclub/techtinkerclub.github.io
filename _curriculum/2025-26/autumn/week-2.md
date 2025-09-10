@@ -67,7 +67,7 @@ header:
 ---
 
 ## Safety & Setup Notes
-- Remind pupils not to throw micro:bits when testing “shake”.  
+- Remind participants not to throw micro:bits when testing “shake”.  
 - Handle cables gently — use data cables not charging-only ones.  
 - Work in pairs to share devices and debugging tips.  
 
