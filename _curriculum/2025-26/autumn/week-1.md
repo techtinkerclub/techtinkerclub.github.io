@@ -68,7 +68,7 @@ header:
 ---
 
 ## Safety & Setup Notes
-- Remind pupils not to pull cables too hard.  
+- Remind participants not to pull cables too hard.  
 - Show correct way to disconnect the micro:bit from USB.  
 - Encourage sharing equipment and helping partners.
 
