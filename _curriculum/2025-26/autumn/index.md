@@ -16,7 +16,7 @@ header:
 
 **Theme:** *“From inputs to outputs: making systems that sense and respond.”*
 
-This term, pupils in Tech Tinker Club will explore how microcontrollers (tiny computers that power gadgets, robots and everyday devices) can be programmed to **sense the world and control outputs**. Using the BBC micro:bit, motors, buzzers, servos and built-in sensors, children will design fun mini-projects that blend **computing concepts** with real-world making.
+This term, participants in Tech Tinker Club will explore how microcontrollers (tiny computers that power gadgets, robots and everyday devices) can be programmed to **sense the world and control outputs**. Using the BBC micro:bit, motors, buzzers, servos and built-in sensors, children will design fun mini-projects that blend **computing concepts** with real-world making.
 
 ---
 
@@ -59,7 +59,7 @@ This term, pupils in Tech Tinker Club will explore how microcontrollers (tiny co
 ---
 
 ## Impact (What success looks like)
-- Pupils can describe their creations in terms of **inputs, processing and outputs**.  
+- Participants can describe their creations in terms of **inputs, processing and outputs**.  
 - They use **computing vocabulary** (variables, loops, conditions).  
 - They demonstrate **debugging strategies** and persistence.  
 - By the end of term, every child has completed a set of working mini-projects and shared one with peers.
@@ -68,4 +68,4 @@ This term, pupils in Tech Tinker Club will explore how microcontrollers (tiny co
 
 ## Looking ahead
 - **Spring 2026:** Tinkercad Design & Circuits — designing and simulating enclosures and circuits.  
-- **Summer 2026:** Integration & Showcase — combining micro:bit coding with 3D design and circuits.
+- **Summer 2026:** Integration — combining micro:bit coding with 3D design and circuits.
