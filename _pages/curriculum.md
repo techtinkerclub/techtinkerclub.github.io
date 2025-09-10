@@ -13,7 +13,7 @@ header:
 # Tech Tinker Club Curriculum (Years 4–6)
 
 **Intent (Why we do it)**  
-Tech Tinker Club exists to spark curiosity and confidence in STEM through **hands-on, real-world projects**. We align to the school’s Computing, Science and D&T curricula while giving pupils extended time to **design, make, code, test and iterate**. Mixed-age sessions (Y4–Y6) are deliberately **tiered** so beginners succeed quickly and returning members are stretched.
+Tech Tinker Club exists to spark curiosity and confidence in STEM through **hands-on, real-world projects**. We do our best allign to the school’s Computing, Science and D&T curricula while giving children extended time to **design, make, code, test and iterate**. Mixed-age sessions (Y4–Y6) are deliberately **tiered** so beginners succeed quickly and returning members are challenged.
 
 **Core Objectives**
 - Build **computational thinking** (sequence, selection, repetition, variables, data).  
@@ -28,7 +28,7 @@ Tech Tinker Club exists to spark curiosity and confidence in STEM through **hand
   - **Autumn — Micro:bit Foundations** (physical computing, sensors, data, motors).  
   - **Spring — Tinkercad Design & Circuits** (3D design, enclosures, circuit simulation).  
   - **Summer — Integration & Showcase** (combine code + 3D + circuits in one product).  
-- **Session structure (≈90 min):** Hook demo → guided build → open extensions → share/reflect.  
+   
 - **Tiered tasks:**  
   - *Level 1* (access): core build works for everyone.  
   - *Level 2* (extend): extra feature(s), data/variables, styling.  
@@ -36,9 +36,9 @@ Tech Tinker Club exists to spark curiosity and confidence in STEM through **hand
 - **Equipment:** Chromebooks, BBC micro:bits, sensors/motors/servos/expansion boards, 3D printer (used strategically).
 
 **Impact (What success looks like)**
-- Pupils can explain **how** their systems work (inputs → processing → outputs).  
+- Children can explain **how** their systems work (inputs → processing → outputs).  
 - Working prototypes that solve a **clear, user-centred problem**.  
-- Evidence of **iteration** (photos, code commits/versions, reflection notes).  
+- Evidence of **iteration** (photos, code versions, reflection).  
 - Improved **vocabulary** across Computing, Science and D&T.  
 - Positive dispositions: persistence, debugging mindset, safe/ethical choices online.
 
@@ -48,14 +48,14 @@ Tech Tinker Club exists to spark curiosity and confidence in STEM through **hand
 - Simple rubrics (Working, Partly, Not yet) for: function, design, explanation, teamwork.
 
 **Inclusion & Safety**
-- Accessible entry for all (scaffolded steps, paired programming, checklists).  
-- E-safety and tool safety embedded; adult checks for electronics/3D printing.  
-- Adaptations available (buddy roles, simplified parts, print-ahead enclosures).
+- Accessible entry for all (scaffolded steps, paired programming).  
+- E-safety and tool safety; adult checks for electronics/3D printing.  
+- Adaptations available (buddy roles, simplified parts, etc).
 
 **Alignment (high level)**
 - **Computing KS2:** programming constructs; working with hardware; data use.  
 - **Science KS2:** Electricity, Light, Forces, Materials; Working Scientifically.  
 - **D&T KS2:** Design-Make-Evaluate; mechanical/electrical systems; CAD.  
-- **School themes:** club projects reference current term themes to deepen classroom links.
+- **School themes:** club projects might reference current term themes to deepen classroom links.
 
 > Explore the current year plan: [Curriculum 2025–26](/curriculum/2025-26/).
