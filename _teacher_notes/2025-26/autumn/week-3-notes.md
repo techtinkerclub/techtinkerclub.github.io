@@ -38,7 +38,7 @@ header:
 
 ### 1) Predict — Simple Coin Flipper
 
-Show this on the projector (don’t run it yet): Simple Coin Flipper [Makecode code](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}
+Show this on the projector (don’t run it yet): [Simple Coin Flipper](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}
 
 Prompt participants:
 
