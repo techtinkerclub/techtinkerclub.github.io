@@ -1,117 +1,194 @@
 ---
+
 layout: single
 title: ""
 permalink: /teacher-notes/2025-26/autumn/week-3-notes/
 week: 3
 robots: noindex
 toc: true
-toc_sticky: true
+toc\_sticky: true
 sidebar: false
 header:
-  overlay_image: /assets/images/banner.png
-  show_overlay_excerpt: false
-  show_overlay_text: false
----
+overlay\_image: /assets/images/banner.png
+show\_overlay\_excerpt: false
+show\_overlay\_text: false
+--------------------------
 
-# Teacher Notes — Week 3  
+# Teacher Notes — Week 3
+
 {% include print-to-pdf.html %}
 
-**Theme:** Conditionals — If / Else Decisions  
-**Focus Concept:** Conditionals & Logic  
-**Mini-Project:** Rock–Paper–Scissors (random choice)  
+**Theme:** Conditionals (if / else)
+**Focus Concept:** Decisions & basic logic
+**Mini-Project:** Rock–Paper–Scissors (micro\:bit chooses at random)
 
 ---
 
 ## Learning Objectives
-- Pupils understand and apply **if / else** decisions.  
-- Pupils compare **2-way (coin toss)** and **3-way (RPS)** conditionals.  
-- Pupils connect randomness and fairness to **Maths (probability)** and **Science (chance, experiments).**  
-- Pupils create a working Rock–Paper–Scissors program.  
+
+* Pupils understand that computers make **decisions** using **conditionals** (`if … else`).
+* Pupils can **predict, run, investigate, modify, and make** programs using PRIMM.
+* Pupils relate **randomness, probability, and fairness** to simple programs (coin toss; RPS).
+* Pupils build a program that uses an **if / else-if / else chain** to choose Rock/Paper/Scissors.
+
+---
+
+## PRIMM Structure (use explicitly)
+
+### 1) Predict — Coin Toss Starter
+
+Show this on the projector (don’t run it yet):
+
+```blocks
+on button A pressed
+    show icon (small animation – optional)
+    set coin to pick random 0 to 1
+    if coin = 0 then
+        show string "H"
+    else
+        show string "T"
+```
+
+Prompt pupils:
+
+* What will happen when I press **A**?
+* Why are there **two** possible outcomes?
+* What does `pick random 0 to 1` mean?
+* What does the condition `if coin = 0` control?
+
+---
+
+### 2) Run
+
+* Pupils flash and run the program; press **A** several times.
+* Quick poll: “Who got H? Who got T?” Why are results different each time?
+
+---
+
+### 3) Investigate
+
+* Draw the decision flow on the board:
+  **IF** coin = 0 → “H” **ELSE** → “T”.
+* Discussion prompts:
+
+  * What happens if we change to `pick random 1 to 2` but keep `if coin = 0`?
+  * What happens if we **remove the `else`**?
+  * Why is a coin toss considered **fair**?
+
+---
+
+### 4) Modify
+
+Quick tweaks (5–7 min):
+
+* Swap “H/T” for LED icons or emojis.
+* Add sounds (high tone for heads, low tone for tails).
+* Challenge: turn into a **dice roller** (`pick random 1–6`).
+
+---
+
+### 5) Make — Main Project (Rock–Paper–Scissors, 3-way decision)
+
+Transition: *“Coin toss is a **2-way** decision. Rock–Paper–Scissors has **three** choices, so we’ll use an **if / else-if / else** chain.”*
+
+Suggested build:
+
+1. **Event:** `on shake`
+2. **Process:** `set hand = pick random 0 to 2`
+3. **Decide:**
+
+   * `if hand = 0` → show Rock icon
+   * `else if hand = 1` → show Paper icon
+   * `else` → show Scissors icon
+
+> Pupils then play their hand with **real gestures**, comparing to the micro\:bit’s choice.
+> Extension: scoring with a variable.
 
 ---
 
 ## Detailed Lesson Plan (≈90 minutes)
 
-**1) Starter — Coin Toss PRIMM (15 min)**  
-- **Predict:**  
-  - Show code: `on button A → set coin = pick random 0–1 → if coin=0 show H else show T`.  
-  - Ask: “What will happen? Why do we need `else`?”  
-- **Run:** Test in simulator and on device.  
-- **Investigate:**  
-  - Change random range (1–2, 0–5).  
-  - Remove `else`.  
-- **Modify:** Add icons, sounds, or a score variable.  
-- **Discussion:** What does “fair” mean? Why is this a fair game?  
+* **Starter (10 min):** link to real-life coin toss.
+* **Predict + Run (10–12 min):** coin toss PRIMM starter.
+* **Investigate + Modify (15–18 min):** explore and tweak coin toss.
+* **Make (30 min):** build Rock–Paper–Scissors.
+* **Reflect (15 min):** share, discuss fairness, exit questions.
 
 ---
 
-**2) Teach / Model — Rock–Paper–Scissors (10 min)**  
-- Show 3-choice version using `if / else if / else`.  
-- Compare to coin toss: 3-way vs 2-way decision.  
-- Reinforce idea: computer is **choosing at random**.  
+## Probability, Chance & Fairness (teacher script)
+
+* **Probability** = how likely something is. Coin toss → 1 out of 2 (50%).
+* **Chance** = everyday word for probability.
+* **Fairness** = all outcomes equally likely.
+* In code, `pick random` makes games fair if we test all outcomes correctly.
+* *Mini-activity:* run coin toss 20 times, tally class results — close to 50/50 but not exact.
 
 ---
 
-**3) Guided Build (30 min)**  
-- Shake event = pick random 0–2.  
-- If 0 → Rock, if 1 → Paper, else → Scissors.  
-- Show on LEDs with patterns/icons.  
-- Test: Pupils play against micro:bit using hand signs.  
+## Vocabulary
+
+* **Conditional** — an instruction that checks a condition and chooses what to do (if/else).
+* **Logic** — rules in decisions (later: AND/OR/NOT).
+* **Random** — an unpredictable value chosen by the computer.
+* **Variable** — a named box of memory that can change.
+* **Fairness / Probability** — equal chance of outcomes.
 
 ---
 
-**4) Extensions & Challenges (20 min)**  
-- Add variable `score`: +1 if player wins, -1 if micro:bit wins (entered manually with button A/B).  
-- Add sound effects for Rock, Paper, Scissors.  
-- Stretch: let player enter their move with A/B/A+B, then program shows win/lose/draw.  
+## Extensions
 
----
-
-**5) Share & Reflect (15 min)**  
-- Pupils compare games and test fairness.  
-- Quick exit ticket Qs:  
-  - “What is a conditional?”  
-  - “Why do we need an `else`?”  
-  - “How is Rock–Paper–Scissors fair?”  
-
----
-
-## Explaining Probability, Chance & Fairness
-- **Probability** = how likely something is to happen. Coin toss = 1 out of 2 (50%).  
-- **Chance** = everyday word for probability (“good chance of rain”).  
-- **Fairness** = each outcome has equal chance. Coin is fair, loaded dice isn’t.  
-- **Activity:** Pupils flip micro:bit coin 20 times, tally Heads/Tails, compare results → close to 50/50 but not exact.  
+* Add a **score variable** (A = win, B = loss, A+B = draw).
+* Best of 5 rounds.
+* Add animations and sounds.
 
 ---
 
 ## Differentiation
-- **New coders:** provide starter template, they fill in missing branches.  
-- **Experienced coders:** add score variable or attempt “full game” (player input vs random).  
+
+* **Support:** provide template with icons.
+* **Core:** build 3-branch conditionals.
+* **Stretch:** add scoring or tally system.
 
 ---
 
 ## Assessment
-- Did pupils explain conditionals in their own words?  
-- Can they write correct `if / else if / else`?  
-- Did they debug missing or misordered conditions?  
+
+* Explain: *What is a conditional?*
+* Spot the bug: missing final `else`.
+* Reason: *Why is coin toss a fair game?*
+* Predict: What happens if only 0 and 1 are tested but random is 0–2?
 
 ---
 
 ## Troubleshooting
-- **Random not working:** check correct range (0–2).  
-- **No output sometimes:** missing `else`.  
-- **Icons wrong:** check LED patterns.  
+
+* Same result every time → random outside the event.
+* Nothing shows → missing `else`.
+* Wrong icons → mapping error.
+* USB issues → swap cable/port, reconnect.
 
 ---
 
 ## Materials & Setup
-- BBC micro:bits, USB cables.  
-- Chromebooks with internet access.  
-- Decision grid visual for Rock–Paper–Scissors.  
+
+* BBC micro\:bits + USB cables.
+* Chromebooks with MakeCode ready.
+* Projector for demo.
+* Optional: printed decision grids, tally sheets.
+
+---
+
+## Safety & Behaviour
+
+* Gentle handling of devices.
+* Pair programming norms.
+* Fair play during testing.
 
 ---
 
 ## Reflection (for leader)
-- Did pupils grasp the jump from 2-way to 3-way conditionals?  
-- Who successfully debugged their program?  
-- Which groups managed the variable extension?  
+
+* Did pupils articulate **if/else** clearly?
+* Who needed more scaffolding for 3-branch logic?
+* Are we ready to move to **variables** in Week 4?
