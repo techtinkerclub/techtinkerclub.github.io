@@ -53,7 +53,7 @@ header:
 ---
 
 ## Resources
-- **Get to know the Micro:bit: ** [Video](https://youtu.be/7WMCgUIcKnk?si=V_rMjP2iSFDZJMOE){:target="_blank" rel="noopener"}
+- **Get to know the Microbit:** [Video](https://youtu.be/7WMCgUIcKnk?si=V_rMjP2iSFDZJMOE){:target="_blank" rel="noopener"}
 - **Microbit V2 Learning Book by Cora Young:** [link](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
 - **Join Micro:bit Makecode Classroom:** [link](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}  
 - **Micro:bit Makecode:** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"}
