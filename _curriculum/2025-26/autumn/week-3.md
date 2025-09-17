@@ -42,7 +42,7 @@ header:
 - **Logic** — rules used in decisions (e.g., AND, OR, NOT).  
 - **Random** — an unpredictable number chosen by the computer.  
 - **Fairness** — when each outcome has the same chance.  
-- **Variable** — a named value that can change during a program (used in extension).  
+- **Variable** — a named value that can change during a program.  
 
 ---
 
