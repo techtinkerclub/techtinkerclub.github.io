@@ -52,7 +52,7 @@ header:
 - **MakeCode (micro:bit):** [Open Editor](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 - **Tutorial: Input Events (Buttons & Shake):** [Getting Started Tutorials](https://makecode.microbit.org/tutorials/getting-started){:target="_blank" rel="noopener"}
 - **Code.org example:** [Makecode code](https://makecode.microbit.org/_CaK9Lv50rY0c){:target="_blank" rel="noopener"}
-- **Dice Roller Example (share later as starter code):** [Template](https://makecode.microbit.org/#){:target="_blank" rel="noopener"}  
+- **Dice Roller Activity:** [Template](https://makecode.microbit.org/lessons/dice-roll/activity){:target="_blank" rel="noopener"}  
 - **MakeCode Classroom (join code given in session):** [Join Classroom](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}
 - **micro:bit Physical Computing Fundamentals:** [TTC Sharedrive Link](https://drive.google.com/file/d/1B4Kuq8CdvplmV3JcjlQWNlYLyQ32foIu/view?usp=drive_link){:target="_blank" rel="noopener"}
 
