@@ -51,7 +51,7 @@ header:
 
 ## Resources
 - **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
-- **PRIMM recap — Simple Coin Flipper:** [open project](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}  
+- **PRIMM recap — Simple Coin Flipper:** [open project](https://makecode.microbit.org/S48819-26737-74641-22192){:target="_blank" rel="noopener"}  
 - **Rock–Paper–Scissors (MakeCode guide):** [project page](https://makecode.microbit.org/projects/rock-paper-scissors-v2){:target="_blank" rel="noopener"}
 
 ---
