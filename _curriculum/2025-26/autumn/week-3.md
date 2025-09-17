@@ -1,8 +1,8 @@
 ---
 layout: single
 title: ""
-permalink: /curriculum/2025-26/autumn/week-3/
-week: 3
+permalink: /curriculum/2025-26/autumn/week-2/
+week: 2
 toc: true
 toc_sticky: true
 sidebar: false
@@ -13,85 +13,82 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=3 %}
+{% include teacher-notes-link.html week=2 %}
 
-## Week 3 — Conditionals: If / Else Decisions  
+## Week 2 — Events & Inputs
 
-**Focus Concept:** Conditionals (if / else) & Logic  
-**Mini-Project:** Rock–Paper–Scissors  
+**Focus Concept:** Inputs & Events  
+**Mini-Project:** Dice Roller  
 
 ---
 
 ## Objectives
-- Understand that computers can make **decisions** using `if / else`.  
-- Use conditionals to create a 2-way (coin toss) and 3-way (RPS) program.  
-- Link randomness and fairness to **probability in Maths** and **chance in Science**.  
-- Build a Rock–Paper–Scissors program where the micro:bit chooses randomly.  
+- Understand that **events** (like button presses or shakes) can trigger different actions.  
+- Explore how the micro:bit can generate **random numbers** to simulate dice.  
+- Write and test a program that responds to **button presses** and **shake events**.  
 
 ---
 
 ## Success Criteria
-- I can explain what a **conditional** is.  
-- I can write a program with `if / else if / else`.  
-- I can make the micro:bit display Rock, Paper, or Scissors at random.  
+- I can explain what an **event** is in computing.  
+- I can use the **`on button pressed`** or **`on shake`** block to trigger code.  
+- I can build a dice roller using `pick random` and display the result.  
 
 ---
 
-## Key Vocabulary & Definitions
-- **Conditional** — code that makes a decision (if…then…else).  
-- **Logic** — rules used in decisions (e.g., AND, OR, NOT).  
-- **Random** — an unpredictable number chosen by the computer.  
-- **Fairness** — when each outcome has the same chance.  
-- **Variable** — a named value that can change during a program.  
+## Key Vocabulary
+- **Event** — something that happens (like pressing a button or shaking the device) that the program can respond to.  
+- **Input** — information from the outside world, e.g. button presses or movement.  
+- **Output** — what the micro:bit does in response (e.g. lights, sound, text).  
+- **Random** — an unpredictable choice made by the computer.  
+- **Conditional** — an instruction that checks something and chooses between outcomes (introduced lightly here).  
 
 ---
 
 ## Resources
-- **Starter (Coin Toss PRIMM):** [link](#)  
-- **Main Project (RPS Starter):** [link](https://makecode.microbit.org/projects/rock-paper-scissors-v2){:target="_blank" rel="noopener"}  
-- **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
+- **MakeCode Editor:** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
+- **Simple Coin Flipper Program (PRIMM Starter):** [link](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}  
+- **Join Micro:bit MakeCode Classroom:** [link](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}  
 
 ---
 
 ## Equipment
-- BBC micro:bits + USB cables.  
+- BBC micro:bits + USB cables (1 per child or pair).  
 - Chromebooks with internet access.  
-- Optional: printed Rock–Paper–Scissors decision grid.  
+- Optional: real dice for comparison activity.  
 
 ---
 
 ## Safety & Setup Notes
-- Usual safe handling of devices and cables.  
-- Remind pupils to play fairly and take turns shaking the micro:bit.  
+- Remind pupils to plug/unplug micro:bits gently.  
+- Demonstrate correct handling of devices during shake events.  
 
 ---
 
-## Lesson Flow (≈90 minutes)
+## Activity Steps
 
-**1) Starter — Coin Toss PRIMM (15 min)**  
-- Pupils predict, run, investigate, and modify a simple coin flip program.  
-- Link to fairness and probability (50/50 chance).  
+**1. Explore Events**  
+- Test simple `on button A pressed` → show icon.  
+- Discuss: *“What is the input? What is the output?”*  
 
-**2) Teach / Model — Rock–Paper–Scissors (10 min)**  
-- Show how 3-way decisions need `if / else if / else`.  
-- Compare with coin toss (2-way).  
+**2. PRIMM Starter: Coin Toss**  
+- Use the [Simple Coin Flipper](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}.  
+- Predict → Run → Investigate → Modify (change icons, text, sounds).  
 
-**3) Guided Build (30 min)**  
-- Shake = random choice 0–2.  
-- If 0 → Rock, if 1 → Paper, else → Scissors.  
-- Display LED icons or patterns.  
+**3. Build the Dice Roller**  
+- New project: `on shake` → `set roll = pick random 1 to 6`.  
+- Use `if … else if … else` blocks to display number icons.  
 
-**4) Extensions & Challenges (20 min)**  
-- Add score variable (track player vs micro:bit).  
-- Add sound effects or animations.  
-- Challenge: display “Win/Lose/Draw” if pupils press a button to enter their own move.  
+**4. Extension Ideas**  
+- Add sound effects for each number.  
+- Display text (“You rolled a 6!”).  
+- Create two dice and add them together.  
 
-**5) Share & Reflect (15 min)**  
-- Pupils play RPS against the micro:bit (hands vs LEDs).  
-- Reflect: “Why is the game fair?” “How did the micro:bit decide?”  
-- Tease Week 4: variables in more depth.  
+**5. Reflect & Share**  
+- Pupils demonstrate their dice rollers.  
+- Discussion: *“Is the dice roller fair?”*  
 
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=3 %}
+{% include teacher-notes-link.html week=2 %}
