@@ -15,7 +15,7 @@ header:
 {% include back-to-autumn.html %}
 {% include teacher-notes-link.html week=3 %}
 
-## Week 3 — Conditionals (if/else)
+## Week 3 — Conditionals (Rock / Paper / Scissors)
 
 **Focus Concept:** Logic & Decision-Making  
 **Mini-Project:** Rock–Paper-Scissors  
