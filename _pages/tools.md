@@ -30,6 +30,9 @@ This page will grow over time — bookmark it!
 - [micro:bit Python Editor](https://python.microbit.org/){:target="_blank" rel="noopener"}  
   For pupils who want to try text-based coding.
 
+- [Behind the microbit MakeCode Hardware](https://makecode.microbit.org/behind-the-makecode-hardware){:target="_blank" rel="noopener"}  
+  For pupils who want to try text-based coding.
+
 ---
 
 ## 📚 Tutorials (Step-by-Step)
