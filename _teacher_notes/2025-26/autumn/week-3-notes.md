@@ -1,9 +1,8 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-3-notes/
+permalink: /curriculum/2025-26/autumn/week-3/
 week: 3
-robots: noindex
 toc: true
 toc_sticky: true
 sidebar: false
@@ -13,138 +12,86 @@ header:
   show_overlay_text: false
 ---
 
-# Teacher Notes — Week 3  
-{% include print-to-pdf.html %}
+{% include back-to-autumn.html %}
+{% include teacher-notes-link.html week=3 %}
 
-**Theme:** Conditionals — If / Else Decisions  
-**Focus Concept:** Conditionals & Logic  
-**Mini-Project:** Rock–Paper–Scissors Game  
+## Week 3 — Conditionals: If / Else Decisions  
 
----
-
-## Learning Objectives
-- Pupils understand what a **conditional** is and why it’s useful.  
-- Pupils can predict, test, and modify programs using `if / else`.  
-- Pupils link randomness and fairness to **Maths (probability)** and **Science (experiments with chance, fairness, data)**.  
-- Pupils can create a working Rock–Paper–Scissors game on the micro:bit.  
+**Focus Concept:** Conditionals (if / else) & Logic  
+**Mini-Project:** Rock–Paper–Scissors  
 
 ---
 
-## Detailed Lesson Plan (≈90 minutes)
-
-**1) Starter — Heads/Tails PRIMM (15 min)**  
-- **Predict:**  
-  - Show blocks: `on button A pressed → set coin = pick random 0–1 → if coin = 0 show H else show T`.  
-  - Ask: “What will happen when I press button A?”  
-  - “What does `pick random 0 to 1` mean?”  
-  - “Why do we need the `else` block?”  
-
-- **Run:** Pupils test in simulator, then on micro:bits. Poll the class — who got heads? tails?  
-
-- **Investigate:**  
-  - Change range to `1–2` (why break?)  
-  - Remove `else` (sometimes blank — why?)  
-  - Extend range to `0–5` (what happens now?)  
-
-- **Modify:**  
-  - Replace H/T with icons 🙂/😢.  
-  - Add sounds (high tone for heads, low tone for tails).  
-  - Add a variable `score` → if heads then +1, else -1.  
-
-- **Discussion:**  
-  - “Is it fair? Why/why not?”  
-  - “What do we mean by random?”  
-  - Link to Maths (probability of 50/50 coin toss).
- 
-### Explaining Probability, Chance & Fairness
-
-- **Probability** is how likely something is to happen. Example: flipping a coin has a probability of 1 out of 2 (50%) for heads.  
-- **Chance** is the everyday word we use for probability. “There’s a good chance of rain.”  
-- **Fairness** means every outcome has the same chance. A fair coin gives each player equal chance. An unfair game means some players or outcomes have better odds.  
-
-**In practice with micro:bit:**  
-- Coin toss (`pick random 0–1`) is fair because both outcomes are equally likely.  
-- Rock–Paper–Scissors is fair because each choice (0,1,2) has equal chance.  
-- If we coded it wrongly (e.g., `pick random 0–2` but only tested 0 and 1), the game wouldn’t be fair.
+## Objectives
+- Understand that computers can make **decisions** using `if / else`.  
+- Use conditionals to create a 2-way (coin toss) and 3-way (RPS) program.  
+- Link randomness and fairness to **probability in Maths** and **chance in Science**.  
+- Build a Rock–Paper–Scissors program where the micro:bit chooses randomly.  
 
 ---
 
-**2) Teach / Model — Rock–Paper–Scissors (10 min)**  
-- Show **decision grid** on slide/board:  
-  - Rock vs Rock = Draw  
-  - Rock vs Paper = Lose  
-  - Rock vs Scissors = Win  
-  (Repeat for Paper/Scissors)  
-
-- Explain this is a **3-way decision**, so we need `if / else if / else`.  
-- Compare to coin toss (2-way).  
+## Success Criteria
+- I can explain what a **conditional** is.  
+- I can write a program with `if / else if / else`.  
+- I can make the micro:bit display Rock, Paper, or Scissors at random.  
 
 ---
 
-**3) Guided Build (30 min)**  
-- Step 1: Shake = computer’s choice (0=Rock, 1=Paper, 2=Scissors).  
-- Step 2: Player chooses with buttons (A=Rock, B=Paper, A+B=Scissors).  
-- Step 3: Use conditionals to compare and decide outcome.  
-- Step 4: Show result (Win/Lose/Draw) with LED pattern or text.  
-- Step 5: Add `score` variable (change by +1 if win).  
+## Key Vocabulary & Definitions
+- **Conditional** — code that makes a decision (if…then…else).  
+- **Logic** — rules used in decisions (e.g., AND, OR, NOT).  
+- **Random** — an unpredictable number chosen by the computer.  
+- **Fairness** — when each outcome has the same chance.  
+- **Variable** — a named value that can change during a program (used in extension).  
 
 ---
 
-**4) Extensions & Challenges (20 min)**  
-- Add sounds or animations for outcomes.  
-- Add “Best of 3” mode.  
-- Stretch: Use **radio** → 2-player Rock–Paper–Scissors across micro:bits.  
+## Resources
+- **Starter (Coin Toss PRIMM):** [link](#)  
+- **Main Project (RPS Starter):** [link](https://makecode.microbit.org/projects/rock-paper-scissors-v2){:target="_blank" rel="noopener"}  
+- **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 
 ---
 
-**5) Share & Reflect (15 min)**  
-- Pupils test each other’s games.  
-- Exit Qs:  
-  - “What’s a conditional?”  
-  - “Why do we need an `else`?”  
-  - “How does randomness make the game fair?”  
-
----
-
-## Differentiation
-- **New coders:** give pre-built starter with computer random + display only. They just add player input and simple if/else.  
-- **Experienced coders:** extend to radio multiplayer or add best-of-3 scoring system.  
-- Encourage pair programming (driver/navigator roles).  
-
----
-
-## Assessment
-- Can pupils explain what a conditional is?  
-- Did they correctly implement `if / else if / else`?  
-- Can they debug when results don’t match the decision grid?  
-- Do they use variables for score tracking?  
-
----
-
-## Troubleshooting
-- **Random not working:** check correct range (0–2 for 3 outcomes).  
-- **Else skipped:** ensure all outcomes covered (final `else` catches remaining).  
-- **Buttons not working:** confirm code inside `on button pressed`.  
-- **Score not changing:** confirm variable updates are inside correct condition.  
-
----
-
-## Materials & Setup
+## Equipment
 - BBC micro:bits + USB cables.  
 - Chromebooks with internet access.  
-- Slides with decision grid.  
-- Printed extension challenges (optional).  
+- Optional: printed Rock–Paper–Scissors decision grid.  
 
 ---
 
-## Safety & Safeguarding Notes
-- Usual safe handling of cables and devices.  
-- Encourage teamwork and respect for equipment.  
-- Allow quick brain breaks if frustration rises.  
+## Safety & Setup Notes
+- Usual safe handling of devices and cables.  
+- Remind pupils to play fairly and take turns shaking the micro:bit.  
 
 ---
 
-## Reflection (for leader)
-- Did pupils grasp difference between 2-way (coin) and 3-way (RPS) decisions?  
-- Who needed extra scaffolding with variables?  
-- Did anyone manage to use AND/OR logic? Track for future extension.  
+## Lesson Flow (≈90 minutes)
+
+**1) Starter — Coin Toss PRIMM (15 min)**  
+- Pupils predict, run, investigate, and modify a simple coin flip program.  
+- Link to fairness and probability (50/50 chance).  
+
+**2) Teach / Model — Rock–Paper–Scissors (10 min)**  
+- Show how 3-way decisions need `if / else if / else`.  
+- Compare with coin toss (2-way).  
+
+**3) Guided Build (30 min)**  
+- Shake = random choice 0–2.  
+- If 0 → Rock, if 1 → Paper, else → Scissors.  
+- Display LED icons or patterns.  
+
+**4) Extensions & Challenges (20 min)**  
+- Add score variable (track player vs micro:bit).  
+- Add sound effects or animations.  
+- Challenge: display “Win/Lose/Draw” if pupils press a button to enter their own move.  
+
+**5) Share & Reflect (15 min)**  
+- Pupils play RPS against the micro:bit (hands vs LEDs).  
+- Reflect: “Why is the game fair?” “How did the micro:bit decide?”  
+- Tease Week 4: variables in more depth.  
+
+---
+
+{% include back-to-autumn.html %}
+{% include teacher-notes-link.html week=3 %}
