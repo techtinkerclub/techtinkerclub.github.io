@@ -42,8 +42,8 @@ This term, participants in Tech Tinker Club will explore how microcontrollers (t
 | Week | Focus Concept | Mini-Project Example | Resources |
 |------|---------------|----------------------|-----------|
 | [Week 1](/curriculum/2025-26/autumn/week-1/) | Intro to club & microcontrollers | Name badge, beating heart | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-1/#resources){:target="_blank" rel="noopener"}|
-| [Week 2](/curriculum/2025-26/autumn/week-2/) | Events & inputs | Dice roller (shake to roll) | Slides · Worksheet |
-| [Week 3](/curriculum/2025-26/autumn/week-3/) | Conditionals (if/else) | Reaction timer game | Slides · Worksheet |
+| [Week 2](/curriculum/2025-26/autumn/week-2/) | Events & inputs | Dice roller (shake to roll) | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-2/#resources){:target="_blank" rel="noopener"} |
+| [Week 3](/curriculum/2025-26/autumn/week-3/) | Conditionals (if/else) | Rock, Paper, Scissors | Slides · Worksheet |
 | [Week 4](/curriculum/2025-26/autumn/week-4/) | Variables & thresholds | Light/temperature monitor | Slides · Worksheet |
 | [Week 5](/curriculum/2025-26/autumn/week-5/) | Loops (iteration) | Step counter | Slides · Worksheet |
 | [Week 6](/curriculum/2025-26/autumn/week-6/) | Outputs (servo & buzzer) | Servo dial + alarm | Slides · Worksheet |
