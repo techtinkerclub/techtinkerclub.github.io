@@ -53,6 +53,8 @@ header:
 - **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 - **PRIMM recap — Simple Coin Flipper:** [open project](https://makecode.microbit.org/S48819-26737-74641-22192){:target="_blank" rel="noopener"}  
 - **Rock–Paper–Scissors (MakeCode guide):** [project page](https://makecode.microbit.org/projects/rock-paper-scissors-v2){:target="_blank" rel="noopener"}
+- **Behind the MakeCode Hardware - Buttons:** [video](https://youtu.be/t_Qujjd_38o?si=VGVEq4eSx__ULwVf){:target="_blank" rel="noopener"}
+- **Behind the MakeCode Hardware - Accelerometer:** [video](https://youtu.be/byngcwjO51U?si=3Dbuf6Hj5Cv1NxAl){:target="_blank" rel="noopener"}
 
 ---
 
