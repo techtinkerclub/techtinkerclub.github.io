@@ -87,12 +87,10 @@ Suggested build:
 2. **Input:** `accelerometer`
 3. **Process:** `set hand = pick random 0 to 2`
    *Decide:*
-
    * `if hand = 0` → show Rock icon
    * `else if hand = 1` → show Paper icon
    * `else` → show Scissors icon
-  
-2. **Output:** `LED display`
+4. **Output:** `LED display`
 
 > Participants then play their hand with **real gestures**, comparing to the micro\:bit’s choice.
 > Extension: add second output (sounds) for R / P / S 
