@@ -39,7 +39,7 @@ header:
 ---
 
 **2) Guided Exploration: Events & Inputs (25 min)**  
-Use **example code and discussion from pages 14–17 of the CSF booklet**.  
+Use **[example code](https://makecode.microbit.org/_CaK9Lv50rY0c) and discussion from pages 14–17 of the CSF booklet**.  
 - `on start` → happy face output.  
 - `on button A pressed` → plays sound + animation.  
 - `on button B pressed` → clears screen + scrolls “hello”.  
