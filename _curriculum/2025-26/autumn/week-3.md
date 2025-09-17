@@ -1,72 +1,38 @@
 ---
+title: "Week 4 — Variables & Thresholds: Smart Plant Protector"
+permalink: /weeks/week-4/
 layout: single
-title: ""
-permalink: /curriculum/2025-26/autumn/week-3/
-week: 3
+classes: wide
 toc: true
-toc_sticky: true
-sidebar: false
-header:
-  overlay_image: /assets/images/banner.png
-  show_overlay_excerpt: false
-  show_overlay_text: false
+toc_label: "On this page"
+description: "Use micro:bit temperature and light sensors with variables and thresholds to decide if a plant is comfy, too cold, too hot, or too dark."
+author_profile: false
+sidebar:
+  nav: "weeks"
 ---
 
-{% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=3 %}
+# Week 4 — Variables & Thresholds: Smart Plant Protector
 
-## Week 3 — Conditionals (Rock / Paper / Scissors)
-
-**Focus Concept:** Logic & Decision-Making  
-**Mini-Project:** Rock–Paper-Scissors  
+## Overview
+Today we build a tiny “greenhouse helper” with a micro:bit. It reads **temperature** and **light**, stores them in **variables**, compares them with **thresholds**, and shows whether a plant is **happy**, **too cold**, **too hot**, or **too dark**.
 
 ---
 
-## Objectives
-- Understand how **conditionals (if/else)** allow programs to make decisions.  
-- Use `if … else` to create different outcomes in code.  
-- Build a Rock-Paper-Scissors game where the micro:bit chooses at random.  
+## Learning goals
+- Use **variables** to store live sensor readings (temperature, light).
+- Apply **thresholds** with `if…then…else` logic.
+- Combine **two inputs** to make a single decision (light AND temperature).
+- Test, tune, and **justify** chosen thresholds from observations.
 
 ---
 
-## Success Criteria
-- I can explain what a **conditional** is.  
-- I can build a program that uses `if/else` to show different outputs based on random choice.  
-- I can play Rock-Paper-Scissors against my friends using micro:bits.  
+## Prerequisites (from Week 2–3)
+- Basic MakeCode navigation & downloading to a micro:bit.
+- Reading a single sensor and using simple **logic** (if/else).
+- Optional: simple icons/strings on the LED display.
 
 ---
 
-## Key Vocabulary
-- **Input** — information the micro:bit receives (e.g. button presses, motion).  
-- **Output** — what the micro:bit does in response (LEDs, sound, text).  
-- **Event** — something that happens (like pressing a button or shaking the device) that starts code.  
-- **Conditional (if/else)** — a rule in code that checks something and chooses what to do.  
-- **Logic** — the set of rules a computer follows to decide what to do. In coding we use conditionals (logic blocks like if…then…else) to check conditions and choose between actions. Logic can also use connectors such as AND, OR, and NOT to combine conditions.
-- **Variable** — a named “box” in memory that stores information your program can use or change (e.g. storing a dice roll or a random choice).
-- **Random** — an unpredictable number chosen by the computer.  
-- **Fairness** — when all outcomes have the same chance (important in games of chance).  
-
-
----
-
-## Resources
-- **MakeCode Editor:** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
-- **Starter: Simple Coin Flipper (PRIMM example):** [link](https://makecode.microbit.org/S48819-26737-74641-22192){:target="_blank" rel="noopener"}  
-- **Rock-Paper-Scissors Project:** [link](https://makecode.microbit.org/projects/rock-paper-scissors-v2){:target="_blank" rel="noopener"}  
-
----
-
-## Equipment
-- BBC micro:bits + USB cables (1 per child or pair)  
-- Chromebooks with internet access  
-
----
-
-## Safety & Setup Notes
-- Handle devices gently, especially when using shake or button events.  
-- Ensure pupils take turns and share equipment fairly.  
-
----
-
-{% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=3 %}
+## Key vocabulary (consistent with Week 2–3)
+- **Logic** — the set of rules a computer follows to decide what to do. In coding we use conditionals (logic blocks like `if…then…else`) to check conditions and choose between actions. Logic can also use connectors such as **AND**, **OR**, and **NOT** to combine conditions.  
+- **Variable**
