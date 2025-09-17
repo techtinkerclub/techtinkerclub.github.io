@@ -55,7 +55,8 @@ header:
 - **Dice Roller Activity:** [Template](https://makecode.microbit.org/lessons/dice-roll/activity){:target="_blank" rel="noopener"}  
 - **MakeCode Classroom (join code given in session):** [Join Classroom](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}
 - **micro:bit Physical Computing Fundamentals:** [TTC Sharedrive Link](https://drive.google.com/file/d/1B4Kuq8CdvplmV3JcjlQWNlYLyQ32foIu/view?usp=drive_link){:target="_blank" rel="noopener"}
-- **Behind the MakeCode Hardware - Buttons on micro:bit** [Video](https://youtu.be/t_Qujjd_38o?si=Sp3EJiOIp6RybYvb){:target="_blank" rel="noopener"}  
+- **Behind the MakeCode Hardware - Buttons on micro:bit** [Video](https://youtu.be/t_Qujjd_38o?si=Sp3EJiOIp6RybYvb){:target="_blank" rel="noopener"}
+- **Behind the MakeCode Hardware - Accelerometer on micro:bit** [Video](https://youtu.be/byngcwjO51U?si=Q8l-QLAlDqLLiGBU){:target="_blank" rel="noopener"}   
 
 ---
 
