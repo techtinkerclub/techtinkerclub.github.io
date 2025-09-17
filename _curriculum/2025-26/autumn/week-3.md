@@ -1,8 +1,8 @@
 ---
 layout: single
 title: ""
-permalink: /curriculum/2025-26/autumn/week-2/
-week: 2
+permalink: /curriculum/2025-26/autumn/week-3/
+week: 3
 toc: true
 toc_sticky: true
 sidebar: false
@@ -13,82 +13,88 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=2 %}
+{% include teacher-notes-link.html week=3 %}
 
-## Week 2 — Events & Inputs
+## Week 3 — Conditionals (if/else)
 
-**Focus Concept:** Inputs & Events  
-**Mini-Project:** Dice Roller  
+**Focus Concept:** Logic & Decision-Making  
+**Mini-Project:** Rock–Paper–Scissors  
 
 ---
 
 ## Objectives
-- Understand that **events** (like button presses or shakes) can trigger different actions.  
-- Explore how the micro:bit can generate **random numbers** to simulate dice.  
-- Write and test a program that responds to **button presses** and **shake events**.  
+- Understand how **conditionals (if/else)** allow programs to make decisions.  
+- Explore how **random numbers** can be used to simulate choices.  
+- Create a Rock–Paper–Scissors game using the micro:bit.  
 
 ---
 
 ## Success Criteria
-- I can explain what an **event** is in computing.  
-- I can use the **`on button pressed`** or **`on shake`** block to trigger code.  
-- I can build a dice roller using `pick random` and display the result.  
+- I can explain what a **conditional** is.  
+- I can build a program that uses **if/else** to make the micro:bit display different outputs.  
+- I can play Rock–Paper–Scissors against my friends using micro:bits.  
 
 ---
 
 ## Key Vocabulary
-- **Event** — something that happens (like pressing a button or shaking the device) that the program can respond to.  
-- **Input** — information from the outside world, e.g. button presses or movement.  
-- **Output** — what the micro:bit does in response (e.g. lights, sound, text).  
-- **Random** — an unpredictable choice made by the computer.  
-- **Conditional** — an instruction that checks something and chooses between outcomes (introduced lightly here).  
+- **Conditional (if/else):** a rule that checks something and decides what to do.  
+- **Logic:** the reasoning we use to make decisions in code (e.g. if this happens, then do that).  
+- **Random:** an unpredictable number chosen by the computer.  
+- **Fairness:** in probability, each option should have the same chance of being chosen.  
+- **Event:** something that triggers code (button press, shake).  
 
 ---
 
 ## Resources
 - **MakeCode Editor:** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
-- **Simple Coin Flipper Program (PRIMM Starter):** [link](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}  
-- **Join Micro:bit MakeCode Classroom:** [link](https://classroom.microbit.org/join){:target="_blank" rel="noopener"}  
+- **Starter: Simple Coin Flipper (recap PRIMM):** [link](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}  
+- **Rock–Paper–Scissors Project Guide:** [link](https://makecode.microbit.org/projects/rock-paper-scissors-v2){:target="_blank" rel="noopener"}  
 
 ---
 
 ## Equipment
 - BBC micro:bits + USB cables (1 per child or pair).  
 - Chromebooks with internet access.  
-- Optional: real dice for comparison activity.  
+- Optional: paper/markers to track scores.  
 
 ---
 
 ## Safety & Setup Notes
-- Remind pupils to plug/unplug micro:bits gently.  
-- Demonstrate correct handling of devices during shake events.  
+- Take care when shaking the micro:bits.  
+- Remind pupils not to drop devices during the game.  
 
 ---
 
 ## Activity Steps
 
-**1. Explore Events**  
-- Test simple `on button A pressed` → show icon.  
-- Discuss: *“What is the input? What is the output?”*  
+**1. Warm-Up — PRIMM Example (Heads/Tails)**  
+- Open the [coin flipper project](https://makecode.microbit.org/S39804-79642-83776-27829).  
+- Predict → Run → Investigate → Modify.  
+- Discuss how the program uses **random numbers** and **conditionals**.  
 
-**2. PRIMM Starter: Coin Toss**  
-- Use the [Simple Coin Flipper](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}.  
-- Predict → Run → Investigate → Modify (change icons, text, sounds).  
+**2. Introducing Conditionals**  
+- Show how `if … else` can be used in MakeCode.  
+- Example:  
+  - If button A pressed → show 😀  
+  - Else → show 😢  
 
-**3. Build the Dice Roller**  
-- New project: `on shake` → `set roll = pick random 1 to 6`.  
-- Use `if … else if … else` blocks to display number icons.  
+**3. Rock–Paper–Scissors Build**  
+- Shake event → generate random number (1–3).  
+- If 1 → show ✊ (rock)  
+- Else if 2 → show ✋ (paper)  
+- Else → show ✌️ (scissors).  
+- Pupils play against each other using their micro:bits.  
 
-**4. Extension Ideas**  
-- Add sound effects for each number.  
-- Display text (“You rolled a 6!”).  
-- Create two dice and add them together.  
+**4. Extensions**  
+- Add a “best of 3” scoring system.  
+- Use sound effects or animations for each choice.  
+- Create a scoreboard using variables.  
 
 **5. Reflect & Share**  
-- Pupils demonstrate their dice rollers.  
-- Discussion: *“Is the dice roller fair?”*  
+- Discuss: *“Is this game fair?”*  
+- Connect to science/maths: chance, probability, fairness.  
 
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=2 %}
+{% include teacher-notes-link.html week=3 %}
