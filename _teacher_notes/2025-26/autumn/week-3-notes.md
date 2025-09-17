@@ -15,42 +15,32 @@ header:
 
 --------------------------
 
-# Teacher Notes — Week 3
+# Instructor Notes — Week 3
 
 {% include print-to-pdf.html %}
 
 **Theme:** Conditionals (if / else)
 **Focus Concept:** Decisions & basic logic
-**Mini-Project:** Rock–Paper–Scissors (micro\:bit chooses at random)
+**Mini-Project:** Rock–Paper–Scissors (micro:bit chooses at random)
 
 ---
 
 ## Learning Objectives
 
-* Pupils understand that computers make **decisions** using **conditionals** (`if … else`).
-* Pupils can **predict, run, investigate, modify, and make** programs using PRIMM.
-* Pupils relate **randomness, probability, and fairness** to simple programs (coin toss; RPS).
-* Pupils build a program that uses an **if / else-if / else chain** to choose Rock/Paper/Scissors.
+* Participants understand that computers make **decisions** using **conditionals** (`if … else`).
+* Participants can **predict, run, investigate, modify, and make** programs using PRIMM.
+* Participants relate **randomness, probability, and fairness** to simple programs (coin toss; RPS).
+* Participants build a program that uses an **if / else-if / else chain** to choose Rock/Paper/Scissors.
 
 ---
 
 ## PRIMM Structure (use explicitly)
 
-### 1) Predict — Coin Toss Starter
+### 1) Predict — Simple Coin Flipper
 
-Show this on the projector (don’t run it yet):
+Show this on the projector (don’t run it yet): Simple Coin Flipper [Makecode code](https://makecode.microbit.org/S39804-79642-83776-27829){:target="_blank" rel="noopener"}
 
-```blocks
-on button A pressed
-    show icon (small animation – optional)
-    set coin to pick random 0 to 1
-    if coin = 0 then
-        show string "H"
-    else
-        show string "T"
-```
-
-Prompt pupils:
+Prompt participants:
 
 * What will happen when I press **A**?
 * Why are there **two** possible outcomes?
@@ -61,7 +51,7 @@ Prompt pupils:
 
 ### 2) Run
 
-* Pupils flash and run the program; press **A** several times.
+* Participants flash and run the program; press **A** several times.
 * Quick poll: “Who got H? Who got T?” Why are results different each time?
 
 ---
@@ -70,8 +60,8 @@ Prompt pupils:
 
 * Draw the decision flow on the board:
   **IF** coin = 0 → “H” **ELSE** → “T”.
-* Discussion prompts:
 
+* Discussion prompts:
   * What happens if we change to `pick random 1 to 2` but keep `if coin = 0`?
   * What happens if we **remove the `else`**?
   * Why is a coin toss considered **fair**?
@@ -84,7 +74,6 @@ Quick tweaks (5–7 min):
 
 * Swap “H/T” for LED icons or emojis.
 * Add sounds (high tone for heads, low tone for tails).
-* Challenge: turn into a **dice roller** (`pick random 1–6`).
 
 ---
 
@@ -95,15 +84,18 @@ Transition: *“Coin toss is a **2-way** decision. Rock–Paper–Scissors has *
 Suggested build:
 
 1. **Event:** `on shake`
-2. **Process:** `set hand = pick random 0 to 2`
-3. **Decide:**
+2. **Input:** `accelerometer`
+3. **Process:** `set hand = pick random 0 to 2`
+   *Decide:*
 
    * `if hand = 0` → show Rock icon
    * `else if hand = 1` → show Paper icon
    * `else` → show Scissors icon
+  
+2. **Output:** `LED display`
 
-> Pupils then play their hand with **real gestures**, comparing to the micro\:bit’s choice.
-> Extension: scoring with a variable.
+> Participants then play their hand with **real gestures**, comparing to the micro\:bit’s choice.
+> Extension: add second output (sounds) for R / P / S 
 
 ---
 
@@ -111,8 +103,8 @@ Suggested build:
 
 * **Starter (10 min):** link to real-life coin toss.
 * **Predict + Run (10–12 min):** coin toss PRIMM starter.
-* **Investigate + Modify (15–18 min):** explore and tweak coin toss.
-* **Make (30 min):** build Rock–Paper–Scissors.
+* **Investigate + Modify (5–10 min):** explore and tweak coin toss.
+* **Make (30-40 min):** build Rock–Paper–Scissors.
 * **Reflect (15 min):** share, discuss fairness, exit questions.
 
 ---
@@ -139,17 +131,14 @@ Suggested build:
 
 ## Extensions
 
-* Add a **score variable** (A = win, B = loss, A+B = draw).
-* Best of 5 rounds.
 * Add animations and sounds.
 
 ---
 
 ## Differentiation
 
-* **Support:** provide template with icons.
 * **Core:** build 3-branch conditionals.
-* **Stretch:** add scoring or tally system.
+* **Stretch:** add scoring
 
 ---
 
@@ -176,20 +165,20 @@ Suggested build:
 * BBC micro\:bits + USB cables.
 * Chromebooks with MakeCode ready.
 * Projector for demo.
-* Optional: printed decision grids, tally sheets.
+* Optional: whiteboard
 
 ---
 
 ## Safety & Behaviour
 
 * Gentle handling of devices.
-* Pair programming norms.
+* Pair programming if needed
 * Fair play during testing.
 
 ---
 
-## Reflection (for leader)
+## Reflection (for instructor)
 
-* Did pupils articulate **if/else** clearly?
+* Did participants articulate **if/else** clearly?
 * Who needed more scaffolding for 3-branch logic?
-* Are we ready to move to **variables** in Week 4?
+* Are we ready to expand in in Week 4 or 5?
