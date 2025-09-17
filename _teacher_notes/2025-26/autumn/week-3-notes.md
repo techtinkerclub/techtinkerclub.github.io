@@ -1,17 +1,18 @@
 ---
-
 layout: single
 title: ""
 permalink: /teacher-notes/2025-26/autumn/week-3-notes/
 week: 3
 robots: noindex
 toc: true
-toc\_sticky: true
+toc_sticky: true
 sidebar: false
 header:
-overlay\_image: /assets/images/banner.png
-show\_overlay\_excerpt: false
-show\_overlay\_text: false
+  overlay_image: "/assets/images/banner.png"
+  show_overlay_excerpt: false
+  show_overlay_text: false
+---
+
 --------------------------
 
 # Teacher Notes — Week 3
