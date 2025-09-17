@@ -41,7 +41,8 @@ header:
 - **Output** — what the micro:bit does in response (LEDs, sound, text).  
 - **Event** — something that happens (like pressing a button or shaking the device) that starts code.  
 - **Conditional (if/else)** — a rule in code that checks something and chooses what to do.  
-- **Logic** — the set of rules a computer follows to decide what to do. In coding we use conditionals (logic blocks like if…then…else) to check conditions and choose between actions. Logic can also use connectors such as AND, OR, and NOT to combine conditions.  
+- **Logic** — the set of rules a computer follows to decide what to do. In coding we use conditionals (logic blocks like if…then…else) to check conditions and choose between actions. Logic can also use connectors such as AND, OR, and NOT to combine conditions.
+- **Variable** — a named “box” in memory that stores information your program can use or change (e.g. storing a dice roll or a random choice).
 - **Random** — an unpredictable number chosen by the computer.  
 - **Fairness** — when all outcomes have the same chance (important in games of chance).  
 
