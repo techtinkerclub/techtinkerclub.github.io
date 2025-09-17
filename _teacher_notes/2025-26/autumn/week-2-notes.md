@@ -13,19 +13,19 @@ header:
   show_overlay_text: false
 ---
 
-# Teacher Notes — Week 2  
+# Instructor Notes — Week 2  
 {% include print-to-pdf.html %}
-**Theme:** Events & Inputs  
-**Focus Concept:** Event-driven programming (inputs trigger actions)  
+**Theme:** Events & Inputs, conditionals  
+**Focus Concept:** Event-driven programming (inputs trigger actions), intro to conditionals and variables  
 **Mini-Project:** Digital Dice Roller  
 
 ---
 
 ## Learning Objectives
-- Pupils understand that **events** (button press, shake, logo touch) trigger specific code blocks.  
-- Pupils can identify inputs (buttons, light, motion) and outputs (LEDs, sound, text).  
-- Pupils can build a program where **input events trigger outputs**.  
-- Pupils can generate and display a random number (1–6) using the micro:bit.  
+- Participants understand that **events** (button press, shake, logo touch) trigger specific code blocks.  
+- Participants can identify inputs (buttons, light, motion) and outputs (LEDs, sound, text).  
+- Participants can build a program where **input events trigger outputs**.  
+- Participants can generate and display a random number (1–6) using the micro:bit.  
 
 ---
 
@@ -34,7 +34,7 @@ header:
 **1) Starter / Recap (10 min)**  
 - Recap Week 1: “What is Input → Process → Output?”  
 - Ask: “What did we use as an input last time? What was the output?”  
-- Show today’s theme: *“We’re going to explore events: things that happen to the micro:bit that make it run different pieces of code.”*
+- Explain today’s theme
 
 ---
 
@@ -82,7 +82,7 @@ Discussion points:
 ---
 
 ## Assessment
-- Pupils can:  
+- Participants can:  
   - Identify at least two types of inputs and outputs.  
   - Explain what an event does in code.  
   - Create a working dice roller with random numbers.  
@@ -102,13 +102,12 @@ Discussion points:
 - BBC micro:bits + USB cables (1 per child or pair).  
 - Chromebooks with internet access.  
 - Projector with MakeCode editor open for demos.  
-- Printed or digital copies of CSF booklet pages 14–17 for leader reference.  
 - Optional: buzzers/speakers, spare cables.  
 
 ---
 
 ## Safety & Safeguarding Notes
-- Remind pupils not to throw micro:bits while testing shake.  
+- Remind participants not to throw micro:bits while testing shake.  
 - Handle cables gently.  
 - Monitor sharing and teamwork; avoid exclusion.  
 - Collect and safely store devices at end.
@@ -116,7 +115,5 @@ Discussion points:
 ---
 
 ## Reflection (for leader)
-- Did pupils connect input → event → output clearly?  
+- Did participants connect input → event → output clearly?  
 - Were they able to extend beyond button A?  
-- Who showed strong debugging/mentoring potential?  
-- Did using the **CSF booklet examples** help scaffold understanding?
