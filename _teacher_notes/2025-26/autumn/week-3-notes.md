@@ -54,7 +54,18 @@ header:
 - **Discussion:**  
   - “Is it fair? Why/why not?”  
   - “What do we mean by random?”  
-  - Link to Maths (probability of 50/50 coin toss).  
+  - Link to Maths (probability of 50/50 coin toss).
+ 
+### Explaining Probability, Chance & Fairness
+
+- **Probability** is how likely something is to happen. Example: flipping a coin has a probability of 1 out of 2 (50%) for heads.  
+- **Chance** is the everyday word we use for probability. “There’s a good chance of rain.”  
+- **Fairness** means every outcome has the same chance. A fair coin gives each player equal chance. An unfair game means some players or outcomes have better odds.  
+
+**In practice with micro:bit:**  
+- Coin toss (`pick random 0–1`) is fair because both outcomes are equally likely.  
+- Rock–Paper–Scissors is fair because each choice (0,1,2) has equal chance.  
+- If we coded it wrongly (e.g., `pick random 0–2` but only tested 0 and 1), the game wouldn’t be fair.
 
 ---
 
