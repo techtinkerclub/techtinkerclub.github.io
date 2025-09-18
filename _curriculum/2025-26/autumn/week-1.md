@@ -39,7 +39,7 @@ header:
 
 ## Key Vocabulary & Definitions
 - **Microcontroller** — a tiny computer on a single chip that controls devices.  
-- **Input** — something the micro:bit senses (e.g., button press, light, shake).  
+- **Input** — something the micro:bit senses (e.g., button, accelerometer, light sensor, etc.)  
 - **Output** — what the micro:bit does in response (e.g., show LEDs, play sound).  
 - **Event** — something that happens and triggers code (e.g., “on start”, “on button A pressed”).  
 - **Sequence** — a set of steps the computer follows in order.  
