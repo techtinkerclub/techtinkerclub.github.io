@@ -38,7 +38,7 @@ header:
 ---
 
 ## Key Vocabulary & Definitions
-- **Input** — something the micro:bit senses (e.g., button press, shake, light).  
+- **Input** — something the micro:bit senses (e.g., button, accelerometer, light sensor, etc.) 
 - **Output** — how the micro:bit responds (e.g., LEDs, sound, text).  
 - **Event** — an action that makes the micro:bit run a block of code (e.g., “on button A pressed”).  
 - **Accelerometer** — a sensor that measures movement or tilt (used for “shake”).  
