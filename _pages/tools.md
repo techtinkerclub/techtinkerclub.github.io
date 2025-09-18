@@ -31,7 +31,7 @@ This page will grow over time — bookmark it!
   For pupils who want to try text-based coding.
 
 - [Behind the microbit MakeCode Hardware](https://makecode.microbit.org/behind-the-makecode-hardware){:target="_blank" rel="noopener"}  
-  For pupils who want to try text-based coding.
+  For children who want to know more about the hardware.
 
 ---
 
