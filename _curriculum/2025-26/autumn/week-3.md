@@ -38,7 +38,7 @@ header:
 
 ## Key Vocabulary
 
-- **Input** — information the micro:bit receives (e.g. button presses, motion).  
+- **Input** — something the micro:bit senses (e.g., button, accelerometer, light sensor, etc.) 
 - **Output** — what the micro:bit does in response (LEDs, sound, text).  
 - **Event** — something that happens (like pressing a button or shaking the device) that starts code.  
 - **Conditional (if/else)** — a rule in code that checks something and chooses what to do.  
