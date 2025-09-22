@@ -19,9 +19,9 @@ header:
 
 {% include print-to-pdf.html %}
 
-**Theme:** Conditionals (if / else)
-**Focus Concept:** Decisions & basic logic
-**Mini-Project:** Rock–Paper–Scissors (micro:bit chooses at random)
+**Theme:** Conditionals (if / else)  
+**Focus Concept:** Decisions & basic logic  
+**Mini-Project:** Rock–Paper–Scissors (micro:bit chooses at random)  
 
 ---
 
