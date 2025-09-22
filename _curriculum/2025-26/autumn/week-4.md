@@ -44,7 +44,8 @@ header:
 - **Sensor** — a device that measures something from the environment, like light or temperature.  
 - **Input** — information coming into the micro:bit (e.g. from a sensor).  
 - **Output** — how the micro:bit reacts (e.g. LEDs, sound, message).  
-- **Logic** — rules that decide what happens (e.g. if…then…else).
+- **Logic** — rules that decide what happens (e.g. if…then…else).  
+- **Loop** — instructions that repeat automatically. A loop can run forever or stop when a condition is met.  
 
 ---
 
