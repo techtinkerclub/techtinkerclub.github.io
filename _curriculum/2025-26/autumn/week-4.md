@@ -51,7 +51,7 @@ header:
 
 ## Resources
 - **Micro:bit MakeCode:** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"}
-- **Simple times tables quiz:** [MakeCode Code]([https://makecode.microbit.org](https://makecode.microbit.org/S35102-48591-68172-69236){:target="_blank" rel="noopener"}  
+- **Simple times tables quiz:** [MakeCode Code](https://makecode.microbit.org/S35102-48591-68172-69236){:target="_blank" rel="noopener"}  
 - **Sensor overview (light, temp):** [link](https://makecode.microbit.org/reference/input){:target="_blank" rel="noopener"}  
 - **Starter code template:** [link](#)  
 
