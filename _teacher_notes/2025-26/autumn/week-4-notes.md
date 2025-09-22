@@ -55,7 +55,7 @@ header:
 ### Part 1: PRIMM Starter — Multiplication Quiz with Thresholds (30 min)
 
 **Predict (5 min)**  
-Show pupils the code (do not run yet): *Simple times tables quiz* [MakeCode Code]([https://makecode.microbit.org](https://makecode.microbit.org/S35102-48591-68172-69236)){:target="_blank" rel="noopener"}
+Show pupils the code (do not run yet): *Simple times tables quiz* [MakeCode Code]([https://makecode.microbit.org](https://makecode.microbit.org/S35102-48591-68172-69236){:target="_blank" rel="noopener"}
 
 - Variables: `first number`, `second number`, `result`, `threshold`.  
 - On A → picks 2 random numbers, but only if both are ≤ threshold.  
