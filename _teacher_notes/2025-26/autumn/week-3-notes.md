@@ -13,8 +13,6 @@ header:
   show_overlay_text: false
 ---
 
---------------------------
-
 # Instructor Notes — Week 3
 
 {% include print-to-pdf.html %}
