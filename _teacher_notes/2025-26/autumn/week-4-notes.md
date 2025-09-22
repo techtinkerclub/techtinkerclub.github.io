@@ -15,92 +15,104 @@ header:
 
 # Teacher Notes — Week 4  
 {% include print-to-pdf.html %}
+
 **Theme:** Variables & Thresholds  
-**Focus Concept:** Variables, Thresholds, Sensors  
-**Mini-Project:** Smart Plant Monitor
+**Focus Concept:** Using and comparing variables, applying thresholds to control outputs  
+**Mini-Project:** 🌱 Smart Plant Monitor (light + temperature sensors)  
 
 ---
 
 ## Learning Objectives
-- Pupils understand that a **variable** stores a value that can change.  
-- Pupils can read sensor values (light, temperature) from the micro:bit.  
-- Pupils can compare sensor values with a **threshold** to trigger actions.  
-- Pupils make a micro:bit monitor that warns if a “plant” is too dark or cold.
+- Pupils understand what a **variable** is and how it stores values.  
+- Pupils use **thresholds** to decide if a variable is “too high” or “too low.”  
+- Pupils apply variables + thresholds to **sensors** (light & temperature).  
+- Pupils link coding to **science**: plants need the right light and warmth.  
 
 ---
 
 ## Detailed Lesson Plan (≈90 minutes)
 
-**1) Starter (10 min)**  
-- Show a plant (real or picture). Ask: *“What does it need to grow?”* (light, warmth).  
-- Link to sensors: the micro:bit can measure these things.  
-- Quick demo: display `temperature` on screen using `show number`.  
+### Part 1: PRIMM Starter — Multiplication Quiz with Thresholds (30 min)
 
-**2) Teach: Variables & Thresholds (15 min)**  
-- Analogy: variable = a labelled box storing a number.  
-- Threshold = a line in the sand (“If it’s colder than 15°C → show warning”).  
-- Use simple block example:  
-  - `set temp = temperature (°C)`  
-  - `if temp < 15 then show snowflake`.
+**Predict (5 min)**  
+Show pupils the code (do not run yet):  
 
-**3) PRIMM Example (20 min)**  
-- **Predict:** Show a short program that checks light level. Pupils predict output.  
-- **Run:** Try it on the micro:bit.  
-- **Investigate:** Where is the variable? Where’s the threshold?  
-- **Modify:** Change the threshold.  
-- **Make:** Extend to include both light and temperature.
+- Variables: `first number`, `second number`, `result`, `threshold`.  
+- On A → picks 2 random numbers, but only if both are ≤ threshold.  
+- On B → shows the multiplication result.  
 
-**4) Main Build (30 min)**  
-- Pupils create a “plant monitor” that:  
-  - Reads light level into variable `light`.  
-  - Reads temperature into variable `temp`.  
-  - If `light < 100` → show ☀️ missing icon.  
-  - If `temp < 15` → show ❄️ icon.  
-  - Otherwise, show ✅ happy plant.  
-
-**5) Reflection & Wrap-Up (15 min)**  
-- Share monitors with the group.  
-- Discuss: *“Why do we need thresholds in real systems?”* (e.g. thermostats, fridges).  
-- Tease Week 5: linking inputs to outputs in creative ways (music, motors, etc).
+Ask:  
+- *“What do you think will happen when we press A?”*  
+- *“Why do you think there’s a threshold set at 12?”*  
+- *“When will it show us numbers, and when will it not?”*  
 
 ---
 
-## Differentiation
-- **New coders:** provide starter template with variables already created.  
-- **Confident coders:** add more conditions (e.g. too hot, too bright).  
-- Challenge: log values over time.
+**Run (5 min)**  
+Press A: sometimes numbers appear, sometimes not.  
+Press B: shows the result of multiplication.  
+
+Highlight:  
+- The threshold acts as a **filter**.  
+- Only easy (small) questions are chosen.  
 
 ---
 
-## Assessment
-- Observe if pupils can:  
-  - Identify variables in the code.  
-  - Adjust thresholds correctly.  
-  - Debug simple mistakes (wrong comparison, missing block).
+**Investigate (5 min)**  
+Guide discussion:  
+- Where are the variables? (*they store the numbers and result*).  
+- What does the threshold do? (*it sets a limit for what’s allowed*).  
+- Why use ≤ ? (*we only want small numbers to practice with*).  
 
 ---
 
-## Troubleshooting
-- **Sensor values not updating:** remind them to put code in `forever` loop.  
-- **LEDs not showing symbols:** check that conditions don’t overlap.  
+**Modify (10 min)**  
+Challenges:  
+- Change the threshold (e.g. 6 for harder questions, 20 for easier).  
+- Switch from multiplication to addition or subtraction.  
+- Make it always show the numbers, but only solve if ≤ threshold.  
 
 ---
 
-## Materials & Setup
-- Micro:bits + USB cables.  
-- Chromebooks with MakeCode access.  
-- Optional: projector for live demo.  
+**Make (5 min)**  
+Extension ideas:  
+- Add a score counter for correct answers.  
+- Change icons or add a message for “Too big!” when numbers are > threshold.  
+- Use `pick random` with a different range.  
+
+**Learning outcome:** pupils see clearly that **variables hold values**, and **thresholds decide when to act**.  
 
 ---
 
-## Science & Cross-Curricular Links
-- **Science (KS2):** Plants need light and warmth.  
-- **Maths:** Thresholds = inequalities (<, >).  
-- **Computing:** Sensors, variables, conditionals.
+### Part 2: Main Project — Smart Plant Monitor (55–60 min)
+
+**Introduction (5 min)**  
+Ask: *“What do plants need to grow well?”*  
+- Pupils will usually say **light** and **water**, sometimes **temperature**.  
+- Explain: *“Today we’ll use the micro:bit to check if a plant would be happy here in the classroom!”*  
 
 ---
 
-## Reflection (for leader)
-- Did pupils grasp the idea of thresholds easily?  
-- Note if any found the dual-sensor logic confusing.  
-- Record extension ideas (e.g. soil moisture with external sensor for future).
+**Step 1: Read variables (10 min)**  
+Show how to get sensor values:  
+- `light = light level`  
+- `temp = temperature`  
+Display them with `show number` to see real readings.  
+
+---
+
+**Step 2: Add thresholds (10 min)**  
+Introduce thresholds for both sensors:  
+- Light < 100 → “too dark” 🌙  
+- Temp < 18 → “too cold” ❄️  
+- Temp > 28 → “too hot” ☀️🔥  
+
+Discuss: *“What happens if we move to a dark corner?”* / *“What if we warm the sensor with our hands?”*  
+
+---
+
+**Step 3: Combine with logic (15 min)**  
+If light ≥ 100 AND temp between 18–28 → show 🌱😀 “Happy Plant.”  
+Else → show warning icon depending on condition.  
+
+Block structure:  
