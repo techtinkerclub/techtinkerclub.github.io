@@ -49,38 +49,51 @@ Ask:
 ---
 
 **Run (5 min)**  
-Press A: sometimes numbers appear, sometimes not.  
+Press A: pupils see pairs of numbers appear.  
 Press B: shows the result of multiplication.  
 
-Highlight:  
-- The threshold acts as a **filter**.  
-- Only easy (small) questions are chosen.  
+---
+
+**Investigate (10 min)**  
+Focus on two important pieces of logic:  
+
+#### 1. `while true`  
+- A **loop** that repeats forever.  
+- Because “true” is *always true*, the loop keeps running again and again.  
+- Each time round, it picks new random numbers.  
+- That’s why it *looks like numbers always appear* — the loop is running super fast until it finds ones that fit the rule.  
+
+#### 2. `break`  
+- `break` means **“stop this loop right now.”**  
+- Without `break`, the loop would keep flashing endless random numbers.  
+- With `break`, as soon as good numbers are found (≤ threshold), the program **stops looping** and shows them.  
+
+💡 **Analogy to use with children:**  
+- Imagine you’re picking raffle tickets out of a bag.  
+- You only want tickets under 12.  
+- If you pick one that’s too big → put it back, try again. (*This is the loop.*)  
+- When you finally pick a good one → shout it out and stop. (*This is the break.*)  
+
+Questions to ask pupils:  
+- *“What would happen if we removed the break?”*  
+- *“Why is the loop needed if we already pick random numbers?”*  
+- *“Could the program ever run forever without finding a result?”* (No, because eventually random numbers will fall under 12.)  
 
 ---
 
-**Investigate (5 min)**  
-Guide discussion:  
-- Where are the variables? (*they store the numbers and result*).  
-- What does the threshold do? (*it sets a limit for what’s allowed*).  
-- Why use ≤ ? (*we only want small numbers to practice with*).  
-
----
-
-**Modify (10 min)**  
+**Modify (5–7 min)**  
 Challenges:  
-- Change the threshold (e.g. 6 for harder questions, 20 for easier).  
-- Switch from multiplication to addition or subtraction.  
-- Make it always show the numbers, but only solve if ≤ threshold.  
+- Change the threshold (e.g. 6 for harder, 20 for easier).  
+- Switch to addition or subtraction.  
+- Remove `break` deliberately to see what happens.  
 
 ---
 
 **Make (5 min)**  
-Extension ideas:  
-- Add a score counter for correct answers.  
-- Change icons or add a message for “Too big!” when numbers are > threshold.  
-- Use `pick random` with a different range.  
-
-**Learning outcome:** pupils see clearly that **variables hold values**, and **thresholds decide when to act**.  
+Extensions:  
+- Add a score counter.  
+- Add a message for “too big!” if numbers exceed the threshold.  
+- Use `pick random` with a wider range (e.g. 1–200).  
 
 ---
 
