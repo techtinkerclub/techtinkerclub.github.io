@@ -1,73 +1,71 @@
 ---
-title: "Week 4 — Variables & Thresholds: Smart Plant Protector"
-permalink: /curriculum/week-4/
 layout: single
-classes: wide
+title: ""
+permalink: /curriculum/2025-26/autumn/week-4/
+week: 4
 toc: true
-toc_label: "On this page"
-description: "Use micro:bit temperature and light sensors with variables and thresholds to monitor plant comfort."
-author_profile: false
-sidebar:
-  nav: "weeks"
+toc_sticky: true
+sidebar: false
+header:
+  overlay_image: /assets/images/banner.png
+  show_overlay_excerpt: false
+  show_overlay_text: false
 ---
 
-## Overview
+{% include back-to-autumn.html %}
+{% include teacher-notes-link.html week=4 %}
 
-This week we build a **Smart Plant Protector** with the micro:bit.  
-We’ll **read two sensors** (temperature & light), store them in **variables**, compare them to **thresholds**, and decide if the plant is **happy**, **too cold**, **too hot**, or **too dark**.
+## Week 4 — Variables & Thresholds with Sensors
 
-> **Why?** Greenhouses use sensors and thresholds to keep conditions right for growth. We’ll recreate a mini version with our micro:bits.
-
----
-
-## Learning goals
-
-- Use **variables** to store live sensor readings.  
-- Use **thresholds** with `if…then…else` logic to trigger messages.  
-- Combine two inputs (temperature & light) to make a single decision.  
-- Test, tweak, and justify chosen thresholds.
+**Focus Concept:** Variables & Thresholds  
+**Mini-Project:** Smart Plant Monitor (light + temperature sensors)
 
 ---
 
-## Key vocabulary
+## Objectives
+- Understand what a **variable** is in coding.  
+- Learn what a **threshold** means and how it controls decisions.  
+- Explore how the **light** and **temperature** sensors on the micro:bit work.  
+- Create a simple monitor that warns when it’s too dark or too cold.
 
-- **Logic** — the set of rules a computer follows to decide what to do. In coding we use conditionals (logic blocks like `if…then…else`) to check conditions and choose between actions. Logic can also use connectors such as **AND**, **OR**, and **NOT** to combine conditions.  
-- **Variable** — a named box in memory that stores a value (e.g., a number from a sensor).  
-- **Threshold** — a boundary value where behaviour changes (e.g., heating turns on below **18 °C**).
+---
 
-> We’ll reuse the **Week 2** definition of *Logic* for consistency.
+## Success Criteria
+- I can explain what a variable is and why it’s useful.  
+- I can use a variable to store a sensor value.  
+- I can compare sensor values with a threshold.  
+- I can make the micro:bit give a warning when the threshold is crossed.
+
+---
+
+## Key Vocabulary
+- **Variable** — a “box” in memory that stores a value which can change.  
+- **Threshold** — a limit or boundary we compare against (e.g. “if temp < 15°C”).  
+- **Sensor** — a device that measures something from the environment, like light or temperature.  
+- **Input** — information coming into the micro:bit (e.g. from a sensor).  
+- **Output** — how the micro:bit reacts (e.g. LEDs, sound, message).  
+- **Logic** — rules that decide what happens (e.g. if…then…else).
+
+---
+
+## Resources
+- **Micro:bit MakeCode:** [link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
+- **Sensor overview (light, temp):** [link](https://makecode.microbit.org/reference/input){:target="_blank" rel="noopener"}  
+- **Starter code template:** [link](#)  
 
 ---
 
 ## Equipment
-
-- micro:bit (V1 or V2), USB cable, battery pack (optional)  
-- A **torch** (for dark/bright testing) and your warm hands (for slightly warming the board)  
-- Laptop with [MakeCode](https://makecode.microbit.org)
+- BBC micro:bits + USB cables.  
+- Chromebooks with internet access.  
 
 ---
 
-## Step-by-step (MakeCode blocks)
+## Safety & Setup Notes
+- Sensors are built-in, no extra hardware needed.  
+- Avoid touching USB ends with damp hands (remind pupils as “plant monitor” is discussed).  
 
-1) **Create variables**  
-`temp`, `light`
+---
 
-2) **Read sensors** *(inside a `forever` loop)*  
-- `set temp = temperature (°C)`  
-- `set light = light level`
-
-3) **Decide with thresholds**  
-Start simple and tweak during testing:
-
-- Temperature bands:
-  - `< 15` → “Too cold!”
-  - `> 25` → “Too hot!”
-- Light:
-  - `< 80` → “Too dark!”
-- Else → “Happy plant :)”
-
-4) **Show result** (strings or custom icons)
-
-### Block-flow (pseudocode)
-
-
+{% include back-to-autumn.html %}
+{% include teacher-notes-link.html week=4 %}
