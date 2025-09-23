@@ -54,6 +54,7 @@ header:
 - **Simple times tables quiz:** [MakeCode Code](https://makecode.microbit.org/S35102-48591-68172-69236){:target="_blank" rel="noopener"}  
 - **Sensor overview (light, temp):** [link](https://makecode.microbit.org/reference/input){:target="_blank" rel="noopener"}  
 - **How temperature affect plants:** [Short](https://youtube.com/shorts/aEq0PoIw3Ek?si=ELEztocGZ6Gp1pTF){:target="_blank" rel="noopener"} ¦ [In depth](https://youtu.be/iKIRYkTrhR8?si=OfkKzhJSSrwhxiYu){:target="_blank" rel="noopener"}
+- **KS3 Photosynthesis:** [video](https://youtu.be/vC-NkGbgTUs?si=SaQRG2xz1GCr-ZAz){:target="_blank" rel="noopener"}
 
 ---
 
