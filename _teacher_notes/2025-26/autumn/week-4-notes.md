@@ -23,11 +23,11 @@ header:
 ---
 
 ## Learning Objectives
-- Pupils understand what a **variable** is and how it stores values.  
-- Pupils use **thresholds** to decide if a variable is “too high” or “too low.”  
-- Pupils explore how `while true` loops work and why `break` is used.  
-- Pupils apply variables + thresholds to real-world sensors (light & temperature).  
-- Pupils link coding to **science**: plants need the right light and warmth.  
+- Participants understand what a **variable** is and how it stores values.  
+- Participants use **thresholds** to decide if a variable is “too high” or “too low.”  
+- Participants explore how `while true` loops work and why `break` is used.  
+- Participants apply variables + thresholds to real-world sensors (light & temperature).  
+- Participants link coding to **science**: plants need the right light and warmth.  
 
 ---
 
@@ -46,7 +46,7 @@ header:
 
 💡 **Teaching tip:**  
 - Show the difference between `on start` (runs once), `forever` (runs forever), and `while true` (runs forever unless broken).  
-- Ask pupils: *“Why would we want the computer to repeat things? What happens if it doesn’t?”*
+- Ask participants: *“Why would we want the computer to repeat things? What happens if it doesn’t?”*
 
 ---
 
@@ -55,7 +55,7 @@ header:
 ### Part 1: PRIMM Starter — Multiplication Quiz with Thresholds (30 min)
 
 **Predict (5 min)**  
-Show pupils the code (do not run yet): *Simple times tables quiz* [MakeCode Code]([https://makecode.microbit.org](https://makecode.microbit.org/S35102-48591-68172-69236){:target="_blank" rel="noopener"}
+Show pupils the code (do not run yet): *Simple times tables quiz* [MakeCode Code](https://makecode.microbit.org/S35102-48591-68172-69236){:target="_blank" rel="noopener"}
 
 - Variables: `first number`, `second number`, `result`, `threshold`.  
 - On A → picks 2 random numbers, but only if both are ≤ threshold.  
@@ -177,7 +177,7 @@ Else → show warning icon depending on condition.
 ---
 
 ## Assessment
-- Can pupils explain what a variable is?  
+- Can participants explain what a variable is?  
 - Can they describe what a threshold does?  
 - Did they use both light and temperature in their monitor?  
 
@@ -206,6 +206,6 @@ Else → show warning icon depending on condition.
 ---
 
 ## Reflection (for leader)
-- Did pupils clearly understand **variables vs thresholds**?  
+- Did participants clearly understand **variables vs thresholds**?  
 - Did the PRIMM starter (maths quiz) help them before moving into sensors?  
 - Note pupils who extended with AND/OR logic successfully.  
