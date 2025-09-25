@@ -54,6 +54,7 @@ header:
 - **PRIMM recap — Simple Coin Flipper:** [open project](https://makecode.microbit.org/S48819-26737-74641-22192){:target="_blank" rel="noopener"}  
 - **Rock–Paper–Scissors (MakeCode guide):** [project page](https://makecode.microbit.org/projects/rock-paper-scissors-v2){:target="_blank" rel="noopener"}
 - **Math Antics - Basic Probability:** [video](https://youtu.be/KzfWUEJjG18?si=aZ-dMP3lBnx2qhnn){:target="_blank" rel="noopener"}
+- **What is random?:** [video](https://youtu.be/9rIy0xY99a0?si=a6b9JRejPcRA3yGu){:target="_blank" rel="noopener"}
 
 
 ---
