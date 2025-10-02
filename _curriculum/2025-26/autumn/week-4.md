@@ -55,6 +55,9 @@ header:
 - **Sensor overview (light, temp):** [link](https://makecode.microbit.org/reference/input){:target="_blank" rel="noopener"}  
 - **How temperature affect plants:** [Short](https://youtube.com/shorts/aEq0PoIw3Ek?si=ELEztocGZ6Gp1pTF){:target="_blank" rel="noopener"} ¦ [In depth](https://youtu.be/iKIRYkTrhR8?si=OfkKzhJSSrwhxiYu){:target="_blank" rel="noopener"}
 - **KS3 Photosynthesis:** [video](https://youtu.be/vC-NkGbgTUs?si=SaQRG2xz1GCr-ZAz){:target="_blank" rel="noopener"}
+- **Generating beautiful patterns using times tables:** [video](https://youtu.be/qhbuKbxJsk8?si=8vKenvlbAJ-2C6kJ){:target="_blank" rel="noopener"}
+- **The Map of Mathematics:** [video](https://youtu.be/OmJ-4B-mS-Y?si=LSQtpz0P18YvyKE8){:target="_blank" rel="noopener"}
+- **The Surprising map of plants:** [video](https://youtu.be/ONVpFtiD-fo?si=8PLefeD0gfpEy8uv){:target="_blank" rel="noopener"}
 
 ---
 
