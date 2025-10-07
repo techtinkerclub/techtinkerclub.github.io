@@ -57,7 +57,7 @@ header:
 - **PRIMM Loop Demo (Week 5):** [MAkecode Code](https://makecode.microbit.org/S62181-98265-95104-79112){:target="_blank" rel="noopener"}  
 - **Barrel Jumper starter:** *(add your share link here)*  
 - **MakeCode Game reference (sprites, collisions):** [Reference](https://makecode.microbit.org/reference/game){:target="_blank" rel="noopener"}
-- **Loops in MakeCode (overview):** [Reference](https://makecode.microbit.org/reference/loops){:target="_blank" rel="noopener"}
+- **Loops in MakeCode (overview):** [Reference](https://makecode.microbit.org/blocks/loops){:target="_blank" rel="noopener"}
 
 ---
 
