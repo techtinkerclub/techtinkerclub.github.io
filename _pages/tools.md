@@ -43,7 +43,7 @@ This page will grow over time — bookmark it!
 
 ---
 
-## 📖 Free Books & Docs
+## 📖 Free Books, Docs and Videos
 
 - **Micro:bit V2 Learning Book** - Cora Young   
   [[TTC Sharedrive]](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
@@ -55,6 +55,9 @@ This page will grow over time — bookmark it!
 - **Arm Academy Introduction to computing with micro:bit**   
   [[Github repository]](https://github.com/arm-university/Introduction-to-Computing-with-microbit){:target="_blank" rel="noopener"}
 
+- **Arm Academy Introduction to computing with micro:bit video playlist**   
+  [[Youtube playlist]](https://youtu.be/M4JdhPqmp7A?si=pXbL5D8gfXMSbBKA){:target="_blank" rel="noopener"}
+  
 - **micro:bit Physical Computing Fundamentals** - Code.org   
   [[Code.org]](https://code.org/maker/assets/CSF-Booklet-Course-E-July23.pdf){:target="_blank" rel="noopener"}
   [[TTC Sharedrive]](https://drive.google.com/file/d/1B4Kuq8CdvplmV3JcjlQWNlYLyQ32foIu/view?usp=drive_link){:target="_blank" rel="noopener"}
