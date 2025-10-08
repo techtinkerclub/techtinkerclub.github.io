@@ -46,7 +46,7 @@ header:
 - **Iteration** — one pass through a loop.
 - **Timer / `millis`** — the micro:bit’s clock in milliseconds (1000 ms = 1 s); useful for timing within loops.
 - **Variable** — a named box that stores changing values (e.g., `score`, `speed`, `x`, `y`).
-- **Sprite** — a movable object on the LED grid (player / obstacle).
+- **Sprite** — a sprite is a two-dimensional graphic object or image that can move freely in a digital environment. Sprites typically consist of pixel images and are used to represent characters, objects, backgrounds, and visual effects in video games and other interactive applications.
 - **Collision detection** — checking if two sprites touch.
 - **Game loop** — a loop that continually updates movement, checks collisions, and redraws.
 
