@@ -54,7 +54,7 @@ header:
 
 ## Resources
 - **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}
-- **PRIMM Loop Demo (Week 5):** [MAkecode Code](https://makecode.microbit.org/S62181-98265-95104-79112){:target="_blank" rel="noopener"}  
+- **PRIMM Loop Demo (Week 5):** [Makecode Code](https://makecode.microbit.org/S62181-98265-95104-79112){:target="_blank" rel="noopener"}  
 - **Introduction to Computing with micro:bit: Loops:** [Video](https://youtu.be/d7OmI54KM_o?si=-Ql3gh5aBJJvmK6k){:target="_blank" rel="noopener"}  
 - **MakeCode Game reference (sprites, collisions):** [Reference](https://makecode.microbit.org/reference/game){:target="_blank" rel="noopener"}
 - **Loops in MakeCode (overview):** [Reference](https://makecode.microbit.org/blocks/loops){:target="_blank" rel="noopener"}
