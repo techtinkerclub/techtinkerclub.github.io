@@ -56,7 +56,7 @@ This page will grow over time — bookmark it!
   [[Github repository]](https://github.com/arm-university/Introduction-to-Computing-with-microbit){:target="_blank" rel="noopener"}
 
 - **Arm Academy Introduction to computing with micro:bit video playlist**   
-  [[Youtube playlist]](https://youtu.be/M4JdhPqmp7A?si=pXbL5D8gfXMSbBKA){:target="_blank" rel="noopener"}
+  [[Youtube playlist]](https://www.youtube.com/watch?v=M4JdhPqmp7A&list=PLXwAdcOl0lCrDF-ympqZC94r59Xpb36GD){:target="_blank" rel="noopener"}
   
 - **micro:bit Physical Computing Fundamentals** - Code.org   
   [[Code.org]](https://code.org/maker/assets/CSF-Booklet-Course-E-July23.pdf){:target="_blank" rel="noopener"}
