@@ -58,9 +58,9 @@ header:
 - **Introduction to Computing with micro:bit: Loops:** [Video](https://youtu.be/d7OmI54KM_o?si=-Ql3gh5aBJJvmK6k){:target="_blank" rel="noopener"}  
 - **MakeCode Game reference (sprites, collisions):** [Reference](https://makecode.microbit.org/reference/game){:target="_blank" rel="noopener"}
 - **Loops in MakeCode (overview):** [Reference](https://makecode.microbit.org/blocks/loops){:target="_blank" rel="noopener"}
-- **Game Development for Noobs | Beginner Guide:** [Video](https://youtu.be/7C92ZCnlmQo?si=sgF6Rr0VOrnupeMM){:target="_blank" rel="noopener"}
-- **Learning to Code is Not Just for Coders | TEDx Talk by Ali Partov (founder of Code.org):** [Video](https://youtu.be/MvTSPwftvyo?si=4wI0UDvA_SJgAkGw){:target="_blank" rel="noopener"}
-- **How curiosity paved the way to self-learning | TEDx Talk by Ray Wu:** [Video](https://youtu.be/MvTSPwftvyo?si=4wI0UDvA_SJgAkGw){:target="_blank" rel="noopener"}
+- **Game Development for Noobs - Beginner Guide:** [Video](https://youtu.be/7C92ZCnlmQo?si=sgF6Rr0VOrnupeMM){:target="_blank" rel="noopener"}
+- **Learning to Code is Not Just for Coders - TEDx Talk by Ali Partov (founder of Code.org):** [Video](https://youtu.be/MvTSPwftvyo?si=4wI0UDvA_SJgAkGw){:target="_blank" rel="noopener"}
+- **How curiosity paved the way to self-learning - TEDx Talk by Ray Wu:** [Video](https://youtu.be/MvTSPwftvyo?si=4wI0UDvA_SJgAkGw){:target="_blank" rel="noopener"}
 
 ---
 
