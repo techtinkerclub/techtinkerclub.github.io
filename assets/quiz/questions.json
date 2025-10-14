@@ -1,431 +1,625 @@
 {
   "weeks": {
     "1": {
-      "title": "Week 1: Intro to Microcontrollers 🤖",
-      "description": "Hardware, MakeCode, and your first programs!",
+      "title": "Week 1: Intro to Microcontrollers",
+      "description": "Hardware, inputs/outputs, MakeCode basics, events & sequencing.",
       "questions": [
         {
-          "type": "mcq",
-          "question": "🤖 What is a microcontroller?",
-          "options": ["A big computer", "A tiny computer on a chip", "A robot", "A video game"],
-          "answer": 1,
-          "explanation": "A microcontroller is a tiny computer on a single chip that can sense inputs and control outputs.",
-          "hint": "Think of 'micro' = small.",
-          "definition": "A MICROCONTROLLER is a tiny computer on a single chip that can sense the world (inputs) and control things (outputs)."
+          "question": "What is a microcontroller?",
+          "type": "multiple-choice",
+          "options": ["A tiny computer on a chip", "A battery", "A speaker", "An internet router"],
+          "correct": 0,
+          "explanation": "A microcontroller is a small computer on a single chip that reads inputs and controls outputs.",
+          "definition": "MICROCONTROLLER — a tiny computer on one chip, used in gadgets and embedded systems.",
+          "category": "hardware",
+          "difficulty": "easy",
+          "hint": "Think: the micro:bit has one on board."
         },
         {
-          "type": "mcq",
-          "question": "🔍 Which of these is an INPUT on the micro:bit?",
-          "options": ["🔘 Button A", "💡 LED lights", "📢 Speaker", "📺 Screen"],
-          "answer": 0,
-          "explanation": "Button A is an input — it sends information TO the micro:bit when you press it.",
-          "definition": "INPUT — information coming into the device (buttons, sensors, accelerometer)."
+          "question": "Which of these is an INPUT on the micro:bit?",
+          "type": "multiple-choice",
+          "options": ["LED matrix", "Speaker", "Button A", "Logo on the board"],
+          "correct": 2,
+          "explanation": "Buttons are inputs; the LED matrix and speaker are outputs.",
+          "definition": "INPUT — information that comes into the device (e.g., buttons, sensors).",
+          "category": "io",
+          "difficulty": "easy",
+          "hint": "Can you press it to send a signal?"
         },
         {
-          "type": "mcq",
-          "question": "📺 Which is an OUTPUT?",
-          "options": ["🌡️ Temperature sensor", "🔘 Buttons", "💡 LED display", "🎯 Accelerometer"],
-          "answer": 2,
-          "explanation": "The LED display shows information FROM the micro:bit.",
-          "definition": "OUTPUT — feedback from the device (LEDs, sounds, radio)."
+          "question": "Which block runs ONCE when the program starts?",
+          "type": "multiple-choice",
+          "code": "on start\n    show string \"Hello\"",
+          "options": ["forever", "on start", "on button A pressed", "on shake"],
+          "correct": 1,
+          "explanation": "“on start” runs once at the beginning. Great for initial messages or setup.",
+          "category": "events",
+          "difficulty": "easy",
+          "hint": "Useful for setup tasks."
         },
         {
-          "type": "mcq",
-          "question": "💻 What is MakeCode?",
-          "options": ["A type of micro:bit", "A sensor", "A block-based programming environment", "A button"],
-          "answer": 2,
-          "explanation": "MakeCode is the visual, block-based IDE we use to program the micro:bit.",
-          "definition": "IDE — a software workspace for writing, running, and saving programs. MakeCode includes blocks, a simulator and download."
+          "question": "In MakeCode, what does this do?",
+          "type": "multiple-choice",
+          "code": "forever\n    show string \"Hi\"",
+          "options": ["Shows 'Hi' once", "Shows 'Hi' forever", "Shows 'Hi' five times", "Never shows 'Hi'"],
+          "correct": 1,
+          "explanation": "Blocks inside a forever loop repeat continuously.",
+          "category": "loops",
+          "difficulty": "medium",
+          "hint": "Forever means… forever."
         },
         {
-          "type": "mcq",
-          "question": "⏱️ What does 'pause 1000' do?",
-          "options": ["Waits 1000 seconds", "Waits 1 second", "Stops the program forever", "Does nothing"],
-          "answer": 1,
-          "explanation": "1000 milliseconds equals 1 second.",
-          "definition": "MILLISECONDS — 1000 ms = 1 second; used for timing animations and delays."
+          "question": "What best describes the LED display?",
+          "type": "multiple-choice",
+          "options": ["An input device", "An output device", "A storage device", "A power source"],
+          "correct": 1,
+          "explanation": "The LED display shows information to the user, so it’s an output.",
+          "category": "io",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🔄 What does a 'forever' loop do?",
-          "options": ["Runs code once", "Runs code 5 times", "Keeps repeating forever", "Runs only on button press"],
-          "answer": 2,
-          "explanation": "The forever loop repeats the enclosed code continuously.",
-          "definition": "LOOP — instructions that repeat; types include forever, repeat N times, while…"
+          "question": "Which pair is correctly matched?",
+          "type": "multiple-choice",
+          "options": ["Accelerometer — Output", "Temperature sensor — Input", "Speaker — Input", "Button — Output"],
+          "correct": 1,
+          "explanation": "Temperature sensor is an input; speaker is an output; accelerometer is an input; button is an input.",
+          "category": "io",
+          "difficulty": "medium",
+          "hint": "Sensors read the world → inputs."
         },
         {
-          "type": "mcq",
-          "question": "🧪 Where will a name badge message usually go?",
-          "options": ["Inside on start", "Inside forever", "Inside on shake only", "It won’t work anywhere"],
-          "answer": 0,
-          "explanation": "A simple badge can show text in `on start`; adding reactions can use events.",
-          "code": "on start\n  show string \"Hello!\""
+          "question": "Where can you test your code without a physical micro:bit?",
+          "type": "multiple-choice",
+          "options": ["Simulator in MakeCode", "In the battery pack", "On a USB drive only", "Inside the LED matrix"],
+          "correct": 0,
+          "explanation": "MakeCode includes a simulator to test code before flashing.",
+          "definition": "SIMULATOR — software that mimics real hardware behaviour.",
+          "category": "tools",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🧩 What is a PROGRAM?",
-          "options": ["A drawing", "A set of instructions a computer follows", "A random number", "A sensor"],
-          "answer": 1,
-          "explanation": "Programs are step-by-step instructions for a computer.",
-          "definition": "ALGORITHM — a step-by-step method to solve a problem; a program implements algorithms in code."
+          "question": "Match terms to definitions.",
+          "type": "drag-drop",
+          "terms": ["Event", "Sequence", "Debug"],
+          "definitions": ["Order of instructions", "Something that triggers code", "Find and fix errors"],
+          "correctMatches": [1, 0, 2],
+          "explanation": "Event triggers; sequence is order; debug is fixing mistakes.",
+          "category": "foundations",
+          "difficulty": "medium",
+          "hint": "Think: cause (event), order (sequence), fix (debug)."
         },
         {
-          "type": "match",
-          "question": "🎯 Match micro:bit parts to what they do",
-          "terms": ["Button A", "LED Display", "Temperature Sensor", "USB Port"],
-          "definitions": ["Input you can press", "Shows patterns and text", "Measures how hot/cold it is", "Connects to a computer to program"],
-          "correctMatches": [0, 1, 2, 3],
-          "explanation": "Knowing core parts helps us predict how programs interact with hardware."
+          "question": "Which statement is TRUE about 'on button A pressed'?",
+          "type": "multiple-choice",
+          "options": ["It runs in a loop automatically", "It runs when you press A", "It runs only at start", "It never runs"],
+          "correct": 1,
+          "explanation": "Event code runs when the event happens.",
+          "category": "events",
+          "difficulty": "hard"
         },
         {
-          "type": "mcq",
-          "question": "🧪 What is a SIMULATOR in MakeCode?",
-          "options": ["A micro:bit battery", "A fake project", "A virtual micro:bit to test code on screen", "A music player"],
-          "answer": 2,
-          "explanation": "The simulator lets you run and debug programs quickly before flashing to the device.",
-          "definition": "SIMULATOR — a virtual version of the hardware to test code safely and quickly."
+          "question": "Which is the best description of a PROGRAM?",
+          "type": "multiple-choice",
+          "options": ["A single instruction", "Random blocks", "A set of instructions a computer follows", "An image on the LED matrix"],
+          "correct": 2,
+          "explanation": "A program is a set of instructions designed to perform tasks.",
+          "definition": "PROGRAM — a precise list of instructions a computer follows.",
+          "category": "foundations",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Why might your program NOT appear on the micro:bit after download?",
+          "type": "multiple-choice",
+          "options": ["Wrong cable (charge-only)", "Didn’t click Download", "Micro:bit not connected", "Any of these"],
+          "correct": 3,
+          "explanation": "All listed causes are common issues.",
+          "category": "troubleshooting",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Which pair shows INPUT → PROCESS → OUTPUT correctly?",
+          "type": "multiple-choice",
+          "options": ["LED → add numbers → button", "Button → compare numbers → show icon", "Speaker → random → LED", "Battery → program → USB"],
+          "correct": 1,
+          "explanation": "Button (input) → logic/compute (process) → show icon (output).",
+          "category": "foundations",
+          "difficulty": "hard"
         }
       ]
     },
     "2": {
-      "title": "Week 2: Events & Random 🎲",
-      "description": "Buttons, dice rolling, and chance!",
+      "title": "Week 2: Events & Random",
+      "description": "Button events, accelerometer events, random numbers, simple probability; revisits Week 1 I/O.",
       "questions": [
         {
-          "type": "mcq",
-          "question": "🎮 When does code inside 'on button A pressed' run?",
-          "options": ["Always", "Only when A is pressed", "On start", "Every 5 seconds"],
-          "answer": 1,
-          "explanation": "Event blocks wait for a trigger (here: pressing A).",
-          "definition": "EVENT — something that happens (press, shake, start) that triggers code."
+          "question": "What does 'random 1 to 6' represent?",
+          "type": "multiple-choice",
+          "options": ["A pattern", "A number chosen by chance from 1..6", "Only odd numbers", "Only even numbers"],
+          "correct": 1,
+          "explanation": "Each number 1–6 has equal chance, like a dice.",
+          "definition": "RANDOM — selection by chance from a range.",
+          "category": "random",
+          "difficulty": "easy",
+          "hint": "Think dice."
         },
         {
-          "type": "mcq",
-          "question": "🎲 What does 'random 1 to 6' return?",
-          "options": ["Always 6", "Any integer 1–6", "Only even numbers", "Only 1"],
-          "answer": 1,
-          "explanation": "It behaves like rolling a fair six-sided die.",
-          "definition": "RANDOM — the computer picks a number by chance from a range; each is equally likely."
+          "question": "When does code inside 'on button A pressed' run?",
+          "type": "multiple-choice",
+          "options": ["All the time", "Only when A is pressed", "At the start only", "Never"],
+          "correct": 1,
+          "explanation": "It’s an event: code runs when the event happens.",
+          "category": "events",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "🎯 What does this dice code do?",
-          "code": "on button A pressed\n  set roll to random 1 to 6\n  show number roll",
-          "options": ["Always 6", "Random 1–6 each press", "Shows nothing", "Crashes"],
-          "answer": 1,
-          "explanation": "Each press produces a new random value."
+          "question": "Which is a fair six-sided dice?",
+          "type": "multiple-choice",
+          "options": ["Each face equally likely", "Some faces more likely", "Always shows 6", "Always shows 1"],
+          "correct": 0,
+          "explanation": "Fair means equal probability for all six outcomes.",
+          "category": "probability",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "📊 Probability check: chance of rolling a 4 on one die?",
-          "options": ["1 in 4", "1 in 6", "1 in 2", "4 in 6"],
-          "answer": 1,
-          "explanation": "There are 6 equally likely outcomes; exactly one is 4.",
-          "definition": "PROBABILITY — how likely an outcome is; for a fair die each face has probability 1/6."
+          "question": "What will this show?",
+          "type": "multiple-choice",
+          "code": "on button A pressed\n    set roll to random 1 to 6\n    show number roll",
+          "options": ["A fixed number", "A random number 1..6", "Only numbers 1..3", "Nothing"],
+          "correct": 1,
+          "explanation": "Each press shows a fresh random dice number.",
+          "category": "random",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🪙 What does 'random 0 to 1' model?",
-          "options": ["A traffic light", "A coin flip", "A spinner with 10 sections", "Temperature"],
-          "answer": 1,
-          "explanation": "0/1 corresponds neatly to two outcomes: Heads/Tails."
+          "question": "Coin flip probabilities: what is the chance of Heads?",
+          "type": "multiple-choice",
+          "options": ["1/2", "1/3", "1/6", "Depends on previous flips"],
+          "correct": 0,
+          "explanation": "Ideal coin: 1 out of 2 outcomes.",
+          "category": "probability",
+          "difficulty": "medium",
+          "hint": "Heads or Tails → two outcomes."
         },
         {
-          "type": "mcq",
-          "question": "⚡ What is an EVENT?",
-          "options": ["A sensor type", "A bug", "A trigger that starts some code", "A loop"],
-          "answer": 2,
-          "explanation": "Events trigger code (press, shake, start)."
+          "question": "Which event uses the accelerometer?",
+          "type": "multiple-choice",
+          "options": ["on loud sound", "on shake", "on logo pressed", "on start"],
+          "correct": 1,
+          "explanation": "Shake is detected by the accelerometer sensor.",
+          "category": "events",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🧮 In 60 dice rolls, roughly how many 3s would you expect?",
-          "options": ["~10", "~20", "~30", "Exactly 3"],
-          "answer": 0,
-          "explanation": "Expected count ≈ 60 × (1/6) = 10."
+          "question": "Debug this dice code: Why do two numbers flash quickly?",
+          "type": "multiple-choice",
+          "code": "on button A pressed\n    show number random 1 to 6\n    show number random 1 to 6",
+          "options": ["Because it shows two random numbers in a row", "Because random is broken", "Because button A is stuck", "Because forever loop is missing"],
+          "correct": 0,
+          "explanation": "Two different random calls → two numbers shown fast.",
+          "category": "debugging",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🔧 What’s wrong with this dice code?",
-          "code": "on button A pressed\n  show number random 1 to 6\n  show number random 1 to 6",
-          "options": ["Nothing", "It shows two different rolls very fast", "Must use B", "Needs pause 2000"],
-          "answer": 1,
-          "explanation": "It generates *two* random values; you probably only see the second."
+          "question": "Match event to trigger.",
+          "type": "drag-drop",
+          "terms": ["on start", "on button A+B", "on shake"],
+          "definitions": ["Both buttons pressed", "Program begins", "Device is moved/vibrated"],
+          "correctMatches": [1, 0, 2],
+          "explanation": "Start → begin; A+B → both down; shake → accelerometer.",
+          "category": "events",
+          "difficulty": "medium"
         },
         {
-          "type": "match",
-          "question": "🎯 Match events to triggers",
-          "terms": ["on start", "on button A pressed", "on shake", "forever"],
-          "definitions": ["Runs when powered on", "Runs on A press", "Runs on movement", "Runs continuously"],
-          "correctMatches": [0, 1, 2, 3],
-          "explanation": "Understanding triggers helps us structure interactive programs."
+          "question": "Expected results: In 60 dice rolls, how many 3s would you expect (roughly)?",
+          "type": "multiple-choice",
+          "options": ["About 10", "About 6", "About 3", "About 30"],
+          "correct": 0,
+          "explanation": "1/6 of 60 ≈ 10.",
+          "category": "probability",
+          "difficulty": "hard"
         },
         {
-          "type": "mcq",
-          "question": "📊 Define FAIR TEST in our dice experiment context:",
-          "options": [
-            "Rolling until we get the result we want",
-            "Keeping conditions the same so results are comparable",
-            "Using two dice at once",
-            "Letting each person choose their favourite number"
-          ],
-          "answer": 1,
-          "explanation": "We control variables (same device, same procedure) to compare fairly.",
-          "definition": "FAIR TEST — changing one thing at a time and keeping others the same to make a fair comparison."
+          "question": "Which best describes an EVENT?",
+          "type": "multiple-choice",
+          "options": ["A repeating loop", "A trigger like a press or shake", "A number store", "A speaker sound"],
+          "correct": 1,
+          "explanation": "Events trigger code to run.",
+          "category": "events",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Revision: Which is an OUTPUT?",
+          "type": "multiple-choice",
+          "options": ["Button B", "Temperature sensor", "LED matrix", "Accelerometer"],
+          "correct": 2,
+          "explanation": "LEDs show info → output; the others are inputs.",
+          "category": "io",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Pseudocode: What does this do?\n\non button A pressed\n  set x to random 1..10\n  if x > 7 then show \"Big\" else show \"Small\"",
+          "type": "multiple-choice",
+          "options": ["Always shows Big", "Shows Big if x is 8,9,10; otherwise Small", "Always shows Small", "Crashes the micro:bit"],
+          "correct": 1,
+          "explanation": "Conditional branches based on the random value.",
+          "category": "logic",
+          "difficulty": "hard"
         }
       ]
     },
     "3": {
-      "title": "Week 3: Conditionals & Decisions 🤔",
-      "description": "If/else, comparisons, and Rock–Paper–Scissors!",
+      "title": "Week 3: Conditionals & Decisions",
+      "description": "If/else, comparisons, Rock–Paper–Scissors; revision of events & random.",
       "questions": [
         {
-          "type": "mcq",
-          "question": "🔢 Which symbol means 'greater than'?",
-          "options": ["<", "=", ">", "≠"],
-          "answer": 2,
-          "explanation": "5 > 3 reads ‘5 is greater than 3’.",
-          "definition": "COMPARISON OPERATORS — >, <, =, ≠ used to compare values in conditions."
+          "question": "Which comparison checks 'equal to'?",
+          "type": "multiple-choice",
+          "options": ["<", ">", "=", "≠"],
+          "correct": 2,
+          "explanation": "= means the two values are the same.",
+          "category": "comparisons",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "🎯 What does ELSE do in if–else?",
-          "options": ["Runs when IF is true", "Always runs", "Runs when IF is false", "Never runs"],
-          "answer": 2,
-          "explanation": "Else is the ‘otherwise’ branch."
+          "question": "What does ELSE mean in an if/else?",
+          "type": "multiple-choice",
+          "options": ["Runs when the IF is true", "Runs when the IF is false", "Runs always", "Stops the program"],
+          "correct": 1,
+          "explanation": "ELSE is the 'otherwise' branch when IF is false.",
+          "category": "logic",
+          "difficulty": "easy",
+          "hint": "Think: If not A, then do B."
         },
         {
-          "type": "mcq",
-          "question": "🪨📄✂️ In RPS, what beats Rock?",
+          "question": "Rock–Paper–Scissors: What beats Rock?",
+          "type": "multiple-choice",
           "options": ["Scissors", "Paper", "Rock", "Nothing"],
-          "answer": 1,
-          "explanation": "Paper covers rock."
+          "correct": 1,
+          "explanation": "Paper covers Rock.",
+          "category": "game_logic",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "🎲 Conditional example: what happens?",
-          "code": "set n to random 1 to 10\nif n > 5 then\n  show string \"Big\"\nelse\n  show string \"Small\"",
-          "options": ["Always Big", "Always Small", "Big or Small depending on n", "Nothing"],
-          "answer": 2,
-          "explanation": "6–10 → Big; 1–5 → Small."
+          "question": "Debug: Goal is 'Go outside if sunny OR warm'. What's wrong?",
+          "type": "multiple-choice",
+          "code": "set isSunny to true\nset isWarm to false\nif isSunny and isWarm then\n    show string \"Go outside!\"\nelse\n    show string \"Stay in\"",
+          "options": ["Change AND to OR", "Swap then/else", "Set both to true", "Add a second if"],
+          "correct": 0,
+          "explanation": "Use OR if either condition should allow going outside.",
+          "category": "debugging",
+          "difficulty": "medium",
+          "hint": "Either/or vs both."
         },
         {
-          "type": "mcq",
-          "question": "🔗 What does AND mean between two conditions?",
-          "options": ["Either can be true", "Both must be true", "Only first matters", "Only second matters"],
-          "answer": 1,
-          "explanation": "Both sides must be true for the whole condition to be true.",
-          "definition": "LOGIC — rules the computer follows to choose actions; connectors include AND, OR, NOT."
+          "question": "What will this show?",
+          "type": "multiple-choice",
+          "code": "set n to random 1 to 10\nif n > 5 then show \"Big\" else show \"Small\"",
+          "options": ["Always Big", "Always Small", "Big for 6–10, Small for 1–5", "Nothing"],
+          "correct": 2,
+          "explanation": "Condition splits the range.",
+          "category": "logic",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "📊 If measured temperature is 20 degrees Celsius, which is TRUE?",
-          "options": ["temperature > 25", "temperature < 15", "temperature = 20", "temperature ≠ 20"],
-          "answer": 2,
-          "explanation": "It exactly equals 20."
+          "question": "Which operator means 'not equal'?",
+          "type": "multiple-choice",
+          "options": ["=", "≠", "<", ">"],
+          "correct": 1,
+          "explanation": "≠ means the two values differ.",
+          "category": "comparisons",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🧪 What will this show?",
-          "code": "set temp to temperature\nif temp < 10 then show \"Freezing\"\nelse if temp < 20 then show \"Cold\"\nelse show \"Warm\"",
-          "options": ["Always Freezing", "Depends on temperature", "Always Warm", "Nothing"],
-          "answer": 1,
-          "explanation": "Ranges split into <10, 10–19, and ≥20."
+          "question": "Match outcomes (RPS).",
+          "type": "drag-drop",
+          "terms": ["Rock vs Scissors", "Paper vs Rock", "Scissors vs Paper"],
+          "definitions": ["Rock wins", "Paper wins", "Scissors wins"],
+          "correctMatches": [0, 1, 2],
+          "explanation": "Standard RPS rules.",
+          "category": "game_logic",
+          "difficulty": "medium"
         },
         {
-          "type": "match",
-          "question": "🎯 Match operators to meanings",
-          "terms": [">", "<", "=", "≠"],
-          "definitions": ["Greater than", "Less than", "Equal to", "Not equal to"],
-          "correctMatches": [0, 1, 2, 3],
-          "explanation": "Operator fluency supports clear condition design."
+          "question": "Revision: Which block waits for a user action before running?",
+          "type": "multiple-choice",
+          "options": ["on start", "forever", "on button A pressed", "show icon"],
+          "correct": 2,
+          "explanation": "Event handlers wait for the event.",
+          "category": "events",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🪨📄✂️ If computer=Rock and player=Paper, what should the code show?",
-          "options": ["You Win!", "You Lose!", "Tie!", "Nothing"],
-          "answer": 0,
-          "explanation": "Paper beats Rock — the player wins."
+          "question": "Pseudocode: Predict the output.\n\nset score to 0\non button A pressed\n  set x to random 0..1\n  if x = 1 then change score by 1 else change score by -1\n\nWhat happens to score over many presses?",
+          "type": "multiple-choice",
+          "options": ["Always increases", "Always decreases", "Goes up or down by chance", "Stays at 0 always"],
+          "correct": 2,
+          "explanation": "Random 0/1 gives a fair chance to go up or down.",
+          "category": "probability",
+          "difficulty": "hard"
         },
         {
-          "type": "mcq",
-          "question": "🔧 Debug: what's wrong here?",
-          "code": "set score to 85\nif score >= 90 then show \"A\"\nelse if score >= 90 then show \"B\"\nelse show \"C\"",
-          "options": ["Nothing", "Second check should be >= 80", "Use AND", "Missing pause"],
-          "answer": 1,
-          "explanation": "The second condition repeats ≥90; it should be ≥80."
+          "question": "Which statement is TRUE?",
+          "type": "multiple-choice",
+          "options": ["If and else always both run", "Else runs only if the if-condition is false", "Else runs only in forever", "Else runs before if"],
+          "correct": 1,
+          "explanation": "Else is the alternative when if is false.",
+          "category": "logic",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Nested decisions: What will show when temp=15?",
+          "type": "multiple-choice",
+          "code": "if temp < 10 then show \"Freezing\"\nelse if temp < 20 then show \"Cold\"\nelse show \"Warm\"",
+          "options": ["Freezing", "Cold", "Warm", "Nothing"],
+          "correct": 1,
+          "explanation": "15 is less than 20 but not less than 10.",
+          "category": "logic",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Revision logic + events: What must be true for this to show \"Win\"?\n\non button A pressed\n  set c to random 1..3\n  if c = 2 then show \"Win\" else show \"Try again\"",
+          "type": "multiple-choice",
+          "options": ["Always true", "c must be 2", "c must be 1 or 3", "Only if button B is pressed"],
+          "correct": 1,
+          "explanation": "Win branch triggers only if c equals 2.",
+          "category": "logic",
+          "difficulty": "hard"
         }
       ]
     },
     "4": {
-      "title": "Week 4: Variables & Thresholds 📊",
-      "description": "Storing data, thresholds, and sensor-powered decisions.",
+      "title": "Week 4: Variables & Thresholds (Sensors)",
+      "description": "Using variables to store sensor readings, comparing to thresholds; revision of conditionals.",
       "questions": [
         {
-          "type": "mcq",
-          "question": "📦 What is a VARIABLE?",
-          "options": ["A loop", "A box that stores a value", "A button", "A sensor"],
-          "answer": 1,
-          "explanation": "Variables store values we can read and change.",
-          "definition": "VARIABLE — a named ‘box’ in memory that can change (e.g., score, temp)."
+          "question": "What is a VARIABLE?",
+          "type": "multiple-choice",
+          "options": ["A loop", "A box that stores a value", "A sensor", "A speaker"],
+          "correct": 1,
+          "explanation": "Variables store changing values like numbers or text.",
+          "category": "variables",
+          "difficulty": "easy",
+          "hint": "Imagine a labeled box."
         },
         {
-          "type": "mcq",
-          "question": "🌡️ What is a THRESHOLD?",
-          "options": ["A sensor", "A mistake", "A boundary/limit value", "A loop"],
-          "answer": 2,
-          "explanation": "We compare readings against thresholds to decide what to do.",
-          "definition": "THRESHOLD — a limit; crossing it triggers a different action (e.g., light < 50 → ‘Too Dark!’)."
+          "question": "What is a THRESHOLD?",
+          "type": "multiple-choice",
+          "options": ["A random number", "A boundary value to compare against", "A sensor error", "An event type"],
+          "correct": 1,
+          "explanation": "A limit that triggers actions when crossed.",
+          "category": "thresholds",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "➕ ‘change score by 5’ means…",
-          "options": ["Set score = 5", "Subtract 5", "Add 5 to score", "Multiply by 5"],
-          "answer": 2,
-          "explanation": "‘Change by’ adds or subtracts relative to the current value."
+          "question": "Which stores the current temperature?",
+          "type": "multiple-choice",
+          "options": ["set temp to temperature", "set temp to LED", "set temp to random 1..6", "set temp to button A"],
+          "correct": 0,
+          "explanation": "The temperature block reads the on-board sensor.",
+          "category": "sensors",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "🌱 Choose the correct condition for ‘Too Dark!’",
-          "code": "set lightLevel to light level\nif lightLevel ??? 50 then show \"Too Dark!\"",
-          "options": ["> 50", "< 50", "= 50", "≠ 50"],
-          "answer": 1,
-          "explanation": "Below the threshold means it’s too dark."
+          "question": "What will this show if lightLevel = 30?",
+          "type": "multiple-choice",
+          "code": "set lightLevel to light level\nif lightLevel < 50 then show \"Too Dark\" else show \"OK\"",
+          "options": ["Too Dark", "OK", "Random", "Nothing"],
+          "correct": 0,
+          "explanation": "30 < 50, so the 'Too Dark' branch runs.",
+          "category": "thresholds",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🌡️ Temperature alarm logic",
-          "code": "set temp to 35\nset threshold to 30\nif temp > threshold then show \"Too Hot!\" else show \"OK\"",
-          "options": ["Too Hot!", "OK", "35", "30"],
-          "answer": 0,
-          "explanation": "35 > 30 is true → ‘Too Hot!’."
+          "question": "Which line changes a variable by 1?",
+          "type": "multiple-choice",
+          "options": ["set score to 1", "change score by 1", "set score to score", "set score to 0"],
+          "correct": 1,
+          "explanation": "‘change by’ adds or subtracts from the current value.",
+          "category": "variables",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🧮 What’s wrong with this times table line?",
-          "code": "set answer to number + multiplier   # expecting multiplication",
-          "options": ["Should be * instead of +", "Should be -", "Should be =", "Nothing"],
-          "answer": 0,
-          "explanation": "Use `*` for multiplication."
+          "question": "Store and compare: Which is correct?",
+          "type": "multiple-choice",
+          "options": [
+            "if temperature then show \"Hot\"",
+            "set t to temperature; if t > 25 then show \"Hot\"",
+            "if t > 25 then set t to temperature",
+            "set t to button A; if t > 25 then show \"Hot\""
+          ],
+          "correct": 1,
+          "explanation": "Store the reading in a variable, then compare.",
+          "category": "sensors",
+          "difficulty": "medium",
+          "hint": "Read → store → compare."
         },
         {
-          "type": "match",
-          "question": "🎯 Match variable operations",
-          "terms": ["set score to 10", "change score by 5", "set score to score + 1", "set score to 0"],
-          "definitions": ["Make score 10", "Add 5 to score", "Increase by 1", "Reset to zero"],
-          "correctMatches": [0, 1, 2, 3],
-          "explanation": "Distinguishing ‘set’ vs ‘change by’ is key to state updates."
+          "question": "Match concept to example.",
+          "type": "drag-drop",
+          "terms": ["Variable", "Threshold", "Sensor"],
+          "definitions": ["light level < 50", "stores value 'temp'", "measures temperature"],
+          "correctMatches": [1, 0, 2],
+          "explanation": "Variable stores; threshold is a boundary; sensor measures.",
+          "category": "foundations",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🌡️🌱 Plant monitor: temp=15, light=60",
-          "code": "if temp < 18 show \"Too Cold!\"\nelse if light < 50 show \"Too Dark!\"\nelse show \"Perfect!\"",
-          "options": ["Too Cold!", "Too Dark!", "Perfect!", "Nothing"],
-          "answer": 0,
-          "explanation": "The first condition is true, so later checks are skipped."
+          "question": "Pseudocode: What does this do?\n\nset minLight to 40\nset temp to temperature\nset light to light level\nif temp < 16 or light < minLight then show \"Help\" else show \"Fine\"",
+          "type": "multiple-choice",
+          "options": [
+            "Shows Help only if both are low",
+            "Shows Help if either temperature is low or light is low",
+            "Always shows Help",
+            "Always shows Fine"
+          ],
+          "correct": 1,
+          "explanation": "OR means either condition triggers the alert.",
+          "category": "logic",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🧠 Why use variables with sensors?",
-          "options": ["To make the code shorter only", "To store readings for comparison, display, or averaging", "Because loops need them", "You can’t read sensors without variables"],
-          "answer": 1,
-          "explanation": "Variables let us reuse readings across logic, outputs and calculations."
+          "question": "Debug: Why might this never show \"OK\"?",
+          "type": "multiple-choice",
+          "code": "set t to temperature\nif t > 100 then show \"Too Hot\" else show \"OK\"",
+          "options": ["Because temp never reads", "Because > 100 is rarely true indoors", "Because 'show' is broken", "Because t is not a variable"],
+          "correct": 1,
+          "explanation": "Typical indoor temps rarely exceed 100°C.",
+          "category": "debugging",
+          "difficulty": "hard"
         },
         {
-          "type": "mcq",
-          "question": "🔧 Debug thermostat logic:",
-          "code": "if temp > target + 2 show \"Cooling\"\nelse if temp > target - 2 show \"Heating\"\nelse show \"Perfect\"",
-          "options": ["Nothing wrong", "It heats when temp is low and cools when high (logic is backwards)", "Use OR", "Needs a forever loop"],
-          "answer": 1,
-          "explanation": "The second branch should detect ‘too cold’, not temp > target - 2."
+          "question": "Combined logic: What shows if temp=18 and light=60?",
+          "type": "multiple-choice",
+          "code": "if temp < 16 then show \"Cold\"\nelse if light < 50 then show \"Dark\"\nelse show \"OK\"",
+          "options": ["Cold", "Dark", "OK", "Nothing"],
+          "correct": 2,
+          "explanation": "Neither condition is true, so 'OK'.",
+          "category": "logic",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Variables: What happens?\n\nset x to 5\nchange x by -2\nset x to x * 3\nshow number x",
+          "type": "multiple-choice",
+          "options": ["Shows 3", "Shows 9", "Shows 7", "Shows 15"],
+          "correct": 1,
+          "explanation": "5→3; 3×3=9.",
+          "category": "variables",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Revision (Week 3): Which condition is TRUE?",
+          "type": "multiple-choice",
+          "options": ["10 < 5", "7 = 9", "12 > 8", "3 ≠ 3"],
+          "correct": 2,
+          "explanation": "12 is greater than 8.",
+          "category": "comparisons",
+          "difficulty": "hard"
         }
       ]
     },
     "5": {
-      "title": "Week 5: Loops & Our First Game 🔄🎮",
-      "description": "Repeat/for/while/forever, timing (millis), sprites & collisions.",
+      "title": "Week 5: Loops & First Game",
+      "description": "repeat/for/while/forever, timing (pause/millis), sprites & collisions; revision of variables and logic.",
       "questions": [
         {
-          "type": "mcq",
-          "question": "🔁 What is a LOOP?",
-          "options": ["A bug", "Code that repeats", "A sensor", "A radio message"],
-          "answer": 1,
-          "explanation": "Loops repeat blocks of code; great for animations and monitoring.",
-          "definition": "LOOP — repeat code; types include forever, repeat N times, for-index, while (condition)."
+          "question": "What does a FOREVER loop do?",
+          "type": "multiple-choice",
+          "options": ["Runs code once", "Repeats code continuously", "Waits for a button", "Stops the program"],
+          "correct": 1,
+          "explanation": "Code inside forever keeps running.",
+          "category": "loops",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "🔄 What does a FOREVER loop do?",
-          "options": ["Runs once", "Runs a set number of times", "Never stops repeating", "Only runs on button press"],
-          "answer": 2,
-          "explanation": "It’s the main ‘game loop’ that keeps updating the game."
+          "question": "What does 'repeat 3 times' mean?",
+          "type": "multiple-choice",
+          "options": ["Run forever", "Run exactly 3 times", "Run until a button press", "Run randomly"],
+          "correct": 1,
+          "explanation": "A counted loop with a fixed number of iterations.",
+          "category": "loops",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "⏱️ What does 'pause 500' inside a loop do?",
-          "options": ["Waits 500 seconds", "Waits half a second per iteration", "Stops the loop", "Speeds it up"],
-          "answer": 1,
-          "explanation": "500 ms = 0.5 seconds; useful for animation pacing.",
-          "definition": "MILLIS — the device clock in milliseconds; helpful for timing behaviours."
+          "question": "What does 'pause 500' do inside a loop?",
+          "type": "multiple-choice",
+          "options": ["Waits half a second", "Waits 5 seconds", "Stops forever", "Does nothing"],
+          "correct": 0,
+          "explanation": "500 ms = 0.5 seconds.",
+          "category": "timing",
+          "difficulty": "easy"
         },
         {
-          "type": "mcq",
-          "question": "🧮 What does this nested loop do in total?",
-          "code": "repeat 3 times\n  repeat 2 times\n    show string \"Beep\"",
-          "options": ["2 times", "3 times", "5 times", "6 times"],
-          "answer": 3,
-          "explanation": "Inner loop runs 2× per outer loop → 3×2 = 6."
+          "question": "Counting: What will display?",
+          "type": "multiple-choice",
+          "code": "set n to 1\nrepeat 4 times\n  show number n\n  change n by 1",
+          "options": ["1,2,3,4", "0,1,2,3", "4,3,2,1", "Only 1"],
+          "correct": 0,
+          "explanation": "Starts at 1 and increments each loop.",
+          "category": "loops",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🎞️ Sprite move loop:",
-          "code": "set sprite to sprite at x 0 y 2\nrepeat 4 times\n  change sprite x by 1\n  pause 300",
-          "options": ["Moves left 4", "Moves up 4", "Does not move", "Moves right 4"],
-          "answer": 3,
-          "explanation": "Starting x=0; +1 repeated four times moves to the right."
+          "question": "Which is best for a game loop that updates movement?",
+          "type": "multiple-choice",
+          "options": ["on start", "forever", "on button A pressed", "drag-drop"],
+          "correct": 1,
+          "explanation": "Games commonly use a forever/game loop.",
+          "category": "game",
+          "difficulty": "medium",
+          "hint": "Continuously update → forever."
         },
         {
-          "type": "mcq",
-          "question": "🎯 Game loop concept:",
-          "options": ["Draw once and finish", "Continuously update movement, check collisions, redraw", "Only check input", "Only update score"],
-          "answer": 1,
-          "explanation": "A game loop repeatedly updates state and renders output.",
-          "definition": "GAME LOOP — loop that updates movement, checks collisions, handles input, and draws frames."
+          "question": "Sprite movement: What happens?",
+          "type": "multiple-choice",
+          "code": "set p to sprite at x 0 y 2\nrepeat 4 times\n  change p x by 1\n  pause 200",
+          "options": ["Moves left 4", "Moves right 4", "Moves up 4", "Doesn't move"],
+          "correct": 1,
+          "explanation": "x increases → moves right.",
+          "category": "sprites",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🧩 Which loop best fits ‘repeat exactly 10 times’?",
-          "options": ["forever", "repeat 10 times", "while condition", "for index from 1 to 100"],
-          "answer": 1,
-          "explanation": "Use a fixed-repeat loop for a known count."
+          "question": "Timing: Why use millis or pauses?",
+          "type": "multiple-choice",
+          "options": ["To control speed of loops/animation", "To increase brightness", "To reduce battery size", "To fix syntax errors"],
+          "correct": 0,
+          "explanation": "Timing controls pacing and responsiveness.",
+          "category": "timing",
+          "difficulty": "medium"
         },
         {
-          "type": "mcq",
-          "question": "🔁 Which loop fits ‘until a condition is false’?",
-          "options": ["repeat N times", "while (condition)", "forever", "on start"],
-          "answer": 1,
-          "explanation": "`while` continues while the condition stays true."
+          "question": "Match loop to use-case.",
+          "type": "drag-drop",
+          "terms": ["forever", "repeat N times", "while condition"],
+          "definitions": ["Run until something changes", "Run exactly a fixed count", "Run continuously"],
+          "correctMatches": [2, 1, 0],
+          "explanation": "forever → continuous; repeat → fixed count; while → until condition changes.",
+          "category": "loops",
+          "difficulty": "medium"
         },
         {
-          "type": "match",
-          "question": "🎯 Match loop types to descriptions",
-          "terms": ["forever", "repeat 10 times", "while temperature > 25", "for index 1 to 5"],
-          "definitions": ["Runs continuously", "Runs exactly 10 times", "Runs while a condition is true", "Counts across a range"],
-          "correctMatches": [0, 1, 2, 3],
-          "explanation": "Choosing the right loop simplifies code."
+          "question": "What’s TRUE about this while loop?",
+          "type": "multiple-choice",
+          "code": "set n to 10\nwhile n > 5\n  show number n\n  change n by -2",
+          "options": ["Runs forever", "Runs 3 times (10→8→6)", "Runs 2 times", "Never runs"],
+          "correct": 1,
+          "explanation": "When n becomes 4, condition is false, loop stops.",
+          "category": "loops",
+          "difficulty": "hard"
         },
         {
-          "type": "mcq",
-          "question": "🧱 What is a SPRITE in MakeCode’s game blocks?",
+          "question": "Combined logic + loops: What shows at end?",
+          "type": "multiple-choice",
+          "code": "set score to 0\nrepeat 5 times\n  set x to random 0..1\n  if x = 1 then change score by 1\nshow number score",
+          "options": ["Always 5", "Between 0 and 5", "Always 0", "Crashes"],
+          "correct": 1,
+          "explanation": "Five Bernoulli trials; result is 0..5 successes.",
+          "category": "probability",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Game logic: Which statement is TRUE for collisions?",
+          "type": "multiple-choice",
           "options": [
-            "A physical robot",
-            "A 2D object you can move and collide",
-            "A sound effect",
-            "A type of variable"
+            "You must check if two sprites touch to count a hit",
+            "Collisions happen only with sound",
+            "Collisions don't need code",
+            "Sprites can’t move on a 5×5 grid"
           ],
-          "answer": 1,
-          "explanation": "Sprites represent game characters/objects you can position and animate.",
-          "definition": "SPRITE — a 2D object that can move, collide, and be drawn on the display."
+          "correct": 0,
+          "explanation": "Collision detection is a code check between sprites’ positions.",
+          "category": "sprites",
+          "difficulty": "hard"
+        },
+        {
+          "question": "Revision (Week 4 + Week 3): What shows if speed=3?",
+          "type": "multiple-choice",
+          "code": "if speed > 5 then show \"Fast\"\nelse if speed >= 3 then show \"Okay\"\nelse show \"Slow\"",
+          "options": ["Fast", "Okay", "Slow", "Nothing"],
+          "correct": 1,
+          "explanation": "3 meets the ≥ 3 condition.",
+          "category": "logic",
+          "difficulty": "hard"
         }
       ]
     }
