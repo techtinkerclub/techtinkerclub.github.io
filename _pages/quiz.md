@@ -15,6 +15,9 @@ header:
 <!-- Styles -->
 <link rel="stylesheet" href="/assets/quiz/quiz.css?v=1">
 
+<!-- Pixel/game fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
 <!-- Quiz Engine -->
 <script id="ttc-quiz-script"
         src="/assets/quiz/quiz.js?v=1"
