@@ -12,9 +12,8 @@ header:
 <div id="tqc-root"></div>
 
 <!-- Load CSS -->
-<link rel="stylesheet" href="{{ '/assets/quiz/quiz.css' | relative_url }}">
+<script id="ttc-quiz-script"
+        src="/assets/quiz/quiz.js"
+        data-questions="/assets/quiz/questions.json"
+        defer></script>
 
-<!-- Load JS and point it to the questions.json (resolves baseurl correctly) -->
-<script src="{{ '/assets/quiz/quiz.js' | relative_url }}" data-questions="{{ '/assets/quiz/questions.json' | relative_url }}"></script>
-
-<p style="margin-top:1rem"><em>Tip:</em> You can link directly to a week, e.g. <code>/quiz/?week=3</code>.</p>
