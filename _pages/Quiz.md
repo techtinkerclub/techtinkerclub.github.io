@@ -9,7 +9,7 @@ header:
   show_overlay_text: false
 ---
 
-<div id="ttc-quiz-root"></div>
+<div id="tqc-root"></div>
 
 <!-- Load CSS -->
 <link rel="stylesheet" href="{{ '/assets/quiz/quiz.css' | relative_url }}">
