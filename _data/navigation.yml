@@ -12,6 +12,8 @@ main:
     url: /projects/
   - title: "Tools & Tutorials"
     url: /tools/
+  - title: "Quizzes"
+    url: /quiz/
 
 curriculum:
   - title: "Curriculum 2025–26"
@@ -22,5 +24,7 @@ curriculum:
     url: /curriculum/2025-26/spring/
   - title: "Summer (Integration)"
     url: /curriculum/2025-26/summer/
+
+
 
 
