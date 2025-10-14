@@ -1,10 +1,11 @@
-/* Tech Tinker Club Quiz Engine */
-
+/* Tech Tinker Club Quiz Engine — compatible with Canva-style JSON
+   File: /assets/quiz/quiz.js
+*/
 (function(){
   const qs = (sel, el=document)=>el.querySelector(sel);
   const qsa = (sel, el=document)=>Array.from(el.querySelectorAll(sel));
 
-  // Resolve base URL (honours site.baseurl at build time through the page that loads this)
+  // Reads the JSON URL from data-questions attribute
   const dataURL = document.currentScript.getAttribute('data-questions') || '/assets/quiz/questions.json';
 
   const state = {
@@ -21,7 +22,58 @@
     const res = await fetch(dataURL, {cache:'no-store'});
     if(!res.ok) throw new Error('Cannot load questions.json');
     const json = await res.json();
-    state.weeks = json.weeks || {};
+    // Accept either top-level { weeks: {...} } or a direct weeks object
+    const maybeWeeks = json.weeks || json;
+    state.weeks = normalizeWeeks(maybeWeeks);
+  }
+
+  /** NORMALISER
+   * Accepts both:
+   *  - type: "multiple-choice" or "mcq"
+   *  - correct (index) or answer (index)
+   *  - type: "drag-drop" or "match"
+   */
+  function normalizeWeeks(weeksObj){
+    const out = {};
+    Object.keys(weeksObj).forEach(weekKey=>{
+      const w = weeksObj[weekKey];
+      const questions = (w.questions || []).map(q => normalizeQuestion(q));
+      out[weekKey] = {
+        title: w.title || `Week ${weekKey}`,
+        description: w.description || '',
+        questions
+      };
+    });
+    return out;
+  }
+
+  function normalizeQuestion(q){
+    const qq = {...q};
+
+    // Normalise type
+    const t = (qq.type || '').toLowerCase().trim();
+    if (t === 'multiple-choice' || t === 'mcq') qq.type = 'mcq';
+    else if (t === 'drag-drop' || t === 'match') qq.type = 'match';
+
+    // Normalise answer index
+    if (typeof qq.answer === 'undefined' && typeof qq.correct !== 'undefined'){
+      qq.answer = qq.correct;
+    }
+
+    // Ensure fields exist
+    if (qq.type === 'mcq'){
+      qq.options = qq.options || [];
+      if (typeof qq.answer !== 'number'){ qq.answer = 0; } // fallback
+    } else if (qq.type === 'match'){
+      qq.terms = qq.terms || [];
+      qq.definitions = qq.definitions || [];
+      qq.correctMatches = qq.correctMatches || []; // defIndex -> termIndex
+    }
+
+    // Hint is optional — engine will show the button only if present
+    if (!qq.hint) qq.hint = ''; 
+
+    return qq;
   }
 
   function getParam(name){
@@ -41,16 +93,14 @@
 
     const card = el('div','tqc-card ttc-quiz');
 
-    // Header
     const header = el('div','tqc-header');
     header.appendChild(el('h1','tqc-title','🎮 Tech Tinker Club — Quizzes'));
     header.appendChild(el('p','tqc-sub','Weekly learning adventures — choose a week!'));
     card.appendChild(header);
 
-    // Week buttons
     const weeksBar = el('div','tqc-weeks');
     const weekKeys = Object.keys(state.weeks).sort((a,b)=>Number(a)-Number(b));
-    weekKeys.forEach((wk,i)=>{
+    weekKeys.forEach((wk)=>{
       const b = el('button','tqc-btn',`Week ${wk}`);
       if (String(state.currentWeek)===wk) b.setAttribute('aria-current','true');
       b.addEventListener('click',()=>selectWeek(wk, container));
@@ -58,13 +108,11 @@
     });
     card.appendChild(weeksBar);
 
-    // Info
     const w = state.weeks[state.currentWeek];
     const info = el('div','tqc-info');
     info.innerHTML = `<div><strong>${w.title}</strong></div><div>${w.description||''}</div>`;
     card.appendChild(info);
 
-    // Score row
     const score = el('div','tqc-score');
     score.innerHTML = `
       <div class="item"><div class="num" id="qcur">${state.idx+1}</div><div>Question</div></div>
@@ -73,7 +121,6 @@
       <div class="item"><div class="num" id="qprog">0%</div><div>Progress</div></div>`;
     card.appendChild(score);
 
-    // Progress bar
     const prog = el('div','tqc-progress');
     const bar = el('div','tqc-progress-bar');
     const fill = el('span','tqc-progress-fill'); fill.id = 'tqc-fill';
@@ -81,7 +128,6 @@
     prog.appendChild(bar);
     card.appendChild(prog);
 
-    // Question container
     const qwrap = el('div'); qwrap.id='tqc-qwrap';
     card.appendChild(qwrap);
 
@@ -120,8 +166,7 @@
     card.appendChild(hintPanel);
 
     if(q.type==='match'){
-      // Drag & drop
-      // Shuffle terms
+      // Drag & drop (terms -> definitions)
       const order = [...q.terms.keys()];
       for(let i=order.length-1;i>0;i--){
         const j=Math.floor(Math.random()*(i+1));
@@ -175,176 +220,204 @@
     // Actions
     const actions = el('div','tqc-actions');
 
-    const hintBtn = el('button','tqc-hint','💡 Hint');
-    hintBtn.addEventListener('click', ()=>{
-      if(state.hintUsed) return;
-      state.hintUsed = true;
-      hintBtn.disabled = true;
-      if(q.hint){
+    // Only show hint button when we actually have a hint text
+    if (q.hint && q.hint.trim().length){
+      const hintBtn = el('button','tqc-hint','💡 Hint');
+      hintBtn.addEventListener('click', ()=>{
+        if(state.hintUsed) return;
+        state.hintUsed = true;
+        hintBtn.disabled = true;
         const hp = el('div','tqc-hint-panel', `<strong>Hint:</strong> ${q.hint}`);
         qs('#tqc-hint').appendChild(hp);
-      }
-    });
-    actions.appendChild(hintBtn);
+      });
+      actions.appendChild(hintBtn);
+    }
 
-    const submit = el('button','tqc-cta','Submit');
-    submit.addEventListener('click', ()=>checkAnswer(card));
-    actions.appendChild(submit);
+    const submitBtn = el('button','tqc-submit','Submit Answer');
+    submitBtn.addEventListener('click', submitAnswer);
+    actions.appendChild(submitBtn);
 
     card.appendChild(actions);
 
-    // Feedback area
-    card.appendChild(el('div','tqc-feedback')); // empty for now
+    const fb = el('div','tqc-feedback'); fb.id = 'tqc-fb';
+    card.appendChild(fb);
 
-    qs('#tqc-qwrap').appendChild(card);
+    box.appendChild(card);
+
+    // reset per-question state
+    state.selected = null;
+    state.hintUsed = false;
   }
 
+  function submitAnswer(){
+    const w = state.weeks[state.currentWeek];
+    const q = w.questions[state.idx];
+    let isCorrect = false;
+
+    if(q.type==='match'){
+      // Check drag & drop: defIndex -> termIndex
+      // Build from DOM
+      const zones = qsa('.tqc-drop');
+      state.dragAnswers = {};
+      zones.forEach(z=>{
+        const defIndex = Number(z.dataset.defIndex);
+        const term = z.querySelector('.tqc-term');
+        if(term){
+          state.dragAnswers[defIndex] = Number(term.dataset.termIndex);
+        }
+      });
+
+      // All zones must be filled
+      isCorrect = zones.every((z, i)=>{
+        const user = state.dragAnswers[i];
+        return typeof user === 'number' && user === q.correctMatches[i];
+      });
+
+      // Visual feedback
+      zones.forEach((z,i)=>{
+        z.classList.remove('correct','incorrect');
+        const user = state.dragAnswers[i];
+        if(typeof user === 'number'){
+          z.classList.add(user === q.correctMatches[i] ? 'correct' : 'incorrect');
+        }
+      });
+
+    } else {
+      // MCQ
+      if (state.selected === null) return; // nothing picked
+      isCorrect = state.selected === q.answer;
+
+      const opts = qsa('.tqc-option');
+      opts.forEach((o,i)=>{
+        o.classList.remove('correct','incorrect');
+        if (i === q.answer) o.classList.add('correct');
+        else if (i === state.selected && !isCorrect) o.classList.add('incorrect');
+      });
+    }
+
+    if(isCorrect) state.score++;
+
+    // Feedback text
+    const fb = qs('#tqc-fb');
+    const exp = q.explanation ? `<div class="tqc-exp"><strong>Why:</strong> ${q.explanation}</div>` : '';
+    const defn = q.definition ? `<div class="tqc-def"><strong>Definition:</strong> ${q.definition}</div>` : '';
+    fb.innerHTML = `
+      <div class="tqc-feedback-inner ${isCorrect?'ok':'nope'}">
+        ${isCorrect ? '🎉 Correct!' : '❌ Not quite.'}
+        ${exp}${defn}
+        <div class="tqc-next-row">
+          ${state.idx < w.questions.length-1
+            ? '<button class="tqc-next">Next Question →</button>'
+            : '<button class="tqc-next">See Final Score →</button>'}
+        </div>
+      </div>
+    `;
+    const nextBtn = qs('.tqc-next', fb);
+    nextBtn.addEventListener('click', ()=>{
+      if (state.idx < w.questions.length-1){
+        state.idx++;
+        renderQuestion();
+      } else {
+        renderFinal();
+      }
+    });
+  }
+
+  function renderFinal(){
+    const w = state.weeks[state.currentWeek];
+    const pct = Math.round((state.score / w.questions.length) * 100);
+    let msg = '';
+    if (pct >= 95) msg = "🏆 Phenomenal!";
+    else if (pct >= 90) msg = "🌟 Outstanding!";
+    else if (pct >= 80) msg = "👏 Excellent!";
+    else if (pct >= 70) msg = "👍 Great job!";
+    else if (pct >= 60) msg = "😊 Good work!";
+    else if (pct >= 50) msg = "🌱 Nice effort!";
+    else msg = "🌟 Keep going!";
+
+    const box = qs('#tqc-qwrap'); box.innerHTML='';
+    const card = el('div','tqc-final');
+    card.innerHTML = `
+      <h2>🎉 ${w.title} Complete!</h2>
+      <div class="tqc-big">${pct}%</div>
+      <p><strong>You got ${state.score} out of ${w.questions.length} correct.</strong></p>
+      <p><strong>${msg}</strong></p>
+      <div class="tqc-final-actions">
+        <button class="tqc-restart">Try This Week Again</button>
+        ${Number(state.currentWeek) < Math.max(...Object.keys(state.weeks).map(n=>Number(n)))
+          ? '<button class="tqc-next-week">Next Week →</button>'
+          : ''}
+      </div>
+    `;
+    box.appendChild(card);
+
+    qs('.tqc-restart', card).addEventListener('click', ()=>{
+      state.idx=0; state.score=0; renderQuestion();
+    });
+    const nx = qs('.tqc-next-week', card);
+    if (nx){
+      nx.addEventListener('click', ()=>{
+        const next = String(Number(state.currentWeek)+1);
+        if(state.weeks[next]) selectWeek(next, qs('#tqc-root'));
+      });
+    }
+  }
+
+  function selectWeek(weekKey, container){
+    state.currentWeek = String(weekKey);
+    state.idx = 0;
+    state.score = 0;
+    state.selected = null;
+    state.dragAnswers = {};
+    state.hintUsed = false;
+    render(container);
+  }
+
+  // Drag & Drop helpers
   function dragStart(e){
     e.dataTransfer.setData('text/plain', e.target.dataset.termIndex);
     e.target.classList.add('dragging');
   }
-  function dragEnd(e){ e.target.classList.remove('dragging'); }
+  function dragEnd(e){
+    e.target.classList.remove('dragging');
+  }
   function dropHandler(e){
     e.preventDefault();
-    const q = state.weeks[state.currentWeek].questions[state.idx];
-    if(e.type==='dragover' || e.type==='dragenter'){
-      e.currentTarget.classList.add('drag-over');
-      return;
-    }
-    if(e.type==='dragleave'){
-      e.currentTarget.classList.remove('drag-over');
-      return;
-    }
-    e.currentTarget.classList.remove('drag-over');
+    const z = e.currentTarget;
+    if (e.type==='dragenter') { z.classList.add('drag-over'); return; }
+    if (e.type==='dragleave'){ z.classList.remove('drag-over'); return; }
+    if (e.type==='dragover'){ return; }
 
-    const termIdx = e.dataTransfer.getData('text/plain');
-    const defIdx = e.currentTarget.dataset.defIndex;
+    // drop
+    z.classList.remove('drag-over');
 
-    // Move dragged term inside this drop zone (remove previous if any)
-    const zone = e.currentTarget;
-    const existing = zone.querySelector('.tqc-term');
-    if(existing){
-      existing.parentElement.removeChild(existing);
-      // Put it back to left column
-      qs('.tqc-col .tqc-term.dragging')?.classList.remove('dragging');
-    }
+    const termIndex = e.dataTransfer.getData('text/plain');
+    if (!termIndex && termIndex!==0) return;
 
-    const termEl = qs(`.tqc-term[data-term-index="${termIdx}"]`);
-    if(termEl){
-      zone.innerHTML = ''; // clear def text
-      zone.appendChild(termEl);
-      state.dragAnswers[defIdx] = Number(termIdx);
-      zone.classList.add('filled');
-    }
+    // Remove existing term from this zone
+    const existing = z.querySelector('.tqc-term');
+    if (existing) existing.remove();
+
+    // Move dragged term here
+    const dragged = qs(`.tqc-term[data-term-index="${termIndex}"]`);
+    if (dragged) z.appendChild(dragged);
   }
 
-  function checkAnswer(card){
-    const q = state.weeks[state.currentWeek].questions[state.idx];
-    const fb = qs('.tqc-feedback', card);
-
-    let ok=false;
-
-    if(q.type==='match'){
-      ok = Object.keys(state.dragAnswers).length === q.definitions.length &&
-           q.definitions.every((_,i)=> state.dragAnswers[i] === q.correctMatches[i]);
-
-      // paint correctness
-      q.definitions.forEach((_,i)=>{
-        const zone = qs(`.tqc-drop[data-def-index="${i}"]`, card);
-        zone.classList.remove('correct','incorrect');
-        zone.classList.add(state.dragAnswers[i]===q.correctMatches[i] ? 'correct':'incorrect');
-      });
-    } else {
-      if(state.selected==null){
-        fb.className='tqc-feedback no';
-        fb.textContent='Please select an answer.';
+  // Bootstrap
+  (async function init(){
+    try {
+      await loadData();
+      const container = document.getElementById('tqc-root');
+      if(!container){
+        console.error('Missing #tqc-root container.');
         return;
       }
-      ok = state.selected === q.answer;
-
-      // paint options
-      qsa('.tqc-option',card).forEach((opt,i)=>{
-        opt.classList.remove('correct','incorrect');
-        if(i===q.answer) opt.classList.add('correct');
-        else if(i===state.selected) opt.classList.add('incorrect');
-      });
+      const wkParam = getParam('week');
+      const first = wkParam && state.weeks[wkParam] ? wkParam : Object.keys(state.weeks).sort((a,b)=>Number(a)-Number(b))[0];
+      selectWeek(first, container);
+    } catch (e){
+      console.error(e);
     }
+  })();
 
-    if(ok){ state.score++; qs('#qscore').textContent = state.score; }
-
-    fb.className = `tqc-feedback ${ok?'ok':'no'}`;
-    const def = q.definition ? `<br><br><strong>Definition:</strong> ${q.definition}` : '';
-    fb.innerHTML = (ok?'✅ Correct! ':'❌ Not quite.') + (q.explanation?`<br>${q.explanation}`:'') + def;
-
-    // Next / Final
-    const actions = el('div','tqc-actions');
-    const w = state.weeks[state.currentWeek];
-    if(state.idx < w.questions.length-1){
-      const next = el('button','tqc-cta','Next →');
-      next.addEventListener('click', ()=>{
-        state.idx++; state.selected=null; state.dragAnswers={}; state.hintUsed=false;
-        renderQuestion();
-      });
-      actions.appendChild(next);
-    } else {
-      const finish = el('button','tqc-cta','See Final Score');
-      finish.addEventListener('click', showFinal);
-      actions.appendChild(finish);
-    }
-    fb.appendChild(actions);
-  }
-
-  function showFinal(){
-    const w = state.weeks[state.currentWeek];
-    const total = w.questions.length;
-    const pct = Math.round((state.score/total)*100);
-    const wrap = qs('#tqc-qwrap'); wrap.innerHTML='';
-
-    const card = el('div','tqc-final');
-    card.innerHTML = `
-      <h2>🎉 ${w.title} Completed!</h2>
-      <div style="font-size:3rem;margin:.5rem 0">${pct}%</div>
-      <p><strong>You got ${state.score} out of ${total} correct.</strong></p>
-    `;
-    const again = el('button',null,'Try this week again');
-    again.addEventListener('click', ()=>selectWeek(state.currentWeek, qs('.tqc-card').parentElement));
-    const nextKey = nextWeekKey();
-    card.appendChild(again);
-    if(nextKey){
-      const nextBtn = el('button',null,`Next week →`);
-      nextBtn.addEventListener('click', ()=>selectWeek(nextKey, qs('.tqc-card').parentElement));
-      card.appendChild(nextBtn);
-    }
-    wrap.appendChild(card);
-  }
-
-  function nextWeekKey(){
-    const keys = Object.keys(state.weeks).map(Number).sort((a,b)=>a-b);
-    const i = keys.indexOf(Number(state.currentWeek));
-    return keys[i+1] ? String(keys[i+1]) : null;
-  }
-
-  function selectWeek(week, container){
-    state.currentWeek = String(week);
-    state.idx=0; state.score=0; state.selected=null; state.dragAnswers={}; state.hintUsed=false;
-    render(container);
-    const url = new URL(location.href); url.searchParams.set('week', state.currentWeek);
-    history.replaceState(null,'',url.toString());
-  }
-
-  // Boot on page load
-  window.addEventListener('DOMContentLoaded', async ()=>{
-    const container = document.getElementById('ttc-quiz-root');
-    if(!container){ console.error('Missing #ttc-quiz-root'); return; }
-
-    try{
-      await loadData();
-      const want = getParam('week');
-      const first = want && state.weeks[want] ? want : Object.keys(state.weeks).sort((a,b)=>Number(a)-Number(b))[0];
-      state.currentWeek = first || '1';
-      render(container);
-    }catch(e){
-      container.innerHTML = `<div class="tqc-card ttc-quiz"><p>Could not load quiz data. ${e.message}</p></div>`;
-    }
-  });
 })();
