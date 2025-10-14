@@ -1,134 +1,224 @@
-/* ================================
-   QUIZ QUICK FIX PATCH (CSS-only)
-   Place this at the very end of your CSS
-   ================================ */
+/* ========== Tech Tinker Club – Canva-like (white page) ========== */
 
-/* 1) Center the title neatly */
-.tqc-header { text-align: center; }
-.tqc-title {
-  display: inline-block;
-  margin: 0 auto 4px auto;
-  letter-spacing: 1px;
+/* ---- Palette (Minecraft-inspired) ---- */
+:root{
+  --page-bg: #ffffff;           /* white site background */
+  --panel:   #8B4513;           /* wood/brown */
+  --panel-edge:#654321;
+  --panel-shadow:#5D4037;
+
+  --leaf: #2e7d32;              /* green panels */
+  --leaf-edge:#1b5e20;
+  --leaf-shadow:#1f5f1f;
+
+  --btn-green:#43a047;          /* week active, submit ok */
+  --btn-green-edge:#2e7d32;
+
+  --btn-red:#e53935;            /* submit */
+  --btn-red-edge:#c62828;
+
+  --btn-orange:#f39c12;         /* hint */
+  --btn-orange-edge:#d8890b;
+
+  --btn-grey:#c7ccd1;           /* disabled week */
+  --btn-grey-edge:#aab2b9;
+
+  --option:#87CEEB;             /* answer boxes */
+  --option-edge:#4682B4;
+  --option-hover:#B0E0E6;
+  --option-correct:#90EE90;
+  --option-correct-edge:#32CD32;
+  --option-wrong:#FFB6C1;
+  --option-wrong-edge:#DC143C;
+
+  --ink:#2F1B14;
+  --white:#fff;
 }
 
-/* 2) Score board: ensure two-line layout (number + label) and readable % */
-.tqc-score{
-  display:flex; gap:12px; justify-content:space-between;
-  align-items:stretch;
+/* ---- Page ---- */
+body { background: var(--page-bg); }
+
+/* Container card */
+.tqc-card{
+  max-width: 920px;
+  margin: 28px auto;
+  background: var(--panel);
+  border: 4px solid var(--panel-edge);
+  box-shadow: 8px 8px 0 var(--panel-shadow), 16px 16px 0 rgba(0,0,0,.18);
+  padding: 22px 24px 28px;
+  position: relative;
+}
+
+/* Header / Title */
+.tqc-header{ text-align:center; margin-bottom: 14px; }
+.tqc-title{
+  margin: 0 0 6px;
+  font-family: 'Minecraft','Press Start 2P','Courier New',monospace;
+  font-size: clamp(20px, 3.2vw, 36px);
+  color: #FFD54F;
+  text-shadow: 3px 3px 0 #B8860B, 6px 6px 0 rgba(0,0,0,.3);
+}
+.tqc-sub{
+  margin: 0;
+  color: #f7e9b8;
+  opacity:.9;
+  font-family: 'Minecraft','Courier New',monospace;
+}
+
+/* Week selector */
+.tqc-weeks{
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+  margin: 14px 0 10px;
+}
+.tqc-btn{
+  font-family:'Minecraft','Courier New',monospace;
+  font-weight:700;
+  font-size: 14px;
+  padding: 8px 14px;
+  background: var(--btn-green);
+  color:#fff; border: 3px solid var(--btn-green-edge);
+  box-shadow: 3px 3px 0 var(--btn-green-edge);
+  cursor:pointer;
+  transition: transform .08s ease;
+  border-radius: 6px;
+}
+.tqc-btn[aria-current="true"]{
+  background: #ef6c00; border-color:#d35400;
+  box-shadow: 3px 3px 0 #b34700;
+}
+.tqc-btn:disabled{
+  background: var(--btn-grey);
+  border-color: var(--btn-grey-edge);
+  color:#666; cursor:not-allowed; box-shadow:none; opacity:.85;
+}
+.tqc-btn:not(:disabled):hover{ transform: translate(-1px,-1px); }
+
+/* Info panel (week title + desc) */
+.tqc-info{
   background: var(--leaf);
   border: 3px solid var(--leaf-edge);
-  padding: 12px 14px;
-  color: var(--white);
-  text-shadow: 1px 1px 0 #000;
+  box-shadow: 4px 4px 0 var(--leaf-shadow);
+  color: #fff; text-shadow: 1px 1px 0 #000;
+  padding: 14px; margin: 10px 0 16px; text-align:center;
+  font-family:'Minecraft','Courier New',monospace;
 }
-.tqc-score .item{
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  min-width: 20%;
+.tqc-info strong{ font-size: 18px; display:block; margin-bottom:4px; }
+
+/* Score strip */
+.tqc-score{
+  display:grid; grid-template-columns: repeat(4,1fr); gap:12px;
+  background: var(--leaf);
+  border: 3px solid var(--leaf-edge);
+  box-shadow: 4px 4px 0 var(--leaf-shadow);
+  color: #fff; text-shadow: 1px 1px 0 #000;
+  padding: 12px; margin-bottom: 12px;
 }
+.tqc-score .item{ display:flex; flex-direction:column; align-items:center; }
 .tqc-score .num{
-  font-size: 18px; font-weight: 800; line-height: 1.1;
-  margin: 0 0 2px 0;
+  font-size: 18px; font-weight:700; line-height:1.1; margin-bottom:2px;
 }
-.tqc-score .item div:last-child{
-  display:block;
-  font-size: 11px; line-height: 1.2; opacity: .95;
+.tqc-score .label{
+  font-size: 11px; letter-spacing:.2px; opacity:.95;
 }
 
-/* 3) Progress bar label refinement (if you show a % number above bar) */
-#qprog{ font-variant-numeric: tabular-nums; }
+/* Progress bar */
+.tqc-progress{ margin: 8px 0 18px; }
+.tqc-progress-bar{ height:10px; background:#d7e4d8; border:2px solid #9bb59d; border-radius:8px; overflow:hidden; }
+.tqc-progress-fill{ display:block; height:100%; width:0%; background:#7cb342; }
 
-/* 4) Add breathing room between buttons and feedback box */
-.tqc-actions{ margin-top: 8px; margin-bottom: 12px; }
-.tqc-feedback{ margin-top: 12px; }
+/* Question card */
+.tqc-qcard{
+  background:#f5e3c4; border:4px solid #D2B48C;
+  box-shadow: 6px 6px 0 #CD853F;
+  padding: 16px 16px 18px; color: var(--ink);
+  position:relative;
+}
+.tqc-qnum{ color:#ff6b35; font-weight:700; font-family:'Minecraft','Courier New',monospace; margin-bottom:6px; }
+.tqc-qtext{ font-weight:700; font-size:18px; margin: 8px 0 10px; }
 
-/* 5) Multiple-choice grid: always 2 columns (not 4) */
+/* Code block */
+.tqc-code{
+  background:#1a1a1a; color:#00FF00; border:3px solid #333;
+  font-family:'Courier New',monospace; white-space:pre; line-height:1.5;
+  padding:12px; box-shadow:4px 4px 0 #000; margin: 10px 0 12px;
+}
+
+/* Hint panel (shown above options) */
+#tqc-hint .tqc-hint-panel{
+  background:#E6F3FF; border:3px solid #4A90E2; border-radius:10px;
+  color:#2C3E50; font-weight:700; padding:12px; margin: 0 0 12px;
+}
+
+/* Options (2×2 grid) */
 .tqc-options{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin: 10px 0 6px;
 }
-@media (max-width: 520px){
-  .tqc-options{ grid-template-columns: 1fr; }
+.tqc-option{
+  background: var(--option); border: 3px solid var(--option-edge); color: var(--ink);
+  box-shadow: 4px 4px 0 #5F9EA0; text-shadow: 1px 1px 0 rgba(255,255,255,.7);
+  font-weight:700; padding: 14px 12px; text-align:center; cursor:pointer;
+  border-radius: 6px; user-select:none;
 }
+.tqc-option:hover{ background: var(--option-hover); transform: translate(-1px,-1px); }
+.tqc-option[aria-selected="true"]{ background:#FFD700; border-color:#FFA500; box-shadow:4px 4px 0 #DAA520; }
+.tqc-option.correct{ background: var(--option-correct); border-color: var(--option-correct-edge); box-shadow:4px 4px 0 #228B22; }
+.tqc-option.incorrect{ background: var(--option-wrong); border-color: var(--option-wrong-edge); box-shadow:4px 4px 0 #DC143C; }
 
-/* 6) Buttons: make hint/submit distinct and visible */
+/* Actions (Hint / Submit) */
+.tqc-actions{ display:flex; gap:10px; align-items:center; margin: 8px 0; }
 .tqc-hint{
-  background: #FFA500; border: 3px solid #FF8C00;
-  color:#222; font-weight: 800; padding: 10px 16px;
-  box-shadow: 3px 3px 0 #CC7000;
+  background: var(--btn-orange); border: 3px solid var(--btn-orange-edge);
+  color:#fff; font-weight:700; padding:10px 16px; border-radius:6px;
+  box-shadow:3px 3px 0 #cc7000; cursor:pointer;
 }
 .tqc-submit{
-  background: #E94F37; border: 3px solid #D4412C;
-  color:#fff; font-weight: 800; padding: 12px 18px;
-  box-shadow: 3px 3px 0 #A93226;
-}
-.tqc-hint:disabled{ background:#999; border-color:#777; color:#222; box-shadow:3px 3px 0 #666; }
-
-/* 7) Drag & drop styling – bring back visible boxes */
-.tqc-dd{ display:flex; gap: 24px; margin-top: 10px; }
-.tqc-col{ flex:1; }
-.tqc-col-h{
-  background:#4682B4; color:#fff; border:3px solid #2F4F4F;
-  text-align:center; font-weight:800; padding:8px 10px;
-  box-shadow:3px 3px 0 #1C3A3A;
-}
-.tqc-term{
-  display:block;
-  background:#FFE4B5; color:#2F1B14;
-  border:3px solid #DEB887; box-shadow:3px 3px 0 #CD853F;
-  font-weight:800; text-align:center;
-  padding:10px 12px; margin:10px 0; cursor:grab;
-  user-select:none;
-}
-.tqc-term.dragging{ opacity:.6; transform: rotate(1deg); }
-
-/* Droppable zones */
-.tqc-drop{
-  background:#E6E6FA;
-  border:3px dashed #9370DB;
-  min-height:56px; padding:10px 12px; margin:10px 0;
-  display:flex; align-items:center; justify-content:center;
-  text-align:center; font-weight:700;
-  transition: all .15s ease;
-}
-.tqc-drop.drag-over{ background:#DDA0DD; border-color:#8A2BE2; transform: scale(1.01); }
-.tqc-drop.correct{ background:#90EE90; border-color:#228B22; border-style:solid; }
-.tqc-drop.incorrect{ background:#FFB6C1; border-color:#DC143C; border-style:solid; }
-
-/* When a term is inside a drop zone, make it fill and keep the box look */
-.tqc-drop .tqc-term{
-  width:100%;
-  margin:0;
-  cursor:grab;
-  background:#FFF9E6;
+  background: var(--btn-red); border: 3px solid var(--btn-red-edge);
+  color:#fff; font-weight:700; padding:10px 16px; border-radius:6px;
+  box-shadow:3px 3px 0 #a3211f; cursor:pointer;
 }
 
-/* 8) Hint panel like Canva */
-.tqc-hint-panel{
-  background:#E6F3FF; border:3px solid #4A90E2; border-radius:10px;
-  padding:12px; margin:12px 0; color:#2C3E50; font-weight:700;
-}
-
-/* 9) Feedback card spacing & look */
-.tqc-feedback-inner.ok{
-  background:#90EE90; border:3px solid #32CD32; box-shadow: 4px 4px 0 #228B22;
-  padding:14px; font-weight:700;
+/* Feedback box + spacing so it doesn’t touch the buttons */
+.tqc-feedback{ margin-top: 14px; }
+.tqc-feedback-inner{
+  padding:14px; border:3px solid #2e7d32; background:#90EE90;
+  box-shadow:4px 4px 0 #228B22; font-weight:700; color:#06410c;
 }
 .tqc-feedback-inner.nope{
-  background:#FFB6C1; border:3px solid #FF69B4; box-shadow: 4px 4px 0 #DC143C;
-  padding:14px; font-weight:700;
+  background:#FFB6C1; border-color:#DC143C; color:#6b0000;
+  box-shadow:4px 4px 0 #b0172f;
 }
-.tqc-next{
-  background:#32CD32; border:3px solid #228B22; color:#fff; font-weight:800;
-  padding:10px 16px; box-shadow:3px 3px 0 #006400; margin-top:10px;
-}
+.tqc-exp, .tqc-def{ margin-top:8px; }
+.tqc-next{ margin-top:10px; background:#32CD32; border:3px solid #228B22; color:#fff; padding:10px 14px; border-radius:6px; box-shadow:3px 3px 0 #006400; cursor:pointer; }
 
-/* 10) Keep MCQ options looking like chunky buttons */
-.tqc-option{
-  background:#87CEEB; border:3px solid #4682B4; box-shadow:4px 4px 0 #5F9EA0;
-  color:#2F1B14; font-weight:800; text-shadow:1px 1px 0 rgba(255,255,255,.7);
-  text-align:center; padding:14px 12px; cursor:pointer; transition: transform .1s ease;
+/* Drag & drop (match) */
+.tqc-dd{ display:flex; gap:24px; margin: 10px 0 6px; }
+.tqc-col{ flex:1; }
+.tqc-col-h{
+  background:#4682B4; color:#fff; text-align:center; font-weight:700;
+  border:3px solid #2F4F4F; box-shadow:3px 3px 0 #1C3A3A; padding:8px; border-radius:6px; margin-bottom:10px;
 }
-.tqc-option[aria-selected="true"]{ transform: translate(-1px,-1px); }
-.tqc-option.correct{ background:#90EE90; border-color:#32CD32; box-shadow:4px 4px 0 #228B22; }
-.tqc-option.incorrect{ background:#FFB6C1; border-color:#FF69B4; box-shadow:4px 4px 0 #DC143C; }
+.tqc-term{
+  background:#FFE4B5; border:3px solid #DEB887; box-shadow:3px 3px 0 #CD853F;
+  font-weight:700; text-align:center; padding:10px; margin:8px 0; border-radius:6px;
+  cursor:grab; user-select:none;
+}
+.tqc-term.dragging{ opacity:.6; transform: rotate(1deg); }
+.tqc-drop{
+  background:#E6E6FA; border:3px dashed #9370DB; min-height:56px;
+  display:flex; align-items:center; justify-content:center; padding:10px; margin:8px 0; border-radius:6px;
+}
+.tqc-drop.drag-over{ background:#DDA0DD; border-color:#8A2BE2; }
+.tqc-drop.correct{ background:#90EE90; border-style:solid; border-color:#228B22; }
+.tqc-drop.incorrect{ background:#FFB6C1; border-style:solid; border-color:#DC143C; }
+
+/* Final screen */
+.tqc-final{ text-align:center; color:#fff; background:var(--leaf); border:4px solid var(--leaf-edge); box-shadow:6px 6px 0 var(--leaf-shadow); padding:22px; }
+.tqc-big{ font-size: clamp(36px, 6vw, 64px); margin:8px 0; text-shadow:2px 2px 0 #000; }
+.tqc-final-actions{ display:flex; gap:10px; justify-content:center; margin-top:10px; }
+.tqc-restart, .tqc-next-week{ background:#ed8936; border:3px solid #dd7324; color:#fff; padding:12px 18px; border-radius:6px; box-shadow:4px 4px 0 #cc6622; cursor:pointer; }
+
+/* Mobile */
+@media (max-width:640px){
+  .tqc-options{ grid-template-columns: 1fr; }
+  .tqc-dd{ flex-direction:column; }
+}
