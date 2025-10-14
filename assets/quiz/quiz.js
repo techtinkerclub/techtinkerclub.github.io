@@ -105,8 +105,8 @@
 
     // Header
     const header = el('div','tqc-header');
-    header.appendChild(el('h1','tqc-title','Tech Tinker Club — Quizzes'));
-    header.appendChild(el('p','tqc-sub','Weekly learning adventures — choose a week!'));
+    header.appendChild(el('h1','tqc-title','Tech Tinker Club'));
+    header.appendChild(el('p','tqc-sub','Micro:bit learning adventures — choose a week!'));
     card.appendChild(header);
 
     // Weeks bar – show all 12; greyed if locked or no questions
