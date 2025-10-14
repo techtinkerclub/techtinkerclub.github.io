@@ -139,10 +139,11 @@
     // Score strip
     const score = el('div','tqc-score');
     score.innerHTML = `
-      <div class="item"><div class="num" id="qcur">${state.idx+1}</div><div>Question</div></div>
-      <div class="item"><div class="num" id="qtot">${w.questions.length}</div><div>Total</div></div>
-      <div class="item"><div class="num" id="qscore">${state.score}</div><div>Score</div></div>
-      <div class="item"><div class="num" id="qprog">0%</</div><div>Progress</div></div>
+    <div class="item"><div class="num" id="qcur">${state.idx+1}</div><div class="label">Question</div></div>
+    <div class="item"><div class="num" id="qtot">${w.questions.length}</div><div class="label">Total</div></div>
+    <div class="item"><div class="num" id="qscore">${state.score}</div><div class="label">Score</div></div>
+    <div class="item"><div class="num" id="qprog">0%</div><div class="label">Progress</div></div>`;
+
     `;
     card.appendChild(score);
 
