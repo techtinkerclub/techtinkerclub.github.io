@@ -51,10 +51,10 @@ body { background: var(--page-bg); }
 
 /* Header / Title */
 .tqc-header{ text-align:center; margin-bottom: 14px; }
-.tqc-title{
+.tqc-title {
   margin: 0 0 6px;
   font-family: 'Minecraft','Press Start 2P','Courier New',monospace;
-  font-size: clamp(20px, 3.2vw, 36px);
+  font-size: clamp(18px, 2vw, 28px);  /* 👈 smaller max size */
   color: #FFD54F;
   text-shadow: 3px 3px 0 #B8860B, 6px 6px 0 rgba(0,0,0,.3);
 }
