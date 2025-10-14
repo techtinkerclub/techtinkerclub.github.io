@@ -616,18 +616,19 @@
           "hint": "Track c step by step."
         },
         {
-          "question": "Game loop timing: Why gate updates using elapsed time?",
+          "question": "This loop controls part of a game timer:\n\n```\nset counter to 9\nwhile counter > 0\n    if counter % 2 = 0 then\n        change counter by -2\n    pause 100\n```\nWhat will happen when this runs?",
           "type": "multiple-choice",
+          "code": "set counter to 9\nwhile counter > 0\n    if counter % 2 = 0 then\n        change counter by -2\n    pause 100",
           "options": [
-            "To slow down the LEDs permanently",
-            "To ensure actions happen at controlled intervals (stable speed)",
-            "To make random numbers fairer",
-            "To increase screen resolution"
+            "It counts down to 0 and stops.",
+            "It becomes an infinite loop and never ends.",
+            "It runs exactly 5 times then stops.",
+            "It throws an error because % is not allowed."
           ],
           "correct": 1,
-          "explanation": "Using elapsed ms avoids updates every iteration and stabilizes speed.",
-          "difficulty": "hard",
-          "hint": "Timing separates game logic ticks from raw loop speed."
+          "explanation": "The loop starts with counter = 9 (odd). The only place counter changes is inside the IF for even numbers. Since 9 is odd, the IF never runs, counter never changes, and the WHILE condition stays true forever — an infinite loop.",
+          "hint": "Look carefully: when does the counter actually change? What happens if it starts odd?",
+          "difficulty": "hard"
         },
         {
           "question": "What is printed at the end?",
