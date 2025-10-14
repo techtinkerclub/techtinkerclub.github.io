@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Quizzes"
+title: ""
 permalink: /quiz/
 sidebar: false
 header:
