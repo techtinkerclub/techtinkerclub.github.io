@@ -136,7 +136,7 @@
     const weeksBar = el('div','tqc-weeks');
 
     // Build weeks bar (fixed list so we can show greyed future weeks)
-    const allWeeks = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+    const allWeeks = ['1','2','3','4','5','6','7','8','9','10','11','12','13'];
     allWeeks.forEach((wk)=>{
       const exists = !!state.weeks[wk];
       const hasQs = exists && Array.isArray(state.weeks[wk].questions) && state.weeks[wk].questions.length > 0;
