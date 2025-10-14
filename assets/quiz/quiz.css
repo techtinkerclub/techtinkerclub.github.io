@@ -1,327 +1,134 @@
-/* ------------------------------------------
-   Tech Tinker Club - Minecraft-style Quiz
-   Adapted from Canva version, white bg
------------------------------------------- */
+/* ================================
+   QUIZ QUICK FIX PATCH (CSS-only)
+   Place this at the very end of your CSS
+   ================================ */
 
-body {
-  box-sizing: border-box;
-  font-family: 'Minecraft', 'Courier New', monospace;
-  margin: 0;
-  padding: 20px;
-  background: #ffffff;
-  color: #333;
-}
-
-/* Outer card */
-.tqc-card {
-  max-width: 800px;
-  margin: 0 auto;
-  background: #8B4513;
-  border: 4px solid #654321;
-  padding: 30px;
-  box-shadow: 8px 8px 0px #5D4037, 16px 16px 0px rgba(0,0,0,0.3);
-}
-
-/* Title header */
-.tqc-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
+/* 1) Center the title neatly */
+.tqc-header { text-align: center; }
 .tqc-title {
-  color: #FFD700;
-  font-size: 2.2rem;
-  text-shadow: 3px 3px 0px #B8860B, 6px 6px 0px rgba(0,0,0,0.3);
-  font-weight: bold;
-  margin-bottom: 10px;
+  display: inline-block;
+  margin: 0 auto 4px auto;
+  letter-spacing: 1px;
 }
 
-.tqc-sub {
-  color: #fff8dc;
-  font-size: 0.9rem;
+/* 2) Score board: ensure two-line layout (number + label) and readable % */
+.tqc-score{
+  display:flex; gap:12px; justify-content:space-between;
+  align-items:stretch;
+  background: var(--leaf);
+  border: 3px solid var(--leaf-edge);
+  padding: 12px 14px;
+  color: var(--white);
   text-shadow: 1px 1px 0 #000;
 }
-
-/* Week buttons */
-.tqc-weeks {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
+.tqc-score .item{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-width: 20%;
+}
+.tqc-score .num{
+  font-size: 18px; font-weight: 800; line-height: 1.1;
+  margin: 0 0 2px 0;
+}
+.tqc-score .item div:last-child{
+  display:block;
+  font-size: 11px; line-height: 1.2; opacity: .95;
 }
 
-.tqc-btn {
-  background: #4CAF50;
-  color: white;
-  border: 3px solid #388E3C;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  font-weight: bold;
-  text-shadow: 1px 1px 0px #000000;
-  box-shadow: 3px 3px 0px #2e7d32;
-  transition: all 0.2s ease;
-}
+/* 3) Progress bar label refinement (if you show a % number above bar) */
+#qprog{ font-variant-numeric: tabular-nums; }
 
-.tqc-btn:hover {
-  background: #45a049;
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0px #2e7d32;
-}
+/* 4) Add breathing room between buttons and feedback box */
+.tqc-actions{ margin-top: 8px; margin-bottom: 12px; }
+.tqc-feedback{ margin-top: 12px; }
 
-.tqc-btn[aria-current="true"] {
-  background: #FF6B35;
-  border-color: #E55A2B;
-  box-shadow: 3px 3px 0px #CC4A1F;
-}
-
-.tqc-btn:disabled {
-  background: #bbb;
-  border-color: #888;
-  color: #eee;
-  cursor: not-allowed;
-}
-
-/* Info box */
-.tqc-info {
-  background: #228B22;
-  border: 3px solid #006400;
-  color: white;
-  padding: 12px;
-  text-align: center;
-  font-weight: bold;
-  box-shadow: 4px 4px 0px #1F5F1F;
-  margin-bottom: 20px;
-}
-
-/* Scoreboard */
-.tqc-score {
+/* 5) Multiple-choice grid: always 2 columns (not 4) */
+.tqc-options{
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  background: #228B22;
-  border: 3px solid #006400;
-  padding: 10px;
-  color: white;
-  text-shadow: 1px 1px 0 #000;
-  box-shadow: 4px 4px 0px #1F5F1F;
-  font-weight: bold;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 520px){
+  .tqc-options{ grid-template-columns: 1fr; }
 }
 
-.tqc-score .item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* 6) Buttons: make hint/submit distinct and visible */
+.tqc-hint{
+  background: #FFA500; border: 3px solid #FF8C00;
+  color:#222; font-weight: 800; padding: 10px 16px;
+  box-shadow: 3px 3px 0 #CC7000;
+}
+.tqc-submit{
+  background: #E94F37; border: 3px solid #D4412C;
+  color:#fff; font-weight: 800; padding: 12px 18px;
+  box-shadow: 3px 3px 0 #A93226;
+}
+.tqc-hint:disabled{ background:#999; border-color:#777; color:#222; box-shadow:3px 3px 0 #666; }
+
+/* 7) Drag & drop styling – bring back visible boxes */
+.tqc-dd{ display:flex; gap: 24px; margin-top: 10px; }
+.tqc-col{ flex:1; }
+.tqc-col-h{
+  background:#4682B4; color:#fff; border:3px solid #2F4F4F;
+  text-align:center; font-weight:800; padding:8px 10px;
+  box-shadow:3px 3px 0 #1C3A3A;
+}
+.tqc-term{
+  display:block;
+  background:#FFE4B5; color:#2F1B14;
+  border:3px solid #DEB887; box-shadow:3px 3px 0 #CD853F;
+  font-weight:800; text-align:center;
+  padding:10px 12px; margin:10px 0; cursor:grab;
+  user-select:none;
+}
+.tqc-term.dragging{ opacity:.6; transform: rotate(1deg); }
+
+/* Droppable zones */
+.tqc-drop{
+  background:#E6E6FA;
+  border:3px dashed #9370DB;
+  min-height:56px; padding:10px 12px; margin:10px 0;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center; font-weight:700;
+  transition: all .15s ease;
+}
+.tqc-drop.drag-over{ background:#DDA0DD; border-color:#8A2BE2; transform: scale(1.01); }
+.tqc-drop.correct{ background:#90EE90; border-color:#228B22; border-style:solid; }
+.tqc-drop.incorrect{ background:#FFB6C1; border-color:#DC143C; border-style:solid; }
+
+/* When a term is inside a drop zone, make it fill and keep the box look */
+.tqc-drop .tqc-term{
+  width:100%;
+  margin:0;
+  cursor:grab;
+  background:#FFF9E6;
 }
 
-.tqc-score .num {
-  font-size: 1.4rem;
-  font-weight: bold;
-  line-height: 1.2;
+/* 8) Hint panel like Canva */
+.tqc-hint-panel{
+  background:#E6F3FF; border:3px solid #4A90E2; border-radius:10px;
+  padding:12px; margin:12px 0; color:#2C3E50; font-weight:700;
 }
 
-.tqc-score .item div:last-child {
-  font-size: 0.75rem;
-  opacity: 0.9;
+/* 9) Feedback card spacing & look */
+.tqc-feedback-inner.ok{
+  background:#90EE90; border:3px solid #32CD32; box-shadow: 4px 4px 0 #228B22;
+  padding:14px; font-weight:700;
+}
+.tqc-feedback-inner.nope{
+  background:#FFB6C1; border:3px solid #FF69B4; box-shadow: 4px 4px 0 #DC143C;
+  padding:14px; font-weight:700;
+}
+.tqc-next{
+  background:#32CD32; border:3px solid #228B22; color:#fff; font-weight:800;
+  padding:10px 16px; box-shadow:3px 3px 0 #006400; margin-top:10px;
 }
 
-/* Progress bar */
-.tqc-progress {
-  margin: 10px 0;
+/* 10) Keep MCQ options looking like chunky buttons */
+.tqc-option{
+  background:#87CEEB; border:3px solid #4682B4; box-shadow:4px 4px 0 #5F9EA0;
+  color:#2F1B14; font-weight:800; text-shadow:1px 1px 0 rgba(255,255,255,.7);
+  text-align:center; padding:14px 12px; cursor:pointer; transition: transform .1s ease;
 }
-.tqc-progress-bar {
-  width: 100%;
-  height: 12px;
-  background: #a0522d;
-  border: 2px solid #5d4037;
-}
-.tqc-progress-fill {
-  display: block;
-  height: 100%;
-  background: #32CD32;
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-/* Question card */
-.tqc-qcard {
-  background: #f5deb3;
-  border: 4px solid #d2b48c;
-  box-shadow: 6px 6px 0px #cd853f;
-  padding: 20px;
-}
-
-.tqc-qnum {
-  color: #ff6b35;
-  font-weight: bold;
-  text-shadow: 1px 1px 0px #000;
-  margin-bottom: 10px;
-}
-
-.tqc-qtext {
-  font-size: 1.1rem;
-  color: #2F1B14;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.tqc-code {
-  background: #1a1a1a;
-  color: #00FF00;
-  padding: 10px;
-  border: 3px solid #333333;
-  font-family: 'Courier New', monospace;
-  margin: 15px 0;
-  box-shadow: 4px 4px 0px #000000;
-  white-space: pre-line;
-  font-weight: bold;
-}
-
-/* Options */
-.tqc-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 15px 0;
-}
-
-.tqc-option {
-  background: #87CEEB;
-  border: 3px solid #4682B4;
-  padding: 12px;
-  cursor: pointer;
-  text-align: center;
-  font-weight: bold;
-  color: #2F1B14;
-  text-shadow: 1px 1px 0px rgba(255,255,255,0.7);
-  transition: all 0.2s ease;
-  box-shadow: 4px 4px 0px #5F9EA0;
-}
-
-.tqc-option:hover {
-  background: #b0e0e6;
-  transform: translate(-2px,-2px);
-  box-shadow: 6px 6px 0px #5F9EA0;
-}
-
-.tqc-option[aria-selected="true"] {
-  background: #FFD700;
-  border-color: #FFA500;
-  box-shadow: 4px 4px 0px #DAA520;
-}
-
-.tqc-option.correct {
-  background: #90EE90;
-  border-color: #32CD32;
-  box-shadow: 4px 4px 0px #228B22;
-}
-
-.tqc-option.incorrect {
-  background: #FFB6C1;
-  border-color: #FF69B4;
-  box-shadow: 4px 4px 0px #DC143C;
-}
-
-/* Buttons */
-.tqc-actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.tqc-submit {
-  background: #FF4500;
-  color: white;
-  border: 3px solid #FF6347;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: bold;
-  text-shadow: 1px 1px 0px #000;
-  box-shadow: 4px 4px 0px #CD5C5C;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.tqc-submit:hover {
-  background: #FF6347;
-  transform: translate(-2px,-2px);
-}
-
-.tqc-hint {
-  background: #FFA500;
-  color: white;
-  border: 3px solid #FF8C00;
-  padding: 8px 15px;
-  font-weight: bold;
-  text-shadow: 1px 1px 0px #000;
-  box-shadow: 3px 3px 0px #CC7000;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.tqc-hint:hover {
-  background: #FF8C00;
-}
-
-/* Hint panel */
-.tqc-hint-panel {
-  background: #E6F3FF;
-  border: 3px solid #4A90E2;
-  padding: 10px;
-  margin-top: 10px;
-  color: #2C3E50;
-  font-weight: bold;
-}
-
-/* Feedback */
-.tqc-feedback-inner.ok {
-  background: #90EE90;
-  border: 3px solid #32CD32;
-  padding: 12px;
-  color: #004400;
-  text-shadow: 1px 1px 0px rgba(255,255,255,0.7);
-}
-.tqc-feedback-inner.nope {
-  background: #FFB6C1;
-  border: 3px solid #FF69B4;
-  padding: 12px;
-  color: #8B0000;
-  text-shadow: 1px 1px 0px rgba(255,255,255,0.7);
-}
-.tqc-next {
-  background: #32CD32;
-  color: white;
-  border: 3px solid #228B22;
-  padding: 10px 18px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* Final screen */
-.tqc-final {
-  text-align: center;
-  background: #4B0082;
-  border: 4px solid #8A2BE2;
-  color: #FFD700;
-  padding: 25px;
-  box-shadow: 8px 8px 0px #301934;
-}
-
-.tqc-final .tqc-big {
-  font-size: 2.5rem;
-  margin: 10px 0;
-}
-
-.tqc-restart,
-.tqc-next-week {
-  background: #ed8936;
-  color: white;
-  border: 3px solid #dd7324;
-  padding: 10px 24px;
-  font-weight: bold;
-  box-shadow: 4px 4px 0px #cc6622;
-  cursor: pointer;
-}
+.tqc-option[aria-selected="true"]{ transform: translate(-1px,-1px); }
+.tqc-option.correct{ background:#90EE90; border-color:#32CD32; box-shadow:4px 4px 0 #228B22; }
+.tqc-option.incorrect{ background:#FFB6C1; border-color:#FF69B4; box-shadow:4px 4px 0 #DC143C; }
