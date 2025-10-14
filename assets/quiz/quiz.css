@@ -154,7 +154,23 @@ body{
   color: var(--white);
   text-shadow:1px 1px 0px #000;
 }
-.tqc-score .num{ font-size:18px; font-weight:bold; }
+.tqc-score .item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.tqc-score .num {
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1.1;
+  margin-bottom: 2px;
+}
+.tqc-score .item div:last-child {
+  font-size: 11px;
+  font-weight: normal;
+  opacity: 0.9;
+}
 
 /* Progress bar (thin) */
 .tqc-progress{ margin-top: -8px; margin-bottom: 10px; }
