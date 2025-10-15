@@ -5,19 +5,19 @@
       "description": "Hardware, inputs/outputs, MakeCode basics, events & sequencing.",
       "questions": [
          {
-        "question": "Which statement best describes the role of the microcontroller inside a micro:bit?",
-        "type": "multiple-choice",
-        "options": [
-          "It processes sensor inputs and controls outputs according to your code",
-          "It only stores your program in memory",
-          "It powers the LEDs and buttons directly without processing",
-          "It connects the micro:bit to the internet"
-        ],
-        "correct": 0,
-        "explanation": "The microcontroller is the 'brain' — it runs your program, reading inputs and sending signals to outputs.",
-        "definition": "MICROCONTROLLER — a small processor that executes code and manages inputs/outputs in embedded systems.",
-        "difficulty": "medium",
-        "hint": "Think of it as the part that actually runs your code and decides what to do next."
+         "question": "Which statement best describes the role of the microcontroller inside a micro:bit?",
+         "type": "multiple-choice",
+         "options": [
+           "It processes sensor inputs and controls outputs according to your code",
+           "It only stores your program in memory",
+           "It powers the LEDs and buttons directly without processing",
+           "It connects the micro:bit to the internet"
+         ],
+         "correct": 0,
+         "explanation": "The microcontroller is the 'brain' — it runs your program, reading inputs and sending signals to outputs.",
+         "definition": "MICROCONTROLLER — a small processor that executes code and manages inputs/outputs in embedded systems.",
+         "difficulty": "medium",
+         "hint": "Think of it as the part that actually runs your code and decides what to do next."
         },
         {
           "question": "Which of these is an INPUT on the micro:bit?",
@@ -30,14 +30,19 @@
           "hint": "Can a user press or move it to send a signal?"
         },
         {
-          "question": "Which block runs exactly once at the beginning of a program?",
+          "question": "In the code below, which block ensures the text appears only one time before the heart starts flashing?",
           "type": "multiple-choice",
-          "code": "on start\n  show string \"Hello\"",
-          "options": ["forever", "on start", "on button A pressed", "on shake"],
+          "code": "on start\n  show string \"Hello!\"\nforever\n  show icon Heart\n  pause(500)\n  clear screen\n  pause(500)",
+          "options": [
+            "forever",
+            "on start",
+            "show string \"Hello!\"",
+            "pause(500)"
+          ],
           "correct": 1,
-          "explanation": "“on start” runs one time when the program begins.",
-          "difficulty": "easy",
-          "hint": "Which block is meant for setup?"
+          "explanation": "Anything inside 'on start' runs just once. The 'forever' loop repeats endlessly, but 'on start' finishes after its commands.",
+          "difficulty": "medium-hard",
+          "hint": "Only one block type is designed for setup instructions that don’t repeat."
         },
         {
           "question": "What does this program do?",
