@@ -4,15 +4,20 @@
       "title": "Week 1: Intro to Microcontrollers",
       "description": "Hardware, inputs/outputs, MakeCode basics, events & sequencing.",
       "questions": [
-        {
-          "question": "What is a microcontroller?",
-          "type": "multiple-choice",
-          "options": ["A tiny computer on a chip", "A battery", "A speaker", "An internet router"],
-          "correct": 0,
-          "explanation": "A microcontroller is a small computer on a single chip that reads inputs and controls outputs.",
-          "definition": "MICROCONTROLLER — a tiny computer on one chip used in embedded devices.",
-          "difficulty": "easy",
-          "hint": "Think about what sits at the heart of the micro:bit."
+         {
+        "question": "Which statement best describes the role of the microcontroller inside a micro:bit?",
+        "type": "multiple-choice",
+        "options": [
+          "It processes sensor inputs and controls outputs according to your code",
+          "It only stores your program in memory",
+          "It powers the LEDs and buttons directly without processing",
+          "It connects the micro:bit to the internet"
+        ],
+        "correct": 0,
+        "explanation": "The microcontroller is the 'brain' — it runs your program, reading inputs and sending signals to outputs.",
+        "definition": "MICROCONTROLLER — a small processor that executes code and manages inputs/outputs in embedded systems.",
+        "difficulty": "medium",
+        "hint": "Think of it as the part that actually runs your code and decides what to do next."
         },
         {
           "question": "Which of these is an INPUT on the micro:bit?",
