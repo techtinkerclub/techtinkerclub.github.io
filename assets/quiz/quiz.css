@@ -234,3 +234,14 @@ body { background: var(--page-bg); }
   .tqc-options{ grid-template-columns: 1fr; }
   .tqc-dd{ flex-direction:column; }
 }
+/* --- QUIZ LOCK STATE FIX --- */
+.tqc-option.tqc-locked,
+.tqc-drop.tqc-locked,
+.tqc-term.tqc-locked {
+  opacity: 0.6;
+  pointer-events: none; /* Prevents clicks and drags */
+}
+
+.tqc-hidden {
+  display: none !important; /* Hide Submit button after grading */
+}
