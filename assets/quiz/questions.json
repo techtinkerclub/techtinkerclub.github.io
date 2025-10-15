@@ -306,22 +306,33 @@
           "hint": "Think: backup plan."
         },
         {
-          "question": "Which symbol means “equal to” in comparisons?",
+          "question": "Look at this code. Which symbol is checking if the score is exactly 10?",
           "type": "multiple-choice",
-          "options": [">", "<", "=", "≠"],
+          "code": "if score = 10 then\n  show string \"Winner!\"",
+          "options": [
+            ">",
+            "<",
+            "=",
+            "≠"
+          ],
           "correct": 2,
-          "explanation": "The = symbol checks equality in block conditions.",
-          "difficulty": "easy",
-          "hint": "Math class should ring a bell."
+          "explanation": "The '=' sign in the condition tests whether the variable 'score' is equal to 10. If so, it shows 'Winner!'.",
+          "difficulty": "hard",
+          "hint": "It compares, not adds — like asking 'are they the same?'"
         },
         {
-          "question": "In Rock–Paper–Scissors, which option beats Rock?",
+          "question": "The micro:bit picks a random number 1..3 to play Rock–Paper–Scissors. What must the code do next to decide who wins?",
           "type": "multiple-choice",
-          "options": ["Scissors", "Paper", "Rock", "Nothing beats Rock"],
-          "correct": 1,
-          "explanation": "Paper covers rock.",
-          "difficulty": "easy",
-          "hint": "What covers a rock?"
+          "options": [
+            "Use if–else blocks to compare your choice and the random pick",
+            "Use 'show string' to display all three options at once",
+            "Add 3 to the random number to get the winner",
+            "Wait 1 second before showing a smiley"
+          ],
+          "correct": 0,
+          "explanation": "After choosing randomly, the program must compare both choices using if–else logic to decide who wins.",
+          "difficulty": "medium-hard",
+          "hint": "How does the program *decide* which move wins?"
         },
         {
           "question": "What message appears for x = 7?",
@@ -383,7 +394,7 @@
           "hint": "Which value triggers the special icon?"
         },
         {
-          "question": "Which branch will execute?",
+          "question": "What will the display show?",
           "type": "multiple-choice",
           "code": "set a to 3\nset b to 7\nif a > b then\n  show string \"A\"\nelse if a = b then\n  show string \"Equal\"\nelse\n  show string \"B\"",
           "options": ["A", "Equal", "B", "Nothing"],
