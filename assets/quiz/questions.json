@@ -618,19 +618,19 @@
           "hint": "Imagine stepping through a dance routine once."
         },
         {
-          "question": "What does the pattern produce?",
+          "question": "What will this code make the micro:bit do?",
           "type": "multiple-choice",
           "code": "forever\n  repeat 5 times\n    show icon \"heart\"\n    pause 200\n    show icon \"small heart\"\n    pause 200\n  clear screen\n  pause 800",
           "options": [
-            "A single heart that never changes",
-            "Five heartbeats, then a short pause, repeating",
-            "Random icons",
-            "Nothing shows"
+            "Show one heart that never changes",
+            "Show five heartbeats, then pause briefly, repeating forever",
+            "Show a random sequence of icons",
+            "Show five hearts once and then stop"
           ],
           "correct": 1,
-          "explanation": "The inner repeat creates pulses; the outer forever repeats the cycle.",
-          "difficulty": "medium",
-          "hint": "Look at the alternation and pauses."
+          "explanation": "The inner 'repeat 5 times' loop creates five quick heartbeats, then the outer 'forever' loop makes the pattern repeat endlessly with a short rest in between.",
+          "difficulty": "medium-hard",
+          "hint": "Think about how the 'repeat 5 times' works inside the 'forever' loop."
         },
         {
           "question": "What numbers will be shown?",
@@ -657,9 +657,9 @@
           "hint": "Think: timers and intervals."
         },
         {
-          "question": "What movement happens?",
+          "question": "What movement happens on the LED screen?",
           "type": "multiple-choice",
-          "code": "set x to 0\nrepeat 4 times\n  change x by 1\n  pause 150",
+          "code": "set sprite to create sprite at x 0 y 2\nrepeat 4 times\n  change sprite x by 1\n  pause 150",
           "options": [
             "Moves left 4 steps",
             "Moves right 4 steps",
@@ -667,24 +667,24 @@
             "Teleports randomly"
           ],
           "correct": 1,
-          "explanation": "Increasing x shifts position rightward in a 5×5 grid.",
-          "difficulty": "medium",
-          "hint": "Positive change to x means which direction?"
+          "explanation": "Changing the sprite’s x by +1 four times moves it 4 columns to the right.",
+          "difficulty": "medium-hard",
+          "hint": "Positive x goes right; negative x goes left."
         },
         {
-          "question": "Match loop type to its description.",
+          "question": "Match each loop type to what it does in a program.",
           "type": "drag-drop",
           "terms": ["forever", "repeat N times", "while (condition)", "for index 1..N"],
           "definitions": [
-            "Never stops, main game loop",
-            "Runs a fixed count",
-            "Runs while a test is true",
-            "Counts through a range"
+            "Repeats a specific number of times, then stops",
+            "Steps through numbers in order, useful for counting or indexing",
+            "Keeps running endlessly while the program is active",
+            "Repeats as long as a test remains true"
           ],
-          "correctMatches": [0, 1, 2, 3],
-          "explanation": "Each loop fits a distinct use case.",
-          "difficulty": "medium",
-          "hint": "Always/Exactly/While/Counting."
+          "correctMatches": [2, 0, 3, 1],
+          "explanation": "‘forever’ never ends, ‘repeat N times’ runs a fixed count, ‘while’ depends on a condition, and ‘for’ iterates through a sequence of values.",
+          "difficulty": "medium-hard",
+          "hint": "Think: endless / fixed / condition / counting."
         },
         {
           "question": "How many times will it run?",
@@ -697,18 +697,18 @@
           "hint": "Track c step by step."
         },
         {
-          "question": "This loop controls part of a game timer:\n\n```\nset counter to 9\nwhile counter > 0\n    if counter % 2 = 0 then\n        change counter by -2\n    pause 100\n```\nWhat will happen when this runs?",
+          "question": "This loop is part of a game timer. What happens when the code runs?",
           "type": "multiple-choice",
-          "code": "set counter to 9\nwhile counter > 0\n    if counter % 2 = 0 then\n        change counter by -2\n    pause 100",
+          "code": "set counter to 9\nwhile counter > 0\n    if counter < 0 then\n        change counter by -1\n    pause 100",
           "options": [
-            "It counts down to 0 and stops.",
-            "It becomes an infinite loop and never ends.",
-            "It runs exactly 5 times then stops.",
-            "It throws an error because % is not allowed."
+            "It counts down to 0 and stops",
+            "It becomes an infinite loop and never ends",
+            "It runs exactly 9 times then stops",
+            "It crashes immediately"
           ],
           "correct": 1,
-          "explanation": "The loop starts with counter = 9 (odd). The only place counter changes is inside the IF for even numbers. Since 9 is odd, the IF never runs, counter never changes, and the WHILE condition stays true forever — an infinite loop.",
-          "hint": "Look carefully: when does the counter actually change? What happens if it starts odd?",
+          "explanation": "The WHILE loop keeps running while counter > 0, but the IF condition inside only runs when counter < 0, which never happens. So the counter never changes, and the loop never ends.",
+          "hint": "Does the IF condition ever become true?",
           "difficulty": "hard"
         },
         {
@@ -727,7 +727,7 @@
           "code": "set wait to 600\nrepeat 3 times\n  play tone C\n  pause wait\n  change wait by -200",
           "options": [
             "Three beeps with equal spacing",
-            "Three beeps with decreasing spacing (faster each time)",
+            "Three beeps, faster each time",
             "One long continuous beep",
             "Beep only once"
           ],
