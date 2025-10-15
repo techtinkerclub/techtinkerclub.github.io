@@ -45,23 +45,33 @@
           "hint": "Only one block type is designed for setup instructions that don’t repeat."
         },
         {
-          "question": "What does this program do?",
+          "question": "If you upload this code to the micro:bit, what will you *see* happen and *why*?",
           "type": "multiple-choice",
           "code": "forever\n  show string \"Hi\"",
-          "options": ["Shows 'Hi' once", "Shows 'Hi' forever", "Shows 'Hi' five times", "Never shows 'Hi'"],
-          "correct": 1,
-          "explanation": "Anything inside a forever loop repeats continuously.",
-          "difficulty": "medium",
-          "hint": "Consider the literal meaning of the word “forever”."
+          "options": [
+            "It scrolls 'Hi' endlessly because there’s no stop condition",
+            "It only shows 'Hi' once because the display clears automatically",
+            "It shows 'Hi' five times, matching the number of LEDs",
+            "It waits for button A before showing 'Hi'"
+          ],
+          "correct": 0,
+          "explanation": "Because the text is inside a 'forever' block, it repeats continuously without stopping until the micro:bit is reset or turned off.",
+          "difficulty": "medium-hard",
+          "hint": "Does anything in the code tell it to stop?"
         },
         {
-          "question": "Which best describes the LED display on the micro:bit?",
+          "question": "The LED grid on a micro:bit can both show light and measure light levels. What type of device is it *mostly* considered?",
           "type": "multiple-choice",
-          "options": ["An input device", "An output device", "A storage device", "A power source"],
-          "correct": 1,
-          "explanation": "The LED display shows information to the user, so it’s an output.",
-          "difficulty": "medium",
-          "hint": "Does it read or show information?"
+          "options": [
+            "Both input and output, but mainly output",
+            "Only an input device",
+            "A storage device for variables",
+            "A power source for sensors"
+          ],
+          "correct": 0,
+          "explanation": "While the LED matrix can detect light levels, its primary role is to display information — so it’s mainly an output device.",
+          "difficulty": "medium-hard",
+          "hint": "It can sense light but that’s not its main purpose."
         },
         {
           "question": "Match each term to its definition.",
@@ -74,14 +84,19 @@
           "hint": "Cause → Event; order → Sequence; fixing → Debug."
         },
         {
-          "question": "Where can you test your program without a physical micro:bit?",
+          "question": "Where can you test your micro:bit program without using the real device?",
           "type": "multiple-choice",
-          "options": ["MakeCode simulator", "Battery pack", "USB folder", "LED matrix directly"],
+          "options": [
+            "In the MakeCode simulator on the screen",
+            "By opening the MICROBIT drive on your computer",
+            "By plugging in the battery pack only",
+            "In the serial data window"
+          ],
           "correct": 0,
-          "explanation": "MakeCode’s simulator lets you try ideas before flashing to the device.",
-          "definition": "SIMULATOR — software that mimics hardware behaviour.",
-          "difficulty": "medium",
-          "hint": "It’s built into the editor."
+          "explanation": "The MakeCode simulator runs your program virtually and lets you try buttons, shaking and LEDs on screen. The MICROBIT drive just stores files, the battery only powers the device, and the serial window only shows messages from a real one.",
+          "definition": "SIMULATOR — a virtual version of the micro:bit you can test inside MakeCode.",
+          "difficulty": "medium-hard",
+          "hint": "Which one shows a working virtual micro:bit on your screen?"
         },
         {
           "question": "Which statement about 'on button A pressed' is TRUE?",
