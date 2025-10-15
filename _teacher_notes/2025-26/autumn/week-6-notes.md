@@ -1,5 +1,4 @@
 ---
-
 layout: single
 title: ""
 permalink: /teacher-notes/2025-26/autumn/week-6-notes/
@@ -9,10 +8,10 @@ toc: true
 toc_sticky: true
 sidebar: false
 header:
-overlay_image: /assets/images/banner.png
-show_overlay_excerpt: false
-show_overlay_text: false
-------------------------
+  overlay_image: /assets/images/banner.png
+  show_overlay_excerpt: false
+  show_overlay_text: false
+---
 
 # Teacher Notes — Week 6
 
