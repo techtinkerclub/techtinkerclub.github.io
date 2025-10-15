@@ -4,20 +4,20 @@
       "title": "Week 1: Intro to Microcontrollers",
       "description": "Hardware, inputs/outputs, MakeCode basics, events & sequencing.",
       "questions": [
-         {
-         "question": "Which statement best describes the role of the microcontroller inside a micro:bit?",
-         "type": "multiple-choice",
-         "options": [
-           "It processes sensor inputs and controls outputs according to your code",
-           "It only stores your program in memory",
-           "It powers the LEDs and buttons directly without processing",
-           "It connects the micro:bit to the internet"
-         ],
-         "correct": 0,
-         "explanation": "The microcontroller is the 'brain' — it runs your program, reading inputs and sending signals to outputs.",
-         "definition": "MICROCONTROLLER — a small processor that executes code and manages inputs/outputs in embedded systems.",
-         "difficulty": "medium",
-         "hint": "Think of it as the part that actually runs your code and decides what to do next."
+        {
+          "question": "Which statement best describes the role of the microcontroller inside a micro:bit?",
+          "type": "multiple-choice",
+          "options": [
+            "It processes sensor inputs and controls outputs according to your code",
+            "It only stores your program in memory",
+            "It powers the LEDs and buttons directly without processing",
+            "It connects the micro:bit to the internet"
+          ],
+          "correct": 0,
+          "explanation": "The microcontroller is the 'brain' — it runs your program, reading inputs and sending signals to outputs.",
+          "definition": "MICROCONTROLLER — a small processor that executes code and manages inputs/outputs in embedded systems.",
+          "difficulty": "medium",
+          "hint": "Think of it as the part that actually runs your code and decides what to do next."
         },
         {
           "question": "Which of these is an INPUT on the micro:bit?",
@@ -150,7 +150,7 @@
       "title": "Week 2: Events & Random",
       "description": "Button events, dice rolling, randomness, simple probability.",
       "questions": [
-       {
+        {
           "question": "When does the code inside the block 'on button A pressed' actually run?",
           "type": "multiple-choice",
           "options": [
@@ -309,12 +309,7 @@
           "question": "Look at this code. Which symbol is checking if the score is exactly 10?",
           "type": "multiple-choice",
           "code": "if score = 10 then\n  show string \"Winner!\"",
-          "options": [
-            ">",
-            "<",
-            "=",
-            "≠"
-          ],
+          "options": [">", "<", "=", "≠"],
           "correct": 2,
           "explanation": "The '=' sign in the condition tests whether the variable 'score' is equal to 10. If so, it shows 'Winner!'.",
           "difficulty": "hard",
@@ -407,7 +402,12 @@
           "question": "Why can’t this ever show \"B\"?",
           "type": "multiple-choice",
           "code": "set n to 90\nif n >= 90 then\n  show string \"A\"\nelse if n >= 90 then\n  show string \"B\"\nelse\n  show string \"C\"",
-          "options": ["Because the second condition repeats the first", "Because n isn’t a number", "Because else must come first", "Because >= doesn’t work"],
+          "options": [
+            "Because the second condition repeats the first",
+            "Because n isn’t a number",
+            "Because else must come first",
+            "Because >= doesn’t work"
+          ],
           "correct": 0,
           "explanation": "The second branch is unreachable since it duplicates the first condition.",
           "difficulty": "hard",
@@ -730,142 +730,138 @@
           "explanation": "The pause shrinks each iteration, so beeps come quicker.",
           "difficulty": "hard",
           "hint": "Watch the pause value change."
-          
+        }
+      ]
+    },
+    "6": {
+      "title": "Week 6: Barrel Jumper — Basics",
+      "description": "Loops, sprites, coordinates, pause timing, scoring, and game-over logic.",
+      "unlocked": false,
+      "unlock_after": 5,
+      "questions": [
+        {
+          "id": "w6-q1",
+          "question": "Which block repeats a group of instructions forever?",
+          "type": "multiple-choice",
+          "options": [
+            "`repeat 4 times`",
+            "`pause (100) ms`",
+            "`forever`",
+            "`on button B pressed`"
+          ],
+          "correct": 2,
+          "explanation": "The `forever` block keeps running while the program is active. It’s commonly used as a game loop.",
+          "difficulty": "easy",
+          "hint": "Which block never stops unless the program ends?"
+        },
+        {
+          "id": "w6-q2",
+          "question": "Why do we use a `pause` block inside loops?",
+          "type": "multiple-choice",
+          "options": [
+            "To stop the program completely",
+            "To slow movement/animation so we can see it",
+            "To make LEDs brighter",
+            "To save the score"
+          ],
+          "correct": 1,
+          "explanation": "Pauses control timing so movement/animation is visible and not too fast.",
+          "difficulty": "easy",
+          "hint": "Think about speed and timing."
+        },
+        {
+          "id": "w6-q3",
+          "question": "On the micro:bit grid, what does the x value control?",
+          "type": "multiple-choice",
+          "options": [
+            "Up and down position",
+            "Left and right position",
+            "Brightness",
+            "Speed"
+          ],
+          "correct": 1,
+          "explanation": "x is left–right (0 = left edge, 4 = right edge). y is up–down.",
+          "difficulty": "easy",
+          "hint": "x-axis is horizontal."
+        },
+        {
+          "id": "w6-q4",
+          "question": "Which block creates a new sprite at a chosen position?",
+          "type": "multiple-choice",
+          "options": [
+            "`move by 1`",
+            "`create sprite at x: 0 y: 4`",
+            "`plot x y`",
+            "`if on edge, bounce`"
+          ],
+          "correct": 1,
+          "explanation": "`create sprite` makes a controllable object at the given coordinates.",
+          "difficulty": "easy",
+          "hint": "Look for the word ‘create’."
+        },
+        {
+          "id": "w6-q5",
+          "question": "What does this code do?",
+          "type": "multiple-choice",
+          "code": "barrel move by 1\\nbarrel if on edge, bounce",
+          "options": [
+            "Moves the barrel and stops at the wall",
+            "Moves the barrel back and forth across the screen",
+            "Draws a bouncing ball picture",
+            "Makes the jumper sprite jump"
+          ],
+          "correct": 1,
+          "explanation": "The barrel steps one LED each time and reverses direction at the edges.",
+          "difficulty": "medium",
+          "hint": "Bounce means reverse direction at an edge."
+        },
+        {
+          "id": "w6-q6",
+          "question": "When should the score increase in Barrel Jumper?",
+          "type": "multiple-choice",
+          "options": [
+            "When the jumper touches the barrel",
+            "Every time the barrel reaches the left edge (x = 0)",
+            "Every time the jumper jumps",
+            "When the game starts"
+          ],
+          "correct": 1,
+          "explanation": "We increment score when the barrel’s x position is 0 (left edge).",
+          "difficulty": "medium",
+          "hint": "We check the barrel’s x coordinate."
+        },
+        {
+          "id": "w6-q7",
+          "question": "What triggers a game over?",
+          "type": "multiple-choice",
+          "options": [
+            "The score is high",
+            "The jumper moves off the grid",
+            "The jumper touches the barrel",
+            "The barrel bounces three times"
+          ],
+          "correct": 2,
+          "explanation": "Collision (touching) between jumper and barrel ends the game.",
+          "difficulty": "easy",
+          "hint": "Think ‘collision detection’."
+        },
+        {
+          "id": "w6-q8",
+          "question": "Debugging: the jumper doesn’t move when B is pressed. Most likely cause?",
+          "type": "multiple-choice",
+          "code": "on button B pressed\\n    repeat 4 times\\n        jumper change y by -1\\n        pause (100) ms\\n    repeat 4 times\\n        jumper change y by +1\\n        pause (100) ms",
+          "options": [
+            "The repeats are outside the button event",
+            "The barrel is too fast",
+            "The speed variable is too small",
+            "Battery is low"
+          ],
+          "correct": 0,
+          "explanation": "The jump code must be inside the `on button B pressed` event to run on button press.",
+          "difficulty": "medium",
+          "hint": "Check where the code lives."
         }
       ]
     }
-  
-  {
-  "week": 6,
-  "title": "Barrel Jumper — Basics",
-  "unlocked": false,
-  "unlock_after": 5,
-  "questions": [
-    {
-      "id": "w6-q1",
-      "question": "Which block repeats a group of instructions forever?",
-      "type": "multiple-choice",
-      "options": [
-        "`repeat 4 times`",
-        "`pause (100) ms`",
-        "`forever`",
-        "`on button B pressed`"
-      ],
-      "correct": 2,
-      "explanation": "The `forever` block keeps running while the program is active. It’s commonly used as a game loop.",
-      "difficulty": "easy",
-      "hint": "Which block never stops unless the program ends?"
-    },
-    {
-      "id": "w6-q2",
-      "question": "Why do we use a `pause` block inside loops?",
-      "type": "multiple-choice",
-      "options": [
-        "To stop the program completely",
-        "To slow movement/animation so we can see it",
-        "To make LEDs brighter",
-        "To save the score"
-      ],
-      "correct": 1,
-      "explanation": "Pauses control timing so movement/animation is visible and not too fast.",
-      "difficulty": "easy",
-      "hint": "Think about speed and timing."
-    },
-    {
-      "id": "w6-q3",
-      "question": "On the micro:bit grid, what does the x value control?",
-      "type": "multiple-choice",
-      "options": [
-        "Up and down position",
-        "Left and right position",
-        "Brightness",
-        "Speed"
-      ],
-      "correct": 1,
-      "explanation": "x is left–right (0 = left edge, 4 = right edge). y is up–down.",
-      "difficulty": "easy",
-      "hint": "x-axis is horizontal."
-    },
-    {
-      "id": "w6-q4",
-      "question": "Which block creates a new sprite at a chosen position?",
-      "type": "multiple-choice",
-      "options": [
-        "`move by 1`",
-        "`create sprite at x: 0 y: 4`",
-        "`plot x y`",
-        "`if on edge, bounce`"
-      ],
-      "correct": 1,
-      "explanation": "`create sprite` makes a controllable object at the given coordinates.",
-      "difficulty": "easy",
-      "hint": "Look for the word ‘create’."
-    },
-    {
-      "id": "w6-q5",
-      "question": "What does this code do?",
-      "type": "multiple-choice",
-      "code": "barrel move by 1\\nbarrel if on edge, bounce",
-      "options": [
-        "Moves the barrel and stops at the wall",
-        "Moves the barrel back and forth across the screen",
-        "Draws a bouncing ball picture",
-        "Makes the jumper sprite jump"
-      ],
-      "correct": 1,
-      "explanation": "The barrel steps one LED each time and reverses direction at the edges.",
-      "difficulty": "medium",
-      "hint": "Bounce means reverse direction at an edge."
-    },
-    {
-      "id": "w6-q6",
-      "question": "When should the score increase in Barrel Jumper?",
-      "type": "multiple-choice",
-      "options": [
-        "When the jumper touches the barrel",
-        "Every time the barrel reaches the left edge (x = 0)",
-        "Every time the jumper jumps",
-        "When the game starts"
-      ],
-      "correct": 1,
-      "explanation": "We increment score when the barrel’s x position is 0 (left edge).",
-      "difficulty": "medium",
-      "hint": "We check the barrel’s x coordinate."
-    },
-    {
-      "id": "w6-q7",
-      "question": "What triggers a game over?",
-      "type": "multiple-choice",
-      "options": [
-        "The score is high",
-        "The jumper moves off the grid",
-        "The jumper touches the barrel",
-        "The barrel bounces three times"
-      ],
-      "correct": 2,
-      "explanation": "Collision (touching) between jumper and barrel ends the game.",
-      "difficulty": "easy",
-      "hint": "Think ‘collision detection’."
-    },
-    {
-      "id": "w6-q8",
-      "question": "Debugging: the jumper doesn’t move when B is pressed. Most likely cause?",
-      "type": "multiple-choice",
-      "code": "on button B pressed\\n    repeat 4 times\\n        jumper change y by -1\\n        pause (100) ms\\n    repeat 4 times\\n        jumper change y by +1\\n        pause (100) ms",
-      "options": [
-        "The repeats are outside the button event",
-        "The barrel is too fast",
-        "The speed variable is too small",
-        "Battery is low"
-      ],
-      "correct": 0,
-      "explanation": "The jump code must be inside the `on button B pressed` event to run on button press.",
-      "difficulty": "medium",
-      "hint": "Check where the code lives."
-    }
-    
-  ]
+  }
 }
-}
-}
-
