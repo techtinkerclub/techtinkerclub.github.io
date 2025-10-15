@@ -150,14 +150,19 @@
       "title": "Week 2: Events & Random",
       "description": "Button events, dice rolling, randomness, simple probability.",
       "questions": [
-        {
-          "question": "When does code inside 'on button A pressed' run?",
+       {
+          "question": "When does the code inside the block 'on button A pressed' actually run?",
           "type": "multiple-choice",
-          "options": ["On its own every second", "Only when A is pressed", "Only at the start", "When the device shakes"],
+          "options": [
+            "Whenever any button is pressed",
+            "Only when button A is pressed down",
+            "Every few seconds automatically",
+            "When button A is released"
+          ],
           "correct": 1,
-          "explanation": "Event code runs when the specified event happens.",
-          "difficulty": "easy",
-          "hint": "It “listens” for a specific action."
+          "explanation": "The code runs only when button A is pressed down. Other buttons or automatic timing don’t trigger it.",
+          "difficulty": "medium",
+          "hint": "It listens for one exact action on one button."
         },
         {
           "question": "What does 'random 1 to 6' give you?",
@@ -179,14 +184,19 @@
           "hint": "It’s the “when” that makes code start."
         },
         {
-          "question": "This dice roller runs on Button A. What will it do?",
+          "question": "This dice roller runs when you press Button A. What happens each time you press it?",
           "type": "multiple-choice",
           "code": "on button A pressed\n  set roll to random 1 to 6\n  show number roll",
-          "options": ["Always shows 1", "Shows a random 1–6", "Shows two numbers", "Shows nothing"],
-          "correct": 1,
-          "explanation": "Each press generates and shows a single random die value.",
-          "difficulty": "medium",
-          "hint": "Follow the steps: press → pick → show."
+          "options": [
+            "It picks a new number from 1 to 6 and shows it",
+            "It keeps showing the same number every time",
+            "It adds 1 to the previous roll and shows that",
+            "It shows all six numbers quickly one after another"
+          ],
+          "correct": 0,
+          "explanation": "Each button A press sets a new random value between 1 and 6, then displays that single number.",
+          "difficulty": "medium-hard",
+          "hint": "Think about what the 'random 1 to 6' block does on *each* button press."
         },
         {
           "question": "What is the chance of rolling a 4 on a fair six-sided die?",
@@ -219,51 +229,66 @@
           "question": "Match the event to when it triggers.",
           "type": "drag-drop",
           "terms": ["on start", "on button A pressed", "on shake", "forever"],
-          "definitions": ["Runs when device turns on", "Runs when A is pressed", "Runs when moved/shaken", "Runs continuously"],
+          "definitions": ["Runs when device turns on", "Runs when A is pressed", "Runs when moved", "Runs continuously"],
           "correctMatches": [0, 1, 2, 3],
           "explanation": "Each event maps to a different trigger; forever has no trigger.",
           "difficulty": "medium",
           "hint": "Think: beginning, button, motion, always."
         },
         {
-          "question": "What gets shown when A is pressed?",
+          "question": "What message might the micro:bit show when you press Button A?",
           "type": "multiple-choice",
           "code": "on button A pressed\n  set x to random 1..10\n  if x > 5 then\n    show string \"Big\"\n  else\n    show string \"Small\"",
-          "options": ["Always 'Big'", "Always 'Small'", "'Big' if x is 6–10; otherwise 'Small'", "Nothing happens"],
-          "correct": 2,
-          "explanation": "The conditional splits 1..10 into two ranges: >5 and ≤5.",
-          "difficulty": "hard",
-          "hint": "Which numbers are greater than 5?"
+          "options": [
+            "It shows 'Big' or 'Small' depending on the random number",
+            "It always shows 'Big' because 10 is the largest number",
+            "It shows 'Small' because x starts at 0",
+            "It shows both 'Big' and 'Small' one after another"
+          ],
+          "correct": 0,
+          "explanation": "Each time you press A, a random number 1–10 is picked. If that number is greater than 5, 'Big' appears; otherwise 'Small'.",
+          "difficulty": "medium-hard",
+          "hint": "Remember: '>' means greater than."
         },
         {
           "question": "What is shown for this coin flip?",
           "type": "multiple-choice",
           "code": "on button B pressed\n  set flip to random 0..1\n  if flip = 0 then\n    show string \"Heads\"\n  else\n    show string \"Tails\"",
-          "options": ["Heads only", "Tails only", "Heads or Tails (random)", "Error"],
+          "options": ["Heads only", "Tails only", "Heads or Tails", "Error"],
           "correct": 2,
           "explanation": "Random 0..1 maps perfectly to a fair coin.",
           "difficulty": "hard",
           "hint": "Two possible values → two possible messages."
         },
         {
-          "question": "Why might this show two different numbers quickly?",
+          "question": "When this code runs, you sometimes see two different numbers flash quickly. Why?",
           "type": "multiple-choice",
           "code": "on button A pressed\n  show number random 1..6\n  show number random 1..6",
-          "options": ["It doesn’t pick randomly", "It picks two random numbers in a row", "The button is broken", "MakeCode can’t show numbers"],
-          "correct": 1,
-          "explanation": "It generates a fresh random value for each show.",
+          "options": [
+            "Because each call to 'random 1..6' generates a new value right away",
+            "Because the same random value is shown twice at high speed",
+            "Because the micro:bit remembers the first number and repeats it",
+            "Because the button is pressed for too long"
+          ],
+          "correct": 0,
+          "explanation": "Both lines use 'random 1..6', so two independent random numbers are shown in quick succession. It’s not caused by the button or timing.",
           "difficulty": "hard",
-          "hint": "Count how many random calls happen."
+          "hint": "Does the code reuse the first random value or call it again?"
         },
         {
-          "question": "What will the code display?",
+          "question": "After pressing Button A five times, what number will the micro:bit show, and why?",
           "type": "multiple-choice",
           "code": "on start\n  set count to 0\non button A pressed\n  change count by 1\n  show number count",
-          "options": ["Always 0", "1, then 2, then 3 as you press", "A random number", "Nothing"],
-          "correct": 1,
-          "explanation": "It increments and shows the running total of presses.",
+          "options": [
+            "5, because 'count' increases by 1 each time and keeps its value",
+            "1, because 'count' resets to 0 on every press",
+            "A random number between 1 and 5",
+            "0, because the program only runs 'on start'"
+          ],
+          "correct": 0,
+          "explanation": "The variable 'count' is stored in memory, so it keeps increasing — 1, 2, 3, 4, 5 — with each press.",
           "difficulty": "hard",
-          "hint": "Start value is 0; each press changes it."
+          "hint": "Does 'set count to 0' happen each time you press the button?"
         }
       ]
     },
