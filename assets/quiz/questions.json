@@ -33,12 +33,7 @@
           "question": "In the code below, which block ensures the text appears only one time before the heart starts flashing?",
           "type": "multiple-choice",
           "code": "on start\n  show string \"Hello!\"\nforever\n  show icon Heart\n  pause(500)\n  clear screen\n  pause(500)",
-          "options": [
-            "forever",
-            "on start",
-            "show string \"Hello!\"",
-            "pause(500)"
-          ],
+          "options": ["forever", "on start", "show string \"Hello!\"", "pause(500)"],
           "correct": 1,
           "explanation": "Anything inside 'on start' runs just once. The 'forever' loop repeats endlessly, but 'on start' finishes after its commands.",
           "difficulty": "medium-hard",
@@ -93,7 +88,7 @@
             "In the serial data window"
           ],
           "correct": 0,
-          "explanation": "The MakeCode simulator runs your program virtually and lets you try buttons, shaking and LEDs on screen. The MICROBIT drive just stores files, the battery only powers the device, and the serial window only shows messages from a real one.",
+          "explanation": "The MakeCode simulator runs your program virtually and lets you try buttons, shaking and LEDs on screen.",
           "definition": "SIMULATOR — a virtual version of the micro:bit you can test inside MakeCode.",
           "difficulty": "medium-hard",
           "hint": "Which one shows a working virtual micro:bit on your screen?"
@@ -271,7 +266,7 @@
             "Because the button is pressed for too long"
           ],
           "correct": 0,
-          "explanation": "Both lines use 'random 1..6', so two independent random numbers are shown in quick succession. It’s not caused by the button or timing.",
+          "explanation": "Both lines use 'random 1..6', so two independent random numbers are shown in quick succession.",
           "difficulty": "hard",
           "hint": "Does the code reuse the first random value or call it again?"
         },
@@ -286,7 +281,7 @@
             "0, because the program only runs 'on start'"
           ],
           "correct": 0,
-          "explanation": "The variable 'count' is stored in memory, so it keeps increasing — 1, 2, 3, 4, 5 — with each press.",
+          "explanation": "The variable 'count' keeps increasing — 1, 2, 3, 4, 5 — with each press.",
           "difficulty": "hard",
           "hint": "Does 'set count to 0' happen each time you press the button?"
         }
@@ -311,9 +306,9 @@
           "code": "if score = 10 then\n  show string \"Winner!\"",
           "options": [">", "<", "=", "≠"],
           "correct": 2,
-          "explanation": "The '=' sign in the condition tests whether the variable 'score' is equal to 10. If so, it shows 'Winner!'.",
+          "explanation": "The '=' sign checks equality.",
           "difficulty": "hard",
-          "hint": "It compares, not adds — like asking 'are they the same?'"
+          "hint": "It compares, not adds."
         },
         {
           "question": "The micro:bit picks a random number 1..3 to play Rock–Paper–Scissors. What must the code do next to decide who wins?",
@@ -325,7 +320,7 @@
             "Wait 1 second before showing a smiley"
           ],
           "correct": 0,
-          "explanation": "After choosing randomly, the program must compare both choices using if–else logic to decide who wins.",
+          "explanation": "After choosing randomly, the program compares both choices using if–else logic.",
           "difficulty": "medium-hard",
           "hint": "How does the program *decide* which move wins?"
         },
@@ -470,14 +465,9 @@
           "question": "If the classroom light level is 80, what message appears when this code runs?",
           "type": "multiple-choice",
           "code": "set lightLevel to light level\nif lightLevel < 50 then\n  show string \"Too Dark!\"\nelse\n  show string \"OK\"",
-          "options": [
-            "\"Too Dark!\" because 80 is still low",
-            "\"OK\" because 80 is higher than the threshold",
-            "\"Too Dark!\" and then \"OK\"",
-            "It shows nothing because light level never changes"
-          ],
+          "options": ["\"Too Dark!\"", "\"OK\"", "\"Too Dark!\" then \"OK\"", "Nothing"],
           "correct": 1,
-          "explanation": "The condition 'lightLevel < 50' is false when lightLevel = 80, so the program runs the 'else' branch and shows 'OK'.",
+          "explanation": "The condition is false when lightLevel = 80, so it shows 'OK'.",
           "difficulty": "hard",
           "hint": "Which branch runs when the condition is false?"
         },
@@ -507,7 +497,7 @@
           "code": "set temp to temperature (onboard sensor)\nset threshold to 30\nif temp > threshold then\n  show string \"Too Hot!\"\nelse\n  show string \"OK\"",
           "options": ["Too Hot!", "OK", "35", "Nothing"],
           "correct": 0,
-          "explanation": "35 > 30 is true, so it shows “Too Hot!”.",
+          "explanation": "35 > 30 is true, so it shows 'Too Hot!'.",
           "difficulty": "medium",
           "hint": "Compare the numbers directly."
         },
@@ -521,21 +511,16 @@
             "set light to temperature"
           ],
           "correct": 0,
-          "explanation": "The command 'set light to light level' copies the sensor’s current reading into the variable called 'light'. The others either use fixed numbers or the wrong sensor.",
+          "explanation": "The command stores the live sensor reading into the variable.",
           "difficulty": "medium-hard",
-          "hint": "Only one uses the actual light sensor reading, not a constant or a different input."
+          "hint": "Only one uses the actual light sensor reading."
         },
         {
           "question": "Where does the temperature value come from in micro:bit projects?",
           "type": "multiple-choice",
-          "options": [
-            "The onboard temperature sensor",
-            "An external sensor is mandatory",
-            "The light sensor",
-            "The USB cable"
-          ],
+          "options": ["Onboard temperature sensor", "An external sensor is mandatory", "The light sensor", "The USB cable"],
           "correct": 0,
-          "explanation": "For these activities we use the micro:bit’s onboard sensor.",
+          "explanation": "We use the micro:bit’s onboard sensor.",
           "difficulty": "hard",
           "hint": "No extra hardware this week."
         },
@@ -543,14 +528,9 @@
           "question": "You want your plant monitor to warn only when it’s cold AND dark. Which line should fill the blank?",
           "type": "multiple-choice",
           "code": "set temp to temperature (onboard)\nset light to light level (onboard)\nif __________ then\n  show string \"Cold & Dark\"",
-          "options": [
-            "temp < 18",
-            "light < 50",
-            "temp < 18 AND light < 50",
-            "temp < 18 OR light < 50"
-          ],
+          "options": ["temp < 18", "light < 50", "temp < 18 AND light < 50", "temp < 18 OR light < 50"],
           "correct": 2,
-          "explanation": "Using AND means both the temperature and the light readings must be below their thresholds for the warning to appear.",
+          "explanation": "AND requires both conditions to be true.",
           "difficulty": "hard",
           "hint": "Which condition checks that both sensors are below their limits?"
         },
@@ -558,14 +538,9 @@
           "question": "What’s the logic mistake?",
           "type": "multiple-choice",
           "code": "set temp to temperature\nif temp > 30 and temp > 40 then\n  show string \"Hot!\"\nelse\n  show string \"OK\"",
-          "options": [
-            "Nothing’s wrong",
-            "It should use OR instead of AND",
-            "The AND makes the first part redundant; it’s effectively temp > 40",
-            "Use = instead of >"
-          ],
+          "options": ["Nothing’s wrong", "Use OR instead of AND", "The first comparison is redundant; effectively temp > 40", "Use = instead of >"],
           "correct": 2,
-          "explanation": "If both are >, the larger threshold dominates; the first comparison is pointless.",
+          "explanation": "If both conditions are '>', the larger threshold dominates.",
           "difficulty": "hard",
           "hint": "Which comparison is stricter?"
         },
@@ -623,9 +598,9 @@
             "Show five hearts once and then stop"
           ],
           "correct": 1,
-          "explanation": "The inner 'repeat 5 times' loop creates five quick heartbeats, then the outer 'forever' loop makes the pattern repeat endlessly with a short rest in between.",
+          "explanation": "The inner 'repeat 5' loop creates five quick heartbeats; the outer 'forever' repeats the pattern.",
           "difficulty": "medium-hard",
-          "hint": "Think about how the 'repeat 5 times' works inside the 'forever' loop."
+          "hint": "Think about how the inner loop runs inside the forever loop."
         },
         {
           "question": "What numbers will be shown?",
@@ -647,7 +622,7 @@
             "Fixing syntax errors"
           ],
           "correct": 1,
-          "explanation": "millis (or elapsed ms) lets you time updates precisely (e.g., speed).",
+          "explanation": "millis/elapsed time lets you time updates precisely (e.g., speed).",
           "difficulty": "medium",
           "hint": "Think: timers and intervals."
         },
@@ -655,14 +630,9 @@
           "question": "What movement happens on the LED screen?",
           "type": "multiple-choice",
           "code": "set sprite to create sprite at x 0 y 2\nrepeat 4 times\n  change sprite x by 1\n  pause 150",
-          "options": [
-            "Moves left 4 steps",
-            "Moves right 4 steps",
-            "Does not move",
-            "Teleports randomly"
-          ],
+          "options": ["Moves left 4 steps", "Moves right 4 steps", "Does not move", "Teleports randomly"],
           "correct": 1,
-          "explanation": "Changing the sprite’s x by +1 four times moves it 4 columns to the right.",
+          "explanation": "Changing x by +1 four times moves it 4 columns to the right.",
           "difficulty": "medium-hard",
           "hint": "Positive x goes right; negative x goes left."
         },
@@ -677,7 +647,7 @@
             "Repeats as long as a test remains true"
           ],
           "correctMatches": [2, 0, 3, 1],
-          "explanation": "‘forever’ never ends, ‘repeat N times’ runs a fixed count, ‘while’ depends on a condition, and ‘for’ iterates through a sequence of values.",
+          "explanation": "forever never ends; repeat N stops; while depends on a condition; for iterates a sequence.",
           "difficulty": "medium-hard",
           "hint": "Think: endless / fixed / condition / counting."
         },
@@ -695,14 +665,9 @@
           "question": "This loop is part of a game timer. What happens when the code runs?",
           "type": "multiple-choice",
           "code": "set counter to 9\nwhile counter > 0\n    if counter < 0 then\n        change counter by -1\n    pause 100",
-          "options": [
-            "It counts down to 0 and stops",
-            "It becomes an infinite loop and never ends",
-            "It runs exactly 9 times then stops",
-            "It crashes immediately"
-          ],
+          "options": ["Counts to 0 and stops", "Infinite loop", "Runs exactly 9 times", "Crashes immediately"],
           "correct": 1,
-          "explanation": "The WHILE loop keeps running while counter > 0, but the IF condition inside only runs when counter < 0, which never happens. So the counter never changes, and the loop never ends.",
+          "explanation": "The IF never runs (condition counter<0 is never true), so counter never changes; loop never ends.",
           "hint": "Does the IF condition ever become true?",
           "difficulty": "hard"
         },
@@ -720,12 +685,7 @@
           "question": "What pattern of beeps will you hear?",
           "type": "multiple-choice",
           "code": "set wait to 600\nrepeat 3 times\n  play tone C\n  pause wait\n  change wait by -200",
-          "options": [
-            "Three beeps with equal spacing",
-            "Three beeps, faster each time",
-            "One long continuous beep",
-            "Beep only once"
-          ],
+          "options": ["Equal spacing", "Faster each time", "One long beep", "Only once"],
           "correct": 1,
           "explanation": "The pause shrinks each iteration, so beeps come quicker.",
           "difficulty": "hard",
@@ -734,132 +694,155 @@
       ]
     },
     "6": {
-      "title": "Week 6: Barrel Jumper — Basics",
-      "description": "Loops, sprites, coordinates, pause timing, scoring, and game-over logic.",
+      "title": "Week 6: Core Mechanics — Loops, Logic, Timing & Coordinates",
+      "description": "Reusable challenge set mixing loops, variables, timing, coordinates, and debugging.",
       "unlocked": false,
       "unlock_after": 5,
       "questions": [
         {
           "id": "w6-q1",
-          "question": "Which block repeats a group of instructions forever?",
+          "question": "A loop updates a sprite once per iteration and then pauses for 80 ms. Approximately how many updates happen in 2 seconds?",
           "type": "multiple-choice",
-          "options": [
-            "`repeat 4 times`",
-            "`pause (100) ms`",
-            "`forever`",
-            "`on button B pressed`"
-          ],
-          "correct": 2,
-          "explanation": "The `forever` block keeps running while the program is active. It’s commonly used as a game loop.",
-          "difficulty": "easy",
-          "hint": "Which block never stops unless the program ends?"
+          "options": ["20", "25", "40", "80"],
+          "correct": 1,
+          "explanation": "2,000 ms / 80 ms ≈ 25 iterations (rounding down).",
+          "difficulty": "medium",
+          "hint": "Convert seconds to milliseconds first."
         },
         {
           "id": "w6-q2",
-          "question": "Why do we use a `pause` block inside loops?",
+          "question": "Pseudocode trace: starting at x = 2 on a 0–4 grid.\n\nrepeat 3 times\n  if x > 0 then change x by -1\nend\nWhat is x after the loop?",
           "type": "multiple-choice",
-          "options": [
-            "To stop the program completely",
-            "To slow movement/animation so we can see it",
-            "To make LEDs brighter",
-            "To save the score"
-          ],
+          "options": ["-1", "0", "1", "2"],
           "correct": 1,
-          "explanation": "Pauses control timing so movement/animation is visible and not too fast.",
-          "difficulty": "easy",
-          "hint": "Think about speed and timing."
+          "explanation": "Moves left while x>0: 2→1→0; then stop, final x = 0.",
+          "difficulty": "medium",
+          "hint": "How many times can you subtract 1 before x stops being > 0?"
         },
         {
           "id": "w6-q3",
-          "question": "On the micro:bit grid, what does the x value control?",
+          "question": "A program increments score when an event occurs. It begins with score = 3 and speed = 200 ms. The event happens 7 times; each time speed decreases by 10. What are the final values?",
           "type": "multiple-choice",
           "options": [
-            "Up and down position",
-            "Left and right position",
-            "Brightness",
-            "Speed"
+            "score = 7, speed = 130",
+            "score = 10, speed = 130",
+            "score = 10, speed = 120",
+            "score = 7, speed = 120"
           ],
           "correct": 1,
-          "explanation": "x is left–right (0 = left edge, 4 = right edge). y is up–down.",
-          "difficulty": "easy",
-          "hint": "x-axis is horizontal."
+          "explanation": "Score: 3 + 7 = 10. Speed: 200 − (7×10) = 130 ms.",
+          "difficulty": "medium",
+          "hint": "Update both variables independently."
         },
         {
           "id": "w6-q4",
-          "question": "Which block creates a new sprite at a chosen position?",
+          "question": "Read & reason:\n\nforever\n  update world\n  if collision = true then\n    game over\n  show number score\n\nWhich statement is most accurate?",
           "type": "multiple-choice",
           "options": [
-            "`move by 1`",
-            "`create sprite at x: 0 y: 4`",
-            "`plot x y`",
-            "`if on edge, bounce`"
+            "The score will always show once after game over.",
+            "The score will never change during the game.",
+            "Execution stops at 'game over', so code after it may not run.",
+            "The loop restarts from the top even after 'game over'."
           ],
-          "correct": 1,
-          "explanation": "`create sprite` makes a controllable object at the given coordinates.",
-          "difficulty": "easy",
-          "hint": "Look for the word ‘create’."
+          "correct": 2,
+          "explanation": "In typical flows, 'game over' ends execution; statements after it do not run.",
+          "difficulty": "hard",
+          "hint": "What usually happens when you end a program?"
         },
         {
           "id": "w6-q5",
-          "question": "What does this code do?",
+          "question": "Choose the correct condition to trigger an alert only when it is dark AND Button A is pressed.",
           "type": "multiple-choice",
-          "code": "barrel move by 1\\nbarrel if on edge, bounce",
           "options": [
-            "Moves the barrel and stops at the wall",
-            "Moves the barrel back and forth across the screen",
-            "Draws a bouncing ball picture",
-            "Makes the jumper sprite jump"
+            "if light < 50 OR buttonA is pressed",
+            "if light < 50 AND buttonA is pressed",
+            "if light >= 50 AND buttonA is pressed",
+            "if buttonA is pressed"
           ],
           "correct": 1,
-          "explanation": "The barrel steps one LED each time and reverses direction at the edges.",
+          "explanation": "Both conditions must be true simultaneously.",
           "difficulty": "medium",
-          "hint": "Bounce means reverse direction at an edge."
+          "hint": "We want both conditions at the same time."
         },
         {
           "id": "w6-q6",
-          "question": "When should the score increase in Barrel Jumper?",
+          "question": "Pseudocode math:\n\nset c = 1\nrepeat 5 times\n  change c by 2\nend\nWhat is c after the loop?",
           "type": "multiple-choice",
-          "options": [
-            "When the jumper touches the barrel",
-            "Every time the barrel reaches the left edge (x = 0)",
-            "Every time the jumper jumps",
-            "When the game starts"
-          ],
-          "correct": 1,
-          "explanation": "We increment score when the barrel’s x position is 0 (left edge).",
+          "options": ["7", "9", "11", "12"],
+          "correct": 2,
+          "explanation": "c increases by 2 five times: 1 + 10 = 11.",
           "difficulty": "medium",
-          "hint": "We check the barrel’s x coordinate."
+          "hint": "Repeated addition."
         },
         {
           "id": "w6-q7",
-          "question": "What triggers a game over?",
+          "question": "Timing with a counter:\n\nset count = 0\nset start = millis()\nwhile millis() < start + 1000\n  change count by 1\n  pause (50)\nend\nAbout how many times does count increase?",
           "type": "multiple-choice",
-          "options": [
-            "The score is high",
-            "The jumper moves off the grid",
-            "The jumper touches the barrel",
-            "The barrel bounces three times"
-          ],
+          "options": ["10", "15", "20", "50"],
           "correct": 2,
-          "explanation": "Collision (touching) between jumper and barrel ends the game.",
-          "difficulty": "easy",
-          "hint": "Think ‘collision detection’."
+          "explanation": "≈ 1000/50 = 20 increments (ignoring small overheads).",
+          "difficulty": "hard",
+          "hint": "Divide total time by pause time."
         },
         {
           "id": "w6-q8",
-          "question": "Debugging: the jumper doesn’t move when B is pressed. Most likely cause?",
+          "question": "Nested loops on a 5×5 LED grid:\n\nfor x from 0 to 4\n  for y from 0 to 4\n    plot (x, y)\n  end\nend\nHow many times does 'plot' run?",
           "type": "multiple-choice",
-          "code": "on button B pressed\\n    repeat 4 times\\n        jumper change y by -1\\n        pause (100) ms\\n    repeat 4 times\\n        jumper change y by +1\\n        pause (100) ms",
+          "options": ["5", "10", "20", "25"],
+          "correct": 3,
+          "explanation": "5×5 = 25 total iterations.",
+          "difficulty": "easy",
+          "hint": "Multiply the sizes of both ranges."
+        },
+        {
+          "id": "w6-q9",
+          "question": "Directional bounce (pseudocode): start x = 2, dir = +1 on a 0–4 line.\n\nrepeat 6 times\n  if x = 4 then set dir = -1\n  if x = 0 then set dir = +1\n  change x by dir\nend\nAfter the loop, what are x and dir?",
+          "type": "multiple-choice",
           "options": [
-            "The repeats are outside the button event",
-            "The barrel is too fast",
-            "The speed variable is too small",
-            "Battery is low"
+            "x = 0, dir = -1",
+            "x = 0, dir = +1",
+            "x = 2, dir = -1",
+            "x = 4, dir = -1"
           ],
           "correct": 0,
-          "explanation": "The jump code must be inside the `on button B pressed` event to run on button press.",
+          "explanation": "Trace: 2→3→4 (flip next)→3→2→1→0; after 6 steps, x=0 and dir is -1 (flip would occur next).",
+          "difficulty": "hard",
+          "hint": "Check when dir flips: before or after moving?"
+        },
+        {
+          "id": "w6-q10",
+          "question": "Bug hunt: Why does this code keep the score at 0?\n\nset score = 0\nforever\n  if event then change score by 1\n  set score = 0\nend",
+          "type": "multiple-choice",
+          "options": [
+            "The event never happens",
+            "The score is reset to 0 every loop iteration",
+            "Variables cannot be changed inside forever",
+            "The change block only works once"
+          ],
+          "correct": 1,
+          "explanation": "The reset happens on every pass, wiping any increment.",
           "difficulty": "medium",
-          "hint": "Check where the code lives."
+          "hint": "Look at where 'set score = 0' is placed."
+        },
+        {
+          "id": "w6-q11",
+          "question": "Coordinate reasoning: A sprite starts at (x=1, y=4). The code runs:\n\nrepeat 2 times\n  if x < 4 then change x by 2 else change x by -1\nend\nWhat is the final x?",
+          "type": "multiple-choice",
+          "options": ["0", "1", "3", "4"],
+          "correct": 3,
+          "explanation": "Iteration 1: 1<4 → x=3. Iteration 2: 3<4 → x=5 → clamped to edge → x=4 (typical grid bounds).",
+          "difficulty": "hard",
+          "hint": "Think about hitting/exceeding the right boundary."
+        },
+        {
+          "id": "w6-q12",
+          "question": "Ordering effects: Which placement better ensures motion appears smooth?\nA) update position → draw → pause\nB) draw → pause → update position",
+          "type": "multiple-choice",
+          "options": ["A only", "B only", "Both are identical", "Neither causes smooth motion"],
+          "correct": 0,
+          "explanation": "Update then draw then pause is the common pattern for smooth, predictable updates.",
+          "difficulty": "medium",
+          "hint": "Consider the frame you’re showing vs. when you move."
         }
       ]
     }
