@@ -1,10 +1,11 @@
-/* Tech Tinker Club Quiz Engine
+/* Tech Tinker Club Quiz Engine (with post-submit lock)
    ------------------------------------------------------------
    - Works with Canva-style JSON (top-level { weeks: {...} } or direct weeks object)
    - 12-week bar: shows all weeks; greyed if no questions or locked:true
    - MCQ and Drag&Drop (Match) question types
    - DnD FIX: dropping onto a filled zone returns the prior term to the pool
    - DnD FIX: you can always drag from a zone back to the pool
+   - Lock after first submission: disables options/drag and hides Submit
    - Clearer Hint / Submit / Next buttons
    - Small debug hooks in console
 */
@@ -26,7 +27,8 @@
     score: 0,
     selected: null,     // MCQ selected index
     dragAnswers: {},    // for Match: defIndex -> termIndex
-    hintUsed: false
+    hintUsed: false,
+    locked: false       // NEW: lock current question after first submit
   };
 
   // ---------- data load & normalize ----------
@@ -144,7 +146,6 @@
     <div class="item"><div class="num" id="qscore">${state.score}</div><div class="label">Score</div></div>
     <div class="item"><div class="num" id="qprog">0%</div><div class="label">Progress</div></div>
     `;
-    
     card.appendChild(score);
 
     // Progress
@@ -173,6 +174,11 @@
     const w = state.weeks[state.currentWeek];
     const q = w.questions[state.idx];
 
+    // reset per-question state (NEW)
+    state.locked = false;
+    state.selected = null;
+    state.hintUsed = false;
+
     qs('#qcur').textContent = state.idx+1;
     qs('#qtot').textContent = w.questions.length;
     qs('#qscore').textContent = state.score;
@@ -195,16 +201,13 @@
     card.appendChild(el('div','', '')).id = 'tqc-hint';
 
     if (q.type === 'match'){
-      // --------- DRAG & DROP (Terms -> Definitions) ----------
-      // left: pool of terms (draggable)
-      // right: definition zones (droppable, one term each)
+      // --------- DRAG & DROP ----------
       const dd = el('div','tqc-dd');
 
       // LEFT (pool)
       const left = el('div','tqc-col');
       left.appendChild(el('div','tqc-col-h','📝 Terms'));
       const pool = el('div','tqc-pool'); pool.id = 'tqc-pool';
-      // shuffle order for variety
       const order = [...q.terms.keys()];
       for (let i=order.length-1; i>0; i--){
         const j = Math.floor(Math.random()*(i+1));
@@ -221,12 +224,12 @@
       left.appendChild(pool);
 
       // Make the pool a valid drop target (to return terms)
-      pool.addEventListener('dragover', evt => { evt.preventDefault(); });
+      pool.addEventListener('dragover', evt => { if (!state.locked) evt.preventDefault(); });
       pool.addEventListener('drop', (evt)=>{
+        if (state.locked) return;
         evt.preventDefault();
         const termIndex = evt.dataTransfer.getData('text/plain');
         if (termIndex === '' || termIndex == null) return;
-        // move dragged element from any zone back to pool
         const dragged = qs(`.tqc-term[data-term-index="${termIndex}"]`);
         if (dragged) pool.appendChild(dragged);
       });
@@ -238,10 +241,10 @@
       q.definitions.forEach((d, i)=>{
         const z = el('div','tqc-drop', d);
         z.dataset.defIndex = String(i);
-        z.addEventListener('dragover', e => e.preventDefault());
-        z.addEventListener('dragenter', e => z.classList.add('drag-over'));
+        z.addEventListener('dragover', e => { if (!state.locked) e.preventDefault(); });
+        z.addEventListener('dragenter', e => { if (!state.locked) z.classList.add('drag-over'); });
         z.addEventListener('dragleave', e => z.classList.remove('drag-over'));
-        z.addEventListener('drop', e => onDropZone(e, pool));
+        z.addEventListener('drop', e => { if (!state.locked) onDropZone(e, pool); });
         rwrap.appendChild(z);
       });
       right.appendChild(rwrap);
@@ -251,13 +254,13 @@
       card.appendChild(dd);
 
       state.dragAnswers = {}; // reset
-
     } else {
       // --------- MCQ ----------
       const grid = el('div','tqc-options');
       q.options.forEach((opt, i)=>{
         const o = el('div','tqc-option', opt);
         o.addEventListener('click', ()=>{
+          if (state.locked) return; // NEW: ignore clicks after submit
           qsa('.tqc-option', grid).forEach(x=>x.removeAttribute('aria-selected'));
           o.setAttribute('aria-selected','true');
           state.selected = i;
@@ -273,7 +276,7 @@
     if (q.hint && q.hint.trim().length){
       const hintBtn = el('button','tqc-hint','💡 Hint');
       hintBtn.addEventListener('click', ()=>{
-        if (state.hintUsed) return;
+        if (state.hintUsed || state.locked) return;
         state.hintUsed = true;
         hintBtn.disabled = true;
         const hp = el('div','tqc-hint-panel', `<strong>Hint:</strong> ${q.hint}`);
@@ -292,14 +295,11 @@
     card.appendChild(fb);
 
     box.appendChild(card);
-
-    // reset per-question state
-    state.selected = null;
-    state.hintUsed = false;
   }
 
   // ---------- DnD handlers ----------
   function onDragStart(e){
+    if (state.locked) { e.preventDefault(); return; }
     e.dataTransfer.setData('text/plain', e.target.dataset.termIndex);
     e.target.classList.add('dragging');
   }
@@ -319,16 +319,17 @@
     const dragged = qs(`.tqc-term[data-term-index="${termIndex}"]`);
     if (!dragged) return;
 
-    // If zone already has a term, return it to pool (FIX: no more “lost” terms)
+    // If zone already has a term, return it to pool (FIX)
     const existing = z.querySelector('.tqc-term');
     if (existing) poolEl.appendChild(existing);
 
-    // If dragged lives inside another zone, remove it from there first (DOM append below handles it)
     z.appendChild(dragged);
   }
 
   // ---------- submit & feedback ----------
   function submitAnswer(){
+    if (state.locked) return; // NEW: block double submit
+
     const w = state.weeks[state.currentWeek];
     const q = w.questions[state.idx];
     let isCorrect = false;
@@ -345,7 +346,7 @@
         }
       });
 
-      // Must fill all zones
+      // Must fill all zones correctly
       isCorrect = zones.every((z, i)=>{
         const user = state.dragAnswers[i];
         return typeof user === 'number' && user === q.correctMatches[i];
@@ -375,7 +376,41 @@
 
     if (isCorrect) state.score++;
 
-    // Feedback text block
+    // ---- NEW: lock the UI so the user can’t change & resubmit ----
+    state.locked = true;
+
+    // 1) Disable/Hide Submit
+    const submitBtn = qs('.tqc-submit');
+    if (submitBtn){
+      submitBtn.disabled = true;
+      submitBtn.classList.add('tqc-hidden');
+      submitBtn.setAttribute('aria-disabled','true');
+    }
+
+    // 2) Disable Hint (if present)
+    const hintBtn = qs('.tqc-hint');
+    if (hintBtn){
+      hintBtn.disabled = true;
+      hintBtn.setAttribute('aria-disabled','true');
+    }
+
+    // 3) Lock MCQ options (visual + a11y)
+    qsa('.tqc-option').forEach(o=>{
+      o.classList.add('tqc-locked');
+      o.setAttribute('aria-disabled','true');
+      o.tabIndex = -1;
+    });
+
+    // 4) Lock Drag & Drop
+    qsa('.tqc-term').forEach(t=>{
+      t.draggable = false;
+      t.classList.add('tqc-locked');
+    });
+    qsa('.tqc-drop').forEach(z=>{
+      z.classList.add('tqc-locked');
+    });
+
+    // ---- feedback + Next button (unchanged structure) ----
     const fb = qs('#tqc-fb');
     const exp = q.explanation ? `<div class="tqc-exp"><strong>Why:</strong> ${q.explanation}</div>` : '';
     const defn = q.definition  ? `<div class="tqc-def"><strong>Definition:</strong> ${q.definition}</div>` : '';
@@ -449,6 +484,7 @@
     state.selected = null;
     state.dragAnswers = {};
     state.hintUsed = false;
+    state.locked = false;
     render(container);
   }
 
