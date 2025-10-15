@@ -525,11 +525,6 @@
           "difficulty": "medium-hard",
           "hint": "Only one uses the actual light sensor reading, not a constant or a different input."
         },
-          "correct": 0,
-          "explanation": "Use the sensor reading to assign to a variable.",
-          "difficulty": "medium",
-          "hint": "You want the actual numeric reading."
-        },
         {
           "question": "Where does the temperature value come from in micro:bit projects?",
           "type": "multiple-choice",
