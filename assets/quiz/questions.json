@@ -430,13 +430,18 @@
       "description": "Storing values, comparing to limits, using sensors (light & temperature).",
       "questions": [
         {
-          "question": "What is a VARIABLE?",
+          "question": "What is a VARIABLE used for in MakeCode?",
           "type": "multiple-choice",
-          "options": ["A loop type", "A named box in memory to store a value", "A hardware sensor", "A sound effect"],
-          "correct": 1,
-          "explanation": "Variables store values that can change over time.",
-          "difficulty": "easy",
-          "hint": "Think: a labelled container for data."
+          "options": [
+            "To store a value that can change while the program runs",
+            "To repeat blocks over and over",
+            "To read values from sensors like light or temperature",
+            "To play sounds or show icons"
+          ],
+          "correct": 0,
+          "explanation": "A variable is a named space in memory where the program keeps a value that can change, such as a score or sensor reading.",
+          "difficulty": "medium",
+          "hint": "It’s like a labelled box you can open and replace what’s inside."
         },
         {
           "question": "What does 'change score by 5' do if score was 10?",
@@ -448,23 +453,33 @@
           "hint": "This operation adds, it doesn’t replace."
         },
         {
-          "question": "What is a THRESHOLD?",
+          "question": "In a micro:bit program, what does a THRESHOLD represent?",
           "type": "multiple-choice",
-          "options": ["A boundary value used in comparisons", "A radio channel", "A sprite", "An error message"],
+          "options": [
+            "A limit value that decides when something should happen",
+            "The exact sensor reading at the start of the program",
+            "A random number between two limits",
+            "The highest possible temperature the micro:bit can read"
+          ],
           "correct": 0,
-          "explanation": "Thresholds are limits for decision-making (e.g., too dark/too cold).",
-          "difficulty": "easy",
-          "hint": "Think of a line you cross."
+          "explanation": "A threshold is a boundary value used to trigger an action — for example, if light level < 100, turn on a torch.",
+          "difficulty": "medium",
+          "hint": "It’s the line between 'go' and 'stop' conditions."
         },
         {
-          "question": "What message will the code show when ran?",
+          "question": "If the classroom light level is 80, what message appears when this code runs?",
           "type": "multiple-choice",
           "code": "set lightLevel to light level\nif lightLevel < 50 then\n  show string \"Too Dark!\"\nelse\n  show string \"OK\"",
-          "options": ["Too Dark!", "OK", "Both", "Nothing"],
-          "correct": 0,
-          "explanation": "When the reading is below the threshold, it warns “Too Dark!”.",
-          "difficulty": "medium",
-          "hint": "Which side of 50 is the warning?"
+          "options": [
+            "\"Too Dark!\" because 80 is still low",
+            "\"OK\" because 80 is higher than the threshold",
+            "\"Too Dark!\" and then \"OK\"",
+            "It shows nothing because light level never changes"
+          ],
+          "correct": 1,
+          "explanation": "The condition 'lightLevel < 50' is false when lightLevel = 80, so the program runs the 'else' branch and shows 'OK'.",
+          "difficulty": "hard",
+          "hint": "Which branch runs when the condition is false?"
         },
         {
           "question": "What is health after running?",
@@ -497,14 +512,19 @@
           "hint": "Compare the numbers directly."
         },
         {
-          "question": "Which code correctly stores the current light reading in a variable?",
+          "question": "Which code correctly stores the current light sensor reading into a variable?",
           "type": "multiple-choice",
           "options": [
             "set light to light level",
-            "set light to \"light level\"",
-            "change light by light level",
-            "set light to LED brightness"
+            "set light to 50",
+            "set light to 'Light'",
+            "set light to temperature"
           ],
+          "correct": 0,
+          "explanation": "The command 'set light to light level' copies the sensor’s current reading into the variable called 'light'. The others either use fixed numbers or the wrong sensor.",
+          "difficulty": "medium-hard",
+          "hint": "Only one uses the actual light sensor reading, not a constant or a different input."
+        },
           "correct": 0,
           "explanation": "Use the sensor reading to assign to a variable.",
           "difficulty": "medium",
@@ -514,7 +534,7 @@
           "question": "Where does the temperature value come from in micro:bit projects?",
           "type": "multiple-choice",
           "options": [
-            "The onboard temperature sensor (micro:bit)",
+            "The onboard temperature sensor",
             "An external sensor is mandatory",
             "The light sensor",
             "The USB cable"
@@ -525,19 +545,19 @@
           "hint": "No extra hardware this week."
         },
         {
-          "question": "Which comparison best fits a plant monitor?",
+          "question": "You want your plant monitor to warn only when it’s cold AND dark. Which line should fill the blank?",
           "type": "multiple-choice",
-          "code": "set temp to temperature (onboard)\nset light to light level\nif temp < 18 and light < 50 then\n  show string \"Cold & Dark\"\nelse if temp < 18 then\n  show string \"Cold\"\nelse if light < 50 then\n  show string \"Dark\"\nelse\n  show string \"Good\"",
+          "code": "set temp to temperature (onboard)\nset light to light level (onboard)\nif __________ then\n  show string \"Cold & Dark\"",
           "options": [
-            "Use only temp < 18",
-            "Use only light < 50",
-            "Use temp < 18 AND light < 50 for the combined warning",
-            "Never use combined checks"
+            "temp < 18",
+            "light < 50",
+            "temp < 18 AND light < 50",
+            "temp < 18 OR light < 50"
           ],
           "correct": 2,
-          "explanation": "The first branch handles the combined case explicitly.",
+          "explanation": "Using AND means both the temperature and the light readings must be below their thresholds for the warning to appear.",
           "difficulty": "hard",
-          "hint": "Handle both low-light and low-temp together first."
+          "hint": "Which condition checks that both sensors are below their limits?"
         },
         {
           "question": "What’s the logic mistake?",
