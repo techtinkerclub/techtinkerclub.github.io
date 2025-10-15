@@ -1,7 +1,7 @@
 ---
 
 layout: single
-title: "Teacher Notes — Week 6"
+title: ""
 permalink: /teacher-notes/2025-26/autumn/week-6-notes/
 week: 6
 robots: noindex
@@ -25,12 +25,12 @@ show_overlay_text: false
 
 ## Learning Objectives
 
-* Participants recall what a **loop** is and how it repeats code automatically.
-* Participants understand how **pause time** controls **game speed**.
-* Participants can use a **forever loop** as a continuous **game engine**.
-* Participants use **variables** to manage `score`, `speed`, and `level`.
-* Participants can explain what **collision detection** means in a game.
-* Participants are introduced to **functions** as reusable blocks of code.
+* Pupils recall what a **loop** is and how it repeats code automatically.
+* Pupils understand how **pause time** controls **game speed**.
+* Pupils can use a **forever loop** as a continuous **game engine**.
+* Pupils use **variables** to manage `score`, `speed`, and `level`.
+* Pupils can explain what **collision detection** means in a game.
+* Pupils are introduced to **functions** as reusable blocks of code.
 
 ---
 
@@ -58,9 +58,7 @@ We’ll build our game **step-by-step**, testing each version as we go.
 
 ---
 
-### Step 1 — Setup (5 min)
-
-Create sprites and variables.
+### Step 1 — Setup
 
 ```blocks
 on start
@@ -76,11 +74,11 @@ on start
 * Explain that a **sprite** is an object on the LED grid.
 * `jumper` = player, `barrel` = obstacle.
 * The **x** coordinate controls left–right, **y** controls up–down.
-* `speed` will control how often the barrel moves (larger = slower).
+* `speed` controls how often the barrel moves (larger = slower).
 
 ---
 
-### Step 2 — Jump Action (10 min)
+### Step 2 — Jump Action
 
 ```blocks
 on button B pressed
@@ -96,16 +94,14 @@ on button B pressed
 
 * Show that both repeats are symmetrical: up and then down.
 * Each pause defines jump smoothness.
-* Let participants experiment with timings (e.g. 50 ms for a quicker jump).
+* Let pupils experiment with timings (e.g. 50 ms for a quicker jump).
 
 💬 *Ask:*
 “What happens if you remove one of the repeat blocks?”
 
 ---
 
-### Step 3 — Game Loop (15 min)
-
-Add a **forever** loop to move the barrel.
+### Step 3 — Game Loop
 
 ```blocks
 forever
@@ -118,7 +114,7 @@ forever
 
 * This loop is the **engine** of the game.
 * `move by 1` slides the barrel each loop.
-* `if on edge, bounce` reverses its direction automatically.
+* `if on edge, bounce` reverses direction automatically.
 * Use this to explain how changing `speed` affects difficulty.
 
 💬 *Maths link:*
@@ -126,7 +122,7 @@ At 200 ms per move, 5 moves ≈ 1 second per full cross.
 
 ---
 
-### Step 4 — Collision + Scoring (15 min)
+### Step 4 — Collision + Scoring
 
 ```blocks
 forever
@@ -146,9 +142,9 @@ forever
 
 🟩 **Instructor Notes**
 
-* "Touching" checks if two sprites overlap.
+* "Touching" checks if sprites overlap.
 * Barrel hitting jumper triggers **game over**.
-* Every time the barrel reaches the left edge, score increases.
+* Each left edge pass increases score.
 * Decreasing speed = faster gameplay.
 
 💬 *Maths connection:*
@@ -156,11 +152,9 @@ Start speed = 200 → after 5 points: 200 - (5 × 10) = 150 ms → faster game.
 
 ---
 
-### Step 5 — Adding Levels and a Simple Function (20 min)
+### Step 5 — Adding Levels & a Simple Function
 
-Now we’ll show a message when we move up a level.
-
-#### Create a simple function:
+Create a function to display levels.
 
 ```blocks
 function showLevelToast()
@@ -174,13 +168,14 @@ end function
 
 🟩 **Instructor Notes**
 
-* Explain that a **function** is a block of code we can **call** whenever needed.
-* It helps us avoid repeating the same set of instructions multiple times.
+* Explain that a **function** is a block of code we can **call** when needed.
+* It avoids repetition and keeps code tidy.
 * Functions can be called anywhere in the program.
 
-💬 *Analogy:* A function is like a reusable recipe — call it when you need that result.
+💬 *Analogy:*
+A function is like a mini-recipe — call it whenever you need that action.
 
-#### Modify the main loop:
+Modify the main loop:
 
 ```blocks
 set intendedLevel to 1 + (score ÷ 5)
@@ -193,77 +188,75 @@ if intendedLevel > level then
 🟩 **Instructor Notes**
 
 * `score ÷ 5` (integer division) means every 5 points = new level.
-  Example: 12 ÷ 5 = 2 → Level 2.
-* Use the function `showLevelToast` to display level change visually.
-* Reinforce: no new arguments here — function is simple and reusable.
+  Example: score = 12 → 12 ÷ 5 = 2 → Level 2.
+* The function `showLevelToast` displays level-up animation.
+* Reinforce that there are **no arguments** yet — simple functions only.
 
-💬 *Extension idea:* add a short sound to the function for a level-up chime.
+💬 *Extension idea:*
+Add a sound effect in `showLevelToast` for a level-up chime.
 
 ---
 
-## Vocabulary Focus
+## Vocabulary Focus (with pupil-friendly wording)
 
-* **Loop** — a block that repeats automatically.
-* **Forever loop** — keeps running until the game ends.
-* **Variable** — a named box storing a value (e.g. score, speed, level).
+* **Loop** — instructions that repeat automatically.
+* **Forever loop** — runs continuously as long as the game is active.
+* **Variable** — a named box that stores values (`score`, `speed`, `level`).
 * **Sprite** — a moving object on the LED grid.
-* **Collision detection** — when two sprites touch.
+* **Collision detection** — checking if two sprites touch.
 * **Function** — a reusable set of instructions.
-* **Integer division** — division ignoring remainders (used for levels).
+* **Integer division** — division that ignores remainders (used for levels).
 
 ---
 
 ## Differentiation
 
-* **New participants:** build up to Step 3 (jump + movement).
-* **Confident:** include scoring and speed change.
-* **Stretch:** add levels, functions, and sound feedback.
+* **New coders:** build base game (jump + movement).
+* **Confident:** add score and speed-up.
+* **Stretch:** add levels, create and call functions, or add sound effects.
 
 ---
 
 ## Assessment
 
-* Can participants explain what a **function** does?
-* Can they describe how **speed** changes difficulty?
-* Can they identify where **game over** is triggered?
-* Can they explain what variables are used for?
+* Can pupils explain what a **function** does?
+* Can they describe how **speed** affects difficulty?
+* Can they identify where **game over** happens?
+* Can they recognise variables and their purpose?
 
 ---
 
 ## Troubleshooting
 
-| Problem              | Likely Cause             | Fix                               |
-| :------------------- | :----------------------- | :-------------------------------- |
-| Game too fast        | Speed too low            | Increase `pause` or reset `speed` |
-| Barrel not moving    | Missing `forever` loop   | Wrap movement in loop             |
-| Jump not working     | One repeat missing       | Add both up & down loops          |
-| Score not changing   | Wrong x-position check   | Use `if barrel x = 0`             |
-| Level not updating   | Missing integer division | Add `score ÷ 5`                   |
-| Function not showing | Function not called      | Add `call showLevelToast()`       |
+* **Too fast:** increase `pause (speed)`.
+* **Sprites missing:** check coordinates (0–4).
+* **No jump:** both repeat blocks must be in the button event.
+* **No score:** ensure `if barrel x = 0`.
+* **No level-up:** check `score ÷ 5` and call `showLevelToast()`.
 
 ---
 
 ## Materials & Setup
 
 * BBC micro:bits + USB cables
-* Computers or Chromebooks with MakeCode
-* Optional: headphones for sound effects
+* Chromebooks with internet access
+* Optional: headphones/speakers for sound
 
 ---
 
 ## Safety & Safeguarding
 
-* Keep USB cables tidy and clear of workspace.
-* Encourage sharing and pair programming.
+* Keep cables tidy and volume sensible.
+* Encourage turn-taking and pair collaboration.
 
 ---
 
-## Reflection (for instructor)
+## Reflection (for leader)
 
-* Who could explain the purpose of a **function**?
-* Who adjusted timing or speed successfully?
-* Who debugged their project independently?
-* Note participants ready to mentor others next session.
+* Who can explain the role of a **function**?
+* Who adjusted timing or speed?
+* Who debugged independently?
+* Note pupils ready to mentor others next session.
 
 ---
 
