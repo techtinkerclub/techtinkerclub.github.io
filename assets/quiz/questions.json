@@ -734,7 +734,7 @@
         }
       ]
     }
-  }
+  
   {
   "week": 6,
   "title": "Barrel Jumper — Basics",
@@ -862,6 +862,7 @@
       "explanation": "The jump code must be inside the `on button B pressed` event to run on button press.",
       "difficulty": "medium",
       "hint": "Check where the code lives."
+    }
     }
   ]
 }
