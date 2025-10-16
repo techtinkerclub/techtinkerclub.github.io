@@ -14,71 +14,62 @@ header:
 ---
 
 # Teacher Notes — Week 6
-
 {% include print-to-pdf.html %}
-**Theme:** Game Loops, Collision Detection & Functions
-**Focus Concept:** Using Loops to Build Games and Introduce Simple Functions
-**Mini-Project:** Barrel Jumper
+
+**Theme:** Game Loops, Timing & Score  
+**Focus Concept:** Using Loops and Variables to Control Game Mechanics  
+**Mini-Project:** Barrel Jumper — building the playable version
 
 ---
 
 ## Learning Objectives
-
-* Pupils recall what a **loop** is and how it repeats code automatically.
-* Pupils understand how **pause time** controls **game speed**.
-* Pupils can use a **forever loop** as a continuous **game engine**.
-* Pupils use **variables** to manage `score`, `speed`, and `level`.
-* Pupils can explain what **collision detection** means in a game.
-* Pupils are introduced to **functions** as reusable blocks of code.
+- Pupils recall what a **loop** is and how it repeats code automatically.  
+- Pupils understand how **pause time** controls **game speed**.  
+- Pupils use a **forever loop** as a continuous **game engine**.  
+- Pupils use **variables** to manage `score` and `speed`.  
+- Pupils can explain how **coordinates** control sprite position.  
+- Pupils can link **speed** and **score** to make the game harder over time.  
 
 ---
 
 ## Recap (≈10 min)
-
-Brief recap from last week:
-
-* We introduced **loops** and saw how they repeat actions automatically.
-* Today we’ll use a **forever loop** to make our first full **game**, and we’ll also learn how to create a simple **function**.
+Review the starting point from Week 5:
+- We created sprites and basic movement with a single “jump” or “move” block.  
+- This week we’ll make that movement continuous and turn it into a full mini-game.  
 
 On the board:
 
-> “A forever loop keeps our game running while we play.”
+> “A **forever loop** is the heartbeat of a game — it keeps running while we play.”
 
 Ask:
+> “What do we need to make the game more challenging each time we score?”
 
-> “Why might we want to use a function in our game?”
-> (Answer: to reuse code easily without repeating ourselves.)
+Expected answers: *Make it go faster, keep track of score, or stop when you crash.*
 
 ---
 
 ## Project — *Barrel Jumper* (≈65 min)
-
-We’ll build our game **step-by-step**, testing each version as we go.
+We build the playable game step-by-step, testing each change.
 
 ---
 
 ### Step 1 — Setup
-
 ```blocks
 on start
     set jumper to create sprite at x: 0 y: 4
     set barrel to create sprite at x: 4 y: 4
     set score to 0
     set speed to 200
-    set level to 1
 ```
 
 🟩 **Instructor Notes**
-
-* Explain that a **sprite** is an object on the LED grid.
-* `jumper` = player, `barrel` = obstacle.
-* The **x** coordinate controls left–right, **y** controls up–down.
-* `speed` controls how often the barrel moves (larger = slower).
+- `jumper` = player; `barrel` = obstacle.  
+- The **x** coordinate controls left–right, **y** controls up–down.  
+- `speed` is the pause between movements — smaller = faster.
 
 ---
 
 ### Step 2 — Jump Action
-
 ```blocks
 on button B pressed
     repeat 4 times
@@ -90,18 +81,15 @@ on button B pressed
 ```
 
 🟩 **Instructor Notes**
+- Two identical loops: up then down.  
+- Pause defines jump smoothness.  
+- Try faster (50 ms) or slower (150 ms) jumps and compare.
 
-* Show that both repeats are symmetrical: up and then down.
-* Each pause defines jump smoothness.
-* Let pupils experiment with timings (e.g. 50 ms for a quicker jump).
-
-💬 *Ask:*
-“What happens if you remove one of the repeat blocks?”
+💬 Ask: *“What happens if you delete one of the repeat loops?”*
 
 ---
 
-### Step 3 — Game Loop
-
+### Step 3 — Main Game Loop
 ```blocks
 forever
     barrel move by 1
@@ -110,19 +98,18 @@ forever
 ```
 
 🟩 **Instructor Notes**
+- This forever loop is the **game engine**.  
+- `move by 1` slides the barrel each frame.  
+- `if on edge, bounce` flips direction automatically.  
+- Explain that smaller `speed` values make the game faster and harder.
 
-* This loop is the **engine** of the game.
-* `move by 1` slides the barrel each loop.
-* `if on edge, bounce` reverses direction automatically.
-* Use this to explain how changing `speed` affects difficulty.
-
-💬 *Maths link:*
-At 200 ms per move, 5 moves ≈ 1 second per full cross.
+💬 **Maths link:**  
+1000 ms ÷ 200 ms = ≈ 5 updates per second.  
+Reducing pause to 100 ms ≈ 10 updates per second.
 
 ---
 
-### Step 4 — Collision + Scoring
-
+### Step 4 — Add Scoring & Difficulty
 ```blocks
 forever
     barrel move by 1
@@ -140,123 +127,78 @@ forever
 ```
 
 🟩 **Instructor Notes**
+- “Touching” checks for collision between sprites.  
+- When touching → **game over** ends program.  
+- Each left-edge pass adds 1 point and increases speed (harder).  
 
-* "Touching" checks if sprites overlap.
-* Barrel hitting jumper triggers **game over**.
-* Each left edge pass increases score.
-* Decreasing speed = faster gameplay.
-
-💬 *Maths connection:*
-Start speed = 200 → after 5 points: 200 - (5 × 10) = 150 ms → faster game.
+💬 **Maths connection:**  
+Start speed = 200 ms → after 5 points: 200 − (5 × 10) = 150 ms.
 
 ---
 
-### Step 5 — Adding Levels & a Simple Function
-
-Create a function to display levels.
-
-```blocks
-function showLevelToast()
-    clear screen
-    show string "L"
-    show number level
-    pause (250) ms
-    clear screen
-end function
-```
-
-🟩 **Instructor Notes**
-
-* Explain that a **function** is a block of code we can **call** when needed.
-* It avoids repetition and keeps code tidy.
-* Functions can be called anywhere in the program.
-
-💬 *Analogy:*
-A function is like a mini-recipe — call it whenever you need that action.
-
-Modify the main loop:
-
-```blocks
-set intendedLevel to 1 + (score ÷ 5)
-if intendedLevel > level then
-    set level to intendedLevel
-    set speed to speed - 5
-    call showLevelToast()
-```
-
-🟩 **Instructor Notes**
-
-* `score ÷ 5` (integer division) means every 5 points = new level.
-  Example: score = 12 → 12 ÷ 5 = 2 → Level 2.
-* The function `showLevelToast` displays level-up animation.
-* Reinforce that there are **no arguments** yet — simple functions only.
-
-💬 *Extension idea:*
-Add a sound effect in `showLevelToast` for a level-up chime.
+### Step 5 — Optional Extensions
+Encourage confident participants to add:
+- **Sound FX:** play tone when score increases.  
+- **Limit speed:** stop at 60 ms minimum.  
+- **Display score:** show number at the end.  
+- **Random barrel start:** for more variation.  
 
 ---
 
-## Vocabulary Focus (with pupil-friendly wording)
-
-* **Loop** — instructions that repeat automatically.
-* **Forever loop** — runs continuously as long as the game is active.
-* **Variable** — a named box that stores values (`score`, `speed`, `level`).
-* **Sprite** — a moving object on the LED grid.
-* **Collision detection** — checking if two sprites touch.
-* **Function** — a reusable set of instructions.
-* **Integer division** — division that ignores remainders (used for levels).
+## Vocabulary Focus
+| Term | Child-friendly Definition |
+|------|---------------------------|
+| **Loop (forever)** | Repeats code again and again while the game runs. |
+| **Variable** | A labelled box storing a value like score or speed. |
+| **Increment** | Increase a variable by a fixed amount. |
+| **Coordinate (x/y)** | A position on the LED grid (x = left/right, y = up/down). |
+| **Condition** | A test that decides what happens next. |
+| **Speed / Delay** | Pause time between updates; smaller = faster. |
 
 ---
 
 ## Differentiation
-
-* **New coders:** build base game (jump + movement).
-* **Confident:** add score and speed-up.
-* **Stretch:** add levels, create and call functions, or add sound effects.
+- **New coders:** build movement + basic loop.  
+- **Confident:** add score and speed-up logic.  
+- **Stretch:** experiment with sounds, speed limits, or randomisation.
 
 ---
 
 ## Assessment
-
-* Can pupils explain what a **function** does?
-* Can they describe how **speed** affects difficulty?
-* Can they identify where **game over** happens?
-* Can they recognise variables and their purpose?
+- Can pupils explain what the **forever loop** does?  
+- Can they show where **score** and **speed** are used?  
+- Can they predict what happens when `pause` decreases?  
+- Can they identify why placing `set score to 0` inside the loop breaks the game?
 
 ---
 
-## Troubleshooting
-
-* **Too fast:** increase `pause (speed)`.
-* **Sprites missing:** check coordinates (0–4).
-* **No jump:** both repeat blocks must be in the button event.
-* **No score:** ensure `if barrel x = 0`.
-* **No level-up:** check `score ÷ 5` and call `showLevelToast()`.
+## Common Mistakes
+- Putting `set score to 0` **inside** the forever loop (resets score).  
+- Forgetting to wrap movement code inside the loop.  
+- Making `pause` too small → game runs too fast.  
+- Using wrong coordinate (> 4 or < 0) so sprites disappear.
 
 ---
 
 ## Materials & Setup
-
-* BBC micro:bits + USB cables
-* Chromebooks with internet access
-* Optional: headphones/speakers for sound
+- BBC micro:bits + USB cables  
+- Chromebooks with internet access  
+- Optional: headphones / speakers for sound
 
 ---
 
 ## Safety & Safeguarding
-
-* Keep cables tidy and volume sensible.
-* Encourage turn-taking and pair collaboration.
+- Keep cables tidy and volume sensible.  
+- Encourage turn-taking and peer support.
 
 ---
 
 ## Reflection (for leader)
-
-* Who can explain the role of a **function**?
-* Who adjusted timing or speed?
-* Who debugged independently?
-* Note pupils ready to mentor others next session.
+- Who could explain how **speed** affects difficulty?  
+- Who debugged independently?  
+- Who experimented with extra features?  
+- Note pupils ready to mentor peers next session.
 
 ---
-
 {% include back-to-autumn.html %}
+```
