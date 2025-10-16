@@ -32,8 +32,7 @@
           "explanation": "The accelerometer senses movement — an input from the environment. The other options send information outward, making them outputs.",
           "difficulty": "hard",
           "hint": "Ask yourself: is the micro:bit *reading* or *displaying* information?"
-        }
-
+        },
         {
           "question": "In the code below, which block ensures the text appears only one time before the heart starts flashing?",
           "type": "multiple-choice",
