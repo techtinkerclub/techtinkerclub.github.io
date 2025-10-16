@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Week 6 — Core Mechanics: Loops, Timing, Score & Coordinates"
+title: ""
 permalink: /curriculum/2025-26/autumn/week-6/
 week: 6
 toc: true
