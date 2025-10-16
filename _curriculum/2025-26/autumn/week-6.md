@@ -76,7 +76,13 @@ This week we took last session’s start and turned it into a playable mini-game
 ---
 
 ## Resources
-- **MakeCode editor:** <https://makecode.microbit.org>  
+- **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"} 
+- **MakeCode Game reference (sprites, collisions):** [Reference](https://makecode.microbit.org/reference/game){:target="_blank" rel="noopener"}
+- **MakeCode  barrel Jumper game code:** [Makecode code](https://makecode.microbit.org/S50863-44059-71252-00559){:target="_blank" rel="noopener"}
+- **What are coordinates - BBC Bitesize** [Link](https://www.bbc.co.uk/bitesize/topics/zgthvcw/articles/z96k9qt#zskx46f){:target="_blank" rel="noopener"}
+- **STE(A)M carees in gaming industry:** [Video](https://youtu.be/dzQmbI5LmQI?si=wVgV52gKlP53VUEt){:target="_blank" rel="noopener"}
+- **Some simple vector maths for game making:** [Video](https://youtu.be/PeSMh2aRsYU?si=_YKlTupIbj73Bh97){:target="_blank" rel="noopener"}
+
 
 ---
 
