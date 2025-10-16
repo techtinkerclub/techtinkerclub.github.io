@@ -715,7 +715,7 @@
         },
         {
           "id": "w6-q2",
-          "question": "A sprite starts at x = 2 on the bottom row of the LED grid. The code runs three times. Where will the sprite end up?",
+          "question": "A sprite starts at x = 2 on the bottom row of the micro:bit LED grid. The code runs three times. Where will the sprite end up?",
           "type": "multiple-choice",
           "code": "set x = 2\nrepeat 3 times\n  if x > 0 then change x by -1\nend",
           "options": ["Off screen (past the edge)", "At the left edge", "One step left of the start position", "Same place as it started"],
