@@ -699,7 +699,7 @@
     },
     "6": {
       "title": "Week 6: Core Mechanics — Loops, Logic, Timing & Coordinates",
-      "description": "Reusable challenge set mixing loops, variables, timing, coordinates, and debugging.",
+      "description": "Loops, variables, timing, coordinates, and debugging.",
       "unlocked": false,
       "unlock_after": 5,
       "questions": [
