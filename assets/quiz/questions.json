@@ -20,15 +20,20 @@
           "hint": "Think of it as the part that actually runs your code and decides what to do next."
         },
         {
-          "question": "Which of these is an INPUT on the micro:bit?",
+          "question": "Which example shows the micro:bit receiving information from its surroundings?",
           "type": "multiple-choice",
-          "options": ["LED matrix", "Speaker", "Button A", "Buzzer"],
-          "correct": 2,
-          "explanation": "Buttons send signals INTO the micro:bit; LEDs/speakers send info OUT.",
-          "definition": "INPUT — information that enters the device (e.g., buttons, sensors).",
-          "difficulty": "easy",
-          "hint": "Can a user press or move it to send a signal?"
-        },
+          "options": [
+            "Detecting motion using the accelerometer",
+            "Showing an arrow on the screen",
+            "Playing a sound through the speaker",
+            "Flashing the LEDs in a pattern"
+          ],
+          "correct": 0,
+          "explanation": "The accelerometer senses movement — an input from the environment. The other options send information outward, making them outputs.",
+          "difficulty": "hard",
+          "hint": "Ask yourself: is the micro:bit *reading* or *displaying* information?"
+        }
+
         {
           "question": "In the code below, which block ensures the text appears only one time before the heart starts flashing?",
           "type": "multiple-choice",
