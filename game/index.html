@@ -2,40 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>CodeQuest Island</title>
   <style>
-    html, body { margin:0; padding:0; height:100%; background:#f5f7fb; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    #gamewrap { max-width: 900px; margin: 0 auto; padding: 8px; }
+    :root {
+      --pad: 10px;
+      --radius: 12px;
+    }
+    html, body { margin:0; padding:0; background:#f5f7fb; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    #gamewrap { max-width: 960px; margin: 0 auto; padding: var(--pad); }
     .bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0; }
-    button { padding:8px 12px; border:1px solid #ccc; border-radius:8px; background:#fff; }
+    .pill { padding:6px 10px; border-radius:999px; background:#e8eefc; border:1px solid #c8d6ff; font-size: 14px; }
+    .note { font-size: 0.95rem; color:#333; }
+    /* Responsive control grid */
+    #controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 8px;
+      width: 100%;
+    }
+    button, select {
+      padding: 10px 12px; border:1px solid #ccd3e0; border-radius: var(--radius); background:#fff; font-size:16px;
+      touch-action: manipulation;
+    }
     button:active { transform: translateY(1px); }
-    .pill { padding:6px 10px; border-radius: 999px; background:#e8eefc; border:1px solid #c8d6ff; }
-    .note { font-size: 0.9rem; color:#333; }
-    canvas { display:block; margin:0 auto; border-radius:12px; border:1px solid #e0e3ea; background:#ffffff; }
+    .wide { grid-column: 1 / -1; }
+    #sketch-holder canvas { display:block; margin:10px auto; border-radius: var(--radius); border:1px solid #e0e3ea; background:#ffffff; width:100%; height:auto; }
   </style>
 </head>
 <body>
   <div id="gamewrap">
     <div class="bar">
-      <span class="pill">CodeQuest Island — v0.1</span>
-      <span class="note">🎯 Goal: reach the star by programming the robot</span>
+      <span class="pill">CodeQuest Island — v0.2</span>
+      <span class="note">Program the robot. Use <b>Repeat</b> and <b>Groups</b> like [F R F] × 3.</span>
     </div>
 
-    <div class="bar" id="controls" aria-label="Game Controls"></div>
+    <!-- Controls populate here -->
+    <div class="bar">
+      <label class="pill">Level:
+        <select id="levelSelect"></select>
+      </label>
+      <span class="pill" id="statusPill">Ready</span>
+    </div>
+    <div id="controls" aria-label="Game Controls"></div>
+
     <div id="sketch-holder"></div>
 
     <div class="bar">
-      <span class="note">Tip: Set a sequence, choose how many times to <b>repeat</b>, then Run.</span>
+      <span class="note">Tips: Use <b>Start Group</b> → add steps (F/L/R) → <b>End Group</b>, set group Repeat, then <b>Run</b>.</span>
     </div>
   </div>
 
   <!-- p5.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
   <!-- Game scripts -->
-  <script src="js/sceneManager.js"></script>
-  <script src="js/scenes/menuScene.js"></script>
-  <script src="js/scenes/loopsLagoon.js"></script>
-  <script src="js/main.js"></script>
+  <script src="/game/js/sceneManager.js"></script>
+  <script src="/game/js/scenes/menuScene.js"></script>
+  <script src="/game/js/scenes/loopsLagoon.js"></script>
+  <script src="/game/js/main.js"></script>
 </body>
 </html>
