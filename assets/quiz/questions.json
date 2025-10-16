@@ -3,8 +3,10 @@
     "1": {
       "title": "Week 1: Intro to Microcontrollers",
       "description": "Hardware, inputs/outputs, MakeCode basics, events & sequencing.",
+      "locked": false,
       "questions": [
         {
+          "id": "w1-q1",
           "question": "Which statement best describes the role of the microcontroller inside a micro:bit?",
           "type": "multiple-choice",
           "options": [
@@ -20,6 +22,7 @@
           "hint": "Think of it as the part that actually runs your code and decides what to do next."
         },
         {
+          "id": "w1-q2",
           "question": "Which example shows the micro:bit receiving information from its surroundings?",
           "type": "multiple-choice",
           "options": [
@@ -31,9 +34,10 @@
           "correct": 0,
           "explanation": "The accelerometer senses movement — an input from the environment. The other options send information outward, making them outputs.",
           "difficulty": "hard",
-          "hint": "Ask yourself: is the micro:bit *reading* or *displaying* information?"
+          "hint": "Ask yourself: is the micro:bit reading or displaying information?"
         },
         {
+          "id": "w1-q3",
           "question": "In the code below, which block ensures the text appears only one time before the heart starts flashing?",
           "type": "multiple-choice",
           "code": "on start\n  show string \"Hello!\"\nforever\n  show icon Heart\n  pause(500)\n  clear screen\n  pause(500)",
@@ -44,7 +48,8 @@
           "hint": "Only one block type is designed for setup instructions that don’t repeat."
         },
         {
-          "question": "If you upload this code to the micro:bit, what will you *see* happen and *why*?",
+          "id": "w1-q4",
+          "question": "If you upload this code to the micro:bit, what will you see happen and why?",
           "type": "multiple-choice",
           "code": "forever\n  show string \"Hi\"",
           "options": [
@@ -59,7 +64,8 @@
           "hint": "Does anything in the code tell it to stop?"
         },
         {
-          "question": "The LED grid on a micro:bit can both show light and measure light levels. What type of device is it *mostly* considered?",
+          "id": "w1-q5",
+          "question": "The LED grid on a micro:bit can both show light and measure light levels. What type of device is it mostly considered?",
           "type": "multiple-choice",
           "options": [
             "Both input and output, but mainly output",
@@ -73,6 +79,7 @@
           "hint": "It can sense light but that’s not its main purpose."
         },
         {
+          "id": "w1-q6",
           "question": "Match each term to its definition.",
           "type": "drag-drop",
           "terms": ["Event", "Sequence", "Debug"],
@@ -83,6 +90,7 @@
           "hint": "Cause → Event; order → Sequence; fixing → Debug."
         },
         {
+          "id": "w1-q7",
           "question": "Where can you test your micro:bit program without using the real device?",
           "type": "multiple-choice",
           "options": [
@@ -98,7 +106,8 @@
           "hint": "Which one shows a working virtual micro:bit on your screen?"
         },
         {
-          "question": "Which statement about 'on button A pressed' is TRUE?",
+          "id": "w1-q8",
+          "question": "Which statement about 'on button A pressed' is true?",
           "type": "multiple-choice",
           "options": ["It runs in a loop automatically", "It runs only when A is pressed", "It runs only at start", "It never runs"],
           "correct": 1,
@@ -107,7 +116,8 @@
           "hint": "It waits for something to happen."
         },
         {
-          "question": "What is a PROGRAM?",
+          "id": "w1-q9",
+          "question": "What is a program?",
           "type": "multiple-choice",
           "options": ["A single instruction", "Random blocks", "A set of instructions a computer follows", "An image on the LED matrix"],
           "correct": 2,
@@ -117,7 +127,8 @@
           "hint": "Think of a recipe for a computer."
         },
         {
-          "question": "Why might your program NOT appear on the micro:bit after download?",
+          "id": "w1-q10",
+          "question": "Why might your program not appear on the micro:bit after download?",
           "type": "multiple-choice",
           "options": ["Wrong cable (charge-only)", "Didn’t click Download", "Micro:bit not connected", "Any of these"],
           "correct": 3,
@@ -126,7 +137,8 @@
           "hint": "Check the obvious steps and connections."
         },
         {
-          "question": "Which example shows INPUT → PROCESS → OUTPUT in the correct order?",
+          "id": "w1-q11",
+          "question": "Which example shows input → process → output in the correct order?",
           "type": "multiple-choice",
           "options": ["LED → add numbers → button", "Button → compare numbers → show icon", "Speaker → random → LED", "Battery → program → USB"],
           "correct": 1,
@@ -135,6 +147,7 @@
           "hint": "First comes data in, then thinking, then feedback out."
         },
         {
+          "id": "w1-q12",
           "question": "Which block would you use to run code continuously during the entire program?",
           "type": "multiple-choice",
           "options": ["on start", "on shake", "forever", "on button B pressed"],
@@ -148,8 +161,10 @@
     "2": {
       "title": "Week 2: Events & Random",
       "description": "Button events, dice rolling, randomness, simple probability.",
+      "locked": false,
       "questions": [
         {
+          "id": "w2-q1",
           "question": "When does the code inside the block 'on button A pressed' actually run?",
           "type": "multiple-choice",
           "options": [
@@ -164,6 +179,7 @@
           "hint": "It listens for one exact action on one button."
         },
         {
+          "id": "w2-q2",
           "question": "What does 'random 1 to 6' give you?",
           "type": "multiple-choice",
           "options": ["Always 6", "Always 1", "Any whole number from 1 to 6", "A decimal number"],
@@ -174,7 +190,8 @@
           "hint": "Think dice."
         },
         {
-          "question": "What is an EVENT in programming?",
+          "id": "w2-q3",
+          "question": "What is an event in programming?",
           "type": "multiple-choice",
           "options": ["A type of sensor", "A mistake in code", "Something that triggers code to run", "A kind of loop"],
           "correct": 2,
@@ -183,6 +200,7 @@
           "hint": "It’s the “when” that makes code start."
         },
         {
+          "id": "w2-q4",
           "question": "This dice roller runs when you press Button A. What happens each time you press it?",
           "type": "multiple-choice",
           "code": "on button A pressed\n  set roll to random 1 to 6\n  show number roll",
@@ -195,27 +213,30 @@
           "correct": 0,
           "explanation": "Each button A press sets a new random value between 1 and 6, then displays that single number.",
           "difficulty": "medium-hard",
-          "hint": "Think about what the 'random 1 to 6' block does on *each* button press."
+          "hint": "Think about what the 'random 1 to 6' block does on each button press."
         },
         {
+          "id": "w2-q5",
           "question": "What is the chance of rolling a 4 on a fair six-sided die?",
           "type": "multiple-choice",
           "options": ["1 in 2", "1 in 4", "1 in 6", "1 in 10"],
           "correct": 2,
-          "explanation": "Each face has equal probability: 1⁄6.",
+          "explanation": "Each face has equal probability: 1/6.",
           "difficulty": "medium",
           "hint": "How many faces are there?"
         },
         {
+          "id": "w2-q6",
           "question": "If a die is rolled 60 times, about how many 3s would you expect?",
           "type": "multiple-choice",
           "options": ["About 5", "About 10", "About 20", "About 30"],
           "correct": 1,
-          "explanation": "Expected frequency ≈ total × probability = 60 × 1⁄6 = 10.",
+          "explanation": "Expected frequency ≈ total × probability = 60 × 1/6 = 10.",
           "difficulty": "medium",
           "hint": "Multiply the number of trials by the chance."
         },
         {
+          "id": "w2-q7",
           "question": "Which block lets you react to movement of the micro:bit?",
           "type": "multiple-choice",
           "options": ["on shake", "on start", "forever", "show number"],
@@ -225,6 +246,7 @@
           "hint": "It’s tied to the accelerometer."
         },
         {
+          "id": "w2-q8",
           "question": "Match the event to when it triggers.",
           "type": "drag-drop",
           "terms": ["on start", "on button A pressed", "on shake", "forever"],
@@ -235,9 +257,10 @@
           "hint": "Think: beginning, button, motion, always."
         },
         {
+          "id": "w2-q9",
           "question": "What message might the micro:bit show when you press Button A?",
           "type": "multiple-choice",
-          "code": "on button A pressed\n  set x to random 1..10\n  if x > 5 then\n    show string \"Big\"\n  else\n    show string \"Small\"",
+          "code": "on button A pressed\n  set x to random 1 to 10\n  if x > 5 then\n    show string \"Big\"\n  else\n    show string \"Small\"",
           "options": [
             "It shows 'Big' or 'Small' depending on the random number",
             "It always shows 'Big' because 10 is the largest number",
@@ -250,31 +273,34 @@
           "hint": "Remember: '>' means greater than."
         },
         {
+          "id": "w2-q10",
           "question": "What is shown for this coin flip?",
           "type": "multiple-choice",
-          "code": "on button B pressed\n  set flip to random 0..1\n  if flip = 0 then\n    show string \"Heads\"\n  else\n    show string \"Tails\"",
+          "code": "on button B pressed\n  set flip to random 0 to 1\n  if flip = 0 then\n    show string \"Heads\"\n  else\n    show string \"Tails\"",
           "options": ["Heads only", "Tails only", "Heads or Tails", "Error"],
           "correct": 2,
-          "explanation": "Random 0..1 maps perfectly to a fair coin.",
+          "explanation": "Random 0 to 1 maps perfectly to a fair coin.",
           "difficulty": "hard",
           "hint": "Two possible values → two possible messages."
         },
         {
+          "id": "w2-q11",
           "question": "When this code runs, you sometimes see two different numbers flash quickly. Why?",
           "type": "multiple-choice",
-          "code": "on button A pressed\n  show number random 1..6\n  show number random 1..6",
+          "code": "on button A pressed\n  show number random 1 to 6\n  show number random 1 to 6",
           "options": [
-            "Because each call to 'random 1..6' generates a new value right away",
+            "Because each call to 'random 1 to 6' generates a new value right away",
             "Because the same random value is shown twice at high speed",
             "Because the micro:bit remembers the first number and repeats it",
             "Because the button is pressed for too long"
           ],
           "correct": 0,
-          "explanation": "Both lines use 'random 1..6', so two independent random numbers are shown in quick succession.",
+          "explanation": "Both lines use 'random 1 to 6', so two independent random numbers are shown in quick succession.",
           "difficulty": "hard",
           "hint": "Does the code reuse the first random value or call it again?"
         },
         {
+          "id": "w2-q12",
           "question": "After pressing Button A five times, what number will the micro:bit show, and why?",
           "type": "multiple-choice",
           "code": "on start\n  set count to 0\non button A pressed\n  change count by 1\n  show number count",
@@ -294,17 +320,20 @@
     "3": {
       "title": "Week 3: Conditionals (If/Else)",
       "description": "Comparisons, branching, fairness. Rock–Paper–Scissors.",
+      "locked": false,
       "questions": [
         {
-          "question": "What does the ELSE part of an if–else do?",
+          "id": "w3-q1",
+          "question": "What does the else part of an if–else do?",
           "type": "multiple-choice",
-          "options": ["Runs when the IF is true", "Runs when the IF is false", "Runs always", "Never runs"],
+          "options": ["Runs when the if is true", "Runs when the if is false", "Runs always", "Never runs"],
           "correct": 1,
-          "explanation": "ELSE handles the “otherwise” case when the IF condition isn’t met.",
+          "explanation": "Else handles the “otherwise” case when the if condition isn’t met.",
           "difficulty": "easy",
           "hint": "Think: backup plan."
         },
         {
+          "id": "w3-q2",
           "question": "Look at this code. Which symbol is checking if the score is exactly 10?",
           "type": "multiple-choice",
           "code": "if score = 10 then\n  show string \"Winner!\"",
@@ -315,7 +344,8 @@
           "hint": "It compares, not adds."
         },
         {
-          "question": "The micro:bit picks a random number 1..3 to play Rock–Paper–Scissors. What must the code do next to decide who wins?",
+          "id": "w3-q3",
+          "question": "The micro:bit picks a random number 1 to 3 to play Rock–Paper–Scissors. What must the code do next to decide who wins?",
           "type": "multiple-choice",
           "options": [
             "Use if–else blocks to compare your choice and the random pick",
@@ -326,9 +356,10 @@
           "correct": 0,
           "explanation": "After choosing randomly, the program compares both choices using if–else logic.",
           "difficulty": "medium-hard",
-          "hint": "How does the program *decide* which move wins?"
+          "hint": "How does the program decide which move wins?"
         },
         {
+          "id": "w3-q4",
           "question": "What message appears for x = 7?",
           "type": "multiple-choice",
           "code": "on button A pressed\n  set x to 7\n  if x > 5 then\n    show string \"Big\"\n  else\n    show string \"Small\"",
@@ -339,6 +370,7 @@
           "hint": "Is 7 greater than 5?"
         },
         {
+          "id": "w3-q5",
           "question": "What’s the output if number = 5?",
           "type": "multiple-choice",
           "code": "set number to 5\nif number < 5 then\n  show string \"Low\"\nelse if number = 5 then\n  show string \"Equal\"\nelse\n  show string \"High\"",
@@ -349,6 +381,7 @@
           "hint": "Check the exact equality branch."
         },
         {
+          "id": "w3-q6",
           "question": "If a coin is fair, what’s the chance of Heads?",
           "type": "multiple-choice",
           "options": ["1/2", "1/3", "1/6", "Depends on the day"],
@@ -358,6 +391,7 @@
           "hint": "How many equally likely outcomes are there?"
         },
         {
+          "id": "w3-q7",
           "question": "Which condition correctly checks for a tie?",
           "type": "multiple-choice",
           "code": "set player to \"Rock\"\nset computer to \"Rock\"\nif ???? then\n  show string \"Tie!\"",
@@ -368,7 +402,8 @@
           "hint": "Same on both sides."
         },
         {
-          "question": "Match the comparison to an example that makes it TRUE.",
+          "id": "w3-q8",
+          "question": "Match the comparison to an example that makes it true.",
           "type": "drag-drop",
           "terms": ["x > 3", "x = 5", "x < 2", "x ≠ 4"],
           "definitions": ["x is 6", "x is 5", "x is 1", "x is 3"],
@@ -378,9 +413,10 @@
           "hint": "Plug in the numbers mentally."
         },
         {
+          "id": "w3-q9",
           "question": "What does it show when A is pressed?",
           "type": "multiple-choice",
-          "code": "on button A pressed\n  set roll to random 1..6\n  if roll = 6 then\n    show icon \"trophy\"\n  else\n    show number roll",
+          "code": "on button A pressed\n  set roll to random 1 to 6\n  if roll = 6 then\n    show icon \"trophy\"\n  else\n    show number roll",
           "options": ["Always a trophy", "Always the number", "Trophy for 6; otherwise the number", "Nothing"],
           "correct": 2,
           "explanation": "It branches on a special case: a roll of 6.",
@@ -388,6 +424,7 @@
           "hint": "Which value triggers the special icon?"
         },
         {
+          "id": "w3-q10",
           "question": "What will the display show?",
           "type": "multiple-choice",
           "code": "set a to 3\nset b to 7\nif a > b then\n  show string \"A\"\nelse if a = b then\n  show string \"Equal\"\nelse\n  show string \"B\"",
@@ -398,6 +435,7 @@
           "hint": "Compare 3 and 7 in order."
         },
         {
+          "id": "w3-q11",
           "question": "Why can’t this ever show \"B\"?",
           "type": "multiple-choice",
           "code": "set n to 90\nif n >= 90 then\n  show string \"A\"\nelse if n >= 90 then\n  show string \"B\"\nelse\n  show string \"C\"",
@@ -413,6 +451,7 @@
           "hint": "Look for a repeated test."
         },
         {
+          "id": "w3-q12",
           "question": "What message appears when the code runs?",
           "type": "multiple-choice",
           "code": "set temp to 20\nset light to 30\nif temp >= 18 and light >= 50 then\n  show string \"Go Outside\"\nelse\n  show string \"Stay In\"",
@@ -420,16 +459,18 @@
           "correct": 1,
           "explanation": "Both conditions must be true; light is too low.",
           "difficulty": "hard",
-          "hint": "AND means both must pass."
+          "hint": "and means both must pass."
         }
       ]
     },
     "4": {
       "title": "Week 4: Variables & Thresholds",
       "description": "Storing values, comparing to limits, using sensors (light & temperature).",
+      "locked": false,
       "questions": [
         {
-          "question": "What is a VARIABLE used for in MakeCode?",
+          "id": "w4-q1",
+          "question": "What is a variable used for in MakeCode?",
           "type": "multiple-choice",
           "options": [
             "To store a value that can change while the program runs",
@@ -443,6 +484,7 @@
           "hint": "It’s like a labelled box you can open and replace what’s inside."
         },
         {
+          "id": "w4-q2",
           "question": "What does 'change score by 5' do if score was 10?",
           "type": "multiple-choice",
           "options": ["Sets it to 5", "Sets it to 10", "Sets it to 15", "Sets it to 50"],
@@ -452,7 +494,8 @@
           "hint": "This operation adds, it doesn’t replace."
         },
         {
-          "question": "In a micro:bit program, what does a THRESHOLD represent?",
+          "id": "w4-q3",
+          "question": "In a micro:bit program, what does a threshold represent?",
           "type": "multiple-choice",
           "options": [
             "A limit value that decides when something should happen",
@@ -466,6 +509,7 @@
           "hint": "It’s the line between 'go' and 'stop' conditions."
         },
         {
+          "id": "w4-q4",
           "question": "If the classroom light level is 80, what message appears when this code runs?",
           "type": "multiple-choice",
           "code": "set lightLevel to light level\nif lightLevel < 50 then\n  show string \"Too Dark!\"\nelse\n  show string \"OK\"",
@@ -476,6 +520,7 @@
           "hint": "Which branch runs when the condition is false?"
         },
         {
+          "id": "w4-q5",
           "question": "What is health after running?",
           "type": "multiple-choice",
           "code": "set health to 100\nchange health by -20\nset health to health * 2",
@@ -486,6 +531,7 @@
           "hint": "Apply steps in order."
         },
         {
+          "id": "w4-q6",
           "question": "Match each variable operation to its effect.",
           "type": "drag-drop",
           "terms": ["set score to 10", "change score by 5", "set score to score + 1", "set score to 0"],
@@ -496,6 +542,7 @@
           "hint": "Replace vs. add."
         },
         {
+          "id": "w4-q7",
           "question": "What will display when temp = 35?",
           "type": "multiple-choice",
           "code": "set temp to temperature (onboard sensor)\nset threshold to 30\nif temp > threshold then\n  show string \"Too Hot!\"\nelse\n  show string \"OK\"",
@@ -506,6 +553,7 @@
           "hint": "Compare the numbers directly."
         },
         {
+          "id": "w4-q8",
           "question": "Which code correctly stores the current light sensor reading into a variable?",
           "type": "multiple-choice",
           "options": [
@@ -520,6 +568,7 @@
           "hint": "Only one uses the actual light sensor reading."
         },
         {
+          "id": "w4-q9",
           "question": "Where does the temperature value come from in micro:bit projects?",
           "type": "multiple-choice",
           "options": ["Onboard temperature sensor", "An external sensor is mandatory", "The light sensor", "The USB cable"],
@@ -529,26 +578,29 @@
           "hint": "No extra hardware this week."
         },
         {
-          "question": "You want your plant monitor to warn only when it’s cold AND dark. Which line should fill the blank?",
+          "id": "w4-q10",
+          "question": "You want your plant monitor to warn only when it’s cold and dark. Which line should fill the blank?",
           "type": "multiple-choice",
           "code": "set temp to temperature (onboard)\nset light to light level (onboard)\nif __________ then\n  show string \"Cold & Dark\"",
-          "options": ["temp < 18", "light < 50", "temp < 18 AND light < 50", "temp < 18 OR light < 50"],
+          "options": ["temp < 18", "light < 50", "temp < 18 and light < 50", "temp < 18 or light < 50"],
           "correct": 2,
-          "explanation": "AND requires both conditions to be true.",
+          "explanation": "and requires both conditions to be true.",
           "difficulty": "hard",
           "hint": "Which condition checks that both sensors are below their limits?"
         },
         {
+          "id": "w4-q11",
           "question": "What’s the logic mistake?",
           "type": "multiple-choice",
           "code": "set temp to temperature\nif temp > 30 and temp > 40 then\n  show string \"Hot!\"\nelse\n  show string \"OK\"",
-          "options": ["Nothing’s wrong", "Use OR instead of AND", "The first comparison is redundant; effectively temp > 40", "Use = instead of >"],
+          "options": ["Nothing’s wrong", "Use or instead of and", "The first comparison is redundant; effectively temp > 40", "Use = instead of >"],
           "correct": 2,
           "explanation": "If both conditions are '>', the larger threshold dominates.",
           "difficulty": "hard",
           "hint": "Which comparison is stricter?"
         },
         {
+          "id": "w4-q12",
           "question": "What does the code display?",
           "type": "multiple-choice",
           "code": "set points to 10\nchange points by 15\nset points to points * 2\nshow number points",
@@ -563,8 +615,10 @@
     "5": {
       "title": "Week 5: Loops & First Game",
       "description": "repeat/for/while/forever loops; timing (millis); sprites and simple game logic.",
+      "locked": false,
       "questions": [
         {
+          "id": "w5-q1",
           "question": "What does a FOREVER loop do?",
           "type": "multiple-choice",
           "options": ["Runs once", "Runs a fixed number of times", "Keeps running continuously", "Never runs"],
@@ -574,6 +628,7 @@
           "hint": "Think: the main heartbeat of a game."
         },
         {
+          "id": "w5-q2",
           "question": "What does 'repeat 3 times' do?",
           "type": "multiple-choice",
           "options": ["Runs forever", "Runs exactly 3 times", "Runs randomly", "Runs until a condition is met"],
@@ -583,6 +638,7 @@
           "hint": "Count the passes."
         },
         {
+          "id": "w5-q3",
           "question": "What is an ITERATION?",
           "type": "multiple-choice",
           "options": ["A type of sprite", "One pass through the loop", "A kind of bug", "A timing unit"],
@@ -592,6 +648,7 @@
           "hint": "Imagine stepping through a dance routine once."
         },
         {
+          "id": "w5-q4",
           "question": "What will this code make the micro:bit do?",
           "type": "multiple-choice",
           "code": "forever\n  repeat 5 times\n    show icon \"heart\"\n    pause 200\n    show icon \"small heart\"\n    pause 200\n  clear screen\n  pause 800",
@@ -607,6 +664,7 @@
           "hint": "Think about how the inner loop runs inside the forever loop."
         },
         {
+          "id": "w5-q5",
           "question": "What numbers will be shown?",
           "type": "multiple-choice",
           "code": "set counter to 1\nrepeat 5 times\n  show number counter\n  change counter by 1\n  pause 500",
@@ -617,6 +675,7 @@
           "hint": "Check the starting value."
         },
         {
+          "id": "w5-q6",
           "question": "What does using 'millis' (elapsed ms) help with?",
           "type": "multiple-choice",
           "options": [
@@ -631,6 +690,7 @@
           "hint": "Think: timers and intervals."
         },
         {
+          "id": "w5-q7",
           "question": "What movement happens on the LED screen?",
           "type": "multiple-choice",
           "code": "set sprite to create sprite at x 0 y 2\nrepeat 4 times\n  change sprite x by 1\n  pause 150",
@@ -641,6 +701,7 @@
           "hint": "Positive x goes right; negative x goes left."
         },
         {
+          "id": "w5-q8",
           "question": "Match each loop type to what it does in a program.",
           "type": "drag-drop",
           "terms": ["forever", "repeat N times", "while (condition)", "for index 1..N"],
@@ -656,6 +717,7 @@
           "hint": "Think: endless / fixed / condition / counting."
         },
         {
+          "id": "w5-q9",
           "question": "How many times will it run?",
           "type": "multiple-choice",
           "code": "set c to 10\nwhile c > 5\n  show number c\n  change c by -2",
@@ -666,16 +728,18 @@
           "hint": "Track c step by step."
         },
         {
+          "id": "w5-q10",
           "question": "This loop is part of a game timer. What happens when the code runs?",
           "type": "multiple-choice",
           "code": "set counter to 9\nwhile counter > 0\n    if counter < 0 then\n        change counter by -1\n    pause 100",
           "options": ["Counts to 0 and stops", "Infinite loop", "Runs exactly 9 times", "Crashes immediately"],
           "correct": 1,
-          "explanation": "The IF never runs (condition counter<0 is never true), so counter never changes; loop never ends.",
-          "hint": "Does the IF condition ever become true?",
+          "explanation": "The if never runs (condition counter < 0 is never true), so counter never changes; loop never ends.",
+          "hint": "Does the if condition ever become true?",
           "difficulty": "hard"
         },
         {
+          "id": "w5-q11",
           "question": "What is printed at the end?",
           "type": "multiple-choice",
           "code": "set s to 0\nfor i from 1 to 4\n  change s by i\nshow number s",
@@ -686,6 +750,7 @@
           "hint": "Add the range 1..4."
         },
         {
+          "id": "w5-q12",
           "question": "What pattern of beeps will you hear?",
           "type": "multiple-choice",
           "code": "set wait to 600\nrepeat 3 times\n  play tone C\n  pause wait\n  change wait by -200",
@@ -699,9 +764,8 @@
     },
     "6": {
       "title": "Week 6: Core Mechanics — Loops, Logic, Timing & Coordinates",
-      "description": "Loops, variables, timing, coordinates, and debugging.",
-      "unlocked": false,
-      "unlock_after": 5,
+      "description": "Reusable challenge set mixing loops, variables, timing, coordinates, and debugging.",
+      "locked": false,
       "questions": [
         {
           "id": "w6-q1",
@@ -715,18 +779,18 @@
         },
         {
           "id": "w6-q2",
-          "question": "A sprite starts at x = 2 on the bottom row of the micro:bit LED grid. The code runs three times. Where will the sprite end up?",
+          "question": "A sprite starts at x = 2 on the bottom row of the LED grid. The code runs three times. Where will the sprite end up?",
           "type": "multiple-choice",
           "code": "set x = 2\nrepeat 3 times\n  if x > 0 then change x by -1\nend",
           "options": ["Off screen (past the edge)", "At the left edge", "One step left of the start position", "Same place as it started"],
           "correct": 1,
-          "explanation": "Each loop step moves the sprite one space left while x > 0. After two moves it reaches x = 0, and the last IF does nothing because x is no longer greater than 0.",
+          "explanation": "Each loop step moves the sprite one space left while x > 0. After two moves it reaches x = 0, and the last if does nothing because x is no longer greater than 0.",
           "difficulty": "medium",
           "hint": "Imagine the sprite moving left one step each loop until it reaches the edge."
         },
         {
           "id": "w6-q3",
-          "question": "A program increments the score by 1 when an event occurs. It begins with score = 3 and speed = 200 ms. The event happens 7 times; each time the score increments by 1 and the speed decreases by 10. What are the final values?",
+          "question": "A program increments the score when an event occurs. It begins with score = 3 and speed = 200 ms. The event happens 7 times; each time the score increments by 1 and the speed decreases by 10. What are the final values?",
           "type": "multiple-choice",
           "options": [
             "score = 7, speed = 130",
@@ -767,7 +831,7 @@
             "It never plays because the light test comes first"
           ],
           "correct": 0,
-          "explanation": "Both conditions must be true at the same time — dark *and* button pressed — for the alarm to play. The 'and' block joins two tests together.",
+          "explanation": "Both conditions must be true at the same time — dark and button pressed — for the alarm to play. The 'and' block joins two tests together.",
           "difficulty": "medium-hard",
           "hint": "Both parts of the 'and' must be true together."
         },
@@ -816,7 +880,7 @@
             "x = 4, dir = -1"
           ],
           "correct": 0,
-          "explanation": "Trace: 2→3→4 (flip next)→3→2→1→0; after 6 steps, x=0 and dir is -1 (flip would occur next).",
+          "explanation": "Trace: 2→3→4 (flip next)→3→2→1→0; after 6 steps, x = 0 and dir is -1 (flip would occur next).",
           "difficulty": "hard",
           "hint": "Check when dir flips: before or after moving?"
         },
@@ -841,13 +905,13 @@
           "question": "A sprite starts at x = 1 on the bottom row of the micro:bit screen. The code below runs twice. Where does the sprite end up?",
           "type": "multiple-choice",
           "code": "set x = 1\nrepeat 2 times\n  if x < 3 then change x by 2 else change x by -1\nend",
-          "options": ["x = 0", "x = 1", "x = 3", "x = 4"],
+          "options": ["x = 0", "x = 1", "x = 2", "x = 3"],
           "correct": 2,
           "explanation": "First loop: 1 < 3 so x becomes 3. Second loop: 3 < 3 is false, so x changes by −1 and becomes 2. Final x = 2.",
           "difficulty": "medium-hard",
           "hint": "Follow each step: check the condition, then change x accordingly."
         },
-       {
+        {
           "id": "w6-q12",
           "question": "A sprite moves across the screen in a forever loop. Where should the 'change score by 1' block go if you want the score to increase every time the sprite reaches the edge?",
           "type": "multiple-choice",
