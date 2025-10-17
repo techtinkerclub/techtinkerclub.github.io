@@ -45,7 +45,7 @@ button:hover{ background:rgba(123,211,255,.08); } button:disabled{ opacity:.6; c
 
 /* CRT Stage */
 .stage{ position:relative; height:280px; border:2px solid #2a2f50; border-radius:12px; overflow:hidden;
-  background:radial-gradient(1200px 500px at 50% 120%, #0c0f1f 0%, #0a0d1b 40%, #070a15 100%); margin-bottom:12px; }
+  background:radial-gradient(1200px 500px at 50% 120%, #0c0f1f 0%, #0a0d1b 40%, #070a15 100%); margin-top:20px; margin-bottom:12px; }
 
 /* Layers */
 .matrix-canvas{ position:absolute; inset:0; z-index:1; opacity:.12; mix-blend-mode:screen;
