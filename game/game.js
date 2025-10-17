@@ -92,8 +92,8 @@
     const g = c.getContext('2d', { alpha:true });
 
     // Tunables
-    const FONT_PX    = 26;  // bigger digits
-    const COL_W      = 22;  // column width
+    const FONT_PX    = 36;  // bigger digits
+    const COL_W      = 28;  // column width
     const FALL_MIN   = 3;   // min per-frame fall
     const FALL_VAR   = 4;   // randomness added
     const FRAME_SKIP = 2;   // draw every Nth frame (~30fps)
