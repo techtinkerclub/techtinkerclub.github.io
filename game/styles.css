@@ -153,4 +153,10 @@ button:hover{background:rgba(123,211,255,.08)}
 
 /* Make disabled hint button visually obvious when used for this question */
 button[disabled].hintlock { opacity:.5; filter:saturate(.6); cursor:not-allowed; }
+/* Hide a tile once it’s been placed */
+.tile.hidden { display: none; }
+
+/* After submission, buckets stop accepting drops (visual hint optional) */
+.bucket.locked { pointer-events: none; opacity: .85; }
+
 
