@@ -142,3 +142,38 @@ button:hover{ background:rgba(123,211,255,.08); } button:disabled{ opacity:.6; c
 
 /* Hint disabled look */
 button[disabled].hintlock{ opacity:.5; filter:saturate(.6); }
+
+/* --- PLAYER HIT FX --- */
+/* quick red flash layer */
+.stage.player-hit::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 5;   /* under overlay, over boss */
+  background: radial-gradient(60% 70% at 50% 45%, rgba(255,85,85,.45), rgba(255,0,0,.15) 60%, transparent 100%);
+  animation: hitFlash .25s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes hitFlash {
+  0% { opacity: .9; }
+  60% { opacity: .18; }
+  100% { opacity: 0; }
+}
+
+/* cabinet shake */
+.stage.shake { animation: stageShake .28s cubic-bezier(.36,.07,.19,.97); }
+@keyframes stageShake {
+  10% { transform: translate(-2px, -1px) rotate(-0.4deg); }
+  20% { transform: translate(3px, 0px)   rotate(0.3deg); }
+  30% { transform: translate(-3px, 1px)  rotate(-0.5deg); }
+  40% { transform: translate(2px, -1px)  rotate(0.4deg); }
+  50% { transform: translate(-1px, 1px)  rotate(-0.2deg); }
+  60% { transform: translate(1px, 0px)   rotate(0.2deg); }
+  100%{ transform: translate(0,0) rotate(0); }
+}
+
+/* boss lunges toward the player (use on #bossSprite) */
+.boss-lunge { animation: bossLunge .28s cubic-bezier(.2,.9,.2,1); }
+@keyframes bossLunge {
+  0%   { transform: scale(1) translate(0,0); filter: drop-shadow(0 6px 12px rgba(0,0,0,.6)); }
+  40%  { transform: scale(1.14) translate(0,-6px); filter: drop-shadow(0 10px 18px rgba(0,0,0,.7)); }
+  100% { transform: scale(1) translate(0,0); }
+} 
