@@ -1,64 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>CodeQuest Island</title>
-  <style>
-    :root {
-      --pad: 10px;
-      --radius: 12px;
-    }
-    html, body { margin:0; padding:0; background:#f5f7fb; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    #gamewrap { max-width: 960px; margin: 0 auto; padding: var(--pad); }
-    .bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0; }
-    .pill { padding:6px 10px; border-radius:999px; background:#e8eefc; border:1px solid #c8d6ff; font-size: 14px; }
-    .note { font-size: 0.95rem; color:#333; }
-    /* Responsive control grid */
-    #controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-      gap: 8px;
-      width: 100%;
-    }
-    button, select {
-      padding: 10px 12px; border:1px solid #ccd3e0; border-radius: var(--radius); background:#fff; font-size:16px;
-      touch-action: manipulation;
-    }
-    button:active { transform: translateY(1px); }
-    .wide { grid-column: 1 / -1; }
-    #sketch-holder canvas { display:block; margin:10px auto; border-radius: var(--radius); border:1px solid #e0e3ea; background:#ffffff; width:100%; height:auto; }
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tech Tinker Boss Battle</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="gamewrap">
-    <div class="bar">
-      <span class="pill">CodeQuest Island — v0.2</span>
-      <span class="note">Program the robot. Use <b>Repeat</b> and <b>Groups</b> like [F R F] × 3.</span>
-    </div>
+  <div class="wrap">
+    <header>
+      <div class="brand">🕹️ Tech Tinker Boss Battle</div>
+      <div class="row">
+        <div class="pill" id="stars">⭐ 0</div>
+        <div class="pill" id="progress-pill">Progress: 0/0</div>
+        <button id="reset" class="ghost smallbtn" title="Reset progress">Reset</button>
+      </div>
+    </header>
 
-    <!-- Controls populate here -->
-    <div class="bar">
-      <label class="pill">Level:
-        <select id="levelSelect"></select>
-      </label>
-      <span class="pill" id="statusPill">Ready</span>
-    </div>
-    <div id="controls" aria-label="Game Controls"></div>
+    <main id="screen-levels" class="grid levels"></main>
 
-    <div id="sketch-holder"></div>
+    <section id="screen-game" style="display:none">
+      <div class="hud">
+        <div class="hearts" id="hearts"></div>
+        <div class="bar" title="Boss HP"><div id="hp" class="fill"></div></div>
+        <div class="pill" id="streak">Streak: 0</div>
+        <div class="pill" id="timer">⏱️ —</div>
+        <div class="pill" id="hintLeft">⭐ Hints: 0</div>
+        <button id="useHint">Use Hint</button>
+        <div class="spacer"></div>
+        <button id="quit">Quit</button>
+      </div>
+      <div class="panel" id="qpanel"></div>
+      <div class="note" id="explain"></div>
+    </section>
 
-    <div class="bar">
-      <span class="note">Tips: Use <b>Start Group</b> → add steps (F/L/R) → <b>End Group</b>, set group Repeat, then <b>Run</b>.</span>
-    </div>
+    <section id="screen-results" style="display:none">
+      <div class="panel">
+        <h2 id="resTitle">Level Complete!</h2>
+        <p id="resSummary"></p>
+        <details>
+          <summary>Review explanations</summary>
+          <ul class="review" id="reviewList"></ul>
+        </details>
+        <div class="row" style="margin-top:12px">
+          <button id="retry">Retry Level</button>
+          <button id="back">Back to Levels</button>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- p5.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
-  <!-- Game scripts -->
-  <script src="/game/js/sceneManager.js"></script>
-  <script src="/game/js/scenes/menuScene.js"></script>
-  <script src="/game/js/scenes/loopsLagoon.js"></script>
-  <script src="/game/js/main.js"></script>
+  <div class="toast" id="toast"></div>
+
+  <!-- Load content first -->
+  <script src="questions.js"></script>
+  <!-- Then the engine -->
+  <script src="game.js"></script>
 </body>
 </html>
