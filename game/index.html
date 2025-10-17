@@ -35,7 +35,12 @@
             <div class="tag" id="introTag"></div>
           </div>
         </div>
+
         <p id="introStory" class="story"></p>
+
+        <!-- Comic bubbles container required by game.js -->
+        <div id="introComic" class="comic"></div>
+
         <div class="row">
           <div class="spacer"></div>
           <button id="introStart">Start Battle ▶</button>
@@ -95,7 +100,7 @@
       </div>
     </section>
 
-    <!-- (Fallback) RESULTS screen – kept for safety, but normal flow uses the stage overlay -->
+    <!-- (Fallback) RESULTS screen – normal flow uses the stage overlay -->
     <section id="screen-results" style="display:none">
       <div class="panel">
         <h2 id="resTitle">Level Complete!</h2>
