@@ -199,4 +199,9 @@ button[disabled].hintlock { opacity:.5; filter:saturate(.6); cursor:not-allowed;
 /* After submission, buckets stop accepting drops (visual hint optional) */
 .bucket.locked { pointer-events: none; opacity: .85; }
 
+/* Pixel hearts for lives */
+.hearts { display:flex; gap:8px; align-items:center }
+.hearts svg { width:22px; height:18px; image-rendering:pixelated }
+.heart-fill { fill:#ff4f7a; filter: drop-shadow(0 2px 0 #8a1e38) drop-shadow(0 0 8px rgba(255,79,122,.3)); }
+.heart-off  { fill:#303459; opacity:.55; filter:none; }
 
