@@ -561,7 +561,7 @@
       }
       save();
 
-      summary.innerHTML = `Boss defeated with <strong>${G.hearts</strong> heart(s) left.<br>
+      summary.innerHTML = `Boss defeated with <strong>${G.hearts}</strong> heart(s) left.<br>
                            <strong>Score:</strong> ${G.score} + <strong>Time Bonus:</strong> ${timeBonus} = <strong>${finalScore}</strong><br>
                            ⭐ <strong>${earnedStars}</strong> ${perfect ? '(perfect clear!)' : ''}<br>
                            <span class="small">Time: ${elapsedSec}s • Baseline: ${baseline}s</span>`;
