@@ -14,6 +14,8 @@
   /* ---------- DOM helpers ---------- */
   const $   = (s) => document.querySelector(s);
   const byId = (id) => document.getElementById(id);
+  const hpCount = document.getElementById('hpCount');
+
 
   /* Screens */
   const screenLevels  = byId('screen-levels');
@@ -215,9 +217,11 @@
       if (i>=G.hearts) s.classList.add('off');
       heartsEl.appendChild(s);
     }
-    // Boss HP
-    const pct = (G.hp/G.hpMax)*100;
-    hpFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+      // Boss HP bar + text
+      const pct = (G.hp / G.hpMax) * 100;
+      if (hpFill) hpFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+      if (hpCount) hpCount.textContent = `(${G.hp}/${G.hpMax})`;
+
 
     // Pills
     streakPill.textContent   = `Streak: ${G.streak}`;
