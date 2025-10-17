@@ -130,3 +130,27 @@ button:hover{background:rgba(123,211,255,.08)}
 
 /* Review list */
 .review li{margin:6px 0}
+
+/* HP label layout */
+.hp-wrap { display:flex; flex-direction:column; gap:6px; min-width:220px; flex:1; }
+.hp-label { font-size:12px; color:var(--muted); }
+
+/* Drag & drop question UI */
+.drag-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.tiles, .buckets { display:grid; gap:10px; }
+.tile {
+  background:#0c1024; border:1px dashed #3a64ff; color:#e9f0ff;
+  border-radius:10px; padding:10px; cursor:grab; user-select:none;
+}
+.tile:active { cursor:grabbing; }
+.bucket {
+  background:#10142a; border:1px dashed #39406c; color:#cfe3ff;
+  border-radius:10px; min-height:50px; padding:10px;
+}
+.bucket .chosen { margin-top:6px; font-weight:700; color:#e9f0ff; }
+.bucket.correct{ outline:2px solid var(--ok); }
+.bucket.wrong{ outline:2px solid var(--bad); }
+
+/* Make disabled hint button visually obvious when used for this question */
+button[disabled].hintlock { opacity:.5; filter:saturate(.6); cursor:not-allowed; }
+
