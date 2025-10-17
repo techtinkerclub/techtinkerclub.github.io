@@ -508,5 +508,6 @@
 
     /* Boot */
     renderLevels();
-  }
-})();
+  } // <<< end initGame
+
+})(); // <<< end IIFE wrapper
