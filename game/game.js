@@ -1,20 +1,21 @@
 /* ===========================================================
-   Tech Tinker Boss Battle — game.js (Arcade Build v5.1)
-   Fixes:
-   - Boss bounce/roll visible (bob moved to wrapper via CSS)
-   - Matrix rain sizing/layering
-   - Overlay z-index & clickability
-   - HP bar updates consistently
+   Tech Tinker Boss Battle — game.js (Arcade Build v6)
+   - Hit bounce + defeat roll-out (stable)
+   - Matrix rain behind boss
+   - Inline results overlay inside stage (no overflow)
+   - Next button on the right
+   - Review explanations collapsed (click to open)
    =========================================================== */
 
 (() => {
+  const $ = (s) => document.querySelector(s);
   const byId = (id) => document.getElementById(id);
 
   /* Screens */
   const screenLevels  = byId('screen-levels');
   const screenIntro   = byId('screen-intro');
   const screenGame    = byId('screen-game');
-  const screenResults = byId('screen-results');
+  const screenResults = byId('screen-results'); // fallback only
 
   /* Stage / Boss */
   const stageEl      = byId('stage');
@@ -34,10 +35,10 @@
   const starsPill    = byId('stars');
   const progressPill = byId('progress-pill');
 
-  /* Q&A */
-  const qpanel   = byId('qpanel');
-  const navRow   = byId('navRow');
-  const nextBtn  = byId('nextBtn');
+  /* Q panel */
+  const qpanel  = byId('qpanel');
+  const navRow  = byId('navRow');
+  const nextBtn = byId('nextBtn');
 
   /* Intro */
   const introImg   = byId('introBossImg');
@@ -57,13 +58,14 @@
   /* Data / Storage */
   const DATA = window.TTC_DATA;
   if (!DATA || !DATA.weeks) { alert('questions.js missing'); return; }
-  const SKEY = 'ttcBossBattle_arcade_v5_1';
+  const SKEY = 'ttcBossBattle_arcade_v6';
+  const state = loadState();
+
   function loadState(){
     let s = { unlocked: ['1'], stars: 0, clears: {}, settings: { timer: true } };
     try { const raw = localStorage.getItem(SKEY); if (raw) Object.assign(s, JSON.parse(raw)); } catch(e){}
     return s;
   }
-  const state = loadState();
   function save(){ localStorage.setItem(SKEY, JSON.stringify(state)); }
   function reset(){ localStorage.removeItem(SKEY); location.reload(); }
 
@@ -77,56 +79,57 @@
       div = document.createElement('div'); div.id = 'callout';
       const title = qpanel.querySelector('h2'); (title?.parentNode || qpanel).insertBefore(div, title?.nextSibling || qpanel.firstChild);
     }
-    div.className = `callout callout--${kind} callout-appear`;
-    div.innerHTML = html;
+    div.className = `callout callout--${kind} callout-appear`; div.innerHTML = html;
   }
   function clearCallout(){ byId('callout')?.remove(); }
 
   /* Beeps */
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  const audioCtx = AudioCtx ? new AudioCtx() : null;
+  const ACtx = window.AudioContext || window.webkitAudioContext;
+  const ctx  = ACtx ? new ACtx() : null;
   function beep(freq=440, dur=0.08, type='square', vol=0.05){
-    if (!audioCtx) return;
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = type; o.frequency.value = freq; g.gain.value = vol;
-    o.connect(g); g.connect(audioCtx.destination); o.start(); setTimeout(()=>o.stop(), dur*1000);
+    if (!ctx) return;
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type=type; o.frequency.value=freq; g.gain.value=vol; o.connect(g); g.connect(ctx.destination); o.start(); setTimeout(()=>o.stop(), dur*1000);
   }
 
   /* Matrix rain */
   let matrix = null;
-  function startMatrixRain(){
+  function startMatrix(){
     const c = matrixCanvas; if (!c) return;
-    const ctx = c.getContext('2d');
+    const g = c.getContext('2d', { alpha: true });
     const chars = '0123456789';
     let w=0, h=0, cols=0, drops=[];
-    function resize(){
-      // size to stage’s content box
+
+    function size(){
+      // Size strictly to the stage’s content box
       const rect = stageEl.getBoundingClientRect();
-      c.width = Math.max(1, Math.floor(rect.width));
-      c.height= Math.max(1, Math.floor(rect.height));
+      c.width  = Math.max(1, Math.floor(rect.width));
+      c.height = Math.max(1, Math.floor(rect.height));
       w = c.width; h = c.height;
-      cols = Math.max(1, Math.floor(w / 14));
+      cols = Math.max(1, Math.floor(w/14));
       drops = new Array(cols).fill(0).map(()=> Math.random()*h);
-      ctx.font = '18px VT323, monospace';
+      g.font = '18px VT323, monospace';
     }
-    resize(); setTimeout(resize, 0);
-    window.addEventListener('resize', resize);
+    size(); setTimeout(size, 0);
+    const resizer = () => size();
+    window.addEventListener('resize', resizer);
 
     let raf;
     function tick(){
-      ctx.fillStyle = 'rgba(8,12,26,0.2)'; // gentle fade
-      ctx.fillRect(0,0,w,h);
-      for(let i=0;i<cols;i++){
+      g.fillStyle = 'rgba(8,12,26,0.22)';
+      g.fillRect(0,0,w,h);
+      for (let i=0;i<cols;i++){
         const ch = chars[(Math.random()*chars.length)|0];
         const x = i*14, y = drops[i];
-        ctx.fillStyle = 'rgba(140,255,170,0.85)';
-        ctx.fillText(ch, x, y);
+        g.fillStyle = 'rgba(140,255,170,0.85)';
+        g.fillText(ch, x, y);
         drops[i] = y > h ? 0 : y + (12 + Math.random()*10);
       }
       raf = requestAnimationFrame(tick);
     }
     tick();
-    matrix = { stop: ()=> cancelAnimationFrame(raf) };
+
+    matrix = { stop: ()=> cancelAnimationFrame(raf), off: ()=> window.removeEventListener('resize', resizer) };
   }
 
   /* Level select */
@@ -136,10 +139,11 @@
     const cleared = Object.keys(state.clears).length;
     starsPill.textContent = `⭐ ${state.stars}`;
     progressPill.textContent = `Progress: ${cleared}/${ids.length}`;
+
     ids.forEach(id=>{
       const w = DATA.weeks[id], locked = !state.unlocked.includes(id) && !w.forceUnlock;
       const totalQ = (w.questions||[]).length;
-      const card = document.createElement('div'); card.className='card';
+      const card = document.createElement('div'); card.className = 'card';
       card.innerHTML = `
         <h3>${w.title || `Week ${id}`}</h3>
         <div class="small">${w.description || ''}</div>
@@ -185,14 +189,15 @@
       score:0, SCORE_PER_CORRECT:100,
       hints:3, hintUsedThisQuestion:false, correctForHintCounter:0,
       idx:0, streak:0, incorrect:[],
-      runStart:Date.now(), perQStart:Date.now(), waitingNext:false
+      runStart:Date.now(), waitingNext:false
     };
 
     setBossAppearance(w, id);
     renderHUD();
 
-    stageOverlay.hidden = true; stageOverlay.innerHTML='';
-    matrix?.stop?.(); startMatrixRain();
+    // Stage state
+    stageOverlay.hidden = true; stageOverlay.innerHTML = '';
+    matrix?.stop?.(); matrix?.off?.(); startMatrix();
 
     screenIntro.style.display  = 'none';
     screenResults.style.display= 'none';
@@ -206,7 +211,7 @@
     bossName.textContent = week.bossName || 'BOSS';
     bossImg.src = week.bossImage || `assets/w${id}b.png`;
     stageEl.classList.remove('boss--hit','boss--dead');
-    bossImg.classList.remove('boss-roll-out','boss-bounce');
+    bossImg.classList.remove('boss-bounce','boss-roll-out');
     bossImg.style.opacity = '1';
     document.documentElement.style.setProperty('--accent', week.bossTint || '#7bd3ff');
   }
@@ -234,7 +239,9 @@
   function bossShowState(state){
     if (state === 'hit'){
       stageEl.classList.add('boss--hit');
-      const dx = (Math.random()*16 - 8)|0, dy=(Math.random()*10 - 5)|0, dr=(Math.random()*10 - 5).toFixed(1)+'deg';
+      const dx = (Math.random()*16 - 8)|0;
+      const dy = (Math.random()*10 - 5)|0;
+      const dr = (Math.random()*10 - 5).toFixed(1)+'deg';
       bossImg.style.setProperty('--hitX', dx+'px');
       bossImg.style.setProperty('--hitY', dy+'px');
       bossImg.style.setProperty('--hitR', dr);
@@ -247,10 +254,13 @@
     }
   }
 
+  /* Questions */
   function nextQuestion(){
-    const q = (G.current = G.questions[G.idx]);
+    const q = G.questions[G.idx];
+    G.current = q;
     G.hintUsedThisQuestion = false;
     clearCallout(); navRow.style.display='none'; G.waitingNext=false;
+
     if (!q){ showOverlay(false); return; }
 
     let html = `
@@ -260,8 +270,15 @@
     if (q.code) html += `<div class="qcode">${q.code}</div>`;
 
     if (q.type === 'multiple-choice'){
-      html += `<div class="options" id="opts"></div>`; qpanel.innerHTML = html;
-      const opts = byId('opts'); q.options.forEach((opt,i)=>{ const b=document.createElement('button'); b.textContent=opt; b.onclick=()=>answerMC(i); opts.appendChild(b); });
+      html += `<div class="options" id="opts"></div>`;
+      qpanel.innerHTML = html;
+      const opts = byId('opts');
+      q.options.forEach((opt,i)=>{
+        const b = document.createElement('button');
+        b.textContent = opt;
+        b.onclick = ()=> answerMC(i);
+        opts.appendChild(b);
+      });
     } else if (q.type === 'drag-drop'){
       const terms=q.terms.slice(), defs=q.definitions.slice(); shuffle(terms); shuffle(defs);
       html += `
@@ -269,17 +286,22 @@
           <div><strong>Terms</strong><div class="tiles" id="tiles"></div></div>
           <div><strong>Definitions</strong><div class="buckets" id="buckets"></div></div>
         </div>
-        <div class="row" style="margin-top:10px"><div class="spacer"></div><button id="submitDD">Submit</button></div>`;
+        <div class="row" id="ddRow" style="margin-top:10px; justify-content:flex-end">
+          <button id="submitDD">Submit</button>
+        </div>`;
       qpanel.innerHTML = html;
 
       const tilesEl=byId('tiles'), bucketsEl=byId('buckets'), submitBtn=byId('submitDD');
       const tileByTerm=new Map(), assignment=new Map();
+
       function makeTile(term){ const t=document.createElement('div'); t.className='tile'; t.textContent=term; t.draggable=true; t.dataset.term=term; t.ondragstart=e=>e.dataTransfer.setData('text/plain',term); return t; }
       function getTile(term){ return tileByTerm.get(term); }
       function setBucketTerm(bucket,newTerm){
         const prev=assignment.get(bucket);
-        if(prev && prev!==newTerm){ getTile(prev)?.classList.remove('hidden'); }
-        assignment.set(bucket,newTerm); bucket.dataset.term=newTerm||''; bucket.querySelector('.chosen').textContent=newTerm||'';
+        if(prev && prev!==newTerm) getTile(prev)?.classList.remove('hidden');
+        assignment.set(bucket,newTerm);
+        bucket.dataset.term=newTerm||'';
+        const c = bucket.querySelector('.chosen'); if (c) c.textContent = newTerm || '';
         if(newTerm){
           getTile(newTerm)?.classList.add('hidden');
           document.querySelectorAll('.bucket').forEach(other=>{
@@ -294,38 +316,48 @@
         bucketsEl.querySelectorAll('.bucket').forEach(b=>{ b.classList.add('locked'); b.ondragover=null; b.ondrop=null; });
         submitBtn.disabled=true;
       }
+
       terms.forEach(term=>{ const t=makeTile(term); tileByTerm.set(term,t); tilesEl.appendChild(t); });
       defs.forEach(def=>{
-        const b=document.createElement('div'); b.className='bucket'; b.dataset.def=def; b.innerHTML=`<div>${def}</div><div class="chosen small"></div>`;
+        const b=document.createElement('div');
+        b.className='bucket'; b.dataset.def=def;
+        b.innerHTML = `<div>${def}</div><div class="chosen small"></div>`;
         b.ondragover=e=>e.preventDefault();
-        b.ondrop=e=>{ e.preventDefault(); if(submitBtn.disabled) return; const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
-          const cur=assignment.get(b); if(cur && cur!==dropped) getTile(cur)?.classList.remove('hidden'); setBucketTerm(b,dropped);
+        b.ondrop=e=>{
+          e.preventDefault(); if(submitBtn.disabled) return;
+          const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
+          const cur=assignment.get(b); if(cur && cur!==dropped) getTile(cur)?.classList.remove('hidden');
+          setBucketTerm(b,dropped);
         };
         bucketsEl.appendChild(b); assignment.set(b,'');
       });
+
       submitBtn.onclick=()=>{
-        const expectedByDef={}; q.correctMatches.forEach((defIdx,termIdx)=>{ expectedByDef[q.definitions[defIdx]]=q.terms[termIdx]; });
-        let all=true; document.querySelectorAll('.bucket').forEach(b=>{
+        const expectedByDef={};
+        q.correctMatches.forEach((defIdx,termIdx)=>{ expectedByDef[q.definitions[defIdx]] = q.terms[termIdx]; });
+        let all=true;
+        document.querySelectorAll('.bucket').forEach(b=>{
           const d=b.dataset.term||'', e=expectedByDef[b.dataset.def]||''; b.classList.remove('correct','wrong');
-          if(d && d===e) b.classList.add('correct'); else { b.classList.add('wrong'); all=false; }
+          if (d && d===e) b.classList.add('correct'); else { b.classList.add('wrong'); all=false; }
         });
-        lockDD(); settleAnswer(all,q.explanation||'');
+        lockDD(); settleAnswer(all, q.explanation || '');
       };
     } else {
       qpanel.innerHTML = html + `<div class="note">Unsupported question type: ${q.type}</div>`;
-      navRow.style.display=''; G.waitingNext=true;
+      navRow.style.display='flex'; G.waitingNext=true;
     }
+
     renderHUD();
   }
 
   function answerMC(i){
     const q = G.current, opts = byId('opts').children;
-    for(let k=0;k<opts.length;k++) opts[k].disabled=true;
+    for (let k=0;k<opts.length;k++) opts[k].disabled = true;
     const correct = (i===q.correct);
     const addBadge=(btn,good)=>{ const b=document.createElement('span'); b.className=`answer-badge ${good?'good':'bad'}`; b.textContent=good?'✓':'✗'; btn.appendChild(b); };
-    if(correct){ opts[i].classList.add('good'); addBadge(opts[i],true); }
-    else{ opts[i].classList.add('bad'); addBadge(opts[i],false); if(typeof q.correct==='number' && opts[q.correct]){ opts[q.correct].classList.add('good'); addBadge(opts[q.correct],true); } }
-    settleAnswer(correct, q.explanation||'', {chosen:i});
+    if (correct){ opts[i].classList.add('good'); addBadge(opts[i],true); }
+    else { opts[i].classList.add('bad'); addBadge(opts[i],false); if(typeof q.correct==='number' && opts[q.correct]){ opts[q.correct].classList.add('good'); addBadge(opts[q.correct],true); } }
+    settleAnswer(correct, q.explanation || '', { chosen:i });
   }
 
   function settleAnswer(correct, explanation){
@@ -335,7 +367,7 @@
       bossShowState('hit'); beep(660,.07,'square'); setTimeout(()=>beep(880,.06,'square'),70);
       if(++G.correctForHintCounter >= 3){ G.hints++; G.correctForHintCounter-=3; toast('Bonus hint earned! ⭐'); }
     } else {
-      G.incorrect.push({ q: G.current });
+      G.incorrect.push({ q:G.current });
       G.streak=0; G.hearts--;
       renderCallout('bad', `<span class="title">❌ Not quite.</span> ${explanation||''}`);
       beep(220,.12,'sawtooth'); toast('Ouch! You lost a heart 💔');
@@ -343,41 +375,49 @@
     renderHUD();
 
     if (G.hearts <= 0){ showOverlay(true); return; }
-    if (G.hp <= 0){ bossImg.classList.add('boss-roll-out'); bossImg.addEventListener('animationend', ()=>showOverlay(false), { once:true }); return; }
+    if (G.hp     <= 0){
+      bossImg.classList.remove('boss-bounce');
+      bossImg.classList.add('boss-roll-out');
+      bossImg.addEventListener('animationend', ()=>showOverlay(false), { once:true });
+      return;
+    }
 
-    navRow.style.display=''; G.waitingNext=true;
+    navRow.style.display='flex'; // right-aligned via CSS
+    G.waitingNext = true;
   }
 
-  function onNext(){ if(!G || !G.waitingNext) return; G.idx++; G.perQStart=Date.now(); nextQuestion(); }
+  function onNext(){ if(!G || !G.waitingNext) return; G.idx++; nextQuestion(); }
 
   function onUseHint(){
     if (!G) return; const q=G.current;
     if (G.hintUsedThisQuestion){ toast('Hint already used on this question.'); return; }
     if (G.hints<=0){ toast('No hints left. Earn more by answering 3 correctly.'); return; }
     if (!q || !q.hint){ toast('No hint for this one.'); return; }
-    G.hints--; G.hintUsedThisQuestion=true; renderCallout('hint', `<span class="title">💡 Hint:</span> ${q.hint}`); renderHUD();
+    G.hints--; G.hintUsedThisQuestion=true;
+    renderCallout('hint', `<span class="title">💡 Hint:</span> ${q.hint}`); renderHUD();
   }
 
   function showOverlay(gameOver){
-    matrix?.stop?.();
-    if (gameOver){ bossImg.style.opacity='0.3'; }
+    matrix?.stop?.(); matrix?.off?.();
+    if (gameOver) bossImg.style.opacity='0.3';
 
     const elapsedSec = Math.floor((Date.now()-G.runStart)/1000);
     const baseline   = G.questions.length * 12;
     const timeBonus  = Math.max(0, (baseline - elapsedSec) * 5);
     const finalScore = G.score + (gameOver ? 0 : timeBonus);
 
-    let summaryHTML='';
+    let summary='';
     if (gameOver){
-      summaryHTML = `<h3>Game Over</h3><div class="meta">You reached question ${G.idx+1} of ${G.questions.length}. Time: ${elapsedSec}s</div>`;
+      summary = `<h3>Game Over</h3><div class="meta">You reached question ${G.idx+1} of ${G.questions.length}. Time: ${elapsedSec}s</div>`;
     } else {
       const perfect = (G.incorrect.length===0 && G.hearts>0);
       const earnedStars = perfect ? 2 : 1;
-      state.stars += earnedStars; state.clears[G.id]=true;
+      state.stars += earnedStars; state.clears[G.id] = true;
       const ids=Object.keys(DATA.weeks).sort((a,b)=>(+a)-(+b)); const nextIdx=ids.indexOf(G.id)+1;
       if(ids[nextIdx] && !state.unlocked.includes(ids[nextIdx])) state.unlocked.push(ids[nextIdx]);
       save();
-      summaryHTML = `
+
+      summary = `
         <h3>Level Complete! 🎉</h3>
         <div class="meta">
           Boss defeated with <strong>${G.hearts}</strong> heart(s) left.<br>
@@ -386,28 +426,25 @@
         </div>`;
     }
 
-    let reviewHTML='';
+    // Collapsed review (click to open)
+    let review = '';
     if (G.incorrect.length){
-      reviewHTML += `<ul class="review">`;
+      let list = '<ul class="review">';
       G.incorrect.forEach(({q})=>{
-        if (q.type === 'multiple-choice'){
-          reviewHTML += `<li><strong>Q:</strong> ${q.question}<br><span class="small">${q.explanation || ''}</span></li>`;
-        } else {
-          reviewHTML += `<li><strong>Q:</strong> ${q.question}<br><span class="small">${q.explanation || ''}</span></li>`;
-        }
+        list += `<li><strong>Q:</strong> ${q.question}<br><span class="small">${q.explanation || ''}</span></li>`;
       });
-      reviewHTML += `</ul>`;
+      list += '</ul>';
+      review = `<details><summary>Review explanations</summary>${list}</details>`;
     } else {
-      reviewHTML = `<div class="small">Flawless! Nothing to review.</div>`;
+      review = `<details><summary>Review explanations</summary><div class="small">Flawless! Nothing to review.</div></details>`;
     }
 
     stageOverlay.innerHTML = `
       <div class="overlay-card">
-        ${summaryHTML}
-        ${reviewHTML}
-        <div class="row" style="margin-top:10px">
+        ${summary}
+        ${review}
+        <div class="row" style="margin-top:10px; justify-content:space-between">
           <button id="overlayNext">Back to Levels</button>
-          <div class="spacer"></div>
           <button id="overlayRetry">Replay</button>
         </div>
       </div>`;
@@ -419,9 +456,14 @@
 
   function onQuit(){ if (confirm('Quit this level? Progress for this run will be lost.')) showLevels(); }
   function showLevels(){
-    screenIntro.style.display='none'; screenResults.style.display='none'; screenGame.style.display='none';
-    screenLevels.style.display=''; stageOverlay.hidden=true; stageOverlay.innerHTML=''; bossImg.classList.remove('boss-roll-out','boss-bounce');
-    matrix?.stop?.(); renderLevels();
+    screenIntro.style.display='none';
+    screenResults.style.display='none';
+    screenGame.style.display='none';
+    screenLevels.style.display='';
+    stageOverlay.hidden = true; stageOverlay.innerHTML='';
+    bossImg.classList.remove('boss-bounce','boss-roll-out');
+    matrix?.stop?.(); matrix?.off?.();
+    renderLevels();
   }
 
   function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
