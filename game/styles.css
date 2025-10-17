@@ -204,4 +204,82 @@ button[disabled].hintlock { opacity:.5; filter:saturate(.6); cursor:not-allowed;
 .hearts svg { width:22px; height:18px; image-rendering:pixelated }
 .heart-fill { fill:#ff4f7a; filter: drop-shadow(0 2px 0 #8a1e38) drop-shadow(0 0 8px rgba(255,79,122,.3)); }
 .heart-off  { fill:#303459; opacity:.55; filter:none; }
+/* Cabinet backdrop */
+.wrap {
+  background:
+    radial-gradient(1000px 400px at 50% -200px, rgba(120,180,255,.05), transparent 60%),
+    radial-gradient(800px 600px at 120% 120%, rgba(255,120,200,.03), transparent 60%),
+    radial-gradient(900px 700px at -10% 130%, rgba(120,255,200,.03), transparent 60%);
+  border: 2px solid #2a2f50;
+  border-radius: 16px;
+  box-shadow: 0 0 0 6px #0a0d1b inset, 0 20px 60px rgba(0,0,0,.6);
+}
+
+/* Marquee (header) */
+header {
+  background: linear-gradient(180deg,#171b33,#0f1328 70%);
+  padding: 10px 14px;
+  border: 2px solid #2a2f50;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5), inset 0 -4px 0 rgba(255,255,255,.03);
+}
+
+/* Panels look like arcade modules */
+.panel, .card {
+  box-shadow: 0 12px 28px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+/* Option buttons → pixel/arcade edges */
+.options button{
+  font-family: "Press Start 2P", monospace;
+  letter-spacing: .5px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #0e1430, #0a0f24);
+  border: 2px solid #364cdd;
+  box-shadow:
+    0 0 0 2px rgba(54,76,221,.25) inset,
+    0 6px 0 0 #060a1a,
+    0 10px 18px rgba(0,0,0,.45);
+  text-shadow: 0 0 6px rgba(150,180,255,.25);
+}
+.options button:hover{ transform: translateY(-1px); }
+.options button:active{ transform: translateY(1px); box-shadow: 0 0 0 2px rgba(54,76,221,.25) inset, 0 3px 0 0 #060a1a, 0 6px 10px rgba(0,0,0,.45); }
+
+/* Big neon callouts already exist; add subtle glow */
+.callout { text-shadow: 0 0 6px rgba(200,220,255,.15); }
+
+/* CRT stage: curvature, vignette, strong scanlines */
+.stage{
+  border: 3px solid #1f2550;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.55), inset 0 0 40px rgba(0,0,0,.6);
+  position: relative;
+}
+.stage::before{ /* vignette */
+  content:""; position:absolute; inset:0;
+  background: radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0,0,0,.35) 100%);
+  pointer-events:none;
+}
+.stage::after{ /* subtle curvature lines */
+  content:""; position:absolute; inset:-2px;
+  background:
+    linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,0) 35%, rgba(0,0,0,.05) 65%, rgba(0,0,0,0)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,.03) 1px, transparent 2px, transparent 4px);
+  mix-blend-mode: overlay;
+  pointer-events:none;
+  border-radius: 14px;
+}
+
+/* Boss label more arcade */
+.boss-name{
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-shadow:
+    0 0 6px rgba(123,211,255,.55),
+    0 0 16px rgba(123,211,255,.28);
+}
+
+/* HP count style */
+.hp-label { display:flex; align-items:center; gap:6px }
+#hpCount { font-family:"Press Start 2P", monospace; letter-spacing:.5px; }
 
