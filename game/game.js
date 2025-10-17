@@ -1,21 +1,18 @@
 /* ===========================================================
-   Tech Tinker Boss Battle — game.js (Polished Full Build v3)
-   - Level select → Intro → Battle → Results
-   - MC & DragDrop questions (one-use tiles, swap before submit, lock after)
-   - Hints: start 3 / 1 per question / +1 per 3 correct answers
-   - Boss HP drains 1 per correct; labeled bar updates
-   - Score: +100 per correct; end time bonus (baseline 12s/question)
-   - Difficulty hidden intentionally
-   - Single boss image; CSS handles hit/dead effects
-   - Prominent callouts for hint/correct/incorrect + ✓/✗ badges on MC
+   Tech Tinker Boss Battle — game.js (Arcade Build v4)
+   - MC & DragDrop (one-use tiles, swap pre-submit, lock post-submit)
+   - Hints: start 3 / 1 per Q / +1 per 3 correct
+   - Boss HP bar (👾 + numeric), pixel-heart lives
+   - Score (+100 per correct) + time bonus on clear
+   - Difficulty hidden
+   - Callouts + ✓/✗ badges
+   - Retro bleeps (no audio assets)
    =========================================================== */
 
 (() => {
   /* ---------- DOM helpers ---------- */
-  const $   = (s) => document.querySelector(s);
+  const $    = (s)  => document.querySelector(s);
   const byId = (id) => document.getElementById(id);
-  const hpCount = document.getElementById('hpCount');
-
 
   /* Screens */
   const screenLevels  = byId('screen-levels');
@@ -31,6 +28,7 @@
   /* HUD */
   const heartsEl     = byId('hearts');
   const hpFill       = byId('hp');
+  const hpCount      = byId('hpCount');      // (hp/max) text next to "Boss HP"
   const streakPill   = byId('streak');
   const scorePill    = byId('scorePill');
   const timerPill    = byId('timer');
@@ -64,11 +62,11 @@
     alert('questions.js missing or malformed (expected window.TTC_DATA.weeks)');
     return;
   }
-  const SKEY = 'ttcBossBattle_v3';
+  const SKEY = 'ttcBossBattle_arcade_v4';
 
   function loadState(){
     let s = { unlocked: ['1'], stars: 0, clears: {}, settings: { timer: true } };
-    try { const raw = localStorage.getItem(SKEY); if(raw) Object.assign(s, JSON.parse(raw)); } catch(e){}
+    try { const raw = localStorage.getItem(SKEY); if (raw) Object.assign(s, JSON.parse(raw)); } catch(e){}
     return s;
   }
   const state = loadState();
@@ -83,14 +81,13 @@
     setTimeout(()=>t.classList.remove('show'), 1200);
   }
 
-  /* ---------- Callouts (hint/correct/incorrect) ---------- */
+  /* ---------- Callouts (hint / correct / wrong) ---------- */
   function renderCallout(kind, html){
     // kind: 'hint' | 'good' | 'bad'
     let div = byId('callout');
     if (!div) {
       div = document.createElement('div');
       div.id = 'callout';
-      // Insert right after the <h2> question title if present
       const title = qpanel.querySelector('h2');
       if (title && title.parentNode) {
         title.parentNode.insertBefore(div, title.nextSibling);
@@ -101,8 +98,20 @@
     div.className = `callout callout--${kind} callout-appear`;
     div.innerHTML = html;
   }
-  function clearCallout(){
-    const c = byId('callout'); if (c) c.remove();
+  function clearCallout(){ const c = byId('callout'); if (c) c.remove(); }
+
+  /* ---------- Tiny 8-bit bleeps (no assets) ---------- */
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = AudioCtx ? new AudioCtx() : null;
+  function beep(freq=440, dur=0.08, type='square', vol=0.05){
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = vol;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    setTimeout(()=>{ o.stop(); }, dur*1000);
   }
 
   /* ---------- Level Select ---------- */
@@ -153,33 +162,28 @@
   }
 
   /* ---------- Game runtime ---------- */
-  let G = null;
+  let G = null; // per-run state
 
   function startLevel(id){
     const w = DATA.weeks[id];
     const questions = (w.questions || []).slice();
-    if (!questions.length) { alert('No questions in this week.'); showLevels(); return; }
+    if (!questions.length){ alert('No questions in this week.'); showLevels(); return; }
 
     G = {
       id, w, questions,
-
       // Player
       heartsMax: 3,
       hearts: 3,
-
       // Boss
       hpMax: questions.length,
       hp: questions.length,
-
       // Scoring
       score: 0,
       SCORE_PER_CORRECT: 100,
-
       // Hints
-      hints: 3,                 // start with 3
+      hints: 3,
       hintUsedThisQuestion: false,
-      correctForHintCounter: 0, // +1 hint per 3 correct
-
+      correctForHintCounter: 0, // +1 per 3 correct
       // Flow
       idx: 0,
       streak: 0,
@@ -204,24 +208,24 @@
     bossName.textContent = week.bossName || 'BOSS';
     bossImg.src = week.bossImage || `assets/w${id}b.png`;
     stageEl.classList.remove('boss--hit','boss--dead');
-
     if (week.bossTint) document.documentElement.style.setProperty('--accent', week.bossTint);
     else               document.documentElement.style.setProperty('--accent', '#7bd3ff');
   }
 
   function renderHUD(){
-    // Hearts
+    // Pixel-heart lives (SVG)
+    const HEART_ON  = '<svg viewBox="0 0 16 14" aria-hidden="true"><path class="heart-fill" d="M8 13s-3.2-2.3-5.1-4.2C1.5 7.4 1 6.3 1 5.1 1 3.4 2.4 2 4.1 2c1.1 0 2.1.6 2.7 1.5C7.4 2.6 8.4 2 9.5 2 11.2 2 12.6 3.4 12.6 5.1c0 1.2-.5 2.3-1.9 3.7C11.2 9.2 8 13 8 13z"/></svg>';
+    const HEART_OFF = '<svg viewBox="0 0 16 14" aria-hidden="true"><path class="heart-off"  d="M8 13s-3.2-2.3-5.1-4.2C1.5 7.4 1 6.3 1 5.1 1 3.4 2.4 2 4.1 2c1.1 0 2.1.6 2.7 1.5C7.4 2.6 8.4 2 9.5 2 11.2 2 12.6 3.4 12.6 5.1c0 1.2-.5 2.3-1.9 3.7C11.2 9.2 8 13 8 13z"/></svg>';
+
     heartsEl.innerHTML = '';
     for (let i=0;i<G.heartsMax;i++){
-      const s = document.createElement('span');
-      if (i>=G.hearts) s.classList.add('off');
-      heartsEl.appendChild(s);
+      heartsEl.insertAdjacentHTML('beforeend', i < G.hearts ? HEART_ON : HEART_OFF);
     }
-      // Boss HP bar + text
-      const pct = (G.hp / G.hpMax) * 100;
-      if (hpFill) hpFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
-      if (hpCount) hpCount.textContent = `(${G.hp}/${G.hpMax})`;
 
+    // Boss HP bar + numeric (hp/max)
+    const pct = (G.hp / G.hpMax) * 100;
+    if (hpFill)  hpFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+    if (hpCount) hpCount.textContent = `(${G.hp}/${G.hpMax})`;
 
     // Pills
     streakPill.textContent   = `Streak: ${G.streak}`;
@@ -231,7 +235,7 @@
       ? `⏱️ ${Math.max(0, Math.floor((Date.now()-G.runStart)/1000))}s`
       : '⏱️ off';
 
-    // Hint button
+    // Hint button availability
     const useHintBtn = byId('useHint');
     if (G.hints<=0 || G.hintUsedThisQuestion || !G.current?.hint){
       useHintBtn.disabled = true; useHintBtn.classList.add('hintlock');
@@ -239,7 +243,7 @@
       useHintBtn.disabled = false; useHintBtn.classList.remove('hintlock');
     }
   }
-  setInterval(()=>{ if(screenGame.style.display!=='none' && state.settings.timer) renderHUD(); }, 500);
+  setInterval(()=>{ if (screenGame.style.display!=='none' && state.settings.timer) renderHUD(); }, 500);
 
   function bossShowState(state){ // 'idle' | 'hit' | 'dead'
     if (state === 'hit'){
@@ -254,7 +258,7 @@
     }
   }
 
-  /* ---------- Question flow ---------- */
+  /* ---------- Questions ---------- */
   function nextQuestion(){
     const q = G.questions[G.idx];
     G.current = q;
@@ -265,7 +269,7 @@
 
     if (!q){ finishLevel(false); return; }
 
-    // Header (hide difficulty)
+    // Header (difficulty hidden)
     let html = `
       <div class="row">
         <div class="tag">Q ${G.idx+1} / ${G.questions.length}</div>
@@ -274,20 +278,20 @@
     `;
     if (q.code) html += `<div class="qcode">${q.code}</div>`;
 
-    // MC
+    // MULTIPLE CHOICE
     if (q.type === 'multiple-choice'){
       html += `<div class="options" id="opts"></div>`;
       qpanel.innerHTML = html;
 
       const opts = byId('opts');
-      q.options.forEach((opt,i)=>{
+      q.options.forEach((opt, i)=>{
         const b = document.createElement('button');
         b.textContent = opt;
         b.onclick = ()=> answerMC(i);
         opts.appendChild(b);
       });
     }
-    // Drag & Drop
+    // DRAG & DROP
     else if (q.type === 'drag-drop'){
       const terms = q.terms.slice();
       const defs  = q.definitions.slice();
@@ -314,11 +318,10 @@
       const bucketsEl = byId('buckets');
       const submitBtn = byId('submitDD');
 
-      // Per-question runtime state
-      const tileByTerm = new Map(); // term -> tileEl
+      // per-question state
+      const tileByTerm = new Map(); // term -> tile element
       const assignment = new Map(); // bucketEl -> term string
 
-      // Helpers
       function makeTile(term){
         const t = document.createElement('div');
         t.className = 'tile';
@@ -331,23 +334,20 @@
       function getTile(term){ return tileByTerm.get(term); }
 
       function setBucketTerm(bucketEl, newTerm){
-        // Return previous term (if any)
+        // return previous term
         const prevTerm = assignment.get(bucketEl);
         if (prevTerm && prevTerm !== newTerm){
           const prevTile = getTile(prevTerm);
           if (prevTile) prevTile.classList.remove('hidden');
         }
-        // Assign
+        // assign
         assignment.set(bucketEl, newTerm);
         bucketEl.dataset.term = newTerm || '';
         bucketEl.querySelector('.chosen').textContent = newTerm || '';
-
-        // Hide used tile
+        // hide used tile and enforce uniqueness
         if (newTerm){
           const newTile = getTile(newTerm);
           if (newTile) newTile.classList.add('hidden');
-
-          // Ensure uniqueness: same term cannot be in two buckets
           document.querySelectorAll('.bucket').forEach(other=>{
             if (other !== bucketEl && other.dataset.term === newTerm){
               assignment.set(other, '');
@@ -368,14 +368,14 @@
         submitBtn.disabled = true;
       }
 
-      // Build tiles
+      // tiles
       terms.forEach(term=>{
         const t = makeTile(term);
         tileByTerm.set(term, t);
         tilesEl.appendChild(t);
       });
 
-      // Build buckets
+      // buckets
       defs.forEach(def=>{
         const b = document.createElement('div');
         b.className = 'bucket';
@@ -384,10 +384,9 @@
         b.ondragover = e => e.preventDefault();
         b.ondrop = e => {
           e.preventDefault();
-          if (submitBtn.disabled) return; // already answered
+          if (submitBtn.disabled) return;
           const droppedTerm = e.dataTransfer.getData('text/plain');
           if (!droppedTerm) return;
-          // Replace old if needed
           const current = assignment.get(b);
           if (current && current !== droppedTerm){
             const oldTile = getTile(current);
@@ -399,7 +398,7 @@
         assignment.set(b, '');
       });
 
-      // Submit evaluation
+      // evaluate
       submitBtn.onclick = ()=>{
         const expectedByDef = {};
         // correctMatches[i] = index in definitions that term[i] should match
@@ -418,10 +417,7 @@
           else { b.classList.add('wrong'); allCorrect = false; }
         });
 
-        // Lock inputs
         lockDragDropUI();
-
-        // Resolve
         settleAnswer(allCorrect, q.explanation || '');
       };
     }
@@ -438,13 +434,11 @@
   function answerMC(i){
     const q = G.current;
     const opts = byId('opts').children;
-
-    // Lock buttons
     for (let k=0;k<opts.length;k++) opts[k].disabled = true;
 
     const correct = (i === q.correct);
 
-    // Visual badges ✓ / ✗
+    // ✓ / ✗ badges
     const addBadge = (btn, good) => {
       const b = document.createElement('span');
       b.className = `answer-badge ${good ? 'good' : 'bad'}`;
@@ -467,7 +461,7 @@
     settleAnswer(correct, q.explanation || '', { chosen: i });
   }
 
-  /* ---------- Settle flow (both MC & DragDrop) ---------- */
+  /* ---------- Settle (both MC & DragDrop) ---------- */
   function settleAnswer(correct, explanation, meta={}){
     if (correct){
       G.streak++;
@@ -475,9 +469,9 @@
       G.hp = Math.max(0, G.hp - 1);
       renderCallout('good', `<span class="title">✅ Correct!</span>${explanation ? (' ' + explanation) : ''}`);
       bossShowState('hit');
-      toast('Hit!');
-
-      // Hint economy
+      // cheerful blip
+      beep(660, 0.07, 'square'); setTimeout(()=>beep(880, 0.06, 'square'), 70);
+      // hint economy
       G.correctForHintCounter++;
       if (G.correctForHintCounter >= 3){
         G.hints++;
@@ -489,16 +483,18 @@
       G.streak = 0;
       G.hearts--;
       renderCallout('bad', `<span class="title">❌ Not quite.</span>${explanation ? (' ' + explanation) : ''}`);
+      // low buzz
+      beep(220, 0.12, 'sawtooth');
       toast('Ouch! You lost a heart 💔');
     }
 
     renderHUD();
 
-    // Show Next so students can read the callout
+    // allow reading, then next
     navRow.style.display = '';
     G.waitingNext = true;
 
-    // End checks
+    // end checks
     if (G.hearts <= 0){ bossShowState('idle'); finishLevel(true);  return; }
     if (G.hp     <= 0){ bossShowState('dead'); finishLevel(false); return; }
   }
@@ -514,7 +510,6 @@
   function onUseHint(){
     if (!G) return;
     const q = G.current;
-
     if (G.hintUsedThisQuestion){ toast('Hint already used on this question.'); return; }
     if (G.hints <= 0){ toast('No hints left. Earn more by answering 3 correctly.'); return; }
     if (!q || !q.hint){ toast('No hint for this one.'); return; }
@@ -550,10 +545,12 @@
       state.stars += earnedStars;
       state.clears[G.id] = true;
 
-      // Unlock next
+      // unlock next week
       const ids = Object.keys(DATA.weeks).sort((a,b)=>(+a)-(+b));
       const nextIdx = ids.indexOf(G.id) + 1;
-      if (ids[nextIdx] && !state.unlocked.includes(ids[nextIdx])) state.unlocked.push(ids[nextIdx]);
+      if (ids[nextIdx] && !state.unlocked.includes(ids[nextIdx])){
+        state.unlocked.push(ids[nextIdx]);
+      }
       save();
 
       summary.innerHTML =
@@ -563,7 +560,6 @@
          <span class="small">Time: ${elapsedSec}s • Baseline: ${baseline}s</span>`;
     }
 
-    // Review mistakes
     if (G.incorrect.length){
       G.incorrect.forEach(({q, chosen})=>{
         const li = document.createElement('li');
