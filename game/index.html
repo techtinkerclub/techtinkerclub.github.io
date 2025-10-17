@@ -1,20 +1,18 @@
 <!doctype html>
 <html lang="en">
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tech Tinker Boss Battle</title>
 
-  <!-- Pixel/arcade font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+  <!-- Retro readable font -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="wrap">
+    <!-- Marquee -->
     <header>
       <div class="brand">🕹️ Tech Tinker Boss Battle</div>
       <div class="row">
@@ -24,10 +22,10 @@
       </div>
     </header>
 
-    <!-- LEVEL SELECT SCREEN -->
+    <!-- LEVEL SELECT -->
     <main id="screen-levels" class="grid levels"></main>
 
-    <!-- INTRO / STORY MODAL (shown before fight) -->
+    <!-- INTRO / STORY (modal) -->
     <section id="screen-intro" class="modal" style="display:none">
       <div class="modal-card">
         <div class="story-head">
@@ -45,32 +43,39 @@
       </div>
     </section>
 
-    <!-- GAME SCREEN -->
+    <!-- GAME -->
     <section id="screen-game" style="display:none">
-      <!-- Retro CRT Stage with the Boss -->
-      <div class="stage" id="stage">
-        <div class="starfield"></div>
-        <div class="scanlines"></div>
+      <!-- CRT Stage -->
+      <div class="stage panel starfield" id="stage">
+        <!-- Subtle matrix rain -->
+        <canvas id="matrixCanvas" class="matrix-canvas" aria-hidden="true"></canvas>
+
+        <!-- Boss sprite + label -->
         <div class="boss-wrap">
-          <img id="bossSprite" alt="Boss" />
+          <img id="bossSprite" alt="Boss">
           <div class="boss-name" id="bossName">BOSS</div>
         </div>
+
+        <!-- Scanline overlay -->
+        <div class="scanlines" aria-hidden="true"></div>
+
+        <!-- Inline results overlay (shown on clear / game over) -->
+        <div id="stageOverlay" class="stage-overlay" hidden></div>
       </div>
 
-           <!-- HUD -->
+      <!-- HUD -->
       <div class="hud">
         <div class="hearts" id="hearts"></div>
-      
-        <!-- Boss HP with label -->
-      <div class="hp-wrap">
-        <div class="hp-label">
-          <span>👾 Boss HP</span>
-          <span id="hpCount" style="margin-left:8px; color:#a7b0d0; font-size:12px;"></span>
-        </div>
-        <div class="bar"><div id="hp" class="fill"></div></div>
-      </div>
 
-      
+        <!-- Boss HP bar with label and numeric -->
+        <div class="hp-wrap">
+          <div class="hp-label">
+            <span>👾 Boss HP</span>
+            <span id="hpCount" style="margin-left:8px; color:#a7b0d0; font-size:12px;"></span>
+          </div>
+          <div class="bar"><div id="hp" class="fill"></div></div>
+        </div>
+
         <div class="pill" id="streak">Streak: 0</div>
         <div class="pill" id="scorePill">Score: 0</div>
         <div class="pill" id="timer">⏱️ —</div>
@@ -80,17 +85,17 @@
         <button id="quit">Quit</button>
       </div>
 
-
       <!-- QUESTION PANEL -->
       <div class="panel" id="qpanel"></div>
-      <div class="note" id="explain"></div>
-      <div class="row" id="navRow" style="display:none;margin-top:10px">
+
+      <!-- Next button row (appears after answer) -->
+      <div class="row" id="navRow" style="display:none; margin-top:10px">
         <div class="spacer"></div>
         <button id="nextBtn">Next ▶</button>
       </div>
     </section>
 
-    <!-- RESULTS SCREEN -->
+    <!-- (Fallback) RESULTS screen – kept for safety, but normal flow uses the stage overlay -->
     <section id="screen-results" style="display:none">
       <div class="panel">
         <h2 id="resTitle">Level Complete!</h2>
@@ -107,9 +112,10 @@
     </section>
   </div>
 
+  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <!-- Load content first, then engine -->
+  <!-- Data first, engine second -->
   <script src="questions.js"></script>
   <script src="game.js"></script>
 </body>
