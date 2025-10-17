@@ -131,9 +131,20 @@ button:hover{background:rgba(123,211,255,.08)}
 /* Review list */
 .review li{margin:6px 0}
 
-/* HP label layout */
+/* Boss HP layout + bar visuals */
 .hp-wrap { display:flex; flex-direction:column; gap:6px; min-width:220px; flex:1; }
 .hp-label { font-size:12px; color:var(--muted); }
+
+.bar{
+  height:10px; background:#2a2f50; border-radius:999px; overflow:hidden;
+  flex:1; min-width:180px;
+}
+.fill{
+  height:100%; width:0;
+  background:linear-gradient(90deg,var(--accent),#9df7c9);
+  transition: width .25s ease;
+}
+
 
 /* Drag & drop question UI */
 .drag-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
