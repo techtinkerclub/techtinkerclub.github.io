@@ -94,8 +94,8 @@
     // Tunables
     const FONT_PX    = 36;  // bigger digits
     const COL_W      = 28;  // column width
-    const FALL_MIN   = 3;   // min per-frame fall
-    const FALL_VAR   = 4;   // randomness added
+    const FALL_MIN   = 2;   // min per-frame fall
+    const FALL_VAR   = 3;   // randomness added
     const FRAME_SKIP = 2;   // draw every Nth frame (~30fps)
 
     let w=0,h=0,cols=0,drops=[];
