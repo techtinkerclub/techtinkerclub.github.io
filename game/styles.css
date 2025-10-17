@@ -2,42 +2,131 @@
   --bg:#0f1221; --panel:#161a2e; --accent:#7bd3ff; --ok:#59e38b; --bad:#ff6b6b; --ink:#eef3ff; --muted:#a7b0d0;
 }
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-.wrap{max-width:920px;margin:0 auto;padding:16px 16px 64px}
+.wrap{max-width:980px;margin:0 auto;padding:16px 16px 64px}
 header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:8px 0 16px}
-.brand{font-weight:700;letter-spacing:.3px}
+.brand{font-family:"Press Start 2P",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;letter-spacing:1px}
 .pill{background:var(--panel);border:1px solid #2a2f50;border-radius:999px;padding:8px 12px;font-size:14px;color:var(--muted)}
 .grid{display:grid;gap:12px}
-.levels{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.levels{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .card{background:var(--panel);border:1px solid #242947;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .card h3{margin:0 0 4px;font-size:18px}
 .lock{color:var(--muted);font-size:14px}
-button{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+button{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
 button:hover{background:rgba(123,211,255,.08)}
 .ghost{opacity:.65}
 .smallbtn{font-size:12px;padding:6px 10px}
+
+/* Modal (intro story) */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:10}
+.modal-card{background:var(--panel);border:1px solid #242947;border-radius:12px;padding:16px;max-width:760px;width:95%}
+.story-head{display:flex;gap:12px;align-items:center}
+.intro-img{width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid #2a2f50;image-rendering:pixelated}
+.story{line-height:1.5}
+
+/* HUD */
 .hud{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 16px}
 .hearts span{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--ok);margin-right:6px}
 .hearts span.off{background:#3a3f66}
-.bar{height:10px;background:#2a2f50;border-radius:999px;overflow:hidden;flex:1}
+.bar{height:10px;background:#2a2f50;border-radius:999px;overflow:hidden;flex:1;min-width:180px}
 .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#9df7c9)}
 .note{font-size:13px;color:var(--muted)}
 .panel{background:var(--panel);border:1px solid #242947;border-radius:12px;padding:14px}
 .qcode{white-space:pre-wrap;background:#11142a;border:1px dashed #2a2f50;border-radius:8px;padding:8px;margin-top:8px;color:#cfe3ff;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-.options{display:grid;gap:10px;margin-top:12px}
-.options button{justify-content:flex-start}
-.good{outline:2px solid var(--ok)}
-.bad{outline:2px solid var(--bad)}
 .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .spacer{flex:1}
 .tag{font-size:12px;border:1px solid #2a2f50;border-radius:999px;padding:4px 8px;color:var(--muted)}
+
+/* ANSWERS — high contrast & readable */
+.options{display:grid;gap:10px;margin-top:12px}
+.options button{
+  background:#0c1024;
+  border-color:#3a64ff;
+  color:#e9f0ff;
+  text-align:left;
+}
+.options button:hover{background:#12183a}
+.options button:disabled{opacity:.9}
+.good{outline:3px solid var(--ok) !important}
+.bad{outline:3px solid var(--bad) !important}
+
+/* Retro CRT Stage */
+.stage {
+  position: relative;
+  height: 240px;
+  border: 2px solid #2a2f50;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(1200px 500px at 50% 120%, #0c0f1f 0%, #0a0d1b 40%, #070a15 100%);
+  margin-bottom: 12px;
+}
+.scanlines {
+  pointer-events: none;
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(to bottom, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: overlay;
+}
+.starfield::before, .starfield::after {
+  content: "";
+  position: absolute; inset: -50%;
+  background:
+    radial-gradient(2px 2px at 20% 30%, #8bd1ff 60%, transparent 61%) ,
+    radial-gradient(1px 1px at 80% 70%, #8bd1ff 60%, transparent 61%) ,
+    radial-gradient(1px 1px at 50% 10%, #8bd1ff 60%, transparent 61%) ,
+    radial-gradient(1px 1px at 60% 50%, #8bd1ff 60%, transparent 61%) ,
+    radial-gradient(1px 1px at 30% 80%, #8bd1ff 60%, transparent 61%);
+  animation: drift 40s linear infinite;
+  opacity: 0.6;
+}
+.starfield::after { animation-duration: 65s; opacity: 0.35; }
+@keyframes drift { to { transform: translateY(25%); } }
+
+/* Boss sprite + name */
+.boss-wrap {
+  position: absolute; left: 50%; top: 56%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+#bossSprite {
+  width: 180px; height: 180px; object-fit: cover;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.6));
+  transform-origin: center;
+  transition: filter .18s ease, transform .18s ease, opacity .18s ease;
+}
+.boss-name {
+  margin-top: -6px;
+  font-family:"Press Start 2P",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-shadow: 0 0 6px rgba(123,211,255,.5);
+}
+
+/* Simple bob */
+#bossSprite { animation: bob 2.2s ease-in-out infinite; }
+@keyframes bob { 0%,100%{ transform: translateY(-2px); } 50%{ transform: translateY(3px); } }
+
+/* Boss state effects using single idle image */
+.boss--hit #bossSprite {
+  filter: hue-rotate(-20deg) saturate(1.6) brightness(1.25) drop-shadow(0 0 10px rgba(255,80,80,.8));
+  transform: scale(1.03);
+}
+.boss--dead #bossSprite {
+  filter: grayscale(1) brightness(.6) contrast(.9);
+  opacity: .9;
+}
+.stage.boss--hit::after {
+  content:"";
+  position:absolute; inset:0;
+  background: radial-gradient(closest-side, rgba(255,60,60,.2), transparent 70%);
+  pointer-events:none;
+  animation: hitfade .25s ease;
+}
+@keyframes hitfade { from {opacity:.7;} to {opacity:0;} }
+
+/* Toast */
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:#0b0e1e;border:1px solid #1e2340;padding:10px 14px;border-radius:10px;color:var(--ink);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.drag-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-.bucket,.tile{border:1px dashed #39406c;border-radius:10px;padding:10px;background:#10142a}
-.bucket{min-height:48px}
-.tile{cursor:grab}
-.bucket.correct{border-color:var(--ok)}
-.bucket.wrong{border-color:var(--bad)}
+
+/* Review list */
 .review li{margin:6px 0}
-a.link{color:var(--accent);text-decoration:none}
-.small{font-size:12px;color:var(--muted)}
