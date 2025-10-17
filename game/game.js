@@ -1,29 +1,30 @@
 /* ===========================================================
-   Tech Tinker Boss Battle — game.js (Arcade Build v6.4)
-   New:
+   Tech Tinker Boss Battle — game.js (Arcade Build v6.5)
+   Changes from v6.4:
+   • Delegated Start handler (unbreakable even after re-render)
+   • DnD submit button hides + locks after submit
+   • HP/Hearts states stay consistent to the end
+   • Matrix digits bigger/slower; wrong-answer shake/flash kept
    • Hint floaty (“+1 Hint!”) when earned
-   • Comic panel with funny boss dialogue on level intro
-   • Sticky HUD on mobile (CSS) + matrix digits larger/slower
-   • All previous fixes preserved (HP bar, DnD submit hide, roll-out/flee, hit FX)
    =========================================================== */
 
 (() => {
   const byId = (id) => document.getElementById(id);
 
-  /* Screens early refs */
+  /* Screens */
   const screenLevels  = byId('screen-levels');
   const screenIntro   = byId('screen-intro');
   const screenGame    = byId('screen-game');
   const screenResults = byId('screen-results');
 
-  /* Wait for data if needed */
+  /* Wait for data then boot */
   waitForData(initGame);
   function waitForData(cb, tries=0){
     if (window.TTC_DATA && window.TTC_DATA.weeks) return cb();
     if (tries>100){
       if (screenLevels){
         screenLevels.innerHTML = `<div class="card"><h3>Game data not loaded</h3><div class="small">
-        Couldn’t find <code>window.TTC_DATA.weeks</code>. Refresh, or ensure <code>questions.js</code> loads before <code>game.js</code>.
+        Couldn’t find <code>window.TTC_DATA.weeks</code>. Make sure <code>questions.js</code> loads before <code>game.js</code>.
         </div></div>`;
       }
       return;
@@ -31,102 +32,36 @@
     setTimeout(()=>waitForData(cb,tries+1),50);
   }
 
-  /* ————— Stories & dialogue (used if weeks[] doesn’t provide them) ————— */
+  /* ——— Default stories/dialogue if not provided in questions.js ——— */
   const STORY_BOOK = {
-    "1": {
-      story: `The Bootloader Blob sits on the USB bus like a grumpy traffic cone. It eats partial flashes and burps out mysterious .hex files.`,
-      dialog: [
-        `Blob: "Your code has… *gelatinous dependencies*."`,
-        `You: "Cool, because I'm about to *jellify* your HP bar."`
-      ]
-    },
-    "2": {
-      story: `Randomizer Dice rolls itself and claims it landed on "sideways seven." Statistically improbable. Also rude.`,
-      dialog: [
-        `Dice: "I only lose one out of six times… per universe."`,
-        `You: "Good, I brought six universes and a reset button."`
-      ]
-    },
-    "3": {
-      story: `Condition Cat debugs by knocking variables off the table. If (cup == on_table) then push(cup).`,
-      dialog: [
-        `Cat: "ELSE? I hardly know her."`,
-        `You: "Meow if you’re ready to evaluate these claws > your face."`
-      ]
-    },
-    "4": {
-      story: `Threshold Troll lives under the if-statement and shouts "TOO LOW!" at perfectly nice sensor readings.`,
-      dialog: [
-        `Troll: "None shall pass below 100!"`,
-        `You: "Cool, I’m bringing 99 problems and this troll is one."`
-      ]
-    },
-    "5": {
-      story: `Loop Goblin winds gears and steals your semicolons. It iterates until morale improves.`,
-      dialog: [
-        `Goblin: "FOR-EVER! FOR-EVER!"`,
-        `You: "Break; /* emotionally and literally */"`
-      ]
-    },
-    "6": {
-      story: `Sprite Specter haunts the 5×5 grid and moves only diagonally when you want horizontal.`,
-      dialog: [
-        `Specter: "Booolean logic scares me."`,
-        `You: "Good. I brought XOR-cise equipment."`
-      ]
-    },
-    "7": {
-      story: `Sensor Slime tastes the air, the light, the table… and sometimes your homework.`,
-      dialog: [
-        `Slime: "Mmmm… ambient light level 82 with hints of panic."`,
-        `You: "You’ll love the aftertaste of defeat."`
-      ]
-    },
-    "8": {
-      story: `Debug Duck stares silently until your bug confesses. Its quacks are peer-reviewed.`,
-      dialog: [
-        `Duck: "Quack? (Explain your code… slowly.)"`,
-        `You: "It was the off-by-one in the while loop! Happy?"`
-      ]
-    },
-    "9": {
-      story: `Voltage Vampire charges service fees for power you already provided. Sucks pins and will not ground itself.`,
-      dialog: [
-        `Vampire: "I vant to sip your milliamp!"`,
-        `You: "Stakeholder meeting in 3… 2… 1…" `
-      ]
-    },
-    "10": {
-      story: `Data Djinn appears when you rub a USB cable and wishes your arrays were longer. Made of ones, zeros, and opinions.`,
-      dialog: [
-        `Djinn: "Your wish is my parse error."`,
-        `You: "I wish for three correct answers in a row."`
-      ]
-    },
-    "11": {
-      story: `Logic Lord speaks exclusively in truth tables. Sometimes he lies about that.`,
-      dialog: [
-        `Lord: "All knights lie, including this sentence."`,
-        `You: "Then it’s TRUE you’re going down."`
-      ]
-    },
-    "12": {
-      story: `Firmware Pharaoh woke after 3,000 years to find… a pending update. He will not read the release notes.`,
-      dialog: [
-        `Pharaoh: "Entombed with version 0.9.0-alpha."`,
-        `You: "Prepare for 1.0.0-mummy. Breaking changes."`
-      ]
-    },
-    "13": {
-      story: `Debug Dragon hoards stack traces and breathes hot, spicy exceptions. Legend says it can seg-fault reality.`,
-      dialog: [
-        `Dragon: "You dare approach with untested code?"`,
-        `You: "I wrote tests. Then I tested the tests. Roll initiative."`
-      ]
-    }
+    "1": { story:`The Bootloader Blob camps on your USB bus and eats half-flashed .hex files.`,
+      dialog:[`Blob: "Your code has… *gelatinous dependencies*."`,`You: "Cool. I’m about to *jellify* your HP bar."`] },
+    "2": { story:`Randomizer Dice claims it landed on "sideways seven." Statistically rude.`,
+      dialog:[`Dice: "I only lose one out of six times… per universe."`,`You: "Great. I brought six universes and a reset button."`] },
+    "3": { story:`Condition Cat debugs by knocking variables off the table. if(cup==on_table) push(cup).`,
+      dialog:[`Cat: "ELSE? I hardly know her."`,`You: "Meow if you’re ready to evaluate claws > face."`] },
+    "4": { story:`Threshold Troll lives under if-statements and shouts "TOO LOW!" at innocent sensors.`,
+      dialog:[`Troll: "None shall pass below 100!"`,`You: "I’ve got 99 problems and this troll is one."`] },
+    "5": { story:`Loop Goblin winds gears and steals semicolons. Iterates until morale improves.`,
+      dialog:[`Goblin: "FOR-EVER! FOR-EVER!"`,`You: "break;  // mentally and literally"`] },
+    "6": { story:`Sprite Specter haunts the 5×5 grid—diagonal when you wanted horizontal.`,
+      dialog:[`Specter: "Booolean logic scares me."`,`You: "Good. I brought XOR-cise equipment."`] },
+    "7": { story:`Sensor Slime tastes the light, the air… and your homework.`,
+      dialog:[`Slime: "Mmm… ambient level 82 with hints of panic."`,`You: "Savor the aftertaste of defeat."`] },
+    "8": { story:`Debug Duck stares until your bug confesses. Quacks are peer-reviewed.`,
+      dialog:[`Duck: "Quack? (Explain your code, slowly.)"`,`You: "It was the off-by-one in the while loop! Happy?"`] },
+    "9": { story:`Voltage Vampire bills you for current you supplied. Won’t ground itself.`,
+      dialog:[`Vampire: "I vant to sip your milliamp!"`,`You: "Stakeholder meeting in 3… 2… 1…" `] },
+    "10": { story:`Data Djinn appears when you rub a USB cable; grants three parse errors.`,
+      dialog:[`Djinn: "Your wish is my parse error."`,`You: "Then I wish for three correct answers in a row."`] },
+    "11": { story:`Logic Lord speaks only in truth tables. Sometimes he lies about that.`,
+      dialog:[`Lord: "All knights lie, including this sentence."`,`You: "Then it’s TRUE you’re going down."`] },
+    "12": { story:`Firmware Pharaoh woke after 3,000 years to… a pending update. Declines release notes.`,
+      dialog:[`Pharaoh: "Entombed with v0.9.0-alpha."`,`You: "Prepare for 1.0.0-mummy. Breaking changes."`] },
+    "13": { story:`Debug Dragon hoards stack traces and breathes spicy exceptions. May seg-fault reality.`,
+      dialog:[`Dragon: "You dare arrive with untested code?"`,`You: "I tested the tests. Roll initiative."`] },
   };
 
-  /* ————— Game init after data ————— */
   function initGame(){
     /* Stage */
     const stageEl      = byId('stage');
@@ -146,7 +81,7 @@
     const starsPill    = byId('stars');
     const progressPill = byId('progress-pill');
 
-    /* Q */
+    /* Q area */
     const qpanel   = byId('qpanel');
     const navRow   = byId('navRow');
     const nextBtn  = byId('nextBtn');
@@ -157,9 +92,9 @@
     const introTag   = byId('introTag');
     const introStory = byId('introStory');
     const introStart = byId('introStart');
-    const introComic = byId('introComic'); // container we fill
+    const introComic = byId('introComic');
 
-    /* Buttons */
+    /* Top controls */
     byId('reset').onclick   = reset;
     byId('quit').onclick    = onQuit;
     byId('useHint').onclick = onUseHint;
@@ -168,33 +103,42 @@
     nextBtn.onclick         = onNext;
 
     const DATA  = window.TTC_DATA;
-    const SKEY  = 'ttcBossBattle_arcade_v6_4';
+    const SKEY  = 'ttcBossBattle_arcade_v6_5';
     const state = loadState();
 
-    function loadState(){ let s={unlocked:['1'],stars:0,clears:{},settings:{timer:true}}; try{const raw=localStorage.getItem(SKEY); if(raw) Object.assign(s,JSON.parse(raw));}catch(e){} return s; }
+    function loadState(){ 
+      let s={unlocked:['1'],stars:0,clears:{},settings:{timer:true}};
+      try{ const raw=localStorage.getItem(SKEY); if(raw) Object.assign(s,JSON.parse(raw)); }catch(e){}
+      return s;
+    }
     function save(){ localStorage.setItem(SKEY, JSON.stringify(state)); }
     function reset(){ localStorage.removeItem(SKEY); location.reload(); }
 
-    /* Toast */
+    /* Tiny toast */
     function toast(msg){ const t=byId('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1200); }
 
-    /* Callouts */
+    /* Callouts under question title */
     function renderCallout(kind, html){
       let div = byId('callout');
-      if(!div){ div=document.createElement('div'); div.id='callout'; const title=qpanel.querySelector('h2'); (title?.parentNode||qpanel).insertBefore(div, title?.nextSibling||qpanel.firstChild); }
-      div.className=`callout callout--${kind} callout-appear`; div.innerHTML=html;
+      if(!div){
+        div=document.createElement('div'); div.id='callout';
+        const title=qpanel.querySelector('h2'); (title?.parentNode||qpanel).insertBefore(div, title?.nextSibling||qpanel.firstChild);
+      }
+      div.className=`callout callout--${kind} callout-appear`;
+      div.innerHTML=html;
     }
     function clearCallout(){ byId('callout')?.remove(); }
 
-    /* SFX */
+    /* Minimal SFX */
     const ACtx = window.AudioContext || window.webkitAudioContext;
     const ctx  = ACtx ? new ACtx() : null;
     function beep(freq=440, dur=.08, type='square', vol=.05){
       if(!ctx) return; const o=ctx.createOscillator(), g=ctx.createGain();
-      o.type=type; o.frequency.value=freq; g.gain.value=vol; o.connect(g); g.connect(ctx.destination); o.start(); setTimeout(()=>o.stop(), dur*1000);
+      o.type=type; o.frequency.value=freq; g.gain.value=vol;
+      o.connect(g); g.connect(ctx.destination); o.start(); setTimeout(()=>o.stop(), dur*1000);
     }
 
-    /* Matrix rain — larger & slower */
+    /* Matrix rain — larger/slower */
     let matrix=null;
     function startMatrix(){
       const c = matrixCanvas; if(!c) return;
@@ -202,12 +146,16 @@
       const FONT_PX=36, COL_W=28, FALL_MIN=2, FALL_VAR=3, FRAME_SKIP=2;
       let w=0,h=0,cols=0,drops=[];
       function size(){
-        const r=stageEl.getBoundingClientRect(); c.width=Math.max(1,Math.floor(r.width)); c.height=Math.max(1,Math.floor(r.height));
-        w=c.width; h=c.height; cols=Math.max(1,Math.floor(w/COL_W));
+        const r=stageEl.getBoundingClientRect();
+        c.width=Math.max(1,Math.floor(r.width));
+        c.height=Math.max(1,Math.floor(r.height));
+        w=c.width; h=c.height;
+        cols=Math.max(1,Math.floor(w/COL_W));
         drops=new Array(cols).fill(0).map(()=>Math.random()*h);
         g.font=`${FONT_PX}px VT323, monospace`;
       }
-      size(); setTimeout(size,0); const res=()=>size(); window.addEventListener('resize',res);
+      size(); setTimeout(size,0);
+      const res=()=>size(); window.addEventListener('resize',res);
       let raf,frame=0;
       function tick(){
         frame=(frame+1)%FRAME_SKIP; if(frame!==0){ raf=requestAnimationFrame(tick); return; }
@@ -227,23 +175,48 @@
     function renderLevels(){
       screenLevels.innerHTML='';
       const ids=Object.keys(DATA.weeks).sort((a,b)=>(+a)-(+b));
-      const cleared=Object.keys(state.clears).length; starsPill.textContent=`⭐ ${state.stars}`;
+      const cleared=Object.keys(state.clears).length;
+      starsPill.textContent=`⭐ ${state.stars}`;
       progressPill.textContent=`Progress: ${cleared}/${ids.length}`;
+
       ids.forEach(id=>{
-        const w=DATA.weeks[id], locked=!state.unlocked.includes(id)&&!w.forceUnlock, total=(w.questions||[]).length;
+        const w=DATA.weeks[id];
+        const locked=!state.unlocked.includes(id)&&!w.forceUnlock;
+        const total=(w.questions||[]).length;
+
         const card=document.createElement('div'); card.className='card';
         card.innerHTML=`<h3>${w.title||`Week ${id}`}</h3>
           <div class="small">${w.description||''}</div>
-          <div class="row"><span class="tag">${total} Qs</span>${state.clears[id]?`<span class="tag">Cleared ✓</span>`:''}${locked?`<span class="lock">🔒 Locked</span>`:`<span class="spacer"></span>`}</div>
-          <div class="row"><button ${locked?'disabled class="ghost"':''} data-id="${id}">${state.clears[id]?'Replay':'Start'}</button></div>`;
+          <div class="row">
+            <span class="tag">${total} Qs</span>
+            ${state.clears[id]?`<span class="tag">Cleared ✓</span>`:''}
+            ${locked?`<span class="lock">🔒 Locked</span>`:`<span class="spacer"></span>`}
+          </div>
+          <div class="row">
+            <button ${locked?'disabled class="ghost"':''} data-id="${id}">${state.clears[id]?'Replay':'Start'}</button>
+          </div>`;
         screenLevels.appendChild(card);
       });
-      screenLevels.querySelectorAll('button[data-id]').forEach(b=> b.addEventListener('click',()=>openIntro(b.dataset.id)));
+
+      // Direct binding (kept) — plus delegated fallback below
+      screenLevels.querySelectorAll('button[data-id]')
+        .forEach(b=> b.addEventListener('click',()=>openIntro(b.dataset.id)));
     }
+
+    // Delegated fallback (never goes stale)
+    document.addEventListener('click', (e)=>{
+      const b=e.target.closest('#screen-levels button[data-id]');
+      if(!b) return;
+      if (b.disabled) {
+        b.classList.add('shake-deny');
+        setTimeout(()=>b.classList.remove('shake-deny'),400);
+        return;
+      }
+      openIntro(b.dataset.id);
+    });
 
     function openIntro(id){
       const w = DATA.weeks[id];
-      // fallbacks from STORY_BOOK
       const sb = STORY_BOOK[id] || {};
       const story  = w.story  || sb.story  || 'Time to face this week’s boss!';
       const dialog = w.dialog || sb.dialog || [`Boss: "…"` , `You: "…"`];
@@ -253,7 +226,6 @@
       introTag.textContent   = w.description || '';
       introStory.textContent = story;
 
-      // comic panel
       introComic.innerHTML = `
         <div class="comic">
           <img class="portrait" src="${w.bossImage || `assets/w${id}b.png`}" alt="boss">
@@ -261,20 +233,25 @@
             <div class="bubble boss">${dialog[0]||''}</div>
             <div class="bubble me">${dialog[1]||''}</div>
           </div>
-        </div>
-      `;
+        </div>`;
 
       introStart.onclick=()=>startLevel(id);
       screenLevels.style.display='none'; screenResults.style.display='none'; screenGame.style.display='none'; screenIntro.style.display='';
     }
 
-    /* Runtime */
+    /* Runtime state */
     let G=null;
+
     function startLevel(id){
-      const w=DATA.weeks[id]; const questions=(w.questions||[]).slice();
+      const w=DATA.weeks[id];
+      const questions=(w.questions||[]).slice();
       if(!questions.length){ alert('No questions in this week.'); showLevels(); return; }
-      G={ id, w, questions, heartsMax:3, hearts:3, hpMax:questions.length, hp:questions.length,
-          score:0, SCORE_PER_CORRECT:100, hints:3, hintUsedThisQuestion:false, correctForHintCounter:0,
+
+      G={ id, w, questions,
+          heartsMax:3, hearts:3,
+          hpMax:questions.length, hp:questions.length,
+          score:0, SCORE_PER_CORRECT:100,
+          hints:3, hintUsedThisQuestion:false, correctForHintCounter:0,
           idx:0, streak:0, incorrect:[], runStart:Date.now(), waitingNext:false };
 
       setBossAppearance(w,id); renderHUD();
@@ -288,7 +265,8 @@
     function setBossAppearance(week,id){
       bossName.textContent=week.bossName||'BOSS';
       bossImg.src=week.bossImage||`assets/w${id}b.png`;
-      stageEl.classList.remove('boss--hit','boss--dead'); bossImg.classList.remove('boss-bounce','boss-roll-out');
+      stageEl.classList.remove('boss--hit','boss--dead');
+      bossImg.classList.remove('boss-bounce','boss-roll-out','boss-lunge');
       bossImg.style.opacity='1';
       document.documentElement.style.setProperty('--accent', week.bossTint || '#7bd3ff');
     }
@@ -314,6 +292,7 @@
     }
     setInterval(()=>{ if(screenGame.style.display!=='none' && state.settings.timer) renderHUD(); },500);
 
+    /* Boss FX */
     function bossShowState(stateStr){
       if(stateStr==='hit'){
         stageEl.classList.add('boss--hit');
@@ -325,7 +304,7 @@
       else { stageEl.classList.remove('boss--hit','boss--dead'); }
     }
 
-    /* Wrong answer FX */
+    /* Wrong answer FX (screen flash + lunge + shake) */
     function playerHitFX(){
       stageEl.classList.add('player-hit','shake');
       bossImg.classList.remove('boss-lunge'); void bossImg.offsetWidth;
@@ -333,21 +312,20 @@
       setTimeout(()=>{ stageEl.classList.remove('player-hit','shake'); bossImg.classList.remove('boss-lunge'); }, 320);
     }
 
-    /* Hint floaty near the hint button */
+    /* Hint floaty */
     function showHintFloaty(){
       const btn = byId('useHint'); if(!btn) return;
       const rect = btn.getBoundingClientRect();
-      const host = document.body;
       const el = document.createElement('div');
       el.className = 'floaty';
       el.textContent = '+1 Hint!';
       el.style.left = (rect.left + rect.width/2 - 40) + 'px';
       el.style.top  = (window.scrollY + rect.top - 10) + 'px';
-      host.appendChild(el);
+      document.body.appendChild(el);
       setTimeout(()=>el.remove(), 900);
     }
 
-    /* Questions */
+    /* Questions flow */
     function nextQuestion(){
       const q=(G.current=G.questions[G.idx]);
       G.hintUsedThisQuestion=false; clearCallout(); navRow.style.display='none'; G.waitingNext=false;
@@ -360,7 +338,8 @@
 
       if(q.type==='multiple-choice'){
         html+=`<div class="options" id="opts"></div>`; qpanel.innerHTML=html;
-        const opts=byId('opts'); q.options.forEach((opt,i)=>{ const b=document.createElement('button'); b.textContent=opt; b.onclick=()=>answerMC(i); opts.appendChild(b); });
+        const opts=byId('opts');
+        q.options.forEach((opt,i)=>{ const b=document.createElement('button'); b.textContent=opt; b.onclick=()=>answerMC(i); opts.appendChild(b); });
       } else if(q.type==='drag-drop'){
         const terms=q.terms.slice(), defs=q.definitions.slice(); shuffle(terms); shuffle(defs);
         html+=`<div class="drag-wrap">
@@ -431,16 +410,11 @@
         G.streak++; G.score+=G.SCORE_PER_CORRECT; G.hp=Math.max(0,G.hp-1);
         renderCallout('good', `<span class="title">✅ Correct!</span> ${explanation||''}`);
         bossShowState('hit'); beep(660,.07,'square'); setTimeout(()=>beep(880,.06,'square'),70);
-        // Earn a hint every 3 correct answers
-        if(++G.correctForHintCounter>=3){
-          G.hints++; G.correctForHintCounter-=3;
-          showHintFloaty(); toast('Bonus hint earned! ⭐');
-        }
+        if(++G.correctForHintCounter>=3){ G.hints++; G.correctForHintCounter-=3; showHintFloaty(); toast('Bonus hint earned! ⭐'); }
       }else{
-        G.incorrect.push({ q:G.current }); G.streak=0; G.hearts--;
+        G.incorrect.push({ q:G.current }); G.streak=0; G.hearts=Math.max(0,G.hearts-1);
         renderCallout('bad', `<span class="title">❌ Not quite.</span> ${explanation||''}`);
-        beep(220,.12,'sawtooth'); toast('Ouch! You lost a heart 💔');
-        playerHitFX();
+        beep(220,.12,'sawtooth'); toast('Ouch! You lost a heart 💔'); playerHitFX();
       }
       renderHUD();
 
@@ -481,7 +455,8 @@
         const perfect=(G.incorrect.length===0 && G.hearts>0);
         const earnedStars = fled ? 0 : (perfect?2:1);
         state.stars += earnedStars; state.clears[G.id]=true;
-        const ids=Object.keys(window.TTC_DATA.weeks).sort((a,b)=>(+a)-(+b)); const nextIdx=ids.indexOf(G.id)+1;
+        const ids=Object.keys(window.TTC_DATA.weeks).sort((a,b)=>(+a)-(+b));
+        const nextIdx=ids.indexOf(G.id)+1;
         if(ids[nextIdx] && !state.unlocked.includes(ids[nextIdx])) state.unlocked.push(ids[nextIdx]);
         save();
 
@@ -520,10 +495,11 @@
     }
 
     function onQuit(){ if(confirm('Quit this level? Progress for this run will be lost.')) showLevels(); }
+
     function showLevels(){
       screenIntro.style.display='none'; screenResults.style.display='none'; screenGame.style.display='none';
       screenLevels.style.display=''; stageOverlay.hidden=true; stageOverlay.innerHTML='';
-      bossImg.classList.remove('boss-bounce','boss-roll-out');
+      bossImg.classList.remove('boss-bounce','boss-roll-out','boss-lunge');
       matrix?.stop?.(); matrix?.off?.();
       renderLevels();
     }
