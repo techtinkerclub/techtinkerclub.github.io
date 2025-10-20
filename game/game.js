@@ -127,8 +127,8 @@ function startMatrix(){
   const g = c.getContext('2d', { alpha: true });
 
   // — Tunables —
-  const FONT_PX    = 46;   // glyph size
-  const COL_W      = 34;   // column width
+  const FONT_PX    = 36;   // glyph size
+  const COL_W      = 24;   // column width
   const FALL_MIN   = 1.4;  // min fall speed (px/frame)
   const FALL_VAR   = 1.8;  // random extra per column
   const TRAIL_ALPHA= 0.10; // trail fade; higher = shorter trail
