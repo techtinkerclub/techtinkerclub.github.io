@@ -255,16 +255,39 @@
 
     /* Footer inside qpanel */
     function ensureFooter(container){
-      let f=container.querySelector('.q-footer');
-      if(!f){
-        f=document.createElement('div'); f.className='q-footer';
-        f.innerHTML=`<button id="nextBtn" class="nextBtn" style="display:none">Next ▶</button>`;
-        container.appendChild(f);
-      }
-      return f;
-    }
-    function showNextBtn(){const b=qpanel.querySelector('#nextBtn'); if(b) b.style.display=''; qpanel.classList.add('qpanel-has-footer');}
-    function hideNextBtn(){const b=qpanel.querySelector('#nextBtn'); if(b) b.style.display='none'; qpanel.classList.remove('qpanel-has-footer');}
+  let f = container.querySelector('.q-footer');
+  if (!f){
+    f = document.createElement('div');
+    f.className = 'q-footer';
+    f.innerHTML = `<button id="nextBtn" class="nextBtn" style="display:none">Next ▶</button>`;
+    container.appendChild(f);
+  }
+  return f;
+}
+
+function showNextBtn(){
+  const footer  = ensureFooter(qpanel);
+  const nextBtn = footer.querySelector('#nextBtn');
+
+  // 👉 park the footer right under the explanation callout when it exists
+  const callout = byId('callout');
+  if (callout && footer.previousElementSibling !== callout){
+    callout.insertAdjacentElement('afterend', footer);
+  } else if (!callout) {
+    // fallback: keep footer at the end of qpanel
+    qpanel.appendChild(footer);
+  }
+
+  nextBtn.style.display = '';
+  qpanel.classList.add('qpanel-has-footer');
+}
+
+function hideNextBtn(){
+  const nextBtn = qpanel.querySelector('#nextBtn');
+  if (nextBtn) nextBtn.style.display = 'none';
+  qpanel.classList.remove('qpanel-has-footer');
+}
+
 
     /* Questions */
     function nextQuestion(){
