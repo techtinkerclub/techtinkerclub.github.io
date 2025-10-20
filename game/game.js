@@ -120,74 +120,80 @@
       o.start(); setTimeout(()=>o.stop(), dur*1000);
     }
 
-/* Matrix rain — cinematic, larger & slower */
+/* Matrix rain — robust & bright (handles DPR, instant visible drops) */
 let matrix = null;
 function startMatrix(){
   const c = matrixCanvas; if (!c) return;
   const g = c.getContext('2d', { alpha: true });
 
-  // ——— Tunables: bigger characters, slower fall, long trails ———
-  const FONT_PX    = 48;     // letter size
-  const COL_W      = 36;     // horizontal spacing between streams
-  const FALL_MIN   = 1.1;    // base fall speed (px / frame)
-  const FALL_VAR   = 1.6;    // random extra speed per stream
-  const FRAME_SKIP = 1;      // 1 = draw every frame (smooth)
+  // — Tunables —
+  const FONT_PX    = 46;   // glyph size
+  const COL_W      = 34;   // column width
+  const FALL_MIN   = 1.4;  // min fall speed (px/frame)
+  const FALL_VAR   = 1.8;  // random extra per column
+  const TRAIL_ALPHA= 0.10; // trail fade; higher = shorter trail
 
-  // glow
-  const GLOW_COLOR = 'rgba(140,255,170,0.55)';
-  const HEAD_COLOR = 'rgba(170,255,190,0.95)';
-  const BODY_COLOR = 'rgba(140,255,170,0.78)';
+  // High-contrast colors (work even without mix-blend)
+  const HEAD_COLOR = '#caffd9';
+  const BODY_COLOR = '#79ffb1';
 
-  let w = 0, h = 0, cols = 0, drops = [];
+  let w=0, h=0, cols=0, drops=[];
+  let raf;
 
   function size(){
-    const r = stageEl.getBoundingClientRect();
-    c.width  = Math.max(1, Math.floor(r.width));
-    c.height = Math.max(1, Math.floor(r.height));
-    w = c.width; h = c.height;
+    // Handle device pixel ratio for crisp text
+    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+    const rect = stageEl.getBoundingClientRect();
+
+    // CSS size
+    const cssW = Math.max(1, Math.floor(rect.width));
+    const cssH = Math.max(1, Math.floor(rect.height));
+
+    // Set backing store size & scale
+    c.width  = cssW * dpr;
+    c.height = cssH * dpr;
+    c.style.width  = cssW + 'px';
+    c.style.height = cssH + 'px';
+
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); // reset & scale to DPR
+    w = cssW; h = cssH;
 
     cols = Math.max(1, Math.floor(w / COL_W));
-    // start each stream above the top so they “enter” naturally
-    drops = new Array(cols).fill(0).map(() => -Math.random() * h);
+    // Start streams at random visible Y so data appears immediately
+    drops = new Array(cols).fill(0).map(() => Math.random() * h);
 
     g.font = `${FONT_PX}px VT323, monospace`;
     g.textBaseline = 'top';
   }
+
   size();
   const onResize = () => size();
   window.addEventListener('resize', onResize);
 
-  let raf, frame = 0;
   function tick(){
-    frame = (frame + 1) % FRAME_SKIP;
-    if (frame !== 0){ raf = requestAnimationFrame(tick); return; }
-
-    // long trailing fade (smaller alpha = longer trails)
-    g.fillStyle = 'rgba(8,12,26,0.12)';
+    // trail fade
+    g.fillStyle = `rgba(8,12,26,${TRAIL_ALPHA})`;
     g.fillRect(0, 0, w, h);
 
-    for (let i = 0; i < cols; i++){
-      const x = i * COL_W;
-      const y = drops[i];
-
-      // random digit
+    for (let i=0; i<cols; i++){
+      const x  = i * COL_W;
+      const y  = drops[i];
       const ch = String((Math.random() * 10) | 0);
 
-      // soft glow
-      g.shadowColor = GLOW_COLOR;
-      g.shadowBlur  = 8;
-
-      // occasionally make a brighter “head” glyph
-      const isHead = (Math.random() < 0.18);
-      g.fillStyle = isHead ? HEAD_COLOR : BODY_COLOR;
+      // draw body glyph
+      g.fillStyle = BODY_COLOR;
       g.fillText(ch, x, y);
 
-      // advance this stream
-      drops[i] = (y > h) ? (-Math.random() * 200) : (y + FALL_MIN + Math.random() * FALL_VAR);
-    }
+      // every so often draw a brighter "head"
+      if ((Math.random() * 6 | 0) === 0){
+        g.fillStyle = HEAD_COLOR;
+        g.fillText(ch, x, y - FONT_PX * 0.9);
+      }
 
-    // reset glow so it doesn't affect other canvas work
-    g.shadowBlur = 0;
+      // advance / wrap
+      const speed = FALL_MIN + Math.random() * FALL_VAR;
+      drops[i] = (y > h + FONT_PX) ? (-Math.random() * 80) : (y + speed);
+    }
 
     raf = requestAnimationFrame(tick);
   }
