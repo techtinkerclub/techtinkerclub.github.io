@@ -1,9 +1,10 @@
+<script>
 /* ===========================================================
-   Tech Tinker Boss Battle — game.js (Arcade Build v6.8)
-   • Animations restored + extra punch (hit/lunge/flash/roll-out)
+   Tech Tinker Boss Battle — game.js (Arcade Build v6.8.1)
+   • Matrix rain fixed (clear trails, real falling glyphs)
+   • Animations: hit bounce, lunge, flash, roll-out (amped)
    • DnD: re-arrange freely until Submit; drop back to tiles = unassign
-   • “Next” appears under explanation (no footer bar); never on last Q
-   • Hint floaty, matrix rain, score hearts/HP — all intact
+   • “Next” appears under explanation; never on last Q
    =========================================================== */
 
 (() => {
@@ -73,7 +74,7 @@
     const introTag   = byId('introTag');
     const introStory = byId('introStory');
     const introStart = byId('introStart');
-    const introComic = byId('introComic');
+    const introComic = byId('introComic'); // may be absent; guarded below
 
     /* Top controls */
     byId('reset').onclick   = reset;
@@ -83,7 +84,7 @@
     byId('retry').onclick   = () => startLevel(G.id);
 
     const DATA  = window.TTC_DATA;
-    const SKEY  = 'ttcBossBattle_arcade_v6_8';
+    const SKEY  = 'ttcBossBattle_arcade_v6_8_1';
     const state = loadState();
 
     function loadState(){
@@ -97,7 +98,7 @@
     /* Toast */
     function toast(msg){ const t=byId('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1200); }
 
-    /* Callouts under the question title */
+    /* Callouts (under the question title) */
     function clearCallout(){ byId('callout')?.remove(); }
     function renderCallout(kind, html){
       let div = byId('callout');
@@ -120,92 +121,80 @@
       o.start(); setTimeout(()=>o.stop(), dur*1000);
     }
 
-/* Matrix rain — robust & bright (handles DPR, instant visible drops) */
-let matrix = null;
-function startMatrix(){
-  const c = matrixCanvas; if (!c) return;
-  const g = c.getContext('2d', { alpha: true });
+    /* ===== Matrix rain (fixed & crisp) ===== */
+    let matrix=null;
+    function startMatrix(){
+      const c = matrixCanvas; if (!c) return;
+      const g = c.getContext('2d', { alpha: true });
+      if (!g) return;
 
-  // — Tunables —
-  const FONT_PX    = 36;   // glyph size
-  const COL_W      = 24;   // column width
-  const FALL_MIN   = 1.4;  // min fall speed (px/frame)
-  const FALL_VAR   = 1.8;  // random extra per column
-  const TRAIL_ALPHA= 0.10; // trail fade; higher = shorter trail
+      // Tunables
+      const FONT_PX    = 42;   // glyph size
+      const COL_W      = 30;   // horizontal spacing
+      const FALL_MIN   = 1.0;  // base fall speed
+      const FALL_VAR   = 1.6;  // extra random speed
+      const TRAIL_ALPHA= 0.12; // lower = longer trails
+      const HEAD_RATE  = 0.18; // chance a head is brighter
 
-  // High-contrast colors (work even without mix-blend)
-  const HEAD_COLOR = '#caffd9';
-  const BODY_COLOR = '#79ffb1';
+      const BODY_COLOR = 'rgba(140,255,170,0.78)';
+      const HEAD_COLOR = 'rgba(170,255,190,0.95)';
+      const GLOW_COLOR = 'rgba(140,255,170,0.55)';
 
-  let w=0, h=0, cols=0, drops=[];
-  let raf;
+      let w=0,h=0,cols=0,drops=[];
+      function size(){
+        // Use the stage’s box to size the canvas exactly to the visible area
+        const r=stageEl.getBoundingClientRect();
+        const newW=Math.max(1, Math.floor(r.width));
+        const newH=Math.max(1, Math.floor(r.height));
+        if (newW===w && newH===h) return;
+        c.width=newW; c.height=newH; w=newW; h=newH;
 
-  function size(){
-    // Handle device pixel ratio for crisp text
-    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
-    const rect = stageEl.getBoundingClientRect();
-
-    // CSS size
-    const cssW = Math.max(1, Math.floor(rect.width));
-    const cssH = Math.max(1, Math.floor(rect.height));
-
-    // Set backing store size & scale
-    c.width  = cssW * dpr;
-    c.height = cssH * dpr;
-    c.style.width  = cssW + 'px';
-    c.style.height = cssH + 'px';
-
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); // reset & scale to DPR
-    w = cssW; h = cssH;
-
-    cols = Math.max(1, Math.floor(w / COL_W));
-    // Start streams at random visible Y so data appears immediately
-    drops = new Array(cols).fill(0).map(() => Math.random() * h);
-
-    g.font = `${FONT_PX}px VT323, monospace`;
-    g.textBaseline = 'top';
-  }
-
-  size();
-  const onResize = () => size();
-  window.addEventListener('resize', onResize);
-
-  function tick(){
-    // trail fade
-    g.fillStyle = `rgba(8,12,26,${TRAIL_ALPHA})`;
-    g.fillRect(0, 0, w, h);
-
-    for (let i=0; i<cols; i++){
-      const x  = i * COL_W;
-      const y  = drops[i];
-      const ch = String((Math.random() * 10) | 0);
-
-      // draw body glyph
-      g.fillStyle = BODY_COLOR;
-      g.fillText(ch, x, y);
-
-      // every so often draw a brighter "head"
-      if ((Math.random() * 6 | 0) === 0){
-        g.fillStyle = HEAD_COLOR;
-        g.fillText(ch, x, y - FONT_PX * 0.9);
+        cols=Math.max(1, Math.floor(w/COL_W));
+        // start each stream above the top for a natural “enter”
+        drops=new Array(cols).fill(0).map(()=> -Math.random()*h);
+        g.font=`${FONT_PX}px VT323, monospace`;
+        g.textBaseline='top';
       }
+      size();
+      // Delay once to catch layout after display switches
+      setTimeout(size, 0);
+      const onResize = () => size();
+      window.addEventListener('resize', onResize);
 
-      // advance / wrap
-      const speed = FALL_MIN + Math.random() * FALL_VAR;
-      drops[i] = (y > h + FONT_PX) ? (-Math.random() * 80) : (y + speed);
+      let raf;
+      function tick(){
+        // trail fade
+        g.fillStyle = `rgba(8,12,26,${TRAIL_ALPHA})`;
+        g.fillRect(0,0,w,h);
+
+        g.shadowColor = GLOW_COLOR;
+        g.shadowBlur  = 8;
+
+        for(let i=0;i<cols;i++){
+          const x = i*COL_W;
+          const y = drops[i];
+          const ch = String((Math.random()*10)|0);
+
+          // Pick head/body brightness
+          const isHead = Math.random() < HEAD_RATE;
+          g.fillStyle = isHead ? HEAD_COLOR : BODY_COLOR;
+          g.fillText(ch, x, y);
+
+          // advance this stream; recycle above the top when off-screen
+          const next = y + FALL_MIN + Math.random()*FALL_VAR;
+          drops[i] = next > h ? (-Math.random()*200) : next;
+        }
+
+        g.shadowBlur = 0;
+        raf = requestAnimationFrame(tick);
+      }
+      tick();
+
+      matrix = {
+        stop: ()=>{ if (raf) cancelAnimationFrame(raf); },
+        off:  ()=> window.removeEventListener('resize', onResize)
+      };
     }
-
-    raf = requestAnimationFrame(tick);
-  }
-  tick();
-
-  matrix = {
-    stop: () => { if (raf) cancelAnimationFrame(raf); },
-    off:  () => window.removeEventListener('resize', onResize),
-  };
-}
-
-
 
     /* Level select cards */
     function renderLevels(){
@@ -253,14 +242,18 @@ function startMatrix(){
       introTitle.textContent = w.title || `Week ${id}`;
       introTag.textContent   = w.description || '';
       introStory.textContent = story;
-      introComic.innerHTML = `
-        <div class="comic">
-          <img class="portrait" src="${w.bossImage || `assets/w${id}b.png`}" alt="">
-          <div class="bubbles">
-            <div class="bubble boss">${dialog[0]}</div>
-            <div class="bubble me">${dialog[1]}</div>
-          </div>
-        </div>`;
+
+      if (introComic){
+        introComic.innerHTML = `
+          <div class="comic">
+            <img class="portrait" src="${w.bossImage || `assets/w${id}b.png`}" alt="">
+            <div class="bubbles">
+              <div class="bubble boss">${dialog[0]}</div>
+              <div class="bubble me">${dialog[1]}</div>
+            </div>
+          </div>`;
+      }
+
       introStart.onclick = () => startLevel(id);
       screenLevels.style.display='none'; screenIntro.style.display='';
     }
@@ -280,7 +273,7 @@ function startMatrix(){
 
       setBossAppearance(w,id); renderHUD();
       stageOverlay.hidden=true; stageOverlay.innerHTML='';
-      matrix?.stop?.(); startMatrix();
+      matrix?.stop?.(); matrix?.off?.(); startMatrix();
 
       screenIntro.style.display='none'; screenGame.style.display='';
       nextQuestion();
@@ -291,25 +284,23 @@ function startMatrix(){
       bossImg.src=week.bossImage||`assets/w${id}b.png`;
       bossImg.style.opacity='1';
       document.documentElement.style.setProperty('--accent', week.bossTint || '#7bd3ff');
+      bossImg.classList.remove('boss-bounce','boss-roll-out','boss-lunge');
     }
 
-    /* ====== FX (amped up) ====== */
+    /* ===== FX (amped) ===== */
     function bossShowState(stateStr){
       if(stateStr==='hit'){
-        // stronger random knock + quick bounce-back
-        const dx=(Math.random()*84-42)|0;   // ±42px
-        const dy=(Math.random()*48-24)|0;   // ±24px
-        const dr=(Math.random()*44-22).toFixed(1)+'deg'; // ±22°
+        const dx=(Math.random()*84-42)|0;
+        const dy=(Math.random()*48-24)|0;
+        const dr=(Math.random()*44-22).toFixed(1)+'deg';
         bossImg.style.setProperty('--hitX', dx+'px');
         bossImg.style.setProperty('--hitY', dy+'px');
         bossImg.style.setProperty('--hitR', dr);
         bossImg.classList.remove('boss-bounce'); void bossImg.offsetWidth;
         bossImg.classList.add('boss-bounce');
-        // brief stage flash
         stageEl.classList.add('boss--hit');
         setTimeout(()=>stageEl.classList.remove('boss--hit'), 280);
       } else if(stateStr==='dead'){
-        // let CSS handle roll-out, we just mark the stage
         stageEl.classList.add('boss--dead');
       } else {
         stageEl.classList.remove('boss--hit','boss--dead');
@@ -317,7 +308,6 @@ function startMatrix(){
     }
 
     function playerHitFX(){
-      // screen flash + heavier shake + boss lunge
       stageEl.classList.add('player-hit','shake');
       bossImg.classList.remove('boss-lunge'); void bossImg.offsetWidth;
       bossImg.classList.add('boss-lunge');
@@ -342,6 +332,8 @@ function startMatrix(){
       if (G.hints<=0 || G.hintUsedThisQuestion || !G.current?.hint){ useHint.disabled=true; useHint.classList.add('hintlock'); }
       else { useHint.disabled=false; useHint.classList.remove('hintlock'); }
     }
+    // keep timer pill ticking
+    setInterval(()=>{ if(screenGame.style.display!=='none' && state.settings.timer && G) renderHUD(); }, 500);
 
     /* "+1 Hint" floaty */
     function showHintFloaty(){
@@ -356,7 +348,7 @@ function startMatrix(){
       setTimeout(()=>el.remove(), 950);
     }
 
-    /* Next button: inline below the callout (no footer bar) */
+    /* Next button: inline below the callout */
     function ensureNextRow(){
       let row = qpanel.querySelector('.q-nextrow');
       if (!row){
@@ -374,10 +366,7 @@ function startMatrix(){
       row.style.display='flex';
       row.querySelector('#nextBtn').onclick = onNext;
     }
-    function hideNextBtn(){
-      const row = qpanel.querySelector('.q-nextrow');
-      if (row) row.style.display='none';
-    }
+    function hideNextBtn(){ const row=qpanel.querySelector('.q-nextrow'); if(row) row.style.display='none'; }
 
     /* Questions */
     function nextQuestion(){
@@ -495,20 +484,20 @@ function startMatrix(){
       if(correct){
         G.streak++; G.score+=G.SCORE_PER_CORRECT; G.hp=Math.max(0,G.hp-1);
         renderCallout('good', `<span class="title">✅ Correct!</span> ${explanation||''}`);
-        bossShowState('hit');               // <<< bounce (amped)
+        bossShowState('hit');
         beep(660,.07); setTimeout(()=>beep(880,.06), 70);
         if(++G.correctForHintCounter>=3){ G.hints++; G.correctForHintCounter-=3; showHintFloaty(); toast('⭐ Bonus hint!'); }
       }else{
         G.incorrect.push({ q:G.current }); G.streak=0; G.hearts=Math.max(0,G.hearts-1);
         renderCallout('bad', `<span class="title">❌ Not quite.</span> ${explanation||''}`);
-        playerHitFX();                      // <<< lunge + flash + shake
+        playerHitFX();
         beep(220,.12,'sawtooth');
       }
       renderHUD();
 
       if(G.hearts<=0){ showOverlay(true); return; }
       if(G.hp<=0){
-        bossImg.classList.add('boss-roll-out');   // CSS handles big dramatic exit
+        bossImg.classList.add('boss-roll-out');
         bossImg.addEventListener('animationend',()=>showOverlay(false),{once:true});
         return;
       }
@@ -593,7 +582,7 @@ function startMatrix(){
       screenIntro.style.display='none'; screenResults.style.display='none'; screenGame.style.display='none';
       screenLevels.style.display=''; stageOverlay.hidden=true; stageOverlay.innerHTML='';
       bossImg.classList.remove('boss-roll-out','boss-bounce','boss-lunge');
-      matrix?.stop?.();
+      matrix?.stop?.(); matrix?.off?.();
       renderLevels();
     }
 
@@ -603,3 +592,4 @@ function startMatrix(){
     renderLevels();
   }
 })();
+</script>
