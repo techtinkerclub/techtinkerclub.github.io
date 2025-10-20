@@ -1,10 +1,9 @@
 /* ===========================================================
-   Tech Tinker Boss Battle — game.js (Arcade Build v6.7.1)
-   - DnD: you can re-arrange tiles freely until Submit
-   - Drop on a bucket = assign; drop back on tiles = unassign
-   - No “Next” on last question (auto-finish)
-   - Footer Next sits under the callout (no overlap / no empty bar)
-   - Delegated Start handler + FX, hints, matrix, etc.
+   Tech Tinker Boss Battle — game.js (Arcade Build v6.8)
+   • Animations restored + extra punch (hit/lunge/flash/roll-out)
+   • DnD: re-arrange freely until Submit; drop back to tiles = unassign
+   • “Next” appears under explanation (no footer bar); never on last Q
+   • Hint floaty, matrix rain, score hearts/HP — all intact
    =========================================================== */
 
 (() => {
@@ -84,7 +83,7 @@
     byId('retry').onclick   = () => startLevel(G.id);
 
     const DATA  = window.TTC_DATA;
-    const SKEY  = 'ttcBossBattle_arcade_v6_7';
+    const SKEY  = 'ttcBossBattle_arcade_v6_8';
     const state = loadState();
 
     function loadState(){
@@ -189,7 +188,7 @@
     });
 
     function openIntro(id){
-      const w=DATA.weeks[id], sb=STORY_BOOK[id]||{}; 
+      const w=DATA.weeks[id], sb=STORY_BOOK[id]||{};
       const story  = w.story  || sb.story  || 'Time to face this week’s boss!';
       const dialog = w.dialog || sb.dialog || [`Boss: "…"`,`You: "…"`];
       introImg.src = w.bossImage || `assets/w${id}b.png`;
@@ -236,6 +235,38 @@
       document.documentElement.style.setProperty('--accent', week.bossTint || '#7bd3ff');
     }
 
+    /* ====== FX (amped up) ====== */
+    function bossShowState(stateStr){
+      if(stateStr==='hit'){
+        // stronger random knock + quick bounce-back
+        const dx=(Math.random()*84-42)|0;   // ±42px
+        const dy=(Math.random()*48-24)|0;   // ±24px
+        const dr=(Math.random()*44-22).toFixed(1)+'deg'; // ±22°
+        bossImg.style.setProperty('--hitX', dx+'px');
+        bossImg.style.setProperty('--hitY', dy+'px');
+        bossImg.style.setProperty('--hitR', dr);
+        bossImg.classList.remove('boss-bounce'); void bossImg.offsetWidth;
+        bossImg.classList.add('boss-bounce');
+        // brief stage flash
+        stageEl.classList.add('boss--hit');
+        setTimeout(()=>stageEl.classList.remove('boss--hit'), 280);
+      } else if(stateStr==='dead'){
+        // let CSS handle roll-out, we just mark the stage
+        stageEl.classList.add('boss--dead');
+      } else {
+        stageEl.classList.remove('boss--hit','boss--dead');
+      }
+    }
+
+    function playerHitFX(){
+      // screen flash + heavier shake + boss lunge
+      stageEl.classList.add('player-hit','shake');
+      bossImg.classList.remove('boss-lunge'); void bossImg.offsetWidth;
+      bossImg.classList.add('boss-lunge');
+      setTimeout(()=>{ stageEl.classList.remove('player-hit','shake'); bossImg.classList.remove('boss-lunge'); }, 380);
+    }
+
+    /* HUD */
     function renderHUD(){
       const HEART_ON  = '<svg viewBox="0 0 16 14"><path class="heart-fill" d="M8 13s-3.2-2.3-5.1-4.2C1.5 7.4 1 6.3 1 5.1 1 3.4 2.4 2 4.1 2c1.1 0 2.1.6 2.7 1.5C7.4 2.6 8.4 2 9.5 2 11.2 2 12.6 3.4 12.6 5.1c0 1.2-.5 2.3-1.9 3.7C11.2 9.2 8 13 8 13z"/></svg>';
       const HEART_OFF = '<svg viewBox="0 0 16 14"><path class="heart-off" d="M8 13s-3.2-2.3-5.1-4.2C1.5 7.4 1 6.3 1 5.1 1 3.4 2.4 2 4.1 2c1.1 0 2.1.6 2.7 1.5C7.4 2.6 8.4 2 9.5 2 11.2 2 12.6 3.4 12.6 5.1c0 1.2-.5 2.3-1.9 3.7C11.2 9.2 8 13 8 13z"/></svg>';
@@ -254,40 +285,47 @@
       else { useHint.disabled=false; useHint.classList.remove('hintlock'); }
     }
 
-    /* Footer inside qpanel (shows only when needed) */
-    function ensureFooter(container){
-      let f = container.querySelector('.q-footer');
-      if (!f){
-        f = document.createElement('div');
-        f.className = 'q-footer';
-        f.innerHTML = `<button id="nextBtn" class="nextBtn">Next ▶</button>`;
-        container.appendChild(f);
+    /* "+1 Hint" floaty */
+    function showHintFloaty(){
+      const btn = byId('useHint'); if(!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const el = document.createElement('div');
+      el.className = 'floaty';
+      el.textContent = '+1 Hint!';
+      el.style.left = (rect.left + rect.width/2 - 40) + 'px';
+      el.style.top  = (window.scrollY + rect.top - 10) + 'px';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(), 950);
+    }
+
+    /* Next button: inline below the callout (no footer bar) */
+    function ensureNextRow(){
+      let row = qpanel.querySelector('.q-nextrow');
+      if (!row){
+        row = document.createElement('div');
+        row.className = 'q-nextrow row';
+        row.innerHTML = `<div class="spacer"></div><button id="nextBtn">Next ▶</button>`;
       }
-      return f;
+      return row;
     }
     function showNextBtn(){
-      const footer  = ensureFooter(qpanel);
-      const nextBtn = footer.querySelector('#nextBtn');
       const callout = byId('callout');
-      if (callout && footer.previousElementSibling !== callout){
-        callout.insertAdjacentElement('afterend', footer);
-      } else if (!callout) {
-        qpanel.appendChild(footer);
-      }
-      footer.style.display = 'flex';
-      nextBtn.style.display = '';
-      qpanel.classList.add('qpanel-has-footer');
+      const row = ensureNextRow();
+      if (callout) callout.insertAdjacentElement('afterend', row);
+      else qpanel.appendChild(row);
+      row.style.display='flex';
+      row.querySelector('#nextBtn').onclick = onNext;
     }
     function hideNextBtn(){
-      const footer  = qpanel.querySelector('.q-footer');
-      if (footer) footer.style.display = 'none';
-      qpanel.classList.remove('qpanel-has-footer');
+      const row = qpanel.querySelector('.q-nextrow');
+      if (row) row.style.display='none';
     }
 
     /* Questions */
     function nextQuestion(){
       const q=(G.current=G.questions[G.idx]);
       G.hintUsedThisQuestion=false; clearCallout(); G.waitingNext=false;
+      hideNextBtn();
 
       if(!q){ finishOrFlee(); return; }
 
@@ -311,31 +349,26 @@
         const tilesEl=byId('tiles'), bucketsEl=byId('buckets'), submitBtn=byId('submitDD');
         const tileByTerm=new Map(), assignment=new Map(); // Map<bucketEl, termOrEmpty>
 
-        // --- tile factory ---
+        // tiles
         function makeTile(term){
           const t=document.createElement('div');
-          t.className='tile';
-          t.textContent=term;
-          t.draggable=true;
-          t.dataset.term=term;
+          t.className='tile'; t.textContent=term; t.draggable=true; t.dataset.term=term;
           t.ondragstart = e => e.dataTransfer.setData('text/plain', term);
           return t;
         }
-
-        // Build tiles
         terms.forEach(term=>{ const t=makeTile(term); tileByTerm.set(term,t); tilesEl.appendChild(t); });
 
-        // Buckets accept drop
+        // buckets accept
         defs.forEach(def=>{
           const b=document.createElement('div'); b.className='bucket'; b.dataset.def=def;
           b.innerHTML=`<div>${def}</div><div class="chosen small"></div>`;
           b.ondragover=e=>e.preventDefault();
           b.ondrop=e=>{
             e.preventDefault();
-            if(submitBtn.style.display==='none') return; // already locked
+            if(submitBtn.style.display==='none') return;
             const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
 
-            // Clear any other bucket holding this term
+            // clear any other bucket that holds this term
             bucketsEl.querySelectorAll('.bucket').forEach(other=>{
               if (other.dataset.term === dropped){
                 assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent='';
@@ -343,7 +376,6 @@
               }
             });
 
-            // Assign here
             assignment.set(b, dropped);
             b.dataset.term = dropped;
             b.querySelector('.chosen').textContent = dropped;
@@ -352,9 +384,9 @@
           bucketsEl.appendChild(b); assignment.set(b,'');
         });
 
-        // Allow dropping back to the tiles area to UNASSIGN a tile
-        tilesEl.ondragover = e => e.preventDefault();
-        tilesEl.ondrop = e => {
+        // drop back on tiles to unassign
+        tilesEl.ondragover=e=>e.preventDefault();
+        tilesEl.ondrop=e=>{
           e.preventDefault();
           if(submitBtn.style.display==='none') return;
           const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
@@ -366,7 +398,7 @@
           });
         };
 
-        // Lock everything after submit
+        // lock after submit
         function lockDD(){
           tilesEl.querySelectorAll('.tile').forEach(t=>t.draggable=false);
           bucketsEl.querySelectorAll('.bucket').forEach(b=>{ b.classList.add('locked'); b.ondragover=null; b.ondrop=null; });
@@ -374,7 +406,7 @@
           submitBtn.style.display='none';
         }
 
-        // Submit check
+        // check
         submitBtn.onclick=()=>{
           const expectedByDef={}; q.correctMatches.forEach((defIdx,termIdx)=>{ expectedByDef[q.definitions[defIdx]]=q.terms[termIdx]; });
           let all=true; bucketsEl.querySelectorAll('.bucket').forEach(b=>{
@@ -387,9 +419,6 @@
         qpanel.innerHTML=html+`<div class="note">Unsupported question type: ${q.type}</div>`;
       }
 
-      ensureFooter(qpanel);
-      const n=qpanel.querySelector('#nextBtn'); n.onclick=onNext;
-      hideNextBtn(); // only show after an answer (and not on final Q)
       renderHUD();
     }
 
@@ -397,8 +426,9 @@
       const q=G.current, opts=byId('opts').children;
       for(let k=0;k<opts.length;k++) opts[k].disabled=true;
       const correct=(i===q.correct);
-      if(correct){ opts[i].classList.add('good'); }
-      else { opts[i].classList.add('bad'); if(typeof q.correct==='number' && opts[q.correct]) opts[q.correct].classList.add('good'); }
+      const addBadge=(btn,good)=>{ const b=document.createElement('span'); b.className=`answer-badge ${good?'good':'bad'}`; b.textContent=good?'✓':'✗'; btn.appendChild(b); };
+      if(correct){ opts[i].classList.add('good'); addBadge(opts[i],true); }
+      else { opts[i].classList.add('bad'); if(typeof q.correct==='number' && opts[q.correct]){ opts[q.correct].classList.add('good'); addBadge(opts[q.correct],true); } }
       settleAnswer(correct, q.explanation||'');
     }
 
@@ -407,35 +437,36 @@
       if(correct){
         G.streak++; G.score+=G.SCORE_PER_CORRECT; G.hp=Math.max(0,G.hp-1);
         renderCallout('good', `<span class="title">✅ Correct!</span> ${explanation||''}`);
-        beep(660,.07);
-        if(++G.correctForHintCounter>=3){ G.hints++; G.correctForHintCounter-=3; toast('⭐ Bonus hint!'); }
+        bossShowState('hit');               // <<< bounce (amped)
+        beep(660,.07); setTimeout(()=>beep(880,.06), 70);
+        if(++G.correctForHintCounter>=3){ G.hints++; G.correctForHintCounter-=3; showHintFloaty(); toast('⭐ Bonus hint!'); }
       }else{
         G.incorrect.push({ q:G.current }); G.streak=0; G.hearts=Math.max(0,G.hearts-1);
         renderCallout('bad', `<span class="title">❌ Not quite.</span> ${explanation||''}`);
-        beep(220,.12);
+        playerHitFX();                      // <<< lunge + flash + shake
+        beep(220,.12,'sawtooth');
       }
       renderHUD();
 
       if(G.hearts<=0){ showOverlay(true); return; }
-      if(G.hp<=0){ bossImg.classList.add('boss-roll-out'); bossImg.addEventListener('animationend',()=>showOverlay(false),{once:true}); return; }
+      if(G.hp<=0){
+        bossImg.classList.add('boss-roll-out');   // CSS handles big dramatic exit
+        bossImg.addEventListener('animationend',()=>showOverlay(false),{once:true});
+        return;
+      }
 
       // If this was the LAST question, finish immediately (no Next button)
       if (G.idx >= G.questions.length - 1){ finishOrFlee(); return; }
 
-      // Otherwise, show Next inside the panel (under the callout)
+      // Otherwise, show Next right under the explanation
       G.waitingNext=true; showNextBtn();
     }
 
     function onNext(){ if(!G || !G.waitingNext) return; G.idx++; nextQuestion(); }
 
     function finishOrFlee(){
-      if(G.hp<=0){
-        bossImg.classList.add('boss-roll-out');
-        bossImg.addEventListener('animationend',()=>showOverlay(false),{once:true});
-      }else{
-        bossImg.classList.add('boss-roll-out');
-        bossImg.addEventListener('animationend',()=>showOverlay(false,true),{once:true});
-      }
+      bossImg.classList.add('boss-roll-out');
+      bossImg.addEventListener('animationend',()=>showOverlay(false, G.hp>0),{once:true});
     }
 
     function onUseHint(){
@@ -503,7 +534,7 @@
     function showLevels(){
       screenIntro.style.display='none'; screenResults.style.display='none'; screenGame.style.display='none';
       screenLevels.style.display=''; stageOverlay.hidden=true; stageOverlay.innerHTML='';
-      bossImg.classList.remove('boss-roll-out');
+      bossImg.classList.remove('boss-roll-out','boss-bounce','boss-lunge');
       matrix?.stop?.();
       renderLevels();
     }
