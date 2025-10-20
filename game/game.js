@@ -1,9 +1,10 @@
+<script>
 /* ===========================================================
    Tech Tinker Boss Battle — game.js (Arcade Build v6.6)
    Changes from v6.5:
-   • Drag & Drop: you can re-drag terms out of buckets back to tiles
-     (nothing locks until you press Submit)
-   • Everything else unchanged
+   • Next button is now INSIDE the question panel, sticky bottom-right
+   • Never overlaps options (adds safe bottom padding while visible)
+   • Keeps all previous fixes (DnD re-drag before submit, HP/Hearts, FX)
    =========================================================== */
 
 (() => {
@@ -81,8 +82,6 @@
 
     /* Q area */
     const qpanel   = byId('qpanel');
-    const navRow   = byId('navRow');
-    const nextBtn  = byId('nextBtn');
 
     /* Intro */
     const introImg   = byId('introBossImg');
@@ -98,13 +97,12 @@
     byId('useHint').onclick = onUseHint;
     byId('back').onclick    = () => showLevels();
     byId('retry').onclick   = () => startLevel(G.id);
-    nextBtn.onclick         = onNext;
 
     const DATA  = window.TTC_DATA;
-    const SKEY  = 'ttcBossBattle_arcade_v6_5';
+    const SKEY  = 'ttcBossBattle_arcade_v6_6';
     const state = loadState();
 
-    function loadState(){
+    function loadState(){ 
       let s={unlocked:['1'],stars:0,clears:{},settings:{timer:true}};
       try{ const raw=localStorage.getItem(SKEY); if(raw) Object.assign(s,JSON.parse(raw)); }catch(e){}
       return s;
@@ -196,7 +194,7 @@
         screenLevels.appendChild(card);
       });
 
-      // Direct binding (kept) — plus delegated fallback below
+      // Direct binding — plus delegated fallback below
       screenLevels.querySelectorAll('button[data-id]')
         .forEach(b=> b.addEventListener('click',()=>openIntro(b.dataset.id)));
     }
@@ -257,7 +255,7 @@
       matrix?.stop?.(); matrix?.off?.(); startMatrix();
 
       screenIntro.style.display='none'; screenResults.style.display='none'; screenGame.style.display='';
-      navRow.style.display='none'; nextQuestion();
+      nextQuestion();
     }
 
     function setBossAppearance(week,id){
@@ -304,10 +302,11 @@
 
     /* Wrong answer FX (screen flash + lunge + shake) */
     function playerHitFX(){
-      stageEl.classList.add('player-hit','shake');
+      const stage = byId('stage');
+      stage.classList.add('player-hit','shake');
       bossImg.classList.remove('boss-lunge'); void bossImg.offsetWidth;
       bossImg.classList.add('boss-lunge');
-      setTimeout(()=>{ stageEl.classList.remove('player-hit','shake'); bossImg.classList.remove('boss-lunge'); }, 320);
+      setTimeout(()=>{ stage.classList.remove('player-hit','shake'); bossImg.classList.remove('boss-lunge'); }, 320);
     }
 
     /* Hint floaty */
@@ -323,21 +322,53 @@
       setTimeout(()=>el.remove(), 900);
     }
 
+    /* ---------- Sticky footer helpers ---------- */
+    function ensureFooter(container){
+      let f = container.querySelector('.q-footer');
+      if (!f){
+        f = document.createElement('div');
+        f.className = 'q-footer';
+        f.innerHTML = `<button id="nextBtn" class="nextBtn" style="display:none">Next ▶</button>`;
+        container.appendChild(f);
+      }
+      return f;
+    }
+    function showNextBtn(){
+      const btn = qpanel.querySelector('#nextBtn');
+      if (!btn) return;
+      btn.style.display = '';
+      // add bottom padding to content group so button never overlaps
+      qpanel.classList.add('qpanel-has-footer');
+    }
+    function hideNextBtn(){
+      const btn = qpanel.querySelector('#nextBtn');
+      if (!btn) return;
+      btn.style.display = 'none';
+      qpanel.classList.remove('qpanel-has-footer');
+    }
+
     /* Questions flow */
     function nextQuestion(){
       const q=(G.current=G.questions[G.idx]);
-      G.hintUsedThisQuestion=false; clearCallout(); navRow.style.display='none'; G.waitingNext=false;
+      G.hintUsedThisQuestion=false; clearCallout(); G.waitingNext=false;
 
       if(!q){ finishOrFlee(); return; }
 
+      // Base shell
       let html = `<div class="row"><div class="tag">Q ${G.idx+1} / ${G.questions.length}</div></div>
                   <h2 style="margin:6px 0 6px">${q.question}</h2>`;
       if(q.code) html+=`<div class="qcode">${q.code}</div>`;
 
+      // Content by type
       if(q.type==='multiple-choice'){
-        html+=`<div class="options" id="opts"></div>`; qpanel.innerHTML=html;
+        html+=`<div class="options" id="opts"></div>`;
+        qpanel.innerHTML=html;
         const opts=byId('opts');
-        q.options.forEach((opt,i)=>{ const b=document.createElement('button'); b.textContent=opt; b.onclick=()=>answerMC(i); opts.appendChild(b); });
+        q.options.forEach((opt,i)=>{
+          const b=document.createElement('button');
+          b.textContent=opt; b.onclick=()=>answerMC(i); opts.appendChild(b);
+        });
+
       } else if(q.type==='drag-drop'){
         const terms=q.terms.slice(), defs=q.definitions.slice(); shuffle(terms); shuffle(defs);
         html+=`<div class="drag-wrap">
@@ -350,16 +381,30 @@
         const tilesEl=byId('tiles'), bucketsEl=byId('buckets'), submitBtn=byId('submitDD');
         const tileByTerm=new Map(), assignment=new Map();
 
-        function makeTile(term){ const t=document.createElement('div'); t.className='tile'; t.textContent=term; t.draggable=true; t.dataset.term=term; t.ondragstart=e=>e.dataTransfer.setData('text/plain',term); return t; }
+        function makeTile(term){
+          const t=document.createElement('div'); t.className='tile'; t.textContent=term;
+          t.draggable=true; t.dataset.term=term;
+          t.ondragstart=e=>e.dataTransfer.setData('text/plain',term);
+          // let users pull a placed tile back by clicking it
+          t.onclick=()=>{
+            const target = [...document.querySelectorAll('.bucket')].find(b=>b.dataset.term===term);
+            if(target){
+              target.dataset.term=''; target.querySelector('.chosen').textContent='';
+            }
+            t.classList.remove('hidden');
+          };
+          return t;
+        }
         function getTile(term){ return tileByTerm.get(term); }
-        function findBucketWithTerm(term){ for(const [b,t] of assignment.entries()){ if(t===term) return b; } return null; }
-
         function setBucketTerm(bucket,newTerm){
-          const prev=assignment.get(bucket); if(prev && prev!==newTerm) getTile(prev)?.classList.remove('hidden');
-          assignment.set(bucket,newTerm||''); bucket.dataset.term=newTerm||'';
+          const prev=assignment.get(bucket);
+          if(prev && prev!==newTerm) getTile(prev)?.classList.remove('hidden');
+          assignment.set(bucket,newTerm);
+          bucket.dataset.term=newTerm||'';
           const c=bucket.querySelector('.chosen'); if(c) c.textContent=newTerm||'';
           if(newTerm){
             getTile(newTerm)?.classList.add('hidden');
+            // unassign from any other bucket if duplicated
             document.querySelectorAll('.bucket').forEach(other=>{
               if(other!==bucket && other.dataset.term===newTerm){
                 assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent='';
@@ -369,47 +414,24 @@
         }
         function lockDD(){
           tilesEl.querySelectorAll('.tile').forEach(t=>t.draggable=false);
-          bucketsEl.querySelectorAll('.bucket').forEach(b=>{
-            b.classList.add('locked'); b.ondragover=null; b.ondrop=null;
-            const ch=b.querySelector('.chosen'); if(ch) ch.draggable=false;
-          });
-          tilesEl.ondragover = tilesEl.ondrop = null;
+          bucketsEl.querySelectorAll('.bucket').forEach(b=>{ b.classList.add('locked'); b.ondragover=null; b.ondrop=null; });
           submitBtn.style.display='none';
         }
 
-        // build tiles
         terms.forEach(term=>{ const t=makeTile(term); tileByTerm.set(term,t); tilesEl.appendChild(t); });
-
-        // allow dropping back to tiles (undo)
-        tilesEl.ondragover = e => e.preventDefault();
-        tilesEl.ondrop = e => {
-          e.preventDefault();
-          if(submitBtn.style.display==='none') return;
-          const term = e.dataTransfer.getData('text/plain'); if(!term) return;
-          const holder = findBucketWithTerm(term);
-          if(holder){
-            assignment.set(holder,''); holder.dataset.term=''; holder.querySelector('.chosen').textContent='';
-          }
-          getTile(term)?.classList.remove('hidden');
-        };
-
-        // build buckets
         defs.forEach(def=>{
           const b=document.createElement('div'); b.className='bucket'; b.dataset.def=def;
           b.innerHTML=`<div>${def}</div><div class="chosen small"></div>`;
           b.ondragover=e=>e.preventDefault();
-          b.ondrop=e=>{ e.preventDefault(); if(submitBtn.style.display==='none') return;
-            const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
-            const cur=assignment.get(b); if(cur && cur!==dropped) getTile(cur)?.classList.remove('hidden');
+          b.ondrop=e=>{
+            e.preventDefault();
+            if(submitBtn.style.display==='none') return; // after submit locked
+            const dropped=e.dataTransfer.getData('text/plain');
+            if(!dropped) return;
+            const cur=assignment.get(b);
+            if(cur && cur!==dropped) getTile(cur)?.classList.remove('hidden');
             setBucketTerm(b,dropped);
           };
-          // make the chosen tag itself draggable (drag out of bucket)
-          const chosen=b.querySelector('.chosen'); chosen.draggable=true;
-          chosen.ondragstart = e => {
-            const term=b.dataset.term||''; if(!term || submitBtn.style.display==='none'){ e.preventDefault(); return; }
-            e.dataTransfer.setData('text/plain', term);
-          };
-
           bucketsEl.appendChild(b); assignment.set(b,'');
         });
 
@@ -421,16 +443,23 @@
           });
           lockDD(); settleAnswer(all, q.explanation||'');
         };
+
       } else {
         qpanel.innerHTML=html+`<div class="note">Unsupported question type: ${q.type}</div>`;
-        navRow.style.display='flex'; G.waitingNext=true;
       }
+
+      // Ensure sticky footer exists and Next is hidden initially
+      ensureFooter(qpanel);
+      const nextBtn = qpanel.querySelector('#nextBtn');
+      nextBtn.onclick = onNext;
+      hideNextBtn();
 
       renderHUD();
     }
 
     function answerMC(i){
-      const q=G.current, opts=byId('opts').children; for(let k=0;k<opts.length;k++) opts[k].disabled=true;
+      const q=G.current, opts=byId('opts').children;
+      for(let k=0;k<opts.length;k++) opts[k].disabled=true;
       const correct=(i===q.correct);
       const addBadge=(btn,good)=>{ const b=document.createElement('span'); b.className=`answer-badge ${good?'good':'bad'}`; b.textContent=good?'✓':'✗'; btn.appendChild(b); };
       if(correct){ opts[i].classList.add('good'); addBadge(opts[i],true); }
@@ -454,7 +483,8 @@
       if(G.hearts<=0){ showOverlay(true); return; }
       if(G.hp<=0){ bossImg.classList.add('boss-roll-out'); bossImg.addEventListener('animationend',()=>showOverlay(false),{once:true}); return; }
 
-      navRow.style.display='flex'; G.waitingNext=true;
+      // reveal sticky Next inside the panel
+      G.waitingNext=true; showNextBtn();
     }
 
     function onNext(){ if(!G || !G.waitingNext) return; G.idx++; nextQuestion(); }
@@ -541,6 +571,6 @@
 
     /* Boot */
     renderLevels();
-  } // <<< end initGame
-
-})(); // <<< end IIFE wrapper
+  } // end initGame
+})(); // end IIFE
+</script>
