@@ -533,3 +533,27 @@ header {
   }
 }
 
+/* ===== Fix: keep Next row below both columns; avoid overlap ===== */
+
+/* Add a 3rd grid row for the nav bar */
+#screen-game{
+  /* was: grid-template-areas: "stage side" "hud side"; */
+  grid-template-rows: auto auto auto;               /* stage, hud, nav  */
+  grid-template-areas:
+    "stage side"
+    "hud   side"
+    "nav   nav";
+}
+
+/* Give the question panel a tiny bottom padding so content never hides
+   behind the nav row’s shadow on short viewports. */
+#qpanel { padding-bottom: 14px; }
+
+/* Place the Next row in its own grid area and keep it on the right */
+#navRow{
+  grid-area: nav;
+  justify-content: flex-end;
+  margin-top: 8px;          /* visual breathing room */
+  position: static;         /* make sure it's not overlaying anything */
+  z-index: 1;               /* sit above the background, below panel content */
+}
