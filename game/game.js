@@ -128,11 +128,11 @@
       if (!g) return;
 
       // Tunables
-      const FONT_PX    = 42;   // glyph size
-      const COL_W      = 30;   // horizontal spacing
+      const FONT_PX    = 32;   // glyph size
+      const COL_W      = 20;   // horizontal spacing
       const FALL_MIN   = 1.0;  // base fall speed
-      const FALL_VAR   = 1.6;  // extra random speed
-      const TRAIL_ALPHA= 0.12; // lower = longer trails
+      const FALL_VAR   = 1.2;  // extra random speed
+      const TRAIL_ALPHA= 0.1; // lower = longer trails
       const HEAD_RATE  = 0.18; // chance a head is brighter
 
       const BODY_COLOR = 'rgba(140,255,170,0.78)';
