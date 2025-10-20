@@ -1,10 +1,10 @@
-<script>
 /* ===========================================================
    Tech Tinker Boss Battle — game.js (Arcade Build v6.6)
    Changes from v6.5:
-   • Next button is now INSIDE the question panel, sticky bottom-right
-   • Never overlaps options (adds safe bottom padding while visible)
-   • Keeps all previous fixes (DnD re-drag before submit, HP/Hearts, FX)
+   • Next button lives INSIDE #qpanel, sticky bottom-right
+   • Never overlaps options (adds safe bottom padding)
+   • DnD: you can change your mind until Submit
+   • Keeps all previous fixes (HP/Hearts, FX, etc.)
    =========================================================== */
 
 (() => {
@@ -222,14 +222,16 @@
       introTag.textContent   = w.description || '';
       introStory.textContent = story;
 
-      introComic.innerHTML = `
-        <div class="comic">
-          <img class="portrait" src="${w.bossImage || `assets/w${id}b.png`}" alt="boss">
-          <div class="bubbles">
-            <div class="bubble boss">${dialog[0]||''}</div>
-            <div class="bubble me">${dialog[1]||''}</div>
-          </div>
-        </div>`;
+      if (byId('introComic')) {
+        byId('introComic').innerHTML = `
+          <div class="comic">
+            <img class="portrait" src="${w.bossImage || `assets/w${id}b.png`}" alt="boss">
+            <div class="bubbles">
+              <div class="bubble boss">${dialog[0]||''}</div>
+              <div class="bubble me">${dialog[1]||''}</div>
+            </div>
+          </div>`;
+      }
 
       introStart.onclick=()=>startLevel(id);
       screenLevels.style.display='none'; screenResults.style.display='none'; screenGame.style.display='none'; screenIntro.style.display='';
@@ -261,7 +263,7 @@
     function setBossAppearance(week,id){
       bossName.textContent=week.bossName||'BOSS';
       bossImg.src=week.bossImage||`assets/w${id}b.png`;
-      stageEl.classList.remove('boss--hit','boss--dead');
+      byId('stage').classList.remove('boss--hit','boss--dead');
       bossImg.classList.remove('boss-bounce','boss-roll-out','boss-lunge');
       bossImg.style.opacity='1';
       document.documentElement.style.setProperty('--accent', week.bossTint || '#7bd3ff');
@@ -290,17 +292,18 @@
 
     /* Boss FX */
     function bossShowState(stateStr){
+      const stage = byId('stage');
       if(stateStr==='hit'){
-        stageEl.classList.add('boss--hit');
+        stage.classList.add('boss--hit');
         const dx=(Math.random()*48-24)|0, dy=(Math.random()*28-14)|0, dr=(Math.random()*24-12).toFixed(1)+'deg';
         bossImg.style.setProperty('--hitX', dx+'px'); bossImg.style.setProperty('--hitY', dy+'px'); bossImg.style.setProperty('--hitR', dr);
         bossImg.classList.remove('boss-bounce'); void bossImg.offsetWidth; bossImg.classList.add('boss-bounce');
-        setTimeout(()=>stageEl.classList.remove('boss--hit'),250);
-      } else if(stateStr==='dead'){ stageEl.classList.add('boss--dead'); }
-      else { stageEl.classList.remove('boss--hit','boss--dead'); }
+        setTimeout(()=>stage.classList.remove('boss--hit'),250);
+      } else if(stateStr==='dead'){ stage.classList.add('boss--dead'); }
+      else { stage.classList.remove('boss--hit','boss--dead'); }
     }
 
-    /* Wrong answer FX (screen flash + lunge + shake) */
+    /* Wrong answer FX */
     function playerHitFX(){
       const stage = byId('stage');
       stage.classList.add('player-hit','shake');
@@ -337,7 +340,6 @@
       const btn = qpanel.querySelector('#nextBtn');
       if (!btn) return;
       btn.style.display = '';
-      // add bottom padding to content group so button never overlaps
       qpanel.classList.add('qpanel-has-footer');
     }
     function hideNextBtn(){
@@ -354,12 +356,10 @@
 
       if(!q){ finishOrFlee(); return; }
 
-      // Base shell
       let html = `<div class="row"><div class="tag">Q ${G.idx+1} / ${G.questions.length}</div></div>
                   <h2 style="margin:6px 0 6px">${q.question}</h2>`;
       if(q.code) html+=`<div class="qcode">${q.code}</div>`;
 
-      // Content by type
       if(q.type==='multiple-choice'){
         html+=`<div class="options" id="opts"></div>`;
         qpanel.innerHTML=html;
@@ -389,7 +389,7 @@
           t.onclick=()=>{
             const target = [...document.querySelectorAll('.bucket')].find(b=>b.dataset.term===term);
             if(target){
-              target.dataset.term=''; target.querySelector('.chosen').textContent='';
+              assignment.set(target,''); target.dataset.term=''; target.querySelector('.chosen').textContent='';
             }
             t.classList.remove('hidden');
           };
@@ -404,7 +404,6 @@
           const c=bucket.querySelector('.chosen'); if(c) c.textContent=newTerm||'';
           if(newTerm){
             getTile(newTerm)?.classList.add('hidden');
-            // unassign from any other bucket if duplicated
             document.querySelectorAll('.bucket').forEach(other=>{
               if(other!==bucket && other.dataset.term===newTerm){
                 assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent='';
@@ -483,7 +482,6 @@
       if(G.hearts<=0){ showOverlay(true); return; }
       if(G.hp<=0){ bossImg.classList.add('boss-roll-out'); bossImg.addEventListener('animationend',()=>showOverlay(false),{once:true}); return; }
 
-      // reveal sticky Next inside the panel
       G.waitingNext=true; showNextBtn();
     }
 
@@ -573,4 +571,3 @@
     renderLevels();
   } // end initGame
 })(); // end IIFE
-</script>
