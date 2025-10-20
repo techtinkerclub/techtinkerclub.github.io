@@ -1,11 +1,9 @@
 /* ===========================================================
-   Tech Tinker Boss Battle — game.js (Arcade Build v6.5)
-   Changes from v6.4:
-   • Delegated Start handler (unbreakable even after re-render)
-   • DnD submit button hides + locks after submit
-   • HP/Hearts states stay consistent to the end
-   • Matrix digits bigger/slower; wrong-answer shake/flash kept
-   • Hint floaty (“+1 Hint!”) when earned
+   Tech Tinker Boss Battle — game.js (Arcade Build v6.6)
+   Changes from v6.5:
+   • Drag & Drop: you can re-drag terms out of buckets back to tiles
+     (nothing locks until you press Submit)
+   • Everything else unchanged
    =========================================================== */
 
 (() => {
@@ -106,7 +104,7 @@
     const SKEY  = 'ttcBossBattle_arcade_v6_5';
     const state = loadState();
 
-    function loadState(){ 
+    function loadState(){
       let s={unlocked:['1'],stars:0,clears:{},settings:{timer:true}};
       try{ const raw=localStorage.getItem(SKEY); if(raw) Object.assign(s,JSON.parse(raw)); }catch(e){}
       return s;
@@ -354,20 +352,48 @@
 
         function makeTile(term){ const t=document.createElement('div'); t.className='tile'; t.textContent=term; t.draggable=true; t.dataset.term=term; t.ondragstart=e=>e.dataTransfer.setData('text/plain',term); return t; }
         function getTile(term){ return tileByTerm.get(term); }
+        function findBucketWithTerm(term){ for(const [b,t] of assignment.entries()){ if(t===term) return b; } return null; }
+
         function setBucketTerm(bucket,newTerm){
           const prev=assignment.get(bucket); if(prev && prev!==newTerm) getTile(prev)?.classList.remove('hidden');
-          assignment.set(bucket,newTerm); bucket.dataset.term=newTerm||''; const c=bucket.querySelector('.chosen'); if(c) c.textContent=newTerm||'';
-          if(newTerm){ getTile(newTerm)?.classList.add('hidden');
-            document.querySelectorAll('.bucket').forEach(other=>{ if(other!==bucket && other.dataset.term===newTerm){ assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent=''; }});
+          assignment.set(bucket,newTerm||''); bucket.dataset.term=newTerm||'';
+          const c=bucket.querySelector('.chosen'); if(c) c.textContent=newTerm||'';
+          if(newTerm){
+            getTile(newTerm)?.classList.add('hidden');
+            document.querySelectorAll('.bucket').forEach(other=>{
+              if(other!==bucket && other.dataset.term===newTerm){
+                assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent='';
+              }
+            });
           }
         }
         function lockDD(){
           tilesEl.querySelectorAll('.tile').forEach(t=>t.draggable=false);
-          bucketsEl.querySelectorAll('.bucket').forEach(b=>{ b.classList.add('locked'); b.ondragover=null; b.ondrop=null; });
-          submitBtn.style.display='none'; // hide after submit
+          bucketsEl.querySelectorAll('.bucket').forEach(b=>{
+            b.classList.add('locked'); b.ondragover=null; b.ondrop=null;
+            const ch=b.querySelector('.chosen'); if(ch) ch.draggable=false;
+          });
+          tilesEl.ondragover = tilesEl.ondrop = null;
+          submitBtn.style.display='none';
         }
 
+        // build tiles
         terms.forEach(term=>{ const t=makeTile(term); tileByTerm.set(term,t); tilesEl.appendChild(t); });
+
+        // allow dropping back to tiles (undo)
+        tilesEl.ondragover = e => e.preventDefault();
+        tilesEl.ondrop = e => {
+          e.preventDefault();
+          if(submitBtn.style.display==='none') return;
+          const term = e.dataTransfer.getData('text/plain'); if(!term) return;
+          const holder = findBucketWithTerm(term);
+          if(holder){
+            assignment.set(holder,''); holder.dataset.term=''; holder.querySelector('.chosen').textContent='';
+          }
+          getTile(term)?.classList.remove('hidden');
+        };
+
+        // build buckets
         defs.forEach(def=>{
           const b=document.createElement('div'); b.className='bucket'; b.dataset.def=def;
           b.innerHTML=`<div>${def}</div><div class="chosen small"></div>`;
@@ -377,6 +403,13 @@
             const cur=assignment.get(b); if(cur && cur!==dropped) getTile(cur)?.classList.remove('hidden');
             setBucketTerm(b,dropped);
           };
+          // make the chosen tag itself draggable (drag out of bucket)
+          const chosen=b.querySelector('.chosen'); chosen.draggable=true;
+          chosen.ondragstart = e => {
+            const term=b.dataset.term||''; if(!term || submitBtn.style.display==='none'){ e.preventDefault(); return; }
+            e.dataTransfer.setData('text/plain', term);
+          };
+
           bucketsEl.appendChild(b); assignment.set(b,'');
         });
 
