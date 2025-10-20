@@ -1,4 +1,3 @@
-<script>
 /* ===========================================================
    Tech Tinker Boss Battle — game.js (Arcade Build v6.8.1)
    • Matrix rain fixed (clear trails, real falling glyphs)
@@ -592,4 +591,3 @@
     renderLevels();
   }
 })();
-</script>
