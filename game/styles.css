@@ -482,3 +482,54 @@ header {
   }
 }
 
+/* ===========================================================
+   WIDTH + TWO-COLUMN HEIGHT MATCH FIX
+   =========================================================== */
+
+/* 1) Header: match content width exactly and add spacing */
+.wrap { max-width: 1100px; margin: 28px auto; padding: 0 14px; }
+header {
+  width: 100%;              /* use the wrap's width */
+  margin: 0 0 18px 0;       /* only bottom gap */
+  box-sizing: border-box;
+}
+
+/* 2) Two-column game layout: stage + HUD on the left, Q panel on right
+      Right panel spans the full left column height (stage + HUD) */
+#screen-game {
+  display: grid;
+  grid-template-columns: 1fr 1fr;     /* equal columns */
+  grid-template-areas:
+    "stage side"
+    "hud   side";
+  gap: 16px;
+  align-items: stretch;               /* let the side stretch vertically */
+}
+
+/* Place the existing children into the grid areas */
+#stage { grid-area: stage; }
+.hud   { grid-area: hud;   }
+
+/* The question panel = the entire right column (spans both rows) */
+#qpanel {
+  grid-area: side;
+  height: 100%;                       /* stretch to match left column height */
+  display: flex;                      /* keeps inner content tidy */
+  flex-direction: column;
+}
+
+/* Ensure the panel styling still applies cleanly to a taller box */
+#qpanel.panel { min-height: 100%; }
+
+/* Keep the Next-row full width *below* the two-column grid */
+#navRow {
+  grid-column: 1 / -1;
+}
+
+/* Mobile: stack back to one column */
+@media (max-width: 900px) {
+  #screen-game {
+    display: block;
+  }
+}
+
