@@ -573,3 +573,6 @@ header {
 }
 #qpanel.qpanel-has-footer .options,
 #qpanel.qpanel-has-footer .drag-wrap { padding-bottom: 64px; } /* prevents overlap */
+
+.q-footer { margin-top: 8px; display:flex; justify-content:flex-end; }
+
