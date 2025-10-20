@@ -381,3 +381,75 @@ details summary{ cursor:pointer; }
 /* ------ Utilities ------ */
 .note{ color:var(--ink-dim); }
 .details{ color:var(--ink-dim); }
+
+
+
+/* ============================
+   Two-column game layout (no page scrolling)
+   ============================ */
+
+/* Wide screens: split stage/HUD (left) and Q panel (right) */
+@media (min-width: 980px){
+  /* tune this once and both columns sync */
+  #screen-game{ 
+    --stageH: 56vh;                 /* arcade screen height */
+    --gap: 12px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 52% 48%;
+    grid-template-rows: auto 1fr;   /* stage row, then hud row (left) */
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  /* Left column */
+  #stage{
+    grid-column: 1; grid-row: 1; 
+    height: var(--stageH);
+    margin: 0;                      /* remove old outer margin in split mode */
+  }
+  .hud{
+    grid-column: 1; grid-row: 2;
+    position: static;               /* no sticky in split mode */
+    margin: 0;
+  }
+
+  /* Right column */
+  #qpanel{
+    grid-column: 2; grid-row: 1 / span 2;   /* spans both rows */
+    height: calc(var(--stageH) + 100px);    /* matches stage + hud area */
+    overflow: auto;                          /* scroll only the questions if needed */
+    margin: 0;
+  }
+
+  /* Keep the Next button pinned at the bottom-right of the questions column */
+  #navRow{
+    position: sticky; 
+    bottom: 8px;                    /* sticks within the qpanel’s scroll */
+    grid-column: 2; 
+    grid-row: 2;
+    width: 100%;
+    margin: 0;
+    padding-top: 6px;
+    justify-content: flex-end;
+  }
+
+  /* Make the overlay card stay centered over the stage area only */
+  .stage-overlay{
+    grid-column: 1; grid-row: 1 / span 2;
+  }
+}
+
+/* Large desktops: give the stage a little more room, keep questions readable */
+@media (min-width: 1300px){
+  #screen-game{ --stageH: 60vh; }
+}
+
+/* Phones/tablets: keep your current stacked layout */
+@media (max-width: 979px){
+  #screen-game{ display:block; }
+  #stage{ margin:16px 0 10px; }
+  .hud{ position: sticky; top: 8px; z-index: 4; }
+  #qpanel{ height: auto; overflow: visible; }
+  #navRow{ position: static; }
+}
