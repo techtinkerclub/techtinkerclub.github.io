@@ -27,6 +27,17 @@
 
 *{ box-sizing: border-box; }
 html,body{ height:100%; }
+
+
+.q-footer{
+  display: none;                     /* hidden until needed */
+  margin-top: 8px;
+  justify-content: flex-end;
+  background: none !important;       /* no box/outline while hidden or shown */
+  box-shadow: none !important;
+  padding: 0;
+}
+
 html{ background: radial-gradient(1200px 600px at 50% -200px, #1a2236 0%, #0a0f1a 45%, #060a12 100%) fixed; }
 body{
   margin:0;
