@@ -595,3 +595,98 @@ header {
   opacity:0.75; /* not 0 */
 }
 
+/* =========================
+   Intro / Dialogue — compact, centered, no page scroll
+   ========================= */
+
+/* Center the whole screen and cap its width */
+#screen-intro{
+  display:flex;
+  justify-content:center;
+  padding: 8px 14px;
+}
+
+/* Keep the card inside the viewport without page scroll */
+#screen-intro .modal-card{
+  width:min(100%, 980px);
+  max-height: 82vh;                 /* stays on one screen */
+  display:grid;
+  grid-template-rows: auto 1fr auto;/* header / body / start btn row */
+  gap: 12px;
+  overflow:hidden;                   /* prevent page scroll */
+}
+
+/* Header row (title + tag) smaller and centered */
+#screen-intro .story-head{
+  align-items:center;
+  justify-content:center;           /* center header content */
+  text-align:center;
+  gap: 12px;
+}
+#screen-intro .intro-img{ width:132px; height:132px; }
+
+#screen-intro .story{
+  font-size:20px;                   /* slightly smaller to fit */
+  line-height:1.35;
+  color: var(--ink);
+  margin: 4px 0 0 0;
+}
+
+/* Comic area: two columns on desktop, perfectly centered portrait */
+#screen-intro .comic{
+  display:grid;
+  grid-template-columns: 240px 1fr; /* portrait | bubbles */
+  gap:16px;
+  align-items:center;
+  margin-top: 8px;
+  padding:14px;
+}
+
+/* Make the left box truly centered and square; portrait centered inside */
+#screen-intro .comic .portrait{
+  width:200px; height:200px;        /* smaller so it fits 82vh layout */
+  object-fit:contain;
+  justify-self:center;              /* center horizontally in the left column */
+  image-rendering: pixelated;
+  filter: drop-shadow(0 6px 0 rgba(0,0,0,.35));
+}
+
+/* Bubbles column can scroll internally if content is long */
+#screen-intro .comic .bubbles{
+  display:grid;
+  gap:10px;
+  max-height: 48vh;                 /* ensures entire card fits; no page scroll */
+  overflow:auto;                    /* only this column scrolls if needed */
+  padding-right: 6px;               /* room for scrollbar */
+}
+
+/* Speech bubbles tighter */
+#screen-intro .bubble{
+  padding:10px 12px;
+  font-size:19px;
+  line-height:1.35;
+}
+
+/* Start button row sticks at the bottom of the card */
+#screen-intro .actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
+/* --- Responsive tweaks --- */
+@media (max-width: 900px){
+  #screen-intro .modal-card{
+    max-height: 86vh;               /* give mobiles a touch more height */
+  }
+  #screen-intro .comic{
+    grid-template-columns: 1fr;     /* stack portrait over bubbles */
+    text-align:center;
+  }
+  #screen-intro .comic .bubbles{
+    max-height: 40vh;               /* still avoid page scroll */
+  }
+  #screen-intro .intro-img{ width:112px; height:112px; }
+  #screen-intro .comic .portrait{ width:180px; height:180px; }
+  #screen-intro .story{ font-size:19px; }
+}
