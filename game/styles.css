@@ -587,3 +587,11 @@ header {
 
 .q-footer { margin-top: 8px; display:flex; justify-content:flex-end; }
 
+.matrix-canvas{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  pointer-events:none;
+  mix-blend-mode: screen;
+  opacity:.65; /* not 0 */
+}
+
