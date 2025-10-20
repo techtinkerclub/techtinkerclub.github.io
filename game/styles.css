@@ -453,3 +453,32 @@ details summary{ cursor:pointer; }
   #qpanel{ height: auto; overflow: visible; }
   #navRow{ position: static; }
 }
+
+
+/* ===========================================================
+   Header width + spacing alignment fix
+   =========================================================== */
+
+/* Make header match content width perfectly */
+header {
+  max-width: 1100px;       /* same as .wrap */
+  width: 100%;
+  margin: 0 auto 18px auto; /* centers + adds bottom space */
+  box-sizing: border-box;
+}
+
+/* Ensure the main container doesn't add duplicate padding */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* On very wide screens, keep header aligned with game grid */
+@media (min-width: 980px) {
+  #screen-game {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+}
+
