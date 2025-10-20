@@ -1,9 +1,10 @@
 /* ===========================================================
-   Tech Tinker Boss Battle — game.js (Arcade Build v6.7-stable)
+   Tech Tinker Boss Battle — game.js (Arcade Build v6.7.1)
+   - DnD: you can re-arrange tiles freely until Submit
+   - Drop on a bucket = assign; drop back on tiles = unassign
    - No “Next” on last question (auto-finish)
-   - Footer Next stays inside qpanel, never overlaps content
-   - DnD: re-drag allowed until Submit; locks after
-   - Delegated Start handler + all v6.6 polish intact
+   - Footer Next sits under the callout (no overlap / no empty bar)
+   - Delegated Start handler + FX, hints, matrix, etc.
    =========================================================== */
 
 (() => {
@@ -188,7 +189,7 @@
     });
 
     function openIntro(id){
-      const w=DATA.weeks[id], sb=STORY_BOOK[id]||{};
+      const w=DATA.weeks[id], sb=STORY_BOOK[id]||{}; 
       const story  = w.story  || sb.story  || 'Time to face this week’s boss!';
       const dialog = w.dialog || sb.dialog || [`Boss: "…"`,`You: "…"`];
       introImg.src = w.bossImage || `assets/w${id}b.png`;
@@ -245,52 +246,43 @@
 
       streakPill.textContent=`Streak: ${G.streak}`;
       scorePill.textContent =`Score: ${G.score}`;
-      hintLeftPill.textContent=`⭐ Hints: ${G.hints}`;
       timerPill.textContent  = state.settings.timer ? `⏱️ ${Math.floor((Date.now()-G.runStart)/1000)}s` : '⏱️ off';
+      hintLeftPill.textContent=`⭐ Hints: ${G.hints}`;
 
       const useHint=byId('useHint');
       if (G.hints<=0 || G.hintUsedThisQuestion || !G.current?.hint){ useHint.disabled=true; useHint.classList.add('hintlock'); }
       else { useHint.disabled=false; useHint.classList.remove('hintlock'); }
     }
 
-    /* Footer inside qpanel */
- function ensureFooter(container){
-  let f = container.querySelector('.q-footer');
-  if (!f){
-    f = document.createElement('div');
-    f.className = 'q-footer';
-    f.innerHTML = `<button id="nextBtn" class="nextBtn">Next ▶</button>`;
-    container.appendChild(f);
-  }
-  return f;
-}
-
-function showNextBtn(){
-  const footer  = ensureFooter(qpanel);
-  const nextBtn = footer.querySelector('#nextBtn');
-
-  // park under the explanation if present
-  const callout = byId('callout');
-  if (callout && footer.previousElementSibling !== callout){
-    callout.insertAdjacentElement('afterend', footer);
-  } else if (!callout) {
-    qpanel.appendChild(footer);
-  }
-
-  footer.style.display = 'flex';     // ← show the whole footer
-  nextBtn.style.display = '';        // (button is visible by default)
-  qpanel.classList.add('qpanel-has-footer');
-}
-
-function hideNextBtn(){
-  const footer  = qpanel.querySelector('.q-footer');
-  if (footer){
-    footer.style.display = 'none';   // ← hide the whole footer (no empty bar)
-  }
-  qpanel.classList.remove('qpanel-has-footer');
-}
-
-
+    /* Footer inside qpanel (shows only when needed) */
+    function ensureFooter(container){
+      let f = container.querySelector('.q-footer');
+      if (!f){
+        f = document.createElement('div');
+        f.className = 'q-footer';
+        f.innerHTML = `<button id="nextBtn" class="nextBtn">Next ▶</button>`;
+        container.appendChild(f);
+      }
+      return f;
+    }
+    function showNextBtn(){
+      const footer  = ensureFooter(qpanel);
+      const nextBtn = footer.querySelector('#nextBtn');
+      const callout = byId('callout');
+      if (callout && footer.previousElementSibling !== callout){
+        callout.insertAdjacentElement('afterend', footer);
+      } else if (!callout) {
+        qpanel.appendChild(footer);
+      }
+      footer.style.display = 'flex';
+      nextBtn.style.display = '';
+      qpanel.classList.add('qpanel-has-footer');
+    }
+    function hideNextBtn(){
+      const footer  = qpanel.querySelector('.q-footer');
+      if (footer) footer.style.display = 'none';
+      qpanel.classList.remove('qpanel-has-footer');
+    }
 
     /* Questions */
     function nextQuestion(){
@@ -317,32 +309,23 @@ function hideNextBtn(){
         qpanel.innerHTML=html;
 
         const tilesEl=byId('tiles'), bucketsEl=byId('buckets'), submitBtn=byId('submitDD');
-        const tileByTerm=new Map(), assignment=new Map();
+        const tileByTerm=new Map(), assignment=new Map(); // Map<bucketEl, termOrEmpty>
 
-        function makeTile(term){ const t=document.createElement('div'); t.className='tile'; t.textContent=term; t.draggable=true; t.dataset.term=term; t.ondragstart=e=>e.dataTransfer.setData('text/plain',term); return t; }
-        function getTile(term){ return tileByTerm.get(term); }
-        function setBucketTerm(bucket,newTerm){
-          const prev=assignment.get(bucket);
-          if(prev && prev!==newTerm) getTile(prev)?.classList.remove('hidden');
-          assignment.set(bucket,newTerm); bucket.dataset.term=newTerm||'';
-          const c=bucket.querySelector('.chosen'); if(c) c.textContent=newTerm||'';
-          if(newTerm){
-            getTile(newTerm)?.classList.add('hidden');
-            // remove from any other bucket that held the same term
-            bucketsEl.querySelectorAll('.bucket').forEach(other=>{
-              if(other!==bucket && other.dataset.term===newTerm){
-                assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent='';
-              }
-            });
-          }
-        }
-        function lockDD(){
-          tilesEl.querySelectorAll('.tile').forEach(t=>t.draggable=false);
-          bucketsEl.querySelectorAll('.bucket').forEach(b=>{ b.classList.add('locked'); b.ondragover=null; b.ondrop=null; });
-          submitBtn.style.display='none';
+        // --- tile factory ---
+        function makeTile(term){
+          const t=document.createElement('div');
+          t.className='tile';
+          t.textContent=term;
+          t.draggable=true;
+          t.dataset.term=term;
+          t.ondragstart = e => e.dataTransfer.setData('text/plain', term);
+          return t;
         }
 
+        // Build tiles
         terms.forEach(term=>{ const t=makeTile(term); tileByTerm.set(term,t); tilesEl.appendChild(t); });
+
+        // Buckets accept drop
         defs.forEach(def=>{
           const b=document.createElement('div'); b.className='bucket'; b.dataset.def=def;
           b.innerHTML=`<div>${def}</div><div class="chosen small"></div>`;
@@ -351,12 +334,47 @@ function hideNextBtn(){
             e.preventDefault();
             if(submitBtn.style.display==='none') return; // already locked
             const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
-            const cur=assignment.get(b); if(cur && cur!==dropped) getTile(cur)?.classList.remove('hidden');
-            setBucketTerm(b,dropped);
+
+            // Clear any other bucket holding this term
+            bucketsEl.querySelectorAll('.bucket').forEach(other=>{
+              if (other.dataset.term === dropped){
+                assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent='';
+                other.classList.remove('correct','wrong');
+              }
+            });
+
+            // Assign here
+            assignment.set(b, dropped);
+            b.dataset.term = dropped;
+            b.querySelector('.chosen').textContent = dropped;
+            b.classList.remove('correct','wrong');
           };
           bucketsEl.appendChild(b); assignment.set(b,'');
         });
 
+        // Allow dropping back to the tiles area to UNASSIGN a tile
+        tilesEl.ondragover = e => e.preventDefault();
+        tilesEl.ondrop = e => {
+          e.preventDefault();
+          if(submitBtn.style.display==='none') return;
+          const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
+          bucketsEl.querySelectorAll('.bucket').forEach(other=>{
+            if (other.dataset.term === dropped){
+              assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent='';
+              other.classList.remove('correct','wrong');
+            }
+          });
+        };
+
+        // Lock everything after submit
+        function lockDD(){
+          tilesEl.querySelectorAll('.tile').forEach(t=>t.draggable=false);
+          bucketsEl.querySelectorAll('.bucket').forEach(b=>{ b.classList.add('locked'); b.ondragover=null; b.ondrop=null; });
+          tilesEl.ondragover = tilesEl.ondrop = null;
+          submitBtn.style.display='none';
+        }
+
+        // Submit check
         submitBtn.onclick=()=>{
           const expectedByDef={}; q.correctMatches.forEach((defIdx,termIdx)=>{ expectedByDef[q.definitions[defIdx]]=q.terms[termIdx]; });
           let all=true; bucketsEl.querySelectorAll('.bucket').forEach(b=>{
@@ -404,7 +422,7 @@ function hideNextBtn(){
       // If this was the LAST question, finish immediately (no Next button)
       if (G.idx >= G.questions.length - 1){ finishOrFlee(); return; }
 
-      // Otherwise, show Next inside the panel
+      // Otherwise, show Next inside the panel (under the callout)
       G.waitingNext=true; showNextBtn();
     }
 
