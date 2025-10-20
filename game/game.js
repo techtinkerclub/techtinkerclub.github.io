@@ -120,72 +120,85 @@
       o.start(); setTimeout(()=>o.stop(), dur*1000);
     }
 
-  /* Matrix rain — robust sizing + crisp on HiDPI */
+/* Matrix rain — cinematic, larger & slower */
 let matrix = null;
 function startMatrix(){
-  const c = matrixCanvas; 
-  if(!c) return;
-
+  const c = matrixCanvas; if (!c) return;
   const g = c.getContext('2d', { alpha: true });
-  const FONT_PX = 36, COL_W = 28, FALL_MIN = 2, FALL_VAR = 3, FRAME_SKIP = 2;
+
+  // ——— Tunables: bigger characters, slower fall, long trails ———
+  const FONT_PX    = 48;     // letter size
+  const COL_W      = 36;     // horizontal spacing between streams
+  const FALL_MIN   = 1.1;    // base fall speed (px / frame)
+  const FALL_VAR   = 1.6;    // random extra speed per stream
+  const FRAME_SKIP = 1;      // 1 = draw every frame (smooth)
+
+  // glow
+  const GLOW_COLOR = 'rgba(140,255,170,0.55)';
+  const HEAD_COLOR = 'rgba(170,255,190,0.95)';
+  const BODY_COLOR = 'rgba(140,255,170,0.78)';
 
   let w = 0, h = 0, cols = 0, drops = [];
-  const dpr = Math.max(1, window.devicePixelRatio || 1);
 
   function size(){
-    // Use the stage box; guard against 0 when first shown
     const r = stageEl.getBoundingClientRect();
-    const cw = Math.max(1, Math.floor(r.width));
-    const ch = Math.max(1, Math.floor(r.height));
+    c.width  = Math.max(1, Math.floor(r.width));
+    c.height = Math.max(1, Math.floor(r.height));
+    w = c.width; h = c.height;
 
-    // HiDPI scaling for crisp glyphs
-    c.width = Math.max(1, Math.floor(cw * dpr));
-    c.height = Math.max(1, Math.floor(ch * dpr));
-    c.style.width = cw + 'px';
-    c.style.height = ch + 'px';
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    w = cw; h = ch;
     cols = Math.max(1, Math.floor(w / COL_W));
-    drops = new Array(cols).fill(0).map(() => Math.random() * h);
+    // start each stream above the top so they “enter” naturally
+    drops = new Array(cols).fill(0).map(() => -Math.random() * h);
+
     g.font = `${FONT_PX}px VT323, monospace`;
+    g.textBaseline = 'top';
   }
-
-  // Size now and again on the next frame (after layout settles)
   size();
-  requestAnimationFrame(size);
-
-  // Keep sizing correct as the stage panel changes
-  const ro = new ResizeObserver(size);
-  ro.observe(stageEl);
+  const onResize = () => size();
+  window.addEventListener('resize', onResize);
 
   let raf, frame = 0;
   function tick(){
     frame = (frame + 1) % FRAME_SKIP;
-    if(frame !== 0){ raf = requestAnimationFrame(tick); return; }
+    if (frame !== 0){ raf = requestAnimationFrame(tick); return; }
 
-    // Faint trail for the rain
-    g.fillStyle = 'rgba(8,12,26,0.18)';
+    // long trailing fade (smaller alpha = longer trails)
+    g.fillStyle = 'rgba(8,12,26,0.12)';
     g.fillRect(0, 0, w, h);
 
-    for(let i=0; i<cols; i++){
+    for (let i = 0; i < cols; i++){
+      const x = i * COL_W;
+      const y = drops[i];
+
+      // random digit
       const ch = String((Math.random() * 10) | 0);
-      const x = i * COL_W, y = drops[i];
-      g.fillStyle = 'rgba(140,255,170,0.85)';
+
+      // soft glow
+      g.shadowColor = GLOW_COLOR;
+      g.shadowBlur  = 8;
+
+      // occasionally make a brighter “head” glyph
+      const isHead = (Math.random() < 0.18);
+      g.fillStyle = isHead ? HEAD_COLOR : BODY_COLOR;
       g.fillText(ch, x, y);
-      drops[i] = y > h ? 0 : y + (FALL_MIN + Math.random() * FALL_VAR);
+
+      // advance this stream
+      drops[i] = (y > h) ? (-Math.random() * 200) : (y + FALL_MIN + Math.random() * FALL_VAR);
     }
+
+    // reset glow so it doesn't affect other canvas work
+    g.shadowBlur = 0;
+
     raf = requestAnimationFrame(tick);
   }
   tick();
 
   matrix = {
-    stop(){
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-    }
+    stop: () => { if (raf) cancelAnimationFrame(raf); },
+    off:  () => window.removeEventListener('resize', onResize),
   };
 }
+
 
 
     /* Level select cards */
