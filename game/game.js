@@ -254,12 +254,12 @@
     }
 
     /* Footer inside qpanel */
-    function ensureFooter(container){
+ function ensureFooter(container){
   let f = container.querySelector('.q-footer');
   if (!f){
     f = document.createElement('div');
     f.className = 'q-footer';
-    f.innerHTML = `<button id="nextBtn" class="nextBtn" style="display:none">Next ▶</button>`;
+    f.innerHTML = `<button id="nextBtn" class="nextBtn">Next ▶</button>`;
     container.appendChild(f);
   }
   return f;
@@ -269,24 +269,27 @@ function showNextBtn(){
   const footer  = ensureFooter(qpanel);
   const nextBtn = footer.querySelector('#nextBtn');
 
-  // 👉 park the footer right under the explanation callout when it exists
+  // park under the explanation if present
   const callout = byId('callout');
   if (callout && footer.previousElementSibling !== callout){
     callout.insertAdjacentElement('afterend', footer);
   } else if (!callout) {
-    // fallback: keep footer at the end of qpanel
     qpanel.appendChild(footer);
   }
 
-  nextBtn.style.display = '';
+  footer.style.display = 'flex';     // ← show the whole footer
+  nextBtn.style.display = '';        // (button is visible by default)
   qpanel.classList.add('qpanel-has-footer');
 }
 
 function hideNextBtn(){
-  const nextBtn = qpanel.querySelector('#nextBtn');
-  if (nextBtn) nextBtn.style.display = 'none';
+  const footer  = qpanel.querySelector('.q-footer');
+  if (footer){
+    footer.style.display = 'none';   // ← hide the whole footer (no empty bar)
+  }
   qpanel.classList.remove('qpanel-has-footer');
 }
+
 
 
     /* Questions */
