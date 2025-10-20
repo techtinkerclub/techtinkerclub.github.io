@@ -225,7 +225,8 @@
       if(G.hp<=0){bossImg.classList.add('boss-roll-out');bossImg.addEventListener('animationend',()=>showOverlay(false),{once:true});return;}
 
       // ✅ End immediately if last question
-      if(G.idx >= G.questions.length-1){finishOrFlee();return;}
+      if (G.idx >= G.questions.length - 1) { finishOrFlee(); return; }
+
 
       G.waitingNext=true;showNextBtn();
     }
