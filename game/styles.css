@@ -1,5 +1,5 @@
 /* ===========================================================
-   Tech Tinker Boss Battle — styles.css (Arcade v6.8)
+   Tech Tinker Boss Battle — styles.css (Arcade v6.8+ Retro Booster)
    Retro CRT, matrix rain, scanlines, glow borders
    Two-column game; compact intro/dialogue; no weird overlaps
    =========================================================== */
@@ -23,7 +23,9 @@
 
 *{ box-sizing: border-box; }
 html,body{ height:100%; }
-html{ background: radial-gradient(1200px 600px at 50% -200px, #1a2236 0%, #0a0f1a 45%, #060a12 100%) fixed; }
+html{
+  background: radial-gradient(1200px 600px at 50% -200px, #1a2236 0%, #0a0f1a 45%, #060a12 100%) fixed;
+}
 body{
   margin:0; color:var(--ink);
   font-family: "VT323", ui-monospace, monospace;
@@ -92,7 +94,7 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
 }
 .card h3{ margin:6px 0 6px; font-size:28px; }
 
-/* ------ Stage ------ */
+/* ------ Stage (CRT screen) ------ */
 .stage.panel{
   position:relative;
   height:420px; border-radius:16px; overflow:hidden;
@@ -101,7 +103,7 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   margin:16px 0 10px;
 }
 
-/* star specks */
+/* static star specks */
 .starfield::before{
   content:""; position:absolute; inset:0; pointer-events:none;
   background-image:
@@ -111,20 +113,28 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
     radial-gradient(2px 2px at 30% 70%, rgba(255,255,255,.22) 50%, transparent 51%);
   opacity:.3;
 }
+
+/* matrix rain canvas (animated by JS) */
 .matrix-canvas{
   position:absolute; inset:0; width:100%; height:100%;
-  pointer-events:none; mix-blend-mode: screen; opacity:.70;
+  pointer-events:none;
+  mix-blend-mode: screen; /* gives that “phosphor add” look */
+  opacity:.70;
+  z-index:1; /* under sprites */
 }
+
+/* scanlines (subtle) */
 .scanlines{
   position:absolute; inset:0; pointer-events:none;
   background-image: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,.15) 50%);
   background-size: 100% 2px; opacity:.07;
+  z-index:3;
 }
 
 /* stage overlay for results */
 .stage-overlay{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  pointer-events:auto;
+  pointer-events:auto; z-index:4;
 }
 .overlay-card{
   width:min(680px, 92%); max-height:90%; overflow:auto;
@@ -135,8 +145,8 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
 .overlay-card h3{ margin:0 0 8px; font-size:28px; }
 .overlay-card .meta{ color:var(--ink-dim); }
 
-/* Boss sprite */
-.boss-wrap{ position:absolute; inset:0; display:grid; place-items:center; }
+/* ---- Boss sprite & name ---- */
+.boss-wrap{ position:absolute; inset:0; display:grid; place-items:center; z-index:2; }
 #bossSprite{
   width: 240px; height: 240px; object-fit: contain;
   image-rendering: pixelated;
@@ -148,7 +158,7 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   letter-spacing:2px; font-size:18px; color:var(--ink-dim);
 }
 
-/* Boss FX states */
+/* ---- Boss FX states ---- */
 .boss-bounce{ animation: bossBounce .32s cubic-bezier(.2,.8,.2,1); }
 @keyframes bossBounce{
   0%{ transform: translate(var(--hitX,0), var(--hitY,0)) rotate(var(--hitR,0)); }
@@ -211,6 +221,9 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   transition: width .18s ease;
 }
 .fill.empty{ width:0%; }
+
+/* Hint button state when locked */
+button#useHint.hintlock{ opacity:.55; }
 
 /* ------ Question panel ------ */
 .panel{
@@ -365,20 +378,47 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   .intro-actions{ position:sticky; bottom:8px; background:transparent; }
 }
 
-/* --- Matrix visibility + stacking fix --- */
+/* Ensure layers are stacked correctly over the matrix */
 .stage.panel { position: relative; }
-
-.matrix-canvas{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  pointer-events:none;
-  /* The two changes that stop the “flashing with no glyphs” */
-  mix-blend-mode: normal;   /* was: screen */
-  opacity: 0.80;
-  z-index: 1;               /* under sprites, over stage bg */
-}
-
-/* Ensure the other layers sit above the matrix */
 .boss-wrap   { position:absolute; inset:0; z-index: 2; }
 .scanlines   { position:absolute; inset:0; z-index: 3; }
-.stage-overlay { z-index: 4; } /* overlay always on top */
+.stage-overlay { z-index: 4; }
+
+/* ===========================================================
+   Retro Booster: CRT glow, curvature & vignette
+   (adds polish without breaking layout or matrix)
+   =========================================================== */
+.stage.panel::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  /* slight convex curvature + soft vignette */
+  background: radial-gradient(120% 90% at 50% 50%,
+    rgba(0,0,0,0) 55%,
+    rgba(0,0,0,.20) 75%,
+    rgba(0,0,0,.38) 100%);
+  mix-blend-mode: multiply;
+}
+
+.matrix-canvas {
+  filter: brightness(1.1)
+          contrast(1.05)
+          saturate(1.05)
+          drop-shadow(0 0 8px rgba(140,255,170,.25));
+}
+
+#bossSprite {
+  /* subtle RGB fringe + base drop shadow */
+  filter:
+    drop-shadow(1px 0 0 rgba(0,255,180,.12))
+    drop-shadow(-1px 0 0 rgba(0,120,255,.12))
+    drop-shadow(0 8px 0 rgba(0,0,0,.45));
+}
+
+.stage.panel {
+  perspective: 800px;
+  transform: perspective(800px) rotateX(0.6deg);
+  overflow:hidden;
+}
