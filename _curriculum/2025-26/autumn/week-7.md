@@ -91,9 +91,10 @@ We first revisited *Barrel Jumper* to understand **levels** and **speed**, then 
 ## Resources
 - **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 - **Advanced Barrel Jumper code:** [View project](https://makecode.microbit.org/S04773-39055-37520-43538){:target="_blank" rel="noopener"}  
-- **Game (sprites, collisions, levels) reference:** [Reference](https://makecode.microbit.org/reference/game){:target="_blank" rel="noopener"}  
 - **Functions in coding** [Video](https://youtu.be/whqjRte86J4?si=YJ7L1_Nau4jytg1e){:target="_blank" rel="noopener"}  
-- **Makecode Functions:** [Video](https://youtu.be/1LACtv9XvXQ?si=h9IoVpsalwd7i-BR){:target="_blank" rel="noopener"}  
+- **Makecode Functions:** [Video](https://youtu.be/1LACtv9XvXQ?si=h9IoVpsalwd7i-BR){:target="_blank" rel="noopener"}
+- **BBC Bitesize - KS2 Algebra and function machines:** [Link](https://www.bbc.co.uk/bitesize/articles/zsmgvwx){:target="_blank" rel="noopener"}
+- **Maths funcfion machines (solved examples):** [Video](https://youtu.be/akj9L0HaTY4?si=hAhCA8pp1-iskAvo){:target="_blank" rel="noopener"}  
 
 ---
 
