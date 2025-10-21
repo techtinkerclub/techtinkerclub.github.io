@@ -15,33 +15,32 @@ header:
 {% include back-to-autumn.html %}
 {% include teacher-notes-link.html week=7 %}
 
-## Week 7 — Functions, Levels & Space Invaders
+## Week 7 — Functions, Inputs & Space Invaders
 
 **Focus Concept:** Functions and game logic  
 **Mini-Projects:** *Function Challenges* → *Mini Space Invaders*
 
-This week we explored how **functions** help us keep code tidy and reusable.  
-We first built and tested small examples of functions — from simple ones that just run a few lines, to ones that use **inputs** (parameters) or even **return** results.  
-After learning how they work, we revisited *Barrel Jumper* to see how a function can show the **level** or **speed-up** message, and then moved on to a new challenge game using the **accelerometer**.
+This week we explored how **functions** can make our programs cleaner, faster to edit, and easier to reuse.  
+Participants first created small examples of functions to see how they work, then applied the same ideas in a larger game that used the **accelerometer** and **collisions**.
 
 ---
 
 ## Objectives
 - Understand what a **function** is and why we use it.  
-- Create and call simple functions to group repeated actions.  
-- Use **parameters** to make a function work in different ways.  
-- Recognise how a function can simplify larger games.  
-- Detect **collisions** and respond with variables and conditions.  
+- Create and call functions to group repeated actions.  
+- Use **parameters** to make a function behave differently.  
+- Explore how a function can return a result.  
+- Apply loops, variables and conditions inside a larger game.  
 - Control sprites using **buttons** and the **accelerometer**.  
 
 ---
 
 ## Success Criteria
 - I can explain what a **function** does and when it runs.  
-- I can create a function that repeats an action or shows a message.  
-- I can use a **parameter** inside a function to change how it behaves.  
-- I can describe how functions make my program easier to read.  
-- I can reuse my function in a different part of the game.  
+- I can create my own function that performs a short task.  
+- I can add **parameters** so a function can change what it does.  
+- I can describe how functions keep code tidy and reusable.  
+- I can reuse my helper function in another project.  
 
 ---
 
@@ -56,32 +55,28 @@ After learning how they work, we revisited *Barrel Jumper* to see how a function
 
 ---
 
-## Part A — Function Challenges & Barrel Jumper Extension
+## Part A — Function Challenges
 
 ### What We Explored
-1. **Static Function:**  
-   A short function that performs a single action when called, for example flashing an icon or showing a message.  
-   → *Helps remove repeated code.*
+1. **Simple Function** — a short reusable block (e.g. flash an icon, play a tone).  
+   → *Shows how to avoid repeating the same code.*
 
-2. **Function with Parameter:**  
-   A reusable version that accepts an **input**, such as the number of flashes or the level to show.  
-   → *Same code, flexible results.*
+2. **Function with Parameter** — takes input, such as how many times to flash or which icon to show.  
+   → *Same recipe, flexible results.*
 
-3. **Function with Return Value:**  
-   A more advanced example where the function works out an answer (for example adding two numbers) and **returns** it to be used later.  
-   → *Used to pass information back into the program.*
+3. **Function with Return Value** — calculates something and gives the answer back (e.g. add two numbers).  
+   → *Lets other parts of the code use the result.*
 
-4. **Applying It in Games:**  
-   In *Advanced Barrel Jumper*, we used a function to display a “Level Up” message whenever the score reached a multiple of 5.  
-   The function could also play a short tone or slow down the barrel briefly before restarting the game loop.
+4. **Combining Functions** — several small helpers can work together, like one that displays a message and another that plays a sound.  
+   → *Builds the habit of modular thinking.*
 
-> 💡 *Functions keep your code neat — write once, use many times!*
+> 💡 *Functions are like reusable tools — once built, you can use them in any project.*
 
 ### Try These Mini-Challenges
 - Make a function `flash(times)` that blinks an icon a chosen number of times.  
-- Create a function `showLevel(level)` that prints the level number and plays a sound.  
-- Modify the Barrel Jumper project so that the level-up rule changes automatically (for example, every 3 points).  
-- Prevent the game from becoming *too fast* by adding a minimum delay in your loop.  
+- Create a function `showMessage(text)` that scrolls a message.  
+- Write a function `addNumbers(a, b)` that returns their sum and shows it.  
+- Combine two functions: one plays a tone, one flashes a light — call both together for an alert effect.  
 
 ---
 
@@ -93,7 +88,7 @@ After learning how they work, we revisited *Barrel Jumper* to see how a function
 3. **Shooting:** pressing B fired a `Laser` straight up; if it touched the alien, the alien disappeared, the score increased, and a new one spawned.  
 4. **Bombs:** when the alien lined up with the ship, it dropped a `Bomb`; if the bomb touched the ship → **Game Over**.  
 
-> 🔄 *This project reused ideas from Barrel Jumper — loops, variables, collisions — in a completely new style of gameplay.*
+> 🔄 *This project reused ideas from previous weeks — loops, variables, collisions — in a completely new style of gameplay.*
 
 ### Try These Mini-Challenges
 - Randomise where the alien respawns (use `pick random 0 to 4`).  
@@ -105,11 +100,10 @@ After learning how they work, we revisited *Barrel Jumper* to see how a function
 
 ## Resources
 - **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
-- **Advanced Barrel Jumper code:** [View project](https://makecode.microbit.org/S04773-39055-37520-43538){:target="_blank" rel="noopener"}  
 - **Functions in coding** [Video](https://youtu.be/whqjRte86J4?si=YJ7L1_Nau4jytg1e){:target="_blank" rel="noopener"}  
-- **Makecode Functions:** [Video](https://youtu.be/1LACtv9XvXQ?si=h9IoVpsalwd7i-BR){:target="_blank" rel="noopener"}
-- **BBC Bitesize - KS2 Algebra and function machines:** [Link](https://www.bbc.co.uk/bitesize/articles/zsmgvwx){:target="_blank" rel="noopener"}
-- **Maths funcfion machines (solved examples):** [Video](https://youtu.be/akj9L0HaTY4?si=hAhCA8pp1-iskAvo){:target="_blank" rel="noopener"}  
+- **MakeCode Functions:** [Video](https://youtu.be/1LACtv9XvXQ?si=h9IoVpsalwd7i-BR){:target="_blank" rel="noopener"}  
+- **BBC Bitesize – KS2 Algebra and Function Machines:** [Link](https://www.bbc.co.uk/bitesize/articles/zsmgvwx){:target="_blank" rel="noopener"}  
+- **Maths function machines (solved examples):** [Video](https://youtu.be/akj9L0HaTY4?si=hAhCA8pp1-iskAvo){:target="_blank" rel="noopener"}  
 
 ---
 
