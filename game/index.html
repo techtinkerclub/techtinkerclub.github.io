@@ -4,123 +4,92 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tech Tinker Boss Battle</title>
-
-  <!-- Retro readable font -->
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="wrap">
-    <!-- Marquee -->
     <header>
       <div class="brand">🕹️ Tech Tinker Boss Battle</div>
       <div class="row">
-        <div class="pill" id="stars">⭐ 0</div>
-        <div class="pill" id="progress-pill">Progress: 0/0</div>
-        <button id="reset" class="ghost smallbtn" title="Reset progress">Reset</button>
+        <span class="pill" id="stars">⭐ 0</span>
+        <span class="pill" id="progress-pill">Progress: 0/0</span>
+        <button id="reset" class="ghost smallbtn">Reset</button>
       </div>
     </header>
 
-    <!-- LEVEL SELECT -->
+    <!-- LEVELS -->
     <main id="screen-levels" class="grid levels"></main>
 
-    <!-- INTRO / STORY (modal) -->
-    <section id="screen-intro" class="modal" style="display:none">
-      <div class="modal-card">
-        <div class="story-head">
-          <img id="introBossImg" class="intro-img" alt="Boss">
-          <div>
-            <h2 id="introTitle">Level Intro</h2>
-            <div class="tag" id="introTag"></div>
+    <!-- INTRO / DIALOGUE -->
+    <section id="screen-intro" style="display:none;">
+      <div class="modal-card intro-card">
+        <div class="intro-grid">
+          <div class="intro-left">
+            <img id="introBossImg" class="intro-portrait" alt="Boss portrait" />
+          </div>
+          <div class="intro-right">
+            <h2 id="introTitle" class="intro-title">Week</h2>
+            <div class="row intro-tags">
+              <span class="tag" id="introTag"></span>
+            </div>
+            <p id="introStory" class="story"></p>
           </div>
         </div>
 
-        <p id="introStory" class="story"></p>
+        <div id="introComic" class="intro-bubbles">
+          <!-- bubbles injected by JS -->
+        </div>
 
-        <!-- Comic bubbles container required by game.js -->
-        <div id="introComic" class="comic"></div>
-
-        <div class="row">
-          <div class="spacer"></div>
-          <button id="introStart">Start Battle ▶</button>
+        <div class="intro-actions">
+          <button id="back" class="ghost smallbtn">Back</button>
+          <span class="spacer"></span>
+          <button id="introStart">Start ▶</button>
         </div>
       </div>
     </section>
 
     <!-- GAME -->
-    <section id="screen-game" style="display:none">
-      <!-- CRT Stage -->
-      <div class="stage panel starfield" id="stage">
-        <!-- Subtle matrix rain -->
-        <canvas id="matrixCanvas" class="matrix-canvas" aria-hidden="true"></canvas>
+    <section id="screen-game" style="display:none;">
+      <div id="stage" class="stage panel starfield">
+        <canvas id="matrixCanvas" class="matrix-canvas"></canvas>
+        <div class="scanlines"></div>
 
-        <!-- Boss sprite + label -->
         <div class="boss-wrap">
-          <img id="bossSprite" alt="Boss">
-          <div class="boss-name" id="bossName">BOSS</div>
+          <img id="bossSprite" src="" alt="Boss" />
+          <div id="bossName" class="boss-name"></div>
         </div>
 
-        <!-- Scanline overlay -->
-        <div class="scanlines" aria-hidden="true"></div>
-
-        <!-- Inline results overlay (shown on clear / game over) -->
         <div id="stageOverlay" class="stage-overlay" hidden></div>
       </div>
 
-      <!-- HUD -->
       <div class="hud">
-        <div class="hearts" id="hearts"></div>
-
-        <!-- Boss HP bar with label and numeric -->
+        <div id="hearts" class="hearts"></div>
         <div class="hp-wrap">
-          <div class="hp-label">
-            <span>👾 Boss HP</span>
-            <span id="hpCount" style="margin-left:8px; color:#a7b0d0; font-size:12px;"></span>
-          </div>
+          <div class="hp-label small">👾 Boss HP <span id="hpCount" class="small"></span></div>
           <div class="bar"><div id="hp" class="fill"></div></div>
         </div>
-
-        <div class="pill" id="streak">Streak: 0</div>
-        <div class="pill" id="scorePill">Score: 0</div>
-        <div class="pill" id="timer">⏱️ —</div>
-        <div class="pill" id="hintLeft">⭐ Hints: 0</div>
-        <button id="useHint">Use Hint</button>
-        <div class="spacer"></div>
-        <button id="quit">Quit</button>
+        <span id="streak" class="pill">Streak: 0</span>
+        <span id="scorePill" class="pill">Score: 0</span>
+        <span id="timer" class="pill">⏱️ 0s</span>
+        <span id="hintLeft" class="pill">⭐ Hints: 3</span>
+        <button id="useHint" class="smallbtn">Use Hint</button>
+        <span class="spacer"></span>
+        <button id="quit" class="smallbtn">Quit</button>
       </div>
 
-      <!-- QUESTION PANEL -->
-      <div class="panel" id="qpanel"></div>
-
-      <!-- Next button row (appears after answer) -->
-      <div class="row" id="navRow" style="display:none; margin-top:10px">
-        <div class="spacer"></div>
-        <button id="nextBtn">Next ▶</button>
-      </div>
+      <div id="qpanel" class="panel"></div>
     </section>
 
-    <!-- (Fallback) RESULTS screen – normal flow uses the stage overlay -->
-    <section id="screen-results" style="display:none">
-      <div class="panel">
-        <h2 id="resTitle">Level Complete!</h2>
-        <p id="resSummary"></p>
-        <details>
-          <summary>Review explanations</summary>
-          <ul class="review" id="reviewList"></ul>
-        </details>
-        <div class="row" style="margin-top:12px">
-          <button id="retry">Retry Level</button>
-          <button id="back">Back to Levels</button>
-        </div>
-      </div>
-    </section>
+    <!-- RESULTS (kept for future use) -->
+    <section id="screen-results" style="display:none;"></section>
+
+    <div id="toast" class="toast"></div>
   </div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
-
-  <!-- Data first, engine second -->
+  <!-- Your questions data file must load before game.js -->
   <script src="questions.js"></script>
   <script src="game.js"></script>
 </body>
