@@ -18,55 +18,70 @@ header:
 ## Week 7 — Functions, Levels & Space Invaders
 
 **Focus Concept:** Functions and game logic  
-**Mini-Projects:** *Advanced Barrel Jumper* → *Mini Space Invaders*
+**Mini-Projects:** *Function Challenges* → *Mini Space Invaders*
 
-This week we explored how a function can simplify our code and make games more dynamic.  
-We first revisited *Barrel Jumper* to understand **levels** and **speed**, then built a brand-new game where the player uses the **accelerometer** to move and fire at an alien.
+This week we explored how **functions** help us keep code tidy and reusable.  
+We first built and tested small examples of functions — from simple ones that just run a few lines, to ones that use **inputs** (parameters) or even **return** results.  
+After learning how they work, we revisited *Barrel Jumper* to see how a function can show the **level** or **speed-up** message, and then moved on to a new challenge game using the **accelerometer**.
 
 ---
 
 ## Objectives
 - Understand what a **function** is and why we use it.  
-- Use **variables** and **maths** to change speed and difficulty.  
-- Detect **collisions** and respond to them in different ways.  
+- Create and call simple functions to group repeated actions.  
+- Use **parameters** to make a function work in different ways.  
+- Recognise how a function can simplify larger games.  
+- Detect **collisions** and respond with variables and conditions.  
 - Control sprites using **buttons** and the **accelerometer**.  
-- Recognise how the same coding ideas can create completely different games.  
 
 ---
 
 ## Success Criteria
-- I can describe what a **function** does and where I used one.  
-- I can make a game get harder automatically as the **score** increases.  
-- I can detect when two sprites **touch** and make something happen.  
-- I can move sprites smoothly using loops, pauses, and conditions.  
-- I can adapt familiar code to make a new type of game.  
+- I can explain what a **function** does and when it runs.  
+- I can create a function that repeats an action or shows a message.  
+- I can use a **parameter** inside a function to change how it behaves.  
+- I can describe how functions make my program easier to read.  
+- I can reuse my function in a different part of the game.  
 
 ---
 
 ## Key Vocabulary
 - **Function** — a mini-program that performs one job and can be reused.  
+- **Call** — the moment your program tells a function to run.  
+- **Parameter** — information passed *into* a function.  
+- **Return** — a value that a function sends *back*.  
 - **Variable** — a box that stores a number or word such as `score`, `speed`, or `level`.  
-- **Loop (forever)** — repeats instructions over and over.  
 - **Condition** — a true/false check that decides what happens next.  
 - **Collision** — when two sprites touch each other.  
-- **Respawn** — recreate something (like a new alien) after it’s deleted.  
 
 ---
 
-## Part A — Advanced Barrel Jumper
+## Part A — Function Challenges & Barrel Jumper Extension
 
-### What We Built (Step-by-Step)
-1. **Game Loop:** keeps the barrel moving and checks for collisions with the jumper.  
-2. **Jump Logic:** button B moves the jumper up 4 steps, then down 4, using two short loops.  
-3. **Scoring & Speed:** each time the barrel reaches the edge, the score increases; every few points, the game speeds up slightly.  
-4. **Level Function:** a function called `showLevelToast()` shows “L” + the current level and briefly pauses play — our first example of reusable code.  
+### What We Explored
+1. **Static Function:**  
+   A short function that performs a single action when called, for example flashing an icon or showing a message.  
+   → *Helps remove repeated code.*
 
-> 💡 *This project introduced “function” as a key programming idea: one neat block of code that we can call any time we need it.*
+2. **Function with Parameter:**  
+   A reusable version that accepts an **input**, such as the number of flashes or the level to show.  
+   → *Same code, flexible results.*
+
+3. **Function with Return Value:**  
+   A more advanced example where the function works out an answer (for example adding two numbers) and **returns** it to be used later.  
+   → *Used to pass information back into the program.*
+
+4. **Applying It in Games:**  
+   In *Advanced Barrel Jumper*, we used a function to display a “Level Up” message whenever the score reached a multiple of 5.  
+   The function could also play a short tone or slow down the barrel briefly before restarting the game loop.
+
+> 💡 *Functions keep your code neat — write once, use many times!*
 
 ### Try These Mini-Challenges
-- Change the level-up rule (every 3 points instead of 5).  
-- Add a sound when the level changes.  
-- Prevent the game from becoming *too fast* (minimum pause = 60 ms).  
+- Make a function `flash(times)` that blinks an icon a chosen number of times.  
+- Create a function `showLevel(level)` that prints the level number and plays a sound.  
+- Modify the Barrel Jumper project so that the level-up rule changes automatically (for example, every 3 points).  
+- Prevent the game from becoming *too fast* by adding a minimum delay in your loop.  
 
 ---
 
