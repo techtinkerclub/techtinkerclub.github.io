@@ -18,65 +18,79 @@ header:
 ## Week 7 — Functions, Levels & Space Invaders
 
 **Focus Concept:** Functions and game logic  
-**Mini-Projects:** Advanced *Barrel Jumper* (with levels) → Mini *Space Invaders*
+**Mini-Projects:** *Advanced Barrel Jumper* → *Mini Space Invaders*
 
-This week we revisited *Barrel Jumper* to explore how a game can become more dynamic using **variables**, **loops**, and a brand-new idea — **functions**.  
-We then applied those ideas in a fast-paced *Space Invaders-style* challenge that used motion sensors, timing, and sprite collisions.
+This week we explored how a function can simplify our code and make games more dynamic.  
+We first revisited *Barrel Jumper* to understand **levels** and **speed**, then built a brand-new game where the player uses the **accelerometer** to move and fire at an alien.
 
 ---
 
 ## Objectives
-- Understand what a **function** is and how it keeps code tidy and reusable.  
-- Use **variables** to manage **level**, **speed**, and **score**.  
-- Apply **loops** to repeat movement and control game rhythm.  
-- Detect and react to **collisions** between sprites.  
-- Explore input from the **accelerometer** for movement control.  
+- Understand what a **function** is and why we use it.  
+- Use **variables** and **maths** to change speed and difficulty.  
+- Detect **collisions** and respond to them in different ways.  
+- Control sprites using **buttons** and the **accelerometer**.  
+- Recognise how the same coding ideas can create completely different games.  
 
 ---
 
 ## Success Criteria
-- I can explain what a **function** does in a program.  
-- I can make a game change **difficulty** automatically using maths and logic.  
-- I can use the **accelerometer** or buttons to control sprites.  
-- I can explain how the game loop updates the world every cycle.  
-- I can make my own simple improvements (e.g. sound, new enemy, level message).
+- I can describe what a **function** does and where I used one.  
+- I can make a game get harder automatically as the **score** increases.  
+- I can detect when two sprites **touch** and make something happen.  
+- I can move sprites smoothly using loops, pauses, and conditions.  
+- I can adapt familiar code to make a new type of game.  
 
 ---
 
 ## Key Vocabulary
-- **Function** — a mini-program that performs a specific job and can be called whenever needed.  
-- **Variable** — a “box” that stores a value like `score`, `level`, or `speed`.  
-- **Loop (forever)** — repeats code continuously while the game runs.  
+- **Function** — a mini-program that performs one job and can be reused.  
+- **Variable** — a box that stores a number or word such as `score`, `speed`, or `level`.  
+- **Loop (forever)** — repeats instructions over and over.  
 - **Condition** — a true/false check that decides what happens next.  
-- **Collision** — when two sprites touch each other on the grid.  
-- **Respawn** — recreate an object after it’s been deleted or destroyed.  
+- **Collision** — when two sprites touch each other.  
+- **Respawn** — recreate something (like a new alien) after it’s deleted.  
 
 ---
 
-## What We Built (Step-by-Step)
+## Part A — Advanced Barrel Jumper
 
-1. **Level System** — the game checks the score every few points; when it’s high enough, a **function** called `showLevelToast()` displays the new level and makes the game slightly faster.  
-2. **Game Loop** — the *forever* loop moves the barrel, checks for collisions, updates the score, and calls the level function when needed.  
-3. **Jump Logic** — button B makes the player move up and down in two short **for loops**, showing how loops save time and space in code.  
-4. **Introducing Functions** — `showLevelToast()` is our first reusable function: it clears the screen, shows “L” + the level number, pauses, then returns to play.  
-5. **Mini Space Invaders** — players tilt the micro:bit to move a ship and press B to fire a laser at an alien that bounces across the top row. If the alien lines up above the ship, it drops a bomb — and that’s *game over*!  
+### What We Built (Step-by-Step)
+1. **Game Loop:** keeps the barrel moving and checks for collisions with the jumper.  
+2. **Jump Logic:** button B moves the jumper up 4 steps, then down 4, using two short loops.  
+3. **Scoring & Speed:** each time the barrel reaches the edge, the score increases; every few points, the game speeds up slightly.  
+4. **Level Function:** a function called `showLevelToast()` shows “L” + the current level and briefly pauses play — our first example of reusable code.  
 
-> We saw how similar ideas (movement, loops, variables, collisions) appear in many games — only the story changes.
+> 💡 *This project introduced “function” as a key programming idea: one neat block of code that we can call any time we need it.*
+
+### Try These Mini-Challenges
+- Change the level-up rule (every 3 points instead of 5).  
+- Add a sound when the level changes.  
+- Prevent the game from becoming *too fast* (minimum pause = 60 ms).  
 
 ---
 
-## Try These Challenges
-- Change how often levels increase (every 3 points instead of 5).  
-- Add a short sound when the level changes or when the laser hits.  
-- Randomise the alien’s starting x position to make it unpredictable.  
-- Add a **“lives”** variable so the player gets 3 tries before game over.  
-- Create a **shield** or **power-up** block using another function.
+## Part B — Mini Space Invaders
+
+### What We Built (Step-by-Step)
+1. **Sprites:** created a `Ship` at the bottom and an `Alien` at the top.  
+2. **Movement:** tilted the micro:bit left/right to move the ship; the alien moved sideways and bounced at the edges.  
+3. **Shooting:** pressing B fired a `Laser` straight up; if it touched the alien, the alien disappeared, the score increased, and a new one spawned.  
+4. **Bombs:** when the alien lined up with the ship, it dropped a `Bomb`; if the bomb touched the ship → **Game Over**.  
+
+> 🔄 *This project reused ideas from Barrel Jumper — loops, variables, collisions — in a completely new style of gameplay.*
+
+### Try These Mini-Challenges
+- Randomise where the alien respawns (use `pick random 0 to 4`).  
+- Add a “lives” variable (e.g. 3 lives before Game Over).  
+- Add a short **laser sound** each time you shoot.  
+- Make the alien move faster each time you score 5 points.  
 
 ---
 
 ## Resources
 - **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
-- **Advanced Barrel Jumper code:** [MakeCode link](https://makecode.microbit.org/S50863-44059-71252-00559){:target="_blank" rel="noopener"}  
+- **Advanced Barrel Jumper code:** [View project](https://makecode.microbit.org/S50863-44059-71252-00559){:target="_blank" rel="noopener"}  
 - **Game (sprites, collisions, levels) reference:** [Reference](https://makecode.microbit.org/reference/game){:target="_blank" rel="noopener"}  
 - **BBC Bitesize – What are functions?** [Link](https://www.bbc.co.uk/bitesize/topics/zsjm7ty/articles/zj6rjhv){:target="_blank" rel="noopener"}  
 - **STE(A)M careers in gaming:** [Video](https://youtu.be/dzQmbI5LmQI?si=wVgV52gKlP53VUEt){:target="_blank" rel="noopener"}  
@@ -86,17 +100,16 @@ We then applied those ideas in a fast-paced *Space Invaders-style* challenge tha
 ## Equipment
 - BBC micro:bits + USB cables (or simulator)  
 - Chromebooks / laptops with internet  
-- Optional speakers or headphones for sound effects  
+- Optional: speakers or headphones for sound effects  
 
 ---
 
 ## Safety & Setup Notes
-- Keep USB cables untangled and micro:bits clear of drinks.  
-- Test small changes often; use the simulator before downloading.  
-- Only open one MakeCode project at a time to avoid confusion.  
+- Keep USB cables tidy and test in the simulator first.  
+- Work in pairs when debugging — one reads code, one tests.  
+- Save and name projects clearly before starting the new one.  
 
 ---
 
 {% include back-to-autumn.html %}
 {% include teacher-notes-link.html week=7 %}
-
