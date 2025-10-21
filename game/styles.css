@@ -1,11 +1,7 @@
 /* ===========================================================
-   Tech Tinker Boss Battle — styles.css (Arcade v6.6)
-   - Retro CRT look without over-fading
-   - Matrix rain, scanlines (subtle), glow borders
-   - Boss hit/bounce/lunge/roll-out animations
-   - HUD: hearts, boss HP bar, pills, sticky mobile HUD
-   - Questions: multiple choice + drag & drop
-   - Intro comic: boss portrait centered & responsive
+   Tech Tinker Boss Battle — styles.css (Arcade v6.8)
+   Retro CRT, matrix rain, scanlines, glow borders
+   Two-column game; compact intro/dialogue; no weird overlaps
    =========================================================== */
 
 /* ------ Base / Reset ------ */
@@ -16,7 +12,7 @@
   --ink: #dbe6ff;
   --ink-dim: #a7b0d0;
   --ink-muted:#8b96b8;
-  --accent: #7bd3ff;          /* can be updated per boss */
+  --accent: #7bd3ff;
   --accent-2:#99f0d0;
   --danger: #ff5577;
   --good: #3de39b;
@@ -27,42 +23,30 @@
 
 *{ box-sizing: border-box; }
 html,body{ height:100%; }
-
-
-.q-footer{
-  display: none;                     /* hidden until needed */
-  margin-top: 8px;
-  justify-content: flex-end;
-  background: none !important;       /* no box/outline while hidden or shown */
-  box-shadow: none !important;
-  padding: 0;
-}
-
 html{ background: radial-gradient(1200px 600px at 50% -200px, #1a2236 0%, #0a0f1a 45%, #060a12 100%) fixed; }
 body{
-  margin:0;
-  color:var(--ink);
+  margin:0; color:var(--ink);
   font-family: "VT323", ui-monospace, monospace;
-  letter-spacing:.5px;
-  font-size:20px;
+  letter-spacing:.5px; font-size:20px;
 }
 
 .wrap{ max-width:1100px; margin:28px auto; padding:0 14px; }
 
-/* ------ Header / Marquee ------ */
+/* ------ Header ------ */
 header{
   display:flex; align-items:center; gap:12px;
   padding:14px 16px; border-radius:14px;
   background: linear-gradient(180deg,var(--panel) 0%, var(--panel-2) 100%);
   box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px var(--outline);
-  position: sticky; top:8px; z-index:5;
+  margin-bottom:18px;
 }
 .brand{ font-size:28px; }
 header .row{ margin-left:auto; display:flex; gap:10px; align-items:center; }
 
-/* ------ Generic UI atoms ------ */
+/* ------ UI atoms ------ */
 .row{ display:flex; align-items:center; gap:10px; }
 .spacer{ flex:1 1 auto; }
+.small{ color:var(--ink-dim); }
 
 .pill{
   display:inline-flex; align-items:center; gap:8px;
@@ -71,16 +55,12 @@ header .row{ margin-left:auto; display:flex; gap:10px; align-items:center; }
   box-shadow: inset 0 0 0 1px var(--outline);
   white-space:nowrap;
 }
-
 .tag{
   display:inline-flex; align-items:center; gap:6px;
   padding:4px 10px; border-radius:999px; font-size:16px; color:var(--ink-dim);
   background: linear-gradient(180deg,#0e1830,#0b1322);
   box-shadow: inset 0 0 0 1px var(--outline);
 }
-
-.lock{ color:#a0a8c0; font-size:18px; }
-
 button{
   font: inherit; color:var(--ink);
   background: linear-gradient(180deg,#13203a,#0d1a30);
@@ -90,16 +70,11 @@ button{
 }
 button:hover{ transform: translateY(-1px); box-shadow: inset 0 0 0 1px var(--outline-strong), 0 10px 28px rgba(0,0,0,.5); }
 button:active{ transform: translateY(0); }
-
-button.ghost{
-  background: transparent;
-  box-shadow: inset 0 0 0 1px var(--outline);
-}
+button.ghost{ background: transparent; box-shadow: inset 0 0 0 1px var(--outline); }
 button:disabled{ opacity:.55; cursor:not-allowed; }
-
 .smallbtn{ padding:6px 12px; font-size:18px; }
 
-/* Tiny shake on locked start button click */
+/* Tiny shake on locked start click */
 .shake-deny{ animation: deny .35s linear; }
 @keyframes deny{
   0%,100%{ transform:none; }
@@ -108,7 +83,7 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   75%{ transform:translateX(-3px); }
 }
 
-/* ------ Level grid ------ */
+/* ------ Level cards ------ */
 .grid.levels{ display:grid; gap:16px; grid-template-columns: 1fr; }
 .card{
   background: linear-gradient(180deg,var(--panel) 0%, var(--panel-2) 100%);
@@ -116,9 +91,8 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px var(--outline);
 }
 .card h3{ margin:6px 0 6px; font-size:28px; }
-.small{ color:var(--ink-dim); }
 
-/* ------ Stage (CRT arcade screen) ------ */
+/* ------ Stage ------ */
 .stage.panel{
   position:relative;
   height:420px; border-radius:16px; overflow:hidden;
@@ -127,34 +101,24 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   margin:16px 0 10px;
 }
 
-/* subtle starfield specks (static) */
+/* star specks */
 .starfield::before{
-  content:"";
-  position:absolute; inset:0;
+  content:""; position:absolute; inset:0; pointer-events:none;
   background-image:
     radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.25) 50%, transparent 51%),
     radial-gradient(2px 2px at 80% 60%, rgba(255,255,255,.2) 50%, transparent 51%),
     radial-gradient(2px 2px at 60% 20%, rgba(255,255,255,.18) 50%, transparent 51%),
     radial-gradient(2px 2px at 30% 70%, rgba(255,255,255,.22) 50%, transparent 51%);
-  pointer-events:none;
   opacity:.3;
 }
-
-/* matrix rain canvas (animated by JS) */
 .matrix-canvas{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  pointer-events:none;
-  mix-blend-mode: screen;
-  opacity:.65;                       /* readable but present */
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none; mix-blend-mode: screen; opacity:.70;
 }
-
-/* scanlines (very subtle, not washing out) */
 .scanlines{
   position:absolute; inset:0; pointer-events:none;
   background-image: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,.15) 50%);
-  background-size: 100% 2px;
-  opacity:.07;
+  background-size: 100% 2px; opacity:.07;
 }
 
 /* stage overlay for results */
@@ -171,11 +135,8 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
 .overlay-card h3{ margin:0 0 8px; font-size:28px; }
 .overlay-card .meta{ color:var(--ink-dim); }
 
-/* ---- Boss sprite & name ---- */
-.boss-wrap{
-  position:absolute; inset:0;
-  display:grid; place-items:center;
-}
+/* Boss sprite */
+.boss-wrap{ position:absolute; inset:0; display:grid; place-items:center; }
 #bossSprite{
   width: 240px; height: 240px; object-fit: contain;
   image-rendering: pixelated;
@@ -187,7 +148,7 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   letter-spacing:2px; font-size:18px; color:var(--ink-dim);
 }
 
-/* ---- Boss FX states ---- */
+/* Boss FX states */
 .boss-bounce{ animation: bossBounce .32s cubic-bezier(.2,.8,.2,1); }
 @keyframes bossBounce{
   0%{ transform: translate(var(--hitX,0), var(--hitY,0)) rotate(var(--hitR,0)); }
@@ -207,7 +168,7 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   100%{ transform: translate(120vw,-70vh) rotate(760deg); opacity:0; }
 }
 
-/* player hit (screen flash + shake) */
+/* player hit FX */
 .player-hit::after{
   content:""; position:absolute; inset:0; pointer-events:none;
   background: radial-gradient(600px 220px at 50% 45%, rgba(255,60,60,.22), rgba(255,60,60,0));
@@ -231,7 +192,6 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   box-shadow: inset 0 0 0 1px var(--outline);
   margin: 6px 0 12px;
 }
-
 .hearts{ display:flex; gap:10px; align-items:center; }
 .hearts svg{ width:22px; height:22px; display:block; }
 .heart-fill{ fill:#ff5e7a; filter: drop-shadow(0 2px 0 rgba(0,0,0,.35)); }
@@ -252,9 +212,6 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
 }
 .fill.empty{ width:0%; }
 
-/* Hint button state when locked */
-button#useHint.hintlock{ opacity:.55; }
-
 /* ------ Question panel ------ */
 .panel{
   background: linear-gradient(180deg,var(--panel),var(--panel-2));
@@ -267,7 +224,7 @@ button#useHint.hintlock{ opacity:.55; }
   box-shadow: inset 0 0 0 1px var(--outline);
 }
 
-/* Multiple choice options */
+/* Multiple choice */
 .options{ display:grid; gap:10px; }
 .options button{
   width:100%; text-align:left; padding:12px 14px;
@@ -292,7 +249,6 @@ button#useHint.hintlock{ opacity:.55; }
   box-shadow: inset 0 0 0 1px var(--outline);
   cursor:grab; user-select:none;
 }
-.tile.hidden{ visibility:hidden; }
 .bucket{
   padding:10px 12px; border-radius:12px;
   background: linear-gradient(180deg,#101a33,#0c1426);
@@ -304,10 +260,7 @@ button#useHint.hintlock{ opacity:.55; }
 .bucket.wrong{ box-shadow: inset 0 0 0 2px rgba(255,85,119,.85); }
 .bucket.locked{ opacity:.7; }
 
-/* Nav row (keep Next on the right) */
-#navRow{ display:flex; justify-content:flex-end; }
-
-/* Callouts (correct/wrong/hint) */
+/* Callouts */
 .callout{
   margin:10px 0; padding:10px 12px; border-radius:12px;
   background:#0e1830; box-shadow: inset 0 0 0 1px var(--outline);
@@ -332,54 +285,7 @@ button#useHint.hintlock{ opacity:.55; }
   100%{ transform: translateY(-26px); opacity:0; }
 }
 
-/* Review list inside overlay */
-.review{ margin:8px 0 0; padding-left:16px; color:var(--ink-dim); }
-details summary{ cursor:pointer; }
-
-/* ------ Intro / Story Modal ------ */
-#screen-intro .modal-card{
-  background: linear-gradient(180deg,var(--panel),var(--panel-2));
-  padding:16px; border-radius:14px;
-  box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px var(--outline);
-}
-.story-head{ display:flex; gap:16px; align-items:center; }
-.intro-img{
-  width:160px; height:160px; object-fit: contain; image-rendering: pixelated;
-  filter: drop-shadow(0 6px 0 rgba(0,0,0,.35));
-}
-.story{ font-size:24px; line-height:1.35; }
-
-#screen-intro .comic{
-  display:grid; grid-template-columns: 220px 1fr; gap:16px; align-items:center;
-  margin-top:16px; padding:16px; border-radius:14px;
-  background: linear-gradient(180deg,#10182b,#0d1526);
-  box-shadow: inset 0 0 0 1px var(--outline);
-}
-#screen-intro .comic .portrait{
-  display:block; width:180px; height:180px; margin:0 auto;
-  object-fit:contain; image-rendering: pixelated;
-  filter: drop-shadow(0 6px 0 rgba(0,0,0,.35));
-}
-#screen-intro .comic .bubbles{ display:grid; gap:12px; }
-#screen-intro .bubble{
-  padding:12px 14px; border-radius:12px; line-height:1.35;
-  background: linear-gradient(180deg,#0f192d,#0c1526);
-  box-shadow: inset 0 0 0 1px var(--outline);
-}
-#screen-intro .bubble.boss{ border-left:3px solid var(--accent); }
-#screen-intro .bubble.me  { border-left:3px solid var(--gold); }
-
-@media (max-width: 700px){
-  .wrap{ margin-top:18px; }
-  header{ position:static; }
-  .stage.panel{ height:380px; }
-  #screen-intro .comic{ grid-template-columns: 1fr; }
-  .drag-wrap{ grid-template-columns: 1fr; }
-  /* sticky HUD on mobile to keep lives/timer visible while scrolling */
-  .hud{ position:sticky; top:8px; z-index:4; }
-}
-
-/* ------ Toast ------ */
+/* Toast */
 .toast{
   position: fixed; left:50%; bottom:20px; transform: translateX(-50%) translateY(30px);
   background: linear-gradient(180deg,#13203a,#0d1a30);
@@ -389,304 +295,72 @@ details summary{ cursor:pointer; }
 }
 .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
 
-/* ------ Utilities ------ */
-.note{ color:var(--ink-dim); }
-.details{ color:var(--ink-dim); }
-
-
-
-/* ============================
-   Two-column game layout (no page scrolling)
-   ============================ */
-
-/* Wide screens: split stage/HUD (left) and Q panel (right) */
+/* =========================
+   Two-column game layout
+   ========================= */
 @media (min-width: 980px){
-  /* tune this once and both columns sync */
-  #screen-game{ 
-    --stageH: 56vh;                 /* arcade screen height */
-    --gap: 12px;
-    position: relative;
-    display: grid;
+  #screen-game{
+    display:grid;
     grid-template-columns: 52% 48%;
-    grid-template-rows: auto 1fr;   /* stage row, then hud row (left) */
-    gap: var(--gap);
-    align-items: start;
+    grid-template-rows: auto auto;  /* stage, then hud under it (left) */
+    gap:12px; align-items:start;
   }
-
-  /* Left column */
-  #stage{
-    grid-column: 1; grid-row: 1; 
-    height: var(--stageH);
-    margin: 0;                      /* remove old outer margin in split mode */
-  }
-  .hud{
-    grid-column: 1; grid-row: 2;
-    position: static;               /* no sticky in split mode */
-    margin: 0;
-  }
-
-  /* Right column */
-  #qpanel{
-    grid-column: 2; grid-row: 1 / span 2;   /* spans both rows */
-    height: calc(var(--stageH) + 100px);    /* matches stage + hud area */
-    overflow: auto;                          /* scroll only the questions if needed */
-    margin: 0;
-  }
-
-  /* Keep the Next button pinned at the bottom-right of the questions column */
-  #navRow{
-    position: sticky; 
-    bottom: 8px;                    /* sticks within the qpanel’s scroll */
-    grid-column: 2; 
-    grid-row: 2;
-    width: 100%;
-    margin: 0;
-    padding-top: 6px;
-    justify-content: flex-end;
-  }
-
-  /* Make the overlay card stay centered over the stage area only */
-  .stage-overlay{
-    grid-column: 1; grid-row: 1 / span 2;
-  }
+  #stage{ grid-column:1; grid-row:1; margin:0; }
+  .hud{ grid-column:1; grid-row:2; margin:0; }
+  #qpanel{ grid-column:2; grid-row:1 / span 2; height: calc(420px + 90px); overflow:auto; }
 }
-
-/* Large desktops: give the stage a little more room, keep questions readable */
-@media (min-width: 1300px){
-  #screen-game{ --stageH: 60vh; }
+@media (min-width:1300px){
+  #stage{ height:460px; }
+  #qpanel{ height: calc(460px + 100px); }
 }
-
-/* Phones/tablets: keep your current stacked layout */
 @media (max-width: 979px){
   #screen-game{ display:block; }
   #stage{ margin:16px 0 10px; }
   .hud{ position: sticky; top: 8px; z-index: 4; }
   #qpanel{ height: auto; overflow: visible; }
-  #navRow{ position: static; }
-}
-
-
-/* ===========================================================
-   Header width + spacing alignment fix
-   =========================================================== */
-
-/* Make header match content width perfectly */
-header {
-  max-width: 1100px;       /* same as .wrap */
-  width: 100%;
-  margin: 0 auto 18px auto; /* centers + adds bottom space */
-  box-sizing: border-box;
-}
-
-/* Ensure the main container doesn't add duplicate padding */
-.wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* On very wide screens, keep header aligned with game grid */
-@media (min-width: 980px) {
-  #screen-game {
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-}
-
-/* ===========================================================
-   WIDTH + TWO-COLUMN HEIGHT MATCH FIX
-   =========================================================== */
-
-/* 1) Header: match content width exactly and add spacing */
-.wrap { max-width: 1100px; margin: 28px auto; padding: 0 14px; }
-header {
-  width: 100%;              /* use the wrap's width */
-  margin: 0 0 18px 0;       /* only bottom gap */
-  box-sizing: border-box;
-}
-
-/* 2) Two-column game layout: stage + HUD on the left, Q panel on right
-      Right panel spans the full left column height (stage + HUD) */
-#screen-game {
-  display: grid;
-  grid-template-columns: 1fr 1fr;     /* equal columns */
-  grid-template-areas:
-    "stage side"
-    "hud   side";
-  gap: 16px;
-  align-items: stretch;               /* let the side stretch vertically */
-}
-
-/* Place the existing children into the grid areas */
-#stage { grid-area: stage; }
-.hud   { grid-area: hud;   }
-
-/* The question panel = the entire right column (spans both rows) */
-#qpanel {
-  grid-area: side;
-  height: 100%;                       /* stretch to match left column height */
-  display: flex;                      /* keeps inner content tidy */
-  flex-direction: column;
-}
-
-/* Ensure the panel styling still applies cleanly to a taller box */
-#qpanel.panel { min-height: 100%; }
-
-/* Keep the Next-row full width *below* the two-column grid */
-#navRow {
-  grid-column: 1 / -1;
-}
-
-/* Mobile: stack back to one column */
-@media (max-width: 900px) {
-  #screen-game {
-    display: block;
-  }
-}
-
-/* ===== Fix: keep Next row below both columns; avoid overlap ===== */
-
-/* Add a 3rd grid row for the nav bar */
-#screen-game{
-  /* was: grid-template-areas: "stage side" "hud side"; */
-  grid-template-rows: auto auto auto;               /* stage, hud, nav  */
-  grid-template-areas:
-    "stage side"
-    "hud   side"
-    "nav   nav";
-}
-
-/* Give the question panel a tiny bottom padding so content never hides
-   behind the nav row’s shadow on short viewports. */
-#qpanel { padding-bottom: 14px; }
-
-/* Place the Next row in its own grid area and keep it on the right */
-#navRow{
-  grid-area: nav;
-  justify-content: flex-end;
-  margin-top: 8px;          /* visual breathing room */
-  position: static;         /* make sure it's not overlaying anything */
-  z-index: 1;               /* sit above the background, below panel content */
-}
-
-
-
-/* Sticky Next inside question panel */
-#qpanel { position: relative; }
-.q-footer{
-  position: sticky; bottom: 12px;
-  display: flex; justify-content: flex-end;
-  margin-top: 12px;
-  padding: 8px;
-  background: linear-gradient(180deg,#10192e,#0c1526);
-  border-radius: 12px;
-  box-shadow: inset 0 0 0 1px var(--outline);
-}
-#qpanel.qpanel-has-footer .options,
-#qpanel.qpanel-has-footer .drag-wrap { padding-bottom: 64px; } /* prevents overlap */
-
-.q-footer { margin-top: 8px; display:flex; justify-content:flex-end; }
-
-.matrix-canvas{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  pointer-events:none;
-  mix-blend-mode: screen;
-  opacity:0.75; /* not 0 */
 }
 
 /* =========================
-   Intro / Dialogue — compact, centered, no page scroll
+   Intro / dialogue screen
    ========================= */
+#screen-intro .intro-card{
+  background: linear-gradient(180deg,var(--panel),var(--panel-2));
+  padding:16px; border-radius:14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px var(--outline);
+}
+.intro-grid{
+  display:grid; grid-template-columns: 220px 1fr; gap:16px; align-items:center;
+}
+.intro-portrait{
+  width:180px; height:180px; object-fit:contain; image-rendering:pixelated;
+  display:block; margin:0 auto; filter: drop-shadow(0 6px 0 rgba(0,0,0,.35));
+}
+.intro-title{ margin:6px 0 6px; font-size:32px; }
+.intro-tags{ margin:6px 0; }
+.story{ font-size:24px; line-height:1.35; margin:10px 0 6px; }
 
-/* Center the whole screen and cap its width */
-#screen-intro{
-  display:flex;
-  justify-content:center;
-  padding: 8px 14px;
+.intro-bubbles{
+  margin-top:14px; padding:16px; border-radius:14px;
+  background: linear-gradient(180deg,#10182b,#0d1526);
+  box-shadow: inset 0 0 0 1px var(--outline);
+  display:grid; gap:12px;
+}
+.intro-bubbles .bubble{
+  padding:12px 14px; border-radius:12px; line-height:1.35;
+  background: linear-gradient(180deg,#0f192d,#0c1526);
+  box-shadow: inset 0 0 0 1px var(--outline);
+}
+.intro-bubbles .boss{ border-left:3px solid var(--accent); }
+.intro-bubbles .me{   border-left:3px solid var(--gold); }
+
+.intro-actions{
+  display:flex; align-items:center; gap:10px; margin-top:12px;
 }
 
-/* Keep the card inside the viewport without page scroll */
-#screen-intro .modal-card{
-  width:min(100%, 980px);
-  max-height: 82vh;                 /* stays on one screen */
-  display:grid;
-  grid-template-rows: auto 1fr auto;/* header / body / start btn row */
-  gap: 12px;
-  overflow:hidden;                   /* prevent page scroll */
-}
-
-/* Header row (title + tag) smaller and centered */
-#screen-intro .story-head{
-  align-items:center;
-  justify-content:center;           /* center header content */
-  text-align:center;
-  gap: 12px;
-}
-#screen-intro .intro-img{ width:132px; height:132px; }
-
-#screen-intro .story{
-  font-size:20px;                   /* slightly smaller to fit */
-  line-height:1.35;
-  color: var(--ink);
-  margin: 4px 0 0 0;
-}
-
-/* Comic area: two columns on desktop, perfectly centered portrait */
-#screen-intro .comic{
-  display:grid;
-  grid-template-columns: 240px 1fr; /* portrait | bubbles */
-  gap:16px;
-  align-items:center;
-  margin-top: 8px;
-  padding:14px;
-}
-
-/* Make the left box truly centered and square; portrait centered inside */
-#screen-intro .comic .portrait{
-  width:200px; height:200px;        /* smaller so it fits 82vh layout */
-  object-fit:contain;
-  justify-self:center;              /* center horizontally in the left column */
-  image-rendering: pixelated;
-  filter: drop-shadow(0 6px 0 rgba(0,0,0,.35));
-}
-
-/* Bubbles column can scroll internally if content is long */
-#screen-intro .comic .bubbles{
-  display:grid;
-  gap:10px;
-  max-height: 48vh;                 /* ensures entire card fits; no page scroll */
-  overflow:auto;                    /* only this column scrolls if needed */
-  padding-right: 6px;               /* room for scrollbar */
-}
-
-/* Speech bubbles tighter */
-#screen-intro .bubble{
-  padding:10px 12px;
-  font-size:19px;
-  line-height:1.35;
-}
-
-/* Start button row sticks at the bottom of the card */
-#screen-intro .actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:10px;
-}
-
-/* --- Responsive tweaks --- */
-@media (max-width: 900px){
-  #screen-intro .modal-card{
-    max-height: 86vh;               /* give mobiles a touch more height */
-  }
-  #screen-intro .comic{
-    grid-template-columns: 1fr;     /* stack portrait over bubbles */
-    text-align:center;
-  }
-  #screen-intro .comic .bubbles{
-    max-height: 40vh;               /* still avoid page scroll */
-  }
-  #screen-intro .intro-img{ width:112px; height:112px; }
-  #screen-intro .comic .portrait{ width:180px; height:180px; }
-  #screen-intro .story{ font-size:19px; }
+/* Mobile intro stack */
+@media (max-width:700px){
+  .intro-grid{ grid-template-columns: 1fr; }
+  .intro-title{ text-align:center; }
+  .intro-tags{ justify-content:center; }
+  .intro-actions{ position:sticky; bottom:8px; background:transparent; }
 }
