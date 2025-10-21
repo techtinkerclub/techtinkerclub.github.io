@@ -927,7 +927,7 @@
           "hint": "Forever loops repeat actions — things outside them happen only once."
         }
       ]
-    }
+    },
     
     "7": {
       "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
@@ -1095,5 +1095,4 @@
       ]
     }
   }  
-}
 }
