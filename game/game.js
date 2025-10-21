@@ -120,42 +120,86 @@
     }
 
     /* Matrix rain — tuned for legibility & motion */
-    let matrix=null;
-    function startMatrix(){
-      const c=matrixCanvas; if(!c) return;
-      const g=c.getContext('2d',{alpha:true});
+    /* Matrix rain — crisp, reliable, no flicker */
+let matrix = null;
+function startMatrix(){
+  const c = matrixCanvas; if (!c) return;
+  const g = c.getContext('2d', { alpha: true });
 
-      const FONT_PX=42, COL_W=32, FALL_MIN=1.2, FALL_VAR=1.4, FRAME_SKIP=1;
-      const GLOW='rgba(140,255,170,0.55)', HEAD='rgba(170,255,190,0.95)', BODY='rgba(140,255,170,0.78)';
-      let w=0,h=0,cols=0,drops=[];
+  // Tunables (feel free to tweak)
+  const FONT_PX    = 44;   // glyph size
+  const COL_W      = 34;   // stream column width
+  const FALL_MIN   = 1.1;  // base fall speed (px/frame)
+  const FALL_VAR   = 1.6;  // per-stream random speed
+  const TRAIL_FADE = 0.12; // lower => longer trails
 
-      function size(){
-        const r=stageEl.getBoundingClientRect();
-        c.width=Math.max(1,Math.floor(r.width));
-        c.height=Math.max(1,Math.floor(r.height));
-        w=c.width; h=c.height;
-        cols=Math.max(1,Math.floor(w/COL_W));
-        drops=new Array(cols).fill(0).map(()=> -Math.random()*h);
-        g.font=`${FONT_PX}px VT323, monospace`; g.textBaseline='top';
+  let w = 0, h = 0, cols = 0, drops = [];
+  let raf = null;
+
+  function size(){
+    // account for CSS size + device pixel ratio
+    const r   = stageEl.getBoundingClientRect();
+    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+
+    // Set the backing store size (actual canvas pixels)
+    c.width  = Math.max(1, Math.floor(r.width  * dpr));
+    c.height = Math.max(1, Math.floor(r.height * dpr));
+
+    // Scale the drawing context so 1 unit == 1 CSS pixel
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    w = Math.max(1, Math.floor(r.width));
+    h = Math.max(1, Math.floor(r.height));
+
+    cols  = Math.max(1, Math.floor(w / COL_W));
+    drops = new Array(cols).fill(0).map(() => -Math.random() * h);
+
+    g.font = `${FONT_PX}px VT323, monospace`;
+    g.textBaseline = 'top';
+  }
+
+  // Initial size after layout is visible
+  size();
+  // One more pass on the next frame to catch late layout
+  requestAnimationFrame(size);
+
+  const onResize = () => size();
+  window.addEventListener('resize', onResize, { passive:true });
+  window.addEventListener('orientationchange', onResize, { passive:true });
+
+  function tick(){
+    // trailing fade
+    g.fillStyle = `rgba(8,12,26,${TRAIL_FADE})`;
+    g.fillRect(0, 0, w, h);
+
+    for (let i = 0; i < cols; i++){
+      const x   = i * COL_W;
+      const y   = drops[i];
+      const ch  = String((Math.random() * 10) | 0);
+
+      // simple, reliable fill (no blend tricks needed)
+      g.fillStyle = 'rgba(150,255,180,0.90)'; // body
+      g.fillText(ch, x, y);
+
+      // occasional head pulse
+      if (Math.random() < 0.18){
+        g.fillStyle = 'rgba(190,255,205,0.95)';
+        g.fillText(ch, x, y);
       }
-      size(); const res=()=>size(); window.addEventListener('resize',res);
-      let raf,frame=0;
-      function tick(){
-        frame=(frame+1)%FRAME_SKIP; if(frame!==0){ raf=requestAnimationFrame(tick); return; }
-        g.fillStyle='rgba(8,12,26,0.12)'; g.fillRect(0,0,w,h);
-        for(let i=0;i<cols;i++){
-          const x=i*COL_W, y=drops[i], ch=String((Math.random()*10)|0);
-          g.shadowColor=GLOW; g.shadowBlur=8;
-          const isHead=(Math.random()<0.18);
-          g.fillStyle=isHead?HEAD:BODY; g.fillText(ch,x,y);
-          drops[i]= (y>h) ? (-Math.random()*200) : (y + FALL_MIN + Math.random()*FALL_VAR);
-        }
-        g.shadowBlur=0;
-        raf=requestAnimationFrame(tick);
-      }
-      tick();
-      matrix={ stop:()=>cancelAnimationFrame(raf) };
+
+      drops[i] = (y > h) ? (-Math.random()*200) : (y + FALL_MIN + Math.random()*FALL_VAR);
     }
+
+    raf = requestAnimationFrame(tick);
+  }
+
+  tick();
+
+  matrix = {
+    stop: () => { if (raf) cancelAnimationFrame(raf); },
+  };
+}
+
 
     /* Levels */
     function renderLevels(){
