@@ -128,7 +128,7 @@ function startMatrix(){
 
   // Tunables (feel free to tweak)
   const FONT_PX    = 44;   // glyph size
-  const COL_W      = 34;   // stream column width
+  const COL_W      = 4;   // stream column width
   const FALL_MIN   = 1.1;  // base fall speed (px/frame)
   const FALL_VAR   = 1.6;  // per-stream random speed
   const TRAIL_FADE = 0.12; // lower => longer trails
