@@ -364,3 +364,21 @@ button:disabled{ opacity:.55; cursor:not-allowed; }
   .intro-tags{ justify-content:center; }
   .intro-actions{ position:sticky; bottom:8px; background:transparent; }
 }
+
+/* --- Matrix visibility + stacking fix --- */
+.stage.panel { position: relative; }
+
+.matrix-canvas{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  pointer-events:none;
+  /* The two changes that stop the “flashing with no glyphs” */
+  mix-blend-mode: normal;   /* was: screen */
+  opacity: 0.80;
+  z-index: 1;               /* under sprites, over stage bg */
+}
+
+/* Ensure the other layers sit above the matrix */
+.boss-wrap   { position:absolute; inset:0; z-index: 2; }
+.scanlines   { position:absolute; inset:0; z-index: 3; }
+.stage-overlay { z-index: 4; } /* overlay always on top */
