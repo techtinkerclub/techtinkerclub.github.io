@@ -90,7 +90,7 @@ We first revisited *Barrel Jumper* to understand **levels** and **speed**, then 
 
 ## Resources
 - **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
-- **Advanced Barrel Jumper code:** [View project](https://makecode.microbit.org/S50863-44059-71252-00559){:target="_blank" rel="noopener"}  
+- **Advanced Barrel Jumper code:** [View project](https://makecode.microbit.org/S04773-39055-37520-43538){:target="_blank" rel="noopener"}  
 - **Game (sprites, collisions, levels) reference:** [Reference](https://makecode.microbit.org/reference/game){:target="_blank" rel="noopener"}  
 - **BBC Bitesize – What are functions?** [Link](https://www.bbc.co.uk/bitesize/topics/zsjm7ty/articles/zj6rjhv){:target="_blank" rel="noopener"}  
 - **STE(A)M careers in gaming:** [Video](https://youtu.be/dzQmbI5LmQI?si=wVgV52gKlP53VUEt){:target="_blank" rel="noopener"}  
