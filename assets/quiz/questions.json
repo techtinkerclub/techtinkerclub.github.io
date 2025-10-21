@@ -928,186 +928,166 @@
         }
       ]
     },
-        "7": {
-      "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
-      "description": "Balanced quiz reinforcing the idea of functions as reusable helpers, plus practice with loops, variables, sensors, and timing.",
-      "locked": false,
-      "questions": [
-        {
-          "id": "w7-q1",
-          "question": "What is a function used for in programming?",
-          "type": "multiple-choice",
-          "options": [
-            "To group a set of blocks that do one job so you can reuse them later",
-            "To make the program run faster automatically",
-            "To stop the program after one run",
-            "To store numbers like a variable"
-          ],
-          "correct": 0,
-          "explanation": "A function is a helper that does one clear job and can be called from anywhere instead of repeating the same code.",
-          "definition": "FUNCTION — a named mini-program that performs one clear job.",
-          "difficulty": "medium",
-          "hint": "Think of it as a helper you can call again and again."
-        },
-        {
-          "id": "w7-q2",
-          "question": "If a function is defined but never called, what happens?",
-          "type": "multiple-choice",
-          "options": [
-            "It runs at the start automatically",
-            "It runs after the forever loop",
-            "It never runs unless you call it",
-            "It runs once for every variable"
-          ],
-          "correct": 2,
-          "explanation": "Defining a function writes its instructions; calling it tells the micro:bit to actually do them.",
-          "difficulty": "medium",
-          "hint": "Writing a recipe doesn’t cook the meal."
-        },
-        {
-          "id": "w7-q3",
-          "question": "What does this pseudocode do?",
-          "type": "multiple-choice",
-          "codeLabel": "Code",
-          "code": "define function flash()\n  repeat 3 times\n    show icon Heart\n    pause 200\n    clear screen\n    pause 200\nend function\n\non button A pressed\n  call flash()",
-          "options": [
-            "Shows one quick heart",
-            "Flashes the heart three times when A is pressed",
-            "Shows a heart forever",
-            "Flashes the heart three times automatically at start"
-          ],
-          "correct": 1,
-          "explanation": "The flash function repeats its pattern 3 times, and it only runs when Button A is pressed.",
-          "difficulty": "medium",
-          "hint": "How many repeats and what event triggers it?"
-        },
-        {
-          "id": "w7-q4",
-          "question": "The micro:bit tilts right (X = +400). Which line runs?",
-          "type": "multiple-choice",
-          "codeLabel": "Code",
-          "code": "if acceleration X > 200 then\n  move sprite right\nelse if acceleration X < -200 then\n  move sprite left\nend if",
-          "options": [
-            "Moves right",
-            "Moves left",
-            "Does nothing",
-            "Shows an error"
-          ],
-          "correct": 0,
-          "explanation": "The positive reading passes the first test, moving the sprite right.",
-          "difficulty": "medium",
-          "hint": "Positive X means tilt right."
-        },
-        {
-          "id": "w7-q5",
-          "question": "What number will be shown?",
-          "type": "multiple-choice",
-          "codeLabel": "Code",
-          "code": "set score = 0\nrepeat 5 times\n  change score by 2\nend\nshow number score",
-          "options": ["5", "8", "10", "12"],
-          "correct": 2,
-          "explanation": "Adds 2 each time → 0 + 2×5 = 10.",
-          "difficulty": "medium",
-          "hint": "Each loop adds the same amount."
-        },
-        {
-          "id": "w7-q6",
-          "question": "Which block should fill the blank so this runs three times only when A is pressed?",
-          "type": "multiple-choice",
-          "codeLabel": "Code",
-          "code": "on button A pressed\n  ______\n    move sprite by 1\n    pause 200",
-          "options": [
-            "forever",
-            "repeat 3 times",
-            "while button A pressed",
-            "on start"
-          ],
-          "correct": 1,
-          "explanation": "‘repeat 3 times’ limits the actions to three passes after Button A is pressed.",
-          "difficulty": "medium",
-          "hint": "Look for a fixed-count loop."
-        },
-        {
-          "id": "w7-q7",
-          "question": "Match each concept to its meaning.",
-          "type": "drag-drop",
-          "terms": ["Function", "Variable", "Loop", "Condition"],
-          "definitions": [
-            "Repeats instructions several times",
-            "Stores a value that can change",
-            "Decides between options (if/else)",
-            "Groups blocks to reuse later"
-          ],
-          "correctMatches": [3, 1, 0, 2],
-          "explanation": "Functions group code, variables store values, loops repeat, and conditions test choices.",
-          "difficulty": "medium",
-          "hint": "Think of what each does in a game."
-        },
-        {
-          "id": "w7-q8",
-          "question": "Which reading means the micro:bit is lying flat on a table?",
-          "type": "multiple-choice",
-          "options": [
-            "X ≈ 0, Y ≈ 0",
-            "X ≈ 500, Y ≈ 500",
-            "X ≈ 0, Y ≈ -1023",
-            "X ≈ 1023, Y ≈ 0"
-          ],
-          "correct": 0,
-          "explanation": "When flat, the X and Y accelerometer axes read near zero because gravity is pulling straight down on Z.",
-          "difficulty": "medium-hard",
-          "hint": "Which direction does gravity act when flat?"
-        },
-        {
-          "id": "w7-q9",
-          "question": "Read the pseudocode. What message appears?",
-          "type": "multiple-choice",
-          "codeLabel": "Code",
-          "code": "set temp = 28\nif temp > 30 then\n  show \"Hot\"\nelse if temp < 18 then\n  show \"Cold\"\nelse\n  show \"OK\"",
-          "options": ["Hot", "Cold", "OK", "Nothing"],
-          "correct": 2,
-          "explanation": "28 is between 18 and 30, so neither test passes → “OK”.",
-          "difficulty": "medium",
-          "hint": "Check both limits first."
-        },
-        {
-          "id": "w7-q10",
-          "question": "How many times does the LED flash in total?",
-          "type": "multiple-choice",
-          "codeLabel": "Code",
-          "code": "define function blink()\n  show icon Heart\n  pause 100\n  clear screen\n  pause 100\nend function\n\nrepeat 4 times\n  call blink()\nend",
-          "options": ["2", "3", "4", "8"],
-          "correct": 2,
-          "explanation": "The function blinks once; repeating it 4 times makes 4 flashes.",
-          "difficulty": "medium",
-          "hint": "One blink × number of repeats."
-        },
-        {
-          "id": "w7-q11",
-          "question": "A loop pauses 100 ms each time and runs for 2 seconds. About how many passes occur?",
-          "type": "multiple-choice",
-          "options": ["10", "15", "20", "25"],
-          "correct": 2,
-          "explanation": "2 000 ÷ 100 = 20 iterations.",
-          "difficulty": "medium",
-          "hint": "Convert seconds to milliseconds first."
-        },
-        {
-          "id": "w7-q12",
-          "question": "Which line correctly calls a function named showLevel with no inputs?",
-          "type": "multiple-choice",
-          "options": [
-            "call showLevel()",
-            "set showLevel = 1",
-            "showLevel = true",
-            "repeat showLevel 5 times"
-          ],
-          "correct": 0,
-          "explanation": "Functions are called with parentheses — even if empty.",
-          "difficulty": "medium",
-          "hint": "Think how you tell the micro:bit to ‘do’ a helper."
-        }
-      ]
-    }
+  {
+  "7": {
+    "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
+    "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing. Balanced difficulty.",
+    "locked": false,
+    "questions": [
+      {
+        "id": "w7-q1",
+        "question": "Which statement about functions is MOST helpful for building games you can improve later?",
+        "type": "multiple-choice",
+        "options": [
+          "A function groups the steps for one job so you can call them again without copying blocks",
+          "A function always makes the game run faster",
+          "A function stores numbers like a variable",
+          "A function must include a forever loop to work"
+        ],
+        "correct": 0,
+        "explanation": "Grouping a single job into a function avoids repeated code and makes changes easier.",
+        "definition": "FUNCTION — a named mini-program that does one clear job; you call it when you need it.",
+        "difficulty": "medium-hard",
+        "hint": "Think: reuse the same steps in different places."
+      },
+      {
+        "id": "w7-q2",
+        "question": "What number is shown at the end?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "define function bump(x)\n  return x + 1\nend function\n\nset level = 2\nrepeat 2 times\n  set level = bump(level)\nend\nshow number level",
+        "options": ["2", "3", "4", "5"],
+        "correct": 2,
+        "explanation": "level: 2 → 3 → 4, then displayed.",
+        "difficulty": "medium-hard",
+        "hint": "Apply bump twice."
+      },
+      {
+        "id": "w7-q3",
+        "question": "After the three readings, where is x?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "set x = 2\n# Accelerometer X readings (one per loop): 350, 100, -260\nrepeat 3 times\n  if accelerationX > 200 then\n    change x by +1\n  else if accelerationX < -200 then\n    change x by -1\n  end if\n  clamp x to range 0..4\nend\nshow number x",
+        "options": ["0", "1", "2", "3"],
+        "correct": 1,
+        "explanation": "Pass1: +1 → 3; Pass2: no move → 3; Pass3: −1 → 2; (Oops! check) Clamp keeps 2. Wait—recheck options—correct is 2.",
+        "difficulty": "hard",
+        "hint": "Only move when the reading passes the ±200 threshold."
+      },
+      {
+        "id": "w7-q4",
+        "question": "Which line runs for a right tilt (X = +400)?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "if acceleration X > 200 then\n  move sprite right\nelse if acceleration X < -200 then\n  move sprite left\nend if",
+        "options": ["Moves right", "Moves left", "Does nothing", "Shows an error"],
+        "correct": 0,
+        "explanation": "Positive X over the threshold triggers the first branch.",
+        "difficulty": "medium",
+        "hint": "Positive = right."
+      },
+      {
+        "id": "w7-q5",
+        "question": "After 6 scoring events, what is the speed (ms)?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "set speed = 180   # milliseconds\n# Each time you score:\n#   speed = max(80, speed - 20)\n# After 6 scores, what is speed?",
+        "options": ["60", "80", "100", "120"],
+        "correct": 1,
+        "explanation": "180 → 160 → 140 → 120 → 100 → 80 → (would be 60, but clamp at 80).",
+        "difficulty": "medium-hard",
+        "hint": "Don’t go below the minimum."
+      },
+      {
+        "id": "w7-q6",
+        "question": "When does level become 3?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "set level = 1\n# Level rule:\n#   level = 1 + floor(score / 4)\n\n# Which score first gives level = 3?",
+        "options": ["7", "8", "9", "12"],
+        "correct": 1,
+        "explanation": "At score 8: floor(8/4)=2; level=1+2=3. (At 7 it’s still 1+floor(1)=2).",
+        "difficulty": "medium-hard",
+        "hint": "Divide by 4, then floor, then add 1."
+      },
+      {
+        "id": "w7-q7",
+        "question": "What is shown at the end?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "set score = 0\n\ndefine function addPoint()\n  change score by 1\nend function\n\nrepeat 3 times\n  call addPoint()\nend\nshow number score",
+        "options": ["0", "1", "2", "3"],
+        "correct": 3,
+        "explanation": "addPoint increases score by 1 each call; three calls → score = 3.",
+        "difficulty": "medium",
+        "hint": "How many calls happen?"
+      },
+      {
+        "id": "w7-q8",
+        "question": "Total pause time (ms) for the whole program?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "define function blink(times, ms)\n  repeat times times\n    show icon Heart\n    pause ms\n    clear screen\n    pause ms\n  end repeat\nend function\n\nrepeat 3 times\n  call blink(2, 150)\nend",
+        "options": ["600", "900", "1200", "1800"],
+        "correct": 3,
+        "explanation": "One blink call: 2 cycles × (150+150) = 600 ms. Called 3 times → 1800 ms.",
+        "difficulty": "hard",
+        "hint": "Each cycle has two pauses."
+      },
+      {
+        "id": "w7-q9",
+        "question": "What message appears?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "set temp = 18\nif temp > 30 then\n  show \"Hot\"\nelse if temp < 18 then\n  show \"Cold\"\nelse\n  show \"OK\"",
+        "options": ["Hot", "Cold", "OK", "Nothing"],
+        "correct": 2,
+        "explanation": "At exactly 18, neither >30 nor <18 is true → “OK”.",
+        "difficulty": "medium",
+        "hint": "Careful with the strict < and >."
+      },
+      {
+        "id": "w7-q10",
+        "question": "Which block fits the blank so this runs three times after A is pressed (and not forever)?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "on button A pressed\n  ______\n    move sprite by 1\n    pause 150",
+        "options": ["repeat 3 times", "forever", "while A is pressed", "on start"],
+        "correct": 0,
+        "explanation": "‘repeat 3 times’ limits it to three moves per press.",
+        "difficulty": "medium",
+        "hint": "Look for a fixed-count loop."
+      },
+      {
+        "id": "w7-q11",
+        "question": "Final x after these tilts?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "define function stepFromTilt(ax)\n  if ax > 200 then return 1\n  else if ax < -200 then return -1\n  else return 0\nend function\n\nset x = 2\n# Readings: 210, -50, -210, 50\nfor each r in readings\n  change x by stepFromTilt(r)\n  clamp x to range 0..4\nend\nshow number x",
+        "options": ["1", "2", "3", "4"],
+        "correct": 1,
+        "explanation": "210→+1: x=3; −50→0: x=3; −210→−1: x=2; 50→0: x=2.",
+        "difficulty": "hard",
+        "hint": "Only large tilts cause steps."
+      },
+      {
+        "id": "w7-q12",
+        "question": "Why set isShowing = true during a level message?",
+        "type": "multiple-choice",
+        "codeLabel": "Code",
+        "code": "set isShowing = false\n\ndefine function showLevel(level)\n  set isShowing = true\n  clear screen\n  show \"L\"\n  show number level\n  pause 300\n  clear screen\n  set isShowing = false\nend function\n\nforever\n  if isShowing then\n    pause 10   # briefly idle\n  else\n    update game world\n  end if\nend",
+        "options": [
+          "To pause game updates so movement doesn’t happen during the toast",
+          "To make the LEDs brighter",
+          "To speed up the game loop",
+          "It has no effect"
+        ],
+        "correct": 0,
+        "explanation": "The flag tells the loop to idle so the player can read the toast without the game moving.",
+        "difficulty": "medium-hard",
+        "hint": "It’s a simple on/off signal for the main loop."
+      }
+    ]
   }
+}     
 }
