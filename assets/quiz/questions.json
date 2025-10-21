@@ -928,171 +928,164 @@
         }
       ]
     },
-    
     "7": {
       "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
-      "description": "Mixed-difficulty quiz reinforcing functions, loops, conditionals, variables, timing, and accelerometer concepts with pseudocode reasoning.",
+      "description": "Challenging, reusable quiz mixing functions (params/returns/side-effects), loops, selection, timing maths, and accelerometer reasoning. Pseudocode is indented and labeled.",
       "locked": false,
       "questions": [
         {
           "id": "w7-q1",
-          "question": "What is the main purpose of a function in a program?",
+          "question": "Which statement about functions is MOST accurate for writing reliable, reusable programs?",
           "type": "multiple-choice",
           "options": [
-            "To group code that performs one specific job so it can be reused",
-            "To store numbers that change during the program",
-            "To make all code run faster automatically",
-            "To stop loops from repeating"
+            "Functions should accept inputs (parameters) and often return a result so they can be reused in different situations",
+            "Functions are mainly for making programs run faster",
+            "Functions should always change global variables and never return a value",
+            "Functions must contain loops; otherwise they are not useful"
           ],
           "correct": 0,
-          "explanation": "A function groups a small, specific job so you can call it whenever needed without rewriting the same code.",
-          "definition": "FUNCTION — a named mini-program that performs one clear job and can be called from different places.",
-          "difficulty": "easy",
-          "hint": "Think of a function as a reusable helper."
+          "explanation": "Parameters and return values make functions flexible and testable. Speed is not guaranteed; side effects are optional.",
+          "definition": "FUNCTION — a named helper that can take inputs (parameters) and may return an output.",
+          "difficulty": "medium-hard",
+          "hint": "Think about how to reuse the same helper in different contexts."
         },
         {
           "id": "w7-q2",
-          "question": "A function is defined in a program but never called. What happens?",
+          "question": "What number is shown?",
           "type": "multiple-choice",
-          "options": [
-            "It runs automatically at the start",
-            "It runs once at the end",
-            "It never runs because it was never called",
-            "It runs inside every loop automatically"
-          ],
+          "codeLabel": "Code",
+          "code": "define function f(a, b)\n  return a * 2 + b\nend function\n\ndefine function g(x)\n  return x - 3\nend function\n\nshow number f( g(6), 4 )",
+          "options": ["6", "9", "10", "12"],
           "correct": 2,
-          "explanation": "Defining a function writes the recipe; calling it actually uses the recipe.",
-          "difficulty": "medium",
-          "hint": "Definition ≠ execution."
+          "explanation": "g(6) = 3; then f(3,4) = 3*2 + 4 = 10.",
+          "difficulty": "hard",
+          "hint": "Evaluate the inner call first."
         },
         {
           "id": "w7-q3",
-          "question": "Which sensor would you use to detect tilt or movement?",
+          "question": "After three loop updates, where is x?",
           "type": "multiple-choice",
-          "options": [
-            "Light sensor",
-            "Temperature sensor",
-            "Accelerometer",
-            "Microphone"
-          ],
-          "correct": 2,
-          "explanation": "An accelerometer measures acceleration and orientation, so it detects tilt and movement.",
-          "definition": "ACCELEROMETER — a sensor that measures motion, tilt, and acceleration.",
-          "difficulty": "easy",
-          "hint": "Phones use it to rotate the screen."
+          "codeLabel": "Code",
+          "code": "set x = 2\n# Each loop reads the latest accelerometer X value\n# and then updates x once.\n# Readings (one per loop pass): 250, -300, -300\n\nrepeat 3 times\n  if accelerationX > 200 then\n    change x by +1\n  else if accelerationX < -200 then\n    change x by -1\n  end if\n  clamp x to range 0..4\nend repeat\n\nshow number x",
+          "options": ["0", "1", "2", "3"],
+          "correct": 1,
+          "explanation": "Pass 1: +1 → 3; Pass 2: −1 → 2; Pass 3: −1 → 1.",
+          "difficulty": "hard",
+          "hint": "Apply exactly one movement per reading and clamp each time."
         },
         {
           "id": "w7-q4",
-          "question": "If a variable named 'speed' controls a pause time between updates, what happens when you decrease 'speed'?",
+          "question": "What does the device display (in order)?",
           "type": "multiple-choice",
-          "options": [
-            "The program slows down",
-            "The program runs faster",
-            "The loop stops",
-            "Nothing changes"
-          ],
-          "correct": 1,
-          "explanation": "Shorter pauses mean more updates per second, so the program feels faster.",
-          "difficulty": "medium",
-          "hint": "Less waiting → faster action."
+          "codeLabel": "Code",
+          "code": "set score = 0\n\ndefine function add(p)\n  set score = score + p        # side effect on the global variable\n  return score - p              # returns the previous score\nend function\n\nshow number add(3)\nshow number score",
+          "options": ["\"3\" then \"3\"", "\"0\" then \"0\"", "\"0\" then \"3\"", "\"3\" then \"0\""],
+          "correct": 2,
+          "explanation": "add(3) sets score to 3, returns 0 (old score). Then score is 3.",
+          "difficulty": "hard",
+          "hint": "Distinguish the returned value from the global state after the call."
         },
         {
           "id": "w7-q5",
-          "question": "Read the pseudocode:\n\nset score = 0\nset level = 1\nforever\n  change score by 1\n  if score > level * 5 then\n    change level by 1\n  end if\nend\n\nAfter score reaches 15, what is the level?",
+          "question": "After 10 edge events, what are level and speed?",
           "type": "multiple-choice",
-          "options": ["1", "2", "3", "4"],
-          "correct": 2,
-          "explanation": "Level increases whenever score exceeds multiples of 5. At 5→2, 10→3, 15→4 only after exceeding 15. At exactly 15, it’s still 3.",
-          "difficulty": "medium",
-          "hint": "Check the condition carefully: ‘>’, not ‘≥’."
+          "codeLabel": "Code",
+          "code": "set level = 1\nset speed = 200   # ms\nset score = 0\n\n# On each edge event:\n#   score += 1\n#   if score mod 4 = 0 then level += 1\n#   speed = max(80, speed - 15)\n\n# After 10 such events, what are level and speed?",
+          "options": ["level = 4, speed = 50", "level = 3, speed = 80", "level = 2, speed = 110", "level = 5, speed = 80"],
+          "correct": 1,
+          "explanation": "Level-ups at scores 4 and 8 → level = 3. Speed: 200 - (10×15) = 50, but clamp to 80.",
+          "difficulty": "hard",
+          "hint": "Remember the clamp to a minimum speed."
         },
         {
           "id": "w7-q6",
-          "question": "Consider the function:\n\ndefine function flash(times)\n  repeat times times\n    show LED\n    pause 100\n    clear screen\n    pause 100\n  end repeat\nend function\n\nWhat happens when the program runs: flash(3)?",
-          "type": "multiple-choice",
-          "options": [
-            "The LED flashes once",
-            "The LED flashes three times",
-            "The LED flashes forever",
-            "Nothing happens"
+          "question": "Match each term to the best definition.",
+          "type": "drag-drop",
+          "terms": ["Parameter", "Return value", "Side effect", "Scope"],
+          "definitions": [
+            "A value a function gives back to the caller",
+            "Where a variable can be used (visible) in the program",
+            "A value you pass into a function so it can work with it",
+            "A change a function makes outside itself (e.g., editing a global variable)"
           ],
-          "correct": 1,
-          "explanation": "The parameter 'times' controls the repeat count; flash(3) produces 3 flashes.",
-          "difficulty": "medium",
-          "hint": "The parameter sets the loop count."
+          "correctMatches": [2, 0, 3, 1],
+          "explanation": "Parameter = input; return value = output; side effect = external change; scope = where a name is visible.",
+          "difficulty": "medium-hard",
+          "hint": "Input vs output vs effect vs visibility."
         },
         {
           "id": "w7-q7",
-          "question": "Trace this pseudocode:\n\nset x = 4\nrepeat 3 times\n  change x by -1\nend repeat\nshow number x\n\nWhat number is shown?",
+          "question": "What number is shown?",
           "type": "multiple-choice",
-          "options": ["1", "2", "3", "4"],
-          "correct": 0,
-          "explanation": "x: 4 → 3 → 2 → 1 after three decrements; the display shows 1.",
-          "difficulty": "medium-hard",
-          "hint": "Track the value after each loop."
+          "codeLabel": "Code",
+          "code": "set count = 0\nfor i from 1 to 4\n  for j from 1 to 3\n    change count by 1\n    if j = i then\n      break   # exit inner loop only\n    end if\n  end for\nend for\nshow number count",
+          "options": ["6", "7", "9", "12"],
+          "correct": 2,
+          "explanation": "i=1 → 1 step; i=2 → 2 steps; i=3 → 3 steps; i=4 → inner never meets j=4, so 3 steps. Total 1+2+3+3 = 9.",
+          "difficulty": "hard",
+          "hint": "The break stops only the inner loop."
         },
         {
           "id": "w7-q8",
-          "question": "What does this code display?\n\nset t = 20\nif t < 18 or t > 30 then\n  show \"Alert\"\nelse\n  show \"OK\"\nend if",
+          "question": "How many pairs trigger the condition?",
           "type": "multiple-choice",
-          "options": ["Alert", "OK", "Nothing", "Error"],
+          "codeLabel": "Code",
+          "code": "define function isAligned(a, b)\n  return abs(a - b) <= 1\nend function\n\n# Test these (x1, x2) pairs:\n# (0,2), (2,3), (4,2), (3,4)\n# Count how many return true.",
+          "options": ["1", "2", "3", "4"],
           "correct": 1,
-          "explanation": "20 is between 18 and 30, so neither part of the OR is true; it shows “OK”.",
-          "difficulty": "medium",
-          "hint": "OR needs at least one true part."
+          "explanation": "|0−2|=2 (F), |2−3|=1 (T), |4−2|=2 (F), |3−4|=1 (T) → 2 true cases.",
+          "difficulty": "medium-hard",
+          "hint": "Absolute difference ≤ 1 means same column or neighbours."
         },
         {
           "id": "w7-q9",
-          "question": "Evaluate the call:\n\ndefine function add(a, b)\n  return a + b\nend function\n\nshow number add(3, 2 * 2)\n\nWhat is shown?",
+          "question": "What is the value of n after three calls?",
           "type": "multiple-choice",
-          "options": ["5", "6", "7", "8"],
-          "correct": 2,
-          "explanation": "2*2 = 4, then add(3,4) = 7.",
+          "codeLabel": "Code",
+          "code": "define function even(n)\n  return n % 2 = 0\nend function\n\ndefine function mystery(n)\n  if not even(n) then\n    return n * 3 + 1\n  else\n    return n / 2\n  end if\nend function\n\nset n = 5\nrepeat 3 times\n  set n = mystery(n)\nend repeat\nshow number n",
+          "options": ["4", "5", "8", "16"],
+          "correct": 0,
+          "explanation": "5→16 (odd branch), 16→8 (even), 8→4 (even).",
           "difficulty": "hard",
-          "hint": "Multiplication before addition."
+          "hint": "Apply the function step-by-step."
         },
         {
           "id": "w7-q10",
-          "question": "Order the steps correctly for how a program uses a function.",
-          "type": "drag-drop",
-          "terms": [
-            "Define the function",
-            "Call the function",
-            "Run the function’s code",
-            "Continue the main program after the function finishes"
-          ],
-          "definitions": [
-            "Step 1",
-            "Step 2",
-            "Step 3",
-            "Step 4"
-          ],
-          "correctMatches": [0, 1, 2, 3],
-          "explanation": "You must define a function before calling it; then it executes and returns control to the caller.",
-          "difficulty": "medium-hard",
-          "hint": "Write it, use it, it runs, then return."
+          "question": "What number is shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Code",
+          "code": "define function sumSquares(n)\n  set s = 0\n  for i from 1 to n\n    set s = s + i*i\n  end for\n  return s\nend function\n\nshow number sumSquares(4)",
+          "options": ["20", "24", "30", "40"],
+          "correct": 2,
+          "explanation": "1²+2²+3²+4² = 1+4+9+16 = 30.",
+          "difficulty": "hard",
+          "hint": "Square each term before adding."
         },
         {
           "id": "w7-q11",
-          "question": "A loop updates once every 50 ms. Approximately how many updates occur in 3 seconds?",
+          "question": "What is the TOTAL pause time over 5 iterations?",
           "type": "multiple-choice",
-          "options": ["30", "50", "60", "100"],
-          "correct": 2,
-          "explanation": "3,000 ms ÷ 50 ms = 60 iterations.",
-          "difficulty": "medium",
-          "hint": "Convert seconds to milliseconds, then divide."
+          "codeLabel": "Code",
+          "code": "set speed = 180   # milliseconds\nset total = 0\nrepeat 5 times\n  pause(speed)\n  set total = total + speed\n  set speed = max(60, speed - 20)\nend repeat\nshow number total",
+          "options": ["600", "700", "720", "800"],
+          "correct": 1,
+          "explanation": "Pauses: 180,160,140,120,100 → sum = 700. Clamp not reached.",
+          "difficulty": "hard",
+          "hint": "List the five speeds then add them."
         },
         {
           "id": "w7-q12",
-          "question": "Read the nested loops:\n\nset count = 0\nfor i from 1 to 4\n  for j from 1 to 3\n    change count by 1\n  end for\nend for\nshow number count\n\nWhat is shown?",
+          "question": "What value is shown?",
           "type": "multiple-choice",
-          "options": ["7", "9", "10", "12"],
-          "correct": 3,
-          "explanation": "Outer loop runs 4 times; inner loop runs 3 times per outer iteration → 4 × 3 = 12.",
+          "codeLabel": "Code",
+          "code": "define function blink(times, ms)\n  # Each cycle: show + pause(ms) + clear + pause(ms)\n  return 2 * times * ms\nend function\n\nset total = blink(3, 80) + blink(2, 120)\nshow number total",
+          "options": ["720", "880", "960", "1040"],
+          "correct": 2,
+          "explanation": "blink(3,80)=480; blink(2,120)=480; total=960.",
           "difficulty": "hard",
-          "hint": "Multiply outer count by inner count."
+          "hint": "Each blink has TWO pauses of the same length."
         }
       ]
     }
-  }  
+  }
 }
