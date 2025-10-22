@@ -968,7 +968,7 @@
             },
             {
               "id": "w7-q3",
-              "question": "A sprite moves left or right based on tilt. Starting at x = 2, after readings **350**, **100**, **−260**, what is x? (Move right if X > +200; left if X < −200; otherwise no move.)",
+              "question": "A sprite moves left or right based on tilt. Starting at x = 2, after readings 350, 100, −260, what is x? (Move right if X > +200; left if X < −200; otherwise no move.)",
               "type": "multiple-choice",
               "codeLabel": "Pseudocode",
               "code": "set x to 2\nrepeat 3 times\n    if acceleration (X) > 200 then\n        change x by 1\n    else if acceleration (X) < -200 then\n        change x by -1\n    end if\nend\nshow number x",
@@ -992,7 +992,7 @@
             },
             {
               "id": "w7-q5",
-              "question": "In a game, speed (ms) gets smaller by 20 each score but can’t go below **80 ms**. Starting at **180 ms**, what is speed after **6** scores?",
+              "question": "In a game, speed (ms) gets smaller by 20 each score but can’t go below 80 ms. Starting at 180 ms, what is speed after 6 scores?",
               "type": "multiple-choice",
               "codeLabel": "Pseudocode",
               "code": "set speed to 180\nrepeat 6 times\n    change speed by -20\n    if speed < 80 then\n        set speed to 80\n    end if\nend\nshow number speed",
@@ -1004,15 +1004,15 @@
             },
             {
               "id": "w7-q6",
-              "question": "The level increases every 4 points. When does level first become **3**?",
+              "question": "The level is worked out as: level = 1 + (score ÷ 4) using whole-number division. What is the smallest score that gives level = 3?",
               "type": "multiple-choice",
               "codeLabel": "Pseudocode",
-              "code": "set level to 1\n# level = 1 + (score ÷ 4)   # integer division\n# Choose the smallest score that makes level = 3",
+              "code": "set level to 1\n# level = 1 + (score ÷ 4)   # ÷ means integer division (floor)\n# Choose the smallest score that makes level become 3",
               "options": ["7", "8", "9", "12"],
               "correct": 1,
               "explanation": "At score 8: 8 ÷ 4 = 2, so level = 1 + 2 = 3. At 7 it’s still 2.",
-              "difficulty": "medium-hard",
-              "hint": "Divide by 4, keep the whole number, then add 1."
+              "difficulty": "medium",
+              "hint": "Divide by 4 (no decimals), then add 1."
             },
             {
               "id": "w7-q7",
@@ -1064,22 +1064,22 @@
             },
             {
               "id": "w7-q11",
-              "question": "Starting at x = 2, apply readings **210**, **−50**, **−210**, **50**. Rule: if reading > +200 move right (+1); if < −200 move left (−1); else no move. What number is shown?",
+              "question": "Starting at x = 1, the sprite moves when the tilt is big. Readings: 250, 250, −300. Rule: if X > +200 move right (+1); if X < −200 move left (−1); otherwise no move. What number is shown?",
               "type": "multiple-choice",
               "codeLabel": "Pseudocode",
-              "code": "set step to 0\nfunction stepFromTilt(ax)\n    set step to 0\n    if ax > 200 then\n        set step to 1\n    else if ax < -200 then\n        set step to -1\n    end if\nend function\n\nset x to 2\nfor each reading in [210, -50, -210, 50]\n    call stepFromTilt(reading)\n    change x by step\nend\nshow number x",
+              "code": "set x to 1\nfor each reading in [250, 250, -300]\n    if acceleration (X) > 200 then\n        change x by 1\n    else if acceleration (X) < -200 then\n        change x by -1\n    end if\nend\nshow number x",
               "options": ["1", "2", "3", "4"],
               "correct": 1,
-              "explanation": "210 → +1: x=3; −50 → 0: x=3; −210 → −1: x=2; 50 → 0: x=2.",
-              "difficulty": "hard",
-              "hint": "Only large tilts cause a move."
+              "explanation": "250 → x=2; 250 → x=3; −300 → x=2. Final x = 2.",
+              "difficulty": "medium",
+              "hint": "Only move on big tilts."
             },
             {
               "id": "w7-q12",
               "question": "Why set isShowing to true while a level message is on screen?",
               "type": "multiple-choice",
               "codeLabel": "Pseudocode",
-              "code": "set isShowing to false\n\nfunction showLevel(level)\n    set isShowing to true\n    clear screen\n    show string \"L\"\n    show number level\n    pause 300\n    clear screen\n    set isShowing to false\nend function\n\nforever\n    if isShowing then\n        pause 10    # briefly idle\n    else\n        update game world\n    end if",
+              "code": "set isShowing to false\n\nfunction showLevel(level)\n    set isShowing to true\n    show string \"L\"\n    show number level\n    pause 300\n    set isShowing to false\nend function\n\nforever\n    if isShowing then\n        pause 10\n    else\n        update game world\n    end if",
               "options": [
                 "To make the LEDs brighter",
                 "To speed up the game loop",
@@ -1088,10 +1088,11 @@
               ],
               "correct": 3,
               "explanation": "The flag makes the main loop idle so players can read the message without the game moving.",
-              "difficulty": "medium-hard",
+              "difficulty": "medium",
               "hint": "It’s a simple on/off switch for the main loop."
             }
           ]
         }
+
   }
 }
