@@ -103,7 +103,8 @@ Participants first created small examples of functions to see how they work, the
 - **Functions in coding** [Video](https://youtu.be/whqjRte86J4?si=YJ7L1_Nau4jytg1e){:target="_blank" rel="noopener"}  
 - **MakeCode Functions:** [Video](https://youtu.be/1LACtv9XvXQ?si=h9IoVpsalwd7i-BR){:target="_blank" rel="noopener"}  
 - **BBC Bitesize – KS2 Algebra and Function Machines:** [Link](https://www.bbc.co.uk/bitesize/articles/zsmgvwx){:target="_blank" rel="noopener"}  
-- **Maths function machines (solved examples):** [Video](https://youtu.be/akj9L0HaTY4?si=hAhCA8pp1-iskAvo){:target="_blank" rel="noopener"}  
+- **Maths function machines (solved examples):** [Video](https://youtu.be/akj9L0HaTY4?si=hAhCA8pp1-iskAvo){:target="_blank" rel="noopener"}
+- **How Space Invaders Birthed Japanese Games:** [Video](https://youtu.be/Jbn8IRmSq8M?si=bMJzEXyBVZ3iUyFE){:target="_blank" rel="noopener"}   
 
 ---
 
