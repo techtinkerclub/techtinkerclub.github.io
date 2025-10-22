@@ -105,6 +105,7 @@ Participants first created small examples of functions to see how they work, the
 - **BBC Bitesize – KS2 Algebra and Function Machines:** [Link](https://www.bbc.co.uk/bitesize/articles/zsmgvwx){:target="_blank" rel="noopener"}  
 - **Maths function machines (solved examples):** [Video](https://youtu.be/akj9L0HaTY4?si=hAhCA8pp1-iskAvo){:target="_blank" rel="noopener"}
 - **How Space Invaders Birthed Japanese Games:** [Video](https://youtu.be/Jbn8IRmSq8M?si=bMJzEXyBVZ3iUyFE){:target="_blank" rel="noopener"}   
+- **Micro:bit accelerometer:** [Video](https://youtu.be/KuekQ-m9xpw?feature=shared){:target="_blank" rel="noopener"}   
 
 ---
 
