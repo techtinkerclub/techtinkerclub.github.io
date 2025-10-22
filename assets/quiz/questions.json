@@ -1076,21 +1076,22 @@
             },
             {
               "id": "w7-q12",
-              "question": "Why set isShowing to true while a level message is on screen?",
+              "question": "Why does the program use a variable called 'paused'?",
               "type": "multiple-choice",
               "codeLabel": "Pseudocode",
-              "code": "set isShowing to false\n\nfunction showLevel(level)\n    set isShowing to true\n    show string \"L\"\n    show number level\n    pause 300\n    set isShowing to false\nend function\n\nforever\n    if isShowing then\n        pause 10\n    else\n        update game world\n    end if",
+              "code": "set paused to false\n\nforever\n    if button A is pressed then\n        set paused to true\n    end if\n    if button B is pressed then\n        set paused to false\n    end if\n\n    if paused then\n        show string \"PAUSE\"\n    else\n        move sprite by 1\n    end if",
               "options": [
                 "To make the LEDs brighter",
-                "To speed up the game loop",
-                "It has no effect",
-                "To pause game updates so movement doesn’t happen during the message"
+                "To decide whether the game should stop or move",
+                "To measure how fast the sprite moves",
+                "To count how many times A was pressed"
               ],
-              "correct": 3,
-              "explanation": "The flag makes the main loop idle so players can read the message without the game moving.",
-              "difficulty": "medium",
-              "hint": "It’s a simple on/off switch for the main loop."
+              "correct": 1,
+              "explanation": "The variable 'paused' acts like an on/off switch — when true, the game shows 'PAUSE'; when false, it keeps moving.",
+              "difficulty": "medium-easy",
+              "hint": "Think of 'paused' as a switch that turns movement on or off."
             }
+
           ]
         }
 
