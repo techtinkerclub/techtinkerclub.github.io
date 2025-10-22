@@ -934,169 +934,164 @@
       ]
     },
     "7": {
-      "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
-      "description": "Mixed-difficulty quiz reinforcing functions, loops, conditionals, variables, timing, and accelerometer concepts with pseudocode reasoning.",
-      "locked": false,
-      "questions": [
-        {
-          "id": "w7-q1",
-          "question": "What is the main purpose of a function in a program?",
-          "type": "multiple-choice",
-          "options": [
-            "To group code that performs one specific job so it can be reused",
-            "To store numbers that change during the program",
-            "To make all code run faster automatically",
-            "To stop loops from repeating"
-          ],
-          "correct": 0,
-          "explanation": "A function groups a small, specific job so you can call it whenever needed without rewriting the same code.",
-          "definition": "FUNCTION — a named mini-program that performs one clear job and can be called from different places.",
-          "difficulty": "easy",
-          "hint": "Think of a function as a reusable helper."
-        },
-        {
-          "id": "w7-q2",
-          "question": "A function is defined in a program but never called. What happens?",
-          "type": "multiple-choice",
-          "options": [
-            "It runs automatically at the start",
-            "It runs once at the end",
-            "It never runs because it was never called",
-            "It runs inside every loop automatically"
-          ],
-          "correct": 2,
-          "explanation": "Defining a function writes the recipe; calling it actually uses the recipe.",
-          "difficulty": "medium",
-          "hint": "Definition ≠ execution."
-        },
-        {
-          "id": "w7-q3",
-          "question": "Which sensor would you use to detect tilt or movement?",
-          "type": "multiple-choice",
-          "options": [
-            "Light sensor",
-            "Temperature sensor",
-            "Accelerometer",
-            "Microphone"
-          ],
-          "correct": 2,
-          "explanation": "An accelerometer measures acceleration and orientation, so it detects tilt and movement.",
-          "definition": "ACCELEROMETER — a sensor that measures motion, tilt, and acceleration.",
-          "difficulty": "easy",
-          "hint": "Phones use it to rotate the screen."
-        },
-        {
-          "id": "w7-q4",
-          "question": "If a variable named 'speed' controls a pause time between updates, what happens when you decrease 'speed'?",
-          "type": "multiple-choice",
-          "options": [
-            "The program slows down",
-            "The program runs faster",
-            "The loop stops",
-            "Nothing changes"
-          ],
-          "correct": 1,
-          "explanation": "Shorter pauses mean more updates per second, so the program feels faster.",
-          "difficulty": "medium",
-          "hint": "Less waiting → faster action."
-        },
-        {
-          "id": "w7-q5",
-          "question": "Read the pseudocode:\n\nset score = 0\nset level = 1\nforever\n  change score by 1\n  if score > level * 5 then\n    change level by 1\n  end if\nend\n\nAfter score reaches 15, what is the level?",
-          "type": "multiple-choice",
-          "options": ["1", "2", "3", "4"],
-          "correct": 2,
-          "explanation": "Level increases whenever score exceeds multiples of 5. At 5→2, 10→3, 15→4 only after exceeding 15. At exactly 15, it’s still 3.",
-          "difficulty": "medium",
-          "hint": "Check the condition carefully: ‘>’, not ‘≥’."
-        },
-        {
-          "id": "w7-q6",
-          "question": "Consider the function:\n\ndefine function flash(times)\n  repeat times times\n    show LED\n    pause 100\n    clear screen\n    pause 100\n  end repeat\nend function\n\nWhat happens when the program runs: flash(3)?",
-          "type": "multiple-choice",
-          "options": [
-            "The LED flashes once",
-            "The LED flashes three times",
-            "The LED flashes forever",
-            "Nothing happens"
-          ],
-          "correct": 1,
-          "explanation": "The parameter 'times' controls the repeat count; flash(3) produces 3 flashes.",
-          "difficulty": "medium",
-          "hint": "The parameter sets the loop count."
-        },
-        {
-          "id": "w7-q7",
-          "question": "Trace this pseudocode:\n\nset x = 4\nrepeat 3 times\n  change x by -1\nend repeat\nshow number x\n\nWhat number is shown?",
-          "type": "multiple-choice",
-          "options": ["1", "2", "3", "4"],
-          "correct": 0,
-          "explanation": "x: 4 → 3 → 2 → 1 after three decrements; the display shows 1.",
-          "difficulty": "medium-hard",
-          "hint": "Track the value after each loop."
-        },
-        {
-          "id": "w7-q8",
-          "question": "What does this code display?\n\nset t = 20\nif t < 18 or t > 30 then\n  show \"Alert\"\nelse\n  show \"OK\"\nend if",
-          "type": "multiple-choice",
-          "options": ["Alert", "OK", "Nothing", "Error"],
-          "correct": 1,
-          "explanation": "20 is between 18 and 30, so neither part of the OR is true; it shows “OK”.",
-          "difficulty": "medium",
-          "hint": "OR needs at least one true part."
-        },
-        {
-          "id": "w7-q9",
-          "question": "Evaluate the call:\n\ndefine function add(a, b)\n  return a + b\nend function\n\nshow number add(3, 2 * 2)\n\nWhat is shown?",
-          "type": "multiple-choice",
-          "options": ["5", "6", "7", "8"],
-          "correct": 2,
-          "explanation": "2*2 = 4, then add(3,4) = 7.",
-          "difficulty": "hard",
-          "hint": "Multiplication before addition."
-        },
-        {
-          "id": "w7-q10",
-          "question": "Order the steps correctly for how a program uses a function.",
-          "type": "drag-drop",
-          "terms": [
-            "Define the function",
-            "Call the function",
-            "Run the function’s code",
-            "Continue the main program after the function finishes"
-          ],
-          "definitions": [
-            "Step 1",
-            "Step 2",
-            "Step 3",
-            "Step 4"
-          ],
-          "correctMatches": [0, 1, 2, 3],
-          "explanation": "You must define a function before calling it; then it executes and returns control to the caller.",
-          "difficulty": "medium-hard",
-          "hint": "Write it, use it, it runs, then return."
-        },
-        {
-          "id": "w7-q11",
-          "question": "A loop updates once every 50 ms. Approximately how many updates occur in 3 seconds?",
-          "type": "multiple-choice",
-          "options": ["30", "50", "60", "100"],
-          "correct": 2,
-          "explanation": "3,000 ms ÷ 50 ms = 60 iterations.",
-          "difficulty": "medium",
-          "hint": "Convert seconds to milliseconds, then divide."
-        },
-        {
-          "id": "w7-q12",
-          "question": "Read the nested loops:\n\nset count = 0\nfor i from 1 to 4\n  for j from 1 to 3\n    change count by 1\n  end for\nend for\nshow number count\n\nWhat is shown?",
-          "type": "multiple-choice",
-          "options": ["7", "9", "10", "12"],
-          "correct": 3,
-          "explanation": "Outer loop runs 4 times; inner loop runs 3 times per outer iteration → 4 × 3 = 12.",
-          "difficulty": "hard",
-          "hint": "Multiply outer count by inner count."
+          "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
+          "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing. Balanced difficulty.",
+          "locked": false,
+          "questions": [
+            {
+              "id": "w7-q1",
+              "question": "Why do programmers use functions when making games?",
+              "type": "multiple-choice",
+              "options": [
+                "To make sprites move faster",
+                "To store numbers like score or speed",
+                "To reuse the same set of steps without rebuilding them each time",
+                "To keep the game running forever"
+              ],
+              "correct": 2,
+              "explanation": "Functions let you reuse the same instructions instead of repeating code, which makes games easier to change later.",
+              "definition": "FUNCTION — a named mini-program that does one clear job; you call it when you need it.",
+              "difficulty": "medium-hard",
+              "hint": "Think: reuse the same instructions instead of repeating them."
+            },
+            {
+              "id": "w7-q2",
+              "question": "What number is shown at the end?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "function bumpLevel()\n    change level by 1\nend function\n\nset level to 2\nrepeat 2 times\n    call bumpLevel()\nend\nshow number level",
+              "options": ["2", "4", "3", "5"],
+              "correct": 1,
+              "explanation": "level: 2 → 3 → 4, then displayed.",
+              "difficulty": "medium-hard",
+              "hint": "The helper runs twice."
+            },
+            {
+              "id": "w7-q3",
+              "question": "A sprite moves left or right based on tilt. Starting at x = 2, after readings **350**, **100**, **−260**, what is x? (Move right if X > +200; left if X < −200; otherwise no move.)",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set x to 2\nrepeat 3 times\n    if acceleration (X) > 200 then\n        change x by 1\n    else if acceleration (X) < -200 then\n        change x by -1\n    end if\nend\nshow number x",
+              "options": ["0", "1", "3", "2"],
+              "correct": 3,
+              "explanation": "350 → x=3; 100 → no move; −260 → x=2. Final x = 2.",
+              "difficulty": "medium-hard",
+              "hint": "Only big tilts (>|200|) move the sprite."
+            },
+            {
+              "id": "w7-q4",
+              "question": "Which branch runs for a right tilt (X = +400)?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "if acceleration (X) > 200 then\n    move sprite right\nelse if acceleration (X) < -200 then\n    move sprite left\nend if",
+              "options": ["Moves right", "Moves left", "Does nothing", "Shows an error"],
+              "correct": 0,
+              "explanation": "Positive X over the threshold triggers the first branch.",
+              "difficulty": "medium",
+              "hint": "Positive = right."
+            },
+            {
+              "id": "w7-q5",
+              "question": "In a game, speed (ms) gets smaller by 20 each score but can’t go below **80 ms**. Starting at **180 ms**, what is speed after **6** scores?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set speed to 180\nrepeat 6 times\n    change speed by -20\n    if speed < 80 then\n        set speed to 80\n    end if\nend\nshow number speed",
+              "options": ["60", "120", "80", "100"],
+              "correct": 2,
+              "explanation": "180 → 160 → 140 → 120 → 100 → 80 → (would be 60, but minimum is 80).",
+              "difficulty": "medium-hard",
+              "hint": "Stop at the minimum."
+            },
+            {
+              "id": "w7-q6",
+              "question": "The level increases every 4 points. When does level first become **3**?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set level to 1\n# level = 1 + (score ÷ 4)   # integer division\n# Choose the smallest score that makes level = 3",
+              "options": ["7", "8", "9", "12"],
+              "correct": 1,
+              "explanation": "At score 8: 8 ÷ 4 = 2, so level = 1 + 2 = 3. At 7 it’s still 2.",
+              "difficulty": "medium-hard",
+              "hint": "Divide by 4, keep the whole number, then add 1."
+            },
+            {
+              "id": "w7-q7",
+              "question": "What number is shown at the end?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set score to 0\nfunction addPoint()\n    change score by 1\nend function\n\nrepeat 3 times\n    call addPoint()\nend\nshow number score",
+              "options": ["3", "0", "1", "2"],
+              "correct": 0,
+              "explanation": "addPoint runs three times → score = 3.",
+              "difficulty": "medium",
+              "hint": "Count the calls."
+            },
+            {
+              "id": "w7-q8",
+              "question": "Total pause time (ms) for the whole program?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "function blink(times, ms)\n    repeat times times\n        show icon \"heart\"\n        pause ms\n        clear screen\n        pause ms\n    end repeat\nend function\n\nrepeat 3 times\n    call blink(2, 150)\nend",
+              "options": ["600", "900", "1200", "1800"],
+              "correct": 3,
+              "explanation": "One call: 2 × (150+150) = 600 ms. Three calls → 1800 ms.",
+              "difficulty": "hard",
+              "hint": "Each blink cycle has two pauses."
+            },
+            {
+              "id": "w7-q9",
+              "question": "What message appears on the screen?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set temp to 18\nif temp > 30 then\n    show string \"Hot\"\nelse if temp < 18 then\n    show string \"Cold\"\nelse\n    show string \"OK\"\nend if",
+              "options": ["Hot", "Cold", "OK", "Nothing"],
+              "correct": 2,
+              "explanation": "At exactly 18, neither >30 nor <18 is true → “OK”.",
+              "difficulty": "medium",
+              "hint": "Mind the strict > and <."
+            },
+            {
+              "id": "w7-q10",
+              "question": "Which block fits the blank so this runs three times after A is pressed (and not forever)?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "on button A pressed\n    ______\n        move sprite by 1\n        pause 150\n    end",
+              "options": ["repeat 3 times", "forever", "while A is pressed", "on start"],
+              "correct": 0,
+              "explanation": "“repeat 3 times” limits it to three moves per press.",
+              "difficulty": "medium",
+              "hint": "Look for a fixed-count loop."
+            },
+            {
+              "id": "w7-q11",
+              "question": "Starting at x = 2, apply readings **210**, **−50**, **−210**, **50**. Rule: if reading > +200 move right (+1); if < −200 move left (−1); else no move. What number is shown?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set step to 0\nfunction stepFromTilt(ax)\n    set step to 0\n    if ax > 200 then\n        set step to 1\n    else if ax < -200 then\n        set step to -1\n    end if\nend function\n\nset x to 2\nfor each reading in [210, -50, -210, 50]\n    call stepFromTilt(reading)\n    change x by step\nend\nshow number x",
+              "options": ["1", "2", "3", "4"],
+              "correct": 1,
+              "explanation": "210 → +1: x=3; −50 → 0: x=3; −210 → −1: x=2; 50 → 0: x=2.",
+              "difficulty": "hard",
+              "hint": "Only large tilts cause a move."
+            },
+            {
+              "id": "w7-q12",
+              "question": "Why set isShowing to true while a level message is on screen?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set isShowing to false\n\nfunction showLevel(level)\n    set isShowing to true\n    clear screen\n    show string \"L\"\n    show number level\n    pause 300\n    clear screen\n    set isShowing to false\nend function\n\nforever\n    if isShowing then\n        pause 10    # briefly idle\n    else\n        update game world\n    end if",
+              "options": [
+                "To make the LEDs brighter",
+                "To speed up the game loop",
+                "It has no effect",
+                "To pause game updates so movement doesn’t happen during the message"
+              ],
+              "correct": 3,
+              "explanation": "The flag makes the main loop idle so players can read the message without the game moving.",
+              "difficulty": "medium-hard",
+              "hint": "It’s a simple on/off switch for the main loop."
+            }
+          ]
         }
-      ]
-    }
   }
 }
