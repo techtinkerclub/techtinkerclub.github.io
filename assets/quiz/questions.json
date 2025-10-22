@@ -704,17 +704,22 @@
           "id": "w5-q8",
           "question": "Match each loop type to what it does in a program.",
           "type": "drag-drop",
-          "terms": ["forever", "repeat N times", "while (condition)", "for index 1..N"],
-          "definitions": [
-            "Repeats a specific number of times, then stops",
-            "Steps through numbers in order, useful for counting or indexing",
-            "Keeps running endlessly while the program is active",
-            "Repeats as long as a test remains true"
+          "terms": [
+            "while (condition)",
+            "forever",
+            "for index 1..N",
+            "repeat N times"
           ],
-          "correctMatches": [2, 0, 3, 1],
-          "explanation": "forever never ends; repeat N stops; while depends on a condition; for iterates a sequence.",
+          "definitions": [
+            "Repeats as long as a test remains true",
+            "Keeps running endlessly while the program is active",
+            "Steps through numbers in order, useful for counting or indexing",
+            "Repeats a specific number of times, then stops"
+          ],
+          "correctMatches": [0, 1, 2, 3],
+          "explanation": "‘forever’ never ends; ‘repeat N times’ stops after a set count; ‘while’ repeats while a test stays true; ‘for index’ steps through a counting range.",
           "difficulty": "medium-hard",
-          "hint": "Think: endless / fixed / condition / counting."
+          "hint": "Think: condition / endless / counting / fixed."
         },
         {
           "id": "w5-q9",
