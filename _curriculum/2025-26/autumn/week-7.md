@@ -106,6 +106,7 @@ Participants first created small examples of functions to see how they work, the
 - **Maths function machines (solved examples):** [Video](https://youtu.be/akj9L0HaTY4?si=hAhCA8pp1-iskAvo){:target="_blank" rel="noopener"}
 - **How Space Invaders Birthed Japanese Games:** [Video](https://youtu.be/Jbn8IRmSq8M?si=bMJzEXyBVZ3iUyFE){:target="_blank" rel="noopener"}   
 - **Micro:bit accelerometer:** [Video](https://youtu.be/KuekQ-m9xpw?feature=shared){:target="_blank" rel="noopener"}   
+- **Behind the hardware - Acceleromiter on the Microbit:** [Video](https://youtu.be/byngcwjO51U?feature=shared){:target="_blank" rel="noopener"}   
 
 ---
 
