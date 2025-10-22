@@ -45,7 +45,7 @@ Participants first created small examples of functions to see how they work, the
 ---
 
 ## Key Vocabulary
-- **Function** — a mini-program that performs one job and can be reused.  
+- **Function** — are groups of code that always run together. They are like modules that you stack together to build programs. Programmers create functions to simplify tasks that occur often.  
 - **Call** — the moment your program tells a function to run.  
 - **Parameter** — information passed *into* a function.  
 - **Return** — a value that a function sends *back*.  
