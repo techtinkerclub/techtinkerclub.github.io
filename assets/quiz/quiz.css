@@ -259,3 +259,56 @@ body { background: var(--page-bg); }
   border:none;
 }
 .tqc-info-btn:hover{ background:#99f0d0; }
+
+/* --- Instructions Modal ------------------------------------------------- */
+.tqc-no-scroll { overflow: hidden; }
+
+.tqc-modal-root { position: relative; z-index: 9999; }
+.tqc-modal {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+}
+.tqc-modal[hidden] { display: none !important; }
+
+.tqc-modal__backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(2px);
+}
+
+.tqc-modal__dialog {
+  position: relative;
+  width: min(900px, 92vw);
+  max-height: 88vh;
+  padding: 0;
+  z-index: 1;
+}
+
+.tqc-modal__card.tqc-card {
+  margin: 0;
+  max-height: 88vh;
+  overflow: auto;               /* scroll the body, not the page */
+  padding: 1.25rem 1.5rem;
+}
+
+.tqc-modal__close {
+  position: absolute;
+  top: -12px; right: -12px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #333; color: #fff;
+  font-size: 22px; line-height: 40px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+.tqc-modal__close:hover { filter: brightness(1.1); }
+
+.tqc-modal__content .tqc-code {
+  margin-top: .75rem;
+  white-space: pre;
+}
+.tqc-modal__content h2,
+.tqc-modal__content h3 { margin: .5rem 0 .25rem; }
+.tqc-modal__content ul { margin: .5rem 0 .75rem 1.25rem; }
+
