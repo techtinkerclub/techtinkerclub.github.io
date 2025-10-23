@@ -935,7 +935,7 @@
     },
      "7": {
           "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
-          "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing. Balanced difficulty.",
+          "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing.",
           "locked": false,
           "questions": [
             {
