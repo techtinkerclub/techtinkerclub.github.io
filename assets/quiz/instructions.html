@@ -1,147 +1,90 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tech Tinker Club Quiz – Instructions</title>
-  <link rel="stylesheet" href="quiz.css">
-  <style>
-    .tqc-instructions {
-      max-width: 800px;
-      margin: 2rem auto;
-      background: var(--panel, #121a2a);
-      color: var(--ink, #dbe6ff);
-      padding: 2rem;
-      border-radius: 8px;
-      line-height: 1.6;
-    }
-    .tqc-instructions h1, .tqc-instructions h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    .tqc-instructions h2 {
-      border-bottom: 1px solid var(--outline, rgba(123,211,255,.35));
-      padding-bottom: 0.5rem;
-    }
-    .tqc-instructions pre {
-      background: var(--panel-2, #0f1726);
-      padding: 1rem;
-      border-radius: 4px;
-      overflow-x: auto;
-      margin: 1rem 0;
-    }
-    .tqc-instructions code {
-      background: var(--panel-2, #0f1726);
-      padding: 2px 5px;
-      border-radius: 3px;
-    }
-    .tqc-instructions ul {
-      margin: 0 0 1.5rem 1.2rem;
-    }
-    .tqc-instructions li {
-      margin-bottom: 0.4rem;
-    }
-    .tqc-instructions section {
-      margin-bottom: 2rem;
-    }
-    .tqc-btn-back {
-      display: inline-block;
-      margin: 2rem auto 0;
-      padding: 0.8rem 1.4rem;
-      background: var(--accent, #7bd3ff);
-      border: none;
-      border-radius: 4px;
-      color: #000;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .tqc-btn-back:hover {
-      background: var(--accent-2, #99f0d0);
-    }
-  </style>
-</head>
-<body>
-  <div class="tqc-instructions">
-    <h1>How to Use the Tech Tinker Club Quiz</h1>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How to Use the Tech Tinker Club Quiz</title>
 
-    <section>
+  <!-- your existing quiz CSS -->
+  <link rel="stylesheet" href="/assets/quiz/quiz.css">
+
+  <!-- NEW: lightweight overrides for readability -->
+  <link rel="stylesheet" href="/assets/quiz/instructions.css">
+</head>
+<body class="instructions-page">
+  <main class="inst-wrap">
+    <article class="inst-card">
+      <h1>How to Use the Tech Tinker Club Quiz</h1>
+
       <p>
         This quiz helps children review and strengthen ideas learned in Tech Tinker Club sessions.
-        Each week covers a different topic from our Micro:bit projects – such as inputs and outputs,
-        loops, conditions, variables, and sensors – with a mix of multiple-choice and drag-and-drop questions.
+        Each week covers a different topic from our Micro:bit projects — such as inputs and outputs,
+        loops, conditions, variables, and sensors — with a mix of multiple-choice and drag-and-drop questions.
       </p>
-      <p>
-        The goal is not to memorise facts, but to practise logical thinking. The questions encourage
-        children to read <strong>pseudocode</strong> (a simplified way of writing code) and to predict
-        what the Micro:bit would do step by step.
-      </p>
-    </section>
 
-    <section>
+      <p>
+        The goal is not to memorise facts, but to practise logical thinking. The questions encourage children to
+        read <em>pseudocode</em> (a simplified way of writing code) and to predict what the Micro:bit would do step by step.
+      </p>
+
       <h2>How to Take the Quiz</h2>
       <ul>
         <li><strong>Choose a week:</strong> Each week matches a club topic. Start with one you’ve already covered.</li>
         <li><strong>Read carefully:</strong> Go line-by-line through any pseudocode before answering.</li>
         <li><strong>Answer:</strong> Click the best choice or drag terms into boxes for match-type questions.</li>
-        <li><strong>Hints:</strong> Some questions include a hint – using it won’t affect your score.</li>
+        <li><strong>Hints:</strong> Some questions include a hint — using it won’t affect your score.</li>
         <li><strong>Submit and review:</strong> Check your answer, read the feedback, and continue.</li>
         <li><strong>Repeat freely:</strong> The quiz doesn’t save data; it’s for open practice and exploration.</li>
       </ul>
-    </section>
 
-    <section>
       <h2>Understanding Pseudocode</h2>
       <p>
-        Pseudocode is a simple, human-readable way of writing a program. It describes what the program does
-        without worrying about exact punctuation or syntax. It sits halfway between everyday language and real code.
+        Pseudocode is a simple, human-readable way of writing a program. It describes what the program does without
+        worrying about exact punctuation or syntax. It sits halfway between everyday language and real code.
       </p>
+
       <p>In MakeCode, you build programs from coloured blocks. The same logic in pseudocode might look like this:</p>
-      <pre>repeat 3 times
-    show icon "heart"
-    pause 200
-end</pre>
+
+<pre><code>repeat 3 times
+  show icon "heart"
+  pause 200
+  clear screen
+  pause 200
+end
+</code></pre>
+
       <p>
         This means exactly the same as the blocks: show a heart, pause briefly, and repeat three times.
+        Pseudocode is great for tracing logic on paper and for discussing ideas before building them.
       </p>
 
-      <h3>Why use pseudocode?</h3>
+      <h2>Tips for Solving Questions</h2>
       <ul>
-        <li>It helps children focus on <strong>logic</strong> rather than colours or shapes.</li>
-        <li>It builds <strong>transferable programming skills</strong> for text-based coding later on.</li>
-        <li>It improves <strong>debugging and reasoning</strong> – reading before running code.</li>
-        <li>It prepares pupils for <strong>KS3 and GCSE computing</strong>, where pseudocode is standard.</li>
+        <li><strong>Use paper:</strong> Track values like <code>x</code>, <code>score</code>, or <code>level</code> as they change.</li>
+        <li><strong>Do small maths:</strong> Convert seconds to milliseconds (e.g., 3 s = 3000 ms) before dividing by a pause time.</li>
+        <li><strong>Circle conditions:</strong> Pay attention to <code>&gt;</code>, <code>&ge;</code>, and <code>=</code>; they mean different things.</li>
+        <li><strong>Read sensors correctly:</strong> Accelerometer X is positive when tilted right, negative when tilted left.
+          Only “big” tilts count if a threshold is given (e.g., |X| &gt; 200).</li>
+        <li><strong>Debug slowly:</strong> If something seems odd, go line by line and say it out loud.</li>
       </ul>
-    </section>
 
-    <section>
-      <h2>Tips for Working Through the Quiz</h2>
+      <h2>Blocks vs Pseudocode</h2>
       <ul>
-        <li>Take your time – logic is about reasoning, not speed.</li>
-        <li>Keep a pencil and paper to track changing values such as <code>x</code> or <code>score</code>.</li>
-        <li>Check conditions carefully (<code>&lt;</code>, <code>&gt;</code>, <code>=</code>) – small details matter.</li>
-        <li>Understand loops: <code>repeat N times</code> runs a set number; <code>forever</code> never stops.</li>
-        <li>Remember timing: 1000&nbsp;ms = 1&nbsp;second. Divide total time by pause length to estimate loops.</li>
-        <li>Relate pseudocode to MakeCode blocks – imagine which blocks would match each line.</li>
-        <li>Be curious: if you’re unsure, try the same logic later in MakeCode and see what happens.</li>
+        <li><strong>Blocks</strong>: colourful puzzle pieces in MakeCode.</li>
+        <li><strong>Pseudocode</strong>: tidy text steps that mean the same thing.</li>
+        <li>Both follow the same logic — inputs → decisions/loops → outputs.</li>
       </ul>
-    </section>
 
-    <section>
-      <h2>Why Practising Logic Matters</h2>
+      <h2>For Families</h2>
       <p>
-        The quiz is not about memorising commands. It’s about learning how computers think.
-        By reasoning through loops, conditions, and variables, children develop computational thinking –
-        the ability to break down a problem, predict outcomes, and debug mistakes.
+        Mistakes are part of learning. Encourage children to read feedback carefully, try again, and explain their
+        thinking. Short, regular practice works better than long sessions.
       </p>
-      <p>
-        These are core STEM skills that build confidence in maths, science, and creative problem-solving.
-        Every question helps develop careful thinking and persistence – key qualities for young makers and programmers.
-      </p>
-    </section>
 
-    <div style="text-align:center;">
-      <button class="tqc-btn-back" onclick="window.location.href='index.html'">Back to Quiz</button>
-    </div>
-  </div>
+      <p class="inst-back">
+        <a href="/quiz/">← Back to the Quiz</a>
+      </p>
+    </article>
+  </main>
 </body>
 </html>
