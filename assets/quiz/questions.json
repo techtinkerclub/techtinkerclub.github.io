@@ -933,23 +933,23 @@
         }
       ]
     },
-    "7": {
+     "7": {
           "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
           "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing. Balanced difficulty.",
           "locked": false,
           "questions": [
             {
               "id": "w7-q1",
-              "question": "Why do programmers use functions when making games?",
+              "question": "Why do programmers use functions when making programs?",
               "type": "multiple-choice",
               "options": [
                 "To make sprites move faster",
                 "To store numbers like score or speed",
                 "To reuse the same set of steps without rebuilding them each time",
-                "To keep the game running forever"
+                "To keep the program running forever"
               ],
               "correct": 2,
-              "explanation": "Functions let you reuse the same instructions instead of repeating code, which makes games easier to change later.",
+              "explanation": "Functions let you reuse the same instructions instead of repeating code, which makes programs easier to change later.",
               "definition": "FUNCTION — a named mini-program that does one clear job; you call it when you need it.",
               "difficulty": "medium-hard",
               "hint": "Think: reuse the same instructions instead of repeating them."
@@ -992,7 +992,7 @@
             },
             {
               "id": "w7-q5",
-              "question": "In a game, speed (ms) gets smaller by 20 each score but can’t go below 80 ms. Starting at 180 ms, what is speed after 6 scores?",
+              "question": "Speed (ms) gets smaller by 20 each score but can’t go below 80 ms. Starting at 180 ms, what is speed after 6 scores?",
               "type": "multiple-choice",
               "codeLabel": "Pseudocode",
               "code": "set speed to 180\nrepeat 6 times\n    change speed by -20\n    if speed < 80 then\n        set speed to 80\n    end if\nend\nshow number speed",
@@ -1007,7 +1007,7 @@
               "question": "The level is worked out as: level = 1 + (score ÷ 4) using whole-number division. What is the smallest score that gives level = 3?",
               "type": "multiple-choice",
               "codeLabel": "Pseudocode",
-              "code": "set level to 1\n# level = 1 + (score ÷ 4)   # ÷ means integer division (floor)\n# Choose the smallest score that makes level become 3",
+              "code": "set level to 1\n# level = 1 + (score ÷ 4)   // ÷ is integer division\n# Choose the smallest score that makes level become 3",
               "options": ["7", "8", "9", "12"],
               "correct": 1,
               "explanation": "At score 8: 8 ÷ 4 = 2, so level = 1 + 2 = 3. At 7 it’s still 2.",
@@ -1058,7 +1058,7 @@
               "code": "on button A pressed\n    ______\n        move sprite by 1\n        pause 150\n    end",
               "options": ["repeat 3 times", "forever", "while A is pressed", "on start"],
               "correct": 0,
-              "explanation": "“repeat 3 times” limits it to three moves per press.",
+              "explanation": "“repeat 3 times” limits the action to exactly three moves per press.",
               "difficulty": "medium",
               "hint": "Look for a fixed-count loop."
             },
@@ -1082,18 +1082,16 @@
               "code": "set paused to false\n\nforever\n    if button A is pressed then\n        set paused to true\n    end if\n    if button B is pressed then\n        set paused to false\n    end if\n\n    if paused then\n        show string \"PAUSE\"\n    else\n        move sprite by 1\n    end if",
               "options": [
                 "To make the LEDs brighter",
-                "To decide whether the game should stop or move",
+                "To count how many times A was pressed",
                 "To measure how fast the sprite moves",
-                "To count how many times A was pressed"
+                "To decide whether the game should stop or move"
               ],
-              "correct": 1,
-              "explanation": "The variable 'paused' acts like an on/off switch — when true, the game shows 'PAUSE'; when false, it keeps moving.",
+              "correct": 3,
+              "explanation": "The variable 'paused' acts like an on/off switch — when true, the program shows 'PAUSE'; when false, it keeps moving.",
               "difficulty": "medium-easy",
               "hint": "Think of 'paused' as a switch that turns movement on or off."
             }
-
           ]
         }
-
   }
 }
