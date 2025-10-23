@@ -99,6 +99,30 @@
     return p.get(name);
   }
 
+  // ---------- NEW: inject "Instructions" button (Option A: open in new tab) ----------
+  function addInstructionsButtonTo(headerEl){
+    if (!headerEl || headerEl.querySelector('.tqc-info-btn')) return;
+
+    // ensure header is a positioned container for absolute child
+    if (getComputedStyle(headerEl).position === 'static'){
+      headerEl.style.position = 'relative';
+    }
+
+    const btn = document.createElement('a');
+    btn.href = 'instructions.html';      // put instructions.html next to quiz.js & quiz.css
+    btn.target = '_blank';
+    btn.rel = 'noopener';
+    btn.textContent = 'Instructions';
+    btn.className = 'tqc-btn tqc-info-btn';
+
+    // lightweight positioning so it appears top-right of the card header
+    btn.style.position = 'absolute';
+    btn.style.top = '8px';
+    btn.style.right = '16px';
+
+    headerEl.appendChild(btn);
+  }
+
   // ---------- render root ----------
   function render(container){
     container.innerHTML = '';
@@ -110,6 +134,9 @@
     header.appendChild(el('h1','tqc-title','Tech Tinker Club'));
     header.appendChild(el('p','tqc-sub','Micro:bit learning adventures — choose a week!'));
     card.appendChild(header);
+
+    // Insert the Instructions button (opens new tab)
+    addInstructionsButtonTo(header);
 
     // Weeks bar – show all 12; greyed if locked or no questions
     const weeksBar = el('div','tqc-weeks');
