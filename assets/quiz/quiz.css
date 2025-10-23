@@ -245,3 +245,17 @@ body { background: var(--page-bg); }
 .tqc-hidden {
   display: none !important; /* Hide Submit button after grading */
 }
+
+
+/* Instructions button */
+.tqc-info-btn{
+  background:#7bd3ff;
+  color:#000;
+  font-weight:700;
+  padding:6px 14px;
+  border-radius:6px;
+  text-decoration:none;
+  box-shadow:0 0 0.4em rgba(123,211,255,.5);
+  border:none;
+}
+.tqc-info-btn:hover{ background:#99f0d0; }
