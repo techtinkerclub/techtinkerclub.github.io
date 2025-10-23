@@ -1,5 +1,5 @@
-/* Tech Tinker Club Quiz Engine (with post-submit lock)
-   ------------------------------------------------------------
+/* Tech Tinker Club Quiz Engine (with post-submit lock + instructions modal)
+   -----------------------------------------------------------------------
    - Works with Canva-style JSON (top-level { weeks: {...} } or direct weeks object)
    - 12-week bar: shows all weeks; greyed if no questions or locked:true
    - MCQ and Drag&Drop (Match) question types
@@ -7,7 +7,7 @@
    - DnD FIX: you can always drag from a zone back to the pool
    - Lock after first submission: disables options/drag and hides Submit
    - Clearer Hint / Submit / Next buttons
-   - Small debug hooks in console
+   - Instructions modal: fetches /assets/quiz/instructions.html into a popup
 */
 
 (function(){
@@ -28,95 +28,111 @@
     selected: null,     // MCQ selected index
     dragAnswers: {},    // for Match: defIndex -> termIndex
     hintUsed: false,
-    locked: false       // NEW: lock current question after first submit
+    locked: false       // lock current question after first submit
   };
 
-   /* --- BEGIN: Instructions modal support ---------------------------------- */
+  /* =========================
+     Instructions modal (popup)
+     ========================= */
 
-// 1) Your instructions content (plain HTML; keep it short-ish)
-const TQC_INSTRUCTIONS_HTML = `
-  <h2>How to Use the Tech Tinker Club Quiz</h2>
-  <p>This quiz helps children practise ideas from club sessions. Read any pseudocode carefully, choose the best answer, and use hints when you need them.</p>
-
-  <h3>How to Take the Quiz</h3>
-  <ul>
-    <li><strong>Choose a week</strong> you’ve covered.</li>
-    <li><strong>Read carefully</strong> (especially pseudocode) line by line.</li>
-    <li><strong>Answer</strong> by clicking a choice or dragging matches.</li>
-    <li><strong>Hints</strong> don’t reduce your score.</li>
-    <li><strong>Submit</strong> to lock the question, then read the feedback.</li>
-    <li><strong>Repeat freely</strong>—it’s practice, not a test.</li>
-  </ul>
-
-  <h3>What is Pseudocode?</h3>
-  <p>Pseudocode is a simple, human-readable way to describe a program. It mirrors MakeCode blocks but is easier to read.</p>
-  <pre class="tqc-code">repeat 3 times
-  show icon "heart"
-  pause 200
-end</pre>
-
-  <h3>Tips</h3>
-  <ul>
-    <li>Keep paper & pencil to track values like <code>x</code>, <code>score</code>, or <code>level</code>.</li>
-    <li>Do small maths carefully (e.g. 2000ms ÷ 50ms = 40 steps).</li>
-    <li>Only “big tilts” count when you see a rule like <code>|X| &gt; 200</code>.</li>
-  </ul>
-`;
-
-// 2) Create a single modal root once
-function ensureModalRoot(){
-  let root = document.getElementById('tqc-modal-root');
-  if (!root){
-    root = document.createElement('div');
-    root.id = 'tqc-modal-root';
-    root.className = 'tqc-modal-root';
-    root.innerHTML = `
-      <div class="tqc-modal" role="dialog" aria-modal="true" aria-labelledby="tqc-modal-title" hidden>
-        <div class="tqc-modal__backdrop" data-close></div>
-        <div class="tqc-modal__dialog">
-          <button class="tqc-modal__close" type="button" aria-label="Close" data-close>&times;</button>
-          <div class="tqc-card tqc-modal__card">
-            <h2 id="tqc-modal-title" class="tqc-title">Instructions</h2>
-            <div class="tqc-modal__content"></div>
+  function ensureModalRoot(){
+    let root = document.getElementById('tqc-modal-root');
+    if (!root){
+      root = document.createElement('div');
+      root.id = 'tqc-modal-root';
+      root.innerHTML = `
+        <div class="tqc-modal" role="dialog" aria-modal="true" aria-labelledby="tqc-modal-title" hidden>
+          <div class="tqc-modal__backdrop" data-close></div>
+          <div class="tqc-modal__dialog" role="document">
+            <button class="tqc-modal__close" type="button" aria-label="Close" data-close>&times;</button>
+            <div class="tqc-card tqc-modal__card">
+              <h2 id="tqc-modal-title" class="tqc-title">Instructions</h2>
+              <div class="tqc-modal__content">
+                <div class="tqc-loading">Loading…</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    `;
-    document.body.appendChild(root);
+      `;
+      document.body.appendChild(root);
 
-    // close on backdrop or X
-    root.addEventListener('click', (e)=>{
-      if (e.target.matches('[data-close]')) closeInstructionsModal();
-    });
+      // close on backdrop or X
+      root.addEventListener('click', (e)=>{
+        if (e.target.matches('[data-close]')) closeInstructionsModal();
+      });
 
-    // close on Esc
-    document.addEventListener('keydown', (e)=>{
-      const open = document.querySelector('.tqc-modal:not([hidden])');
-      if (open && e.key === 'Escape') closeInstructionsModal();
-    });
+      // close on Esc
+      document.addEventListener('keydown', (e)=>{
+        const open = document.querySelector('.tqc-modal:not([hidden])');
+        if (open && e.key === 'Escape') closeInstructionsModal();
+      });
+    }
+    return root.querySelector('.tqc-modal');
   }
-  return root.querySelector('.tqc-modal');
-}
 
-function openInstructionsModal(){
-  const modal = ensureModalRoot();
-  modal.querySelector('.tqc-modal__content').innerHTML = TQC_INSTRUCTIONS_HTML;
-  modal.hidden = false;
+  function openInstructionsModalFromURL(url){
+    const modal = ensureModalRoot();
+    const content = modal.querySelector('.tqc-modal__content');
+    content.innerHTML = '<div class="tqc-loading">Loading…</div>';
+    modal.hidden = false;
+    document.documentElement.classList.add('tqc-no-scroll');
 
-  // basic focus management
-  const closeBtn = modal.querySelector('.tqc-modal__close');
-  closeBtn && closeBtn.focus();
-  document.documentElement.classList.add('tqc-no-scroll');
-}
+    fetch(url, { cache: 'no-store' })
+      .then(r => r.text())
+      .then(html => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
 
-function closeInstructionsModal(){
-  const modal = document.querySelector('.tqc-modal');
-  if (!modal) return;
-  modal.hidden = true;
-  document.documentElement.classList.remove('tqc-no-scroll');
-}
-/* --- END: Instructions modal support ------------------------------------ */
+        // Prefer <article class="tqi-article">, else <main>, else body
+        const src = doc.querySelector('article.tqi-article') ||
+                    doc.querySelector('main') ||
+                    doc.body;
 
+        content.innerHTML = '';
+
+        // Wrap to inherit quiz look-and-feel
+        const inner = document.createElement('div');
+        inner.className = 'tqc-instructions-inner';
+        inner.innerHTML = src.innerHTML;
+        content.appendChild(inner);
+      })
+      .catch(err => {
+        console.error('Failed to load instructions:', err);
+        content.innerHTML = '<p>Sorry, the instructions could not be loaded right now.</p>';
+      });
+  }
+
+  function closeInstructionsModal(){
+    const modal = document.querySelector('.tqc-modal');
+    if (!modal) return;
+    modal.hidden = true;
+    document.documentElement.classList.remove('tqc-no-scroll');
+  }
+
+  // Add "Instructions" button (opens modal and loads external page)
+  function addInstructionsButtonTo(headerEl){
+    if (!headerEl || headerEl.querySelector('.tqc-info-btn')) return;
+
+    // ensure header is positioned for the absolute button
+    if (getComputedStyle(headerEl).position === 'static'){
+      headerEl.style.position = 'relative';
+    }
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Instructions';
+    btn.className = 'tqc-btn tqc-info-btn';
+    btn.style.position = 'absolute';
+    btn.style.top = '8px';
+    btn.style.right = '16px';
+
+    // open modal and fetch /assets/quiz/instructions.html
+    btn.addEventListener('click', ()=>{
+      const ver = 'v=20251023-quiz'; // change this string whenever you update instructions.html
+      openInstructionsModalFromURL(`/assets/quiz/instructions.html?${ver}`);
+    });
+
+    headerEl.appendChild(btn);
+  }
 
   // ---------- data load & normalize ----------
   async function loadData(){
@@ -186,33 +202,6 @@ function closeInstructionsModal(){
     return p.get(name);
   }
 
-
- // ---------- NEW: inject "Instructions" button (opens in-page modal) ----------
-   function addInstructionsButtonTo(headerEl){
-     if (!headerEl || headerEl.querySelector('.tqc-info-btn')) return;
-   
-     // Ensure header can anchor an absolutely-positioned child
-     if (getComputedStyle(headerEl).position === 'static'){
-       headerEl.style.position = 'relative';
-     }
-   
-     const btn = document.createElement('button');
-     btn.type = 'button';
-     btn.textContent = 'Instructions';
-     btn.className = 'tqc-btn tqc-info-btn';
-   
-     // top-right of the header card
-     btn.style.position = 'absolute';
-     btn.style.top = '8px';
-     btn.style.right = '16px';
-   
-     // Open the modal
-     btn.addEventListener('click', openInstructionsModal);
-   
-     headerEl.appendChild(btn);
-   }
-
-
   // ---------- render root ----------
   function render(container){
     container.innerHTML = '';
@@ -220,16 +209,13 @@ function closeInstructionsModal(){
     const card = el('div','tqc-card ttc-quiz');
 
     // Header
- // Header
-   const header = el('div','tqc-header');
-   header.appendChild(el('h1','tqc-title','Tech Tinker Club'));
-   header.appendChild(el('p','tqc-sub','Micro:bit learning adventures — choose a week!'));
-   card.appendChild(header);
-   
-   // Ensure the modal root is in the DOM once, then add the button
-   ensureModalRoot();
-   addInstructionsButtonTo(header);
+    const header = el('div','tqc-header');
+    header.appendChild(el('h1','tqc-title','Tech Tinker Club'));
+    header.appendChild(el('p','tqc-sub','Micro:bit learning adventures — choose a week!'));
+    card.appendChild(header);
 
+    // Insert the Instructions button (opens modal)
+    addInstructionsButtonTo(header);
 
     // Weeks bar – show all 12; greyed if locked or no questions
     const weeksBar = el('div','tqc-weeks');
@@ -261,10 +247,10 @@ function closeInstructionsModal(){
     // Score strip
     const score = el('div','tqc-score');
     score.innerHTML = `
-    <div class="item"><div class="num" id="qcur">${state.idx+1}</div><div class="label">Question</div></div>
-    <div class="item"><div class="num" id="qtot">${w.questions.length}</div><div class="label">Total</div></div>
-    <div class="item"><div class="num" id="qscore">${state.score}</div><div class="label">Score</div></div>
-    <div class="item"><div class="num" id="qprog">0%</div><div class="label">Progress</div></div>
+      <div class="item"><div class="num" id="qcur">${state.idx+1}</div><div class="label">Question</div></div>
+      <div class="item"><div class="num" id="qtot">${w.questions.length}</div><div class="label">Total</div></div>
+      <div class="item"><div class="num" id="qscore">${state.score}</div><div class="label">Score</div></div>
+      <div class="item"><div class="num" id="qprog">0%</div><div class="label">Progress</div></div>
     `;
     card.appendChild(score);
 
@@ -294,7 +280,7 @@ function closeInstructionsModal(){
     const w = state.weeks[state.currentWeek];
     const q = w.questions[state.idx];
 
-    // reset per-question state (NEW)
+    // reset per-question state
     state.locked = false;
     state.selected = null;
     state.hintUsed = false;
@@ -318,7 +304,8 @@ function closeInstructionsModal(){
     }
 
     // hint panel region (empty until clicked)
-    card.appendChild(el('div','', '')).id = 'tqc-hint';
+    const hintHost = el('div',''); hintHost.id = 'tqc-hint';
+    card.appendChild(hintHost);
 
     if (q.type === 'match'){
       // --------- DRAG & DROP ----------
@@ -380,7 +367,7 @@ function closeInstructionsModal(){
       q.options.forEach((opt, i)=>{
         const o = el('div','tqc-option', opt);
         o.addEventListener('click', ()=>{
-          if (state.locked) return; // NEW: ignore clicks after submit
+          if (state.locked) return;
           qsa('.tqc-option', grid).forEach(x=>x.removeAttribute('aria-selected'));
           o.setAttribute('aria-selected','true');
           state.selected = i;
@@ -439,7 +426,7 @@ function closeInstructionsModal(){
     const dragged = qs(`.tqc-term[data-term-index="${termIndex}"]`);
     if (!dragged) return;
 
-    // If zone already has a term, return it to pool (FIX)
+    // If zone already has a term, return it to pool
     const existing = z.querySelector('.tqc-term');
     if (existing) poolEl.appendChild(existing);
 
@@ -448,7 +435,7 @@ function closeInstructionsModal(){
 
   // ---------- submit & feedback ----------
   function submitAnswer(){
-    if (state.locked) return; // NEW: block double submit
+    if (state.locked) return; // block double submit
 
     const w = state.weeks[state.currentWeek];
     const q = w.questions[state.idx];
@@ -496,7 +483,7 @@ function closeInstructionsModal(){
 
     if (isCorrect) state.score++;
 
-    // ---- NEW: lock the UI so the user can’t change & resubmit ----
+    // ---- lock the UI so the user can’t change & resubmit ----
     state.locked = true;
 
     // 1) Disable/Hide Submit
@@ -530,7 +517,7 @@ function closeInstructionsModal(){
       z.classList.add('tqc-locked');
     });
 
-    // ---- feedback + Next button (unchanged structure) ----
+    // ---- feedback + Next button ----
     const fb = qs('#tqc-fb');
     const exp = q.explanation ? `<div class="tqc-exp"><strong>Why:</strong> ${q.explanation}</div>` : '';
     const defn = q.definition  ? `<div class="tqc-def"><strong>Definition:</strong> ${q.definition}</div>` : '';
