@@ -312,3 +312,67 @@ body { background: var(--page-bg); }
 .tqc-modal__content h3 { margin: .5rem 0 .25rem; }
 .tqc-modal__content ul { margin: .5rem 0 .75rem 1.25rem; }
 
+/* === Instructions Modal (shared) ===================================== */
+.tqc-no-scroll { overflow: hidden; }
+
+#tqc-modal-root .tqc-modal {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  z-index: 9999;
+}
+#tqc-modal-root .tqc-modal[hidden] { display: none; }
+
+#tqc-modal-root .tqc-modal__backdrop {
+  position: absolute; inset: 0;
+  background: rgba(17, 24, 39, 0.6);
+}
+
+#tqc-modal-root .tqc-modal__dialog {
+  position: relative;
+  max-width: 960px;
+  width: min(92vw, 960px);
+  max-height: 86vh;
+  overflow: auto;
+  padding: 0;
+}
+
+#tqc-modal-root .tqc-modal__card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.25);
+  padding: 1.5rem 1.25rem 1.25rem;
+}
+
+#tqc-modal-root .tqc-modal__close {
+  position: absolute;
+  top: .5rem; right: .5rem;
+  width: 40px; height: 40px;
+  border: 0; border-radius: 999px;
+  background: #eef2ff; color: #111827;
+  cursor: pointer; font-size: 1.4rem; line-height: 1;
+}
+#tqc-modal-root .tqc-modal__close:hover { background: #e0e7ff; }
+
+#tqc-modal-root .tqc-title {
+  margin: 0 2rem .75rem 0;
+}
+
+#tqc-modal-root .tqc-modal__content {
+  padding: .25rem .25rem 0;
+}
+
+/* Content wrapper populated from instructions.html */
+#tqc-modal-root .tqc-instructions-inner {
+  line-height: 1.65;
+  font-size: 1.06rem;
+}
+#tqc-modal-root .tqc-instructions-inner h1,
+#tqc-modal-root .tqc-instructions-inner h2 { margin-top: 1.25rem; }
+#tqc-modal-root .tqc-instructions-inner pre {
+  background: #0b1220;
+  color: #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  overflow: auto;
+}
+#tqc-modal-root .tqc-loading { padding: 1rem; }
