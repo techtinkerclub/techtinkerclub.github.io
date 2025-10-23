@@ -109,7 +109,7 @@
     }
 
     const btn = document.createElement('a');
-    btn.href = 'instructions.html';      // put instructions.html next to quiz.js & quiz.css
+    btn.href = '/assets/quiz/instructions.html';      // put instructions.html next to quiz.js & quiz.css
     btn.target = '_blank';
     btn.rel = 'noopener';
     btn.textContent = 'Instructions';
