@@ -45,9 +45,9 @@ This term, participants in Tech Tinker Club will explore how microcontrollers (t
 | [Week 2](/curriculum/2025-26/autumn/week-2/) | Events & inputs | Dice roller (shake to roll) | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-2/#resources){:target="_blank" rel="noopener"} |
 | [Week 3](/curriculum/2025-26/autumn/week-3/) | Conditionals (if/else) | Rock, Paper, Scissors | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-3/#resources){:target="_blank" rel="noopener"} |
 | [Week 4](/curriculum/2025-26/autumn/week-4/) | Variables & thresholds | Light/temperature monitor | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-4/#resources){:target="_blank" rel="noopener"} |
-| [Week 5](/curriculum/2025-26/autumn/week-5/) | Loops (iteration) | Barrel jumper | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-4/#resources){:target="_blank" rel="noopener"} |
-| [Week 6](/curriculum/2025-26/autumn/week-6/) | Game consolidation | Berrel jumper (stretch) | Slides · Worksheet |
-| [Week 7](/curriculum/2025-26/autumn/week-7/) | Mini-project consolidation | Burglar alarm or tilt gadget | Slides · Worksheet |
+| [Week 5](/curriculum/2025-26/autumn/week-5/) | Loops (iteration) | Barrel jumper | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-5/#resources){:target="_blank" rel="noopener"} |
+| [Week 6](/curriculum/2025-26/autumn/week-6/) | Game consolidation | Berrel jumper (stretch) | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-6/#resources){:target="_blank" rel="noopener"} |
+| [Week 7](/curriculum/2025-26/autumn/week-7/) | Functions | Space Invaders |  [Link](https://techtinker.club/curriculum/2025-26/autumn/week-7/#resources){:target="_blank" rel="noopener"}  |
 | [Week 8](/curriculum/2025-26/autumn/week-8/) | Data logging | Temperature tracker | Slides · Worksheet |
 | [Week 9](/curriculum/2025-26/autumn/week-9/) | Radio communication | Wireless message sender | Slides · Worksheet |
 | [Week 10](/curriculum/2025-26/autumn/week-10/) | Compound logic | Dark + motion alarm | Slides · Worksheet |
