@@ -1,5 +1,4 @@
 <!-- Place in your repo as: quiz.js -->
-<script>
 // Tiny helpers
 const $ = (sel, root=document) => root.querySelector(sel);
 const el = (tag, cls, text) => {
@@ -426,4 +425,3 @@ document.addEventListener('DOMContentLoaded', ()=>{
     console.error(err);
   });
 });
-</script>
