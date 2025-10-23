@@ -1,4 +1,5 @@
-<!-- Place in your repo as: quiz.js -->
+/* quiz.js — Tech Tinker Club */
+
 // Tiny helpers
 const $ = (sel, root=document) => root.querySelector(sel);
 const el = (tag, cls, text) => {
@@ -11,15 +12,15 @@ const getParam = (k) => new URLSearchParams(location.search).get(k);
 
 // ---------- state ----------
 const state = {
-  weeks: {},         // loaded from JSON
-  currentWeek: null, // string key, e.g. "7"
-  idx: 0,            // question index within week
+  weeks: {},
+  currentWeek: null,
+  idx: 0,
   score: 0,
-  selected: null,    // selected option for MCQ
-  dragAnswers: {},   // for drag-drop
+  selected: null,
+  dragAnswers: {},
   hintUsed: false,
-  locked: false,     // has the current question been submitted?
-  mode: 'week'       // 'week' | 'instructions'
+  locked: false,
+  mode: 'week' // 'week' | 'instructions'
 };
 
 // ---------- Instructions content ----------
@@ -34,10 +35,7 @@ const INSTRUCTIONS_HTML = `
     </ul>
 
     <h3>🧠 What is Pseudocode?</h3>
-    <p>
-      <strong>Pseudocode</strong> is simple, pretend code that reads like a recipe. It matches MakeCode blocks
-      but is easier to read for tracing logic.
-    </p>
+    <p><strong>Pseudocode</strong> is simple, pretend code that reads like a recipe. It matches MakeCode blocks but is easier to read for tracing logic.</p>
     <pre class="tqc-code">repeat 3 times
   show icon "heart"
   pause 200
@@ -123,7 +121,7 @@ function render(container){
   });
   card.appendChild(weeksBar);
 
-  // If instructions page
+  // Instructions page
   if (state.mode === 'instructions'){
     const wrap = el('div'); wrap.id = 'tqc-qwrap';
     card.appendChild(wrap);
@@ -156,7 +154,11 @@ function render(container){
 
   const prevBtn = el('button','tqc-btn','◀ Previous');
   prevBtn.disabled = state.idx === 0;
-  prevBtn.addEventListener('click',()=> { if (state.idx>0){ state.idx--; state.selected=null; state.dragAnswers={}; state.locked=false; state.hintUsed=false; render(container); }});
+  prevBtn.addEventListener('click',()=> {
+    if (state.idx>0){
+      state.idx--; state.selected=null; state.dragAnswers={}; state.locked=false; state.hintUsed=false; render(container);
+    }
+  });
   foot.appendChild(prevBtn);
 
   const nextBtn = el('button','tqc-btn tqc-prim','Next ▶');
@@ -214,7 +216,6 @@ function selectWeek(weekKey, container){
 // ---------- Question renderers ----------
 function renderQuestion(wrap, q){
   const box = el('div','tqc-qbox');
-  // stem
   const stem = el('div','tqc-stem');
   stem.appendChild(el('div','tqc-qtext', q.question));
   if (q.code){
@@ -225,7 +226,6 @@ function renderQuestion(wrap, q){
   }
   wrap.appendChild(stem);
 
-  // body
   const body = el('div','tqc-body');
   if (q.type === 'multiple-choice'){
     renderMCQ(body, q);
@@ -236,7 +236,6 @@ function renderQuestion(wrap, q){
   }
   wrap.appendChild(body);
 
-  // hint + submit
   const actions = el('div','tqc-actions');
   if (q.hint){
     const hintBtn = el('button','tqc-btn','💡 Hint');
@@ -253,10 +252,8 @@ function renderQuestion(wrap, q){
   submit.disabled = state.locked;
   submit.addEventListener('click', ()=>submitAnswer(wrap, q));
   actions.appendChild(submit);
-
   wrap.appendChild(actions);
 
-  // meta row (definition/difficulty)
   const meta = el('div','tqc-meta');
   if (q.definition) meta.appendChild(el('div','tqc-def', `Definition: ${q.definition}`));
   if (q.difficulty) meta.appendChild(el('div','tqc-diff', `Difficulty: ${q.difficulty}`));
@@ -280,7 +277,6 @@ function renderMCQ(root, q){
 }
 
 function renderDragDrop(root, q){
-  // Terms (draggables)
   const bank = el('div','tqc-dd-bank');
   (q.terms || []).forEach((t, idx)=>{
     const chip = el('div','tqc-chip', t);
@@ -292,7 +288,6 @@ function renderDragDrop(root, q){
     bank.appendChild(chip);
   });
 
-  // Targets (definitions)
   const targets = el('div','tqc-dd-targets');
   (q.definitions || []).forEach((d, slot)=>{
     const tgt = el('div','tqc-slot');
@@ -348,7 +343,6 @@ function submitAnswer(wrap, q){
   state.locked = true;
   if (correct) state.score += 1;
 
-  // feedback row
   const fb = el('div', `tqc-feedback ${correct ? 'ok' : 'bad'}`);
   fb.textContent = correct ? '✅ Correct!' : '❌ Not quite — check the explanation below.';
   wrap.appendChild(fb);
@@ -359,7 +353,6 @@ function submitAnswer(wrap, q){
     wrap.appendChild(exp);
   }
 
-  // disable options visually
   const opts = wrap.querySelectorAll('.tqc-opt');
   opts.forEach(btn=>{
     btn.disabled = true;
@@ -369,26 +362,30 @@ function submitAnswer(wrap, q){
 
 // ---------- Data loading & init ----------
 async function loadQuestions(){
-  // Priority 1: global var (if you embed JSON directly on page)
+  // 0) Allow a hard-coded URL via data-questions on the script tag, or global
+  const currentScript = document.currentScript;
+  const hintedUrl = currentScript && currentScript.dataset ? currentScript.dataset.questions : null;
   if (window.TQC_QUESTIONS) return window.TQC_QUESTIONS;
 
-  // Priority 2: try common filenames in the same folder
-  const candidates = [
-    'questions.json',
-    'questions (1).json',
-    'questions_v2.json'
-  ];
+  const here = location.pathname.replace(/[^/]+$/, ''); // current folder with trailing '/'
 
-  for (const name of candidates){
+  // Try (in order):
+  const candidates = [
+    hintedUrl,                                // explicit override
+    `${here}questions.json`,                  // same folder
+    `${here}questions (1).json`,
+    `${here}questions_v2.json`,
+    `/assets/quiz/questions.json`,            // <- your repo location
+    `/quiz/questions.json`,                   // if you later move folder to /quiz/
+  ].filter(Boolean);
+
+  for (const url of candidates){
     try {
-      const r = await fetch(name, { cache:'no-store' });
-      if (r.ok){
-        const data = await r.json();
-        return data;
-      }
-    } catch (_) { /* continue */ }
+      const r = await fetch(url, { cache:'no-store' });
+      if (r.ok) return await r.json();
+    } catch (_) { /* keep trying */ }
   }
-  throw new Error('Could not load questions JSON. Place questions.json next to quiz.js or set window.TQC_QUESTIONS.');
+  throw new Error('Could not load questions JSON. Ensure questions.json exists or set data-questions on the <script>.');
 }
 
 async function init(){
@@ -396,10 +393,8 @@ async function init(){
   if (!container) { console.error('Missing #tqc-root'); return; }
 
   const data = await loadQuestions();
-  // Expect shape: { weeks: { "1": {...}, "2": {...}, ... } }
   state.weeks = data.weeks || {};
 
-  // Deep-link support: ?page=instructions
   const pageParam = (getParam('page') || '').toLowerCase();
   if (pageParam === 'instructions'){
     state.mode = 'instructions';
@@ -407,7 +402,6 @@ async function init(){
     return;
   }
 
-  // Choose initial week: ?week=… or first with questions
   const wkParam = getParam('week');
   const weekKeys = Object.keys(state.weeks).sort((a,b)=>Number(a)-Number(b));
   let initial = wkParam && state.weeks[wkParam] ? wkParam : weekKeys.find(k => state.weeks[k].questions?.length > 0 && !state.weeks[k].locked);
