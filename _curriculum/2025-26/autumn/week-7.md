@@ -45,14 +45,18 @@ Participants first created small examples of functions to see how they work, the
 ---
 
 ## Key Vocabulary
-- **Function** — are groups of code that always run together. They are like modules that you stack together to build programs. Programmers create functions to simplify tasks that occur often.  
-- **Call** — the moment your program tells a function to run.  
-- **Parameter** — information passed *into* a function.  
-- **Return** — a value that a function sends *back*.  
-- **Variable** — a box that stores a number or word such as `score`, `speed`, or `level`.  
-- **Condition** — a true/false check that decides what happens next.  
+- **Function** — a named group of code that runs together to do one specific job. Programmers use functions to reuse code and keep programs tidy.  
+- **Call** — when your program *tells* a function to run.  
+- **Parameter** — information you *send into* a function so it knows what to do.  
+- **Return** — a value a function *sends back* after it finishes.  
+- **Variable** — a labelled box that stores a number or word such as `score`, `speed`, or `level`.  
+- **Condition** — a true/false test that decides what happens next.  
 - **Collision** — when two sprites touch each other.  
-
+- **Accelerometer** — a sensor inside the micro:bit that detects tilt, movement, and direction.  
+- **Axis** — one of the directions used to describe positions on the LED grid (**X** for left–right, **Y** for up–down).  
+- **Coordinate** — the pair of numbers (**X**, **Y**) that tell you exactly where a sprite or LED is on the screen.  
+- **Threshold** — a limit or boundary value that triggers an action (like moving only when the tilt is greater than 200).  
+  
 ---
 
 ## Part A — Function Challenges
