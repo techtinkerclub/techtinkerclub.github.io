@@ -17,148 +17,94 @@ header:
 
 ## Week 8 — Radio, IDs & “Duck Hot-Potato”
 
-**Focus Concept:** Radio messages, IDs and selection  
+**Focus Concept:** Radio messages and networked communication  
 **Mini-Projects:** *Pass the Blink (radio starter)* → *Duck Hot-Potato (multiplayer game)*
 
-This week we learned how micro:bits can **talk to each other using radio**.  
-We began with a tiny program that simply *passed a blink* to another device, then expanded the idea into a full **multiplayer Duck Hot-Potato game** that uses **IDs**, **randomness**, and **timers**.
+This week’s session introduced how **micro:bits communicate wirelessly** using **radio waves** — invisible signals that carry messages through the air.  
+We began with a short science discussion about **how radio works**, then used that knowledge to send messages between micro:bits, finishing with a fast-paced **multiplayer game**.
 
 ---
 
 ## Objectives
-- Understand what **radio waves** are and how the micro:bit uses them to send **messages**.  
-- Use a shared **radio group** so devices can talk to each other.  
-- Identify each device with a unique **ID** and use **selection** (`if`) to route messages.  
-- Build a multiplayer game that uses **variables**, **loops**, **random**, and **conditions**.  
-- Practise debugging and teamwork while play-testing in small groups.  
+- Understand what **radio waves** are and how the micro:bit uses them to send information.  
+- Learn about **transmitters**, **receivers**, and **radio groups**.  
+- Give each device a unique **ID** so messages only reach the correct player.  
+- Apply **selection** (`if` tests), **loops**, and **variables** in a real game context.  
+- Collaborate in small groups to build and test a working multiplayer project.  
 
 ---
 
 ## Success Criteria
-- I can explain in simple words how a message travels from one micro:bit to another.  
-- I can set a **radio group** and send/receive a **number**.  
-- I can give my device an **ID** and only react to **messages for me**.  
-- I can build (or extend) the Duck Hot-Potato game so it works with my team.  
+- I can explain what a **radio group** is and why all players must share the same one.  
+- I can describe how a message travels from one micro:bit to another.  
+- I can set an **ID** for my device and use it to identify messages meant for me.  
+- I can work with others to play and improve the Duck Hot-Potato game.  
 
 ---
 
 ## Key Vocabulary
 - **Radio wave** — an invisible wave that carries information through the air.  
-- **Transmitter** — the device that **sends** the message.  
-- **Receiver** — the device that **gets** the message.  
-- **Antenna** — the part that helps send and receive radio waves.  
-- **Frequency** — how fast a wave wiggles (waves per second).  
-- **Amplitude** — how big the wave is (linked to signal strength).  
-- **Interference** — when other signals or noise make it harder to hear the message.  
-- **Message / Packet** — the data we send (like a number) in one go.  
-- **Radio Group** — a shared channel (like a chat room) that devices join to talk.  
-- **ID** — a number that identifies a player or device.  
-- **Variable** — a labelled box that stores a value (e.g. `timer`, `hasDuck`).  
-- **Condition** — an `if` test that decides what happens next.  
-- **Loop** — repeats instructions, e.g. `forever` or `repeat 10`.  
+- **Transmitter** — sends the signal.  
+- **Receiver** — listens for incoming signals.  
+- **Antenna** — part of the micro:bit that helps send and receive radio waves.  
+- **Frequency** — how fast a wave vibrates (measured in hertz).  
+- **Amplitude** — the wave’s height or strength.  
+- **Interference** — when two signals clash or mix.  
+- **Radio Group** — a shared “channel” or network all players join.  
+- **ID** — a number that identifies a specific player or device.  
+- **Variable** — a labelled box that stores data such as `score` or `timer`.  
+- **Condition** — a true/false test that decides what happens next.  
+- **Loop** — repeats instructions continuously (e.g. `forever`).  
 
 ---
 
-## Part A — Radio Mini-Lesson + “Pass the Blink”
+## Part A — Radio Mini-Lesson & “Pass the Blink”
 
-### What We Explored
-1. **How radio works:** one device is a *transmitter*, others are *receivers*; everyone in the same *group* can hear the message.  
-2. **Pass the Blink:** pressing a button sends a **number**; the matching micro:bit blinks an icon for a moment.  
-3. **Add an ID:** each device only responds if the **message equals its ID** — otherwise it ignores it.  
+We started with a short introduction to **radio waves** — how sound, Wi-Fi, and even micro:bits use the same principles to send information invisibly through the air.  
+Participants explored how messages can be sent and received between devices using the **radio blocks** in MakeCode.
 
-> 💡 *Like calling a friend’s name in a busy playground; only the right friend answers.*
+Our first mini-project, *Pass the Blink*, used two micro:bits:
+- Pressing a button on one micro:bit sent a number over radio.  
+- The other micro:bit received the number and flashed a heart icon.  
+- Adding **IDs** meant only the intended device reacted to each message.
 
-### Mini-Challenges
-- Change the **icon** shown on receive.  
-- Swap which **button** sends the message.  
-- Add a second button to send to a **different ID**.  
-- Add a short **pause** then clear the screen.  
+> 💡 *It’s like calling someone’s name in a playground — only that person answers.*
 
 ---
 
-## Part B — Duck Hot-Potato (Game Build)
+## Part B — Duck Hot-Potato
 
-### What We Built
-1. **Setup:** everyone uses the same **radio group**; each player sets the **total players** and their **own ID** (1…N).  
-2. **Catching the duck:** when a micro:bit receives *its* ID, it “has the duck,” shows a duck icon and starts a **random fuse** timer.  
-3. **Passing:** shake the micro:bit to pass early; if the timer runs out while still holding, you **“die”** and it auto-passes.  
-4. **Fair play:** if a dead player receives the duck, it **forwards** immediately so it never gets stuck.  
+Next, participants applied what they’d learned to build a **multiplayer game**.  
+In *Duck Hot-Potato*, one micro:bit starts with a “duck.”  
+Each time the duck is passed, a **radio message** sends it to another random player.  
+Every duck comes with a **hidden timer (fuse)** — if it runs out while you’re still holding the duck, your micro:bit shows a skull, and you’re “out!”
 
-### Duck Hot-Potato Code (JavaScript / MakeCode)
+Children worked in groups of 3–6, testing how quickly messages passed through the group and experimenting with different fuse lengths, speeds, and icons.
 
-```typescript
-// Duck Hot-Potato — peer-to-peer (no host)
-// All players must share the same radio group.
-// Each sets: total players and its own ID (1..players).
+> 🔄 *This activity blended coding, science, and teamwork — showing how networks can create real-time multiplayer games.*
 
-radio.onReceivedNumber(function (receivedNumber) {
-    if (receivedNumber == ID) {
-        if (!dead) {
-            hasDuck = true
-            timer = randint(50, 150) // 0.5–1.5 s fuse
-            basic.showIcon(IconNames.Duck)
-            while (timer > 0 && hasDuck) {
-                timer += -1
-                basic.pause(10)
-            }
-            if (hasDuck) {
-                send()
-                dead = true
-                basic.showIcon(IconNames.Skull)
-            }
-        } else {
-            forward()
-        }
-    }
-})
+---
 
-function send () {
-    if (!hasDuck) return
-    let target = ID
-    while (target == ID) {
-        target = randint(1, players)
-        basic.pause(10)
-    }
-    hasDuck = false
-    timer = 0
-    basic.clearScreen()
-    radio.sendNumber(target)
-}
+## Resources
+- **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
+- **BBC micro:bit Radio Guide:** [Reference](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"}  
+- **BBC Bitesize – How Radio Waves Work (KS2):** [Link](https://www.bbc.co.uk/bitesize){:target="_blank" rel="noopener"}  
 
-function forward () {
-    let target = ID
-    while (target == ID) {
-        target = randint(1, players)
-        basic.pause(10)
-    }
-    radio.sendNumber(target)
-}
+---
 
-input.onGesture(Gesture.Shake, function () {
-    if (!dead && hasDuck) {
-        send()
-    }
-})
+## Equipment
+- BBC micro:bits + USB cables (or simulator)  
+- Laptops / Chromebooks with internet access  
+- Optional: speakers for sound effects  
 
-let timer = 0
-let hasDuck = false
-let dead = false
-let ID = 0
-let players = 0
+---
 
-radio.setGroup(42)
-radio.setTransmitPower(7) // optional: stronger signal
+## Safety & Setup Notes
+- Keep cables tidy when moving around the room.  
+- Use a **unique radio group** to avoid interference with other micro:bits nearby.  
+- Test projects in pairs before connecting the whole group.  
 
-players = 4   // total players
-ID = 1        // change per micro:bit (1..players)
+---
 
-dead = false
-basic.showNumber(ID)
-basic.pause(400)
-basic.clearScreen()
-
-if (ID == 1) {
-    hasDuck = true
-    basic.showIcon(IconNames.Duck)
-}
-
+{% include back-to-autumn.html %}
+{% include teacher-notes-link.html week=8 %}
