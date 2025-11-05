@@ -15,7 +15,7 @@ header:
 {% include back-to-autumn.html %}
 {% include teacher-notes-link.html week=8 %}
 
-## Week 8 — Radio, IDs & “Duck Hot-Potato”
+## Week 8 — Radio, IDs & Exploding Duck
 
 **Focus Concept:** Radio messages and networked communication  
 **Mini-Projects:** *Pass the Blink (radio starter)* → *Duck Hot-Potato (multiplayer game)*
@@ -58,7 +58,7 @@ We began with a short science discussion about **how radio works**, then used th
 
 ---
 
-## Part A — Radio Mini-Lesson & “Pass the Blink”
+## Part A — Radio Mini-Lesson & “Pass the Ghost”
 
 We started with a short introduction to **radio waves** — how sound, Wi-Fi, and even micro:bits use the same principles to send information invisibly through the air.  
 Participants explored how messages can be sent and received between devices using the **radio blocks** in MakeCode.
@@ -75,7 +75,7 @@ Our first mini-project, *Pass the Blink*, used two micro:bits:
 ## Part B — Duck Hot-Potato
 
 Next, participants applied what they’d learned to build a **multiplayer game**.  
-In *Duck Hot-Potato*, one micro:bit starts with a “duck.”  
+In *Exploding Duck*, one micro:bit starts with a “duck.”  
 Each time the duck is passed, a **radio message** sends it to another random player.  
 Every duck comes with a **hidden timer (fuse)** — if it runs out while you’re still holding the duck, your micro:bit shows a skull, and you’re “out!”
 
