@@ -1095,180 +1095,194 @@
           ]
         },
         "8": {
-          "title": "Week 8: Waves, Signals & Communication Logic",
-          "description": "Reasoning with pseudocode, Booleans, selection, loops, timing, and general wave/communication concepts (project-agnostic).",
-          "locked": false,
-          "questions": [
-            {
-              "id": "w8-q1",
-              "question": "Which statement best describes what a wave does?",
-              "type": "multiple-choice",
-              "options": [
-                "It transfers energy from one place to another",
-                "It transfers solid matter from one place to another",
-                "It always needs air to travel",
-                "It can only travel through water"
-              ],
-              "correct": 0,
-              "explanation": "Waves carry energy (not matter). Sound needs a medium; light/radio do not.",
-              "difficulty": "medium"
-            },
-            {
-              "id": "w8-q2",
-              "question": "What happens when the frequency of a sound wave increases (all else the same)?",
-              "type": "multiple-choice",
-              "options": [
-                "The pitch becomes higher",
-                "The sound becomes quieter",
-                "The wave travels faster through air",
-                "The amplitude doubles"
-              ],
-              "correct": 0,
-              "explanation": "More vibrations per second → higher pitch. Loudness relates to amplitude, not frequency.",
-              "difficulty": "medium"
-            },
-            {
-              "id": "w8-q3",
-              "question": "Match each term to its description.",
-              "type": "drag-drop",
-              "terms": ["Amplitude", "Frequency", "Wavelength", "Receiver"],
-              "definitions": [
-                "Height/strength of a wave",
-                "How many waves per second",
-                "Distance between two peaks",
-                "Device that detects a signal"
-              ],
-              "correctMatches": [0, 1, 2, 3],
-              "explanation": "Standard wave properties + a device term used in communication.",
-              "difficulty": "medium"
-            },
-            {
-              "id": "w8-q4",
-              "question": "Why must devices use the same channel/group in a simple radio system?",
-              "type": "multiple-choice",
-              "options": [
-                "So they can hear each other’s messages",
-                "To make messages travel faster",
-                "Because higher group numbers are louder",
-                "To charge batteries wirelessly"
-              ],
-              "correct": 0,
-              "explanation": "Only devices sharing the same channel/group exchange data.",
-              "difficulty": "medium"
-            },
-            {
-              "id": "w8-q5",
-              "question": "Which variable name is best for a true/false state that means a message has arrived?",
-              "type": "multiple-choice",
-              "options": [
-                "hasMessage",
-                "messageCount",
-                "volumeLevel",
-                "frequencyHz"
-              ],
-              "correct": 0,
-              "explanation": "Use a Boolean-sounding name for true/false flags (e.g., hasMessage).",
-              "difficulty": "easy"
-            },  
-            {
-              "id": "w8-q6",
-              "question": "Trace the final value of x.",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set x = 2\nrepeat 3 times\n  if x % 2 = 0 then\n    change x by 3\n  else\n    change x by -1\n  end if\nend\nshow number x",
-              "options": ["6", "7", "5", "4"],
-              "correct": 2,
-              "explanation": "Start 2(even)→+3=5; 5(odd)→-1=4; 4(even)→+3=7; shows 7.",
-              "difficulty": "hard"
-            },
-            {
-              "id": "w8-q7",
-              "question": "Which branch runs and what is shown?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set a = 5\nset b = 5\nif a > b then\n  show \"A\"\nelse if a >= b then\n  show \"Equal or A\"\nelse\n  show \"B\"\nend if",
-              "options": [
-                "\"A\"",
-                "\"Equal or A\"",
-                "\"B\"",
-                "Nothing"
-              ],
-              "correct": 1,
-              "explanation": "First test false; second (a >= b) true → prints \"Equal or A\".",
-              "difficulty": "medium-hard"
-            },
-            {
-              "id": "w8-q8",
-              "question": "What is printed and why?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set n = 3\nwhile n < 10\n  if n < 5 then\n    change n by 2\n  else if n < 8 then\n    change n by 3\n  else\n    change n by 4\n  end if\nend\nshow number n",
-              "options": ["9", "10", "11", "12"],
-              "correct": 2,
-              "explanation": "n: 3→5(+2), 5→8(+3), 8→12(+4) and loop stops (n>=10). Shows 12.",
-              "difficulty": "hard"
-            },
-            {
-              "id": "w8-q9",
-              "question": "Find the bug that causes an infinite loop.",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set count = 4\nwhile count > 0\n  if count < 0 then\n    change count by -1\n  end if\nend",
-              "options": [
-                "The if condition never becomes true, so count never changes",
-                "while should be repeat",
-                "count should start at 0",
-                "Missing a pause"
-              ],
-              "correct": 0,
-              "explanation": "We test `count < 0` but start at 4 and never reduce it → `while` never ends.",
-              "difficulty": "hard"
-            },
-            {
-              "id": "w8-q10",
-              "question": "What number is shown? (Careful with integer division.)",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set s = 0\nfor i from 1 to 6\n  if i % 2 = 0 then\n    change s by i / 2   # integer division\n  else\n    change s by i\n  end if\nend\nshow number s",
-              "options": ["15", "16", "17", "18"],
-              "correct": 1,
-              "explanation": "i:1→+1=1;2→+1=2;3→+3=5;4→+2=7;5→+5=12;6→+3=15 → wait… check: 1+1+3+2+5+3=15; BUT we forgot starting s=0, total 15. (Trick!) Correction: add carefully → 1 + 1 + 3 + 2 + 5 + 3 = 15. (Answer 15).",
-              "difficulty": "hard"
-            },
-            {
-              "id": "w8-q11",
-              "question": "Which option makes the logic behave as described?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "# Goal: only alert when BOTH conditions are true at the same time\nif __________ then\n  show \"ALERT\"\nend if",
-              "options": [
-                "temp > 30 and light < 50",
-                "temp > 30 or light < 50",
-                "not (temp > 30) and not (light < 50)",
-                "temp > 30 xor light < 50"
-              ],
-              "correct": 0,
-              "explanation": "Use AND for both true together. OR/NOT/XOR don’t match the requirement.",
-              "difficulty": "medium"
-            },
-            {
-              "id": "w8-q12",
-              "question": "Predict the output (order matters).",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set t = 0\nrepeat 3 times\n  show number t\n  change t by 2\nend\nshow number t",
-              "options": [
-                "0,2,4 and then 6",
-                "0,2,4 and then 4",
-                "0,2 and then 4,6",
-                "2,4,6 and then 6"
-              ],
-              "correct": 0,
-              "explanation": "Shows before changing: prints 0 then +2→2; prints 2 then +2→4; prints 4 then +2→6; final show prints 6.",
-              "difficulty": "medium-hard"
-            }
-          ]
-        }
+        "title": "Week 8: Waves, Signals & Communication Logic",
+        "description": "Reasoning with pseudocode, Booleans, selection, loops, timing, and general wave/communication concepts (project-agnostic).",
+        "locked": false,
+        "questions": [
+          {
+            "id": "w8-q1",
+            "question": "Which statement best describes what a wave does?",
+            "type": "multiple-choice",
+            "options": [
+              "It transfers energy from one place to another",
+              "It transfers solid matter from one place to another",
+              "It always needs air to travel",
+              "It can only travel through water"
+            ],
+            "correct": 0,
+            "explanation": "Waves carry energy (not matter). Sound needs a medium; light/radio do not.",
+            "difficulty": "medium",
+            "hint": "Think about Wi-Fi and light versus sound in air."
+          },
+          {
+            "id": "w8-q2",
+            "question": "What happens when the frequency of a sound wave increases (all else the same)?",
+            "type": "multiple-choice",
+            "options": [
+              "The pitch becomes higher",
+              "The sound becomes quieter",
+              "The wave travels faster through air",
+              "The amplitude doubles"
+            ],
+            "correct": 0,
+            "explanation": "More vibrations per second → higher pitch. Loudness relates to amplitude, not frequency.",
+            "difficulty": "medium",
+            "hint": "Pitch ↔ frequency, loudness ↔ amplitude."
+          },
+          {
+            "id": "w8-q3",
+            "question": "Match each term to its description.",
+            "type": "drag-drop",
+            "terms": ["Amplitude", "Frequency", "Wavelength", "Receiver"],
+            "definitions": [
+              "Distance between two peaks",
+              "Device that detects a signal",
+              "How many waves per second",
+              "Height/strength of a wave"
+            ],
+            "correctMatches": [3, 2, 0, 1],
+            "explanation": "Amplitude → height/strength; Frequency → waves per second; Wavelength → distance between peaks; Receiver → device that detects the signal.",
+            "difficulty": "medium",
+            "hint": "Picture the classic wave drawing: height, spacing, and the gadget listening."
+          },
+          {
+            "id": "w8-q4",
+            "question": "Why must devices use the same channel/group in a simple radio system?",
+            "type": "multiple-choice",
+            "options": [
+              "So they can hear each other’s messages",
+              "To make messages travel faster",
+              "Because higher group numbers are louder",
+              "To charge batteries wirelessly"
+            ],
+            "correct": 0,
+            "explanation": "Only devices sharing the same channel/group exchange data.",
+            "difficulty": "medium",
+            "hint": "Like joining the same chat room."
+          },
+      
+          {
+          "id": "w8-q5",
+          "question": "Reorder the lines to set a Boolean flag when a message arrives, then react to it.",
+          "type": "drag-drop",
+          "terms": [
+            "if hasMessage then\\n    show icon Heart",
+            "on message received (n)",
+            "set hasMessage = true",
+            "set hasMessage = false"
+          ],
+          "definitions": ["1st line", "2nd line", "3rd line", "4th line"],
+          "correctMatches": [3, 1, 2, 0],
+          "explanation": "Start by clearing the flag (false). When a message is received, set the flag true. Finally, if the flag is true, show the icon.",
+          "difficulty": "medium",
+          "hint": "Think: initialise → event happens → set flag → react."
+        },
+      
+          {
+            "id": "w8-q6",
+            "question": "Trace the final value of x (uses a toggle flag, no modulo).",
+            "type": "multiple-choice",
+            "codeLabel": "Pseudocode",
+            "code": "set x = 2\nset up = true\nrepeat 4 times\n    if up then\n        change x by 2\n    else\n        change x by -1\n    end if\n    set up = not up\nend\nshow number x",
+            "options": ["3", "4", "5", "6"],
+            "correct": 2,
+            "explanation": "Steps: start 2; +2→4; −1→3; +2→5; −1→4, then show 4? Careful: we toggle after each change. Sequence is: 2→4 (up=T), 4→3 (up=F), 3→5 (up=T), 5→4 (up=F). Final x = 4.",
+            "difficulty": "hard",
+            "hint": "Flip the flag every loop: T→F→T→F."
+          },
+          {
+            "id": "w8-q7",
+            "question": "Which branch runs and what is shown?",
+            "type": "multiple-choice",
+            "codeLabel": "Pseudocode",
+            "code": "set a = 5\nset b = 5\nif a > b then\n    show \"A\"\nelse if a >= b then\n    show \"Equal or A\"\nelse\n    show \"B\"\nend if",
+            "options": [
+              "\"A\"",
+              "\"Equal or A\"",
+              "\"B\"",
+              "Nothing"
+            ],
+            "correct": 1,
+            "explanation": "First test is false; second is true because a >= b when both are 5.",
+            "difficulty": "medium-hard",
+            "hint": "Check the comparisons in order."
+          },
+          {
+            "id": "w8-q8",
+            "question": "What number is shown at the end?",
+            "type": "multiple-choice",
+            "codeLabel": "Pseudocode",
+            "code": "set n = 3\nwhile n < 10\n    if n < 5 then\n        change n by 2\n    else if n < 8 then\n        change n by 3\n    else\n        change n by 4\n    end if\nend\nshow number n",
+            "options": ["9", "10", "11", "12"],
+            "correct": 3,
+            "explanation": "n: 3→5(+2), 5→8(+3), 8→12(+4); loop stops when n >= 10; shows 12.",
+            "difficulty": "hard",
+            "hint": "Update then re-check the loop condition."
+          },
+          {
+            "id": "w8-q9",
+            "question": "Find the bug that causes an infinite loop.",
+            "type": "multiple-choice",
+            "codeLabel": "Pseudocode",
+            "code": "set count = 4\nwhile count > 0\n    if count < 0 then\n        change count by -1\n    end if\nend",
+            "options": [
+              "The if condition never becomes true, so count never changes",
+              "while should be repeat",
+              "count should start at 0",
+              "Missing a pause"
+            ],
+            "correct": 0,
+            "explanation": "We never reduce count because the inner test is wrong; the loop condition stays true forever.",
+            "difficulty": "hard",
+            "hint": "Does count ever go down?"
+          },
+          {
+            "id": "w8-q10",
+            "question": "What number is shown? (careful with the order of change vs show)",
+            "type": "multiple-choice",
+            "codeLabel": "Pseudocode",
+            "code": "set t = 0\nrepeat 3 times\n    change t by 2\n    show number t\nend\nshow number t",
+            "options": ["2, 4, 6 then 6", "0, 2, 4 then 6", "2, 4, 6 then 8", "0, 2, 4 then 4"],
+            "correct": 0,
+            "explanation": "Inside the loop we add first, then show: 2, 4, 6. After the loop, t is still 6, so final show is 6.",
+            "difficulty": "medium",
+            "hint": "Do we show before or after changing t?"
+          },
+          {
+            "id": "w8-q11",
+            "question": "Choose the condition that makes the alert happen only when BOTH tests are true at the same time.",
+            "type": "multiple-choice",
+            "codeLabel": "Pseudocode",
+            "code": "if __________ then\n    show \"ALERT\"\nend if\n# Goal: trigger only when temp is high AND light is low",
+            "options": [
+              "temp > 30 and light < 50",
+              "temp > 30 or light < 50",
+              "not (temp > 30)",
+              "light < 50"
+            ],
+            "correct": 0,
+            "explanation": "AND requires both to be true together; the others don’t match the goal.",
+            "difficulty": "medium",
+            "hint": "‘Both at once’ means AND."
+          },
+          {
+            "id": "w8-q12",
+            "question": "Signals collide when two devices transmit at the exact same time. What is this called?",
+            "type": "multiple-choice",
+            "options": [
+              "Interference",
+              "Amplification",
+              "Reflection",
+              "Refraction"
+            ],
+            "correct": 0,
+            "explanation": "Overlapping signals interfere, which can corrupt or lose messages.",
+            "difficulty": "medium",
+            "hint": "Like two people talking over each other on the same channel."
+          }
+        ]
+      }
+
 
 
   }
