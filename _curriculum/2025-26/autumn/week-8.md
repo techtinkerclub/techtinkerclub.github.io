@@ -84,9 +84,10 @@ During the last 15–20 minutes, we revisited concepts from Weeks 1 and 2 throug
 ---
 
 ## Resources
-- **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
-- **BBC Bitesize – Radio Waves (KS2):** [Link](https://www.bbc.co.uk/bitesize){:target="_blank" rel="noopener"}  
-- **How do micro:bits communicate?** [Reference](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"}  
+- **MakeCode Editor:** [Link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
+- **Micro:bit Radio Reference:** [Link](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"} 
+- **Pass the Ghost** [Makecode Code](https://makecode.microbit.org/S45111-00513-19130-58682){:target="_blank" rel="noopener"}
+- **Radio in Micro:bit:** [Video](https://youtu.be/Re3H2ISfQE8?si=CazYc56h3ZuGSxX6){:target="_blank" rel="noopener"}    
 
 ---
 
