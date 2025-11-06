@@ -15,94 +15,93 @@ header:
 {% include back-to-autumn.html %}
 {% include teacher-notes-link.html week=8 %}
 
-## Week 8 — Radio, IDs & Exploding Duck
+## Week 8 — Radio Waves & Pass the Ghost
 
-**Focus Concept:** Radio messages and networked communication  
-**Mini-Projects:** *Pass the Blink (radio starter)* → *Duck Hot-Potato (multiplayer game)*
+**Focus Concept:** Radio communication and wave basics  
+**Mini-Project:** *Pass the Ghost* (two-player radio game)
 
-This week’s session introduced how **micro:bits communicate wirelessly** using **radio waves** — invisible signals that carry messages through the air.  
-We began with a short science discussion about **how radio works**, then used that knowledge to send messages between micro:bits, finishing with a fast-paced **multiplayer game**.
+This week’s session mixed **science and coding**.  
+We began by exploring **waves** — how they move energy and information — and linked that to how the **micro:bit radio** works.  
+Participants then built a small program called *Pass the Ghost*, where one micro:bit sends a message to another, showing a ghost icon and short sound when received.
 
 ---
 
 ## Objectives
-- Understand what **radio waves** are and how the micro:bit uses them to send information.  
-- Learn about **transmitters**, **receivers**, and **radio groups**.  
-- Give each device a unique **ID** so messages only reach the correct player.  
-- Apply **selection** (`if` tests), **loops**, and **variables** in a real game context.  
-- Collaborate in small groups to build and test a working multiplayer project.  
+- Understand what a **wave** is and how **radio waves** carry information.  
+- Learn the ideas of **amplitude**, **frequency**, and **wavelength** in simple terms.  
+- Identify common uses of radio waves (music, phones, Wi-Fi, etc.).  
+- Use **micro:bit radio** to send and receive a message.  
+- Add sound effects and experiment with inputs and outputs.  
+- Revisit concepts from Weeks 1–2 through a short quiz.
 
 ---
 
 ## Success Criteria
-- I can explain what a **radio group** is and why all players must share the same one.  
-- I can describe how a message travels from one micro:bit to another.  
-- I can set an **ID** for my device and use it to identify messages meant for me.  
-- I can work with others to play and improve the Duck Hot-Potato game.  
+- I can explain that waves transfer energy, not matter.  
+- I can describe radio waves as a type of electromagnetic wave.  
+- I can say what **frequency** and **amplitude** mean.  
+- I can use the micro:bit to send a simple message by radio.  
+- I can debug and improve a program that uses radio blocks.
 
 ---
 
 ## Key Vocabulary
-- **Radio wave** — an invisible wave that carries information through the air.  
-- **Transmitter** — sends the signal.  
-- **Receiver** — listens for incoming signals.  
-- **Antenna** — part of the micro:bit that helps send and receive radio waves.  
-- **Frequency** — how fast a wave vibrates (measured in hertz).  
-- **Amplitude** — the wave’s height or strength.  
-- **Interference** — when two signals clash or mix.  
-- **Radio Group** — a shared “channel” or network all players join.  
-- **ID** — a number that identifies a specific player or device.  
-- **Variable** — a labelled box that stores data such as `score` or `timer`.  
-- **Condition** — a true/false test that decides what happens next.  
-- **Loop** — repeats instructions continuously (e.g. `forever`).  
+- **Wave** — a moving pattern that transfers energy.  
+- **Amplitude** — how tall a wave is (strength).  
+- **Frequency** — how many waves per second (pitch for sound).  
+- **Wavelength** — distance from one wave peak to the next.  
+- **Radio wave** — an electromagnetic wave used for communication.  
+- **Transmitter** — device that sends the signal.  
+- **Receiver** — device that picks it up.  
+- **Radio Group** — a shared channel that devices join to talk.  
+- **ID** — a number that identifies each micro:bit.  
+- **Amplitude (modulation)** and **frequency (modulation)** — ways to carry sound on radio waves.  
 
 ---
 
-## Part A — Radio Mini-Lesson & “Pass the Ghost”
+## Part A — Exploring Waves
+We started by discussing:
+- What different types of waves exist (sound, light, radio, water).  
+- The difference between **amplitude**, **frequency**, and **wavelength**.  
+- Why humans can only hear certain frequencies.  
+- How radio waves carry signals and what “frequency bands” mean.  
 
-We started with a short introduction to **radio waves** — how sound, Wi-Fi, and even micro:bits use the same principles to send information invisibly through the air.  
-Participants explored how messages can be sent and received between devices using the **radio blocks** in MakeCode.
-
-Our first mini-project, *Pass the Blink*, used two micro:bits:
-- Pressing a button on one micro:bit sent a number over radio.  
-- The other micro:bit received the number and flashed a heart icon.  
-- Adding **IDs** meant only the intended device reacted to each message.
-
-> 💡 *It’s like calling someone’s name in a playground — only that person answers.*
+Simple classroom demonstrations and drawings helped visualise how waves move energy but not matter.
 
 ---
 
-## Part B — Duck Hot-Potato
+## Part B — Pass the Ghost
+Participants then examined a short piece of radio code that let two micro:bits “pass a ghost” back and forth by shaking.  
+They predicted what the program would do, tested it, and modified it to add sound effects and different icons.
 
-Next, participants applied what they’d learned to build a **multiplayer game**.  
-In *Exploding Duck*, one micro:bit starts with a “duck.”  
-Each time the duck is passed, a **radio message** sends it to another random player.  
-Every duck comes with a **hidden timer (fuse)** — if it runs out while you’re still holding the duck, your micro:bit shows a skull, and you’re “out!”
+> 💡 This activity linked coding logic (`if` tests and variables) to the real-world idea of transmitters and receivers.
 
-Children worked in groups of 3–6, testing how quickly messages passed through the group and experimenting with different fuse lengths, speeds, and icons.
+---
 
-> 🔄 *This activity blended coding, science, and teamwork — showing how networks can create real-time multiplayer games.*
+## Part C — Quiz Recap
+During the last 15–20 minutes, we revisited concepts from Weeks 1 and 2 through quiz questions and discussions, checking how much the group remembered about inputs, outputs, loops and events.
 
 ---
 
 ## Resources
 - **MakeCode Editor:** [makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
-- **BBC micro:bit Radio Guide:** [Reference](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"}  
-- **BBC Bitesize – How Radio Waves Work (KS2):** [Link](https://www.bbc.co.uk/bitesize){:target="_blank" rel="noopener"}  
+- **BBC Bitesize – Radio Waves (KS2):** [Link](https://www.bbc.co.uk/bitesize){:target="_blank" rel="noopener"}  
+- **How do micro:bits communicate?** [Reference](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"}  
 
 ---
 
 ## Equipment
 - BBC micro:bits + USB cables (or simulator)  
 - Laptops / Chromebooks with internet access  
-- Optional: speakers for sound effects  
+- Speakers or headphones for sound effects  
+- Whiteboard or visuals to draw wave examples  
 
 ---
 
 ## Safety & Setup Notes
-- Keep cables tidy when moving around the room.  
-- Use a **unique radio group** to avoid interference with other micro:bits nearby.  
-- Test projects in pairs before connecting the whole group.  
+- Keep cables tidy when pupils move around testing radio code.  
+- Use unique radio group numbers to avoid interference.  
+- Monitor volume levels for sound experiments.  
 
 ---
 
