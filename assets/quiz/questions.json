@@ -1169,10 +1169,7 @@
               "correct": 0,
               "explanation": "Use a Boolean-sounding name for true/false flags (e.g., hasMessage).",
               "difficulty": "easy"
-            },
-        
-            // PSEUDOCODE-HEAVY FROM HERE
-        
+            },  
             {
               "id": "w8-q6",
               "question": "Trace the final value of x.",
