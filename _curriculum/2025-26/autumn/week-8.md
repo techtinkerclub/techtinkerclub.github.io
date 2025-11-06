@@ -87,7 +87,9 @@ During the last 15–20 minutes, we revisited concepts from Weeks 1 and 2 throug
 - **MakeCode Editor:** [Link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 - **Micro:bit Radio Reference:** [Link](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"} 
 - **Pass the Ghost** [Makecode Code](https://makecode.microbit.org/S45111-00513-19130-58682){:target="_blank" rel="noopener"}
-- **Radio in Micro:bit:** [Video](https://youtu.be/Re3H2ISfQE8?si=CazYc56h3ZuGSxX6){:target="_blank" rel="noopener"}    
+- **Radio in Micro:bit:** [Video](https://youtu.be/Re3H2ISfQE8?si=CazYc56h3ZuGSxX6){:target="_blank" rel="noopener"}
+- **1st Radford Semele and Leamington Scouts in touch with the ISS via Amateur Radio (complete event):** [Video](https://www.youtube.com/live/LFBgDKPg4Mk?si=RUgEqm5lzMiW5x0r){:target="_blank" rel="noopener"}
+- 
 
 ---
 
