@@ -1094,188 +1094,189 @@
   
           ]
         },
-       "8": {
-        "title": "Week 8: Waves, Radio & Event Logic",
-        "description": "Electromagnetic waves and simple radio concepts, plus event-driven logic with flags and sensors.",
-        "locked": false,
-        "questions": [
-          {
-            "id": "w8-q1",
-            "question": "Which statement best describes a wave?",
-            "type": "multiple-choice",
-            "options": [
-              "A pattern that transfers energy from place to place",
-              "A material that moves permanently from A to B",
-              "A battery that powers circuits",
-              "A message that only travels through wires"
-            ],
-            "correct": 0,
-            "explanation": "Waves transfer energy (and sometimes information), not matter itself.",
-            "difficulty": "easy",
-            "hint": "Think of ripples on water: the water mostly stays put."
-          },
-          {
-            "id": "w8-q2",
-            "question": "Which pairing is correct?",
-            "type": "multiple-choice",
-            "options": [
-              "Amplitude = waves per second; Frequency = height/strength",
-              "Amplitude = height/strength; Frequency = waves per second",
-              "Amplitude = distance between peaks; Frequency = colour",
-              "Amplitude = speed; Frequency = distance per second"
-            ],
-            "correct": 1,
-            "explanation": "Amplitude is the height/strength; frequency is how many waves each second.",
-            "difficulty": "medium",
-            "hint": "Frequency ≈ how often; amplitude ≈ how tall."
-          },
-          {
-            "id": "w8-q3",
-            "question": "Match each term to its description.",
-            "type": "drag-drop",
-            "terms": ["Amplitude", "Frequency", "Wavelength", "Receiver"],
-            "definitions": [
-              "Distance between two peaks",
-              "Device that detects a signal",
-              "How many waves per second",
-              "Height/strength of a wave"
-            ],
-            "correctMatches": [3, 2, 0, 1],
-            "explanation": "Amplitude → height; Frequency → waves per second; Wavelength → spacing between peaks; Receiver → detects the signal.",
-            "difficulty": "medium",
-            "hint": "Picture a sketched wave with labels for height and spacing."
-          },
-          {
-            "id": "w8-q4",
-            "question": "Why do devices on the same radio “group/channel” hear each other?",
-            "type": "multiple-choice",
-            "options": [
-              "They share a battery",
-              "They share the same frequency/channel identifier",
-              "They have identical names",
-              "They are connected by wires"
-            ],
-            "correct": 1,
-            "explanation": "Being on the same group means they listen and talk on the same channel.",
-            "difficulty": "easy",
-            "hint": "Think of everyone in the same chat room."
-          },
-          {
-            "id": "w8-q5",
-            "question": "Pseudocode logic: when should the heart be shown?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set hasMsg = false\non message received (n)\n    if n = myID then\n        set hasMsg = true\n    end if\nend\nif hasMsg then\n    show icon \"Heart\"\nend",
-            "options": [
-              "Immediately at start",
-              "Only after a message arrives with n = myID",
-              "For any received message",
-              "Never, because hasMsg starts false"
-            ],
-            "correct": 1,
-            "explanation": "The flag flips to true only for your ID; the final check then shows the heart.",
-            "difficulty": "medium",
-            "hint": "Track the flag from false → true."
-          },
-          {
-            "id": "w8-q6",
-            "question": "Which devices are inputs and which are outputs?",
-            "type": "drag-drop",
-            "terms": ["Button A", "Accelerometer reading", "Light level", "Show icon", "Play tone", "Scroll text"],
-            "definitions": ["Input", "Input", "Input", "Output", "Output", "Output"],
-            "correctMatches": [0, 1, 2, 3, 4, 5],
-            "explanation": "Buttons/sensors are inputs; LEDs/sound/text are outputs.",
-            "difficulty": "easy",
-            "hint": "Does it read the world (in) or tell the world something (out)?"
-          },
-          {
-            "id": "w8-q7",
-            "question": "Two devices share a group. Each device has a unique myID. What must be true to react only to your own messages?",
-            "type": "multiple-choice",
-            "options": [
-              "Check n ≠ myID",
-              "Ignore all messages",
-              "Check n = myID",
-              "Change group every second"
-            ],
-            "correct": 2,
-            "explanation": "Guard by ID equality to accept only messages meant for you.",
-            "difficulty": "easy",
-            "hint": "Equality, not inequality."
-          },
-          {
-            "id": "w8-q8",
-            "question": "Choose the correct condition if it must be BOTH hot and dark to alert.",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set temp = temperature\nset light = light level\nif ________ then\n    show \"ALERT\"",
-            "options": [
-              "temp > 30 or light < 50",
-              "temp > 30 and light < 50",
-              "temp > 30",
-              "light < 50"
-            ],
-            "correct": 1,
-            "explanation": "AND means both tests must be true together.",
-            "difficulty": "medium",
-            "hint": "AND is stricter than OR."
-          },
-          {
-            "id": "w8-q9",
-            "question": "Random send: which description is best for avoiding sending to yourself?",
-            "type": "multiple-choice",
-            "options": [
-              "Pick a random target once and send",
-              "Set target = myID, then send",
-              "Pick a random target; while target = myID, pick again; then send",
-              "Always send to the highest ID"
-            ],
-            "correct": 2,
-            "explanation": "Re-pick while it equals you, then send.",
-            "difficulty": "medium-hard",
-            "hint": "A loop is needed to avoid your own ID."
-          },
-          {
-            "id": "w8-q10",
-            "question": "Timing maths: a loop shows an icon, pauses 200 ms, clears, pauses 300 ms, and repeats 4 times. About how long (ms) does the whole loop take?",
-            "type": "multiple-choice",
-            "options": ["500", "800", "1200", "2000"],
-            "correct": 2,
-            "explanation": "Each iteration pauses 200 + 300 = 500 ms. Four iterations → 2000 ms. (Display updates themselves are very quick.)",
-            "difficulty": "hard",
-            "hint": "Add the pauses per iteration, then multiply by 4."
-          },
-          {
-            "id": "w8-q11",
-            "question": "What does this show and why?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "on start\n    set group = 17\n    show number 3\non message received (n)\n    show string \"Msg\"\nend",
-            "options": [
-              "Shows 3 once at start; shows “Msg” whenever any message arrives on group 17",
-              "Shows 3 repeatedly forever",
-              "Shows “Msg” at start, then nothing",
-              "Shows nothing until a button is pressed"
-            ],
-            "correct": 0,
-            "explanation": "on start runs once; the receive event triggers for any message on that group.",
-            "difficulty": "medium",
-            "hint": "on start vs. event handler."
-          },
-          {
-            "id": "w8-q12",
-            "question": "What number is shown at the end?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set count = 0\non button A pressed\n    change count by 1\nend\non message received (n)\n    change count by 2\nend\n# Imagine: A is pressed once; then one message arrives.\nshow number count",
-            "options": ["0", "1", "2", "3"],
-            "correct": 3,
-            "explanation": "Button adds 1 → count = 1; message adds 2 → count = 3.",
-            "difficulty": "medium",
-            "hint": "Apply the two events in order."
-          }
-        ]
-      }
+        "8": {
+          "title": "Week 8: Waves, Radio & Logic Review",
+          "description": "Recap of core coding ideas (loops, variables, conditions, sensors, functions) and new science on waves and radio communication.",
+          "locked": false,
+          "questions": [
+            {
+              "id": "w8-q1",
+              "question": "Which statement best describes a wave?",
+              "type": "multiple-choice",
+              "options": [
+                "A moving pattern that transfers energy from place to place",
+                "A material that moves permanently from A to B",
+                "A type of battery used in radios",
+                "A signal that can only travel through wires"
+              ],
+              "correct": 0,
+              "explanation": "Waves move energy (and sometimes information), but the material itself stays roughly where it was.",
+              "difficulty": "easy",
+              "hint": "Think of water ripples — the energy moves, not the water."
+            },
+            {
+              "id": "w8-q2",
+              "question": "Match each wave term to its meaning.",
+              "type": "drag-drop",
+              "terms": ["Amplitude", "Frequency", "Wavelength", "Transmitter"],
+              "definitions": [
+                "Distance between one peak and the next",
+                "Height/strength of a wave",
+                "How many waves per second",
+                "Device that sends out radio waves"
+              ],
+              "correctMatches": [1, 2, 0, 3],
+              "explanation": "Amplitude → height; Frequency → waves per second; Wavelength → spacing between peaks; Transmitter → sends signal.",
+              "difficulty": "medium",
+              "hint": "Label a drawn wave: height, spacing, and how often it repeats."
+            },
+            {
+              "id": "w8-q3",
+              "question": "Which pairing is correct?",
+              "type": "multiple-choice",
+              "options": [
+                "Amplitude = waves per second; Frequency = height",
+                "Amplitude = height; Frequency = waves per second",
+                "Amplitude = distance between peaks; Frequency = colour",
+                "Amplitude = speed; Frequency = direction"
+              ],
+              "correct": 1,
+              "explanation": "Amplitude measures wave strength; frequency counts how often it repeats each second.",
+              "difficulty": "easy",
+              "hint": "‘Frequent’ means how often."
+            },
+            {
+              "id": "w8-q4",
+              "question": "Pseudocode logic — what number is shown?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set score = 0\nrepeat 5 times\n    change score by 2\nend\nshow number score",
+              "options": ["2", "5", "8", "10"],
+              "correct": 3,
+              "explanation": "Each loop adds 2, repeated 5 times → 2×5 = 10.",
+              "difficulty": "easy",
+              "hint": "Multiply change × repeats."
+            },
+            {
+              "id": "w8-q5",
+              "question": "When will this program show “ALERT”?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set temp = temperature\nset light = light level\nif temp > 30 and light < 50 then\n    show \"ALERT\"",
+              "options": [
+                "When it is hot or dark",
+                "When it is both hot and dark",
+                "When it is cold and dark",
+                "Whenever light < 50"
+              ],
+              "correct": 1,
+              "explanation": "The AND joins two tests; both must be true.",
+              "difficulty": "medium",
+              "hint": "AND means both together."
+            },
+            {
+              "id": "w8-q6",
+              "question": "Which line correctly stores a light sensor reading?",
+              "type": "multiple-choice",
+              "options": [
+                "set light = light level",
+                "set light = 50",
+                "set light = 'light'",
+                "set temperature = light level"
+              ],
+              "correct": 0,
+              "explanation": "The first option saves the current light sensor reading in the variable.",
+              "difficulty": "medium",
+              "hint": "Look for reading, not a constant or string."
+            },
+            {
+              "id": "w8-q7",
+              "question": "What number is shown at the end?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set count = 3\non button A pressed\n    change count by 1\nend\non shake\n    change count by 2\nend\n# Imagine: one press, one shake, one more press.\nshow number count",
+              "options": ["4", "5", "6", "7"],
+              "correct": 2,
+              "explanation": "Start 3 → +1 = 4 → +2 = 6 → +1 = 7 (show 7).",
+              "difficulty": "medium",
+              "hint": "Follow each event’s effect in order."
+            },
+            {
+              "id": "w8-q8",
+              "question": "The function doubles a number. What is shown?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "function double(x)\n    return x * 2\nend function\nset n = 4\nshow number double(n + 1)",
+              "options": ["8", "9", "10", "5"],
+              "correct": 2,
+              "explanation": "n + 1 = 5 → double(5) = 10.",
+              "difficulty": "medium",
+              "hint": "Do the bracketed part first, then multiply × 2."
+            },
+            {
+              "id": "w8-q9",
+              "question": "Which loop runs exactly 5 times?",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "repeat 5 times\n    play tone\nend",
+              "options": [
+                "It runs 5 times, then stops",
+                "It runs forever",
+                "It runs until a button is pressed",
+                "It never runs"
+              ],
+              "correct": 0,
+              "explanation": "‘repeat 5 times’ executes the block exactly 5 times.",
+              "difficulty": "easy",
+              "hint": "Counted loop = fixed number of repeats."
+            },
+            {
+              "id": "w8-q10",
+              "question": "Match each event type to what triggers it.",
+              "type": "drag-drop",
+              "terms": ["on start", "on button A pressed", "on shake", "forever"],
+              "definitions": [
+                "Runs once when the program begins",
+                "Runs when A is pressed",
+                "Runs when the micro:bit moves",
+                "Repeats endlessly while running"
+              ],
+              "correctMatches": [0, 1, 2, 3],
+              "explanation": "Each block listens for its trigger; ‘forever’ has no trigger and repeats constantly.",
+              "difficulty": "medium",
+              "hint": "Start = beginning, button = input, shake = motion."
+            },
+            {
+              "id": "w8-q11",
+              "question": "Predict the final value of total.",
+              "type": "multiple-choice",
+              "codeLabel": "Pseudocode",
+              "code": "set total = 0\nfor i from 1 to 4\n    change total by i\nend\nshow number total",
+              "options": ["4", "6", "10", "12"],
+              "correct": 2,
+              "explanation": "Adds 1 + 2 + 3 + 4 = 10.",
+              "difficulty": "hard",
+              "hint": "Sum of 1–4."
+            },
+            {
+              "id": "w8-q12",
+              "question": "Match the radio term to its meaning.",
+              "type": "drag-drop",
+              "terms": ["Receiver", "Antenna", "Interference", "Channel/Group"],
+              "definitions": [
+                "The 'room' devices join to communicate",
+                "Hardware part that sends or picks up radio waves",
+                "Device that listens for a signal",
+                "Noise or mixing that makes a signal unclear"
+              ],
+              "correctMatches": [2, 1, 3, 0],
+              "explanation": "Receiver = listener; Antenna = physical component; Interference = unwanted noise; Channel = shared band.",
+              "difficulty": "medium",
+              "hint": "Who listens, what hardware helps, and what can block the signal."
+            }
+          ]
+        }
+
 
   }
 }
