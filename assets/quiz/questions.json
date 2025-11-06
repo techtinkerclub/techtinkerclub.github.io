@@ -1094,9 +1094,9 @@
   
           ]
         },
-        "8": {
-        "title": "Week 8: Waves & Radio Basics",
-        "description": "Electromagnetic waves, simple radio concepts, and event-driven logic with flags. Includes Parsons reorder problems.",
+       "8": {
+        "title": "Week 8: Waves, Radio & Event Logic",
+        "description": "Electromagnetic waves and simple radio concepts, plus event-driven logic with flags and sensors.",
         "locked": false,
         "questions": [
           {
@@ -1104,9 +1104,9 @@
             "question": "Which statement best describes a wave?",
             "type": "multiple-choice",
             "options": [
-              "A moving pattern that transfers energy from place to place",
+              "A pattern that transfers energy from place to place",
               "A material that moves permanently from A to B",
-              "A type of battery used to power circuits",
+              "A battery that powers circuits",
               "A message that only travels through wires"
             ],
             "correct": 0,
@@ -1116,23 +1116,23 @@
           },
           {
             "id": "w8-q2",
-            "question": "Two ideas often confused are amplitude and frequency. Which pairing is correct?",
+            "question": "Which pairing is correct?",
             "type": "multiple-choice",
             "options": [
-              "Amplitude = how many waves per second; Frequency = height/strength",
-              "Amplitude = height/strength; Frequency = how many waves per second",
-              "Amplitude = distance between peaks; Frequency = height/strength",
-              "Amplitude = distance per second; Frequency = wave colour"
+              "Amplitude = waves per second; Frequency = height/strength",
+              "Amplitude = height/strength; Frequency = waves per second",
+              "Amplitude = distance between peaks; Frequency = colour",
+              "Amplitude = speed; Frequency = distance per second"
             ],
             "correct": 1,
-            "explanation": "Amplitude is the height/strength; frequency is waves per second.",
+            "explanation": "Amplitude is the height/strength; frequency is how many waves each second.",
             "difficulty": "medium",
-            "hint": "Frequency sounds like ‘frequent’ — how often."
+            "hint": "Frequency ≈ how often; amplitude ≈ how tall."
           },
           {
             "id": "w8-q3",
             "question": "Match each term to its description.",
-            "type": "match",
+            "type": "drag-drop",
             "terms": ["Amplitude", "Frequency", "Wavelength", "Receiver"],
             "definitions": [
               "Distance between two peaks",
@@ -1141,104 +1141,71 @@
               "Height/strength of a wave"
             ],
             "correctMatches": [3, 2, 0, 1],
-            "explanation": "Amplitude → height; Frequency → waves per second; Wavelength → distance between peaks; Receiver → detects the signal.",
+            "explanation": "Amplitude → height; Frequency → waves per second; Wavelength → spacing between peaks; Receiver → detects the signal.",
             "difficulty": "medium",
-            "hint": "Picture a drawn wave with labelled height and spacing."
+            "hint": "Picture a sketched wave with labels for height and spacing."
           },
           {
             "id": "w8-q4",
-            "question": "On simple classroom radios (like microcontroller radio groups), why do all devices on the same 'group/channel' hear each other?",
+            "question": "Why do devices on the same radio “group/channel” hear each other?",
             "type": "multiple-choice",
             "options": [
-              "They share the same battery",
+              "They share a battery",
               "They share the same frequency/channel identifier",
-              "They have the same device name",
-              "They are physically connected with wires"
+              "They have identical names",
+              "They are connected by wires"
             ],
             "correct": 1,
-            "explanation": "Sharing the same group/channel means they listen and speak on the same ‘room’ of the airwaves.",
+            "explanation": "Being on the same group means they listen and talk on the same channel.",
             "difficulty": "easy",
-            "hint": "Think of choosing the same chat room."
+            "hint": "Think of everyone in the same chat room."
           },
           {
             "id": "w8-q5",
-            "question": "Parsons: Put these lines in order to initialise radio usefully, show your ID, then be ready for messages.",
-            "type": "parsons",
-            "lines": [
-              { "text": "set group = 12", "indent": 0 },
-              { "text": "show number myID", "indent": 0 },
-              { "text": "on message received (n)", "indent": 0 },
-              { "text": "end", "indent": 0 }
+            "question": "Pseudocode logic: when should the heart be shown?",
+            "type": "multiple-choice",
+            "codeLabel": "Pseudocode",
+            "code": "set hasMsg = false\non message received (n)\n    if n = myID then\n        set hasMsg = true\n    end if\nend\nif hasMsg then\n    show icon \"Heart\"\nend",
+            "options": [
+              "Immediately at start",
+              "Only after a message arrives with n = myID",
+              "For any received message",
+              "Never, because hasMsg starts false"
             ],
-            "correctOrder": [0, 1, 2, 3],
-            "explanation": "Set group first, give feedback (ID), then define the receive handler.",
+            "correct": 1,
+            "explanation": "The flag flips to true only for your ID; the final check then shows the heart.",
             "difficulty": "medium",
-            "hint": "Always set up before listening."
+            "hint": "Track the flag from false → true."
           },
           {
             "id": "w8-q6",
-            "question": "Parsons: Only react to messages that are meant for me.",
-            "type": "parsons",
-            "lines": [
-              { "text": "on message received (n)", "indent": 0 },
-              { "text": "if n = myID then", "indent": 1 },
-              { "text": "show icon Heart", "indent": 2 },
-              { "text": "end if", "indent": 1 },
-              { "text": "end", "indent": 0 }
-            ],
-            "correctOrder": [0, 1, 2, 3, 4],
-            "explanation": "Guard by ID → action → close blocks.",
-            "difficulty": "medium",
-            "hint": "Check the ID before doing anything."
+            "question": "Which devices are inputs and which are outputs?",
+            "type": "drag-drop",
+            "terms": ["Button A", "Accelerometer reading", "Light level", "Show icon", "Play tone", "Scroll text"],
+            "definitions": ["Input", "Input", "Input", "Output", "Output", "Output"],
+            "correctMatches": [0, 1, 2, 3, 4, 5],
+            "explanation": "Buttons/sensors are inputs; LEDs/sound/text are outputs.",
+            "difficulty": "easy",
+            "hint": "Does it read the world (in) or tell the world something (out)?"
           },
           {
             "id": "w8-q7",
-            "question": "Read the pseudocode: what happens when a message equals myID?",
+            "question": "Two devices share a group. Each device has a unique myID. What must be true to react only to your own messages?",
             "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set hasMsg = false\non message received (n)\n    if n = myID then\n        set hasMsg = true\n    end if\nend\nif hasMsg then\n    show icon \"ghost\"\nend",
             "options": [
-              "The ghost never shows because hasMsg starts false",
-              "The ghost only shows after a matching message arrives",
-              "The ghost always shows at start",
-              "The ghost shows for any message"
+              "Check n ≠ myID",
+              "Ignore all messages",
+              "Check n = myID",
+              "Change group every second"
             ],
-            "correct": 1,
-            "explanation": "hasMsg flips true only for a matching ID; then the final check shows the icon.",
-            "difficulty": "medium",
-            "hint": "Follow the flag variable."
+            "correct": 2,
+            "explanation": "Guard by ID equality to accept only messages meant for you.",
+            "difficulty": "easy",
+            "hint": "Equality, not inequality."
           },
           {
             "id": "w8-q8",
-            "question": "Match each item to Input or Output.",
-            "type": "match",
-            "terms": ["Button A", "Accelerometer reading", "Light level", "Show icon", "Play tone", "Scroll text"],
-            "definitions": ["Input", "Input", "Input", "Output", "Output", "Output"],
-            "correctMatches": [0, 0, 0, 3, 4, 5],
-            "explanation": "Buttons/sensors → Input; LEDs/sound/text → Output.",
-            "difficulty": "easy",
-            "hint": "Does it read from the world or tell the world something?"
-          },
-          {
-            "id": "w8-q9",
-            "question": "Parsons: Send to a random target that is not me. (One line is a distractor.)",
-            "type": "parsons",
-            "lines": [
-              { "text": "set target = myID", "indent": 0, "distractor": true },
-              { "text": "set target = random 1..players", "indent": 0 },
-              { "text": "while target = myID", "indent": 0 },
-              { "text": "set target = random 1..players", "indent": 1 },
-              { "text": "end while", "indent": 0 },
-              { "text": "send message target", "indent": 0 }
-            ],
-            "correctOrder": [1, 2, 3, 4, 5],
-            "explanation": "Pick a random, re-pick while it equals me, then send. The first line was a distractor.",
-            "difficulty": "hard",
-            "hint": "Avoid sending to yourself."
-          },
-          {
-            "id": "w8-q10",
-            "question": "Which condition is correct if you only want to alert when it is BOTH hot and dark?",
+            "question": "Choose the correct condition if it must be BOTH hot and dark to alert.",
             "type": "multiple-choice",
             "codeLabel": "Pseudocode",
             "code": "set temp = temperature\nset light = light level\nif ________ then\n    show \"ALERT\"",
@@ -1249,27 +1216,51 @@
               "light < 50"
             ],
             "correct": 1,
-            "explanation": "‘and’ means both tests must be true together.",
+            "explanation": "AND means both tests must be true together.",
             "difficulty": "medium",
             "hint": "AND is stricter than OR."
           },
           {
-            "id": "w8-q11",
-            "question": "Parsons: Build a short countdown (3 → 2 → 1) and then show 'Go!'.",
-            "type": "parsons",
-            "lines": [
-              { "text": "set t = 3", "indent": 0 },
-              { "text": "repeat 3 times", "indent": 0 },
-              { "text": "show number t", "indent": 1 },
-              { "text": "pause 1000", "indent": 1 },
-              { "text": "change t by -1", "indent": 1 },
-              { "text": "end repeat", "indent": 0 },
-              { "text": "show string \"Go!\"", "indent": 0 }
+            "id": "w8-q9",
+            "question": "Random send: which description is best for avoiding sending to yourself?",
+            "type": "multiple-choice",
+            "options": [
+              "Pick a random target once and send",
+              "Set target = myID, then send",
+              "Pick a random target; while target = myID, pick again; then send",
+              "Always send to the highest ID"
             ],
-            "correctOrder": [0, 1, 2, 3, 4, 5, 6],
-            "explanation": "Initialise → loop 3 times: show, pause, decrement → end → 'Go!'.",
+            "correct": 2,
+            "explanation": "Re-pick while it equals you, then send.",
+            "difficulty": "medium-hard",
+            "hint": "A loop is needed to avoid your own ID."
+          },
+          {
+            "id": "w8-q10",
+            "question": "Timing maths: a loop shows an icon, pauses 200 ms, clears, pauses 300 ms, and repeats 4 times. About how long (ms) does the whole loop take?",
+            "type": "multiple-choice",
+            "options": ["500", "800", "1200", "2000"],
+            "correct": 2,
+            "explanation": "Each iteration pauses 200 + 300 = 500 ms. Four iterations → 2000 ms. (Display updates themselves are very quick.)",
+            "difficulty": "hard",
+            "hint": "Add the pauses per iteration, then multiply by 4."
+          },
+          {
+            "id": "w8-q11",
+            "question": "What does this show and why?",
+            "type": "multiple-choice",
+            "codeLabel": "Pseudocode",
+            "code": "on start\n    set group = 17\n    show number 3\non message received (n)\n    show string \"Msg\"\nend",
+            "options": [
+              "Shows 3 once at start; shows “Msg” whenever any message arrives on group 17",
+              "Shows 3 repeatedly forever",
+              "Shows “Msg” at start, then nothing",
+              "Shows nothing until a button is pressed"
+            ],
+            "correct": 0,
+            "explanation": "on start runs once; the receive event triggers for any message on that group.",
             "difficulty": "medium",
-            "hint": "Do the display and the decrement inside the loop."
+            "hint": "on start vs. event handler."
           },
           {
             "id": "w8-q12",
@@ -1281,7 +1272,7 @@
             "correct": 3,
             "explanation": "Button adds 1 → count = 1; message adds 2 → count = 3.",
             "difficulty": "medium",
-            "hint": "Apply both events in order."
+            "hint": "Apply the two events in order."
           }
         ]
       }
