@@ -88,9 +88,13 @@ During the last 15–20 minutes, we revisited concepts from Weeks 1 and 2 throug
 - **Micro:bit Radio Reference:** [Link](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"} 
 - **Pass the Ghost** [Makecode Code](https://makecode.microbit.org/S45111-00513-19130-58682){:target="_blank" rel="noopener"}
 - **Radio in Micro:bit:** [Video](https://youtu.be/Re3H2ISfQE8?si=CazYc56h3ZuGSxX6){:target="_blank" rel="noopener"}
-- **1st Radford Semele and Leamington Scouts in touch with the ISS via Amateur Radio (complete event):** [Video](https://www.youtube.com/live/LFBgDKPg4Mk?si=RUgEqm5lzMiW5x0r){:target="_blank" rel="noopener"}
-- 
-
+- **Sound: Wavelength, Frequency and Amplitude:** [Video](https://youtu.be/TsQL-sXZOLc?si=Sxbi0HiviYStxhAw){:target="_blank" rel="noopener"}
+- **Physics - Sound Waves and Hearing:** [Video](https://youtu.be/s9wZkP64rAc?si=2tzFTIuPfwqsX_ta){:target="_blank" rel="noopener"}
+- **Waves - Light Waves and Sound Waves:** [Video](https://youtu.be/lIrjYh9GrGM?si=q9zOmsQ_JY_JF1Jb){:target="_blank" rel="noopener"}
+- **Electromagnetic spectrum:** [Video](https://youtu.be/508ZsmsIlno?si=HyAakt5BUui5oXNh){:target="_blank" rel="noopener"}
+- **Why can't you put metal in a microwave?** [Video](https://youtu.be/ZExGV6jSuBw?si=BK9qXszv7D7hb1nb){:target="_blank" rel="noopener"}
+- **1st Radford Semele and Leamington Scouts in touch with the ISS via Amateur Radio (full event):** [Video](https://www.youtube.com/live/LFBgDKPg4Mk?si=RUgEqm5lzMiW5x0r){:target="_blank" rel="noopener"}
+  
 ---
 
 ## Equipment
