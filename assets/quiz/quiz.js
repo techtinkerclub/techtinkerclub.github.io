@@ -1,618 +1,447 @@
-/* Tech Tinker Club Quiz Engine (with post-submit lock + instructions modal)
-   -----------------------------------------------------------------------
-   - Works with Canva-style JSON (top-level { weeks: {...} } or direct weeks object)
-   - 12-week bar: shows all weeks; greyed if no questions or locked:true
-   - MCQ and Drag&Drop (Match) question types
-   - DnD FIX: dropping onto a filled zone returns the prior term to the pool
-   - DnD FIX: you can always drag from a zone back to the pool
-   - Lock after first submission: disables options/drag and hides Submit
-   - Clearer Hint / Submit / Next buttons
-   - Instructions modal: fetches /assets/quiz/instructions.html into a popup
-*/
+<script>
+// ===== Tech Tinker Club — Quiz Engine (MCQ + Match + Parsons) =====
+// Drop-in replacement with backward compatibility and a new 'parsons' type
+// Assumptions:
+// - questions.json has shape: { "weeks": { "1": {...}, "2": {...}, ... } }
+// - Supported question types: 'multiple-choice' (alias: 'mcq'),
+//   'drag-drop' (alias: 'match'), and NEW 'parsons'.
+// - 'match' supports TWO modes automatically:
+//    A) Normal matching (terms↔definitions), 0-based 'correctMatches' (term index -> def index)
+//    B) Reorder-the-lines (Parsons-lite): definitions like ["1st line","2nd line",...] and
+//       'correctMatches' are 1-based positions (top→bottom). This keeps your existing quizzes working.
 
-(function(){
-  // ---------- tiny helpers ----------
-  const qs  = (sel, el=document)=>el.querySelector(sel);
-  const qsa = (sel, el=document)=>Array.from(el.querySelectorAll(sel));
-  const log = (...a)=>console.debug('[TTC-QUIZ]', ...a);
+// ====== CONFIG ======
+const QUESTIONS_PATH = 'questions.json'; // adjust if you host elsewhere
+const USE_HASH_WEEK   = true;            // pick week from URL hash #8
 
-  // Read JSON URL from <script data-questions="...">
-  const dataURL = document.currentScript.getAttribute('data-questions') || '/assets/quiz/questions.json';
+// ====== Helpers ======
+const qs  = (sel, root=document) => root.querySelector(sel);
+const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const el  = (tag, cls, html) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (typeof html === 'string') n.innerHTML = html;
+  return n;
+};
+function shuffle(arr){ for (let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  // ---------- state ----------
-  const state = {
-    weeks: {},
-    currentWeek: null,
-    idx: 0,
-    score: 0,
-    selected: null,     // MCQ selected index
-    dragAnswers: {},    // for Match: defIndex -> termIndex
-    hintUsed: false,
-    locked: false       // lock current question after first submit
-  };
+// ====== State ======
+const state = {
+  data: null,
+  weekKey: null,
+  questions: [],
+  idx: 0,
+  locked: false
+};
 
-  /* =========================
-     Instructions modal (popup)
-     ========================= */
+// ====== Load ======
+async function loadQuestions(){
+  const res = await fetch(QUESTIONS_PATH, {cache:'no-cache'});
+  if (!res.ok) throw new Error('Failed to load questions.json');
+  state.data = await res.json();
+}
 
-  function ensureModalRoot(){
-    let root = document.getElementById('tqc-modal-root');
-    if (!root){
-      root = document.createElement('div');
-      root.id = 'tqc-modal-root';
-      root.innerHTML = `
-        <div class="tqc-modal" role="dialog" aria-modal="true" aria-labelledby="tqc-modal-title" hidden>
-          <div class="tqc-modal__backdrop" data-close></div>
-          <div class="tqc-modal__dialog" role="document">
-            <button class="tqc-modal__close" type="button" aria-label="Close" data-close>&times;</button>
-            <div class="tqc-card tqc-modal__card">
-              <h2 id="tqc-modal-title" class="tqc-title">Instructions</h2>
-              <div class="tqc-modal__content">
-                <div class="tqc-loading">Loading…</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(root);
+function getWeekKey(){
+  if (USE_HASH_WEEK){
+    const h = (location.hash||'').replace('#','').trim();
+    if (h && state.data.weeks[h]) return h;
+  }
+  // fallback: highest week number available
+  const keys = Object.keys(state.data.weeks)
+    .filter(k => /^\d+$/.test(k))
+    .map(k => Number(k))
+    .sort((a,b)=>a-b);
+  return String(keys[keys.length-1] || 1);
+}
 
-      // close on backdrop or X
-      root.addEventListener('click', (e)=>{
-        if (e.target.matches('[data-close]')) closeInstructionsModal();
-      });
+function normalizeWeek(week){
+  week.title = week.title || '';
+  week.description = week.description || '';
+  week.locked = !!week.locked;
+  week.questions = Array.isArray(week.questions) ? week.questions : [];
+  week.questions.forEach(normalizeQuestion);
+}
 
-      // close on Esc
-      document.addEventListener('keydown', (e)=>{
-        const open = document.querySelector('.tqc-modal:not([hidden])');
-        if (open && e.key === 'Escape') closeInstructionsModal();
-      });
-    }
-    return root.querySelector('.tqc-modal');
+function normalizeQuestion(q){
+  // type normalisation
+  const t = (q.type || '').toLowerCase().trim();
+  if (t === 'multiple-choice' || t === 'mcq') q.type = 'mcq';
+  else if (t === 'drag-drop' || t === 'match') q.type = 'match';
+  else if (t === 'parsons') q.type = 'parsons';
+  else q.type = 'mcq';
+
+  // MCQ
+  if (q.type === 'mcq'){
+    q.options = q.options || [];
+    if (typeof q.correct === 'number' && typeof q.answer === 'undefined') q.answer = q.correct;
+    if (typeof q.answer !== 'number') q.answer = 0;
   }
 
-  function openInstructionsModalFromURL(url){
-    const modal = ensureModalRoot();
-    const content = modal.querySelector('.tqc-modal__content');
-    content.innerHTML = '<div class="tqc-loading">Loading…</div>';
-    modal.hidden = false;
-    document.documentElement.classList.add('tqc-no-scroll');
-
-    fetch(url, { cache: 'no-store' })
-      .then(r => r.text())
-      .then(html => {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-
-        // Prefer <article class="tqi-article">, else <main>, else body
-        const src = doc.querySelector('article.tqi-article') ||
-                    doc.querySelector('main') ||
-                    doc.body;
-
-        content.innerHTML = '';
-
-        // Wrap to inherit quiz look-and-feel
-        const inner = document.createElement('div');
-        inner.className = 'tqc-instructions-inner';
-        inner.innerHTML = src.innerHTML;
-        content.appendChild(inner);
-      })
-      .catch(err => {
-        console.error('Failed to load instructions:', err);
-        content.innerHTML = '<p>Sorry, the instructions could not be loaded right now.</p>';
-      });
+  // MATCH (two modes supported)
+  if (q.type === 'match'){
+    q.terms = q.terms || [];
+    q.definitions = q.definitions || [];
+    q.correctMatches = Array.isArray(q.correctMatches) ? q.correctMatches : [];
+    // detection: are definitions "1st line"/"2nd line" style? -> treat as Parsons-lite (1-based)
+    q._isReorder = q.definitions.every(d => /^\s*\d+(st|nd|rd|th)\s+line\s*$/i.test(d) || /^(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th)\s+line$/i.test(d));
   }
 
-  function closeInstructionsModal(){
-    const modal = document.querySelector('.tqc-modal');
-    if (!modal) return;
-    modal.hidden = true;
-    document.documentElement.classList.remove('tqc-no-scroll');
+  // PARSONS
+  if (q.type === 'parsons'){
+    q.lines = Array.isArray(q.lines) ? q.lines : [];
+    q.correctOrder = Array.isArray(q.correctOrder) ? q.correctOrder : [];
   }
 
-  // Add "Instructions" button (opens modal and loads external page)
-  function addInstructionsButtonTo(headerEl){
-    if (!headerEl || headerEl.querySelector('.tqc-info-btn')) return;
+  // niceties
+  q.hint = q.hint || '';
+  q.explanation = q.explanation || '';
+  q.difficulty = q.difficulty || '';
+  q.codeLabel = q.codeLabel || '';
+  q.code = q.code || '';
+}
 
-    // ensure header is positioned for the absolute button
-    if (getComputedStyle(headerEl).position === 'static'){
-      headerEl.style.position = 'relative';
-    }
+// ====== Render ======
+function renderApp(){
+  const root = qs('#quiz-root') || document.body;
+  root.innerHTML = '';
 
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = 'Instructions';
-    btn.className = 'tqc-btn tqc-info-btn';
-    btn.style.position = 'absolute';
-    btn.style.top = '8px';
-    btn.style.right = '16px';
+  const header = el('div','tqc-header');
+  const h1 = el('h2','', esc(state.data.weeks[state.weekKey].title || `Week ${state.weekKey}`));
+  const p  = el('p','tqc-desc', esc(state.data.weeks[state.weekKey].description||''));
+  header.appendChild(h1);
+  header.appendChild(p);
 
-    // open modal and fetch /assets/quiz/instructions.html
-    btn.addEventListener('click', ()=>{
-      const ver = 'v=20251023-quiz'; // change this string whenever you update instructions.html
-      openInstructionsModalFromURL(`/assets/quiz/instructions.html?${ver}`);
+  const card = el('div','tqc-card');
+  card.id = 'tqc-card';
+
+  const nav = el('div','tqc-nav');
+  const idxInfo = el('div','tqc-idx', `Question <strong>${state.idx+1}</strong> of ${state.questions.length}`);
+  const btnPrev = el('button','tqc-btn', '◀ Prev');
+  const btnNext = el('button','tqc-btn', 'Next ▶');
+  btnPrev.disabled = (state.idx===0);
+  btnNext.disabled = (state.idx>=state.questions.length-1);
+  btnPrev.addEventListener('click', ()=>{ if (state.idx>0){ state.idx--; renderApp(); }});
+  btnNext.addEventListener('click', ()=>{ if (state.idx<state.questions.length-1){ state.idx++; renderApp(); }});
+  nav.appendChild(idxInfo);
+  nav.appendChild(btnPrev);
+  nav.appendChild(btnNext);
+
+  root.appendChild(header);
+  root.appendChild(card);
+  root.appendChild(nav);
+
+  renderQuestion(card, state.questions[state.idx]);
+}
+
+function renderQuestion(card, q){
+  state.locked = false;
+  card.innerHTML = '';
+
+  const title = el('div','tqc-q');
+  title.appendChild(el('div','tqc-qtext', esc(q.question)));
+
+  if (q.code){
+    const pre = el('pre','tqc-code');
+    pre.textContent = q.code;
+    const label = q.codeLabel ? el('div','tqc-codelabel', esc(q.codeLabel)) : null;
+    if (label) card.appendChild(label);
+    card.appendChild(pre);
+  }
+
+  // --- type branches ---
+  if (q.type === 'mcq'){
+    const list = el('div','tqc-mcq');
+    q.options.forEach((opt, i)=>{
+      const row = el('label','tqc-mcq-row');
+      const input = el('input');
+      input.type = 'radio';
+      input.name = 'mcq';
+      input.value = String(i);
+      row.appendChild(input);
+      row.appendChild(el('span','', esc(opt)));
+      list.appendChild(row);
+    });
+    card.appendChild(list);
+  }
+  else if (q.type === 'match'){
+    // two modes:
+    // A) normal match (terms↔definitions) — q._isReorder === false, 0-based correctMatches (term->def)
+    // B) reorder the lines (Parsons-lite) — q._isReorder === true, 1-based positions
+
+    const wrap = el('div','tqc-dd');
+
+    // LEFT pool: terms
+    const left = el('div','tqc-col');
+    left.appendChild(el('div','tqc-col-h','🧩 Terms'));
+    const pool = el('div','tqc-pool'); pool.id = 'tqc-pool';
+    const terms = q.terms.map((t, i) => ({ text: t, _termIndex: i }));
+    shuffle(terms).forEach(T=>{
+      const t = el('div','tqc-term', T.text);
+      t.draggable = true;
+      t.dataset.termIndex = String(T._termIndex);
+      t.addEventListener('dragstart', onDragStart);
+      t.addEventListener('dragend', onDragEnd);
+      pool.appendChild(t);
+    });
+    left.appendChild(pool);
+
+    // pool dropback
+    pool.addEventListener('dragover', e=>{ if(!state.locked) e.preventDefault(); });
+    pool.addEventListener('drop', e=>{
+      if (state.locked) return; e.preventDefault();
+      const termIndex = e.dataTransfer.getData('text/plain');
+      const n = qs(`.tqc-term[data-term-index="${termIndex}"]`);
+      if (n) pool.appendChild(n);
     });
 
-    headerEl.appendChild(btn);
-  }
+    // RIGHT: slots for definitions (or ordered positions)
+    const right = el('div','tqc-col');
+    right.appendChild(el('div','tqc-col-h', q._isReorder ? '📐 Order (top → bottom)' : '🎯 Definitions'));
+    const rwrap = el('div');
 
-  // ---------- data load & normalize ----------
-  async function loadData(){
-    const res = await fetch(dataURL, { cache: 'no-store' });
-    if(!res.ok) throw new Error('Cannot load questions.json');
-    const json = await res.json();
-    const weeksObj = json.weeks || json;
-    state.weeks = normalizeWeeks(weeksObj);
-    log('Loaded weeks:', Object.keys(state.weeks));
-  }
-
-  function normalizeWeeks(weeksObj){
-    const out = {};
-    for (const weekKey of Object.keys(weeksObj)){
-      const w = weeksObj[weekKey] || {};
-      out[weekKey] = {
-        title:       w.title || `Week ${weekKey}`,
-        description: w.description || '',
-        locked:      !!w.locked,
-        questions:   (w.questions || []).map(q => normalizeQuestion(q))
-      };
-    }
-    return out;
-  }
-
-  function normalizeQuestion(q){
-    const qq = { ...q };
-
-    // type normalisation
-    const t = (qq.type || '').toLowerCase().trim();
-    if (t === 'multiple-choice' || t === 'mcq') qq.type = 'mcq';
-    else if (t === 'drag-drop' || t === 'match') qq.type = 'match';
-
-    // answer normalisation (mcq)
-    if (typeof qq.answer === 'undefined' && typeof qq.correct !== 'undefined'){
-      qq.answer = qq.correct;
-    }
-
-    if (qq.type === 'mcq'){
-      qq.options = qq.options || [];
-      if (typeof qq.answer !== 'number') qq.answer = 0;
-    } else if (qq.type === 'match'){
-      qq.terms = qq.terms || [];
-      qq.definitions = qq.definitions || [];
-      qq.correctMatches = qq.correctMatches || []; // defIndex -> termIndex
-    }
-
-    // optional fields
-    qq.hint = qq.hint || '';
-    qq.explanation = qq.explanation || '';
-    qq.definition  = qq.definition || '';
-    qq.code = qq.code || '';
-
-    return qq;
-  }
-
-  // ---------- DOM helpers ----------
-  function el(tag, cls, html){
-    const e = document.createElement(tag);
-    if (cls)  e.className = cls;
-    if (html != null) e.innerHTML = html;
-    return e;
-  }
-
-  function getParam(name){
-    const p = new URLSearchParams(location.search);
-    return p.get(name);
-  }
-
-  // ---------- render root ----------
-  function render(container){
-    container.innerHTML = '';
-
-    const card = el('div','tqc-card ttc-quiz');
-
-    // Header
-    const header = el('div','tqc-header');
-    header.appendChild(el('h1','tqc-title','Tech Tinker Club'));
-    header.appendChild(el('p','tqc-sub','Micro:bit learning adventures — choose a week!'));
-    card.appendChild(header);
-
-    // Insert the Instructions button (opens modal)
-    addInstructionsButtonTo(header);
-
-    // Weeks bar – show all 12; greyed if locked or no questions
-    const weeksBar = el('div','tqc-weeks');
-    const allWeeks = ['1','2','3','4','5','6','7','8','9','10','11','12'];
-    allWeeks.forEach((wk)=>{
-      const exists = !!state.weeks[wk];
-      const hasQs  = exists && Array.isArray(state.weeks[wk].questions) && state.weeks[wk].questions.length > 0;
-      const locked = exists && state.weeks[wk].locked === true;
-
-      const b = el('button','tqc-btn',`Week ${wk}`);
-      if (String(state.currentWeek) === wk) b.setAttribute('aria-current','true');
-
-      if (!exists || !hasQs || locked){
-        b.disabled = true;
-        b.title = locked ? 'Coming soon (locked)' : 'Coming soon';
+    // Build slots
+    const defs = q.definitions.map((d, i) => ({ text: d, _defIndex: i }));
+    defs.forEach(D=>{
+      const z = el('div','tqc-drop');
+      if (!q._isReorder){
+        // normal match shows definition text
+        z.innerHTML = esc(D.text);
       } else {
-        b.addEventListener('click',()=>selectWeek(wk, container));
+        // reorder shows just the target label (e.g., "1st line")
+        z.innerHTML = esc(D.text);
       }
-      weeksBar.appendChild(b);
+      z.dataset.defIndex = String(D._defIndex);
+      z.addEventListener('dragover', e=>{ if(!state.locked) e.preventDefault(); });
+      z.addEventListener('dragenter', e=>{ if(!state.locked) z.classList.add('drag-over'); });
+      z.addEventListener('dragleave', e=> z.classList.remove('drag-over'));
+      z.addEventListener('drop', e=>{ if(!state.locked) onDropZone(e, pool); });
+      rwrap.appendChild(z);
     });
-    card.appendChild(weeksBar);
 
-    // Week info (title/desc)
-    const w = state.weeks[state.currentWeek];
-    const info = el('div','tqc-info');
-    info.innerHTML = `<div><strong>${w.title}</strong></div><div>${w.description || ''}</div>`;
-    card.appendChild(info);
-
-    // Score strip
-    const score = el('div','tqc-score');
-    score.innerHTML = `
-      <div class="item"><div class="num" id="qcur">${state.idx+1}</div><div class="label">Question</div></div>
-      <div class="item"><div class="num" id="qtot">${w.questions.length}</div><div class="label">Total</div></div>
-      <div class="item"><div class="num" id="qscore">${state.score}</div><div class="label">Score</div></div>
-      <div class="item"><div class="num" id="qprog">0%</div><div class="label">Progress</div></div>
-    `;
-    card.appendChild(score);
-
-    // Progress
-    const prog = el('div','tqc-progress');
-    const bar  = el('div','tqc-progress-bar');
-    const fill = el('span','tqc-progress-fill'); fill.id = 'tqc-fill';
-    bar.appendChild(fill);
-    prog.appendChild(bar);
-    card.appendChild(prog);
-
-    // Question host
-    const qwrap = el('div'); qwrap.id = 'tqc-qwrap';
-    card.appendChild(qwrap);
-
-    container.appendChild(card);
-    renderQuestion();
+    right.appendChild(rwrap);
+    wrap.appendChild(left);
+    wrap.appendChild(right);
+    card.appendChild(wrap);
   }
+  else if (q.type === 'parsons'){
+    // Full Parsons: lines with optional indent/distractors; correctOrder is array of 0-based indexes
+    const dd = el('div','tqc-dd');
 
-  function pct(){
-    const w = state.weeks[state.currentWeek];
-    return Math.round(((state.idx+1)/w.questions.length)*100);
-  }
+    // LEFT column
+    const left = el('div','tqc-col');
+    left.appendChild(el('div','tqc-col-h','🧩 Lines'));
+    const pool = el('div','tqc-pool'); pool.id = 'tqc-pool';
 
-  // ---------- render a question ----------
-  function renderQuestion(){
-    const w = state.weeks[state.currentWeek];
-    const q = w.questions[state.idx];
+    const lines = q.lines.map((ln, idx)=>({ ...ln, _idx: idx }));
+    shuffle(lines).forEach(L=>{
+      const t = el('div','tqc-term tqc-line', L.text);
+      t.draggable = true;
+      t.dataset.termIndex = String(L._idx);
+      if (typeof L.indent === 'number') t.dataset.indent = String(L.indent);
+      t.addEventListener('dragstart', onDragStart);
+      t.addEventListener('dragend', onDragEnd);
+      pool.appendChild(t);
+    });
+    left.appendChild(pool);
 
-    // reset per-question state
-    state.locked = false;
-    state.selected = null;
-    state.hintUsed = false;
+    // pool accepts dropback
+    pool.addEventListener('dragover', e=>{ if(!state.locked) e.preventDefault(); });
+    pool.addEventListener('drop', e=>{
+      if (state.locked) return; e.preventDefault();
+      const termIndex = e.dataTransfer.getData('text/plain');
+      const n = qs(`.tqc-term[data-term-index="${termIndex}"]`);
+      if (n) pool.appendChild(n);
+    });
 
-    qs('#qcur').textContent = state.idx+1;
-    qs('#qtot').textContent = w.questions.length;
-    qs('#qscore').textContent = state.score;
-    qs('#qprog').textContent  = `${pct()}%`;
-    qs('#tqc-fill').style.width = `${pct()}%`;
-
-    const box = qs('#tqc-qwrap'); box.innerHTML = '';
-    const card = el('div','tqc-qcard');
-
-    card.appendChild(el('div','tqc-qnum',`Question ${state.idx+1}`));
-    card.appendChild(el('div','tqc-qtext', q.question));
-
-    if (q.code){
-      const code = el('pre','tqc-code');
-      code.textContent = q.code;
-      card.appendChild(code);
+    // RIGHT column: N slots == q.correctOrder.length
+    const right = el('div','tqc-col');
+    right.appendChild(el('div','tqc-col-h','📐 Order (top → bottom)'));
+    const rwrap = el('div');
+    for (let i=0;i<q.correctOrder.length;i++){
+      const z = el('div','tqc-drop tqc-slot', `Line ${i+1}`);
+      z.dataset.defIndex = String(i);
+      z.addEventListener('dragover', e=>{ if(!state.locked) e.preventDefault(); });
+      z.addEventListener('dragenter', e=>{ if(!state.locked) z.classList.add('drag-over'); });
+      z.addEventListener('dragleave', e=> z.classList.remove('drag-over'));
+      z.addEventListener('drop', e=>{ if(!state.locked) onDropZone(e, pool); });
+      rwrap.appendChild(z);
     }
+    right.appendChild(rwrap);
 
-    // hint panel region (empty until clicked)
-    const hintHost = el('div',''); hintHost.id = 'tqc-hint';
-    card.appendChild(hintHost);
-
-    if (q.type === 'match'){
-      // --------- DRAG & DROP ----------
-      const dd = el('div','tqc-dd');
-
-      // LEFT (pool)
-      const left = el('div','tqc-col');
-      left.appendChild(el('div','tqc-col-h','📝 Terms'));
-      const pool = el('div','tqc-pool'); pool.id = 'tqc-pool';
-      const order = [...q.terms.keys()];
-      for (let i=order.length-1; i>0; i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [order[i], order[j]] = [order[j], order[i]];
-      }
-      order.forEach(idx=>{
-        const t = el('div','tqc-term', q.terms[idx]);
-        t.draggable = true;
-        t.dataset.termIndex = String(idx);
-        t.addEventListener('dragstart', onDragStart);
-        t.addEventListener('dragend', onDragEnd);
-        pool.appendChild(t);
-      });
-      left.appendChild(pool);
-
-      // Make the pool a valid drop target (to return terms)
-      pool.addEventListener('dragover', evt => { if (!state.locked) evt.preventDefault(); });
-      pool.addEventListener('drop', (evt)=>{
-        if (state.locked) return;
-        evt.preventDefault();
-        const termIndex = evt.dataTransfer.getData('text/plain');
-        if (termIndex === '' || termIndex == null) return;
-        const dragged = qs(`.tqc-term[data-term-index="${termIndex}"]`);
-        if (dragged) pool.appendChild(dragged);
-      });
-
-      // RIGHT (defs)
-      const right = el('div','tqc-col');
-      right.appendChild(el('div','tqc-col-h','📖 Definitions'));
-      const rwrap = el('div');
-      q.definitions.forEach((d, i)=>{
-        const z = el('div','tqc-drop', d);
-        z.dataset.defIndex = String(i);
-        z.addEventListener('dragover', e => { if (!state.locked) e.preventDefault(); });
-        z.addEventListener('dragenter', e => { if (!state.locked) z.classList.add('drag-over'); });
-        z.addEventListener('dragleave', e => z.classList.remove('drag-over'));
-        z.addEventListener('drop', e => { if (!state.locked) onDropZone(e, pool); });
-        rwrap.appendChild(z);
-      });
-      right.appendChild(rwrap);
-
-      dd.appendChild(left);
-      dd.appendChild(right);
-      card.appendChild(dd);
-
-      state.dragAnswers = {}; // reset
-    } else {
-      // --------- MCQ ----------
-      const grid = el('div','tqc-options');
-      q.options.forEach((opt, i)=>{
-        const o = el('div','tqc-option', opt);
-        o.addEventListener('click', ()=>{
-          if (state.locked) return;
-          qsa('.tqc-option', grid).forEach(x=>x.removeAttribute('aria-selected'));
-          o.setAttribute('aria-selected','true');
-          state.selected = i;
-        });
-        grid.appendChild(o);
-      });
-      card.appendChild(grid);
-    }
-
-    // Actions: Hint (only if exists) + Submit
-    const actions = el('div','tqc-actions');
-
-    if (q.hint && q.hint.trim().length){
-      const hintBtn = el('button','tqc-hint','💡 Hint');
-      hintBtn.addEventListener('click', ()=>{
-        if (state.hintUsed || state.locked) return;
-        state.hintUsed = true;
-        hintBtn.disabled = true;
-        const hp = el('div','tqc-hint-panel', `<strong>Hint:</strong> ${q.hint}`);
-        qs('#tqc-hint').appendChild(hp);
-      });
-      actions.appendChild(hintBtn);
-    }
-
-    const submitBtn = el('button','tqc-submit','Submit Answer');
-    submitBtn.addEventListener('click', submitAnswer);
-    actions.appendChild(submitBtn);
-
-    card.appendChild(actions);
-
-    const fb = el('div','tqc-feedback'); fb.id = 'tqc-fb';
-    card.appendChild(fb);
-
-    box.appendChild(card);
+    dd.appendChild(left);
+    dd.appendChild(right);
+    card.appendChild(dd);
   }
 
-  // ---------- DnD handlers ----------
-  function onDragStart(e){
-    if (state.locked) { e.preventDefault(); return; }
-    e.dataTransfer.setData('text/plain', e.target.dataset.termIndex);
-    e.target.classList.add('dragging');
-  }
-  function onDragEnd(e){
-    e.target.classList.remove('dragging');
+  // hint
+  if (q.hint){
+    const hint = el('div','tqc-hint','💡 Hint: ' + esc(q.hint));
+    card.appendChild(hint);
   }
 
-  // Drop onto a definition zone
-  function onDropZone(evt, poolEl){
-    evt.preventDefault();
-    const z = evt.currentTarget;
-    z.classList.remove('drag-over');
+  // submit
+  const actions = el('div','tqc-actions');
+  const btn = el('button','tqc-submit','Check Answer');
+  btn.addEventListener('click', submitAnswer);
+  actions.appendChild(btn);
+  card.appendChild(actions);
 
-    const termIndex = evt.dataTransfer.getData('text/plain');
-    if (termIndex === '' || termIndex == null) return;
+  // feedback
+  card.appendChild(el('div','tqc-feedback'));
+}
 
-    const dragged = qs(`.tqc-term[data-term-index="${termIndex}"]`);
-    if (!dragged) return;
+function onDragStart(e){
+  const t = e.target.closest('.tqc-term');
+  if (!t) return;
+  e.dataTransfer.setData('text/plain', t.dataset.termIndex || '');
+  requestAnimationFrame(()=> t.classList.add('dragging'));
+}
+function onDragEnd(e){
+  const t = e.target.closest('.tqc-term');
+  if (!t) return;
+  t.classList.remove('dragging');
+}
+function onDropZone(e, pool){
+  e.preventDefault();
+  const z = e.currentTarget;
+  z.classList.remove('drag-over');
+  const termIndex = e.dataTransfer.getData('text/plain');
+  if (!termIndex && termIndex!== '0') return;
+  const dragged = qs(`.tqc-term[data-term-index="${termIndex}"]`);
+  if (!dragged) return;
 
-    // If zone already has a term, return it to pool
-    const existing = z.querySelector('.tqc-term');
-    if (existing) poolEl.appendChild(existing);
+  // ensure only one term per slot (move existing back to pool)
+  const existing = z.querySelector('.tqc-term');
+  if (existing) pool.appendChild(existing);
+  z.appendChild(dragged);
+}
 
-    z.appendChild(dragged);
+function submitAnswer(){
+  if (state.locked) return;
+  const q = state.questions[state.idx];
+  const card = qs('#tqc-card');
+  const feedback = qs('.tqc-feedback', card);
+  let isCorrect = false;
+
+  if (q.type === 'mcq'){
+    const chosen = qs('input[name="mcq"]:checked', card);
+    const idx = chosen ? Number(chosen.value) : -1;
+    isCorrect = (idx === q.answer);
+    qsa('.tqc-mcq-row', card).forEach((row, i)=>{
+      row.classList.toggle('correct', i === q.answer);
+      row.classList.toggle('incorrect', i !== q.answer && i === idx);
+    });
   }
+  else if (q.type === 'match'){
+    const zones = qsa('.tqc-drop', card);
+    const pairs = []; // {termIndex, defIndex}
+    zones.forEach(z=>{
+      const defIndex = Number(z.dataset.defIndex);
+      const term = z.querySelector('.tqc-term');
+      const termIndex = term ? Number(term.dataset.termIndex) : null;
+      pairs.push({defIndex, termIndex});
+    });
 
-  // ---------- submit & feedback ----------
-  function submitAnswer(){
-    if (state.locked) return; // block double submit
+    // Two modes:
+    // A) Normal match: correctMatches = array mapping termIndex -> defIndex (0-based)
+    // B) Reorder (Parsons-lite): definitions like "1st line"..."N-th line"
+    //    correctMatches = [1..N] (1-based positions). We verify slot order.
+    if (!q._isReorder){
+      // build an answer map from termIndex -> defIndex user placed
+      const userMap = {};
+      pairs.forEach(p=>{ if (p.termIndex !== null) userMap[p.termIndex] = p.defIndex; });
 
-    const w = state.weeks[state.currentWeek];
-    const q = w.questions[state.idx];
-    let isCorrect = false;
+      // check each termIndex against expected defIndex
+      let allPlaced = true, allRight = true;
+      q.terms.forEach((_, termIdx)=>{
+        const expectedDef = q.correctMatches[termIdx]; // 0-based
+        const got = userMap[termIdx];
+        const ok = (typeof got === 'number') && (got === expectedDef);
+        if (typeof got !== 'number') allPlaced = false;
+        if (!ok) allRight = false;
+      });
+      isCorrect = allPlaced && allRight;
 
-    if (q.type === 'match'){
-      // Build answers from zones
-      const zones = qsa('.tqc-drop');
-      state.dragAnswers = {};
+      // per-zone colouring: find which termIndex belongs to each defIndex
       zones.forEach(z=>{
-        const defIndex = Number(z.dataset.defIndex);
-        const term = z.querySelector('.tqc-term');
-        if (term){
-          state.dragAnswers[defIndex] = Number(term.dataset.termIndex);
-        }
+        const defIdx = Number(z.dataset.defIndex);
+        // find expected term for this def
+        const expectedTermIdx = q.correctMatches.findIndex(def => def === defIdx);
+        const placedTerm = z.querySelector('.tqc-term');
+        const ok = placedTerm && Number(placedTerm.dataset.termIndex) === expectedTermIdx;
+        z.classList.toggle('correct', !!ok);
+        z.classList.toggle('incorrect', !ok);
       });
-
-      // Must fill all zones correctly
-      isCorrect = zones.every((z, i)=>{
-        const user = state.dragAnswers[i];
-        return typeof user === 'number' && user === q.correctMatches[i];
-      });
-
-      // Zone feedback
-      zones.forEach((z, i)=>{
-        z.classList.remove('correct','incorrect');
-        const user = state.dragAnswers[i];
-        if (typeof user === 'number'){
-          z.classList.add(user === q.correctMatches[i] ? 'correct' : 'incorrect');
-        }
-      });
-
     } else {
-      // MCQ
-      if (state.selected === null) return; // nothing picked
-      isCorrect = state.selected === q.answer;
-
-      const opts = qsa('.tqc-option');
-      opts.forEach((o,i)=>{
-        o.classList.remove('correct','incorrect');
-        if (i === q.answer) o.classList.add('correct');
-        else if (i === state.selected && !isCorrect) o.classList.add('incorrect');
+      // reorder mode:
+      // correctMatches are 1-based positions. Slots are in defIndex order already.
+      const positions = pairs.map(p => p.termIndex); // array of termIndex in slot order
+      const allFilled = positions.every(x => typeof x === 'number');
+      // build expected by converting 1-based positions to termIndex we expect in each slot
+      // Here we simply expect slot k to contain the term whose correct position is (k+1).
+      // So if correctMatches[termIndex] === (k+1) => this term belongs in slot k.
+      const expectedTermAtSlot = pairs.map(_=>null);
+      q.correctMatches.forEach((pos1based, termIdx)=>{
+        const slot = pos1based - 1; // convert to 0-based slot index
+        if (slot>=0 && slot<expectedTermAtSlot.length){
+          expectedTermAtSlot[slot] = termIdx;
+        }
       });
-    }
+      const same = allFilled && positions.length === expectedTermAtSlot.length &&
+                   positions.every((v,i)=> v === expectedTermAtSlot[i]);
+      isCorrect = same;
 
-    if (isCorrect) state.score++;
-
-    // ---- lock the UI so the user can’t change & resubmit ----
-    state.locked = true;
-
-    // 1) Disable/Hide Submit
-    const submitBtn = qs('.tqc-submit');
-    if (submitBtn){
-      submitBtn.disabled = true;
-      submitBtn.classList.add('tqc-hidden');
-      submitBtn.setAttribute('aria-disabled','true');
-    }
-
-    // 2) Disable Hint (if present)
-    const hintBtn = qs('.tqc-hint');
-    if (hintBtn){
-      hintBtn.disabled = true;
-      hintBtn.setAttribute('aria-disabled','true');
-    }
-
-    // 3) Lock MCQ options (visual + a11y)
-    qsa('.tqc-option').forEach(o=>{
-      o.classList.add('tqc-locked');
-      o.setAttribute('aria-disabled','true');
-      o.tabIndex = -1;
-    });
-
-    // 4) Lock Drag & Drop
-    qsa('.tqc-term').forEach(t=>{
-      t.draggable = false;
-      t.classList.add('tqc-locked');
-    });
-    qsa('.tqc-drop').forEach(z=>{
-      z.classList.add('tqc-locked');
-    });
-
-    // ---- feedback + Next button ----
-    const fb = qs('#tqc-fb');
-    const exp = q.explanation ? `<div class="tqc-exp"><strong>Why:</strong> ${q.explanation}</div>` : '';
-    const defn = q.definition  ? `<div class="tqc-def"><strong>Definition:</strong> ${q.definition}</div>` : '';
-    fb.innerHTML = `
-      <div class="tqc-feedback-inner ${isCorrect ? 'ok':'nope'}">
-        ${isCorrect ? '🎉 Correct!' : '❌ Not quite.'}
-        ${exp}${defn}
-        <div class="tqc-next-row">
-          ${state.idx < w.questions.length-1
-            ? '<button class="tqc-next">Next Question →</button>'
-            : '<button class="tqc-next">See Final Score →</button>'}
-        </div>
-      </div>
-    `;
-
-    const nextBtn = qs('.tqc-next', fb);
-    nextBtn.addEventListener('click', ()=>{
-      if (state.idx < w.questions.length-1){
-        state.idx++;
-        renderQuestion();
-      } else {
-        renderFinal();
-      }
-    });
-  }
-
-  function renderFinal(){
-    const w = state.weeks[state.currentWeek];
-    const percent = Math.round((state.score / w.questions.length) * 100);
-    let msg = '';
-    if (percent >= 95) msg = "🏆 Phenomenal!";
-    else if (percent >= 90) msg = "🌟 Outstanding!";
-    else if (percent >= 80) msg = "👏 Excellent!";
-    else if (percent >= 70) msg = "👍 Great job!";
-    else if (percent >= 60) msg = "😊 Good work!";
-    else if (percent >= 50) msg = "🌱 Nice effort!";
-    else msg = "🌟 Keep going!";
-
-    const box = qs('#tqc-qwrap'); box.innerHTML = '';
-    const card = el('div','tqc-final');
-    card.innerHTML = `
-      <h2>🎉 ${w.title} Complete!</h2>
-      <div class="tqc-big">${percent}%</div>
-      <p><strong>You got ${state.score} out of ${w.questions.length} correct.</strong></p>
-      <p><strong>${msg}</strong></p>
-      <div class="tqc-final-actions">
-        <button class="tqc-restart">Try This Week Again</button>
-        ${Number(state.currentWeek) < Math.max(...Object.keys(state.weeks).map(n=>Number(n)))
-          ? '<button class="tqc-next-week">Next Week →</button>' : ''}
-      </div>
-    `;
-    box.appendChild(card);
-
-    qs('.tqc-restart', card).addEventListener('click', ()=>{
-      state.idx = 0; state.score = 0; renderQuestion();
-    });
-    const nx = qs('.tqc-next-week', card);
-    if (nx){
-      nx.addEventListener('click', ()=>{
-        const next = String(Number(state.currentWeek)+1);
-        if (state.weeks[next]) selectWeek(next, qs('#tqc-root'));
+      // per-slot colouring
+      qsa('.tqc-drop', card).forEach((z,i)=>{
+        const placed = z.querySelector('.tqc-term');
+        const ok = placed && Number(placed.dataset.termIndex) === expectedTermAtSlot[i];
+        z.classList.toggle('correct', !!ok);
+        z.classList.toggle('incorrect', !ok);
       });
     }
   }
+  else if (q.type === 'parsons'){
+    // collect placed original indexes in slot order
+    const zones = qsa('.tqc-drop', card);
+    const placed = zones.map(z=>{
+      const t = z.querySelector('.tqc-term');
+      return t ? Number(t.dataset.termIndex) : null;
+    });
+    const allFilled = placed.every(x => typeof x === 'number');
+    isCorrect = allFilled &&
+                placed.length === q.correctOrder.length &&
+                placed.every((v,i)=> v === q.correctOrder[i]);
 
-  // ---------- select week ----------
-  function selectWeek(weekKey, container){
-    state.currentWeek = String(weekKey);
-    state.idx = 0;
-    state.score = 0;
-    state.selected = null;
-    state.dragAnswers = {};
-    state.hintUsed = false;
-    state.locked = false;
-    render(container);
+    zones.forEach((z,i)=>{
+      const t = z.querySelector('.tqc-term');
+      const ok = t && Number(t.dataset.termIndex) === q.correctOrder[i];
+      z.classList.toggle('correct', !!ok);
+      z.classList.toggle('incorrect', !ok);
+    });
   }
 
-  // ---------- bootstrap ----------
-  (async function init(){
-    try {
-      await loadData();
-      const container = document.getElementById('tqc-root');
-      if (!container){
-        console.error('Missing #tqc-root container.');
-        return;
-      }
-      const wkParam = getParam('week');
-      // choose initial week: ?week=… or first available with questions
-      const weekKeys = Object.keys(state.weeks).sort((a,b)=>Number(a)-Number(b));
-      let initial = wkParam && state.weeks[wkParam] ? wkParam : weekKeys.find(k => state.weeks[k].questions.length > 0 && !state.weeks[k].locked);
-      if (!initial) initial = weekKeys[0]; // fallback
-      selectWeek(initial, container);
-    } catch (e){
-      console.error(e);
-    }
-  })();
+  // lock + feedback
+  state.locked = true;
+  feedback.innerHTML = '';
+  feedback.className = 'tqc-feedback ' + (isCorrect ? 'ok' : 'bad');
+  const msg = isCorrect ? '✅ Correct!' : '❌ Not quite.';
+  feedback.appendChild(el('div','', msg));
+  if (state.questions[state.idx].explanation){
+    feedback.appendChild(el('div','tqc-explain', esc(state.questions[state.idx].explanation)));
+  }
+}
 
-})();
+// ====== Boot ======
+async function boot(){
+  await loadQuestions();
+  state.weekKey = getWeekKey();
+  const week = state.data.weeks[state.weekKey];
+  normalizeWeek(week);
+  state.questions = week.questions;
+  state.idx = 0;
+  renderApp();
+}
+
+document.addEventListener('DOMContentLoaded', boot);
+</script>
