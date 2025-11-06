@@ -1130,21 +1130,21 @@
             "hint": "Pitch ↔ frequency, loudness ↔ amplitude."
           },
           {
-            "id": "w8-q3",
-            "question": "Match each term to its description.",
-            "type": "drag-drop",
-            "terms": ["Amplitude", "Frequency", "Wavelength", "Receiver"],
-            "definitions": [
-              "Distance between two peaks",
-              "Device that detects a signal",
-              "How many waves per second",
-              "Height/strength of a wave"
-            ],
-            "correctMatches": [3, 2, 0, 1],
-            "explanation": "Amplitude → height/strength; Frequency → waves per second; Wavelength → distance between peaks; Receiver → device that detects the signal.",
-            "difficulty": "medium",
-            "hint": "Picture the classic wave drawing: height, spacing, and the gadget listening."
-          },
+          "id": "w8-q3",
+          "question": "Match each term to its description.",
+          "type": "drag-drop",
+          "terms": ["Amplitude", "Frequency", "Wavelength", "Receiver"],
+          "definitions": [
+            "Distance between two peaks",
+            "Device that detects a signal",
+            "How many waves per second",
+            "Height/strength of a wave"
+          ],
+          "correctMatches": [4, 3, 1, 2],
+          "explanation": "Amplitude → height/strength; Frequency → waves per second; Wavelength → distance between peaks; Receiver → device that detects the signal.",
+          "difficulty": "medium",
+          "hint": "Picture the wave drawing — height, spacing, and which gadget receives it."
+        },
           {
             "id": "w8-q4",
             "question": "Why must devices use the same channel/group in a simple radio system?",
