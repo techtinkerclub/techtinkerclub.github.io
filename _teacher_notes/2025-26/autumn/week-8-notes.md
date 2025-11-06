@@ -16,83 +16,68 @@ header:
 # Instructor Notes — Week 8
 {% include print-to-pdf.html %}
 
-**Theme:** Radio Messages & Multiplayer Logic  
-**Focus Concept:** Transmitters, Receivers, and Message Routing  
-**Mini-Projects:** *Pass the Ghost* (Part A) → *Duck Hot-Potato* (Part B)
+**Theme:** Radio Waves & Wireless Communication  
+**Focus Concept:** Energy transfer through waves and radio messaging  
+**Mini-Project:** *Pass the Ghost* (two-player radio activity)  
 
 ---
 
 ## Learning Objectives
-- Understand that a **radio wave** is an invisible signal carrying data through the air.  
-- Describe how the micro:bit can act as both **transmitter** and **receiver**.  
-- Set a **radio group** so only chosen devices share messages.  
-- Use **IDs** and **selection** (`if` tests) to control which device responds.  
-- Apply **variables**, **loops**, and **randomness** to create multiplayer behaviour.  
-- Reflect on how networks and message routing work in real systems.
+- Explain in simple terms what a wave is and what it does.  
+- Recognise examples of wave energy (sound, light, radio, microwaves).  
+- Understand **amplitude**, **frequency**, and **wavelength** conceptually.  
+- Describe how a micro:bit uses radio waves to send and receive numbers.  
+- Apply selection (`if` tests) and variables to control messages.  
+- Work collaboratively to debug and enhance a shared program.  
 
 ---
 
-## Lesson Timing (≈ 80 min total)
+## Session Flow (≈ 80 min)
 
 | Segment | Time | Focus |
 |----------|------|-------|
-| Introduction & radio demo | 10 min | What is a radio wave? |
-| Part A — Pass the Ghost | 25 min | Send / Receive logic |
-| PRIMM discussion | 10 min | IDs, groups, conditions |
-| Part B — Duck Hot-Potato | 35 min | Multiplayer game build |
-| Play-test & reflection | 5 min | Debug & extend |
+| Wave Introduction | 20 min | Science demo and discussion |
+| Radio link to micro:bit | 10 min | From theory to practice |
+| Part A – Pass the Ghost (PRIMM) | 25 min | Code exploration and testing |
+| Enhancement – Add Sounds / Icons | 10 min | Modification and creativity |
+| Quiz Review | 15 min | Weeks 1–2 concept recap |
 
 ---
 
-## Concept Recap
+## Part A — Wave and Radio Exploration
 
-Write on the board:
+### Starter Discussion
+Ask:
+- What do we mean by a “wave”?  
+- Can you think of different kinds of waves?  
+- What happens to a rope if you wiggle one end?  
 
-> **Radio wave:** invisible signal carrying data through the air  
-> **Transmitter:** sends the message  
-> **Receiver:** listens for messages  
-> **Group:** a channel where all members can hear each other  
-> **ID:** number that identifies who a message is meant for
+Sketch or demonstrate how amplitude and frequency change the shape of a wave.  
 
-Prompt questions:
-- What other things use radio waves? (TV, Wi-Fi, Bluetooth)  
-- What happens if two people talk on the same channel at once? (*interference*)  
-- Why might we use IDs in a network?
+**Key points**
+- Waves carry energy but not matter.  
+- Sound waves need air; radio waves do not.  
+- Higher frequency = more energy.  
+- Different frequencies = different uses (radio, Wi-Fi, microwave, X-ray).  
+- Humans hear roughly 20 Hz–20 kHz.  
 
----
-
-## Vocabulary Focus
-
-| Term | Child-friendly definition |
-|------|----------------------------|
-| **Radio wave** | Invisible energy wave that carries messages through the air. |
-| **Transmitter** | The sender of the message. |
-| **Receiver** | The listener that picks up the signal. |
-| **Antenna** | Part of a device that sends / receives radio waves. |
-| **Frequency** | How fast the wave wiggles (vibrations per second). |
-| **Amplitude** | Height of the wave — bigger = stronger signal. |
-| **Interference** | When signals clash or mix, causing lost data. |
-| **Radio Group** | A shared “room” where devices exchange messages. |
-| **ID** | Number that tells which device a message is for. |
-| **Variable** | A labelled box that stores a value. |
-| **Condition** | A yes/no test deciding what happens next. |
-| **Loop** | Repeats a block of code again and again. |
+Link this to the micro:bit radio feature — a tiny transmitter and receiver sending numbers instead of sound.
 
 ---
 
-## Part A — *Pass the Ghost* (PRIMM Starter)
+## Part B — *Pass the Ghost* (PRIMM Starter)
 
 ### Aim
-Introduce **radio send/receive** and **ID-based selection** through a very small two-player activity.  
-Each device changes only **one line** — its ID.
+Show how data travels between devices using radio messages and IDs.
 
 ### Pseudocode
 
     on start:
-        set radio group to 42
+        set radio group to shared number
         set my ID (1 or 2)
-        show my ID, then clear screen
-        if my ID is 1 → start with ghost
+        show my ID briefly
+        clear screen
+        if ID == 1 → start holding ghost
             ghost = true
             show ghost icon
 
@@ -105,136 +90,74 @@ Each device changes only **one line** — its ID.
         if ghost == true:
             ghost = false
             clear screen
-            if my ID == 1 → target = 2
+            if ID == 1 → target = 2
             else → target = 1
             send target over radio
 
 ---
 
-### Teaching Flow
+### Teaching Steps
 
-1. **Predict**  
-   Ask: *What will happen when one player shakes?*  
-   Who will see the ghost? Why only that player?
-
-2. **Run**  
-   Test in pairs. Both devices must share the same radio group and have unique IDs.
-
-3. **Investigate**  
-   - Change the group number — what happens?  
-   - Swap IDs — who starts now?  
-   - Add a pause after shaking — does that make it clearer?
-
-4. **Modify**  
-   - Replace shake with button A.  
-   - Use a different icon.  
-   - Add a short sound when receiving the ghost.
-
-5. **Make**  
-   - Extend to 3 players.  
-   - Introduce a random target between 1 and N.
+1. **Predict** – What will happen when Player 1 shakes? Why only one micro:bit reacts?  
+2. **Run** – Test in pairs on same radio group; verify unique IDs.  
+3. **Investigate** – Change group numbers or swap IDs to see effects.  
+4. **Modify** – Add different icons or short melodies when receiving.  
+5. **Make** – Let learners create themes (e.g. “pass the alien”) or extend to three players.
 
 ---
 
 ### Instructor Tips
-- Keep player IDs written on paper next to each device to avoid duplication.  
-- Re-explain **selection**:  
-  > “If the number I hear matches my ID, I do something; otherwise I ignore it.”  
-- Use this to connect to **message routing** (“like postal addresses”).  
-- Encourage pupils to narrate aloud:  
-  *“I sent 2 → that’s me! I received 2!”*
+- Keep player IDs visible on the desk to avoid confusion.  
+- Highlight the `if` test logic — selection based on the message’s number.  
+- Encourage pairs to narrate events aloud to show understanding.  
+- Remind them that radio range depends on distance and obstacles.  
 
 ---
 
-## Part B — *Duck Hot-Potato* (Multiplayer Build)
+## Part C — Add Sounds and Replay
 
-### Game Concept
-- The “duck” behaves like a **hot-potato** — only one micro:bit holds it at a time.  
-- When you **shake**, you pass it to another random player.  
-- A hidden **timer (fuse)** counts down; if it runs out while you still hold it, you “die.”  
-- Dead players automatically forward any ducks they receive so the game never freezes.
-
----
-
-### Pseudocode Overview
-
-    on start:
-        set radio group (same for all)
-        set total players = N
-        set my ID
-        set variables: hasDuck = false, dead = false
-        show my ID, then clear screen
-        if ID == 1 → starter
-            hasDuck = true
-            show duck icon
-
-    on radio received (number):
-        if number == my ID:
-            if not dead:
-                hasDuck = true
-                show duck icon
-                timer = random 0.5 – 1.5 seconds
-                while timer > 0 and hasDuck == true:
-                    decrease timer
-                    short pause
-                if hasDuck == true:
-                    sendDuck()
-                    dead = true
-                    show skull icon
-            else:
-                forwardDuck()  // keeps duck moving
-
-    on shake:
-        if hasDuck == true and dead == false:
-            sendDuck()
-
-    function sendDuck():
-        choose random target (not myself)
-        hasDuck = false
-        clear screen
-        send target over radio
-
-    function forwardDuck():
-        choose random target (not myself)
-        send target over radio
+After a working version is tested:
+- Add a **sound** when the ghost arrives (using tone or melody blocks).  
+- Play again in pairs or small groups and compare timing and response.  
+- Discuss how the sound travels through air while the message travels through radio waves.
 
 ---
 
-### Discussion Prompts
-- Why choose a random target?  
-- What happens if two players send at the same time?  
-- How could we make the fuse shorter or longer?  
-- Why must dead players still forward messages?
+## Part D — Quiz Recap (Weeks 1–2)
 
----
+Spend final 15–20 minutes on a short quiz review:  
+- Inputs and outputs  
+- Loops and conditions  
+- Variables and events  
 
-### Common Issues & Fixes
-
-| Problem | Likely Cause | Fix |
-|----------|--------------|-----|
-| Duck gets stuck | Dead player never forwards | Ensure `forwardDuck()` runs when `dead == true`. |
-| Everyone lights up | Duplicate IDs or wrong group | Give each device a unique ID and one shared group. |
-| Messages lost | Too many rapid sends | Add a short pause inside loops. |
-| Wrong player starts | Missing starter rule | Re-add `if ID == 1 → hasDuck = true`. |
-
----
-
-## Differentiation
-- **Beginners:** 2-player version, no randomness.  
-- **Intermediate:** 3–4 players, random target, adjustable fuse time.  
-- **Advanced:** Add sounds, lives, or restart button (A + B).  
+Encourage peer discussion and self-checking before revealing answers.
 
 ---
 
 ## Assessment & Reflection
-- Can participants explain who starts and how the duck moves?  
-- Can they locate the line that checks the **ID**?  
-- Can they describe the **random fuse**?  
-- Observe teamwork and verbal reasoning during debugging.
+- Can learners explain the difference between sound waves and radio waves?  
+- Can they identify where the radio message is sent and received in their program?  
+- Do they use correct vocabulary (amplitude, frequency, transmitter, receiver)?  
+- Observe collaboration and debugging approaches.  
 
-Encourage short reflection:  
-> “How is this like sending messages across the internet?”  
-> “What might cause interference in real networks?”
+> Reflect: “How did we turn an invisible wave into something we could see and hear on the micro:bit?”
+
+---
+
+## Common Misconceptions & Fixes
+
+| Misconception | Clarification |
+|----------------|---------------|
+| Radio waves are sound | Radio waves are electromagnetic; sound needs air. |
+| Amplitude = speed | Amplitude is height (strength), not speed. |
+| All devices receive all messages | They only respond if the ID matches. |
+
+---
+
+## Differentiation
+- **Beginners:** follow guided steps and use 2 players.  
+- **Confident:** add sound effects or different icons.  
+- **Stretch:** extend to 3+ players with random target logic.  
 
 ---
 
@@ -242,10 +165,10 @@ Encourage short reflection:
 
 | Subject | Connection |
 |----------|-------------|
-| **Science** | Radio waves, signal strength, interference. |
-| **Maths** | Random numbers, countdowns, comparison operators. |
-| **Design & Technology** | System design, input-process-output model. |
-| **PSHE / Teamwork** | Communication, resilience, cooperation. |
+| **Science** | Waves, energy transfer, radio communication. |
+| **Maths** | Frequency as “times per second”; random numbers. |
+| **Design & Technology** | Understanding networks and control systems. |
+| **PSHE / Teamwork** | Cooperation and clear communication. |
 
 ---
 
@@ -253,26 +176,26 @@ Encourage short reflection:
 
 | Strand | Evidence in Session |
 |---------|---------------------|
-| **Programming A — Sequence** | Ordered send/receive behaviour. |
-| **Programming B — Repetition** | Countdown loop; repeating checks. |
-| **Programming C — Variables** | `timer`, `hasDuck`, `dead`, `ID`. |
-| **Programming D — Selection** | `if (number == ID)` and pass/death branches. |
-| **Networks / Communication** | Radio groups, unique IDs, interference. |
+| Programming A — Sequence | Ordered radio events. |
+| Programming B — Repetition | Loops and repeated testing. |
+| Programming C — Variables | `ghost`, `ID`, `target`. |
+| Programming D — Selection | `if number == ID` logic. |
+| Networks / Communication | Radio groups, IDs, message passing. |
 
 ---
 
 ## Materials & Setup
 - BBC micro:bits + USB cables (or simulator)  
-- Laptops / Chromebooks with internet  
-- Test radio communication in pairs before the session  
-- Optional speakers for sound effects  
+- Laptops / Chromebooks with MakeCode  
+- Speakers or headphones for sound testing  
+- Visual aids for wave illustrations  
 
 ---
 
 ## Safety & Safeguarding
-- Keep cables clear during movement activities.  
-- Monitor sound levels if tones are added.  
-- Reinforce respectful teamwork and fair play during group testing.
+- Keep cables tidy while testing.  
+- Avoid loud volume when using tones.   
+- Encourage kind communication and turn-taking in pairs.  
 
 ---
 
