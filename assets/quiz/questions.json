@@ -1161,21 +1161,21 @@
             "hint": "Like joining the same chat room."
           },
       
-          {
-          "id": "w8-q5",
-          "question": "Reorder the lines to set a Boolean flag when a message arrives, then react to it.",
-          "type": "drag-drop",
-          "terms": [
-            "if hasMessage then\\n    show icon Heart",
-            "on message received (n)",
-            "set hasMessage = true",
-            "set hasMessage = false"
+         {
+          "id": "w8-qP2",
+          "question": "Assemble a handler that reacts only to messages for me.",
+          "type": "parsons",
+          "lines": [
+            { "text": "on message received (n)", "indent": 0 },
+            { "text": "if n = myID then",       "indent": 1 },
+            { "text": "show icon Ghost",         "indent": 2 },
+            { "text": "end if",                   "indent": 1 },
+            { "text": "end",                      "indent": 0 }
           ],
-          "definitions": ["1st line", "2nd line", "3rd line", "4th line"],
-          "correctMatches": [3, 1, 2, 0],
-          "explanation": "Start by clearing the flag (false). When a message is received, set the flag true. Finally, if the flag is true, show the icon.",
-          "difficulty": "medium",
-          "hint": "Think: initialise → event happens → set flag → react."
+          "correctOrder": [0,1,2,3,4],
+          "explanation": "Guard on ID → show → close blocks in order.",
+          "difficulty": "hard",
+          "hint": "Event first, then the check, then the action, then close the blocks."
         },
       
           {
