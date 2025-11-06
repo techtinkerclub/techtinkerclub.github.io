@@ -1,4 +1,4 @@
-<script>
+
 // ===== Tech Tinker Club — Quiz Engine (MCQ + Match + Parsons) =====
 // Drop-in replacement with backward compatibility and a new 'parsons' type
 // Assumptions:
@@ -444,4 +444,3 @@ async function boot(){
 }
 
 document.addEventListener('DOMContentLoaded', boot);
-</script>
