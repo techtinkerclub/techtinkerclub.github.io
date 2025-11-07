@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-3-notes/
+permalink: /instructor-notes/2025-26/autumn/week-3-notes/
 week: 3
 robots: noindex
 toc: true
@@ -105,7 +105,7 @@ Suggested build:
 
 ---
 
-## Probability, Chance & Fairness (teacher script)
+## Probability, Chance & Fairness (instructor script)
 
 * **Probability** = how likely something is. Coin toss → 1 out of 2 (50%).
 * **Chance** = everyday word for probability.
@@ -178,3 +178,17 @@ Suggested build:
 * Did participants articulate **if/else** clearly?
 * Who needed more scaffolding for 3-branch logic?
 * Are we ready to expand in in Week 4 or 5?
+
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will use <strong>conditions</strong> (if/else) to make decisions and practise <strong>debugging</strong> unexpected behaviour.</li>
+    <li><strong>Science:</strong> We will treat sensor readings as <strong>measurements</strong> and talk about fair comparisons.</li>
+    <li><strong>Maths:</strong> We will apply <strong>inequalities</strong> and <strong>ranges</strong> (for example, light &lt; 50) to control outcomes.</li>
+    <li><strong>Engineering:</strong> We will test, observe, and <strong>improve reliability</strong> through small design changes.</li>
+    <li><em>Real world:</em> If time allows, we will connect this idea to everyday technology or careers.</li>
+  </ul>
+</div>
+
+

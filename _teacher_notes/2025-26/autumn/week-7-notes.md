@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-7-notes/
+permalink: /instructor-notes/2025-26/autumn/week-7-notes/
 week: 7
 robots: noindex
 toc: true
@@ -272,3 +272,17 @@ end
 ---
 
 {% include back-to-autumn.html %}
+
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will create and reuse <strong>functions</strong> with parameters to keep our code tidy and modular.</li>
+    <li><strong>Maths:</strong> We will use <strong>coordinates (x, y)</strong> and <strong>increments</strong> for movement and aiming.</li>
+    <li><strong>Art &amp; Design:</strong> We will iterate on <strong>iconography</strong> and <strong>effects</strong> to make gameplay clearer.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We will follow a mini <strong>design cycle</strong>—build → test → adjust → replay.</li>
+    <li><em>Real world:</em> If time allows, we will connect this idea to everyday technology or careers.</li>
+  </ul>
+</div>
+
+

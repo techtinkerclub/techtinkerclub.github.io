@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-5-notes/
+permalink: /instructor-notes/2025-26/autumn/week-5-notes/
 week: 5
 robots: noindex
 toc: true
@@ -13,7 +13,7 @@ header:
   show_overlay_text: false
 ---
 
-# Teacher Notes — Week 5
+# Instructor Notes — Week 5
 {% include print-to-pdf.html %}
 **Theme:** Loops & Iteration  
 **Focus Concept:** Loops and Game Mechanics  
@@ -22,10 +22,10 @@ header:
 ---
 
 ## Learning Objectives
-- Pupils understand what a **loop** is and can recognise different types (`repeat`, `for`, `while`, `forever`).
-- Pupils know that an **iteration** is one pass through a loop.
-- Pupils can explain how **timing** (`pause`, `millis`) controls loop speed.
-- Pupils use loops to move **sprites**, check **collisions**, and keep score in a simple game.
+- Participants understand what a **loop** is and can recognise different types (`repeat`, `for`, `while`, `forever`).
+- Participants know that an **iteration** is one pass through a loop.
+- Participants can explain how **timing** (`pause`, `millis`) controls loop speed.
+- Participants use loops to move **sprites**, check **collisions**, and keep score in a simple game.
 
 ---
 
@@ -63,7 +63,7 @@ for x from 0 to 4
 ```blocks
 set timer to millis()
 while true
-    // do something simple so pupils can see it looping
+    // do something simple so participants can see it looping
     toggle (0,0)
     pause (100) ms
 
@@ -152,7 +152,7 @@ forever
 
 ---
 
-## Vocabulary Focus (with pupil-friendly wording)
+## Vocabulary Focus (with participant-friendly wording)
 - **Loop** — instructions that repeat automatically.
   - **repeat / for**: run a fixed number of times or across a range.
   - **while**: keep going while a rule is true (stop with **break**).
@@ -173,7 +173,7 @@ forever
 ---
 
 ## Assessment
-- Can pupils name two loop types and explain when to use them?
+- Can participants name two loop types and explain when to use them?
 - Can they describe how **pause/speed** changes difficulty?
 - Does their game loop correctly move the barrel and detect collisions?
 
@@ -203,8 +203,22 @@ forever
 ## Reflection (for leader)
 - Who can clearly explain **repeat vs while vs forever**?
 - Who adjusted timing/iterations to balance the game?
-- Note pupils ready to mentor others next session.
+- Note participants ready to mentor others next session.
 
 ---
 {% include back-to-autumn.html %}
+
+
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will combine <strong>loops</strong> and <strong>collisions</strong> to create our first full game.</li>
+    <li><strong>Maths:</strong> We will use ideas of <strong>timing</strong> and <strong>position</strong> to keep gameplay fair and balanced.</li>
+    <li><strong>Art &amp; Design:</strong> We will choose and design sprites that emphasise <strong>contrast</strong> and <strong>readability</strong>.</li>
+    <li><strong>Engineering:</strong> We will carry out quick <strong>play-test cycles</strong> and fix bugs based on what we observe.</li>
+    <li><em>Real world:</em> If time allows, we will connect this idea to everyday technology or careers.</li>
+  </ul>
+</div>
+
 

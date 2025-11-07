@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-2-notes/
+permalink: /instructor-notes/2025-26/autumn/week-2-notes/
 week: 2
 robots: noindex
 toc: true
@@ -117,3 +117,17 @@ Discussion points:
 ## Reflection (for leader)
 - Did participants connect input → event → output clearly?  
 - Were they able to extend beyond button A?  
+
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will use <strong>events</strong> like button-press and tilt to trigger actions and combine inputs for richer control.</li>
+    <li><strong>Science:</strong> We will link the micro:bit’s <strong>accelerometer</strong> to real-world ideas of measuring motion and orientation.</li>
+    <li><strong>Maths:</strong> We will reason about <strong>thresholds</strong> and <strong>comparisons</strong> such as tilt &gt; value.</li>
+    <li><strong>Art &amp; Design:</strong> We will refine our icons and animations for a clearer visual story.</li>
+    <li><em>Real world:</em> If time allows, we will connect this idea to everyday technology or careers.</li>
+  </ul>
+</div>
+
+

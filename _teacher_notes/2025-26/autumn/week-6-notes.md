@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-6-notes/
+permalink: /instructor-notes/2025-26/autumn/week-6-notes/
 week: 6
 robots: noindex
 toc: true
@@ -13,7 +13,7 @@ header:
   show_overlay_text: false
 ---
 
-# Teacher Notes — Week 6
+# Instructor Notes — Week 6
 {% include print-to-pdf.html %}
 
 **Theme:** Game Loops, Timing & Score  
@@ -23,12 +23,12 @@ header:
 ---
 
 ## Learning Objectives
-- Pupils recall what a **loop** is and how it repeats code automatically.  
-- Pupils understand how **pause time** controls **game speed**.  
-- Pupils use a **forever loop** as a continuous **game engine**.  
-- Pupils use **variables** to manage `score` and `speed`.  
-- Pupils can explain how **coordinates** control sprite position.  
-- Pupils can link **speed** and **score** to make the game harder over time.  
+- Participants recall what a **loop** is and how it repeats code automatically.  
+- Participants understand how **pause time** controls **game speed**.  
+- Participants use a **forever loop** as a continuous **game engine**.  
+- Participants use **variables** to manage `score` and `speed`.  
+- Participants can explain how **coordinates** control sprite position.  
+- Participants can link **speed** and **score** to make the game harder over time.  
 
 ---
 
@@ -165,7 +165,7 @@ Encourage confident participants to add:
 ---
 
 ## Assessment
-- Can pupils explain what the **forever loop** does?  
+- Can participants explain what the **forever loop** does?  
 - Can they show where **score** and **speed** are used?  
 - Can they predict what happens when `pause` decreases?  
 - Can they identify why placing `set score to 0` inside the loop breaks the game?
@@ -197,8 +197,22 @@ Encourage confident participants to add:
 - Who could explain how **speed** affects difficulty?  
 - Who debugged independently?  
 - Who experimented with extra features?  
-- Note pupils ready to mentor peers next session.
+- Note participants ready to mentor peers next session.
 
 ---
 {% include back-to-autumn.html %}
 ```
+
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will tune the <strong>game loop</strong> and <strong>difficulty scaling</strong> using variables and conditions.</li>
+    <li><strong>Maths:</strong> We will explore <strong>scaling</strong> (speed vs score) and simple <strong>functions</strong> that link inputs to outputs.</li>
+    <li><strong>Art &amp; Design:</strong> We will balance visuals and sound to give useful <strong>feedback</strong> without overload.</li>
+    <li><strong>Engineering:</strong> We will improve <strong>usability</strong>—controls, clarity, and reset behaviour.</li>
+    <li><em>Real world:</em> If time allows, we will connect this idea to everyday technology or careers.</li>
+  </ul>
+</div>
+
+

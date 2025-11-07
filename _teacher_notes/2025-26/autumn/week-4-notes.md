@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-4-notes/
+permalink: /instructor-notes/2025-26/autumn/week-4-notes/
 week: 4
 robots: noindex
 toc: true
@@ -13,7 +13,7 @@ header:
   show_overlay_text: false
 ---
 
-# Teacher Notes — Week 4  
+# Instructor Notes — Week 4  
 {% include print-to-pdf.html %}
 
 **Theme:** Variables & Thresholds  
@@ -55,7 +55,7 @@ header:
 ### Part 1: PRIMM Starter — Multiplication Quiz with Thresholds (30 min)
 
 **Predict (5 min)**  
-Show pupils the code (do not run yet): *Simple times tables quiz* [MakeCode Code](https://makecode.microbit.org/S35102-48591-68172-69236){:target="_blank" rel="noopener"}
+Show participants the code (do not run yet): *Simple times tables quiz* [MakeCode Code](https://makecode.microbit.org/S35102-48591-68172-69236){:target="_blank" rel="noopener"}
 
 - Variables: `first number`, `second number`, `result`, `threshold`.  
 - On A → picks 2 random numbers, but only if both are ≤ threshold.  
@@ -69,7 +69,7 @@ Ask:
 ---
 
 **Run (5 min)**  
-Press A: pupils see pairs of numbers appear.  
+Press A: participants see pairs of numbers appear.  
 Press B: shows the result of multiplication.  
 
 ---
@@ -94,7 +94,7 @@ Focus on two important pieces of logic:
 - If you pick one that’s too big → put it back, try again. (*This is the loop.*)  
 - When you finally pick a good one → shout it out and stop. (*This is the break.*)  
 
-Questions to ask pupils:  
+Questions to ask participants:  
 - *“What would happen if we removed the break?”*  
 - *“Why is the loop needed if we already pick random numbers?”*  
 - *“Could the program ever run forever without finding a result?”* (No, because eventually random numbers will fall under 12.)  
@@ -121,7 +121,7 @@ Extensions:
 
 **Introduction (5 min)**  
 Ask: *“What do plants need to grow well?”*  
-- Pupils will usually say **light** and **water**, sometimes **temperature**.  
+- Participants will usually say **light** and **water**, sometimes **temperature**.  
 - Explain: *“Today we’ll use the micro:bit to check if a plant would be happy here in the classroom!”*  
 
 ---
@@ -208,4 +208,18 @@ Else → show warning icon depending on condition.
 ## Reflection (for leader)
 - Did participants clearly understand **variables vs thresholds**?  
 - Did the PRIMM starter (maths quiz) help them before moving into sensors?  
-- Note pupils who extended with AND/OR logic successfully.  
+- Note participants who extended with AND/OR logic successfully.  
+
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will introduce <strong>variables</strong> to track score and speed, and use <strong>loops</strong> to update them.</li>
+    <li><strong>Science:</strong> We will think like investigators—<strong>predict → test → observe → refine</strong>.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We will design clear <strong>feedback</strong> for players and iterate our designs.</li>
+    <li><strong>Maths:</strong> We will explore <strong>increments</strong> and simple <strong>rates of change</strong> as the game speeds up.</li>
+    <li><em>Real world:</em> If time allows, we will connect this idea to everyday technology or careers.</li>
+  </ul>
+</div>
+
+

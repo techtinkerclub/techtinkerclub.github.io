@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-8-notes/
+permalink: /instructor-notes/2025-26/autumn/week-8-notes/
 week: 8
 robots: noindex
 toc: true
@@ -200,3 +200,17 @@ Encourage peer discussion and self-checking before revealing answers.
 ---
 
 {% include back-to-autumn.html %}
+
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will exchange data using the <strong>micro:bit radio</strong> and explore how groups and channels work.</li>
+    <li><strong>Science:</strong> We will link our project to how <strong>signals</strong> and communication happen in everyday devices.</li>
+    <li><strong>Maths:</strong> We will consider <strong>timing</strong>, ordering, and <strong>ranking</strong>—for example, who buzzes first.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We will design a fair communication system with clear <strong>feedback</strong> and reliable resets.</li>
+    <li><em>Real world:</em> If time allows, we will connect this idea to everyday technology or careers.</li>
+  </ul>
+</div>
+
+
