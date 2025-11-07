@@ -13,7 +13,6 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=5 %}
 
 ## Week 5 — Loops & Our First Game
 
