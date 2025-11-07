@@ -21,3 +21,8 @@
 .notice--steam h2 { margin-top: 0.2rem; font-size: 1.2rem; }
 .notice--steam ul { margin: .5rem 0 0 1.2rem; }
 .notice--steam li { margin: .25rem 0; }
+
+.btn.btn--primary {
+  background-color: #b22222;
+  border: none;
+}
