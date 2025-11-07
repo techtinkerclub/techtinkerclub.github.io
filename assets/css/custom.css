@@ -1,1 +1,12 @@
 
+
+/* Connections to STEAM Learning box */
+.connections {
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 1rem;
+  background: rgba(0,0,0,0.03);
+  margin: 1.5rem 0;
+}
+.connections strong { font-weight: 600; }
+
