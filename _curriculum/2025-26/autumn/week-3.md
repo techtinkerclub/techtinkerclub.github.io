@@ -13,12 +13,23 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=3 %}
+{% include instructor-notes-link.html week=3 %}
 
 ## Week 3 — Conditionals (if/else)
 
 **Focus Concept:** Logic & Decision-Making  
 **Mini-Project:** Rock–Paper–Scissors  
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will use <strong>conditions</strong> (if/else) to make decisions and practise <strong>debugging</strong> unexpected behaviour.</li>
+    <li><strong>Science:</strong> We will treat sensor readings as <strong>measurements</strong> and talk about fair comparisons.</li>
+    <li><strong>Maths:</strong> We will apply <strong>inequalities</strong> and <strong>ranges</strong> (for example, light &lt; 50) to control outcomes.</li>
+    <li><strong>Engineering:</strong> We will test, observe, and <strong>improve reliability</strong> through small design changes.</li>
+  </ul>
+</div>
+
 
 ---
 
@@ -73,4 +84,4 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=3 %}
+{% include instructor-notes-link.html week=3 %}

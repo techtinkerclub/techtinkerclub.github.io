@@ -13,12 +13,23 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=2 %}
+{% include instructor-notes-link.html week=2 %}
 
 ## Week 2 — Events & Inputs (Digital Dice Roller)
 
 **Focus Concept:** Event-driven programming (inputs trigger actions)  
 **Mini-Project:** Dice Roller  
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will use <strong>events</strong> like button-press and tilt to trigger actions and combine inputs for richer control.</li>
+    <li><strong>Science:</strong> We will link the micro:bit’s <strong>accelerometer</strong> to real-world ideas of measuring motion and orientation.</li>
+    <li><strong>Maths:</strong> We will reason about <strong>thresholds</strong> and <strong>comparisons</strong> such as tilt &gt; value.</li>
+    <li><strong>Art &amp; Design:</strong> We will refine our icons and animations for a clearer visual story.</li>
+  </ul>
+</div>
+
 
 ---
 
@@ -76,4 +87,4 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=2 %}
+{% include instructor-notes-link.html week=2 %}

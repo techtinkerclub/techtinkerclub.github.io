@@ -13,12 +13,23 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=8 %}
+{% include instructor-notes-link.html week=8 %}
 
 ## Week 8 — Radio Waves & Pass the Ghost
 
 **Focus Concept:** Radio communication and wave basics  
 **Mini-Project:** *Pass the Ghost* (two-player radio game)
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will exchange data using the <strong>micro:bit radio</strong> and explore how groups and channels work.</li>
+    <li><strong>Science:</strong> We will link our project to how <strong>signals</strong> and communication happen in everyday devices.</li>
+    <li><strong>Maths:</strong> We will consider <strong>timing</strong>, ordering, and <strong>ranking</strong>—for example, who buzzes first.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We will design a fair communication system with clear <strong>feedback</strong> and reliable resets.</li>
+  </ul>
+</div>
+
 
 This week’s session mixed **science and coding**.  
 We began by exploring **waves** — how they move energy and information — and linked that to how the **micro:bit radio** works.  
@@ -106,11 +117,11 @@ During the last 15–20 minutes, we revisited concepts from Weeks 1 and 2 throug
 ---
 
 ## Safety & Setup Notes
-- Keep cables tidy when pupils move around testing radio code.  
+- Keep cables tidy when participants move around testing radio code.  
 - Use unique radio group numbers to avoid interference.  
 - Monitor volume levels for sound experiments.  
 
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=8 %}
+{% include instructor-notes-link.html week=8 %}

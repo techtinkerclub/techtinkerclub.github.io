@@ -13,12 +13,23 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=5 %}
+{% include instructor-notes-link.html week=5 %}
 
 ## Week 5 — Loops & Our First Game
 
 **Focus Concept:** Loops & Iteration  
 **Mini-Project:** *Barrel Jumper* (sprites, movement, collisions)
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will combine <strong>loops</strong> and <strong>collisions</strong> to create our first full game.</li>
+    <li><strong>Maths:</strong> We will use ideas of <strong>timing</strong> and <strong>position</strong> to keep gameplay fair and balanced.</li>
+    <li><strong>Art &amp; Design:</strong> We will choose and design sprites that emphasise <strong>contrast</strong> and <strong>readability</strong>.</li>
+    <li><strong>Engineering:</strong> We will carry out quick <strong>play-test cycles</strong> and fix bugs based on what we observe.</li>
+  </ul>
+</div>
+
 
 ---
 
@@ -78,5 +89,5 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=5 %}
+{% include instructor-notes-link.html week=5 %}
 

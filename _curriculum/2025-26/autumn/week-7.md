@@ -13,12 +13,23 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=7 %}
+{% include instructor-notes-link.html week=7 %}
 
 ## Week 7 — Functions, Inputs & Space Invaders
 
 **Focus Concept:** Functions and game logic  
 **Mini-Projects:** *Function Challenges* → *Mini Space Invaders*
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will create and reuse <strong>functions</strong> with parameters to keep our code tidy and modular.</li>
+    <li><strong>Maths:</strong> We will use <strong>coordinates (x, y)</strong> and <strong>increments</strong> for movement and aiming.</li>
+    <li><strong>Art &amp; Design:</strong> We will iterate on <strong>iconography</strong> and <strong>effects</strong> to make gameplay clearer.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We will follow a mini <strong>design cycle</strong>—build → test → adjust → replay.</li>
+  </ul>
+</div>
+
 
 This week we explored how **functions** can make our programs cleaner, faster to edit, and easier to reuse.  
 Participants first created small examples of functions to see how they work, then applied the same ideas in a larger game that used the **accelerometer** and **collisions**.
@@ -130,4 +141,4 @@ Participants first created small examples of functions to see how they work, the
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=7 %}
+{% include instructor-notes-link.html week=7 %}

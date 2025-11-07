@@ -13,12 +13,23 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=6 %}
+{% include instructor-notes-link.html week=6 %}
 
 ## Week 6 — Core Mechanics: Loops, Timing, Score & Coordinates
 
 **Focus Concept:** Game loop & difficulty  
 **Mini-Project:** Barrel Jumper — iterative build (basic → speed-up)
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will tune the <strong>game loop</strong> and <strong>difficulty scaling</strong> using variables and conditions.</li>
+    <li><strong>Maths:</strong> We will explore <strong>scaling</strong> (speed vs score) and simple <strong>functions</strong> that link inputs to outputs.</li>
+    <li><strong>Art &amp; Design:</strong> We will balance visuals and sound to give useful <strong>feedback</strong> without overload.</li>
+    <li><strong>Engineering:</strong> We will improve <strong>usability</strong>—controls, clarity, and reset behaviour.</li>
+  </ul>
+</div>
+
 
 This week we took last session’s start and turned it into a playable mini-game. We reviewed loops, coordinates, and movement, added a score, and linked game **speed** to the score so difficulty increases as you play.
 
@@ -102,4 +113,4 @@ This week we took last session’s start and turned it into a playable mini-game
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=6 %}
+{% include instructor-notes-link.html week=6 %}

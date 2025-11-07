@@ -13,12 +13,23 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=1 %}
+{% include instructor-notes-link.html week=1 %}
 
 ## Week 1 — Welcome & Micro:bit Basics
 
 **Focus Concept:** Events & Sequencing  
 **Mini-Project:** Digital Name Badge
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will explore <strong>inputs and outputs</strong> on the micro:bit and use clear <strong>sequences</strong> to make our ideas visible.</li>
+    <li><strong>Maths:</strong> We will use <strong>counting</strong> and <strong>simple coordinates</strong> to reason about movement across the grid.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We will discuss <strong>user-interface</strong> choices such as buttons and prompts, improving our designs through iteration.</li>
+    <li><strong>Art &amp; Design:</strong> We will sketch <strong>icon designs</strong> with attention to balance and clarity.</li>
+  </ul>
+</div>
+
 
 ---
 
@@ -76,4 +87,4 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=1 %}
+{% include instructor-notes-link.html week=1 %}

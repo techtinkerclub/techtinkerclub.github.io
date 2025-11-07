@@ -13,12 +13,23 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=4 %}
+{% include instructor-notes-link.html week=4 %}
 
 ## Week 4 — Variables & Thresholds with Sensors
 
 **Focus Concept:** Variables & Thresholds  
 **Mini-Project:** Smart Plant Monitor (light + temperature sensors)
+
+<div class="notice--steam">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We will introduce <strong>variables</strong> to track score and speed, and use <strong>loops</strong> to update them.</li>
+    <li><strong>Science:</strong> We will think like investigators—<strong>predict → test → observe → refine</strong>.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We will design clear <strong>feedback</strong> for players and iterate our designs.</li>
+    <li><strong>Maths:</strong> We will explore <strong>increments</strong> and simple <strong>rates of change</strong> as the game speeds up.</li>
+  </ul>
+</div>
+
 
 ---
 
@@ -69,9 +80,9 @@ header:
 
 ## Safety & Setup Notes
 - Sensors are built-in, no extra hardware needed.  
-- Avoid touching USB ends with damp hands (remind pupils as “plant monitor” is discussed).  
+- Avoid touching USB ends with damp hands (remind participants as “plant monitor” is discussed).  
 
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=4 %}
+{% include instructor-notes-link.html week=4 %}
