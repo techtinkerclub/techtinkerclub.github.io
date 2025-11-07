@@ -48,7 +48,7 @@ header:
 
 ---
 
-<div class="connections">
+<div class="connections" markdown="1">
 
 ## Connections to STEAM Learning
 - **Computing:** We used **events** (on button/tilt) to trigger actions and combined inputs for richer control.
