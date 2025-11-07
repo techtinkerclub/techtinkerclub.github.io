@@ -1,15 +1,22 @@
 {%- comment -%}
-Button appears ONLY if URL has ?notes=1
-Usage: {% include teacher-notes-link.html week=7 %}
+Shows the Instructor Notes button only when ?notes=1 is in the URL.
+Appears inline next to the “Back to Autumn” link.
 {%- endcomment -%}
 
-<div id="notes-link-{{ include.week }}" style="display:none; text-align:center; margin:.75rem 0;">
+<style>
+.notes-inline {
+  display: inline-block;
+  margin-left: .75rem;
+}
+</style>
+
+<span id="notes-link-{{ include.week }}" class="notes-inline" style="display:none;">
   <a class="btn btn--primary"
      href="{{ '/teacher_notes/2025-26/autumn/week-' | append: include.week | append: '-notes/' | relative_url }}"
      target="_blank" rel="noopener noreferrer">
-    View Instructor Notes for Week {{ include.week }}
+    View Instructor Notes
   </a>
-</div>
+</span>
 
 <script>
 (function(){
@@ -17,7 +24,7 @@ Usage: {% include teacher-notes-link.html week=7 %}
     var p = new URLSearchParams(window.location.search);
     if (p.get('notes') === '1') {
       var el = document.getElementById('notes-link-{{ include.week }}');
-      if (el) el.style.display = 'block';
+      if (el) el.style.display = 'inline-block';
     }
   } catch(e) {}
 })();
