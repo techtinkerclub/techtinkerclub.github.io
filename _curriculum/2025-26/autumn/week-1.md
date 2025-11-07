@@ -13,7 +13,6 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=1 %}
 
 ## Week 1 — Welcome & Micro:bit Basics
 
