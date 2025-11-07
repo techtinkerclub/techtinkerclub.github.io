@@ -1248,7 +1248,7 @@
             "id": "w8-q12",
             "question": "Match the CS idea to a clear example.",
             "type": "drag-drop",
-            "terms": ["Sequence", "Selection (if…else)", "Repetition (loop)", "Variable"],
+            "terms": ["Sequence", "Selection", "Loop", "Variable"],
             "definitions": [
               "Run steps in order: A then B then C",
               "Repeat a block many times",
