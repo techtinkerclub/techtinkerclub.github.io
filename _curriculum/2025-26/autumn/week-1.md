@@ -52,14 +52,14 @@ header:
 
 ---
 
-<div class="connections" markdown="1">
-
-## Connections to STEAM Learning
-- **Computing:** We explored **inputs and outputs** on the micro:bit and used clear **sequences** to make ideas visible.
-- **Maths:** We used **counting and simple coordinates** to place icons and reason about left–right movement.
-- **Engineering & Technology:** We discussed **user interface** choices (buttons, prompts) and iterated small improvements.
-- **Art & Design:** Participants sketched **icon designs**, talking about balance and clarity.
-
+<div class="connections">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We explored <strong>inputs and outputs</strong> on the micro:bit and used clear <strong>sequences</strong> to make ideas visible.</li>
+    <li><strong>Maths:</strong> We used <strong>counting</strong> and <strong>simple coordinates</strong> to place icons and reason about left–right movement.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We discussed <strong>user interface</strong> choices and iterated small improvements.</li>
+    <li><strong>Art &amp; Design:</strong> Participants sketched <strong>icon designs</strong>, talking about balance and clarity.</li>
+  </ul>
 </div>
 
 
