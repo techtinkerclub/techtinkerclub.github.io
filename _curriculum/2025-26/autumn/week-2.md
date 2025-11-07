@@ -13,7 +13,6 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=2 %}
 
 ## Week 2 — Events & Inputs (Digital Dice Roller)
 
