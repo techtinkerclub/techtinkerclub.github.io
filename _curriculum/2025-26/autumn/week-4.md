@@ -13,7 +13,6 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=4 %}
 
 ## Week 4 — Variables & Thresholds with Sensors
 
