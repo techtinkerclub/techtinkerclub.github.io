@@ -52,7 +52,7 @@ header:
 
 ---
 
-<div class="connections">
+<div class="connections" markdown="1">
 
 ## Connections to STEAM Learning
 - **Computing:** We explored **inputs and outputs** on the micro:bit and used clear **sequences** to make ideas visible.
