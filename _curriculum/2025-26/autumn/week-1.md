@@ -13,7 +13,7 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=1 %}
+{% include instructor-notes-link.html week=1 %}
 
 ## Week 1 — Welcome & Micro:bit Basics
 
@@ -52,6 +52,17 @@ header:
 
 ---
 
+<div class="connections">
+
+## Connections to STEAM Learning
+- **Computing:** We explored **inputs and outputs** on the micro:bit and used clear **sequences** to make ideas visible.
+- **Maths:** We used **counting and simple coordinates** to place icons and reason about left–right movement.
+- **Engineering & Technology:** We discussed **user interface** choices (buttons, prompts) and iterated small improvements.
+- **Art & Design:** Participants sketched **icon designs**, talking about balance and clarity.
+
+</div>
+
+
 ## Resources
 - **Get to know the Microbit:** [Video](https://youtu.be/7WMCgUIcKnk?si=V_rMjP2iSFDZJMOE){:target="_blank" rel="noopener"}
 - **Microbit V2 Learning Book by Cora Young:** [link](https://drive.google.com/file/d/1XLkU2YoNfRceLK_6HlpHcmtKa_EW-Sbw/view?usp=drive_link){:target="_blank" rel="noopener"}
@@ -76,4 +87,4 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=1 %}
+{% include instructor-notes-link.html week=1 %}
