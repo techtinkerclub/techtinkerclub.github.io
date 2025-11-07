@@ -36,7 +36,7 @@ This term, participants in Tech Tinker Club will explore how microcontrollers (t
 
 ---
 
-## Week by Week Overview
+## Week by Week Overview {#week-by-week}
 
 
 | Week | Focus Concept | Mini-Project Example | Resources |
