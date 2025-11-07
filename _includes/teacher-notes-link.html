@@ -1,19 +1,23 @@
-{%- assign w = include.week | default: 1 -%}
-{%- assign notes_url = include.url | default: "/teacher-notes/2025-26/autumn/week-" | append: w | append: "-notes/" -%}
+{%- comment -%}
+Button appears ONLY if URL has ?notes=1
+Usage: {% include teacher-notes-link.html week=7 %}
+{%- endcomment -%}
 
-<div id="teacher-notes-link" style="display:none">
-  <p>
-    <a href="{{ notes_url }}?notes=1" class="btn btn--warning" target="_blank" rel="noopener">
-      👀 Teacher Notes (private)
-    </a>
-  </p>
+<div id="notes-link-{{ include.week }}" style="display:none; text-align:center; margin:.75rem 0;">
+  <a class="btn btn--primary"
+     href="{{ '/teacher_notes/2025-26/autumn/week-' | append: include.week | append: '-notes/' | relative_url }}">
+    View Instructor Notes for Week {{ include.week }}
+  </a>
 </div>
+
 <script>
-(function () {
-  // Only show the button when ?notes=1 is in the URL
-  var show = /(^|[?&])notes=1([&#]|$)/.test(window.location.search);
-  if (!show) return;
-  var el = document.getElementById('teacher-notes-link');
-  if (el) el.style.display = 'block';
+(function(){
+  try {
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('notes') === '1') {
+      var el = document.getElementById('notes-link-{{ include.week }}');
+      if (el) el.style.display = 'block';
+    }
+  } catch(e) {}
 })();
 </script>
