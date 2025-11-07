@@ -1141,27 +1141,32 @@
           },
           {
             "id": "w8-q4",
-            "question": "A function returns true if a message is for me. What shows?",
+            "question": "A message is received with number = myID. What will the micro:bit show?",
             "type": "multiple-choice",
             "codeLabel": "Pseudocode",
-            "code": "function isMine(n)\n    return n = myID\nend function\non message received (n)\n    if isMine(n) then\n        show string \"OK\"\n    else\n        show string \"NO\"\n    end if\nend\n# One message arrives with n = myID.",
-            "options": ["It shows NO", "It shows OK", "It shows both OK then NO", "Nothing happens"],
+            "code": "on message received (n)\n    if n = myID then\n        show string \"OK\"\n    else\n        show string \"NO\"\n    end if\nend\n# One message arrives where n = myID",
+            "options": [
+              "It shows NO",
+              "It shows OK",
+              "It shows both OK then NO",
+              "Nothing happens"
+            ],
             "correct": 1,
-            "explanation": "isMine(myID) is true → shows \"OK\".",
+            "explanation": "Because the message number equals myID, the first condition is true, so it shows 'OK'.",
             "difficulty": "medium",
-            "hint": "The function just checks equality."
+            "hint": "Check which branch runs when the test is true."
           },
           {
             "id": "w8-q5",
-            "question": "Timing — total pause for this pattern?",
+            "question": "How long (in milliseconds) does this whole sequence take?",
             "type": "multiple-choice",
             "codeLabel": "Pseudocode",
-            "code": "set extra = false\nset total = 0\nrepeat 6 times\n    pause 100  # add to total\n    if extra = true then\n        pause 50  # add to total\n    end if\n    set extra = not extra\nend\nshow number total",
+            "code": "repeat 6 times\n    pause 100\n    if loop number is even then\n        pause 50\n    end if\nend",
             "options": ["450 ms", "600 ms", "750 ms", "900 ms"],
             "correct": 2,
-            "explanation": "Six loops: always 6×100 = 600. extra toggles T/F → +50 on 3 of the 6 passes → +150. Total = 750 ms.",
-            "difficulty": "hard",
-            "hint": "extra is true on every second pass."
+            "explanation": "Every loop always pauses 100 ms → 6×100 = 600. The extra 50 ms happens on loops 2, 4, 6 → +150. Total = 750 ms.",
+            "difficulty": "medium-hard",
+            "hint": "Even-numbered loops take slightly longer."
           },
           {
             "id": "w8-q6",
@@ -1188,10 +1193,10 @@
           },
           {
             "id": "w8-q8",
-            "question": "Radio group & ID — how many times does score increase?",
+            "question": "Radio group & ID — how many times does score increase after messages arrive in order: [1, 2, 3, 2, 1]?",
             "type": "multiple-choice",
             "codeLabel": "Pseudocode",
-            "code": "set myID = 2\nset score = 0\non message received (n)\n    if n = myID then change score by 1\nend\n# Messages arrive in order: [1, 2, 3, 2, 1]",
+            "code": "set myID = 2\nset score = 0\non message received (n)\n    if n = myID then change score by 1\nend",
             "options": ["0", "1", "2", "3"],
             "correct": 2,
             "explanation": "Only messages equal to 2 count → positions 2 and 4 → score +2.",
@@ -1250,11 +1255,12 @@
               "Store a value like score that can change",
               "Choose a branch based on a test"
             ],
-            "correctMatches": [0, 3, 1, 2],
+            "correctMatches": [0, 1, 3, 2],
             "explanation": "Sequence = ordered steps; Selection = choose by condition; Repetition = loop; Variable = stored value.",
             "difficulty": "medium",
             "hint": "Think: order, choice, repeat, remember."
           }
+
         ]
       }
 
