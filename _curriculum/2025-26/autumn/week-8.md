@@ -17,7 +17,7 @@ header:
 ## Week 8 — Radio Waves & Pass the Ghost
 
 **Focus Concept:** Radio communication and wave basics  
-**Mini-Project:** *Pass the Ghost* (two-player radio game)
+**Mini-Project:** *Pass the Ghost* (multiplayer radio)
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
