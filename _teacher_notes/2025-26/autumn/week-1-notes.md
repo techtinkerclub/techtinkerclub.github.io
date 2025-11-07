@@ -1,7 +1,7 @@
 ---
 layout: single
 title: ""
-permalink: /teacher-notes/2025-26/autumn/week-1-notes/
+permalink: /teacher_notes/2025-26/autumn/week-1-notes/
 week: 1
 robots: noindex
 toc: true
