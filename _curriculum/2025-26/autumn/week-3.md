@@ -13,7 +13,6 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=3 %}
 
 ## Week 3 — Conditionals (if/else)
 
