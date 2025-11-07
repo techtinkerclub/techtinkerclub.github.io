@@ -13,7 +13,6 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=7 %}
 
 ## Week 7 — Functions, Inputs & Space Invaders
 
