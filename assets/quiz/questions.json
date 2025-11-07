@@ -1255,7 +1255,7 @@
               "Store a value like score that can change",
               "Choose a branch based on a test"
             ],
-            "correctMatches": [0, 1, 3, 2],
+            "correctMatches": [0, 2, 3, 1],
             "explanation": "Sequence = ordered steps; Selection = choose by condition; Repetition = loop; Variable = stored value.",
             "difficulty": "medium",
             "hint": "Think: order, choice, repeat, remember."
