@@ -13,7 +13,6 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=6 %}
 
 ## Week 6 — Core Mechanics: Loops, Timing, Score & Coordinates
 
