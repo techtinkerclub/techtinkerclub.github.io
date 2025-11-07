@@ -1,17 +1,37 @@
 {%- comment -%}
-Inline version of the “Back to Autumn” link — compatible with the Instructor Notes button.
+Renders BOTH buttons inline:
+- Back to Autumn (always)
+- Instructor Notes (only if ?notes=1)
+Uses page.week from front-matter.
 {%- endcomment -%}
 
-<style>
-.back-inline {
-  display: inline-block;
-}
-</style>
+{%- if site.collections.instructor_notes -%}
+  {%- assign notes_base = '/instructor_notes' -%}
+{%- else -%}
+  {%- assign notes_base = '/teacher_notes' -%}
+{%- endif -%}
 
-<span class="back-inline">
-  <a href="/curriculum/2025-26/autumn/"
-     class="btn btn--primary"
-     style="background-color:#a33; border:none;">
+<div style="display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; margin:.5rem 0 1rem;">
+  <a href="/curriculum/2025-26/autumn/" class="btn btn--primary">
     ← Back to Autumn 2025 Overview
   </a>
-</span>
+
+  <span id="notes-link" style="display:none;">
+    <a class="btn btn--primary"
+       href="{{ notes_base }}/2025-26/autumn/week-{{ page.week }}-notes/"
+       target="_blank" rel="noopener noreferrer">
+      View Instructor Notes
+    </a>
+  </span>
+</div>
+
+<script>
+(function(){
+  try{
+    if (new URLSearchParams(window.location.search).get('notes') === '1') {
+      var el = document.getElementById('notes-link');
+      if (el) el.style.display = 'inline-block';
+    }
+  }catch(e){}
+})();
+</script>
