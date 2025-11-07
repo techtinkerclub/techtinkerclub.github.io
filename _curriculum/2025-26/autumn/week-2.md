@@ -13,7 +13,7 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=2 %}
+{% include instructor-notes-link.html week=2 %}
 
 ## Week 2 — Events & Inputs (Digital Dice Roller)
 
@@ -48,6 +48,17 @@ header:
 
 ---
 
+<div class="connections">
+
+## Connections to STEAM Learning
+- **Computing:** We used **events** (on button/tilt) to trigger actions and combined inputs for richer control.
+- **Science:** We connected the accelerometer to **measuring motion** and orientation in everyday tech.
+- **Maths:** We reasoned about **thresholds** and simple **comparisons** (e.g., tilt > value).
+- **Art & Design:** We refined icons/animations for a clearer visual story.
+
+</div>
+
+
 ## Resources
 - **MakeCode (micro:bit):** [Open Editor](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 - **Tutorial: Input Events (Buttons & Shake):** [Getting Started Tutorials](https://makecode.microbit.org/tutorials/getting-started){:target="_blank" rel="noopener"}
@@ -76,4 +87,4 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include teacher-notes-link.html week=2 %}
+{% include instructor-notes-link.html week=2 %}
