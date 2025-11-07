@@ -1161,10 +1161,10 @@
             "question": "How long (in milliseconds) does this whole sequence take?",
             "type": "multiple-choice",
             "codeLabel": "Pseudocode",
-            "code": "repeat 6 times\n    pause 100\n    if loop number is even then\n        pause 50\n    end if\nend",
+            "code": "for i from 1 to 6   # i increases by 1 each time\n    pause 100\n    if i is even then\n        pause 50\n    end if\nend",
             "options": ["450 ms", "600 ms", "750 ms", "900 ms"],
             "correct": 2,
-            "explanation": "Every loop always pauses 100 ms → 6×100 = 600. The extra 50 ms happens on loops 2, 4, 6 → +150. Total = 750 ms.",
+            "explanation": "Each loop always pauses 100 ms → 6×100 = 600. On loops 2, 4, and 6 (even numbers), it adds another 50 ms each → +150. Total = 750 ms.",
             "difficulty": "medium-hard",
             "hint": "Even-numbered loops take slightly longer."
           },
