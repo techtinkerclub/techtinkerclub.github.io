@@ -48,15 +48,16 @@ header:
 
 ---
 
-<div class="connections" markdown="1">
-
-## Connections to STEAM Learning
-- **Computing:** We used **events** (on button/tilt) to trigger actions and combined inputs for richer control.
-- **Science:** We connected the accelerometer to **measuring motion** and orientation in everyday tech.
-- **Maths:** We reasoned about **thresholds** and simple **comparisons** (e.g., tilt > value).
-- **Art & Design:** We refined icons/animations for a clearer visual story.
-
+<div class="connections">
+  <h2>Connections to STEAM Learning</h2>
+  <ul>
+    <li><strong>Computing:</strong> We explored <strong>inputs and outputs</strong> on the micro:bit and used clear <strong>sequences</strong> to make ideas visible.</li>
+    <li><strong>Maths:</strong> We used <strong>counting</strong> and <strong>simple coordinates</strong> to place icons and reason about left–right movement.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We discussed <strong>user interface</strong> choices and iterated small improvements.</li>
+    <li><strong>Art &amp; Design:</strong> Participants sketched <strong>icon designs</strong>, talking about balance and clarity.</li>
+  </ul>
 </div>
+
 
 
 ## Resources
