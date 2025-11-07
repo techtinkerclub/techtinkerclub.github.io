@@ -13,7 +13,6 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=8 %}
 
 ## Week 8 — Radio Waves & Pass the Ghost
 
