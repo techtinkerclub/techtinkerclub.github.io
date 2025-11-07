@@ -13,7 +13,7 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=2 %}
+{% include teacher-notes-link.html week=2 %}
 
 ## Week 2 — Events & Inputs (Digital Dice Roller)
 
@@ -48,18 +48,6 @@ header:
 
 ---
 
-<div class="connections">
-  <h2>Connections to STEAM Learning</h2>
-  <ul>
-    <li><strong>Computing:</strong> We explored <strong>inputs and outputs</strong> on the micro:bit and used clear <strong>sequences</strong> to make ideas visible.</li>
-    <li><strong>Maths:</strong> We used <strong>counting</strong> and <strong>simple coordinates</strong> to place icons and reason about left–right movement.</li>
-    <li><strong>Engineering &amp; Technology:</strong> We discussed <strong>user interface</strong> choices and iterated small improvements.</li>
-    <li><strong>Art &amp; Design:</strong> Participants sketched <strong>icon designs</strong>, talking about balance and clarity.</li>
-  </ul>
-</div>
-
-
-
 ## Resources
 - **MakeCode (micro:bit):** [Open Editor](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 - **Tutorial: Input Events (Buttons & Shake):** [Getting Started Tutorials](https://makecode.microbit.org/tutorials/getting-started){:target="_blank" rel="noopener"}
@@ -88,4 +76,4 @@ header:
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=2 %}
+{% include teacher-notes-link.html week=2 %}
