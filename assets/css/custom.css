@@ -10,3 +10,14 @@
 }
 .connections strong { font-weight: 600; }
 
+/* Tech Tinker Club: pastel neutral notice box for STEAM connections */
+.notice--steam {
+  border: 1px solid #e6e6ea;      /* light grey-lilac */
+  background-color: #f7f7fa;      /* very light neutral */
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  margin: 1.25rem 0;
+}
+.notice--steam h2 { margin-top: 0.2rem; font-size: 1.2rem; }
+.notice--steam ul { margin: .5rem 0 0 1.2rem; }
+.notice--steam li { margin: .25rem 0; }
