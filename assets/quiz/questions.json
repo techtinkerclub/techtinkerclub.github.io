@@ -1363,7 +1363,7 @@
       "type": "multiple-choice",
       "options": [
         "Every device asks a central server for instructions every second",
-        "Each device only listens to, receives and sendd information to nearby devices",
+        "Each device only listens to, receives and sends information to nearby devices",
         "One device sends a command directly to every other device in the room",
         "All devices share one global variable stored on the internet"
       ],
