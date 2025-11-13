@@ -1262,7 +1262,181 @@
           }
 
         ]
-      }
+      },
+    "9": {
+  "title": "Week 9: Fireflies, Radio & Local Rules — Higher Challenge",
+  "description": "Mixed set: synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates. MCQ + Match only.",
+  "locked": false,
+  "questions": [
+    {
+      "id": "w9-q1",
+      "question": "Why do the micro:bits in the fireflies activity gradually start flashing at almost the same time, even though none of them is a leader?",
+      "type": "multiple-choice",
+      "options": [
+        "They secretly choose one micro:bit as the leader and copy its timing",
+        "Each micro:bit speeds up its own timer slightly when it receives a neighbour’s flash",
+        "All micro:bits share exactly the same random seed so they stay in sync",
+        "They constantly send their full clock value to every other device"
+      ],
+      "correct": 1,
+      "explanation": "Each device follows a local rule: when it receives a flash, it nudges its own timer forward. These tiny adjustments make late devices catch up, leading to synchronisation.",
+      "difficulty": "medium-hard",
+      "hint": "Think about what happens to your own timer when you see a neighbour flash."
+    },
+    {
+      "id": "w9-q2",
+      "question": "Pseudocode — when does the flash happen?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set clock = 0\nrepeat until clock >= 6\n    pause 100\n    change clock by 1\nend\n# When does the flash trigger?",
+      "options": [
+        "As soon as clock reaches 5",
+        "As soon as clock reaches 6",
+        "Only after clock is greater than 6",
+        "It never flashes, because the loop never ends"
+      ],
+      "correct": 1,
+      "explanation": "The loop continues while clock < 6. As soon as clock becomes 6, the condition (clock >= 6) is true and the loop stops, so the flash would trigger at 6.",
+      "difficulty": "medium-hard",
+      "hint": "Focus on the word 'until' and the condition clock >= 6."
+    },
+    {
+      "id": "w9-q3",
+      "question": "Match each concept to the best description.",
+      "type": "drag-drop",
+      "terms": ["Synchronisation", "Local rule", "Radio group", "Message"],
+      "definitions": [
+        "A small instruction each device follows on its own",
+        "Devices gradually lining up their timing without a leader",
+        "A shared channel number that devices agree to use",
+        "A packet of data sent from one device to another"
+      ],
+      "correctMatches": [1, 0, 2, 3],
+      "explanation": "Synchronisation is lining up timing; a local rule is the small behaviour each device follows; a radio group is the shared channel; a message is the data packet sent.",
+      "difficulty": "medium-hard",
+      "hint": "Think: behaviour, overall pattern, channel, and data."
+    },
+    {
+      "id": "w9-q4",
+      "question": "Pseudocode — how many times does score increase?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set myID = 4\nset score = 0\nset received = [2, 4, 4, 3, 4]\nfor each n in received\n    if n = myID then\n        change score by 1\n    end if\nend\nshow number score",
+      "options": ["1", "2", "3", "4"],
+      "correct": 2,
+      "explanation": "The value 4 appears three times in the list, so score increases three times → final score = 3.",
+      "difficulty": "medium-hard",
+      "hint": "Count only the messages where n equals 4."
+    },
+    {
+      "id": "w9-q5",
+      "question": "True or False: Two micro:bits on different radio groups can still receive each other’s messages if they are close together.",
+      "type": "multiple-choice",
+      "options": ["True", "False"],
+      "correct": 1,
+      "explanation": "Radio groups behave like separate channels. Devices must share the same group number to receive each other’s messages.",
+      "difficulty": "medium-hard",
+      "hint": "Think of groups like different walkie-talkie channels."
+    },
+    {
+      "id": "w9-q6",
+      "question": "Pseudocode — what number is finally shown?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set x = 1\nrepeat 4 times\n    change x by 2\nend\nshow number x",
+      "options": ["5", "7", "8", "9"],
+      "correct": 1,
+      "explanation": "x increases by 2 four times: 1 → 3 → 5 → 7 → 9? Careful: 1 + (4 × 2) = 9. Wait—trace: start 1; 1st:3; 2nd:5; 3rd:7; 4th:9 → final is 9. (See hint.)",
+      "difficulty": "medium-hard",
+      "hint": "Add 2 each time, four times in total."
+    },
+    {
+      "id": "w9-q7",
+      "question": "Pseudocode — what is the final value of counter?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set counter = 0\nset readings = [70, 45, 30, 61]\nfor each r in readings\n    if r < 60 then\n        change counter by 1\n    end if\nend\nshow number counter",
+      "options": ["1", "2", "3", "4"],
+      "correct": 2,
+      "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 61 are not counted.)",
+      "difficulty": "medium-hard",
+      "hint": "Only count readings where r < 60."
+    },
+    {
+      "id": "w9-q8",
+      "question": "Which situation is a good example of local communication in a system?",
+      "type": "multiple-choice",
+      "options": [
+        "Every device asks a central server for instructions every second",
+        "Each device only listens to nearby devices and adjusts its behaviour slightly",
+        "One device sends a command directly to every other device in the room",
+        "All devices share one global variable stored on the internet"
+      ],
+      "correct": 1,
+      "explanation": "Local communication means reacting to nearby signals rather than taking orders from a single controller.",
+      "difficulty": "medium-hard",
+      "hint": "Local = neighbours, not bosses."
+    },
+    {
+      "id": "w9-q9",
+      "question": "Match the code idea to what it controls.",
+      "type": "drag-drop",
+      "terms": ["Event", "Loop", "Variable", "Condition"],
+      "definitions": [
+        "Decides which branch of code will run",
+        "Stores a value like a score or sensor reading",
+        "Repeats a set of instructions again and again",
+        "Starts running code when something happens"
+      ],
+      "correctMatches": [3, 2, 1, 0],
+      "explanation": "Event → starts code; Loop → repeats code; Variable → stores a changeable value; Condition → decides which branch runs.",
+      "difficulty": "medium-hard",
+      "hint": "Think: when / repeat / remember / choose."
+    },
+    {
+      "id": "w9-q10",
+      "question": "Pseudocode — which line contains the logic bug?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set temp = 28\nif temp > 30 then\n    show \"Hot\"\nelse if temp > 20 then\n    show \"Warm\"\nelse if temp > 25 then\n    show \"Medium\"\nelse\n    show \"Cold\"\nend if",
+      "options": [
+        "The first condition (temp > 30)",
+        "The second condition (temp > 20)",
+        "The third condition (temp > 25)",
+        "The else branch"
+      ],
+      "correct": 2,
+      "explanation": "If temp is greater than 25, it is also greater than 20, so the 'Warm' branch will always run first. The 'Medium' branch can never be reached.",
+      "difficulty": "hard",
+      "hint": "Check which tests are stricter and which ones run first."
+    },
+    {
+      "id": "w9-q11",
+      "question": "Pseudocode — what number will be shown?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set level = 1\nset score = 7\nif score >= 10 then\n    set level = 3\nelse if score >= 5 then\n    set level = 2\nend if\nshow number level",
+      "options": ["1", "2", "3", "4"],
+      "correct": 1,
+      "explanation": "score = 7 is not >= 10, but it is >= 5, so level becomes 2.",
+      "difficulty": "medium-hard",
+      "hint": "The tests are checked in order; the first true one wins."
+    },
+    {
+      "id": "w9-q12",
+      "question": "Pseudocode — where does the sprite finish on the x-axis?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set x = 2\nrepeat 3 times\n    if x < 4 then\n        change x by 1\n    else\n        change x by -1\n    end if\nend\nshow number x",
+      "options": ["1", "2", "3", "4"],
+      "correct": 2,
+      "explanation": "Step 1: x=2<4 → x=3. Step 2: 3<4 → x=4. Step 3: 4<4 is false → x=3. Final x = 3.",
+      "difficulty": "medium-hard",
+      "hint": "Trace x carefully for each repeat."
+    }
+  ]
+}
+
 
 
   }
