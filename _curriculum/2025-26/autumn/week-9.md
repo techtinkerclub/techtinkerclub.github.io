@@ -90,9 +90,12 @@ We tested in small circles, then as a whole group.
 
 ## Resources
 - **Fireflies simulator:** [Link](https://ncase.me/fireflies/){:target="_blank" rel="noopener"}  
-- **Fireflies (MakeCode):** [Link](https://makecode.microbit.org/projects/fireflies){:target="_blank" rel="noopener"}  
+- **Fireflies Makecode Project:** [Link](https://makecode.microbit.org/projects/fireflies){:target="_blank" rel="noopener"}
+- **Exploding duck Makecode Project:** [Code](https://makecode.microbit.org/S42078-98378-75662-51312){:target="_blank" rel="noopener"}
 - **MakeCode Editor:** [Link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
 - **Micro:bit Radio Reference:** [Link](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"}
+- **Glow of Love: The Secret Language Fireflies Use to Find Mates:** [Video](https://youtu.be/cgvQaY_COrg?si=uMdAEzTF6g4ETZGU){:target="_blank" rel="noopener"}
+- **The Surprising Secret of Synchronization:** [Video](https://youtu.be/t-_VPRCtiUg?si=QKBu0BjIT0df27zt){:target="_blank" rel="noopener"}
 
 ---
 
