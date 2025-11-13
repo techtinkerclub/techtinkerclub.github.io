@@ -104,7 +104,6 @@ We tested in small circles, then as a whole group.
 - BBC micro:bits + USB cables (or simulator)  
 - Laptops / Chromebooks with internet access  
 - Batteries (for untethered play)  
-- Space to stand in a circle for testing
 
 ---
 
