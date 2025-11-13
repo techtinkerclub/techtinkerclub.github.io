@@ -96,7 +96,8 @@ We tested in small circles, then as a whole group.
 - **Micro:bit Radio Reference:** [Link](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"}
 - **Glow of Love: The Secret Language Fireflies Use to Find Mates:** [Video](https://youtu.be/cgvQaY_COrg?si=uMdAEzTF6g4ETZGU){:target="_blank" rel="noopener"}
 - **The Surprising Secret of Synchronization:** [Video](https://youtu.be/t-_VPRCtiUg?si=QKBu0BjIT0df27zt){:target="_blank" rel="noopener"}
-
+- **What's Behind The Firefly's Glow?:** [Video](https://youtu.be/CogHulTLH2g?si=ormlEyg_ppdC6Lr0){:target="_blank" rel="noopener"}
+- **How do fireflies create light?:** [Video](https://youtu.be/XsFP8fpuQR4?si=p4xAD83ElXsYz6MK){:target="_blank" rel="noopener"}
 ---
 
 ## Equipment
