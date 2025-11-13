@@ -1270,35 +1270,30 @@
   "questions": [
     {
       "id": "w9-q1",
-      "question": "Why do the micro:bits in the fireflies activity gradually start flashing at almost the same time, even though none of them is a leader?",
+      "question": "Why is it important that devices use the same radio group number when communicating?",
       "type": "multiple-choice",
       "options": [
-        "They secretly choose one micro:bit as the leader and copy its timing",
-        "Each micro:bit speeds up its own timer slightly when it receives a neighbour’s flash",
-        "All micro:bits share exactly the same random seed so they stay in sync",
-        "They constantly send their full clock value to every other device"
+        "It lets them send stronger messages",
+        "Only devices on the same group can hear each other's messages",
+        "It makes the LEDs brighter",
+        "It increases battery life"
       ],
       "correct": 1,
-      "explanation": "Each device follows a local rule: when it receives a flash, it nudges its own timer forward. These tiny adjustments make late devices catch up, leading to synchronisation.",
+      "explanation": "Radio groups act like channels. Devices must match the group number to receive each other's messages.",
       "difficulty": "medium-hard",
-      "hint": "Think about what happens to your own timer when you see a neighbour flash."
+      "hint": "Think: like walkie-talkie channels."
     },
     {
       "id": "w9-q2",
-      "question": "Pseudocode — when does the flash happen?",
+      "question": "Pseudocode — how many times does the loop run?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
-      "code": "set clock = 0\nrepeat until clock >= 6\n    pause 100\n    change clock by 1\nend\n# When does the flash trigger?",
-      "options": [
-        "As soon as clock reaches 5",
-        "As soon as clock reaches 6",
-        "Only after clock is greater than 6",
-        "It never flashes, because the loop never ends"
-      ],
+      "code": "set clock = 0\nrepeat until clock >= 6\n    pause 100\n    change clock by 1\nend",
+      "options": ["5 times", "6 times", "7 times", "It runs forever"],
       "correct": 1,
-      "explanation": "The loop continues while clock < 6. As soon as clock becomes 6, the condition (clock >= 6) is true and the loop stops, so the flash would trigger at 6.",
+      "explanation": "clock starts at 0. Each loop adds 1. It stops when clock becomes 6, so it runs exactly 6 times.",
       "difficulty": "medium-hard",
-      "hint": "Focus on the word 'until' and the condition clock >= 6."
+      "hint": "Trace clock: 0,1,2,3,4,5,6."
     },
     {
       "id": "w9-q3",
@@ -1345,8 +1340,8 @@
       "codeLabel": "Pseudocode",
       "code": "set x = 1\nrepeat 4 times\n    change x by 2\nend\nshow number x",
       "options": ["5", "7", "8", "9"],
-      "correct": 1,
-      "explanation": "x increases by 2 four times: 1 → 3 → 5 → 7 → 9? Careful: 1 + (4 × 2) = 9. Wait—trace: start 1; 1st:3; 2nd:5; 3rd:7; 4th:9 → final is 9. (See hint.)",
+      "correct": 3,
+      "explanation": "x starts at 1. It increases by 2 four times: 1 → 3 → 5 → 7 → 9. The final value is 9.",
       "difficulty": "medium-hard",
       "hint": "Add 2 each time, four times in total."
     },
@@ -1355,9 +1350,9 @@
       "question": "Pseudocode — what is the final value of counter?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
-      "code": "set counter = 0\nset readings = [70, 45, 30, 61]\nfor each r in readings\n    if r < 60 then\n        change counter by 1\n    end if\nend\nshow number counter",
+      "code": "set counter = 0\nset readings = [70, 45, 30, 60]\nfor each r in readings\n    if r < 60 then\n        change counter by 1\n    end if\nend\nshow number counter",
       "options": ["1", "2", "3", "4"],
-      "correct": 2,
+      "correct": 1,
       "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 61 are not counted.)",
       "difficulty": "medium-hard",
       "hint": "Only count readings where r < 60."
@@ -1368,7 +1363,7 @@
       "type": "multiple-choice",
       "options": [
         "Every device asks a central server for instructions every second",
-        "Each device only listens to nearby devices and adjusts its behaviour slightly",
+        "Each device only listens to, receives and sendd information to nearby devices",
         "One device sends a command directly to every other device in the room",
         "All devices share one global variable stored on the internet"
       ],
@@ -1395,20 +1390,20 @@
     },
     {
       "id": "w9-q10",
-      "question": "Pseudocode — which line contains the logic bug?",
+      "question": "Pseudocode — which condition will never run because of the order of the tests?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
-      "code": "set temp = 28\nif temp > 30 then\n    show \"Hot\"\nelse if temp > 20 then\n    show \"Warm\"\nelse if temp > 25 then\n    show \"Medium\"\nelse\n    show \"Cold\"\nend if",
+      "code": "set temp = 28\nif temp > 25 then\n    show \"Hot\"\nelse if temp > 20 then\n    show \"Warm\"\nelse if temp > 10 then\n    show \"Mild\"\nelse\n    show \"Cold\"\nend if",
       "options": [
-        "The first condition (temp > 30)",
+        "The first condition (temp > 25)",
         "The second condition (temp > 20)",
-        "The third condition (temp > 25)",
-        "The else branch"
+        "The third condition (temp > 10)",
+        "None — all of them can run in some situation"
       ],
-      "correct": 2,
-      "explanation": "If temp is greater than 25, it is also greater than 20, so the 'Warm' branch will always run first. The 'Medium' branch can never be reached.",
-      "difficulty": "hard",
-      "hint": "Check which tests are stricter and which ones run first."
+      "correct": 3,
+      "explanation": "All three conditions can be true for different values of temp (for example: 30 → Hot, 22 → Warm, 15 → Mild). None of the branches are unreachable.",
+      "difficulty": "medium-hard",
+      "hint": "Think about what happens for different values: 30, 22, 15, and 5."
     },
     {
       "id": "w9-q11",
