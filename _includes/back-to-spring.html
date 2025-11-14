@@ -1,0 +1,36 @@
+{%- comment -%}
+Renders BOTH buttons inline:
+- Back to Spring (always)
+- Instructor Notes (only if ?notes=1)
+Uses page.week from front-matter.
+{%- endcomment -%}
+
+{%- if site.collections.instructor_notes -%}
+  {%- assign notes_base = '/instructor_notes' -%}
+{%- else -%}
+  {%- assign notes_base = '/teacher_notes' -%}
+{%- endif -%}
+
+<div style="display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; margin:.5rem 0 1rem;">
+  <a href="/curriculum/2025-26/spring/#week-by-week" class="btn btn--primary">
+    ← Back to Spring
+  </a>
+
+  <span id="notes-inline-{{ page.week }}" style="display:none;">
+    <a class="btn" href="{{ notes_base }}/2025-26/spring/week-{{ page.week }}-notes/" target="_blank" rel="noopener">
+      Instructor Notes
+    </a>
+  </span>
+</div>
+
+<script>
+(function(){
+  try {
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('notes') === '1') {
+      var el = document.getElementById('notes-inline-{{ page.week }}');
+      if (el) el.style.display = 'inline-block';
+    }
+  } catch(e) {}
+})();
+</script>

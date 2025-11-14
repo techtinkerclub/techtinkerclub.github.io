@@ -1,0 +1,16 @@
+{%- comment -%}Inline Instructor Notes button — hidden unless ?notes=1. Auto-detect term.{%- endcomment -%}
+<style>.notes-inline{{display:inline-block;margin-left:.75rem;}}</style>
+
+{%- assign term = 'autumn' -%}
+{%- if page.permalink contains '/spring/' -%}{%- assign term = 'spring' -%}{%- endif -%}
+{%- if page.permalink contains '/summer/' -%}{%- assign term = 'summer' -%}{%- endif -%}
+
+<span id="notes-link-{{ include.week }}" class="notes-inline" style="display:none;">
+  <a class="btn btn--primary"
+     href="{{ '/teacher_notes/2025-26/' | append: term | append: '/week-' | append: include.week | append: '-notes/' | relative_url }}"
+     target="_blank" rel="noopener noreferrer">
+    View Instructor Notes
+  </a>
+</span>
+
+<script>(function(){try{var p=new URLSearchParams(window.location.search);if(p.get('notes')==='1'){var el=document.getElementById('notes-link-{{ include.week }}');if(el)el.style.display='inline-block';}}catch(e){}})();</script>
