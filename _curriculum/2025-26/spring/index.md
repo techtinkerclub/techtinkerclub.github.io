@@ -14,16 +14,17 @@ header:
 
 # Spring 2026 — Tinkercad Term
 
-# Spring 2026 — Tinkercad Term
-
 **Theme:** *“Design, Make, Iterate.”*  
 This term, participants at Tech Tinker Club will use Tinkercad to design 3D models, explore mechanisms and simple circuits, and prepare a small number of projects for 3D printing or digital showcase.
 
 <div style="margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .75rem;">
-  <a class="btn btn--primary" href="#intent">
+  <a class="btn btn--primary"
+     href="/curriculum/2025-26/spring/#week-by-week">
     Term Overview
   </a>
-  <a class="btn" href="/curriculum/2025-26/spring/curriculum-links/">
+  <a class="btn btn--primary"
+     href="/curriculum/2025-26/spring/curriculum-links/"
+     target="_blank" rel="noopener">
     Curriculum Links
   </a>
 </div>
@@ -53,13 +54,6 @@ This term, participants at Tech Tinker Club will use Tinkercad to design 3D mode
 
 ---
 
-## Further Details
-
-- 📄 [Term Overview]( /curriculum/2025-26/spring/#week-by-week )  
-- 📚 [Curriculum Links]( /curriculum/2025-26/spring/curriculum-links/ )
-
----
-
 ## Week by Week Overview {#week-by-week}
 
 | Week | Focus Concept | Mini-Project Example | Resources |
@@ -73,6 +67,6 @@ This term, participants at Tech Tinker Club will use Tinkercad to design 3D mode
 | [Week 7](/curriculum/2025-26/spring/week-7/) | Preparing models for 3D printing safely and successfully | Desk Nameplate or Phone Stand | [View resources](/curriculum/2025-26/spring/week-7/#resources){:target="_blank" rel="noopener"} |
 | [Week 8](/curriculum/2025-26/spring/week-8/) | Generating repeated forms with Codeblocks | Patterned Bracelet or Tower | [View resources](/curriculum/2025-26/spring/week-8/#resources){:target="_blank" rel="noopener"} |
 | [Week 9](/curriculum/2025-26/spring/week-9/) | Basics of digital circuits and simulation | Blinking LED Card (simulated) | [View resources](/curriculum/2025-26/spring/week-9/#resources){:target="_blank" rel="noopener"} |
-| [Week 10](/curriculum/2025-26/spring/week-10/) | Iterate, document and present a product | Final Print or Best‑of‑Term Model | [View resources](/curriculum/2025-26/spring/week-10/#resources){:target="_blank" rel="noopener"} |
+| [Week 10](/curriculum/2025-26/spring/week-10/) | Iterate, document and present a product | Final Print or Best-of-Term Model | [View resources](/curriculum/2025-26/spring/week-10/#resources){:target="_blank" rel="noopener"} |
 
 ---
