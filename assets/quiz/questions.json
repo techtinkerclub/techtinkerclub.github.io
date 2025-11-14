@@ -739,7 +739,7 @@
           "code": "set counter to 9\nwhile counter > 0\n    if counter < 0 then\n        change counter by -1\n    pause 100",
           "options": ["Counts to 0 and stops", "Infinite loop", "Runs exactly 9 times", "Crashes immediately"],
           "correct": 1,
-          "explanation": "The if never runs (condition counter < 0 is never true), so counter never changes; loop never ends.",
+          "explanation": "Inside the loop, counter never changes because counter < 0 is never true. It stays 9, so counter > 0 is always true and the while-loop never ends.",
           "hint": "Does the if condition ever become true?",
           "difficulty": "hard"
         },
@@ -804,7 +804,7 @@
             "score = 7, speed = 120"
           ],
           "correct": 1,
-          "explanation": "Increment means increase — here the score increases by 1 each time (3 + 7 = 10). The speed decreases by 10 each time (200 − 70 = 130 ms).",
+          "explanation": "Increment means increase — the score goes from 3 up to 10 (3 + 7 = 10). Each time the event happens, speed goes down by 10, so 200 − 70 = 130 ms.",
           "difficulty": "medium",
           "hint": "Increment means 'increase by' — think about how both values change each event."
         },
@@ -1228,7 +1228,7 @@
             "code": "set c = 0\nrepeat 4 times\n    change c by 2\n    if c > 3 then set c = 1\nend\nshow number c",
             "options": ["1", "2", "3", "4"],
             "correct": 0,
-            "explanation": "Steps: c=0→2→(≤3)→4→reset→1→3→(≤3)→5→reset→1. Final c=1.",
+            "explanation": "Follow c step by step: start 0 → loop 1: c = 2 → loop 2: c becomes 4, then resets to 1 → loop 3: c becomes 3 (no reset) → loop 4: c becomes 5, then resets to 1. Final c = 1.",
             "difficulty": "hard",
             "hint": "Apply the reset each time c passes 3."
           },
@@ -1240,7 +1240,7 @@
             "code": "function addTwice(a, b)\n    return a + a + b\nend function\nset x = 3\nset y = 4\nshow number addTwice(y, x)",
             "options": ["9", "10", "11", "12"],
             "correct": 2,
-            "explanation": "a=y=4, b=x=3 → 4+4+3 = 11?",
+            "explanation": "Here a = y = 4 and b = x = 3, so a + a + b = 4 + 4 + 3 = 11.",
             "difficulty": "medium-hard",
             "hint": "Mind which argument is ‘a’ and which is ‘b’."
           },
@@ -1353,7 +1353,7 @@
       "code": "set counter = 0\nset readings = [70, 45, 30, 60]\nfor each r in readings\n    if r < 60 then\n        change counter by 1\n    end if\nend\nshow number counter",
       "options": ["1", "2", "3", "4"],
       "correct": 1,
-      "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 61 are not counted.)",
+      "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 60 are not counted.)",
       "difficulty": "medium-hard",
       "hint": "Only count readings where r < 60."
     },
