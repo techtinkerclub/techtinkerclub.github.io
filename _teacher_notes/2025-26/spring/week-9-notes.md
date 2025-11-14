@@ -16,120 +16,146 @@ header:
 # Instructor Notes — Week 9
 {% include print-to-pdf.html %}
 
-**Theme:** Circuits in Tinkercad  
-**Focus Concept:** Basics of digital circuits and simulation  
-**Mini-Project:** *Blinking LED Card (simulated)*  
+**Theme:** Structure & Stability (SimLab Earthquake)  
+**Focus Concept:** Building towers that can withstand shaking  
+**Mini-Project:** *Anti-Fall Tower Challenge*
 
 ---
 
 ## Learning Objectives
-- Use this week’s focus tools effectively to model a simple product.  
-- Explain design choices using correct vocabulary (e.g. size, symmetry, tolerance).  
-- Iterate designs based on testing or peer feedback.
+
+- Build a simple tower structure in SimLab using beams and connectors.  
+- Test the tower with earthquake simulations.  
+- Strengthen the design using wider bases and **bracing**.
 
 ---
 
 ## Session Flow (≈ 80 min)
 
-| Segment | Time | Focus |
-|----------|------|-------|
-| Welcome & recap | 10 min | Recap Autumn and introduce today’s focus |
-| Tool demo | 10 min | Model the new tools with a short example |
-| Guided build | 25 min | Scaffold the mini-project step by step |
-| Independent make | 25 min | Personalise, refine and extend designs |
-| Share & tidy | 10 min | Quick gallery, feedback and saving work |
+| Segment           | Time | Focus                                           |
+|-------------------|------|------------------------------------------------|
+| Recap & intro     | 10   | Review motion tests; introduce towers & quakes |
+| Tool demo         | 10   | Build a basic tower; run a gentle quake        |
+| Guided build      | 25   | Everyone builds a first-attempt tower          |
+| Independent refine| 25   | Bracing, widening base, re-testing             |
+| Share & tidy      | 10   | Compare “before” and “after” towers           |
 
 ---
 
-## Part A — Explore & Demo
-- Demonstrate today’s tools with a very small example (e.g. one corner of the final project).  
-- Highlight common pitfalls, such as tiny features that will not print well or awkward print orientations.  
+## Part A — Demo: Wobbly vs Braced Tower
 
-## Part B — Guided Build
-- Lead the group through building a minimal viable product (MVP) that meets the week’s brief.  
-- Pause after key steps so participants can catch up and you can check understanding.  
+- Build a quick, tall, **thin** tower with minimal support.  
+- Run a low-level earthquake simulation and watch it fail.  
+- Add **bracing** (diagonal members) and widen the base.  
+- Run the same simulation and compare.
 
-## Part C — Independent Make & Extend
-- Ask learners to personalise their designs or add one extra feature.  
-- Offer simple extension ideas for quick finishers (extra details, improved strength, extra patterns, etc.).  
+Link this to real-world buildings and bridges.
+
+---
+
+## Part B — Guided Build: First Towers
+
+- Set a brief:  
+  - Minimum height (e.g. 3 or 4 “storeys”).  
+  - No grouping everything into one solid (we want realistic behaviour).  
+- Let learners build a basic tower and run a first earthquake test.  
+- Ask them to identify which parts failed first.
+
+---
+
+## Part C — Independent Strengthening & Challenge
+
+- Learners improve their towers by:
+  - Adding diagonal braces.  
+  - Widening the footprint.  
+  - Thickening critical parts.  
+- If time allows, run a friendly challenge:
+  - Increase the quake strength gradually.  
+  - See which towers survive longest, while recognising that “failure” shows where they can improve.
 
 ---
 
 ## Vocabulary for This Week
-Words to emphasise in explanations and on the board: Breadboard, LED, Resistor, Polarity, Simulate.
+
+- **Stability** — how well something stays upright.  
+- **Bracing** — diagonal supports that stop wobbling.  
+- **Base** — the part of the structure that sits on the ground.  
+- **Earthquake** — shaking of the ground that can damage buildings.  
 
 ---
 
 ## Instructor Tips
-- Use a visual timer or simple “halfway” reminder so the group leaves enough time to finish and save.  
-- Encourage learners to rotate their view often to check designs from more than one angle.  
-- For trickier weeks (mechanisms, Codeblocks, circuits), consider short paired explanations before independent work.  
-- Keep a print queue list with model names and initials so pupils can track when their designs will be printed.  
+
+- Be sensitive: earthquakes can be a scary or lived topic for some children.  
+- Emphasise that this is a **safe simulation** to help engineers design safer real buildings.  
+- Encourage changes one at a time, so pupils see what each addition does.
 
 ---
 
 ## Assessment & Reflection
-- Can learners name and demonstrate the focus tools for the week?  
-- Do their models broadly match the design brief (e.g. fit size, stability, readability)?  
-- Can they describe at least one change they made after testing or feedback?  
 
-> Prompt: “What did you change in your design and why did it make it better?”
+Look for:
+
+- Evidence of design changes that improve stability.  
+- Pupils able to point to braces or base changes and explain their function.  
+- Use of terms like “wider base”, “bracing”, “top-heavy”.
+
+> Prompt: “What did you change after the first test, and how did it help your tower?”  
 
 ---
 
 ## Common Misconceptions & Fixes
 
-| Misconception | Clarification |
-|---------------|---------------|
-| “Thin parts are always fine if they look cool.” | Thin walls and tiny details can break easily or fail to print; strengthen or thicken where possible. |
-| “If it looks OK from one side, it will print fine.” | Check all sides and think about overhangs and supports before exporting. |
-| “Undo will always rescue me.” | Encourage regular saving and copying so experimental changes don’t lose the best version. |
+| Misconception                             | Clarification / Strategy                                   |
+|-------------------------------------------|-------------------------------------------------------------|
+| “Taller is always better”                 | Discuss trade-off: taller is harder to stabilise.          |
+| Adding mass at the top improves strength  | Show that top-heavy towers topple more easily.             |
+| Braces anywhere work the same             | Compare random vs well-placed diagonal supports.           |
 
 ---
 
 ## Differentiation
-- **Beginners:** Follow the guided steps closely; limit changes to colours, simple decorations or one extra feature.  
-- **Confident learners:** Add extra functional details (handles, fillets, mirrored parts, parameter changes).  
-- **Stretch:** Create variants for different users (e.g. a smaller tag for a younger sibling, a heavier base for stability).  
+
+- **Beginners:**  
+  - Build shorter towers with explicit guidance on where to add braces.  
+- **Confident learners:**  
+  - Attempt taller towers; compare different bracing patterns.  
+  - Explain their design as if presenting to a client or engineer.  
 
 ---
 
 ## Cross-Curricular Links
 
-| Subject | Connection |
-|---------|------------|
-| **Maths** | Measurement in millimetres, symmetry, angles, simple scaling. |
-| **Art & Design** | Composition, colour, balance, and use of pattern or motif. |
-| **Science/Engineering** | Structures, forces, friction, mechanisms and material strength. |
-| **Computing** | Digital content creation and, in Week 8, block-based programming for parametric design. |
+| Subject          | Connection                                                 |
+|------------------|------------------------------------------------------------|
+| **Science**      | Forces, vibrations, and real-world natural phenomena.     |
+| **Geography**    | Earthquakes and where they occur (if appropriate/time).   |
+| **D&T**          | Structural design and testing under constraints.          |
 
 ---
 
 ## KS2 Curriculum Mapping
 
-| Strand | Evidence in Session |
-|--------|----------------------|
-| KS2 Computing — Creating Media (3D) | Using a digital tool to create 3D content and discuss audience and purpose. |
-| KS2 Computing — Programming (Week 8) | Using Codeblocks loops and parameters to generate geometry. |
-| KS2 D&T — Design | Developing and communicating ideas that are fit for a simple brief. |
-| KS2 D&T — Make | Selecting virtual tools and techniques; measuring and aligning accurately. |
-| KS2 D&T — Evaluate | Reflecting on designs and suggesting improvements. |
-| KS2 D&T — Technical Knowledge | Understanding simple mechanisms, structures and print-related constraints. |
+| Strand                                | Evidence in Session                                      |
+|---------------------------------------|----------------------------------------------------------|
+| Science — Working Scientifically      | Predicting, testing, observing, and improving designs.  |
+| D&T — Technical Knowledge             | Understanding how structures can be strengthened.       |
+| Computing — Modelling & Simulation    | Using digital simulations to explore “what if?”         |
 
 ---
 
 ## Materials & Setup
-- Computers with internet and Tinkercad accounts (one per participant or one between two).  
-- Mice for easier navigation wherever possible.  
-- Optional: card or scrap paper for quick sketching of ideas.  
-- Adult-supervised 3D printer if prints will be prepared.  
-- Whiteboard or flipchart for vocabulary and the print queue.  
+
+- Laptops / Chromebooks with internet and Tinkercad accounts.  
+- Mouse per device.  
 
 ---
 
 ## Safety & Safeguarding
-- Only adults or trained staff should operate slicing software and 3D printers.  
-- Avoid printing items that are too small, sharp or could be swallowed; follow school policies.  
-- Encourage sensible posture at computers and short movement breaks where appropriate.  
+
+- Handle earthquake topics with care and sensitivity.  
+- Encourage supportive, non-competitive language when towers fail.  
 
 ---
+
+{% include back-to-spring.html %}

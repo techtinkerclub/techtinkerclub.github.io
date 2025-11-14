@@ -16,120 +16,153 @@ header:
 # Instructor Notes — Week 10
 {% include print-to-pdf.html %}
 
-**Theme:** Capstone Showcase  
-**Focus Concept:** Iterate, document and present a product  
-**Mini-Project:** *Final Print or Best‑of‑Term Model*  
+**Theme:** Final Project (Structured Choice)  
+**Focus Concept:** Planning, improving and presenting a chosen design  
+**Mini-Project:** *Improved Car / Tower / Rocket*
 
 ---
 
 ## Learning Objectives
-- Use this week’s focus tools effectively to model a simple product.  
-- Explain design choices using correct vocabulary (e.g. size, symmetry, tolerance).  
-- Iterate designs based on testing or peer feedback.
+
+- Choose a project focus (car, tower or rocket / revolved form).  
+- Plan and implement at least one meaningful improvement.  
+- Present the final design and explain how it has improved over time.
 
 ---
 
 ## Session Flow (≈ 80 min)
 
-| Segment | Time | Focus |
-|----------|------|-------|
-| Welcome & recap | 10 min | Recap Autumn and introduce today’s focus |
-| Tool demo | 10 min | Model the new tools with a short example |
-| Guided build | 25 min | Scaffold the mini-project step by step |
-| Independent make | 25 min | Personalise, refine and extend designs |
-| Share & tidy | 10 min | Quick gallery, feedback and saving work |
+| Segment           | Time | Focus                                           |
+|-------------------|------|------------------------------------------------|
+| Recap & options   | 10   | Review term, explain project choices           |
+| Planning          | 10   | Quick sketch/plan of improvements              |
+| Build & refine    | 40   | Main working time on chosen project            |
+| Optional testing  | 10   | SimLab tests for cars/towers where relevant    |
+| Share & reflect   | 10   | Short presentations and feedback               |
 
 ---
 
-## Part A — Explore & Demo
-- Demonstrate today’s tools with a very small example (e.g. one corner of the final project).  
-- Highlight common pitfalls, such as tiny features that will not print well or awkward print orientations.  
+## Part A — Recap & Choice
 
-## Part B — Guided Build
-- Lead the group through building a minimal viable product (MVP) that meets the week’s brief.  
-- Pause after key steps so participants can catch up and you can check understanding.  
+- Briefly revisit the main themes of the term:
+  - 3D basics, alignment, holes, symmetry, Sketch & Revolve.  
+  - Motion and friction in SimLab.  
+  - Stability and bracing for towers.  
+- Present the three options clearly:
+  - **Car:** focus on motion, shape and smooth movement.  
+  - **Tower:** focus on stability and earthquake survival.  
+  - **Rocket / Revolved object:** focus on clean design and practicality.  
 
-## Part C — Independent Make & Extend
-- Ask learners to personalise their designs or add one extra feature.  
-- Offer simple extension ideas for quick finishers (extra details, improved strength, extra patterns, etc.).  
+Ask each learner to pick **one** and state a simple goal (e.g. “make my car roll straighter”).
+
+---
+
+## Part B — Build, Refine & Test
+
+- Most of the session is devoted to:
+  - Re-opening a previous model or starting a refined version from scratch.  
+  - Making targeted changes based on what they learned.  
+- For cars and towers:
+  - Use **SimLab** where possible to test improvements.  
+- For rockets/pendants:
+  - Check thickness, proportions and details for a plausible, printable design.
+
+Remind learners to save versions as they go, especially if making big changes.
+
+---
+
+## Part C — Sharing & Reflection
+
+- Invite quick, informal presentations (30–60 seconds each):
+  - Which project they chose.  
+  - What they changed.  
+  - What difference it made.  
+- Encourage peers to give kind, specific feedback (“I like how you…”, “Have you thought about…?”).
 
 ---
 
 ## Vocabulary for This Week
-Words to emphasise in explanations and on the board: Prototype, Iteration, Evaluate, Brief, Audience.
+
+- **Iterate** — make repeated improvements to a design.  
+- **Prototype** — an early version of something used for testing.  
+- **Brief** — a short description of what a design should do or be like.  
 
 ---
 
 ## Instructor Tips
-- Use a visual timer or simple “halfway” reminder so the group leaves enough time to finish and save.  
-- Encourage learners to rotate their view often to check designs from more than one angle.  
-- For trickier weeks (mechanisms, Codeblocks, circuits), consider short paired explanations before independent work.  
-- Keep a print queue list with model names and initials so pupils can track when their designs will be printed.  
+
+- Keep the focus on **quality of thinking** and improvement, not complexity.  
+- Gently steer over-ambitious ideas back to manageable goals for the available time.  
+- Consider taking screenshots or exports for a term-end display or online gallery.  
 
 ---
 
 ## Assessment & Reflection
-- Can learners name and demonstrate the focus tools for the week?  
-- Do their models broadly match the design brief (e.g. fit size, stability, readability)?  
-- Can they describe at least one change they made after testing or feedback?  
 
-> Prompt: “What did you change in your design and why did it make it better?”
+Look for:
+
+- Evidence of thoughtful planning before jumping into changes.  
+- Clear improvement compared with earlier versions.  
+- Ability to explain design decisions in relation to motion or stability.
+
+> Prompt: “If you had another week, what would you do next with this design?”  
 
 ---
 
 ## Common Misconceptions & Fixes
 
-| Misconception | Clarification |
-|---------------|---------------|
-| “Thin parts are always fine if they look cool.” | Thin walls and tiny details can break easily or fail to print; strengthen or thicken where possible. |
-| “If it looks OK from one side, it will print fine.” | Check all sides and think about overhangs and supports before exporting. |
-| “Undo will always rescue me.” | Encourage regular saving and copying so experimental changes don’t lose the best version. |
+| Misconception                          | Clarification / Strategy                                 |
+|----------------------------------------|-----------------------------------------------------------|
+| “Starting over is always bad”          | Frame restart as sometimes the best way to improve.      |
+| Only big, flashy changes count         | Emphasise that **small, smart changes** can be powerful. |
+| SimLab results don’t matter            | Link test outcomes directly to design improvements.      |
 
 ---
 
 ## Differentiation
-- **Beginners:** Follow the guided steps closely; limit changes to colours, simple decorations or one extra feature.  
-- **Confident learners:** Add extra functional details (handles, fillets, mirrored parts, parameter changes).  
-- **Stretch:** Create variants for different users (e.g. a smaller tag for a younger sibling, a heavier base for stability).  
+
+- **Beginners:**  
+  - May simply tidy and slightly refine an existing model.  
+  - Focus on one clear improvement and explaining it.  
+- **Confident learners:**  
+  - Attempt more significant re-designs.  
+  - Combine features from more than one earlier project.  
 
 ---
 
 ## Cross-Curricular Links
 
-| Subject | Connection |
-|---------|------------|
-| **Maths** | Measurement in millimetres, symmetry, angles, simple scaling. |
-| **Art & Design** | Composition, colour, balance, and use of pattern or motif. |
-| **Science/Engineering** | Structures, forces, friction, mechanisms and material strength. |
-| **Computing** | Digital content creation and, in Week 8, block-based programming for parametric design. |
+| Subject          | Connection                                               |
+|------------------|----------------------------------------------------------|
+| **Computing**    | Consolidating tool use and simulation skills.           |
+| **D&T**          | Full design cycle: brief → design → test → improve.    |
+| **PSHE**         | Reflection, resilience and constructive peer feedback.  |
 
 ---
 
 ## KS2 Curriculum Mapping
 
-| Strand | Evidence in Session |
-|--------|----------------------|
-| KS2 Computing — Creating Media (3D) | Using a digital tool to create 3D content and discuss audience and purpose. |
-| KS2 Computing — Programming (Week 8) | Using Codeblocks loops and parameters to generate geometry. |
-| KS2 D&T — Design | Developing and communicating ideas that are fit for a simple brief. |
-| KS2 D&T — Make | Selecting virtual tools and techniques; measuring and aligning accurately. |
-| KS2 D&T — Evaluate | Reflecting on designs and suggesting improvements. |
-| KS2 D&T — Technical Knowledge | Understanding simple mechanisms, structures and print-related constraints. |
+| Strand                                | Evidence in Session                                      |
+|---------------------------------------|----------------------------------------------------------|
+| Computing — Creating Media (3D)       | Producing a final digital artefact.                     |
+| D&T — Design, Make, Evaluate          | Iterative improvement, considering user and function.   |
+| Science — Working Scientifically      | Applying previous observations to make better designs.  |
 
 ---
 
 ## Materials & Setup
-- Computers with internet and Tinkercad accounts (one per participant or one between two).  
-- Mice for easier navigation wherever possible.  
-- Optional: card or scrap paper for quick sketching of ideas.  
-- Adult-supervised 3D printer if prints will be prepared.  
-- Whiteboard or flipchart for vocabulary and the print queue.  
+
+- Laptops / Chromebooks with internet and Tinkercad accounts.  
+- Mouse per device.  
+- Optional: display board or digital folder for final screenshots.  
 
 ---
 
 ## Safety & Safeguarding
-- Only adults or trained staff should operate slicing software and 3D printers.  
-- Avoid printing items that are too small, sharp or could be swallowed; follow school policies.  
-- Encourage sensible posture at computers and short movement breaks where appropriate.  
+
+- Ensure final designs are appropriate and safe to print or share.  
+- Maintain a positive, supportive atmosphere during presentations.  
 
 ---
+
+{% include back-to-spring.html %}

@@ -16,120 +16,149 @@ header:
 # Instructor Notes — Week 7
 {% include print-to-pdf.html %}
 
-**Theme:** Print Preparation  
-**Focus Concept:** Preparing models for 3D printing safely and successfully  
-**Mini-Project:** *Desk Nameplate or Phone Stand*  
+**Theme:** CAD: Design a Simple Car Body  
+**Focus Concept:** Combining 3D tools into one purposeful vehicle design  
+**Mini-Project:** *4-Wheel Car Design*
 
 ---
 
 ## Learning Objectives
-- Use this week’s focus tools effectively to model a simple product.  
-- Explain design choices using correct vocabulary (e.g. size, symmetry, tolerance).  
-- Iterate designs based on testing or peer feedback.
+
+- Use align, group, holes, duplicate and mirror together in one project.  
+- Design a car body that clearly shows where four wheels would go.  
+- Keep the model roughly symmetric and stable for later testing.
 
 ---
 
 ## Session Flow (≈ 80 min)
 
-| Segment | Time | Focus |
-|----------|------|-------|
-| Welcome & recap | 10 min | Recap Autumn and introduce today’s focus |
-| Tool demo | 10 min | Model the new tools with a short example |
-| Guided build | 25 min | Scaffold the mini-project step by step |
-| Independent make | 25 min | Personalise, refine and extend designs |
-| Share & tidy | 10 min | Quick gallery, feedback and saving work |
+| Segment           | Time | Focus                                           |
+|-------------------|------|------------------------------------------------|
+| Recap & intro     | 10   | Review SimLab motion; introduce car design     |
+| Planning          | 10   | Sketch or discuss car ideas and constraints    |
+| Guided build      | 25   | Build a simple chassis and wheel arches        |
+| Independent make  | 25   | Refine, decorate and adjust proportions        |
+| Share & tidy      | 10   | Show designs; discuss where wheels will be     |
 
 ---
 
-## Part A — Explore & Demo
-- Demonstrate today’s tools with a very small example (e.g. one corner of the final project).  
-- Highlight common pitfalls, such as tiny features that will not print well or awkward print orientations.  
+## Part A — Planning & Constraints
 
-## Part B — Guided Build
-- Lead the group through building a minimal viable product (MVP) that meets the week’s brief.  
-- Pause after key steps so participants can catch up and you can check understanding.  
+- Explain that this week is about a **car body only** (no detailed wheels yet).  
+- Mention simple constraints:
+  - Enough space for 4 wheels.  
+  - Fairly symmetric left–right.  
+  - Flat enough bottom so it would sit or roll on a surface.  
+- Invite quick sketching on paper or talk through designs in pairs.
+
+---
+
+## Part B — Guided Build: Car Body
+
+Suggested sequence:
+
+1. Create a rectangular chassis block in sensible proportions.  
+2. Use **holes** to cut out simple wheel arches or gaps for wheel positions.  
+3. Use **duplicate + mirror** for left/right wheel openings.  
+4. Round or adjust the front and back using extra shapes.
+
+Keep the design simple and clear, rather than extremely detailed.
+
+---
 
 ## Part C — Independent Make & Extend
-- Ask learners to personalise their designs or add one extra feature.  
-- Offer simple extension ideas for quick finishers (extra details, improved strength, extra patterns, etc.).  
+
+- Learners refine:
+  - Cabin shape, windows, roof.  
+  - Simple bumper or spoiler.  
+- Encourage them to check that:
+  - The car still has space for wheels.  
+  - The underside is not too bumpy to roll.  
 
 ---
 
 ## Vocabulary for This Week
-Words to emphasise in explanations and on the board: STL, OBJ, Wall thickness, Overhang, Support, Orientation.
+
+- **Chassis** — main frame or body of a vehicle.  
+- **Wheelbase** — distance between front and rear wheel positions.  
+- **Symmetry** — similar shape on both sides of a centre line.  
 
 ---
 
 ## Instructor Tips
-- Use a visual timer or simple “halfway” reminder so the group leaves enough time to finish and save.  
-- Encourage learners to rotate their view often to check designs from more than one angle.  
-- For trickier weeks (mechanisms, Codeblocks, circuits), consider short paired explanations before independent work.  
-- Keep a print queue list with model names and initials so pupils can track when their designs will be printed.  
+
+- Use side-view screenshots or real toy cars as a reference.  
+- Remind learners that **function comes first**, then decoration.  
+- If time is short, you can provide a starter chassis and focus on wheel arch placement.
 
 ---
 
 ## Assessment & Reflection
-- Can learners name and demonstrate the focus tools for the week?  
-- Do their models broadly match the design brief (e.g. fit size, stability, readability)?  
-- Can they describe at least one change they made after testing or feedback?  
 
-> Prompt: “What did you change in your design and why did it make it better?”
+Look for:
+
+- Clear, consistent wheel positions on both sides.  
+- Designs that resemble a car, not an unstructured block.  
+- Pupils who can explain why their car might move smoothly or not.
+
+> Prompt: “Show me where your wheels would go. How did that affect your design?”  
 
 ---
 
 ## Common Misconceptions & Fixes
 
-| Misconception | Clarification |
-|---------------|---------------|
-| “Thin parts are always fine if they look cool.” | Thin walls and tiny details can break easily or fail to print; strengthen or thicken where possible. |
-| “If it looks OK from one side, it will print fine.” | Check all sides and think about overhangs and supports before exporting. |
-| “Undo will always rescue me.” | Encourage regular saving and copying so experimental changes don’t lose the best version. |
+| Misconception                                | Clarification / Strategy                             |
+|----------------------------------------------|-------------------------------------------------------|
+| Wheels “floating” in mid-air                  | Emphasise contact with ground and proper arches.     |
+| Very narrow or unstable body                  | Encourage widening the chassis for better stability. |
+| Forgetting symmetry                           | Use mirror and align to tidy up left and right.      |
 
 ---
 
 ## Differentiation
-- **Beginners:** Follow the guided steps closely; limit changes to colours, simple decorations or one extra feature.  
-- **Confident learners:** Add extra functional details (handles, fillets, mirrored parts, parameter changes).  
-- **Stretch:** Create variants for different users (e.g. a smaller tag for a younger sibling, a heavier base for stability).  
+
+- **Beginners:**  
+  - Start from a teacher-provided chassis block.  
+  - Focus mainly on wheel arches and a simple roof.  
+- **Confident learners:**  
+  - Experiment with different car types (racing car vs. minibus).  
+  - Add subtle design details while preserving function.  
 
 ---
 
 ## Cross-Curricular Links
 
-| Subject | Connection |
-|---------|------------|
-| **Maths** | Measurement in millimetres, symmetry, angles, simple scaling. |
-| **Art & Design** | Composition, colour, balance, and use of pattern or motif. |
-| **Science/Engineering** | Structures, forces, friction, mechanisms and material strength. |
-| **Computing** | Digital content creation and, in Week 8, block-based programming for parametric design. |
+| Subject          | Connection                                             |
+|------------------|--------------------------------------------------------|
+| **Science**      | Friction, stability and centre of mass.               |
+| **Maths**        | Length, width and symmetry.                           |
+| **D&T**          | Designing vehicles for purpose and user.              |
 
 ---
 
 ## KS2 Curriculum Mapping
 
-| Strand | Evidence in Session |
-|--------|----------------------|
-| KS2 Computing — Creating Media (3D) | Using a digital tool to create 3D content and discuss audience and purpose. |
-| KS2 Computing — Programming (Week 8) | Using Codeblocks loops and parameters to generate geometry. |
-| KS2 D&T — Design | Developing and communicating ideas that are fit for a simple brief. |
-| KS2 D&T — Make | Selecting virtual tools and techniques; measuring and aligning accurately. |
-| KS2 D&T — Evaluate | Reflecting on designs and suggesting improvements. |
-| KS2 D&T — Technical Knowledge | Understanding simple mechanisms, structures and print-related constraints. |
+| Strand                                | Evidence in Session                                      |
+|---------------------------------------|----------------------------------------------------------|
+| Computing — Creating Media (3D)       | Designing a more complex 3D object using many tools.    |
+| D&T — Design                          | Responding to a brief (simple car body).                |
+| D&T — Technical Knowledge             | Awareness of wheel placement and weight distribution.   |
 
 ---
 
 ## Materials & Setup
-- Computers with internet and Tinkercad accounts (one per participant or one between two).  
-- Mice for easier navigation wherever possible.  
-- Optional: card or scrap paper for quick sketching of ideas.  
-- Adult-supervised 3D printer if prints will be prepared.  
-- Whiteboard or flipchart for vocabulary and the print queue.  
+
+- Laptops / Chromebooks with internet and Tinkercad accounts.  
+- Mouse per device.  
+- Optional: a few toy cars for reference.  
 
 ---
 
 ## Safety & Safeguarding
-- Only adults or trained staff should operate slicing software and 3D printers.  
-- Avoid printing items that are too small, sharp or could be swallowed; follow school policies.  
-- Encourage sensible posture at computers and short movement breaks where appropriate.  
+
+- If printing any bodies, follow the same safety rules on size and sharpness.  
+- Encourage respectful feedback between learners when comparing designs.  
 
 ---
+
+{% include back-to-spring.html %}
