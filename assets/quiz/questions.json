@@ -1239,8 +1239,8 @@
             "codeLabel": "Pseudocode",
             "code": "function addTwice(a, b)\n    return a + a + b\nend function\nset x = 3\nset y = 4\nshow number addTwice(y, x)",
             "options": ["9", "10", "11", "12"],
-            "correct": 1,
-            "explanation": "a=y=4, b=x=3 → 4+4+3 = 11? Wait—careful: (a + a + b) = 4 + 4 + 3 = 11. But the options include 10 — check mapping: addTwice(y,x)=4+4+3=11 → correct is 11.",
+            "correct": 2,
+            "explanation": "a=y=4, b=x=3 → 4+4+3 = 11?",
             "difficulty": "medium-hard",
             "hint": "Mind which argument is ‘a’ and which is ‘b’."
           },
