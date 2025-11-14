@@ -1479,7 +1479,7 @@ window.TTC_DATA = {
       ]
     },
     "8": {
-      "title": "Week 8: Waves, Radio & Logic Review — Higher Challenge",
+      "title": "Week 8: Waves, Radio & Logic Review",
       "description": "Stronger mixed set: KS2 wave science + event logic, functions, counters, timing, thresholds, and coordinates. MCQ + Match only.",
       "locked": false,
       "questions": [
@@ -1721,7 +1721,7 @@ window.TTC_DATA = {
       ]
     },
     "9": {
-      "title": "Week 9: Fireflies, Radio & Local Rules — Higher Challenge",
+      "title": "Week 9: Fireflies, Radio & Local Rules",
       "description": "Mixed set: synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates. MCQ + Match only.",
       "locked": false,
       "questions": [
