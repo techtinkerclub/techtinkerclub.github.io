@@ -98,6 +98,7 @@ We tested in small circles, then as a whole group.
 - **The Surprising Secret of Synchronization:** [Video](https://youtu.be/t-_VPRCtiUg?si=QKBu0BjIT0df27zt){:target="_blank" rel="noopener"}
 - **What's Behind The Firefly's Glow?:** [Video](https://youtu.be/CogHulTLH2g?si=ormlEyg_ppdC6Lr0){:target="_blank" rel="noopener"}
 - **How do fireflies create light?:** [Video](https://youtu.be/XsFP8fpuQR4?si=p4xAD83ElXsYz6MK){:target="_blank" rel="noopener"}
+    
 ---
 
 ## Equipment
