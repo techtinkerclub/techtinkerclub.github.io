@@ -14,9 +14,21 @@ header:
 
 # Autumn 2025 — Micro:bit Foundations
 
-**Theme:** *“From inputs to outputs: making systems that sense and respond.”*
+**Theme:** *“From inputs to outputs: making systems that sense and respond.”*  
 
 This term, participants in Tech Tinker Club will explore how microcontrollers (tiny computers that power gadgets, robots and everyday devices) can be programmed to **sense the world and control outputs**. Using the BBC micro:bit, motors, buzzers, servos and built-in sensors, children will design fun mini-projects that blend **computing concepts** with real-world making.
+
+<div style="margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .75rem;">
+  <a class="btn btn--primary"
+     href="/curriculum/2025-26/autumn/#week-by-week">
+    Term Overview
+  </a>
+  <a class="btn btn--primary"
+     href="/curriculum/2025-26/autumn/curriculum-links/"
+     target="_blank" rel="noopener">
+    Curriculum Links
+  </a>
+</div>
 
 ---
 
@@ -38,23 +50,21 @@ This term, participants in Tech Tinker Club will explore how microcontrollers (t
 
 ## Week by Week Overview {#week-by-week}
 
-
 | Week | Focus Concept | Mini-Project Example | Resources |
 |------|---------------|----------------------|-----------|
-| [Week 1](/curriculum/2025-26/autumn/week-1/) | Intro to club & microcontrollers | Name badge, beating heart | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-1/#resources){:target="_blank" rel="noopener"}|
+| [Week 1](/curriculum/2025-26/autumn/week-1/) | Intro to club & microcontrollers | Name badge, beating heart | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-1/#resources){:target="_blank" rel="noopener"} |
 | [Week 2](/curriculum/2025-26/autumn/week-2/) | Events & inputs | Dice roller (shake to roll) | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-2/#resources){:target="_blank" rel="noopener"} |
 | [Week 3](/curriculum/2025-26/autumn/week-3/) | Conditionals (if/else) | Rock, Paper, Scissors | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-3/#resources){:target="_blank" rel="noopener"} |
 | [Week 4](/curriculum/2025-26/autumn/week-4/) | Variables & thresholds | Light/temperature monitor | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-4/#resources){:target="_blank" rel="noopener"} |
-| [Week 5](/curriculum/2025-26/autumn/week-5/) | Loops (iteration) | Barrel jumper | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-5/#resources){:target="_blank" rel="noopener"} |
-| [Week 6](/curriculum/2025-26/autumn/week-6/) | Game consolidation | Berrel jumper (stretch) | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-6/#resources){:target="_blank" rel="noopener"} |
-| [Week 7](/curriculum/2025-26/autumn/week-7/) | Functions | Space Invaders |  [Link](https://techtinker.club/curriculum/2025-26/autumn/week-7/#resources){:target="_blank" rel="noopener"}  |
+| [Week 5](/curriculum/2025-26/autumn/week-5/) | Loops (iteration) | Barrel Jumper | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-5/#resources){:target="_blank" rel="noopener"} |
+| [Week 6](/curriculum/2025-26/autumn/week-6/) | Game consolidation | Barrel Jumper (stretch) | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-6/#resources){:target="_blank" rel="noopener"} |
+| [Week 7](/curriculum/2025-26/autumn/week-7/) | Functions | Space Invaders | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-7/#resources){:target="_blank" rel="noopener"} |
 | [Week 8](/curriculum/2025-26/autumn/week-8/) | Radio communication | Quiz | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-8/#resources){:target="_blank" rel="noopener"} |
-| [Week 9](/curriculum/2025-26/autumn/week-9/) | Radio communication | Fireflies and Exploding Duck |  [Link](https://techtinker.club/curriculum/2025-26/autumn/week-9/#resources){:target="_blank" rel="noopener"}  |
+| [Week 9](/curriculum/2025-26/autumn/week-9/) | Radio communication | Fireflies and Exploding Duck | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-9/#resources){:target="_blank" rel="noopener"} |
 | [Week 10](/curriculum/2025-26/autumn/week-10/) | Compound logic | Dark + motion alarm | Slides · Worksheet |
 | [Week 11](/curriculum/2025-26/autumn/week-11/) | Game loops | Score-based button game | Slides · Worksheet |
 | [Week 12](/curriculum/2025-26/autumn/week-12/) | Integration | Design your own 2-sensor gadget | Slides · Worksheet |
 | [Week 13](/curriculum/2025-26/autumn/week-13/) | Showcase & reflection | Share favourite projects | Slides · Reflection |
-
 
 ---
 
