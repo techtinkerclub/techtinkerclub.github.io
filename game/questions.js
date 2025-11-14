@@ -1013,7 +1013,7 @@ window.TTC_DATA = {
             "Crashes immediately"
           ],
           "correct": 1,
-          "explanation": "The if never runs (condition counter < 0 is never true), so counter never changes; loop never ends.",
+          "explanation": "Inside the loop, nothing ever changes c. The if-condition (counter < 0) is never true, so c stays 10 and the test c > 5 is always true. That means the while-loop never ends.",
           "hint": "Does the if condition ever become true?",
           "difficulty": "hard"
         },
@@ -1664,7 +1664,7 @@ window.TTC_DATA = {
             "4"
           ],
           "correct": 0,
-          "explanation": "Steps: c=0→2→(≤3)→4→reset→1→3→(≤3)→5→reset→1. Final c=1.",
+          "explanation": "Track c step by step:\nStart 0 → after loop 1 it becomes 2 → loop 2: 2+2 = 4, then reset to 1 → loop 3: 1+2 = 3 (no reset) → loop 4: 3+2 = 5, then reset to 1. Final c = 1.",
           "difficulty": "hard",
           "hint": "Apply the reset each time c passes 3."
         },
@@ -1844,7 +1844,7 @@ window.TTC_DATA = {
             "4"
           ],
           "correct": 1,
-          "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 61 are not counted.)",
+          "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 60 are not counted.)",
           "difficulty": "medium-hard",
           "hint": "Only count readings where r < 60."
         },
