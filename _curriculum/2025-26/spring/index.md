@@ -15,6 +15,7 @@ header:
 # Spring 2026 — Tinkercad Term
 
 **Theme:** *“Design, Make, Iterate.”*  
+
 This term, participants at Tech Tinker Club will use Tinkercad to design 3D models, explore mechanisms and test simple structures in **SimLab**. The focus is on thoughtful design: planning, making, testing and improving.
 
 <div style="margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .75rem;">
