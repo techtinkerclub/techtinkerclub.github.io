@@ -217,25 +217,30 @@
     // Insert the Instructions button (opens modal)
     addInstructionsButtonTo(header);
 
-    // Weeks bar – show all 12; greyed if locked or no questions
-    const weeksBar = el('div','tqc-weeks');
-    const allWeeks = ['1','2','3','4','5','6','7','8','9','10','11','12'];
-    allWeeks.forEach((wk)=>{
-      const exists = !!state.weeks[wk];
-      const hasQs  = exists && Array.isArray(state.weeks[wk].questions) && state.weeks[wk].questions.length > 0;
-      const locked = exists && state.weeks[wk].locked === true;
+   // Weeks bar – show all 14; greyed if locked or no questions
+   const weeksBar = el('div','tqc-weeks');
+   
+   // change this number if you ever want more / fewer weeks
+   const maxWeeks = 14;
+   const allWeeks = Array.from({ length: maxWeeks }, (_, i) => String(i + 1));
+   
+   allWeeks.forEach((wk) => {
+     const exists = !!state.weeks[wk];
+     const hasQs  = exists && Array.isArray(state.weeks[wk].questions) && state.weeks[wk].questions.length > 0;
+     const locked = exists && state.weeks[wk].locked === true;
+   
+     const b = el('button', 'tqc-btn', `Week ${wk}`);
+     if (String(state.currentWeek) === wk) b.setAttribute('aria-current', 'true');
+   
+     if (!exists || !hasQs || locked) {
+       b.disabled = true;
+       b.title = locked ? 'Coming soon (locked)' : 'Coming soon';
+     } else {
+       b.addEventListener('click', () => selectWeek(wk, container));
+     }
+     weeksBar.appendChild(b);
+   });
 
-      const b = el('button','tqc-btn',`Week ${wk}`);
-      if (String(state.currentWeek) === wk) b.setAttribute('aria-current','true');
-
-      if (!exists || !hasQs || locked){
-        b.disabled = true;
-        b.title = locked ? 'Coming soon (locked)' : 'Coming soon';
-      } else {
-        b.addEventListener('click',()=>selectWeek(wk, container));
-      }
-      weeksBar.appendChild(b);
-    });
     card.appendChild(weeksBar);
 
     // Week info (title/desc)
