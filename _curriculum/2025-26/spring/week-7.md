@@ -22,9 +22,9 @@ header:
   <h2>Connections to STEAM Learning</h2>
   <ul>
     <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design & Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
+    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
     <li><strong>Maths:</strong> Measurement in millimetres, symmetry, and simple parameters.</li>
-    <li><strong>Art & Design:</strong> Aesthetics, colour choices, and visual balance.</li>
+    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices, and visual balance.</li>
     <li><strong>Engineering:</strong> Strength, stability, and how parts fit together.</li>
   </ul>
 </div>
@@ -58,14 +58,14 @@ This week’s session is hands-on and creative. Participants will complete a **m
 ---
 
 ## Part A — Explore Export & Checks
-- Export STL and inspect for non-manifold or thin walls (teacher demo).
+- Export STL and inspect for very thin walls (teacher demo).
 - Choose orientations that reduce supports.
 ## Part B — Make: Stand/Nameplate
 - Design with stable base and readable text.
-- Add fillets/chamfers for strength.
+- Add fillets or chamfers for strength.
 ## Part C — Extend & Share
-- Optional branding or school crest outline.
-- Create a print queue list.
+- Optional logo or school crest outline.
+- Create a print queue list together.
 
 ---
 

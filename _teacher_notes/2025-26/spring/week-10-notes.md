@@ -60,13 +60,13 @@ header:
 - Use a visual timer to keep the pace; stop for short, whole-group showcases.
 - Encourage sketch-first for tricky models (30–60 seconds thumbnail).
 - Mouse use makes a big difference; pair up to share if needed.
-- Keep a **print queue board** with model names and owner initials.
+- Keep a print queue board with model names and owner initials.
 
 ---
 
 ## Assessment & Reflection
 - Can learners name and demonstrate the focus tools?
-- Do models meet the brief (size fit, readable text, stable base)?
+- Do models meet the brief (size fit, readable base, stable structure)?
 - Are pupils iterating based on feedback (at least one improvement)?
 
 > Prompt: “What changed between version 1 and version 2? Why?”
@@ -77,15 +77,15 @@ header:
 
 | Misconception | Clarification |
 |---------------|---------------|
-| “Bigger grid = bigger model” | Grid is a ruler; model size depends on the part dimensions. |
-| “Walls can be paper thin” | Thin parts may fail; aim for ~1.2–2.0 mm minimum where possible. |
-| “Supports are free” | Supports cost time and can mark surfaces; prefer good orientation. |
+| “Bigger grid = bigger model.” | The grid is a ruler; model size depends on part dimensions. |
+| “Walls can be paper thin.” | Thin parts may fail; aim for ~1.2–2.0 mm minimum where possible. |
+| “Supports are free.” | Supports cost time and can mark surfaces; prefer good orientation. |
 
 ---
 
 ## Differentiation
 - **Beginners:** Copy teacher model, then change colours/text only.
-- **Confident:** Add features (fillets/chamfers, patterned cut-outs).
+- **Confident:** Add features (fillets/chamfers, patterned cut-outs).  
 - **Stretch:** Parametric/Codeblocks (Week 8), or multi-part assemblies.
 
 ---
@@ -108,8 +108,8 @@ header:
 | KS2 Computing — Creating Media (3D) | Using a digital tool to create 3D content and discuss audience & purpose. |
 | KS2 Computing — Programming (Week 8) | Codeblocks loops/parameters to generate geometry. |
 | KS2 D&T — Design | Develop and communicate ideas; consider user and purpose. |
-| KS2 D&T — Make | Select tools/techniques; measure and cut (virtually) accurately. |
-| KS2 D&T — Evaluate | Evaluate existing products and their own designs; suggest improvements. |
+| KS2 D&T — Make | Select tools/techniques; measure and “cut” (virtually) accurately. |
+| KS2 D&T — Evaluate | Evaluate their own designs and suggest improvements. |
 | KS2 D&T — Technical Knowledge | Understand how structures/mechanisms strengthen products; tolerances for fit. |
 
 ---

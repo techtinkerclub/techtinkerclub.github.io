@@ -13,24 +13,23 @@ Uses page.week from front-matter.
 
 <div style="display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; margin:.5rem 0 1rem;">
   <a href="/curriculum/2025-26/spring/#week-by-week" class="btn btn--primary">
-    ← Back to Spring
+    ← Back to Spring 2026 Overview
   </a>
 
-  <span id="notes-inline-{{ page.week }}" style="display:none;">
-    <a class="btn" href="{{ notes_base }}/2025-26/spring/week-{{ page.week }}-notes/" target="_blank" rel="noopener">
+  {%- if page.week -%}
+    <a id="notes-link" class="btn" href="{{ notes_base }}/2025-26/spring/week-{{ page.week }}-notes/" style="display:none;" target="_blank" rel="noopener">
       Instructor Notes
     </a>
-  </span>
+  {%- endif -%}
 </div>
 
 <script>
 (function(){
-  try {
-    var p = new URLSearchParams(window.location.search);
-    if (p.get('notes') === '1') {
-      var el = document.getElementById('notes-inline-{{ page.week }}');
+  try{
+    if (new URLSearchParams(window.location.search).get('notes') === '1') {
+      var el = document.getElementById('notes-link');
       if (el) el.style.display = 'inline-block';
     }
-  } catch(e) {}
+  }catch(e){}
 })();
 </script>

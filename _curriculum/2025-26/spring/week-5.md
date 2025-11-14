@@ -22,9 +22,9 @@ header:
   <h2>Connections to STEAM Learning</h2>
   <ul>
     <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design & Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
+    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
     <li><strong>Maths:</strong> Measurement in millimetres, symmetry, and simple parameters.</li>
-    <li><strong>Art & Design:</strong> Aesthetics, colour choices, and visual balance.</li>
+    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices, and visual balance.</li>
     <li><strong>Engineering:</strong> Strength, stability, and how parts fit together.</li>
   </ul>
 </div>
@@ -56,11 +56,11 @@ This week’s session is hands-on and creative. Participants will complete a **m
 ---
 
 ## Part A — Explore Generators
-- Adjust parameters to modify forms (e.g., star points).
+- Adjust parameters to modify forms (for example, star points).
 - Draw custom outlines with Scribble.
 ## Part B — Make: Badge/Ornament
 - Combine generators and standard shapes.
-- Add embossed text and mounting hole.
+- Add embossed text and a mounting hole.
 ## Part C — Extend & Share
 - Try multi-part assemblies.
 - Discuss thin features vs print strength.

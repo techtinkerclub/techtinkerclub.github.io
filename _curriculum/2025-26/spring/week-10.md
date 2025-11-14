@@ -22,9 +22,9 @@ header:
   <h2>Connections to STEAM Learning</h2>
   <ul>
     <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design & Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
+    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
     <li><strong>Maths:</strong> Measurement in millimetres, symmetry, and simple parameters.</li>
-    <li><strong>Art & Design:</strong> Aesthetics, colour choices, and visual balance.</li>
+    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices, and visual balance.</li>
     <li><strong>Engineering:</strong> Strength, stability, and how parts fit together.</li>
   </ul>
 </div>
@@ -60,10 +60,10 @@ This week’s session is hands-on and creative. Participants will complete a **m
 - Choose a favourite model and improve it using feedback.
 - Check printability (orientation, thickness).
 ## Part B — Make: Finalise & Export
-- Prepare files for printing; create a one-slide poster.
+- Prepare files for printing and create a one-slide poster.
 - Capture screenshots with labels.
 ## Part C — Showcase & Reflect
-- Informal presentations; peer feedback.
+- Hold informal presentations and peer feedback.
 - Celebrate creativity and persistence.
 
 ---

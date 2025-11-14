@@ -22,9 +22,9 @@ header:
   <h2>Connections to STEAM Learning</h2>
   <ul>
     <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design & Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
+    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
     <li><strong>Maths:</strong> Measurement in millimetres, symmetry, and simple parameters.</li>
-    <li><strong>Art & Design:</strong> Aesthetics, colour choices, and visual balance.</li>
+    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices, and visual balance.</li>
     <li><strong>Engineering:</strong> Strength, stability, and how parts fit together.</li>
   </ul>
 </div>
@@ -60,11 +60,11 @@ This week’s session is hands-on and creative. Participants will complete a **m
 - Place components and wire on a breadboard.
 - Run the simulator and fix polarity errors.
 ## Part B — Make: Blinking Circuit
-- Build a simple blinker with resistor + LED.
-- Optional: Use microcontroller block in sim.
+- Build a simple blinker with resistor and LED.
+- Optional: use a microcontroller block in simulation.
 ## Part C — Extend & Share
 - Discuss how this links to real components.
-- Screenshot to add as documentation.
+- Capture a screenshot as documentation.
 
 ---
 

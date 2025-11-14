@@ -22,9 +22,9 @@ header:
   <h2>Connections to STEAM Learning</h2>
   <ul>
     <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design & Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
+    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief; thinking about materials and print constraints.</li>
     <li><strong>Maths:</strong> Measurement in millimetres, symmetry, and simple parameters.</li>
-    <li><strong>Art & Design:</strong> Aesthetics, colour choices, and visual balance.</li>
+    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices, and visual balance.</li>
     <li><strong>Engineering:</strong> Strength, stability, and how parts fit together.</li>
   </ul>
 </div>
@@ -64,7 +64,7 @@ This week’s session is hands-on and creative. Participants will complete a **m
 - Use text or icon shape to create a raised or recessed pattern.
 - Add a handle and test fit in preview.
 ## Part C — Extend & Share
-- Try curved shapes (cylinders) and edge fillets (rounded boxes).
+- Try curved shapes like cylinders or rounded boxes.
 - Discuss print orientation.
 
 ---

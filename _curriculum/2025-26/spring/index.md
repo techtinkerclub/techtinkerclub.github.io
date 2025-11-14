@@ -28,9 +28,9 @@ Each week introduces a small, focused **mini-project**, building skills step by 
 ---
 
 ## Implementation (How we will do it)
-- **Weekly 90-minute sessions** throughout Spring.  
+- **Weekly 90-minute sessions** throughout the Spring term.  
 - Each week introduces a **new design idea** inside a **mini-project**.  
-- Projects are tiered for mixed-ability access and extension.  
+- Projects are designed with **tiers of challenge** so every child can access and extend.  
 - Plans may adapt depending on time, resources, or group interests.
 
 ---
@@ -38,7 +38,7 @@ Each week introduces a small, focused **mini-project**, building skills step by 
 ## Impact (How we’ll know it worked)
 - Pupils explain design choices using correct vocabulary.  
 - Models meet simple briefs and show at least one iteration.  
-- Selected models prepared for safe printing and a small showcase.
+- Selected models are prepared for safe printing and a small showcase.
 
 ---
 
