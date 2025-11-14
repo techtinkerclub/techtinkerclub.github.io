@@ -1680,11 +1680,12 @@ window.TTC_DATA = {
             "11",
             "12"
           ],
-          "correct": 1,
-          "explanation": "a=y=4, b=x=3 → 4+4+3 = 11? Wait—careful: (a + a + b) = 4 + 4 + 3 = 11. But the options include 10 — check mapping: addTwice(y,x)=4+4+3=11 → correct is 11.",
+          "correct": 2,
+          "explanation": "Here a = y = 4 and b = x = 3, so a + a + b = 4 + 4 + 3 = 11. The correct answer is 11.",
           "difficulty": "medium-hard",
           "hint": "Mind which argument is ‘a’ and which is ‘b’."
         },
+
         {
           "id": "w8-q12",
           "question": "Match the CS idea to a clear example.",
