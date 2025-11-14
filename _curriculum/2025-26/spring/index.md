@@ -14,8 +14,19 @@ header:
 
 # Spring 2026 — Tinkercad Term
 
+# Spring 2026 — Tinkercad Term
+
 **Theme:** *“Design, Make, Iterate.”*  
 This term, participants at Tech Tinker Club will use Tinkercad to design 3D models, explore mechanisms and simple circuits, and prepare a small number of projects for 3D printing or digital showcase.
+
+<div style="margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .75rem;">
+  <a class="btn btn--primary" href="#intent">
+    Term Overview
+  </a>
+  <a class="btn" href="/curriculum/2025-26/spring/curriculum-links/">
+    Curriculum Links
+  </a>
+</div>
 
 ---
 
