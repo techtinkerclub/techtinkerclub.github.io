@@ -16,11 +16,13 @@ Uses page.week from front-matter.
     ← Back to Spring 2026 Overview
   </a>
 
-  {%- if page.week -%}
-    <a id="notes-link" class="btn" href="{{ notes_base }}/2025-26/spring/week-{{ page.week }}-notes/" style="display:none;" target="_blank" rel="noopener">
-      Instructor Notes
+  <span id="notes-link" style="display:none;">
+    <a class="btn btn--primary"
+       href="{{ notes_base }}/2025-26/spring/week-{{ page.week }}-notes/"
+       target="_blank" rel="noopener noreferrer">
+      View Instructor Notes
     </a>
-  {%- endif -%}
+  </span>
 </div>
 
 <script>

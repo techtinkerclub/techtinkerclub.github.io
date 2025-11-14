@@ -12,64 +12,68 @@ header:
   show_overlay_excerpt: false
   show_overlay_text: false
 ---
+
 # Instructor Notes — Week 10
 {% include print-to-pdf.html %}
 
 **Theme:** Capstone Showcase  
-**Focus Concept:** Iterate, document, and present a product  
-**Mini-Project:** *Final Print or Best-of-Term Model*  
+**Focus Concept:** Iterate, document and present a product  
+**Mini-Project:** *Final Print or Best‑of‑Term Model*  
 
 ---
 
 ## Learning Objectives
-- Use the focus tools effectively to model a simple product.
-- Explain choices using correct vocabulary (size, symmetry, tolerance).
+- Use this week’s focus tools effectively to model a simple product.  
+- Explain design choices using correct vocabulary (e.g. size, symmetry, tolerance).  
 - Iterate designs based on testing or peer feedback.
 
 ---
 
 ## Session Flow (≈ 80 min)
 
-
 | Segment | Time | Focus |
 |----------|------|-------|
-| Welcome & Tools Demo | 15 min | Workspace tour and focus concept |
-| Guided Build | 30 min | Mini-project (scaffolded) |
-| Independent Make | 20 min | Personalise / extend |
-| Share & Reflect | 10 min | Peer feedback and gallery |
-| Tidy & Close | 5 min | Save/export and queue prints |
-
+| Welcome & recap | 10 min | Recap Autumn and introduce today’s focus |
+| Tool demo | 10 min | Model the new tools with a short example |
+| Guided build | 25 min | Scaffold the mini-project step by step |
+| Independent make | 25 min | Personalise, refine and extend designs |
+| Share & tidy | 10 min | Quick gallery, feedback and saving work |
 
 ---
 
 ## Part A — Explore & Demo
-- Demo today’s tools with a small example model.
-- Highlight common pitfalls and show a “good” orientation for printing.
+- Demonstrate today’s tools with a very small example (e.g. one corner of the final project).  
+- Highlight common pitfalls, such as tiny features that will not print well or awkward print orientations.  
 
 ## Part B — Guided Build
-- Step-by-step to achieve a minimal viable product (MVP) for the brief.
-- Pause after key steps for quick check-ins.
+- Lead the group through building a minimal viable product (MVP) that meets the week’s brief.  
+- Pause after key steps so participants can catch up and you can check understanding.  
 
 ## Part C — Independent Make & Extend
-- Learners personalise and add features.
-- Offer optional stretch goals for fast finishers.
+- Ask learners to personalise their designs or add one extra feature.  
+- Offer simple extension ideas for quick finishers (extra details, improved strength, extra patterns, etc.).  
+
+---
+
+## Vocabulary for This Week
+Words to emphasise in explanations and on the board: Prototype, Iteration, Evaluate, Brief, Audience.
 
 ---
 
 ## Instructor Tips
-- Use a visual timer to keep the pace; stop for short, whole-group showcases.
-- Encourage sketch-first for tricky models (30–60 seconds thumbnail).
-- Mouse use makes a big difference; pair up to share if needed.
-- Keep a print queue board with model names and owner initials.
+- Use a visual timer or simple “halfway” reminder so the group leaves enough time to finish and save.  
+- Encourage learners to rotate their view often to check designs from more than one angle.  
+- For trickier weeks (mechanisms, Codeblocks, circuits), consider short paired explanations before independent work.  
+- Keep a print queue list with model names and initials so pupils can track when their designs will be printed.  
 
 ---
 
 ## Assessment & Reflection
-- Can learners name and demonstrate the focus tools?
-- Do models meet the brief (size fit, readable base, stable structure)?
-- Are pupils iterating based on feedback (at least one improvement)?
+- Can learners name and demonstrate the focus tools for the week?  
+- Do their models broadly match the design brief (e.g. fit size, stability, readability)?  
+- Can they describe at least one change they made after testing or feedback?  
 
-> Prompt: “What changed between version 1 and version 2? Why?”
+> Prompt: “What did you change in your design and why did it make it better?”
 
 ---
 
@@ -77,16 +81,16 @@ header:
 
 | Misconception | Clarification |
 |---------------|---------------|
-| “Bigger grid = bigger model.” | The grid is a ruler; model size depends on part dimensions. |
-| “Walls can be paper thin.” | Thin parts may fail; aim for ~1.2–2.0 mm minimum where possible. |
-| “Supports are free.” | Supports cost time and can mark surfaces; prefer good orientation. |
+| “Thin parts are always fine if they look cool.” | Thin walls and tiny details can break easily or fail to print; strengthen or thicken where possible. |
+| “If it looks OK from one side, it will print fine.” | Check all sides and think about overhangs and supports before exporting. |
+| “Undo will always rescue me.” | Encourage regular saving and copying so experimental changes don’t lose the best version. |
 
 ---
 
 ## Differentiation
-- **Beginners:** Copy teacher model, then change colours/text only.
-- **Confident:** Add features (fillets/chamfers, patterned cut-outs).  
-- **Stretch:** Parametric/Codeblocks (Week 8), or multi-part assemblies.
+- **Beginners:** Follow the guided steps closely; limit changes to colours, simple decorations or one extra feature.  
+- **Confident learners:** Add extra functional details (handles, fillets, mirrored parts, parameter changes).  
+- **Stretch:** Create variants for different users (e.g. a smaller tag for a younger sibling, a heavier base for stability).  
 
 ---
 
@@ -94,10 +98,10 @@ header:
 
 | Subject | Connection |
 |---------|------------|
-| **Maths** | Measurement, units, symmetry, simple ratios. |
-| **Art & Design** | Composition, colour, symmetry, surface detail. |
-| **Science/Engineering** | Strength, stability, moving parts, friction. |
-| **Computing** | Digital creation; parametric thinking (Week 8). |
+| **Maths** | Measurement in millimetres, symmetry, angles, simple scaling. |
+| **Art & Design** | Composition, colour, balance, and use of pattern or motif. |
+| **Science/Engineering** | Structures, forces, friction, mechanisms and material strength. |
+| **Computing** | Digital content creation and, in Week 8, block-based programming for parametric design. |
 
 ---
 
@@ -105,38 +109,27 @@ header:
 
 | Strand | Evidence in Session |
 |--------|----------------------|
-| KS2 Computing — Creating Media (3D) | Using a digital tool to create 3D content and discuss audience & purpose. |
-| KS2 Computing — Programming (Week 8) | Codeblocks loops/parameters to generate geometry. |
-| KS2 D&T — Design | Develop and communicate ideas; consider user and purpose. |
-| KS2 D&T — Make | Select tools/techniques; measure and “cut” (virtually) accurately. |
-| KS2 D&T — Evaluate | Evaluate their own designs and suggest improvements. |
-| KS2 D&T — Technical Knowledge | Understand how structures/mechanisms strengthen products; tolerances for fit. |
+| KS2 Computing — Creating Media (3D) | Using a digital tool to create 3D content and discuss audience and purpose. |
+| KS2 Computing — Programming (Week 8) | Using Codeblocks loops and parameters to generate geometry. |
+| KS2 D&T — Design | Developing and communicating ideas that are fit for a simple brief. |
+| KS2 D&T — Make | Selecting virtual tools and techniques; measuring and aligning accurately. |
+| KS2 D&T — Evaluate | Reflecting on designs and suggesting improvements. |
+| KS2 D&T — Technical Knowledge | Understanding simple mechanisms, structures and print-related constraints. |
 
 ---
 
 ## Materials & Setup
-- Computers with internet and Tinkercad accounts
-- Optional: card/paper for sketching ideas
-- 3D printer supervised by adults (for selected models)
-- Whiteboard for print queue and tips
+- Computers with internet and Tinkercad accounts (one per participant or one between two).  
+- Mice for easier navigation wherever possible.  
+- Optional: card or scrap paper for quick sketching of ideas.  
+- Adult-supervised 3D printer if prints will be prepared.  
+- Whiteboard or flipchart for vocabulary and the print queue.  
 
 ---
 
 ## Safety & Safeguarding
-- Only adults handle slicing/printing and hot equipment.
-- Avoid tiny, swallowable prints; follow school policy.
-- Promote good posture and short eye breaks.
+- Only adults or trained staff should operate slicing software and 3D printers.  
+- Avoid printing items that are too small, sharp or could be swallowed; follow school policies.  
+- Encourage sensible posture at computers and short movement breaks where appropriate.  
 
 ---
-
-{% include back-to-spring.html %}
-
-<div class="notice--steam">
-  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
-  <ul>
-    <li><strong>Computing:</strong> Creating digital 3D content; parametric thinking in Codeblocks.</li>
-    <li><strong>Design &amp; Technology:</strong> Designing for users and iterating to improve fitness for purpose.</li>
-    <li><strong>Maths:</strong> Measuring in mm, symmetry, and simple parameters.</li>
-    <li><em>Real world:</em> If time allows, connect to products we use daily and how they’re prototyped.</li>
-  </ul>
-</div>
