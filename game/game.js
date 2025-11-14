@@ -1,729 +1,1952 @@
-/* ===========================================================
-   Tech Tinker Boss Battle — game.js (Arcade Build v6.8 + debug)
-   • Real falling matrix (canvas) + retro CRT look
-   • Animations (bounce/lunge/flash/roll-out) amped a touch
-   • DnD: rearrange freely; drop back to tiles to unassign
-   • “Next” shows under explanation; never shown on last Q
-   • Debug: ?debug=1 unlocks all weeks; ?debug=1&week=7 auto-opens Week 7
-   =========================================================== */
-
-(() => {
-  const byId = (id) => document.getElementById(id);
-
-  /* Screens */
-  const screenLevels  = byId('screen-levels');
-  const screenIntro   = byId('screen-intro');
-  const screenGame    = byId('screen-game');
-  const screenResults = byId('screen-results');
-
-  // --- DEBUG MODE DETECTION (via URL params) ---
-  const params = new URLSearchParams(window.location.search);
-  const DEBUG = params.get("debug") === "1";
-  const DEBUG_WEEK = params.get("week");
-
-  /* Boot after data */
-  waitForData(initGame);
-  function waitForData(cb, tries = 0){
-    if (window.TTC_DATA && window.TTC_DATA.weeks) return cb();
-    if (tries > 100){
-      if (screenLevels){
-        screenLevels.innerHTML = `<div class="card"><h3>Game data not loaded</h3>
-          <div class="small">Make sure <code>questions.js</code> loads before <code>game.js</code>.</div></div>`;
-      }
-      return;
+/* Auto-generated questions.js — synced with questions14112025.json (weeks 1–9)
+   Includes boss meta for Tech Tinker Boss Battle.
+   Replace your existing questions.js with this file.
+*/
+window.TTC_DATA = {
+  "weeks": {
+    "1": {
+      "title": "Week 1: Intro to Microcontrollers",
+      "description": "Hardware, inputs/outputs, MakeCode basics, events & sequencing.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w1-q1",
+          "question": "Which statement best describes the role of the microcontroller inside a micro:bit?",
+          "type": "multiple-choice",
+          "options": [
+            "It processes sensor inputs and controls outputs according to your code",
+            "It only stores your program in memory",
+            "It powers the LEDs and buttons directly without processing",
+            "It connects the micro:bit to the internet"
+          ],
+          "correct": 0,
+          "explanation": "The microcontroller is the 'brain' — it runs your program, reading inputs and sending signals to outputs.",
+          "definition": "MICROCONTROLLER — a small processor that executes code and manages inputs/outputs in embedded systems.",
+          "difficulty": "medium",
+          "hint": "Think of it as the part that actually runs your code and decides what to do next."
+        },
+        {
+          "id": "w1-q2",
+          "question": "Which example shows the micro:bit receiving information from its surroundings?",
+          "type": "multiple-choice",
+          "options": [
+            "Detecting motion using the accelerometer",
+            "Showing an arrow on the screen",
+            "Playing a sound through the speaker",
+            "Flashing the LEDs in a pattern"
+          ],
+          "correct": 0,
+          "explanation": "The accelerometer senses movement — an input from the environment. The other options send information outward, making them outputs.",
+          "difficulty": "hard",
+          "hint": "Ask yourself: is the micro:bit reading or displaying information?"
+        },
+        {
+          "id": "w1-q3",
+          "question": "In the code below, which block ensures the text appears only one time before the heart starts flashing?",
+          "type": "multiple-choice",
+          "code": "on start\n  show string \"Hello!\"\nforever\n  show icon Heart\n  pause(500)\n  clear screen\n  pause(500)",
+          "options": [
+            "forever",
+            "on start",
+            "show string \"Hello!\"",
+            "pause(500)"
+          ],
+          "correct": 1,
+          "explanation": "Anything inside 'on start' runs just once. The 'forever' loop repeats endlessly, but 'on start' finishes after its commands.",
+          "difficulty": "medium-hard",
+          "hint": "Only one block type is designed for setup instructions that don’t repeat."
+        },
+        {
+          "id": "w1-q4",
+          "question": "If you upload this code to the micro:bit, what will you see happen and why?",
+          "type": "multiple-choice",
+          "code": "forever\n  show string \"Hi\"",
+          "options": [
+            "It scrolls 'Hi' endlessly because there’s no stop condition",
+            "It only shows 'Hi' once because the display clears automatically",
+            "It shows 'Hi' five times, matching the number of LEDs",
+            "It waits for button A before showing 'Hi'"
+          ],
+          "correct": 0,
+          "explanation": "Because the text is inside a 'forever' block, it repeats continuously without stopping until the micro:bit is reset or turned off.",
+          "difficulty": "medium-hard",
+          "hint": "Does anything in the code tell it to stop?"
+        },
+        {
+          "id": "w1-q5",
+          "question": "The LED grid on a micro:bit can both show light and measure light levels. What type of device is it mostly considered?",
+          "type": "multiple-choice",
+          "options": [
+            "Both input and output, but mainly output",
+            "Only an input device",
+            "A storage device for variables",
+            "A power source for sensors"
+          ],
+          "correct": 0,
+          "explanation": "While the LED matrix can detect light levels, its primary role is to display information — so it’s mainly an output device.",
+          "difficulty": "medium-hard",
+          "hint": "It can sense light but that’s not its main purpose."
+        },
+        {
+          "id": "w1-q6",
+          "question": "Match each term to its definition.",
+          "type": "drag-drop",
+          "terms": [
+            "Event",
+            "Sequence",
+            "Debug"
+          ],
+          "definitions": [
+            "Order of instructions",
+            "Something that triggers code",
+            "Find and fix errors"
+          ],
+          "correctMatches": [
+            1,
+            0,
+            2
+          ],
+          "explanation": "Event triggers code; sequence is order; debug means fix mistakes.",
+          "difficulty": "medium",
+          "hint": "Cause → Event; order → Sequence; fixing → Debug."
+        },
+        {
+          "id": "w1-q7",
+          "question": "Where can you test your micro:bit program without using the real device?",
+          "type": "multiple-choice",
+          "options": [
+            "In the MakeCode simulator on the screen",
+            "By opening the MICROBIT drive on your computer",
+            "By plugging in the battery pack only",
+            "In the serial data window"
+          ],
+          "correct": 0,
+          "explanation": "The MakeCode simulator runs your program virtually and lets you try buttons, shaking and LEDs on screen.",
+          "definition": "SIMULATOR — a virtual version of the micro:bit you can test inside MakeCode.",
+          "difficulty": "medium-hard",
+          "hint": "Which one shows a working virtual micro:bit on your screen?"
+        },
+        {
+          "id": "w1-q8",
+          "question": "Which statement about 'on button A pressed' is true?",
+          "type": "multiple-choice",
+          "options": [
+            "It runs in a loop automatically",
+            "It runs only when A is pressed",
+            "It runs only at start",
+            "It never runs"
+          ],
+          "correct": 1,
+          "explanation": "Event code runs when the event happens — here, pressing Button A.",
+          "difficulty": "hard",
+          "hint": "It waits for something to happen."
+        },
+        {
+          "id": "w1-q9",
+          "question": "What is a program?",
+          "type": "multiple-choice",
+          "options": [
+            "A single instruction",
+            "Random blocks",
+            "A set of instructions a computer follows",
+            "An image on the LED matrix"
+          ],
+          "correct": 2,
+          "explanation": "A program is a precise sequence of instructions.",
+          "definition": "PROGRAM — a precise list of instructions a computer follows.",
+          "difficulty": "hard",
+          "hint": "Think of a recipe for a computer."
+        },
+        {
+          "id": "w1-q10",
+          "question": "Why might your program not appear on the micro:bit after download?",
+          "type": "multiple-choice",
+          "options": [
+            "Wrong cable (charge-only)",
+            "Didn’t click Download",
+            "Micro:bit not connected",
+            "Any of these"
+          ],
+          "correct": 3,
+          "explanation": "All of these are common causes.",
+          "difficulty": "hard",
+          "hint": "Check the obvious steps and connections."
+        },
+        {
+          "id": "w1-q11",
+          "question": "Which example shows input → process → output in the correct order?",
+          "type": "multiple-choice",
+          "options": [
+            "LED → add numbers → button",
+            "Button → compare numbers → show icon",
+            "Speaker → random → LED",
+            "Battery → program → USB"
+          ],
+          "correct": 1,
+          "explanation": "Input (button) → processing/logic → output (display).",
+          "difficulty": "hard",
+          "hint": "First comes data in, then thinking, then feedback out."
+        },
+        {
+          "id": "w1-q12",
+          "question": "Which block would you use to run code continuously during the entire program?",
+          "type": "multiple-choice",
+          "options": [
+            "on start",
+            "on shake",
+            "forever",
+            "on button B pressed"
+          ],
+          "correct": 2,
+          "explanation": "The forever loop keeps running as long as the program runs.",
+          "difficulty": "medium",
+          "hint": "Think of a heartbeat the program always follows."
+        }
+      ],
+      "bossName": "BOOTLOADER BLOB",
+      "bossImage": "assets/w1b.png",
+      "story": "The Bootloader Blob camps on the USB bus like a grumpy jelly, slurping half-flashes and burping out mystery .hex files.",
+      "dialog": [
+        "Blob: \"Your code has… *gelatinous* dependencies.\"",
+        "You: \"Perfect. I’m about to *set* you to 0.\""
+      ]
+    },
+    "2": {
+      "title": "Week 2: Events & Random",
+      "description": "Button events, dice rolling, randomness, simple probability.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w2-q1",
+          "question": "When does the code inside the block 'on button A pressed' actually run?",
+          "type": "multiple-choice",
+          "options": [
+            "Whenever any button is pressed",
+            "Only when button A is pressed down",
+            "Every few seconds automatically",
+            "When button A is released"
+          ],
+          "correct": 1,
+          "explanation": "The code runs only when button A is pressed down. Other buttons or automatic timing don’t trigger it.",
+          "difficulty": "medium",
+          "hint": "It listens for one exact action on one button."
+        },
+        {
+          "id": "w2-q2",
+          "question": "What does 'random 1 to 6' give you?",
+          "type": "multiple-choice",
+          "options": [
+            "Always 6",
+            "Always 1",
+            "Any whole number from 1 to 6",
+            "A decimal number"
+          ],
+          "correct": 2,
+          "explanation": "It behaves like a fair six-sided die.",
+          "definition": "RANDOM — the computer chooses by chance from a range.",
+          "difficulty": "easy",
+          "hint": "Think dice."
+        },
+        {
+          "id": "w2-q3",
+          "question": "What is an event in programming?",
+          "type": "multiple-choice",
+          "options": [
+            "A type of sensor",
+            "A mistake in code",
+            "Something that triggers code to run",
+            "A kind of loop"
+          ],
+          "correct": 2,
+          "explanation": "Events trigger code when they occur (press, shake, start).",
+          "difficulty": "easy",
+          "hint": "It’s the “when” that makes code start."
+        },
+        {
+          "id": "w2-q4",
+          "question": "This dice roller runs when you press Button A. What happens each time you press it?",
+          "type": "multiple-choice",
+          "code": "on button A pressed\n  set roll to random 1 to 6\n  show number roll",
+          "options": [
+            "It picks a new number from 1 to 6 and shows it",
+            "It keeps showing the same number every time",
+            "It adds 1 to the previous roll and shows that",
+            "It shows all six numbers quickly one after another"
+          ],
+          "correct": 0,
+          "explanation": "Each button A press sets a new random value between 1 and 6, then displays that single number.",
+          "difficulty": "medium-hard",
+          "hint": "Think about what the 'random 1 to 6' block does on each button press."
+        },
+        {
+          "id": "w2-q5",
+          "question": "What is the chance of rolling a 4 on a fair six-sided die?",
+          "type": "multiple-choice",
+          "options": [
+            "1 in 2",
+            "1 in 4",
+            "1 in 6",
+            "1 in 10"
+          ],
+          "correct": 2,
+          "explanation": "Each face has equal probability: 1/6.",
+          "difficulty": "medium",
+          "hint": "How many faces are there?"
+        },
+        {
+          "id": "w2-q6",
+          "question": "If a die is rolled 60 times, about how many 3s would you expect?",
+          "type": "multiple-choice",
+          "options": [
+            "About 5",
+            "About 10",
+            "About 20",
+            "About 30"
+          ],
+          "correct": 1,
+          "explanation": "Expected frequency ≈ total × probability = 60 × 1/6 = 10.",
+          "difficulty": "medium",
+          "hint": "Multiply the number of trials by the chance."
+        },
+        {
+          "id": "w2-q7",
+          "question": "Which block lets you react to movement of the micro:bit?",
+          "type": "multiple-choice",
+          "options": [
+            "on shake",
+            "on start",
+            "forever",
+            "show number"
+          ],
+          "correct": 0,
+          "explanation": "The accelerometer triggers the shake event.",
+          "difficulty": "medium",
+          "hint": "It’s tied to the accelerometer."
+        },
+        {
+          "id": "w2-q8",
+          "question": "Match the event to when it triggers.",
+          "type": "drag-drop",
+          "terms": [
+            "on start",
+            "on button A pressed",
+            "on shake",
+            "forever"
+          ],
+          "definitions": [
+            "Runs when device turns on",
+            "Runs when A is pressed",
+            "Runs when moved",
+            "Runs continuously"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "Each event maps to a different trigger; forever has no trigger.",
+          "difficulty": "medium",
+          "hint": "Think: beginning, button, motion, always."
+        },
+        {
+          "id": "w2-q9",
+          "question": "What message might the micro:bit show when you press Button A?",
+          "type": "multiple-choice",
+          "code": "on button A pressed\n  set x to random 1 to 10\n  if x > 5 then\n    show string \"Big\"\n  else\n    show string \"Small\"",
+          "options": [
+            "It shows 'Big' or 'Small' depending on the random number",
+            "It always shows 'Big' because 10 is the largest number",
+            "It shows 'Small' because x starts at 0",
+            "It shows both 'Big' and 'Small' one after another"
+          ],
+          "correct": 0,
+          "explanation": "Each time you press A, a random number 1–10 is picked. If that number is greater than 5, 'Big' appears; otherwise 'Small'.",
+          "difficulty": "medium-hard",
+          "hint": "Remember: '>' means greater than."
+        },
+        {
+          "id": "w2-q10",
+          "question": "What is shown for this coin flip?",
+          "type": "multiple-choice",
+          "code": "on button B pressed\n  set flip to random 0 to 1\n  if flip = 0 then\n    show string \"Heads\"\n  else\n    show string \"Tails\"",
+          "options": [
+            "Heads only",
+            "Tails only",
+            "Heads or Tails",
+            "Error"
+          ],
+          "correct": 2,
+          "explanation": "Random 0 to 1 maps perfectly to a fair coin.",
+          "difficulty": "hard",
+          "hint": "Two possible values → two possible messages."
+        },
+        {
+          "id": "w2-q11",
+          "question": "When this code runs, you sometimes see two different numbers flash quickly. Why?",
+          "type": "multiple-choice",
+          "code": "on button A pressed\n  show number random 1 to 6\n  show number random 1 to 6",
+          "options": [
+            "Because each call to 'random 1 to 6' generates a new value right away",
+            "Because the same random value is shown twice at high speed",
+            "Because the micro:bit remembers the first number and repeats it",
+            "Because the button is pressed for too long"
+          ],
+          "correct": 0,
+          "explanation": "Both lines use 'random 1 to 6', so two independent random numbers are shown in quick succession.",
+          "difficulty": "hard",
+          "hint": "Does the code reuse the first random value or call it again?"
+        },
+        {
+          "id": "w2-q12",
+          "question": "After pressing Button A five times, what number will the micro:bit show, and why?",
+          "type": "multiple-choice",
+          "code": "on start\n  set count to 0\non button A pressed\n  change count by 1\n  show number count",
+          "options": [
+            "5, because 'count' increases by 1 each time and keeps its value",
+            "1, because 'count' resets to 0 on every press",
+            "A random number between 1 and 5",
+            "0, because the program only runs 'on start'"
+          ],
+          "correct": 0,
+          "explanation": "The variable 'count' keeps increasing — 1, 2, 3, 4, 5 — with each press.",
+          "difficulty": "hard",
+          "hint": "Does 'set count to 0' happen each time you press the button?"
+        }
+      ],
+      "bossName": "RANDOMIZER DICE",
+      "bossImage": "assets/w2b.png",
+      "story": "Randomizer Dice claims it landed on “sideways seven”. Statistically impossible. Also rude.",
+      "dialog": [
+        "Dice: \"I only lose one out of six times… per universe.\"",
+        "You: \"Great. I brought six universes and a reset button.\""
+      ]
+    },
+    "3": {
+      "title": "Week 3: Conditionals (If/Else)",
+      "description": "Comparisons, branching, fairness. Rock–Paper–Scissors.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w3-q1",
+          "question": "What does the else part of an if–else do?",
+          "type": "multiple-choice",
+          "options": [
+            "Runs when the if is true",
+            "Runs when the if is false",
+            "Runs always",
+            "Never runs"
+          ],
+          "correct": 1,
+          "explanation": "Else handles the “otherwise” case when the if condition isn’t met.",
+          "difficulty": "easy",
+          "hint": "Think: backup plan."
+        },
+        {
+          "id": "w3-q2",
+          "question": "Look at this code. Which symbol is checking if the score is exactly 10?",
+          "type": "multiple-choice",
+          "code": "if score = 10 then\n  show string \"Winner!\"",
+          "options": [
+            ">",
+            "<",
+            "=",
+            "≠"
+          ],
+          "correct": 2,
+          "explanation": "The '=' sign checks equality.",
+          "difficulty": "hard",
+          "hint": "It compares, not adds."
+        },
+        {
+          "id": "w3-q3",
+          "question": "The micro:bit picks a random number 1 to 3 to play Rock–Paper–Scissors. What must the code do next to decide who wins?",
+          "type": "multiple-choice",
+          "options": [
+            "Use if–else blocks to compare your choice and the random pick",
+            "Use 'show string' to display all three options at once",
+            "Add 3 to the random number to get the winner",
+            "Wait 1 second before showing a smiley"
+          ],
+          "correct": 0,
+          "explanation": "After choosing randomly, the program compares both choices using if–else logic.",
+          "difficulty": "medium-hard",
+          "hint": "How does the program decide which move wins?"
+        },
+        {
+          "id": "w3-q4",
+          "question": "What message appears for x = 7?",
+          "type": "multiple-choice",
+          "code": "on button A pressed\n  set x to 7\n  if x > 5 then\n    show string \"Big\"\n  else\n    show string \"Small\"",
+          "options": [
+            "Big",
+            "Small",
+            "Both",
+            "Nothing"
+          ],
+          "correct": 0,
+          "explanation": "7 > 5 is true, so it shows “Big”.",
+          "difficulty": "medium",
+          "hint": "Is 7 greater than 5?"
+        },
+        {
+          "id": "w3-q5",
+          "question": "What’s the output if number = 5?",
+          "type": "multiple-choice",
+          "code": "set number to 5\nif number < 5 then\n  show string \"Low\"\nelse if number = 5 then\n  show string \"Equal\"\nelse\n  show string \"High\"",
+          "options": [
+            "Low",
+            "Equal",
+            "High",
+            "Nothing"
+          ],
+          "correct": 1,
+          "explanation": "The second condition matches exactly.",
+          "difficulty": "medium",
+          "hint": "Check the exact equality branch."
+        },
+        {
+          "id": "w3-q6",
+          "question": "If a coin is fair, what’s the chance of Heads?",
+          "type": "multiple-choice",
+          "options": [
+            "1/2",
+            "1/3",
+            "1/6",
+            "Depends on the day"
+          ],
+          "correct": 0,
+          "explanation": "A fair coin has two equally likely outcomes.",
+          "difficulty": "medium",
+          "hint": "How many equally likely outcomes are there?"
+        },
+        {
+          "id": "w3-q7",
+          "question": "Which condition correctly checks for a tie?",
+          "type": "multiple-choice",
+          "code": "set player to \"Rock\"\nset computer to \"Rock\"\nif ???? then\n  show string \"Tie!\"",
+          "options": [
+            "player ≠ computer",
+            "player = computer",
+            "computer = \"Paper\"",
+            "player = \"Scissors\""
+          ],
+          "correct": 1,
+          "explanation": "A tie occurs when both choices are equal.",
+          "difficulty": "medium",
+          "hint": "Same on both sides."
+        },
+        {
+          "id": "w3-q8",
+          "question": "Match the comparison to an example that makes it true.",
+          "type": "drag-drop",
+          "terms": [
+            "x > 3",
+            "x = 5",
+            "x < 2",
+            "x ≠ 4"
+          ],
+          "definitions": [
+            "x is 6",
+            "x is 5",
+            "x is 1",
+            "x is 3"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "Each example satisfies the comparison shown.",
+          "difficulty": "medium",
+          "hint": "Plug in the numbers mentally."
+        },
+        {
+          "id": "w3-q9",
+          "question": "What does it show when A is pressed?",
+          "type": "multiple-choice",
+          "code": "on button A pressed\n  set roll to random 1 to 6\n  if roll = 6 then\n    show icon \"trophy\"\n  else\n    show number roll",
+          "options": [
+            "Always a trophy",
+            "Always the number",
+            "Trophy for 6; otherwise the number",
+            "Nothing"
+          ],
+          "correct": 2,
+          "explanation": "It branches on a special case: a roll of 6.",
+          "difficulty": "hard",
+          "hint": "Which value triggers the special icon?"
+        },
+        {
+          "id": "w3-q10",
+          "question": "What will the display show?",
+          "type": "multiple-choice",
+          "code": "set a to 3\nset b to 7\nif a > b then\n  show string \"A\"\nelse if a = b then\n  show string \"Equal\"\nelse\n  show string \"B\"",
+          "options": [
+            "A",
+            "Equal",
+            "B",
+            "Nothing"
+          ],
+          "correct": 2,
+          "explanation": "3 > 7 is false; 3 = 7 is false; it falls through to “B”.",
+          "difficulty": "hard",
+          "hint": "Compare 3 and 7 in order."
+        },
+        {
+          "id": "w3-q11",
+          "question": "Why can’t this ever show \"B\"?",
+          "type": "multiple-choice",
+          "code": "set n to 90\nif n >= 90 then\n  show string \"A\"\nelse if n >= 90 then\n  show string \"B\"\nelse\n  show string \"C\"",
+          "options": [
+            "Because the second condition repeats the first",
+            "Because n isn’t a number",
+            "Because else must come first",
+            "Because >= doesn’t work"
+          ],
+          "correct": 0,
+          "explanation": "The second branch is unreachable since it duplicates the first condition.",
+          "difficulty": "hard",
+          "hint": "Look for a repeated test."
+        },
+        {
+          "id": "w3-q12",
+          "question": "What message appears when the code runs?",
+          "type": "multiple-choice",
+          "code": "set temp to 20\nset light to 30\nif temp >= 18 and light >= 50 then\n  show string \"Go Outside\"\nelse\n  show string \"Stay In\"",
+          "options": [
+            "Go Outside",
+            "Stay In",
+            "Both",
+            "Nothing"
+          ],
+          "correct": 1,
+          "explanation": "Both conditions must be true; light is too low.",
+          "difficulty": "hard",
+          "hint": "and means both must pass."
+        }
+      ],
+      "bossName": "CONDITION CAT",
+      "bossImage": "assets/w3b.png",
+      "story": "Condition Cat debugs by knocking variables off the table. if (cup == on_table) then push(cup).",
+      "dialog": [
+        "Cat: \"ELSE? I hardly know her.\"",
+        "You: \"Prepare to evaluate these claws > your face.\""
+      ]
+    },
+    "4": {
+      "title": "Week 4: Variables & Thresholds",
+      "description": "Storing values, comparing to limits, using sensors (light & temperature).",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w4-q1",
+          "question": "What is a variable used for in MakeCode?",
+          "type": "multiple-choice",
+          "options": [
+            "To store a value that can change while the program runs",
+            "To repeat blocks over and over",
+            "To read values from sensors like light or temperature",
+            "To play sounds or show icons"
+          ],
+          "correct": 0,
+          "explanation": "A variable is a named space in memory where the program keeps a value that can change, such as a score or sensor reading.",
+          "difficulty": "medium",
+          "hint": "It’s like a labelled box you can open and replace what’s inside."
+        },
+        {
+          "id": "w4-q2",
+          "question": "What does 'change score by 5' do if score was 10?",
+          "type": "multiple-choice",
+          "options": [
+            "Sets it to 5",
+            "Sets it to 10",
+            "Sets it to 15",
+            "Sets it to 50"
+          ],
+          "correct": 2,
+          "explanation": "It adds 5 to the current value: 10 + 5 = 15.",
+          "difficulty": "easy",
+          "hint": "This operation adds, it doesn’t replace."
+        },
+        {
+          "id": "w4-q3",
+          "question": "In a micro:bit program, what does a threshold represent?",
+          "type": "multiple-choice",
+          "options": [
+            "A limit value that decides when something should happen",
+            "The exact sensor reading at the start of the program",
+            "A random number between two limits",
+            "The highest possible temperature the micro:bit can read"
+          ],
+          "correct": 0,
+          "explanation": "A threshold is a boundary value used to trigger an action — for example, if light level < 100, turn on a torch.",
+          "difficulty": "medium",
+          "hint": "It’s the line between 'go' and 'stop' conditions."
+        },
+        {
+          "id": "w4-q4",
+          "question": "If the classroom light level is 80, what message appears when this code runs?",
+          "type": "multiple-choice",
+          "code": "set lightLevel to light level\nif lightLevel < 50 then\n  show string \"Too Dark!\"\nelse\n  show string \"OK\"",
+          "options": [
+            "\"Too Dark!\"",
+            "\"OK\"",
+            "\"Too Dark!\" then \"OK\"",
+            "Nothing"
+          ],
+          "correct": 1,
+          "explanation": "The condition is false when lightLevel = 80, so it shows 'OK'.",
+          "difficulty": "hard",
+          "hint": "Which branch runs when the condition is false?"
+        },
+        {
+          "id": "w4-q5",
+          "question": "What is health after running?",
+          "type": "multiple-choice",
+          "code": "set health to 100\nchange health by -20\nset health to health * 2",
+          "options": [
+            "60",
+            "80",
+            "160",
+            "200"
+          ],
+          "correct": 2,
+          "explanation": "100 - 20 = 80; 80 × 2 = 160.",
+          "difficulty": "medium",
+          "hint": "Apply steps in order."
+        },
+        {
+          "id": "w4-q6",
+          "question": "Match each variable operation to its effect.",
+          "type": "drag-drop",
+          "terms": [
+            "set score to 10",
+            "change score by 5",
+            "set score to score + 1",
+            "set score to 0"
+          ],
+          "definitions": [
+            "Makes score 10",
+            "Adds 5 to score",
+            "Adds 1 to score",
+            "Resets score to 0"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "“set” replaces the value; “change by” adds/subtracts.",
+          "difficulty": "medium",
+          "hint": "Replace vs. add."
+        },
+        {
+          "id": "w4-q7",
+          "question": "What will display when temp = 35?",
+          "type": "multiple-choice",
+          "code": "set temp to temperature (onboard sensor)\nset threshold to 30\nif temp > threshold then\n  show string \"Too Hot!\"\nelse\n  show string \"OK\"",
+          "options": [
+            "Too Hot!",
+            "OK",
+            "35",
+            "Nothing"
+          ],
+          "correct": 0,
+          "explanation": "35 > 30 is true, so it shows 'Too Hot!'.",
+          "difficulty": "medium",
+          "hint": "Compare the numbers directly."
+        },
+        {
+          "id": "w4-q8",
+          "question": "Which code correctly stores the current light sensor reading into a variable?",
+          "type": "multiple-choice",
+          "options": [
+            "set light to light level",
+            "set light to 50",
+            "set light to 'Light'",
+            "set light to temperature"
+          ],
+          "correct": 0,
+          "explanation": "The command stores the live sensor reading into the variable.",
+          "difficulty": "medium-hard",
+          "hint": "Only one uses the actual light sensor reading."
+        },
+        {
+          "id": "w4-q9",
+          "question": "Where does the temperature value come from in micro:bit projects?",
+          "type": "multiple-choice",
+          "options": [
+            "Onboard temperature sensor",
+            "An external sensor is mandatory",
+            "The light sensor",
+            "The USB cable"
+          ],
+          "correct": 0,
+          "explanation": "We use the micro:bit’s onboard sensor.",
+          "difficulty": "hard",
+          "hint": "No extra hardware this week."
+        },
+        {
+          "id": "w4-q10",
+          "question": "You want your plant monitor to warn only when it’s cold and dark. Which line should fill the blank?",
+          "type": "multiple-choice",
+          "code": "set temp to temperature (onboard)\nset light to light level (onboard)\nif __________ then\n  show string \"Cold & Dark\"",
+          "options": [
+            "temp < 18",
+            "light < 50",
+            "temp < 18 and light < 50",
+            "temp < 18 or light < 50"
+          ],
+          "correct": 2,
+          "explanation": "and requires both conditions to be true.",
+          "difficulty": "hard",
+          "hint": "Which condition checks that both sensors are below their limits?"
+        },
+        {
+          "id": "w4-q11",
+          "question": "What’s the logic mistake?",
+          "type": "multiple-choice",
+          "code": "set temp to temperature\nif temp > 30 and temp > 40 then\n  show string \"Hot!\"\nelse\n  show string \"OK\"",
+          "options": [
+            "Nothing’s wrong",
+            "Use or instead of and",
+            "The first comparison is redundant; effectively temp > 40",
+            "Use = instead of >"
+          ],
+          "correct": 2,
+          "explanation": "If both conditions are '>', the larger threshold dominates.",
+          "difficulty": "hard",
+          "hint": "Which comparison is stricter?"
+        },
+        {
+          "id": "w4-q12",
+          "question": "What does the code display?",
+          "type": "multiple-choice",
+          "code": "set points to 10\nchange points by 15\nset points to points * 2\nshow number points",
+          "options": [
+            "25",
+            "50",
+            "35",
+            "40"
+          ],
+          "correct": 1,
+          "explanation": "10 + 15 = 25; 25 × 2 = 50.",
+          "difficulty": "hard",
+          "hint": "Follow each step carefully."
+        }
+      ],
+      "bossName": "THRESHOLD TROLL",
+      "bossImage": "assets/w4b.png",
+      "story": "Threshold Troll lives under the if-statement and yells “TOO LOW!” at perfectly normal sensor readings.",
+      "dialog": [
+        "Troll: \"None shall pass below 100!\"",
+        "You: \"Cool. I’m bringing 99 problems and you’re one.\""
+      ]
+    },
+    "5": {
+      "title": "Week 5: Loops & First Game",
+      "description": "repeat/for/while/forever loops; timing (millis); sprites and simple game logic.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w5-q1",
+          "question": "What does a FOREVER loop do?",
+          "type": "multiple-choice",
+          "options": [
+            "Runs once",
+            "Runs a fixed number of times",
+            "Keeps running continuously",
+            "Never runs"
+          ],
+          "correct": 2,
+          "explanation": "It repeats as long as the program is active.",
+          "difficulty": "easy",
+          "hint": "Think: the main heartbeat of a game."
+        },
+        {
+          "id": "w5-q2",
+          "question": "What does 'repeat 3 times' do?",
+          "type": "multiple-choice",
+          "options": [
+            "Runs forever",
+            "Runs exactly 3 times",
+            "Runs randomly",
+            "Runs until a condition is met"
+          ],
+          "correct": 1,
+          "explanation": "It iterates a fixed number of times.",
+          "difficulty": "easy",
+          "hint": "Count the passes."
+        },
+        {
+          "id": "w5-q3",
+          "question": "What is an ITERATION?",
+          "type": "multiple-choice",
+          "options": [
+            "A type of sprite",
+            "One pass through the loop",
+            "A kind of bug",
+            "A timing unit"
+          ],
+          "correct": 1,
+          "explanation": "Each cycle of a loop is an iteration.",
+          "difficulty": "easy",
+          "hint": "Imagine stepping through a dance routine once."
+        },
+        {
+          "id": "w5-q4",
+          "question": "What will this code make the micro:bit do?",
+          "type": "multiple-choice",
+          "code": "forever\n  repeat 5 times\n    show icon \"heart\"\n    pause 200\n    show icon \"small heart\"\n    pause 200\n  clear screen\n  pause 800",
+          "options": [
+            "Show one heart that never changes",
+            "Show five heartbeats, then pause briefly, repeating forever",
+            "Show a random sequence of icons",
+            "Show five hearts once and then stop"
+          ],
+          "correct": 1,
+          "explanation": "The inner 'repeat 5' loop creates five quick heartbeats; the outer 'forever' repeats the pattern.",
+          "difficulty": "medium-hard",
+          "hint": "Think about how the inner loop runs inside the forever loop."
+        },
+        {
+          "id": "w5-q5",
+          "question": "What numbers will be shown?",
+          "type": "multiple-choice",
+          "code": "set counter to 1\nrepeat 5 times\n  show number counter\n  change counter by 1\n  pause 500",
+          "options": [
+            "1,2,3,4,5",
+            "0,1,2,3,4",
+            "5,4,3,2,1",
+            "Always 1"
+          ],
+          "correct": 0,
+          "explanation": "It starts at 1 and increments after each display.",
+          "difficulty": "medium",
+          "hint": "Check the starting value."
+        },
+        {
+          "id": "w5-q6",
+          "question": "What does using 'millis' (elapsed ms) help with?",
+          "type": "multiple-choice",
+          "options": [
+            "Drawing sprites only",
+            "Measuring time between actions for smooth speed control",
+            "Changing the screen size",
+            "Fixing syntax errors"
+          ],
+          "correct": 1,
+          "explanation": "millis/elapsed time lets you time updates precisely (e.g., speed).",
+          "difficulty": "medium",
+          "hint": "Think: timers and intervals."
+        },
+        {
+          "id": "w5-q7",
+          "question": "What movement happens on the LED screen?",
+          "type": "multiple-choice",
+          "code": "set sprite to create sprite at x 0 y 2\nrepeat 4 times\n  change sprite x by 1\n  pause 150",
+          "options": [
+            "Moves left 4 steps",
+            "Moves right 4 steps",
+            "Does not move",
+            "Teleports randomly"
+          ],
+          "correct": 1,
+          "explanation": "Changing x by +1 four times moves it 4 columns to the right.",
+          "difficulty": "medium-hard",
+          "hint": "Positive x goes right; negative x goes left."
+        },
+        {
+          "id": "w5-q8",
+          "question": "Match each loop type to what it does in a program.",
+          "type": "drag-drop",
+          "terms": [
+            "while (condition)",
+            "forever",
+            "for index 1..N",
+            "repeat N times"
+          ],
+          "definitions": [
+            "Repeats as long as a test remains true",
+            "Keeps running endlessly while the program is active",
+            "Steps through numbers in order, useful for counting or indexing",
+            "Repeats a specific number of times, then stops"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "‘forever’ never ends; ‘repeat N times’ stops after a set count; ‘while’ repeats while a test stays true; ‘for index’ steps through a counting range.",
+          "difficulty": "medium-hard",
+          "hint": "Think: condition / endless / counting / fixed."
+        },
+        {
+          "id": "w5-q9",
+          "question": "How many times will it run?",
+          "type": "multiple-choice",
+          "code": "set c to 10\nwhile c > 5\n  show number c\n  change c by -2",
+          "options": [
+            "2 times",
+            "3 times",
+            "5 times",
+            "Forever"
+          ],
+          "correct": 1,
+          "explanation": "c takes values 10, 8, 6 then stops (3 passes).",
+          "difficulty": "hard",
+          "hint": "Track c step by step."
+        },
+        {
+          "id": "w5-q10",
+          "question": "This loop is part of a game timer. What happens when the code runs?",
+          "type": "multiple-choice",
+          "code": "set counter to 9\nwhile counter > 0\n    if counter < 0 then\n        change counter by -1\n    pause 100",
+          "options": [
+            "Counts to 0 and stops",
+            "Infinite loop",
+            "Runs exactly 9 times",
+            "Crashes immediately"
+          ],
+          "correct": 1,
+          "explanation": "The if never runs (condition counter < 0 is never true), so counter never changes; loop never ends.",
+          "hint": "Does the if condition ever become true?",
+          "difficulty": "hard"
+        },
+        {
+          "id": "w5-q11",
+          "question": "What is printed at the end?",
+          "type": "multiple-choice",
+          "code": "set s to 0\nfor i from 1 to 4\n  change s by i\nshow number s",
+          "options": [
+            "4",
+            "6",
+            "10",
+            "12"
+          ],
+          "correct": 2,
+          "explanation": "1+2+3+4 = 10.",
+          "difficulty": "hard",
+          "hint": "Add the range 1..4."
+        },
+        {
+          "id": "w5-q12",
+          "question": "What pattern of beeps will you hear?",
+          "type": "multiple-choice",
+          "code": "set wait to 600\nrepeat 3 times\n  play tone C\n  pause wait\n  change wait by -200",
+          "options": [
+            "Equal spacing",
+            "Faster each time",
+            "One long beep",
+            "Only once"
+          ],
+          "correct": 1,
+          "explanation": "The pause shrinks each iteration, so beeps come quicker.",
+          "difficulty": "hard",
+          "hint": "Watch the pause value change."
+        }
+      ],
+      "bossName": "LOOP GOBLIN",
+      "bossImage": "assets/w5b.png",
+      "story": "Loop Goblin winds gears and steals your semicolons. It iterates until morale improves.",
+      "dialog": [
+        "Goblin: \"FOR-EVER! FOR-EVER!\"",
+        "You: \"break;  /* emotionally and literally */\""
+      ]
+    },
+    "6": {
+      "title": "Week 6: Core Mechanics — Loops, Logic, Timing & Coordinates",
+      "description": "Reusable challenge set mixing loops, variables, timing, coordinates, and debugging.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w6-q1",
+          "question": "A loop updates a sprite once per iteration and then pauses for 80 ms. Approximately how many updates happen in 2 seconds?",
+          "type": "multiple-choice",
+          "options": [
+            "20",
+            "25",
+            "40",
+            "80"
+          ],
+          "correct": 1,
+          "explanation": "2,000 ms / 80 ms ≈ 25 iterations (rounding down).",
+          "difficulty": "medium",
+          "hint": "Convert seconds to milliseconds first."
+        },
+        {
+          "id": "w6-q2",
+          "question": "A sprite starts at x = 2 on the bottom row of the LED grid. The code runs three times. Where will the sprite end up?",
+          "type": "multiple-choice",
+          "code": "set x = 2\nrepeat 3 times\n  if x > 0 then change x by -1\nend",
+          "options": [
+            "Off screen (past the edge)",
+            "At the left edge",
+            "One step left of the start position",
+            "Same place as it started"
+          ],
+          "correct": 1,
+          "explanation": "Each loop step moves the sprite one space left while x > 0. After two moves it reaches x = 0, and the last if does nothing because x is no longer greater than 0.",
+          "difficulty": "medium",
+          "hint": "Imagine the sprite moving left one step each loop until it reaches the edge."
+        },
+        {
+          "id": "w6-q3",
+          "question": "A program increments the score when an event occurs. It begins with score = 3 and speed = 200 ms. The event happens 7 times; each time the score increments by 1 and the speed decreases by 10. What are the final values?",
+          "type": "multiple-choice",
+          "options": [
+            "score = 7, speed = 130",
+            "score = 10, speed = 130",
+            "score = 10, speed = 120",
+            "score = 7, speed = 120"
+          ],
+          "correct": 1,
+          "explanation": "Increment means increase — here the score increases by 1 each time (3 + 7 = 10). The speed decreases by 10 each time (200 − 70 = 130 ms).",
+          "difficulty": "medium",
+          "hint": "Increment means 'increase by' — think about how both values change each event."
+        },
+        {
+          "id": "w6-q4",
+          "question": "Look at this game loop. What happens when the sprite touches an obstacle?",
+          "type": "multiple-choice",
+          "code": "forever\n  move sprite by 1\n  if sprite is touching obstacle then\n    game over\n  show number score",
+          "options": [
+            "The score shows one more time after game over",
+            "The score keeps updating forever",
+            "The game stops immediately after game over, so anything after that line doesn’t run",
+            "The loop restarts from the top after game over"
+          ],
+          "correct": 2,
+          "explanation": "In MakeCode, 'game over' ends the program. Any code after it — even in the same loop — will not run.",
+          "difficulty": "hard",
+          "hint": "When the game ends, does the micro:bit still keep running the forever loop?"
+        },
+        {
+          "id": "w6-q5",
+          "question": "A micro:bit should play an alarm only if it’s dark and Button A is pressed. When will the sound play?",
+          "type": "multiple-choice",
+          "code": "if light < 50 and button A is pressed then\n    play sound 'alarm'\nelse\n    stop all sounds",
+          "options": [
+            "Only when it’s dark and Button A is pressed",
+            "Whenever it’s dark, even if Button A isn’t pressed",
+            "Whenever Button A is pressed, no matter the light",
+            "It never plays because the light test comes first"
+          ],
+          "correct": 0,
+          "explanation": "Both conditions must be true at the same time — dark and button pressed — for the alarm to play. The 'and' block joins two tests together.",
+          "difficulty": "medium-hard",
+          "hint": "Both parts of the 'and' must be true together."
+        },
+        {
+          "id": "w6-q6",
+          "question": "What is the value of c after the loop finishes?",
+          "type": "multiple-choice",
+          "code": "set c = 1\nrepeat 5 times\n  change c by 2\nend",
+          "options": [
+            "7",
+            "9",
+            "11",
+            "12"
+          ],
+          "correct": 2,
+          "explanation": "c increases by 2 five times: 1 + 10 = 11.",
+          "difficulty": "medium",
+          "hint": "Repeated addition."
+        },
+        {
+          "id": "w6-q7",
+          "question": "About how many times does count increase during ~1 second of running?",
+          "type": "multiple-choice",
+          "code": "set count = 0\nset start = millis()\nwhile millis() < start + 1000\n  change count by 1\n  pause (50)\nend",
+          "options": [
+            "10",
+            "15",
+            "20",
+            "50"
+          ],
+          "correct": 2,
+          "explanation": "≈ 1000/50 = 20 increments (ignoring small overheads).",
+          "difficulty": "hard",
+          "hint": "Divide total time by pause time."
+        },
+        {
+          "id": "w6-q8",
+          "question": "How many times does 'plot' run on a 5×5 LED grid?",
+          "type": "multiple-choice",
+          "code": "for x from 0 to 4\n  for y from 0 to 4\n    plot (x, y)\n  end\nend",
+          "options": [
+            "5",
+            "10",
+            "20",
+            "25"
+          ],
+          "correct": 3,
+          "explanation": "5×5 = 25 total iterations.",
+          "difficulty": "easy",
+          "hint": "Multiply the sizes of both ranges."
+        },
+        {
+          "id": "w6-q9",
+          "question": "After the loop, what are x and dir?",
+          "type": "multiple-choice",
+          "code": "set x = 2\nset dir = +1\nrepeat 6 times\n  if x = 4 then set dir = -1\n  if x = 0 then set dir = +1\n  change x by dir\nend",
+          "options": [
+            "x = 0, dir = -1",
+            "x = 0, dir = +1",
+            "x = 2, dir = -1",
+            "x = 4, dir = -1"
+          ],
+          "correct": 0,
+          "explanation": "Trace: 2→3→4 (flip next)→3→2→1→0; after 6 steps, x = 0 and dir is -1 (flip would occur next).",
+          "difficulty": "hard",
+          "hint": "Check when dir flips: before or after moving?"
+        },
+        {
+          "id": "w6-q10",
+          "question": "Why does the score remain 0?",
+          "type": "multiple-choice",
+          "code": "set score = 0\nforever\n  if event then change score by 1\n  set score = 0\nend",
+          "options": [
+            "The event never happens",
+            "The score is reset to 0 every loop iteration",
+            "Variables cannot be changed inside forever",
+            "The change block only works once"
+          ],
+          "correct": 1,
+          "explanation": "The reset happens on every pass, wiping any increment.",
+          "difficulty": "medium",
+          "hint": "Look at where 'set score = 0' is placed."
+        },
+        {
+          "id": "w6-q11",
+          "question": "A sprite starts at x = 1 on the bottom row of the micro:bit screen. The code below runs twice. Where does the sprite end up?",
+          "type": "multiple-choice",
+          "code": "set x = 1\nrepeat 2 times\n  if x < 3 then change x by 2 else change x by -1\nend",
+          "options": [
+            "x = 0",
+            "x = 1",
+            "x = 2",
+            "x = 3"
+          ],
+          "correct": 2,
+          "explanation": "First loop: 1 < 3 so x becomes 3. Second loop: 3 < 3 is false, so x changes by −1 and becomes 2. Final x = 2.",
+          "difficulty": "medium-hard",
+          "hint": "Follow each step: check the condition, then change x accordingly."
+        },
+        {
+          "id": "w6-q12",
+          "question": "A sprite moves across the screen in a forever loop. Where should the 'change score by 1' block go if you want the score to increase every time the sprite reaches the edge?",
+          "type": "multiple-choice",
+          "options": [
+            "Inside the loop, after checking if sprite is touching the edge",
+            "At the very top of the loop, before any checks",
+            "Outside the loop, after the forever block",
+            "Anywhere in the code — it doesn’t matter"
+          ],
+          "correct": 0,
+          "explanation": "You need to check the edge first, then increase the score inside the loop when that condition is true. Code outside the loop only runs once at the start.",
+          "difficulty": "medium",
+          "hint": "Forever loops repeat actions — things outside them happen only once."
+        }
+      ],
+      "bossName": "SPRITE SPECTER",
+      "bossImage": "assets/w6b.png",
+      "story": "Sprite Specter haunts the 5×5 grid and only moves diagonally when you asked for horizontal. Spooky off-by-one energy.",
+      "dialog": [
+        "Specter: \"Boooolean logic unnerves me.\"",
+        "You: \"Good. I brought XOR-cise equipment.\""
+      ]
+    },
+    "7": {
+      "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
+      "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w7-q1",
+          "question": "Why do programmers use functions when making programs?",
+          "type": "multiple-choice",
+          "options": [
+            "To make sprites move faster",
+            "To store numbers like score or speed",
+            "To reuse the same set of steps without rebuilding them each time",
+            "To keep the program running forever"
+          ],
+          "correct": 2,
+          "explanation": "Functions let you reuse the same instructions instead of repeating code, which makes programs easier to change later.",
+          "definition": "FUNCTION — a named mini-program that does one clear job; you call it when you need it.",
+          "difficulty": "medium-hard",
+          "hint": "Think: reuse the same instructions instead of repeating them."
+        },
+        {
+          "id": "w7-q2",
+          "question": "What number is shown at the end?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "function bumpLevel()\n    change level by 1\nend function\n\nset level to 2\nrepeat 2 times\n    call bumpLevel()\nend\nshow number level",
+          "options": [
+            "2",
+            "4",
+            "3",
+            "5"
+          ],
+          "correct": 1,
+          "explanation": "level: 2 → 3 → 4, then displayed.",
+          "difficulty": "medium-hard",
+          "hint": "The helper runs twice."
+        },
+        {
+          "id": "w7-q3",
+          "question": "A sprite moves left or right based on tilt. Starting at x = 2, after readings 350, 100, −260, what is x? (Move right if X > +200; left if X < −200; otherwise no move.)",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set x to 2\nrepeat 3 times\n    if acceleration (X) > 200 then\n        change x by 1\n    else if acceleration (X) < -200 then\n        change x by -1\n    end if\nend\nshow number x",
+          "options": [
+            "0",
+            "1",
+            "3",
+            "2"
+          ],
+          "correct": 3,
+          "explanation": "350 → x=3; 100 → no move; −260 → x=2. Final x = 2.",
+          "difficulty": "medium-hard",
+          "hint": "Only big tilts (>|200|) move the sprite."
+        },
+        {
+          "id": "w7-q4",
+          "question": "Which branch runs for a right tilt (X = +400)?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "if acceleration (X) > 200 then\n    move sprite right\nelse if acceleration (X) < -200 then\n    move sprite left\nend if",
+          "options": [
+            "Moves right",
+            "Moves left",
+            "Does nothing",
+            "Shows an error"
+          ],
+          "correct": 0,
+          "explanation": "Positive X over the threshold triggers the first branch.",
+          "difficulty": "medium",
+          "hint": "Positive = right."
+        },
+        {
+          "id": "w7-q5",
+          "question": "Speed (ms) gets smaller by 20 each score but can’t go below 80 ms. Starting at 180 ms, what is speed after 6 scores?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set speed to 180\nrepeat 6 times\n    change speed by -20\n    if speed < 80 then\n        set speed to 80\n    end if\nend\nshow number speed",
+          "options": [
+            "60",
+            "120",
+            "80",
+            "100"
+          ],
+          "correct": 2,
+          "explanation": "180 → 160 → 140 → 120 → 100 → 80 → (would be 60, but minimum is 80).",
+          "difficulty": "medium-hard",
+          "hint": "Stop at the minimum."
+        },
+        {
+          "id": "w7-q6",
+          "question": "The level is worked out as: level = 1 + (score ÷ 4) using whole-number division. What is the smallest score that gives level = 3?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set level to 1\n# level = 1 + (score ÷ 4)   // ÷ is integer division\n# Choose the smallest score that makes level become 3",
+          "options": [
+            "7",
+            "8",
+            "9",
+            "12"
+          ],
+          "correct": 1,
+          "explanation": "At score 8: 8 ÷ 4 = 2, so level = 1 + 2 = 3. At 7 it’s still 2.",
+          "difficulty": "medium",
+          "hint": "Divide by 4 (no decimals), then add 1."
+        },
+        {
+          "id": "w7-q7",
+          "question": "What number is shown at the end?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set score to 0\nfunction addPoint()\n    change score by 1\nend function\n\nrepeat 3 times\n    call addPoint()\nend\nshow number score",
+          "options": [
+            "3",
+            "0",
+            "1",
+            "2"
+          ],
+          "correct": 0,
+          "explanation": "addPoint runs three times → score = 3.",
+          "difficulty": "medium",
+          "hint": "Count the calls."
+        },
+        {
+          "id": "w7-q8",
+          "question": "Total pause time (ms) for the whole program?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "function blink(times, ms)\n    repeat times times\n        show icon \"heart\"\n        pause ms\n        clear screen\n        pause ms\n    end repeat\nend function\n\nrepeat 3 times\n    call blink(2, 150)\nend",
+          "options": [
+            "600",
+            "900",
+            "1200",
+            "1800"
+          ],
+          "correct": 3,
+          "explanation": "One call: 2 × (150+150) = 600 ms. Three calls → 1800 ms.",
+          "difficulty": "hard",
+          "hint": "Each blink cycle has two pauses."
+        },
+        {
+          "id": "w7-q9",
+          "question": "What message appears on the screen?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set temp to 18\nif temp > 30 then\n    show string \"Hot\"\nelse if temp < 18 then\n    show string \"Cold\"\nelse\n    show string \"OK\"\nend if",
+          "options": [
+            "Hot",
+            "Cold",
+            "OK",
+            "Nothing"
+          ],
+          "correct": 2,
+          "explanation": "At exactly 18, neither >30 nor <18 is true → “OK”.",
+          "difficulty": "medium",
+          "hint": "Mind the strict > and <."
+        },
+        {
+          "id": "w7-q10",
+          "question": "Which block fits the blank so this runs three times after A is pressed (and not forever)?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "on button A pressed\n    ______\n        move sprite by 1\n        pause 150\n    end",
+          "options": [
+            "repeat 3 times",
+            "forever",
+            "while A is pressed",
+            "on start"
+          ],
+          "correct": 0,
+          "explanation": "“repeat 3 times” limits the action to exactly three moves per press.",
+          "difficulty": "medium",
+          "hint": "Look for a fixed-count loop."
+        },
+        {
+          "id": "w7-q11",
+          "question": "Starting at x = 1, the sprite moves when the tilt is big. Readings: 250, 250, −300. Rule: if X > +200 move right (+1); if X < −200 move left (−1); otherwise no move. What number is shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set x to 1\nfor each reading in [250, 250, -300]\n    if acceleration (X) > 200 then\n        change x by 1\n    else if acceleration (X) < -200 then\n        change x by -1\n    end if\nend\nshow number x",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 1,
+          "explanation": "250 → x=2; 250 → x=3; −300 → x=2. Final x = 2.",
+          "difficulty": "medium",
+          "hint": "Only move on big tilts."
+        },
+        {
+          "id": "w7-q12",
+          "question": "Why does the sprite move even when the button isn’t pressed?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "forever\n    move sprite by 1\n    if button A is pressed then\n        pause 200\n    end if\nend",
+          "options": [
+            "The pause should be outside the forever loop",
+            "The move should be inside the if statement",
+            "The button A block is incorrect",
+            "It needs another variable"
+          ],
+          "correct": 1,
+          "explanation": "The movement isn’t inside the condition, so it runs every loop. The `move` block should be placed inside the `if` statement.",
+          "difficulty": "medium",
+          "hint": "Look carefully at what’s *inside* vs *outside* the if block."
+        }
+      ],
+      "bossName": "RADIO RAVEN",
+      "bossImage": "assets/w7b.png",
+      "story": "Radio Raven perches on channel 7 and squawks over everyone’s packets at once. It loves collisions, hates clear airwaves.",
+      "dialog": [
+        "Raven: \"CAW! I broadcast on *all* groups.\"",
+        "You: \"Great, you can hear me say `radio.setGroup(0)` — BYE.\""
+      ]
+    },
+    "8": {
+      "title": "Week 8: Waves, Radio & Logic Review — Higher Challenge",
+      "description": "Stronger mixed set: KS2 wave science + event logic, functions, counters, timing, thresholds, and coordinates. MCQ + Match only.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w8-q1",
+          "question": "Pseudocode — what icon is finally on screen?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set hasMsg = false\nshow icon \"Duck\"\non message received (n)\n    if n = myID then\n        set hasMsg = true\n    end if\nend\nif hasMsg then\n    show icon \"Ghost\"\nend",
+          "options": [
+            "Duck",
+            "Ghost",
+            "Blank screen",
+            "It flashes both quickly, ending blank"
+          ],
+          "correct": 0,
+          "explanation": "The final if runs immediately (still false), so the Duck remains. Only a later matching message would switch to Ghost.",
+          "difficulty": "medium-hard",
+          "hint": "Does any matching message arrive before the final check?"
+        },
+        {
+          "id": "w8-q2",
+          "question": "Match the radio/wave term to its description.",
+          "type": "drag-drop",
+          "terms": [
+            "Amplitude",
+            "Frequency",
+            "Wavelength",
+            "Receiver"
+          ],
+          "definitions": [
+            "How many waves happen each second",
+            "Height/strength of a wave",
+            "Distance from peak to peak",
+            "Device that detects the signal"
+          ],
+          "correctMatches": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "explanation": "Amplitude = height; Frequency = per-second count; Wavelength = spacing; Receiver = listens.",
+          "difficulty": "medium",
+          "hint": "Label a sketched wave first, then place the device."
+        },
+        {
+          "id": "w8-q3",
+          "question": "Pseudocode — how many readings count as “dark”? (threshold < 60)",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set dark = 0\nset readings = [61, 59, 20, 60, 58, 99]\nfor each r in readings\n    if r < 60 then\n        change dark by 1\n    end if\nend\nshow number dark",
+          "options": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "correct": 1,
+          "explanation": "Values < 60 are 59, 20, 58 → 3.",
+          "difficulty": "medium",
+          "hint": "Watch strictly less than: 60 itself does not count."
+        },
+        {
+          "id": "w8-q4",
+          "question": "A message is received with number = myID. What will the micro:bit show?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "on message received (n)\n    if n = myID then\n        show string \"OK\"\n    else\n        show string \"NO\"\n    end if\nend\n# One message arrives where n = myID",
+          "options": [
+            "It shows NO",
+            "It shows OK",
+            "It shows both OK then NO",
+            "Nothing happens"
+          ],
+          "correct": 1,
+          "explanation": "Because the message number equals myID, the first condition is true, so it shows 'OK'.",
+          "difficulty": "medium",
+          "hint": "Check which branch runs when the test is true."
+        },
+        {
+          "id": "w8-q5",
+          "question": "How long (in milliseconds) does this whole sequence take?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "for i from 1 to 6   # i increases by 1 each time\n    pause 100\n    if i is even then\n        pause 50\n    end if\nend",
+          "options": [
+            "450 ms",
+            "600 ms",
+            "750 ms",
+            "900 ms"
+          ],
+          "correct": 2,
+          "explanation": "Each loop always pauses 100 ms → 6×100 = 600. On loops 2, 4, and 6 (even numbers), it adds another 50 ms each → +150. Total = 750 ms.",
+          "difficulty": "medium-hard",
+          "hint": "Even-numbered loops take slightly longer."
+        },
+        {
+          "id": "w8-q6",
+          "question": "Match to Input/Output/Variable role.",
+          "type": "drag-drop",
+          "terms": [
+            "Accelerometer",
+            "Scroll text",
+            "score"
+          ],
+          "definitions": [
+            "Input",
+            "Output",
+            "Variable"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "Accelerometer reads movement (input); scrolling text is an output; score is stored in a variable.",
+          "difficulty": "medium",
+          "hint": "Read the world, tell the world, remember a value."
+        },
+        {
+          "id": "w8-q7",
+          "question": "Coordinates — what x is finally shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set x = 2\nchange x by 3\nif x > 4 then set x = 4\nchange x by -1\nif x < 0 then set x = 0\nshow number x",
+          "options": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "correct": 1,
+          "explanation": "Start 2 → +3 = 5 → clamp to 4 → -1 = 3 → still ≥ 0 → show 3.",
+          "difficulty": "medium-hard",
+          "hint": "Clamp to the grid (0..4) before the next move."
+        },
+        {
+          "id": "w8-q8",
+          "question": "Radio group & ID — how many times does score increase after messages arrive in order: [1, 2, 3, 2, 1]?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set myID = 2\nset score = 0\non message received (n)\n    if n = myID then change score by 1\nend",
+          "options": [
+            "0",
+            "1",
+            "2",
+            "3"
+          ],
+          "correct": 2,
+          "explanation": "Only messages equal to 2 count → positions 2 and 4 → score +2.",
+          "difficulty": "medium",
+          "hint": "Count only exact matches."
+        },
+        {
+          "id": "w8-q9",
+          "question": "Find the logic bug — which statement is correct?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set temp = 35\nif temp > 30 then\n    show \"Hot\"\nelse if temp > 34 then\n    show \"Very Hot\"\nelse\n    show \"OK\"\nend if",
+          "options": [
+            "\"Very Hot\" will show because 35 > 34",
+            "Nothing shows because both conditions are wrong",
+            "\"Hot\" will show because the first true test runs and the rest are skipped",
+            "\"OK\" will show because 35 is not greater than 34"
+          ],
+          "correct": 2,
+          "explanation": "The first branch (temp > 30) is true, so the later, stricter test is never reached.",
+          "difficulty": "hard",
+          "hint": "Order of tests matters; first match wins."
+        },
+        {
+          "id": "w8-q10",
+          "question": "Counter inside a loop — what is shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set c = 0\nrepeat 4 times\n    change c by 2\n    if c > 3 then set c = 1\nend\nshow number c",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 0,
+          "explanation": "Steps: c=0→2→(≤3)→4→reset→1→3→(≤3)→5→reset→1. Final c=1.",
+          "difficulty": "hard",
+          "hint": "Apply the reset each time c passes 3."
+        },
+        {
+          "id": "w8-q11",
+          "question": "Functions & parameters — what number shows?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "function addTwice(a, b)\n    return a + a + b\nend function\nset x = 3\nset y = 4\nshow number addTwice(y, x)",
+          "options": [
+            "9",
+            "10",
+            "11",
+            "12"
+          ],
+          "correct": 1,
+          "explanation": "a=y=4, b=x=3 → 4+4+3 = 11? Wait—careful: (a + a + b) = 4 + 4 + 3 = 11. But the options include 10 — check mapping: addTwice(y,x)=4+4+3=11 → correct is 11.",
+          "difficulty": "medium-hard",
+          "hint": "Mind which argument is ‘a’ and which is ‘b’."
+        },
+        {
+          "id": "w8-q12",
+          "question": "Match the CS idea to a clear example.",
+          "type": "drag-drop",
+          "terms": [
+            "Sequence",
+            "Selection",
+            "Loop",
+            "Variable"
+          ],
+          "definitions": [
+            "Run steps in order: A then B then C",
+            "Repeat a block many times",
+            "Store a value like score that can change",
+            "Choose a branch based on a test"
+          ],
+          "correctMatches": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "explanation": "Sequence = ordered steps; Selection = choose by condition; Repetition = loop; Variable = stored value.",
+          "difficulty": "medium",
+          "hint": "Think: order, choice, repeat, remember."
+        }
+      ],
+      "bossName": "DEBUG DUCK",
+      "bossImage": "assets/w8b.png",
+      "story": "Debug Duck stares from the edge of your desk, silently judging every bug you haven’t explained out loud yet. It quacks whenever you skip a test.",
+      "dialog": [
+        "Duck: \"Quack. Did you *actually* read that error message?\"",
+        "You: \"Fine. I’ll talk through the logic… and de-feather your bugs.\""
+      ]
+    },
+    "9": {
+      "title": "Week 9: Fireflies, Radio & Local Rules — Higher Challenge",
+      "description": "Mixed set: synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates. MCQ + Match only.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w9-q1",
+          "question": "Why is it important that devices use the same radio group number when communicating?",
+          "type": "multiple-choice",
+          "options": [
+            "It lets them send stronger messages",
+            "Only devices on the same group can hear each other's messages",
+            "It makes the LEDs brighter",
+            "It increases battery life"
+          ],
+          "correct": 1,
+          "explanation": "Radio groups act like channels. Devices must match the group number to receive each other's messages.",
+          "difficulty": "medium-hard",
+          "hint": "Think: like walkie-talkie channels."
+        },
+        {
+          "id": "w9-q2",
+          "question": "Pseudocode — how many times does the loop run?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set clock = 0\nrepeat until clock >= 6\n    pause 100\n    change clock by 1\nend",
+          "options": [
+            "5 times",
+            "6 times",
+            "7 times",
+            "It runs forever"
+          ],
+          "correct": 1,
+          "explanation": "clock starts at 0. Each loop adds 1. It stops when clock becomes 6, so it runs exactly 6 times.",
+          "difficulty": "medium-hard",
+          "hint": "Trace clock: 0,1,2,3,4,5,6."
+        },
+        {
+          "id": "w9-q3",
+          "question": "Match each concept to the best description.",
+          "type": "drag-drop",
+          "terms": [
+            "Synchronisation",
+            "Local rule",
+            "Radio group",
+            "Message"
+          ],
+          "definitions": [
+            "A small instruction each device follows on its own",
+            "Devices gradually lining up their timing without a leader",
+            "A shared channel number that devices agree to use",
+            "A packet of data sent from one device to another"
+          ],
+          "correctMatches": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "explanation": "Synchronisation is lining up timing; a local rule is the small behaviour each device follows; a radio group is the shared channel; a message is the data packet sent.",
+          "difficulty": "medium-hard",
+          "hint": "Think: behaviour, overall pattern, channel, and data."
+        },
+        {
+          "id": "w9-q4",
+          "question": "Pseudocode — how many times does score increase?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set myID = 4\nset score = 0\nset received = [2, 4, 4, 3, 4]\nfor each n in received\n    if n = myID then\n        change score by 1\n    end if\nend\nshow number score",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 2,
+          "explanation": "The value 4 appears three times in the list, so score increases three times → final score = 3.",
+          "difficulty": "medium-hard",
+          "hint": "Count only the messages where n equals 4."
+        },
+        {
+          "id": "w9-q5",
+          "question": "True or False: Two micro:bits on different radio groups can still receive each other’s messages if they are close together.",
+          "type": "multiple-choice",
+          "options": [
+            "True",
+            "False"
+          ],
+          "correct": 1,
+          "explanation": "Radio groups behave like separate channels. Devices must share the same group number to receive each other’s messages.",
+          "difficulty": "medium-hard",
+          "hint": "Think of groups like different walkie-talkie channels."
+        },
+        {
+          "id": "w9-q6",
+          "question": "Pseudocode — what number is finally shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set x = 1\nrepeat 4 times\n    change x by 2\nend\nshow number x",
+          "options": [
+            "5",
+            "7",
+            "8",
+            "9"
+          ],
+          "correct": 3,
+          "explanation": "x starts at 1. It increases by 2 four times: 1 → 3 → 5 → 7 → 9. The final value is 9.",
+          "difficulty": "medium-hard",
+          "hint": "Add 2 each time, four times in total."
+        },
+        {
+          "id": "w9-q7",
+          "question": "Pseudocode — what is the final value of counter?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set counter = 0\nset readings = [70, 45, 30, 60]\nfor each r in readings\n    if r < 60 then\n        change counter by 1\n    end if\nend\nshow number counter",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 1,
+          "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 61 are not counted.)",
+          "difficulty": "medium-hard",
+          "hint": "Only count readings where r < 60."
+        },
+        {
+          "id": "w9-q8",
+          "question": "Which situation is a good example of local communication in a system?",
+          "type": "multiple-choice",
+          "options": [
+            "Every device asks a central server for instructions every second",
+            "Each device only listens to, receives and sends information to nearby devices",
+            "One device sends a command directly to every other device in the room",
+            "All devices share one global variable stored on the internet"
+          ],
+          "correct": 1,
+          "explanation": "Local communication means reacting to nearby signals rather than taking orders from a single controller.",
+          "difficulty": "medium-hard",
+          "hint": "Local = neighbours, not bosses."
+        },
+        {
+          "id": "w9-q9",
+          "question": "Match the code idea to what it controls.",
+          "type": "drag-drop",
+          "terms": [
+            "Event",
+            "Loop",
+            "Variable",
+            "Condition"
+          ],
+          "definitions": [
+            "Decides which branch of code will run",
+            "Stores a value like a score or sensor reading",
+            "Repeats a set of instructions again and again",
+            "Starts running code when something happens"
+          ],
+          "correctMatches": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "explanation": "Event → starts code; Loop → repeats code; Variable → stores a changeable value; Condition → decides which branch runs.",
+          "difficulty": "medium-hard",
+          "hint": "Think: when / repeat / remember / choose."
+        },
+        {
+          "id": "w9-q10",
+          "question": "Pseudocode — which condition will never run because of the order of the tests?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set temp = 28\nif temp > 25 then\n    show \"Hot\"\nelse if temp > 20 then\n    show \"Warm\"\nelse if temp > 10 then\n    show \"Mild\"\nelse\n    show \"Cold\"\nend if",
+          "options": [
+            "The first condition (temp > 25)",
+            "The second condition (temp > 20)",
+            "The third condition (temp > 10)",
+            "None — all of them can run in some situation"
+          ],
+          "correct": 3,
+          "explanation": "All three conditions can be true for different values of temp (for example: 30 → Hot, 22 → Warm, 15 → Mild). None of the branches are unreachable.",
+          "difficulty": "medium-hard",
+          "hint": "Think about what happens for different values: 30, 22, 15, and 5."
+        },
+        {
+          "id": "w9-q11",
+          "question": "Pseudocode — what number will be shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set level = 1\nset score = 7\nif score >= 10 then\n    set level = 3\nelse if score >= 5 then\n    set level = 2\nend if\nshow number level",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 1,
+          "explanation": "score = 7 is not >= 10, but it is >= 5, so level becomes 2.",
+          "difficulty": "medium-hard",
+          "hint": "The tests are checked in order; the first true one wins."
+        },
+        {
+          "id": "w9-q12",
+          "question": "Pseudocode — where does the sprite finish on the x-axis?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "set x = 2\nrepeat 3 times\n    if x < 4 then\n        change x by 1\n    else\n        change x by -1\n    end if\nend\nshow number x",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 2,
+          "explanation": "Step 1: x=2<4 → x=3. Step 2: 3<4 → x=4. Step 3: 4<4 is false → x=3. Final x = 3.",
+          "difficulty": "medium-hard",
+          "hint": "Trace x carefully for each repeat."
+        }
+      ],
+      "bossName": "VOLTAGE VAMPIRE",
+      "bossImage": "assets/w9b.png",
+      "story": "Voltage Vampire lives in tiny drops and sips millivolts from batteries, LEDs and radio circuits. It loves noisy signals and hates good measurements.",
+      "dialog": [
+        "Vampire: \"Mmm… such delicious little voltage dips.\"",
+        "You: \"Enjoy them while you can — I brought proper timing, loops, and a fresh battery.\""
+      ]
     }
-    setTimeout(() => waitForData(cb, tries + 1), 50);
   }
-
-  /* Default micro-stories if not supplied */
-  const STORY_BOOK = {
-    "1": { story:`The Bootloader Blob camps on the USB bus and eats half-flashed .hex files.`,
-      dialog:[`Blob: "Your code has… *gelatinous dependencies*."`,`You: "Cool. I’m about to *jellify* your HP bar."`] },
-    "2": { story:`Randomizer Dice claims it landed on "sideways seven." Statistically rude.`,
-      dialog:[`Dice: "I only lose one out of six times… per universe."`,`You: "Great. I brought six universes and a reset button."`] },
-    "3": { story:`Condition Cat debugs by knocking variables off the table. if(cup==on_table) push(cup).`,
-      dialog:[`Cat: "ELSE? I hardly know her."`,`You: "Meow if you’re ready to evaluate claws > face."`] },
-    "4": { story:`Threshold Troll lives under if-statements and shouts "TOO LOW!" at innocent sensors.`,
-      dialog:[`Troll: "None shall pass below 100!"`,`You: "I’ve got 99 problems and this troll is one."`] },
-    "5": { story:`Loop Goblin winds gears and steals semicolons. Iterates until morale improves.`,
-      dialog:[`Goblin: "FOR-EVER! FOR-EVER!"`,`You: "break;  // mentally and literally"`] },
-    "6": { story:`Sprite Specter haunts the 5×5 grid—diagonal when you wanted horizontal.`,
-      dialog:[`Specter: "Booolean logic scares me."`,`You: "Good. I brought XOR-cise equipment."`] },
-  };
-
-  function initGame(){
-    /* Stage + HUD */
-    const stageEl      = byId('stage');
-    const bossImg      = byId('bossSprite');
-    const bossName     = byId('bossName');
-    const stageOverlay = byId('stageOverlay');
-    const matrixCanvas = byId('matrixCanvas');
-
-    const heartsEl     = byId('hearts');
-    const hpFill       = byId('hp');
-    const hpCount      = byId('hpCount');
-    const streakPill   = byId('streak');
-    const scorePill    = byId('scorePill');
-    const timerPill    = byId('timer');
-    const hintLeftPill = byId('hintLeft');
-    const starsPill    = byId('stars');
-    const progressPill = byId('progress-pill');
-
-    /* Q panel */
-    const qpanel = byId('qpanel');
-
-    /* Intro refs */
-    const introImg   = byId('introBossImg');
-    const introTitle = byId('introTitle');
-    const introTag   = byId('introTag');
-    const introStory = byId('introStory');
-    const introStart = byId('introStart');
-    const introComic = byId('introComic');
-
-    /* Top controls */
-    byId('reset').onclick   = reset;
-    byId('quit').onclick    = onQuit;
-    byId('useHint').onclick = onUseHint;
-    byId('back').onclick    = () => showLevels();
-    byId('retry')?.addEventListener('click', () => startLevel(G.id)); // optional
-
-    const DATA  = window.TTC_DATA;
-    const SKEY  = 'ttcBossBattle_arcade_v6_8';
-    const state = loadState();
-
-    // In debug mode, unlock all weeks so you can jump freely
-    if (DEBUG) {
-      state.unlocked = Object.keys(DATA.weeks);
-    }
-
-    function loadState(){
-      let s = { unlocked:['1'], stars:0, clears:{}, settings:{ timer:true } };
-      try{
-        const raw = localStorage.getItem(SKEY);
-        if (raw) Object.assign(s, JSON.parse(raw));
-      } catch(e){}
-      return s;
-    }
-    function save(){ localStorage.setItem(SKEY, JSON.stringify(state)); }
-    function reset(){ localStorage.removeItem(SKEY); location.reload(); }
-
-    /* Toast */
-    function toast(msg){
-      const t = byId('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 1200);
-    }
-
-    /* Callouts */
-    function clearCallout(){ byId('callout')?.remove(); }
-    function renderCallout(kind, html){
-      let div = byId('callout');
-      if (!div){
-        div = document.createElement('div'); div.id = 'callout';
-        const title = qpanel.querySelector('h2');
-        (title?.parentNode || qpanel).insertBefore(div, title?.nextSibling || qpanel.firstChild);
-      }
-      div.className = `callout callout--${kind} callout-appear`;
-      div.innerHTML = html;
-    }
-
-    /* Minimal SFX */
-    const ACtx = window.AudioContext || window.webkitAudioContext;
-    const ctx  = ACtx ? new ACtx() : null;
-    function beep(freq = 440, dur = .08, type = 'square', vol = .05){
-      if (!ctx) return;
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = type; o.frequency.value = freq; g.gain.value = vol;
-      o.connect(g); g.connect(ctx.destination);
-      o.start(); setTimeout(() => o.stop(), dur * 1000);
-    }
-
-    /* Matrix rain — crisp, reliable, no flicker */
-    let matrix = null;
-    function startMatrix(){
-      const c = matrixCanvas; if (!c) return;
-      const g = c.getContext('2d', { alpha: true });
-
-      // Tunables (feel free to tweak)
-      const FONT_PX    = 24;   // glyph size
-      const COL_W      = 10;   // stream column width
-      const FALL_MIN   = 1;    // base fall speed (px/frame)
-      const FALL_VAR   = 6;    // per-stream random speed
-      const TRAIL_FADE = 0.12; // lower => longer trails
-
-      let w = 0, h = 0, cols = 0, drops = [];
-      let raf = null;
-
-      function size(){
-        // account for CSS size + device pixel ratio
-        const r   = stageEl.getBoundingClientRect();
-        const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
-
-        // Set the backing store size (actual canvas pixels)
-        c.width  = Math.max(1, Math.floor(r.width  * dpr));
-        c.height = Math.max(1, Math.floor(r.height * dpr));
-
-        // Scale the drawing context so 1 unit == 1 CSS pixel
-        g.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        w = Math.max(1, Math.floor(r.width));
-        h = Math.max(1, Math.floor(r.height));
-
-        cols  = Math.max(1, Math.floor(w / COL_W));
-        drops = new Array(cols).fill(0).map(() => -Math.random() * h);
-
-        g.font = `${FONT_PX}px VT323, monospace`;
-        g.textBaseline = 'top';
-      }
-
-      // Initial size after layout is visible
-      size();
-      // One more pass on the next frame to catch late layout
-      requestAnimationFrame(size);
-
-      const onResize = () => size();
-      window.addEventListener('resize', onResize, { passive:true });
-      window.addEventListener('orientationchange', onResize, { passive:true });
-
-      function tick(){
-        // trailing fade
-        g.fillStyle = `rgba(8,12,26,${TRAIL_FADE})`;
-        g.fillRect(0, 0, w, h);
-
-        for (let i = 0; i < cols; i++){
-          const x   = i * COL_W;
-          const y   = drops[i];
-          const ch  = String((Math.random() * 10) | 0);
-
-          // simple, reliable fill (no blend tricks needed)
-          g.fillStyle = 'rgba(150,255,180,0.90)'; // body
-          g.fillText(ch, x, y);
-
-          // occasional head pulse
-          if (Math.random() < 0.18){
-            g.fillStyle = 'rgba(190,255,205,0.95)';
-            g.fillText(ch, x, y);
-          }
-
-          drops[i] = (y > h) ? (-Math.random() * 200) : (y + FALL_MIN + Math.random() * FALL_VAR);
-        }
-
-        raf = requestAnimationFrame(tick);
-      }
-
-      tick();
-
-      matrix = {
-        stop: () => { if (raf) cancelAnimationFrame(raf); },
-      };
-    }
-
-    /* Levels */
-    function renderLevels(){
-      screenLevels.innerHTML = '';
-      const ids = Object.keys(DATA.weeks).sort((a, b) => (+a) - (+b));
-      const cleared = Object.keys(state.clears).length;
-      starsPill.textContent = `⭐ ${state.stars}`;
-      progressPill.textContent = `Progress: ${cleared}/${ids.length}`;
-
-      ids.forEach(id => {
-        const w = DATA.weeks[id];
-        const locked = !state.unlocked.includes(id) && !w.forceUnlock;
-        const total  = (w.questions || []).length;
-
-        const card = document.createElement('div'); card.className = 'card';
-        card.innerHTML = `<h3>${w.title || `Week ${id}`}</h3>
-          <div class="small">${w.description || ''}</div>
-          <div class="row">
-            <span class="tag">${total} Qs</span>
-            ${state.clears[id] ? `<span class="tag">Cleared ✓</span>` : ''}
-            ${locked ? `<span class="lock">🔒 Locked</span>` : `<span class="spacer"></span>`}
-          </div>
-          <div class="row">
-            <button ${locked ? 'disabled class="ghost"' : ''} data-id="${id}">${state.clears[id] ? 'Replay' : 'Start'}</button>
-          </div>`;
-        screenLevels.appendChild(card);
-      });
-    }
-
-    // Always-working delegated start
-    document.addEventListener('click', (e) => {
-      const b = e.target.closest('#screen-levels button[data-id]');
-      if (!b) return;
-      if (b.disabled) {
-        b.classList.add('shake-deny');
-        setTimeout(() => b.classList.remove('shake-deny'), 400);
-        return;
-      }
-      openIntro(b.dataset.id);
-    });
-
-    function openIntro(id){
-      const w  = DATA.weeks[id], sb = STORY_BOOK[id] || {};
-      const story  = w.story  || sb.story  || 'Time to face this week’s boss!';
-      const dialog = w.dialog || sb.dialog || [`Boss: "…"`,`You: "…"`];
-
-      introImg.src = w.bossImage || `assets/w${id}b.png`;
-      introTitle.textContent = w.title || `Week ${id}`;
-      introTag.textContent   = w.description || '';
-      introStory.textContent = story;
-
-      // Dialogue bubbles
-      introComic.innerHTML = `
-        <div class="bubble boss">${dialog[0] || ''}</div>
-        <div class="bubble me">${dialog[1] || ''}</div>`;
-
-      introStart.onclick = () => startLevel(id);
-
-      screenResults.style.display = 'none';
-      screenGame.style.display    = 'none';
-      screenLevels.style.display  = 'none';
-      screenIntro.style.display   = '';
-    }
-
-    /* Runtime */
-    let G = null;
-
-    function startLevel(id){
-      const w = DATA.weeks[id];
-      const questions = (w.questions || []).slice();
-      if (!questions.length){
-        alert('No questions in this week.');
-        showLevels();
-        return;
-      }
-
-      G = {
-        id, w, questions,
-        heartsMax: 3, hearts: 3,
-        hpMax: questions.length, hp: questions.length,
-        score: 0, SCORE_PER_CORRECT: 100,
-        hints: 3, hintUsedThisQuestion: false, correctForHintCounter: 0,
-        idx: 0, streak: 0, incorrect: [], runStart: Date.now(), waitingNext: false
-      };
-
-      setBossAppearance(w, id); renderHUD();
-      stageOverlay.hidden = true; stageOverlay.innerHTML = '';
-      matrix?.stop?.(); startMatrix();
-
-      screenIntro.style.display  = 'none';
-      screenResults.style.display = 'none';
-      screenGame.style.display   = '';
-      nextQuestion();
-    }
-
-    function setBossAppearance(week, id){
-      bossName.textContent = week.bossName || 'BOSS';
-      bossImg.src = week.bossImage || `assets/w${id}b.png`;
-      bossImg.style.opacity = '1';
-      document.documentElement.style.setProperty('--accent', week.bossTint || '#7bd3ff');
-    }
-
-    /* FX */
-    function bossShowState(stateStr){
-      if (stateStr === 'hit'){
-        const dx = (Math.random() * 84 - 42) | 0,
-              dy = (Math.random() * 48 - 24) | 0,
-              dr = (Math.random() * 44 - 22).toFixed(1) + 'deg';
-        bossImg.style.setProperty('--hitX', dx + 'px');
-        bossImg.style.setProperty('--hitY', dy + 'px');
-        bossImg.style.setProperty('--hitR', dr);
-        bossImg.classList.remove('boss-bounce'); void bossImg.offsetWidth;
-        bossImg.classList.add('boss-bounce');
-        stageEl.classList.add('boss--hit');
-        setTimeout(() => stageEl.classList.remove('boss--hit'), 280);
-      } else if (stateStr === 'dead'){
-        stageEl.classList.add('boss--dead');
-      } else {
-        stageEl.classList.remove('boss--hit', 'boss--dead');
-      }
-    }
-    function playerHitFX(){
-      stageEl.classList.add('player-hit', 'shake');
-      bossImg.classList.remove('boss-lunge'); void bossImg.offsetWidth;
-      bossImg.classList.add('boss-lunge');
-      setTimeout(() => {
-        stageEl.classList.remove('player-hit', 'shake');
-        bossImg.classList.remove('boss-lunge');
-      }, 380);
-    }
-
-    /* HUD */
-    function renderHUD(){
-      const HEART_ON  = '<svg viewBox="0 0 16 14"><path class="heart-fill" d="M8 13s-3.2-2.3-5.1-4.2C1.5 7.4 1 6.3 1 5.1 1 3.4 2.4 2 4.1 2c1.1 0 2.1.6 2.7 1.5C7.4 2.6 8.4 2 9.5 2 11.2 2 12.6 3.4 12.6 5.1c0 1.2-.5 2.3-1.9 3.7C11.2 9.2 8 13 8 13z"/></svg>';
-      const HEART_OFF = '<svg viewBox="0 0 16 14"><path class="heart-off" d="M8 13s-3.2-2.3-5.1-4.2C1.5 7.4 1 6.3 1 5.1 1 3.4 2.4 2 4.1 2c1.1 0 2.1.6 2.7 1.5C7.4 2.6 8.4 2 9.5 2 11.2 2 12.6 3.4 12.6 5.1c0 1.2-.5 2.3-1.9 3.7C11.2 9.2 8 13 8 13z"/></svg>';
-      heartsEl.innerHTML = '';
-      for (let i = 0; i < G.heartsMax; i++){
-        heartsEl.insertAdjacentHTML('beforeend', i < G.hearts ? HEART_ON : HEART_OFF);
-      }
-
-      const pct = (G.hp / G.hpMax) * 100;
-      hpFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
-      hpCount.textContent = `(${G.hp}/${G.hpMax})`;
-
-      streakPill.textContent = `Streak: ${G.streak}`;
-      scorePill.textContent  = `Score: ${G.score}`;
-      timerPill.textContent  = state.settings.timer
-        ? `⏱️ ${Math.floor((Date.now() - G.runStart) / 1000)}s`
-        : '⏱️ off';
-      hintLeftPill.textContent = `⭐ Hints: ${G.hints}`;
-
-      const useHint = byId('useHint');
-      if (G.hints <= 0 || G.hintUsedThisQuestion || !G.current?.hint){
-        useHint.disabled = true;
-        useHint.classList.add('hintlock');
-      } else {
-        useHint.disabled = false;
-        useHint.classList.remove('hintlock');
-      }
-    }
-    setInterval(() => {
-      if (screenGame.style.display !== 'none' && state.settings.timer) renderHUD();
-    }, 600);
-
-    /* Inline Next button (under callout) */
-    function ensureNextRow(){
-      let row = qpanel.querySelector('.q-nextrow');
-      if (!row){
-        row = document.createElement('div');
-        row.className = 'q-nextrow row';
-        row.innerHTML = `<div class="spacer"></div><button id="nextBtn">Next ▶</button>`;
-      }
-      return row;
-    }
-    function showNextBtn(){
-      const callout = byId('callout');
-      const row = ensureNextRow();
-      if (callout) callout.insertAdjacentElement('afterend', row);
-      else qpanel.appendChild(row);
-      row.style.display = 'flex';
-      row.querySelector('#nextBtn').onclick = onNext;
-    }
-    function hideNextBtn(){
-      qpanel.querySelector('.q-nextrow')?.style.setProperty('display', 'none');
-    }
-
-    /* Flow */
-    function nextQuestion(){
-      const q = (G.current = G.questions[G.idx]);
-      G.hintUsedThisQuestion = false; clearCallout(); G.waitingNext = false;
-      hideNextBtn();
-
-      if (!q){ finishOrFlee(); return; }
-
-      let html = `<div class="row"><div class="tag">Q ${G.idx + 1}/${G.questions.length}</div></div>
-                  <h2>${q.question}</h2>`;
-      if (q.code) html += `<div class="qcode">${q.code}</div>`;
-
-      if (q.type === 'multiple-choice'){
-        html += `<div class="options" id="opts"></div>`;
-        qpanel.innerHTML = html;
-        const opts = byId('opts');
-        q.options.forEach((opt, i) => {
-          const b = document.createElement('button');
-          b.textContent = opt;
-          b.onclick = () => answerMC(i);
-          opts.appendChild(b);
-        });
-      } else if (q.type === 'drag-drop'){
-        const terms = q.terms.slice(), defs = q.definitions.slice(); shuffle(terms); shuffle(defs);
-        html += `\
-<div class="drag-wrap">
-  <div><strong>Terms</strong><div class="tiles" id="tiles"></div></div>
-  <div><strong>Definitions</strong><div class="buckets" id="buckets"></div></div>
-</div>
-<div class="row" style="margin-top:10px; justify-content:flex-end">
-  <button id="submitDD">Submit</button>
-</div>`;
-        qpanel.innerHTML = html;
-
-        const tilesEl   = byId('tiles');
-        const bucketsEl = byId('buckets');
-        const submitBtn = byId('submitDD');
-        const assignment = new Map(); // Map<bucketEl, termOrEmpty>
-
-        // tiles
-        function makeTile(term){
-          const t = document.createElement('div');
-          t.className = 'tile'; t.textContent = term; t.draggable = true; t.dataset.term = term;
-          t.ondragstart = e => e.dataTransfer.setData('text/plain', term);
-          return t;
-        }
-        terms.forEach(term => tilesEl.appendChild(makeTile(term)));
-
-        // accept to buckets
-        defs.forEach(def => {
-          const b = document.createElement('div');
-          b.className = 'bucket'; b.dataset.def = def;
-          b.innerHTML = `<div>${def}</div><div class="chosen small"></div>`;
-          b.ondragover = e => e.preventDefault();
-          b.ondrop = e => {
-            e.preventDefault();
-            if (submitBtn.style.display === 'none') return;
-            const dropped = e.dataTransfer.getData('text/plain'); if (!dropped) return;
-
-            // remove from any other bucket
-            bucketsEl.querySelectorAll('.bucket').forEach(other => {
-              if (other.dataset.term === dropped){
-                assignment.set(other, '');
-                other.dataset.term = '';
-                other.querySelector('.chosen').textContent = '';
-                other.classList.remove('correct', 'wrong');
-              }
-            });
-
-            assignment.set(b, dropped);
-            b.dataset.term = dropped;
-            b.querySelector('.chosen').textContent = dropped;
-            b.classList.remove('correct', 'wrong');
-          };
-          bucketsEl.appendChild(b); assignment.set(b, '');
-        });
-
-        // unassign by dropping back to tiles
-        tilesEl.ondragover = e => e.preventDefault();
-        tilesEl.ondrop = e => {
-          e.preventDefault();
-          if (submitBtn.style.display === 'none') return;
-          const dropped = e.dataTransfer.getData('text/plain'); if (!dropped) return;
-          bucketsEl.querySelectorAll('.bucket').forEach(b => {
-            if (b.dataset.term === dropped){
-              assignment.set(b, '');
-              b.dataset.term = '';
-              b.querySelector('.chosen').textContent = '';
-              b.classList.remove('correct', 'wrong');
-            }
-          });
-        };
-
-        function lockDD(){
-          tilesEl.querySelectorAll('.tile').forEach(t => t.draggable = false);
-          bucketsEl.querySelectorAll('.bucket').forEach(b => {
-            b.classList.add('locked');
-            b.ondragover = null;
-            b.ondrop = null;
-          });
-          tilesEl.ondragover = tilesEl.ondrop = null;
-          submitBtn.style.display = 'none';
-        }
-
-        submitBtn.onclick = () => {
-          const expectedByDef = {};
-          q.correctMatches.forEach((defIdx, termIdx) => {
-            expectedByDef[q.definitions[defIdx]] = q.terms[termIdx];
-          });
-          let all = true;
-          bucketsEl.querySelectorAll('.bucket').forEach(b => {
-            const d = b.dataset.term || '';
-            const e = expectedByDef[b.dataset.def] || '';
-            b.classList.remove('correct', 'wrong');
-            if (d && d === e) b.classList.add('correct');
-            else { b.classList.add('wrong'); all = false; }
-          });
-          lockDD();
-          settleAnswer(all, q.explanation || '');
-        };
-      } else {
-        qpanel.innerHTML = html + `<div class="note">Unsupported question type: ${q.type}</div>`;
-      }
-
-      renderHUD();
-    }
-
-    function answerMC(i){
-      const q   = G.current;
-      const opts = byId('opts').children;
-      for (let k = 0; k < opts.length; k++) opts[k].disabled = true;
-      const correct = (i === q.correct);
-      const addBadge = (btn, good) => {
-        const b = document.createElement('span');
-        b.className = `answer-badge ${good ? 'good' : 'bad'}`;
-        b.textContent = good ? '✓' : '✗';
-        btn.appendChild(b);
-      };
-      if (correct){
-        opts[i].classList.add('good');
-        addBadge(opts[i], true);
-      } else {
-        opts[i].classList.add('bad');
-        if (typeof q.correct === 'number' && opts[q.correct]){
-          opts[q.correct].classList.add('good');
-          addBadge(opts[q.correct], true);
-        }
-      }
-      settleAnswer(correct, q.explanation || '');
-    }
-
-    function settleAnswer(correct, explanation){
-      if (correct){
-        G.streak++;
-        G.score += G.SCORE_PER_CORRECT;
-        G.hp = Math.max(0, G.hp - 1);
-        renderCallout('good', `<span class="title">✅ Correct!</span> ${explanation || ''}`);
-        bossShowState('hit');
-        beep(660, .07, 'square');
-        setTimeout(() => beep(880, .06, 'square'), 70);
-        if (++G.correctForHintCounter >= 3){
-          G.hints++;
-          G.correctForHintCounter -= 3;
-          toast('Bonus hint! ⭐');
-        }
-      } else {
-        G.incorrect.push({ q: G.current });
-        G.streak = 0;
-        G.hearts = Math.max(0, G.hearts - 1);
-        renderCallout('bad', `<span class="title">❌ Not quite.</span> ${explanation || ''}`);
-        playerHitFX();
-        beep(220, .12, 'sawtooth');
-      }
-      renderHUD();
-
-      if (G.hearts <= 0){
-        showOverlay(true);
-        return;
-      }
-      if (G.hp <= 0){
-        bossImg.classList.add('boss-roll-out');
-        bossImg.addEventListener('animationend', () => showOverlay(false), { once:true });
-        return;
-      }
-
-      // last question => end immediately (no Next)
-      if (G.idx >= G.questions.length - 1){
-        finishOrFlee();
-        return;
-      }
-
-      G.waitingNext = true;
-      showNextBtn();
-    }
-
-    function onNext(){
-      if (!G || !G.waitingNext) return;
-      G.idx++;
-      nextQuestion();
-    }
-
-    function finishOrFlee(){
-      bossImg.classList.add('boss-roll-out');
-      bossImg.addEventListener('animationend', () => showOverlay(false, G.hp > 0), { once:true });
-    }
-
-    function onUseHint(){
-      if (!G) return;
-      const q = G.current;
-      if (G.hintUsedThisQuestion){
-        toast('Hint already used on this question.');
-        return;
-      }
-      if (G.hints <= 0){
-        toast('No hints left. Earn more by answering 3 correctly.');
-        return;
-      }
-      if (!q || !q.hint){
-        toast('No hint for this one.');
-        return;
-      }
-      G.hints--;
-      G.hintUsedThisQuestion = true;
-      renderCallout('hint', `<span class="title">💡 Hint:</span> ${q.hint}`);
-      renderHUD();
-    }
-
-    function showOverlay(gameOver, fled = false){
-      const elapsedSec = Math.floor((Date.now() - G.runStart) / 1000);
-      const baseline   = G.questions.length * 12;
-      const timeBonus  = Math.max(0, (baseline - elapsedSec) * 5);
-      const finalScore = G.score + (gameOver ? 0 : timeBonus);
-
-      let summary = '';
-      if (gameOver){
-        summary = `<h3>Game Over</h3>
-          <div class="meta">
-            You reached question ${G.idx + 1} of ${G.questions.length}. Time: ${elapsedSec}s
-          </div>`;
-      } else {
-        const perfect     = (G.incorrect.length === 0 && G.hearts > 0);
-        const earnedStars = fled ? 0 : (perfect ? 2 : 1);
-        state.stars += earnedStars;
-        state.clears[G.id] = true;
-        const ids = Object.keys(window.TTC_DATA.weeks).sort((a, b) => (+a) - (+b));
-        const nextIdx = ids.indexOf(G.id) + 1;
-        if (ids[nextIdx] && !state.unlocked.includes(ids[nextIdx])) state.unlocked.push(ids[nextIdx]);
-        save();
-
-        summary = `
-          <h3>${fled ? 'Boss Fled!' : 'Level Complete! 🎉'}</h3>
-          <div class="meta">
-            ${fled
-              ? 'The boss escaped while you regrouped.'
-              : `Boss defeated with <strong>${G.hearts}</strong> heart(s) left.`}<br>
-            Score: <strong>${G.score}</strong> ${gameOver ? '' : `+ Time Bonus: <strong>${timeBonus}</strong> = <strong>${finalScore}</strong>`}<br>
-            ${fled
-              ? '⭐ <strong>0</strong> (try again for stars)'
-              : `⭐ <strong>${earnedStars}</strong> ${perfect ? '(perfect clear!)' : ''}`} • Time: ${elapsedSec}s
-          </div>`;
-      }
-
-      let review = '';
-      if (G.incorrect.length){
-        let list = '<ul class="review">';
-        G.incorrect.forEach(({ q }) => {
-          list += `<li><strong>Q:</strong> ${q.question}<br><span class="small">${q.explanation || ''}</span></li>`;
-        });
-        list += '</ul>';
-        review = `<details><summary>Review explanations</summary>${list}</details>`;
-      } else {
-        review = `<details><summary>Review explanations</summary><div class="small">Flawless! Nothing to review.</div></details>`;
-      }
-
-      stageOverlay.innerHTML = `
-        <div class="overlay-card">
-          ${summary}
-          ${review}
-          <div class="row" style="margin-top:10px; justify-content:space-between">
-            <button id="overlayNext">Back to Levels</button>
-            <button id="overlayRetry">Replay</button>
-          </div>
-        </div>`;
-      stageOverlay.hidden = false;
-
-      byId('overlayNext').onclick = showLevels;
-      byId('overlayRetry').onclick = () => startLevel(G.id);
-    }
-
-    function onQuit(){
-      if (confirm('Quit this level? Progress for this run will be lost.')) showLevels();
-    }
-
-    function showLevels(){
-      screenIntro.style.display   = 'none';
-      screenResults.style.display = 'none';
-      screenGame.style.display    = 'none';
-      screenLevels.style.display  = '';
-      stageOverlay.hidden         = true;
-      stageOverlay.innerHTML      = '';
-      bossImg.classList.remove('boss-roll-out', 'boss-bounce', 'boss-lunge');
-      matrix?.stop?.();
-      renderLevels();
-    }
-
-    function shuffle(a){
-      for (let i = a.length - 1; i > 0; i--){
-        const j = (Math.random() * (i + 1)) | 0;
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-
-    /* Boot */
-    renderLevels();
-
-    // In debug mode, ?week=7 will auto-open that week’s intro
-    if (DEBUG && DEBUG_WEEK && DATA.weeks[DEBUG_WEEK]) {
-      openIntro(DEBUG_WEEK);
-    }
-  }
-
-})();
+};
