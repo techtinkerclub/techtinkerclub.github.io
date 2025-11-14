@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Curriculum Links — Spring 2026 (Tinkercad)"
+title: ""
 permalink: /curriculum/2025-26/spring/curriculum-links/
 toc: true
 toc_sticky: true
