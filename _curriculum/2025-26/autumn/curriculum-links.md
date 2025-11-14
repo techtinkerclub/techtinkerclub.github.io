@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Curriculum Links — Autumn 2025 (Micro:bit Foundations)"
+title: ""
 permalink: /curriculum/2025-26/autumn/curriculum-links/
 toc: true
 toc_sticky: true
