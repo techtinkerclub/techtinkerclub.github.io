@@ -31,7 +31,7 @@ header:
 
 This week linked biology, science and computing.  
 We began by observing how **fireflies communicate using light** and how they manage to flash in rhythm without a leader.  
-Then we applied the same idea with the **micro:bit radio**, finishing with a lively multiplayer game called *Exploding Ducks!* 🦆💥
+Then we applied the same idea with the **micro:bit radio**, finishing with a lively multiplayer game called *Exploding Ducks!* 
 
 ---
 
