@@ -205,7 +205,7 @@ window.TTC_DATA = {
       ],
       "bossName": "BOOTLOADER BLOB",
       "bossImage": "assets/w1b.png",
-      "story": "The Bootloader Blob camps on the USB bus like a grumpy jelly—slurping half-flashes and burping out mystery .hex files.",
+      "story": "The Bootloader Blob camps on the USB bus like a grumpy jelly, slurping half-flashes and burping out mystery .hex files.",
       "dialog": [
         "Blob: \"Your code has… *gelatinous* dependencies.\"",
         "You: \"Perfect. I’m about to *set* you to 0.\""
@@ -416,7 +416,7 @@ window.TTC_DATA = {
       ],
       "bossName": "RANDOMIZER DICE",
       "bossImage": "assets/w2b.png",
-      "story": "Randomizer Dice claims it landed on 'sideways seven'. Statistically impossible. Also rude.",
+      "story": "Randomizer Dice claims it landed on “sideways seven”. Statistically impossible. Also rude.",
       "dialog": [
         "Dice: \"I only lose one out of six times… per universe.\"",
         "You: \"Great. I brought six universes and a reset button.\""
@@ -629,7 +629,7 @@ window.TTC_DATA = {
       ],
       "bossName": "CONDITION CAT",
       "bossImage": "assets/w3b.png",
-      "story": "Condition Cat debugs by knocking variables off the table. If (cup == on_table) then push(cup).",
+      "story": "Condition Cat debugs by knocking variables off the table. if (cup == on_table) then push(cup).",
       "dialog": [
         "Cat: \"ELSE? I hardly know her.\"",
         "You: \"Prepare to evaluate these claws > your face.\""
@@ -1055,7 +1055,7 @@ window.TTC_DATA = {
       "story": "Loop Goblin winds gears and steals your semicolons. It iterates until morale improves.",
       "dialog": [
         "Goblin: \"FOR-EVER! FOR-EVER!\"",
-        "You: \"break; /* emotionally and literally */\""
+        "You: \"break;  /* emotionally and literally */\""
       ]
     },
     "6": {
@@ -1472,14 +1472,14 @@ window.TTC_DATA = {
       ],
       "bossName": "RADIO RAVEN",
       "bossImage": "assets/w7b.png",
-      "story": "Radio Raven perches on channel 7 and squawks over everyone’s packets at once.",
+      "story": "Radio Raven perches on channel 7 and squawks over everyone’s packets at once. It loves collisions, hates clear airwaves.",
       "dialog": [
         "Raven: \"CAW! I broadcast on *all* groups.\"",
         "You: \"Great, you can hear me say `radio.setGroup(0)` — BYE.\""
       ]
     },
     "8": {
-      "title": "Week 8: Waves, Radio & Logic Review",
+      "title": "Week 8: Waves, Radio & Logic Review — Higher Challenge",
       "description": "Stronger mixed set: KS2 wave science + event logic, functions, counters, timing, thresholds, and coordinates. MCQ + Match only.",
       "locked": false,
       "questions": [
@@ -1712,16 +1712,16 @@ window.TTC_DATA = {
           "hint": "Think: order, choice, repeat, remember."
         }
       ],
-      "bossName": "SYNC FIREFLY SWARM",
+      "bossName": "DEBUG DUCK",
       "bossImage": "assets/w8b.png",
-      "story": "The Sync Firefly Swarm blinks in creepy perfect rhythm… unless your timing maths is solid.",
+      "story": "Debug Duck stares from the edge of your desk, silently judging every bug you haven’t explained out loud yet. It quacks whenever you skip a test.",
       "dialog": [
-        "Fireflies: \"*blink blink* We run on vibes, not clocks.\"",
-        "You: \"Good thing I brought millis(), averages and a spare micro:bit.\""
+        "Duck: \"Quack. Did you *actually* read that error message?\"",
+        "You: \"Fine. I’ll talk through the logic… and de-feather your bugs.\""
       ]
     },
     "9": {
-      "title": "Week 9: Fireflies, Radio & Local Rules",
+      "title": "Week 9: Fireflies, Radio & Local Rules — Higher Challenge",
       "description": "Mixed set: synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates. MCQ + Match only.",
       "locked": false,
       "questions": [
@@ -1940,12 +1940,12 @@ window.TTC_DATA = {
           "hint": "Trace x carefully for each repeat."
         }
       ],
-      "bossName": "DEBUG DRAGON",
+      "bossName": "VOLTAGE VAMPIRE",
       "bossImage": "assets/w9b.png",
-      "story": "Debug Dragon hoards off-by-one errors and breathes fire whenever a loop never ends.",
+      "story": "Voltage Vampire lives in tiny drops and sips millivolts from batteries, LEDs and radio circuits. It loves noisy signals and hates good measurements.",
       "dialog": [
-        "Dragon: \"My favourite snack? Infinite loops.\"",
-        "You: \"Cool, I’m about to `break` your diet.\""
+        "Vampire: \"Mmm… such delicious little voltage dips.\"",
+        "You: \"Enjoy them while you can — I brought proper timing, loops, and a fresh battery.\""
       ]
     }
   }
