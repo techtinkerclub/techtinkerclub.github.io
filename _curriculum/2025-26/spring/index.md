@@ -42,8 +42,6 @@ This term, participants at Tech Tinker Club will use Tinkercad to design 3D mode
 
 ---
 
----
-
 ## Further Details
 
 - 📄 [Term Overview]( /curriculum/2025-26/spring/#week-by-week )  
