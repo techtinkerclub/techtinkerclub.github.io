@@ -14,84 +14,98 @@ header:
 
 {% include back-to-spring.html %}
 
-## Week 1 — Welcome to 3D Design
+## Week 1 — 3D Basics & Navigation
 
-**Focus Concept:** 3D space (x/y/z), navigation, placing and resizing shapes  
-**Mini-Project:** *Personal Name Tag or Keyring*
+**Focus Concept:** 3D space, camera controls and simple shapes  
+**Mini-Project:** *Name Tag / Keyring*
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief and thinking about materials and print constraints.</li>
-    <li><strong>Maths:</strong> Measurement in millimetres, symmetry, pattern and simple parameters.</li>
-    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices and visual balance.</li>
-    <li><strong>Engineering:</strong> Strength, stability and how parts fit together or move.</li>
+    <li><strong>Computing:</strong> Exploring a 3D digital environment and learning how to move the camera.</li>
+    <li><strong>Design &amp; Technology:</strong> Creating a simple product for a user (a readable name tag).</li>
+    <li><strong>Maths:</strong> Informal use of size, scale and position.</li>
+    <li><strong>Art &amp; Design:</strong> Choosing colours, layout and simple decoration.</li>
+    <li><strong>Engineering:</strong> Thinking about thickness so objects are not too flimsy.</li>
   </ul>
 </div>
 
-This week’s session is hands-on and creative. Participants complete a **mini-project** — *Personal Name Tag or Keyring* — to apply new tools and build confidence.
+This week is all about getting comfortable in **3D space**. Participants learn how to orbit, pan and zoom, then place, resize and combine a few simple shapes to make a personalised **name tag or keyring**.
 
 ---
 
 ## Objectives
-- Understand and use this week’s core tools in Tinkercad.  
-- Apply design thinking to make a simple, working model that fits a brief.  
-- Share, discuss and improve designs based on feedback.
+
+- Understand that Tinkercad is a **3D space** with x, y and z directions.  
+- Use **orbit, pan and zoom** to look at a model from different angles.  
+- Place and resize basic shapes on the workplane.  
+- Combine a base shape and text to create a simple name tag or keyring.
 
 ---
 
 ## Success Criteria
-- I can explain what today’s tools do and why I used them.  
-- I can make and adjust a 3D model to fit a simple brief.  
-- I can export or prepare a model for printing (with help if needed).  
+
+- I can move the camera to see my model from different sides.  
+- I can place shapes on the workplane and change their size.  
+- I can make a name tag or keyring that clearly shows a name or initials.  
 
 ---
 
 ## Key Vocabulary
-- **3D workspace** — the virtual space where you place and move 3D shapes.
-- **Orbit** — moving the camera around your model to see it from different sides.
-- **Pan** — sliding the view left, right, up or down without rotating it.
-- **Zoom** — moving the camera closer to or further from the model.
-- **Shape** — a 3D object like a box, cylinder or sphere used to build models.
-- **Resize** — change the size of a shape by stretching or shrinking it.
-- **Grid** — the pattern of lines on the workplane that helps you measure and line things up.
-- **Snap** — a setting that makes shapes move or resize in fixed steps, like 1 mm at a time.
+
+- **Orbit** — moving the camera around a model to see it from different sides.  
+- **Pan** — sliding the camera left, right, up or down.  
+- **Zoom** — moving the camera closer to or further from a model.  
+- **Workplane** — the flat “floor” where you place shapes.  
+- **Group** — joining shapes together so they move as one object.  
 
 ---
 
-## Part A — Explore 3D Space
-- Tour the Tinkercad workspace (view cube, orbit, pan, zoom).
-- Identify the X, Y and Z axes and how the workplane sits in 3D space.
+## Part A — Explore the 3D Space
 
-## Part B — Make: Name Tag or Keyring
-- Place basic shapes and text to create a simple tag.
-- Resize shapes and add a hole so it can go on a keyring or lanyard.
+- Show the difference between **orbit, pan and zoom** using a simple cube.  
+- Let participants drop a few shapes onto the workplane and practise looking at them from different angles.  
+- Highlight how the **view cube** and **home view** buttons help if they feel “lost”.  
+
+---
+
+## Part B — Make: Name Tag / Keyring
+
+- Add a flat base shape (box or cylinder) and resize it so it could fit as a small tag.  
+- Add **text shapes** for a name or initials; resize so the text is readable.  
+- Optional: add a small cylinder or hole near the edge for a keyring loop.  
+
+> Encourage them to think about a real user — themselves, a friend or a family member.
+
+---
 
 ## Part C — Extend & Share
-- Add colours or small decorations that don’t make the tag too fragile.
-- Show designs to a partner and give one suggestion for improvement.
+
+- Add one or two simple decorations (symbols, small shapes) without over‑complicating the model.  
+- Invite a quick “mini gallery” where learners show their tag and explain who it is for.  
+
 ---
 
 ## Resources
+
 - **Tinkercad:** <https://www.tinkercad.com>  
-- **Official Lessons Library:** <https://www.tinkercad.com/learn>  
-- **Codeblocks (Week 8):** <https://www.tinkercad.com/codeblocks>  
+- **Tinkercad Lessons — Getting started:** <https://www.tinkercad.com/learn>  
 
 ---
 
 ## Equipment
-- Laptops or Chromebooks with internet access and Tinkercad accounts  
-- Mice (recommended for easier orbit, pan and zoom)  
-- Optional: 3D printer access for selected models  
-- Headphones (if watching short videos)  
+
+- Laptops / Chromebooks with internet access and Tinkercad accounts  
+- Mouse for each device (highly recommended)  
+- Projector or large screen for live demo  
 
 ---
 
 ## Safety & Setup Notes
-- Supervise slicing and printing; only adults operate printers and hot equipment.  
-- Avoid overly thin parts that can snap or become sharp.  
-- Encourage careful mouse and keyboard use and short screen breaks where possible.  
+
+- Check logins before the session so time is not lost.  
+- Encourage good posture and short breaks from the screen when needed.  
+- If you plan to print later, remind participants that tiny details might not print well.  
 
 ---
 

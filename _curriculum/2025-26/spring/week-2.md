@@ -14,82 +14,92 @@ header:
 
 {% include back-to-spring.html %}
 
-## Week 2 — Align, Group, Holes
+## Week 2 — Align & Group (Character Design)
 
-**Focus Concept:** Combining shapes precisely with align, group and holes  
-**Mini-Project:** *Stamp or Cutter (not for real food)*
+**Focus Concept:** Aligning, grouping and arranging shapes to make a simple character  
+**Mini-Project:** *Simple Character*
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief and thinking about materials and print constraints.</li>
-    <li><strong>Maths:</strong> Measurement in millimetres, symmetry, pattern and simple parameters.</li>
-    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices and visual balance.</li>
-    <li><strong>Engineering:</strong> Strength, stability and how parts fit together or move.</li>
+    <li><strong>Computing:</strong> Using alignment tools to control layout rather than “eyeballing”.</li>
+    <li><strong>Design &amp; Technology:</strong> Building up a product (a character token) from parts.</li>
+    <li><strong>Maths:</strong> Symmetry and spacing between features.</li>
+    <li><strong>Art &amp; Design:</strong> Expression, proportion and visual style.</li>
+    <li><strong>Engineering:</strong> Keeping bases flat and stable so the model can stand or sit on a surface.</li>
   </ul>
 </div>
 
-This week’s session is hands-on and creative. Participants complete a **mini-project** — *Stamp or Cutter (not for real food)* — to apply new tools and build confidence.
+This week, participants use **align** and **group** to place eyes, mouth and other features accurately, building a simple 3D character.
 
 ---
 
 ## Objectives
-- Understand and use this week’s core tools in Tinkercad.  
-- Apply design thinking to make a simple, working model that fits a brief.  
-- Share, discuss and improve designs based on feedback.
+
+- Use the **align** tool to position features accurately.  
+- **Group** shapes to form a single object.  
+- Design and build a simple character with a clear face and body.
 
 ---
 
 ## Success Criteria
-- I can explain what today’s tools do and why I used them.  
-- I can make and adjust a 3D model to fit a simple brief.  
-- I can export or prepare a model for printing (with help if needed).  
+
+- I can use the align tool to centre or line up shapes.  
+- I can group shapes so they move as one.  
+- I can design a simple character whose features are spaced sensibly.  
 
 ---
 
 ## Key Vocabulary
-- **Align** — a precision tool that lines shapes up neatly along an axis.
-- **Group** — join shapes together so they behave as one object.
-- **Ungroup** — split a grouped object back into separate shapes.
-- **Hole** — a special cutting shape used to remove material from another shape.
-- **Solid** — a normal 3D shape that adds material to your model.
-- **Boolean operation** — a way of adding or cutting shapes by combining solids and holes.
+
+- **Align** — line shapes up along edges or centres.  
+- **Group** — join shapes together so they behave like one object.  
+- **Symmetry** — when two sides of something match in shape and size.  
 
 ---
 
 ## Part A — Explore Align & Group
-- Practise aligning shapes along the X, Y and Z axes.
-- Group and ungroup shapes to see how they combine and separate.
 
-## Part B — Make: Stamp or Cutter
-- Use text or a simple icon shape to create a raised or recessed pattern.
-- Add a handle or base so it is easy to push down.
+- Demonstrate aligning two eyes on a face shape.  
+- Show how grouping keeps features together when the body is moved.  
+- Let learners practise aligning a few simple shapes in rows or columns.  
+
+---
+
+## Part B — Make: Simple Character
+
+- Start from a basic body shape (e.g. cylinder, box, or rounded shape).  
+- Add eyes, mouth and optional features (hat, ears, arms) using smaller shapes.  
+- Use **align** to centre eyes or line up details on both sides.  
+
+---
 
 ## Part C — Extend & Share
-- Try curved shapes (like cylinders) for the base.
-- Discuss why we do not use these prints with real food at school.
+
+- Add a simple base or stand so the character can sit on a shelf.  
+- Encourage participants to name their character and briefly explain its design.  
+
 ---
 
 ## Resources
+
 - **Tinkercad:** <https://www.tinkercad.com>  
-- **Official Lessons Library:** <https://www.tinkercad.com/learn>  
-- **Codeblocks (Week 8):** <https://www.tinkercad.com/codeblocks>  
+- **Tinkercad — Place, move and see your design:** <https://www.tinkercad.com/learn>  
 
 ---
 
 ## Equipment
-- Laptops or Chromebooks with internet access and Tinkercad accounts  
-- Mice (recommended for easier orbit, pan and zoom)  
-- Optional: 3D printer access for selected models  
-- Headphones (if watching short videos)  
+
+- Laptops / Chromebooks with internet  
+- Mouse per device  
+- Projector or large screen  
 
 ---
 
 ## Safety & Setup Notes
-- Supervise slicing and printing; only adults operate printers and hot equipment.  
-- Avoid overly thin parts that can snap or become sharp.  
-- Encourage careful mouse and keyboard use and short screen breaks where possible.  
+
+- Remind learners not to crowd the screen — work in pairs at most if sharing devices.  
+- If prints will be made later, avoid very thin arms or necks that could easily snap.  
 
 ---
 

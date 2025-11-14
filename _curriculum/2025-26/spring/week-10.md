@@ -14,81 +14,96 @@ header:
 
 {% include back-to-spring.html %}
 
-## Week 10 — Capstone Showcase
+## Week 10 — Final Project (Structured Choice)
 
-**Focus Concept:** Iterate, document and present a product  
-**Mini-Project:** *Final Print or Best‑of‑Term Model*
+**Focus Concept:** Planning, improving and presenting a chosen design  
+**Mini-Project:** *Improved Car / Tower / Rocket*
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief and thinking about materials and print constraints.</li>
-    <li><strong>Maths:</strong> Measurement in millimetres, symmetry, pattern and simple parameters.</li>
-    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices and visual balance.</li>
-    <li><strong>Engineering:</strong> Strength, stability and how parts fit together or move.</li>
+    <li><strong>Computing:</strong> Using Tinkercad and SimLab (where appropriate) to refine a design.</li>
+    <li><strong>Design &amp; Technology:</strong> Following a simple brief and iterating a product.</li>
+    <li><strong>Maths:</strong> Adjusting measurements, proportions and comparisons.</li>
+    <li><strong>Science &amp; Engineering:</strong> Applying ideas about strength, motion or stability.</li>
+    <li><strong>Art &amp; Design:</strong> Finishing touches, colour and presentation.</li>
   </ul>
 </div>
 
-This week’s session is hands-on and creative. Participants complete a **mini-project** — *Final Print or Best‑of‑Term Model* — to apply new tools and build confidence.
+In the final week, participants choose one of the term’s themes — **car**, **tower**, or **rocket / revolved object** — and create an improved, “best‑of‑term” version of their design.
 
 ---
 
 ## Objectives
-- Understand and use this week’s core tools in Tinkercad.  
-- Apply design thinking to make a simple, working model that fits a brief.  
-- Share, discuss and improve designs based on feedback.
+
+- Choose a focus (car, tower or rocket / revolved object).  
+- Plan at least one clear improvement to make.  
+- Build, test (where appropriate) and present the final design.  
 
 ---
 
 ## Success Criteria
-- I can explain what today’s tools do and why I used them.  
-- I can make and adjust a 3D model to fit a simple brief.  
-- I can export or prepare a model for printing (with help if needed).  
+
+- I can explain which design I chose and why.  
+- I can describe at least one improvement I made.  
+- I can talk about how my design links to motion or stability.  
 
 ---
 
 ## Key Vocabulary
-- **Prototype** — a first version of a product used to test ideas and improvements.
-- **Iteration** — making small changes and improvements to a design over several versions.
-- **Evaluate** — look carefully at a design to decide what works well and what needs changing.
-- **Brief** — a short description of what a design should do and who it is for.
-- **Audience** — the people who will use or look at your final product.
+
+- **Iterate** — improve a design through small changes.  
+- **Prototype** — an early version of a design used for testing.  
+- **Brief** — a simple description of what the design should do.  
 
 ---
 
-## Part A — Plan & Iterate
-- Choose a favourite model from the term or start a small new one based on a short brief.
-- Decide one or two changes that would make the design better for its audience.
+## Part A — Plan
 
-## Part B — Make: Finalise & Export
-- Update the design, then prepare it for printing or for display on screen.
-- Create a simple one‑slide poster or title card to introduce the model.
+- Offer three structured choices:  
+  - **Car:** improve motion or shape.  
+  - **Tower:** improve stability in SimLab.  
+  - **Rocket / Revolved object:** improve shape, detail or practicality.  
+- Ask learners to quickly sketch or explain what they will change.  
 
-## Part C — Showcase & Reflect
-- Share models in a mini‑gallery or short presentations.
-- Reflect on what skills were gained from Autumn’s Micro:bit term to Spring’s Tinkercad term.
+---
+
+## Part B — Make & Test
+
+- Give most of the session for building and refining.  
+- Cars and towers can be tested in **SimLab** to check motion or earthquake performance.  
+- Rockets or pendants can be checked for sensible thickness and proportions.  
+
+---
+
+## Part C — Share & Reflect
+
+- Run a short, informal “show and tell” where each participant presents:  
+  - their chosen project  
+  - the main change they made  
+  - what worked well and what they would try next.  
+
 ---
 
 ## Resources
+
 - **Tinkercad:** <https://www.tinkercad.com>  
-- **Official Lessons Library:** <https://www.tinkercad.com/learn>  
-- **Codeblocks (Week 8):** <https://www.tinkercad.com/codeblocks>  
+- **Tinkercad SimLab overview:** <https://www.tinkercad.com/blog/simlab>  
 
 ---
 
 ## Equipment
-- Laptops or Chromebooks with internet access and Tinkercad accounts  
-- Mice (recommended for easier orbit, pan and zoom)  
-- Optional: 3D printer access for selected models  
-- Headphones (if watching short videos)  
+
+- Laptops / Chromebooks with internet  
+- Mouse per device  
+- Optional: 3D printer access for a small number of chosen models  
 
 ---
 
 ## Safety & Setup Notes
-- Supervise slicing and printing; only adults operate printers and hot equipment.  
-- Avoid overly thin parts that can snap or become sharp.  
-- Encourage careful mouse and keyboard use and short screen breaks where possible.  
+
+- If printing, follow school policies on what objects are appropriate (no weapons or unsafe shapes).  
+- Encourage kind, constructive feedback during sharing.  
 
 ---
 

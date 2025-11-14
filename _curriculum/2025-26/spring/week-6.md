@@ -14,81 +14,92 @@ header:
 
 {% include back-to-spring.html %}
 
-## Week 6 — Mechanisms: Axles & Wheels
+## Week 6 — Motion, Gravity & Friction (SimLab)
 
-**Focus Concept:** Designing rotating parts and clearances  
-**Mini-Project:** *Spinning Top or Wheel & Axle Toy*
+**Focus Concept:** Exploring how objects slide, roll and collide in Tinkercad SimLab  
+**Mini-Project:** *Sliding & Rolling Experiments*
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief and thinking about materials and print constraints.</li>
-    <li><strong>Maths:</strong> Measurement in millimetres, symmetry, pattern and simple parameters.</li>
-    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices and visual balance.</li>
-    <li><strong>Engineering:</strong> Strength, stability and how parts fit together or move.</li>
+    <li><strong>Computing:</strong> Using a physics simulation tool (SimLab) to test designs virtually.</li>
+    <li><strong>Science:</strong> Observing forces, gravity, friction and collisions.</li>
+    <li><strong>Design &amp; Technology:</strong> Testing shapes and surfaces before making real models.</li>
+    <li><strong>Maths:</strong> Comparing distances, speeds and slopes informally.</li>
+    <li><strong>Engineering:</strong> Thinking about which shapes move smoothly and which get stuck.</li>
   </ul>
 </div>
 
-This week’s session is hands-on and creative. Participants complete a **mini-project** — *Spinning Top or Wheel & Axle Toy* — to apply new tools and build confidence.
+This week introduces **Tinkercad SimLab**. Instead of building something to print, participants build simple test rigs and watch how shapes slide, roll and bump into each other.
 
 ---
 
 ## Objectives
-- Understand and use this week’s core tools in Tinkercad.  
-- Apply design thinking to make a simple, working model that fits a brief.  
-- Share, discuss and improve designs based on feedback.
+
+- Open a design in **SimLab** and run a basic simulation.  
+- Compare how different shapes move (sliding vs rolling).  
+- Talk about gravity and friction using simple language.  
 
 ---
 
 ## Success Criteria
-- I can explain what today’s tools do and why I used them.  
-- I can make and adjust a 3D model to fit a simple brief.  
-- I can export or prepare a model for printing (with help if needed).  
+
+- I can start a SimLab simulation and watch it play.  
+- I can say whether an object slid, rolled or toppled — and why.  
+- I can tweak my design (e.g. ramp angle or shape) to change the motion.  
 
 ---
 
 ## Key Vocabulary
-- **Axle** — a rod or shaft that a wheel or other part spins around.
-- **Hub** — the central part of a wheel that connects to the axle.
-- **Clearance** — the extra space between parts so they can move without rubbing.
-- **Friction** — the force that resists motion when two surfaces touch.
-- **Bearing (simple)** — a simple way of supporting an axle so it can spin more smoothly.
+
+- **SimLab** — Tinkercad’s physics simulation space.  
+- **Gravity** — the force that pulls things down.  
+- **Friction** — the force that slows sliding and rolling surfaces.  
+- **Ramp** — a sloping surface that changes height gradually.  
 
 ---
 
-## Part A — Explore Motion by Design
-- Compare a tight fit and a loose fit around an axle.
-- Discuss when friction is helpful (staying in place) and when it gets in the way (spinning).
+## Part A — Explore SimLab
 
-## Part B — Make: Spinner or Wheel Toy
-- Design a central hub with an axle and balanced arms or a wheel shape.
-- Think about where to leave clearance so the parts can move.
+- Show how to switch from normal Tinkercad into **SimLab** for a simple scene.  
+- Drop a block and a cylinder onto a ramp and predict what will happen.  
+- Run the simulation and compare with predictions.  
+
+---
+
+## Part B — Make: Sliding & Rolling Experiments
+
+- Let learners build their own small ramps and obstacle courses.  
+- Test different shapes (cubes, cylinders, spheres) and observe how they move.  
+- Encourage them to make small changes (steeper ramp, rougher surface, different shapes) and test again.  
+
+---
 
 ## Part C — Extend & Share
-- Optional: Add a small handle or cap so it is easier to spin.
-- Talk about which parts might wear out first if heavily used.
+
+- Try simple “races”: which object reaches the bottom first?  
+- Ask: “What changed when you made the ramp steeper?” or “Which shape rolls best and why?”  
+
 ---
 
 ## Resources
+
+- **Tinkercad SimLab overview:** <https://www.tinkercad.com/blog/simlab>  
 - **Tinkercad:** <https://www.tinkercad.com>  
-- **Official Lessons Library:** <https://www.tinkercad.com/learn>  
-- **Codeblocks (Week 8):** <https://www.tinkercad.com/codeblocks>  
 
 ---
 
 ## Equipment
-- Laptops or Chromebooks with internet access and Tinkercad accounts  
-- Mice (recommended for easier orbit, pan and zoom)  
-- Optional: 3D printer access for selected models  
-- Headphones (if watching short videos)  
+
+- Laptops / Chromebooks with internet  
+- Mouse per device  
 
 ---
 
 ## Safety & Setup Notes
-- Supervise slicing and printing; only adults operate printers and hot equipment.  
-- Avoid overly thin parts that can snap or become sharp.  
-- Encourage careful mouse and keyboard use and short screen breaks where possible.  
+
+- Make clear that this is a **virtual** experiment, but ideas link to real‑world ramps and rolling objects.  
+- Encourage learners to run short simulations and reset often, rather than making huge, complex scenes that become confusing.  
 
 ---
 

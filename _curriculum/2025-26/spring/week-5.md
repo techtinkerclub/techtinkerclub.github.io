@@ -14,80 +14,92 @@ header:
 
 {% include back-to-spring.html %}
 
-## Week 5 — Shape Generators & Scribble
+## Week 5 — Sketch & Revolve (2D → 3D)
 
-**Focus Concept:** Custom forms using shape generators and Scribble  
-**Mini-Project:** *Custom Badge or Pendant*
+**Focus Concept:** Using Sketch and Revolve to create smooth curved 3D forms  
+**Mini-Project:** *Revolved Rocket / Pendant*
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief and thinking about materials and print constraints.</li>
-    <li><strong>Maths:</strong> Measurement in millimetres, symmetry, pattern and simple parameters.</li>
-    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices and visual balance.</li>
-    <li><strong>Engineering:</strong> Strength, stability and how parts fit together or move.</li>
+    <li><strong>Computing:</strong> Turning 2D sketches into 3D objects using tools like Revolve.</li>
+    <li><strong>Design &amp; Technology:</strong> Designing simple products such as bottles, rockets or pendants.</li>
+    <li><strong>Maths:</strong> Rotational symmetry and profiles.</li>
+    <li><strong>Art &amp; Design:</strong> Creating smooth, flowing shapes from simple outlines.</li>
+    <li><strong>Engineering:</strong> Considering wall thickness and stability for printed parts.</li>
   </ul>
 </div>
 
-This week’s session is hands-on and creative. Participants complete a **mini-project** — *Custom Badge or Pendant* — to apply new tools and build confidence.
+This week participants use the **Sketch** tool to draw a 2D profile, then use **Revolve** to spin it into a 3D shape such as a rocket body, bottle or pendant.
 
 ---
 
 ## Objectives
-- Understand and use this week’s core tools in Tinkercad.  
-- Apply design thinking to make a simple, working model that fits a brief.  
-- Share, discuss and improve designs based on feedback.
+
+- Create a simple, closed **profile sketch**.  
+- Use **Revolve** to turn that sketch into a solid 3D object.  
+- Adjust proportions so the final model looks sensible and stable.  
 
 ---
 
 ## Success Criteria
-- I can explain what today’s tools do and why I used them.  
-- I can make and adjust a 3D model to fit a simple brief.  
-- I can export or prepare a model for printing (with help if needed).  
+
+- I can draw a profile that Revolve can turn into a solid shape.  
+- I can choose a good axis and angle for the revolve.  
+- I can tweak my design so it looks intentional and usable.  
 
 ---
 
 ## Key Vocabulary
-- **Shape generator** — a special shape whose form changes when you adjust sliders or numbers.
-- **Parameters** — the values you change to control a generator’s size, count or pattern.
-- **Scribble** — a tool that turns a hand‑drawn outline into a 3D shape.
-- **Profile** — the outline or side‑view shape that helps define an object.
+
+- **Sketch** — a 2D drawing used as the basis for a 3D model.  
+- **Profile** — the outline that will be revolved.  
+- **Revolve** — spin a profile around an axis to make a 3D object.  
+- **Axis** — the line the sketch spins around.  
 
 ---
 
-## Part A — Explore Generators & Scribble
-- Adjust a shape generator’s parameters to see how the form changes.
-- Use Scribble to draw a simple outline and turn it into a 3D piece.
+## Part A — Explore Sketch
 
-## Part B — Make: Badge or Pendant
-- Combine generators and standard shapes to form a base.
-- Add raised text or symbols and a hole for a chain or lanyard.
+- Demonstrate how to open the Sketch tool and draw a simple side‑on outline.  
+- Show how to make sure the profile is **closed** (no gaps).  
+- Let participants practise drawing a basic cup or rocket profile.  
+
+---
+
+## Part B — Make: Revolved Rocket / Pendant
+
+- Learners choose whether to design a small rocket body, bottle, cup or pendant.  
+- They draw a profile, then use **Revolve** to create the 3D form.  
+- Adjust scale and proportions to make the design look practical.  
+
+---
 
 ## Part C — Extend & Share
-- Discuss which features might be too thin or fragile when printed.
-- Optional: Design a second version that is stronger or simpler.
+
+- Add small extra details (fins, loop for pendant, simple base) using normal Tinkercad shapes.  
+- Invite learners to show their profile and final 3D shape side by side.  
+
 ---
 
 ## Resources
+
+- **Tinkercad — Sketch & Revolve overview:** <https://www.tinkercad.com/blog/sketch-revolve>  
 - **Tinkercad:** <https://www.tinkercad.com>  
-- **Official Lessons Library:** <https://www.tinkercad.com/learn>  
-- **Codeblocks (Week 8):** <https://www.tinkercad.com/codeblocks>  
 
 ---
 
 ## Equipment
-- Laptops or Chromebooks with internet access and Tinkercad accounts  
-- Mice (recommended for easier orbit, pan and zoom)  
-- Optional: 3D printer access for selected models  
-- Headphones (if watching short videos)  
+
+- Laptops / Chromebooks with internet  
+- Mouse per device  
 
 ---
 
 ## Safety & Setup Notes
-- Supervise slicing and printing; only adults operate printers and hot equipment.  
-- Avoid overly thin parts that can snap or become sharp.  
-- Encourage careful mouse and keyboard use and short screen breaks where possible.  
+
+- For prints, avoid very thin edges or sharp points that could snap or be uncomfortable to touch.  
+- Remind learners to keep model sizes sensible to avoid long print times.  
 
 ---
 

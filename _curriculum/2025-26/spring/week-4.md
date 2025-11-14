@@ -14,81 +14,91 @@ header:
 
 {% include back-to-spring.html %}
 
-## Week 4 — Mirror & Symmetry
+## Week 4 — Duplicate, Patterns & Basic Mirror
 
-**Focus Concept:** Mirroring shapes and designing with bilateral symmetry  
+**Focus Concept:** Repetition and simple symmetry in 3D designs  
 **Mini-Project:** *Symmetric Creature or Rocket*
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> Using a digital 3D environment and (in Week 8) Codeblocks to generate geometry.</li>
-    <li><strong>Design &amp; Technology:</strong> Iterating models to meet a brief and thinking about materials and print constraints.</li>
-    <li><strong>Maths:</strong> Measurement in millimetres, symmetry, pattern and simple parameters.</li>
-    <li><strong>Art &amp; Design:</strong> Aesthetics, colour choices and visual balance.</li>
-    <li><strong>Engineering:</strong> Strength, stability and how parts fit together or move.</li>
+    <li><strong>Computing:</strong> Using duplicate and mirror as “manual loops” for repeated parts.</li>
+    <li><strong>Design &amp; Technology:</strong> Planning and building up designs from repeatable modules.</li>
+    <li><strong>Maths:</strong> Lines of symmetry and repeated patterns.</li>
+    <li><strong>Art &amp; Design:</strong> Balance, rhythm and repeated decorative elements.</li>
+    <li><strong>Engineering:</strong> Keeping a design balanced so it would stand or move straight.</li>
   </ul>
 </div>
 
-This week’s session is hands-on and creative. Participants complete a **mini-project** — *Symmetric Creature or Rocket* — to apply new tools and build confidence.
+This week participants use **duplicate** and **mirror** to build a symmetric creature or rocket, thinking about balance and repeated details.
 
 ---
 
 ## Objectives
-- Understand and use this week’s core tools in Tinkercad.  
-- Apply design thinking to make a simple, working model that fits a brief.  
-- Share, discuss and improve designs based on feedback.
+
+- Use **duplicate** to copy shapes quickly.  
+- Use **mirror** to create simple bilateral symmetry.  
+- Apply repetition and symmetry to a creature or rocket design.  
 
 ---
 
 ## Success Criteria
-- I can explain what today’s tools do and why I used them.  
-- I can make and adjust a 3D model to fit a simple brief.  
-- I can export or prepare a model for printing (with help if needed).  
+
+- I can duplicate shapes instead of rebuilding them from scratch.  
+- I can mirror parts so the left and right sides match.  
+- My design looks balanced and roughly symmetric.  
 
 ---
 
 ## Key Vocabulary
-- **Mirror** — a tool that flips a shape to make a reflected copy.
-- **Symmetry** — when parts of a design match across a line or plane.
-- **Axis** — an imaginary line used for rotation or mirroring (X, Y or Z).
-- **Plane** — a flat 2D surface that can be used as a mirror or slicing line.
-- **Balance** — how weight or visual detail is shared so a design does not look lopsided.
+
+- **Duplicate** — make an exact copy of a selected shape.  
+- **Mirror** — flip a shape across a chosen axis.  
+- **Axis** — an imaginary line the mirror tool uses to flip shapes.  
+- **Symmetry** — when both sides of a shape match.  
 
 ---
 
-## Part A — Explore Mirror Tool
-- Mirror simple shapes across the X, Y or Z axis.
-- Combine Align and Mirror for neat, even designs.
+## Part A — Explore Duplicate & Mirror
 
-## Part B — Make: Creature or Rocket
-- Build half of a creature or rocket and then mirror it to finish the other side.
-- Check that the base is flat so the model could stand or print.
+- Demonstrate duplicating a single block into a row or stack.  
+- Show how mirroring an arm, fin or eye can create a symmetric pair.  
+- Let participants practise mirroring simple pairs of shapes across a centre line.  
+
+---
+
+## Part B — Make: Symmetric Creature or Rocket
+
+- Start with a central body (creature torso or rocket fuselage).  
+- Add one side feature (arm, fin, eye, booster), then **duplicate and mirror** it.  
+- Encourage learners to keep checking the design from all angles.  
+
+---
 
 ## Part C — Extend & Share
-- Add small, deliberate asymmetries for character (like a scar or different eye).
-- Discuss how symmetry helps with stability and appearance.
+
+- Add repeated decorative elements (windows, spots, stripes) using duplicate.  
+- Ask participants to show where the line of symmetry is on their model.  
+
 ---
 
 ## Resources
+
 - **Tinkercad:** <https://www.tinkercad.com>  
-- **Official Lessons Library:** <https://www.tinkercad.com/learn>  
-- **Codeblocks (Week 8):** <https://www.tinkercad.com/codeblocks>  
 
 ---
 
 ## Equipment
-- Laptops or Chromebooks with internet access and Tinkercad accounts  
-- Mice (recommended for easier orbit, pan and zoom)  
-- Optional: 3D printer access for selected models  
-- Headphones (if watching short videos)  
+
+- Laptops / Chromebooks with internet  
+- Mouse per device  
 
 ---
 
 ## Safety & Setup Notes
-- Supervise slicing and printing; only adults operate printers and hot equipment.  
-- Avoid overly thin parts that can snap or become sharp.  
-- Encourage careful mouse and keyboard use and short screen breaks where possible.  
+
+- For any prints, avoid very thin, spiky parts that could break or be unsafe.  
+- Remind learners to save regularly and keep filenames meaningful.  
 
 ---
 
