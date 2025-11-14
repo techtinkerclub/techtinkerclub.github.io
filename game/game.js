@@ -29,6 +29,11 @@
     setTimeout(()=>waitForData(cb,tries+1),50);
   }
 
+   // --- DEBUG MODE DETECTION ---
+   const params = new URLSearchParams(window.location.search);
+   const DEBUG = params.get("debug") === "1";
+
+
   /* Default micro-stories if not supplied */
   const STORY_BOOK = {
     "1": { story:`The Bootloader Blob camps on the USB bus and eats half-flashed .hex files.`,
@@ -45,7 +50,54 @@
       dialog:[`Specter: "Booolean logic scares me."`,`You: "Good. I brought XOR-cise equipment."`] },
   };
 
-  function initGame(){
+     function showDebugWeekSelector() {
+       const container = document.getElementById("game");
+       container.innerHTML = `
+           <div class="debug-menu">
+               <h2>DEBUG MODE — Jump to Week</h2>
+               <p>Select a week to load its boss & questions instantly.</p>
+               <div class="debug-weeks"></div>
+           </div>
+       `;
+   
+       const wrap = container.querySelector(".debug-weeks");
+   
+       Object.keys(window.TTC_DATA.weeks).forEach(wk => {
+           const btn = document.createElement("button");
+           btn.textContent = "Week " + wk;
+           btn.onclick = () => startBattle(Number(wk));   
+           wrap.appendChild(btn);
+       });
+   
+       // Styling
+       const style = document.createElement("style");
+       style.textContent = `
+       .debug-menu {
+           padding: 20px;
+           text-align: center;
+           background: rgba(255,255,255,0.9);
+           border: 2px solid #444;
+           border-radius: 10px;
+           margin: 20px;
+       }
+       .debug-weeks button {
+           margin: 6px;
+           padding: 10px 14px;
+           font-size: 16px;
+           cursor: pointer;
+       }
+       `;
+       document.head.appendChild(style);
+   }
+
+   
+   function initGame(){
+      
+      if (DEBUG) {
+          showDebugWeekSelector();
+          return; // Skip normal start
+      }
+
     /* Stage + HUD */
     const stageEl      = byId('stage');
     const bossImg      = byId('bossSprite');
