@@ -79,7 +79,7 @@ on button A pressed:
     show the chosen activity
 ```
 
-**Blocks version (MakeCode)**
+### Blocks version (MakeCode)
 
 <div class="makecode-embed">
   <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
@@ -92,7 +92,6 @@ on button A pressed:
     </iframe>
   </div>
 </div>
-```
 
 ### Teaching Steps (Part A)
 
@@ -125,21 +124,6 @@ on shake:
     pick a random number 0–2
     read the image at that position
     show that image
-```
-
-Blocks version (MakeCode):
-
-```blocks
-let list: Image[] = []
-basic.showIcon(IconNames.Yes)
-list = [
-    images.iconImage(IconNames.Target),
-    images.iconImage(IconNames.Square),
-    images.iconImage(IconNames.Scissors)
-]
-input.onGesture(Gesture.Shake, function () {
-    list[randint(0, 2)].showImage(0)
-})
 ```
 
 ---
@@ -205,47 +189,6 @@ forever:
     -- 5. timing --
     change ticks by 1
     pause 1000 ms
-```
-
-Blocks version (MakeCode – full Crashy Bird):
-
-```blocks
-let emptyObstacleY = 0
-let ticks = 0
-let bird: game.LedSprite = null
-let obstacles: game.LedSprite[] = []
-bird = game.createSprite(0, 2)
-bird.set(LedSpriteProperty.Blink, 300)
-input.onButtonPressed(Button.A, function () {
-    bird.change(LedSpriteProperty.Y, -1)
-})
-input.onButtonPressed(Button.B, function () {
-    bird.change(LedSpriteProperty.Y, 1)
-})
-basic.forever(function () {
-    while (obstacles.length > 0 && obstacles[0].get(LedSpriteProperty.X) == 0) {
-        obstacles.removeAt(0).delete()
-    }
-    for (let obstacle2 of obstacles) {
-        obstacle2.change(LedSpriteProperty.X, -1)
-    }
-    if (ticks % 3 == 0) {
-        emptyObstacleY = Math.randomRange(0, 4)
-        for (let row = 0; row <= 4; row++) {
-            if (row != emptyObstacleY) {
-                obstacles.push(game.createSprite(4, row))
-            }
-        }
-    }
-    for (let obstacle3 of obstacles) {
-        if (obstacle3.get(LedSpriteProperty.X) == bird.get(LedSpriteProperty.X) &&
-            obstacle3.get(LedSpriteProperty.Y) == bird.get(LedSpriteProperty.Y)) {
-            game.gameOver()
-        }
-    }
-    ticks += 1
-    basic.pause(1000)
-})
 ```
 
 ---
@@ -383,7 +326,5 @@ Ticks increases every cycle. The pause slows the game to a playable speed.
 - “Where do we loop through the entire list?”  
 
 ---
-
-<script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
 
 {% include back-to-autumn.html %}
