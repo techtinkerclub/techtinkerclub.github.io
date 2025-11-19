@@ -66,4 +66,7 @@ defaults:
       sidebar:
         nav: "curriculum"
 
+  makecode:
+    home_url: https://makecode.com/
+
 markdown: kramdown
