@@ -388,6 +388,6 @@ Ticks increases every cycle. The pause slows the game to a playable speed.
 
 ---
 
-<script src="https://makecode.microbit.org/--docs.js"></script>
+<script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
 
 {% include back-to-autumn.html %}
