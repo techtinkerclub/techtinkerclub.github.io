@@ -79,6 +79,25 @@ on button A pressed:
     show the chosen activity
 ```
 
+Blocks version (MakeCode):
+
+```blocks
+let choice = 0
+let options: string[] = []
+options = [
+"PE with Joe",
+"watch a movie",
+"play a board game",
+"tidy our rooms",
+"learn a song",
+"bake a cake"
+]
+input.onButtonPressed(Button.A, function () {
+    choice = randint(0, options.length - 1)
+    basic.showString("" + options[choice])
+})
+```
+
 ### Teaching Steps (Part A)
 
 1. Spoken list: “pizza, pasta, salad…” → explain index positions.  
@@ -112,6 +131,21 @@ on shake:
     show that image
 ```
 
+Blocks version (MakeCode):
+
+```blocks
+let list: Image[] = []
+basic.showIcon(IconNames.Yes)
+list = [
+    images.iconImage(IconNames.Target),
+    images.iconImage(IconNames.Square),
+    images.iconImage(IconNames.Scissors)
+]
+input.onGesture(Gesture.Shake, function () {
+    list[randint(0, 2)].showImage(0)
+})
+```
+
 ---
 
 ## Part C – Crashy Bird Build
@@ -131,6 +165,8 @@ Build Crashy Bird step by step, emphasising arrays, loops and collisions.
 ---
 
 ## Pseudocode Overview (Blocks-style)
+
+**Note:** All steps below happen *inside the forever loop* unless stated otherwise.
 
 ```text
 on start:
@@ -175,6 +211,47 @@ forever:
     pause 1000 ms
 ```
 
+Blocks version (MakeCode – full Crashy Bird):
+
+```blocks
+let emptyObstacleY = 0
+let ticks = 0
+let bird: game.LedSprite = null
+let obstacles: game.LedSprite[] = []
+bird = game.createSprite(0, 2)
+bird.set(LedSpriteProperty.Blink, 300)
+input.onButtonPressed(Button.A, function () {
+    bird.change(LedSpriteProperty.Y, -1)
+})
+input.onButtonPressed(Button.B, function () {
+    bird.change(LedSpriteProperty.Y, 1)
+})
+basic.forever(function () {
+    while (obstacles.length > 0 && obstacles[0].get(LedSpriteProperty.X) == 0) {
+        obstacles.removeAt(0).delete()
+    }
+    for (let obstacle2 of obstacles) {
+        obstacle2.change(LedSpriteProperty.X, -1)
+    }
+    if (ticks % 3 == 0) {
+        emptyObstacleY = Math.randomRange(0, 4)
+        for (let row = 0; row <= 4; row++) {
+            if (row != emptyObstacleY) {
+                obstacles.push(game.createSprite(4, row))
+            }
+        }
+    }
+    for (let obstacle3 of obstacles) {
+        if (obstacle3.get(LedSpriteProperty.X) == bird.get(LedSpriteProperty.X) &&
+            obstacle3.get(LedSpriteProperty.Y) == bird.get(LedSpriteProperty.Y)) {
+            game.gameOver()
+        }
+    }
+    ticks += 1
+    basic.pause(1000)
+})
+```
+
 ---
 
 ## Step-by-Step Build Notes
@@ -217,7 +294,8 @@ This loop acts as the **engine** of the game — it repeats again and again, upd
 ### 3a – Remove Off‑Screen Obstacles
 
 ```text
-while obstacles not empty and first obstacle x = 0:
+while obstacles not empty
+      and first obstacle x = 0:
     delete first obstacle
     remove from list
 ```
@@ -309,5 +387,7 @@ Ticks increases every cycle. The pause slows the game to a playable speed.
 - “Where do we loop through the entire list?”  
 
 ---
+
+<script src="https://makecode.microbit.org/--docs.js"></script>
 
 {% include back-to-autumn.html %}
