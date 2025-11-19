@@ -44,7 +44,7 @@ By the end of this session, participants should be able to:
 
 ---
 
-# Part A – Arrays with Words
+## Part A – Arrays with Words
 
 ### Aim
 Give children an intuitive feel for arrays using a simple list of text options before they see arrays inside games.
@@ -87,7 +87,7 @@ on button A pressed:
 
 ---
 
-# Part B – Rock–Paper–Scissors with Arrays
+## Part B – Rock–Paper–Scissors with Arrays
 
 ### Aim
 Show a mini‑game using an array of images.
@@ -114,14 +114,14 @@ on shake:
 
 ---
 
-# Part C – Crashy Bird Build
+## Part C – Crashy Bird Build
 
 ### Aim
 Build Crashy Bird step by step, emphasising arrays, loops and collisions.
 
 ---
 
-# Conceptual Focus
+## Conceptual Focus
 - Arrays: one variable storing many sprites (obstacles).  
 - Indexing: positions in a list.  
 - Iteration: acting on every obstacle.  
@@ -179,9 +179,9 @@ forever:
 
 ---
 
-# Step-by-Step Build Notes
+## Step-by-Step Build Notes
 
-## Step 1 – Initialise Bird, Index and List
+### Step 1 – Initialise Bird, Index and List
 
 ```text
 on start:
@@ -197,7 +197,7 @@ This runs once at the beginning. We prepare the bird’s position, make it blink
 
 ---
 
-## Step 2 – Player Controls
+### Step 2 – Player Controls
 
 ```text
 when button A pressed: move bird up one row
@@ -225,18 +225,9 @@ while obstacles not empty
     remove from list
 ```
 
-**Explanation:** 
+**Explanation:**  
 Obstacles move from right to left. When one reaches the left edge (x = 0), the next movement would push it off the grid.  
-If we don’t remove it:
-
-- the list grows longer and longer  
-- the game slows down  
-- collisions become confusing  
-- memory gets wasted  
-
-We check the **first** obstacle in the list because obstacles are added on the right, so the leftmost one is always first.
-
-A **while** loop is needed because sometimes multiple obstacles leave at the same time — especially when a full column scrolls off.
+If we don’t remove it, the list grows forever, slowing the game and confusing collision checks.
 
 ---
 
@@ -247,15 +238,9 @@ for each obstacle in obstacles:
     move obstacle left by 1
 ```
 
-**Explanation:** 
-Games often have many similar objects (pipes, enemies, bullets).  
-Instead of writing five separate blocks, we use **one loop** to update **every** obstacle.
-
-This is the core reason arrays matter:
-
-> *One list holds many objects. One loop updates them all.*
-
-This mirrors real game engines where thousands of objects are updated every frame.
+**Explanation:**  
+A single loop updates *all* obstacles, no matter how many exist.  
+This demonstrates the power of arrays in games.
 
 ---
 
@@ -270,23 +255,9 @@ if ticks mod 3 = 0:
             add obstacle to list
 ```
 
-**Explanation:** 
-Every few cycles we create a new column of obstacles.  
-We use `ticks` as a simple timer — every time the loop runs, ticks increases by 1.
-
-**ticks mod 3 = 0** means:  
-“Do this every 3 cycles.”
-
-One random row becomes the **gap**, allowing the bird to pass through.  
-We then loop from row 0 to 4 and create obstacles in all rows *except* the gap.
-
-This structure makes the game easy to adjust:
-
-- Faster spawning → change the divisor (2 instead of 3)  
-- Slower spawning → use 4 or 5  
-- Smaller gaps → create two gap rows  
-
-Children enjoy experimenting with these variations.
+**Explanation:**  
+Every few cycles (based on ticks), we create a new column of obstacles.  
+One random row becomes the gap, making the game playable.
 
 ---
 
@@ -298,15 +269,8 @@ for each obstacle:
         game over
 ```
 
-**Explanation:** 
-A collision happens when two sprites share the same exact location.  
-We check every obstacle in the list because:
-
-- obstacles arrive at the bird at different times  
-- checking only obstacle 0 would miss most collisions  
-
-Relate this back to earlier weeks (Space Invaders, projectiles, etc.).  
-Collision detection is one of the most important concepts in game programming.
+**Explanation:**  
+A collision occurs when the bird and any obstacle share the same coordinates.
 
 ---
 
@@ -317,53 +281,34 @@ change ticks by 1
 pause 1000 ms
 ```
 
-**Explanation:** 
-The `ticks` variable tracks how many times the loop has run.  
-It is **not seconds**, just a counter.
-
-The `pause` slows the game down so the movement is visible.  
-Changing pause values changes difficulty:
-
-- 500 ms → faster game  
-- 200 ms → increasingly chaotic  
-- 50 ms → nearly impossible  
-
-This is a good place to let children experiment safely.
+**Explanation:**  
+Ticks increases every cycle. The pause slows the game to a playable speed.
 
 ---
 
-# Instructor Tips
-- Frequently remind learners: **one list → many obstacles**.  
-- Narrate loops in everyday language, not code language.  
-- Ask for predictions before running the program.  
-- When buggy, ask: “Which stage is failing — movement, spawning, deletion, or collision?”
+## Instructor Tips
+- Reinforce: **one list → many obstacles**.  
+- Ask for predictions before running code.
 
 ---
 
-# Common Misconceptions
+## Common Misconceptions
 - Arrays start at **0**, not 1.  
 - Lists can hold **many** items.  
-- You must remove old obstacles.  
-- Collision must check **every** obstacle.
+- Removing off‑screen obstacles is essential.
 
 ---
 
-# Differentiation
+## Differentiation
 
-**Support:**  
-- Provide a partially built starter (bird + movement).  
-- Let them focus on speed and timing adjustments.
-
-**Extend:**  
-- Scoring based on survival time.  
-- Increasing speed over time.  
-- Sounds, special effects, custom patterns.
+**Support:** partially built starter.  
+**Extend:** scoring, speed changes, sound, patterns.
 
 ---
 
-# Reflection Questions
-- “What is an array in your own words?”  
-- “Why is it helpful in Crashy Bird?”  
+## Reflection Questions
+- “What is an array?”  
+- “Why is it useful in Crashy Bird?”  
 - “Where do we loop through the entire list?”  
 
 ---
