@@ -225,6 +225,7 @@ while obstacles not empty
     remove from list
 ```
 
+**Explanation:** 
 Obstacles move from right to left. When one reaches the left edge (x = 0), the next movement would push it off the grid.  
 If we don’t remove it:
 
@@ -246,6 +247,7 @@ for each obstacle in obstacles:
     move obstacle left by 1
 ```
 
+**Explanation:** 
 Games often have many similar objects (pipes, enemies, bullets).  
 Instead of writing five separate blocks, we use **one loop** to update **every** obstacle.
 
@@ -268,6 +270,7 @@ if ticks mod 3 = 0:
             add obstacle to list
 ```
 
+**Explanation:** 
 Every few cycles we create a new column of obstacles.  
 We use `ticks` as a simple timer — every time the loop runs, ticks increases by 1.
 
@@ -295,6 +298,7 @@ for each obstacle:
         game over
 ```
 
+**Explanation:** 
 A collision happens when two sprites share the same exact location.  
 We check every obstacle in the list because:
 
@@ -313,6 +317,7 @@ change ticks by 1
 pause 1000 ms
 ```
 
+**Explanation:** 
 The `ticks` variable tracks how many times the loop has run.  
 It is **not seconds**, just a counter.
 
