@@ -17,273 +17,291 @@ header:
 
 # Instructor Notes — Week 10
 
-**Theme:** Arrays & Game Behaviour  
-**Focus Concept:** Lists, indexing and multi-object updates  
-**Mini-Project:** *Crashy Bird* (scrolling obstacle game built in stages)
+**Theme:** Arrays  
+**Focus Concept:** Lists, indexing and multi‑object updates  
+**Mini‑Project:** *Crashy Bird* (scrolling obstacle game built in stages)
 
 ---
 
 ## Learning Objectives
 
-By the end of the session, participants should be able to:
+By the end of this session, participants should be able to:
 
-- Explain in simple language what an **array/list** is.  
-- Describe how a program can select an item by its **position** in a list.  
-- Recognise why games use arrays to manage multiple objects that behave similarly.  
-- Help build a game where several obstacles are stored in a list and updated together.  
-- Use debugging strategies when movement or collisions do not work as expected.
+- Explain that an **array/list** is one variable that stores many values in order.  
+- Use a **position/index** to select a value from a list.  
+- Describe how a game can use an array to track multiple obstacles.  
+- Build and test a simple version of Crashy Bird that uses arrays for the pipes.  
 
 ---
 
 ## Session Flow (≈ 80 min)
 
-| Segment | Time | Focus |
-| ------ | ---- | ----- |
-| Welcome & Setup | 5 min | Devices connected, quick recap of variables & loops |
-| Part A – Arrays Intro (Choices Demo) | 15 min | What a list is, positions, random selection |
-| Part B – Arrays in Games (Unplugged) | 10 min | Why games need arrays; diagrams and discussion |
-| Part C – Crashy Bird Build | 40 min | Player movement, obstacle list, scrolling, collisions |
-| Reflection & Tidy Up | 10 min | Recap, questions, save projects |
+1. **Starter & Recap (10 min)**  
+   Quick recap of variables and random numbers. Introduce the idea of “a box with many slots” → arrays.
+
+2. **Part A – Arrays with Words & Images (15–20 min)**  
+   Build a simple random chooser with a list of text options.  
+   Show Rock–Paper–Scissors using an array of images.
+
+3. **Part B – Why Games Need Arrays (10 min)**  
+   Whole‑class discussion using diagrams: many pipes / enemies → one list plus a loop.
+
+4. **Part C – Crashy Bird Build (30–35 min)**  
+   Build the game in stages: player movement → game loop → obstacle list → scrolling pipes → collisions.
+
+5. **Reflection & Extensions (5–10 min)**  
+   Discuss how arrays appear in other games. Offer challenges for fast finishers.
 
 ---
 
-## Part A — Arrays & Choices
+# Part A – Arrays with Words and Images
 
 ### Aim
 
-Introduce arrays as “one variable that can remember many values” using a simple, fun choices demo before moving into games.
+Give children an intuitive feel for arrays before they see them inside a game.  
+Two short projects:
+
+1. **Random Activity Chooser** – list of strings.  
+2. **Rock–Paper–Scissors** – list of images.
 
 ### Conceptual Focus
 
-- **Collection:** a list groups related items together.  
-- **Index:** each item has a position number (0, 1, 2, …).  
-- **Random selection:** we can choose an item by picking a random index.  
+- One variable can contain **many values**.  
+- Each value has a **position** in the list (index).  
+- We can pick a random position and then read the value at that position.  
 
-### Pseudocode (Blocks-style)
+---
+
+### Pseudocode (Blocks‑style)
+
+#### A1. Random Activity Chooser
+
+Children build this one.
 
 ```text
 on start:
-    create a list of options (words or icons)
-    show a friendly icon so participants know it is ready
+    make a list of activities:
+        "PE with Joe"
+        "watch a movie"
+        "play a board game"
+        "tidy our rooms"
+        "learn a song"
+        "bake a cake"
 
 on button A pressed:
-    pick a random index from 0 up to the last position in the list
-    read the item at that position
-    show or say the chosen item
+    pick a random position between 0 and last position in the list
+    read the activity at that position
+    show the chosen activity on the screen
 ```
 
-### Teaching Steps
+#### A2. Rock–Paper–Scissors (Array Version)
 
-1. **Start from a human example.**  
-   On the board, write 5–6 activities in a column (e.g. “watch a movie”, “play a game”, “bake a cake”). Number them 0, 1, 2, 3, 4, 5.  
-   Ask: “If I say number 3, which activity is that?” Emphasise that we used the **position**, not the word itself.
-
-2. **Name the structure.**  
-   Introduce the term **array** or **list**:  
-   > “An array is one variable that stores many values in order. Each value has a position number called its index.”
-
-3. **Connect to the micro:bit version.**  
-   Explain that on the micro:bit we will:  
-   - store our activities in a list,  
-   - choose a random index,  
-   - display the item at that position when a button is pressed.
-
-4. **Build together, then let them customise.**  
-   As a whole group, step through the pseudocode. Once one version works, let participants change the options to their own ideas (favourite games, foods, exercises, etc.).
-
-5. **Highlight the key behaviour.**  
-   Ask a few participants to explain in their own words what is happening when they press the button:  
-   - “The program picks a random position.”  
-   - “It looks up the item in the list at that position.”  
-   - “It shows that item.”
-
-### Instructor Tips
-
-- Keep the first list short (4–6 items) to avoid scrolling overload on the display.  
-- Avoid technical detail about how random numbers are generated; focus on the concept of *unpredictable choice*.  
-- If some groups finish quickly, challenge them to add a second button that always chooses the first or last item in the list.
-
----
-
-## Part B — Arrays in Games (Unplugged Discussion)
-
-### Aim
-
-Help participants see why arrays are essential in games before they start building Crashy Bird.
-
-### Conceptual Focus
-
-- **Many similar objects:** enemies, obstacles, projectiles.  
-- **Shared behaviour:** each object follows the same rules (move, check collision, disappear).  
-- **One list:** makes it possible to update all objects in a loop instead of writing separate code for each one.
-
-### Teaching Steps
-
-1. **Draw the game world.**  
-   On the board, sketch the bird on the left and several columns of pipes on the right moving leftward. Label the pipes “obstacles”.
-
-2. **Ask guiding questions.**  
-   - “If we had only one pipe, how would we move it?”  
-   - “What if we want ten pipes?”  
-   - “Would we really want ten separate variables and ten copies of the same movement rule?”
-
-3. **Introduce the array solution.**  
-   Explain that we instead:  
-   - keep all pipes in **one list of obstacles**,  
-   - use a loop that says “for each obstacle, move it one step”.
-
-4. **Connect to the earlier demo.**  
-   Link back to the choices project:  
-   > “Earlier we picked one item from a list. Now we’ll use a list so the game can keep track of *many* items and update all of them.”
-
-5. **Preview the build stages.**  
-   Quickly outline what they are about to implement:  
-   - Bird movement,  
-   - Game loop,  
-   - List of obstacles,  
-   - Moving obstacles,  
-   - Removing old ones,  
-   - Adding new ones,  
-   - Checking collisions.
-
----
-
-## Part C — Crashy Bird (Build & Test)
-
-### Aim
-
-Build a full scrolling game where the player avoids pipes. Use arrays to keep track of all current obstacles.
-
-### Conceptual Focus
-
-- **Game loop:** repeated updates create animation.  
-- **Obstacle list:** one list storing all pipes.  
-- **Iteration:** applying the same movement rule to each obstacle.  
-- **Lifecycle:** create → move → possibly remove → check collision.
-
----
-
-### Pseudocode (Blocks-style)
-
-The pseudocode below mirrors the structure of the final game but avoids exact code or block names.
+You *show* this on the projector. Children may copy it if time allows, but it is mainly for understanding.
 
 ```text
 on start:
-    create the player character on the left
-    create an empty list to store obstacles
-    set a counter to track time steps
+    make a list of three images:
+        rock picture
+        paper picture
+        scissors picture
+
+on shake:
+    pick a random position 0, 1 or 2
+    read the image at that position
+    show that image
+```
+
+---
+
+### Teaching Steps (Part A)
+
+1. Start with a spoken list (e.g. “pizza, pasta, salad…”) and ask:  
+   “If I say number 0, which one is it? Number 2?”  
+   This sets up the idea of **index positions**.
+
+2. Move to the **Random Activity Chooser**. Build it live with the class.  
+   Emphasise:
+   - the list holds **all the options**,  
+   - the program chooses a **position**, not the word directly.
+
+3. Once most devices work, briefly show the **Rock–Paper–Scissors** version.  
+   Highlight that the only real change is **what** is stored in the list (images instead of text).
+
+4. Key sentence to repeat:  
+   > “A list lets us keep many related things together and pick the one we want by position.”
+
+---
+
+# Part B – Arrays in Games
+
+### Aim
+
+Bridge from small demos to a full game. Children should see *why* arrays are essential in games like Crashy Bird.
+
+### Conceptual Focus
+
+- A game often has **many similar objects** (pipes, enemies, projectiles).  
+- It is messy to give each one its own variable.  
+- Instead, we put all of them in **one list** and use a **loop** to update them.
+
+---
+
+### Pseudocode (Conceptual)
+
+This is *not* full code – just how the game thinks about obstacles.
+
+```text
+have a list called obstacles
+
+every cycle of the game:
+    for each obstacle in obstacles:
+        move it one step left
+
+    from time to time:
+        create new obstacles on the right side
+        add them into the list
+
+    if any obstacle hits the player:
+        game over
+```
+
+### Teaching Steps (Part B)
+
+1. On the board, draw:
+   - bird on the left,  
+   - several columns of pipes moving from right to left.
+
+2. Ask:  
+   “If we had ten pipes, would you want ten separate variables? What about twenty?”  
+
+3. Introduce the idea:  
+   > “Instead of ten separate boxes, we use **one list** of pipes.”
+
+4. Show the small pseudocode above and talk it through in plain English:
+   - we go through the list and move everything,  
+   - sometimes we add new pipes,  
+   - we also check if any pipe hits the bird.
+
+This prepares them for the full build.
+
+---
+
+# Part C – Crashy Bird Build
+
+### Aim
+
+Use arrays in a meaningful context: a scrolling‑obstacle game.  
+The build should feel like a structured extension of previous game weeks (movement, loops, collisions), with arrays added in.
+
+---
+
+## Pseudocode (Blocks‑style)
+
+This is the **full behaviour** of the game, written in the same style as Week 9’s pseudocode.  
+You can keep it on a slide while you build.
+
+```text
+on start:
+    create player (bird) on the left
+    set bird to blink so it is easy to see
+    create an empty list called obstacles
+    reset a counter called ticks to 0
 
 on button A pressed:
-    move the player one step up
+    move bird one step up
 
 on button B pressed:
-    move the player one step down
+    move bird one step down
 
 forever:
-    move every obstacle one step left
-    remove any obstacle that has moved off the left edge
+    -- 1. tidy up obstacles that left the screen --
+    while there is at least one obstacle
+          and the first obstacle is at the left edge:
+        delete that obstacle from the screen
+        remove it from the list
 
-    if the time counter reaches a chosen interval:
-        choose one random row that will stay empty (the gap)
-        for each row on the screen:
-            if this row is not the gap:
-                create a new obstacle at the right side in this row
-                add this obstacle to the list
-
+    -- 2. move all obstacles one step left --
     for each obstacle in the list:
-        if the obstacle is in the same position as the player:
+        move obstacle one step left
+
+    -- 3. sometimes create a new column of pipes --
+    if ticks is a multiple of 3 (or similar timing):
+        choose one random row to be the gap
+        for each row from top to bottom:
+            if this row is not the gap:
+                create a new pipe at the right edge in this row
+                add the new pipe to the list
+
+    -- 4. check for collisions with the bird --
+    for each obstacle in the list:
+        if obstacle is in the same position as the bird:
             end the game
 
-    increase the time counter by one
-    pause for a short time to control the game speed
+    -- 5. advance game time --
+    increase ticks by 1
+    pause for a short time (game speed)
 ```
 
 ---
 
-### Teaching Steps
+## Teaching Steps (Part C)
 
-1. **Stage 1 – Player movement**  
-   - Create the player sprite on the left middle row.  
-   - Add button events to move up and down.  
-   - Test: player should move only within the screen.
+1. **Stage 1 – Bird Movement (recap of earlier weeks)**  
+   - Make sure everyone can move a sprite up/down with buttons.  
+   - Keep this step short: it is familiar and builds confidence.
 
-2. **Stage 2 – Game loop and time counter**  
-   - Introduce a repeating loop that will handle movement and timing.  
-   - Add a simple counter that increases each time the loop runs.  
-   - Test: display the counter briefly so participants can see it changing, then remove that display once understood.
+2. **Stage 2 – Add the Empty List and Ticks Counter**  
+   - Introduce the idea of “a list that will hold all pipes”.  
+   - Explain that `ticks` is just a counter that lets us say “every few cycles”.
 
-3. **Stage 3 – Empty obstacle list**  
-   - Create an empty list for obstacles.  
-   - Explain that every new pipe will be added to this list.  
-   - No visible change yet – this is setting up the structure.
+3. **Stage 3 – Moving Existing Obstacles**  
+   - Add the loop that moves each obstacle one step left.  
+   - Test even with an empty list – no errors should occur.
 
-4. **Stage 4 – Moving existing obstacles**  
-   - Inside the game loop, add a step that goes through all obstacles and moves each one left by one column.  
-   - Test using a temporary manual obstacle (create one pipe and add it to the list).  
-   - Confirm that each loop step moves it left until it disappears off-screen.
+4. **Stage 4 – Spawning New Pipes**  
+   - Add the timing rule (e.g. when ticks is a multiple of 3).  
+   - Choose a random row as the gap.  
+   - Create pipes in all the other rows and add them to the list.  
+   - Test that pipes appear and scroll.
 
-5. **Stage 5 – Removing obstacles that leave the screen**  
-   - Add logic that checks the obstacles at the front of the list.  
-   - If one has moved off the left edge, remove it from the list.  
-   - Emphasise that this keeps the list tidy and prevents the game from slowly filling with invisible pipes.  
-   - Test by watching that the number of obstacles does not grow without limit.
+5. **Stage 5 – Cleaning Up Old Pipes**  
+   - Show what happens if you *never* remove pipes (list grows forever).  
+   - Then add the “while first obstacle is off‑screen → remove it” logic.  
+   - Test again and point out how the game stays tidy.
 
-6. **Stage 6 – Creating new pipes with a gap**  
-   - Use the time counter to create new columns of pipes at regular intervals (for example, every few cycles).  
-   - Each time we create new obstacles, first choose one random row to remain empty (the gap the bird can fly through).  
-   - For each row: if it is not the chosen gap, create a pipe at the right edge and add it to the list.  
-   - Test repeatedly, checking that each new column has exactly one empty row and that the columns scroll smoothly.
+6. **Stage 6 – Collision Detection**  
+   - Add the loop that compares each obstacle’s position with the bird.  
+   - If they match, the game ends.  
+   - Test deliberately flying into a pipe.
 
-7. **Stage 7 – Collision detection**  
-   - Add a step in the loop that checks every obstacle against the player.  
-   - If any obstacle shares both the same column and row as the player, trigger game over.  
-   - Test by deliberately flying into a pipe.
-
-8. **Stage 8 – Polish and customisation**  
-   - Allow time for participants to adjust speed, spacing, or add sound effects.  
-   - More advanced participants can add a score that counts how long they survive or how many columns they pass.
+7. **Stage 7 – Polishing & Customising**  
+   - Let participants change the speed, gap timing, or add sound.  
+   - Encourage them to try small changes and re‑test.
 
 ---
 
-### Instructor Tips
+## Instructor Tips
 
-- Build in **small, testable steps**. Do not jump straight from an empty screen to the full game.  
-- Use plenty of board sketches showing how obstacles move and where they are stored in the list.  
-- When debugging, encourage participants to speak in terms of lists and cycles:  
-  - “What happens to each obstacle each cycle?”  
-  - “When do we add new ones?”  
-  - “When do we remove them?”  
-- If several children get stuck at the same stage, pause the group and live-debug on the projector.
-
----
-
-## Assessment & Reflection
-
-Prompt questions:
-
-- “What is an array / list in your own words?”  
-- “Why does Crashy Bird need a list of obstacles instead of separate variables?”  
-- “What happens to each obstacle during one game loop?”  
-- “How does the game know when the bird has crashed?”  
-
-Ask a few participants to walk through one complete loop:  
-create pipes → move pipes → remove old ones → check collisions → repeat.
+- Keep the **array idea** alive all the way through: one list, many pipes.  
+- Say out loud what each loop is doing in ordinary language.  
+- Frequently pause and ask learners to predict what will happen *before* running the code.  
+- When things break, ask: “Which stage do you think is misbehaving – movement, spawning, removal, or collision?”
 
 ---
 
 ## Common Misconceptions & Fixes
 
-- **Arrays start at 1.**  
-  Remind that indices start at 0. Use the drawer analogy with labels 0–4.
+- **“Arrays start at 1.”**  
+  Remind them that the first position is 0. Show the list visually with numbered boxes.
 
-- **Only one pipe exists at a time.**  
-  Show on the board that the list may hold many obstacles at once; the loop visits each one.
+- **“The list only holds one pipe at a time.”**  
+  Use the debugger or print the length of the list to show multiple entries.
 
-- **Removing pipes is “bad” or unsafe.**  
-  Explain that removal is necessary to stop the list growing forever and to keep memory free.
+- **“Removing obstacles is optional.”**  
+  Demonstrate what happens if you never remove them: the list gets huge and the game slows down.
 
-- **Collision checks only one obstacle.**  
-  Emphasise that the collision check happens inside a loop over all obstacles.
+- **“Collision should check only one obstacle.”**  
+  Reinforce that we must check every obstacle in the list, not just the first one.
 
 ---
 
@@ -291,50 +309,45 @@ create pipes → move pipes → remove old ones → check collisions → repeat.
 
 **Support:**
 
-- Provide a partially built project with the bird and game loop already working.  
-- For some participants, focus the session just on seeing how new pipes appear and move left.  
-- Allow them to work mainly on adjusting game speed or gap frequency.
+- Provide a partially completed project with bird movement and basic spawning already in place.  
+- Let less‑confident learners focus on adjusting speed and gap spacing rather than writing every loop themselves.
 
 **Extend:**
 
-- Add a score that increases each loop while the player is alive.  
-- Increase difficulty gradually by speeding up the game or reducing the gap.  
-- Add special “bonus” gaps or different types of obstacles.  
-- Challenge advanced participants to explain their logic to a partner.
+- Add a score that increases as long as the player survives.  
+- Increase difficulty over time by speeding up the pipes or shrinking the gap.  
+- Add sound effects when the bird flaps or crashes.  
+- Create special patterns: double gaps, long walls, etc.
 
 ---
 
-## Cross-Curricular Links
+## Assessment & Reflection
 
-- **Maths:** sequences, counting from zero, simple probability via random choices.  
-- **Science/Engineering:** systems that follow rules every cycle (control systems, simulations).  
-- **Art & Design:** designing fair but challenging game levels and feedback.
+Questions you can ask at the end:
 
----
+- “In your own words, what is an array?”  
+- “Why is an array useful in Crashy Bird?”  
+- “What would be harder if we tried to manage each pipe separately?”  
+- “Where in your game do you loop through a list and update everything?”
 
-## KS2 Computing Curriculum Mapping
-
-- Design, write and debug programs that accomplish specific goals.  
-- Use sequence, selection and repetition in programs.  
-- Work with variables and various forms of input and output.  
-- Use logical reasoning to explain how some simple algorithms work and to detect and correct errors.
+Learners who can answer these questions and make small changes to the game have met the goals for the week.
 
 ---
 
 ## Materials & Setup
 
-- BBC micro:bits with batteries or USB power.  
-- Laptops / Chromebooks with internet access.  
-- Projector or large display for live demos.  
-- Whiteboard and pens for arrays diagrams and game sketches.
+- BBC micro:bits and USB cables (or batteries for unplugged play).  
+- Laptops / Chromebooks with access to MakeCode.  
+- Projector or large display for live coding and diagrams.  
+- Whiteboard for drawing lists and game diagrams.
 
 ---
 
 ## Safety & Safeguarding
 
-- Check cables to avoid trip hazards during any movement around the room.  
-- Ensure participants stay seated while testing handheld devices.  
-- Follow school safeguarding procedures for supervision and device use.
+- Manage cables and devices to avoid tripping hazards.  
+- Encourage calm movement in the room – the game is virtual, not physical.  
+- As always, follow school/organisation policies for supervision and online access.
 
 ---
 
