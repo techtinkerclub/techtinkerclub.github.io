@@ -125,6 +125,11 @@ on shake:
     read the image at that position
     show that image
 ```
+### Blocks version (MakeCode)
+
+<div class="makecode-embed">
+  <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S61168-68102-35768-98938" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+</div>
 
 ---
 
@@ -190,6 +195,9 @@ forever:
     change ticks by 1
     pause 1000 ms
 ```
+<div class="makecode-embed">
+<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S42595-41266-97255-32528" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+</div>
 
 ---
 
