@@ -81,21 +81,9 @@ on button A pressed:
 
 Blocks version (MakeCode):
 
-```blocks
-let choice = 0
-let options: string[] = []
-options = [
-"PE with Joe",
-"watch a movie",
-"play a board game",
-"tidy our rooms",
-"learn a song",
-"bake a cake"
-]
-input.onButtonPressed(Button.A, function () {
-    choice = randint(0, options.length - 1)
-    basic.showString("" + options[choice])
-})
+<div class="makecode-embed">
+  <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S57666-26417-59731-40588" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+</div>
 ```
 
 ### Teaching Steps (Part A)
