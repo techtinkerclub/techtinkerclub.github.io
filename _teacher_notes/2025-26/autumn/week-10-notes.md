@@ -209,14 +209,14 @@ This recreates the familiar control scheme from earlier weeks. Remind children t
 
 ---
 
-# Step 3 – The Game Loop (Forever Loop)
+## Step 3 – The Game Loop (Forever Loop)
 
 Everything from this point onward happens *inside* the `forever` loop.  
 This loop acts as the **engine** of the game — it repeats again and again, updating everything on the screen.
 
 ---
 
-## 3a – Remove Off‑Screen Obstacles
+### 3a – Remove Off‑Screen Obstacles
 
 ```text
 while obstacles not empty
@@ -240,7 +240,7 @@ A **while** loop is needed because sometimes multiple obstacles leave at the sam
 
 ---
 
-## 3b – Move All Obstacles Left
+### 3b – Move All Obstacles Left
 
 ```text
 for each obstacle in obstacles:
@@ -259,7 +259,7 @@ This mirrors real game engines where thousands of objects are updated every fram
 
 ---
 
-## 3c – Spawn New Obstacles
+### 3c – Spawn New Obstacles
 
 ```text
 if ticks mod 3 = 0:
@@ -290,7 +290,7 @@ Children enjoy experimenting with these variations.
 
 ---
 
-## 3d – Detect Collisions
+### 3d – Detect Collisions
 
 ```text
 for each obstacle:
@@ -310,7 +310,7 @@ Collision detection is one of the most important concepts in game programming.
 
 ---
 
-## 3e – Timing with Ticks
+### 3e – Timing with Ticks
 
 ```text
 change ticks by 1
