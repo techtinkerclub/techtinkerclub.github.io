@@ -132,8 +132,6 @@ Build Crashy Bird step by step, emphasising arrays, loops and collisions.
 
 ## Pseudocode Overview (Blocks-style)
 
-**Note:** All steps below happen *inside the forever loop* unless stated otherwise.
-
 ```text
 on start:
     set index to 0
@@ -219,8 +217,7 @@ This loop acts as the **engine** of the game — it repeats again and again, upd
 ### 3a – Remove Off‑Screen Obstacles
 
 ```text
-while obstacles not empty
-      and first obstacle x = 0:
+while obstacles not empty and first obstacle x = 0:
     delete first obstacle
     remove from list
 ```
