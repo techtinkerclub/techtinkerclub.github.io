@@ -18,8 +18,8 @@ header:
 # Instructor Notes — Week 10
 
 **Theme:** Arrays  
-**Focus Concept:** Lists, indexing and multi-object updates  
-**Mini-Project:** *Crashy Bird* (scrolling obstacle game built in stages)
+**Focus Concept:** Lists, indexing and multi‑object updates  
+**Mini‑Project:** *Crashy Bird* (scrolling obstacle game built in stages)
 
 ---
 
@@ -36,24 +36,15 @@ By the end of this session, participants should be able to:
 
 ## Session Flow (≈ 80 min)
 
-1. **Starter & Recap (10 min)**  
-   Quick recap of variables and random numbers. Introduce list positions as “0, 1, 2…”.
-
-2. **Part A – Arrays with Words (10–15 min)**  
-   Build a simple random chooser with a list of text options.
-
-3. **Part B – Rock–Paper–Scissors with Arrays (15–20 min)**  
-   Show and discuss a Rock–Paper–Scissors game implemented using an array of images.
-
-4. **Part C – Crashy Bird Build (30–35 min)**  
-   Build the game in stages: player movement → empty obstacle list → scrolling obstacles → spawning → collisions → timing.
-
+1. **Starter & Recap (10 min)** — recap of variables and random numbers.  
+2. **Part A – Arrays with Words (10–15 min)** — build a random chooser.  
+3. **Part B – Rock–Paper–Scissors with Arrays (15–20 min)** — demo with image arrays.  
+4. **Part C – Crashy Bird Build (30–35 min)** — full game build inside the *forever* loop.  
 5. **Reflection & Extensions (5–10 min)**  
-   Discuss where arrays appear in other games. Offer challenges.
 
 ---
 
-## Part A – Arrays with Words
+# Part A – Arrays with Words
 
 ### Aim
 Give children an intuitive feel for arrays using a simple list of text options before they see arrays inside games.
@@ -91,15 +82,15 @@ on button A pressed:
 ### Teaching Steps (Part A)
 
 1. Spoken list: “pizza, pasta, salad…” → explain index positions.  
-2. Build the chooser live. Emphasise choosing a **position**.  
-3. Key sentence: “A list keeps related things together and we pick by position.”
+2. Build the chooser live. Emphasise choosing a **position**, not the word directly.  
+3. Key idea: “A list keeps related things together and we pick by position.”
 
 ---
 
-## Part B – Rock–Paper–Scissors with Arrays
+# Part B – Rock–Paper–Scissors with Arrays
 
 ### Aim
-Show a mini-game using an array of images.
+Show a mini‑game using an array of images.
 
 ### Conceptual Focus
 - Arrays can hold **icons/images**, not just text.  
@@ -123,27 +114,33 @@ on shake:
 
 ---
 
-## Part C – Crashy Bird Build
+# Part C – Crashy Bird Build
 
 ### Aim
 Build Crashy Bird step by step, emphasising arrays, loops and collisions.
 
-### Conceptual Focus
+---
+
+# Conceptual Focus
 - Arrays: one variable storing many sprites (obstacles).  
 - Indexing: positions in a list.  
 - Iteration: acting on every obstacle.  
-- Game loop: the forever block as the engine.  
+- Game loop: the **forever** loop acts as the engine.  
 - Collision: bird and obstacle share same (x, y).
 
 ---
 
-### Pseudocode Overview
+## Pseudocode Overview (Blocks-style)
+
+**Note:** All steps below happen *inside the forever loop* unless stated otherwise.
 
 ```text
 on start:
     set index to 0
     create bird at x = 0, y = 2
-    make bird blink
+    set bird to blink
+    create an empty list called obstacles
+    set ticks to 0
 
 on button A pressed:
     move bird up one row
@@ -152,65 +149,117 @@ on button B pressed:
     move bird down one row
 
 forever:
-    while obstacles has at least one item
-          and the first obstacle's x is 0:
-        delete the first obstacle from the list
+    -- 1. remove off‑screen obstacles --
+    while obstacles has items
+          and first obstacle x = 0:
+        delete first obstacle from screen
+        remove it from the list
 
+    -- 2. move all obstacles --
     for each obstacle in obstacles:
-        move obstacle left
+        move obstacle left by 1
 
-    if ticks ÷ 3 has remainder 0:
+    -- 3. spawn new obstacles --
+    if ticks mod 3 = 0:
         choose random gap row 0–4
-        for each row 0–4:
+        for row from 0 to 4:
             if row ≠ gap:
                 create obstacle at (4, row)
-                add to obstacles
+                add obstacle to the list
 
+    -- 4. detect collisions --
     for each obstacle in obstacles:
         if obstacle position = bird position:
             game over
 
+    -- 5. timing --
     change ticks by 1
     pause 1000 ms
 ```
 
 ---
 
-## Step-by-Step Build Notes
+# Step-by-Step Build Notes
 
-### Step 1 – Initialise Bird and Index
+## Step 1 – Initialise Bird, Index and List
 
 ```text
 on start:
     set index to 0
     create bird at (0,2)
     set bird to blink
+    create empty list obstacles
+    set ticks to 0
 ```
 
-### Step 2 – Player Controls
+**Explanation:**  
+This runs once at the beginning. We prepare the bird’s position, make it blink so it stands out, and create an empty list that will soon hold many obstacles.
+
+---
+
+## Step 2 – Player Controls
 
 ```text
-when button A pressed: move bird up
-when button B pressed: move bird down
+when button A pressed: move bird up one row
+when button B pressed: move bird down one row
 ```
 
-### Step 3 – Game Loop
+**Explanation:**  
+This recreates the familiar control scheme from earlier weeks. Remind children that going above row 0 or below row 4 will move the sprite off‑screen.
 
-#### 3a. Remove off-screen obstacles
+---
+
+# Step 3 – The Game Loop (Forever Loop)
+
+Everything from this point onward happens *inside* the `forever` loop.  
+This loop acts as the **engine** of the game — it repeats again and again, updating everything on the screen.
+
+---
+
+## 3a – Remove Off‑Screen Obstacles
 
 ```text
 while obstacles not empty
       and first obstacle x = 0:
     delete first obstacle
+    remove from list
 ```
 
-#### 3b. Move all obstacles
+### Verbose Explanation
+Obstacles move from right to left. When one reaches the left edge (x = 0), the next movement would push it off the grid.  
+If we don’t remove it:
+
+- the list grows longer and longer  
+- the game slows down  
+- collisions become confusing  
+- memory gets wasted  
+
+We check the **first** obstacle in the list because obstacles are added on the right, so the leftmost one is always first.
+
+A **while** loop is needed because sometimes multiple obstacles leave at the same time — especially when a full column scrolls off.
+
+---
+
+## 3b – Move All Obstacles Left
 
 ```text
-for each obstacle: move obstacle left
+for each obstacle in obstacles:
+    move obstacle left by 1
 ```
 
-#### 3c. Spawn new obstacles
+### Verbose Explanation
+Games often have many similar objects (pipes, enemies, bullets).  
+Instead of writing five separate blocks, we use **one loop** to update **every** obstacle.
+
+This is the core reason arrays matter:
+
+> *One list holds many objects. One loop updates them all.*
+
+This mirrors real game engines where thousands of objects are updated every frame.
+
+---
+
+## 3c – Spawn New Obstacles
 
 ```text
 if ticks mod 3 = 0:
@@ -218,10 +267,30 @@ if ticks mod 3 = 0:
     for row 0–4:
         if row ≠ gap:
             create obstacle at (4,row)
-            add to list
+            add obstacle to list
 ```
 
-#### 3d. Detect collisions
+### Verbose Explanation
+Every few cycles we create a new column of obstacles.  
+We use `ticks` as a simple timer — every time the loop runs, ticks increases by 1.
+
+**ticks mod 3 = 0** means:  
+“Do this every 3 cycles.”
+
+One random row becomes the **gap**, allowing the bird to pass through.  
+We then loop from row 0 to 4 and create obstacles in all rows *except* the gap.
+
+This structure makes the game easy to adjust:
+
+- Faster spawning → change the divisor (2 instead of 3)  
+- Slower spawning → use 4 or 5  
+- Smaller gaps → create two gap rows  
+
+Children enjoy experimenting with these variations.
+
+---
+
+## 3d – Detect Collisions
 
 ```text
 for each obstacle:
@@ -229,44 +298,73 @@ for each obstacle:
         game over
 ```
 
-#### 3e. Timing
+### Verbose Explanation
+A collision happens when two sprites share the same exact location.  
+We check every obstacle in the list because:
+
+- obstacles arrive at the bird at different times  
+- checking only obstacle 0 would miss most collisions  
+
+Relate this back to earlier weeks (Space Invaders, projectiles, etc.).  
+Collision detection is one of the most important concepts in game programming.
+
+---
+
+## 3e – Timing with Ticks
 
 ```text
-ticks += 1
+change ticks by 1
 pause 1000 ms
 ```
 
----
+### Verbose Explanation
+The `ticks` variable tracks how many times the loop has run.  
+It is **not seconds**, just a counter.
 
-## Instructor Tips
+The `pause` slows the game down so the movement is visible.  
+Changing pause values changes difficulty:
 
-- Emphasise: **one list → many obstacles**.  
-- Narrate loops in simple language.  
-- Pause for predictions before running code.
+- 500 ms → faster game  
+- 200 ms → increasingly chaotic  
+- 50 ms → nearly impossible  
 
----
-
-## Common Misconceptions
-
-- Arrays start at 0, not 1.  
-- Lists can hold **many** obstacles.  
-- Removing obstacles is required.  
-- Must check **all** obstacles for collisions.
+This is a good place to let children experiment safely.
 
 ---
 
-## Differentiation
-
-**Support:** part-built starter file.  
-**Extend:** scoring, speed changes, sounds, special patterns.
+# Instructor Tips
+- Frequently remind learners: **one list → many obstacles**.  
+- Narrate loops in everyday language, not code language.  
+- Ask for predictions before running the program.  
+- When buggy, ask: “Which stage is failing — movement, spawning, deletion, or collision?”
 
 ---
 
-## Reflection
+# Common Misconceptions
+- Arrays start at **0**, not 1.  
+- Lists can hold **many** items.  
+- You must remove old obstacles.  
+- Collision must check **every** obstacle.
 
-- What is an array?  
-- Why is it useful?  
-- What happens in the movement loop?
+---
+
+# Differentiation
+
+**Support:**  
+- Provide a partially built starter (bird + movement).  
+- Let them focus on speed and timing adjustments.
+
+**Extend:**  
+- Scoring based on survival time.  
+- Increasing speed over time.  
+- Sounds, special effects, custom patterns.
+
+---
+
+# Reflection Questions
+- “What is an array in your own words?”  
+- “Why is it helpful in Crashy Bird?”  
+- “Where do we loop through the entire list?”  
 
 ---
 
