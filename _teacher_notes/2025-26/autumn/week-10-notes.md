@@ -18,8 +18,8 @@ header:
 # Instructor Notes — Week 10
 
 **Theme:** Arrays  
-**Focus Concept:** Lists, indexing and multi‑object updates  
-**Mini‑Project:** *Crashy Bird* (scrolling obstacle game built in stages)
+**Focus Concept:** Lists, indexing and multi-object updates  
+**Mini-Project:** *Crashy Bird* (scrolling obstacle game built in stages)
 
 ---
 
@@ -53,7 +53,7 @@ By the end of this session, participants should be able to:
 
 ---
 
-# Part A – Arrays with Words
+## Part A – Arrays with Words
 
 ### Aim
 Give children an intuitive feel for arrays using a simple list of text options before they see arrays inside games.
@@ -96,10 +96,10 @@ on button A pressed:
 
 ---
 
-# Part B – Rock–Paper–Scissors with Arrays
+## Part B – Rock–Paper–Scissors with Arrays
 
 ### Aim
-Show a mini‑game using an array of images.
+Show a mini-game using an array of images.
 
 ### Conceptual Focus
 - Arrays can hold **icons/images**, not just text.  
@@ -123,12 +123,12 @@ on shake:
 
 ---
 
-# Part C – Crashy Bird Build
+## Part C – Crashy Bird Build
 
 ### Aim
 Build Crashy Bird step by step, emphasising arrays, loops and collisions.
 
-## Conceptual Focus
+### Conceptual Focus
 - Arrays: one variable storing many sprites (obstacles).  
 - Indexing: positions in a list.  
 - Iteration: acting on every obstacle.  
@@ -137,7 +137,7 @@ Build Crashy Bird step by step, emphasising arrays, loops and collisions.
 
 ---
 
-## Pseudocode Overview
+### Pseudocode Overview
 
 ```text
 on start:
@@ -176,9 +176,10 @@ forever:
 
 ---
 
-# Step-by-Step Build Notes
+## Step-by-Step Build Notes
 
-## Step 1 – Initialise Bird and Index
+### Step 1 – Initialise Bird and Index
+
 ```text
 on start:
     set index to 0
@@ -186,27 +187,31 @@ on start:
     set bird to blink
 ```
 
-## Step 2 – Player Controls
+### Step 2 – Player Controls
+
 ```text
 when button A pressed: move bird up
 when button B pressed: move bird down
 ```
 
-## Step 3 – Game Loop
+### Step 3 – Game Loop
 
-### 3a. Remove off-screen obstacles
+#### 3a. Remove off-screen obstacles
+
 ```text
 while obstacles not empty
       and first obstacle x = 0:
     delete first obstacle
 ```
 
-### 3b. Move all obstacles
+#### 3b. Move all obstacles
+
 ```text
 for each obstacle: move obstacle left
 ```
 
-### 3c. Spawn new obstacles
+#### 3c. Spawn new obstacles
+
 ```text
 if ticks mod 3 = 0:
     choose gap row
@@ -216,14 +221,16 @@ if ticks mod 3 = 0:
             add to list
 ```
 
-### 3d. Detect collisions
+#### 3d. Detect collisions
+
 ```text
 for each obstacle:
     if obstacle x = bird x and obstacle y = bird y:
         game over
 ```
 
-### 3e. Timing
+#### 3e. Timing
+
 ```text
 ticks += 1
 pause 1000 ms
@@ -232,6 +239,7 @@ pause 1000 ms
 ---
 
 ## Instructor Tips
+
 - Emphasise: **one list → many obstacles**.  
 - Narrate loops in simple language.  
 - Pause for predictions before running code.
@@ -239,6 +247,7 @@ pause 1000 ms
 ---
 
 ## Common Misconceptions
+
 - Arrays start at 0, not 1.  
 - Lists can hold **many** obstacles.  
 - Removing obstacles is required.  
@@ -247,12 +256,14 @@ pause 1000 ms
 ---
 
 ## Differentiation
-**Support:** part‑built starter file.  
+
+**Support:** part-built starter file.  
 **Extend:** scoring, speed changes, sounds, special patterns.
 
 ---
 
 ## Reflection
+
 - What is an array?  
 - Why is it useful?  
 - What happens in the movement loop?
