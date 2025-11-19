@@ -61,7 +61,7 @@ This term, participants in Tech Tinker Club will explore how microcontrollers (t
 | [Week 7](/curriculum/2025-26/autumn/week-7/) | Functions | Space Invaders | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-7/#resources){:target="_blank" rel="noopener"} |
 | [Week 8](/curriculum/2025-26/autumn/week-8/) | Radio communication | Quiz | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-8/#resources){:target="_blank" rel="noopener"} |
 | [Week 9](/curriculum/2025-26/autumn/week-9/) | Radio communication | Fireflies and Exploding Duck | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-9/#resources){:target="_blank" rel="noopener"} |
-| [Week 10](/curriculum/2025-26/autumn/week-10/) | Compound logic | Dark + motion alarm | Slides · Worksheet |
+| [Week 10](/curriculum/2025-26/autumn/week-10/) | Arrays | Crashy Bird | [Link](https://techtinker.club/curriculum/2025-26/autumn/week-10/#resources){:target="_blank" rel="noopener"} |
 | [Week 11](/curriculum/2025-26/autumn/week-11/) | Game loops | Score-based button game | Slides · Worksheet |
 | [Week 12](/curriculum/2025-26/autumn/week-12/) | Integration | Design your own 2-sensor gadget | Slides · Worksheet |
 | [Week 13](/curriculum/2025-26/autumn/week-13/) | Showcase & reflection | Share favourite projects | Slides · Reflection |
