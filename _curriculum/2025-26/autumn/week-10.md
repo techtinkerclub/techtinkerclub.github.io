@@ -16,118 +16,136 @@ header:
 
 ## Week 10 — Arrays & Crashy Bird
 
-**Focus Concept:** Arrays (lists) and indexed data  
+**Focus Concept:** Arrays (lists) and coordinated game behaviour  
 **Mini-Project:** *Crashy Bird* (built step-by-step)
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> We learned how a single variable can hold <strong>many values</strong> using an <strong>array</strong>, and how loops process each element.</li>
-    <li><strong>Maths:</strong> We used <strong>index numbers</strong>, <strong>length</strong>, and <strong>random selection</strong> to control which item is chosen from a list.</li>
-    <li><strong>Engineering &amp; Technology:</strong> We built a complete game system where multiple <strong>obstacles</strong> must be created, moved and removed using consistent rules.</li>
-    <li><strong>Art &amp; Design:</strong> Participants customised their game with their own timings, speeds and visual patterns.</li>
+    <li><strong>Computing:</strong> We learned how a single variable can store <strong>many values</strong> using an <strong>array</strong>, and how loops process each value in turn.</li>
+    <li><strong>Maths:</strong> We used <strong>index numbers</strong>, <strong>ordering</strong>, and <strong>random selection</strong> to manage list elements.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We built a game system with repeating cycles, movement rules and updating objects.</li>
+    <li><strong>Art &amp; Design:</strong> Participants customised gameplay speed, timing and visual patterns to create their own style.</li>
   </ul>
 </div>
 
-This week we were introduced to **arrays**, a powerful tool for storing several values inside a single variable.  
-We began with a simple example to understand how arrays work, then used the same idea to build the scrolling obstacle system for our main project — **Crashy Bird**.
+This week we explored **arrays**, an essential idea in programming that lets us store and organise many related values at once.  
+We began with small examples to understand how arrays work, then applied the concept in stages to build our own version of **Crashy Bird**, a scrolling obstacle game.
 
 ---
 
 ## Objectives
-- Understand what an **array/list** is and why we use it.  
-- Use a **random index** to select an element from an array.  
-- Build a game that uses arrays to manage several sprites at once.  
-- Practise loops, conditions, events and variables in a structured game project.
+- Understand what an **array/list** is and why it is useful.  
+- Learn how to select an item from a list using its **position**.  
+- Recognise how arrays help games manage several objects at once.  
+- Build a complete project using loops, movement and collision logic.
 
 ---
 
 ## Success Criteria
-- I can explain that an array stores <strong>many values</strong> in order.  
-- I can get an element using its <strong>index</strong> (0, 1, 2…).  
-- I can describe how the game stores its obstacles in an array.  
-- I can build and test a game that updates multiple elements using a loop.
+- I can explain that an array holds <strong>many items</strong> inside one variable.  
+- I can describe what an <strong>index</strong> is.  
+- I can show how a game uses arrays to track multiple obstacles.  
+- I can build a project where several elements update each cycle.
 
 ---
 
 ## Key Vocabulary
 - **Array / List** — a variable that stores many values in order.  
-- **Element** — a single item in an array.  
+- **Element** — one item inside a list.  
 - **Index** — the position of an element (starting at 0).  
-- **Length** — how many items are in the array.  
-- **Sprite** — a micro:bit LED character or object.  
-- **Loop** — repeats instructions, often for each item in an array.  
-- **Random** — chooses an unpredictable value (commonly used to select an index).
+- **Length** — the number of items in the list.  
+- **Sprite** — a character or object on the LED grid.  
+- **Loop** — repeats instructions, often for each element in a list.  
+- **Random** — chooses an unpredictable value.
 
 ---
 
-## Part A — What Is an Array?
-We began by creating a simple **random chooser** project.  
-Participants made a list of words (e.g., “watch a movie”, “play a board game”, “bake a cake”) and used:
+## Part A — Exploring Arrays
 
-- `pick random 0 to length of array - 1`  
-- `get value at index`  
+### What We Explored
+We began with a simple activity where participants created a list of choices (for example: activities, foods or mini-games).  
+Pressing a button selected one item at random.  
+This showed how:
 
-This helped everyone understand how a list stores several values, and how we select just one using its **index number**.
+1. A list can hold several values at once.  
+2. Each value has a position (its **index**).  
+3. Choosing a random position picks a random item from the list.  
 
-We also briefly saw how an array can store **images** instead of words, reinforcing that arrays can hold different types of data.
+We then briefly looked at how arrays can also store **images**, not just words—helping everyone understand that arrays can hold many types of data.
+
+> 💡 *Key idea: arrays help us organise sets of related information so we can access each item easily.*
 
 ---
 
-## Part B — Why Games Need Arrays
-Next, we discussed how games often need to manage several objects at once:
+## Part B — Arrays in Games
 
-- multiple enemies  
-- multiple projectiles  
-- multiple obstacles  
-- multiple notes or sounds  
+### What We Discussed
+Before building the main project, we explored why games need arrays:
 
-Instead of creating many separate variables, programmers use **one array** and a loop that updates each element.
+- A game often has many objects on the screen at once.  
+- Each object needs to move or update every cycle.  
+- Instead of making lots of separate variables, we store these objects in **one list**.  
+- A loop can then update every item in the list.  
 
-> 💡 Key idea: arrays let us keep track of many things using a single variable.
+We looked at examples from familiar games (enemies, obstacles, projectiles) to see how this pattern appears everywhere in game design.
+
+> 💡 *Arrays let us manage many objects using one structure instead of many separate variables.*
 
 ---
 
 ## Part C — Crashy Bird (Build & Test)
-We built the *Crashy Bird* game step-by-step.
 
-Together, participants:
+### What We Built (Step-by-Step)
+We built our own version of *Crashy Bird* in stages:
 
-- created a **bird sprite** that moves up/down on button presses  
-- added a variable `ticks` to track timing  
-- created an empty **array of obstacles**  
-- used `add value` to push new pipes into the list  
-- used `for element of array` loops to move each obstacle left  
-- removed obstacles that move off-screen  
-- added a **collision check** using the bird’s position  
-- tested and debugged as the game developed
+1. **The Bird**  
+   We created a player sprite and programmed simple controls to move it up and down.
 
-Participants then customised their version by adjusting speed, timing, gap size or adding sound effects.
+2. **Scrolling Obstacles**  
+   We introduced an empty list to store obstacles.  
+   Each cycle, new obstacles were added, and existing ones were moved across the screen.
 
-> 🧩 This reinforced how arrays, loops and conditions work together to create dynamic game behaviour.
+3. **Removing Old Obstacles**  
+   When an obstacle moved off the edge, we removed it from the list to keep the game tidy.
+
+4. **Collision Logic**  
+   We checked if the bird’s position matched any obstacle.  
+   If they touched → **Game Over**.
+
+5. **Testing & Refining**  
+   Participants tested their versions, fixed issues and customised elements such as speed, timing and effects.
+
+> 🔄 *This project brought together arrays, loops, events and movement to create a complete game.*
+
+### Try These Mini-Challenges
+- Make obstacles appear more or less often.  
+- Change the speed to make the game harder or easier.  
+- Show a score based on how long the bird survives.  
+- Add sound effects for movement or crashes.  
+- Create “bonus” gaps or patterns.
 
 ---
 
 ## Resources
-- **Crashy Bird (reference code):** <https://makecode.microbit.org/v1/projects/crashy-bird>{:target="_blank" rel="noopener"}  
-- **Array Random Chooser Example:** *(Add your shared link here)*  
+- **Crashy Bird Reference Project:** <https://makecode.microbit.org/v1/projects/crashy-bird>{:target="_blank" rel="noopener"}  
 - **MakeCode Arrays Overview:** <https://makecode.microbit.org/courses/csintro/arrays/overview>{:target="_blank" rel="noopener"}  
 - **Maker MakeCode Arrays Reference:** <https://maker.makecode.com/reference/arrays>{:target="_blank" rel="noopener"}  
-- **SkoolOfCode Arrays Guide:** <https://skoolofcode.us/blog/hands-on-learning-arrays-made-simple-with-microbit-and-makecode/>{:target="_blank" rel="noopener"}  
-- **MakeCode Editor:** <https://makecode.microbit.org>{:target="_blank" rel="noopener"}
+- **SkoolOfCode – Arrays Made Simple:** <https://skoolofcode.us/blog/hands-on-learning-arrays-made-simple-with-microbit-and-makecode/>{:target="_blank" rel="noopener"}  
+- **MakeCode Editor:** <https://makecode.microbit.org>{:target="_blank" rel="noopener"}  
 
 ---
 
 ## Equipment
-- BBC micro:bits + USB cables (or simulator)  
+- BBC micro:bits + USB cables  
 - Laptops / Chromebooks with internet access  
 
 ---
 
 ## Safety & Setup Notes
-- Provide support for younger participants when editing longer scripts.  
-- Encourage testing often so errors can be spotted early.  
-- Ensure cables remain tidy during programming.
+- Test frequently to catch small bugs early.  
+- Encourage careful handling of USB cables.  
+- Allow space for participants to debug in pairs when needed.
 
 ---
 
