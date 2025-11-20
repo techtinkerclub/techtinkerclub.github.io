@@ -1264,17 +1264,184 @@
         ]
       },
     "9": {
-  "title": "Week 10: Arrays and Iteration",
-  "description": "Medium-hard questions combining arrays, loops, events, conditions and revision from previous weeks.",
+  "title": "Week 9: Fireflies, Radio & Local Rules",
+  "description": "Mixed set: synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates. MCQ + Match only.",
   "locked": false,
   "questions": [
-
+    {
+      "id": "w9-q1",
+      "question": "Why is it important that devices use the same radio group number when communicating?",
+      "type": "multiple-choice",
+      "options": [
+        "It lets them send stronger messages",
+        "Only devices on the same group can hear each other's messages",
+        "It makes the LEDs brighter",
+        "It increases battery life"
+      ],
+      "correct": 1,
+      "explanation": "Radio groups act like channels. Devices must match the group number to receive each other's messages.",
+      "difficulty": "medium-hard",
+      "hint": "Think: like walkie-talkie channels."
+    },
+    {
+      "id": "w9-q2",
+      "question": "Pseudocode — how many times does the loop run?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set clock = 0\nrepeat until clock >= 6\n    pause 100\n    change clock by 1\nend",
+      "options": ["5 times", "6 times", "7 times", "It runs forever"],
+      "correct": 1,
+      "explanation": "clock starts at 0. Each loop adds 1. It stops when clock becomes 6, so it runs exactly 6 times.",
+      "difficulty": "medium-hard",
+      "hint": "Trace clock: 0,1,2,3,4,5,6."
+    },
+    {
+      "id": "w9-q3",
+      "question": "Match each concept to the best description.",
+      "type": "drag-drop",
+      "terms": ["Synchronisation", "Local rule", "Radio group", "Message"],
+      "definitions": [
+        "A small instruction each device follows on its own",
+        "Devices gradually lining up their timing without a leader",
+        "A shared channel number that devices agree to use",
+        "A packet of data sent from one device to another"
+      ],
+      "correctMatches": [1, 0, 2, 3],
+      "explanation": "Synchronisation is lining up timing; a local rule is the small behaviour each device follows; a radio group is the shared channel; a message is the data packet sent.",
+      "difficulty": "medium-hard",
+      "hint": "Think: behaviour, overall pattern, channel, and data."
+    },
+    {
+      "id": "w9-q4",
+      "question": "Pseudocode — how many times does score increase?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set myID = 4\nset score = 0\nset received = [2, 4, 4, 3, 4]\nfor each n in received\n    if n = myID then\n        change score by 1\n    end if\nend\nshow number score",
+      "options": ["1", "2", "3", "4"],
+      "correct": 2,
+      "explanation": "The value 4 appears three times in the list, so score increases three times → final score = 3.",
+      "difficulty": "medium-hard",
+      "hint": "Count only the messages where n equals 4."
+    },
+    {
+      "id": "w9-q5",
+      "question": "True or False: Two micro:bits on different radio groups can still receive each other’s messages if they are close together.",
+      "type": "multiple-choice",
+      "options": ["True", "False"],
+      "correct": 1,
+      "explanation": "Radio groups behave like separate channels. Devices must share the same group number to receive each other’s messages.",
+      "difficulty": "medium-hard",
+      "hint": "Think of groups like different walkie-talkie channels."
+    },
+    {
+      "id": "w9-q6",
+      "question": "Pseudocode — what number is finally shown?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set x = 1\nrepeat 4 times\n    change x by 2\nend\nshow number x",
+      "options": ["5", "7", "8", "9"],
+      "correct": 3,
+      "explanation": "x starts at 1. It increases by 2 four times: 1 → 3 → 5 → 7 → 9. The final value is 9.",
+      "difficulty": "medium-hard",
+      "hint": "Add 2 each time, four times in total."
+    },
+    {
+      "id": "w9-q7",
+      "question": "Pseudocode — what is the final value of counter?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set counter = 0\nset readings = [70, 45, 30, 60]\nfor each r in readings\n    if r < 60 then\n        change counter by 1\n    end if\nend\nshow number counter",
+      "options": ["1", "2", "3", "4"],
+      "correct": 1,
+      "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 60 are not counted.)",
+      "difficulty": "medium-hard",
+      "hint": "Only count readings where r < 60."
+    },
+    {
+      "id": "w9-q8",
+      "question": "Which situation is a good example of local communication in a system?",
+      "type": "multiple-choice",
+      "options": [
+        "Every device asks a central server for instructions every second",
+        "Each device only listens to, receives and sends information to nearby devices",
+        "One device sends a command directly to every other device in the room",
+        "All devices share one global variable stored on the internet"
+      ],
+      "correct": 1,
+      "explanation": "Local communication means reacting to nearby signals rather than taking orders from a single controller.",
+      "difficulty": "medium-hard",
+      "hint": "Local = neighbours, not bosses."
+    },
+    {
+      "id": "w9-q9",
+      "question": "Match the code idea to what it controls.",
+      "type": "drag-drop",
+      "terms": ["Event", "Loop", "Variable", "Condition"],
+      "definitions": [
+        "Decides which branch of code will run",
+        "Stores a value like a score or sensor reading",
+        "Repeats a set of instructions again and again",
+        "Starts running code when something happens"
+      ],
+      "correctMatches": [3, 2, 1, 0],
+      "explanation": "Event → starts code; Loop → repeats code; Variable → stores a changeable value; Condition → decides which branch runs.",
+      "difficulty": "medium-hard",
+      "hint": "Think: when / repeat / remember / choose."
+    },
+    {
+      "id": "w9-q10",
+      "question": "Pseudocode — which condition will never run because of the order of the tests?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set temp = 28\nif temp > 25 then\n    show \"Hot\"\nelse if temp > 20 then\n    show \"Warm\"\nelse if temp > 10 then\n    show \"Mild\"\nelse\n    show \"Cold\"\nend if",
+      "options": [
+        "The first condition (temp > 25)",
+        "The second condition (temp > 20)",
+        "The third condition (temp > 10)",
+        "None — all of them can run in some situation"
+      ],
+      "correct": 3,
+      "explanation": "All three conditions can be true for different values of temp (for example: 30 → Hot, 22 → Warm, 15 → Mild). None of the branches are unreachable.",
+      "difficulty": "medium-hard",
+      "hint": "Think about what happens for different values: 30, 22, 15, and 5."
+    },
+    {
+      "id": "w9-q11",
+      "question": "Pseudocode — what number will be shown?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set level = 1\nset score = 7\nif score >= 10 then\n    set level = 3\nelse if score >= 5 then\n    set level = 2\nend if\nshow number level",
+      "options": ["1", "2", "3", "4"],
+      "correct": 1,
+      "explanation": "score = 7 is not >= 10, but it is >= 5, so level becomes 2.",
+      "difficulty": "medium-hard",
+      "hint": "The tests are checked in order; the first true one wins."
+    },
+    {
+      "id": "w9-q12",
+      "question": "Pseudocode — where does the sprite finish on the x-axis?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set x = 2\nrepeat 3 times\n    if x < 4 then\n        change x by 1\n    else\n        change x by -1\n    end if\nend\nshow number x",
+      "options": ["1", "2", "3", "4"],
+      "correct": 2,
+      "explanation": "Step 1: x=2<4 → x=3. Step 2: 3<4 → x=4. Step 3: 4<4 is false → x=3. Final x = 3.",
+      "difficulty": "medium-hard",
+      "hint": "Trace x carefully for each repeat."
+    }
+  ]
+},
+    "10": {
+  "title": "Week 10: Arrays and Iteration",
+  "description": "Medium-hard questions mixing arrays, loops, counters, conditions and earlier concepts. Includes new 'missing line' pseudocode items.",
+  "locked": false,
+  "questions": [
     {
       "id": "w10-q1",
       "question": "What does an index represent in an array?",
       "type": "multiple-choice",
       "options": [
-        "The number of items the array can hold",
+        "The number of elements the array can hold",
         "The position of an element inside the array",
         "The value stored at the first element",
         "A special variable used only in loops"
@@ -1283,17 +1450,15 @@
       "explanation": "An index is the position of an element in an array. Indexing starts at 0.",
       "difficulty": "medium"
     },
-
     {
       "id": "w10-q2",
       "question": "An array contains 5 elements. Which of these is a valid index?",
       "type": "multiple-choice",
       "options": ["5", "4", "6", "-1"],
       "correct": 1,
-      "explanation": "A 5-element array has valid positions 0–4.",
+      "explanation": "A 5-element array has valid positions 0, 1, 2, 3 and 4.",
       "difficulty": "medium"
     },
-
     {
       "id": "w10-q3",
       "question": "Which description best explains why arrays are useful?",
@@ -1305,84 +1470,91 @@
         "They generate random numbers without using the random block."
       ],
       "correct": 1,
-      "explanation": "Arrays group related values so loops can process them efficiently.",
+      "explanation": "Arrays group related values so loops can process or check them efficiently.",
       "difficulty": "medium"
     },
-
     {
       "id": "w10-q4",
-      "question": "What does this pseudocode do?\n\n```text\nset nums to [3, 6, 9, 12]\nfor each value in nums:\n    show number value / 3\n```",
+      "question": "Pseudocode — what numbers are shown on the micro:bit?",
       "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set nums = [3, 6, 9, 12]\nfor each value in nums\n    show number value / 3\nend",
       "options": [
-        "Shows 3, 6, 9, 12",
-        "Shows 1, 2, 3, 4",
-        "Shows 0, 1, 2, 3",
-        "Shows 9, 6, 3, 1"
+        "3, 6, 9, 12",
+        "1, 2, 3, 4",
+        "0, 1, 2, 3",
+        "9, 6, 3, 1"
       ],
       "correct": 1,
-      "explanation": "Each element is divided by 3 → 3/3=1, 6/3=2, 9/3=3, 12/3=4.",
-      "difficulty": "medium-hard"
+      "explanation": "Each array element is divided by 3 → 3/3=1, 6/3=2, 9/3=3, 12/3=4.",
+      "difficulty": "medium-hard",
+      "hint": "Follow each element in order: 3 then 6 then 9 then 12."
     },
-
     {
       "id": "w10-q5",
       "question": "Which line correctly checks if an array is empty?",
       "type": "multiple-choice",
       "options": [
-        "if array = 0 then",
-        "if length of array = 0 then",
-        "if array < 0 then",
+        "if arr = 0 then",
+        "if length of arr = 0 then",
+        "if arr < 0 then",
         "if first element = empty then"
       ],
       "correct": 1,
-      "explanation": "An array is empty when its length is 0.",
+      "explanation": "An array is empty when its length (number of elements) is 0.",
       "difficulty": "medium"
     },
-
     {
       "id": "w10-q6",
-      "question": "In pseudocode, what does this mean?\n\n```text\nfor each item in array:\n    do something\n```",
+      "question": "Pseudocode — what does this loop do?",
       "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "for each item in arr\n    do something\nend",
       "options": [
-        "Repeat the loop a random number of times",
-        "Repeat once for every element stored in the array",
-        "Repeat until the array becomes empty",
-        "Repeat only for the first element"
+        "Repeats a random number of times",
+        "Repeats once for every element stored in the array",
+        "Repeats until the array becomes empty",
+        "Repeats only for the first element"
       ],
       "correct": 1,
-      "explanation": "The loop runs once per element in the array.",
+      "explanation": "The loop runs once per element in the array arr.",
       "difficulty": "medium"
     },
-
     {
       "id": "w10-q7",
-      "question": "Consider the pseudocode:\n\n```text\nset score to 0\nfor i from 0 to 4:\n    if i mod 2 = 0 then\n        change score by 1\n```\nWhat is the final value of score?",
+      "question": "Pseudocode — what number is finally shown?",
       "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set score = 0\nfor i from 0 to 4   # i increases by 1 each time\n    if i mod 2 = 0 then\n        change score by 1\n    end if\nend\nshow number score",
       "options": ["1", "2", "3", "4"],
       "correct": 2,
-      "explanation": "i takes values 0,1,2,3,4 → even values = 0,2,4 → score increases 3 times.",
-      "difficulty": "medium-hard"
+      "explanation": "i takes values 0,1,2,3,4. Even values are 0,2,4, so score increases 3 times.",
+      "difficulty": "medium-hard",
+      "hint": "Count how many even values appear between 0 and 4."
     },
-
     {
       "id": "w10-q8",
+      "question": "Missing line — choose the line that correctly picks a random activity from an array.",
       "type": "missing-line",
-      "question": "Choose the missing line:\n\n```text\nset activities to [\"read\", \"run\", \"draw\"]\npick random index from 0 to 2\n__________________________\nshow string chosen\n```",
+      "codeLabel": "Pseudocode",
+      "code": "set activities = [\"read\", \"run\", \"draw\"]\npick random index from 0 to 2\n____\nshow string chosen",
       "options": [
-        "set chosen to activities at index",
-        "set activities to chosen",
+        "set chosen = activities at index",
+        "set activities = chosen",
         "change index by chosen",
         "repeat index times"
       ],
       "correct": 0,
-      "explanation": "We read the element at that index: chosen = activities[index].",
-      "difficulty": "medium-hard"
+      "explanation": "We need to read the element at that index: chosen = activities[index].",
+      "difficulty": "medium-hard",
+      "hint": "We want to copy one element out of the array into chosen."
     },
-
     {
       "id": "w10-q9",
+      "question": "Missing line — this loop removes certain elements from the front of an array. Which line fits in the blank?",
       "type": "missing-line",
-      "question": "Choose the missing line in this cleanup loop:\n\n```text\nwhile length of array > 0 and first element = 0:\n    ____________________________\n    remove first element from array\n```",
+      "codeLabel": "Pseudocode",
+      "code": "while length of arr > 0 and first element = 0\n    ____\n    remove first element from arr\nend",
       "options": [
         "pause 100 ms",
         "set first element to 1",
@@ -1390,25 +1562,27 @@
         "change index by 1"
       ],
       "correct": 2,
-      "explanation": "Even in general games, you delete the sprite before removing it from the array.",
-      "difficulty": "medium-hard"
+      "explanation": "In many games we delete the sprite from the screen before removing it from the array.",
+      "difficulty": "medium-hard",
+      "hint": "Think about tidying both the display and the data."
     },
-
     {
       "id": "w10-q10",
-      "question": "What does this pseudocode create?\n\n```text\nset numbers to []\nfor i from 1 to 4:\n    add i*i to numbers\n```",
+      "question": "Pseudocode — what does the array numbers contain at the end?",
       "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set numbers = []\nfor i from 1 to 4\n    add i*i to numbers\nend",
       "options": [
-        "Adds 1, 2, 3, 4 to the array",
-        "Adds 1, 4, 9, 16 to the array",
-        "Adds 2, 4, 6, 8 to the array",
-        "Adds 1, 3, 5, 7 to the array"
+        "[1, 2, 3, 4]",
+        "[1, 4, 9, 16]",
+        "[2, 4, 6, 8]",
+        "[1, 3, 5, 7]"
       ],
       "correct": 1,
-      "explanation": "For i=1..4, i*i gives 1, 4, 9, 16.",
-      "difficulty": "medium-hard"
+      "explanation": "For i = 1,2,3,4 we add 1,4,9,16 to the array.",
+      "difficulty": "medium-hard",
+      "hint": "i*i means i multiplied by itself."
     },
-
     {
       "id": "w10-q11",
       "question": "Which statement about arrays is correct?",
@@ -1416,27 +1590,29 @@
       "options": [
         "An array can only store numbers.",
         "Arrays always start at index 1.",
-        "Arrays can store many types of data, including images, text and numbers.",
+        "Arrays can store many types of data, including text, numbers or images.",
         "Arrays cannot be used inside loops."
       ],
       "correct": 2,
-      "explanation": "Arrays can store values of many types.",
+      "explanation": "Arrays can store many types of values, not just numbers.",
       "difficulty": "medium"
     },
-
     {
       "id": "w10-q12",
-      "question": "What does this pseudocode display?\n\n```text\nset arr to [2, 4, 6]\nset total to 0\nfor each n in arr:\n    change total by n\nshow number total\n```",
+      "question": "Pseudocode — what number is shown?",
       "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "set arr = [2, 4, 6]\nset total = 0\nfor each n in arr\n    change total by n\nend\nshow number total",
       "options": ["6", "8", "10", "12"],
       "correct": 3,
-      "explanation": "2 + 4 + 6 = 12.",
+      "explanation": "We add 2 + 4 + 6, giving a total of 12.",
       "difficulty": "medium"
     }
   ]
 }
 
-   
+
+
 
   }
 }
