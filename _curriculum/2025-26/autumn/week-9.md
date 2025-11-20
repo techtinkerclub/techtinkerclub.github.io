@@ -110,20 +110,15 @@ A remainder of **0** means the number is a **multiple**, which is why this works
 ---
 
 ## Resources
-- **Crashy Bird (MakeCode Project):**  
-  [Code](https://makecode.microbit.org/v1/projects/crashy-bird){:target="_blank" rel="noopener"}
+- **Crashy Bird (MakeCode Project):**  [Code](https://makecode.microbit.org/v1/projects/crashy-bird){:target="_blank" rel="noopener"}
 
-- **MakeCode Arrays Overview:**  
-  [Link](https://makecode.microbit.org/courses/csintro/arrays/overview){:target="_blank" rel="noopener"}
+- **MakeCode Arrays Overview:**  [Link](https://makecode.microbit.org/courses/csintro/arrays/overview){:target="_blank" rel="noopener"}
 
-- **MakeCode Arrays Reference (Maker Edition):**  
-  [Link](https://maker.makecode.com/reference/arrays){:target="_blank" rel="noopener"}
+- **MakeCode Arrays Reference (Maker Edition):**  [Link](https://maker.makecode.com/reference/arrays){:target="_blank" rel="noopener"}
 
-- **SkoolOfCode — Arrays Made Simple:**  
-  [Link](https://skoolofcode.us/blog/hands-on-learning-arrays-made-simple-with-microbit-and-makecode/){:target="_blank" rel="noopener"}
+- **SkoolOfCode — Arrays Made Simple:**  [Link](https://skoolofcode.us/blog/hands-on-learning-arrays-made-simple-with-microbit-and-makecode/){:target="_blank" rel="noopener"}
 
-- **MakeCode Editor:**  
-  [Link](https://makecode.microbit.org){:target="_blank" rel="noopener"}
+- **MakeCode Editor:**  [Link](https://makecode.microbit.org){:target="_blank" rel="noopener"}
 
 ---
 
