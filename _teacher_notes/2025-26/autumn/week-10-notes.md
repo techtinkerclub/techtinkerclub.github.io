@@ -19,50 +19,32 @@ header:
 
 **Theme:** Arrays  
 **Focus Concept:** Lists, indexing and multi‑object updates  
-**Mini‑Project:** *Crashy Bird* (scrolling obstacle game built in stages)
+**Mini‑Project:** *Crashy Bird*
 
 ---
 
 ## Learning Objectives
 
-By the end of this session, participants should be able to:
-
-- Explain that an **array/list** is one variable that stores many values in order.  
-- Use a **position/index** to select a value from a list.  
-- Describe how a game can use an array to track multiple obstacles.  
-- Build and test a scrolling game that uses arrays and loops together.
+- Explain that an **array/list** stores many values in order  
+- Use **index positions** to pick a value  
+- Understand multi‑object updates using loops  
+- Build a full scrolling game using arrays
 
 ---
 
 ## Session Flow (≈ 80 min)
 
-1. **Starter & Recap (10 min)** — recap of variables and random numbers.  
-2. **Part A – Arrays with Words (10–15 min)** — build a random chooser.  
-3. **Part B – Rock–Paper–Scissors with Arrays (15–20 min)** — demo with image arrays.  
-4. **Part C – Crashy Bird Build (30–35 min)** — full game build inside the *forever* loop.  
-5. **Reflection & Extensions (5–10 min)**  
+1. Starter & recap  
+2. Part A – Arrays with Words  
+3. Part B – Rock–Paper–Scissors with Arrays  
+4. Part C – Crashy Bird (main build)  
+5. Reflection  
 
 ---
 
-## Part A – Arrays with Words
+# Part A – Arrays with Words
 
-### Aim
-Give children an intuitive feel for arrays using a simple list of text options before they see arrays inside games.
-
-Short project:
-- **Random Activity Chooser** – list of strings
-
-### Conceptual Focus
-- A list can store **many related items** under one variable name.  
-- Each item has a **position** called an index (starting at 0).  
-- We can use a random index to pick a random element.
-
----
-
-### Pseudocode (Blocks-style)
-
-#### A1. Random Activity Chooser
-
+### Pseudocode
 ```text
 on start:
     make a list of activities:
@@ -74,264 +56,164 @@ on start:
         "bake a cake"
 
 on button A pressed:
-    pick a random position between 0 and last position in the list
-    read the activity at that position
-    show the chosen activity
+    pick random index 0 → last
+    read activity at that index
+    show activity
 ```
 
-### Blocks version (MakeCode)
-
+### Blocks Version
 <div class="makecode-embed">
   <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
-    <iframe 
-      style="position:absolute;top:0;left:0;width:100%;height:100%;" 
-      src="https://makecode.microbit.org/---codeembed#pub:S57666-26417-59731-40588" 
-      allowfullscreen="allowfullscreen" 
-      frameborder="0" 
-      sandbox="allow-scripts allow-same-origin">
-    </iframe>
+    <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S57666-26417-59731-40588" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
 </div>
 
-### Teaching Steps (Part A)
-
-1. Spoken list: “pizza, pasta, salad…” → explain index positions.  
-2. Build the chooser live. Emphasise choosing a **position**, not the word directly.  
-3. Key idea: “A list keeps related things together and we pick by position.”
-
 ---
 
-## Part B – Rock–Paper–Scissors with Arrays
-
-### Aim
-Show a mini‑game using an array of images.
-
-### Conceptual Focus
-- Arrays can hold **icons/images**, not just text.  
-- Random index → random image.  
-- Same idea later for choosing the gap row in Crashy Bird.
+# Part B – Rock–Paper–Scissors with Arrays
 
 ### Pseudocode
-
 ```text
 on start:
     make a list of images:
-        rock picture
-        paper picture
-        scissors picture
+        rock
+        paper
+        scissors
 
 on shake:
-    pick a random number 0–2
-    read the image at that position
-    show that image
+    pick random index 0→2
+    read image at that index
+    show image
 ```
-### Blocks version (MakeCode)
 
+### Blocks Version
 <div class="makecode-embed">
-  <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S61168-68102-35768-98938" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+  <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
+    <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S61168-68102-35768-98938" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
 </div>
 
 ---
 
-## Part C – Crashy Bird Build
+# Part C – Crashy Bird Build
 
-### Aim
-Build Crashy Bird step by step, emphasising arrays, loops and collisions.
-
----
-
-## Conceptual Focus
-- Arrays: one variable storing many sprites (obstacles).  
-- Indexing: positions in a list.  
-- Iteration: acting on every obstacle.  
-- Game loop: the **forever** loop acts as the engine.  
-- Collision: bird and obstacle share same (x, y).
-
----
-
-## Pseudocode Overview (Blocks-style)
-
-**Note:** All steps below happen *inside the forever loop* unless stated otherwise.
-
+## Pseudocode Overview
 ```text
 on start:
     set index to 0
-    create bird at x = 0, y = 2
-    set bird to blink
-    create an empty list called obstacles
+    create bird at x=0 y=2
+    set bird blink
+    set obstacles to empty array
     set ticks to 0
 
-on button A pressed:
-    move bird up one row
-
-on button B pressed:
-    move bird down one row
+on button A pressed: change bird y by -1
+on button B pressed: change bird y by +1
 
 forever:
-    -- 1. remove off‑screen obstacles --
-    while obstacles has items
-          and first obstacle x = 0:
-        delete first obstacle from screen
-        remove it from the list
+    # 1 remove off‑screen
+    while length of obstacles > 0
+          and (x of obstacle at 0 = 0):
+        delete obstacle at 0
+        remove from obstacles
 
-    -- 2. move all obstacles --
+    # 2 move obstacles
     for each obstacle in obstacles:
-        move obstacle left by 1
+        change obstacle x by -1
 
-    -- 3. spawn new obstacles --
-    if ticks mod 3 = 0:
-        choose random gap row 0–4
+    # 3 spawn
+    if remainder of ticks ÷ 3 = 0:
+        set gap to pick random 0→4
         for row from 0 to 4:
             if row ≠ gap:
-                create obstacle at (4, row)
-                add obstacle to the list
+                create obstacle at (4,row)
+                add to obstacles
 
-    -- 4. detect collisions --
+    # 4 collision
     for each obstacle in obstacles:
-        if obstacle position = bird position:
+        if same x AND same y as bird:
             game over
 
-    -- 5. timing --
+    # 5 timing
     change ticks by 1
     pause 1000 ms
 ```
+
+### Blocks Version
 <div class="makecode-embed">
-<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S42595-41266-97255-32528" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+  <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
+    <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S42595-41266-97255-32528" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
 </div>
 
 ---
 
-## Step-by-Step Build Notes
+# Step‑by‑Step Build Notes
 
-### Step 1 – Initialise Bird, Index and List
-
+### Step 1 – Initialise
 ```text
-on start:
-    set index to 0
-    create bird at (0,2)
-    set bird to blink
-    create empty list obstacles
-    set ticks to 0
+set index to 0
+create bird at (0,2)
+set blink
+set obstacles to empty array
+set ticks to 0
 ```
 
-**Explanation:**  
-This runs once at the beginning. We prepare the bird’s position, make it blink so it stands out, and create an empty list that will soon hold many obstacles.
-
----
-
-### Step 2 – Player Controls
-
+### Step 2 – Controls
 ```text
-when button A pressed: move bird up one row
-when button B pressed: move bird down one row
+on A: change bird y by −1
+on B: change bird y by +1
 ```
 
-**Explanation:**  
-This recreates the familiar control scheme from earlier weeks. Remind children that going above row 0 or below row 4 will move the sprite off‑screen.
-
----
-
-## Step 3 – The Game Loop (Forever Loop)
-
-Everything from this point onward happens *inside* the `forever` loop.  
-This loop acts as the **engine** of the game — it repeats again and again, updating everything on the screen.
-
----
-
-### 3a – Remove Off‑Screen Obstacles
-
+### Step 3a – Remove Off‑Screen Obstacles
 ```text
-while obstacles not empty
-      and first obstacle x = 0:
-    delete first obstacle
-    remove from list
+while obstacles not empty AND x of first obstacle = 0:
+    delete obstacle at 0
+    remove from array
 ```
 
-**Explanation:**  
-Obstacles move from right to left. When one reaches the left edge (x = 0), the next movement would push it off the grid.  
-If we don’t remove it, the list grows forever, slowing the game and confusing collision checks.
-
----
-
-### 3b – Move All Obstacles Left
-
+### Step 3b – Move All Obstacles
 ```text
 for each obstacle in obstacles:
-    move obstacle left by 1
+    change x by −1
 ```
 
-**Explanation:**  
-A single loop updates *all* obstacles, no matter how many exist.  
-This demonstrates the power of arrays in games.
-
----
-
-### 3c – Spawn New Obstacles
-
+### Step 3c – Spawn New Obstacles
 ```text
-if ticks mod 3 = 0:
-    choose gap row
-    for row 0–4:
+if remainder of ticks ÷ 3 = 0:
+    gap = pick random 0→4
+    for row 0→4:
         if row ≠ gap:
             create obstacle at (4,row)
-            add obstacle to list
+            add to array
 ```
 
-**Explanation:**  
-Every few cycles (based on ticks), we create a new column of obstacles.  
-One random row becomes the gap, making the game playable.
-
----
-
-### 3d – Detect Collisions
-
+### Step 3d – Collision
 ```text
-for each obstacle:
-    if obstacle x = bird x and obstacle y = bird y:
+for each obstacle in obstacles:
+    if same position as bird:
         game over
 ```
 
-**Explanation:**  
-A collision occurs when the bird and any obstacle share the same coordinates.
-
----
-
-### 3e – Timing with Ticks
-
+### Step 3e – Timing
 ```text
 change ticks by 1
 pause 1000 ms
 ```
 
-**Explanation:**  
-Ticks increases every cycle. The pause slows the game to a playable speed.
+---
+
+# Instructor Tips
+- One **array** holds many obstacles  
+- Loops update every item  
+- Predict before running  
+- Debug one stage at a time  
 
 ---
 
-## Instructor Tips
-- Reinforce: **one list → many obstacles**.  
-- Ask for predictions before running code.
-
----
-
-## Common Misconceptions
-- Arrays start at **0**, not 1.  
-- Lists can hold **many** items.  
-- Removing off‑screen obstacles is essential.
-
----
-
-## Differentiation
-
-**Support:** partially built starter.  
-**Extend:** scoring, speed changes, sound, patterns.
-
----
-
-## Reflection Questions
-- “What is an array?”  
-- “Why is it useful in Crashy Bird?”  
-- “Where do we loop through the entire list?”  
+# Reflection
+- What does the array store?  
+- Why must we delete old obstacles?  
+- How does the forever loop act as a “game engine”?  
 
 ---
 
