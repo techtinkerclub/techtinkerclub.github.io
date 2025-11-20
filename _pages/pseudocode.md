@@ -1,18 +1,3 @@
----
-layout: single
-title: ""
-permalink: /tools/ttc-pseudocode-spec/
-robots: noindex
-toc: true
-toc_sticky: true
-sidebar: false
-header:
-  overlay_image: /assets/images/banner.png
-  show_overlay_excerpt: false
-  show_overlay_text: false
----
-
-{% include print-to-pdf.html %}
 
 # Tech Tinker Club Pseudocode Specification v1.2 (Full Content)
 
@@ -119,8 +104,7 @@ These rules define how every program, quiz answer, worksheet example, and teachi
 
 ---
 
-# **2.1 Keywords in ALL CAPS**
-
+### 2.1 Keywords in ALL CAPS
 Keywords are always written in **ALL CAPS** so they stand out clearly from variables and values.
 
 Examples of TTC keywords:
@@ -140,8 +124,7 @@ Children recognise these capitalised words as “instructions to the computer”
 
 ---
 
-# **2.2 Variables in lowercase_with_underscores**
-
+### 2.2 Variables in lowercase_with_underscores
 Variables are created by the programmer and follow these rules:
 
 - All lowercase  
@@ -164,8 +147,7 @@ Good variable names are **short but meaningful**.
 
 ---
 
-# **2.3 System Values in [ Square Brackets ]**
-
+### 2.3 System Values in [ Square Brackets ]
 System or sensor readings always appear inside **square brackets**.
 
 Examples:
@@ -199,8 +181,7 @@ This rule makes it clear to children what comes **from the micro:bit/system**, a
 
 ---
 
-# **2.4 Commands Always Start With a Verb**
-
+### 2.4 Commands Always Start With a Verb
 Commands make something happen.  
 They always:
 
@@ -224,8 +205,7 @@ Commands are actions.
 
 ---
 
-# **2.5 Expressions Return Values**
-
+### 2.5 Expressions Return Values
 Expressions appear inside commands or conditions:
 
 Examples:
@@ -243,8 +223,7 @@ An expression never appears standalone on its own line.
 
 ---
 
-# **2.6 Block Structures Use Explicit END Lines**
-
+### 2.6 Block Structures Use Explicit END Lines
 Every multi-line structure must be closed clearly:
 
 ### **WHEN blocks**
@@ -288,8 +267,7 @@ This teaches structured programming from the start.
 
 ---
 
-# **2.7 Indentation and Layout**
-
+### 2.7 Indentation and Layout
 Inside a block:
 
 - all inner lines are indented with **4 spaces**
@@ -310,20 +288,19 @@ Proper indentation makes code easy for both children and teachers to read.
 
 ---
 
-# **2.8 Comments**
-
+### 2.8 Comments
 Comments use `#` at the beginning of the line.
 
 Examples:
 
 ```
-# reset the game values
+### reset the game values
 set score to 0
 set life to 3
 ```
 
 ```
-# check if the room is too dark
+### check if the room is too dark
 IF [light level] < 30 THEN
     show text "TOO DARK"
 END IF
@@ -333,8 +310,7 @@ Comments are ignored by the “computer” but very helpful for humans.
 
 ---
 
-# **2.9 One Purpose Per Line**
-
+### 2.9 One Purpose Per Line
 Children should avoid stacking multiple actions on one line.
 
 Bad:
@@ -352,8 +328,7 @@ show text "GO"
 
 ---
 
-# **2.10 No Symbols Children Don’t Need**
-
+### 2.10 No Symbols Children Don’t Need
 TTC avoids:
 
 - semicolons  
@@ -366,8 +341,7 @@ This keeps the language predictable and accessible.
 
 ---
 
-# **2.11 Summary of Syntax Rules**
-
+### 2.11 Summary of Syntax Rules
 - **Keywords** → ALL CAPS  
 - **Variables** → lowercase_with_underscores  
 - **System values** → [brackets]  
@@ -389,8 +363,7 @@ and helps teachers explain “why this goes inside [square brackets]”.
 
 ---
 
-# **3.1 Overview of Data Types**
-
+### 3.1 Overview of Data Types
 TTC pseudocode supports the following data types:
 
 ### **3.1.1 Numbers**
@@ -505,8 +478,7 @@ END IMAGE
 
 ---
 
-# **3.2 System Values in TTC Pseudocode**
-
+### 3.2 System Values in TTC Pseudocode
 System values are values provided automatically by the micro:bit or Arcade engine.  
 They always appear in **[square brackets]**.  
 They are **read-only**.
@@ -685,8 +657,7 @@ Used inside tilemap overlap events.
 
 ---
 
-# **3.3 Rules About System Values**
-
+### 3.3 Rules About System Values
 ### **3.3.1 They cannot be assigned**
 ❌ `set [light level] to 100`  
 ✔ `SET level TO [light level]`
@@ -705,8 +676,7 @@ This is intentional.
 
 ---
 
-# **3.4 Summary**
-
+### 3.4 Summary
 System values:
 
 - are always in **[square brackets]**  
@@ -1448,8 +1418,7 @@ All mappings are grouped by MakeCode category.
 
 ---
 
-# **5A.1 BASIC**
-
+### 5A.1 BASIC
 ### **show number**
 MakeCode block:  
 `show number 0`  
@@ -1507,8 +1476,7 @@ END FOREVER
 
 ---
 
-# **5A.2 INPUT**
-
+### 5A.2 INPUT
 ### **on button pressed**
 MakeCode:  
 `on button A pressed`  
@@ -1565,8 +1533,7 @@ TTC:
 
 ---
 
-# **5A.3 LED**
-
+### 5A.3 LED
 ### **plot**
 MakeCode:  
 `plot x y`  
@@ -1612,8 +1579,7 @@ TTC:
 
 ---
 
-# **5A.4 MUSIC**
-
+### 5A.4 MUSIC
 ### **play tone**
 MakeCode:  
 `play tone Middle C for 1 beat`  
@@ -1659,8 +1625,7 @@ TTC:
 
 ---
 
-# **5A.5 IMAGES**
-
+### 5A.5 IMAGES
 ### **show icon**
 Matches Basic section:
 `show icon heart`
@@ -1695,8 +1660,7 @@ END IMAGE
 
 ---
 
-# **5A.6 GAME**
-
+### 5A.6 GAME
 ### **score**
 MakeCode:  
 `set score 0`  
@@ -1733,8 +1697,7 @@ MakeCode:
 
 ---
 
-# **5A.7 RADIO**
-
+### 5A.7 RADIO
 ### **set group**
 MakeCode:  
 `radio.setGroup(1)`  
@@ -1772,8 +1735,7 @@ TTC: `[received packet number]`
 
 ---
 
-# **5A.8 PINS**
-
+### 5A.8 PINS
 ### **digital write**
 `pins.digitalWritePin(P0, 1)`  
 → `set digital pin P0 to 1`
@@ -1800,8 +1762,7 @@ TTC: `[received packet number]`
 
 ---
 
-# **5A.9 SERIAL**
-
+### 5A.9 SERIAL
 ### **serial write**
 `serial.writeLine("hello")`  
 → `serial write line "hello"`
@@ -1830,8 +1791,7 @@ END WHEN
 
 ---
 
-# **5A.10 BLUETOOTH**
-
+### 5A.10 BLUETOOTH
 Exact mapping depends on services enabled; core examples:
 
 `bluetooth.startUartService()`  
@@ -1842,8 +1802,7 @@ Exact mapping depends on services enabled; core examples:
 
 ---
 
-# **5A.11 TEXT (STRINGS)**
-
+### 5A.11 TEXT (STRINGS)
 ### **join text**
 MakeCode:  
 `"Score:" + score`  
@@ -1860,8 +1819,7 @@ TTC:
 
 ---
 
-# **5A.12 LISTS / ARRAYS**
-
+### 5A.12 LISTS / ARRAYS
 ### **create list**
 MakeCode:
 `let list = [1, 2, 3]`  
@@ -1902,8 +1860,7 @@ TTC:
 
 ---
 
-# **5A.13 SPRITES**
-
+### 5A.13 SPRITES
 ### **create sprite**
 MakeCode:
 ```
@@ -1954,8 +1911,7 @@ END WHEN
 
 ---
 
-# **5A.14 TILEMAP (Arcade)**
-
+### 5A.14 TILEMAP (Arcade)
 ### **on tile overlap**
 MakeCode:
 ```
@@ -1974,8 +1930,7 @@ END WHEN
 
 ---
 
-# **5A.15 ADVANCED**
-
+### 5A.15 ADVANCED
 ### **bitwise**
 MakeCode:  
 `bitwise AND`, `OR`, etc.  
@@ -2027,8 +1982,7 @@ Mappings are grouped by category.
 
 ---
 
-# **5B.1 BASIC**
-
+### 5B.1 BASIC
 ### **show number**
 TTC:
 ```
@@ -2094,8 +2048,7 @@ MakeCode:
 
 ---
 
-# **5B.2 INPUT**
-
+### 5B.2 INPUT
 ### **WHEN button**
 TTC:
 ```
@@ -2137,8 +2090,7 @@ TTC:
 
 ---
 
-# **5B.3 LED**
-
+### 5B.3 LED
 ### **plot**
 TTC:
 ```
@@ -2185,8 +2137,7 @@ MakeCode:
 
 ---
 
-# **5B.4 MUSIC**
-
+### 5B.4 MUSIC
 ### **play tone**
 ```
 play tone C4 for 1 beat
@@ -2234,8 +2185,7 @@ set volume to 100
 
 ---
 
-# **5B.5 IMAGES**
-
+### 5B.5 IMAGES
 ### **show big image / scroll**
 ```
 scroll image mountain at speed 200
@@ -2265,8 +2215,7 @@ The corresponding MakeCode is produced by:
 
 ---
 
-# **5B.6 GAME**
-
+### 5B.6 GAME
 ### **score**
 ```
 set score to 0
@@ -2321,8 +2270,7 @@ game over with win
 
 ---
 
-# **5B.7 RADIO**
-
+### 5B.7 RADIO
 ### **set group**
 ```
 set radio group to 5
@@ -2356,8 +2304,7 @@ System value:
 
 ---
 
-# **5B.8 PINS**
-
+### 5B.8 PINS
 ### **digital write**
 ```
 set digital pin P1 to 1
@@ -2390,8 +2337,7 @@ set servo P2 angle to 90
 
 ---
 
-# **5B.9 SERIAL**
-
+### 5B.9 SERIAL
 ### **write**
 ```
 serial write line "hello"
@@ -2423,8 +2369,7 @@ WHEN [serial data received "
 
 ---
 
-# **5B.10 BLUETOOTH**
-
+### 5B.10 BLUETOOTH
 ### **uart service**
 ```
 enable bluetooth uart service
@@ -2441,8 +2386,7 @@ enable bluetooth uart service
 
 ---
 
-# **5B.11 TEXT**
-
+### 5B.11 TEXT
 ### **join text**
 ```
 "Score: " + to_text(score)
@@ -2464,8 +2408,7 @@ Direct equivalents exist in **Text → substring**, **Text → char at**.
 
 ---
 
-# **5B.12 LISTS**
-
+### 5B.12 LISTS
 ### **make list**
 ```
 MAKE LIST nums WITH 1, 2, 3
@@ -2503,8 +2446,7 @@ SET nums[1] TO 10
 
 ---
 
-# **5B.13 SPRITES (Arcade)**
-
+### 5B.13 SPRITES (Arcade)
 ### **create sprite**
 ```
 MAKE SPRITE bird OF KIND player WITH IMAGE
@@ -2555,8 +2497,7 @@ set stay_in_screen of bird to on
 
 ---
 
-# **5B.14 TILEMAP (Arcade)**
-
+### 5B.14 TILEMAP (Arcade)
 ```
 WHEN player overlaps tile grass DO
 ```
@@ -2569,8 +2510,7 @@ WHEN player overlaps tile grass DO
 
 ---
 
-# **5B.15 ADVANCED**
-
+### 5B.15 ADVANCED
 ### **background**
 ```
 IN BACKGROUND
@@ -2598,4 +2538,3 @@ log data "temp" = temperature
 ---
 
 This completes the full **TTC → MakeCode** mapping.
-
