@@ -29,7 +29,7 @@ By the end of this session, participants should be able to:
 
 - Explain that an **array/list** is one variable that stores many values in order.  
 - Use a **position/index** to select a value from an array.  
-- Describe how a game can use an array to track multiple obstacles.  
+- Describe how a game can use an array to track multiple **obstacle sprites**.  
 - Build and test a scrolling game that uses arrays and loops together.
 
 ---
@@ -37,10 +37,10 @@ By the end of this session, participants should be able to:
 ## Session Flow (≈ 80 min)
 
 1. **Starter & Recap (10 min)** — quick recap of variables and random numbers.  
-2. **Part A – Arrays with Words (10–15 min)** — random chooser with a text array.  
-3. **Part B – Rock–Paper–Scissors with Arrays (15–20 min)** — demo with an array of images.  
+2. **Part A – Arrays with Words (10–15 min)** — random chooser using an array of strings.  
+3. **Part B – Rock–Paper–Scissors with Arrays (15–20 min)** — demo using an array of images.  
 4. **Part C – Crashy Bird Build (30–35 min)** — full game build using arrays and loops.  
-5. **Reflection & Extensions (5–10 min)** — connect arrays to other games and term concepts.
+5. **Reflection & Extensions (5–10 min)** — connect arrays to other games and concepts from the term.
 
 ---
 
@@ -48,7 +48,7 @@ By the end of this session, participants should be able to:
 
 ### Aim
 
-Give children an intuitive feel for arrays using a simple list of text options before they see arrays inside games.
+Give children an intuitive feel for arrays using a simple list of text options before they see arrays inside a game.
 
 Short project:
 
@@ -58,7 +58,7 @@ Short project:
 
 - An **array** can store **many related items** under one variable name.  
 - Each item has a **position** called an **index** (starting at 0).  
-- We can use a **random index** to pick a random element from the array.
+- We use a **random index** to pick a random element from the array.
 
 ---
 
@@ -99,26 +99,30 @@ on button A pressed:
 **How to introduce it**
 
 - Start with a spoken list: “pizza, pasta, salad, soup…”.  
+  Draw a row of boxes on the board labelled **0, 1, 2, 3** and write one item in each box.  
   Ask: *“If I say index 0, which one is it? What about index 2?”*  
-  Draw small boxes on the board labeled `0, 1, 2, 3` and write the items inside to make the idea of **index positions** concrete.
-- Then say: *“A list/array in code is like these boxes — one variable, many slots.”*
+- Then say:  
+  > “An array in code is like these labelled boxes: one variable, many slots. Each slot has a position number called an index.”
 
 **Key points while building**
 
-- Emphasise that `activities` is **one array variable** holding many strings, not six separate variables.  
-- When choosing, the program **does not choose the text directly**. It chooses an **index**, then reads the value at that index.
-- Make the “length − 1” idea explicit: if there are 6 items, valid indexes are `0` to `5`.
-  - You can quickly ask: *“What would happen if we picked random 0 to 6?”* → off‑by‑one error.
+- Make it clear that `activities` is **one array variable** that holds all the strings, not six separate variables.  
+- When choosing, the program **does not choose the word directly**. It chooses a **number** (`index`), then uses that number to look up the word in the array.  
+- Explicitly talk through `length - 1`: if there are 6 items, valid indexes are `0` to `5`.  
+  You can ask: *“What might go wrong if we picked random 0 to 6?”* → off‑by‑one error.
 
 **Checks and common issues**
 
-- If nothing appears, check that `show string choice` uses the **variable** `choice`, not a literal word.  
-- If the same item appears suspiciously often, explain that randomness can repeat and that this is normal.
+- If nothing appears when A is pressed:
+  - Check that `show string` is using the variable `choice` and not a hard‑coded string.  
+  - Check that `length of activities` is set correctly.
+- If learners think the array “remembers” the last index forever, show that each button press picks a **new random index**.
 
-**Good questions to ask learners**
+**Questions to ask learners**
 
-- “What does `index` store — the word or the position?”  
-- “If I add a new activity at the end, does the array get longer? What happens to the last index?”
+- “What exactly does `index` store — the word or the position?”  
+- “If we add another activity to the array, what happens to the length and the last index?”  
+- “Could we use the same pattern to choose a random sound or a random speed later on?”
 
 ---
 
@@ -132,7 +136,7 @@ Show that arrays can hold **images/icons** as well as text, and that the random�
 
 - Arrays can store **images**, not just words or numbers.  
 - We again pick a **random index**, then read the item at that position.  
-- This mirrors what we will later do with **rows** and **obstacles** in Crashy Bird.
+- This mirrors what we will later do with **rows** and **obstacle sprites** in Crashy Bird.
 
 ---
 
@@ -165,29 +169,31 @@ on shake:
 
 **How to frame it**
 
-- Tell participants: *“We’re going to reuse the same idea, but instead of words, our array will store pictures.”*  
-- Show the three icons on the board or screen first: rock, paper, scissors.  
-  Label them with indexes 0, 1, 2 to keep the connection clear.
+- Tell participants:  
+  > “We’re going to reuse the same idea, but instead of a list of words, our array will store pictures.”  
+- Show the three icons (rock, paper, scissors) on the projector or board.  
+  Underneath them, write the indexes **0**, **1**, **2** to keep the index idea alive.
 
 **While coding**
 
-- Link each line of pseudocode to blocks:
+- Link each line of pseudocode to the blocks:
   - *“make array icons”* → array variable of type image.  
-  - *“set index to random 0 to 2”* → built‑in block for random number.  
-  - *“show leds icons at index”* → array **get‑at‑index** block feeding an image into `show leds`.
-- Make explicit that the **array structure** is identical to Part A:
-  - One variable, multiple items, choose a position, then use it.
+  - *“set index to random 0 to 2”* → random block that returns a number.  
+  - *“show leds icons at index”* → **get‑at‑index** block feeding into `show leds`.
+- Keep repeating:  
+  > “The array holds the images. The random block picks a position. Then we ask the array for the image at that position.”
 
-**Questions and reasoning prompts**
+**Reasoning prompts**
 
-- “What do we expect to see if the random index is 1?”  
-- “If we wanted to add ‘lizard’ and ‘Spock’, what would we need to change?”  
-  (Array length + random range.)
+- “What exactly happens when the random index is 1?”  
+  (We show the second image: paper.)  
+- “If we added two more gestures (e.g. lizard and Spock), where should we change the random range?”  
 
 **Common misconceptions**
 
-- Learners sometimes think randomness is applied to the **icon** rather than to the **index**.  
-  Correct this gently: the randomness always acts on a **number**, which we use as an address inside the array.
+- Thinking that the random function chooses between rock, paper and scissors directly.  
+  Gently correct: randomness always gives a **number**, and we use that number to access the array.
+- Confusing “index = 1” with “first item”. Emphasise again: first item has index 0.
 
 ---
 
@@ -196,19 +202,19 @@ on shake:
 ### Aim
 
 Use arrays and loops in a meaningful context: a scrolling‑obstacle game.  
-The build should connect back to earlier weeks (movement, loops, collisions), with arrays as the new concept.
+The build should connect back to earlier weeks (movement, loops, collisions), with arrays as the new concept tying everything together.
 
 ### Conceptual Focus
 
-- **Arrays:** one variable storing many obstacle sprites.  
-- **Indexing:** the array keeps order; we can talk about “the first obstacle”.  
-- **Iteration:** a loop can update *every* obstacle each cycle.  
-- **Game loop:** the `forever` block is the “engine” that runs the game.  
-- **Collision:** a hit occurs when two sprites share the same (x, y) position.
+- **Arrays:** one variable storing many **obstacle sprites**.  
+- **Indexing:** the array keeps order; we can talk about “the first obstacle” as `obstacles[0]`.  
+- **Iteration:** a loop can update *every* obstacle on each cycle of the game loop.  
+- **Game loop:** the `forever` block is the “engine” that repeatedly updates the game state.  
+- **Collision:** a hit occurs when an obstacle sprite and the bird share the same (x, y) position.
 
 ---
 
-## Pseudocode Overview (Improved Blocks‑style)
+## Pseudocode Overview (Blocks‑style, aligned to MakeCode)
 
 ```text
 on start:
@@ -239,7 +245,7 @@ forever:
         set gapRow to random 0 to 4
         for row from 0 to 4:
             if row ≠ gapRow:
-                create obstacle at (4, row)
+                create obstacle sprite at (4, row)
                 add obstacle to obstacles
 
     # 4. Check for collisions
@@ -253,7 +259,7 @@ forever:
     pause 1000 ms
 ```
 
-### Blocks version (MakeCode)
+### Blocks version (Crashy Bird reference)
 
 <div class="makecode-embed">
   <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
@@ -280,21 +286,22 @@ on start:
 
 **What this does**
 
-- Runs **once** at the very beginning.  
-- Puts the bird on the left, in the middle of the screen (column 0, row 2).  
-- Sets a gentle blink to make the bird easier to spot.  
-- Creates an **empty array** `obstacles` — this will later hold every obstacle sprite.  
-- Sets `ticks` to 0, ready to act as a simple timer.
+- Runs **once** at the very start of the program.  
+- Creates the **bird sprite** at the left‑middle of the LED grid (x = 0, y = 2).  
+- Makes the bird blink so it is easy to track among other LEDs.  
+- Creates an **empty array** called `obstacles` — this will later hold many obstacle sprites.  
+- Sets `ticks` to 0, ready to act as a simple loop counter / timer.
 
 **How to explain it to participants**
 
-- Compare `obstacles` to an **empty shelf** that will soon hold many pipes.  
-- Emphasise that we are *not* creating any obstacles yet; we are just preparing the array.
+- Compare `obstacles` to an **empty container** which will soon hold many obstacle sprites.  
+  > “Right now the array is empty, but as the game runs, we’ll keep adding obstacle sprites into it.”  
+- Emphasise that *no obstacles exist yet*; we are just preparing the structures we need.
 
 **Things to check**
 
-- Bird is visible and blinking.  
-- No errors when running, even though no obstacles exist yet.
+- Bird appears at the left and blinks.  
+- No errors on download, even though `obstacles` is empty.
 
 ---
 
@@ -310,29 +317,37 @@ on button B pressed:
 
 **What this does**
 
-- Button A moves the bird **up one row**.  
-- Button B moves the bird **down one row**.  
-- This is identical in spirit to earlier weeks — the focus is on making the bird feel responsive.
+- Button A moves the bird up one row.  
+- Button B moves the bird down one row.  
+- This mirrors earlier weeks’ control schemes, so it should feel familiar.
 
-**How to explain it to participants**
+**How to explain it**
 
-- Remind them of the LED grid coordinates: x is left–right, y is up–down.  
-- Ask them to predict: *“If y = 2 now and I press A, what does y become?”*
+- Re‑draw the 5×5 grid and mark y positions 0 (top) to 4 (bottom).  
+- Ask: *“If the bird is at y = 2 and we press A, what does y become?”* → 1.  
+- Connect this to coordinates used in previous projects:
+
+  > “x is left–right, y is up–down. Here we only change y, so the bird slides in a vertical line.”
 
 **Things to check**
 
-- Bird moves exactly **one** step at a time, not more.  
-- Bird does not need to wrap; if it goes off‑screen, that’s okay at this stage (we are focusing on arrays later).
+- Bird moves exactly one step per press.  
+- If it goes off‑screen (y < 0 or y > 4), that is OK for now — main focus is on the array logic later.
 
 ---
 
-## Step 3 – The Game Loop (Forever)
+## Step 3 – The Game Loop (`forever`)
 
-From now on, every change happens **inside** the `forever` block.
+From now on, all the “game logic” lives inside the `forever` loop.
 
-You can describe it to the group as:
+You can explain it like this:
 
-> “This loop is the game engine. Each time around the loop, the game updates everything: cleans up obstacles, moves them, maybe spawns new ones, checks for collisions, and then waits a bit.”
+> “The `forever` loop is the game engine. Every time it runs, it:  
+> 1) cleans up old obstacles,  
+> 2) moves all current obstacles,  
+> 3) maybe spawns new ones,  
+> 4) checks for collisions, and  
+> 5) waits a bit before the next cycle.”
 
 ---
 
@@ -347,27 +362,34 @@ while length of obstacles > 0
 
 **What this does**
 
-- Looks at the **first obstacle** in the array (index 0).  
-- If its x‑position is 0, it is at the left edge and will leave the screen on the next move.  
-- We:
-  - delete the sprite so it disappears visually, and  
-  - remove the reference from the `obstacles` array.  
-- The **while** loop repeats in case several obstacles leave at once (e.g. a full column).
+- Looks at the **first** obstacle in the array (`obstacles[0]`).  
+- If:
+  - the array is not empty, and  
+  - the x‑position of that first obstacle is 0 (left edge),  
+  then that obstacle is about to leave the screen on the next move.  
+- The code:
+  - deletes the **sprite** so it disappears from the LEDs, and  
+  - removes the **reference** from the `obstacles` array.  
+- The `while` loop repeats in case more than one obstacle at the front of the array has x = 0 (for example, in a column of obstacles).
 
-**How to explain it to participants**
+**How to explain it**
 
-- Show an imaginary row of pipes drawn on the board, moving left.  
-- Label the leftmost one as “index 0”, the next as “index 1”, and so on.  
-- Explain: *“When the first one falls off, we remove it from both the screen and from our list so we don’t keep tracking a ghost.”*
+- Draw a column of obstacle sprites moving left across the screen.  
+- Mark the leftmost as “obstacles[0]”, next as “obstacles[1]”, and so on.  
+- Explain:  
+  > “When the first obstacle reaches the left edge, we don’t want to keep tracking it forever. We delete it from the screen and remove it from the array so the game stays tidy and fast.”
 
 **Common mistakes**
 
-- Using `if` instead of `while` → only removes one obstacle when multiple should be removed.  
-- Forgetting to call both **delete sprite** *and* **remove from array** → leads to invisible sprites still being tracked in the array.
+- Using `if` instead of `while` → only one obstacle is removed even if an entire column has reached x = 0.  
+- Forgetting to call **both**:
+  - `delete sprite obstacles[0]`, and  
+  - `remove element at index 0 from obstacles` → this leaves “ghost” entries in the array that no longer exist on screen.
 
-**Quick debugging tip**
+**Debugging tip**
 
-- Temporarily show `length of obstacles` on the screen. If the number climbs forever, this clean‑up step is not working properly.
+- Temporarily show `length of obstacles` on the display or in the console.  
+  If the length keeps increasing even when obstacles leave the grid, the clean‑up code isn’t working correctly.
 
 ---
 
@@ -380,24 +402,31 @@ for each obstacle in obstacles:
 
 **What this does**
 
-- Goes through every element in the `obstacles` array.  
-- Moves each obstacle one step left.  
-- Works no matter whether there are 0, 5 or 20 obstacles.
+- Loops through **every obstacle sprite** stored in the array.  
+- Moves each one one step left (towards the bird).  
+- Works the same whether there are 0, 3 or 20 obstacles in the array.
 
-**How to explain it to participants**
+**How to explain it**
 
-- Link directly back to earlier array work:  
-  - *“Before, we used loops to show each word or number. Now we loop through an array of sprites and move each one.”*  
-- Emphasise that we don’t need separate variables like `pipe1`, `pipe2`, `pipe3` — the **array plus loop** replaces all that.
+- Link back to Part A and B:
+
+  > “Before, we looped through every word or every image in an array.  
+  > Now we loop through an array of **sprites** and move each sprite one step.”  
+
+- Emphasise the power of arrays:
+
+  > “Instead of writing separate code for obstacle 1, obstacle 2, obstacle 3… we have a single array and a single loop that handles them all.”
 
 **Common mistakes**
 
-- Accidentally changing y instead of x.  
-- Forgetting this loop and wondering why newly created obstacles never move.
+- Accidentally changing `y` instead of `x` (obstacles move up/down instead of sideways).  
+- Forgetting this step completely, which makes newly‑spawned obstacles appear but never move.
 
-**Good question to ask**
+**Good discussion question**
 
-- “What would happen if we removed this loop completely? Would the game still feel like a scrolling game?”
+- “What would the game feel like if we removed this loop? Would it still be a scrolling game?”  
+
+Let learners describe the behaviour: static obstacles suddenly appearing on the right and never moving.
 
 ---
 
@@ -408,36 +437,42 @@ if (ticks remainder of 3) = 0:
     set gapRow to random 0 to 4
     for row from 0 to 4:
         if row ≠ gapRow:
-            create obstacle at (4, row)
+            create obstacle sprite at (4, row)
             add obstacle to obstacles
 ```
 
 **What this does**
 
-- Uses `ticks` as a simple timer: every time around the `forever` loop, `ticks` increases by 1.  
-- The condition *“ticks remainder of 3 = 0”* means *“every 3 cycles”*.  
-- When the condition is true:
-  - We choose one **gap row** at random (0–4).  
-  - We loop over each row from 0 to 4.  
-  - For every row that is **not** the gap row, we create an obstacle at the right edge (x = 4) and add it to the array.
+- Uses `ticks` as a basic **timer**: each cycle of `forever` adds 1 to `ticks`.  
+- The condition `(ticks remainder of 3) = 0` means:  
+  > “Do this when ticks is a multiple of 3: 0, 3, 6, 9, 12, …”  
+- When that happens:
+  - Choose a **gap row** randomly between 0 and 4.  
+  - Loop over each row `0, 1, 2, 3, 4`.  
+  - For every row that is **not** the gap row, create a new obstacle sprite at (4, row) and add it to the `obstacles` array.  
+  - The result is a “wall” of obstacles with one missing LED — that missing LED is the tunnel for the bird.
 
-**How to explain it to participants**
+**How to explain it**
 
-- Connect this to maths: remainder is what’s left after division.  
-  - Example: 7 ÷ 3 = 2 remainder 1.  
-  - So ticks = 0, 3, 6, 9… are exactly the times when the remainder is 0.  
-- Explain the game idea:
-  > “Every few moments, a new wall of obstacles appears on the right, but one row is missing — that’s the tunnel the bird must fly through.”
+- Connect to maths explicitly:
 
-**Things they can tweak**
+  > “The remainder is what is left after division.  
+  > If ticks = 7 and we divide by 3, we get 2 remainder 1.  
+  > Only when the remainder is 0 (like 0, 3, 6, 9, …) do we create new obstacles.”
 
-- Change the number 3 to 2 or 4 and see how it affects difficulty.  
-- Use two gap rows for an easier game, or move the gap based on another rule.
+- Relate this to gameplay:
+
+  > “Every few moments, a new wall of obstacles appears on the right. One random row in that wall is left empty, so the bird has somewhere to fly.”
+
+**Things they can safely tweak**
+
+- Change the remainder check from 3 to 2 or 4 and see how often new obstacles appear.  
+- Use two gap rows instead of one to make the game easier (e.g. allow both gapRow and gapRow + 1 to be empty).
 
 **Common mistakes**
 
-- Forgetting to add the new obstacle to the `obstacles` array → sprite appears once but is never moved.  
-- Using the wrong range (e.g. `random 1 to 4`), which makes row 0 or 4 never be a gap.
+- Forgetting to **add** each newly created obstacle to the `obstacles` array → the sprite appears once but never moves or collides.  
+- Using an incorrect random range (for example, `random 1 to 4`), which means some rows never become the gap.
 
 ---
 
@@ -452,27 +487,32 @@ for each obstacle in obstacles:
 
 **What this does**
 
-- Checks every obstacle in the array.  
-- If any obstacle’s position exactly matches the bird’s position, the game ends.
+- Loops through every obstacle sprite in the array.  
+- Compares its (x, y) position to the bird’s position.  
+- If **both** x and y match, a collision is detected and the game ends.
 
-**How to explain it to participants**
+**How to explain it**
 
-- Revisit the idea of coordinates from earlier weeks:  
-  - *“Two sprites collide when both their x and y match — they share a single LED.”*  
-- You can illustrate with a quick table or grid: mark bird and obstacle positions and ask: *“Is this a collision?”*
+- Re‑use the coordinate grid from earlier:
+
+  > “Imagine writing the bird’s coordinates as (x, y).  
+  > A collision happens when an obstacle has exactly the same pair: same x and same y.  
+  > That means they are on the same LED.”
+
+- Link back to previous games (e.g. Space Invaders‑style projects) where collisions were also based on coordinates.
 
 **Common mistakes**
 
-- Only checking x or only checking y, not both.  
-- Checking just one obstacle instead of looping through the array.
+- Only comparing x or only comparing y, not both → collisions trigger early or not at all.  
+- Checking only a single obstacle and forgetting to loop through the entire array.
 
 **Simple test**
 
-- Ask a learner to deliberately fly into an obstacle and check whether the game ends immediately.
+- Ask a learner to intentionally fly into an obstacle and confirm that the game ends **as soon as** they overlap.
 
 ---
 
-### 3e – Timing with Ticks
+### 3e – Timing with `ticks` and `pause`
 
 ```text
 change ticks by 1
@@ -481,77 +521,96 @@ pause 1000 ms
 
 **What this does**
 
-- `ticks` increases by 1 each time the loop runs.  
-- `pause 1000 ms` makes the loop wait one second before repeating.  
-- Together they control how often:
-  - obstacles move,  
-  - new walls appear, and  
-  - collision checks happen.
+- `ticks` goes up by 1 on every pass through `forever`.  
+- `pause 1000 ms` makes the program wait about one second before starting the next cycle.  
+- Because the spawn logic depends on `ticks`, changing the pause or the remainder condition changes how challenging the game feels.
 
-**How to explain it to participants**
+**How to explain it**
 
-- Clarify that `ticks` is not “seconds”, it is just a **counter**.  
-- The link to spawn timing is through the remainder rule:  
-  - *“Every time ticks hits a multiple of 3 (0, 3, 6, 9…), we spawn obstacles.”*
+- Clarify that `ticks` is just a **counter**, not “seconds”:
+
+  > “ticks is a number that increases every time the loop runs.  
+  > We use it with the remainder rule to decide when to create new obstacles.”
+
+- Illustrate with a short table:
+
+  | ticks | ticks remainder of 3 | spawn? |
+  |-------|----------------------|--------|
+  | 0     | 0                    | yes    |
+  | 1     | 1                    | no     |
+  | 2     | 2                    | no     |
+  | 3     | 0                    | yes    |
 
 **Extension ideas**
 
-- Let them experiment: try `pause 500 ms` or `pause 200 ms` and ask:  
-  - *“Is the game still fair?”*  
-- Show that difficulty can be changed just by tweaking timing and spawn rules, not by rewriting everything.
+- Let learners try:
+  - `pause 500 ms` (faster game), or  
+  - `pause 200 ms` (very fast, harder to survive).  
+- Ask: *“What changes if we use remainder of 4 instead of 3?”* (Obstacles appear less often.)
 
 ---
 
 ## Instructor Tips
 
-- Keep repeating the mantra: **“One array, many obstacles; one loop, update them all.”**  
-- When something breaks, help learners identify **which stage** is misbehaving:  
-  - clean‑up, movement, spawning, collision, or timing.  
-- Use the pseudocode as a map: point to the relevant part while inspecting their blocks.
+- Keep repeating the core idea:  
+  > “One array holds all the obstacles. One loop lets us update them all in one go.”  
+- When supporting debugging, help learners decide **which part** is going wrong:
+  - removal, movement, spawning, collision, or timing.  
+- Encourage them to refer to the pseudocode as a **map** while they work on their blocks.
 
 ---
 
 ## Common Misconceptions & Fixes
 
 - **“Arrays start at 1.”**  
-  - Re‑draw the box diagram from Part A and label from 0. Emphasise that the **first** element is index 0.
-
-- **“Removing obstacles is optional.”**  
-  - Show what happens if the clean‑up step is commented out: the array length grows, performance drops, and collisions feel strange.
-
-- **“Loops only work on numbers.”**  
-  - Remind them that in Part C we loop over an array of **sprites**, not numbers or strings.
+  - Re‑draw the index boxes from Part A: first element is index 0.  
+- **“Arrays only store numbers.”**  
+  - Remind them of Part B (images) and Part C (sprites). Arrays store many types, as long as each array is consistent.  
+- **“Obstacles disappear automatically when they leave the grid.”**  
+  - Demonstrate what happens when the removal code is disabled: the array grows and the game slows.  
+- **“You only need to check one obstacle for collisions.”**  
+  - Show a case with two obstacles in the same column; only checking one would miss the closer one.
 
 ---
 
 ## Differentiation
 
-**Support:**
+**Support**
 
-- Provide a starter file with:
-  - bird created,  
-  - controls working,  
-  - an empty `forever` loop ready.  
-- Give them one section at a time (e.g. movement, then spawning) instead of the whole game at once.
+- Provide a starter project with:
+  - bird created and blinking,  
+  - up/down controls working,  
+  - an empty `forever` loop already in place.  
+- Let less‑confident participants focus on:
+  - movement,  
+  - basic spawning, and  
+  - simple collision,  
+  rather than every optimisation.
 
-**Extend:**
+**Extend**
 
-- Add a score that increases every loop where the game is still running.  
-- Gradually increase difficulty by:
-  - reducing the pause, or  
-  - changing the remainder check from 3 to 2 over time.  
-- Add sound effects for flapping or crashing, or special “bonus” gaps.
+- Add a **score** that increases each cycle while the player is still alive.  
+- Speed up the game over time by:
+  - reducing the `pause`, or  
+  - changing the spawn remainder from 3 to 2 after a certain number of ticks.  
+- Add sound:
+  - a flap sound when the bird moves,  
+  - a crash sound on game over.  
+- Experiment with patterns:
+  - double gaps,  
+  - moving gaps,  
+  - “bonus” rows with extra points.
 
 ---
 
 ## Reflection Questions
 
-You can use these for an end‑of‑session recap or for the quiz:
+Use these for whole‑class discussion or at the end of the session:
 
 - “In your own words, what is an array?”  
-- “Why is an array useful in Crashy Bird?”  
-- “Where in the game do we loop through every obstacle?”  
-- “What could go wrong if we forgot to remove off‑screen obstacles?”
+- “Why is an array useful in Crashy Bird instead of using lots of separate variables?”  
+- “Where in our game do we loop through **every** obstacle?”  
+- “What would happen if we never removed off‑screen obstacles from the array?”  
 
 ---
 
