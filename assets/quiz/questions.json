@@ -1433,7 +1433,7 @@
 },
     "10": {
   "title": "Week 10: Arrays and Iteration",
-  "description": "Medium-hard questions mixing arrays, loops, counters, conditions and earlier concepts. Includes new 'missing line' pseudocode items.",
+  "description": "Arrays, loops, counters, conditions and earlier concepts. Includes new 'missing line' pseudocode items.",
   "locked": false,
   "questions": [
     {
