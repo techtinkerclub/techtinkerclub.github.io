@@ -1430,7 +1430,180 @@
       "hint": "Trace x carefully for each repeat."
     }
   ]
+},
+ "10": {
+  "title": "Week 10: Arrays and Iteration",
+  "description": "Medium-hard questions combining arrays, loops, events, conditions and revision from previous weeks.",
+  "locked": false,
+  "questions": [
+
+    {
+      "id": "w10-q1",
+      "question": "What does an index represent in an array?",
+      "type": "multiple-choice",
+      "options": [
+        "The number of items the list can hold",
+        "The position of an item inside the list",
+        "The value stored in the first element",
+        "A special variable used only in loops"
+      ],
+      "correct": 1,
+      "explanation": "An index is the position of an item in a list (starting from 0).",
+      "difficulty": "medium"
+    },
+
+    {
+      "id": "w10-q2",
+      "question": "A list contains 5 items. Which of these is a valid index?",
+      "type": "multiple-choice",
+      "options": ["5", "4", "6", "-1"],
+      "correct": 1,
+      "explanation": "A 5-item list has valid positions 0–4.",
+      "difficulty": "medium"
+    },
+
+    {
+      "id": "w10-q3",
+      "question": "Which description best explains why arrays (lists) are useful?",
+      "type": "multiple-choice",
+      "options": [
+        "They allow you to create new variables automatically.",
+        "They allow storing many related values inside one variable and process them with loops.",
+        "They make your code run faster even without loops.",
+        "They create random numbers without using the random block."
+      ],
+      "correct": 1,
+      "explanation": "Arrays let us group related values and update them using loops.",
+      "difficulty": "medium"
+    },
+
+    {
+      "id": "w10-q4",
+      "question": "What does this pseudocode do?\n\n```text\nset list to [3, 6, 9, 12]\nfor each value in list:\n    show number value / 3\n```",
+      "type": "multiple-choice",
+      "options": [
+        "Shows 3, 6, 9, 12",
+        "Shows 1, 2, 3, 4",
+        "Shows 0, 1, 2, 3",
+        "Shows 9, 6, 3, 1"
+      ],
+      "correct": 1,
+      "explanation": "Each value is divided by 3 → 3/3=1, 6/3=2, 9/3=3, 12/3=4.",
+      "difficulty": "medium-hard"
+    },
+
+    {
+      "id": "w10-q5",
+      "question": "Which line correctly checks if a list is empty?",
+      "type": "multiple-choice",
+      "options": [
+        "if list = 0 then",
+        "if length of list = 0 then",
+        "if list < 0 then",
+        "if index of list = empty then"
+      ],
+      "correct": 1,
+      "explanation": "A list is empty when its length is 0.",
+      "difficulty": "medium"
+    },
+
+    {
+      "id": "w10-q6",
+      "question": "In pseudocode, what does this mean?\n\n```text\nfor each item in list:\n    do something\n```",
+      "type": "multiple-choice",
+      "options": [
+        "Repeat the loop a random number of times",
+        "Repeat once for every value stored in the list",
+        "Repeat until the list becomes empty",
+        "Repeat only for the first value in the list"
+      ],
+      "correct": 1,
+      "explanation": "The loop runs once per element inside the list.",
+      "difficulty": "medium"
+    },
+
+    {
+      "id": "w10-q7",
+      "question": "Consider the pseudocode:\n\n```text\nset score to 0\nfor i from 0 to 4:\n    if i mod 2 = 0 then\n        change score by 1\n``` \nWhat is the final value of score?",
+      "type": "multiple-choice",
+      "options": ["1", "2", "3", "4"],
+      "correct": 2,
+      "explanation": "i takes values 0,1,2,3,4 → evens: 0,2,4 → score increases 3 times.",
+      "difficulty": "medium-hard"
+    },
+
+    {
+      "id": "w10-q8",
+      "type": "missing-line",
+      "question": "Choose the missing line:\n\n```text\nset activities to [\"read\", \"run\", \"draw\"]\npick random index from 0 to 2\n__________________________\nshow string chosen\n```",
+      "options": [
+        "set chosen to activities at index",
+        "set activities to chosen",
+        "change index by chosen",
+        "repeat index times"
+      ],
+      "correct": 0,
+      "explanation": "We read the value at that index: chosen = activities[index].",
+      "difficulty": "medium-hard"
+    },
+
+    {
+      "id": "w10-q9",
+      "type": "missing-line",
+      "question": "Choose the missing line in this cleanup loop:\n\n```text\nwhile length of list > 0 and first item = 0:\n    ____________________________\n    remove first item from list\n```",
+      "options": [
+        "pause 100 ms",
+        "set first item to 1",
+        "delete first item from the screen",
+        "change index by 1"
+      ],
+      "correct": 2,
+      "explanation": "We delete the sprite before removing it from the list (general principle).",
+      "difficulty": "medium-hard"
+    },
+
+    {
+      "id": "w10-q10",
+      "question": "What does this pseudocode do?\n\n```text\nset numbers to []\nfor i from 1 to 4:\n    add i*i to numbers\n```",
+      "type": "multiple-choice",
+      "options": [
+        "Adds 1,2,3,4",
+        "Adds 1,4,9,16",
+        "Adds 2,4,6,8",
+        "Adds 1,3,5,7"
+      ],
+      "correct": 1,
+      "explanation": "For i=1..4, i*i gives 1,4,9,16.",
+      "difficulty": "medium-hard"
+    },
+
+    {
+      "id": "w10-q11",
+      "question": "Which statement is true about arrays?",
+      "type": "multiple-choice",
+      "options": [
+        "An array can only store numbers.",
+        "Arrays always start at index 1.",
+        "Arrays can store many values, like text, numbers or images.",
+        "Arrays cannot be used inside loops."
+      ],
+      "correct": 2,
+      "explanation": "Arrays can store many types of data, not just numbers.",
+      "difficulty": "medium"
+    },
+
+    {
+      "id": "w10-q12",
+      "question": "What does this pseudocode display?\n\n```text\nset list to [2, 4, 6]\nset total to 0\nfor each n in list:\n    change total by n\nshow number total\n```",
+      "type": "multiple-choice",
+      "options": ["6", "8", "10", "12"],
+      "correct": 3,
+      "explanation": "2 + 4 + 6 = 12.",
+      "difficulty": "medium"
+    }
+  ]
 }
+   
 
 
 
