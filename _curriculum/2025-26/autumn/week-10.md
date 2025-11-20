@@ -22,94 +22,117 @@ header:
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> We used arrays to store many values and loops to update them efficiently.</li>
-    <li><strong>Maths:</strong> We used index numbers, ordering and random selection.</li>
-    <li><strong>Engineering &amp; Technology:</strong> We built a cycling game engine with multiple moving parts.</li>
-    <li><strong>Art &amp; Design:</strong> Participants customised gameplay speed, timing and patterns.</li>
+    <li><strong>Computing:</strong> We used <strong>arrays</strong> to store multiple values and <strong>loops</strong> to update them efficiently.</li>
+    <li><strong>Maths:</strong> We explored <strong>indices</strong>, ordering, and the idea of checking when a number is a <strong>multiple</strong> of another by testing if the <strong>remainder</strong> is 0.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We built a cycling game engine where many objects update each cycle.</li>
+    <li><strong>Art &amp; Design:</strong> Participants customised speed, timing patterns and visual effects.</li>
   </ul>
 </div>
 
-This week we explored arrays, an essential programming idea that lets us store and organise many related values at once.  
-We began with small examples to understand how arrays work, then applied the concept in stages to build our own version of Crashy Bird.
+This week we explored **arrays**, an essential programming idea that lets us store and organise many related values at once.  
+We began with small examples to understand how arrays work, then applied the concept in stages to build our own version of **Crashy Bird**, a scrolling obstacle game.
 
 ---
 
 ## Objectives
 - Understand what an array/list is and why it is useful.  
-- Learn how to select an item from a list using its position.  
-- Recognise how arrays help games manage several objects at once.  
+- Select an item from a list using its **index**.  
+- Recognise how arrays help games manage multiple moving objects.  
 - Build a project using loops, movement and collision logic.
 
 ---
 
 ## Success Criteria
-- I can explain that an array holds many items inside one variable.  
-- I can describe what an index is.  
-- I can show how a game uses arrays to track multiple obstacles.  
-- I can build a project where several elements update each cycle.
+- I can explain that an array holds <strong>many items</strong> in a single variable.  
+- I can describe what an <strong>index</strong> is.  
+- I can explain how games use arrays to track multiple obstacles.  
+- I can write a project where many elements update each cycle.
 
 ---
 
 ## Key Vocabulary
 - **Array / List** — a variable that stores many values in order.  
 - **Element** — one item inside a list.  
-- **Index** — the position of an element (starting at 0).  
-- **Sprite** — a character or object on the LED grid.  
-- **Loop** — repeats instructions, often for every element in a list.  
+- **Index** — the position of an element (starting from 0).  
+- **Loop** — repeats instructions, often once for each element.  
 - **Collision** — when two sprites share the same position.  
-- **Random** — chooses an unpredictable value.
+- **Random** — chooses an unpredictable value.  
+- **Remainder** — what is left after dividing two numbers; used to check for multiples.
 
 ---
 
 ## Part A — Exploring Arrays
 
-We began with a simple activity where participants created a list of choices.  
-Pressing a button selected one item at random.  
-This showed how lists store multiple values and how index positions work.
+We created simple lists of choices. Pressing a button picked a random **index** and showed the item stored in that position.  
+This helped participants understand:
+
+- arrays store many values together  
+- each value has an index  
+- the program can use that index to select an item  
 
 ---
 
 ## Part B — Rock–Paper–Scissors with Arrays
 
-We explored how a list can store several images at once, and how a program can choose one by selecting its position (index).  
-Participants predicted what would happen when shaking the micro:bit and tested the Rock–Paper–Scissors version live.
+We explored how arrays can also store **images**, not just words or numbers.  
+Shaking the micro:bit selected a random index and displayed the corresponding icon.
+
+This also prepared us for Crashy Bird, where we later choose a random **gap position** in an obstacle row.
 
 ---
 
 ## Part C — Crashy Bird (Build & Test)
 
-We built our own version of Crashy Bird in stages:
+We built a scrolling obstacle game using an array of obstacle sprites.
 
-1. The bird moves up/down with buttons.  
-2. An empty list stores obstacles.  
-3. Each loop moves all obstacles left.  
-4. Every few ticks, new obstacles spawn with one random gap.  
-5. Old obstacles are removed.  
-6. Collisions end the game.
+### Steps:
+1. Create a bird sprite that moves up/down with buttons.  
+2. Create an empty array to store obstacles.  
+3. Use a loop to move every obstacle left each cycle.  
+4. Every few cycles, spawn new obstacles with one random gap.  
+5. Remove old obstacles that leave the screen.  
+6. Detect collisions between the bird and any obstacle.  
+
+### Maths Connection  
+We discussed how to check if a number is a **multiple** of another:  
+If **remainder of (number ÷ divisor) = 0**, the number is a multiple.  
+Participants used this to control how often new obstacles appeared.
 
 ### Try These Mini-Challenges
-- Change spawn timing.  
-- Adjust speed.  
-- Add score or sound effects.
+- Create different timing patterns.  
+- Change game speed.  
+- Add score or sound effects.  
 
 ---
 
 ## Resources
-- Crashy Bird: https://makecode.microbit.org/v1/projects/crashy-bird  
-- Arrays Overview: https://makecode.microbit.org/courses/csintro/arrays/overview  
-- MakeCode Editor: https://makecode.microbit.org
+- **Crashy Bird reference project:**  
+  <https://makecode.microbit.org/v1/projects/crashy-bird>{:target="_blank" rel="noopener"}  
+
+- **MakeCode Arrays Overview:**  
+  <https://makecode.microbit.org/courses/csintro/arrays/overview>{:target="_blank" rel="noopener"}  
+
+- **Maker MakeCode — Arrays Reference:**  
+  <https://maker.makecode.com/reference/arrays>{:target="_blank" rel="noopener"}  
+
+- **SkoolOfCode — Arrays Explained:**  
+  <https://skoolofcode.us/blog/hands-on-learning-arrays-made-simple-with-microbit-and-makecode/>{:target="_blank" rel="noopener"}  
+
+- **MakeCode Editor:**  
+  <https://makecode.microbit.org>{:target="_blank" rel="noopener"}  
 
 ---
 
 ## Equipment
-- BBC micro:bits + cables  
-- Laptops / Chromebooks  
+- BBC micro:bits + USB cables  
+- Laptops / Chromebooks with internet  
 
 ---
 
 ## Safety & Setup Notes
-- Test frequently.  
-- Handle USB cables carefully.
+- Test code frequently to catch early mistakes.  
+- Handle USB cables carefully.  
+- Encourage pair debugging (one reads, one tests).
 
 ---
 
