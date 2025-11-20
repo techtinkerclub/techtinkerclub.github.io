@@ -106,11 +106,11 @@ Participants used this to control how often new obstacles appeared.
 ---
 
 ## Resources
-- **Crashy Bird reference project:**  <https://makecode.microbit.org/v1/projects/crashy-bird>{:target="_blank" rel="noopener"}  
-- **MakeCode Arrays Overview:**  <https://makecode.microbit.org/courses/csintro/arrays/overview>{:target="_blank" rel="noopener"}  
-- **Maker MakeCode — Arrays Reference:**  <https://maker.makecode.com/reference/arrays>{:target="_blank" rel="noopener"}  
-- **SkoolOfCode — Arrays Explained:**  <https://skoolofcode.us/blog/hands-on-learning-arrays-made-simple-with-microbit-and-makecode/>{:target="_blank" rel="noopener"}  
-- **MakeCode Editor:**  <https://makecode.microbit.org>{:target="_blank" rel="noopener"}  
+- **MakeCode Editor:**  [Link](<https://makecode.microbit.org>){:target="_blank" rel="noopener"}  
+- **Crashy Bird reference project:**  [Link](<https://makecode.microbit.org/v1/projects/crashy-bird>){:target="_blank" rel="noopener"}  
+- **MakeCode Arrays Overview:**  [Link](<https://makecode.microbit.org/courses/csintro/arrays/overview>){:target="_blank" rel="noopener"}  
+- **Maker MakeCode — Arrays Reference:**  [Link](<https://maker.makecode.com/reference/arrays>){:target="_blank" rel="noopener"}  
+- **Arrays in micro:bit:**  [Video](https://youtu.be/ei4RhkIyhSk?si=VZvxMrqtP8eZ8DgG>){:target="_blank" rel="noopener"}
 
 ---
 
