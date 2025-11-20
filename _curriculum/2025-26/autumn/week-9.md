@@ -1,8 +1,8 @@
 ---
 layout: single
 title: ""
-permalink: /curriculum/2025-26/autumn/week-10/
-week: 10
+permalink: /curriculum/2025-26/autumn/week-9/
+week: 9
 toc: true
 toc_sticky: true
 sidebar: false
@@ -14,126 +14,107 @@ header:
 
 {% include back-to-autumn.html %}
 
-## Week 10 — Arrays & Crashy Bird
+## Week 9 — Fireflies & Exploding Ducks
 
-**Focus Concept:** Arrays (lists) and coordinated game behaviour  
-**Mini-Project:** *Crashy Bird* (built step-by-step)
+**Focus Concept:** Radio synchronisation and local communication  
+**Mini-Project:** *Exploding Ducks* (multiplayer radio game)
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> We used <strong>arrays</strong> to store multiple values and <strong>loops</strong> to update them efficiently.</li>
-    <li><strong>Maths:</strong> We explored <strong>indices</strong>, ordering, and how to check if a number is a <strong>multiple</strong> of another by testing whether the <strong>remainder</strong> is zero.</li>
-    <li><strong>Engineering &amp; Technology:</strong> We built a simple “game engine” where many objects update each cycle.</li>
-    <li><strong>Art &amp; Design:</strong> Participants customised speed, timing patterns and visual effects.</li>
+    <li><strong>Computing:</strong> We explored how <strong>radio messages</strong> let devices share information wirelessly and react to events.</li>
+    <li><strong>Science:</strong> We connected this to how <strong>fireflies</strong> synchronise in nature—simple local rules leading to complex group behaviour.</li>
+    <li><strong>Maths:</strong> We used <strong>timers</strong>, <strong>random numbers</strong>, and <strong>conditional logic</strong> to control outcomes.</li>
+    <li><strong>Engineering &amp; Technology:</strong> We designed and tested a small <strong>networked system</strong> that communicates reliably in real time.</li>
   </ul>
 </div>
 
-This week we explored **arrays**, an essential programming idea that lets us store and organise many related values at once.  
-We began with small examples to understand how arrays work, then applied the concept step-by-step to build our own version of **Crashy Bird**, a scrolling obstacle game.
+This week linked biology, science and computing.  
+We began by observing how **fireflies communicate using light** and how they manage to flash in rhythm without a leader.  
+Then we applied the same idea with the **micro:bit radio**, finishing with a lively multiplayer game called *Exploding Ducks!* 
 
 ---
 
 ## Objectives
-- Understand what an array/list is and why it is useful.  
-- Select an item from a list using its **index**.  
-- Recognise how arrays help games manage multiple moving objects.  
-- Build a project using loops, movement and collision logic.
+- Understand how **local communication** can lead to **synchronised patterns**.  
+- Use the **micro:bit radio** to send and receive messages.  
+- Practise **variables**, **random values**, **events** and **conditions**.  
+- Build and test a multiplayer game that reacts in real time.
 
 ---
 
 ## Success Criteria
-- I can explain that an array holds <strong>many items</strong> in a single variable.  
-- I can describe what an <strong>index</strong> represents.  
-- I can explain how games use arrays to track multiple obstacles.  
-- I can build a project where many elements update each cycle.
+- I can describe how fireflies synchronise using simple local rules.  
+- I can explain how a shared **radio group** allows devices to communicate.  
+- I can use a **timer** to trigger an action when it reaches zero.  
+- I can test and debug a multiplayer radio program.
 
 ---
 
 ## Key Vocabulary
-- **Array / List** — a variable that stores many values in order.  
-- **Element** — one item inside an array.  
-- **Index** — the position of an element (starting from 0).  
-- **Length** — how many elements the array contains.  
-- **Iterate / Loop** — repeat instructions, often once for every element.  
-- **Random** — chooses an unpredictable value.  
-- **Remainder** — the amount left after dividing; remainder = 0 means a number is a *multiple*.  
-- **Sprite** — a character or object on the LED grid.  
-- **Collision** — when two sprites share the same position.  
-- **Condition** — a true/false test that decides what happens next.
+- **Synchronisation** — matching timing or rhythm with others.  
+- **Local rule** — a simple instruction each device follows on its own.  
+- **Radio message** — data sent wirelessly between devices.  
+- **Event** — something that happens and triggers code to run.  
+- **Variable** — a stored value that can change.  
+- **Random** — producing unpredictable outcomes in code.  
+- **Condition** — a true/false test that controls decisions.
 
 ---
 
-## Part A — Exploring Arrays
+## Part A — Fireflies and Synchronisation
+We started with a short discussion and demonstration:
 
-We created simple lists of choices and used a random **index** to select an item.  
-This helped participants understand that:
+- Watched the interactive **Fireflies simulator** to see how individual rules create group patterns.  
+- Explored the **MakeCode Fireflies** project and predicted what would happen as timing or brightness changed.  
+- Linked this to how computers and sensors coordinate without a central leader.
 
-- arrays hold multiple values  
-- each value has a position (index)  
-- programs use the index number to look up the item  
-
----
-
-## Part B — Rock–Paper–Scissors with Arrays
-
-We explored how arrays can also store **images**, not just words or numbers.  
-Shaking the micro:bit chose a random index, and the program displayed the corresponding icon.
-
-This helped prepare for Crashy Bird, where we use the same idea to choose a random **gap position**.
+> 💡 Key idea: each “firefly” follows a small local rule, but together they create a shared rhythm.
 
 ---
 
-## Part C — Crashy Bird (Build & Test)
+## Part B — From Fireflies to Radio
+We connected the biology idea to computing by using **micro:bit radio**.  
+Participants discussed how devices “talk” over a shared group, and how events and variables control behaviour and timing.
 
-We built a scrolling obstacle game using an array to store all obstacle sprites.
+---
 
-### Steps:
-1. Create a bird sprite that moves up/down with buttons.  
-2. Make an empty array to store obstacles.  
-3. Use a loop to move every obstacle left each cycle.  
-4. Every few cycles, spawn new obstacles with one random gap.  
-5. Remove obstacles as they leave the screen.  
-6. Detect collisions between the bird and any obstacle.
+## Part C — Exploding Ducks (Build & Play)
+We built a simple multiplayer game where one player holds an invisible “duck” with a hidden timer.  
+Players can **shake** to pass it on; if the timer ends, the duck “explodes” and that player is out.  
+We tested in small circles, then as a whole group.
 
-### Maths Link  
-We explored how to check “spawn every 3 cycles” using:  
-**If (ticks remainder of 3) = 0 → spawn obstacles**  
-A remainder of **0** means the number is a **multiple**, which is why this works.
-
-### Try These Mini-Challenges
-- Change how often obstacles appear.  
-- Adjust game speed.  
-- Add score or sound effects.  
-- Make custom patterns.
+> 🧠 This reinforced events (shake/receive), variables (ID, timer), and fairness in radio communication.
 
 ---
 
 ## Resources
-- **Crashy Bird (MakeCode Project):**  [Code](https://makecode.microbit.org/v1/projects/crashy-bird){:target="_blank" rel="noopener"}
-
-- **MakeCode Arrays Overview:**  [Link](https://makecode.microbit.org/courses/csintro/arrays/overview){:target="_blank" rel="noopener"}
-
-- **MakeCode Arrays Reference (Maker Edition):**  [Link](https://maker.makecode.com/reference/arrays){:target="_blank" rel="noopener"}
-
-- **SkoolOfCode — Arrays Made Simple:**  [Link](https://skoolofcode.us/blog/hands-on-learning-arrays-made-simple-with-microbit-and-makecode/){:target="_blank" rel="noopener"}
-
-- **MakeCode Editor:**  [Link](https://makecode.microbit.org){:target="_blank" rel="noopener"}
-
+- **Fireflies simulator:** [Link](https://ncase.me/fireflies/){:target="_blank" rel="noopener"}  
+- **Fireflies Makecode Project:** [Link](https://makecode.microbit.org/projects/fireflies){:target="_blank" rel="noopener"}
+- **Exploding duck Makecode Project:** [Code](https://makecode.microbit.org/S42078-98378-75662-51312){:target="_blank" rel="noopener"}
+- **MakeCode Editor:** [Link](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
+- **Micro:bit Radio Reference:** [Link](https://makecode.microbit.org/reference/radio){:target="_blank" rel="noopener"}
+- **Glow of Love: The Secret Language Fireflies Use to Find Mates:** [Video](https://youtu.be/cgvQaY_COrg?si=uMdAEzTF6g4ETZGU){:target="_blank" rel="noopener"}
+- **The Surprising Secret of Synchronization:** [Video](https://youtu.be/t-_VPRCtiUg?si=QKBu0BjIT0df27zt){:target="_blank" rel="noopener"}
+- **What's Behind The Firefly's Glow?:** [Video](https://youtu.be/CogHulTLH2g?si=ormlEyg_ppdC6Lr0){:target="_blank" rel="noopener"}
+- **How do fireflies create light?:** [Video](https://youtu.be/XsFP8fpuQR4?si=p4xAD83ElXsYz6MK){:target="_blank" rel="noopener"}
+    
 ---
 
 ## Equipment
-- BBC micro:bits + USB cables  
-- Laptops / Chromebooks  
+- BBC micro:bits + USB cables (or simulator)  
+- Laptops / Chromebooks with internet access  
+- Batteries (for untethered play)  
 
 ---
 
 ## Safety & Setup Notes
-- Test frequently to catch early mistakes.  
-- Handle USB cables carefully.  
-- Encourage pair debugging (one reads, one tests).
+- Use a shared **radio group** for this session only to avoid interference.  
+- Ensure clear floor space when playing the multiplayer game.  
+- Keep cables tidy during programming time.
 
 ---
 
 {% include back-to-autumn.html %}
-{% include instructor-notes-link.html week=10 %}
+{% include instructor-notes-link.html week=9 %}
+
