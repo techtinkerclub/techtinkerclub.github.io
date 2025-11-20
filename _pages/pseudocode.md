@@ -1,3 +1,18 @@
+---
+layout: single
+title: "TTC Pseudocode Specification"
+permalink: /tools/ttc-pseudocode-spec/
+robots: noindex
+toc: true
+toc_sticky: true
+sidebar: false
+header:
+  overlay_image: /assets/images/banner.png
+  show_overlay_excerpt: false
+  show_overlay_text: false
+---
+
+{% include print-to-pdf.html %}
 
 # Tech Tinker Club Pseudocode Specification v1.2 (Full Content)
 
