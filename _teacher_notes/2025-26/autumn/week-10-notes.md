@@ -40,7 +40,7 @@ By the end of this session, participants should be able to:
 2. **Part A – Arrays with Words (10–15 min)** — random chooser using an array of strings.  
 3. **Part B – Rock–Paper–Scissors with Arrays (15–20 min)** — demo using an array of images.  
 4. **Part C – Crashy Bird Build (30–35 min)** — full game build using arrays and loops.  
-5. **Reflection & Extensions (5–10 min)** — connect arrays to other games and concepts from the term.
+5. **Reflection & Extensions (5–10 min)** — connect arrays to other games and to concepts from the term.
 
 ---
 
@@ -62,7 +62,7 @@ Short project:
 
 ---
 
-### Pseudocode (Blocks‑style)
+### Pseudocode (Blocks-style)
 
 ```text
 on start:
@@ -140,7 +140,7 @@ Show that arrays can hold **images/icons** as well as text, and that the random�
 
 ---
 
-### Pseudocode (Blocks‑style)
+### Pseudocode (Blocks-style)
 
 ```text
 on start:
@@ -214,12 +214,12 @@ The build should connect back to earlier weeks (movement, loops, collisions), wi
 
 ---
 
-## Pseudocode Overview (Blocks‑style, aligned to MakeCode)
+## Pseudocode Overview (Blocks-style, aligned to MakeCode)
 
 ```text
 on start:
     create bird at (0, 2)
-    set bird to blink
+    set blink of bird to 300 ms
     make empty array obstacles
     set ticks to 0
 
@@ -241,7 +241,7 @@ forever:
         change obstacle x by -1
 
     # 3. Sometimes spawn a new column of obstacles
-    if (ticks remainder of 3) = 0:
+    if remainder of (ticks / 3) = 0:
         set gapRow to random 0 to 4
         for row from 0 to 4:
             if row ≠ gapRow:
@@ -272,14 +272,14 @@ forever:
 
 ---
 
-# Step‑by‑Step Build Notes (Verbose)
+# Step-by-Step Build Notes (Verbose)
 
 ## Step 1 – Initialise Bird, Array and Timer
 
 ```text
 on start:
     create bird at (0, 2)
-    set bird to blink
+    set blink of bird to 300 ms
     make empty array obstacles
     set ticks to 0
 ```
@@ -288,7 +288,7 @@ on start:
 
 - Runs **once** at the very start of the program.  
 - Creates the **bird sprite** at the left‑middle of the LED grid (x = 0, y = 2).  
-- Makes the bird blink so it is easy to track among other LEDs.  
+- Uses the **set blink** property block to make the bird blink every 300 ms so it is easier to see.  
 - Creates an **empty array** called `obstacles` — this will later hold many obstacle sprites.  
 - Sets `ticks` to 0, ready to act as a simple loop counter / timer.
 
@@ -296,11 +296,11 @@ on start:
 
 - Compare `obstacles` to an **empty container** which will soon hold many obstacle sprites.  
   > “Right now the array is empty, but as the game runs, we’ll keep adding obstacle sprites into it.”  
-- Emphasise that *no obstacles exist yet*; we are just preparing the structures we need.
+- Emphasise that *no obstacles exist yet*; we are just preparing the structures we need before the game starts.
 
 **Things to check**
 
-- Bird appears at the left and blinks.  
+- Bird appears at the left and blinks steadily.  
 - No errors on download, even though `obstacles` is empty.
 
 ---
@@ -332,7 +332,7 @@ on button B pressed:
 **Things to check**
 
 - Bird moves exactly one step per press.  
-- If it goes off‑screen (y < 0 or y > 4), that is OK for now — main focus is on the array logic later.
+- If it goes off‑screen (y < 0 or y > 4), that is OK for now — the main focus is on the array logic later.
 
 ---
 
@@ -370,12 +370,12 @@ while length of obstacles > 0
 - The code:
   - deletes the **sprite** so it disappears from the LEDs, and  
   - removes the **reference** from the `obstacles` array.  
-- The `while` loop repeats in case more than one obstacle at the front of the array has x = 0 (for example, in a column of obstacles).
+- The `while` loop repeats in case more than one obstacle at the front of the array has x = 0 (for example, in a full column of obstacles).
 
 **How to explain it**
 
 - Draw a column of obstacle sprites moving left across the screen.  
-- Mark the leftmost as “obstacles[0]”, next as “obstacles[1]”, and so on.  
+- Mark the leftmost as `obstacles[0]`, next as `obstacles[1]`, and so on.  
 - Explain:  
   > “When the first obstacle reaches the left edge, we don’t want to keep tracking it forever. We delete it from the screen and remove it from the array so the game stays tidy and fast.”
 
@@ -433,7 +433,7 @@ Let learners describe the behaviour: static obstacles suddenly appearing on the 
 ### 3c – Spawn New Obstacles
 
 ```text
-if (ticks remainder of 3) = 0:
+if remainder of (ticks / 3) = 0:
     set gapRow to random 0 to 4
     for row from 0 to 4:
         if row ≠ gapRow:
@@ -444,7 +444,8 @@ if (ticks remainder of 3) = 0:
 **What this does**
 
 - Uses `ticks` as a basic **timer**: each cycle of `forever` adds 1 to `ticks`.  
-- The condition `(ticks remainder of 3) = 0` means:  
+- The MakeCode-style block **remainder of (ticks / 3)** gives the remainder when you divide `ticks` by 3.  
+- The condition `remainder of (ticks / 3) = 0` means:  
   > “Do this when ticks is a multiple of 3: 0, 3, 6, 9, 12, …”  
 - When that happens:
   - Choose a **gap row** randomly between 0 and 4.  
@@ -466,8 +467,8 @@ if (ticks remainder of 3) = 0:
 
 **Things they can safely tweak**
 
-- Change the remainder check from 3 to 2 or 4 and see how often new obstacles appear.  
-- Use two gap rows instead of one to make the game easier (e.g. allow both gapRow and gapRow + 1 to be empty).
+- Change the divisor in `remainder of (ticks / something)` and see how often new obstacles appear.  
+- Use two gap rows instead of one to make the game easier (e.g. allow both `gapRow` and `gapRow + 1` to be empty, if still within 0–4).
 
 **Common mistakes**
 
@@ -534,19 +535,19 @@ pause 1000 ms
 
 - Illustrate with a short table:
 
-  | ticks | ticks remainder of 3 | spawn? |
-  |-------|----------------------|--------|
-  | 0     | 0                    | yes    |
-  | 1     | 1                    | no     |
-  | 2     | 2                    | no     |
-  | 3     | 0                    | yes    |
+  | ticks | remainder of (ticks / 3) | spawn? |
+  |-------|--------------------------|--------|
+  | 0     | 0                        | yes    |
+  | 1     | 1                        | no     |
+  | 2     | 2                        | no     |
+  | 3     | 0                        | yes    |
 
 **Extension ideas**
 
 - Let learners try:
   - `pause 500 ms` (faster game), or  
   - `pause 200 ms` (very fast, harder to survive).  
-- Ask: *“What changes if we use remainder of 4 instead of 3?”* (Obstacles appear less often.)
+- Ask: *“What changes if we use remainder of (ticks / 4) instead of 3?”* (Obstacles appear less often.)
 
 ---
 
@@ -605,12 +606,12 @@ pause 1000 ms
 
 ## Reflection Questions
 
-Use these for whole‑class discussion or at the end of the session:
+Use these for whole-class discussion or at the end of the session:
 
 - “In your own words, what is an array?”  
 - “Why is an array useful in Crashy Bird instead of using lots of separate variables?”  
-- “Where in our game do we loop through **every** obstacle?”  
-- “What would happen if we never removed off‑screen obstacles from the array?”  
+- “Where in your game do you loop through **every** obstacle?”  
+- “What would happen if we never removed off-screen obstacles from the array?”  
 
 ---
 
