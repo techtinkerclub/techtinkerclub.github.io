@@ -1478,15 +1478,15 @@
       "question": "Pseudocode — what numbers are shown on the micro:bit?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
-      "code": "set nums = [3, 6, 9, 12]\nfor each value in nums\n    show number value / 3\nend",
+      "code": "set nums = [9, 3, 6, 12]\nfor each value in nums\n    show number (value divided by 3)\nend",
       "options": [
         "3, 6, 9, 12",
-        "1, 2, 3, 4",
-        "0, 1, 2, 3",
+        "3, 1, 2, 4",
+        "3, 1, 0, 2",
         "9, 6, 3, 1"
       ],
       "correct": 1,
-      "explanation": "Each array element is divided by 3 → 3/3=1, 6/3=2, 9/3=3, 12/3=4.",
+      "explanation": "Each array element is divided by 3.",
       "difficulty": "medium-hard",
       "hint": "Follow each element in order: 3 then 6 then 9 then 12."
     },
@@ -1525,10 +1525,10 @@
       "question": "Pseudocode — what number is finally shown?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
-      "code": "set score = 0\nfor i from 0 to 4   # i increases by 1 each time\n    if i mod 2 = 0 then\n        change score by 1\n    end if\nend\nshow number score",
+      "code": "set score = 0\nfor i from 0 to 4   # i increases by 1 each time\n    if (i remainder of 2) = 0 then\n        change score by 1\n    end if\nend\nshow number score",
       "options": ["1", "2", "3", "4"],
       "correct": 2,
-      "explanation": "i takes values 0,1,2,3,4. Even values are 0,2,4, so score increases 3 times.",
+      "explanation": "i takes values 0, 1, 2, 3, 4. Even numbers have remainder 0 when divided by 2. The even values are 0, 2 and 4 → score increases 3 times.",
       "difficulty": "medium-hard",
       "hint": "Count how many even values appear between 0 and 4."
     },
@@ -1551,21 +1551,22 @@
     },
     {
       "id": "w10-q9",
-      "question": "Missing line — this loop removes certain elements from the front of an array. Which line fits in the blank?",
+      "question": "Missing line — this loop removes low readings from the front of an array. Which condition fits in the blank?",
       "type": "missing-line",
       "codeLabel": "Pseudocode",
-      "code": "while length of arr > 0 and first element = 0\n    ____\n    remove first element from arr\nend",
+      "code": "set readings = [12, 30, 55, 80, 10]\nset threshold = 50\nwhile length of readings > 0 and ____\n    remove first element from readings\nend",
       "options": [
-        "pause 100 ms",
-        "set first element to 1",
-        "delete first element from the screen",
-        "change index by 1"
+        "first element < threshold",
+        "length of readings < threshold",
+        "first element = threshold",
+        "threshold < 0"
       ],
-      "correct": 2,
-      "explanation": "In many games we delete the sprite from the screen before removing it from the array.",
+      "correct": 0,
+      "explanation": "We want to keep removing values from the front while they are below the threshold. The correct condition is: first element < threshold.",
       "difficulty": "medium-hard",
-      "hint": "Think about tidying both the display and the data."
+      "hint": "Think about when the loop should stop removing values."
     },
+
     {
       "id": "w10-q10",
       "question": "Pseudocode — what does the array numbers contain at the end?",
@@ -1590,11 +1591,11 @@
       "options": [
         "An array can only store numbers.",
         "Arrays always start at index 1.",
-        "Arrays can store many types of data, including text, numbers or images.",
+        "Arrays can store only data of the same type.",
         "Arrays cannot be used inside loops."
       ],
       "correct": 2,
-      "explanation": "Arrays can store many types of values, not just numbers.",
+      "explanation": "In MakeCode, arrays must store values of one type (all numbers, all strings, etc.), even though some languages allow mixed types.",
       "difficulty": "medium"
     },
     {
