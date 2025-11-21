@@ -173,7 +173,7 @@ The second half of Week 7 uses everything learned so far:
 
 This project is split into clear steps so participants understand each mechanic.
 
-### Blocks version (MakeCode)
+## Blocks version (MakeCode)
 
 <div class="makecode-embed">
 <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S02862-67759-70499-11772" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
