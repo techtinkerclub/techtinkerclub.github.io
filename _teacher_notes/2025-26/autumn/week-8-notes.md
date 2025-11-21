@@ -13,204 +13,271 @@ header:
   show_overlay_text: false
 ---
 
-# Instructor Notes — Week 8
 {% include print-to-pdf.html %}
 
-**Theme:** Radio Waves & Wireless Communication  
-**Focus Concept:** Energy transfer through waves and radio messaging  
-**Mini-Project:** *Pass the Ghost* (two-player radio activity)  
+# Instructor Notes — Week 8
+
+**Theme:** Radio, Waves, Communication  
+**Focus Concept:** Wireless communication using the micro:bit radio  
+**Mini‑Project:** *Pass the Ghost* — broadcasting, receiving, and relaying messages
 
 ---
 
 ## Learning Objectives
-- Explain in simple terms what a wave is and what it does.  
-- Recognise examples of wave energy (sound, light, radio, microwaves).  
-- Understand **amplitude**, **frequency**, and **wavelength** conceptually.  
-- Describe how a micro:bit uses radio waves to send and receive numbers.  
-- Apply selection (`if` tests) and variables to control messages.  
-- Work collaboratively to debug and enhance a shared program.  
+
+- Understand the idea of radio waves as part of the electromagnetic spectrum  
+- Describe how micro:bits send and receive data using radio groups  
+- Read and write TTC‑style pseudocode involving events, conditions, and loops  
+- Build a simple communication game using broadcasting  
+- Reason about randomness, IDs, and message routing
 
 ---
 
-## Session Flow (≈ 80 min)
+## Vocabulary Focus
 
-| Segment | Time | Focus |
-|----------|------|-------|
-| Wave Introduction | 20 min | Science demo and discussion |
-| Radio link to micro:bit | 10 min | From theory to practice |
-| Part A – Pass the Ghost (PRIMM) | 25 min | Code exploration and testing |
-| Enhancement – Add Sounds / Icons | 10 min | Modification and creativity |
-| Quiz Review | 15 min | Weeks 1–2 concept recap |
+- **radio** – wireless communication using invisible waves  
+- **broadcast** – sending a message to everyone listening  
+- **ID** – a number that identifies each participant  
+- **condition** – a yes/no check the program uses  
+- **event** – something that triggers code (shake, receiving a number)  
+- **random number** – an unpredictable value chosen by the computer
 
 ---
 
-## Part A — Wave and Radio Exploration
+# Part A — Science Warm‑Up: Waves, Sound, and Radio
 
-### Starter Discussion
+*(Use your own explanations from the session — this simply structures them for notes.)*
+
+### What we covered:
+
+- Sound waves: vibrations travelling through air  
+- Light waves: part of the electromagnetic spectrum  
+- Radio waves: invisible light used for communication  
+- Why radios don’t need wires  
+- Why we use **channels** (micro:bit “groups”) to avoid interference  
+
+Explain to participants:
+
+> “When a micro:bit sends a radio message, it’s like shouting — anyone on the same channel can hear it.  
+> When it listens, it’s like keeping its ears open for incoming messages.”
+
+This sets the foundation for Part B.
+
+---
+
+# Part B — Project: *Pass the Ghost*
+
+Below is the full TTC‑style breakdown of the game you built.
+
+Blocks version:
+
+<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S39214-31133-40788-63085" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+
+---
+
+# B1 — Full TTC‑Style Pseudocode
+
+```
+WHEN program starts DO
+    SET radio group TO 1
+    SET radio power TO highest
+    SET ID TO a chosen number
+    SET players TO total number of players
+    SET ghost TO false
+
+    IF ID = 1 THEN
+        SHOW ghost icon
+        SET ghost TO true
+    END IF
+END WHEN
+
+WHEN a radio number is received DO
+    IF received number = ID THEN
+        SET ghost TO true
+        SHOW ghost icon
+    END IF
+END WHEN
+
+WHEN device is shaken DO
+    IF ghost = true THEN
+        SET target TO ID
+        WHILE target = ID DO
+            SET target TO [random number from 1 to players]
+            PAUSE 10 ms
+        END WHILE
+        SET ghost TO false
+        SEND radio number target
+        CLEAR screen
+    END IF
+END WHEN
+```
+
+---
+
+# B2 — Step‑by‑Step Build With Explanations
+
+Below each step is a detailed explanation you can use when teaching.
+
+---
+
+## **Step 1 — Radio Setup**
+
+```text
+SET radio group TO 1
+SET radio power TO highest
+SET ID TO a chosen number
+SET players TO total number of players
+SET ghost TO false
+```
+
+### Explanation
+
+- A **radio group** is like a walkie‑talkie channel  
+- All micro:bits on the same group can hear each other  
+- Each participant gets an **ID** (1–10 in your version)  
+- `ghost` starts as `false` because only Player 1 begins as the ghost  
+
+Ask participants:
+
+> “Why can’t everyone be on different groups?”  
+> “Why do we need an ID?”
+
+---
+
+## **Step 2 — Start With One Ghost**
+
+```text
+IF ID = 1 THEN
+    SHOW ghost icon
+    SET ghost TO true
+END IF
+```
+
+### Explanation
+
+- Only player 1 starts as the ghost  
+- Showing the ghost icon gives visual feedback  
+- `ghost = true` means “I am currently the ghost”  
+
+Useful question:
+
+> “Why do we only let one player start as the ghost?”
+
+---
+
+## **Step 3 — Receiving a Message**
+
+```text
+WHEN a radio number is received DO
+    IF received number = ID THEN
+        SET ghost TO true
+        SHOW ghost icon
+    END IF
+END WHEN
+```
+
+### Explanation
+
+- When someone broadcasts a number, everyone hears it  
+- Each micro:bit checks: **Is the message meant for me?**  
+- If yes → that player becomes the ghost  
+- If not → ignore it  
+
+Analogy:
+
+> “This is like shouting a name in a playground — only the person whose name you said reacts.”
+
+---
+
+## **Step 4 — Shake to Pass the Ghost**
+
+```text
+WHEN device is shaken DO
+    IF ghost = true THEN
+        SET target TO ID
+        WHILE target = ID DO
+            SET target TO [random number from 1 to players]
+            PAUSE 10 ms
+        END WHILE
+        SET ghost TO false
+        SEND radio number target
+        CLEAR screen
+    END IF
+END WHEN
+```
+
+### Explanation
+
+This is where most of the logic happens.
+
+Break it down clearly:
+
+#### **A. Only the ghost can pass the ghost**
+
+```text
+IF ghost = true THEN
+```
+
+Everyone else shaking their micro:bit does nothing.
+
+#### **B. Pick a target**
+
+```text
+SET target TO ID
+WHILE target = ID DO
+    SET target TO [random number from 1 to players]
+END WHILE
+```
+
+- Start by setting `target` to your own ID  
+- Keep picking random players until you get a number that is *not* yours  
+- This prevents passing the ghost to yourself  
+
 Ask:
-- What do we mean by a “wave”?  
-- Can you think of different kinds of waves?  
-- What happens to a rope if you wiggle one end?  
 
-Sketch or demonstrate how amplitude and frequency change the shape of a wave.  
+> “What would happen if we didn’t use the WHILE loop?”
 
-**Key points**
-- Waves carry energy but not matter.  
-- Sound waves need air; radio waves do not.  
-- Higher frequency = more energy.  
-- Different frequencies = different uses (radio, Wi-Fi, microwave, X-ray).  
-- Humans hear roughly 20 Hz–20 kHz.  
+#### **C. Send the message**
 
-Link this to the micro:bit radio feature — a tiny transmitter and receiver sending numbers instead of sound.
+```text
+SET ghost TO false
+SEND radio number target
+CLEAR screen
+```
 
----
-
-## Part B — *Pass the Ghost* (PRIMM Starter)
-
-### Aim
-Show how data travels between devices using radio messages and IDs.
-
-### Pseudocode
-
-    on start:
-        set radio group to shared number
-        set my ID (1 or 2)
-        show my ID briefly
-        clear screen
-        if ID == 1 → start holding ghost
-            ghost = true
-            show ghost icon
-
-    on radio received (number):
-        if number == my ID:
-            ghost = true
-            show ghost icon
-
-    on shake:
-        if ghost == true:
-            ghost = false
-            clear screen
-            if ID == 1 → target = 2
-            else → target = 1
-            send target over radio
+- You are no longer the ghost  
+- The chosen player will receive the message  
+- Clearing the screen removes the ghost icon  
 
 ---
 
-### Teaching Steps
+# B3 — Final Program Behaviour (Summary)
 
-1. **Predict** – What will happen when Player 1 shakes? Why only one micro:bit reacts?  
-2. **Run** – Test in pairs on same radio group; verify unique IDs.  
-3. **Investigate** – Change group numbers or swap IDs to see effects.  
-4. **Modify** – Add different icons or short melodies when receiving.  
-5. **Make** – Let learners create themes (e.g. “pass the alien”) or extend to three players.
-
----
-
-### Instructor Tips
-- Keep player IDs visible on the desk to avoid confusion.  
-- Highlight the `if` test logic — selection based on the message’s number.  
-- Encourage pairs to narrate events aloud to show understanding.  
-- Remind them that radio range depends on distance and obstacles.  
+- Exactly one person starts as the ghost  
+- Shaking sends the ghost to someone else  
+- Radio messages carry the ID of the next ghost  
+- No wires — everything is wireless  
+- Program combines **events**, **loops**, **conditions**, **randomness**, and **radio**
 
 ---
 
-## Part C — Add Sounds and Replay
+# Reflection & Wrap‑Up
 
-After a working version is tested:
-- Add a **sound** when the ghost arrives (using tone or melody blocks).  
-- Play again in pairs or small groups and compare timing and response.  
-- Discuss how the sound travels through air while the message travels through radio waves.
+You can finish the session by asking:
 
----
+- “How does the micro:bit know who the message is for?”  
+- “Why do we use random numbers?”  
+- “How is sending a radio message like sending a text message?”  
+- “Where do we check if we are the ghost?”  
+- “Why do we need the WHILE loop?”
 
-## Part D — Quiz Recap (Weeks 1–2)
+Tie it back to real-world communication:
 
-Spend final 15–20 minutes on a short quiz review:  
-- Inputs and outputs  
-- Loops and conditions  
-- Variables and events  
-
-Encourage peer discussion and self-checking before revealing answers.
-
----
-
-## Assessment & Reflection
-- Can learners explain the difference between sound waves and radio waves?  
-- Can they identify where the radio message is sent and received in their program?  
-- Do they use correct vocabulary (amplitude, frequency, transmitter, receiver)?  
-- Observe collaboration and debugging approaches.  
-
-> Reflect: “How did we turn an invisible wave into something we could see and hear on the micro:bit?”
-
----
-
-## Common Misconceptions & Fixes
-
-| Misconception | Clarification |
-|----------------|---------------|
-| Radio waves are sound | Radio waves are electromagnetic; sound needs air. |
-| Amplitude = speed | Amplitude is height (strength), not speed. |
-| All devices receive all messages | They only respond if the ID matches. |
-
----
-
-## Differentiation
-- **Beginners:** follow guided steps and use 2 players.  
-- **Confident:** add sound effects or different icons.  
-- **Stretch:** extend to 3+ players with random target logic.  
-
----
-
-## Cross-Curricular Links
-
-| Subject | Connection |
-|----------|-------------|
-| **Science** | Waves, energy transfer, radio communication. |
-| **Maths** | Frequency as “times per second”; random numbers. |
-| **Design & Technology** | Understanding networks and control systems. |
-| **PSHE / Teamwork** | Cooperation and clear communication. |
-
----
-
-## KS2 Computing Curriculum Mapping
-
-| Strand | Evidence in Session |
-|---------|---------------------|
-| Programming A — Sequence | Ordered radio events. |
-| Programming B — Repetition | Loops and repeated testing. |
-| Programming C — Variables | `ghost`, `ID`, `target`. |
-| Programming D — Selection | `if number == ID` logic. |
-| Networks / Communication | Radio groups, IDs, message passing. |
-
----
-
-## Materials & Setup
-- BBC micro:bits + USB cables (or simulator)  
-- Laptops / Chromebooks with MakeCode  
-- Speakers or headphones for sound testing  
-- Visual aids for wave illustrations  
-
----
-
-## Safety & Safeguarding
-- Keep cables tidy while testing.  
-- Avoid loud volume when using tones.   
-- Encourage kind communication and turn-taking in pairs.  
+- Wi‑Fi  
+- Bluetooth  
+- Mobile phones  
+- Spacecraft sending signals  
 
 ---
 
 {% include back-to-autumn.html %}
-
-
-<div class="notice--steam">
-  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
-  <ul>
-    <li><strong>Computing:</strong> We will exchange data using the <strong>micro:bit radio</strong> and explore how groups and channels work.</li>
-    <li><strong>Science:</strong> We will link our project to how <strong>signals</strong> and communication happen in everyday devices.</li>
-    <li><strong>Maths:</strong> We will consider <strong>timing</strong>, ordering, and <strong>ranking</strong>—for example, who buzzes first.</li>
-    <li><strong>Engineering &amp; Technology:</strong> We will design a fair communication system with clear <strong>feedback</strong> and reliable resets.</li>
-    <li><em>Real world:</em> If time allows, we will connect this idea to everyday technology or careers.</li>
-  </ul>
-</div>
-
-
