@@ -13,259 +13,283 @@ header:
   show_overlay_text: false
 ---
 
-# Instructor Notes — Week 9
 {% include print-to-pdf.html %}
 
-**Theme:** Synchronisation & Local Communication  
-**Focus Concept:** Firefly behaviour and wireless radio messaging  
-**Mini-Project:** *Exploding Ducks* (multiplayer radio game)
+# Instructor Notes — Week 9
+
+**Theme:** Synchronisation, Communication & Emergent Behaviour  
+**Focus Concept:** How simple local rules can create large‑scale patterns  
+**Mini‑Projects:**  
+- **A: Firefly Synchronisation** (local synchrony → global effects)  
+- **B: Exploding Duck** (radio communication, IDs, state, timers)  
 
 ---
 
 ## Learning Objectives
-- Explain how **fireflies synchronise** their flashes using simple, local rules.  
-- Understand how **radio messages** allow micro:bits to coordinate behaviour.  
-- Use **events**, **variables**, **conditions**, and **random values** in a radio program.  
-- Apply the **PRIMM** approach to predict, investigate, and modify a radio system.  
-- Work collaboratively to test, debug, and extend a multiplayer game.
+
+Participants should be able to:
+
+- Explain how devices can **synchronise** using only local communication.  
+- Understand that **global patterns** can emerge from simple local rules.  
+- Read and explain **TTC‑style pseudocode** involving radio events, loops, and timers.  
+- Understand **state variables** (`clock`, `hasDuck`, `dead`, `timer`).  
+- Appreciate how radio communication uses **groups**, **IDs**, and **messages**.
 
 ---
 
-## Session Flow (≈ 80 min)
+## Vocabulary Focus
 
-| Segment | Time | Focus |
-|----------|------|-------|
-| Fireflies & Synchronisation | 20 min | Science + computing concept |
-| PRIMM Discussion | 10 min | Predict, Run, Investigate, Modify, Make |
-| Part A – Fireflies Simulation | 20 min | Radio synchronisation demo |
-| Part B – Exploding Ducks Game | 25 min | Build and play |
-| Reflection & Wrap-Up | 5 min | Discussion and clean-up |
-
----
-
-## Part A — Fireflies & Synchronisation
-
-### Starter Discussion
-Ask:
-- “Have you ever seen fireflies or videos of them flashing together?”  
-- “Do you think they have a leader or a signal that tells them when to flash?”  
-- “How could they stay in sync if each one acts on its own?”
-
-### Key Idea — Local Rules → Global Pattern
-Each firefly has its own **timer** that counts up to a “flash moment.”  
-When a firefly sees a nearby flash, it **resets or speeds up** its own timer slightly.  
-Over many cycles, all the timers naturally **align**.
-
-**Simplified explanation**
-1. Each firefly starts flashing at random times.  
-2. When one flashes, nearby ones adjust their rhythm a little earlier.  
-3. Because every flash influences its neighbours, small differences fade out.  
-4. Eventually, everyone’s timer lines up — the group flashes together.  
-
-**Analogy:**  
-Think of a group of people clapping along to music. At first it’s messy,  
-but when each person listens and adjusts slightly to match others, they end up clapping in rhythm.
+- **synchronisation** – matching timing with neighbours or signals.  
+- **local rule** – behaviour based only on what you see/hear around you.  
+- **emergent pattern** – a big pattern that appears when many small actions combine.  
+- **broadcast** – send a message to everyone on the radio group.  
+- **state** – information that describes what mode the program is in.  
+- **timer** – a variable used to count down without blocking the program.  
+- **ID** – your unique number so you know who a message is for.  
 
 ---
 
-### Visual Demo
-1. Show the [**Fireflies interactive simulation**](https://ncase.me/fireflies/).  
-   - Turn coupling strength up and down to show faster or slower synchronisation.  
-2. Load the [**MakeCode Fireflies project**](https://makecode.microbit.org/projects/fireflies).  
-   - Let pupils predict what will happen as the “delay” or “brightness” changes.
+## Session Flow
+
+1. **Warm‑up:** What are synchronised patterns? (birds, fireflies, clocks, applause)  
+2. **Part A – Firefly Synchronisation**  
+3. **Part B – Exploding Duck**  
+4. **Wrap‑Up & Reflection**
 
 ---
 
-### Pseudocode (Fireflies behaviour)
+# Part A — Firefly Synchronisation  
+*A miniature model of how synchrony emerges from local communication*
 
-    on start:
-        set radio group
-        light_on = false
-        timer = random number between 1 and max_time
+### MakeCode Blocks Version  
+<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
+<iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S36785-83339-30622-24316" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
+</div>
 
-    forever:
-        wait 1 tick
-        increase timer by 1
-        if timer > max_time:
-            flash light
-            send "flash" message by radio
-            reset timer to 0
+---
 
-    on radio received "flash":
-        if light_on == false:
-            shorten timer slightly (fire sooner)
-            // imitates reacting to neighbour’s flash
+## A1 — TTC Pseudocode (Firefly Sync)
+
+### Step 1 — Setup radio
+```text
+WHEN program starts DO
+    SET clock TO 0
+    SET radio group TO 12
+    SET transmit power TO 1
+END WHEN
+```
+**Explanation:**  
+We put all micro:bits in the same *radio group* so they can hear each other.  
+A low transmit power means the communication resembles local “nearby neighbour” behaviour — just like real fireflies.
+
+---
+
+### Step 2 — When I receive a tick from a neighbour
+```text
+WHEN radio receives a number DO
+    INCREASE clock BY 1
+END WHEN
+```
+**Explanation:**  
+Whenever a neighbour “flashes”, they send a small message.  
+When we hear it, we **advance our own clock**.  
+This is the key mechanic: hearing a neighbour nudges our timing closer to theirs.
+
+---
+
+### Step 3 — My own ticking loop
+```text
+FOREVER DO
+    IF clock >= 8 THEN
+        SEND radio number 0       // tell neighbours I flashed
+        FLASH SCREEN              // bright moment = firefly flash
+        PAUSE 200 ms              // short rest
+        SET clock TO 0            // restart my cycle
+    ELSE
+        PAUSE 100 ms
+        INCREASE clock BY 1       // normal ticking
+    END IF
+END FOREVER
+```
 
 **Explanation:**  
-Every firefly does the same thing, but because they all react to each other’s “flash” message,  
-they end up firing in sync — just like computer networks aligning their internal clocks.
+Each micro:bit has an internal “clock” that rises steadily.  
+When it reaches 8, the micro:bit **flashes** and resets.  
+But because receiving neighbour flashes pushes your clock forward, eventually all micro:bits’ clocks line up naturally.
+
+This is how **synchrony emerges from local signals** — no leader required.
 
 ---
 
-### Teaching Steps
-1. **Predict** – Ask pupils to guess what happens if there are fewer neighbours or slower reactions.  
-2. **Run** – Try it in MakeCode simulator or with 3–4 real micro:bits.  
-3. **Investigate** – Change the reaction strength or delay.  
-4. **Modify** – Add colour, icons, or sound.  
-5. **Make** – Let each group build a small “colony” and observe if they sync.
+### A2 — Key teaching points
+
+- Each micro:bit only reacts to **local messages** from nearby devices.  
+- With enough neighbours, the pattern grows into **global synchrony**.  
+- This mirrors how real fireflies match their flashing in nature.  
+- The program is extremely short but creates beautiful collective behaviour.
 
 ---
 
-## Part B — *Exploding Ducks* (Multiplayer Radio Game)
+# Part B — Exploding Duck  
+*A fast‑paced radio game using state, IDs, and timers*
 
-### Aim
-Use the same **radio communication** ideas from the fireflies to design a game  
-where players must **react quickly** before a random timer runs out.
-
-Each device behaves like a “duck.”  
-One duck starts with a hidden timer (the “fuse”).  
-Players can **shake** their micro:bit to pass the duck to another player before it explodes.
+### MakeCode Blocks Version  
+<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
+<iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S21329-33783-70559-31040" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
+</div>
 
 ---
 
-### Conceptual Focus
-- **Event-driven:** actions occur when an event happens (receive, shake).  
-- **State-based:** each device knows whether it *has* the duck or not.  
-- **Randomised timing:** fuse length adds unpredictability.  
-- **Selection:** `if` tests decide what happens next.
+## B1 — TTC Pseudocode (Exploding Duck)
+
+### Step 1 — Setup
+```text
+WHEN program starts DO
+    SET players TO (total players)
+    SET ID TO (your unique number)
+    SET hasDuck TO FALSE
+    SET dead TO FALSE
+    SET timer TO 0
+    SET radio group TO 42
+    SET transmit power TO 7
+
+    SHOW NUMBER ID
+    PAUSE 400 ms
+    CLEAR SCREEN
+
+    IF ID = 1 THEN
+        SET hasDuck TO TRUE
+        SHOW ICON duck
+    END IF
+END WHEN
+```
+
+**Explanation:**  
+Each micro:bit knows **how many players** there are and which **ID** it is.  
+Only Player 1 starts with the duck.  
+Transmit power is high because all players must hear each other.
 
 ---
 
-### Pseudocode (Blocks-style)
+### Step 2 — Receiving the duck
+```text
+WHEN radio receives number DO
+    IF received number = ID THEN
+        IF dead = FALSE THEN
+            SET hasDuck TO TRUE
+            SET timer TO random value 50..150   // 0.5–1.5 s fuse
+            SHOW ICON duck
+        ELSE
+            CALL forward()                      // pass immediately if dead
+        END IF
+    END IF
+END WHEN
+```
 
-    on start:
-        set radio group to shared number
-        set total_players
-        set my_ID (1..players)
-        show my ID briefly
-        clear screen
-        if ID == 1 → start with duck
-
-    on radio received (number):
-        if number == my_ID:
-            if alive:
-                has_duck = true
-                start timer with random length
-                show duck icon
-            else:
-                // already exploded → forward immediately
-                forward_duck()
-
-    on shake:
-        if has_duck and alive:
-            send duck to random player
-            clear screen
-            stop timer
-
-    forever:
-        if has_duck:
-            reduce timer by small step
-            if timer reaches 0:
-                alive = false
-                show skull icon
-                forward_duck()
-
-    function forward_duck():
-        choose random target ≠ my_ID
-        send target number over radio
+**Explanation:**  
+If a message with **your ID** arrives, the duck is now yours.  
+Dead players can still *relay* the duck — they just can’t survive holding it.
 
 ---
 
-### Teaching Steps
-1. **Predict** – “What will happen when the duck explodes?”  
-   “What if two players have the same ID?”  
-2. **Run** – Start with two players, then expand to 4–6.  
-3. **Investigate** – Change fuse length or add delays.  
-4. **Modify** – Add icons, sounds, or score counters.  
-5. **Make** – Play full-class rounds; observe timing and fairness.
+### Step 3 — Shake to pass early
+```text
+WHEN shake detected DO
+    IF dead = FALSE THEN
+        IF hasDuck = TRUE THEN
+            CALL send()
+        END IF
+    END IF
+END WHEN
+```
+
+**Explanation:**  
+You may pass the duck voluntarily — but only if you’re alive and currently holding it.
 
 ---
 
-### Instructor Tips
-- Use **unique IDs** (write on sticky notes).  
-- Keep **one shared radio group** (e.g. 42).  
-- Encourage calm shaking — not throwing!  
-- If a duck gets “stuck,” check for typos in IDs or radio group numbers.  
-- Demonstrate how events let the micro:bit *listen* while the timer runs in the background.
+### Step 4 — Send the duck
+```text
+FUNCTION send() DO
+    IF hasDuck = TRUE THEN
+        SET target TO ID
+        WHILE target = ID DO
+            SET target TO random player 1..players
+            PAUSE 10 ms
+        END WHILE
+
+        SET hasDuck TO FALSE
+        SET timer TO 0
+        CLEAR SCREEN
+        SEND radio number target
+    END IF
+END FUNCTION
+```
+
+**Explanation:**  
+Choose someone else at random.  
+Reset your timer and send the duck away.
 
 ---
 
-## Assessment & Reflection
-- Can learners describe how devices coordinate without a leader?  
-- Do they understand that radio passes *data*, not sound?  
-- Can they identify the variables controlling the game (ID, timer, has_duck)?  
-- Are they able to reason about conditions: “if I have the duck, do this; else do nothing”?  
+### Step 5 — Forwarding (even if dead)
+```text
+FUNCTION forward() DO
+    SET target2 TO ID
+    WHILE target2 = ID DO
+        SET target2 TO random player 1..players
+        PAUSE 10 ms
+    END WHILE
+    SEND radio number target2
+END FUNCTION
+```
 
-> Reflect: “How are the ducks like fireflies?  Both share simple signals that make the group act together.”
-
----
-
-## Common Misconceptions & Fixes
-
-| Misconception | Clarification |
-|----------------|---------------|
-| Fireflies have a leader | Synchronisation happens automatically through local adjustment. |
-| Random = unfair | Random values make games exciting but still balanced over time. |
-| Radio = sound | The radio block sends data packets, not audio waves. |
-| Timer pauses other actions | The timer runs alongside other events; the micro:bit keeps listening. |
+**Explanation:**  
+A dead player can still forward the duck the moment it arrives.  
+This keeps the game circulating quickly.
 
 ---
 
-## Differentiation
-- **Beginners:** build using a starter scaffold; fewer players.  
-- **Confident:** adjust timer range or add explosion sound.  
-- **Stretch:** track rounds or create elimination mode.
+### Step 6 — Non‑blocking countdown
+```text
+FOREVER DO
+    IF hasDuck = TRUE THEN
+        IF timer > 0 THEN
+            SET timer TO timer - 1
+            PAUSE 10 ms
+
+            IF timer = 0 THEN
+                IF hasDuck = TRUE THEN
+                    SET dead TO TRUE
+                    CALL forward()
+                    SET hasDuck TO FALSE
+                    SHOW ICON skull
+                END IF
+            END IF
+        END IF
+    END IF
+END FOREVER
+```
+
+**Explanation:**  
+This is the heart of the game.  
+The countdown ticks down *without freezing the micro:bit*.  
+So radio still works, shaking still works, and messages still move.  
+When the timer hits zero, you explode → you forward the duck → and you’re out.
 
 ---
 
-## Cross-Curricular Links
+# Reflection & Wrap‑Up
 
-| Subject | Connection |
-|----------|-------------|
-| **Science** | Animal communication, light signals, wave behaviour. |
-| **Maths** | Random numbers, countdown timing, variables. |
-| **Design & Technology** | System design and debugging. |
-| **PSHE / Teamwork** | Cooperation, fairness, quick reactions. |
+Questions to ask:
 
----
+- “How does local information lead to big synchronised patterns?”  
+- “How do timers and radio events run at the same time?”  
+- “What state variables did we use in Exploding Duck?”  
+- “What happens when many players forward messages at once?”  
 
-## KS2 Computing Curriculum Mapping
-
-| Strand | Evidence in Session |
-|---------|---------------------|
-| Programming A – Sequence | Ordered event flow (receive → react → send). |
-| Programming B – Repetition | Continuous countdown in `forever`. |
-| Programming C – Variables | `has_duck`, `timer`, `ID`. |
-| Programming D – Selection | `if` tests for game states. |
-| Networks / Communication | Radio group and message passing. |
-
----
-
-## Materials & Setup
-- BBC micro:bits + USB cables (or simulator)  
-- Laptops / Chromebooks with MakeCode  
-- Batteries for untethered play  
-- Whiteboard for illustrating synchronisation concept  
-
----
-
-## Safety & Safeguarding
-- Keep cables clear before game play.  
-- Reduce transmit power if rooms overlap.  
-- Supervise movement and prevent device collisions.  
-- Reinforce respectful teamwork and turn-taking.
+Both activities show how **simple rules** produce surprisingly complex behaviour — a key idea in computing, robotics, biology, and physics.
 
 ---
 
 {% include back-to-autumn.html %}
-
-<div class="notice--steam">
-  <h2>Connections to STEAM Learning &amp; Real-World Links</h2>
-  <ul>
-    <li><strong>Computing:</strong> Wireless communication, variables, randomisation, and event-driven programming.</li>
-    <li><strong>Science:</strong> Biological synchronisation (fireflies) and radio signals.</li>
-    <li><strong>Maths:</strong> Counting, timing, and random probability.</li>
-    <li><strong>Engineering &amp; Technology:</strong> Designing reliable networked systems.</li>
-    <li><em>Real world:</em> Firefly algorithms inspire real swarm-robot and sensor-network research.</li>
-  </ul>
-</div>
