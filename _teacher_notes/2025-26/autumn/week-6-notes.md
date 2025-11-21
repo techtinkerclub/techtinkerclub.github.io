@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Instructor Notes — Week 6"
+title: ""
 permalink: /teacher_notes/2025-26/autumn/week-6-notes/
 week: 6
 robots: noindex
@@ -56,63 +56,131 @@ Model sentences like:
 
 ---
 
-## Recap from Week 5 — PRIMM and Loops (5–10 min)
-
-Start by briefly reminding participants what they did last week:
-
-- They worked through a **PRIMM** activity with:  
-  - a countdown,  
-  - a **button lock** (`btnlock`),  
-  - a timed sparkle effect,  
-  - a sweeping fill/clear pattern using **nested loops**.  
-- They practised **predicting** what a program would do, then **running**, **investigating**, and **modifying** it.  
-- They also saw the **beginning** of the Barrel Jumper project — just the **ON START** setup for sprites, speed, and score.
-
-You might say:
-
-> “Last week we spent a lot of time looking *inside* someone else’s code and understanding how it worked.  
-> This week, we’ll use the same ideas — loops, conditions, variables — to finish our own game.”
-
-Check a few key ideas with quick questions:
-
-- “What does a `FOREVER` loop do?”  
-- “What is a sprite?”  
-- “Why might a game need a score variable?”
-
-No need to go into deep detail here — the main goal is to reconnect loops and events in their minds.
-
----
-
 ## Session Flow (≈ 80 minutes)
 
-1. **Recap & warm‑up (10 min)** – quick Q&A about loops, sprites, and the Week 5 PRIMM demo.  
-2. **Part A – Rebuild the ON START section (10–15 min)** – intro picture, sprites, `speed`, and `score`.  
-3. **Part B – Add the jump control (10–15 min)** – Button B moves the jumper up and down.  
-4. **Part C – Add barrel movement & bouncing (15–20 min)** – FOREVER loop for the obstacle.  
-5. **Part D – Add scoring and difficulty (10–15 min)** – tracking score and making the game faster.  
-6. **Part E – Add collision and game over (5–10 min)** – detecting when the jumper hits the barrel.  
-7. **Wrap‑up (5–10 min)** – reflection, show‑and‑tell, and ideas for next time.
+1. **Part A – Recap & loop warm‑up (15–20 min)** – quick recap of Week 5 PRIMM and a short loop‑reasoning warm‑up.  
+2. **Part B – *Barrel Jumper* full build (50–55 min)** – from ON START to full game loop with scoring and collision.  
+3. **Wrap‑up (5–10 min)** – reflection, show‑and‑tell, and ideas for extending the game.
 
 You can flex timings depending on how quickly participants debug their games.
 
 ---
 
-# Part A — ON START: Intro Screen, Sprites, and Variables
+# Part A — Recap & Loop Reasoning Warm‑Up
 
-In Week 5 participants already saw the idea of an ON START section that:
+The goal of Part A is to **reactivate Week 5 ideas** and put loops firmly back in participants’ heads before they build a game.
+
+You are mainly drawing connections between:
+
+- the **PRIMM sparkle + sweep** program from Week 5, and  
+- the **FOREVER + REPEAT loops** they are about to use in *Barrel Jumper*.
+
+---
+
+## A1 — Verbal Recap of Week 5 (5–10 min)
+
+Remind participants what they did in Week 5:
+
+- They worked through a **PRIMM** activity that used:  
+  - a countdown,  
+  - a **button lock** (`btnlock`),  
+  - a timed sparkle effect (using `[milliseconds since start]`),  
+  - a sweeping fill/clear pattern using **nested loops**.  
+- They practised:  
+  - **PREDICTING** what a program would do,  
+  - **RUNNING** it,  
+  - **INVESTIGATING** line by line,  
+  - **MODIFYING** small details (speed, time, patterns).  
+- At the end, they saw the **start** of *Barrel Jumper* — the ON START block that made sprites and set up variables.
+
+You might say:
+
+> “Last week we looked inside a finished program and tried to understand how it worked.  
+> This week we’ll use those same ideas — especially loops and timing — to finish our own game.”
+
+Quick check questions (whole‑class, hands‑up or mini‑whiteboards):
+
+- “What does a `FOREVER` loop do?”  
+- “What is a sprite?”  
+- “Why might a game need a score variable?”  
+- “What did `btnlock` do in last week’s program?”
+
+You don’t need long answers — just enough to see that basic concepts are still there.
+
+---
+
+## A2 — Short Loop Warm‑Up (optional mini‑task, 5–10 min)
+
+If you have time, you can do a very quick loop “trace” on the board using TTC pseudocode, for example:
+
+```text
+SET x TO 0
+REPEAT 4 TIMES
+    SET x TO x + 2
+END REPEAT
+```
+
+Ask:
+
+- “What is x at the start?”  
+- “What happens each time the loop runs?”  
+- “What is x at the end?”
+
+You can also link to *Barrel Jumper* by showing this pseudocode:
+
+```text
+FOREVER DO
+    MOVE barrel BY 1 STEP
+    PAUSE 200 ms
+END FOREVER
+```
+
+Ask:
+
+- “What part repeats here?”  
+- “What would it feel like if we changed 200 ms to 100 ms?”  
+- “Is there anything inside this loop that ever stops it?”
+
+The aim is to remind them that:
+
+- **REPEAT n TIMES** loops run a fixed number of times.  
+- **FOREVER** loops never stop on their own.  
+- Small changes in values (like pause times or step sizes) change the behaviour.
+
+Once loops feel “fresh” again, move into the main build.
+
+---
+
+# Part B — *Barrel Jumper* Full Game Build
+
+From this point on, the whole session focuses on building *Barrel Jumper* in stages.
+
+You can either:
+
+- rebuild everything live, or  
+- provide a starter project with ON START already done (to save time).
+
+For consistency with Week 5, the TTC pseudocode is given first, followed by verbose instructor notes for each step.
+
+### Blocks version (MakeCode)
+
+<div class="makecode-embed">
+<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S50863-44059-71252-00559" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+</div>
+
+---
+
+## B1 — ON START: Intro Screen, Sprites, and Variables
+
+In Week 5 participants already saw an ON START section that:
 
 - shows a simple picture,  
 - creates sprites,  
 - sets up variables.
 
-In Week 6, you can either:
+In Week 6 you can either rebuild it or use it as a given base.
 
-- quickly rebuild it from scratch together, or  
-- provide a starter project that already has ON START complete.
-
----
-
-## A1 — TTC Pseudocode: ON START
+### TTC Pseudocode — ON START
 
 ```text
 WHEN program starts DO
@@ -133,34 +201,37 @@ WHEN program starts DO
 END WHEN
 ```
 
-### Instructor Notes
+### Instructor Notes — ON START
 
-Key points to emphasise:
+Key ideas to highlight:
 
-- **Sprites and coordinates:**  
-  - `(0, 4)` is bottom‑left → the jumper starts on the “ground”.  
-  - `(4, 4)` is bottom‑right → the barrel starts on the opposite side.
+- **Sprites and coordinates**
+  - `(0, 4)` is bottom‑left → the jumper starts on the “ground” on the left.  
+  - `(4, 4)` is bottom‑right → the barrel starts on the far right.
 
-- **Variables:**  
-  - `speed` decides how long the game waits between barrel movements.  
-  - `score` will count how many times the barrel passes safely.
+You can draw the 5×5 grid on the board and label the bottom row as `y = 4` so learners see that both sprites sit on the same “floor”.
 
-You can ask:
+- **Variables `speed` and `score`**
+  - `speed` controls the **pause** time inside the FOREVER loop — smaller speed = shorter pause = a faster game.  
+  - `score` will count how many times the player successfully survives a barrel pass.
 
-- “What might happen if we started the jumper at the top instead?”  
-- “What would a bigger `speed` value do to the game?”
+Helpful questions:
+
+- “What might happen if we started the jumper at the top instead of the bottom?”  
+- “If we made `speed` 400 instead of 200, would the game feel easier or harder? Why?”
+
+At the end of this step, participants should see:
+
+- a short picture on start,  
+- then a 5×5 grid with two sprites on the bottom row.
 
 ---
 
-# Part B — Jump Control (Button B)
+## B2 — Jump Control (Button B)
 
-Now we add a way for the player to jump over the barrel.
+Now we give the player something to do: **jump over the barrel**.
 
-The idea: when Button B is pressed, the jumper moves **up** several steps, then **down** again.
-
----
-
-## B1 — TTC Pseudocode: Button B
+### TTC Pseudocode — Jump
 
 ```text
 WHEN button B is pressed DO
@@ -176,37 +247,35 @@ WHEN button B is pressed DO
 END WHEN
 ```
 
-### Instructor Notes
+### Instructor Notes — Jump
 
-Key ideas:
+Key concepts:
 
-- Changing `y` by **−1** moves the sprite **up**; changing `y` by **+1** moves it **down**.  
-- The two REPEAT loops give a smooth jump arc: up 4 steps, then down 4 steps.  
-- The pauses make the animation visible.
+- `CHANGE jumper y BY -1` moves the sprite **up one row**.  
+- `CHANGE jumper y BY +1` moves it **down one row**.  
+- The two REPEAT loops create a full jump arc: up 4 steps, then down 4 steps.  
+- The pauses make the motion visible instead of instant.
+
+You can act this out physically:
+
+- Ask one participant to “be the jumper”: take 4 steps forward (up), then 4 steps back (down).  
+- Link each step to “one loop run” in the REPEAT.
 
 Questions to explore:
 
-- “What would happen if we only went up 2 times but down 4?”  
-- “What if we made the PAUSE `50 ms` instead of `100 ms`?”  
-- “Could we make a double‑jump by repeating this pattern twice?”
+- “What would happen if we only went up 2 times but down 4?” (Jumper would end up off the bottom of the grid.)  
+- “What if we changed the PAUSE from 100 ms to 50 ms?” (Jump would be quicker and harder to time.)  
+- “Could we make a double‑jump by repeating this whole block twice?”
 
-Participants should now have a micro:bit that shows the intro picture and can “jump” on Button B, even though nothing moves yet.
-
----
-
-# Part C — Barrel Movement and Bouncing (FOREVER Loop)
-
-Now we give the barrel life. It should:
-
-- move across the row,  
-- bounce off each edge,  
-- keep going as long as the game runs.
-
-This is where the **FOREVER loop** becomes the game’s “engine”.
+At this point, they can press Button B and see the jumper “hop” even though the barrel is not moving yet.
 
 ---
 
-## C1 — TTC Pseudocode: Basic Game Loop (Movement Only)
+## B3 — Barrel Movement & Bouncing (FOREVER Loop — Movement Only)
+
+The barrel needs continuous movement to turn this into a game. This is the first time in this unit that the **FOREVER loop** is used to drive game behaviour.
+
+### TTC Pseudocode — Basic Game Loop
 
 ```text
 FOREVER DO
@@ -220,36 +289,53 @@ FOREVER DO
 END FOREVER
 ```
 
-### Instructor Notes
+### Instructor Notes — Movement Loop
 
-Explain that:
+Explain clearly what happens in order:
 
-- The FOREVER loop repeats again and again until the program ends.  
-- `MOVE barrel BY 1 STEP` moves the sprite in its current direction.  
-- `BOUNCE` reverses direction when the barrel hits an edge.  
-- `PAUSE speed ms` controls how quickly the barrel moves.
+1. **MOVE barrel BY 1 STEP**  
+   - The barrel moves one LED in its current direction.  
+   - At the start this will be from right to left (depending on how the sprite was created).
 
-Good prompts:
+2. **IF barrel IS ON EDGE THEN BOUNCE**  
+   - When the barrel reaches either left or right edge, it flips direction.  
+   - This makes it go back and forth across the bottom row.
 
-- “If we halve the `speed`, what happens to the game difficulty?”  
-- “What would happen if we removed the PAUSE altogether?”
+3. **PAUSE speed ms**  
+   - This pause controls the game’s rhythm.  
+   - Changing `speed` changes how quickly the barrel moves.
 
-At this stage, participants can see the barrel moving and bouncing while they test the jump timing, even though there is no scoring or game over yet.
+Link this back to the warm‑up:
+
+> “Just like in our small FOREVER examples, the loop never stops.  
+> It keeps moving the barrel, bouncing, and waiting, again and again.”
+
+Prompts for reasoning:
+
+- “If we halve the `speed`, what happens to the difficulty?”  
+- “What if we removed the PAUSE completely — would it still feel playable?”  
+- “Does anything inside this loop ever stop it?” (Answer: No — that happens later with GAME OVER.)
+
+Once this step is complete, participants can test:
+
+- The barrel slides left and right on the bottom row.  
+- The jumper can jump, but hits don’t matter yet — no scoring or game over.
 
 ---
 
-# Part D — Scoring and Difficulty (Score + Speed)
+## B4 — Scoring and Difficulty (Score + Speed)
 
-Now we reward the player for surviving. Each time the barrel passes across the screen (reaching `x = 0`), we:
+Now we add a simple form of **progress** and **difficulty increase**.
 
-- increase `score` by 1  
-- reduce `speed` slightly to make the game harder
+Each time the barrel reaches the left edge (`x = 0`), we:
 
----
+- assume the jumper has successfully avoided it,  
+- increase `score` by 1,  
+- decrease `speed` to make the next pass a bit faster.
 
-## D1 — TTC Pseudocode: Adding Score and Speed Change
+### TTC Pseudocode — Add Score and Speed Change
 
-Extend the FOREVER loop with this extra block near the end:
+This logic extends the FOREVER loop. After the pause, add:
 
 ```text
     IF [x position of barrel] = 0 THEN
@@ -258,7 +344,7 @@ Extend the FOREVER loop with this extra block near the end:
     END IF
 ```
 
-So the full loop becomes:
+So the loop becomes:
 
 ```text
 FOREVER DO
@@ -277,34 +363,33 @@ FOREVER DO
 END FOREVER
 ```
 
-### Instructor Notes
+### Instructor Notes — Score & Speed
 
-Explain what this section does:
+Talk through what happens over time:
 
-- **`[x position of barrel] = 0`** means the barrel has reached the left edge.  
-- Each time this happens, we assume the jumper has successfully dodged it and:  
-  - increase `score` by 1,  
-  - reduce `speed` so the barrel moves faster next time.
+- On the **first pass**, speed = 200 ms.  
+- When the barrel reaches `x = 0`, score becomes 1 and speed becomes 190.  
+- Next pass: barrel moves slightly faster.  
+- Over multiple passes, the game ramps up in difficulty as speed gets smaller.
 
-Discussion ideas:
+Good discussion questions:
 
-- “What might happen if we reduce speed by a bigger amount (for example, −20)?”  
-- “Could the speed ever become too small or even negative? What would that feel like?”
+- “What might happen if we used −20 instead of −10?”  
+- “Can speed ever go below 0? What would that do?”  
+- “Is it fair if the game gets too fast too quickly?”
 
-You can encourage participants to experiment with different difficulty curves.
-
----
-
-# Part E — Collision and Game Over
-
-Finally, we end the game when the barrel hits the jumper.  
-We also show the final score.
+Encourage participants to **predict** and then **test** different values.  
+This is a nice place to connect coding to **game design** and **balancing difficulty**.
 
 ---
 
-## E1 — TTC Pseudocode: Collision Check and Game Over
+## B5 — Collision and Game Over
 
-Add this to the FOREVER loop **after** the barrel moves and pauses (order matters):
+Finally, we make the game end when the jumper hits the barrel and show the final score.
+
+### TTC Pseudocode — Collision & Game Over
+
+Add this block inside the FOREVER loop, **after** the movement and pause:
 
 ```text
     IF jumper IS TOUCHING barrel THEN
@@ -315,7 +400,7 @@ Add this to the FOREVER loop **after** the barrel moves and pauses (order matter
     END IF
 ```
 
-### Full Game Loop (All Together)
+A full version of the loop now looks like:
 
 ```text
 FOREVER DO
@@ -341,83 +426,77 @@ FOREVER DO
 END FOREVER
 ```
 
-### Instructor Notes
+### Instructor Notes — Collision & Order of Checks
 
-Key ideas:
+Key points:
 
-- The **collision check** must come **after** the barrel movement and pause so we are checking the current positions.  
-- `STOP PROGRAM` here just means “nothing else will change after showing the score”.
+- **Collision must be checked after movement and pause.**  
+  That way, we are checking the **current** positions of the sprites, not the old ones.
 
-Ask participants:
+- `jumper IS TOUCHING barrel` uses the game engine’s built‑in collision check for sprites sharing the same LED.
+
+- `STOP PROGRAM` means that after showing the score, nothing else in the FOREVER loop will run again.
+
+Helpful questions:
 
 - “What happens if we put the score update above the collision check?”  
-- “Do you think the score should increase when we crash, or only when we survive a full pass?”
+  (Children can reason about whether a crash should still earn a point.)  
+- “Do you think we should show the score *before* GAME OVER, or after, or both?”  
+- “Should the player see their best score somewhere?” (Extension idea.)
 
-This is a good opportunity to let them make small design decisions and justify them.
+Once this step is in place, participants have a **fully playable game**:
+
+- The barrel moves and bounces.  
+- The jumper can jump.  
+- Score increases on successful passes.  
+- The game ends with a score display when a collision happens.
 
 ---
 
-## Differentiation
+## B6 — Differentiation, Troubleshooting, and Extensions
 
-**Support:**
+You can keep this brief in delivery, but it is useful to have in your notes.
 
-- Give a partially completed program with:  
+### Support
+
+- Give a partially completed project with:  
   - ON START done,  
   - jump built,  
-  - FOREVER loop skeleton ready,  
-  and let participants fill in only missing pieces (e.g., collision or scoring).  
-- Provide a printed version of the pseudocode so they can tick off each line as they implement it.
+  - FOREVER loop skeleton in place,  
+  and let less‑confident participants focus just on **score** or **collision**.
 
-**Extend:**
+- Provide printed pseudocode with checkboxes so they can tick off each line as they add blocks.
 
-- Allow confident participants to:  
-  - add sound effects (jump / crash),  
-  - add lives (3 hearts → decrement on each hit),  
-  - add a “level” variable based on score thresholds,  
-  - show a different message if they reach a very high score.
+- Encourage them to read their code out loud in TTC style:
 
----
+  > “FOREVER do… move barrel… if on edge then bounce… pause…”
 
-## Assessment & Evidence of Learning
+### Extend
 
-Look for:
+For confident participants:
 
-- Participants who can explain **why** the FOREVER loop is needed.  
-- Participants who can describe what `speed` and `score` are doing in the game.  
-- Participants who adjust values (like `speed` or the score increment) and can predict what will happen before testing.
+- Add **sound effects** for jump and crash.  
+- Add **lives** (e.g. 3 hearts) instead of an instant game over.  
+- Introduce a **“level”** variable that increases every few points and changes behaviour (for example, less speed reduction or faster jumps).  
+- Change the picture, add an intro “title screen”, or display the best score across runs.
 
-Quick formative checks:
-
-- “Explain in your own words what happens inside the FOREVER loop.”  
-- “Point to where the game decides that it is over.”  
-- “Show me where the difficulty increases.”
-
-Make brief notes about participants who are ready to:  
-- help others debug,  
-- suggest their own small enhancements,  
-- reason about code without immediately running it.
-
----
-
-## Troubleshooting & Common Issues
+### Common Issues & Fixes
 
 - **Game is too fast / too slow**  
   - Check the starting value of `speed`.  
   - Check that `CHANGE speed BY -10` is not accidentally `+10`.
 
 - **Score never changes**  
-  - Check the condition is `[x position of barrel] = 0`.  
-  - Confirm it is inside the FOREVER loop, not outside.
+  - Ensure the `[x position of barrel] = 0` check is **inside** the FOREVER loop.  
+  - Check that it really is the barrel’s x‑position, not the jumper’s.
 
 - **Game never ends**  
-  - Collision check may be missing or placed incorrectly.  
-  - Check that the condition uses `jumper IS TOUCHING barrel`.
+  - Collision check might be missing, or may be outside the FOREVER loop.  
+  - Confirm the condition is `jumper IS TOUCHING barrel`.
 
-- **Barrel disappears or behaves oddly**  
-  - Ensure `MOVE` and `BOUNCE` are always applied to **barrel**, not to `jumper`.  
-  - Check that there is only one barrel sprite.
-
-Encourage participants to read their code out loud following the pseudocode.
+- **Barrel disappears or behaves strangely**  
+  - Ensure all MOVE and BOUNCE blocks refer to **barrel**, not `jumper`.  
+  - Check that you only create one barrel sprite.
 
 ---
 
@@ -426,11 +505,11 @@ Encourage participants to read their code out loud following the pseudocode.
 Finish with a short conversation or mini‑plenary:
 
 - “What part of the game logic was hardest to understand at first?”  
-- “How did loops help us keep the code short?”  
+- “How did loops help us keep the game short but powerful?”  
 - “Where do we use variables to control how the game feels?”  
-- “If you had more time, what would you add to Barrel Jumper?”
+- “If you had more time, what would you add to *Barrel Jumper*?”
 
-You can invite a few participants to show their version of the game and explain one change they made (e.g. different speed curve, different picture, extra sounds).
+Invite a few participants to show their version of the game and describe **one deliberate change** they made (for example, different speed curve, extra sounds, or a new picture).
 
 ---
 
