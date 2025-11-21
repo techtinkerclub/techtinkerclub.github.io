@@ -1,3 +1,18 @@
+---
+layout: single
+title: ""
+permalink: /teacher_notes/2025-26/autumn/week-7-notes/
+week: 7
+robots: noindex
+toc: true
+toc_sticky: true
+sidebar: false
+header:
+  overlay_image: /assets/images/banner.png
+  show_overlay_excerpt: false
+  show_overlay_text: false
+---
+
 # Instructor Notes — Week 7
 
 **Theme:** Functions, Reusability, and Multi‑Object Games  
