@@ -33,6 +33,9 @@ This page will grow over time — bookmark it!
 - [Behind the microbit MakeCode Hardware](https://makecode.microbit.org/behind-the-makecode-hardware){:target="_blank" rel="noopener"}  
   For children who want to know more about the hardware.
 
+- [Microbit Makecode Pseudocode Reference](https://techtinker.club/tools/microbit-pseudocode-reference/){:target="_blank" rel="noopener"}  
+  Reference document for pseudocode used in the quizzes.
+
 ---
 
 ## 📚 Tutorials (Step-by-Step)
