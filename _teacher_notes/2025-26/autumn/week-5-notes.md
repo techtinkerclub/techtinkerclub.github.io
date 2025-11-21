@@ -78,6 +78,12 @@ We use a single program that ties together:
 
 The aim is to **read and reason** about the program together.
 
+### Blocks version (MakeCode)
+
+<div class="makecode-embed">
+  <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S62181-98265-95104-79112" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+</div>
+
 ---
 
 ## A1 — TTC Pseudocode for the Full Demo
@@ -313,6 +319,12 @@ In Week 5, we **only build the starting setup**:
 - Initial `speed` and `score`.  
 
 The jump mechanic and the full forever loop (movement, scoring, game over) are built in **Week 6**.
+
+### Blocks version (MakeCode)
+
+<div class="makecode-embed">
+<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S50863-44059-71252-00559" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+</div>
 
 ---
 
