@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Tech Tinker Club — Microbit Pseudocode Reference"
+title: ""
 permalink: /tools/microbit-pseudocode-reference/
 robots: noindex
 toc: true
