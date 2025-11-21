@@ -15,228 +15,227 @@ header:
 
 # Instructor Notes — Week 7
 
-**Theme:** Functions & Game Mechanics  
-**Focus Concept:** Defining and using functions; building Space Invaders  
-**Mini‑Project:** Two‑part lesson — (A) Functions exploration, (B) Space Invaders game
+**Theme:** Functions, Reuse, and Game Logic  
+**Focus Concept:** Designing and using functions, passing parameters, and combining them with events  
+**Mini‑Project:** Part A — Function demonstrations; Part B — *Space Invaders* mini‑game
 
 ---
 
 ## Learning Objectives
 
-- Understand what a **function** is and why we use it.  
-- Define functions with **parameters** and **return values**.  
-- Call functions from button events and use their outputs.  
-- Apply functions inside a game project (Space Invaders).  
-- Work with sprites, movement, collision, and sensors.
+By the end of this session, participants should be able to:
+
+- Explain what a **function** is and why we use them.  
+- Understand the difference between a function **with parameters** and a function **without parameters**.  
+- Use TTC‑style pseudocode to reason about reusable behaviours.  
+- Build a simple game that uses functions, loops, collisions, and events.  
+- Describe how acceleration input controls player movement.
 
 ---
 
 ## Vocabulary Focus
 
-- **function** — a named block of code you can run any time.  
-- **parameter** — information you pass *into* a function.  
-- **return value** — information a function gives *back*.  
-- **sprite** — an object that moves on the LED grid.  
+- **function** — a named block of instructions we can reuse.  
+- **parameter** — information we pass *into* a function.  
+- **return value** — information a function passes *back*.  
+- **reuse** — writing code once and using it many times.  
 - **collision** — when two sprites touch.  
-- **accelerometer** — motion sensor that measures tilt.  
-- **loop** — repeats actions over time (FOREVER, REPEAT, intervals).
+- **event** — something the micro:bit reacts to (button pressed, shaking, etc.).
 
 ---
 
-# Part A — Understanding Functions
+## Session Flow (≈ 80–90 minutes)
+
+1. **Recap (5–10 min)** — what functions are and why we use them.  
+2. **Part A – Functions Deep Dive (25–30 min)** — define, test, call functions with/without parameters.  
+3. **Part B – Build Space Invaders (40–45 min)** — movement, lasers, aliens, bombs, collisions, scoring.  
+4. **Wrap‑up (5 min)** — check understanding + show modifications.
+
+---
+
+# Part A — Understanding and Using Functions
 
 ### Blocks version (MakeCode)
-
-<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S75217-00243-09727-56214" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+<div class="makecode-embed">
+  <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
+    <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S75217-00243-09727-56214" allowfullscreen frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
 
 ---
 
-## A1 — TTC‑Style Pseudocode for Functions Demo
-
-### Function: addNumbers
+## A1 — TTC Pseudocode: flashHeart (no parameters)
 
 ```
-DEFINE FUNCTION addNumbers (num, num2)
-    RETURN num + num2
-END FUNCTION
-```
-
-### Function: flashSquare
-
-```
-DEFINE FUNCTION flashSquare (duration)
-    SHOW ICON big_square
-    PAUSE duration
-    SHOW ICON small_square
-    PAUSE duration
-END FUNCTION
-```
-
-### Function: flashHeart
-
-```
-DEFINE FUNCTION flashHeart
+TO DO flashHeart
     SHOW ICON heart
-    PAUSE 200
+    PAUSE 200 ms
     SHOW ICON small_heart
-    PAUSE 200
-END FUNCTION
+    PAUSE 200 ms
+END TO DO
 ```
 
-### Button events
+### Explanation
+
+- This is the simplest type of function: **no inputs**, no return value.  
+- When we *call* it, the instructions inside run exactly as written.  
+- Explain to participants that this is like pressing a “macro button” — all steps happen automatically.
+
+---
+
+## A2 — TTC Pseudocode: addNumbers (returns a value)
+
+```
+TO DO addNumbers WITH num, num2
+    RETURN num + num2
+END TO DO
+```
+
+### Explanation
+
+- This function **receives two numbers** (`num` and `num2`).  
+- It **returns** a value — the sum.  
+- We do not see anything on the LED grid unless we *use* the returned number somewhere (e.g., SHOW NUMBER).  
+- Emphasise that functions can be “machines” that *produce* information.
+
+---
+
+## A3 — TTC Pseudocode: flashSquare (takes a parameter)
+
+```
+TO DO flashSquare WITH time
+    SHOW ICON square
+    PAUSE time ms
+    SHOW ICON small_square
+    PAUSE time ms
+END TO DO
+```
+
+### Explanation
+
+- This function takes a **parameter** that controls the timing.  
+- When we call `flashSquare(300)` it pauses for 300 ms.  
+- When we call `flashSquare(addNumbers(600, 400))`, the parameter becomes **1000**.  
+- This demonstrates how functions can *work together*.
+
+---
+
+## A4 — Using the Functions (Events)
 
 ```
 WHEN button A is pressed DO
-    CALL flashSquare (300)
+    CALL flashSquare WITH 300
 END WHEN
 
 WHEN button AB is pressed DO
-    CALL flashSquare ( addNumbers(600, 400) )
+    CALL flashSquare WITH addNumbers(600, 400)
 END WHEN
 
 WHEN button B is pressed DO
-    SHOW NUMBER ( addNumbers(33, 34) )
+    SHOW NUMBER addNumbers(33, 34)
 END WHEN
 
 CALL flashHeart
 ```
 
----
+### Explanation
 
-## A2 — Verbose Instructor Explanation
-
-### 1) What is a function?
-
-A **function** is a reusable mini‑program.  
-It lets participants write something once and use it many times.
-
-Explain:
-
-- “Functions help us avoid repeating code.”  
-- “Functions make your programs cleaner and easier to understand.”  
-- “Functions can *do* something or *return* something.”
-
-### 2) addNumbers — introducing *return values*
-
-Walk through line‑by‑line:
-
-- The function takes **two numbers** (`num`, `num2`).  
-- It calculates the sum.  
-- It *returns* that result.  
-- Nothing is shown — the function just gives a number back.
-
-Show examples on the board:
-
-`addNumbers(3, 5)` → 8  
-`addNumbers(10, -2)` → 8  
-`addNumbers(600, 400)` → 1000
-
-Reinforce:
-
-> “A return value behaves just like a number you typed into the program.”
-
-### 3) flashSquare — introducing *parameters*
-
-Explain:
-
-- The function needs to know *how long* to show each shape.  
-- That value is the **parameter** called `duration`.  
-- Different button presses use different values, so the animation changes.
-
-Good guiding question:
-
-- “What would happen if we used 50 instead of 300?”
-
-### 4) flashHeart — a simple no‑parameter function
-
-This function:
-
-- Takes no inputs  
-- Does a fixed animation  
-- Is called once at the bottom of the program
-
-Highlight the idea:
-
-> “A function doesn’t need parameters.  
-> It can also be used just to organise your code.”
-
-### 5) Buttons calling functions
-
-Show how each button triggers a function:
-
-- Button A → flashSquare(300)  
-- Button AB → flashSquare(addNumbers(600, 400))  
-- Button B → showNumber(addNumbers(33, 34))
-
-Explain how functions can be **combined**:
-
-> “addNumbers runs first, gives back a number,  
-> and that number becomes the parameter for flashSquare.”
-
-### 6) Why functions matter for games
-
-Explain clearly:
-
-- Games often have animations (like explosions or damage flashes).  
-- Instead of rewriting the animation many times, we put it in a function.  
-- Functions help keep big game projects manageable.
-
-Transition to Part B:
-
-> “Now we’ll use functions and everything we’ve learned about loops, sprites, and sensors to build our Space Invaders game.”
+- Buttons **trigger** functions.  
+- Functions can call **other functions** inside their parameters.  
+- Parameters let participants customise behaviour without rewriting logic.  
+- The final line runs once at the start of the program.
 
 ---
 
-# Part B — Space Invaders Game
+# Part B — Space Invaders Mini‑Game
 
 ### Blocks version (MakeCode)
-
-<div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S02862-67759-70499-11772" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe></div>
+<div class="makecode-embed">
+  <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
+    <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S02862-67759-70499-11772" allowfullscreen frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
 
 ---
 
-## B1 — TTC‑Style Pseudocode: Space Invaders (Full Game)
+# Part B1 — Game Setup (Sprites)
 
-### ON START
-
-```
-SET Alien TO NEW SPRITE AT (0, 0)
-SET Ship TO NEW SPRITE AT (2, 4)
-```
-
-### Button B — Firing a Laser
+## TTC Pseudocode
 
 ```
-WHEN button B is pressed DO
-    SET Laser TO NEW SPRITE AT (Ship.x, Ship.y)
-
-    REPEAT 5 TIMES
-        PAUSE 100 ms
-        MOVE Laser UP BY 1
-
-        IF Laser IS TOUCHING Alien THEN
-            DELETE Alien
-            INCREASE score BY 1
-            SET Alien TO NEW SPRITE AT (0, 0)
-        END IF
-    END REPEAT
-
-    DELETE Laser
-END WHEN
+SET Alien TO NEW SPRITE AT (0,0)
+SET Ship TO NEW SPRITE AT (2,4)
 ```
 
-### Bomb Dropping Logic (Runs every 1 ms)
+### Explanation
+
+- The **Alien** starts at the top-left corner and will move horizontally.  
+- The **Ship** starts at the middle-bottom and will be player‑controlled.  
+- Keep reinforcing coordinates:  
+  - x increases left → right  
+  - y increases top → bottom
+
+---
+
+# Part B2 — Ship Movement (Tilt Control)
+
+## TTC Pseudocode
+
+```
+FOREVER DO
+    IF [x acceleration] > 100 THEN
+        CHANGE Ship x BY +1
+    END IF
+
+    IF [x acceleration] < -100 THEN
+        CHANGE Ship x BY -1
+    END IF
+END FOREVER
+```
+
+### Explanation
+
+- Tilting right moves the ship right; tilting left moves left.  
+- The thresholds ±100 prevent “noise” movement.  
+- This is the main player control system.
+
+---
+
+# Part B3 — Alien Movement (Bouncing)
+
+## TTC Pseudocode
+
+```
+FOREVER DO
+    MOVE Alien BY 1 STEP
+    IF Alien IS ON EDGE THEN
+        BOUNCE Alien
+    END IF
+    PAUSE 200 ms
+END FOREVER
+```
+
+### Explanation
+
+- Alien slides left–right, bouncing off edges.  
+- This creates predictable but challenging behaviour.
+
+---
+
+# Part B4 — Bomb Drop Logic (Alien Attacks)
+
+## TTC Pseudocode
 
 ```
 EVERY 1 ms DO
     IF Alien.x = Ship.x THEN
-        SET Alien BRIGHTNESS TO 1000
+        SET Alien brightness TO 1000
 
         SET Bomb TO NEW SPRITE AT (Alien.x, 0)
 
         REPEAT 5 TIMES
             PAUSE 200 ms
-            MOVE Bomb DOWN BY 1
+            CHANGE Bomb y BY +1
         END REPEAT
 
         IF Bomb IS TOUCHING Ship THEN
@@ -248,185 +247,89 @@ EVERY 1 ms DO
 END EVERY
 ```
 
-### Alien Movement (FOREVER)
+### Explanation
 
-```
-FOREVER DO
-    MOVE Alien BY 1 STEP
-    IF Alien IS ON EDGE THEN
-        BOUNCE Alien
-    END IF
-
-    PAUSE 200 ms
-
-    IF Ship TILTED RIGHT THEN
-        MOVE Ship RIGHT BY 1
-    END IF
-
-    IF Ship TILTED LEFT THEN
-        MOVE Ship LEFT BY 1
-    END IF
-END FOREVER
-```
+- **Alien shoots only when aligned** with the ship (same x‑value).  
+- Brightness changes briefly to show “charging / warning”.  
+- Bomb falls straight down using a REPEAT loop.  
+- If the bomb touches the ship → **game over**.  
+- Bomb is deleted either way to avoid piling up sprites.
 
 ---
 
-## B2 — Verbose Instructor Explanation (Very Detailed)
+# Part B5 — Shooting Lasers (Button B)
 
-### 1) Game Setup — Sprites and Starting Positions
+## TTC Pseudocode
 
-Explain:
+```
+WHEN button B is pressed DO
+    SET Laser TO NEW SPRITE AT (Ship.x, Ship.y)
 
-- The **Alien** begins at the top‑left corner.  
-- The **Ship** begins at the bottom centre (`(2, 4)`).  
-- Both are sprites, which means they have:
-  - x and y coordinates  
-  - movement direction  
-  - brightness  
-  - built‑in collision detection  
-  - delete / create behaviours
+    REPEAT 5 TIMES
+        PAUSE 100 ms
+        CHANGE Laser y BY -1
 
-Use the whiteboard to mark the 5×5 grid and show coordinates.
+        IF Laser IS TOUCHING Alien THEN
+            DELETE Alien
+            ADD 1 TO score
+            SET Alien TO NEW SPRITE AT (0,0)
+        END IF
+    END REPEAT
 
-### 2) Shooting (Button B)
+    DELETE Laser
+END WHEN
+```
 
-Break it down:
+### Explanation
 
-- When Button B is pressed, the code creates a new **Laser** sprite at the Ship’s exact position.  
-- The Laser moves upward by decreasing its `y` position.  
-- It moves in a controlled loop:
-  - 5 steps  
-  - 100 ms pause between each  
-  - deletes itself at the end so it doesn’t clutter the board
+- Laser starts at the ship’s position and travels up (y decreases).  
+- If it touches the alien:  
+  - alien is destroyed  
+  - score increases  
+  - new alien respawns at (0,0).  
+- This introduces **collision detection** and **respawning**.
 
-Explain collision:
+---
 
-- If Laser touches Alien at any time:
-  - Alien is destroyed  
-  - Score increases  
-  - A new Alien respawns at top‑left  
-  - (This mimics classic Space Invaders)
+# Part B6 — Full Game Loop Interaction
 
-Good questions:
+Participants now have:
 
-- “What happens if we increase the number of loop steps?”  
-- “What happens if the Alien moves faster than the laser?”
+- ship movement loop  
+- alien movement loop  
+- bomb drop logic (event-like interval)  
+- laser shooting behaviour  
+- scoring and game over
 
-### 3) The Bomb Logic — WHY everyInterval?
+Encourage them to test:
 
-Explain carefully:
-
-- We want the Alien to drop a bomb **only when it is aligned** with the Ship.  
-- Checking Alien.x = Ship.x needs to happen frequently.  
-- loops.everyInterval(1, …) is MakeCode’s way to run a piece of code *very often*, almost like a mini‑FOREVER loop with timing.
-
-Walk through what happens:
-
-1. Alien moves left-right in FOREVER loop.  
-2. everyInterval checks constantly:  
-   - “Are the x positions the same?”  
-3. If YES:  
-   - Alien glows bright  
-   - Bomb appears at Alien’s column  
-   - Bomb falls 5 steps  
-4. If Bomb touches Ship → **game over**
-
-Explain visually with arrows:
-
-Alien  
-↓  
-Bomb  
-↓  
-Ship
-
-### 4) Alien Movement (FOREVER Loop)
-
-Explain step-by-step:
-
-- Alien moves horizontally by 1 step.  
-- When it reaches the LED edge, `ifOnEdgeBounce` reverses its direction.  
-- This creates the classic “pacing” movement.
-
-Ask participants:
-
-- “What would happen if we removed the bounce?”  
-- “What if we changed pause 200 ms to pause 50 ms?”  
-
-Explain accelerometer control:
-
-- The micro:bit senses tilt using the **accelerometer**.  
-- If tilted right:
-  - Ship moves right  
-- If tilted left:
-  - Ship moves left  
-- Values above +100 or below −100 work like thresholds.
-
-This allows hands‑on gameplay: tilting the micro:bit to move the ship.
-
-### 5) Putting It All Together
-
-Explain:
-
-- Three systems run at once:  
-  1. Shooting (event-driven)  
-  2. Bomb dropping (interval-based)  
-  3. Alien movement + tilt control (FOREVER loop)
-
-Highlight:
-
-> “Games are made of separate systems running at the same time.  
-> That’s why events, loops, and intervals are so important.”
+- shoot alien while it moves  
+- dodge bomb drops  
+- play until score increases multiple times
 
 ---
 
 # Differentiation
 
-### Support
+**Support:**  
+- Provide printed pseudocode blocks for matching.  
+- Allow them to build only laser OR only bomb logic.
 
-- Give learners partially completed code with missing pieces.  
-- Allow some to build only the laser or only the bombs.  
-- Provide pre-labelled grid printouts for coordinate reasoning.
-
-### Extend
-
-- Add multiple aliens.  
-- Add shield blocks.  
+**Extend:**  
 - Add sound effects for shooting and explosions.  
-- Add lives instead of immediate game over.  
-- Add levels with faster movement.
-
----
-
-# Assessment & Evidence of Learning
-
-Look for:
-
-- Explaining what a parameter is.  
-- Explaining what a return value is.  
-- Correctly using functions in button events.  
-- Reasoning about sprite positions and collisions.  
-- Debugging movement issues by checking coordinates.
-
----
-
-# Troubleshooting
-
-- **Laser doesn’t move:** Check REPEAT loop or direction.  
-- **Alien never drops bombs:** Check Alien.x = Ship.x condition.  
-- **Ship doesn’t move:** Check accelerometer thresholds.  
-- **Alien gets stuck:** Check ifOnEdgeBounce placement.
+- Add alien speed increase based on score.  
+- Add multiple aliens or shields.
 
 ---
 
 # Reflection & Wrap‑Up
 
-Discussion prompts:
+Questions to ask:
 
-- “Why are functions helpful in games?”  
-- “Which part of Space Invaders was hardest to debug?”  
-- “How do events, loops, and intervals work together?”  
-- “If you continued next week, what would you add to the game?”
+- “Where did we use functions today?”  
+- “How do parameters help us reuse ideas?”  
+- “How did the game decide when to drop a bomb?”  
+- “What part of the code controls difficulty?”
 
----
+Participants should now understand functions deeply and see how they fit into a real game.
 
-{% include back-to-autumn.html %}
