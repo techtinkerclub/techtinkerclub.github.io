@@ -67,7 +67,7 @@ Timing can flex slightly depending on how quickly participants get through the P
 
 ---
 
-# Part A — PRIMM Deep Dive: Sparkle and Sweep Demo
+## Part A — PRIMM Deep Dive: Sparkle and Sweep Demo
 
 We use a single program that ties together:
 
@@ -310,7 +310,7 @@ These “make” ideas can be simple; the important thing is that participants f
 
 ---
 
-# Part B — Barrel Jumper (Week 5 Preview Only)
+## Part B — Barrel Jumper (Week 5 Preview Only)
 
 In Week 5, we **only build the starting setup**:
 
@@ -388,7 +388,7 @@ Make sure they see the link:
 
 ---
 
-# Differentiation
+## Differentiation
 
 **Support:**
 
@@ -404,7 +404,7 @@ Make sure they see the link:
 
 ---
 
-# Assessment & Evidence of Learning
+## Assessment & Evidence of Learning
 
 Look for:
 
@@ -420,7 +420,7 @@ Quick checks you can use:
 
 ---
 
-# Troubleshooting & Common Issues
+## Troubleshooting & Common Issues
 
 - **Buttons do nothing:**  
   - Often `btnlock` never gets set to 0. Check ON START is running and the countdown finishes.  
@@ -435,7 +435,7 @@ Encourage participants to **read the pseudocode out loud** when debugging.
 
 ---
 
-# Reflection & Wrap‑Up
+## Reflection & Wrap‑Up
 
 End with a short discussion:
 
