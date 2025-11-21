@@ -48,7 +48,7 @@ header:
 
 *(Use your own explanations from the session — this simply structures them for notes.)*
 
-### What we covered:
+## What we covered:
 
 - Sound waves: vibrations travelling through air  
 - Light waves: part of the electromagnetic spectrum  
@@ -130,7 +130,7 @@ SET players TO total number of players
 SET ghost TO false
 ```
 
-### Explanation
+#### Explanation
 
 - A **radio group** is like a walkie‑talkie channel  
 - All micro:bits on the same group can hear each other  
@@ -153,7 +153,7 @@ IF ID = 1 THEN
 END IF
 ```
 
-### Explanation
+#### Explanation
 
 - Only player 1 starts as the ghost  
 - Showing the ghost icon gives visual feedback  
@@ -176,7 +176,7 @@ WHEN a radio number is received DO
 END WHEN
 ```
 
-### Explanation
+#### Explanation
 
 - When someone broadcasts a number, everyone hears it  
 - Each micro:bit checks: **Is the message meant for me?**  
@@ -206,7 +206,7 @@ WHEN device is shaken DO
 END WHEN
 ```
 
-### Explanation
+#### Explanation
 
 This is where most of the logic happens.
 
