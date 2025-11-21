@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Instructor Notes — Week 5"
+title: ""
 permalink: /teacher_notes/2025-26/autumn/week-5-notes/
 week: 5
 robots: noindex
