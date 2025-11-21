@@ -181,16 +181,16 @@ This project is split into clear steps so participants understand each mechanic.
 
 ---
 
-# Part B1 — Setting Up the Sprites
+## Part B1 — Setting Up the Sprites
 
-## TTC Pseudocode
+### TTC Pseudocode
 
 ```text
 SET Alien TO NEW SPRITE AT (0, 0)
 SET Ship TO NEW SPRITE AT (2, 4)
 ```
 
-## Instructor Notes
+### Instructor Notes
 
 - `Alien` starts at the top-left corner.  
 - `Ship` starts at the bottom of the screen (x = 2).  
@@ -202,9 +202,9 @@ Ask participants:
 
 ---
 
-# Part B2 — Moving the Alien (FOREVER Loop)
+## Part B2 — Moving the Alien (FOREVER Loop)
 
-## TTC Pseudocode
+### TTC Pseudocode
 
 ```text
 FOREVER DO
@@ -225,16 +225,16 @@ FOREVER DO
 END FOREVER
 ```
 
-## Instructor Notes (Verbose)
+### Instructor Notes (Verbose)
 
 Explain each piece:
 
-### Alien Movement
+#### Alien Movement
 - `MOVE` makes the alien walk across the row.  
 - `BOUNCE` flips direction when it hits the edge.  
 - This creates the classic horizontal enemy movement.
 
-### Ship Movement Using Tilt
+#### Ship Movement Using Tilt
 - The ship moves right if the micro:bit is tilted right.  
 - It moves left if tilted left.  
 - Threshold (`100` and `-100`) prevents tiny shakes from moving the ship.
@@ -245,9 +245,9 @@ Great guiding questions:
 
 ---
 
-# Part B3 — Shooting with Button B (Laser Logic)
+## Part B3 — Shooting with Button B (Laser Logic)
 
-## TTC Pseudocode
+### TTC Pseudocode
 
 ```text
 WHEN button B is pressed DO
@@ -268,15 +268,15 @@ WHEN button B is pressed DO
 END WHEN
 ```
 
-## Instructor Notes (Verbose)
+### Instructor Notes (Verbose)
 
-### How shooting works
+#### How shooting works
 
 - A new sprite appears *at the ship’s location*.  
 - We move it upward (y decreases).  
 - It moves step‑by‑step so players can see it travel.
 
-### Collision Logic
+#### Collision Logic
 
 When the laser touches the alien:
 
@@ -291,9 +291,9 @@ Key discussion points:
 
 ---
 
-# Part B4 — Alien Dropping a Bomb
+## Part B4 — Alien Dropping a Bomb
 
-## TTC Pseudocode
+### TTC Pseudocode
 
 ```text
 EVERY 1 ms DO
@@ -314,16 +314,16 @@ EVERY 1 ms DO
 END EVERY
 ```
 
-## Instructor Notes (Verbose)
+### Instructor Notes (Verbose)
 
-### Why check if `Alien.x = Ship.x`?  
+#### Why check if `Alien.x = Ship.x`?  
 This means the alien is *above the ship* — the perfect moment to drop a bomb.
 
-### Bomb behaviour
+#### Bomb behaviour
 - Bomb falls straight down by increasing y.  
 - It moves slowly so players have time to dodge.
 
-### Collision
+#### Collision
 If the bomb touches the ship → **Game Over**.
 
 Great questions:
@@ -334,12 +334,12 @@ Great questions:
 
 # Differentiation
 
-## Support
+### Support
 - Provide printed TTC pseudocode for each part.  
 - Let less confident participants implement **only movement** or **only shooting**.  
 - Allow them to test collision using just one sprite.
 
-## Extend
+### Extend
 - Add sound effects for shooting or getting hit.  
 - Add multiple aliens moving at different speeds.  
 - Add shields or health points.  
@@ -347,7 +347,7 @@ Great questions:
 
 ---
 
-# Assessment & Evidence of Learning
+## Assessment & Evidence of Learning
 
 Look for participants who can:
 
@@ -363,7 +363,7 @@ Quick questions:
 
 ---
 
-# Reflection & Wrap‑Up
+## Reflection & Wrap‑Up
 
 End with a short discussion:
 
