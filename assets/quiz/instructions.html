@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html> 
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -158,14 +158,21 @@
       </p>
 
       <p>
-        In MakeCode, we build programs using colourful puzzle-like blocks. Pseudocode expresses those same ideas using words and
-        indentation, for example:
+        In MakeCode, we build programs using colourful puzzle-like blocks. For the quiz, we use a small, consistent
+        <strong>Tech Tinker Club pseudocode style</strong>, where:
       </p>
+      <ul>
+        <li>Keywords like <code>IF</code>, <code>THEN</code>, <code>REPEAT</code> and <code>FOREVER</code> are written in CAPITAL LETTERS.</li>
+        <li>Variables use lowercase letters with underscores, for example <code>score</code> or <code>bird_y</code>.</li>
+        <li>Sensor readings and system values are written in square brackets, like <code>[light level]</code> or <code>[button A is pressed]</code>.</li>
+      </ul>
 
-      <pre class="tqi-code">repeat 3 times
-  show icon "heart"
-  pause 200
-end</pre>
+      <p>Here is an example of our pseudocode style:</p>
+
+      <pre class="tqi-code">REPEAT 3 TIMES
+    SHOW ICON heart
+    PAUSE 200 ms
+END REPEAT</pre>
 
       <p>This means exactly the same as using the blocks:</p>
       <ul>
@@ -174,6 +181,12 @@ end</pre>
         <li>The program pauses for 200 milliseconds.</li>
         <li>Then the loop repeats until it has run three times.</li>
       </ul>
+
+      <p>
+        If you’d like to see the full list of commands and how they map from MakeCode blocks to our pseudocode,
+        you can look at the <a href="/tools/microbit-pseudocode-reference/" target="_blank" rel="noopener">
+        Tech Tinker Club Pseudocode Reference</a>.
+      </p>
 
       <p><strong>Why use pseudocode?</strong></p>
       <ul>
@@ -197,7 +210,7 @@ end</pre>
         </li>
         <li><strong>Check how loops work.</strong> <em>repeat N times</em> runs a set number; <em>forever</em> never stops; <em>while (condition)</em> runs only while something is true.</li>
         <li><strong>Think about timing.</strong> Pauses are in milliseconds (ms). <code>1000 ms = 1 s</code>. For “3 seconds at 50 ms per update” → <code>3000 ÷ 50 = 60</code>.</li>
-        <li><strong>Relate pseudocode to MakeCode blocks.</strong> Map lines to blocks: <em>if … then</em> → If block; <em>repeat N times</em> → Repeat loop; <em>on button A pressed</em> → Event.</li>
+        <li><strong>Relate pseudocode to MakeCode blocks.</strong> Map lines to blocks: <em>IF … THEN</em> → If block; <em>REPEAT N TIMES</em> → Repeat loop; <em>WHEN button A is pressed</em> → Event.</li>
         <li><strong>Stay curious.</strong> If something’s unclear, rebuild it in MakeCode later and see what the Micro:bit does.</li>
       </ul>
 
@@ -213,7 +226,6 @@ end</pre>
         reasoning — all essential parts of STEM learning.
       </p>
 
-      </p>
     </article>
   </div>
 </body>
