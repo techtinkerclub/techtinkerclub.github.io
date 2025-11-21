@@ -40,8 +40,13 @@
           "id": "w1-q3",
           "question": "In the code below, which block ensures the text appears only one time before the heart starts flashing?",
           "type": "multiple-choice",
-          "code": "on start\n  show string \"Hello!\"\nforever\n  show icon Heart\n  pause(500)\n  clear screen\n  pause(500)",
-          "options": ["forever", "on start", "show string \"Hello!\"", "pause(500)"],
+          "code": "WHEN program starts DO\n  SHOW TEXT \"Hello!\"\nFOREVER DO\n  SHOW ICON Heart\n  PAUSE 500 ms\n  CLEAR SCREEN\n  PAUSE 500 ms",
+          "options": [
+            "forever",
+            "on start",
+            "show string \"Hello!\"",
+            "pause(500)"
+          ],
           "correct": 1,
           "explanation": "Anything inside 'on start' runs just once. The 'forever' loop repeats endlessly, but 'on start' finishes after its commands.",
           "difficulty": "medium-hard",
@@ -51,7 +56,7 @@
           "id": "w1-q4",
           "question": "If you upload this code to the micro:bit, what will you see happen and why?",
           "type": "multiple-choice",
-          "code": "forever\n  show string \"Hi\"",
+          "code": "FOREVER DO\n  SHOW TEXT \"Hi\"",
           "options": [
             "It scrolls 'Hi' endlessly because there’s no stop condition",
             "It only shows 'Hi' once because the display clears automatically",
@@ -82,9 +87,21 @@
           "id": "w1-q6",
           "question": "Match each term to its definition.",
           "type": "drag-drop",
-          "terms": ["Event", "Sequence", "Debug"],
-          "definitions": ["Order of instructions", "Something that triggers code", "Find and fix errors"],
-          "correctMatches": [1, 0, 2],
+          "terms": [
+            "Event",
+            "Sequence",
+            "Debug"
+          ],
+          "definitions": [
+            "Order of instructions",
+            "Something that triggers code",
+            "Find and fix errors"
+          ],
+          "correctMatches": [
+            1,
+            0,
+            2
+          ],
           "explanation": "Event triggers code; sequence is order; debug means fix mistakes.",
           "difficulty": "medium",
           "hint": "Cause → Event; order → Sequence; fixing → Debug."
@@ -109,7 +126,12 @@
           "id": "w1-q8",
           "question": "Which statement about 'on button A pressed' is true?",
           "type": "multiple-choice",
-          "options": ["It runs in a loop automatically", "It runs only when A is pressed", "It runs only at start", "It never runs"],
+          "options": [
+            "It runs in a loop automatically",
+            "It runs only when A is pressed",
+            "It runs only at start",
+            "It never runs"
+          ],
           "correct": 1,
           "explanation": "Event code runs when the event happens — here, pressing Button A.",
           "difficulty": "hard",
@@ -119,7 +141,12 @@
           "id": "w1-q9",
           "question": "What is a program?",
           "type": "multiple-choice",
-          "options": ["A single instruction", "Random blocks", "A set of instructions a computer follows", "An image on the LED matrix"],
+          "options": [
+            "A single instruction",
+            "Random blocks",
+            "A set of instructions a computer follows",
+            "An image on the LED matrix"
+          ],
           "correct": 2,
           "explanation": "A program is a precise sequence of instructions.",
           "definition": "PROGRAM — a precise list of instructions a computer follows.",
@@ -130,7 +157,12 @@
           "id": "w1-q10",
           "question": "Why might your program not appear on the micro:bit after download?",
           "type": "multiple-choice",
-          "options": ["Wrong cable (charge-only)", "Didn’t click Download", "Micro:bit not connected", "Any of these"],
+          "options": [
+            "Wrong cable (charge-only)",
+            "Didn’t click Download",
+            "Micro:bit not connected",
+            "Any of these"
+          ],
           "correct": 3,
           "explanation": "All of these are common causes.",
           "difficulty": "hard",
@@ -140,7 +172,12 @@
           "id": "w1-q11",
           "question": "Which example shows input → process → output in the correct order?",
           "type": "multiple-choice",
-          "options": ["LED → add numbers → button", "Button → compare numbers → show icon", "Speaker → random → LED", "Battery → program → USB"],
+          "options": [
+            "LED → add numbers → button",
+            "Button → compare numbers → show icon",
+            "Speaker → random → LED",
+            "Battery → program → USB"
+          ],
           "correct": 1,
           "explanation": "Input (button) → processing/logic → output (display).",
           "difficulty": "hard",
@@ -150,7 +187,12 @@
           "id": "w1-q12",
           "question": "Which block would you use to run code continuously during the entire program?",
           "type": "multiple-choice",
-          "options": ["on start", "on shake", "forever", "on button B pressed"],
+          "options": [
+            "on start",
+            "on shake",
+            "forever",
+            "on button B pressed"
+          ],
           "correct": 2,
           "explanation": "The forever loop keeps running as long as the program runs.",
           "difficulty": "medium",
@@ -182,7 +224,12 @@
           "id": "w2-q2",
           "question": "What does 'random 1 to 6' give you?",
           "type": "multiple-choice",
-          "options": ["Always 6", "Always 1", "Any whole number from 1 to 6", "A decimal number"],
+          "options": [
+            "Always 6",
+            "Always 1",
+            "Any whole number from 1 to 6",
+            "A decimal number"
+          ],
           "correct": 2,
           "explanation": "It behaves like a fair six-sided die.",
           "definition": "RANDOM — the computer chooses by chance from a range.",
@@ -193,7 +240,12 @@
           "id": "w2-q3",
           "question": "What is an event in programming?",
           "type": "multiple-choice",
-          "options": ["A type of sensor", "A mistake in code", "Something that triggers code to run", "A kind of loop"],
+          "options": [
+            "A type of sensor",
+            "A mistake in code",
+            "Something that triggers code to run",
+            "A kind of loop"
+          ],
           "correct": 2,
           "explanation": "Events trigger code when they occur (press, shake, start).",
           "difficulty": "easy",
@@ -203,7 +255,7 @@
           "id": "w2-q4",
           "question": "This dice roller runs when you press Button A. What happens each time you press it?",
           "type": "multiple-choice",
-          "code": "on button A pressed\n  set roll to random 1 to 6\n  show number roll",
+          "code": "WHEN button A is pressed DO\n  SET roll TO random 1 to 6\n  SHOW NUMBER roll",
           "options": [
             "It picks a new number from 1 to 6 and shows it",
             "It keeps showing the same number every time",
@@ -219,7 +271,12 @@
           "id": "w2-q5",
           "question": "What is the chance of rolling a 4 on a fair six-sided die?",
           "type": "multiple-choice",
-          "options": ["1 in 2", "1 in 4", "1 in 6", "1 in 10"],
+          "options": [
+            "1 in 2",
+            "1 in 4",
+            "1 in 6",
+            "1 in 10"
+          ],
           "correct": 2,
           "explanation": "Each face has equal probability: 1/6.",
           "difficulty": "medium",
@@ -229,7 +286,12 @@
           "id": "w2-q6",
           "question": "If a die is rolled 60 times, about how many 3s would you expect?",
           "type": "multiple-choice",
-          "options": ["About 5", "About 10", "About 20", "About 30"],
+          "options": [
+            "About 5",
+            "About 10",
+            "About 20",
+            "About 30"
+          ],
           "correct": 1,
           "explanation": "Expected frequency ≈ total × probability = 60 × 1/6 = 10.",
           "difficulty": "medium",
@@ -239,7 +301,12 @@
           "id": "w2-q7",
           "question": "Which block lets you react to movement of the micro:bit?",
           "type": "multiple-choice",
-          "options": ["on shake", "on start", "forever", "show number"],
+          "options": [
+            "on shake",
+            "on start",
+            "forever",
+            "show number"
+          ],
           "correct": 0,
           "explanation": "The accelerometer triggers the shake event.",
           "difficulty": "medium",
@@ -249,9 +316,24 @@
           "id": "w2-q8",
           "question": "Match the event to when it triggers.",
           "type": "drag-drop",
-          "terms": ["on start", "on button A pressed", "on shake", "forever"],
-          "definitions": ["Runs when device turns on", "Runs when A is pressed", "Runs when moved", "Runs continuously"],
-          "correctMatches": [0, 1, 2, 3],
+          "terms": [
+            "on start",
+            "on button A pressed",
+            "on shake",
+            "forever"
+          ],
+          "definitions": [
+            "Runs when device turns on",
+            "Runs when A is pressed",
+            "Runs when moved",
+            "Runs continuously"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2,
+            3
+          ],
           "explanation": "Each event maps to a different trigger; forever has no trigger.",
           "difficulty": "medium",
           "hint": "Think: beginning, button, motion, always."
@@ -260,7 +342,7 @@
           "id": "w2-q9",
           "question": "What message might the micro:bit show when you press Button A?",
           "type": "multiple-choice",
-          "code": "on button A pressed\n  set x to random 1 to 10\n  if x > 5 then\n    show string \"Big\"\n  else\n    show string \"Small\"",
+          "code": "WHEN button A is pressed DO\n  SET x TO random 1 to 10\n  IF x > 5 THEN\n    SHOW TEXT \"Big\"\n  ELSE\n    SHOW TEXT \"Small\"",
           "options": [
             "It shows 'Big' or 'Small' depending on the random number",
             "It always shows 'Big' because 10 is the largest number",
@@ -276,8 +358,13 @@
           "id": "w2-q10",
           "question": "What is shown for this coin flip?",
           "type": "multiple-choice",
-          "code": "on button B pressed\n  set flip to random 0 to 1\n  if flip = 0 then\n    show string \"Heads\"\n  else\n    show string \"Tails\"",
-          "options": ["Heads only", "Tails only", "Heads or Tails", "Error"],
+          "code": "WHEN button B is pressed DO\n  SET flip TO random 0 to 1\n  IF flip = 0 THEN\n    SHOW TEXT \"Heads\"\n  ELSE\n    SHOW TEXT \"Tails\"",
+          "options": [
+            "Heads only",
+            "Tails only",
+            "Heads or Tails",
+            "Error"
+          ],
           "correct": 2,
           "explanation": "Random 0 to 1 maps perfectly to a fair coin.",
           "difficulty": "hard",
@@ -287,7 +374,7 @@
           "id": "w2-q11",
           "question": "When this code runs, you sometimes see two different numbers flash quickly. Why?",
           "type": "multiple-choice",
-          "code": "on button A pressed\n  show number random 1 to 6\n  show number random 1 to 6",
+          "code": "WHEN button A is pressed DO\n  SHOW NUMBER random 1 to 6\n  SHOW NUMBER random 1 to 6",
           "options": [
             "Because each call to 'random 1 to 6' generates a new value right away",
             "Because the same random value is shown twice at high speed",
@@ -303,7 +390,7 @@
           "id": "w2-q12",
           "question": "After pressing Button A five times, what number will the micro:bit show, and why?",
           "type": "multiple-choice",
-          "code": "on start\n  set count to 0\non button A pressed\n  change count by 1\n  show number count",
+          "code": "WHEN program starts DO\n  SET count TO 0\nWHEN button A is pressed DO\n  CHANGE count BY 1\n  SHOW NUMBER count",
           "options": [
             "5, because 'count' increases by 1 each time and keeps its value",
             "1, because 'count' resets to 0 on every press",
@@ -326,7 +413,12 @@
           "id": "w3-q1",
           "question": "What does the else part of an if–else do?",
           "type": "multiple-choice",
-          "options": ["Runs when the if is true", "Runs when the if is false", "Runs always", "Never runs"],
+          "options": [
+            "Runs when the if is true",
+            "Runs when the if is false",
+            "Runs always",
+            "Never runs"
+          ],
           "correct": 1,
           "explanation": "Else handles the “otherwise” case when the if condition isn’t met.",
           "difficulty": "easy",
@@ -336,8 +428,13 @@
           "id": "w3-q2",
           "question": "Look at this code. Which symbol is checking if the score is exactly 10?",
           "type": "multiple-choice",
-          "code": "if score = 10 then\n  show string \"Winner!\"",
-          "options": [">", "<", "=", "≠"],
+          "code": "IF score = 10 THEN\n  SHOW TEXT \"Winner!\"",
+          "options": [
+            ">",
+            "<",
+            "=",
+            "≠"
+          ],
           "correct": 2,
           "explanation": "The '=' sign checks equality.",
           "difficulty": "hard",
@@ -362,8 +459,13 @@
           "id": "w3-q4",
           "question": "What message appears for x = 7?",
           "type": "multiple-choice",
-          "code": "on button A pressed\n  set x to 7\n  if x > 5 then\n    show string \"Big\"\n  else\n    show string \"Small\"",
-          "options": ["Big", "Small", "Both", "Nothing"],
+          "code": "WHEN button A is pressed DO\n  SET x TO 7\n  IF x > 5 THEN\n    SHOW TEXT \"Big\"\n  ELSE\n    SHOW TEXT \"Small\"",
+          "options": [
+            "Big",
+            "Small",
+            "Both",
+            "Nothing"
+          ],
           "correct": 0,
           "explanation": "7 > 5 is true, so it shows “Big”.",
           "difficulty": "medium",
@@ -373,8 +475,13 @@
           "id": "w3-q5",
           "question": "What’s the output if number = 5?",
           "type": "multiple-choice",
-          "code": "set number to 5\nif number < 5 then\n  show string \"Low\"\nelse if number = 5 then\n  show string \"Equal\"\nelse\n  show string \"High\"",
-          "options": ["Low", "Equal", "High", "Nothing"],
+          "code": "SET number TO 5\nIF number < 5 THEN\n  SHOW TEXT \"Low\"\nELSE IF number = 5 THEN\n  SHOW TEXT \"Equal\"\nELSE\n  SHOW TEXT \"High\"",
+          "options": [
+            "Low",
+            "Equal",
+            "High",
+            "Nothing"
+          ],
           "correct": 1,
           "explanation": "The second condition matches exactly.",
           "difficulty": "medium",
@@ -384,7 +491,12 @@
           "id": "w3-q6",
           "question": "If a coin is fair, what’s the chance of Heads?",
           "type": "multiple-choice",
-          "options": ["1/2", "1/3", "1/6", "Depends on the day"],
+          "options": [
+            "1/2",
+            "1/3",
+            "1/6",
+            "Depends on the day"
+          ],
           "correct": 0,
           "explanation": "A fair coin has two equally likely outcomes.",
           "difficulty": "medium",
@@ -394,8 +506,13 @@
           "id": "w3-q7",
           "question": "Which condition correctly checks for a tie?",
           "type": "multiple-choice",
-          "code": "set player to \"Rock\"\nset computer to \"Rock\"\nif ???? then\n  show string \"Tie!\"",
-          "options": ["player ≠ computer", "player = computer", "computer = \"Paper\"", "player = \"Scissors\""],
+          "code": "SET player TO \"Rock\"\nSET computer TO \"Rock\"\nIF ???? THEN\n  SHOW TEXT \"Tie!\"",
+          "options": [
+            "player ≠ computer",
+            "player = computer",
+            "computer = \"Paper\"",
+            "player = \"Scissors\""
+          ],
           "correct": 1,
           "explanation": "A tie occurs when both choices are equal.",
           "difficulty": "medium",
@@ -405,9 +522,24 @@
           "id": "w3-q8",
           "question": "Match the comparison to an example that makes it true.",
           "type": "drag-drop",
-          "terms": ["x > 3", "x = 5", "x < 2", "x ≠ 4"],
-          "definitions": ["x is 6", "x is 5", "x is 1", "x is 3"],
-          "correctMatches": [0, 1, 2, 3],
+          "terms": [
+            "x > 3",
+            "x = 5",
+            "x < 2",
+            "x ≠ 4"
+          ],
+          "definitions": [
+            "x is 6",
+            "x is 5",
+            "x is 1",
+            "x is 3"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2,
+            3
+          ],
           "explanation": "Each example satisfies the comparison shown.",
           "difficulty": "medium",
           "hint": "Plug in the numbers mentally."
@@ -416,8 +548,13 @@
           "id": "w3-q9",
           "question": "What does it show when A is pressed?",
           "type": "multiple-choice",
-          "code": "on button A pressed\n  set roll to random 1 to 6\n  if roll = 6 then\n    show icon \"trophy\"\n  else\n    show number roll",
-          "options": ["Always a trophy", "Always the number", "Trophy for 6; otherwise the number", "Nothing"],
+          "code": "WHEN button A is pressed DO\n  SET roll TO random 1 to 6\n  IF roll = 6 THEN\n    SHOW ICON \"trophy\"\n  ELSE\n    SHOW NUMBER roll",
+          "options": [
+            "Always a trophy",
+            "Always the number",
+            "Trophy for 6; otherwise the number",
+            "Nothing"
+          ],
           "correct": 2,
           "explanation": "It branches on a special case: a roll of 6.",
           "difficulty": "hard",
@@ -427,8 +564,13 @@
           "id": "w3-q10",
           "question": "What will the display show?",
           "type": "multiple-choice",
-          "code": "set a to 3\nset b to 7\nif a > b then\n  show string \"A\"\nelse if a = b then\n  show string \"Equal\"\nelse\n  show string \"B\"",
-          "options": ["A", "Equal", "B", "Nothing"],
+          "code": "SET a TO 3\nSET b TO 7\nIF a > b THEN\n  SHOW TEXT \"A\"\nELSE IF a = b THEN\n  SHOW TEXT \"Equal\"\nELSE\n  SHOW TEXT \"B\"",
+          "options": [
+            "A",
+            "Equal",
+            "B",
+            "Nothing"
+          ],
           "correct": 2,
           "explanation": "3 > 7 is false; 3 = 7 is false; it falls through to “B”.",
           "difficulty": "hard",
@@ -438,7 +580,7 @@
           "id": "w3-q11",
           "question": "Why can’t this ever show \"B\"?",
           "type": "multiple-choice",
-          "code": "set n to 90\nif n >= 90 then\n  show string \"A\"\nelse if n >= 90 then\n  show string \"B\"\nelse\n  show string \"C\"",
+          "code": "SET n TO 90\nIF n >= 90 THEN\n  SHOW TEXT \"A\"\nELSE IF n >= 90 THEN\n  SHOW TEXT \"B\"\nELSE\n  SHOW TEXT \"C\"",
           "options": [
             "Because the second condition repeats the first",
             "Because n isn’t a number",
@@ -454,8 +596,13 @@
           "id": "w3-q12",
           "question": "What message appears when the code runs?",
           "type": "multiple-choice",
-          "code": "set temp to 20\nset light to 30\nif temp >= 18 and light >= 50 then\n  show string \"Go Outside\"\nelse\n  show string \"Stay In\"",
-          "options": ["Go Outside", "Stay In", "Both", "Nothing"],
+          "code": "SET temp TO 20\nSET light TO 30\nIF temp >= 18 and light >= 50 THEN\n  SHOW TEXT \"Go Outside\"\nELSE\n  SHOW TEXT \"Stay In\"",
+          "options": [
+            "Go Outside",
+            "Stay In",
+            "Both",
+            "Nothing"
+          ],
           "correct": 1,
           "explanation": "Both conditions must be true; light is too low.",
           "difficulty": "hard",
@@ -487,7 +634,12 @@
           "id": "w4-q2",
           "question": "What does 'change score by 5' do if score was 10?",
           "type": "multiple-choice",
-          "options": ["Sets it to 5", "Sets it to 10", "Sets it to 15", "Sets it to 50"],
+          "options": [
+            "Sets it to 5",
+            "Sets it to 10",
+            "Sets it to 15",
+            "Sets it to 50"
+          ],
           "correct": 2,
           "explanation": "It adds 5 to the current value: 10 + 5 = 15.",
           "difficulty": "easy",
@@ -512,8 +664,13 @@
           "id": "w4-q4",
           "question": "If the classroom light level is 80, what message appears when this code runs?",
           "type": "multiple-choice",
-          "code": "set lightLevel to light level\nif lightLevel < 50 then\n  show string \"Too Dark!\"\nelse\n  show string \"OK\"",
-          "options": ["\"Too Dark!\"", "\"OK\"", "\"Too Dark!\" then \"OK\"", "Nothing"],
+          "code": "SET lightlevel TO light level\nIF lightLevel < 50 THEN\n  SHOW TEXT \"Too Dark!\"\nELSE\n  SHOW TEXT \"OK\"",
+          "options": [
+            "\"Too Dark!\"",
+            "\"OK\"",
+            "\"Too Dark!\" then \"OK\"",
+            "Nothing"
+          ],
           "correct": 1,
           "explanation": "The condition is false when lightLevel = 80, so it shows 'OK'.",
           "difficulty": "hard",
@@ -523,8 +680,13 @@
           "id": "w4-q5",
           "question": "What is health after running?",
           "type": "multiple-choice",
-          "code": "set health to 100\nchange health by -20\nset health to health * 2",
-          "options": ["60", "80", "160", "200"],
+          "code": "SET health TO 100\nCHANGE health BY -20\nSET health TO health * 2",
+          "options": [
+            "60",
+            "80",
+            "160",
+            "200"
+          ],
           "correct": 2,
           "explanation": "100 - 20 = 80; 80 × 2 = 160.",
           "difficulty": "medium",
@@ -534,9 +696,24 @@
           "id": "w4-q6",
           "question": "Match each variable operation to its effect.",
           "type": "drag-drop",
-          "terms": ["set score to 10", "change score by 5", "set score to score + 1", "set score to 0"],
-          "definitions": ["Makes score 10", "Adds 5 to score", "Adds 1 to score", "Resets score to 0"],
-          "correctMatches": [0, 1, 2, 3],
+          "terms": [
+            "set score to 10",
+            "change score by 5",
+            "set score to score + 1",
+            "set score to 0"
+          ],
+          "definitions": [
+            "Makes score 10",
+            "Adds 5 to score",
+            "Adds 1 to score",
+            "Resets score to 0"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2,
+            3
+          ],
           "explanation": "“set” replaces the value; “change by” adds/subtracts.",
           "difficulty": "medium",
           "hint": "Replace vs. add."
@@ -545,8 +722,13 @@
           "id": "w4-q7",
           "question": "What will display when temp = 35?",
           "type": "multiple-choice",
-          "code": "set temp to temperature (onboard sensor)\nset threshold to 30\nif temp > threshold then\n  show string \"Too Hot!\"\nelse\n  show string \"OK\"",
-          "options": ["Too Hot!", "OK", "35", "Nothing"],
+          "code": "SET temp TO temperature (onboard sensor)\nSET threshold TO 30\nIF temp > threshold THEN\n  SHOW TEXT \"Too Hot!\"\nELSE\n  SHOW TEXT \"OK\"",
+          "options": [
+            "Too Hot!",
+            "OK",
+            "35",
+            "Nothing"
+          ],
           "correct": 0,
           "explanation": "35 > 30 is true, so it shows 'Too Hot!'.",
           "difficulty": "medium",
@@ -571,7 +753,12 @@
           "id": "w4-q9",
           "question": "Where does the temperature value come from in micro:bit projects?",
           "type": "multiple-choice",
-          "options": ["Onboard temperature sensor", "An external sensor is mandatory", "The light sensor", "The USB cable"],
+          "options": [
+            "Onboard temperature sensor",
+            "An external sensor is mandatory",
+            "The light sensor",
+            "The USB cable"
+          ],
           "correct": 0,
           "explanation": "We use the micro:bit’s onboard sensor.",
           "difficulty": "hard",
@@ -581,8 +768,13 @@
           "id": "w4-q10",
           "question": "You want your plant monitor to warn only when it’s cold and dark. Which line should fill the blank?",
           "type": "multiple-choice",
-          "code": "set temp to temperature (onboard)\nset light to light level (onboard)\nif __________ then\n  show string \"Cold & Dark\"",
-          "options": ["temp < 18", "light < 50", "temp < 18 and light < 50", "temp < 18 or light < 50"],
+          "code": "SET temp TO temperature (onboard)\nSET light TO light level (onboard)\nIF __________ THEN\n  SHOW TEXT \"Cold & Dark\"",
+          "options": [
+            "temp < 18",
+            "light < 50",
+            "temp < 18 and light < 50",
+            "temp < 18 or light < 50"
+          ],
           "correct": 2,
           "explanation": "and requires both conditions to be true.",
           "difficulty": "hard",
@@ -592,8 +784,13 @@
           "id": "w4-q11",
           "question": "What’s the logic mistake?",
           "type": "multiple-choice",
-          "code": "set temp to temperature\nif temp > 30 and temp > 40 then\n  show string \"Hot!\"\nelse\n  show string \"OK\"",
-          "options": ["Nothing’s wrong", "Use or instead of and", "The first comparison is redundant; effectively temp > 40", "Use = instead of >"],
+          "code": "SET temp TO temperature\nIF temp > 30 and temp > 40 THEN\n  SHOW TEXT \"Hot!\"\nELSE\n  SHOW TEXT \"OK\"",
+          "options": [
+            "Nothing’s wrong",
+            "Use or instead of and",
+            "The first comparison is redundant; effectively temp > 40",
+            "Use = instead of >"
+          ],
           "correct": 2,
           "explanation": "If both conditions are '>', the larger threshold dominates.",
           "difficulty": "hard",
@@ -603,8 +800,13 @@
           "id": "w4-q12",
           "question": "What does the code display?",
           "type": "multiple-choice",
-          "code": "set points to 10\nchange points by 15\nset points to points * 2\nshow number points",
-          "options": ["25", "50", "35", "40"],
+          "code": "SET points TO 10\nCHANGE points BY 15\nSET points TO points * 2\nSHOW NUMBER points",
+          "options": [
+            "25",
+            "50",
+            "35",
+            "40"
+          ],
           "correct": 1,
           "explanation": "10 + 15 = 25; 25 × 2 = 50.",
           "difficulty": "hard",
@@ -621,7 +823,12 @@
           "id": "w5-q1",
           "question": "What does a FOREVER loop do?",
           "type": "multiple-choice",
-          "options": ["Runs once", "Runs a fixed number of times", "Keeps running continuously", "Never runs"],
+          "options": [
+            "Runs once",
+            "Runs a fixed number of times",
+            "Keeps running continuously",
+            "Never runs"
+          ],
           "correct": 2,
           "explanation": "It repeats as long as the program is active.",
           "difficulty": "easy",
@@ -631,7 +838,12 @@
           "id": "w5-q2",
           "question": "What does 'repeat 3 times' do?",
           "type": "multiple-choice",
-          "options": ["Runs forever", "Runs exactly 3 times", "Runs randomly", "Runs until a condition is met"],
+          "options": [
+            "Runs forever",
+            "Runs exactly 3 times",
+            "Runs randomly",
+            "Runs until a condition is met"
+          ],
           "correct": 1,
           "explanation": "It iterates a fixed number of times.",
           "difficulty": "easy",
@@ -641,7 +853,12 @@
           "id": "w5-q3",
           "question": "What is an ITERATION?",
           "type": "multiple-choice",
-          "options": ["A type of sprite", "One pass through the loop", "A kind of bug", "A timing unit"],
+          "options": [
+            "A type of sprite",
+            "One pass through the loop",
+            "A kind of bug",
+            "A timing unit"
+          ],
           "correct": 1,
           "explanation": "Each cycle of a loop is an iteration.",
           "difficulty": "easy",
@@ -651,7 +868,7 @@
           "id": "w5-q4",
           "question": "What will this code make the micro:bit do?",
           "type": "multiple-choice",
-          "code": "forever\n  repeat 5 times\n    show icon \"heart\"\n    pause 200\n    show icon \"small heart\"\n    pause 200\n  clear screen\n  pause 800",
+          "code": "FOREVER DO\n  REPEAT 5 TIMES\n    SHOW ICON \"heart\"\n    PAUSE 200 ms\n    SHOW ICON \"small heart\"\n    PAUSE 200 ms\n  CLEAR SCREEN\n  PAUSE 800 ms",
           "options": [
             "Show one heart that never changes",
             "Show five heartbeats, then pause briefly, repeating forever",
@@ -667,8 +884,13 @@
           "id": "w5-q5",
           "question": "What numbers will be shown?",
           "type": "multiple-choice",
-          "code": "set counter to 1\nrepeat 5 times\n  show number counter\n  change counter by 1\n  pause 500",
-          "options": ["1,2,3,4,5", "0,1,2,3,4", "5,4,3,2,1", "Always 1"],
+          "code": "SET counter TO 1\nREPEAT 5 TIMES\n  SHOW NUMBER counter\n  CHANGE counter BY 1\n  PAUSE 500 ms",
+          "options": [
+            "1,2,3,4,5",
+            "0,1,2,3,4",
+            "5,4,3,2,1",
+            "Always 1"
+          ],
           "correct": 0,
           "explanation": "It starts at 1 and increments after each display.",
           "difficulty": "medium",
@@ -693,8 +915,13 @@
           "id": "w5-q7",
           "question": "What movement happens on the LED screen?",
           "type": "multiple-choice",
-          "code": "set sprite to create sprite at x 0 y 2\nrepeat 4 times\n  change sprite x by 1\n  pause 150",
-          "options": ["Moves left 4 steps", "Moves right 4 steps", "Does not move", "Teleports randomly"],
+          "code": "SET sprite TO create sprite at x 0 y 2\nREPEAT 4 TIMES\n  change sprite x by 1\n  PAUSE 150 ms",
+          "options": [
+            "Moves left 4 steps",
+            "Moves right 4 steps",
+            "Does not move",
+            "Teleports randomly"
+          ],
           "correct": 1,
           "explanation": "Changing x by +1 four times moves it 4 columns to the right.",
           "difficulty": "medium-hard",
@@ -716,7 +943,12 @@
             "Steps through numbers in order, useful for counting or indexing",
             "Repeats a specific number of times, then stops"
           ],
-          "correctMatches": [0, 1, 2, 3],
+          "correctMatches": [
+            0,
+            1,
+            2,
+            3
+          ],
           "explanation": "‘forever’ never ends; ‘repeat N times’ stops after a set count; ‘while’ repeats while a test stays true; ‘for index’ steps through a counting range.",
           "difficulty": "medium-hard",
           "hint": "Think: condition / endless / counting / fixed."
@@ -725,8 +957,13 @@
           "id": "w5-q9",
           "question": "How many times will it run?",
           "type": "multiple-choice",
-          "code": "set c to 10\nwhile c > 5\n  show number c\n  change c by -2",
-          "options": ["2 times", "3 times", "5 times", "Forever"],
+          "code": "SET c TO 10\nWHILE c > 5 DO\n  SHOW NUMBER c\n  CHANGE c BY -2",
+          "options": [
+            "2 times",
+            "3 times",
+            "5 times",
+            "Forever"
+          ],
           "correct": 1,
           "explanation": "c takes values 10, 8, 6 then stops (3 passes).",
           "difficulty": "hard",
@@ -736,8 +973,13 @@
           "id": "w5-q10",
           "question": "This loop is part of a game timer. What happens when the code runs?",
           "type": "multiple-choice",
-          "code": "set counter to 9\nwhile counter > 0\n    if counter < 0 then\n        change counter by -1\n    pause 100",
-          "options": ["Counts to 0 and stops", "Infinite loop", "Runs exactly 9 times", "Crashes immediately"],
+          "code": "SET counter TO 9\nWHILE counter > 0 DO\n    IF counter < 0 THEN\n        CHANGE counter BY -1\n    PAUSE 100 ms",
+          "options": [
+            "Counts to 0 and stops",
+            "Infinite loop",
+            "Runs exactly 9 times",
+            "Crashes immediately"
+          ],
           "correct": 1,
           "explanation": "Inside the loop, counter never changes because counter < 0 is never true. It stays 9, so counter > 0 is always true and the while-loop never ends.",
           "hint": "Does the if condition ever become true?",
@@ -747,8 +989,13 @@
           "id": "w5-q11",
           "question": "What is printed at the end?",
           "type": "multiple-choice",
-          "code": "set s to 0\nfor i from 1 to 4\n  change s by i\nshow number s",
-          "options": ["4", "6", "10", "12"],
+          "code": "SET s TO 0\nFOR I FROM 1 TO 4\n  CHANGE s BY i\nSHOW NUMBER s",
+          "options": [
+            "4",
+            "6",
+            "10",
+            "12"
+          ],
           "correct": 2,
           "explanation": "1+2+3+4 = 10.",
           "difficulty": "hard",
@@ -758,8 +1005,13 @@
           "id": "w5-q12",
           "question": "What pattern of beeps will you hear?",
           "type": "multiple-choice",
-          "code": "set wait to 600\nrepeat 3 times\n  play tone C\n  pause wait\n  change wait by -200",
-          "options": ["Equal spacing", "Faster each time", "One long beep", "Only once"],
+          "code": "SET wait TO 600\nREPEAT 3 TIMES\n  play tone C\n  pause wait\n  CHANGE wait BY -200",
+          "options": [
+            "Equal spacing",
+            "Faster each time",
+            "One long beep",
+            "Only once"
+          ],
           "correct": 1,
           "explanation": "The pause shrinks each iteration, so beeps come quicker.",
           "difficulty": "hard",
@@ -776,7 +1028,12 @@
           "id": "w6-q1",
           "question": "A loop updates a sprite once per iteration and then pauses for 80 ms. Approximately how many updates happen in 2 seconds?",
           "type": "multiple-choice",
-          "options": ["20", "25", "40", "80"],
+          "options": [
+            "20",
+            "25",
+            "40",
+            "80"
+          ],
           "correct": 1,
           "explanation": "2,000 ms / 80 ms ≈ 25 iterations (rounding down).",
           "difficulty": "medium",
@@ -786,8 +1043,13 @@
           "id": "w6-q2",
           "question": "A sprite starts at x = 2 on the bottom row of the LED grid. The code runs three times. Where will the sprite end up?",
           "type": "multiple-choice",
-          "code": "set x = 2\nrepeat 3 times\n  if x > 0 then change x by -1\nend",
-          "options": ["Off screen (past the edge)", "At the left edge", "One step left of the start position", "Same place as it started"],
+          "code": "SET x TO 2\nREPEAT 3 TIMES\n  IF x > 0 then change x by -1 THEN\nEND",
+          "options": [
+            "Off screen (past the edge)",
+            "At the left edge",
+            "One step left of the start position",
+            "Same place as it started"
+          ],
           "correct": 1,
           "explanation": "Each loop step moves the sprite one space left while x > 0. After two moves it reaches x = 0, and the last if does nothing because x is no longer greater than 0.",
           "difficulty": "medium",
@@ -812,7 +1074,7 @@
           "id": "w6-q4",
           "question": "Look at this game loop. What happens when the sprite touches an obstacle?",
           "type": "multiple-choice",
-          "code": "forever\n  move sprite by 1\n  if sprite is touching obstacle then\n    game over\n  show number score",
+          "code": "FOREVER DO\n  move sprite by 1\n  IF sprite is touching obstacle THEN\n    game over\n  SHOW NUMBER score",
           "options": [
             "The score shows one more time after game over",
             "The score keeps updating forever",
@@ -828,7 +1090,7 @@
           "id": "w6-q5",
           "question": "A micro:bit should play an alarm only if it’s dark and Button A is pressed. When will the sound play?",
           "type": "multiple-choice",
-          "code": "if light < 50 and button A is pressed then\n    play sound 'alarm'\nelse\n    stop all sounds",
+          "code": "IF light < 50 and button A is pressed THEN\n    play sound 'alarm'\nELSE\n    stop all sounds",
           "options": [
             "Only when it’s dark and Button A is pressed",
             "Whenever it’s dark, even if Button A isn’t pressed",
@@ -844,8 +1106,13 @@
           "id": "w6-q6",
           "question": "What is the value of c after the loop finishes?",
           "type": "multiple-choice",
-          "code": "set c = 1\nrepeat 5 times\n  change c by 2\nend",
-          "options": ["7", "9", "11", "12"],
+          "code": "SET c TO 1\nREPEAT 5 TIMES\n  CHANGE c BY 2\nEND",
+          "options": [
+            "7",
+            "9",
+            "11",
+            "12"
+          ],
           "correct": 2,
           "explanation": "c increases by 2 five times: 1 + 10 = 11.",
           "difficulty": "medium",
@@ -855,8 +1122,13 @@
           "id": "w6-q7",
           "question": "About how many times does count increase during ~1 second of running?",
           "type": "multiple-choice",
-          "code": "set count = 0\nset start = millis()\nwhile millis() < start + 1000\n  change count by 1\n  pause (50)\nend",
-          "options": ["10", "15", "20", "50"],
+          "code": "SET count TO 0\nSET start TO millis()\nWHILE millis() < start + 1000 DO\n  CHANGE count BY 1\n  pause (50)\nEND",
+          "options": [
+            "10",
+            "15",
+            "20",
+            "50"
+          ],
           "correct": 2,
           "explanation": "≈ 1000/50 = 20 increments (ignoring small overheads).",
           "difficulty": "hard",
@@ -867,7 +1139,12 @@
           "question": "How many times does 'plot' run on a 5×5 LED grid?",
           "type": "multiple-choice",
           "code": "for x from 0 to 4\n  for y from 0 to 4\n    plot (x, y)\n  end\nend",
-          "options": ["5", "10", "20", "25"],
+          "options": [
+            "5",
+            "10",
+            "20",
+            "25"
+          ],
           "correct": 3,
           "explanation": "5×5 = 25 total iterations.",
           "difficulty": "easy",
@@ -877,7 +1154,7 @@
           "id": "w6-q9",
           "question": "After the loop, what are x and dir?",
           "type": "multiple-choice",
-          "code": "set x = 2\nset dir = +1\nrepeat 6 times\n  if x = 4 then set dir = -1\n  if x = 0 then set dir = +1\n  change x by dir\nend",
+          "code": "SET x TO 2\nSET dir TO +1\nREPEAT 6 TIMES\n  IF x = 4 then set dir = -1 THEN\n  IF x = 0 then set dir = +1 THEN\n  CHANGE x BY dir\nEND",
           "options": [
             "x = 0, dir = -1",
             "x = 0, dir = +1",
@@ -893,7 +1170,7 @@
           "id": "w6-q10",
           "question": "Why does the score remain 0?",
           "type": "multiple-choice",
-          "code": "set score = 0\nforever\n  if event then change score by 1\n  set score = 0\nend",
+          "code": "SET score TO 0\nFOREVER DO\n  IF event then change score by 1 THEN\n  SET score TO 0\nEND",
           "options": [
             "The event never happens",
             "The score is reset to 0 every loop iteration",
@@ -909,8 +1186,13 @@
           "id": "w6-q11",
           "question": "A sprite starts at x = 1 on the bottom row of the micro:bit screen. The code below runs twice. Where does the sprite end up?",
           "type": "multiple-choice",
-          "code": "set x = 1\nrepeat 2 times\n  if x < 3 then change x by 2 else change x by -1\nend",
-          "options": ["x = 0", "x = 1", "x = 2", "x = 3"],
+          "code": "SET x TO 1\nREPEAT 2 TIMES\n  IF x < 3 then change x by 2 else change x by -1 THEN\nEND",
+          "options": [
+            "x = 0",
+            "x = 1",
+            "x = 2",
+            "x = 3"
+          ],
           "correct": 2,
           "explanation": "First loop: 1 < 3 so x becomes 3. Second loop: 3 < 3 is false, so x changes by −1 and becomes 2. Final x = 2.",
           "difficulty": "medium-hard",
@@ -933,687 +1215,865 @@
         }
       ]
     },
-     "7": {
-          "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
-          "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing.",
-          "locked": false,
-          "questions": [
-            {
-              "id": "w7-q1",
-              "question": "Why do programmers use functions when making programs?",
-              "type": "multiple-choice",
-              "options": [
-                "To make sprites move faster",
-                "To store numbers like score or speed",
-                "To reuse the same set of steps without rebuilding them each time",
-                "To keep the program running forever"
-              ],
-              "correct": 2,
-              "explanation": "Functions let you reuse the same instructions instead of repeating code, which makes programs easier to change later.",
-              "definition": "FUNCTION — a named mini-program that does one clear job; you call it when you need it.",
-              "difficulty": "medium-hard",
-              "hint": "Think: reuse the same instructions instead of repeating them."
-            },
-            {
-              "id": "w7-q2",
-              "question": "What number is shown at the end?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "function bumpLevel()\n    change level by 1\nend function\n\nset level to 2\nrepeat 2 times\n    call bumpLevel()\nend\nshow number level",
-              "options": ["2", "4", "3", "5"],
-              "correct": 1,
-              "explanation": "level: 2 → 3 → 4, then displayed.",
-              "difficulty": "medium-hard",
-              "hint": "The helper runs twice."
-            },
-            {
-              "id": "w7-q3",
-              "question": "A sprite moves left or right based on tilt. Starting at x = 2, after readings 350, 100, −260, what is x? (Move right if X > +200; left if X < −200; otherwise no move.)",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set x to 2\nrepeat 3 times\n    if acceleration (X) > 200 then\n        change x by 1\n    else if acceleration (X) < -200 then\n        change x by -1\n    end if\nend\nshow number x",
-              "options": ["0", "1", "3", "2"],
-              "correct": 3,
-              "explanation": "350 → x=3; 100 → no move; −260 → x=2. Final x = 2.",
-              "difficulty": "medium-hard",
-              "hint": "Only big tilts (>|200|) move the sprite."
-            },
-            {
-              "id": "w7-q4",
-              "question": "Which branch runs for a right tilt (X = +400)?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "if acceleration (X) > 200 then\n    move sprite right\nelse if acceleration (X) < -200 then\n    move sprite left\nend if",
-              "options": ["Moves right", "Moves left", "Does nothing", "Shows an error"],
-              "correct": 0,
-              "explanation": "Positive X over the threshold triggers the first branch.",
-              "difficulty": "medium",
-              "hint": "Positive = right."
-            },
-            {
-              "id": "w7-q5",
-              "question": "Speed (ms) gets smaller by 20 each score but can’t go below 80 ms. Starting at 180 ms, what is speed after 6 scores?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set speed to 180\nrepeat 6 times\n    change speed by -20\n    if speed < 80 then\n        set speed to 80\n    end if\nend\nshow number speed",
-              "options": ["60", "120", "80", "100"],
-              "correct": 2,
-              "explanation": "180 → 160 → 140 → 120 → 100 → 80 → (would be 60, but minimum is 80).",
-              "difficulty": "medium-hard",
-              "hint": "Stop at the minimum."
-            },
-            {
-              "id": "w7-q6",
-              "question": "The level is worked out as: level = 1 + (score ÷ 4) using whole-number division. What is the smallest score that gives level = 3?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set level to 1\n# level = 1 + (score ÷ 4)   // ÷ is integer division\n# Choose the smallest score that makes level become 3",
-              "options": ["7", "8", "9", "12"],
-              "correct": 1,
-              "explanation": "At score 8: 8 ÷ 4 = 2, so level = 1 + 2 = 3. At 7 it’s still 2.",
-              "difficulty": "medium",
-              "hint": "Divide by 4 (no decimals), then add 1."
-            },
-            {
-              "id": "w7-q7",
-              "question": "What number is shown at the end?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set score to 0\nfunction addPoint()\n    change score by 1\nend function\n\nrepeat 3 times\n    call addPoint()\nend\nshow number score",
-              "options": ["3", "0", "1", "2"],
-              "correct": 0,
-              "explanation": "addPoint runs three times → score = 3.",
-              "difficulty": "medium",
-              "hint": "Count the calls."
-            },
-            {
-              "id": "w7-q8",
-              "question": "Total pause time (ms) for the whole program?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "function blink(times, ms)\n    repeat times times\n        show icon \"heart\"\n        pause ms\n        clear screen\n        pause ms\n    end repeat\nend function\n\nrepeat 3 times\n    call blink(2, 150)\nend",
-              "options": ["600", "900", "1200", "1800"],
-              "correct": 3,
-              "explanation": "One call: 2 × (150+150) = 600 ms. Three calls → 1800 ms.",
-              "difficulty": "hard",
-              "hint": "Each blink cycle has two pauses."
-            },
-            {
-              "id": "w7-q9",
-              "question": "What message appears on the screen?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set temp to 18\nif temp > 30 then\n    show string \"Hot\"\nelse if temp < 18 then\n    show string \"Cold\"\nelse\n    show string \"OK\"\nend if",
-              "options": ["Hot", "Cold", "OK", "Nothing"],
-              "correct": 2,
-              "explanation": "At exactly 18, neither >30 nor <18 is true → “OK”.",
-              "difficulty": "medium",
-              "hint": "Mind the strict > and <."
-            },
-            {
-              "id": "w7-q10",
-              "question": "Which block fits the blank so this runs three times after A is pressed (and not forever)?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "on button A pressed\n    ______\n        move sprite by 1\n        pause 150\n    end",
-              "options": ["repeat 3 times", "forever", "while A is pressed", "on start"],
-              "correct": 0,
-              "explanation": "“repeat 3 times” limits the action to exactly three moves per press.",
-              "difficulty": "medium",
-              "hint": "Look for a fixed-count loop."
-            },
-            {
-              "id": "w7-q11",
-              "question": "Starting at x = 1, the sprite moves when the tilt is big. Readings: 250, 250, −300. Rule: if X > +200 move right (+1); if X < −200 move left (−1); otherwise no move. What number is shown?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "set x to 1\nfor each reading in [250, 250, -300]\n    if acceleration (X) > 200 then\n        change x by 1\n    else if acceleration (X) < -200 then\n        change x by -1\n    end if\nend\nshow number x",
-              "options": ["1", "2", "3", "4"],
-              "correct": 1,
-              "explanation": "250 → x=2; 250 → x=3; −300 → x=2. Final x = 2.",
-              "difficulty": "medium",
-              "hint": "Only move on big tilts."
-            },
-            {
-              "id": "w7-q12",
-              "question": "Why does the sprite move even when the button isn’t pressed?",
-              "type": "multiple-choice",
-              "codeLabel": "Pseudocode",
-              "code": "forever\n    move sprite by 1\n    if button A is pressed then\n        pause 200\n    end if\nend",
-              "options": [
-                "The pause should be outside the forever loop",
-                "The move should be inside the if statement",
-                "The button A block is incorrect",
-                "It needs another variable"
-              ],
-              "correct": 1,
-              "explanation": "The movement isn’t inside the condition, so it runs every loop. The `move` block should be placed inside the `if` statement.",
-              "difficulty": "medium",
-              "hint": "Look carefully at what’s *inside* vs *outside* the if block."
-            }
-  
-          ]
+    "7": {
+      "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
+      "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w7-q1",
+          "question": "Why do programmers use functions when making programs?",
+          "type": "multiple-choice",
+          "options": [
+            "To make sprites move faster",
+            "To store numbers like score or speed",
+            "To reuse the same set of steps without rebuilding them each time",
+            "To keep the program running forever"
+          ],
+          "correct": 2,
+          "explanation": "Functions let you reuse the same instructions instead of repeating code, which makes programs easier to change later.",
+          "definition": "FUNCTION — a named mini-program that does one clear job; you call it when you need it.",
+          "difficulty": "medium-hard",
+          "hint": "Think: reuse the same instructions instead of repeating them."
         },
-        "8": {
-        "title": "Week 8: Waves, Radio & Logic Review",
-        "description": "Stronger mixed set: KS2 wave science + event logic, functions, counters, timing, thresholds, and coordinates. MCQ + Match only.",
-        "locked": false,
-        "questions": [
-          {
-            "id": "w8-q1",
-            "question": "Pseudocode — what icon is finally on screen?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set hasMsg = false\nshow icon \"Duck\"\non message received (n)\n    if n = myID then\n        set hasMsg = true\n    end if\nend\nif hasMsg then\n    show icon \"Ghost\"\nend",
-            "options": ["Duck", "Ghost", "Blank screen", "It flashes both quickly, ending blank"],
-            "correct": 0,
-            "explanation": "The final if runs immediately (still false), so the Duck remains. Only a later matching message would switch to Ghost.",
-            "difficulty": "medium-hard",
-            "hint": "Does any matching message arrive before the final check?"
-          },
-          {
-            "id": "w8-q2",
-            "question": "Match the radio/wave term to its description.",
-            "type": "drag-drop",
-            "terms": ["Amplitude", "Frequency", "Wavelength", "Receiver"],
-            "definitions": [
-              "How many waves happen each second",
-              "Height/strength of a wave",
-              "Distance from peak to peak",
-              "Device that detects the signal"
-            ],
-            "correctMatches": [1, 0, 2, 3],
-            "explanation": "Amplitude = height; Frequency = per-second count; Wavelength = spacing; Receiver = listens.",
-            "difficulty": "medium",
-            "hint": "Label a sketched wave first, then place the device."
-          },
-          {
-            "id": "w8-q3",
-            "question": "Pseudocode — how many readings count as “dark”? (threshold < 60)",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set dark = 0\nset readings = [61, 59, 20, 60, 58, 99]\nfor each r in readings\n    if r < 60 then\n        change dark by 1\n    end if\nend\nshow number dark",
-            "options": ["2", "3", "4", "5"],
-            "correct": 1,
-            "explanation": "Values < 60 are 59, 20, 58 → 3.",
-            "difficulty": "medium",
-            "hint": "Watch strictly less than: 60 itself does not count."
-          },
-          {
-            "id": "w8-q4",
-            "question": "A message is received with number = myID. What will the micro:bit show?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "on message received (n)\n    if n = myID then\n        show string \"OK\"\n    else\n        show string \"NO\"\n    end if\nend\n# One message arrives where n = myID",
-            "options": [
-              "It shows NO",
-              "It shows OK",
-              "It shows both OK then NO",
-              "Nothing happens"
-            ],
-            "correct": 1,
-            "explanation": "Because the message number equals myID, the first condition is true, so it shows 'OK'.",
-            "difficulty": "medium",
-            "hint": "Check which branch runs when the test is true."
-          },
-          {
-            "id": "w8-q5",
-            "question": "How long (in milliseconds) does this whole sequence take?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "for i from 1 to 6   # i increases by 1 each time\n    pause 100\n    if i is even then\n        pause 50\n    end if\nend",
-            "options": ["450 ms", "600 ms", "750 ms", "900 ms"],
-            "correct": 2,
-            "explanation": "Each loop always pauses 100 ms → 6×100 = 600. On loops 2, 4, and 6 (even numbers), it adds another 50 ms each → +150. Total = 750 ms.",
-            "difficulty": "medium-hard",
-            "hint": "Even-numbered loops take slightly longer."
-          },
-          {
-            "id": "w8-q6",
-            "question": "Match to Input/Output/Variable role.",
-            "type": "drag-drop",
-            "terms": ["Accelerometer", "Scroll text", "score"],
-            "definitions": ["Input", "Output", "Variable"],
-            "correctMatches": [0, 1, 2],
-            "explanation": "Accelerometer reads movement (input); scrolling text is an output; score is stored in a variable.",
-            "difficulty": "medium",
-            "hint": "Read the world, tell the world, remember a value."
-          },
-          {
-            "id": "w8-q7",
-            "question": "Coordinates — what x is finally shown?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set x = 2\nchange x by 3\nif x > 4 then set x = 4\nchange x by -1\nif x < 0 then set x = 0\nshow number x",
-            "options": ["2", "3", "4", "5"],
-            "correct": 1,
-            "explanation": "Start 2 → +3 = 5 → clamp to 4 → -1 = 3 → still ≥ 0 → show 3.",
-            "difficulty": "medium-hard",
-            "hint": "Clamp to the grid (0..4) before the next move."
-          },
-          {
-            "id": "w8-q8",
-            "question": "Radio group & ID — how many times does score increase after messages arrive in order: [1, 2, 3, 2, 1]?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set myID = 2\nset score = 0\non message received (n)\n    if n = myID then change score by 1\nend",
-            "options": ["0", "1", "2", "3"],
-            "correct": 2,
-            "explanation": "Only messages equal to 2 count → positions 2 and 4 → score +2.",
-            "difficulty": "medium",
-            "hint": "Count only exact matches."
-          },
-          {
-            "id": "w8-q9",
-            "question": "Find the logic bug — which statement is correct?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set temp = 35\nif temp > 30 then\n    show \"Hot\"\nelse if temp > 34 then\n    show \"Very Hot\"\nelse\n    show \"OK\"\nend if",
-            "options": [
-              "\"Very Hot\" will show because 35 > 34",
-              "Nothing shows because both conditions are wrong",
-              "\"Hot\" will show because the first true test runs and the rest are skipped",
-              "\"OK\" will show because 35 is not greater than 34"
-            ],
-            "correct": 2,
-            "explanation": "The first branch (temp > 30) is true, so the later, stricter test is never reached.",
-            "difficulty": "hard",
-            "hint": "Order of tests matters; first match wins."
-          },
-          {
-            "id": "w8-q10",
-            "question": "Counter inside a loop — what is shown?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "set c = 0\nrepeat 4 times\n    change c by 2\n    if c > 3 then set c = 1\nend\nshow number c",
-            "options": ["1", "2", "3", "4"],
-            "correct": 0,
-            "explanation": "Follow c step by step: start 0 → loop 1: c = 2 → loop 2: c becomes 4, then resets to 1 → loop 3: c becomes 3 (no reset) → loop 4: c becomes 5, then resets to 1. Final c = 1.",
-            "difficulty": "hard",
-            "hint": "Apply the reset each time c passes 3."
-          },
-          {
-            "id": "w8-q11",
-            "question": "Functions & parameters — what number shows?",
-            "type": "multiple-choice",
-            "codeLabel": "Pseudocode",
-            "code": "function addTwice(a, b)\n    return a + a + b\nend function\nset x = 3\nset y = 4\nshow number addTwice(y, x)",
-            "options": ["9", "10", "11", "12"],
-            "correct": 2,
-            "explanation": "Here a = y = 4 and b = x = 3, so a + a + b = 4 + 4 + 3 = 11.",
-            "difficulty": "medium-hard",
-            "hint": "Mind which argument is ‘a’ and which is ‘b’."
-          },
-          {
-            "id": "w8-q12",
-            "question": "Match the CS idea to a clear example.",
-            "type": "drag-drop",
-            "terms": ["Sequence", "Selection", "Loop", "Variable"],
-            "definitions": [
-              "Run steps in order: A then B then C",
-              "Repeat a block many times",
-              "Store a value like score that can change",
-              "Choose a branch based on a test"
-            ],
-            "correctMatches": [0, 2, 3, 1],
-            "explanation": "Sequence = ordered steps; Selection = choose by condition; Repetition = loop; Variable = stored value.",
-            "difficulty": "medium",
-            "hint": "Think: order, choice, repeat, remember."
-          }
-
-        ]
-      },
+        {
+          "id": "w7-q2",
+          "question": "What number is shown at the end?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "FUNCTION bumpLevel()\n    CHANGE level BY 1\nEND FUNCTION\n\nSET level TO 2\nREPEAT 2 TIMES\n    CALL bumpLevel()\nEND\nSHOW NUMBER level",
+          "options": [
+            "2",
+            "4",
+            "3",
+            "5"
+          ],
+          "correct": 1,
+          "explanation": "level: 2 → 3 → 4, then displayed.",
+          "difficulty": "medium-hard",
+          "hint": "The helper runs twice."
+        },
+        {
+          "id": "w7-q3",
+          "question": "A sprite moves left or right based on tilt. Starting at x = 2, after readings 350, 100, −260, what is x? (Move right if X > +200; left if X < −200; otherwise no move.)",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET x TO 2\nREPEAT 3 TIMES\n    IF acceleration (X) > 200 THEN\n        CHANGE x BY 1\n    ELSE IF acceleration (X) < -200 THEN\n        CHANGE x BY -1\n    END IF\nEND\nSHOW NUMBER x",
+          "options": [
+            "0",
+            "1",
+            "3",
+            "2"
+          ],
+          "correct": 3,
+          "explanation": "350 → x=3; 100 → no move; −260 → x=2. Final x = 2.",
+          "difficulty": "medium-hard",
+          "hint": "Only big tilts (>|200|) move the sprite."
+        },
+        {
+          "id": "w7-q4",
+          "question": "Which branch runs for a right tilt (X = +400)?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "IF acceleration (X) > 200 THEN\n    move sprite right\nELSE IF acceleration (X) < -200 THEN\n    move sprite left\nEND IF",
+          "options": [
+            "Moves right",
+            "Moves left",
+            "Does nothing",
+            "Shows an error"
+          ],
+          "correct": 0,
+          "explanation": "Positive X over the threshold triggers the first branch.",
+          "difficulty": "medium",
+          "hint": "Positive = right."
+        },
+        {
+          "id": "w7-q5",
+          "question": "Speed (ms) gets smaller by 20 each score but can’t go below 80 ms. Starting at 180 ms, what is speed after 6 scores?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET speed TO 180\nREPEAT 6 TIMES\n    CHANGE speed BY -20\n    IF speed < 80 THEN\n        SET speed TO 80\n    END IF\nEND\nSHOW NUMBER speed",
+          "options": [
+            "60",
+            "120",
+            "80",
+            "100"
+          ],
+          "correct": 2,
+          "explanation": "180 → 160 → 140 → 120 → 100 → 80 → (would be 60, but minimum is 80).",
+          "difficulty": "medium-hard",
+          "hint": "Stop at the minimum."
+        },
+        {
+          "id": "w7-q6",
+          "question": "The level is worked out as: level = 1 + (score ÷ 4) using whole-number division. What is the smallest score that gives level = 3?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET level TO 1\n# level = 1 + (score ÷ 4)   // ÷ is integer division\n# Choose the smallest score that makes level become 3",
+          "options": [
+            "7",
+            "8",
+            "9",
+            "12"
+          ],
+          "correct": 1,
+          "explanation": "At score 8: 8 ÷ 4 = 2, so level = 1 + 2 = 3. At 7 it’s still 2.",
+          "difficulty": "medium",
+          "hint": "Divide by 4 (no decimals), then add 1."
+        },
+        {
+          "id": "w7-q7",
+          "question": "What number is shown at the end?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET score TO 0\nFUNCTION addPoint()\n    CHANGE score BY 1\nEND FUNCTION\n\nREPEAT 3 TIMES\n    CALL addPoint()\nEND\nSHOW NUMBER score",
+          "options": [
+            "3",
+            "0",
+            "1",
+            "2"
+          ],
+          "correct": 0,
+          "explanation": "addPoint runs three times → score = 3.",
+          "difficulty": "medium",
+          "hint": "Count the calls."
+        },
+        {
+          "id": "w7-q8",
+          "question": "Total pause time (ms) for the whole program?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "FUNCTION blink(times, ms)\n    repeat times times\n        SHOW ICON \"heart\"\n        pause ms\n        CLEAR SCREEN\n        pause ms\n    end repeat\nEND FUNCTION\n\nREPEAT 3 TIMES\n    CALL blink(2, 150)\nEND",
+          "options": [
+            "600",
+            "900",
+            "1200",
+            "1800"
+          ],
+          "correct": 3,
+          "explanation": "One call: 2 × (150+150) = 600 ms. Three calls → 1800 ms.",
+          "difficulty": "hard",
+          "hint": "Each blink cycle has two pauses."
+        },
+        {
+          "id": "w7-q9",
+          "question": "What message appears on the screen?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET temp TO 18\nIF temp > 30 THEN\n    SHOW TEXT \"Hot\"\nELSE IF temp < 18 THEN\n    SHOW TEXT \"Cold\"\nELSE\n    SHOW TEXT \"OK\"\nEND IF",
+          "options": [
+            "Hot",
+            "Cold",
+            "OK",
+            "Nothing"
+          ],
+          "correct": 2,
+          "explanation": "At exactly 18, neither >30 nor <18 is true → “OK”.",
+          "difficulty": "medium",
+          "hint": "Mind the strict > and <."
+        },
+        {
+          "id": "w7-q10",
+          "question": "Which block fits the blank so this runs three times after A is pressed (and not forever)?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "WHEN button A is pressed DO\n    ______\n        move sprite by 1\n        PAUSE 150 ms\n    END",
+          "options": [
+            "repeat 3 times",
+            "forever",
+            "while A is pressed",
+            "on start"
+          ],
+          "correct": 0,
+          "explanation": "“repeat 3 times” limits the action to exactly three moves per press.",
+          "difficulty": "medium",
+          "hint": "Look for a fixed-count loop."
+        },
+        {
+          "id": "w7-q11",
+          "question": "Starting at x = 1, the sprite moves when the tilt is big. Readings: 250, 250, −300. Rule: if X > +200 move right (+1); if X < −200 move left (−1); otherwise no move. What number is shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET x TO 1\nFOR EACH reading IN [250, 250, -300] DO\n    IF acceleration (X) > 200 THEN\n        CHANGE x BY 1\n    ELSE IF acceleration (X) < -200 THEN\n        CHANGE x BY -1\n    END IF\nEND\nSHOW NUMBER x",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 1,
+          "explanation": "250 → x=2; 250 → x=3; −300 → x=2. Final x = 2.",
+          "difficulty": "medium",
+          "hint": "Only move on big tilts."
+        },
+        {
+          "id": "w7-q12",
+          "question": "Why does the sprite move even when the button isn’t pressed?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "FOREVER DO\n    move sprite by 1\n    IF button A is pressed THEN\n        PAUSE 200 ms\n    END IF\nEND",
+          "options": [
+            "The pause should be outside the forever loop",
+            "The move should be inside the if statement",
+            "The button A block is incorrect",
+            "It needs another variable"
+          ],
+          "correct": 1,
+          "explanation": "The movement isn’t inside the condition, so it runs every loop. The `move` block should be placed inside the `if` statement.",
+          "difficulty": "medium",
+          "hint": "Look carefully at what’s *inside* vs *outside* the if block."
+        }
+      ]
+    },
+    "8": {
+      "title": "Week 8: Waves, Radio & Logic Review",
+      "description": "Stronger mixed set: KS2 wave science + event logic, functions, counters, timing, thresholds, and coordinates. MCQ + Match only.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w8-q1",
+          "question": "Pseudocode — what icon is finally on screen?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET hasmsg TO false\nSHOW ICON \"Duck\"\nWHEN message received (n) DO\n    IF n = myID THEN\n        SET hasmsg TO true\n    END IF\nEND\nIF hasMsg THEN\n    SHOW ICON \"Ghost\"\nEND",
+          "options": [
+            "Duck",
+            "Ghost",
+            "Blank screen",
+            "It flashes both quickly, ending blank"
+          ],
+          "correct": 0,
+          "explanation": "The final if runs immediately (still false), so the Duck remains. Only a later matching message would switch to Ghost.",
+          "difficulty": "medium-hard",
+          "hint": "Does any matching message arrive before the final check?"
+        },
+        {
+          "id": "w8-q2",
+          "question": "Match the radio/wave term to its description.",
+          "type": "drag-drop",
+          "terms": [
+            "Amplitude",
+            "Frequency",
+            "Wavelength",
+            "Receiver"
+          ],
+          "definitions": [
+            "How many waves happen each second",
+            "Height/strength of a wave",
+            "Distance from peak to peak",
+            "Device that detects the signal"
+          ],
+          "correctMatches": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "explanation": "Amplitude = height; Frequency = per-second count; Wavelength = spacing; Receiver = listens.",
+          "difficulty": "medium",
+          "hint": "Label a sketched wave first, then place the device."
+        },
+        {
+          "id": "w8-q3",
+          "question": "Pseudocode — how many readings count as “dark”? (threshold < 60)",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET dark TO 0\nSET readings TO [61, 59, 20, 60, 58, 99]\nFOR EACH r IN readings DO\n    IF r < 60 THEN\n        CHANGE dark BY 1\n    END IF\nEND\nSHOW NUMBER dark",
+          "options": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "correct": 1,
+          "explanation": "Values < 60 are 59, 20, 58 → 3.",
+          "difficulty": "medium",
+          "hint": "Watch strictly less than: 60 itself does not count."
+        },
+        {
+          "id": "w8-q4",
+          "question": "A message is received with number = myID. What will the micro:bit show?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "WHEN message received (n) DO\n    IF n = myID THEN\n        SHOW TEXT \"OK\"\n    ELSE\n        SHOW TEXT \"NO\"\n    END IF\nEND\n# One message arrives where n = myID",
+          "options": [
+            "It shows NO",
+            "It shows OK",
+            "It shows both OK then NO",
+            "Nothing happens"
+          ],
+          "correct": 1,
+          "explanation": "Because the message number equals myID, the first condition is true, so it shows 'OK'.",
+          "difficulty": "medium",
+          "hint": "Check which branch runs when the test is true."
+        },
+        {
+          "id": "w8-q5",
+          "question": "How long (in milliseconds) does this whole sequence take?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "FOR I FROM 1 TO 6   # I INCREASES BY 1 EACH TIME\n    PAUSE 100 ms\n    IF i is even THEN\n        PAUSE 50 ms\n    END IF\nEND",
+          "options": [
+            "450 ms",
+            "600 ms",
+            "750 ms",
+            "900 ms"
+          ],
+          "correct": 2,
+          "explanation": "Each loop always pauses 100 ms → 6×100 = 600. On loops 2, 4, and 6 (even numbers), it adds another 50 ms each → +150. Total = 750 ms.",
+          "difficulty": "medium-hard",
+          "hint": "Even-numbered loops take slightly longer."
+        },
+        {
+          "id": "w8-q6",
+          "question": "Match to Input/Output/Variable role.",
+          "type": "drag-drop",
+          "terms": [
+            "Accelerometer",
+            "Scroll text",
+            "score"
+          ],
+          "definitions": [
+            "Input",
+            "Output",
+            "Variable"
+          ],
+          "correctMatches": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "Accelerometer reads movement (input); scrolling text is an output; score is stored in a variable.",
+          "difficulty": "medium",
+          "hint": "Read the world, tell the world, remember a value."
+        },
+        {
+          "id": "w8-q7",
+          "question": "Coordinates — what x is finally shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET x TO 2\nCHANGE x BY 3\nIF x > 4 then set x = 4 THEN\nCHANGE x BY -1\nIF x < 0 then set x = 0 THEN\nSHOW NUMBER x",
+          "options": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "correct": 1,
+          "explanation": "Start 2 → +3 = 5 → clamp to 4 → -1 = 3 → still ≥ 0 → show 3.",
+          "difficulty": "medium-hard",
+          "hint": "Clamp to the grid (0..4) before the next move."
+        },
+        {
+          "id": "w8-q8",
+          "question": "Radio group & ID — how many times does score increase after messages arrive in order: [1, 2, 3, 2, 1]?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET myid TO 2\nSET score TO 0\nWHEN message received (n) DO\n    IF n = myID then change score by 1 THEN\nEND",
+          "options": [
+            "0",
+            "1",
+            "2",
+            "3"
+          ],
+          "correct": 2,
+          "explanation": "Only messages equal to 2 count → positions 2 and 4 → score +2.",
+          "difficulty": "medium",
+          "hint": "Count only exact matches."
+        },
+        {
+          "id": "w8-q9",
+          "question": "Find the logic bug — which statement is correct?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET temp TO 35\nIF temp > 30 THEN\n    show \"Hot\"\nELSE IF temp > 34 THEN\n    show \"Very Hot\"\nELSE\n    show \"OK\"\nEND IF",
+          "options": [
+            "\"Very Hot\" will show because 35 > 34",
+            "Nothing shows because both conditions are wrong",
+            "\"Hot\" will show because the first true test runs and the rest are skipped",
+            "\"OK\" will show because 35 is not greater than 34"
+          ],
+          "correct": 2,
+          "explanation": "The first branch (temp > 30) is true, so the later, stricter test is never reached.",
+          "difficulty": "hard",
+          "hint": "Order of tests matters; first match wins."
+        },
+        {
+          "id": "w8-q10",
+          "question": "Counter inside a loop — what is shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET c TO 0\nREPEAT 4 TIMES\n    CHANGE c BY 2\n    IF c > 3 then set c = 1 THEN\nEND\nSHOW NUMBER c",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 0,
+          "explanation": "Follow c step by step: start 0 → loop 1: c = 2 → loop 2: c becomes 4, then resets to 1 → loop 3: c becomes 3 (no reset) → loop 4: c becomes 5, then resets to 1. Final c = 1.",
+          "difficulty": "hard",
+          "hint": "Apply the reset each time c passes 3."
+        },
+        {
+          "id": "w8-q11",
+          "question": "Functions & parameters — what number shows?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "FUNCTION addTwice(a, b)\n    RETURN a + a + b\nEND FUNCTION\nSET x TO 3\nSET y TO 4\nSHOW NUMBER addTwice(y, x)",
+          "options": [
+            "9",
+            "10",
+            "11",
+            "12"
+          ],
+          "correct": 2,
+          "explanation": "Here a = y = 4 and b = x = 3, so a + a + b = 4 + 4 + 3 = 11.",
+          "difficulty": "medium-hard",
+          "hint": "Mind which argument is ‘a’ and which is ‘b’."
+        },
+        {
+          "id": "w8-q12",
+          "question": "Match the CS idea to a clear example.",
+          "type": "drag-drop",
+          "terms": [
+            "Sequence",
+            "Selection",
+            "Loop",
+            "Variable"
+          ],
+          "definitions": [
+            "Run steps in order: A then B then C",
+            "Repeat a block many times",
+            "Store a value like score that can change",
+            "Choose a branch based on a test"
+          ],
+          "correctMatches": [
+            0,
+            2,
+            3,
+            1
+          ],
+          "explanation": "Sequence = ordered steps; Selection = choose by condition; Repetition = loop; Variable = stored value.",
+          "difficulty": "medium",
+          "hint": "Think: order, choice, repeat, remember."
+        }
+      ]
+    },
     "9": {
-  "title": "Week 9: Fireflies, Radio & Local Rules",
-  "description": "Mixed set: synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates. MCQ + Match only.",
-  "locked": false,
-  "questions": [
-    {
-      "id": "w9-q1",
-      "question": "Why is it important that devices use the same radio group number when communicating?",
-      "type": "multiple-choice",
-      "options": [
-        "It lets them send stronger messages",
-        "Only devices on the same group can hear each other's messages",
-        "It makes the LEDs brighter",
-        "It increases battery life"
-      ],
-      "correct": 1,
-      "explanation": "Radio groups act like channels. Devices must match the group number to receive each other's messages.",
-      "difficulty": "medium-hard",
-      "hint": "Think: like walkie-talkie channels."
+      "title": "Week 9: Fireflies, Radio & Local Rules",
+      "description": "Mixed set: synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates. MCQ + Match only.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w9-q1",
+          "question": "Why is it important that devices use the same radio group number when communicating?",
+          "type": "multiple-choice",
+          "options": [
+            "It lets them send stronger messages",
+            "Only devices on the same group can hear each other's messages",
+            "It makes the LEDs brighter",
+            "It increases battery life"
+          ],
+          "correct": 1,
+          "explanation": "Radio groups act like channels. Devices must match the group number to receive each other's messages.",
+          "difficulty": "medium-hard",
+          "hint": "Think: like walkie-talkie channels."
+        },
+        {
+          "id": "w9-q2",
+          "question": "Pseudocode — how many times does the loop run?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET clock TO 0\nrepeat until clock >= 6\n    PAUSE 100 ms\n    CHANGE clock BY 1\nEND",
+          "options": [
+            "5 times",
+            "6 times",
+            "7 times",
+            "It runs forever"
+          ],
+          "correct": 1,
+          "explanation": "clock starts at 0. Each loop adds 1. It stops when clock becomes 6, so it runs exactly 6 times.",
+          "difficulty": "medium-hard",
+          "hint": "Trace clock: 0,1,2,3,4,5,6."
+        },
+        {
+          "id": "w9-q3",
+          "question": "Match each concept to the best description.",
+          "type": "drag-drop",
+          "terms": [
+            "Synchronisation",
+            "Local rule",
+            "Radio group",
+            "Message"
+          ],
+          "definitions": [
+            "A small instruction each device follows on its own",
+            "Devices gradually lining up their timing without a leader",
+            "A shared channel number that devices agree to use",
+            "A packet of data sent from one device to another"
+          ],
+          "correctMatches": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "explanation": "Synchronisation is lining up timing; a local rule is the small behaviour each device follows; a radio group is the shared channel; a message is the data packet sent.",
+          "difficulty": "medium-hard",
+          "hint": "Think: behaviour, overall pattern, channel, and data."
+        },
+        {
+          "id": "w9-q4",
+          "question": "Pseudocode — how many times does score increase?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET myid TO 4\nSET score TO 0\nSET received TO [2, 4, 4, 3, 4]\nFOR EACH n IN received DO\n    IF n = myID THEN\n        CHANGE score BY 1\n    END IF\nEND\nSHOW NUMBER score",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 2,
+          "explanation": "The value 4 appears three times in the list, so score increases three times → final score = 3.",
+          "difficulty": "medium-hard",
+          "hint": "Count only the messages where n equals 4."
+        },
+        {
+          "id": "w9-q5",
+          "question": "True or False: Two micro:bits on different radio groups can still receive each other’s messages if they are close together.",
+          "type": "multiple-choice",
+          "options": [
+            "True",
+            "False"
+          ],
+          "correct": 1,
+          "explanation": "Radio groups behave like separate channels. Devices must share the same group number to receive each other’s messages.",
+          "difficulty": "medium-hard",
+          "hint": "Think of groups like different walkie-talkie channels."
+        },
+        {
+          "id": "w9-q6",
+          "question": "Pseudocode — what number is finally shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET x TO 1\nREPEAT 4 TIMES\n    CHANGE x BY 2\nEND\nSHOW NUMBER x",
+          "options": [
+            "5",
+            "7",
+            "8",
+            "9"
+          ],
+          "correct": 3,
+          "explanation": "x starts at 1. It increases by 2 four times: 1 → 3 → 5 → 7 → 9. The final value is 9.",
+          "difficulty": "medium-hard",
+          "hint": "Add 2 each time, four times in total."
+        },
+        {
+          "id": "w9-q7",
+          "question": "Pseudocode — what is the final value of counter?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET counter TO 0\nSET readings TO [70, 45, 30, 60]\nFOR EACH r IN readings DO\n    IF r < 60 THEN\n        CHANGE counter BY 1\n    END IF\nEND\nSHOW NUMBER counter",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 1,
+          "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 60 are not counted.)",
+          "difficulty": "medium-hard",
+          "hint": "Only count readings where r < 60."
+        },
+        {
+          "id": "w9-q8",
+          "question": "Which situation is a good example of local communication in a system?",
+          "type": "multiple-choice",
+          "options": [
+            "Every device asks a central server for instructions every second",
+            "Each device only listens to, receives and sends information to nearby devices",
+            "One device sends a command directly to every other device in the room",
+            "All devices share one global variable stored on the internet"
+          ],
+          "correct": 1,
+          "explanation": "Local communication means reacting to nearby signals rather than taking orders from a single controller.",
+          "difficulty": "medium-hard",
+          "hint": "Local = neighbours, not bosses."
+        },
+        {
+          "id": "w9-q9",
+          "question": "Match the code idea to what it controls.",
+          "type": "drag-drop",
+          "terms": [
+            "Event",
+            "Loop",
+            "Variable",
+            "Condition"
+          ],
+          "definitions": [
+            "Decides which branch of code will run",
+            "Stores a value like a score or sensor reading",
+            "Repeats a set of instructions again and again",
+            "Starts running code when something happens"
+          ],
+          "correctMatches": [
+            3,
+            2,
+            1,
+            0
+          ],
+          "explanation": "Event → starts code; Loop → repeats code; Variable → stores a changeable value; Condition → decides which branch runs.",
+          "difficulty": "medium-hard",
+          "hint": "Think: when / repeat / remember / choose."
+        },
+        {
+          "id": "w9-q10",
+          "question": "Pseudocode — which condition will never run because of the order of the tests?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET temp TO 28\nIF temp > 25 THEN\n    show \"Hot\"\nELSE IF temp > 20 THEN\n    show \"Warm\"\nELSE IF temp > 10 THEN\n    show \"Mild\"\nELSE\n    show \"Cold\"\nEND IF",
+          "options": [
+            "The first condition (temp > 25)",
+            "The second condition (temp > 20)",
+            "The third condition (temp > 10)",
+            "None — all of them can run in some situation"
+          ],
+          "correct": 3,
+          "explanation": "All three conditions can be true for different values of temp (for example: 30 → Hot, 22 → Warm, 15 → Mild). None of the branches are unreachable.",
+          "difficulty": "medium-hard",
+          "hint": "Think about what happens for different values: 30, 22, 15, and 5."
+        },
+        {
+          "id": "w9-q11",
+          "question": "Pseudocode — what number will be shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET level TO 1\nSET score TO 7\nIF score >= 10 THEN\n    SET level TO 3\nELSE IF score >= 5 THEN\n    SET level TO 2\nEND IF\nSHOW NUMBER level",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 1,
+          "explanation": "score = 7 is not >= 10, but it is >= 5, so level becomes 2.",
+          "difficulty": "medium-hard",
+          "hint": "The tests are checked in order; the first true one wins."
+        },
+        {
+          "id": "w9-q12",
+          "question": "Pseudocode — where does the sprite finish on the x-axis?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET x TO 2\nREPEAT 3 TIMES\n    IF x < 4 THEN\n        CHANGE x BY 1\n    ELSE\n        CHANGE x BY -1\n    END IF\nEND\nSHOW NUMBER x",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 2,
+          "explanation": "Step 1: x=2<4 → x=3. Step 2: 3<4 → x=4. Step 3: 4<4 is false → x=3. Final x = 3.",
+          "difficulty": "medium-hard",
+          "hint": "Trace x carefully for each repeat."
+        }
+      ]
     },
-    {
-      "id": "w9-q2",
-      "question": "Pseudocode — how many times does the loop run?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set clock = 0\nrepeat until clock >= 6\n    pause 100\n    change clock by 1\nend",
-      "options": ["5 times", "6 times", "7 times", "It runs forever"],
-      "correct": 1,
-      "explanation": "clock starts at 0. Each loop adds 1. It stops when clock becomes 6, so it runs exactly 6 times.",
-      "difficulty": "medium-hard",
-      "hint": "Trace clock: 0,1,2,3,4,5,6."
-    },
-    {
-      "id": "w9-q3",
-      "question": "Match each concept to the best description.",
-      "type": "drag-drop",
-      "terms": ["Synchronisation", "Local rule", "Radio group", "Message"],
-      "definitions": [
-        "A small instruction each device follows on its own",
-        "Devices gradually lining up their timing without a leader",
-        "A shared channel number that devices agree to use",
-        "A packet of data sent from one device to another"
-      ],
-      "correctMatches": [1, 0, 2, 3],
-      "explanation": "Synchronisation is lining up timing; a local rule is the small behaviour each device follows; a radio group is the shared channel; a message is the data packet sent.",
-      "difficulty": "medium-hard",
-      "hint": "Think: behaviour, overall pattern, channel, and data."
-    },
-    {
-      "id": "w9-q4",
-      "question": "Pseudocode — how many times does score increase?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set myID = 4\nset score = 0\nset received = [2, 4, 4, 3, 4]\nfor each n in received\n    if n = myID then\n        change score by 1\n    end if\nend\nshow number score",
-      "options": ["1", "2", "3", "4"],
-      "correct": 2,
-      "explanation": "The value 4 appears three times in the list, so score increases three times → final score = 3.",
-      "difficulty": "medium-hard",
-      "hint": "Count only the messages where n equals 4."
-    },
-    {
-      "id": "w9-q5",
-      "question": "True or False: Two micro:bits on different radio groups can still receive each other’s messages if they are close together.",
-      "type": "multiple-choice",
-      "options": ["True", "False"],
-      "correct": 1,
-      "explanation": "Radio groups behave like separate channels. Devices must share the same group number to receive each other’s messages.",
-      "difficulty": "medium-hard",
-      "hint": "Think of groups like different walkie-talkie channels."
-    },
-    {
-      "id": "w9-q6",
-      "question": "Pseudocode — what number is finally shown?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set x = 1\nrepeat 4 times\n    change x by 2\nend\nshow number x",
-      "options": ["5", "7", "8", "9"],
-      "correct": 3,
-      "explanation": "x starts at 1. It increases by 2 four times: 1 → 3 → 5 → 7 → 9. The final value is 9.",
-      "difficulty": "medium-hard",
-      "hint": "Add 2 each time, four times in total."
-    },
-    {
-      "id": "w9-q7",
-      "question": "Pseudocode — what is the final value of counter?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set counter = 0\nset readings = [70, 45, 30, 60]\nfor each r in readings\n    if r < 60 then\n        change counter by 1\n    end if\nend\nshow number counter",
-      "options": ["1", "2", "3", "4"],
-      "correct": 1,
-      "explanation": "Values less than 60 are 45 and 30 → 2 increments. (70 and 60 are not counted.)",
-      "difficulty": "medium-hard",
-      "hint": "Only count readings where r < 60."
-    },
-    {
-      "id": "w9-q8",
-      "question": "Which situation is a good example of local communication in a system?",
-      "type": "multiple-choice",
-      "options": [
-        "Every device asks a central server for instructions every second",
-        "Each device only listens to, receives and sends information to nearby devices",
-        "One device sends a command directly to every other device in the room",
-        "All devices share one global variable stored on the internet"
-      ],
-      "correct": 1,
-      "explanation": "Local communication means reacting to nearby signals rather than taking orders from a single controller.",
-      "difficulty": "medium-hard",
-      "hint": "Local = neighbours, not bosses."
-    },
-    {
-      "id": "w9-q9",
-      "question": "Match the code idea to what it controls.",
-      "type": "drag-drop",
-      "terms": ["Event", "Loop", "Variable", "Condition"],
-      "definitions": [
-        "Decides which branch of code will run",
-        "Stores a value like a score or sensor reading",
-        "Repeats a set of instructions again and again",
-        "Starts running code when something happens"
-      ],
-      "correctMatches": [3, 2, 1, 0],
-      "explanation": "Event → starts code; Loop → repeats code; Variable → stores a changeable value; Condition → decides which branch runs.",
-      "difficulty": "medium-hard",
-      "hint": "Think: when / repeat / remember / choose."
-    },
-    {
-      "id": "w9-q10",
-      "question": "Pseudocode — which condition will never run because of the order of the tests?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set temp = 28\nif temp > 25 then\n    show \"Hot\"\nelse if temp > 20 then\n    show \"Warm\"\nelse if temp > 10 then\n    show \"Mild\"\nelse\n    show \"Cold\"\nend if",
-      "options": [
-        "The first condition (temp > 25)",
-        "The second condition (temp > 20)",
-        "The third condition (temp > 10)",
-        "None — all of them can run in some situation"
-      ],
-      "correct": 3,
-      "explanation": "All three conditions can be true for different values of temp (for example: 30 → Hot, 22 → Warm, 15 → Mild). None of the branches are unreachable.",
-      "difficulty": "medium-hard",
-      "hint": "Think about what happens for different values: 30, 22, 15, and 5."
-    },
-    {
-      "id": "w9-q11",
-      "question": "Pseudocode — what number will be shown?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set level = 1\nset score = 7\nif score >= 10 then\n    set level = 3\nelse if score >= 5 then\n    set level = 2\nend if\nshow number level",
-      "options": ["1", "2", "3", "4"],
-      "correct": 1,
-      "explanation": "score = 7 is not >= 10, but it is >= 5, so level becomes 2.",
-      "difficulty": "medium-hard",
-      "hint": "The tests are checked in order; the first true one wins."
-    },
-    {
-      "id": "w9-q12",
-      "question": "Pseudocode — where does the sprite finish on the x-axis?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set x = 2\nrepeat 3 times\n    if x < 4 then\n        change x by 1\n    else\n        change x by -1\n    end if\nend\nshow number x",
-      "options": ["1", "2", "3", "4"],
-      "correct": 2,
-      "explanation": "Step 1: x=2<4 → x=3. Step 2: 3<4 → x=4. Step 3: 4<4 is false → x=3. Final x = 3.",
-      "difficulty": "medium-hard",
-      "hint": "Trace x carefully for each repeat."
-    }
-  ]
-},
     "10": {
-  "title": "Week 10: Arrays and Iteration",
-  "description": "Arrays, loops, counters, conditions and earlier concepts. Includes new 'missing line' pseudocode items.",
-  "locked": false,
-  "questions": [
-    {
-      "id": "w10-q1",
-      "question": "What does an index represent in an array?",
-      "type": "multiple-choice",
-      "options": [
-        "The number of elements the array can hold",
-        "The position of an element inside the array",
-        "The value stored at the first element",
-        "A special variable used only in loops"
-      ],
-      "correct": 1,
-      "explanation": "An index is the position of an element in an array. Indexing starts at 0.",
-      "difficulty": "medium"
-    },
-    {
-      "id": "w10-q2",
-      "question": "An array contains 5 elements. Which of these is a valid index?",
-      "type": "multiple-choice",
-      "options": ["5", "4", "6", "-1"],
-      "correct": 1,
-      "explanation": "A 5-element array has valid positions 0, 1, 2, 3 and 4.",
-      "difficulty": "medium"
-    },
-    {
-      "id": "w10-q3",
-      "question": "Which description best explains why arrays are useful?",
-      "type": "multiple-choice",
-      "options": [
-        "They automatically create new variables.",
-        "They store many related values inside one variable and let loops process them.",
-        "They make programs faster even without loops.",
-        "They generate random numbers without using the random block."
-      ],
-      "correct": 1,
-      "explanation": "Arrays group related values so loops can process or check them efficiently.",
-      "difficulty": "medium"
-    },
-    {
-      "id": "w10-q4",
-      "question": "Pseudocode — what numbers are shown on the micro:bit?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set nums = [9, 3, 6, 12]\nfor each value in nums\n    show number (value divided by 3)\nend",
-      "options": [
-        "3, 6, 9, 12",
-        "3, 1, 2, 4",
-        "3, 1, 0, 2",
-        "9, 6, 3, 1"
-      ],
-      "correct": 1,
-      "explanation": "Each array element is divided by 3.",
-      "difficulty": "medium-hard",
-      "hint": "Follow each element in order: 3 then 6 then 9 then 12."
-    },
-    {
-      "id": "w10-q5",
-      "question": "Which line correctly checks if an array is empty?",
-      "type": "multiple-choice",
-      "options": [
-        "if arr = 0 then",
-        "if length of arr = 0 then",
-        "if arr < 0 then",
-        "if first element = empty then"
-      ],
-      "correct": 1,
-      "explanation": "An array is empty when its length (number of elements) is 0.",
-      "difficulty": "medium"
-    },
-    {
-      "id": "w10-q6",
-      "question": "Pseudocode — what does this loop do?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "for each item in arr\n    do something\nend",
-      "options": [
-        "Repeats a random number of times",
-        "Repeats once for every element stored in the array",
-        "Repeats until the array becomes empty",
-        "Repeats only for the first element"
-      ],
-      "correct": 1,
-      "explanation": "The loop runs once per element in the array arr.",
-      "difficulty": "medium"
-    },
-    {
-      "id": "w10-q7",
-      "question": "Pseudocode — what number is finally shown?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set score = 0\nfor i from 0 to 4   # i increases by 1 each time\n    if (i remainder of 2) = 0 then\n        change score by 1\n    end if\nend\nshow number score",
-      "options": ["1", "2", "3", "4"],
-      "correct": 2,
-      "explanation": "i takes values 0, 1, 2, 3, 4. Even numbers have remainder 0 when divided by 2. The even values are 0, 2 and 4 → score increases 3 times.",
-      "difficulty": "medium-hard",
-      "hint": "Count how many even values appear between 0 and 4."
-    },
-    {
-      "id": "w10-q8",
-      "question": "Missing line — choose the line that correctly picks a random activity from an array.",
-      "type": "missing-line",
-      "codeLabel": "Pseudocode",
-      "code": "set activities = [\"read\", \"run\", \"draw\"]\npick random index from 0 to 2\n____\nshow string chosen",
-      "options": [
-        "set chosen = activities at index",
-        "set activities = chosen",
-        "change index by chosen",
-        "repeat index times"
-      ],
-      "correct": 0,
-      "explanation": "We need to read the element at that index: chosen = activities[index].",
-      "difficulty": "medium-hard",
-      "hint": "We want to copy one element out of the array into chosen."
-    },
-    {
-      "id": "w10-q9",
-      "question": "Missing line — this loop removes low readings from the front of an array. Which condition fits in the blank?",
-      "type": "missing-line",
-      "codeLabel": "Pseudocode",
-      "code": "set readings = [12, 30, 55, 80, 10]\nset threshold = 50\nwhile length of readings > 0 and ____\n    remove first element from readings\nend",
-      "options": [
-        "first element < threshold",
-        "length of readings < threshold",
-        "first element = threshold",
-        "threshold < 0"
-      ],
-      "correct": 0,
-      "explanation": "We want to keep removing values from the front while they are below the threshold. The correct condition is: first element < threshold.",
-      "difficulty": "medium-hard",
-      "hint": "Think about when the loop should stop removing values."
-    },
-
-    {
-      "id": "w10-q10",
-      "question": "Pseudocode — what does the array numbers contain at the end?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set numbers = []\nfor i from 1 to 4\n    add i*i to numbers\nend",
-      "options": [
-        "[1, 2, 3, 4]",
-        "[1, 4, 9, 16]",
-        "[2, 4, 6, 8]",
-        "[1, 3, 5, 7]"
-      ],
-      "correct": 1,
-      "explanation": "For i = 1,2,3,4 we add 1,4,9,16 to the array.",
-      "difficulty": "medium-hard",
-      "hint": "i*i means i multiplied by itself."
-    },
-    {
-      "id": "w10-q11",
-      "question": "Which statement about arrays is correct?",
-      "type": "multiple-choice",
-      "options": [
-        "An array can only store numbers.",
-        "Arrays always start at index 1.",
-        "Arrays can store only data of the same type.",
-        "Arrays cannot be used inside loops."
-      ],
-      "correct": 2,
-      "explanation": "In MakeCode, arrays must store values of one type (all numbers, all strings, etc.), even though some languages allow mixed types.",
-      "difficulty": "medium"
-    },
-    {
-      "id": "w10-q12",
-      "question": "Pseudocode — what number is shown?",
-      "type": "multiple-choice",
-      "codeLabel": "Pseudocode",
-      "code": "set arr = [2, 4, 6]\nset total = 0\nfor each n in arr\n    change total by n\nend\nshow number total",
-      "options": ["6", "8", "10", "12"],
-      "correct": 3,
-      "explanation": "We add 2 + 4 + 6, giving a total of 12.",
-      "difficulty": "medium"
+      "title": "Week 10: Arrays and Iteration",
+      "description": "Arrays, loops, counters, conditions and earlier concepts. Includes new 'missing line' pseudocode items.",
+      "locked": false,
+      "questions": [
+        {
+          "id": "w10-q1",
+          "question": "What does an index represent in an array?",
+          "type": "multiple-choice",
+          "options": [
+            "The number of elements the array can hold",
+            "The position of an element inside the array",
+            "The value stored at the first element",
+            "A special variable used only in loops"
+          ],
+          "correct": 1,
+          "explanation": "An index is the position of an element in an array. Indexing starts at 0.",
+          "difficulty": "medium"
+        },
+        {
+          "id": "w10-q2",
+          "question": "An array contains 5 elements. Which of these is a valid index?",
+          "type": "multiple-choice",
+          "options": [
+            "5",
+            "4",
+            "6",
+            "-1"
+          ],
+          "correct": 1,
+          "explanation": "A 5-element array has valid positions 0, 1, 2, 3 and 4.",
+          "difficulty": "medium"
+        },
+        {
+          "id": "w10-q3",
+          "question": "Which description best explains why arrays are useful?",
+          "type": "multiple-choice",
+          "options": [
+            "They automatically create new variables.",
+            "They store many related values inside one variable and let loops process them.",
+            "They make programs faster even without loops.",
+            "They generate random numbers without using the random block."
+          ],
+          "correct": 1,
+          "explanation": "Arrays group related values so loops can process or check them efficiently.",
+          "difficulty": "medium"
+        },
+        {
+          "id": "w10-q4",
+          "question": "Pseudocode — what numbers are shown on the micro:bit?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET nums TO [9, 3, 6, 12]\nFOR EACH value IN nums DO\n    SHOW NUMBER (value divided by 3)\nEND",
+          "options": [
+            "3, 6, 9, 12",
+            "3, 1, 2, 4",
+            "3, 1, 0, 2",
+            "9, 6, 3, 1"
+          ],
+          "correct": 1,
+          "explanation": "Each array element is divided by 3.",
+          "difficulty": "medium-hard",
+          "hint": "Follow each element in order: 3 then 6 then 9 then 12."
+        },
+        {
+          "id": "w10-q5",
+          "question": "Which line correctly checks if an array is empty?",
+          "type": "multiple-choice",
+          "options": [
+            "if arr = 0 then",
+            "if length of arr = 0 then",
+            "if arr < 0 then",
+            "if first element = empty then"
+          ],
+          "correct": 1,
+          "explanation": "An array is empty when its length (number of elements) is 0.",
+          "difficulty": "medium"
+        },
+        {
+          "id": "w10-q6",
+          "question": "Pseudocode — what does this loop do?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "FOR EACH item IN arr DO\n    do something\nEND",
+          "options": [
+            "Repeats a random number of times",
+            "Repeats once for every element stored in the array",
+            "Repeats until the array becomes empty",
+            "Repeats only for the first element"
+          ],
+          "correct": 1,
+          "explanation": "The loop runs once per element in the array arr.",
+          "difficulty": "medium"
+        },
+        {
+          "id": "w10-q7",
+          "question": "Pseudocode — what number is finally shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET score TO 0\nFOR I FROM 0 TO 4   # I INCREASES BY 1 EACH TIME\n    IF (i remainder of 2) = 0 THEN\n        CHANGE score BY 1\n    END IF\nEND\nSHOW NUMBER score",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": 2,
+          "explanation": "i takes values 0, 1, 2, 3, 4. Even numbers have remainder 0 when divided by 2. The even values are 0, 2 and 4 → score increases 3 times.",
+          "difficulty": "medium-hard",
+          "hint": "Count how many even values appear between 0 and 4."
+        },
+        {
+          "id": "w10-q8",
+          "question": "Missing line — choose the line that correctly picks a random activity from an array.",
+          "type": "missing-line",
+          "codeLabel": "Pseudocode",
+          "code": "SET activities TO [\"read\", \"run\", \"draw\"]\npick random index from 0 to 2\n____\nSHOW TEXT chosen",
+          "options": [
+            "set chosen = activities at index",
+            "set activities = chosen",
+            "change index by chosen",
+            "repeat index times"
+          ],
+          "correct": 0,
+          "explanation": "We need to read the element at that index: chosen = activities[index].",
+          "difficulty": "medium-hard",
+          "hint": "We want to copy one element out of the array into chosen."
+        },
+        {
+          "id": "w10-q9",
+          "question": "Missing line — this loop removes low readings from the front of an array. Which condition fits in the blank?",
+          "type": "missing-line",
+          "codeLabel": "Pseudocode",
+          "code": "SET readings TO [12, 30, 55, 80, 10]\nSET threshold TO 50\nWHILE length of readings > 0 and ____ DO\n    remove first element from readings\nEND",
+          "options": [
+            "first element < threshold",
+            "length of readings < threshold",
+            "first element = threshold",
+            "threshold < 0"
+          ],
+          "correct": 0,
+          "explanation": "We want to keep removing values from the front while they are below the threshold. The correct condition is: first element < threshold.",
+          "difficulty": "medium-hard",
+          "hint": "Think about when the loop should stop removing values."
+        },
+        {
+          "id": "w10-q10",
+          "question": "Pseudocode — what does the array numbers contain at the end?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET numbers TO []\nFOR I FROM 1 TO 4\n    add i*i to numbers\nEND",
+          "options": [
+            "[1, 2, 3, 4]",
+            "[1, 4, 9, 16]",
+            "[2, 4, 6, 8]",
+            "[1, 3, 5, 7]"
+          ],
+          "correct": 1,
+          "explanation": "For i = 1,2,3,4 we add 1,4,9,16 to the array.",
+          "difficulty": "medium-hard",
+          "hint": "i*i means i multiplied by itself."
+        },
+        {
+          "id": "w10-q11",
+          "question": "Which statement about arrays is correct?",
+          "type": "multiple-choice",
+          "options": [
+            "An array can only store numbers.",
+            "Arrays always start at index 1.",
+            "Arrays can store only data of the same type.",
+            "Arrays cannot be used inside loops."
+          ],
+          "correct": 2,
+          "explanation": "In MakeCode, arrays must store values of one type (all numbers, all strings, etc.), even though some languages allow mixed types.",
+          "difficulty": "medium"
+        },
+        {
+          "id": "w10-q12",
+          "question": "Pseudocode — what number is shown?",
+          "type": "multiple-choice",
+          "codeLabel": "Pseudocode",
+          "code": "SET arr TO [2, 4, 6]\nSET total TO 0\nFOR EACH n IN arr DO\n    CHANGE total BY n\nEND\nSHOW NUMBER total",
+          "options": [
+            "6",
+            "8",
+            "10",
+            "12"
+          ],
+          "correct": 3,
+          "explanation": "We add 2 + 4 + 6, giving a total of 12.",
+          "difficulty": "medium"
+        }
+      ]
     }
-  ]
-}
-
-
-
-
   }
 }
