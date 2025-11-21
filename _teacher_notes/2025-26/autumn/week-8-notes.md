@@ -75,7 +75,7 @@ Blocks version:
 
 ---
 
-# B1 — Full TTC‑Style Pseudocode
+## B1 — Full TTC‑Style Pseudocode
 
 ```
 WHEN program starts DO
@@ -114,13 +114,13 @@ END WHEN
 
 ---
 
-# B2 — Step‑by‑Step Build With Explanations
+## B2 — Step‑by‑Step Build With Explanations
 
 Below each step is a detailed explanation you can use when teaching.
 
 ---
 
-## **Step 1 — Radio Setup**
+### **Step 1 — Radio Setup**
 
 ```text
 SET radio group TO 1
@@ -144,7 +144,7 @@ Ask participants:
 
 ---
 
-## **Step 2 — Start With One Ghost**
+### **Step 2 — Start With One Ghost**
 
 ```text
 IF ID = 1 THEN
@@ -165,7 +165,7 @@ Useful question:
 
 ---
 
-## **Step 3 — Receiving a Message**
+### **Step 3 — Receiving a Message**
 
 ```text
 WHEN a radio number is received DO
@@ -189,7 +189,7 @@ Analogy:
 
 ---
 
-## **Step 4 — Shake to Pass the Ghost**
+### **Step 4 — Shake to Pass the Ghost**
 
 ```text
 WHEN device is shaken DO
@@ -251,7 +251,7 @@ CLEAR screen
 
 ---
 
-# B3 — Final Program Behaviour (Summary)
+## B3 — Final Program Behaviour (Summary)
 
 - Exactly one person starts as the ghost  
 - Shaking sends the ghost to someone else  
