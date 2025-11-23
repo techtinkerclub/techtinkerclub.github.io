@@ -212,46 +212,65 @@ The build should connect back to earlier weeks (movement, loops, collisions), wi
 ## Pseudocode Overview (Blocks-style, aligned to MakeCode)
 
 ```text
-on start:
-    create bird at (0, 2)
-    set blink of bird to 300 ms
-    make empty array obstacles
-    set ticks to 0
+WHEN program starts DO
+    SET bird TO NEW SPRITE AT (0, 2)
+    SET blink_of_bird TO 300 ms
+    SET obstacles TO empty array
+    SET ticks TO 0
+END WHEN
 
-on button A pressed:
-    change bird y by -1
 
-on button B pressed:
-    change bird y by +1
+WHEN button A is pressed DO
+    CHANGE bird y BY -1
+END WHEN
 
-forever:
+
+WHEN button B is pressed DO
+    CHANGE bird y BY +1
+END WHEN
+
+
+FOREVER DO
     # 1. Remove obstacles that have left the screen
-    while length of obstacles > 0
-          AND x-position of obstacles[0] = 0:
-        delete sprite obstacles[0]
-        remove element at index 0 from obstacles
+    WHILE [length of obstacles] > 0
+          AND [x position of obstacles[0]] = 0 DO
+        DELETE SPRITE obstacles[0]
+        REMOVE element at index 0 FROM obstacles
+    END WHILE
+
 
     # 2. Move all obstacles left
-    for each obstacle in obstacles:
-        change obstacle x by -1
+    FOR EACH obstacle IN obstacles DO
+        CHANGE obstacle x BY -1
+    END FOR
+
 
     # 3. Sometimes spawn a new column of obstacles
-    if remainder of (ticks / 3) = 0:
-        set gapRow to random 0 to 4
-        for row from 0 to 4:
-            if row ≠ gapRow:
-                create obstacle sprite at (4, row)
-                add obstacle to obstacles
+    IF [remainder of (ticks / 3)] = 0 THEN
+        SET gap_row TO [random number from 0 to 4]
+
+        FOR row FROM 0 TO 4 DO
+            IF row ≠ gap_row THEN
+                SET new_obstacle TO NEW SPRITE AT (4, row)
+                ADD new_obstacle TO obstacles
+            END IF
+        END FOR
+    END IF
+
 
     # 4. Check for collisions
-    for each obstacle in obstacles:
-        if obstacle x = bird x
-           AND obstacle y = bird y:
-            game over
+    FOR EACH obstacle IN obstacles DO
+        IF [x position of obstacle] = [x position of bird]
+           AND [y position of obstacle] = [y position of bird] THEN
+            GAME OVER
+        END IF
+    END FOR
+
 
     # 5. Timing
-    change ticks by 1
-    pause 1000 ms
+    CHANGE ticks BY 1
+    PAUSE 1000 ms
+END FOREVER
 ```
 
 ### Blocks version (Crashy Bird reference)
@@ -272,11 +291,12 @@ forever:
 ## Step 1 – Initialise Bird, Array and Timer
 
 ```text
-on start:
-    create bird at (0, 2)
-    set blink of bird to 300 ms
-    make empty array obstacles
-    set ticks to 0
+WHEN program starts DO
+    SET bird TO NEW SPRITE AT (0, 2)
+    SET blink_of_bird TO 300 ms
+    SET obstacles TO empty array
+    SET ticks TO 0
+END WHEN
 ```
 
 **What this does**
@@ -303,11 +323,14 @@ on start:
 ## Step 2 – Player Controls (Up / Down)
 
 ```text
-on button A pressed:
-    change bird y by -1
+WHEN button A is pressed DO
+    CHANGE bird y BY -1
+END WHEN
 
-on button B pressed:
-    change bird y by +1
+
+WHEN button B is pressed DO
+    CHANGE bird y BY +1
+END WHEN
 ```
 
 **What this does**
@@ -349,10 +372,11 @@ You can explain it like this:
 ### 3a – Remove Off‑Screen Obstacles
 
 ```text
-while length of obstacles > 0
-      AND x-position of obstacles[0] = 0:
-    delete sprite obstacles[0]
-    remove element at index 0 from obstacles
+WHILE [length of obstacles] > 0
+          AND [x position of obstacles[0]] = 0 DO
+        DELETE SPRITE obstacles[0]
+        REMOVE element at index 0 FROM obstacles
+    END WHILE
 ```
 
 **What this does**
@@ -391,8 +415,9 @@ while length of obstacles > 0
 ### 3b – Move All Obstacles Left
 
 ```text
-for each obstacle in obstacles:
-    change obstacle x by -1
+FOR EACH obstacle IN obstacles DO
+        CHANGE obstacle x BY -1
+    END FOR
 ```
 
 **What this does**
@@ -428,12 +453,16 @@ Let learners describe the behaviour: static obstacles suddenly appearing on the 
 ### 3c – Spawn New Obstacles
 
 ```text
-if remainder of (ticks / 3) = 0:
-    set gapRow to random 0 to 4
-    for row from 0 to 4:
-        if row ≠ gapRow:
-            create obstacle sprite at (4, row)
-            add obstacle to obstacles
+IF [remainder of (ticks / 3)] = 0 THEN
+        SET gap_row TO [random number from 0 to 4]
+
+        FOR row FROM 0 TO 4 DO
+            IF row ≠ gap_row THEN
+                SET new_obstacle TO NEW SPRITE AT (4, row)
+                ADD new_obstacle TO obstacles
+            END IF
+        END FOR
+    END IF
 ```
 
 **What this does**
@@ -475,10 +504,12 @@ if remainder of (ticks / 3) = 0:
 ### 3d – Detect Collisions
 
 ```text
-for each obstacle in obstacles:
-    if obstacle x = bird x
-       AND obstacle y = bird y:
-        game over
+FOR EACH obstacle IN obstacles DO
+        IF [x position of obstacle] = [x position of bird]
+           AND [y position of obstacle] = [y position of bird] THEN
+            GAME OVER
+        END IF
+    END FOR
 ```
 
 **What this does**
@@ -511,8 +542,8 @@ for each obstacle in obstacles:
 ### 3e – Timing with `ticks` and `pause`
 
 ```text
-change ticks by 1
-pause 1000 ms
+CHANGE ticks BY 1
+    PAUSE 1000 ms
 ```
 
 **What this does**
