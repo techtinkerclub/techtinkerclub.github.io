@@ -18,10 +18,10 @@ header:
 # Instructor Notes — Week 9
 
 **Theme:** Synchronisation, Communication & Emergent Behaviour  
-**Focus Concept:** How simple local rules can create large‑scale patterns  
-**Mini‑Projects:**  
-- **A: Firefly Synchronisation** (local synchrony → global effects)  
-- **B: Exploding Duck** (radio communication, IDs, state, timers)  
+**Focus Concept:** How simple local rules can create large-scale patterns  
+**Mini-Projects:**  
+- **A: Firefly Synchronisation** — local timing → global synchrony  
+- **B: Exploding Duck** — radio messaging, state, timers, events
 
 ---
 
@@ -29,37 +29,37 @@ header:
 
 Participants should be able to:
 
-- Explain how devices can **synchronise** using only local communication.  
-- Understand that **global patterns** can emerge from simple local rules.  
-- Read and explain **TTC‑style pseudocode** involving radio events, loops, and timers.  
-- Understand **state variables** (`clock`, `hasDuck`, `dead`, `timer`).  
-- Appreciate how radio communication uses **groups**, **IDs**, and **messages**.
+- Explain how devices can **synchronise** using simple local communication.  
+- Understand that **emergent patterns** (large behaviours) come from many small local rules.  
+- Read and explain **TTC pseudocode** involving radio events, timers, conditions, and loops.  
+- Use and interpret **state variables** (`clock`, `hasDuck`, `dead`, `timer`, `ID`).  
+- Understand radio fundamentals: **groups**, **broadcasts**, **message IDs**, **local vs global range**.
 
 ---
 
 ## Vocabulary Focus
 
-- **synchronisation** – matching timing with neighbours or signals.  
-- **local rule** – behaviour based only on what you see/hear around you.  
-- **emergent pattern** – a big pattern that appears when many small actions combine.  
-- **broadcast** – send a message to everyone on the radio group.  
-- **state** – information that describes what mode the program is in.  
-- **timer** – a variable used to count down without blocking the program.  
-- **ID** – your unique number so you know who a message is for.  
+- **synchronisation** – matching timing with neighbours.  
+- **local rule** – a rule based only on the immediate environment.  
+- **emergent behaviour** – a complex pattern created when many simple behaviours interact.  
+- **broadcast** – send a message to everyone listening in the same group.  
+- **state** – information describing the current mode or condition of a device.  
+- **timer** – a variable used to measure time without freezing the program.  
+- **ID** – a unique number that identifies a player or device.  
 
 ---
 
 ## Session Flow
 
-1. **Warm‑up:** What are synchronised patterns? (birds, fireflies, clocks, applause)  
+1. **Warm-up discussion:** synchronised patterns in nature (fireflies, applause, pendulum clocks).  
 2. **Part A – Firefly Synchronisation**  
 3. **Part B – Exploding Duck**  
-4. **Wrap‑Up & Reflection**
+4. **Wrap-Up reflection**
 
 ---
 
 # Part A — Firefly Synchronisation  
-*A miniature model of how synchrony emerges from local communication*
+*A hands-on demonstration of emergent behaviour through local communication.*
 
 ### MakeCode Blocks Version  
 <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
@@ -79,8 +79,10 @@ WHEN program starts DO
 END WHEN
 ```
 **Explanation:**  
-We put all micro:bits in the same *radio group* so they can hear each other.  
-A low transmit power means the communication resembles local “nearby neighbour” behaviour — just like real fireflies.
+- `clock` represents each micro:bit's internal timing cycle.  
+- All devices join **radio group 12**, meaning they can hear each other.  
+- A **low transmit power** (1) ensures messages only reach nearby micro:bits.  
+  This creates “local neighbourhoods” — essential for demonstrating emergent synchrony.
 
 ---
 
@@ -91,9 +93,12 @@ WHEN radio receives a number DO
 END WHEN
 ```
 **Explanation:**  
-Whenever a neighbour “flashes”, they send a small message.  
-When we hear it, we **advance our own clock**.  
-This is the key mechanic: hearing a neighbour nudges our timing closer to theirs.
+- A neighbour “flashes” and broadcasts a tiny message.  
+- When this device hears that message, it **nudges its own clock forward**.  
+- This is the key mechanism behind synchronisation:  
+  **hearing someone ahead of you nudges you to catch up.**
+
+This mirrors how real fireflies adjust their flashing rhythm when they see others nearby.
 
 ---
 
@@ -101,37 +106,32 @@ This is the key mechanic: hearing a neighbour nudges our timing closer to theirs
 ```text
 FOREVER DO
     IF clock >= 8 THEN
-        SEND radio number 0       // tell neighbours I flashed
-        FLASH SCREEN              // bright moment = firefly flash
-        PAUSE 200 ms              // short rest
-        SET clock TO 0            // restart my cycle
+        SEND radio number 0
+        FLASH SCREEN
+        PAUSE 200 ms
+        SET clock TO 0
     ELSE
         PAUSE 100 ms
-        INCREASE clock BY 1       // normal ticking
+        INCREASE clock BY 1
     END IF
 END FOREVER
 ```
 
 **Explanation:**  
-Each micro:bit has an internal “clock” that rises steadily.  
-When it reaches 8, the micro:bit **flashes** and resets.  
-But because receiving neighbour flashes pushes your clock forward, eventually all micro:bits’ clocks line up naturally.
+- Each micro:bit counts up slowly (`clock += 1`).  
+- When the clock reaches 8:  
+  - It **flashes** → a burst of LED light.  
+  - It **broadcasts a message** telling neighbours “I flashed”.  
+  - It **resets its clock**.  
+- Neighbours hearing the message speed up their own clocks.  
+- Over time, everyone drifts into the same rhythm — **emergent synchrony**.
 
-This is how **synchrony emerges from local signals** — no leader required.
-
----
-
-### A2 — Key teaching points
-
-- Each micro:bit only reacts to **local messages** from nearby devices.  
-- With enough neighbours, the pattern grows into **global synchrony**.  
-- This mirrors how real fireflies match their flashing in nature.  
-- The program is extremely short but creates beautiful collective behaviour.
+This is a powerful demonstration that **global patterns form without a leader**.
 
 ---
 
 # Part B — Exploding Duck  
-*A fast‑paced radio game using state, IDs, and timers*
+*A radio-based reaction-speed game teaching IDs, timers, and state management.*
 
 ### MakeCode Blocks Version  
 <div style="position:relative;height:calc(300px + 5em);width:100%;overflow:hidden;">
@@ -165,9 +165,10 @@ END WHEN
 ```
 
 **Explanation:**  
-Each micro:bit knows **how many players** there are and which **ID** it is.  
-Only Player 1 starts with the duck.  
-Transmit power is high because all players must hear each other.
+- Every micro:bit knows **how many people** are in the game and which **ID** it has.  
+- Higher transmit power (7) ensures full-range communication for the game.  
+- Player 1 starts with the duck and shows it on the screen.  
+- All other players begin “empty-handed”.
 
 ---
 
@@ -177,18 +178,20 @@ WHEN radio receives number DO
     IF received number = ID THEN
         IF dead = FALSE THEN
             SET hasDuck TO TRUE
-            SET timer TO random value 50..150   // 0.5–1.5 s fuse
+            SET timer TO random value 50..150
             SHOW ICON duck
         ELSE
-            CALL forward()                      // pass immediately if dead
+            CALL forward()
         END IF
     END IF
 END WHEN
 ```
 
 **Explanation:**  
-If a message with **your ID** arrives, the duck is now yours.  
-Dead players can still *relay* the duck — they just can’t survive holding it.
+- If the incoming message matches **your ID**, you have just received the duck.  
+- If you are alive, you start a random countdown (“fuse”).  
+- If you are dead, you immediately relay the duck elsewhere.  
+- This prevents dead players from blocking the game.
 
 ---
 
@@ -204,7 +207,9 @@ END WHEN
 ```
 
 **Explanation:**  
-You may pass the duck voluntarily — but only if you’re alive and currently holding it.
+- Players can attempt to pass the duck voluntarily *before* the fuse explodes.  
+- Only living players holding the duck may pass it.  
+- Encourages fast reactions and tactical decisions.
 
 ---
 
@@ -227,8 +232,10 @@ END FUNCTION
 ```
 
 **Explanation:**  
-Choose someone else at random.  
-Reset your timer and send the duck away.
+- Picks a random player *other than yourself* to receive the duck.  
+- Clears your screen and resets your timer.  
+- Sends the duck to the chosen target.  
+- `PAUSE 10 ms` in the loop ensures fair randomness and avoids infinite loops.
 
 ---
 
@@ -245,12 +252,13 @@ END FUNCTION
 ```
 
 **Explanation:**  
-A dead player can still forward the duck the moment it arrives.  
-This keeps the game circulating quickly.
+- Dead players automatically relay the duck.  
+- Keeps the game moving dynamically.  
+- Avoids situations where a dead micro:bit “traps” the duck.
 
 ---
 
-### Step 6 — Non‑blocking countdown
+### Step 6 — Non-blocking countdown
 ```text
 FOREVER DO
     IF hasDuck = TRUE THEN
@@ -272,23 +280,23 @@ END FOREVER
 ```
 
 **Explanation:**  
-This is the heart of the game.  
-The countdown ticks down *without freezing the micro:bit*.  
-So radio still works, shaking still works, and messages still move.  
-When the timer hits zero, you explode → you forward the duck → and you’re out.
+- This countdown lets the duck “explode” if held too long.  
+- Crucially, the micro:bit does *not freeze* — radio and shake still work.  
+- If the fuse expires, the player dies and immediately forwards the duck.  
+- The skull shows clearly who has exploded.
 
 ---
 
-# Reflection & Wrap‑Up
+# Reflection & Wrap-Up
 
-Questions to ask:
+Ask participants:
 
-- “How does local information lead to big synchronised patterns?”  
-- “How do timers and radio events run at the same time?”  
-- “What state variables did we use in Exploding Duck?”  
-- “What happens when many players forward messages at once?”  
+- “How does synchronisation happen without a leader?”  
+- “What is the difference between local and global communication?”  
+- “Why is a non-blocking timer important for Exploding Duck?”  
+- “Which state variables control the game flow?”  
 
-Both activities show how **simple rules** produce surprisingly complex behaviour — a key idea in computing, robotics, biology, and physics.
+Both activities reveal that **complex behaviour** can arise from **simple rules**, a core idea across computing, robotics, biology, and physics.
 
 ---
 
