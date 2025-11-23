@@ -65,19 +65,15 @@ Short project:
 ### Pseudocode (Blocks-style)
 
 ```text
-on start:
-    make array activities:
-        "PE with Joe"
-        "watch a movie"
-        "play a board game"
-        "tidy our rooms"
-        "learn a song"
-        "bake a cake"
+WHEN program starts DO
+    SET activities TO ["PE with Joe", "watch a movie", "play a board game", "tidy our rooms", "learn a song", "bake a cake"]
+END WHEN
 
-on button A pressed:
-    set index to random 0 to (length of activities - 1)
-    set choice to activities at index
-    show string choice
+WHEN button A is pressed DO
+    SET index TO [random number from 0 to (length of activities - 1)]
+    SET choice TO activities[index]
+    SHOW TEXT choice
+END WHEN
 ```
 
 ### Blocks version (MakeCode)
@@ -143,15 +139,14 @@ Show that arrays can hold **images/icons** as well as text, and that the randomâ
 ### Pseudocode (Blocks-style)
 
 ```text
-on start:
-    make array icons:
-        rock image
-        paper image
-        scissors image
+WHEN program starts DO
+    SET icons TO [rock_image, paper_image, scissors_image]
+END WHEN
 
-on shake:
-    set index to random 0 to 2
-    show leds icons at index
+WHEN shake detected DO
+    SET index TO [random number from 0 to 2]
+    SHOW LEDs icons[index]
+END WHEN
 ```
 
 ### Blocks version (MakeCode)
