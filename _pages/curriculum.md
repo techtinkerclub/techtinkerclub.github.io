@@ -12,51 +12,61 @@ header:
 
 # Tech Tinker Club Curriculum (Years 4–6)
 
-**Intent (Why we do it)**    
-  
-Tech Tinker Club exists to spark curiosity and confidence in STEM through **hands-on, real-world projects**. We do our best allign to the school’s Computing, Science and D&T curricula while giving children extended time to **design, make, code, test and iterate**. Mixed-age sessions (Y4–Y6) are deliberately **tiered** so beginners succeed quickly and returning members are challenged.
+<div class="ttc-button-row" style="margin-bottom: 1.5rem;">
+  <a class="btn btn--primary" href="/curriculum/2025-26/#term-overview">
+    View This Year's Plan (2025–26)
+  </a>
+</div>
 
-**Core Objectives**
-- Build **computational thinking** (sequence, selection, repetition, variables, data).  
-- Develop **engineering habits** (problem framing, prototyping, testing, evaluation).  
-- Practice **Working Scientifically** (fair tests, data logging, observation, conclusions).  
-- Strengthen **maths in context** (measurement, units, graphs, ratio/scale).  
-- Grow **collaboration & communication** (pair work, peer review, showcases).  
-- Cultivate **safe, ethical, and responsible use** of technology.
+Tech Tinker Club helps children build confidence in **computing, engineering and design** through practical, hands-on projects. Our approach blends coding, electronics, 3D design and scientific thinking in ways that feel meaningful, fun and achievable for mixed ages (Years 4–6).
 
-**Implementation (How it runs)**
-- **Term model:**  
-  - **Autumn — Micro:bit Foundations** (physical computing, sensors, data, motors).  
-  - **Spring — Tinkercad Design & Circuits** (3D design, enclosures, circuit simulation).  
-  - **Summer — Integration & Showcase** (combine code + 3D + circuits in one product).  
-   
-- **Tiered tasks:**  
-  - *Level 1* (access): core build works for everyone.  
-  - *Level 2* (extend): extra feature(s), data/variables, styling.  
-  - *Level 3* (challenge): custom ideas, radio networks, CAD tweaks, analysis.  
-- **Equipment:** Chromebooks, BBC micro:bits, sensors/motors/servos/expansion boards, 3D printer (used strategically).
+---
 
-**Impact (What success looks like)**
-- Children can explain **how** their systems work (inputs → processing → outputs).  
-- Working prototypes that solve a **clear, user-centred problem**.  
-- Evidence of **iteration** (photos, code versions, reflection).  
-- Improved **vocabulary** across Computing, Science and D&T.  
-- Positive dispositions: persistence, debugging mindset, safe/ethical choices online.
+## Our Approach
 
-**Assessment (light-touch)**
-- Quick exit checks (What changed? Why?).  
-- Photo/video of outcomes + brief learner reflections.  
-- Simple rubrics (Working, Partly, Not yet) for: function, design, explanation, teamwork.
+### Learning by Making  
+Children learn best when they create something real. Every session includes **designing, building, coding, testing and improving** — not just following instructions.
 
-**Inclusion & Safety**
-- Accessible entry for all (scaffolded steps, paired programming).  
-- E-safety and tool safety; adult checks for electronics/3D printing.  
-- Adaptations available (buddy roles, simplified parts, etc).
+### Mixed-Age, Tiered Activities  
+Each project includes:  
+- **Level 1:** accessible core build  
+- **Level 2:** extensions and customisation  
+- **Level 3:** challenge tasks (radio, data, CAD tweaks, analysis)  
+This ensures beginners succeed quickly while returning members stay challenged.
 
-**Alignment (high level)**
-- **Computing KS2:** programming constructs; working with hardware; data use.  
-- **Science KS2:** Electricity, Light, Forces, Materials; Working Scientifically.  
-- **D&T KS2:** Design-Make-Evaluate; mechanical/electrical systems; CAD.  
-- **School themes:** club projects might reference current term themes to deepen classroom links.
+### Cross-Curricular Links  
+Projects naturally connect to:  
+- **Computing:** programming constructs, hardware control, debugging  
+- **Science:** electricity, forces, materials, data loggers, fair tests  
+- **Design & Technology:** CAD, mechanisms, evaluating and improving products  
+- **Maths:** measurement, scale, position, graphs, ratio
 
-> Explore the current year plan: [Curriculum 2025–26](/curriculum/2025-26/).
+---
+
+## Safety, Inclusion & Responsible Use  
+- Step-by-step scaffolded tasks  
+- Safe handling of electronics and 3D printing  
+- Positive use of technology (privacy, e-safety, teamwork)  
+- Adaptations available for all learners (buddy roles, alternative inputs, simplified builds)
+
+---
+
+## What a Typical Year Looks Like  
+Our curriculum follows a clear, repeating structure each year:  
+
+- **Autumn — Micro:bit Foundations**  
+  *Physical computing, sensors, motors, data and simple systems.*
+
+- **Spring — Tinkercad Design & Circuits**  
+  *3D modelling, mechanisms, SimLab testing and simple circuits.*
+
+- **Summer — Integration & Showcase**  
+  *One small product combining code + 3D design + electronics.*
+
+---
+
+<div class="ttc-button-row" style="margin-top: 1.5rem;">
+  <a class="btn btn--primary" href="/curriculum/2025-26/#term-overview">
+    View This Year's Plan (2025–26)
+  </a>
+</div>
