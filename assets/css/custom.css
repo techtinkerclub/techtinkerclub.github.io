@@ -26,3 +26,9 @@
   background-color: #b22222;
   border: none;
 }
+
+/* Prevent week numbers (Week 10, Week 11...) from wrapping */
+table td:first-child a {
+  white-space: nowrap;
+}
+
