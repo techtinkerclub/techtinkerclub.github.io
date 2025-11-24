@@ -109,28 +109,6 @@ You do **not** need children to type this pseudocode; it is for your reference w
   </div>
 </div>
 
-### TypeScript reference (Raw Demo)
-
-```ts
-let distance = 0
-basic.forever(function () {
-    // Trigger on P0
-    pins.digitalWritePin(DigitalPin.P0, 0)
-    control.waitMicros(2)
-    pins.digitalWritePin(DigitalPin.P0, 1)
-    control.waitMicros(10)
-    pins.digitalWritePin(DigitalPin.P0, 0)
-    // Echo on P1
-    distance = Math.idiv(pins.pulseIn(DigitalPin.P1, PulseValue.High), 58)
-    // Remove invalid readings
-    if (distance <= 0 || distance > 200) {
-        distance = 0
-    }
-    // Show distance simply
-    basic.showNumber(distance)
-    basic.pause(50)
-})
-```
 
 ---
 
@@ -169,22 +147,6 @@ Emphasise:
 - **You never set P1 HIGH in your code.**  
 - The sensor drives ECHO; the micro:bit only **measures** it.
 
-A timing diagram you can sketch:
-
-```text
-TRIG (P0, micro:bit → sensor)
-       ┌──────────10 µs──────────┐
--------┘                        └------------------------
-
-Ultrasonic bursts (inside sensor)
-                     ) ) ) ) ) ) ) ) 
-                              ))))))
-
-ECHO (P1, sensor → micro:bit)
-                        ┌──────────── ECHO HIGH ─────────────┐
-------------------------┘                                   └---------
-                      (duration depends on distance)
-```
 
 #### Explaining the “divide by 58” maths
 
@@ -305,26 +267,6 @@ Again, this pseudocode is for your guidance; children will build it using blocks
 
 ### TypeScript reference (Extension Project)
 
-```ts
-let brightness = 0
-let delay = 0
-let distance = 0
-makerbit.connectUltrasonicDistanceSensor(DigitalPin.P13, DigitalPin.P14)
-basic.forever(function () {
-    distance = makerbit.getUltrasonicDistance(DistanceUnit.CM)
-    // Keep values stable
-    distance = Math.constrain(distance, 10, 300)
-    // Map distance → delay for beeping
-    delay = Math.map(distance, 10, 300, 100, 1000)
-    // Simple visual: LED brightness (closer = brighter)
-    brightness = Math.map(delay, 1000, 100, 10, 255)
-    led.setBrightness(brightness)
-    basic.showIcon(IconNames.SmallDiamond)
-    // Chirp
-    music.playTone(988, 100)
-    basic.pause(delay)
-})
-```
 
 ---
 
@@ -384,11 +326,6 @@ Emphasise:
 
 #### Explaining constrain
 
-Before mapping, you use:
-
-```ts
-distance = Math.constrain(distance, 10, 300)
-```
 
 Key points:
 
