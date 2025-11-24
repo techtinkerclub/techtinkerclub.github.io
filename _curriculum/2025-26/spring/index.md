@@ -18,15 +18,17 @@ header:
 
 This term, participants at Tech Tinker Club will use Tinkercad to design 3D models, explore mechanisms and test simple structures in **SimLab**. The focus is on thoughtful design: planning, making, testing and improving.
 
-<div style="margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .75rem;">
-  <a class="btn btn--primary"
-     href="/curriculum/2025-26/spring/#week-by-week">
+<div class="ttc-button-row">
+  <a class="btn btn--primary" href="/curriculum/2025-26/spring/#week-by-week">
     Term Overview
   </a>
   <a class="btn btn--primary"
      href="/curriculum/2025-26/spring/curriculum-links/"
      target="_blank" rel="noopener">
     Curriculum Links
+  </a>
+  <a class="btn btn--primary" href="/curriculum/2025-26/#term-overview">
+    Back to Year Overview
   </a>
 </div>
 
@@ -44,7 +46,7 @@ This term, participants at Tech Tinker Club will use Tinkercad to design 3D mode
 ## Implementation (How we will do it)
 
 - **Weekly 90-minute sessions** throughout the Spring term.  
-- Each week introduces a **focus concept** through a **small, guided mini‑project**.  
+- Each week introduces a **focus concept** through a **small, guided mini-project**.  
 - Activities are **tiered**, so beginners can follow a clear path while confident learners extend and personalise.  
 - SimLab is used in the second half of term to test designs **virtually** before any real making.  
 
@@ -69,9 +71,9 @@ This term, participants at Tech Tinker Club will use Tinkercad to design 3D mode
 | [Week 4](/curriculum/2025-26/spring/week-4/) | Duplicate, Patterns & Basic Mirror | Symmetric Creature or Rocket | [View resources](/curriculum/2025-26/spring/week-4/#resources){:target="_blank" rel="noopener"} |
 | [Week 5](/curriculum/2025-26/spring/week-5/) | Sketch & Revolve (2D → 3D) | Revolved Rocket / Pendant | [View resources](/curriculum/2025-26/spring/week-5/#resources){:target="_blank" rel="noopener"} |
 | [Week 6](/curriculum/2025-26/spring/week-6/) | Motion, Gravity & Friction (SimLab) | Sliding & Rolling Experiments | [View resources](/curriculum/2025-26/spring/week-6/#resources){:target="_blank" rel="noopener"} |
-| [Week 7](/curriculum/2025-26/spring/week-7/) | CAD: Design a Simple Car Body | 4‑Wheel Car Design | [View resources](/curriculum/2025-26/spring/week-7/#resources){:target="_blank" rel="noopener"} |
+| [Week 7](/curriculum/2025-26/spring/week-7/) | CAD: Design a Simple Car Body | 4-Wheel Car Design | [View resources](/curriculum/2025-26/spring/week-7/#resources){:target="_blank" rel="noopener"} |
 | [Week 8](/curriculum/2025-26/spring/week-8/) | Make the Car Move (SimLab) | Car Motion Test & Improvements | [View resources](/curriculum/2025-26/spring/week-8/#resources){:target="_blank" rel="noopener"} |
-| [Week 9](/curriculum/2025-26/spring/week-9/) | Structure & Stability (SimLab Earthquake) | Anti‑Fall Tower Challenge | [View resources](/curriculum/2025-26/spring/week-9/#resources){:target="_blank" rel="noopener"} |
+| [Week 9](/curriculum/2025-26/spring/week-9/) | Structure & Stability (SimLab Earthquake) | Anti-Fall Tower Challenge | [View resources](/curriculum/2025-26/spring/week-9/#resources){:target="_blank" rel="noopener"} |
 | [Week 10](/curriculum/2025-26/spring/week-10/) | Final Project (Structured Choice) | Improved Car / Tower / Rocket | [View resources](/curriculum/2025-26/spring/week-10/#resources){:target="_blank" rel="noopener"} |
 
 ---
@@ -79,4 +81,3 @@ This term, participants at Tech Tinker Club will use Tinkercad to design 3D mode
 ## Looking ahead
 
 - **Summer 2026:** Integration term — combining micro:bit coding, 3D design and (later) simple circuits into small, purposeful projects.  
-
