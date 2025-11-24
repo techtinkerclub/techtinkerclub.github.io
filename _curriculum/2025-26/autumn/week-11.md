@@ -14,170 +14,135 @@ header:
 
 {% include back-to-autumn.html %}
 
-## Week 11 — Ultrasonic Sensors, Echolocation & Mapping
+## Week 11 — Ultrasonic Sensors & Echolocation
 
-**Focus Concept:** Measuring distance with sensors and mapping values  
-**Mini-Project:** Echolocation beeper (closer = faster beeps, farther = slower beeps)
+**Focus Concept:** Using input sensors + mapping to control output behaviour  
+**Mini-Project:** *Echolocation Beeper* (closer = faster beeps, farther = slower beeps)
 
 <div class="notice--steam">
   <h2>Connections to STEAM Learning</h2>
   <ul>
-    <li><strong>Computing:</strong> We use an <strong>ultrasonic sensor</strong> as an input, read its values in code, and use <strong>mapping</strong>, <strong>conditions</strong> and an <strong>extension</strong> to control sounds.</li>
-    <li><strong>Science:</strong> We explore <strong>sound waves</strong>, <strong>echolocation</strong> in bats and dolphins, and how the <strong>speed of sound</strong> links time and distance.</li>
-    <li><strong>Maths:</strong> We work with <strong>measurements</strong> (centimetres), <strong>comparisons</strong> (&lt;, &gt;) and use <strong>mapping</strong> to translate one range of values (distance) into another (pause time).</li>
-    <li><strong>Engineering:</strong> We build a small <strong>physical system</strong> (micro:bit + expansion board + ultrasonic sensor), test it, and debug wiring and code to make it reliable.</li>
+    <li><strong>Computing:</strong> We used an <strong>ultrasonic sensor</strong> as an input device, applied <strong>mapping</strong> to scale values, and used a MakeCode <strong>extension</strong> to simplify sensor control.</li>
+    <li><strong>Science:</strong> We linked our project to <strong>echolocation</strong> in bats and dolphins, exploring how sound waves reflect off objects.</li>
+    <li><strong>Maths:</strong> We worked with measurements (cm), <strong>comparisons</strong>, and converted one range of values into another using <strong>mapping</strong>.</li>
+    <li><strong>Engineering & Technology:</strong> We built a working system using the micro:bit, a <strong>terminal block expansion board</strong>, a breadboard and an ultrasonic sensor.</li>
   </ul>
 </div>
 
-This week we moved deeper into **physical computing** and “real-world” sensing.  
-The children learned how an ultrasonic sensor can help a microcontroller estimate distance using sound — very similar to how bats and dolphins use **echolocation**.
+This week we explored how computers can “sense” distance using sound, just like animals that use **echolocation**.  
+We learned how an ultrasonic sensor sends out a tiny ultrasonic “ping”, listens for the echo, and estimates distance based on how long the echo takes to return.
 
-We talked about how the sensor sends out a tiny ultrasonic “ping”, waits for the echo to bounce back and then measures how long that took. From this time, the micro:bit can calculate an approximate distance.
+We first wired the sensor on **P0** (TRIG) and **P1** (ECHO) to understand the raw timing code behind the scenes.  
+Later, when switching to the MakeCode extension, we deliberately moved the sensor to **P13** and **P14**. This showed that extensions can use **any** suitable pins — we are not limited to just P0 and P1 — and that choosing pins is part of designing a physical computing system.
 
-Using the Keyestudio terminal block shield, a breadboard and jumper wires, everyone wired up an ultrasonic distance sensor to their micro:bit. We then built an **“echolocation beeper”**: a program where the micro:bit beeps **faster when something is close** and **slower when it is far away**. To do this, we introduced two important ideas:
-
-- **Extensions** — add-on packs in MakeCode that give us new blocks for special hardware (like the ultrasonic sensor).  
-- **Mapping** — turning one range of values (distance in cm) into another range of values (pause time in ms).
+With everything connected, we turned every micro:bit into a small “bat”: it beeps more quickly when something is close, and slowly when things are far away.  
+To do this, we also introduced two important ideas: **mapping**, and **extensions**.
 
 ---
 
 ## Objectives
-
-By the end of this session, children should be able to:
-
-- Describe, in simple terms, how <strong>echolocation</strong> works in animals and sensors.  
-- Explain that the ultrasonic sensor is an <strong>input device</strong> which measures distance.  
-- Recognise the role of the <strong>expansion board</strong> and <strong>breadboard</strong> in making neat, safe connections.  
-- Use a MakeCode <strong>extension</strong> block to read a distance value from the ultrasonic sensor.  
-- Use <strong>mapping</strong> to turn a distance into a suitable pause time for beeps.  
-- Use <strong>conditions</strong> and <strong>loops</strong> to control how fast the micro:bit beeps as objects move closer or further away.
+- Understand, in simple terms, how <strong>echolocation</strong> helps animals and sensors detect distance.  
+- Wire an <strong>ultrasonic sensor</strong> using the expansion board and breadboard.  
+- Read distance values from the sensor in MakeCode using an <strong>extension block</strong>.  
+- Use <strong>mapping</strong> to convert distance ranges into suitable pause times.  
+- Build an <strong>echolocation beeper</strong> where the beeping rate changes based on how close an object is.  
+- Practise <strong>loops</strong>, <strong>conditional logic</strong> and <strong>input/output</strong> behaviour.
 
 ---
 
-## This Week’s Journey
-
-We began with a short science discussion:
-
-- Bats and dolphins send out clicks or squeaks and listen for the echo to find obstacles and prey.  
-- Submarines do something similar with sonar to map the sea and avoid collisions.  
-- The key idea is always the same: <strong>send sound → get echo → measure the delay</strong>.
-
-Then we introduced the ultrasonic sensor:
-
-- One “eye” <strong>sends</strong> the ultrasonic pulse (TRIG).  
-- The other “eye” <strong>listens</strong> for the echo (ECHO).  
-- The micro:bit measures how long the ECHO signal stays high, which tells us how long the sound wave took to travel there and back.
-
-Using the Keyestudio terminal block shield, we connected:
-
-- Sensor VCC to 3V  
-- Sensor GND to GND  
-- Sensor TRIG to pin P0  
-- Sensor ECHO to pin P1  
-
-We briefly showed a lower-level (“behind the scenes”) version of the code, where the micro:bit manually sends a tiny trigger pulse and uses microseconds to time the echo. This helped children understand that, inside the neat block they will use later, there is quite a bit of careful timing and maths.
-
-After that, we moved to a more practical and readable solution by adding an **ultrasonic sensor extension** in MakeCode. This extension provides a block that directly gives us a distance in centimetres. Instead of writing all the timing code ourselves, we can now use a single block that clearly says “distance (cm)”, which makes the main program easier to understand.
-
-Finally, we introduced the idea of **mapping**: taking a distance (for example, from 5 cm to 50 cm) and converting it into a pause time (for example, from 100 ms to 800 ms). This allowed us to control how quickly the micro:bit beeps, based on how close an object is.
+## Success Criteria
+- I can explain how the ultrasonic sensor measures distance using echo time.  
+- I can wire TRIG and ECHO pins correctly using the terminal block shield.  
+- I can use an <strong>extension</strong> to simplify my code and read distance in centimetres.  
+- I can use <strong>mapping</strong> to scale a distance into a delay.  
+- I can control the speed of beeping based on how near or far an object is.  
+- I can test and improve my program when the response doesn’t match what I expected.
 
 ---
 
-## Mini-Project: Echolocation Beeper
-
-For the main activity, the children programmed their micro:bit to behave a bit like a bat:
-
-- When something is **very close**, the beeps are **fast** and can sound urgent.  
-- When something is **far away**, the beeps are **slower** and more relaxed.
-
-Using the ultrasonic extension, a typical loop in their program looked like:
-
-1. Read the current **distance** from the ultrasonic sensor.  
-2. **Map** that distance from a range like 5–50 cm into a range of pause times like 100–800 ms.  
-3. Play a short tone.  
-4. Pause for the mapped amount of time.  
-5. Repeat.
-
-Some children added extra touches such as:
-
-- Higher-pitched notes when very close and lower notes when far.  
-- Icons on the LED display to show “safe”, “getting close” and “danger!”.  
-- Different behaviour when nothing was detected within a reasonable distance.
-
-In small groups, they tried different objects (books, pencil cases, hands, soft fabric) and noticed how the beeping pattern changed depending on how well the sound bounced back.
+## Key Vocabulary
+- **Echolocation** — finding where things are by sending sound and listening for the echo (used by bats, dolphins, and ultrasonic sensors).  
+- **Ultrasonic sensor** — an input device that sends out high-pitched sound and listens for the echo to estimate distance.  
+- **TRIG / ECHO** — the two key pins on an ultrasonic sensor: one <em>sends</em> the pulse (TRIG) and one <em>receives</em> the echo (ECHO).  
+- **Extension** — an add-on pack in MakeCode that gives us extra blocks for special hardware (like the ultrasonic sensor).  
+- **Extension block** — a block that comes from an extension and performs a more complex action behind the scenes.  
+- **Mapping** — converting a value from one range into another (e.g. distance 5–50 cm → pause 100–800 ms).  
+- **Input device** — something that sends information <em>into</em> the micro:bit (buttons, sensors).  
+- **Output** — something the micro:bit does (sounds, lights, messages).
 
 ---
 
-## Try These Challenges
+## Part A — Echolocation & Real-World Sensing
+We began with a discussion about animals that use **echolocation**, such as bats and dolphins.  
+Children explored how sending a sound and listening for the reflection helps creatures navigate in the dark or underwater. We linked this to sonar used in ships and submarines.
 
-If your child would like to tinker further at home, you could suggest:
+We handled the ultrasonic sensor and identified the two “eyes”:  
+- one sends the sound pulse,  
+- the other listens for the echo.  
 
-- **Experiment with the ranges:**  
-  Try different mapping ranges. What happens if we change the “close” distance or the minimum/maximum pause time?  
-- **Pitch and speed together:**  
-  Map distance both to the <em>pause</em> and to the <em>pitch</em>, so close objects give high, fast beeps and distant objects give low, slow beeps.  
-- **Three-zone display:**  
-  Add icons for “safe”, “warning” and “too close” and link them to distance thresholds.  
-- **Guess the distance:**  
-  One person holds an object at an unknown distance. Can the other person guess “close, medium or far” just by listening to the beep pattern?  
-- **Silent sonar:**  
-  Instead of sound, use radio messages or LED patterns as the output, while still using the ultrasonic sensor and mapping underneath.
+This allowed us to clearly understand how our micro:bit would measure distance.
 
 ---
 
-## Vocabulary
+## Part B — Wiring & Understanding the Sensor
+Using the Keyestudio terminal block shield and a breadboard, children wired:
 
-- **ECHOLOCATION** — finding out where things are by making a sound and listening for the echo.  
-  Used by bats, dolphins and our ultrasonic sensor.
+- **VCC → 3V**  
+- **GND → GND**  
+- **TRIG → P0** (for the raw demo)  
+- **ECHO → P1** (for the raw demo)
 
-- **ULTRASONIC SENSOR** — an input device that sends out high-pitched sound and listens for the echo to estimate how far away an object is.
+We demonstrated the “behind the scenes” code that sends a 10-microsecond trigger pulse and measures the echo time with `pulseIn()`, explaining why dividing by **58** gives a distance in centimetres.
 
-- **EXTENSION** — an extra pack of blocks you can add to MakeCode.  
-  It usually controls special hardware (like an ultrasonic sensor or LED strip) or adds new features. Inside the extension, someone has already written the harder code for us.
+After this low-level demonstration, we added a MakeCode **extension** to make the program clearer.  
+To emphasise that extensions are flexible, we **chose different pins** this time:
 
-- **EXTENSION BLOCK** — a MakeCode block that comes from an extension.  
-  It looks like a normal block but is part of an add-on for a specific sensor, motor or feature.
+- **TRIG → P13**  
+- **ECHO → P14**
 
-- **MAPPING** — changing a value from one range into another range while keeping its position.  
-  Example: mapping a distance from 5–50 cm into a delay from 100–800 ms so that closer = smaller delay and farther = bigger delay.
+This showed that extensions can work with **any** suitable pins, not just P0/P1, and that choosing pins is part of designing real systems.
 
-- **INPUT DEVICE** — a component that sends information <em>into</em> the micro:bit (for example: buttons, light sensor, ultrasonic sensor).
+---
+
+## Part C — Echolocation Beeper (Build & Play)
+For our main activity, we turned each micro:bit into a “bat”.  
+Using the extension to read distance and a **mapping** block, children created a system where:
+
+- **Close object → very fast beeps**  
+- **Medium distance → medium-speed beeps**  
+- **Far away → slow beeps**  
+
+Mapping allowed us to convert one range (10–300 cm) into another range (e.g. 100–1000 ms), creating smooth and realistic behaviour.
 
 ---
 
 ## Resources
-
-- **MakeCode Editor (micro:bit):**  
-  [https://makecode.microbit.org](https://makecode.microbit.org){:target="_blank" rel="noopener"}
-
-- **Ultrasonic Sensor Starter Project (distance meter):**  
-  (Link to be added once the class code is finalised.)
-
-- **Echolocation Beeper Example:**  
-  (Link to be added for the version using mapping and the ultrasonic extension.)
-
-- **Background on echolocation (child-friendly videos/articles):**  
-  Short clips about bats, dolphins and sonar are linked from this Week 11 page.
+- **MakeCode Editor:**  
+  <https://makecode.microbit.org>{:target="_blank" rel="noopener"}
+- **Ultrasonic Distance Extension:**  
+  Added through the **Extensions** menu in MakeCode  
+- **Example Echolocation Beeper Project:**  
+  (Link added once final class code is saved)
+- **Videos on Echolocation:**  
+  Linked alongside this page (bats, dolphins, sonar).
 
 ---
 
 ## Equipment
-
 - BBC micro:bits + USB cables  
 - Laptops / Chromebooks with internet access  
 - Keyestudio micro:bit terminal blocks shield  
 - Ultrasonic sensors (HC-SR04 or similar)  
 - Breadboards and jumper wires  
-- Optional: small objects for testing (books, pencil cases, boxes, soft and hard materials)
+- Optional: small objects for distance testing
 
 ---
 
 ## Safety & Setup Notes
-
-- Remind children to handle <strong>micro:bits, expansion boards and sensors</strong> carefully and avoid pulling on cables.  
-- Encourage tidy wiring so that boards don’t get pulled off tables and connections stay secure.  
-- If using sound, keep the volume and beeping rate reasonable for the classroom.  
-- Support children in double-checking power and ground connections before powering up their circuit.
+- Double-check power and ground wiring before switching on.  
+- Keep wires tidy to avoid disconnections while testing.  
+- If using sound, keep volume reasonable in the classroom.  
+- Support children in testing, observing and adjusting their code based on what the sensor reads.
 
 ---
 
