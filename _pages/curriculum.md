@@ -13,7 +13,7 @@ header:
 # Tech Tinker Club Curriculum (Years 4–6)
 
 <div class="ttc-button-row" style="margin-bottom: 1.5rem;">
-  <a class="btn btn--primary" href="/curriculum/2025-26/#term-overview">
+  <a class="btn btn--primary" href="/curriculum/2025-26/">
     View This Year's Plan (2025–26)
   </a>
 </div>
@@ -66,7 +66,7 @@ Our curriculum follows a clear, repeating structure each year:
 ---
 
 <div class="ttc-button-row" style="margin-top: 1.5rem;">
-  <a class="btn btn--primary" href="/curriculum/2025-26/#term-overview">
+  <a class="btn btn--primary" href="/curriculum/2025-26/">
     View This Year's Plan (2025–26)
   </a>
 </div>
