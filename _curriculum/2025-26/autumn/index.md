@@ -18,18 +18,14 @@ header:
 
 This term, participants in Tech Tinker Club will explore how microcontrollers (tiny computers that power gadgets, robots and everyday devices) can be programmed to **sense the world and control outputs**. Using the BBC micro:bit, motors, buzzers, servos and built-in sensors, children will design fun mini-projects that blend **computing concepts** with real-world making.
 
-<div style="margin: 1rem 0; display: flex; flex-wrap: wrap; gap: .75rem;">
-  <a class="btn btn--primary"
-     href="/curriculum/2025-26/autumn/#week-by-week">
+<div class="ttc-button-row">
+  <a class="btn btn--primary" href="/curriculum/2025-26/autumn/#week-by-week">
     Term Overview
   </a>
-  <a class="btn btn--primary"
-     href="/curriculum/2025-26/autumn/curriculum-links/"
-     target="_blank" rel="noopener">
+  <a class="btn btn--primary" href="/curriculum/2025-26/autumn/curriculum-links/" target="_blank" rel="noopener">
     Curriculum Links
   </a>
-  <a class="btn btn--primary"
-     href="/curriculum/2025-26/#term-overview">
+  <a class="btn btn--primary" href="/curriculum/2025-26/#term-overview">
     Back to Year Overview
   </a>
 </div>
