@@ -32,3 +32,14 @@ table td:first-child a {
   white-space: nowrap;
 }
 
+/* Spread the 3 term buttons evenly across the line */
+.ttc-button-row {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.ttc-button-row a.btn {
+  flex: 1;               /* makes each button expand equally */
+  text-align: center;    /* centers the text */
+}
