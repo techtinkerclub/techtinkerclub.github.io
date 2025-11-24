@@ -14,8 +14,21 @@ header:
 
 # Curriculum 2025–26 — Overview (Y4–Y6)
 
+<!-- ===== TERM HUB BUTTONS AT TOP ===== -->
+<div class="term-hub-row" style="display:flex; gap:1rem; margin:1.5rem 0; flex-wrap:wrap;">
+  <a class="btn btn--primary" href="/curriculum/2025-26/autumn/" style="flex:1; text-align:center;">
+    Autumn — Micro:bit Foundations
+  </a>
+  <a class="btn btn--primary" href="/curriculum/2025-26/spring/" style="flex:1; text-align:center;">
+    Spring — Tinkercad Design & Circuits
+  </a>
+  <a class="btn btn--primary" href="/curriculum/2025-26/summer/" style="flex:1; text-align:center;">
+    Summer — Integration & Showcase
+  </a>
+</div>
+<!-- ==================================== -->
+
 ## Intent  
-  
 A coherent, year-long journey where children **learn by making**: Autumn builds coding + electronics fluency; Spring builds design + circuit simulation; Summer fuses both into a polished product.
 
 ## Term at a glance
@@ -41,11 +54,6 @@ A coherent, year-long journey where children **learn by making**: Autumn builds 
 - **Make + explain**: short demo plus “How does it work?” discussion (inputs → process → outputs).  
 - Photo/video gallery; code files; project status (problem, design, test, next steps).
 
-## Term hubs
-- **[Autumn — Micro:bit Foundations](/curriculum/2025-26/autumn/)**  
-- **[Spring — Tinkercad Design & Circuits](/curriculum/2025-26/spring/)**  
-- **[Summer — Integration & Showcase](/curriculum/2025-26/summer/)**
-
 ---
 
 ### Safeguarding, E-safety & Risk
@@ -54,4 +62,3 @@ A coherent, year-long journey where children **learn by making**: Autumn builds 
 
 ### Equipment & platforms
 Chromebooks · BBC micro:bit (MakeCode; optional Python) · motors/servos/expansion boards · Tinkercad (3D & Circuits) · 3D printer (selective, pre-sliced).
-
