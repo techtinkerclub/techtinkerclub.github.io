@@ -31,7 +31,7 @@ header:
 ## Intent  
 A coherent, year-long journey where children **learn by making**: Autumn builds coding + electronics fluency; Spring builds design + circuit simulation; Summer fuses both into a polished product.
 
-## Term at a glance
+## Term at a glance {#term-overview}
 
 | Term | Focus | Example Outcomes | Key Concepts |
 |---|---|---|---|
