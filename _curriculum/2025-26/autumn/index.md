@@ -28,6 +28,10 @@ This term, participants in Tech Tinker Club will explore how microcontrollers (t
      target="_blank" rel="noopener">
     Curriculum Links
   </a>
+  <a class="btn btn--primary"
+     href="/curriculum/2025-26/#term-overview">
+    Back to Year Overview
+  </a>
 </div>
 
 ---
