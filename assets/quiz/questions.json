@@ -816,7 +816,7 @@
     },
     "5": {
       "title": "Week 5: Loops & First Game",
-      "description": "repeat/for/while/forever loops; timing (millis); sprites and simple game logic.",
+      "description": "Repeat/for/while/forever loops; timing (millis); sprites and simple game logic.",
       "locked": false,
       "questions": [
         {
@@ -1021,7 +1021,7 @@
     },
     "6": {
       "title": "Week 6: Core Mechanics — Loops, Logic, Timing & Coordinates",
-      "description": "Reusable challenge set mixing loops, variables, timing, coordinates, and debugging.",
+      "description": "Loops, variables, timing, coordinates, and debugging.",
       "locked": false,
       "questions": [
         {
@@ -1217,7 +1217,7 @@
     },
     "7": {
       "title": "Week 7: Functions, Variables, Loops, Conditions & Sensors",
-      "description": "Upper-KS2 quiz mixing functions as reusable helpers, accelerometer reasoning, loop/timing maths, and clear pseudocode tracing.",
+      "description": "Functions as reusable helpers, accelerometer, loop/timing maths, pseudocode tracing.",
       "locked": false,
       "questions": [
         {
@@ -1427,7 +1427,7 @@
     },
     "8": {
       "title": "Week 8: Waves, Radio & Logic Review",
-      "description": "Stronger mixed set: KS2 wave science + event logic, functions, counters, timing, thresholds, and coordinates. MCQ + Match only.",
+      "description": "Wave science, event logic, functions, counters, timing, thresholds, and coordinates.",
       "locked": false,
       "questions": [
         {
@@ -1662,7 +1662,7 @@
     },
     "9": {
       "title": "Week 9: Fireflies, Radio & Local Rules",
-      "description": "Mixed set: synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates. MCQ + Match only.",
+      "description": "Synchronisation and local communication, radio groups, message logic, plus revision of events, variables, loops, timing, and coordinates.",
       "locked": false,
       "questions": [
         {
@@ -1883,7 +1883,7 @@
     },
     "10": {
       "title": "Week 10: Arrays and Iteration",
-      "description": "Arrays, loops, counters, conditions and earlier concepts. Includes new 'missing line' pseudocode items.",
+      "description": "Arrays, loops, counters, conditions and earlier concepts.",
       "locked": false,
       "questions": [
         {
