@@ -2027,21 +2027,19 @@
           "hint": "Think about when the loop should stop removing values."
         },
         {
-          "id": "w10-q10",
-          "question": "Pseudocode — what does the array numbers contain at the end?",
+          "id": "w11-q10",
+          "question": "Why is mapping often used when turning a sensor value into a brightness or beep-speed?",
           "type": "multiple-choice",
-          "codeLabel": "Pseudocode",
-          "code": "SET numbers TO []\nFOR I FROM 1 TO 4\n    add i*i to numbers\nEND",
           "options": [
-            "[1, 2, 3, 4]",
-            "[1, 4, 9, 16]",
-            "[2, 4, 6, 8]",
-            "[1, 3, 5, 7]"
+            "Because the output device usually works in a different range than the sensor",
+            "Because mapping makes the sensor measure distance more accurately",
+            "Because sensors do not work unless they are mapped first",
+            "Because mapping automatically removes incorrect readings"
           ],
-          "correct": 1,
-          "explanation": "For i = 1,2,3,4 we add 1,4,9,16 to the array.",
-          "difficulty": "medium-hard",
-          "hint": "i*i means i multiplied by itself."
+          "correct": 0,
+          "explanation": "Mapping converts one range of numbers (for example, a sensor reading) into another range that an output device understands (like brightness 0–255 or timing). It does not fix accuracy or errors.",
+          "difficulty": "medium",
+          "hint": "Think about the *output* device, not the sensor."
         },
         {
           "id": "w10-q11",
