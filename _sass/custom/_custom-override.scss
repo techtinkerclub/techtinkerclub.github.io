@@ -142,3 +142,35 @@
 .ttc-footer-support .ttc-footer-link:hover {
   color: #ffffff;
 }
+
+
+/* ---- Floating Support Button (Mobile only) ---- */
+.ttc-floating-support {
+  display: none; /* hidden by default on desktop */
+}
+
+@media (max-width: 768px) {
+  .ttc-floating-support {
+    display: block;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background: #b72b2b;
+    color: #fff;
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    z-index: 9999;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .ttc-floating-support a {
+    color: #fff !important;
+    text-decoration: none;
+  }
+
+  .ttc-floating-support:hover {
+    background: #9f2424;
+  }
+}
