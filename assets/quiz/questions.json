@@ -2074,7 +2074,7 @@
           "difficulty": "medium"
         }
       ]
-    }
+    },
     "11": {
   "title": "Week 11: Ultrasonic Sensors & Mapping",
   "description": "Ultrasonic distance sensing, mapping and constrain, plus recap of variables, comparisons and loops.",
