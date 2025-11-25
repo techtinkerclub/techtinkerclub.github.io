@@ -90,4 +90,19 @@
   display: none !important;
 }
 
+/* Style the GoFundMe link in the top menu like a small button */
+.greedy-nav a[href*="gofund.me"] {
+  background: #b72b2b;
+  color: #fff !important;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.greedy-nav a[href*="gofund.me"]:hover {
+  background: #9f2424;
+  color: #fff !important;
+}
+
 
