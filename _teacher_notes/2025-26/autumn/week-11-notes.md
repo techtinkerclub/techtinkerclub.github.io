@@ -36,6 +36,19 @@ By the end of this session, participants should be able to:
 
 ---
 
+## Key Vocabulary
+- **Echolocation** — finding where things are by sending sound and listening for the echo.  
+- **Ultrasonic sensor** — an input device that sends high-frequency sound and listens for the reflection.  
+- **TRIG / ECHO** — the pins used to send the pulse (TRIG) and receive the echo (ECHO).  
+- **Extension** — an add-on pack in MakeCode that gives extra blocks for special hardware.  
+- **Mapping** — converting a number from one range into another (e.g. 10–300 → 100–1000).  
+- **Constrain** — keeping a value inside a chosen minimum and maximum range.  
+- **Input device** — something that gives the micro:bit information.  
+- **Output** — something the micro:bit does (sound, light, messages).
+- **Transducer** — a device that converts one type of energy into another (e.g., electrical energy into sound waves, or sound waves back into electrical signals).
+
+---
+
 ## Session Flow (≈ 80 min)
 
 1. **Starter & Context (10 min)** — echolocation in animals (bats, dolphins) and sonar in technology.  
@@ -264,8 +277,6 @@ Again, this pseudocode is for your guidance; children will build it using blocks
     <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://makecode.microbit.org/---codeembed#pub:S67741-95959-79621-04923" allowfullscreen="allowfullscreen" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
 </div>
-
-### TypeScript reference (Extension Project)
 
 
 ---
