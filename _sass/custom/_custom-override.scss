@@ -64,3 +64,15 @@
   font-size: 0.9rem;
 }
 
+/* Reduce big empty space above footer content */
+.page__footer {
+  padding-top: 0.25rem !important;
+}
+
+/* Remove extra padding Minimal Mistakes adds inside the footer area */
+.page__footer-follow,
+.page__footer-inner {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
