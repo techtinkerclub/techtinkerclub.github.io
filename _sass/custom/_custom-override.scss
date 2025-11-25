@@ -125,3 +125,20 @@
   font-size: 0.9rem;
 }
 
+/* ---- Minimalistic footer support line ---- */
+.ttc-footer-support {
+  text-align: center;
+  padding: 1rem 0 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+}
+
+.ttc-footer-support .ttc-footer-link {
+  margin-left: 0.5rem;
+  color: #ffd7d7; /* soft light red/pink */
+  font-weight: 600;
+}
+
+.ttc-footer-support .ttc-footer-link:hover {
+  color: #ffffff;
+}
