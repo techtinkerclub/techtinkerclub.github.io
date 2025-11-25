@@ -14,6 +14,7 @@ minimal_mistakes_skin: "contrast"
 plugins:
   - jekyll-feed
   - jekyll-include-cache
+  - jekyll-sitemap
 
 # Include _pages directory in the build
 include:
