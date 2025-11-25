@@ -14,6 +14,10 @@ main:
     url: /tools/
   - title: "Quizzes"
     url: /quiz/
+  - title: "Support Us"
+    url: "https://gofund.me/a52ab72b8"
+    external: true
+
 
 curriculum:
   - title: "Curriculum 2025–26"
