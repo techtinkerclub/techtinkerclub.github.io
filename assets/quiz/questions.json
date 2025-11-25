@@ -2097,18 +2097,20 @@
     },
     {
       "id": "w11-q2",
-      "question": "In pseudocode, what does this line do: SET delay TO map(distance, 10, 200, 100, 800)?",
+      "question": "In pseudocode, what does this block do?",
       "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "SET delay_ms TO MAP distance_cm\n    FROM 10 TO 300\n    INTO 100 TO 1000",
       "options": [
-        "It copies distance into delay without changing it",
-        "It adds 100 to the distance value",
-        "It checks whether distance is between 100 and 800",
+        "It copies distance_cm without changing it",
+        "It adds 100 to distance_cm",
+        "It checks whether distance_cm is between 100 and 1000",
         "It converts the distance range into a new range of delay values"
       ],
       "correct": 3,
-      "explanation": "map(distance, 10, 200, 100, 800) takes a value in the range 10–200 and finds its matching position in the new range 100–800. The shape (proportion) stays the same, the numbers change.",
+      "explanation": "MAP turns a value in one range into the matching value in a different range. Here, distance 10–300 cm becomes a delay 100–1000 ms.",
       "difficulty": "medium-hard",
-      "hint": "Think about changing from one range of values to another, like 0–100 into 0–4."
+      "hint": "Think: new range with the same proportion."
     },
     {
       "id": "w11-q3",
@@ -2174,10 +2176,10 @@
         "Keeps a value inside limits"
       ],
       "correctMatches": [
+        2,
+        4,
         1,
-        3,
-        0,
-        2
+        3
       ],
       "explanation": "Mapping converts a value from one range into a matching value in another range; constrain keeps a value inside a minimum and maximum; a variable stores a value that can change; a sensor reads data from the world.",
       "difficulty": "medium",
@@ -2185,10 +2187,10 @@
     },
     {
       "id": "w11-q7",
-      "question": "Pseudocode — what number is shown on the display?",
+      "question": "Pseudocode — what number is shown?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
-      "code": "SET x TO 5\nSET y TO map(x, 0, 10, 0, 100)\nSHOW NUMBER y",
+      "code": "SET x TO 5\nSET y TO MAP x\n    FROM 0 TO 10\n    INTO 0 TO 100\nSHOW NUMBER y",
       "options": [
         "5",
         "10",
@@ -2196,43 +2198,43 @@
         "100"
       ],
       "correct": 2,
-      "explanation": "x = 5 is exactly halfway between 0 and 10, so its mapped value y is halfway between 0 and 100, which is 50.",
+      "explanation": "5 is halfway between 0 and 10, so the mapped value is halfway between 0 and 100 → 50.",
       "difficulty": "medium-hard",
-      "hint": "Mapping keeps the position in the range the same (middle maps to middle)."
+      "hint": "MAP keeps the proportion the same."
     },
     {
       "id": "w11-q8",
-      "question": "Pseudocode — after constraining, what is the value of s?",
+      "question": "After constraining, what is the value of distance_cm?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
-      "code": "SET s TO 250\nSET s TO constrain(s, 0, 200)\nSHOW NUMBER s",
+      "code": "SET distance_cm TO 250\nSET distance_cm TO CONSTRAIN distance_cm BETWEEN 10 AND 300",
       "options": [
-        "0",
+        "10",
         "50",
         "250",
-        "200"
+        "300"
       ],
       "correct": 3,
-      "explanation": "The value 250 is above the upper limit of 200, so constrain changes s to 200. It cannot go higher than the maximum.",
+      "explanation": "250 is above the maximum of 300, so the constrained value becomes 300.",
       "difficulty": "medium",
-      "hint": "If a value is above the maximum limit, it is clipped down to that limit."
+      "hint": "Values above the maximum boundary are clipped to that maximum."
     },
     {
       "id": "w11-q9",
-      "question": "Which line correctly reads a sensor distance value into the variable distance before checking it?",
+      "question": "Which line correctly reads a sensor value into distance_cm before checking it?",
       "type": "missing-line",
       "codeLabel": "Pseudocode",
-      "code": "_____\nIF distance < 40 THEN\n    SHOW ICON \"skull\"\nEND IF",
+      "code": "_____\nIF distance_cm < 40 THEN\n    SHOW ICON \"skull\"\nEND IF",
       "options": [
-        "SET distance TO random 0 to 100",
-        "SET distance TO sensor_reading",
-        "SET sensor_reading TO distance",
-        "SET distance TO distance + 40"
+        "SET distance_cm TO random number from 0 to 100",
+        "SET distance_cm TO sensor_reading",
+        "SET sensor_reading TO distance_cm",
+        "SET distance_cm TO distance_cm + 40"
       ],
       "correct": 1,
-      "explanation": "We want to copy the latest reading from the sensor into the variable distance, so we can use it in the IF test. SET distance TO sensor_reading does exactly that.",
+      "explanation": "We must copy the latest sensor value into the variable before using it in a comparison.",
       "difficulty": "medium",
-      "hint": "Which line copies data from the sensor into the variable we are testing?"
+      "hint": "Which line copies data into distance_cm?"
     },
     {
       "id": "w11-q10",
