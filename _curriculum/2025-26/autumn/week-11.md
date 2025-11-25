@@ -124,14 +124,12 @@ Constraining kept the sensor values stable so the behaviour didn’t jump around
 ---
 
 ## Resources
-- **MakeCode Editor:**  
-  <https://makecode.microbit.org>{:target="_blank" rel="noopener"}
-- **Ultrasonic Distance Extension:**  
-  Added through the **Extensions** menu in MakeCode  
-- **Sample Projects:**  
-  Posted on the Week 11 page after the session  
-- **Echolocation Videos:**  
-  Linked on the page (bats, dolphins, sonar)
+- **MakeCode Editor:**  [Link](<https://makecode.microbit.org>){:target="_blank" rel="noopener"}  
+- **Ultrasonic Sensor - no extension:**  [Code](https://makecode.microbit.org/S35833-69730-32788-01921){:target="_blank" rel="noopener"}  
+- **Echolocation project - using extension**  [Code](https://makecode.microbit.org/S67741-95959-79621-04923){:target="_blank" rel="noopener"}  
+- **How Do Ultrasonic Distance Sensors Work?:**  [Video 1](https://youtu.be/2ojWO1QNprw?si=MehHW_xLUpUQP3BR){:target="_blank" rel="noopener"}  [Video 1](https://youtu.be/T11ptR8ICl4?si=xdOlQp6twNNjwH5k){:target="_blank" rel="noopener"}  
+- **What Is Echolocation? | BBC Earth Explore:**  [Video](https://youtu.be/l2py029bwhA?si=z4V8ZSb5NYGusdZI){:target="_blank" rel="noopener"}
+- **How does whale communication work? | TED-Ed :**  [Video](https://youtu.be/00Ar2_irvJk?si=ar3NRj7kyLp4a9T6){:target="_blank" rel="noopener"}
 
 ---
 
