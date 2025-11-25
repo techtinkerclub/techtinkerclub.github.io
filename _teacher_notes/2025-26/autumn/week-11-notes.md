@@ -160,6 +160,10 @@ Emphasise:
 - **You never set P1 HIGH in your code.**  
 - The sensor drives ECHO; the micro:bit only **measures** it.
 
+#### Sensor wiring
+
+![Ultrasonic Wiring Diagram](/assets/images/week-11/Ultrasonic-sensor-wiring.png)
+
 
 #### Explaining the “divide by 58” maths
 
