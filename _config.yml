@@ -33,7 +33,7 @@ collections:
     output: true
     permalink: /curriculum/:path/
   teacher_notes:
-    output: true      # <-- NEVER published to the live site
+    output: true      # built and accessible, but we'll noindex them via defaults
     permalink: /teacher-notes/:path/
 
 # Defaults
@@ -66,5 +66,13 @@ defaults:
         show_overlay_text: false
       sidebar:
         nav: "curriculum"
+
+  # C) Teacher Notes — build but do not index
+  - scope:
+      path: ""
+      type: "teacher_notes"
+    values:
+      sitemap: false    # exclude from sitemap.xml
+      robots: noindex   # add <meta name="robots" content="noindex">
 
 markdown: kramdown
