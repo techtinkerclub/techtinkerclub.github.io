@@ -2114,18 +2114,20 @@
     },
     {
       "id": "w11-q3",
-      "question": "Which statement about constrain(x, a, b) is true?",
+      "question": "Which statement about this pseudocode is true?",
       "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "SET x TO CONSTRAIN x BETWEEN 10 AND 100",
       "options": [
-        "It keeps x between a and b by limiting it to that range",
+        "It keeps x inside the range 10 to 100",
         "It randomly changes x on every loop",
-        "It only works if x is negative",
-        "It makes x increase by 1 each time"
+        "It only works when x is negative",
+        "It always sets x to 10, no matter what"
       ],
       "correct": 0,
-      "explanation": "constrain(x, a, b) forces the value x to stay inside the limits a and b. If x is smaller than a, it becomes a; if x is larger than b, it becomes b; otherwise it stays the same.",
+      "explanation": "CONSTRAIN forces the value to stay between a minimum and a maximum. If x is smaller than 10, it becomes 10; if bigger than 100, it becomes 100; otherwise it stays the same.",
       "difficulty": "medium",
-      "hint": "Imagine squeezing a value so it cannot go below the minimum or above the maximum."
+      "hint": "Think of CONSTRAIN as squeezing a value into a safe range."
     },
     {
       "id": "w11-q4",
@@ -2146,18 +2148,18 @@
     },
     {
       "id": "w11-q5",
-      "question": "Why is dividing the echo time by 58 commonly used in ultrasonic distance formulas?",
+      "question": "When using an ultrasonic distance sensor in a program, why might you ignore readings where distance_cm is 0 or much bigger than the maximum range (for example, 300 cm)?",
       "type": "multiple-choice",
       "options": [
-        "58 is just a random number chosen for convenience",
-        "It represents the number of LEDs on the micro:bit",
-        "It converts the echo time from microseconds into centimetres for the distance",
-        "It slows down the program so humans can read the values"
+        "Because 0 and very big numbers are always the safest values",
+        "Because the sensor can only send 0 or 300, nothing in between",
+        "Because ignoring them makes the sensor completely turn off",
+        "Because those readings often mean 'no echo' or 'out of range', not a real distance"
       ],
-      "correct": 2,
-      "explanation": "Sound travels at about 340 m/s (about 0.034 cm per microsecond). Because the pulse goes out and back, the distance calculation uses a constant that is approximately 58 to convert round-trip time to one-way distance in centimetres.",
-      "difficulty": "hard",
-      "hint": "Think physics: speed of sound, time and distance are linked."
+      "correct": 3,
+      "explanation": "If the sensor does not get a proper echo back, it may report 0 or a very large value. These are usually 'no reading' or 'out of range' values, not real distances, so programs often ignore them.",
+      "difficulty": "medium-hard",
+      "hint": "Think about what happens if the sound never comes back to the sensor."
     },
     {
       "id": "w11-q6",
