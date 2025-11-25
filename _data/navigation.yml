@@ -8,8 +8,9 @@ main:
     url: /curriculum/
   - title: "Gallery"
     url: /gallery/
-  - title: "Projects"
-    url: /projects/
+  # Temporarily remove Projects from the top nav (page can stay published)
+  # - title: "Projects"
+  # url: /projects/
   - title: "Tools & Tutorials"
     url: /tools/
   - title: "Quizzes"
