@@ -76,6 +76,7 @@ These help keep the beeping smooth and realistic.
 - **Constrain** — keeping a value inside a chosen minimum and maximum range.  
 - **Input device** — something that gives the micro:bit information.  
 - **Output** — something the micro:bit does (sound, light, messages).
+- **Transducer** — a device that converts one type of energy into another (e.g., electrical energy into sound waves, or sound waves back into electrical signals).
 
 ---
 
