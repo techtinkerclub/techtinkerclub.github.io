@@ -2075,5 +2075,225 @@
         }
       ]
     }
+    "11": {
+  "title": "Week 11: Ultrasonic Sensors & Mapping",
+  "description": "Ultrasonic distance sensing, mapping and constrain, plus recap of variables, comparisons and loops.",
+  "locked": false,
+  "questions": [
+    {
+      "id": "w11-q1",
+      "question": "What does an ultrasonic sensor measure?",
+      "type": "multiple-choice",
+      "options": [
+        "Temperature of the room",
+        "Distance by timing an echo",
+        "Brightness of light in the area",
+        "How fast the micro:bit is shaking"
+      ],
+      "correct": 1,
+      "explanation": "An ultrasonic sensor measures how long a sound pulse takes to go out, bounce off an object, and come back. From that time, the program can calculate distance.",
+      "difficulty": "medium",
+      "hint": "Think of how bats use sound to locate things in the dark."
+    },
+    {
+      "id": "w11-q2",
+      "question": "In pseudocode, what does this line do: SET delay TO map(distance, 10, 200, 100, 800)?",
+      "type": "multiple-choice",
+      "options": [
+        "It copies distance into delay without changing it",
+        "It adds 100 to the distance value",
+        "It checks whether distance is between 100 and 800",
+        "It converts the distance range into a new range of delay values"
+      ],
+      "correct": 3,
+      "explanation": "map(distance, 10, 200, 100, 800) takes a value in the range 10–200 and finds its matching position in the new range 100–800. The shape (proportion) stays the same, the numbers change.",
+      "difficulty": "medium-hard",
+      "hint": "Think about changing from one range of values to another, like 0–100 into 0–4."
+    },
+    {
+      "id": "w11-q3",
+      "question": "Which statement about constrain(x, a, b) is true?",
+      "type": "multiple-choice",
+      "options": [
+        "It keeps x between a and b by limiting it to that range",
+        "It randomly changes x on every loop",
+        "It only works if x is negative",
+        "It makes x increase by 1 each time"
+      ],
+      "correct": 0,
+      "explanation": "constrain(x, a, b) forces the value x to stay inside the limits a and b. If x is smaller than a, it becomes a; if x is larger than b, it becomes b; otherwise it stays the same.",
+      "difficulty": "medium",
+      "hint": "Imagine squeezing a value so it cannot go below the minimum or above the maximum."
+    },
+    {
+      "id": "w11-q4",
+      "question": "Choose the line that correctly checks if a distance reading is too close.",
+      "type": "missing-line",
+      "codeLabel": "Pseudocode",
+      "code": "SET d TO sensor_reading\nIF ______ THEN\n    SHOW TEXT \"Close!\"\nEND IF",
+      "options": [
+        "d < 20",
+        "d = 20 or 30",
+        "d > 200 and d < 10",
+        "d remainder of 2 = 0"
+      ],
+      "correct": 0,
+      "explanation": "The test d < 20 becomes true when the distance is less than 20 units (for example, centimetres), which is a good way to flag that something is very near.",
+      "difficulty": "medium-hard",
+      "hint": "Which condition means “nearer than a limit” rather than “bigger than a limit”?"
+    },
+    {
+      "id": "w11-q5",
+      "question": "Why is dividing the echo time by 58 commonly used in ultrasonic distance formulas?",
+      "type": "multiple-choice",
+      "options": [
+        "58 is just a random number chosen for convenience",
+        "It represents the number of LEDs on the micro:bit",
+        "It converts the echo time from microseconds into centimetres for the distance",
+        "It slows down the program so humans can read the values"
+      ],
+      "correct": 2,
+      "explanation": "Sound travels at about 340 m/s (about 0.034 cm per microsecond). Because the pulse goes out and back, the distance calculation uses a constant that is approximately 58 to convert round-trip time to one-way distance in centimetres.",
+      "difficulty": "hard",
+      "hint": "Think physics: speed of sound, time and distance are linked."
+    },
+    {
+      "id": "w11-q6",
+      "question": "Match each term to what it does.",
+      "type": "drag-drop",
+      "terms": [
+        "mapping",
+        "constrain",
+        "variable",
+        "sensor"
+      ],
+      "definitions": [
+        "Stores a changing value",
+        "Converts one range to another",
+        "Reads information from the environment",
+        "Keeps a value inside limits"
+      ],
+      "correctMatches": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explanation": "Mapping converts a value from one range into a matching value in another range; constrain keeps a value inside a minimum and maximum; a variable stores a value that can change; a sensor reads data from the world.",
+      "difficulty": "medium",
+      "hint": "Think: who senses, who remembers, who squeezes values, who rescales them."
+    },
+    {
+      "id": "w11-q7",
+      "question": "Pseudocode — what number is shown on the display?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "SET x TO 5\nSET y TO map(x, 0, 10, 0, 100)\nSHOW NUMBER y",
+      "options": [
+        "5",
+        "10",
+        "50",
+        "100"
+      ],
+      "correct": 2,
+      "explanation": "x = 5 is exactly halfway between 0 and 10, so its mapped value y is halfway between 0 and 100, which is 50.",
+      "difficulty": "medium-hard",
+      "hint": "Mapping keeps the position in the range the same (middle maps to middle)."
+    },
+    {
+      "id": "w11-q8",
+      "question": "Pseudocode — after constraining, what is the value of s?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "SET s TO 250\nSET s TO constrain(s, 0, 200)\nSHOW NUMBER s",
+      "options": [
+        "0",
+        "50",
+        "250",
+        "200"
+      ],
+      "correct": 3,
+      "explanation": "The value 250 is above the upper limit of 200, so constrain changes s to 200. It cannot go higher than the maximum.",
+      "difficulty": "medium",
+      "hint": "If a value is above the maximum limit, it is clipped down to that limit."
+    },
+    {
+      "id": "w11-q9",
+      "question": "Which line correctly reads a sensor distance value into the variable distance before checking it?",
+      "type": "missing-line",
+      "codeLabel": "Pseudocode",
+      "code": "_____\nIF distance < 40 THEN\n    SHOW ICON \"skull\"\nEND IF",
+      "options": [
+        "SET distance TO random 0 to 100",
+        "SET distance TO sensor_reading",
+        "SET sensor_reading TO distance",
+        "SET distance TO distance + 40"
+      ],
+      "correct": 1,
+      "explanation": "We want to copy the latest reading from the sensor into the variable distance, so we can use it in the IF test. SET distance TO sensor_reading does exactly that.",
+      "difficulty": "medium",
+      "hint": "Which line copies data from the sensor into the variable we are testing?"
+    },
+    {
+      "id": "w11-q10",
+      "question": "A program maps distance to LED brightness. Why is mapping needed here?",
+      "type": "multiple-choice",
+      "options": [
+        "Because the LED grid only accepts values from 0 to 9",
+        "Because mapping automatically plays sound at the same time",
+        "Because brightness uses a different value range than distance",
+        "Because mapping prevents the program from crashing"
+      ],
+      "correct": 2,
+      "explanation": "Distance is usually measured in centimetres, while LED brightness uses a range like 0–255. Mapping scales the distance values into a range that the brightness setting can use.",
+      "difficulty": "hard",
+      "hint": "Think about how a value measured in centimetres can be turned into a brightness level."
+    },
+    {
+      "id": "w11-q11",
+      "question": "Match each comparison to a value that makes it true.",
+      "type": "drag-drop",
+      "terms": [
+        "d > 50",
+        "d < 10",
+        "d = 30",
+        "d ≠ 20"
+      ],
+      "definitions": [
+        "d is 3",
+        "d is 30",
+        "d is 60",
+        "d is 10"
+      ],
+      "correctMatches": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "explanation": "60 is greater than 50; 3 is less than 10; 30 equals 30; 10 is a value that is not 20.",
+      "difficulty": "medium",
+      "hint": "Mentally plug each value into the comparison and see if it makes the statement true."
+    },
+    {
+      "id": "w11-q12",
+      "question": "Pseudocode — how many increments happen in total?",
+      "type": "multiple-choice",
+      "codeLabel": "Pseudocode",
+      "code": "SET count TO 0\nSET readings TO [5, 18, 22, 8, 40]\nFOR EACH r IN readings DO\n    IF r < 20 THEN\n        CHANGE count BY 1\n    END IF\nEND\nSHOW NUMBER count",
+      "options": [
+        "1",
+        "2",
+        "4",
+        "3"
+      ],
+      "correct": 3,
+      "explanation": "Values less than 20 are 5, 18 and 8. That makes three increments of count, so the final value shown is 3.",
+      "difficulty": "medium-hard",
+      "hint": "Only count readings that are strictly smaller than 20, not equal to 20."
+    }
+  ]
+}
+
   }
 }
