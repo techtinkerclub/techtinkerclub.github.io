@@ -2163,7 +2163,7 @@
     },
     {
       "id": "w11-q6",
-      "question": "Match each term to what it does.",
+      "question": "Match each term to what it does in a program.",
       "type": "drag-drop",
       "terms": [
         "mapping",
@@ -2172,20 +2172,20 @@
         "sensor"
       ],
       "definitions": [
-        "Stores a changing value",
         "Converts one range to another",
-        "Reads information from the environment",
-        "Keeps a value inside limits"
+        "Keeps a value inside limits",
+        "Stores a changing value",
+        "Reads information from the environment"
       ],
       "correctMatches": [
-        2,
-        4,
+        0,
         1,
+        2,
         3
       ],
-      "explanation": "Mapping converts a value from one range into a matching value in another range; constrain keeps a value inside a minimum and maximum; a variable stores a value that can change; a sensor reads data from the world.",
+      "explanation": "Mapping converts a value from one range into a matching value in another range; CONSTRAIN keeps a value between a minimum and a maximum; a variable stores a value that can change; a sensor reads data from the outside world.",
       "difficulty": "medium",
-      "hint": "Think: who senses, who remembers, who squeezes values, who rescales them."
+      "hint": "Think: who rescales values, who squeezes them into a safe zone, who remembers them, and who senses the world."
     },
     {
       "id": "w11-q7",
@@ -2209,7 +2209,7 @@
       "question": "After constraining, what is the value of distance_cm?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
-      "code": "SET distance_cm TO 250\nSET distance_cm TO CONSTRAIN distance_cm BETWEEN 10 AND 300",
+      "code": "SET distance_cm TO 350\nSET distance_cm TO CONSTRAIN distance_cm BETWEEN 10 AND 300",
       "options": [
         "10",
         "50",
@@ -2217,26 +2217,26 @@
         "300"
       ],
       "correct": 3,
-      "explanation": "250 is above the maximum of 300, so the constrained value becomes 300.",
+      "explanation": "350 is above the maximum of 300, so the constrained value becomes 300.",
       "difficulty": "medium",
       "hint": "Values above the maximum boundary are clipped to that maximum."
     },
     {
       "id": "w11-q9",
-      "question": "Which line correctly reads a sensor value into distance_cm before checking it?",
+      "question": "Which line correctly reads a sensor distance value into distance_cm before checking it?",
       "type": "missing-line",
       "codeLabel": "Pseudocode",
       "code": "_____\nIF distance_cm < 40 THEN\n    SHOW ICON \"skull\"\nEND IF",
       "options": [
+        "SET distance_cm TO [distance sensor reading]",
         "SET distance_cm TO random number from 0 to 100",
-        "SET distance_cm TO sensor_reading",
-        "SET sensor_reading TO distance_cm",
+        "SET [distance sensor reading] TO distance_cm",
         "SET distance_cm TO distance_cm + 40"
       ],
-      "correct": 1,
-      "explanation": "We must copy the latest sensor value into the variable before using it in a comparison.",
+      "correct": 0,
+      "explanation": "We must copy the latest reading from the sensor into the variable distance_cm so that the IF test uses the current value. In TTC pseudocode, sensor values are written in square brackets, like [distance sensor reading].",
       "difficulty": "medium",
-      "hint": "Which line copies data into distance_cm?"
+      "hint": "Which line brings information from the sensor into the variable we are testing?"
     },
     {
       "id": "w11-q10",
@@ -2258,9 +2258,9 @@
       "question": "Match each comparison to a value that makes it true.",
       "type": "drag-drop",
       "terms": [
-        "d > 50",
         "d < 10",
         "d = 30",
+        "d > 50",
         "d ≠ 20"
       ],
       "definitions": [
@@ -2270,18 +2270,18 @@
         "d is 10"
       ],
       "correctMatches": [
-        2,
         0,
         1,
+        2,
         3
       ],
-      "explanation": "60 is greater than 50; 3 is less than 10; 30 equals 30; 10 is a value that is not 20.",
+      "explanation": "3 is less than 10; 30 equals 30; 60 is greater than 50; 10 is a value that is not 20.",
       "difficulty": "medium",
-      "hint": "Mentally plug each value into the comparison and see if it makes the statement true."
+      "hint": "Try plugging each value into the comparison and see if it is true."
     },
     {
       "id": "w11-q12",
-      "question": "Pseudocode — how many increments happen in total?",
+      "question": "Pseudocode — how many increments of 'count' variable happen in total?",
       "type": "multiple-choice",
       "codeLabel": "Pseudocode",
       "code": "SET count TO 0\nSET readings TO [5, 18, 22, 8, 40]\nFOR EACH r IN readings DO\n    IF r < 20 THEN\n        CHANGE count BY 1\n    END IF\nEND\nSHOW NUMBER count",
