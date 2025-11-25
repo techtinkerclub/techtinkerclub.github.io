@@ -84,3 +84,10 @@
   color: rgba(255,255,255,0.85);   /* slightly softer */
 }
 
+/* Hide default Minimal Mistakes footer bits we don't need */
+.page__footer-follow,
+.page__footer-copyright {
+  display: none !important;
+}
+
+
