@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Contact Tech Tinker Club"
+title: ""
 permalink: /contact/
 ---
 
