@@ -105,4 +105,23 @@
   color: #fff !important;
 }
 
+/* Softer Support Us button in nav */
+.greedy-nav a[href*="gofund.me"] {
+  background: #b72b2b;
+  color: #fff !important;
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px;
+  font-weight: 600;
+  line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.greedy-nav a[href*="gofund.me"]:hover {
+  background: #9f2424;
+  color: #fff !important;
+}
+
+.greedy-nav a[href*="gofund.me"] {
+  font-size: 0.9rem;
+}
 
