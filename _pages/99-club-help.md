@@ -9,7 +9,7 @@ header:
   show_overlay_text: false
 ---
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=11">
+<link rel="stylesheet" href="/assets/99club/99club.css?v=12">
 
 <div class="tt99-guide">
   <div class="tt99-guide-hero">
@@ -52,6 +52,8 @@ header:
     <p>You can replace the same question more than once. Studio remembers only the <strong>final reviewed worksheet</strong> for recreation purposes; it does not keep every discarded question in the QR code.</p>
     <p><b>Shuffle questions</b> changes the order without changing the challenge rules. If you later recreate the sheet using its Full recreation code or teacher QR, the final reviewed order is restored.</p>
     <p>The level is shown by its <strong>achievement badge in the top-right of the sheet</strong>. The badge replaces the old repeated text title, so the worksheet stays cleaner while the child can still see immediately which stage they are working on.</p>
+    <p><strong>The preview uses the same page layout routine as the downloaded PDF.</strong> Headers, QR panel, question positions, column spacing and footer therefore use the same A4 coordinates. A browser and a PDF viewer may anti-alias text slightly differently, but the page geometry is the same.</p>
+    <p>On a phone, Studio keeps the real page proportions instead of squeezing the worksheet into the screen width. The preview is shown at a readable size inside a horizontal scroller; swipe sideways to inspect the rest of a portrait or landscape page. Tap a question to reveal its ↻ replacement control.</p>
   </section>
 
   <section id="schemes" class="tt99-guide-section">

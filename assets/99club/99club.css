@@ -100,3 +100,23 @@
 .tt99-paper.is-landscape .tt99-paper-title .tt99-paper-title--single{font-size:clamp(9.2px,.94vw,12.1px)}
 .tt99-paper.is-landscape .tt99-paper-teacher.is-no-qr{min-height:0;margin:.45% 0 .55%;padding:.52% 1%}
 @media(max-width:760px){.tt99-paper-teacher.is-no-qr>div:first-child{display:flex;flex-direction:column;gap:1px}.tt99-paper-teacher.is-no-qr b{align-self:flex-start}}
+
+/* v1.11: preview is drawn from the same vector layout routine as the generated PDF. */
+.tt99-preview-wrap{overflow:auto;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable both-edges}
+.tt99-paper.tt99-paper-svg{display:block!important;position:relative;margin:0 auto;padding:0!important;height:auto!important;max-width:none;overflow:visible!important;background:#fff;box-shadow:0 4px 18px rgba(28,48,56,.18);font-family:Helvetica,Arial,sans-serif}
+.tt99-paper.tt99-paper-svg.is-portrait{width:min(100%,760px);aspect-ratio:auto}
+.tt99-paper.tt99-paper-svg.is-landscape{width:min(100%,1040px);aspect-ratio:auto}
+.tt99-svg-row-hit{pointer-events:all}
+.tt99-svg-replace{opacity:0;cursor:pointer;transition:opacity .12s ease}
+.tt99-svg-replace circle{fill:#eaf4f2;stroke:#a9d1cb;stroke-width:.65}
+.tt99-svg-replace text{font:700 9.5px Helvetica,Arial,sans-serif;fill:#147d75;pointer-events:none}
+.tt99-svg-row-review:hover .tt99-svg-replace,.tt99-svg-row-review:focus .tt99-svg-replace,.tt99-svg-row-review:focus-within .tt99-svg-replace,.tt99-svg-row-review.is-review-active .tt99-svg-replace,.tt99-svg-replace:focus{opacity:1;outline:none}
+.tt99-preview-mobile-hint{display:none!important}
+@media(max-width:760px){
+  .tt99-preview-wrap{padding:5px;overscroll-behavior-x:contain}
+  #tt99-root .tt99-paper.tt99-paper-svg.is-portrait{width:500px!important;min-width:500px!important}
+  #tt99-root .tt99-paper.tt99-paper-svg.is-landscape{width:720px!important;min-width:720px!important}
+  .tt99-preview-mobile-hint{display:block!important;margin-top:2px;color:#526a70!important;font-weight:700}
+  .tt99-svg-replace{opacity:0}
+}
+@media print{.tt99-svg-replace{display:none!important}.tt99-paper.tt99-paper-svg{box-shadow:none}}

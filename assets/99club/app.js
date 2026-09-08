@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.10';
+  const VERSION = '1.11';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const GENERATION_VERSION = 1;
@@ -100,6 +100,13 @@
   };
 
   root.addEventListener('click',e=>{
+    const reviewRow=e.target.closest('.tt99-svg-row-review');
+    if(reviewRow && !e.target.closest('[data-replace]')){
+      const wasActive=reviewRow.classList.contains('is-review-active');
+      root.querySelectorAll('.tt99-svg-row-review.is-review-active').forEach(row=>row.classList.remove('is-review-active'));
+      if(!wasActive)reviewRow.classList.add('is-review-active');
+      return;
+    }
     const help=e.target.closest('[data-help-key]');
     if(help){ e.preventDefault(); e.stopPropagation(); const key=help.dataset.helpKey; const pop=root.querySelector('#tt99-help-popover'); const same=help.getAttribute('aria-expanded')==='true' && pop && !pop.hidden; if(same)closeHelp(); else showHelp(help,key); return; }
     if(e.target.closest('.tt99-help-close')){e.preventDefault();closeHelp();return;}
@@ -524,28 +531,25 @@
   }
 
   function renderPreviewToolbar(){
-    return `<div class="tt99-preview-toolbar"><div><strong>Print preview</strong><span>${esc(state.previewAnswers?'Answer key':'Pupil worksheet')} · Use ↻ beside a question to replace it with another of the same type.</span></div><div class="tt99-preview-tabs">${state.sheets.map((s,i)=>`<button data-preview-variant="${i}" class="${i===state.previewVariant?'is-active':''}">Version ${String.fromCharCode(65+i)}</button>`).join('')}</div><div class="tt99-preview-mode"><button data-preview-mode="student" class="${!state.previewAnswers?'is-active':''}">Worksheet</button><button data-preview-mode="answers" class="${state.previewAnswers?'is-active':''}">Answers</button></div></div>`;
+    return `<div class="tt99-preview-toolbar"><div><strong>Print preview</strong><span>${esc(state.previewAnswers?'Answer key':'Pupil worksheet')} · Use ↻ beside a question to replace it with another of the same type.</span><span class="tt99-preview-mobile-hint">On a phone, swipe sideways to inspect the page. Tap a question to show its ↻ replacement control.</span></div><div class="tt99-preview-tabs">${state.sheets.map((s,i)=>`<button data-preview-variant="${i}" class="${i===state.previewVariant?'is-active':''}">Version ${String.fromCharCode(65+i)}</button>`).join('')}</div><div class="tt99-preview-mode"><button data-preview-mode="student" class="${!state.previewAnswers?'is-active':''}">Worksheet</button><button data-preview-mode="answers" class="${state.previewAnswers?'is-active':''}">Answers</button></div></div>`;
   }
 
   function renderPaper(){
-    const sheet = state.sheets[state.previewVariant];
-    if (!sheet) return '';
-    const r=state.rules, s=state.school;
-    const cols = L.getColumns(r.questionCount,state.orientation);
-    const rows = Math.ceil(r.questionCount / cols);
-    const identityMeta=[L.displayYear(s.yearGroup),L.displayClass(s.className),s.teacherName,s.worksheetDate?formatDate(s.worksheetDate):''].filter(Boolean).join(' · ');
-    const groups = Array.from({length:cols},(_,c)=>sheet.questions.slice(c*rows, Math.min((c+1)*rows,sheet.questions.length)));
-    const qrSvg=state.previewAnswers&&state.includeAnswerQr?qrSvgForVariant(state.previewVariant):'';
-    return `<article class="tt99-paper is-${state.orientation} cols-${cols} rows-${rows}" data-orientation="${state.orientation}" style="--paper-cols:${cols};--row-count:${rows}">
-      <header class="tt99-paper-head">
-        <div class="tt99-paper-identity"><div class="tt99-paper-logo">${s.logoDataUrl?`<img src="${s.logoDataUrl}" alt="">`:''}</div><div class="tt99-paper-identity-copy"><div class="tt99-paper-school">${esc(s.schoolName || 'School name')}</div>${identityMeta?`<div class="tt99-paper-classmeta">${esc(identityMeta)}</div>`:''}</div></div>
-        <div class="tt99-paper-title">${state.previewAnswers?'<h2>ANSWER KEY</h2><span>MENTAL MATHS CHALLENGE</span>':'<h2 class="tt99-paper-title--single">MENTAL MATHS CHALLENGE</h2>'}</div>
-        ${renderHeaderBadge()}
-      </header>
-      ${state.previewAnswers?`<div class="tt99-paper-teacher ${qrSvg?'':'is-no-qr'}"><div><b>Teacher answer copy</b><span>${qrSvg?'Scan to recreate this exact sheet in 99 Club Studio.':(state.includeAnswerQr?'QR omitted because the recreation data is too dense for reliable printing. Use the Full recreation code instead.':'Recreation QR is turned off for this PDF.')}</span><small>Sheet ${esc(sheet.code)}</small></div>${qrSvg?`<div class="tt99-paper-qr">${qrSvg}</div>`:''}</div>`:`<div class="tt99-paper-student"><span>Name <i></i></span><span>Score <i class="short"></i> / ${r.questionCount}</span></div><div class="tt99-paper-instructions">${esc(G.instructionText(r))}</div>`}
-      <div class="tt99-question-grid">${groups.map(group=>`<div class="tt99-question-col">${group.map(q=>`<div class="tt99-question ${String(q.prompt||'').length>22?'is-very-long':String(q.prompt||'').length>15?'is-long':''}" data-q="${q.number}"><b>${q.number}.</b><span>${esc(q.prompt)}</span>${state.previewAnswers?`<strong>${esc(q.answer)}</strong>`:'<i></i>'}<button type="button" data-replace="${q.number-1}" aria-label="Replace question ${q.number} with another ${esc(questionCategoryLabel(q))} question" title="Replace with another ${esc(questionCategoryLabel(q))} question">↻</button></div>`).join('')}</div>`).join('')}</div>
-      <footer class="tt99-paper-foot"><span>Sheet ${esc(sheet.code)}</span><span>Generated by Tech Tinker Club · 99 Club Studio</span></footer>
-    </article>`;
+    const sheet=state.sheets[state.previewVariant];
+    if(!sheet)return '';
+    let qrMatrix=null;
+    if(state.previewAnswers&&state.includeAnswerQr){
+      try{qrMatrix=qrResultForVariant(state.previewVariant)?.matrix||null;}catch(err){qrMatrix=null;}
+    }
+    return L.renderPreviewSvg({
+      rules:state.rules,
+      sheet,
+      school:state.school,
+      answers:state.previewAnswers,
+      orientation:state.orientation,
+      qrMatrix,
+      badgeUrl:badgeUrlForClub(state.clubId)
+    });
   }
   function bindEvents(){
     root.querySelector('#tt99-scheme')?.addEventListener('change',e=>selectScheme(e.target.value));
@@ -582,7 +586,7 @@
     root.querySelector('#tt99-sheet-code')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();recreateFromCode();}});
     root.querySelectorAll('[data-preview-variant]').forEach(btn=>btn.addEventListener('click',()=>{state.previewVariant=Number(btn.dataset.previewVariant);render();}));
     root.querySelectorAll('[data-preview-mode]').forEach(btn=>btn.addEventListener('click',()=>{state.previewAnswers=btn.dataset.previewMode==='answers';render();}));
-    root.querySelectorAll('[data-replace]').forEach(btn=>btn.addEventListener('click',()=>replaceOne(Number(btn.dataset.replace))));
+    root.querySelectorAll('[data-replace]').forEach(btn=>{btn.addEventListener('click',()=>replaceOne(Number(btn.dataset.replace)));btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();replaceOne(Number(btn.dataset.replace));}});});
     root.querySelector('#tt99-pdf-student')?.addEventListener('click',()=>downloadPDF('student'));
     root.querySelector('#tt99-pdf-answer')?.addEventListener('click',()=>downloadPDF('answers'));
     root.querySelector('#tt99-pdf-both')?.addEventListener('click',()=>downloadPDF('both'));
@@ -1074,7 +1078,7 @@
     try{const previous=JSON.parse(localStorage.getItem(PRE_RESTORE_KEY)||'null');if(!previous)throw new Error('missing');const current=fullBackupData();localStorage.setItem(PRE_RESTORE_KEY,JSON.stringify(current));applyBackupData(previous,'Last full-backup restore undone. The state you just replaced is now the safety snapshot, so you can swap back again if needed.');}catch(err){state.status='There is no usable pre-restore safety snapshot in this browser.';render();}
   }
 
-  function softRenderPaper(){ const wrap=root.querySelector('.tt99-preview-wrap'); if(wrap)wrap.innerHTML=renderPaper(); const paper=wrap?.querySelector('.tt99-paper'); paper?.querySelectorAll('[data-replace]').forEach(btn=>btn.addEventListener('click',()=>replaceOne(Number(btn.dataset.replace)))); }
+  function softRenderPaper(){ const wrap=root.querySelector('.tt99-preview-wrap'); if(wrap)wrap.innerHTML=renderPaper(); const paper=wrap?.querySelector('.tt99-paper'); paper?.querySelectorAll('[data-replace]').forEach(btn=>{btn.addEventListener('click',()=>replaceOne(Number(btn.dataset.replace)));btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();replaceOne(Number(btn.dataset.replace));}});}); }
 
   async function handleLogo(e){
     const file=e.target.files?.[0]; if(!file)return;

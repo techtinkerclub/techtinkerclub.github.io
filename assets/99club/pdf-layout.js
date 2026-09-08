@@ -118,6 +118,7 @@
         drawQuestionPrompt(page,promptX,y,q.prompt,fonts.question,ink,promptMaxW);
         if(answers) page.text(x+colW-6,y,String(q.answer),fonts.answer,{bold:true,align:'right',color:teal});
         else page.line(x+colW-answerLineW,y+2,x+colW-5,y+2,{color:[120,128,136],width:0.6});
+        if(typeof page.replaceButton==='function') page.replaceButton(x,top+rr*rowH,colW,rowH,idx,q.number);
       }
     }
 
@@ -232,6 +233,63 @@
     return `${d} ${months[m-1] || m} ${y}`;
   }
 
+  function svgEsc(value){
+    return String(value == null ? '' : value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function cssRgb(c){return `rgb(${c.map(v=>Math.max(0,Math.min(255,Number(v)||0))).join(',')})`;}
+
+  class SVGPreviewDocument{
+    constructor(imageSources={}){this.imageSources=imageSources;this.pages=[];}
+    addPage(options={}){
+      const orientation=normalizeOrientation(options.orientation);
+      const width=orientation==='landscape'?P.LANDSCAPE_W:P.PAGE_W;
+      const height=orientation==='landscape'?P.LANDSCAPE_H:P.PAGE_H;
+      const page=new SVGPreviewPage(width,height,this.imageSources);
+      this.pages.push(page);return page;
+    }
+  }
+  class SVGPreviewPage{
+    constructor(width,height,imageSources={}){this.width=width;this.height=height;this.images=imageSources;this.elements=[];this.replaceLayers=[];}
+    text(x,topY,text,size=10,opts={}){
+      const bold=!!opts.bold,width=P.estimateTextWidth(text,size,bold);let tx=x;
+      if(opts.align==='center')tx-=width/2;if(opts.align==='right')tx-=width;
+      const fill=opts.color?cssRgb(opts.color):'#000';
+      this.elements.push(`<text x="${tx.toFixed(2)}" y="${Number(topY).toFixed(2)}" font-family="Helvetica,Arial,sans-serif" font-size="${Number(size).toFixed(2)}" font-weight="${bold?700:400}" fill="${fill}">${svgEsc(text)}</text>`);
+      return width;
+    }
+    symbol(x,topY,code,size=10,opts={}){
+      const width=size*(Number(code)===214?.549:.6),fill=opts.color?cssRgb(opts.color):'#000';let tx=x;
+      if(opts.align==='center')tx-=width/2;if(opts.align==='right')tx-=width;
+      const glyph=Number(code)===214?'√':'?';
+      this.elements.push(`<text x="${tx.toFixed(2)}" y="${Number(topY).toFixed(2)}" font-family="Symbol,Helvetica,Arial,sans-serif" font-size="${Number(size).toFixed(2)}" fill="${fill}">${glyph}</text>`);return width;
+    }
+    line(x1,y1,x2,y2,opts={}){this.elements.push(`<line x1="${Number(x1).toFixed(2)}" y1="${Number(y1).toFixed(2)}" x2="${Number(x2).toFixed(2)}" y2="${Number(y2).toFixed(2)}" stroke="${opts.color?cssRgb(opts.color):'#000'}" stroke-width="${Number(opts.width||.7).toFixed(2)}"/>`);}
+    rect(x,topY,w,h,opts={}){
+      const fill=opts.fill?cssRgb(opts.fill):'none',stroke=opts.stroke?cssRgb(opts.stroke):'none';
+      this.elements.push(`<rect x="${Number(x).toFixed(2)}" y="${Number(topY).toFixed(2)}" width="${Number(w).toFixed(2)}" height="${Number(h).toFixed(2)}" fill="${fill}" stroke="${stroke}" stroke-width="${Number(opts.width||.7).toFixed(2)}"/>`);
+    }
+    image(x,topY,w,h,name='Im1'){
+      const href=this.images[name];if(!href)return;
+      this.elements.push(`<image x="${Number(x).toFixed(2)}" y="${Number(topY).toFixed(2)}" width="${Number(w).toFixed(2)}" height="${Number(h).toFixed(2)}" href="${svgEsc(href)}" preserveAspectRatio="xMidYMid meet"/>`);
+    }
+    replaceButton(x,topY,w,h,index,number){
+      const cy=topY+h*.5,cx=x-6,r=5.7;
+      this.replaceLayers.push(`<g class="tt99-svg-row-review" tabindex="0"><rect class="tt99-svg-row-hit" x="${Number(x).toFixed(2)}" y="${Number(topY).toFixed(2)}" width="${Number(w).toFixed(2)}" height="${Number(h).toFixed(2)}" fill="transparent"/><g class="tt99-svg-replace" data-replace="${Number(index)}" role="button" tabindex="0" aria-label="Replace question ${Number(number)} with another question of the same type"><circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${r}"/><text x="${cx.toFixed(2)}" y="${(cy+3.2).toFixed(2)}" text-anchor="middle">↻</text></g></g>`);
+    }
+    svg(classNames=''){
+      return `<svg class="tt99-paper tt99-paper-svg ${svgEsc(classNames)}" viewBox="0 0 ${this.width} ${this.height}" width="${this.width}" height="${this.height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Worksheet print preview"><rect width="100%" height="100%" fill="#fff"/>${this.elements.join('')}${this.replaceLayers.join('')}</svg>`;
+    }
+  }
+
+  function renderPreviewSvg(options={}){
+    const {rules,sheet,school={},answers=false,orientation='portrait',qrMatrix=null,badgeUrl=''}=options;
+    if(!sheet)return '';
+    const images={};if(school.logoDataUrl)images.logo=school.logoDataUrl;if(badgeUrl)images.badge=badgeUrl;
+    const doc=new SVGPreviewDocument(images);
+    drawPage(doc,rules,sheet,0,school,!!answers,orientation,qrMatrix,!!badgeUrl);
+    return doc.pages[0].svg(`${normalizeOrientation(orientation)==='landscape'?'is-landscape':'is-portrait'}`);
+  }
+
   function filename(rules,kind,orientation='portrait'){
     const r=G.normalizeRules(rules);
     const club=(r.name || `${r.questionCount}-Club`).replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'');
@@ -240,7 +298,7 @@
     return `${club}-${suffix}${layout}.pdf`;
   }
 
-  const api={buildDocument,drawPage,filename,formatDate,getColumns,getQuestionFonts,normalizeOrientation,displayYear,displayClass};
+  const api={buildDocument,drawPage,renderPreviewSvg,filename,formatDate,getColumns,getQuestionFonts,normalizeOrientation,displayYear,displayClass};
   if(typeof module!=='undefined' && module.exports) module.exports=api;
   global.TT99PDFLayout=api;
 }(typeof window!=='undefined'?window:globalThis));
