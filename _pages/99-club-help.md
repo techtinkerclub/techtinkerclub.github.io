@@ -9,7 +9,7 @@ header:
   show_overlay_text: false
 ---
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=5">
+<link rel="stylesheet" href="/assets/99club/99club.css?v=6">
 
 <div class="tt99-guide">
   <div class="tt99-guide-hero">
@@ -33,7 +33,7 @@ header:
     <a href="#weights">Weights</a>
     <a href="#fractions">Fractions</a>
     <a href="#percentages">Percentages</a>
-    <a href="#reproducibility">Sheet codes & settings</a>
+    <a href="#reproducibility">Saving & recreation</a>
   </nav>
 
   <section id="workflow" class="tt99-guide-section">
@@ -80,7 +80,7 @@ header:
         <tr><td>Diamond</td><td>Broad mixed mental maths including scaled facts, fractions of quantities and percentages</td></tr>
       </tbody>
     </table></div>
-    <p class="tt99-guide-small">These are generator presets, not claims of one universal school standard. Every challenge can be customised.</p>
+    <p class="tt99-guide-small">These are generator presets, not claims of one universal school standard. For the named Bronze–Diamond challenges, the defining core families and basic 1–12 multiplication/division facts stay enabled so the challenge keeps its meaning. You can still change weights, relevant ranges and optional extras, or save the result as a fully custom preset.</p>
   </section>
 
   <section id="rules" class="tt99-guide-section">
@@ -89,7 +89,7 @@ header:
       <article><h3>Number of questions</h3><p>The number of questions placed on the sheet. The page layout automatically adapts its columns and spacing.</p></article>
       <article><h3>Time limit</h3><p>The target completion time printed in the worksheet instructions. The TTC default is five minutes.</p></article>
       <article><h3>Perfect attempts to advance</h3><p>How many perfect scores should be achieved before moving to the next level. The TTC default is two.</p></article>
-      <article><h3>Question type</h3><p>Chooses the broad generator mode. <b>Mixed mental arithmetic</b> unlocks the family selector and lets different kinds of question appear on one sheet.</p></article>
+      <article><h3>Question type</h3><p>For 11–99 and custom presets, this chooses the broad generator mode. Named Bronze–Diamond challenges keep their defining structure fixed; use family weights, relevant ranges and optional extras to tune them, or save a custom preset for a completely different structure.</p></article>
       <article><h3>Independent / unaided</h3><p>Adds wording to the printed instructions telling pupils to work independently and without help.</p></article>
       <article><h3>Duplicate handling</h3><p>Exact duplicate prevention avoids identical questions where possible. Reversed duplicate prevention can also treat 3 × 7 and 7 × 3 as the same multiplication fact.</p></article>
     </div>
@@ -101,13 +101,13 @@ header:
     <p>Mixed mental-arithmetic sheets can combine the following families. Only enabled families are generated.</p>
     <div class="tt99-guide-family-grid">
       <article><h3>Addition / subtraction</h3><p>Whole-number arithmetic controlled by operand and answer limits. Negative subtraction answers can be enabled separately.</p></article>
-      <article><h3>Multiplication / division</h3><p>Uses selected times-table families and the factor/quotient range. Division facts are exact in these table-based families.</p></article>
+      <article><h3>Multiplication / division</h3><p>For 11–99 and custom presets, these use the selected tables and factor/quotient range. Named Bronze–Diamond challenges always use the full 1–12 basic fact set. Division facts are exact in these table-based families.</p></article>
       <article><h3>Missing numbers</h3><p>Facts such as <code>7 × ___ = 42</code> or <code>42 ÷ ___ = 7</code>. You can choose the operations and the allowed blank positions.</p></article>
       <article><h3>Squares / square roots / cubes</h3><p>Uses configurable base ranges. Square-root questions are constructed to have exact whole-number roots.</p></article>
       <article><h3>Order of operations</h3><p>Expressions combining selected operations, with optional brackets. The largest base number controls the basic size of the operands.</p></article>
-      <article><h3>Scaled multiplication / division</h3><p>Extends known facts by ×10, ×100 or ×1000, for example <code>6 × 70</code> or <code>4200 ÷ 60</code>.</p></article>
+      <article><h3>Scaled multiplication / division</h3><p>Extends known facts by ×10, ×100 or ×1000, for example <code>6 × 70</code> or <code>4200 ÷ 60</code>. Its base range is configured separately from the ordinary 1–12 multiplication/division facts.</p></article>
       <article><h3>Fractions / percentages of quantities</h3><p>Uses selected fractions or percentages and suitable whole quantities so the generated answer is a whole number.</p></article>
-      <article><h3>Additional advanced families</h3><p>Negative numbers, Roman numerals, angle facts and simple algebra can be enabled for schools that want a broader advanced challenge.</p></article>
+      <article><h3>Additional advanced families</h3><p>Negative numbers, Roman numerals, angle facts and simple algebra can be enabled for schools that want a broader advanced challenge. Roman numerals and algebra now have their own dedicated ranges rather than borrowing unrelated arithmetic/table settings.</p></article>
     </div>
   </section>
 
@@ -125,7 +125,7 @@ header:
 
   <section id="fractions" class="tt99-guide-section">
     <h2>Fractions of quantities</h2>
-    <p>The denominator selector controls which denominator families may be used. A button labelled <b>1/5</b> means “allow denominator 5”; it does <strong>not</strong> mean that every generated fraction is 1/5.</p>
+    <p>The denominator selector controls which denominator families may be used. A button labelled <b>5</b> means “allow denominator 5”; it does <strong>not</strong> mean that every generated fraction is 1/5.</p>
     <div class="tt99-guide-example"><span>If denominator 5 is selected, the pool can include:</span><code>1/5 of 60</code><code>2/5 of 45</code><code>3/5 of 80</code><code>4/5 of 35</code></div>
     <p>The current fraction-of-quantity generator uses <strong>proper fractions</strong>: the numerator is smaller than the denominator. It varies numerators, denominators and quantities so a sheet is not filled with one fraction type.</p>
     <p><strong>Custom denominators</strong> accept comma-separated whole numbers from 2 to 100, for example <code>13, 15, 20</code>. The quantity range controls the whole quantities available. Only combinations that produce whole-number answers are kept.</p>
@@ -140,18 +140,20 @@ header:
   </section>
 
   <section id="reproducibility" class="tt99-guide-section">
-    <h2>Equivalent versions, sheet codes and settings</h2>
+    <h2>Saving, recreation and moving between browsers</h2>
     <div class="tt99-guide-defs">
       <article><h3>Equivalent versions</h3><p>Create up to four sheets using the same rules but different generated questions. Matching answer keys use the same version code.</p></article>
-      <article><h3>Sheet code</h3><p>Every generated sheet has a reproducible code. Enter the printed code while the same rules are selected to recreate that generated version.</p></article>
-      <article><h3>Export settings</h3><p>Downloads a JSON settings file containing the current configuration, scheme/challenge edits and exact current worksheet versions.</p></article>
-      <article><h3>Import settings</h3><p>Loads a settings JSON produced by the generator. This is useful for moving a setup between browsers without creating an account.</p></article>
+      <article><h3>Short sheet code</h3><p>The short code printed on a worksheet records its deterministic seed/version. It is enough when the same built-in rules are available. If the challenge used edited or custom rules, the receiving browser also needs those rules.</p></article>
+      <article><h3>Portable recreation code</h3><p>This longer copy-and-paste code carries the active rules as well as the seed, so an edited/custom sheet can be recreated on another browser. If questions were manually replaced or shuffled, the exact question set is included too. The school logo is deliberately excluded.</p></article>
+      <article><h3>Current setup file</h3><p>Exports the current challenge configuration and exact worksheet versions to JSON. This is useful when you want to move or archive one setup.</p></article>
+      <article><h3>Full browser backup</h3><p>Backs up all custom presets, per-challenge edits, current exact sheets, personalisation and the current school logo. Use this before clearing site data or when moving the whole generator setup to another browser/device.</p></article>
+      <article><h3>Browser-saved data</h3><p>The generator uses local browser storage, not cookies. It normally survives an ordinary cache clear, but clearing site data/storage, private browsing, a different browser profile or a different device can remove it.</p></article>
     </div>
   </section>
 
   <section class="tt99-guide-section">
     <h2>Privacy and storage</h2>
-    <p>The generator runs client-side in the browser. School details and uploaded logos are processed locally for the worksheet and PDF. Browser storage is used to remember settings on that device.</p>
+    <p>The generator runs client-side in the browser. School details and uploaded logos are processed locally for the worksheet and PDF; nothing is sent to Tech Tinker Club. Browser storage is a convenience layer rather than cloud storage, so use the built-in full backup for anything you want to keep independently of the browser.</p>
     <p><a class="tt99-guide-back" href="/tools/99-club/">Back to the 99 Club Sheet Generator →</a></p>
   </section>
 </div>

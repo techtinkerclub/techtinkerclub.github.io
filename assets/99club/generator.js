@@ -287,7 +287,12 @@
     r.percentageChoices = normalizeNumberList(r.percentageChoices, [10,20,25,50,75], 1, 100);
     r.percentageQuantityMin = clampInt(r.percentageQuantityMin, 10, 5000, 20);
     r.percentageQuantityMax = clampInt(r.percentageQuantityMax, r.percentageQuantityMin, 5000, Math.max(500, r.percentageQuantityMin));
+    r.scaledBaseMin = clampInt(r.scaledBaseMin, 0, 100, r.factorMin);
+    r.scaledBaseMax = clampInt(r.scaledBaseMax, r.scaledBaseMin, 100, r.factorMax);
     r.scaledMultipliers = normalizeNumberList(r.scaledMultipliers, [10,100], 10, 1000);
+    r.romanMax = clampInt(r.romanMax, 1, 3999, Math.min(100, r.arithmeticMax));
+    r.algebraUnknownMax = clampInt(r.algebraUnknownMax, 1, 100, Math.min(20, r.arithmeticOperandMax));
+    r.algebraCoefficientMax = clampInt(r.algebraCoefficientMax, 2, 50, Math.min(12, r.factorMax));
     r.angleTotals = normalizeNumberList(r.angleTotals, [90,180,360], 1, 360);
     const validFamilies = Object.keys(FAMILY_LABELS);
     r.families = Array.isArray(r.families) ? [...new Set(r.families.filter(f => validFamilies.includes(f)))] : ['addition','subtraction','multiply','divide'];
@@ -486,7 +491,7 @@
 
   function buildScaledMultiplyPool(rules) {
     const out = [];
-    const bases = range(Math.max(2, rules.factorMin), rules.factorMax);
+    const bases = range(Math.max(2, rules.scaledBaseMin), rules.scaledBaseMax);
     const scales = rules.scaledMultipliers || [10,100];
     const legacyDefault = scales.length === 2 && scales[0] === 10 && scales[1] === 100;
     for (const a of bases) for (const b of bases) for (const sa of scales) {
@@ -502,7 +507,7 @@
 
   function buildScaledDividePool(rules) {
     const out = [];
-    const bases = range(Math.max(2, rules.factorMin), rules.factorMax);
+    const bases = range(Math.max(2, rules.scaledBaseMin), rules.scaledBaseMax);
     for (const divisor of bases) for (const quotient of bases) {
       for (const scale of (rules.scaledMultipliers || [10,100])) {
         const dividend = divisor * quotient * scale;
@@ -570,7 +575,7 @@
 
   function buildRomanNumeralPool(rules) {
     const out = [];
-    const max = Math.max(10, Math.min(100, rules.arithmeticMax));
+    const max = Math.max(10, Math.min(3999, rules.romanMax));
     for (let n = 1; n <= max; n += 1) {
       const roman=toRoman(n);
       out.push({ kind:'roman_numerals', prompt:`${roman} =`, answer:n, key:`rom:n:${n}` });
@@ -592,14 +597,14 @@
 
   function buildSimpleAlgebraPool(rules) {
     const out = [];
-    const xMax=Math.max(5,Math.min(20,rules.arithmeticOperandMax));
-    const cMax=Math.max(5,Math.min(12,rules.factorMax));
+    const xMax=Math.max(5,Math.min(100,rules.algebraUnknownMax));
+    const cMax=Math.max(5,Math.min(50,rules.algebraCoefficientMax));
     for(let x=1;x<=xMax;x+=1){
       for(let c=1;c<=cMax;c+=1){
         out.push({ kind:'simple_algebra', prompt:`x + ${c} = ${x+c}, x =`, answer:x, key:`alg:1:${x}:${c}` });
         if(x>c)out.push({ kind:'simple_algebra', prompt:`x - ${c} = ${x-c}, x =`, answer:x, key:`alg:2:${x}:${c}` });
       }
-      for(let m=2;m<=Math.min(12,rules.factorMax);m+=1){
+      for(let m=2;m<=rules.algebraCoefficientMax;m+=1){
         out.push({ kind:'simple_algebra', prompt:`${m}x = ${m*x}, x =`, answer:x, key:`alg:3:${x}:${m}` });
         const c=((x+m)%9)+1;
         out.push({ kind:'simple_algebra', prompt:`${m}x + ${c} = ${m*x+c}, x =`, answer:x, key:`alg:4:${x}:${m}:${c}` });

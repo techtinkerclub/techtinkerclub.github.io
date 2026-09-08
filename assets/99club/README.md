@@ -4,7 +4,7 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version 1.5 is a help-and-guidance pass on the frozen v1.4 generator. The maths engine and PDF engine are unchanged. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1/v1.2 baselines. Existing built-in Bronze-Diamond presets are also regression-tested so rule-editor work cannot silently alter their default sheets.
+Version 1.6 is a rule-relevance and portability pass on the frozen v1.5 baseline. Classic/post-99 default worksheet outputs and the PDF engine remain regression-frozen. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1/v1.2 baselines. Existing built-in Bronze-Diamond presets are also regression-tested so rule-editor work cannot silently alter their default sheets.
 
 The normal progression shown on first load is still:
 
@@ -17,7 +17,7 @@ with the TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. B
 - `generator.js` - Classic presets, optional 11-99 schemes, Bronze-Diamond presets, rule normalisation, reusable question-family generators, deterministic generation and balancing.
 - `simple-pdf.js` - dependency-free A4 PDF writer using standard PDF fonts, optional JPEG logos, portrait/landscape page sizes and a standard Symbol-font radical glyph for square roots.
 - `pdf-layout.js` - separate portrait and landscape worksheet/answer-key layouts.
-- `app.js` - UI state, personalisation, scheme selection, page-layout selection, contextual help popovers, custom presets, preview, local storage, settings import/export and PDF downloads.
+- `app.js` - UI state, personalisation, scheme selection, page-layout selection, contextual help, custom presets, exact-sheet browser persistence, portable recreation codes, full backup/restore, settings import/export and PDF downloads.
 - `99club.css` - responsive app, contextual help, guide-page and print-preview styling.
 - `../../_pages/99-club-help.md` - full Help & guide page at `/tools/99-club/help/`.
 
@@ -42,7 +42,7 @@ The main selector also includes:
 - **Platinum** - Gold content plus order of operations / brackets
 - **Diamond** - Platinum content plus scaled multiplication/division, fractions of quantities and percentages of quantities
 
-Post-99 naming/content is not universal between schools. These are TTC's researched, editable defaults built from common public patterns rather than copies of any school's fixed worksheet.
+Post-99 naming/content is not universal between schools. These are TTC's researched defaults built from common public patterns rather than copies of any school's fixed worksheet. In v1.6 their defining core content is protected: basic multiplication/division uses all 1–12 facts and core families cannot be switched off. Weights, relevant ranges and optional extras remain editable; saving as a custom preset unlocks a fully flexible structure.
 
 ## Reusable question families
 
@@ -66,8 +66,29 @@ Mixed mental-arithmetic presets can be composed from:
 - angle facts
 - simple algebra
 
-The rule editor can turn these families on/off and change their relative weighting. It also exposes relevant settings such as arithmetic operand/result limits, tables/factor ranges, missing-number operations and blank positions, square/cube ranges, BODMAS operations/brackets, scaled factors, fraction denominators and quantity ranges, percentage choices and quantity ranges, angle totals, negative subtraction answers, time limit and advancement attempts. Family weights show an estimated percentage and estimated number of questions for the current sheet.
+For custom/mixed presets the rule editor can turn families on/off and change their relative weighting. Named Bronze–Diamond challenges show their defining families as locked core content and allow optional extras. Relevant controls are separated by family: arithmetic operand/result limits; tables/factor ranges where table selection is meaningful; missing-number operations/blank positions; square/cube ranges; BODMAS operations/brackets; independent scaled base/scale ranges; fraction denominators/quantity ranges; percentage choices/quantity ranges; Roman-numeral maximum; algebra unknown/coefficient limits; angle totals; time limit and advancement attempts. Family weights show an estimated percentage and estimated number of questions for the current sheet.
 
+
+
+## v1.6 rule relevance and saved-data portability
+
+The advanced editor now hides or locks controls that do not make sense for a named challenge rather than offering flexibility that can silently change what that challenge means.
+
+- **Bronze–Diamond** always use the full 1–12 basic multiplication/division fact set. Their table selector and ordinary factor/quotient controls are therefore hidden.
+- **Silver–Diamond** keep the families that define the named challenge as locked core families. Their weights can still be changed and optional extra families can be added/removed. Saving the result as a custom preset creates a fully flexible version.
+- Scaled multiplication/division has its own `scaledBaseMin` / `scaledBaseMax`; it no longer borrows the ordinary table factor range.
+- Roman numerals have their own maximum value, and simple algebra has independent unknown/coefficient limits. This removes misleading cross-coupling between unrelated controls.
+- Existing v1.5 custom data migrates through normalisation: irrelevant old table/factor edits on named advanced challenges are discarded, while an old factor edit is preserved as the scaled range when scaled maths was actually part of that edited challenge.
+
+Browser persistence is also now explicit and portable:
+
+- Exact current worksheet versions (including manual replacements/shuffles) are stored in browser local storage and survive a normal page refresh.
+- A **portable recreation code** carries the active rules + seed. When manual question edits/shuffles exist, the exact question set is included. This solves the short-sheet-code limitation for edited/custom rules on another browser.
+- A **full browser backup** JSON includes custom presets, per-challenge edits, current exact sheets, personalisation and the current school logo.
+- A **current setup** JSON remains available as the smaller one-challenge transfer format.
+- Browser storage is local storage, not cookies. It should not be treated as permanent/cloud storage because clearing site data, using private browsing or moving browser/device can remove it.
+
+The short printed sheet code is intentionally unchanged for backward compatibility and PDF regression safety. It remains sufficient for unchanged built-in rules; use the portable recreation code or setup file for edited/custom rules.
 
 ## v1.5 help and guidance
 
@@ -110,11 +131,11 @@ Teachers can also edit rules in the browser and save their own custom presets lo
 
 ## Privacy
 
-No server is used. School/class details, custom presets and the optional school logo are handled in the browser. The logo is resized locally before being used in the preview/PDF.
+No server is used. School/class details, custom presets and the optional school logo are handled in the browser. The logo is resized locally before being used in the preview/PDF. Local browser storage is used only for convenience; full backup/restore provides a portable copy independent of that browser.
 
 ## Sheet reproducibility
 
-Each generated version has a sheet code derived from its deterministic seed. Equivalent versions use the same base seed with separate variant suffixes. A printed code can be entered in the UI to recreate an untouched generated sheet using the same rules. Exported settings also include the exact current question sets, so manual replacements/shuffles can be transferred exactly.
+Each generated version has a short sheet code derived from its deterministic seed. Equivalent versions use the same base seed with separate variant suffixes. The short code recreates an untouched generated sheet when the same rules are available. For portability across browsers when rules were edited/custom, v1.6 adds a self-contained recreation code. Current-setup files and full backups also preserve exact manual replacements/shuffles.
 
 ## Page layouts
 
