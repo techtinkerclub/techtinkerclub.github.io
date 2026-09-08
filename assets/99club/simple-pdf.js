@@ -47,11 +47,11 @@
   class PDFDocument {
     constructor() {
       this.pages = [];
-      this.image = null;
+      this.images = {};
     }
-    setJpeg(dataUrl, widthPx, heightPx) {
-      if (!dataUrl) { this.image = null; return; }
-      this.image = { bytes: dataUrlToBytes(dataUrl), width: widthPx, height: heightPx };
+    setJpeg(dataUrl, widthPx, heightPx, name = 'Im1') {
+      if (!dataUrl) { delete this.images[name]; return; }
+      this.images[name] = { bytes: dataUrlToBytes(dataUrl), width: widthPx, height: heightPx };
     }
     addPage(options = {}) {
       const orientation = options.orientation === 'landscape' ? 'landscape' : 'portrait';
@@ -73,11 +73,10 @@
       // shipping a webfont or external dependency. It is used only for the
       // optional post-99 square-root question family.
       const fontSymbolId = add('<< /Type /Font /Subtype /Type1 /BaseFont /Symbol >>');
-      let imageId = null;
-      if (this.image) {
-        const im = this.image;
-        imageId = add(`<< /Type /XObject /Subtype /Image /Width ${im.width} /Height ${im.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${im.bytes.length} >>\nstream\n${bytesToBinary(im.bytes)}\nendstream`);
-      }
+      const imageIds = {};
+      Object.entries(this.images).forEach(([name, im]) => {
+        imageIds[name] = add(`<< /Type /XObject /Subtype /Image /Width ${im.width} /Height ${im.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${im.bytes.length} >>\nstream\n${bytesToBinary(im.bytes)}\nendstream`);
+      });
       const pageIds = [];
       for (const entry of this.pages) {
         const cmds = Array.isArray(entry) ? entry : entry.cmds;
@@ -85,7 +84,8 @@
         const pageHeight = Array.isArray(entry) ? PAGE_H : entry.height;
         const stream = cmds.join('\n') + '\n';
         const contentId = add(`<< /Length ${stream.length} >>\nstream\n${stream}endstream`);
-        const resources = `<< /Font << /F1 ${fontRegularId} 0 R /F2 ${fontBoldId} 0 R /F3 ${fontSymbolId} 0 R >>${imageId ? ` /XObject << /Im1 ${imageId} 0 R >>` : ''} >>`;
+        const xObject = Object.keys(imageIds).length ? ` /XObject << ${Object.entries(imageIds).map(([name,id])=>`/${name} ${id} 0 R`).join(' ')} >>` : '';
+        const resources = `<< /Font << /F1 ${fontRegularId} 0 R /F2 ${fontBoldId} 0 R /F3 ${fontSymbolId} 0 R >>${xObject} >>`;
         const pageId = add(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${n(pageWidth)} ${n(pageHeight)}] /Resources ${resources} /Contents ${contentId} 0 R >>`);
         pageIds.push(pageId);
       }
@@ -152,9 +152,9 @@
       parts.push(opts.fill && opts.stroke ? 'B' : opts.fill ? 'f' : 'S');
       this.c.push(parts.join(' '));
     }
-    image(x, topY, w, h) {
+    image(x, topY, w, h, name = 'Im1') {
       const y = this.height - topY - h;
-      this.c.push(`q ${n(w)} 0 0 ${n(h)} ${n(x)} ${n(y)} cm /Im1 Do Q`);
+      this.c.push(`q ${n(w)} 0 0 ${n(h)} ${n(x)} ${n(y)} cm /${name} Do Q`);
     }
   }
 

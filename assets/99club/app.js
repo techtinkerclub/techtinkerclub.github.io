@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.8';
+  const VERSION = '1.9';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const GENERATION_VERSION = 1;
@@ -16,6 +16,11 @@
   const PRE_RESTORE_KEY = 'tt99-pre-restore-snapshot-v1';
   const Q = window.TT99QR;
   const ADVANCED_CHALLENGE_IDS = new Set(['bronze','silver','gold','platinum','diamond']);
+  const BADGE_IMAGE_BY_CLUB = {
+    '11':'11club.png','22':'22club.png','33':'33club.png','44':'44club.png','55':'55club.png','66':'66club.png','77':'77club.png','88':'88club.png','99':'99club.png',
+    bronze:'bronzeclub.png',silver:'silverclub.png',gold:'goldclub.png',platinum:'platinumclub.png',diamond:'diamondclub.png'
+  };
+  const badgeImageCache = new Map();
   const ALL_TABLES = Array.from({length:12},(_,i)=>i+1);
   const FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
   const FRACTION_DENOMINATOR_CHOICES = Array.from({length:11}, (_,i)=>i+2);
@@ -112,6 +117,14 @@
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function helpButton(key){ const item=HELP_TEXT[key]; if(!item)return ''; return `<button type="button" class="tt99-help-btn" data-help-key="${esc(key)}" aria-label="Help: ${esc(item[0])}" aria-expanded="false">?</button>`; }
   function helpLabel(text,key){ return `<span class="tt99-label-help"><span>${esc(text)}</span>${helpButton(key)}</span>`; }
+  function badgeFilenameForClub(clubId){ return BADGE_IMAGE_BY_CLUB[String(clubId||'').toLowerCase()] || ''; }
+  function badgeUrlForClub(clubId){ const file=badgeFilenameForClub(clubId); return file ? `/assets/99club/images/${file}` : ''; }
+  function currentBadgeName(){ return String(state.rules?.name || state.clubId || '99 Club'); }
+  function renderHeaderBadge(){
+    const url=badgeUrlForClub(state.clubId);
+    if(!url)return `<div class="tt99-paper-badge is-fallback"><span>${esc(currentBadgeName())}</span></div>`;
+    return `<div class="tt99-paper-badge"><img src="${esc(url)}" alt="${esc(currentBadgeName())} badge"></div>`;
+  }
   function showHelp(button,key){
     const item=HELP_TEXT[key], pop=root.querySelector('#tt99-help-popover'); if(!item||!pop)return;
     root.querySelectorAll('[data-help-key]').forEach(b=>b.setAttribute('aria-expanded','false'));
@@ -519,22 +532,20 @@
     const r=state.rules, s=state.school;
     const cols = L.getColumns(r.questionCount,state.orientation);
     const rows = Math.ceil(r.questionCount / cols);
-    const identityMeta=[L.displayYear(s.yearGroup),L.displayClass(s.className),s.teacherName].filter(Boolean).join(' · ');
-    const dateText=s.worksheetDate ? formatDate(s.worksheetDate) : '';
+    const identityMeta=[L.displayYear(s.yearGroup),L.displayClass(s.className),s.teacherName,s.worksheetDate?formatDate(s.worksheetDate):''].filter(Boolean).join(' · ');
     const groups = Array.from({length:cols},(_,c)=>sheet.questions.slice(c*rows, Math.min((c+1)*rows,sheet.questions.length)));
     const qrSvg=state.previewAnswers&&state.includeAnswerQr?qrSvgForVariant(state.previewVariant):'';
     return `<article class="tt99-paper is-${state.orientation} cols-${cols} rows-${rows}" data-orientation="${state.orientation}" style="--paper-cols:${cols};--row-count:${rows}">
       <header class="tt99-paper-head">
         <div class="tt99-paper-identity"><div class="tt99-paper-logo">${s.logoDataUrl?`<img src="${s.logoDataUrl}" alt="">`:''}</div><div class="tt99-paper-identity-copy"><div class="tt99-paper-school">${esc(s.schoolName || 'School name')}</div>${identityMeta?`<div class="tt99-paper-classmeta">${esc(identityMeta)}</div>`:''}</div></div>
-        <div class="tt99-paper-title"><h2>${esc(r.name || `${r.questionCount} Club`)}</h2><span>${state.previewAnswers?'ANSWER KEY':'MENTAL MATHS CHALLENGE'}</span></div>
-        <div class="tt99-paper-date">${dateText?esc(dateText):''}</div>
+        <div class="tt99-paper-title">${state.previewAnswers?'<h2>ANSWER KEY</h2><span>MENTAL MATHS CHALLENGE</span>':'<h2 class="tt99-paper-title--single">MENTAL MATHS CHALLENGE</h2>'}</div>
+        ${renderHeaderBadge()}
       </header>
       ${state.previewAnswers?`<div class="tt99-paper-teacher"><div><b>Teacher answer copy</b><span>${qrSvg?'Scan to recreate this exact sheet in 99 Club Studio.':(state.includeAnswerQr?'QR omitted because the recreation data is too dense for reliable printing. Use the Full recreation code instead.':'Recreation QR is turned off for this PDF.')}</span><small>Sheet ${esc(sheet.code)}</small></div>${qrSvg?`<div class="tt99-paper-qr">${qrSvg}</div>`:''}</div>`:`<div class="tt99-paper-student"><span>Name <i></i></span><span>Score <i class="short"></i> / ${r.questionCount}</span></div><div class="tt99-paper-instructions">${esc(G.instructionText(r))}</div>`}
       <div class="tt99-question-grid">${groups.map(group=>`<div class="tt99-question-col">${group.map(q=>`<div class="tt99-question ${String(q.prompt||'').length>22?'is-very-long':String(q.prompt||'').length>15?'is-long':''}" data-q="${q.number}"><b>${q.number}.</b><span>${esc(q.prompt)}</span>${state.previewAnswers?`<strong>${esc(q.answer)}</strong>`:'<i></i>'}<button type="button" data-replace="${q.number-1}" aria-label="Replace question ${q.number} with another ${esc(questionCategoryLabel(q))} question" title="Replace with another ${esc(questionCategoryLabel(q))} question">↻</button></div>`).join('')}</div>`).join('')}</div>
       <footer class="tt99-paper-foot"><span>Sheet ${esc(sheet.code)}</span><span>Generated by Tech Tinker Club · 99 Club Studio</span></footer>
     </article>`;
   }
-
   function bindEvents(){
     root.querySelector('#tt99-scheme')?.addEventListener('change',e=>selectScheme(e.target.value));
     root.querySelectorAll('[data-club]').forEach(btn=>btn.addEventListener('click',()=>selectClub(btn.dataset.club)));
@@ -979,20 +990,28 @@
     catch(err){state.status='That logo could not be read. Try a PNG or JPG.';render();}
   }
   function imageFileToJpeg(file,maxSize){ return new Promise((resolve,reject)=>{ const img=new Image(); const url=URL.createObjectURL(file); img.onload=()=>{ const scale=Math.min(1,maxSize/Math.max(img.naturalWidth,img.naturalHeight)); const w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale)); const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);URL.revokeObjectURL(url);resolve({dataUrl:c.toDataURL('image/jpeg',0.9),width:w,height:h});};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('image'));};img.src=url;}); }
+  function imageUrlToJpeg(url,maxSize){ return new Promise((resolve,reject)=>{ const img=new Image(); img.crossOrigin='anonymous'; img.onload=()=>{ const scale=Math.min(1,maxSize/Math.max(img.naturalWidth,img.naturalHeight)); const w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale)); const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h); resolve({dataUrl:c.toDataURL('image/jpeg',0.92),width:w,height:h}); }; img.onerror=()=>reject(new Error('image')); img.src=url; }); }
+  async function badgeImageForPdf(){
+    const url=badgeUrlForClub(state.clubId);
+    if(!url)return null;
+    if(badgeImageCache.has(url)) return badgeImageCache.get(url);
+    try{ const result=await imageUrlToJpeg(url,360); badgeImageCache.set(url,result); return result; }
+    catch(err){ console.warn('Badge image unavailable',err); return null; }
+  }
 
-  function downloadPDF(kind){
+  async function downloadPDF(kind){
     if(state.rulesError){state.status=state.rulesError;render();return;}
     try {
       let qrOmitted=0;
       const qrByVariant=(state.includeAnswerQr && (kind==='answers'||kind==='both')) ? state.sheets.map((_,i)=>{
         try{return qrResultForVariant(i)?.matrix||null;}catch(err){console.warn('QR omitted for variant',i,err);qrOmitted++;return null;}
       }) : [];
-      const doc=L.buildDocument({rules:state.rules,sheets:state.sheets,school:state.school,kind,orientation:state.orientation,qrByVariant});
+      const badge=await badgeImageForPdf();
+      const doc=L.buildDocument({rules:state.rules,sheets:state.sheets,school:state.school,kind,orientation:state.orientation,qrByVariant,badge:badge?{imageDataUrl:badge.dataUrl,width:badge.width,height:badge.height}:{}});
       doc.save(L.filename(state.rules,kind,state.orientation));
       state.status=qrOmitted?`PDF created. ${qrOmitted} answer-sheet QR ${qrOmitted===1?'code was':'codes were'} omitted because the recreation data was too large.`:'PDF created.'; render();
     } catch(err){ console.error(err); state.status='PDF generation failed in this browser. Please refresh and try again.';render(); }
   }
-
   function exportSettings(){
     const data={
       kind:'tt99-current-setup',setupVersion:2,app:'Tech Tinker Club · 99 Club Studio',version:VERSION,generationVersion:GENERATION_VERSION,

@@ -11,48 +11,59 @@
   function normalizeOrientation(value){ return value === 'landscape' ? 'landscape' : 'portrait'; }
 
   function buildDocument(options){
-    const { rules, sheets, school={}, kind='student', qrByVariant=[] } = options;
+    const { rules, sheets, school={}, kind='student', qrByVariant=[], badge={} } = options;
     const orientation = normalizeOrientation(options.orientation);
     const doc = new P.PDFDocument();
-    if (school.logoDataUrl) doc.setJpeg(school.logoDataUrl, school.logoWidth, school.logoHeight);
-    if (kind === 'student' || kind === 'both') sheets.forEach((sheet,i)=>drawPage(doc,rules,sheet,i,school,false,orientation,null));
-    if (kind === 'answers' || kind === 'both') sheets.forEach((sheet,i)=>drawPage(doc,rules,sheet,i,school,true,orientation,qrByVariant[i]||null));
+    if (school.logoDataUrl) doc.setJpeg(school.logoDataUrl, school.logoWidth, school.logoHeight, 'logo');
+    if (badge.imageDataUrl) doc.setJpeg(badge.imageDataUrl, badge.width, badge.height, 'badge');
+    if (kind === 'student' || kind === 'both') sheets.forEach((sheet,i)=>drawPage(doc,rules,sheet,i,school,false,orientation,null,!!badge.imageDataUrl));
+    if (kind === 'answers' || kind === 'both') sheets.forEach((sheet,i)=>drawPage(doc,rules,sheet,i,school,true,orientation,qrByVariant[i]||null,!!badge.imageDataUrl));
     return doc;
   }
 
-  function drawPage(doc,rules,sheet,variantIndex,school,answers,orientation='portrait',qrMatrix=null){
+  function drawPage(doc,rules,sheet,variantIndex,school,answers,orientation='portrait',qrMatrix=null,hasBadge=false){
     orientation = normalizeOrientation(orientation);
     const landscape = orientation === 'landscape';
     const page=doc.addPage({orientation}), r=G.normalizeRules(rules), s=school || {};
     const W=landscape ? P.LANDSCAPE_W : P.PAGE_W;
-    const H=landscape ? P.LANDSCAPE_H : P.PAGE_H;
     const ink=[31,41,55], muted=[95,105,120], teal=[15,118,110], pale=[241,247,246], line=[202,211,215];
     const margin=landscape?34:36, right=W-margin;
 
-    // Compact identity/header: school identity left, challenge title centred, date right.
     const logoBox=landscape?34:40;
     const logoTop=landscape?17:20;
     let identityX=margin;
     if(s.logoDataUrl){
       const ratio=(s.logoWidth||1)/(s.logoHeight||1); let w=logoBox,h=logoBox;
       if(ratio>1)h=logoBox/ratio; else w=logoBox*ratio;
-      page.image(margin,logoTop+(logoBox-h)/2,w,h);
+      page.image(margin,logoTop+(logoBox-h)/2,w,h,'logo');
       identityX=margin+logoBox+9;
     }
-    const identityMax=landscape?235:160;
+    const badgeBox=landscape?45:54;
+    const badgeX=right-badgeBox;
+    const badgeTop=landscape?12:15;
+    if(hasBadge) page.image(badgeX,badgeTop,badgeBox,badgeBox,'badge');
+
+    const identityMax=(landscape?260:182)-(identityX-margin);
+    const titleRight=hasBadge ? badgeX-18 : right;
+    const titleLeft=Math.max(identityX+identityMax+12, margin+170);
+    const titleCenter=(titleLeft+titleRight)/2;
+
     if(s.schoolName){
       const schoolFit=fitText(s.schoolName,landscape?10.7:10.4,8.2,identityMax,true);
       page.text(identityX,landscape?30:34,schoolFit.text,schoolFit.size,{bold:true,color:ink});
     }
     const metadata=headerMetadata(s);
     if(metadata){
-      const metaFit=fitText(metadata,landscape?7.8:7.5,6.5,identityMax,false);
+      const metaFit=fitText(metadata,landscape?7.8:7.5,6.5,Math.max(100,identityMax+110),false);
       page.text(identityX,landscape?45:50,metaFit.text,metaFit.size,{color:muted});
     }
 
-    page.text(W/2,landscape?29:33,r.name || `${r.questionCount} Club`,landscape?22:23,{bold:true,align:'center',color:ink});
-    page.text(W/2,landscape?45:51,answers?'ANSWER KEY':'MENTAL MATHS CHALLENGE',landscape?7.8:7.8,{bold:true,align:'center',color:teal});
-    if(s.worksheetDate) page.text(right,landscape?30:34,formatDate(s.worksheetDate),landscape?8.6:8.7,{align:'right',color:muted});
+    if(answers){
+      page.text(titleCenter,landscape?28:32,'ANSWER KEY',landscape?18.5:19.5,{bold:true,align:'center',color:ink});
+      page.text(titleCenter,landscape?43:49,'MENTAL MATHS CHALLENGE',landscape?7.8:7.8,{bold:true,align:'center',color:teal});
+    }else{
+      page.text(titleCenter,landscape?34:38,'MENTAL MATHS CHALLENGE',landscape?13.2:13.7,{bold:true,align:'center',color:teal});
+    }
 
     const headerLineY=landscape?62:70;
     page.line(margin,headerLineY,right,headerLineY,{color:line,width:0.7});
@@ -81,7 +92,7 @@
     }
 
     const cols=getColumns(r.questionCount,orientation), rows=Math.ceil(r.questionCount/cols);
-    const colGap=landscape?18:18, contentW=right-margin, colW=(contentW-colGap*(cols-1))/cols;
+    const colGap=18, contentW=right-margin, colW=(contentW-colGap*(cols-1))/cols;
     const top=answers?(landscape?147:160):(landscape?134:151), footerLine=landscape?564:811, bottom=footerLine-12, available=bottom-top;
     const rowH=available/rows;
     const fonts=getQuestionFonts(r.questionCount,orientation);
@@ -155,8 +166,6 @@
 
   function getQuestionFonts(count,orientation){
     const landscape=normalizeOrientation(orientation)==='landscape';
-    // v1.8: prioritise the maths. Long prompts are fitted down individually by
-    // drawQuestionPrompt, so ordinary facts can use a noticeably larger base size.
     if(landscape){
       if(count<=11)return {question:15.5,number:10.0,answer:14.0};
       if(count<=22)return {question:14.1,number:9.6,answer:12.9};
@@ -185,7 +194,7 @@
     const v=String(value||'').trim(); if(!v)return '';
     return /^class\b/i.test(v)?v:`Class ${v}`;
   }
-  function headerMetadata(s){ return [displayYear(s.yearGroup),displayClass(s.className),String(s.teacherName||'').trim()].filter(Boolean).join(' · '); }
+  function headerMetadata(s){ return [displayYear(s.yearGroup),displayClass(s.className),String(s.teacherName||'').trim(),formatDate(s.worksheetDate)].filter(Boolean).join(' · '); }
 
   function fitText(text,startSize,minSize,maxWidth,bold){
     const raw=String(text||'');

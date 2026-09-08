@@ -65,3 +65,16 @@
 .tt99-question.is-long{font-size:.92em}.tt99-question.is-very-long{font-size:.82em}.tt99-question>button:focus-visible{opacity:1;outline:2px solid var(--tt99-teal);outline-offset:1px}
 
 @media (hover:none),(max-width:760px){.tt99-question>button{opacity:.72}.tt99-question:hover>i,.tt99-question:hover>strong{margin-right:22px}}
+
+/* v1.9: replace worksheet title with level badge in the top-right header */
+.tt99-paper-head{grid-template-columns:minmax(0,1.15fr) minmax(0,.95fr) auto;column-gap:1.8%;align-items:center}
+.tt99-paper-title{min-width:0}
+.tt99-paper-title h2{font-size:clamp(12px,1.4vw,19.5px);margin:0 0 3px;line-height:1.02;letter-spacing:-.02em}
+.tt99-paper-title .tt99-paper-title--single{font-size:clamp(10px,1.14vw,13.8px);letter-spacing:.06em;color:var(--tt99-teal)}
+.tt99-paper-title>span{letter-spacing:.12em}
+.tt99-paper-badge{justify-self:end;display:flex;align-items:center;justify-content:center;width:clamp(28px,5.4vw,54px);height:clamp(28px,5.4vw,54px);border-radius:10px;overflow:hidden}
+.tt99-paper-badge img{display:block;max-width:100%;max-height:100%;object-fit:contain}
+.tt99-paper-badge.is-fallback{padding:4px 6px;border:1px solid #d6e3e1;background:#f6fbfa;color:var(--tt99-teal-dark);font-size:clamp(5px,.55vw,7.4px);font-weight:800;line-height:1.15;text-align:center}
+.tt99-paper.is-landscape .tt99-paper-head{grid-template-columns:minmax(0,1.22fr) minmax(0,.88fr) auto;column-gap:1.5%}
+.tt99-paper.is-landscape .tt99-paper-badge{width:clamp(26px,4.4vw,45px);height:clamp(26px,4.4vw,45px)}
+.tt99-paper.is-landscape .tt99-paper-title .tt99-paper-title--single{font-size:clamp(9.8px,1.02vw,13.2px)}
