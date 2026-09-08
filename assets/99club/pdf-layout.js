@@ -1,4 +1,4 @@
-/* Tech Tinker Club 99 Club - print/PDF layout.
+/* Tech Tinker Club · 99 Club Studio - print/PDF layout.
  * Pure layout layer on top of simple-pdf.js; browser and Node friendly.
  * Portrait remains the default; landscape is a separate A4 layout using the same questions/seed.
  */
@@ -11,16 +11,16 @@
   function normalizeOrientation(value){ return value === 'landscape' ? 'landscape' : 'portrait'; }
 
   function buildDocument(options){
-    const { rules, sheets, school={}, kind='student' } = options;
+    const { rules, sheets, school={}, kind='student', qrByVariant=[] } = options;
     const orientation = normalizeOrientation(options.orientation);
     const doc = new P.PDFDocument();
     if (school.logoDataUrl) doc.setJpeg(school.logoDataUrl, school.logoWidth, school.logoHeight);
-    if (kind === 'student' || kind === 'both') sheets.forEach((sheet,i)=>drawPage(doc,rules,sheet,i,school,false,orientation));
-    if (kind === 'answers' || kind === 'both') sheets.forEach((sheet,i)=>drawPage(doc,rules,sheet,i,school,true,orientation));
+    if (kind === 'student' || kind === 'both') sheets.forEach((sheet,i)=>drawPage(doc,rules,sheet,i,school,false,orientation,null));
+    if (kind === 'answers' || kind === 'both') sheets.forEach((sheet,i)=>drawPage(doc,rules,sheet,i,school,true,orientation,qrByVariant[i]||null));
     return doc;
   }
 
-  function drawPage(doc,rules,sheet,variantIndex,school,answers,orientation='portrait'){
+  function drawPage(doc,rules,sheet,variantIndex,school,answers,orientation='portrait',qrMatrix=null){
     orientation = normalizeOrientation(orientation);
     const landscape = orientation === 'landscape';
     const page=doc.addPage({orientation}), r=G.normalizeRules(rules), s=school || {};
@@ -58,21 +58,31 @@
     page.line(margin,headerLineY,right,headerLineY,{color:line,width:0.7});
 
     const nameY=landscape?81:91;
-    const nameLineY=nameY+2;
-    page.text(margin,nameY,'Name',landscape?10:10.2,{bold:true,color:ink});
-    page.line(margin+(landscape?35:34),nameLineY,landscape?360:282,nameLineY,{color:muted,width:0.65});
-    const scoreX=landscape?535:345;
-    page.text(scoreX,nameY,'Score',landscape?10:10.2,{bold:true,color:ink});
-    page.line(scoreX+(landscape?39:38),nameLineY,scoreX+(landscape?105:101),nameLineY,{color:muted,width:0.65});
-    page.text(scoreX+(landscape?111:107),nameY,`/ ${r.questionCount}`,landscape?10:10.2,{color:muted});
-
     const instTop=landscape?93:105, instH=landscape?28:31;
-    page.rect(margin,instTop,right-margin,instH,{fill:pale,stroke:[222,232,230],width:0.6});
-    wrapText(page,G.instructionText(r),margin+10,instTop+(landscape?17:18),right-margin-20,landscape?8.8:9.1,landscape?9.5:10.2,{color:ink});
+    if(!answers){
+      const nameLineY=nameY+2;
+      page.text(margin,nameY,'Name',landscape?10:10.2,{bold:true,color:ink});
+      page.line(margin+(landscape?35:34),nameLineY,landscape?360:282,nameLineY,{color:muted,width:0.65});
+      const scoreX=landscape?535:345;
+      page.text(scoreX,nameY,'Score',landscape?10:10.2,{bold:true,color:ink});
+      page.line(scoreX+(landscape?39:38),nameLineY,scoreX+(landscape?105:101),nameLineY,{color:muted,width:0.65});
+      page.text(scoreX+(landscape?111:107),nameY,`/ ${r.questionCount}`,landscape?10:10.2,{color:muted});
+      page.rect(margin,instTop,right-margin,instH,{fill:pale,stroke:[222,232,230],width:0.6});
+      wrapText(page,G.instructionText(r),margin+10,instTop+(landscape?17:18),right-margin-20,landscape?8.8:9.1,landscape?9.5:10.2,{color:ink});
+    }else{
+      const panelTop=landscape?70:78, panelH=landscape?66:67;
+      page.rect(margin,panelTop,right-margin,panelH,{fill:pale,stroke:[222,232,230],width:0.6});
+      const qrSize=landscape?58:60;
+      const qrX=right-qrSize-7, qrTop=panelTop+(panelH-qrSize)/2;
+      page.text(margin+10,panelTop+(landscape?17:18),'Teacher answer copy',landscape?10.2:10.4,{bold:true,color:ink});
+      page.text(margin+10,panelTop+(landscape?33:35),qrMatrix?'Scan the QR to recreate this exact sheet in 99 Club Studio.':'Recreation QR not included. Use the Full recreation code if needed.',landscape?8.1:8.3,{color:ink});
+      page.text(margin+10,panelTop+(landscape?49:52),`Sheet ${sheet.code}`,landscape?7.5:7.7,{color:muted});
+      if(qrMatrix) drawQr(page,qrX,qrTop,qrSize,qrMatrix);
+    }
 
     const cols=getColumns(r.questionCount,orientation), rows=Math.ceil(r.questionCount/cols);
     const colGap=landscape?18:18, contentW=right-margin, colW=(contentW-colGap*(cols-1))/cols;
-    const top=landscape?134:151, footerLine=landscape?564:811, bottom=footerLine-12, available=bottom-top;
+    const top=answers?(landscape?147:160):(landscape?134:151), footerLine=landscape?564:811, bottom=footerLine-12, available=bottom-top;
     const rowH=available/rows;
     const fonts=getQuestionFonts(r.questionCount,orientation);
     const answerLineW=landscape?(r.questionCount>=77?38:44):(r.questionCount>=77?42:48);
@@ -92,8 +102,25 @@
 
     page.line(margin,footerLine,right,footerLine,{color:line,width:0.55});
     const footerY=footerLine+(landscape?14:15);
-    page.text(margin,footerY,`Sheet ${sheet.code} · Version ${String.fromCharCode(65+variantIndex)}`,landscape?7.2:7.3,{color:muted});
-    page.text(right,footerY,'Generated with Tech Tinker Club · techtinker.club',landscape?7.2:7.3,{align:'right',color:muted});
+    page.text(margin,footerY,`Sheet ${sheet.code}`,landscape?7.2:7.3,{color:muted});
+    page.text(right,footerY,'Generated by Tech Tinker Club · 99 Club Studio',landscape?7.2:7.3,{align:'right',color:muted});
+  }
+
+  function drawQr(page,x,topY,size,matrix){
+    if(!Array.isArray(matrix)||!matrix.length)return;
+    const n=matrix.length, quiet=4, total=n+quiet*2, module=size/total;
+    page.rect(x,topY,size,size,{fill:[255,255,255]});
+    for(let row=0;row<n;row++){
+      let start=-1;
+      for(let col=0;col<=n;col++){
+        const dark=col<n && !!matrix[row][col];
+        if(dark && start<0)start=col;
+        if(!dark && start>=0){
+          page.rect(x+(quiet+start)*module,topY+(quiet+row)*module,(col-start)*module,module,{fill:[0,0,0]});
+          start=-1;
+        }
+      }
+    }
   }
 
   function drawQuestionPrompt(page,x,y,prompt,size,color){

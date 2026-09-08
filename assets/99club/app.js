@@ -8,12 +8,30 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.6';
+  const VERSION = '1.7';
+  const APP_NAME = '99 Club Studio';
+  const APP_URL = 'https://techtinker.club/tools/99-club/';
+  const GENERATION_VERSION = 1;
+  const MAX_PRINT_QR_VERSION = 14;
+  const PRE_RESTORE_KEY = 'tt99-pre-restore-snapshot-v1';
+  const Q = window.TT99QR;
   const ADVANCED_CHALLENGE_IDS = new Set(['bronze','silver','gold','platinum','diamond']);
   const ALL_TABLES = Array.from({length:12},(_,i)=>i+1);
   const FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
   const FRACTION_DENOMINATOR_CHOICES = Array.from({length:11}, (_,i)=>i+2);
   const PERCENTAGE_STEP_CHOICES = Array.from({length:20}, (_,i)=>(i+1)*5);
+  const CODE_ALPHABET='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const SCHEME_CODE={classic:'C',addition_first:'AF',arithmetic_first:'AR',missing_number:'MN',tables_first:'TF'};
+  const ADVANCED_CODE={bronze:'BRZ',silver:'SLV',gold:'GLD',platinum:'PLT',diamond:'DIA'};
+  const ADVANCED_CODE_REV=Object.fromEntries(Object.entries(ADVANCED_CODE).map(([k,v])=>[v,k]));
+  const SCHEME_CODE_REV=Object.fromEntries(Object.entries(SCHEME_CODE).map(([k,v])=>[v,k]));
+  function randomStudioToken(length=6){
+    const bytes=new Uint8Array(length);
+    if(globalThis.crypto?.getRandomValues)globalThis.crypto.getRandomValues(bytes);
+    else for(let i=0;i<length;i++)bytes[i]=Math.floor(Math.random()*256);
+    let out='';for(const b of bytes)out+=CODE_ALPHABET[b%CODE_ALPHABET.length];return out;
+  }
+  function newStudioSeed(clubId){return `${clubId}-${randomStudioToken(6)}`;}
   const HELP_TEXT = {
     scheme: ['Ruleset scheme','A scheme changes the default 11–99 progression. Classic 99 Club is the standard starting point. Other schemes are optional alternatives; your edits are remembered separately for each scheme and challenge.'],
     challenge: ['Challenge','Choose the level you want to generate. Bronze, Silver, Gold, Platinum and Diamond are post-99 presets with progressively broader mental-maths content.'],
@@ -42,28 +60,31 @@
     percentageQuantity: ['Percentage quantity range','Sets the smallest and largest quantity used in percentage questions. Unsuitable combinations that would produce a non-whole answer are skipped.'],
     angleFacts: ['Angle facts','Generates missing-angle facts based on the selected totals: 90° for a right angle, 180° for a straight line, and 360° for a full turn.'],
     duplicates: ['Duplicate handling','“Exact duplicates” avoids the same question appearing twice where possible. Reversed multiplication duplicates treats facts such as 3 × 7 and 7 × 3 as the same fact.'],
-    savePreset: ['Save these rules','Stores the current rule combination as a custom challenge in this browser. It does not upload anything or alter the built-in preset.'],
+    savePreset: ['Save as reusable preset','Stores the current rule combination as a custom challenge in this browser. It does not upload anything or alter the built-in preset.'],
     resetChallenge: ['Reset this challenge','Restores only the currently selected scheme + challenge to its built-in default rules. Other edited challenges are kept.'],
     resetScheme: ['Reset scheme','Restores every edited 11–99 challenge in the selected scheme. It does not remove your saved custom presets.'],
     layout: ['Page layout','Portrait uses the traditional taller worksheet. Landscape uses the wider page to give questions more horizontal space and, where possible, larger working text. The maths and sheet code do not change.'],
     variants: ['Equivalent versions','Creates up to four equivalent sheets from the same rules. Each version has its own reproducible sheet code and matching answer key.'],
-    sheetCode: ['Sheet code','The code printed on each worksheet records the random seed and version. Enter it here with the same rules selected to recreate that exact generated version.'],
-    exportSettings: ['Export / import current setup','A setup file preserves the current challenge rules and exact worksheet versions. It is portable between browsers, but it is not a backup of every custom preset saved on this device.'],
+    sheetCode: ['Sheet code','New sheet codes are human-readable and versioned, for example C99-G1-7FK2M9-A. The challenge, generator generation and worksheet version are built into the code. An X after the challenge means edited/custom rules are required. Older sheet codes remain supported.'],
+    exportSettings: ['Export / import one setup','Exports the current challenge rules, exact worksheet versions and personalisation text to a portable JSON file. Use this when you want to archive or share one setup; use Full backup to protect everything saved in this browser.'],
     browserStorage: ['Browser-saved data','The app uses local browser storage, not cookies. It normally survives an ordinary cache clear, but clearing site data, private browsing, changing browser/profile or changing device can remove it. Use a full backup for anything you want to keep.'],
-    fullBackup: ['Full backup','Downloads all browser-saved generator data: custom presets, per-challenge edits, personalisation including the current logo, current worksheet versions and generator settings. Restore the file on this or another browser.'],
-    portableCode: ['Portable recreation code','A self-contained code that carries the current rules and seed as well as the short sheet code. It can recreate an edited/custom sheet on another browser. If you manually replaced or shuffled questions, the exact question set is included too. The optional school logo is not included; use a full backup for that.']
+    fullBackup: ['Full backup','Downloads everything 99 Club Studio has saved in this browser: reusable presets, per-challenge edits, personalisation including the logo, and the current exact sheets. Restoring creates a local safety snapshot first so the previous browser state can be recovered.'],
+    portableCode: ['Full recreation code','A self-contained copy-and-paste code carrying the rules, deterministic seed and exact manual replacements/shuffling. It can recreate the maths on another browser without a preset file. The school logo is not included; use a Full backup when you need the complete browser setup.'],
+    answerQr: ['Recreation QR on answer sheets','Adds a QR code to teacher answer pages only. Scanning it opens 99 Club Studio and recreates the exact maths, rules and page orientation using a privacy-preserving URL fragment. School personalisation and the logo are deliberately left out. If a recreation payload would make the printed QR too dense to scan reliably, Studio omits the QR and tells you to use the Full recreation code instead. Pupil worksheets never receive the QR.'],
+    saveSafety: ['How saving works','99 Club Studio saves automatically in this browser for convenience. Reusable presets are browser-local. Export one setup to move a single configuration, and download a Full backup to protect everything from site-data clearing or a device/browser change.']
   };
   const state = {
     schemeId: 'classic',
     clubId: '33',
     rules: G.clone(G.CLASSIC_PRESETS['33']),
     ruleOverrides: {},
-    seed: G.newSeed('33'),
+    seed: newStudioSeed('33'),
     variants: 1,
     orientation: 'portrait',
     sheets: [],
     previewVariant: 0,
     previewAnswers: false,
+    includeAnswerQr: true,
     school: { schoolName:'', yearGroup:'', className:'', teacherName:'', worksheetDate:'', logoDataUrl:'', logoWidth:0, logoHeight:0 },
     customPresets: loadCustomPresets(),
     advancedOpen: false,
@@ -83,8 +104,9 @@
 
   const restoredExactSheets = restoreSettings();
   if (!restoredExactSheets) generateAll();
-  else refreshRulesError();
+  else { refreshSheetCodes(); refreshRulesError(); persist(); }
   render();
+  setTimeout(loadRecreationFromLocation,0);
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function helpButton(key){ const item=HELP_TEXT[key]; if(!item)return ''; return `<button type="button" class="tt99-help-btn" data-help-key="${esc(key)}" aria-label="Help: ${esc(item[0])}" aria-expanded="false">?</button>`; }
@@ -177,7 +199,7 @@
     return {
       schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,ruleOverrides:state.ruleOverrides,
       variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,
-      previewAnswers:state.previewAnswers,school,
+      previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,school,
       sheets:includeSheets?state.sheets:undefined
     };
   }
@@ -199,11 +221,13 @@
       state.variants = Math.min(4, Math.max(1, Number(s.variants) || 1));
       state.orientation = s.orientation === 'landscape' ? 'landscape' : 'portrait';
       state.school = { ...state.school, ...(s.school || {}) };
-      state.seed = s.seed || G.newSeed(state.clubId);
+      state.seed = s.seed || newStudioSeed(state.clubId);
       state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(s.previewVariant)||0));
       state.previewAnswers=!!s.previewAnswers;
+      state.includeAnswerQr=s.includeAnswerQr!==false;
       if(validExactSheets(s.sheets,state.variants,state.rules)){
         state.sheets=G.clone(s.sheets);
+        refreshSheetCodes();
         return true;
       }
     } catch(e) {}
@@ -220,20 +244,50 @@
       }
     }
   }
+
+  function functionalRules(rules,clubId=state.clubId){
+    const r=G.clone(normalizeForContext(rules,clubId));
+    for(const k of ['id','name','tagline','sourceSchemeId','sourceClubId'])delete r[k];
+    return r;
+  }
+  function ruleFingerprint(rules,clubId=state.clubId){
+    const bytes=new TextEncoder().encode(JSON.stringify(canonical(functionalRules(rules,clubId))));
+    let h=2166136261>>>0;for(const b of bytes){h^=b;h=Math.imul(h,16777619)>>>0;}
+    let out='';for(let i=0;i<4;i++){out=CODE_ALPHABET[h%CODE_ALPHABET.length]+out;h=Math.floor(h/CODE_ALPHABET.length);}return out;
+  }
+  function codePrefix(schemeId=state.schemeId,clubId=state.clubId,edited=(hasRuleOverride(schemeId,clubId)||String(clubId).startsWith('custom-'))){
+    let base;if(ADVANCED_CODE[clubId])base=ADVANCED_CODE[clubId];
+    else if(/^\d+$/.test(String(clubId)))base=`${SCHEME_CODE[schemeId]||'C'}${clubId}`;
+    else base='CUS';
+    return edited?`${base}X`:base;
+  }
+  function displayCode(seed,schemeId=state.schemeId,clubId=state.clubId,rules=state.rules){
+    const m=String(seed).match(/-([23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{5,6})-V([1-4])$/i);
+    if(!m)return String(seed).replace(/-V(\d+)$/,'-$1');
+    const edited=hasRuleOverride(schemeId,clubId)||String(clubId).startsWith('custom-');
+    const prefix=codePrefix(schemeId,clubId,edited),letter=String.fromCharCode(64+Number(m[2]));
+    return `${prefix}-G${GENERATION_VERSION}-${m[1].toUpperCase()}-${letter}${edited?`-R${ruleFingerprint(rules,clubId)}`:''}`;
+  }
+  function refreshSheetCodes(){
+    if(!Array.isArray(state.sheets))return;
+    state.sheets.forEach(s=>{if(s&&s.seed)s.code=displayCode(s.seed,state.schemeId,state.clubId,state.rules);});
+  }
   function generateAll(){
     state.rules = normalizeForContext(state.rules,state.clubId);
     state.sheets = Array.from({length: state.variants}, (_, i) => {
       const variantSeed = `${state.seed}-V${i+1}`;
-      return { seed: variantSeed, code: displayCode(variantSeed), questions: G.generateQuestions(state.rules, variantSeed) };
+      return { seed: variantSeed, code: displayCode(variantSeed,state.schemeId,state.clubId,state.rules), questions: G.generateQuestions(state.rules, variantSeed), actions: [] };
     });
     refreshRulesError();
     state.previewVariant = Math.min(state.previewVariant, state.sheets.length - 1);
     persist();
   }
-  function displayCode(seed){ return String(seed).replace(/-V(\d+)$/, '-$1'); }
-  function newQuestions(){ state.seed = G.newSeed(state.clubId === 'custom' ? 'C' : state.clubId); generateAll(); state.status='New equivalent questions generated.'; render(); }
+  function newQuestions(){ state.seed = newStudioSeed(state.clubId === 'custom' ? 'C' : state.clubId); generateAll(); state.status='New equivalent questions generated.'; render(); }
   function shuffleCurrent(){
-    state.sheets = state.sheets.map((s,i)=>({ ...s, questions:G.shuffleQuestions(s.questions, `${s.seed}:${Date.now()}:${i}`) }));
+    state.sheets = state.sheets.map(s=>{
+      const token=randomStudioToken(5), actions=[...(Array.isArray(s.actions)?s.actions:[]),['s',token]];
+      return { ...s, questions:G.shuffleQuestions(s.questions, `${s.seed}:${token}`), actions };
+    });
     persist();state.status='Question order shuffled and saved on this browser.'; render();
   }
 
@@ -243,8 +297,8 @@
         <section class="tt99-hero">
           <div class="tt99-hero__copy">
             <span class="tt99-eyebrow">Tech Tinker Club · Free classroom tool</span>
-            <h1>99 Club Sheet Generator</h1>
-            <p>Create balanced, personalised 99 Club worksheets and answer keys in seconds. Everything runs in your browser; school details and logos are not uploaded anywhere.</p>
+            <h1>99 Club Studio</h1>
+            <p>Create, customise, save and reproduce balanced 99 Club and advanced mental-maths worksheets. Everything runs in your browser; school details and logos are not uploaded anywhere.</p>
             <div class="tt99-hero-actions"><a href="/tools/99-club/help/" class="tt99-help-link">Help & guide</a><span>New here? Start with the Classic scheme and a challenge level.</span></div>
           </div>
           <div class="tt99-hero__badge" aria-hidden="true"><span>99</span><small>CLUB</small></div>
@@ -281,7 +335,7 @@
       <div class="tt99-club-grid">${classics}</div>
       <div class="tt99-club-section-label tt99-club-section-label--advanced">Post-99 challenges</div>
       <div class="tt99-club-grid tt99-club-grid--advanced">${challenges}</div>
-      ${customs?`<div class="tt99-club-section-label tt99-club-section-label--advanced">Saved custom rules</div><div class="tt99-club-grid">${customs}</div>`:''}
+      ${customs?`<div class="tt99-club-section-label tt99-club-section-label--advanced">Saved reusable preset</div><div class="tt99-club-grid">${customs}</div>`:''}
     </section>`;
   }
 
@@ -290,7 +344,7 @@
     const edited=hasRuleOverride(state.schemeId,p.id);
     const badge=custom?(edited?'Custom · Edited':'Custom'):(edited?'Edited':'');
     return `<button type="button" class="tt99-club ${selected?'is-selected':''} ${custom?'is-custom':''} ${edited?'is-edited':''}" data-club="${esc(p.id)}" aria-pressed="${selected}">
-      <strong>${esc(p.name)}</strong><span>${esc(p.tagline || 'Saved custom rules')}</span>${badge?`<em>${esc(badge)}</em>`:''}
+      <strong>${esc(p.name)}</strong><span>${esc(p.tagline || 'Saved reusable preset')}</span>${badge?`<em>${esc(badge)}</em>`:''}
     </button>`;
   }
 
@@ -379,7 +433,7 @@
         <label class="tt99-check"><input data-rule-check="avoidExactDuplicates" type="checkbox" ${r.avoidExactDuplicates?'checked':''}><span>Avoid exact duplicate questions where possible ${helpButton('duplicates')}</span></label>
         ${['multiply','mixed'].includes(r.mode) || (r.mode==='family_mix'&&r.families.includes('multiply'))?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates ${helpButton('duplicates')}</span></label>`:''}
       </div>
-      <div class="tt99-save-preset"><span class="tt99-save-preset-help">${helpButton('savePreset')}</span><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Year 4 Autumn"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save these rules</button></div>
+      <div class="tt99-save-preset"><span class="tt99-save-preset-help">${helpButton('savePreset')}</span><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Year 4 Autumn"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save as reusable preset</button></div>
     </div>`;
   }
 
@@ -413,22 +467,25 @@
 
   function renderStepGenerate(){
     const shortCodeNeedsRules=hasRuleOverride() || state.clubId.startsWith('custom-');
+    const canUndo=hasPreRestoreSnapshot();
     return `<section class="tt99-card tt99-card--action">
-      <div class="tt99-step"><span>4</span><div><h2>Generate and download</h2><p>Create up to four equivalent versions. Answer keys use the same sheet codes.</p></div></div>
+      <div class="tt99-step"><span>4</span><div><h2>Generate and download</h2><p>Create up to four equivalent versions. Answer keys use matching sheet codes.</p></div></div>
       <div class="tt99-layout-control"><span class="tt99-field-label">Page layout ${helpButton('layout')}</span><div class="tt99-layout-picker" role="group" aria-label="Page layout">
         <button type="button" class="tt99-layout-option ${state.orientation==='portrait'?'is-selected':''}" data-page-orientation="portrait" aria-pressed="${state.orientation==='portrait'}"><span class="tt99-page-icon tt99-page-icon--portrait" aria-hidden="true"></span><span><b>Portrait</b><small>Classic worksheet layout</small></span></button>
         <button type="button" class="tt99-layout-option ${state.orientation==='landscape'?'is-selected':''}" data-page-orientation="landscape" aria-pressed="${state.orientation==='landscape'}"><span class="tt99-page-icon tt99-page-icon--landscape" aria-hidden="true"></span><span><b>Landscape</b><small>Wider, larger working text</small></span></button>
       </div></div>
       <label class="tt99-field">${helpLabel('Equivalent versions','variants')}<select id="tt99-variants">${[1,2,3,4].map(n=>`<option value="${n}" ${state.variants===n?'selected':''}>${n} ${n===1?'version':'versions'}</option>`).join('')}</select></label>
+      <label class="tt99-check tt99-answer-qr"><input id="tt99-answer-qr" type="checkbox" ${state.includeAnswerQr?'checked':''}><span><b>Recreation QR on answer sheets ${helpButton('answerQr')}</b><small>Recommended. Teacher copies can be scanned back into 99 Club Studio; pupil worksheets never include the QR. School personalisation is not embedded in the QR.</small></span></label>
       <div class="tt99-action-row"><button type="button" class="tt99-primary" id="tt99-new">Generate new questions</button><button type="button" class="tt99-secondary" id="tt99-shuffle">Shuffle order</button></div>
-      <div class="tt99-recreate"><div><strong>Recreate from short sheet code ${helpButton('sheetCode')}</strong><small>${shortCodeNeedsRules?'This challenge has edited/custom rules, so the short code is only reproducible where those same rules are available. Use the portable recreation code below for another browser.':'For built-in unchanged rules, the printed short code is enough to recreate the generated questions.'}</small></div><div><input id="tt99-sheet-code" type="text" maxlength="90" spellcheck="false" placeholder="e.g. 99-ABCDE-1"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>
-      <div class="tt99-downloads"><button id="tt99-pdf-student" class="tt99-download" ${state.rulesError?'disabled':''}><b>Worksheet PDF</b><span>Pupil sheets only</span></button><button id="tt99-pdf-answer" class="tt99-download" ${state.rulesError?'disabled':''}><b>Answer key PDF</b><span>Matching answers</span></button><button id="tt99-pdf-both" class="tt99-download tt99-download--accent" ${state.rulesError?'disabled':''}><b>Worksheet + answers</b><span>One complete PDF</span></button></div>
-      <details class="tt99-portability"><summary>Saved data & portability ${helpButton('browserStorage')}</summary>
+      <div class="tt99-recreate"><div><strong>Recreate from sheet code ${helpButton('sheetCode')}</strong><small>${shortCodeNeedsRules?'This sheet uses edited/custom rules. Its code carries a rule fingerprint so the app will refuse to recreate it with the wrong rules. Use the Full recreation code or QR on another browser.':'Standard codes identify the scheme/challenge, generation version and worksheet version, so unchanged built-in sheets can be recreated directly.'}</small></div><div><input id="tt99-sheet-code" type="text" maxlength="100" spellcheck="false" placeholder="e.g. C99-G1-7FK2M9-A"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>
+      <div class="tt99-downloads"><button id="tt99-pdf-student" class="tt99-download" ${state.rulesError?'disabled':''}><b>Worksheet PDF</b><span>Pupil sheets only</span></button><button id="tt99-pdf-answer" class="tt99-download" ${state.rulesError?'disabled':''}><b>Answer key PDF</b><span>Matching answers${state.includeAnswerQr?' + QR':''}</span></button><button id="tt99-pdf-both" class="tt99-download tt99-download--accent" ${state.rulesError?'disabled':''}><b>Worksheet + answers</b><span>One complete PDF</span></button></div>
+      <div class="tt99-save-safety"><div><strong>Saved automatically on this browser ${helpButton('saveSafety')}</strong><small>Browser storage is convenient, but it is not a permanent backup. Before testing custom presets or clearing site data, download one file that protects everything.</small></div><button type="button" class="tt99-secondary" id="tt99-backup-all">Download full backup</button></div>
+      <details class="tt99-portability"><summary>Save, import, reuse & move your work ${helpButton('browserStorage')}</summary>
         <div class="tt99-portability__body">
-          <p><strong>Browser saves are convenient, not a permanent backup.</strong> This tool uses local browser storage rather than cookies. Download a backup if you want custom presets and edits to survive clearing site data or moving to another device.</p>
-          <div class="tt99-portable-block"><div><strong>Portable recreation code ${helpButton('portableCode')}</strong><small>Best for recreating this exact maths setup on another browser. The school logo is not included.</small></div><button type="button" class="tt99-secondary" id="tt99-copy-full-code">Copy full recreation code</button><div class="tt99-portable-load"><textarea id="tt99-full-code" rows="3" spellcheck="false" placeholder="Paste a TT99 recreation code here"></textarea><button type="button" class="tt99-secondary" id="tt99-load-full-code">Recreate</button></div></div>
-          <div class="tt99-portable-block"><div><strong>Full browser backup ${helpButton('fullBackup')}</strong><small>Includes custom presets, all scheme/challenge edits, current exact sheets, personalisation and the current school logo.</small></div><div class="tt99-config-actions"><button type="button" class="tt99-linkbtn" id="tt99-backup-all">Download full backup</button><label class="tt99-linkbtn tt99-import">Restore full backup<input id="tt99-restore-backup" type="file" accept="application/json,.json"></label></div></div>
-          <div class="tt99-portable-block"><div><strong>Current setup file ${helpButton('exportSettings')}</strong><small>Smaller file for this current challenge and its exact worksheet versions.</small></div><div class="tt99-config-actions"><button type="button" class="tt99-linkbtn" id="tt99-export-settings">Export current setup</button><label class="tt99-linkbtn tt99-import">Import current setup<input id="tt99-import-settings" type="file" accept="application/json,.json"></label></div></div>
+          <div class="tt99-save-map"><div><b>Reuse rules</b><span>Save as a reusable preset in Step 3.</span></div><div><b>Move one setup</b><span>Export / import the current setup below.</span></div><div><b>Protect everything</b><span>Use Full backup above.</span></div><div><b>Recreate one sheet</b><span>Use its sheet code, full recreation code, or teacher QR.</span></div></div>
+          <div class="tt99-portable-block"><div><strong>Full recreation code ${helpButton('portableCode')}</strong><small>Self-contained rules + seed + exact manual changes. Best for copy/paste recreation without a file. The school logo is not included.</small></div><button type="button" class="tt99-secondary" id="tt99-copy-full-code">Copy full recreation code</button><div class="tt99-portable-load"><textarea id="tt99-full-code" rows="3" spellcheck="false" placeholder="Paste a TT99R recreation code here"></textarea><button type="button" class="tt99-secondary" id="tt99-load-full-code">Recreate</button></div></div>
+          <div class="tt99-portable-block"><div><strong>Full browser backup ${helpButton('fullBackup')}</strong><small>Includes reusable presets, every scheme/challenge edit, current exact sheets, personalisation and the school logo. Restoring first keeps a safety snapshot of the browser state it replaces.</small></div><div class="tt99-config-actions"><label class="tt99-linkbtn tt99-import">Restore full backup<input id="tt99-restore-backup" type="file" accept="application/json,.json"></label>${canUndo?'<button type="button" class="tt99-linkbtn" id="tt99-undo-restore">Undo last restore</button>':''}</div></div>
+          <div class="tt99-portable-block"><div><strong>One setup file ${helpButton('exportSettings')}</strong><small>Portable JSON for this current challenge, its rules, exact worksheet versions and personalisation text. It does not contain every saved preset in the browser.</small></div><div class="tt99-config-actions"><button type="button" class="tt99-linkbtn" id="tt99-export-settings">Export this setup</button><label class="tt99-linkbtn tt99-import">Import a setup<input id="tt99-import-settings" type="file" accept="application/json,.json"></label></div></div>
         </div>
       </details>
       ${state.status?`<div class="tt99-status" role="status">${esc(state.status)}</div>`:''}
@@ -448,16 +505,16 @@
     const identityMeta=[L.displayYear(s.yearGroup),L.displayClass(s.className),s.teacherName].filter(Boolean).join(' · ');
     const dateText=s.worksheetDate ? formatDate(s.worksheetDate) : '';
     const groups = Array.from({length:cols},(_,c)=>sheet.questions.slice(c*rows, Math.min((c+1)*rows,sheet.questions.length)));
+    const qrSvg=state.previewAnswers&&state.includeAnswerQr?qrSvgForVariant(state.previewVariant):'';
     return `<article class="tt99-paper is-${state.orientation} cols-${cols} rows-${rows}" data-orientation="${state.orientation}" style="--paper-cols:${cols};--row-count:${rows}">
       <header class="tt99-paper-head">
         <div class="tt99-paper-identity"><div class="tt99-paper-logo">${s.logoDataUrl?`<img src="${s.logoDataUrl}" alt="">`:''}</div><div class="tt99-paper-identity-copy"><div class="tt99-paper-school">${esc(s.schoolName || 'School name')}</div>${identityMeta?`<div class="tt99-paper-classmeta">${esc(identityMeta)}</div>`:''}</div></div>
         <div class="tt99-paper-title"><h2>${esc(r.name || `${r.questionCount} Club`)}</h2><span>${state.previewAnswers?'ANSWER KEY':'MENTAL MATHS CHALLENGE'}</span></div>
         <div class="tt99-paper-date">${dateText?esc(dateText):''}</div>
       </header>
-      <div class="tt99-paper-student"><span>Name <i></i></span><span>Score <i class="short"></i> / ${r.questionCount}</span></div>
-      <div class="tt99-paper-instructions">${esc(G.instructionText(r))}</div>
+      ${state.previewAnswers?`<div class="tt99-paper-teacher"><div><b>Teacher answer copy</b><span>${qrSvg?'Scan to recreate this exact sheet in 99 Club Studio.':(state.includeAnswerQr?'QR omitted because the recreation data is too dense for reliable printing. Use the Full recreation code instead.':'Recreation QR is turned off for this PDF.')}</span><small>Sheet ${esc(sheet.code)}</small></div>${qrSvg?`<div class="tt99-paper-qr">${qrSvg}</div>`:''}</div>`:`<div class="tt99-paper-student"><span>Name <i></i></span><span>Score <i class="short"></i> / ${r.questionCount}</span></div><div class="tt99-paper-instructions">${esc(G.instructionText(r))}</div>`}
       <div class="tt99-question-grid">${groups.map(group=>`<div class="tt99-question-col">${group.map(q=>`<div class="tt99-question" data-q="${q.number}"><b>${q.number}.</b><span>${esc(q.prompt)}</span>${state.previewAnswers?`<strong>${esc(q.answer)}</strong>`:'<i></i>'}<button type="button" data-replace="${q.number-1}" aria-label="Replace question ${q.number}" title="Replace this question">↻</button></div>`).join('')}</div>`).join('')}</div>
-      <footer class="tt99-paper-foot"><span>Sheet ${esc(sheet.code)} · Version ${String.fromCharCode(65+state.previewVariant)}</span><span>Generated with Tech Tinker Club · techtinker.club</span></footer>
+      <footer class="tt99-paper-foot"><span>Sheet ${esc(sheet.code)}</span><span>Generated by Tech Tinker Club · 99 Club Studio</span></footer>
     </article>`;
   }
 
@@ -489,6 +546,7 @@
     root.querySelector('#tt99-save-preset')?.addEventListener('click',savePreset);
     root.querySelectorAll('[data-page-orientation]').forEach(btn=>btn.addEventListener('click',()=>setOrientation(btn.dataset.pageOrientation)));
     root.querySelector('#tt99-variants')?.addEventListener('change',e=>{state.variants=Number(e.target.value);generateAll();render();});
+    root.querySelector('#tt99-answer-qr')?.addEventListener('change',e=>{state.includeAnswerQr=!!e.target.checked;persist();render();});
     root.querySelector('#tt99-new')?.addEventListener('click',newQuestions);
     root.querySelector('#tt99-shuffle')?.addEventListener('click',shuffleCurrent);
     root.querySelector('#tt99-recreate')?.addEventListener('click',recreateFromCode);
@@ -506,6 +564,7 @@
     root.querySelector('#tt99-full-code')?.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();loadFullRecreationCode();}});
     root.querySelector('#tt99-backup-all')?.addEventListener('click',downloadFullBackup);
     root.querySelector('#tt99-restore-backup')?.addEventListener('change',restoreFullBackup);
+    root.querySelector('#tt99-undo-restore')?.addEventListener('click',undoLastRestore);
   }
 
   function setOrientation(value){
@@ -522,7 +581,7 @@
     commitCurrentRules();
     state.schemeId=id;
     state.rules=loadRulesFor(state.schemeId,state.clubId);
-    state.seed=G.newSeed(state.clubId);
+    state.seed=newStudioSeed(state.clubId);
     generateAll();
     state.status=`${getScheme().name} rules selected. Your edits are remembered separately for each scheme and challenge.`;
     render();
@@ -533,24 +592,24 @@
     commitCurrentRules();
     state.clubId=id;
     state.rules=loadRulesFor(state.schemeId,id);
-    state.seed=G.newSeed(id); state.status=''; generateAll(); render();
+    state.seed=newStudioSeed(id); state.status=''; generateAll(); render();
   }
   function resetRules(){
     const p=getBasePreset(state.schemeId,state.clubId); if(!p)return;
     delete state.ruleOverrides[overrideKey()];
-    state.rules=normalizeForContext(G.clone(p),state.clubId);state.seed=G.newSeed(state.clubId);generateAll();state.status='This challenge has been reset to its scheme preset.';render();
+    state.rules=normalizeForContext(G.clone(p),state.clubId);state.seed=newStudioSeed(state.clubId);generateAll();state.status='This challenge has been reset to its scheme preset.';render();
   }
   function resetScheme(){
     if(!schemeHasOverrides())return;
     if(typeof window.confirm==='function' && !window.confirm(`Reset all edited challenge rules in ${getScheme().name}?`))return;
     const prefix=`${state.schemeId}::`;
     Object.keys(state.ruleOverrides).filter(k=>k.startsWith(prefix)).forEach(k=>delete state.ruleOverrides[k]);
-    state.rules=loadRulesFor(state.schemeId,state.clubId);state.seed=G.newSeed(state.clubId);generateAll();state.status=`All edited rules in ${getScheme().name} have been reset.`;render();
+    state.rules=loadRulesFor(state.schemeId,state.clubId);state.seed=newStudioSeed(state.clubId);generateAll();state.status=`All edited rules in ${getScheme().name} have been reset.`;render();
   }
   function ruleChanged(key,value){
     const numeric=['questionCount','timeMinutes','perfectAttempts','numberMin','numberMax','addendMin','addendMax','repeatsMin','repeatsMax','factorMin','factorMax','multiplyPercent','arithmeticMax','arithmeticOperandMin','arithmeticOperandMax','squareMin','squareMax','cubeMin','cubeMax','bodmasMax','scaledBaseMin','scaledBaseMax','fractionQuantityMin','fractionQuantityMax','percentageQuantityMin','percentageQuantityMax','romanMax','algebraUnknownMax','algebraCoefficientMax'];
     state.rules[key] = numeric.includes(key) ? Number(value) : value;
-    state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+    state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function familiesChanged(){
     const selectedExtras=Array.from(root.querySelectorAll('[data-family]:checked')).map(x=>x.dataset.family);
@@ -561,18 +620,18 @@
     const base=G.CHALLENGE_PRESETS[state.clubId];
     state.rules.families=selected;
     state.rules.familyWeights=Object.fromEntries(selected.map(f=>[f,previous[f]||base?.familyWeights?.[f]||1]));
-    state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+    state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function familyWeightChanged(family,value){
     if(!state.rules.families.includes(family))return;
     state.rules.familyWeights={...(state.rules.familyWeights||{}),[family]:Math.max(1,Math.min(20,Number(value)||1))};
-    state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+    state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
 
   function setStringChoices(attr,property,message){
     const selected=Array.from(root.querySelectorAll(`[data-${attr}]:checked`)).map(x=>x.getAttribute(`data-${attr}`));
     if(!selected.length){state.status=message;render();state.advancedOpen=true;return false;}
-    state.rules[property]=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;return true;
+    state.rules[property]=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;return true;
   }
   function parseCustomWholeNumbers(value,min,max,stripPercent=false){
     const tokens=String(value||'').split(/[;,\s]+/).map(v=>stripPercent?v.replace(/%/g,''):v).filter(Boolean);
@@ -583,62 +642,108 @@
     const custom=parseCustomWholeNumbers(root.querySelector('#tt99-custom-denominators')?.value,2,100);
     const selected=[...new Set([...chips,...custom])].sort((a,b)=>a-b);
     if(!selected.length){state.status='Keep at least one fraction denominator selected or enter a custom denominator.';render();state.advancedOpen=true;return;}
-    state.rules.fractionDenominators=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+    state.rules.fractionDenominators=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function percentageChoicesChanged(){
     const chips=Array.from(root.querySelectorAll('[data-percentage-choice]:checked')).map(x=>Number(x.dataset.percentageChoice));
     const custom=parseCustomWholeNumbers(root.querySelector('#tt99-custom-percentages')?.value,1,100,true);
     const selected=[...new Set([...chips,...custom])].sort((a,b)=>a-b);
     if(!selected.length){state.status='Keep at least one percentage selected or enter a custom percentage.';render();state.advancedOpen=true;return;}
-    state.rules.percentageChoices=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+    state.rules.percentageChoices=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function scaledMultiplierChoicesChanged(){
     const selected=Array.from(root.querySelectorAll('[data-scaled-multiplier]:checked')).map(x=>Number(x.dataset.scaledMultiplier));
     if(!selected.length){state.status='Keep at least one scale factor selected.';render();state.advancedOpen=true;return;}
-    state.rules.scaledMultipliers=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+    state.rules.scaledMultipliers=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function angleTotalChoicesChanged(){
     const selected=Array.from(root.querySelectorAll('[data-angle-total]:checked')).map(x=>Number(x.dataset.angleTotal));
     if(!selected.length){state.status='Keep at least one angle total selected.';render();state.advancedOpen=true;return;}
-    state.rules.angleTotals=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+    state.rules.angleTotals=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function missingOperationChoicesChanged(){setStringChoices('missing-operation','missingNumberOperations','Keep multiplication or division enabled for missing-number questions.');}
   function missingPositionChoicesChanged(){setStringChoices('missing-position','missingNumberPositions','Keep at least one blank position enabled.');}
   function bodmasOperationChoicesChanged(){
     const selected=Array.from(root.querySelectorAll('[data-bodmas-operation]:checked')).map(x=>x.dataset.bodmasOperation);
     if(selected.length<2){state.status='Order-of-operations questions need at least two operations selected.';render();state.advancedOpen=true;return;}
-    state.rules.bodmasOperations=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+    state.rules.bodmasOperations=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
-  function tablesChanged(){ const selected=Array.from(root.querySelectorAll('[data-table]:checked')).map(x=>Number(x.dataset.table)); if(!selected.length){state.status='At least one times table must stay selected.';render();state.advancedOpen=true;return;} state.rules.tables=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true; }
-  function tableAction(action){ state.rules.tables=action==='all'?Array.from({length:12},(_,i)=>i+1):action==='core'?[2,3,5,10]:[2];state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true; }
+  function tablesChanged(){ const selected=Array.from(root.querySelectorAll('[data-table]:checked')).map(x=>Number(x.dataset.table)); if(!selected.length){state.status='At least one times table must stay selected.';render();state.advancedOpen=true;return;} state.rules.tables=selected;state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true; }
+  function tableAction(action){ state.rules.tables=action==='all'?Array.from({length:12},(_,i)=>i+1):action==='core'?[2,3,5,10]:[2];state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true; }
 
   function savePreset(){
     const input=root.querySelector('#tt99-preset-name'); const name=(input?.value||'').trim(); if(!name){state.status='Give your preset a name first.';render();state.advancedOpen=true;return;}
     commitCurrentRules();
-    const id='custom-'+Date.now().toString(36); const preset={...G.clone(state.rules),id,name,tagline:'Saved custom rules'}; state.customPresets.push(preset);saveCustomPresets();state.clubId=id;state.rules=G.clone(preset);delete state.ruleOverrides[overrideKey()];state.seed=G.newSeed(id);generateAll();state.status=`Saved “${name}” on this browser.`;render();
+    const currentCustom=state.customPresets.find(p=>p.id===state.clubId);
+    const sourceSchemeId=currentCustom?.sourceSchemeId||state.schemeId, sourceClubId=currentCustom?.sourceClubId||state.clubId;
+    const id='custom-'+Date.now().toString(36); const preset={...G.clone(state.rules),id,name,tagline:'Saved reusable preset',sourceSchemeId,sourceClubId}; state.customPresets.push(preset);saveCustomPresets();state.clubId=id;state.rules=G.clone(preset);delete state.ruleOverrides[overrideKey()];state.seed=newStudioSeed(id);generateAll();state.status=`Saved “${name}” on this browser.`;render();
   }
   function deletePreset(id){
     const p=state.customPresets.find(x=>x.id===id); if(!p)return;
     state.customPresets=state.customPresets.filter(x=>x.id!==id); saveCustomPresets();
     Object.keys(state.ruleOverrides).filter(k=>k.endsWith(`::${id}`)).forEach(k=>delete state.ruleOverrides[k]);
-    if(state.clubId===id){state.clubId='33';state.rules=loadRulesFor(state.schemeId,'33');state.seed=G.newSeed('33');generateAll();}
+    if(state.clubId===id){state.clubId='33';state.rules=loadRulesFor(state.schemeId,'33');state.seed=newStudioSeed('33');generateAll();}
     state.status=`Deleted custom preset “${p.name}”.`;render();
   }
-  function replaceOne(index){ const s=state.sheets[state.previewVariant]; s.questions=G.replaceQuestion(s.questions,index,state.rules,s.seed);persist();state.status=`Question ${index+1} replaced in Version ${String.fromCharCode(65+state.previewVariant)} and saved on this browser. Use a full backup or current setup file for portability.`;render(); }
+  function replaceOne(index){
+    const s=state.sheets[state.previewVariant], before=s.questions[index], next=G.replaceQuestion(s.questions,index,state.rules,s.seed);
+    s.questions=next;const q=next[index];
+    if(q&&questionSig(q)!==questionSig(before)){
+      s.actions=[...(Array.isArray(s.actions)?s.actions:[]),['r',index,q.kind,q.prompt,q.answer,q.key||'']];
+    }
+    persist();state.status=`Question ${index+1} replaced in Version ${String.fromCharCode(65+state.previewVariant)} and saved on this browser. Use a full backup or current setup file for portability.`;render();
+  }
 
+  function decodeNewSheetCode(raw){
+    const code=String(raw||'').trim().toUpperCase();
+    const m=code.match(/^([A-Z0-9]+?)(X?)-G(\d+)-([23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{5,6})-([A-D])(?:-R([23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{4}))?$/);
+    if(!m)return null;
+    const basePrefix=m[1],edited=m[2]==='X',gen=Number(m[3]),token=m[4],variant=m[5].charCodeAt(0)-64,fingerprint=m[6]||'';
+    let schemeId=null,clubId=null;
+    if(ADVANCED_CODE_REV[basePrefix]){schemeId=state.schemeId;clubId=ADVANCED_CODE_REV[basePrefix];}
+    else if(basePrefix==='CUS'){schemeId=state.schemeId;clubId=String(state.clubId).startsWith('custom-')?state.clubId:null;}
+    else{
+      const mm=basePrefix.match(/^(AF|AR|MN|TF|C)(11|22|33|44|55|66|77|88|99)$/);
+      if(mm){schemeId=SCHEME_CODE_REV[mm[1]];clubId=mm[2];}
+    }
+    return {code,basePrefix,edited,gen,token,variant,fingerprint,schemeId,clubId};
+  }
   function recreateFromCode(){
     const input=root.querySelector('#tt99-sheet-code');
     const code=(input?.value||'').trim();
-    const match=code.match(/^(.+)-(\d+)$/);
-    if(!match){state.status='Enter a valid sheet code, for example 99-ABCDE-1.';render();return;}
-    const variant=Number(match[2]);
-    if(!Number.isInteger(variant) || variant<1 || variant>4){state.status='This version of the generator supports sheet versions 1 to 4.';render();return;}
-    state.seed=match[1];
-    state.variants=Math.max(state.variants,variant);
-    generateAll();
-    state.previewVariant=variant-1;
-    state.status=`Recreated sheet ${code} using the current rules. For edited/custom rules on another browser, use the portable recreation code.`;
-    persist();render();
+    const modern=decodeNewSheetCode(code);
+    if(modern){
+      if(modern.gen!==GENERATION_VERSION){state.status=`Sheet ${modern.code} uses generation G${modern.gen}, which this build cannot recreate. Use its Full recreation code or archived setup file.`;render();return;}
+      if(!modern.clubId && modern.basePrefix==='CUS' && modern.fingerprint){
+        const matches=state.customPresets.filter(p=>ruleFingerprint(p,p.id)===modern.fingerprint);
+        if(matches.length===1)modern.clubId=matches[0].id;
+      }
+      if(!modern.clubId){state.status='This custom-rule sheet code does not match a reusable preset saved in this browser. Nothing was changed. Use the Full recreation code, teacher QR, or import the saved setup.';render();return;}
+      if(modern.schemeId&&G.SCHEME_PRESETS[modern.schemeId])state.schemeId=modern.schemeId;
+      state.clubId=modern.clubId;
+      if(modern.edited){
+        let candidate=loadRulesFor(state.schemeId,state.clubId);
+        if(modern.fingerprint && ruleFingerprint(candidate,state.clubId)!==modern.fingerprint && ADVANCED_CHALLENGE_IDS.has(state.clubId)){
+          for(const schemeId of Object.keys(G.SCHEME_PRESETS)){
+            const possible=loadRulesFor(schemeId,state.clubId);
+            if(ruleFingerprint(possible,state.clubId)===modern.fingerprint){state.schemeId=schemeId;candidate=possible;break;}
+          }
+        }
+        state.rules=candidate;
+        if(!modern.fingerprint || ruleFingerprint(candidate,state.clubId)!==modern.fingerprint){state.status=`${modern.code} was made with edited/custom rules that are not available here. Nothing was changed. Use the Full recreation code, scan the answer-sheet QR, or import the saved setup.`;render();return;}
+      }else{
+        if(hasRuleOverride(state.schemeId,state.clubId)){state.status=`${modern.code} is a standard preset sheet, but this browser has edited rules saved for that challenge. Your edits were not overwritten. Export/backup them, then Reset this challenge before recreating the standard code.`;render();return;}
+        state.rules=normalizeForContext(G.clone(getBasePreset(state.schemeId,state.clubId)),state.clubId);
+      }
+      state.seed=`${state.clubId}-${modern.token}`;state.variants=modern.variant;generateAll();state.previewVariant=modern.variant-1;
+      state.status=`Recreated ${modern.code}. The code identified the ${state.rules.name} preset, generation G${modern.gen}, and Version ${String.fromCharCode(64+modern.variant)}.`;persist();render();return;
+    }
+    // Backward compatibility with v1.0-v1.6 numeric sheet codes.
+    const legacy=code.match(/^(.+)-(\d+)$/);
+    if(!legacy){state.status='Enter a valid sheet code, for example C99-G1-7FK2M9-A.';render();return;}
+    const variant=Number(legacy[2]);if(!Number.isInteger(variant)||variant<1||variant>4){state.status='This generator supports worksheet versions A-D (legacy versions 1-4).';render();return;}
+    state.seed=legacy[1];state.variants=variant;generateAll();state.previewVariant=variant-1;
+    state.status=`Legacy sheet code ${code} recreated using the currently selected rules. Old codes did not identify their rule preset, so keep the matching setup when exact historical reproduction matters.`;persist();render();
   }
 
   function utf8ToBase64Url(text){
@@ -651,86 +756,186 @@
     const binary=atob(b64),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
     return new TextDecoder().decode(bytes);
   }
-  function exactSheetsDifferFromSeed(){
-    if(!state.sheets.length)return false;
-    return state.sheets.some(s=>JSON.stringify(canonical(s.questions))!==JSON.stringify(canonical(G.generateQuestions(state.rules,s.seed))));
+  function questionSig(q){return JSON.stringify([q?.kind||'',q?.prompt||'',q?.answer,q?.key||'']);}
+  function bytesToBase64Url(bytes){
+    let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));
+    return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   }
+  function base64UrlToBytes(value){
+    let b64=String(value||'').replace(/-/g,'+').replace(/_/g,'/');while(b64.length%4)b64+='=';
+    const binary=atob(b64),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes;
+  }
+  function applySheetActions(seed,rules,actions){
+    let out=G.generateQuestions(rules,seed);
+    if(!Array.isArray(actions))return out;
+    for(const a of actions){
+      if(!Array.isArray(a)||!a.length)continue;
+      if(a[0]==='r'){
+        const i=Number(a[1]);if(!Number.isInteger(i)||i<0||i>=out.length)continue;
+        out[i]={kind:a[2],prompt:a[3],answer:a[4],key:a[5]||'',number:i+1};
+      }else if(a[0]==='s'&&a[1]) out=G.shuffleQuestions(out,`${seed}:${a[1]}`);
+    }
+    return out.map((q,i)=>({...q,number:i+1}));
+  }
+  function sameQuestionSet(a,b){return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((q,i)=>questionSig(q)===questionSig(b[i]));}
+  function sheetRecipe(sheet,rules){
+    if(Array.isArray(sheet.actions)&&sheet.actions.length){
+      const replay=applySheetActions(sheet.seed,rules,sheet.actions);
+      if(sameQuestionSet(replay,sheet.questions))return {a:G.clone(sheet.actions)};
+    }
+    const base=G.generateQuestions(rules,sheet.seed),buckets=new Map(),order=[],replacements=[];
+    base.forEach((q,i)=>{const k=questionSig(q);if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(i);});
+    sheet.questions.forEach((q,i)=>{
+      const list=buckets.get(questionSig(q));
+      if(list&&list.length)order.push(list.shift());
+      else{order.push(255);replacements.push([i,q.kind,q.prompt,q.answer,q.key||'']);}
+    });
+    const identity=order.every((v,i)=>v===i||v===255);
+    if(identity&&!replacements.length)return null;
+    // Sparse replacements need only their changed positions. A shuffled sheet stores the
+    // permutation as raw bytes (question counts are <255), which is far smaller than a
+    // JSON array of 100+ integers and keeps teacher-copy QR codes reliably printable.
+    const recipe={};
+    if(!identity)recipe.p=bytesToBase64Url(Uint8Array.from(order));
+    if(replacements.length)recipe.x=replacements;
+    return recipe;
+  }
+  function applySheetRecipe(seed,rules,recipe){
+    const base=G.generateQuestions(rules,seed);
+    if(!recipe)return base;
+    // Backward compatibility with the earlier array recipe used by TT99R1/R2 drafts.
+    if(Array.isArray(recipe))return recipe.map((entry,i)=>{let q;if(Number.isInteger(entry)&&base[entry])q=G.clone(base[entry]);else if(Array.isArray(entry)&&entry[0]==='Q')q={kind:entry[1],prompt:entry[2],answer:entry[3],key:entry[4]};else q=G.clone(base[i]||base[0]);return {...q,number:i+1};});
+    if(typeof recipe!=='object')return base;
+    if(Array.isArray(recipe.a))return applySheetActions(seed,rules,recipe.a);
+    let out=base.map(q=>G.clone(q));
+    if(recipe.p){
+      try{
+        const order=base64UrlToBytes(recipe.p);
+        if(order.length===base.length)out=Array.from(order,(idx,i)=>idx!==255&&base[idx]?G.clone(base[idx]):G.clone(base[i]||base[0]));
+      }catch(ignore){}
+    }
+    if(Array.isArray(recipe.x))for(const entry of recipe.x){
+      if(!Array.isArray(entry)||entry.length<4)continue;const i=Number(entry[0]);if(!Number.isInteger(i)||i<0||i>=out.length)continue;
+      out[i]={kind:entry[1],prompt:entry[2],answer:entry[3],key:entry[4]||''};
+    }
+    return out.map((q,i)=>({...q,number:i+1}));
+  }
+  function recreationSchool(){return {schoolName:state.school.schoolName,yearGroup:state.school.yearGroup,className:state.school.className,teacherName:state.school.teacherName,worksheetDate:state.school.worksheetDate};}
   function buildFullRecreationCode(){
-    const payload={
-      kind:'TT99R',format:1,appVersion:VERSION,schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,
-      variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,
-      school:{schoolName:state.school.schoolName,yearGroup:state.school.yearGroup,className:state.school.className,teacherName:state.school.teacherName,worksheetDate:state.school.worksheetDate}
-    };
-    if(exactSheetsDifferFromSeed())payload.sheets=state.sheets;
-    return `TT99R1.${utf8ToBase64Url(JSON.stringify(payload))}`;
+    const payload={kind:'TT99R',format:2,generationVersion:GENERATION_VERSION,appVersion:VERSION,schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,school:recreationSchool(),recipes:state.sheets.map(s=>sheetRecipe(s,state.rules))};
+    return `TT99R2.${utf8ToBase64Url(JSON.stringify(payload))}`;
   }
   async function copyFullRecreationCode(){
     const code=buildFullRecreationCode();
     try{
-      if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(code);
-      else {const ta=document.createElement('textarea');ta.value=code;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
-      state.status=`Portable recreation code copied (${code.length.toLocaleString()} characters).`;
-    }catch(err){
-      state.status='The browser blocked automatic copying. The full code has been placed in the box for you to copy manually.';
-      render();
-      const details=root.querySelector('.tt99-portability');if(details)details.open=true;
-      const box=root.querySelector('#tt99-full-code');if(box){box.value=code;box.focus();box.select();}
-      return;
-    }
+      if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(code);else{const ta=document.createElement('textarea');ta.value=code;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+      state.status=`Full recreation code copied (${code.length.toLocaleString()} characters).`;
+    }catch(err){state.status='The browser blocked automatic copying. The full code has been placed in the box for manual copying.';render();const details=root.querySelector('.tt99-portability');if(details)details.open=true;const box=root.querySelector('#tt99-full-code');if(box){box.value=code;box.focus();box.select();}return;}
     render();
   }
-  function ensureImportedCustomPreset(requestedId,rules,tagline='Imported portable rules'){
-    if(!requestedId || getBasePreset(state.schemeId,requestedId))return requestedId;
-    const imported={...G.clone(rules),id:requestedId,name:rules.name||'Imported preset',tagline};
-    state.customPresets=state.customPresets.filter(p=>p.id!==requestedId);state.customPresets.push(imported);saveCustomPresets();
-    return requestedId;
+  function ensureImportedCustomPreset(requestedId,rules,tagline='Imported recreation rules'){
+    if(!requestedId||getBasePreset(state.schemeId,requestedId))return requestedId;
+    const imported={...G.clone(rules),id:requestedId,name:rules.name||'Imported preset',tagline};state.customPresets=state.customPresets.filter(p=>p.id!==requestedId);state.customPresets.push(imported);saveCustomPresets();return requestedId;
   }
-  function loadFullRecreationCode(){
-    const raw=(root.querySelector('#tt99-full-code')?.value||'').trim();
+  function applyRecreationV2(d,source='Full recreation code'){
+    if(!d||d.kind!=='TT99R'||d.format!==2||!d.rules)throw new Error('format');
+    if(Number(d.generationVersion||1)!==GENERATION_VERSION)throw new Error('generation');
+    if(d.schemeId&&G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;
+    let requestedId=String(d.clubId||d.rules.id||'').trim()||'33';ensureImportedCustomPreset(requestedId,d.rules);state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';
+    state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));state.previewAnswers=!!d.previewAnswers;state.includeAnswerQr=d.includeAnswerQr!==false;
+    if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};generateAll();
+    if(Array.isArray(d.recipes)){state.sheets=state.sheets.map((s,i)=>{const recipe=d.recipes[i];return {...s,questions:applySheetRecipe(s.seed,state.rules,recipe),actions:Array.isArray(recipe?.a)?G.clone(recipe.a):[]};});refreshSheetCodes();refreshRulesError();persist();}
+    state.status=`${source} loaded. Rules, seed and exact manual question changes were restored.`;render();
+  }
+  function applyRecreationV1(d,source='Legacy recreation code'){
+    if(!d||d.kind!=='TT99R'||d.format!==1||!d.rules)throw new Error('format');
+    if(d.schemeId&&G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;let requestedId=String(d.clubId||d.rules.id||'').trim()||'33';ensureImportedCustomPreset(requestedId,d.rules);state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};
+    if(validExactSheets(d.sheets,state.variants,state.rules)){state.sheets=G.clone(d.sheets);refreshSheetCodes();refreshRulesError();persist();}else generateAll();state.status=`${source} loaded. This was created by an earlier 99 Club Studio/Generator version.`;render();
+  }
+  function loadFullRecreationCode(rawOverride){
+    let raw=typeof rawOverride==='string'?rawOverride.trim():(root.querySelector('#tt99-full-code')?.value||'').trim();
     try{
-      if(!raw.startsWith('TT99R1.'))throw new Error('prefix');
-      const d=JSON.parse(base64UrlToUtf8(raw.slice(7)));
-      if(!d||d.kind!=='TT99R'||d.format!==1||!d.rules)throw new Error('format');
-      if(d.schemeId&&G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;
-      let requestedId=String(d.clubId||d.rules.id||'').trim()||'33';
-      ensureImportedCustomPreset(requestedId,d.rules);
-      state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';
-      state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();
-      state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));
-      state.orientation=d.orientation==='landscape'?'landscape':'portrait';
-      state.seed=typeof d.seed==='string'&&d.seed?d.seed:G.newSeed(state.clubId);
-      state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));
-      if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};
-      if(validExactSheets(d.sheets,state.variants,state.rules)){state.sheets=G.clone(d.sheets);refreshRulesError();persist();}
-      else generateAll();
-      state.status=d.sheets?'Exact worksheet and rules recreated from the portable code.':'Rules and deterministic worksheet recreated from the portable code.';
-      render();
-    }catch(err){state.status='That portable recreation code is not valid.';render();}
+      const qMatch=raw.match(/[#&]q=([^&]+)/);if(qMatch){loadQrRecreationCode(decodeURIComponent(qMatch[1]));return;}
+      const rMatch=raw.match(/[#&]recreate=([^&]+)/);if(rMatch)raw=decodeURIComponent(rMatch[1]);
+      if(raw.startsWith('TT99R2.')){applyRecreationV2(JSON.parse(base64UrlToUtf8(raw.slice(7))));return;}
+      if(raw.startsWith('TT99R1.')){applyRecreationV1(JSON.parse(base64UrlToUtf8(raw.slice(7))));return;}
+      throw new Error('prefix');
+    }catch(err){state.status=String(err.message)==='generation'?'That recreation code uses a generation version this build cannot reproduce.':'That Full recreation code is not valid.';render();}
   }
+
+  function builtInBaseRules(schemeId,clubId){
+    const scheme=G.SCHEME_PRESETS[schemeId];if(scheme?.presets?.[clubId])return normalizeForContext(G.clone(scheme.presets[clubId]),clubId);if(G.CHALLENGE_PRESETS[clubId])return normalizeForContext(G.clone(G.CHALLENGE_PRESETS[clubId]),clubId);return null;
+  }
+  function diffRules(base,current){
+    if(JSON.stringify(canonical(base))===JSON.stringify(canonical(current)))return undefined;
+    if(Array.isArray(base)||Array.isArray(current)||!base||!current||typeof base!=='object'||typeof current!=='object')return G.clone(current);
+    const out={};for(const k of Object.keys(current)){const d=diffRules(base[k],current[k]);if(d!==undefined)out[k]=d;}return Object.keys(out).length?out:undefined;
+  }
+  function mergeRules(base,diff){
+    if(diff===undefined)return G.clone(base);if(Array.isArray(diff)||!diff||typeof diff!=='object')return G.clone(diff);const out=base&&typeof base==='object'&&!Array.isArray(base)?G.clone(base):{};for(const [k,v] of Object.entries(diff))out[k]=mergeRules(out[k],v);return out;
+  }
+  function buildQrRecreationCode(variantIndex){
+    const isCustom=String(state.clubId).startsWith('custom-');
+    let sourceSchemeId=state.schemeId,sourceClubId=state.clubId,base=builtInBaseRules(sourceSchemeId,sourceClubId);
+    if(!base && isCustom){
+      const preset=state.customPresets.find(p=>p.id===state.clubId);
+      if(preset?.sourceSchemeId&&preset?.sourceClubId){sourceSchemeId=preset.sourceSchemeId;sourceClubId=preset.sourceClubId;base=builtInBaseRules(sourceSchemeId,sourceClubId);}
+    }
+    const currentForDiff=isCustom?functionalRules(state.rules,state.clubId):state.rules;
+    const baseForDiff=base?(isCustom?functionalRules(base,sourceClubId):base):null;
+    const diff=baseForDiff?diffRules(baseForDiff,currentForDiff):undefined,sheet=state.sheets[variantIndex];
+    const d={k:'Q',f:1,g:GENERATION_VERSION,s:state.schemeId,c:isCustom&&base?sourceClubId:state.clubId,z:state.seed,p:variantIndex,o:state.orientation==='landscape'?'l':'p',e:sheetRecipe(sheet,state.rules)};
+    if(isCustom&&base)d.u=1;
+    if(baseForDiff){if(sourceSchemeId!==state.schemeId||sourceClubId!==d.c)d.b=[sourceSchemeId,sourceClubId];if(diff!==undefined)d.d=diff;}else d.r=state.rules;
+    return `TT99Q1.${utf8ToBase64Url(JSON.stringify(d))}`;
+  }
+  function buildQrRecreationUrl(variantIndex){return `${APP_URL}#q=${buildQrRecreationCode(variantIndex)}`;}
+  function qrResultForVariant(variantIndex){
+    if(!Q||!state.includeAnswerQr)return null;
+    const result=Q.make(buildQrRecreationUrl(variantIndex));
+    if(result.version>MAX_PRINT_QR_VERSION)throw new Error('QR too dense for reliable print');
+    return result;
+  }
+  function qrSvgForVariant(variantIndex){try{const r=qrResultForVariant(variantIndex);return r?Q.svg(r,{className:'tt99-qr-svg',label:'Scan to recreate this worksheet'}):'';}catch(err){return '';}}
+  function loadQrRecreationCode(raw){
+    try{
+      if(!String(raw).startsWith('TT99Q1.'))throw new Error('prefix');const d=JSON.parse(base64UrlToUtf8(String(raw).slice(7)));if(!d||d.k!=='Q'||d.f!==1||Number(d.g)!==GENERATION_VERSION)throw new Error('format');
+      if(d.s&&G.SCHEME_PRESETS[d.s])state.schemeId=d.s;
+      let rules,requestedId=String(d.c||'33');
+      if(d.r)rules=G.normalizeRules(d.r);
+      else{
+        const baseSpec=Array.isArray(d.b)&&d.b.length===2?d.b:[state.schemeId,requestedId];
+        const base=builtInBaseRules(baseSpec[0],baseSpec[1]);if(!base)throw new Error('base');
+        rules=d.d?mergeRules(d.u?functionalRules(base,baseSpec[1]):base,d.d):base;
+      }
+      if(d.u){
+        const baseSpec=Array.isArray(d.b)&&d.b.length===2?d.b:[state.schemeId,requestedId];
+        const tempId=`custom-qr-${ruleFingerprint(rules,requestedId).toLowerCase()}`;
+        rules={...rules,id:tempId,name:'Recreated custom sheet',tagline:'Imported from teacher QR',sourceSchemeId:baseSpec[0],sourceClubId:baseSpec[1]};
+        requestedId=tempId;ensureImportedCustomPreset(requestedId,rules,'Imported from teacher QR');
+      }else if(String(requestedId).startsWith('custom-')&&!getBasePreset(state.schemeId,requestedId))ensureImportedCustomPreset(requestedId,rules,'Imported from teacher QR');
+      state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:(getBasePreset(state.schemeId,rules.id)?rules.id:'33');state.rules=normalizeForContext(rules,state.clubId);commitCurrentRules();state.seed=String(d.z||newStudioSeed(state.clubId));const qrVariant=Math.max(0,Math.min(3,Number(d.p)||0));state.variants=Math.min(4,Math.max(qrVariant+1,Number(d.v)||1));state.previewVariant=qrVariant;state.orientation=d.o==='l'?'landscape':'portrait';if(Array.isArray(d.m))state.school={...state.school,schoolName:d.m[0]||'',yearGroup:d.m[1]||'',className:d.m[2]||'',teacherName:d.m[3]||'',worksheetDate:d.m[4]||'',logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};generateAll();if(d.e){const i=state.previewVariant,stateSheet=state.sheets[i];stateSheet.questions=applySheetRecipe(stateSheet.seed,state.rules,d.e);stateSheet.actions=Array.isArray(d.e?.a)?G.clone(d.e.a):[];refreshSheetCodes();refreshRulesError();persist();}state.previewAnswers=true;state.status='Teacher QR recreation loaded. This exact sheet and its rules are ready in 99 Club Studio.';render();
+    }catch(err){state.status='That teacher QR recreation data is not valid or is from an unsupported generation version.';render();}
+  }
+  function loadRecreationFromLocation(){
+    try{const hash=String(location.hash||'');const m=hash.match(/^#q=(.+)$/);if(!m)return;const code=decodeURIComponent(m[1]);loadQrRecreationCode(code);if(history?.replaceState)history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+  }
+
   function downloadJson(filename,data){
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
-  function downloadFullBackup(){
-    const data={kind:'tt99-full-backup',backupVersion:1,appVersion:VERSION,savedAt:new Date().toISOString(),customPresets:state.customPresets,settings:settingsPayload(true,true)};
-    downloadJson('99-club-full-backup.json',data);state.status='Full browser backup downloaded.';render();
+  function safeDateStamp(){return new Date().toISOString().slice(0,10);}
+  function fullBackupData(){return {kind:'tt99-full-backup',backupVersion:1,app:'Tech Tinker Club · 99 Club Studio',appVersion:VERSION,generationVersion:GENERATION_VERSION,savedAt:new Date().toISOString(),customPresets:state.customPresets,settings:settingsPayload(true,true)};}
+  function downloadFullBackup(){downloadJson(`99-club-studio-full-backup-${safeDateStamp()}.json`,fullBackupData());state.status='Full backup downloaded. Keep this file somewhere independent of the browser if the saved presets matter.';render();}
+  function hasPreRestoreSnapshot(){try{const d=JSON.parse(localStorage.getItem(PRE_RESTORE_KEY)||'null');return !!(d&&d.kind==='tt99-full-backup'&&d.settings);}catch(e){return false;}}
+  function applyBackupData(d,statusText){
+    if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');state.customPresets=Array.isArray(d.customPresets)?G.clone(d.customPresets):[];saveCustomPresets();const x=d.settings;state.schemeId=x.schemeId&&G.SCHEME_PRESETS[x.schemeId]?x.schemeId:'classic';state.ruleOverrides=x.ruleOverrides&&typeof x.ruleOverrides==='object'&&!Array.isArray(x.ruleOverrides)?G.clone(x.ruleOverrides):{};const requestedId=String(x.clubId||x.rules?.id||'33');state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';state.rules=normalizeForContext(x.rules||getBasePreset(state.schemeId,state.clubId),state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(x.variants)||1));state.orientation=x.orientation==='landscape'?'landscape':'portrait';state.seed=typeof x.seed==='string'&&x.seed?x.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(x.previewVariant)||0));state.previewAnswers=!!x.previewAnswers;state.includeAnswerQr=x.includeAnswerQr!==false;if(x.school)state.school={...state.school,...x.school};if(validExactSheets(x.sheets,state.variants,state.rules)){state.sheets=G.clone(x.sheets);refreshSheetCodes();refreshRulesError();persist();}else generateAll();state.status=statusText;render();
   }
   function restoreFullBackup(e){
-    const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{
-      const d=JSON.parse(reader.result);if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');
-      state.customPresets=Array.isArray(d.customPresets)?G.clone(d.customPresets):[];saveCustomPresets();
-      const x=d.settings;
-      state.schemeId=x.schemeId&&G.SCHEME_PRESETS[x.schemeId]?x.schemeId:'classic';
-      if(x.ruleOverrides&&typeof x.ruleOverrides==='object'&&!Array.isArray(x.ruleOverrides))state.ruleOverrides=G.clone(x.ruleOverrides);else state.ruleOverrides={};
-      const requestedId=String(x.clubId||x.rules?.id||'33');
-      state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';
-      state.rules=normalizeForContext(x.rules||getBasePreset(state.schemeId,state.clubId),state.clubId);commitCurrentRules();
-      state.variants=Math.min(4,Math.max(1,Number(x.variants)||1));state.orientation=x.orientation==='landscape'?'landscape':'portrait';
-      state.seed=typeof x.seed==='string'&&x.seed?x.seed:G.newSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(x.previewVariant)||0));state.previewAnswers=!!x.previewAnswers;
-      if(x.school)state.school={...state.school,...x.school};
-      if(validExactSheets(x.sheets,state.variants,state.rules)){state.sheets=G.clone(x.sheets);refreshRulesError();persist();}
-      else generateAll();
-      state.status='Full browser backup restored, including custom presets and challenge edits.';render();
-    }catch(err){state.status='That file is not a valid 99 Club full backup.';render();}};reader.readAsText(file);
+    const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');try{localStorage.setItem(PRE_RESTORE_KEY,JSON.stringify(fullBackupData()));}catch(ignore){}applyBackupData(d,'Full backup restored. The browser state it replaced is kept as a local safety snapshot; use “Undo last restore” if needed.');}catch(err){state.status='That file is not a valid 99 Club Studio full backup.';render();}};reader.readAsText(file);
+  }
+  function undoLastRestore(){
+    try{const previous=JSON.parse(localStorage.getItem(PRE_RESTORE_KEY)||'null');if(!previous)throw new Error('missing');const current=fullBackupData();localStorage.setItem(PRE_RESTORE_KEY,JSON.stringify(current));applyBackupData(previous,'Last full-backup restore undone. The state you just replaced is now the safety snapshot, so you can swap back again if needed.');}catch(err){state.status='There is no usable pre-restore safety snapshot in this browser.';render();}
   }
 
   function softRenderPaper(){ const wrap=root.querySelector('.tt99-preview-wrap'); if(wrap)wrap.innerHTML=renderPaper(); const paper=wrap?.querySelector('.tt99-paper'); paper?.querySelectorAll('[data-replace]').forEach(btn=>btn.addEventListener('click',()=>replaceOne(Number(btn.dataset.replace)))); }
@@ -746,27 +951,34 @@
   function downloadPDF(kind){
     if(state.rulesError){state.status=state.rulesError;render();return;}
     try {
-      const doc=L.buildDocument({rules:state.rules,sheets:state.sheets,school:state.school,kind,orientation:state.orientation});
+      let qrOmitted=0;
+      const qrByVariant=(state.includeAnswerQr && (kind==='answers'||kind==='both')) ? state.sheets.map((_,i)=>{
+        try{return qrResultForVariant(i)?.matrix||null;}catch(err){console.warn('QR omitted for variant',i,err);qrOmitted++;return null;}
+      }) : [];
+      const doc=L.buildDocument({rules:state.rules,sheets:state.sheets,school:state.school,kind,orientation:state.orientation,qrByVariant});
       doc.save(L.filename(state.rules,kind,state.orientation));
-      state.status='PDF created.'; render();
+      state.status=qrOmitted?`PDF created. ${qrOmitted} answer-sheet QR ${qrOmitted===1?'code was':'codes were'} omitted because the recreation data was too large.`:'PDF created.'; render();
     } catch(err){ console.error(err); state.status='PDF generation failed in this browser. Please refresh and try again.';render(); }
   }
 
   function exportSettings(){
     const data={
-      app:'Tech Tinker Club 99 Club Generator',version:VERSION,schemeId:state.schemeId,clubId:state.clubId,
-      rules:state.rules,ruleOverrides:state.ruleOverrides,variants:state.variants,orientation:state.orientation,seed:state.seed,
-      sheets:state.sheets.map(s=>({seed:s.seed,code:s.code,questions:s.questions})),
+      kind:'tt99-current-setup',setupVersion:2,app:'Tech Tinker Club · 99 Club Studio',version:VERSION,generationVersion:GENERATION_VERSION,
+      schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,variants:state.variants,
+      orientation:state.orientation,includeAnswerQr:state.includeAnswerQr,seed:state.seed,
+      sheets:state.sheets.map(s=>({seed:s.seed,code:s.code,questions:s.questions,actions:Array.isArray(s.actions)?s.actions:[]})),
       school:{schoolName:state.school.schoolName,yearGroup:state.school.yearGroup,className:state.school.className,teacherName:state.school.teacherName,worksheetDate:state.school.worksheetDate}
     };
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='99-club-settings.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const safe=(state.rules.name||state.clubId||'setup').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase();
+    downloadJson(`99-club-studio-${safe||'setup'}-setup.json`,data);
+    state.status='This setup was exported. It carries only the current challenge, exact worksheet versions and personalisation text; it does not contain the school logo, other saved presets or other challenge edits.';render();
   }
   function importSettings(e){
     const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{
       const d=JSON.parse(reader.result);
       if(!d || typeof d!=='object' || !d.rules) throw new Error('settings');
+      if(d.generationVersion && Number(d.generationVersion)!==GENERATION_VERSION)throw new Error('generation');
       if(d.schemeId && G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;
-      if(d.ruleOverrides && typeof d.ruleOverrides==='object' && !Array.isArray(d.ruleOverrides))state.ruleOverrides=G.clone(d.ruleOverrides);
       let requestedId=String(d.clubId||d.rules.id||'').trim();
       let candidateBase=requestedId?getBasePreset(state.schemeId,requestedId):null;
       const importedRulesRaw=G.normalizeRules(d.rules);
@@ -776,20 +988,19 @@
         candidateBase=imported;
       }
       state.clubId=requestedId&&getBasePreset(state.schemeId,requestedId)?requestedId:(getBasePreset(state.schemeId,importedRulesRaw.id)?importedRulesRaw.id:'33');
-      state.rules=normalizeForContext(importedRulesRaw,state.clubId);
-      // Old settings files have no override map. Preserve their active edited rules
-      // as the selected scheme/challenge's independent v1.3 override.
-      commitCurrentRules();
+      state.rules=normalizeForContext(importedRulesRaw,state.clubId);commitCurrentRules();
       state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));
       state.orientation=d.orientation==='landscape'?'landscape':'portrait';
+      state.includeAnswerQr=d.includeAnswerQr!==false;
       if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};
-      state.seed=typeof d.seed==='string'&&d.seed?d.seed:G.newSeed(state.clubId);
+      state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);
       const exactSheets=validExactSheets(d.sheets,state.variants,state.rules);
-      if(exactSheets){state.sheets=G.clone(d.sheets);state.previewVariant=0;refreshRulesError();persist();}
+      if(exactSheets){state.sheets=G.clone(d.sheets);refreshSheetCodes();state.previewVariant=0;refreshRulesError();persist();}
       else generateAll();
-      state.status=exactSheets?'Settings, challenge-rule edits and exact worksheet versions imported.':'Settings and challenge-rule edits imported.';render();
-    }catch(err){state.status='That settings file is not valid.';render();}};reader.readAsText(file);
+      state.status=exactSheets?'Setup imported, including the exact worksheet versions. Your other browser-saved presets and challenge edits were left untouched.':'Setup imported. Your other browser-saved presets and challenge edits were left untouched.';render();
+    }catch(err){state.status=String(err&&err.message)==='generation'?'That setup uses a worksheet generation version this build does not support.':'That file is not a valid 99 Club Studio setup.';render();}};reader.readAsText(file);
   }
+
 
   function formatDate(iso){ if(!iso)return ''; const [y,m,d]=iso.split('-').map(Number); if(!y||!m||!d)return iso; return new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(y,m-1,d)); }
 })();

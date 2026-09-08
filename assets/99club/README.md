@@ -1,23 +1,24 @@
-# Tech Tinker Club 99 Club Generator
+# Tech Tinker Club · 99 Club Studio
 
 Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version 1.6 is a rule-relevance and portability pass on the frozen v1.5 baseline. Classic/post-99 default worksheet outputs and the PDF engine remain regression-frozen. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1/v1.2 baselines. Existing built-in Bronze-Diamond presets are also regression-tested so rule-editor work cannot silently alter their default sheets.
+Version 1.7 is the tester-readiness, persistence and reproducibility baseline. The mathematical question-generation paths from v1.6 remain frozen: Classic 11–99 and the built-in Bronze–Diamond presets are regression-checked with fixed seeds so persistence, code and PDF work cannot silently change the maths.
 
-The normal progression shown on first load is still:
+The public app name is **99 Club Studio**. Classic 99 Club remains the default scheme, with the normal progression:
 
 `11 -> 22 -> 33 -> 44 -> 55 -> 66 -> 77 -> 88 -> 99`
 
-with the TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. Both remain editable.
+and TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. Both remain editable.
 
 ## Files
 
 - `generator.js` - Classic presets, optional 11-99 schemes, Bronze-Diamond presets, rule normalisation, reusable question-family generators, deterministic generation and balancing.
 - `simple-pdf.js` - dependency-free A4 PDF writer using standard PDF fonts, optional JPEG logos, portrait/landscape page sizes and a standard Symbol-font radical glyph for square roots.
-- `pdf-layout.js` - separate portrait and landscape worksheet/answer-key layouts.
-- `app.js` - UI state, personalisation, scheme selection, page-layout selection, contextual help, custom presets, exact-sheet browser persistence, portable recreation codes, full backup/restore, settings import/export and PDF downloads.
+- `pdf-layout.js` - separate portrait and landscape worksheet/answer-key layouts, including optional teacher-only recreation QR rendering.
+- `app.js` - UI state, personalisation, scheme selection, page-layout selection, contextual help, custom presets, exact-sheet browser persistence, human-readable/versioned sheet codes, portable recreation codes, teacher QR recreation, full backup/restore, setup import/export and PDF downloads.
+- `qr-lite.js` - dependency-free QR encoder used only for local teacher-sheet recreation links.
 - `99club.css` - responsive app, contextual help, guide-page and print-preview styling.
 - `../../_pages/99-club-help.md` - full Help & guide page at `/tools/99-club/help/`.
 
@@ -70,25 +71,30 @@ For custom/mixed presets the rule editor can turn families on/off and change the
 
 
 
-## v1.6 rule relevance and saved-data portability
+## v1.7 saving, backup and reproducibility
 
-The advanced editor now hides or locks controls that do not make sense for a named challenge rather than offering flexibility that can silently change what that challenge means.
+99 Club Studio keeps automatic browser storage for convenience, but makes portable saving explicit:
 
-- **Bronze–Diamond** always use the full 1–12 basic multiplication/division fact set. Their table selector and ordinary factor/quotient controls are therefore hidden.
-- **Silver–Diamond** keep the families that define the named challenge as locked core families. Their weights can still be changed and optional extra families can be added/removed. Saving the result as a custom preset creates a fully flexible version.
-- Scaled multiplication/division has its own `scaledBaseMin` / `scaledBaseMax`; it no longer borrows the ordinary table factor range.
-- Roman numerals have their own maximum value, and simple algebra has independent unknown/coefficient limits. This removes misleading cross-coupling between unrelated controls.
-- Existing v1.5 custom data migrates through normalisation: irrelevant old table/factor edits on named advanced challenges are discarded, while an old factor edit is preserved as the scaled range when scaled maths was actually part of that edited challenge.
+- **Save as reusable preset** stores one reusable ruleset in this browser.
+- **Export this setup** downloads only the current challenge, exact worksheet versions and personalisation text as JSON. It deliberately does not include the school logo, other reusable presets or other challenge edits; importing a setup leaves those other browser-saved items untouched.
+- **Full browser backup** downloads all Studio data saved in this browser: reusable presets, per-scheme/per-challenge edits, exact current sheets, personalisation and the school logo.
+- **Restore full backup** first stores a local pre-restore safety snapshot. **Undo last restore** can swap back if the wrong backup was chosen.
+- **Full recreation code** (`TT99R2…`) contains the active rules, seed and a compact exact-sheet recipe for manual replacements/shuffling. New edits are stored as a small replayable action recipe (replace/shuffle actions) so exact recreation does not require embedding a 100-position question permutation. It is portable across browsers and does not depend on a locally saved preset. The school logo is intentionally excluded.
+- **Teacher answer-sheet QR** contains a compact `TT99Q1…` recreation payload in the URL fragment (`#q=`). Pupil worksheets never receive the QR. The fragment is processed client-side and is not sent to the web server. Printable QR density is capped deliberately: if a complex legacy/custom payload would be unreliable on paper, the PDF is still produced and Studio reports that the QR was omitted. Newly saved custom presets remember their source challenge so their QR payload can usually remain compact.
 
-Browser persistence is also now explicit and portable:
+### Human-readable sheet codes
 
-- Exact current worksheet versions (including manual replacements/shuffles) are stored in browser local storage and survive a normal page refresh.
-- A **portable recreation code** carries the active rules + seed. When manual question edits/shuffles exist, the exact question set is included. This solves the short-sheet-code limitation for edited/custom rules on another browser.
-- A **full browser backup** JSON includes custom presets, per-challenge edits, current exact sheets, personalisation and the current school logo.
-- A **current setup** JSON remains available as the smaller one-challenge transfer format.
-- Browser storage is local storage, not cookies. It should not be treated as permanent/cloud storage because clearing site data, using private browsing or moving browser/device can remove it.
+New printed codes identify the challenge, worksheet-generation version and variant, for example `C99-G1-7FK2M9-A`. Advanced challenge prefixes include `BRZ`, `SLV`, `GLD`, `PLT` and `DIA`. Edited/custom rules add an `X` marker plus a short functional-rule fingerprint so Studio can refuse to recreate the sheet with the wrong mathematical configuration rather than silently producing different maths. The fingerprint ignores preset names/IDs.
 
-The short printed sheet code is intentionally unchanged for backward compatibility and PDF regression safety. It remains sufficient for unchanged built-in rules; use the portable recreation code or setup file for edited/custom rules.
+Legacy pre-v1.7 codes are still accepted. Because the old format did not encode the scheme/rule identity, exact historical recreation of an old customised sheet still requires the matching rules/setup.
+
+### v1.6 rule relevance retained
+
+The v1.6 contextual-rule safeguards remain unchanged:
+
+- **Bronze–Diamond** always use the full 1–12 basic multiplication/division fact set; irrelevant table/factor selectors are hidden.
+- **Silver–Diamond** keep the families that define the named challenge as locked core families. Their weights can be changed and optional extra families can be added/removed. Saving as a custom preset creates a fully flexible version.
+- Scaled multiplication/division has independent base/scale ranges; Roman numerals and simple algebra have their own family-specific ranges instead of borrowing ordinary table/arithmetic controls.
 
 ## v1.5 help and guidance
 
@@ -100,7 +106,7 @@ The generator now has a three-layer help system without changing worksheet gener
 
 The help explicitly explains that **weight controls frequency, not difficulty**, that selected fraction denominators can generate varied proper numerators (for example denominator 5 can produce 1/5 through 4/5), and how custom percentages, sheet codes, independent challenge edits and settings export/import work.
 
-`generator.js`, `pdf-layout.js` and `simple-pdf.js` are unchanged from v1.4.
+At the v1.5 help-only baseline, the maths and PDF-generation paths were intentionally left unchanged; later versions retain the same frozen maths core while adding contextual rules, persistence and teacher-copy QR recreation.
 
 ## v1.4 fraction and percentage controls
 
@@ -131,11 +137,11 @@ Teachers can also edit rules in the browser and save their own custom presets lo
 
 ## Privacy
 
-No server is used. School/class details, custom presets and the optional school logo are handled in the browser. The logo is resized locally before being used in the preview/PDF. Local browser storage is used only for convenience; full backup/restore provides a portable copy independent of that browser.
+No application server is used for worksheet generation or storage. School/class details, custom presets and the optional school logo are handled in the browser. The logo is resized locally before being used in the preview/PDF. Local browser storage is a convenience layer only; full backup/restore provides a portable copy independent of that browser. Teacher QR recreation data is placed in the URL fragment so it is not sent to the website server.
 
 ## Sheet reproducibility
 
-Each generated version has a short sheet code derived from its deterministic seed. Equivalent versions use the same base seed with separate variant suffixes. The short code recreates an untouched generated sheet when the same rules are available. For portability across browsers when rules were edited/custom, v1.6 adds a self-contained recreation code. Current-setup files and full backups also preserve exact manual replacements/shuffles.
+Each generated version has a human-readable, generation-versioned sheet code. Unedited built-in sheets can be recreated directly from that short code. Edited/custom codes carry a rule fingerprint and Studio refuses to recreate them when the matching rules are unavailable. For complete portability, use the self-contained Full recreation code or the teacher-copy QR; setup files and full backups also preserve exact manual replacements/shuffles. The generation version is kept separate from the app release version so future UI changes do not silently redefine historical worksheet codes.
 
 ## Page layouts
 

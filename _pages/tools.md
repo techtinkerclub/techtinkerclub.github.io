@@ -18,8 +18,8 @@ This page will grow over time — bookmark it!
 
 ## 🧮 Classroom Generators
 
-- [**99 Club Sheet Generator**](/tools/99-club/)  
-  Create personalised, print-ready 11–99 Club maths worksheets and matching answer keys. Choose the level, adjust the rules, add school/class details and download a PDF. Everything runs privately in your browser.
+- [**99 Club Studio**](/tools/99-club/)  
+  Create, customise, save and reproduce personalised 99 Club and advanced mental-maths worksheets with matching answer keys. Includes reusable presets, portable setup files, full browser backup and teacher-copy recreation QR codes. Everything runs privately in your browser.
 
 ---
 
