@@ -94,7 +94,9 @@
         const q=sheet.questions[idx], rr=idx-start;
         const y=top+rr*rowH+Math.min(14.5,Math.max(10,rowH*.64));
         page.text(x,y,`${q.number}.`,fonts.number,{bold:true,color:muted});
-        drawQuestionPrompt(page,x+(landscape?24:23),y,q.prompt,fonts.question,ink);
+        const promptX=x+(landscape?24:23);
+        const promptMaxW=Math.max(28,colW-(promptX-x)-answerLineW-7);
+        drawQuestionPrompt(page,promptX,y,q.prompt,fonts.question,ink,promptMaxW);
         if(answers) page.text(x+colW-6,y,String(q.answer),fonts.answer,{bold:true,align:'right',color:teal});
         else page.line(x+colW-answerLineW,y+2,x+colW-5,y+2,{color:[120,128,136],width:0.6});
       }
@@ -123,14 +125,21 @@
     }
   }
 
-  function drawQuestionPrompt(page,x,y,prompt,size,color){
+  function drawQuestionPrompt(page,x,y,prompt,size,color,maxWidth=Infinity){
     const raw=String(prompt == null ? '' : prompt);
+    let drawSize=size;
+    if(Number.isFinite(maxWidth)){
+      const estimated=raw.charAt(0)==='√'
+        ? size*.56 + P.estimateTextWidth(raw.slice(1),size,false)
+        : P.estimateTextWidth(raw,size,false);
+      if(estimated>maxWidth)drawSize=Math.max(6.8,size*(maxWidth/estimated));
+    }
     if(raw.charAt(0)==='√' && typeof page.symbol==='function'){
-      const radicalWidth=page.symbol(x,y,214,size,{color});
-      page.text(x+radicalWidth+Math.max(1.1,size*.06),y,raw.slice(1),size,{color});
+      const radicalWidth=page.symbol(x,y,214,drawSize,{color});
+      page.text(x+radicalWidth+Math.max(1.1,drawSize*.06),y,raw.slice(1),drawSize,{color});
       return;
     }
-    page.text(x,y,raw,size,{color});
+    page.text(x,y,raw,drawSize,{color});
   }
 
   function getColumns(count,orientation){
@@ -146,24 +155,26 @@
 
   function getQuestionFonts(count,orientation){
     const landscape=normalizeOrientation(orientation)==='landscape';
+    // v1.8: prioritise the maths. Long prompts are fitted down individually by
+    // drawQuestionPrompt, so ordinary facts can use a noticeably larger base size.
     if(landscape){
-      if(count<=11)return {question:14.2,number:9.5,answer:13.2};
-      if(count<=22)return {question:12.9,number:9.1,answer:12.1};
-      if(count<=33)return {question:12.4,number:8.9,answer:11.8};
-      if(count<=44)return {question:12.0,number:8.7,answer:11.5};
-      if(count<=55)return {question:11.6,number:8.5,answer:11.1};
-      if(count<=66)return {question:11.2,number:8.3,answer:10.8};
-      if(count<=77)return {question:10.8,number:8.1,answer:10.5};
-      return {question:10.4,number:8.0,answer:10.2};
+      if(count<=11)return {question:15.5,number:10.0,answer:14.0};
+      if(count<=22)return {question:14.1,number:9.6,answer:12.9};
+      if(count<=33)return {question:13.5,number:9.4,answer:12.6};
+      if(count<=44)return {question:13.0,number:9.2,answer:12.2};
+      if(count<=55)return {question:12.6,number:9.0,answer:11.9};
+      if(count<=66)return {question:12.2,number:8.8,answer:11.6};
+      if(count<=77)return {question:11.8,number:8.6,answer:11.3};
+      return {question:11.5,number:8.5,answer:11.0};
     }
-    if(count<=11)return {question:13.6,number:9.4,answer:12.7};
-    if(count<=22)return {question:12.1,number:9.0,answer:11.6};
-    if(count<=33)return {question:11.8,number:8.8,answer:11.3};
-    if(count<=44)return {question:11.4,number:8.6,answer:11.0};
-    if(count<=55)return {question:11.0,number:8.4,answer:10.7};
-    if(count<=66)return {question:10.7,number:8.2,answer:10.4};
-    if(count<=77)return {question:10.4,number:8.0,answer:10.2};
-    return {question:10.1,number:7.9,answer:10.0};
+    if(count<=11)return {question:14.8,number:9.9,answer:13.5};
+    if(count<=22)return {question:13.2,number:9.5,answer:12.4};
+    if(count<=33)return {question:12.8,number:9.3,answer:12.1};
+    if(count<=44)return {question:12.4,number:9.1,answer:11.8};
+    if(count<=55)return {question:12.0,number:8.9,answer:11.5};
+    if(count<=66)return {question:11.7,number:8.7,answer:11.2};
+    if(count<=77)return {question:11.4,number:8.5,answer:11.0};
+    return {question:11.1,number:8.4,answer:10.8};
   }
 
   function displayYear(value){

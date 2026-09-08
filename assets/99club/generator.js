@@ -749,12 +749,56 @@
     return shuffle(questions, rng).map((q, idx) => ({ ...q, number: idx + 1 }));
   }
 
-  function replaceQuestion(questions, index, rules, seed) {
+  function poolForQuestionKind(kind, rules) {
+    if (kind === 'double') return buildDoublePool(rules);
+    if (kind === 'repeated_addition') return buildRepeatedPool(rules);
+    if (kind === 'multiply') return buildMultiplyPool(rules);
+    if (kind === 'divide') return buildDividePool(rules);
+    if (kind === 'addition') return buildAdditionPool(rules);
+    if (kind === 'subtraction') return buildSubtractionPool(rules);
+    if (kind === 'missing_number') return buildMissingNumberPool(rules);
+    if (Object.prototype.hasOwnProperty.call(FAMILY_LABELS, kind)) return poolForFamily(kind, rules);
+    return [];
+  }
+
+  function questionByKey(kind, inputRules, key) {
+    const rules = normalizeRules(inputRules);
+    const q = poolForQuestionKind(kind, rules).find(item => item && item.key === key);
+    return q ? { ...q } : null;
+  }
+
+  function replaceQuestion(questions, index, inputRules, seed) {
     if (index < 0 || index >= questions.length) return questions.slice();
-    const existing = new Set(questions.map((q, i) => i === index ? null : q.key).filter(Boolean));
-    const candidates = generateQuestions({ ...rules, questionCount: Math.max(20, rules.questionCount) }, `${seed}:replace:${index}:${Date.now()}`)
-      .filter(q => !existing.has(q.key));
+    const rules = normalizeRules(inputRules);
+    const current = questions[index];
+    if (!current) return questions.slice();
+
+    // A manual replacement is a review action, not a re-roll of the whole sheet.
+    // Keep the replacement in the same mathematical family as the question it replaces.
+    const pool = poolForQuestionKind(current.kind, rules);
+    if (!pool.length) return questions.slice();
+
+    const exactSeen = new Set();
+    const reverseSeen = new Set();
+    questions.forEach((q, i) => {
+      if (i === index || !q) return;
+      if (q.key) exactSeen.add(q.key);
+      reverseSeen.add(q.reverseKey || q.key || '');
+    });
+
+    let candidates = pool.filter(q => {
+      if (!q || q.key === current.key) return false;
+      if (rules.avoidExactDuplicates && exactSeen.has(q.key)) return false;
+      if (rules.avoidReversedDuplicates && reverseSeen.has(q.reverseKey || q.key)) return false;
+      return true;
+    });
+    // If a very small pool is exhausted, still stay in the same family rather than
+    // silently switching category. Prefer a different fact even if duplication is unavoidable.
+    if (!candidates.length) candidates = pool.filter(q => q && q.key !== current.key);
     if (!candidates.length) return questions.slice();
+
+    const rng = rngFromSeed(String(seed || '') + ':same-family-replacement');
+    candidates = shuffle(candidates, rng);
     const out = questions.slice();
     out[index] = { ...candidates[0], number: index + 1 };
     return out;
@@ -814,7 +858,7 @@
   const api = {
     CLASSIC_PRESETS, CHALLENGE_PRESETS, SCHEME_PRESETS, FAMILY_LABELS,
     clone, normalizeRules, generateQuestions, shuffleQuestions,
-    replaceQuestion, rulesSummary, instructionText, newSeed, rngFromSeed, compressNumbers
+    replaceQuestion, questionByKey, rulesSummary, instructionText, newSeed, rngFromSeed, compressNumbers
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -13,9 +13,9 @@ header:
   <noscript>This worksheet generator needs JavaScript enabled in your browser.</noscript>
 </div>
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=9">
-<script src="/assets/99club/generator.js?v=9"></script>
-<script src="/assets/99club/simple-pdf.js?v=9"></script>
-<script src="/assets/99club/pdf-layout.js?v=9"></script>
-<script src="/assets/99club/qr-lite.js?v=9"></script>
-<script src="/assets/99club/app.js?v=9" defer></script>
+<link rel="stylesheet" href="/assets/99club/99club.css?v=10">
+<script src="/assets/99club/generator.js?v=10"></script>
+<script src="/assets/99club/simple-pdf.js?v=10"></script>
+<script src="/assets/99club/pdf-layout.js?v=10"></script>
+<script src="/assets/99club/qr-lite.js?v=10"></script>
+<script src="/assets/99club/app.js?v=10" defer></script>

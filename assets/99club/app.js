@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.7';
+  const VERSION = '1.8';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const GENERATION_VERSION = 1;
@@ -60,18 +60,19 @@
     percentageQuantity: ['Percentage quantity range','Sets the smallest and largest quantity used in percentage questions. Unsuitable combinations that would produce a non-whole answer are skipped.'],
     angleFacts: ['Angle facts','Generates missing-angle facts based on the selected totals: 90° for a right angle, 180° for a straight line, and 360° for a full turn.'],
     duplicates: ['Duplicate handling','“Exact duplicates” avoids the same question appearing twice where possible. Reversed multiplication duplicates treats facts such as 3 × 7 and 7 × 3 as the same fact.'],
+    replaceQuestion: ['Replace one question','Use the circular-arrow button in the preview to swap a question you do not want. The new question stays in the same mathematical family—for example a fraction is replaced by another fraction and a square root by another square root.'],
     savePreset: ['Save as reusable preset','Stores the current rule combination as a custom challenge in this browser. It does not upload anything or alter the built-in preset.'],
     resetChallenge: ['Reset this challenge','Restores only the currently selected scheme + challenge to its built-in default rules. Other edited challenges are kept.'],
     resetScheme: ['Reset scheme','Restores every edited 11–99 challenge in the selected scheme. It does not remove your saved custom presets.'],
     layout: ['Page layout','Portrait uses the traditional taller worksheet. Landscape uses the wider page to give questions more horizontal space and, where possible, larger working text. The maths and sheet code do not change.'],
     variants: ['Equivalent versions','Creates up to four equivalent sheets from the same rules. Each version has its own reproducible sheet code and matching answer key.'],
-    sheetCode: ['Sheet code','New sheet codes are human-readable and versioned, for example C99-G1-7FK2M9-A. The challenge, generator generation and worksheet version are built into the code. An X after the challenge means edited/custom rules are required. Older sheet codes remain supported.'],
-    exportSettings: ['Export / import one setup','Exports the current challenge rules, exact worksheet versions and personalisation text to a portable JSON file. Use this when you want to archive or share one setup; use Full backup to protect everything saved in this browser.'],
-    browserStorage: ['Browser-saved data','The app uses local browser storage, not cookies. It normally survives an ordinary cache clear, but clearing site data, private browsing, changing browser/profile or changing device can remove it. Use a full backup for anything you want to keep.'],
-    fullBackup: ['Full backup','Downloads everything 99 Club Studio has saved in this browser: reusable presets, per-challenge edits, personalisation including the logo, and the current exact sheets. Restoring creates a local safety snapshot first so the previous browser state can be recovered.'],
-    portableCode: ['Full recreation code','A self-contained copy-and-paste code carrying the rules, deterministic seed and exact manual replacements/shuffling. It can recreate the maths on another browser without a preset file. The school logo is not included; use a Full backup when you need the complete browser setup.'],
-    answerQr: ['Recreation QR on answer sheets','Adds a QR code to teacher answer pages only. Scanning it opens 99 Club Studio and recreates the exact maths, rules and page orientation using a privacy-preserving URL fragment. School personalisation and the logo are deliberately left out. If a recreation payload would make the printed QR too dense to scan reliably, Studio omits the QR and tells you to use the Full recreation code instead. Pupil worksheets never receive the QR.'],
-    saveSafety: ['How saving works','99 Club Studio saves automatically in this browser for convenience. Reusable presets are browser-local. Export one setup to move a single configuration, and download a Full backup to protect everything from site-data clearing or a device/browser change.']
+    sheetCode: ['Sheet code','A short reference printed on every sheet. For a standard preset it can rebuild the same questions. If the sheet used edited rules, use the Full recreation code or the QR as well so Studio also knows those rules.'],
+    exportSettings: ['Export / import one setup','Use this when you want to move or share one particular setup. The file includes the current rules and exact worksheet versions, but it does not replace the rest of your saved browser work when imported.'],
+    browserStorage: ['Saved in this browser','Studio remembers your work automatically on this browser. This is convenient, but it is not an online account: clearing site data, using private browsing, changing browser profile or moving device can remove it. Download a Full backup for anything important.'],
+    fullBackup: ['Full backup','Use this as your safety copy. It contains all Studio data saved in this browser, including reusable presets, challenge edits, the current exact sheets and school personalisation/logo. Restore it on this or another browser when you need everything back.'],
+    portableCode: ['Full recreation code','Use this to recreate one exact worksheet on another browser without sending a setup file. It contains the worksheet rules and the final reviewed question set/order. Replacing the same question several times does not keep the old replacements. The school logo is not included.'],
+    answerQr: ['Recreation QR on answer sheets','Adds a QR to the teacher answer copy only. Scan it to reopen the final reviewed worksheet with the same rules and question order. The QR stores the current sheet, not the history of changes you made while reviewing it. School names and logos are not included, and pupil worksheets never receive the QR.'],
+    saveSafety: ['How saving works','For normal weekly use, Studio saves automatically in this browser. Save a reusable preset when you want a rule set again, export one setup when you want to share that setup, and download a Full backup when you want a safety copy of everything.']
   };
   const state = {
     schemeId: 'classic',
@@ -283,12 +284,28 @@
     persist();
   }
   function newQuestions(){ state.seed = newStudioSeed(state.clubId === 'custom' ? 'C' : state.clubId); generateAll(); state.status='New equivalent questions generated.'; render(); }
+  function compactSheetActions(actions){
+    const out=[];let segmentStart=0;
+    for(const a of (Array.isArray(actions)?actions:[])){
+      if(!Array.isArray(a)||!a.length)continue;
+      if(a[0]==='s'&&a[1]){out.push(['s',a[1]]);segmentStart=out.length;continue;}
+      if(a[0]==='r'||a[0]==='k'){
+        const idx=Number(a[1]);if(!Number.isInteger(idx))continue;
+        let found=-1;for(let i=out.length-1;i>=segmentStart;i--){if((out[i][0]==='r'||out[i][0]==='k')&&Number(out[i][1])===idx){found=i;break;}}
+        const clean=a[0]==='k'?['k',idx,a[2]||'']:['r',idx,a[2],a[3],a[4],a[5]||''];
+        if(found>=0)out[found]=clean;else out.push(clean);
+      }
+    }
+    return out;
+  }
+
   function shuffleCurrent(){
     state.sheets = state.sheets.map(s=>{
-      const token=randomStudioToken(5), actions=[...(Array.isArray(s.actions)?s.actions:[]),['s',token]];
+      const token=randomStudioToken(5);
+      const actions=compactSheetActions([...(Array.isArray(s.actions)?s.actions:[]),['s',token]]);
       return { ...s, questions:G.shuffleQuestions(s.questions, `${s.seed}:${token}`), actions };
     });
-    persist();state.status='Question order shuffled and saved on this browser.'; render();
+    persist();state.status='Question order shuffled. The recreation recipe keeps only the compact steps needed to rebuild the current sheet.'; render();
   }
 
   function render(){
@@ -477,15 +494,15 @@
       <label class="tt99-field">${helpLabel('Equivalent versions','variants')}<select id="tt99-variants">${[1,2,3,4].map(n=>`<option value="${n}" ${state.variants===n?'selected':''}>${n} ${n===1?'version':'versions'}</option>`).join('')}</select></label>
       <label class="tt99-check tt99-answer-qr"><input id="tt99-answer-qr" type="checkbox" ${state.includeAnswerQr?'checked':''}><span><b>Recreation QR on answer sheets ${helpButton('answerQr')}</b><small>Recommended. Teacher copies can be scanned back into 99 Club Studio; pupil worksheets never include the QR. School personalisation is not embedded in the QR.</small></span></label>
       <div class="tt99-action-row"><button type="button" class="tt99-primary" id="tt99-new">Generate new questions</button><button type="button" class="tt99-secondary" id="tt99-shuffle">Shuffle order</button></div>
-      <div class="tt99-recreate"><div><strong>Recreate from sheet code ${helpButton('sheetCode')}</strong><small>${shortCodeNeedsRules?'This sheet uses edited/custom rules. Its code carries a rule fingerprint so the app will refuse to recreate it with the wrong rules. Use the Full recreation code or QR on another browser.':'Standard codes identify the scheme/challenge, generation version and worksheet version, so unchanged built-in sheets can be recreated directly.'}</small></div><div><input id="tt99-sheet-code" type="text" maxlength="100" spellcheck="false" placeholder="e.g. C99-G1-7FK2M9-A"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>
+      <div class="tt99-recreate"><div><strong>Recreate from sheet code ${helpButton('sheetCode')}</strong><small>${shortCodeNeedsRules?'This sheet uses customised rules. The short code alone is not enough on another browser; use the Full recreation code or the teacher QR so those rules travel with the sheet.':'For an unchanged built-in challenge, this short code is enough to rebuild the same questions.'}</small></div><div><input id="tt99-sheet-code" type="text" maxlength="100" spellcheck="false" placeholder="e.g. C99-G1-7FK2M9-A"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>
       <div class="tt99-downloads"><button id="tt99-pdf-student" class="tt99-download" ${state.rulesError?'disabled':''}><b>Worksheet PDF</b><span>Pupil sheets only</span></button><button id="tt99-pdf-answer" class="tt99-download" ${state.rulesError?'disabled':''}><b>Answer key PDF</b><span>Matching answers${state.includeAnswerQr?' + QR':''}</span></button><button id="tt99-pdf-both" class="tt99-download tt99-download--accent" ${state.rulesError?'disabled':''}><b>Worksheet + answers</b><span>One complete PDF</span></button></div>
-      <div class="tt99-save-safety"><div><strong>Saved automatically on this browser ${helpButton('saveSafety')}</strong><small>Browser storage is convenient, but it is not a permanent backup. Before testing custom presets or clearing site data, download one file that protects everything.</small></div><button type="button" class="tt99-secondary" id="tt99-backup-all">Download full backup</button></div>
+      <div class="tt99-save-safety"><div><strong>Saved automatically on this browser ${helpButton('saveSafety')}</strong><small>You can carry on without saving manually. Download a Full backup before clearing site data, changing browser/device, or whenever you want a safety copy of everything.</small></div><button type="button" class="tt99-secondary" id="tt99-backup-all">Download full backup</button></div>
       <details class="tt99-portability"><summary>Save, import, reuse & move your work ${helpButton('browserStorage')}</summary>
         <div class="tt99-portability__body">
           <div class="tt99-save-map"><div><b>Reuse rules</b><span>Save as a reusable preset in Step 3.</span></div><div><b>Move one setup</b><span>Export / import the current setup below.</span></div><div><b>Protect everything</b><span>Use Full backup above.</span></div><div><b>Recreate one sheet</b><span>Use its sheet code, full recreation code, or teacher QR.</span></div></div>
-          <div class="tt99-portable-block"><div><strong>Full recreation code ${helpButton('portableCode')}</strong><small>Self-contained rules + seed + exact manual changes. Best for copy/paste recreation without a file. The school logo is not included.</small></div><button type="button" class="tt99-secondary" id="tt99-copy-full-code">Copy full recreation code</button><div class="tt99-portable-load"><textarea id="tt99-full-code" rows="3" spellcheck="false" placeholder="Paste a TT99R recreation code here"></textarea><button type="button" class="tt99-secondary" id="tt99-load-full-code">Recreate</button></div></div>
-          <div class="tt99-portable-block"><div><strong>Full browser backup ${helpButton('fullBackup')}</strong><small>Includes reusable presets, every scheme/challenge edit, current exact sheets, personalisation and the school logo. Restoring first keeps a safety snapshot of the browser state it replaces.</small></div><div class="tt99-config-actions"><label class="tt99-linkbtn tt99-import">Restore full backup<input id="tt99-restore-backup" type="file" accept="application/json,.json"></label>${canUndo?'<button type="button" class="tt99-linkbtn" id="tt99-undo-restore">Undo last restore</button>':''}</div></div>
-          <div class="tt99-portable-block"><div><strong>One setup file ${helpButton('exportSettings')}</strong><small>Portable JSON for this current challenge, its rules, exact worksheet versions and personalisation text. It does not contain every saved preset in the browser.</small></div><div class="tt99-config-actions"><button type="button" class="tt99-linkbtn" id="tt99-export-settings">Export this setup</button><label class="tt99-linkbtn tt99-import">Import a setup<input id="tt99-import-settings" type="file" accept="application/json,.json"></label></div></div>
+          <div class="tt99-portable-block"><div><strong>Full recreation code ${helpButton('portableCode')}</strong><small>Copy/paste method for one exact reviewed worksheet. It includes the rules and final question order, but not the school logo.</small></div><button type="button" class="tt99-secondary" id="tt99-copy-full-code">Copy full recreation code</button><div class="tt99-portable-load"><textarea id="tt99-full-code" rows="3" spellcheck="false" placeholder="Paste a TT99R recreation code here"></textarea><button type="button" class="tt99-secondary" id="tt99-load-full-code">Recreate</button></div></div>
+          <div class="tt99-portable-block"><div><strong>Full browser backup ${helpButton('fullBackup')}</strong><small>Your complete Studio safety copy: reusable presets, challenge edits, exact sheets, school details and logo. Restore it when moving browser/device or recovering cleared site data.</small></div><div class="tt99-config-actions"><label class="tt99-linkbtn tt99-import">Restore full backup<input id="tt99-restore-backup" type="file" accept="application/json,.json"></label>${canUndo?'<button type="button" class="tt99-linkbtn" id="tt99-undo-restore">Undo last restore</button>':''}</div></div>
+          <div class="tt99-portable-block"><div><strong>One setup file ${helpButton('exportSettings')}</strong><small>A file for this one current setup. Use it to archive or share one challenge without replacing the rest of the recipient's saved Studio work.</small></div><div class="tt99-config-actions"><button type="button" class="tt99-linkbtn" id="tt99-export-settings">Export this setup</button><label class="tt99-linkbtn tt99-import">Import a setup<input id="tt99-import-settings" type="file" accept="application/json,.json"></label></div></div>
         </div>
       </details>
       ${state.status?`<div class="tt99-status" role="status">${esc(state.status)}</div>`:''}
@@ -493,7 +510,7 @@
   }
 
   function renderPreviewToolbar(){
-    return `<div class="tt99-preview-toolbar"><div><strong>Print preview</strong><span>${esc(state.previewAnswers?'Answer key':'Pupil worksheet')}</span></div><div class="tt99-preview-tabs">${state.sheets.map((s,i)=>`<button data-preview-variant="${i}" class="${i===state.previewVariant?'is-active':''}">Version ${String.fromCharCode(65+i)}</button>`).join('')}</div><div class="tt99-preview-mode"><button data-preview-mode="student" class="${!state.previewAnswers?'is-active':''}">Worksheet</button><button data-preview-mode="answers" class="${state.previewAnswers?'is-active':''}">Answers</button></div></div>`;
+    return `<div class="tt99-preview-toolbar"><div><strong>Print preview</strong><span>${esc(state.previewAnswers?'Answer key':'Pupil worksheet')} · Use ↻ beside a question to replace it with another of the same type.</span></div><div class="tt99-preview-tabs">${state.sheets.map((s,i)=>`<button data-preview-variant="${i}" class="${i===state.previewVariant?'is-active':''}">Version ${String.fromCharCode(65+i)}</button>`).join('')}</div><div class="tt99-preview-mode"><button data-preview-mode="student" class="${!state.previewAnswers?'is-active':''}">Worksheet</button><button data-preview-mode="answers" class="${state.previewAnswers?'is-active':''}">Answers</button></div></div>`;
   }
 
   function renderPaper(){
@@ -513,7 +530,7 @@
         <div class="tt99-paper-date">${dateText?esc(dateText):''}</div>
       </header>
       ${state.previewAnswers?`<div class="tt99-paper-teacher"><div><b>Teacher answer copy</b><span>${qrSvg?'Scan to recreate this exact sheet in 99 Club Studio.':(state.includeAnswerQr?'QR omitted because the recreation data is too dense for reliable printing. Use the Full recreation code instead.':'Recreation QR is turned off for this PDF.')}</span><small>Sheet ${esc(sheet.code)}</small></div>${qrSvg?`<div class="tt99-paper-qr">${qrSvg}</div>`:''}</div>`:`<div class="tt99-paper-student"><span>Name <i></i></span><span>Score <i class="short"></i> / ${r.questionCount}</span></div><div class="tt99-paper-instructions">${esc(G.instructionText(r))}</div>`}
-      <div class="tt99-question-grid">${groups.map(group=>`<div class="tt99-question-col">${group.map(q=>`<div class="tt99-question" data-q="${q.number}"><b>${q.number}.</b><span>${esc(q.prompt)}</span>${state.previewAnswers?`<strong>${esc(q.answer)}</strong>`:'<i></i>'}<button type="button" data-replace="${q.number-1}" aria-label="Replace question ${q.number}" title="Replace this question">↻</button></div>`).join('')}</div>`).join('')}</div>
+      <div class="tt99-question-grid">${groups.map(group=>`<div class="tt99-question-col">${group.map(q=>`<div class="tt99-question ${String(q.prompt||'').length>22?'is-very-long':String(q.prompt||'').length>15?'is-long':''}" data-q="${q.number}"><b>${q.number}.</b><span>${esc(q.prompt)}</span>${state.previewAnswers?`<strong>${esc(q.answer)}</strong>`:'<i></i>'}<button type="button" data-replace="${q.number-1}" aria-label="Replace question ${q.number} with another ${esc(questionCategoryLabel(q))} question" title="Replace with another ${esc(questionCategoryLabel(q))} question">↻</button></div>`).join('')}</div>`).join('')}</div>
       <footer class="tt99-paper-foot"><span>Sheet ${esc(sheet.code)}</span><span>Generated by Tech Tinker Club · 99 Club Studio</span></footer>
     </article>`;
   }
@@ -685,13 +702,22 @@
     if(state.clubId===id){state.clubId='33';state.rules=loadRulesFor(state.schemeId,'33');state.seed=newStudioSeed('33');generateAll();}
     state.status=`Deleted custom preset “${p.name}”.`;render();
   }
+  function questionCategoryLabel(q){
+    const labels={double:'doubling',repeated_addition:'repeated addition',addition:'addition',subtraction:'subtraction',multiply:'multiplication',divide:'division',missing_number:'missing-number'};
+    return G.FAMILY_LABELS[q?.kind] || labels[q?.kind] || 'same-category';
+  }
   function replaceOne(index){
-    const s=state.sheets[state.previewVariant], before=s.questions[index], next=G.replaceQuestion(s.questions,index,state.rules,s.seed);
+    const s=state.sheets[state.previewVariant], before=s.questions[index];
+    const token=randomStudioToken(6);
+    const next=G.replaceQuestion(s.questions,index,state.rules,`${s.seed}:replace:${index}:${token}`);
     s.questions=next;const q=next[index];
-    if(q&&questionSig(q)!==questionSig(before)){
-      s.actions=[...(Array.isArray(s.actions)?s.actions:[]),['r',index,q.kind,q.prompt,q.answer,q.key||'']];
-    }
-    persist();state.status=`Question ${index+1} replaced in Version ${String.fromCharCode(65+state.previewVariant)} and saved on this browser. Use a full backup or current setup file for portability.`;render();
+    // Keep a compact recreation recipe: if the same question is replaced repeatedly before
+    // a shuffle, only its latest replacement survives in the recipe.
+    if(q&&questionSig(q)!==questionSig(before))s.actions=compactSheetActions([...(Array.isArray(s.actions)?s.actions:[]),['k',index,q.key||'']]);
+    persist();
+    if(q&&questionSig(q)!==questionSig(before))state.status=`Question ${index+1} replaced with another ${questionCategoryLabel(q)} question in Version ${String.fromCharCode(65+state.previewVariant)}.`;
+    else state.status=`No different ${questionCategoryLabel(before)} question is available under the current rules.`;
+    render();
   }
 
   function decodeNewSheetCode(raw){
@@ -770,7 +796,11 @@
     if(!Array.isArray(actions))return out;
     for(const a of actions){
       if(!Array.isArray(a)||!a.length)continue;
-      if(a[0]==='r'){
+      if(a[0]==='k'){
+        const i=Number(a[1]);if(!Number.isInteger(i)||i<0||i>=out.length)continue;
+        const q=G.questionByKey(out[i]?.kind,rules,a[2]);if(q)out[i]={...q,number:i+1};
+      }else if(a[0]==='r'){
+        // Backward compatibility with v1.7 recreation codes that stored the full question.
         const i=Number(a[1]);if(!Number.isInteger(i)||i<0||i>=out.length)continue;
         out[i]={kind:a[2],prompt:a[3],answer:a[4],key:a[5]||'',number:i+1};
       }else if(a[0]==='s'&&a[1]) out=G.shuffleQuestions(out,`${seed}:${a[1]}`);
@@ -779,10 +809,12 @@
   }
   function sameQuestionSet(a,b){return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((q,i)=>questionSig(q)===questionSig(b[i]));}
   function sheetRecipe(sheet,rules){
-    if(Array.isArray(sheet.actions)&&sheet.actions.length){
-      const replay=applySheetActions(sheet.seed,rules,sheet.actions);
-      if(sameQuestionSet(replay,sheet.questions))return {a:G.clone(sheet.actions)};
-    }
+    // Prefer the compact replay recipe when it exactly matches the final sheet. Repeated
+    // replacements of the same position are collapsed, so discarded review history is not
+    // carried into QR/full recreation data. This also keeps a shuffle compact (one token)
+    // instead of encoding a full 100-position permutation.
+    const compact=compactSheetActions(sheet.actions);
+    if(compact.length){const replay=applySheetActions(sheet.seed,rules,compact);if(sameQuestionSet(replay,sheet.questions))return {a:compact};}
     const base=G.generateQuestions(rules,sheet.seed),buckets=new Map(),order=[],replacements=[];
     base.forEach((q,i)=>{const k=questionSig(q);if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(i);});
     sheet.questions.forEach((q,i)=>{

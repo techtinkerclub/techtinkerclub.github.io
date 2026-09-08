@@ -4,13 +4,22 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version 1.7 is the tester-readiness, persistence and reproducibility baseline. The mathematical question-generation paths from v1.6 remain frozen: Classic 11–99 and the built-in Bronze–Diamond presets are regression-checked with fixed seeds so persistence, code and PDF work cannot silently change the maths.
+Version 1.8 is the review-usability and teacher-documentation baseline. The built-in worksheet-generation paths remain regression-frozen: Classic 11–99 and Bronze–Diamond are checked with fixed seeds so review/UI changes cannot silently alter the default maths. v1.8 adds same-family manual replacement without changing seeded sheet generation.
 
 The public app name is **99 Club Studio**. Classic 99 Club remains the default scheme, with the normal progression:
 
 `11 -> 22 -> 33 -> 44 -> 55 -> 66 -> 77 -> 88 -> 99`
 
 and TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. Both remain editable.
+
+
+## v1.8 review behaviour
+
+- The preview replacement button always chooses another question from the **same mathematical family** as the question being replaced.
+- Superseded replacements are collapsed to the latest choice at that position. New replacement recipes store only compact question keys (not full discarded prompts/answers), while shuffles use compact replay tokens; this prevents repeated review clicks from steadily inflating the teacher QR.
+- Browser persistence and backups still retain the exact current questions. Earlier action-based recreation payloads remain readable for backward compatibility.
+- Base question text is larger in portrait and landscape. Long advanced prompts are fitted down individually rather than forcing every question on the sheet to use a smaller font.
+- The public Help page is written for teachers around practical workflows (make, review, save, share, recover, recreate), while this README remains the maintainer-facing technical reference.
 
 ## Files
 
