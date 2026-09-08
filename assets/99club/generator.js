@@ -266,14 +266,29 @@
     r.arithmeticMin = clampInt(r.arithmeticMin, -1000, 1000, 0);
     r.arithmeticMax = clampInt(r.arithmeticMax, Math.max(1, r.arithmeticMin), 5000, 100);
     r.arithmeticOperandMax = clampInt(r.arithmeticOperandMax, 1, 5000, Math.min(100, r.arithmeticMax));
+    r.arithmeticOperandMin = clampInt(r.arithmeticOperandMin, 0, r.arithmeticOperandMax, 0);
     r.allowNegativeAnswers = !!r.allowNegativeAnswers;
     r.squareMin = clampInt(r.squareMin, 0, 50, 1);
     r.squareMax = clampInt(r.squareMax, r.squareMin, 50, Math.max(12, r.squareMin));
     r.cubeMin = clampInt(r.cubeMin, 0, 20, 1);
     r.cubeMax = clampInt(r.cubeMax, r.cubeMin, 20, Math.max(10, r.cubeMin));
     r.bodmasMax = clampInt(r.bodmasMax, 2, 30, 12);
+    r.bodmasOperations = normalizeStringList(r.bodmasOperations, ['add','subtract','multiply','divide'], ['add','subtract','multiply','divide']);
+    if (r.bodmasOperations.length < 2) r.bodmasOperations = ['add','multiply'];
+    r.bodmasUseBrackets = r.bodmasUseBrackets !== false;
+    r.missingNumberOperations = normalizeStringList(r.missingNumberOperations, ['multiply','divide'], ['multiply','divide']);
+    r.missingNumberPositions = normalizeStringList(r.missingNumberPositions, ['multiply_second','multiply_first','divide_divisor','divide_dividend'], ['multiply_first','multiply_second','multiply_result','divide_dividend','divide_divisor','divide_result']);
+    const compatibleMissing = r.missingNumberPositions.filter(pos => (pos.startsWith('multiply_') && r.missingNumberOperations.includes('multiply')) || (pos.startsWith('divide_') && r.missingNumberOperations.includes('divide')));
+    if (compatibleMissing.length) r.missingNumberPositions = compatibleMissing;
+    else r.missingNumberPositions = r.missingNumberOperations.includes('multiply') ? ['multiply_second','multiply_first'] : ['divide_divisor','divide_dividend'];
     r.fractionDenominators = normalizeNumberList(r.fractionDenominators, [2,3,4,5,10], 2, 20);
+    r.fractionQuantityMin = clampInt(r.fractionQuantityMin, 1, 5000, 1);
+    r.fractionQuantityMax = clampInt(r.fractionQuantityMax, r.fractionQuantityMin, 5000, Math.max(500, r.fractionQuantityMin));
     r.percentageChoices = normalizeNumberList(r.percentageChoices, [10,20,25,50,75], 1, 100);
+    r.percentageQuantityMin = clampInt(r.percentageQuantityMin, 10, 5000, 20);
+    r.percentageQuantityMax = clampInt(r.percentageQuantityMax, r.percentageQuantityMin, 5000, Math.max(500, r.percentageQuantityMin));
+    r.scaledMultipliers = normalizeNumberList(r.scaledMultipliers, [10,100], 10, 1000);
+    r.angleTotals = normalizeNumberList(r.angleTotals, [90,180,360], 1, 360);
     const validFamilies = Object.keys(FAMILY_LABELS);
     r.families = Array.isArray(r.families) ? [...new Set(r.families.filter(f => validFamilies.includes(f)))] : ['addition','subtraction','multiply','divide'];
     if (!r.families.length && r.mode === 'family_mix') r.families = ['addition','subtraction','multiply','divide'];
@@ -296,6 +311,13 @@
   function normalizeNumberList(value, fallback, min, max) {
     const source = Array.isArray(value) ? value : fallback;
     const out = [...new Set(source.map(Number).filter(n => Number.isInteger(n) && n >= min && n <= max))].sort((a,b)=>a-b);
+    return out.length ? out : fallback.slice();
+  }
+
+  function normalizeStringList(value, fallback, allowed) {
+    const source = Array.isArray(value) ? value : fallback;
+    const valid = new Set(allowed);
+    const out = [...new Set(source.map(String).filter(v => valid.has(v)))];
     return out.length ? out : fallback.slice();
   }
 
@@ -357,9 +379,10 @@
   function buildAdditionPool(rules) {
     const out = [];
     const maxOperand = Math.min(rules.arithmeticOperandMax, rules.arithmeticMax);
-    for (let a = Math.max(0, rules.arithmeticMin); a <= maxOperand; a += 1) {
+    const minOperand = Math.max(0, rules.arithmeticOperandMin || 0);
+    for (let a = Math.max(0, rules.arithmeticMin, minOperand); a <= maxOperand; a += 1) {
       const bMax = Math.min(maxOperand, rules.arithmeticMax - a);
-      for (let b = 0; b <= bMax; b += 1) {
+      for (let b = minOperand; b <= bMax; b += 1) {
         if (a === 0 && b === 0) continue;
         out.push({ kind:'addition', a, b, prompt:`${a} + ${b} =`, answer:a+b, key:`a:${a}:${b}` });
       }
@@ -370,8 +393,9 @@
   function buildSubtractionPool(rules) {
     const out = [];
     const maxOperand = Math.min(rules.arithmeticOperandMax, rules.arithmeticMax);
-    for (let a = 1; a <= maxOperand; a += 1) {
-      const bStart = rules.allowNegativeAnswers ? 0 : 0;
+    const minOperand = Math.max(0, rules.arithmeticOperandMin || 0);
+    for (let a = Math.max(1, minOperand); a <= maxOperand; a += 1) {
+      const bStart = minOperand;
       const bMax = rules.allowNegativeAnswers ? maxOperand : a;
       for (let b = bStart; b <= bMax; b += 1) {
         const answer = a - b;
@@ -384,13 +408,25 @@
 
   function buildMissingNumberPool(rules) {
     const out = [];
+    const operations = new Set(rules.missingNumberOperations || ['multiply','divide']);
+    const positions = new Set(rules.missingNumberPositions || ['multiply_second','multiply_first','divide_divisor','divide_dividend']);
     for (const table of rules.tables.filter(t => t !== 0)) {
       for (let factor = Math.max(0, rules.factorMin); factor <= rules.factorMax; factor += 1) {
         const product = table * factor;
-        out.push({ kind:'missing_number', prompt:`${table} × ___ = ${product}`, answer:factor, key:`mn:m:r:${table}:${factor}`, group:table });
-        out.push({ kind:'missing_number', prompt:`___ × ${factor} = ${product}`, answer:table, key:`mn:m:l:${table}:${factor}`, group:table });
-        if (factor !== 0) out.push({ kind:'missing_number', prompt:`${product} ÷ ___ = ${factor}`, answer:table, key:`mn:d:d:${table}:${factor}`, group:table });
-        out.push({ kind:'missing_number', prompt:`___ ÷ ${table} = ${factor}`, answer:product, key:`mn:d:n:${table}:${factor}`, group:table });
+        // Keep the historical order of the four default patterns so v1.2
+        // fixed-seed worksheets remain unchanged when the new controls are untouched.
+        if (operations.has('multiply') && positions.has('multiply_second'))
+          out.push({ kind:'missing_number', prompt:`${table} × ___ = ${product}`, answer:factor, key:`mn:m:r:${table}:${factor}`, group:table });
+        if (operations.has('multiply') && positions.has('multiply_first'))
+          out.push({ kind:'missing_number', prompt:`___ × ${factor} = ${product}`, answer:table, key:`mn:m:l:${table}:${factor}`, group:table });
+        if (operations.has('divide') && positions.has('divide_divisor') && factor !== 0)
+          out.push({ kind:'missing_number', prompt:`${product} ÷ ___ = ${factor}`, answer:table, key:`mn:d:d:${table}:${factor}`, group:table });
+        if (operations.has('divide') && positions.has('divide_dividend'))
+          out.push({ kind:'missing_number', prompt:`___ ÷ ${table} = ${factor}`, answer:product, key:`mn:d:n:${table}:${factor}`, group:table });
+        if (operations.has('multiply') && positions.has('multiply_result'))
+          out.push({ kind:'missing_number', prompt:`${table} × ${factor} = ___`, answer:product, key:`mn:m:a:${table}:${factor}`, group:table });
+        if (operations.has('divide') && positions.has('divide_result'))
+          out.push({ kind:'missing_number', prompt:`${product} ÷ ${table} = ___`, answer:factor, key:`mn:d:a:${table}:${factor}`, group:table });
       }
     }
     return out;
@@ -410,14 +446,39 @@
 
   function buildBodmasPool(rules) {
     const out = [], m = rules.bodmasMax;
+    const ops = new Set(rules.bodmasOperations || ['add','subtract','multiply','divide']);
+    const brackets = rules.bodmasUseBrackets !== false;
+    const legacyDefault = brackets && ['add','subtract','multiply','divide'].every(x=>ops.has(x)) && ops.size===4;
     for (let a = 2; a <= m; a += 1) {
       for (let b = 2; b <= m; b += 1) {
         const c = ((a + b) % Math.max(2, m - 1)) + 2;
-        out.push({ kind:'bodmas', prompt:`${a} + ${b} × ${c} =`, answer:a+b*c, key:`bo:1:${a}:${b}:${c}` });
-        out.push({ kind:'bodmas', prompt:`${a} × (${b} + ${c}) =`, answer:a*(b+c), key:`bo:2:${a}:${b}:${c}` });
-        out.push({ kind:'bodmas', prompt:`(${a} + ${b}) × ${c} =`, answer:(a+b)*c, key:`bo:3:${a}:${b}:${c}` });
-        out.push({ kind:'bodmas', prompt:`${a*b} ÷ ${b} + ${c} =`, answer:a+c, key:`bo:4:${a}:${b}:${c}` });
-        if (a*b > c) out.push({ kind:'bodmas', prompt:`${a*b} - (${b} + ${c}) =`, answer:a*b-b-c, key:`bo:5:${a}:${b}:${c}` });
+        if (legacyDefault) {
+          // Historical v1.2 order retained byte-for-byte for default presets.
+          out.push({ kind:'bodmas', prompt:`${a} + ${b} × ${c} =`, answer:a+b*c, key:`bo:1:${a}:${b}:${c}` });
+          out.push({ kind:'bodmas', prompt:`${a} × (${b} + ${c}) =`, answer:a*(b+c), key:`bo:2:${a}:${b}:${c}` });
+          out.push({ kind:'bodmas', prompt:`(${a} + ${b}) × ${c} =`, answer:(a+b)*c, key:`bo:3:${a}:${b}:${c}` });
+          out.push({ kind:'bodmas', prompt:`${a*b} ÷ ${b} + ${c} =`, answer:a+c, key:`bo:4:${a}:${b}:${c}` });
+          if (a*b > c) out.push({ kind:'bodmas', prompt:`${a*b} - (${b} + ${c}) =`, answer:a*b-b-c, key:`bo:5:${a}:${b}:${c}` });
+          continue;
+        }
+        if (ops.has('add') && ops.has('multiply')) {
+          out.push({ kind:'bodmas', prompt:`${a} + ${b} × ${c} =`, answer:a+b*c, key:`box:am:${a}:${b}:${c}` });
+          if (brackets) out.push({ kind:'bodmas', prompt:`${a} × (${b} + ${c}) =`, answer:a*(b+c), key:`box:amb:${a}:${b}:${c}` });
+        }
+        if (ops.has('subtract') && ops.has('multiply') && a*b >= c) {
+          out.push({ kind:'bodmas', prompt:`${a} × ${b} - ${c} =`, answer:a*b-c, key:`box:sm:${a}:${b}:${c}` });
+          if (brackets && b < c) out.push({ kind:'bodmas', prompt:`${a} × (${c} - ${b}) =`, answer:a*(c-b), key:`box:smb:${a}:${b}:${c}` });
+        }
+        if (ops.has('add') && ops.has('divide'))
+          out.push({ kind:'bodmas', prompt:`${a*b} ÷ ${b} + ${c} =`, answer:a+c, key:`box:ad:${a}:${b}:${c}` });
+        if (ops.has('subtract') && ops.has('divide') && a >= c)
+          out.push({ kind:'bodmas', prompt:`${a*b} ÷ ${b} - ${c} =`, answer:a-c, key:`box:sd:${a}:${b}:${c}` });
+        if (ops.has('multiply') && ops.has('divide'))
+          out.push({ kind:'bodmas', prompt:`${a*c} × ${b} ÷ ${c} =`, answer:a*b, key:`box:md:${a}:${b}:${c}` });
+        if (ops.has('add') && ops.has('subtract')) {
+          out.push({ kind:'bodmas', prompt:`${a} + ${b} - ${c} =`, answer:a+b-c, key:`box:as:${a}:${b}:${c}` });
+          if (brackets) out.push({ kind:'bodmas', prompt:`(${a} + ${b}) - ${c} =`, answer:a+b-c, key:`box:asb:${a}:${b}:${c}` });
+        }
       }
     }
     return out;
@@ -425,20 +486,25 @@
 
   function buildScaledMultiplyPool(rules) {
     const out = [];
-    const bases = range(Math.max(2, rules.factorMin), Math.min(12, rules.factorMax));
-    const scales = [10,100];
+    const bases = range(Math.max(2, rules.factorMin), rules.factorMax);
+    const scales = rules.scaledMultipliers || [10,100];
+    const legacyDefault = scales.length === 2 && scales[0] === 10 && scales[1] === 100;
     for (const a of bases) for (const b of bases) for (const sa of scales) {
       out.push({ kind:'scaled_multiply', prompt:`${a*sa} × ${b} =`, answer:a*sa*b, key:`sm:1:${a}:${sa}:${b}` });
-      out.push({ kind:'scaled_multiply', prompt:`${a*10} × ${b*10} =`, answer:a*b*100, key:`sm:2:${a}:${b}` });
+      // Preserve the historical default pool exactly for v1.2. When a teacher
+      // deliberately changes the scale choices, make this second pattern honour
+      // the selected scale too.
+      const bothScale = legacyDefault ? 10 : sa;
+      out.push({ kind:'scaled_multiply', prompt:`${a*bothScale} × ${b*bothScale} =`, answer:a*b*bothScale*bothScale, key:legacyDefault?`sm:2:${a}:${b}`:`sm:2:${a}:${b}:${bothScale}` });
     }
     return out;
   }
 
   function buildScaledDividePool(rules) {
     const out = [];
-    const bases = range(Math.max(2, rules.factorMin), Math.min(12, rules.factorMax));
+    const bases = range(Math.max(2, rules.factorMin), rules.factorMax);
     for (const divisor of bases) for (const quotient of bases) {
-      for (const scale of [10,100]) {
+      for (const scale of (rules.scaledMultipliers || [10,100])) {
         const dividend = divisor * quotient * scale;
         out.push({ kind:'scaled_divide', prompt:`${dividend} ÷ ${divisor} =`, answer:quotient*scale, key:`sd:1:${divisor}:${quotient}:${scale}` });
         out.push({ kind:'scaled_divide', prompt:`${dividend} ÷ ${divisor*scale} =`, answer:quotient, key:`sd:2:${divisor}:${quotient}:${scale}` });
@@ -449,10 +515,17 @@
 
   function buildFractionOfPool(rules) {
     const out = [];
+    // Keep the v1.2 default pool/order exactly unchanged. When a teacher edits
+    // the quantity range, deliberately switch to a range-driven pool so both
+    // the minimum and maximum controls genuinely affect the available facts.
+    const legacyRange = rules.fractionQuantityMin === 1 && rules.fractionQuantityMax === 500;
     for (const d of rules.fractionDenominators) {
+      const unitMin = legacyRange ? 2 : Math.max(1, Math.ceil(rules.fractionQuantityMin / d));
+      const unitMax = legacyRange ? 20 : Math.floor(rules.fractionQuantityMax / d);
       for (let n = 1; n < d; n += 1) {
-        for (let unit = 2; unit <= 20; unit += 1) {
+        for (let unit = unitMin; unit <= unitMax; unit += 1) {
           const quantity = d * unit;
+          if (quantity < rules.fractionQuantityMin || quantity > rules.fractionQuantityMax) continue;
           out.push({ kind:'fraction_of', prompt:`${n}/${d} of ${quantity} =`, answer:n*unit, key:`fr:${n}:${d}:${quantity}` });
         }
       }
@@ -463,7 +536,8 @@
   function buildPercentageOfPool(rules) {
     const out = [];
     for (const pct of rules.percentageChoices) {
-      for (let quantity = 20; quantity <= 500; quantity += 10) {
+      const start = Math.max(10, Math.ceil(rules.percentageQuantityMin / 10) * 10);
+      for (let quantity = start; quantity <= rules.percentageQuantityMax; quantity += 10) {
         const answer = quantity * pct / 100;
         if (!Number.isInteger(answer)) continue;
         out.push({ kind:'percentage_of', prompt:`${pct}% of ${quantity} =`, answer, key:`pc:${pct}:${quantity}` });
@@ -507,7 +581,7 @@
 
   function buildAngleFactsPool(rules) {
     const out = [];
-    for (const total of [90,180,360]) {
+    for (const total of (rules.angleTotals || [90,180,360])) {
       const step=total===90?5:10;
       for(let known=step;known<total;known+=step){
         out.push({ kind:'angle_facts', prompt:`${total}° - ${known}° =`, answer:total-known, key:`ang:${total}:${known}` });
@@ -691,7 +765,7 @@
     if (r.mode === 'mixed') maths = `mixed multiplication/division · tables ${compressNumbers(r.tables)} · ${r.multiplyPercent}% multiplication`;
     if (r.mode === 'addition') maths = `addition · answers to ${r.arithmeticMax}`;
     if (r.mode === 'add_subtract') maths = `addition/subtraction · range to ${r.arithmeticMax}`;
-    if (r.mode === 'missing_number') maths = `missing-number multiplication/division · tables ${compressNumbers(r.tables)}`;
+    if (r.mode === 'missing_number') maths = `missing-number ${r.missingNumberOperations.join('/')} · tables ${compressNumbers(r.tables)}`;
     if (r.mode === 'family_mix') maths = `mixed mental maths · ${r.families.map(f => FAMILY_LABELS[f] || f).join(', ')}`;
     return `${r.questionCount} questions · ${maths} · ${formatMinutes(r.timeMinutes)} · ${r.perfectAttempts} perfect ${r.perfectAttempts === 1 ? 'attempt' : 'attempts'} to advance`;
   }

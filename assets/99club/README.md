@@ -4,7 +4,7 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version 1.2 extends the v1.1 generator additively. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1 engine.
+Version 1.3 extends the v1.2 generator additively. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1/v1.2 baselines. Existing built-in Bronze-Diamond presets are also regression-tested so rule-editor work cannot silently alter their default sheets.
 
 The normal progression shown on first load is still:
 
@@ -65,7 +65,20 @@ Mixed mental-arithmetic presets can be composed from:
 - angle facts
 - simple algebra
 
-The rule editor can turn these families on/off and change their relative weighting. It also exposes relevant settings such as arithmetic limits, tables/factor ranges, square/cube ranges, fraction denominators, percentage choices, negative subtraction answers, time limit and advancement attempts.
+The rule editor can turn these families on/off and change their relative weighting. It also exposes relevant settings such as arithmetic operand/result limits, tables/factor ranges, missing-number operations and blank positions, square/cube ranges, BODMAS operations/brackets, scaled factors, fraction denominators and quantity ranges, percentage choices and quantity ranges, angle totals, negative subtraction answers, time limit and advancement attempts. Family weights show an estimated percentage and estimated number of questions for the current sheet.
+
+## v1.3 independent rule state
+
+Rule edits are remembered independently for each **scheme + challenge** combination. For example, editing Classic Gold does not alter Classic Silver, and editing Addition-first 33 Club does not alter Classic 33 Club. The challenge cards mark edited combinations, and the editor provides both **Reset this challenge** and **Reset scheme** controls. Settings export/import preserves these independent overrides.
+
+The page workflow is intentionally ordered as:
+
+1. Personalise the sheet
+2. Choose the challenge
+3. Check / edit rules
+4. Generate and download
+
+The generator warns when a custom rule combination is too restrictive to create the requested number of unique questions and disables PDF downloads until the rules are made valid.
 
 ## Adding or changing a built-in Club
 
@@ -87,7 +100,7 @@ Portrait is the default and keeps the familiar three-column dense-sheet format. 
 
 ## Regression rule
 
-Do not rewrite or route the existing Classic generation paths through the newer mixed-family engine. The frozen v1.1 Classic outputs are used as exact regression fixtures so future feature work cannot silently change existing 11-99 sheets.
+Do not rewrite or route the existing Classic generation paths through the newer mixed-family engine. The frozen Classic outputs are used as exact regression fixtures so future feature work cannot silently change existing 11-99 sheets. Built-in Bronze-Diamond presets are also checked with fixed seeds and representative portrait/landscape PDFs before a new baseline is accepted.
 
 ## Public source basis for optional presets
 
