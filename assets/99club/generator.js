@@ -281,7 +281,7 @@
     const compatibleMissing = r.missingNumberPositions.filter(pos => (pos.startsWith('multiply_') && r.missingNumberOperations.includes('multiply')) || (pos.startsWith('divide_') && r.missingNumberOperations.includes('divide')));
     if (compatibleMissing.length) r.missingNumberPositions = compatibleMissing;
     else r.missingNumberPositions = r.missingNumberOperations.includes('multiply') ? ['multiply_second','multiply_first'] : ['divide_divisor','divide_dividend'];
-    r.fractionDenominators = normalizeNumberList(r.fractionDenominators, [2,3,4,5,10], 2, 20);
+    r.fractionDenominators = normalizeNumberList(r.fractionDenominators, [2,3,4,5,10], 2, 100);
     r.fractionQuantityMin = clampInt(r.fractionQuantityMin, 1, 5000, 1);
     r.fractionQuantityMax = clampInt(r.fractionQuantityMax, r.fractionQuantityMin, 5000, Math.max(500, r.fractionQuantityMin));
     r.percentageChoices = normalizeNumberList(r.percentageChoices, [10,20,25,50,75], 1, 100);

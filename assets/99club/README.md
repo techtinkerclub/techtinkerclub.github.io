@@ -4,7 +4,7 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version 1.3 extends the v1.2 generator additively. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1/v1.2 baselines. Existing built-in Bronze-Diamond presets are also regression-tested so rule-editor work cannot silently alter their default sheets.
+Version 1.4 extends the v1.3 generator additively. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1/v1.2 baselines. Existing built-in Bronze-Diamond presets are also regression-tested so rule-editor work cannot silently alter their default sheets.
 
 The normal progression shown on first load is still:
 
@@ -66,6 +66,15 @@ Mixed mental-arithmetic presets can be composed from:
 - simple algebra
 
 The rule editor can turn these families on/off and change their relative weighting. It also exposes relevant settings such as arithmetic operand/result limits, tables/factor ranges, missing-number operations and blank positions, square/cube ranges, BODMAS operations/brackets, scaled factors, fraction denominators and quantity ranges, percentage choices and quantity ranges, angle totals, negative subtraction answers, time limit and advancement attempts. Family weights show an estimated percentage and estimated number of questions for the current sheet.
+
+
+## v1.4 fraction and percentage controls
+
+The advanced fraction editor exposes every standard denominator from **2 to 12**, including 7, 9 and 11, while leaving existing preset selections unchanged. Teachers can also enter additional whole-number denominators from 2 to 100 as a comma-separated list.
+
+Percentage choices expose every **5% step from 5% to 100%**. Existing presets keep their previous selected values, and teachers can add other whole-number percentages from 1% to 100% with a comma-separated custom field (for example `37%, 42%, 67%`). Percentage-of-quantity generation continues to keep whole-number answers by pairing selected percentages with suitable quantities.
+
+These controls are additive only: built-in Classic and Bronze-Diamond fixed-seed outputs remain unchanged unless a teacher explicitly selects one of the new choices.
 
 ## v1.3 independent rule state
 

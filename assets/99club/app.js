@@ -8,7 +8,9 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.3';
+  const VERSION = '1.4';
+  const FRACTION_DENOMINATOR_CHOICES = Array.from({length:11}, (_,i)=>i+2);
+  const PERCENTAGE_STEP_CHOICES = Array.from({length:20}, (_,i)=>(i+1)*5);
   const state = {
     schemeId: 'classic',
     clubId: '33',
@@ -236,8 +238,8 @@
       ${(needSquares||needCubes)?`<div class="tt99-advanced-section"><span class="tt99-field-label">Powers & radicals</span>${needSquares?`<div class="tt99-inline-fields">${numField('Smallest square/root base','squareMin',r.squareMin,0,50)}${numField('Largest square/root base','squareMax',r.squareMax,0,50)}</div>`:''}${needCubes?`<div class="tt99-inline-fields">${numField('Smallest cube base','cubeMin',r.cubeMin,0,20)}${numField('Largest cube base','cubeMax',r.cubeMax,0,20)}</div>`:''}<small class="tt99-help">Square-root questions are always generated with exact whole-number roots.</small></div>`:''}
       ${needBodmas?`<div class="tt99-advanced-section"><span class="tt99-field-label">Order of operations</span><div class="tt99-inline-fields">${numField('Largest base number','bodmasMax',r.bodmasMax,2,30)}</div>${renderStringChoiceSelector('Operations allowed','bodmasOperation',[['add','+ addition'],['subtract','− subtraction'],['multiply','× multiplication'],['divide','÷ division']],r.bodmasOperations)}<label class="tt99-check"><input data-rule-check="bodmasUseBrackets" type="checkbox" ${r.bodmasUseBrackets?'checked':''}><span>Include bracketed expressions</span></label></div>`:''}
       ${needScaled?`<div class="tt99-advanced-section"><span class="tt99-field-label">Scaled multiplication / division</span>${renderChoiceSelector('Scale factors','scaledMultiplier',[10,100,1000],r.scaledMultipliers,n=>`×${n}`)}</div>`:''}
-      ${needFractions?`<div class="tt99-advanced-section"><span class="tt99-field-label">Fractions of quantities</span>${renderChoiceSelector('Fraction denominators','fractionDenominator',[2,3,4,5,6,8,10,12],r.fractionDenominators,n=>`1/${n}`)}<div class="tt99-inline-fields">${numField('Smallest quantity','fractionQuantityMin',r.fractionQuantityMin,1,5000)}${numField('Largest quantity','fractionQuantityMax',r.fractionQuantityMax,1,5000)}</div></div>`:''}
-      ${needPercentages?`<div class="tt99-advanced-section"><span class="tt99-field-label">Percentages of quantities</span>${renderChoiceSelector('Percentages included','percentageChoice',[5,10,20,25,50,75],r.percentageChoices,n=>`${n}%`)}<div class="tt99-inline-fields">${numField('Smallest quantity','percentageQuantityMin',r.percentageQuantityMin,10,5000)}${numField('Largest quantity','percentageQuantityMax',r.percentageQuantityMax,10,5000)}</div></div>`:''}
+      ${needFractions?`<div class="tt99-advanced-section"><span class="tt99-field-label">Fractions of quantities</span>${renderChoiceSelector('Fraction denominators','fractionDenominator',FRACTION_DENOMINATOR_CHOICES,r.fractionDenominators,n=>`1/${n}`)}${customListField('Add custom denominators','tt99-custom-denominators',r.fractionDenominators.filter(n=>!FRACTION_DENOMINATOR_CHOICES.includes(n)).join(', '),'e.g. 13, 15, 20','Whole-number denominators from 2 to 100. Separate values with commas.')}<div class="tt99-inline-fields">${numField('Smallest quantity','fractionQuantityMin',r.fractionQuantityMin,1,5000)}${numField('Largest quantity','fractionQuantityMax',r.fractionQuantityMax,1,5000)}</div></div>`:''}
+      ${needPercentages?`<div class="tt99-advanced-section"><span class="tt99-field-label">Percentages of quantities</span>${renderChoiceSelector('Percentages included','percentageChoice',PERCENTAGE_STEP_CHOICES,r.percentageChoices,n=>`${n}%`)}${customListField('Add custom percentages','tt99-custom-percentages',r.percentageChoices.filter(n=>!PERCENTAGE_STEP_CHOICES.includes(n)).map(n=>`${n}%`).join(', '),'e.g. 37%, 42%, 67%','Whole-number percentages from 1% to 100%. Separate values with commas; the % sign is optional.')}<div class="tt99-inline-fields">${numField('Smallest quantity','percentageQuantityMin',r.percentageQuantityMin,10,5000)}${numField('Largest quantity','percentageQuantityMax',r.percentageQuantityMax,10,5000)}</div><small class="tt99-help">Generated percentage questions keep whole-number answers, so custom values such as 37% are paired with suitable quantities.</small></div>`:''}
       ${needAngles?`<div class="tt99-advanced-section"><span class="tt99-field-label">Angle facts</span>${renderChoiceSelector('Whole-turn / angle totals','angleTotal',[90,180,360],r.angleTotals,n=>`${n}°`)}</div>`:''}
       <div class="tt99-check-row">
         <label class="tt99-check"><input data-rule-check="avoidExactDuplicates" type="checkbox" ${r.avoidExactDuplicates?'checked':''}><span>Avoid exact duplicate questions where possible</span></label>
@@ -266,6 +268,7 @@
   }
 
   function numField(label,key,value,min,max){ return `<label class="tt99-field"><span>${label}</span><input data-rule="${key}" type="number" min="${min}" max="${max}" value="${value}"></label>`; }
+  function customListField(label,id,value,placeholder,help){ return `<label class="tt99-field tt99-custom-list"><span>${esc(label)}</span><input id="${esc(id)}" type="text" spellcheck="false" value="${esc(value)}" placeholder="${esc(placeholder)}"><small>${esc(help)}</small></label>`; }
   function renderTableSelector(r){
     return `<div class="tt99-table-select"><span class="tt99-field-label">Tables included</span><div class="tt99-table-chips">${Array.from({length:12},(_,i)=>i+1).map(n=>`<label><input type="checkbox" data-table="${n}" ${r.tables.includes(n)?'checked':''}><span>${n}×</span></label>`).join('')}</div><div class="tt99-mini-actions"><button type="button" data-tables-action="all">1–12</button><button type="button" data-tables-action="core">2, 3, 5, 10</button><button type="button" data-tables-action="single">2× only</button></div></div>`;
   }
@@ -327,7 +330,9 @@
     root.querySelectorAll('[data-family]').forEach(input=>input.addEventListener('change',familiesChanged));
     root.querySelectorAll('[data-family-weight]').forEach(input=>input.addEventListener('change',()=>familyWeightChanged(input.dataset.familyWeight,input.value)));
     root.querySelectorAll('[data-fraction-denominator]').forEach(input=>input.addEventListener('change',fractionChoicesChanged));
+    root.querySelector('#tt99-custom-denominators')?.addEventListener('change',fractionChoicesChanged);
     root.querySelectorAll('[data-percentage-choice]').forEach(input=>input.addEventListener('change',percentageChoicesChanged));
+    root.querySelector('#tt99-custom-percentages')?.addEventListener('change',percentageChoicesChanged);
     root.querySelectorAll('[data-scaled-multiplier]').forEach(input=>input.addEventListener('change',scaledMultiplierChoicesChanged));
     root.querySelectorAll('[data-angle-total]').forEach(input=>input.addEventListener('change',angleTotalChoicesChanged));
     root.querySelectorAll('[data-missing-operation]').forEach(input=>input.addEventListener('change',missingOperationChoicesChanged));
@@ -414,14 +419,22 @@
     if(!selected.length){state.status=message;render();state.advancedOpen=true;return false;}
     state.rules[property]=selected;state.rules=G.normalizeRules(state.rules);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;return true;
   }
+  function parseCustomWholeNumbers(value,min,max,stripPercent=false){
+    const tokens=String(value||'').split(/[;,\s]+/).map(v=>stripPercent?v.replace(/%/g,''):v).filter(Boolean);
+    return [...new Set(tokens.map(Number).filter(n=>Number.isInteger(n)&&n>=min&&n<=max))].sort((a,b)=>a-b);
+  }
   function fractionChoicesChanged(){
-    const selected=Array.from(root.querySelectorAll('[data-fraction-denominator]:checked')).map(x=>Number(x.dataset.fractionDenominator));
-    if(!selected.length){state.status='Keep at least one fraction denominator selected.';render();state.advancedOpen=true;return;}
+    const chips=Array.from(root.querySelectorAll('[data-fraction-denominator]:checked')).map(x=>Number(x.dataset.fractionDenominator));
+    const custom=parseCustomWholeNumbers(root.querySelector('#tt99-custom-denominators')?.value,2,100);
+    const selected=[...new Set([...chips,...custom])].sort((a,b)=>a-b);
+    if(!selected.length){state.status='Keep at least one fraction denominator selected or enter a custom denominator.';render();state.advancedOpen=true;return;}
     state.rules.fractionDenominators=selected;state.rules=G.normalizeRules(state.rules);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function percentageChoicesChanged(){
-    const selected=Array.from(root.querySelectorAll('[data-percentage-choice]:checked')).map(x=>Number(x.dataset.percentageChoice));
-    if(!selected.length){state.status='Keep at least one percentage selected.';render();state.advancedOpen=true;return;}
+    const chips=Array.from(root.querySelectorAll('[data-percentage-choice]:checked')).map(x=>Number(x.dataset.percentageChoice));
+    const custom=parseCustomWholeNumbers(root.querySelector('#tt99-custom-percentages')?.value,1,100,true);
+    const selected=[...new Set([...chips,...custom])].sort((a,b)=>a-b);
+    if(!selected.length){state.status='Keep at least one percentage selected or enter a custom percentage.';render();state.advancedOpen=true;return;}
     state.rules.percentageChoices=selected;state.rules=G.normalizeRules(state.rules);commitCurrentRules();state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function scaledMultiplierChoicesChanged(){
