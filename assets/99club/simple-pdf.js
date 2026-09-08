@@ -5,6 +5,8 @@
   'use strict';
   const PAGE_W = 595.28;
   const PAGE_H = 841.89;
+  const LANDSCAPE_W = PAGE_H;
+  const LANDSCAPE_H = PAGE_W;
 
   function asciiish(s) {
     return String(s == null ? '' : s)
@@ -50,10 +52,13 @@
       if (!dataUrl) { this.image = null; return; }
       this.image = { bytes: dataUrlToBytes(dataUrl), width: widthPx, height: heightPx };
     }
-    addPage() {
-      const page = [];
-      this.pages.push(page);
-      return new PDFPage(page);
+    addPage(options = {}) {
+      const orientation = options.orientation === 'landscape' ? 'landscape' : 'portrait';
+      const width = orientation === 'landscape' ? LANDSCAPE_W : PAGE_W;
+      const height = orientation === 'landscape' ? LANDSCAPE_H : PAGE_H;
+      const cmds = [];
+      this.pages.push({ cmds, width, height, orientation });
+      return new PDFPage(cmds, width, height);
     }
     outputBytes() {
       if (!this.pages.length) this.addPage();
@@ -69,11 +74,14 @@
         imageId = add(`<< /Type /XObject /Subtype /Image /Width ${im.width} /Height ${im.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${im.bytes.length} >>\nstream\n${bytesToBinary(im.bytes)}\nendstream`);
       }
       const pageIds = [];
-      for (const cmds of this.pages) {
+      for (const entry of this.pages) {
+        const cmds = Array.isArray(entry) ? entry : entry.cmds;
+        const pageWidth = Array.isArray(entry) ? PAGE_W : entry.width;
+        const pageHeight = Array.isArray(entry) ? PAGE_H : entry.height;
         const stream = cmds.join('\n') + '\n';
         const contentId = add(`<< /Length ${stream.length} >>\nstream\n${stream}endstream`);
         const resources = `<< /Font << /F1 ${fontRegularId} 0 R /F2 ${fontBoldId} 0 R >>${imageId ? ` /XObject << /Im1 ${imageId} 0 R >>` : ''} >>`;
-        const pageId = add(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${n(PAGE_W)} ${n(PAGE_H)}] /Resources ${resources} /Contents ${contentId} 0 R >>`);
+        const pageId = add(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${n(pageWidth)} ${n(pageHeight)}] /Resources ${resources} /Contents ${contentId} 0 R >>`);
         pageIds.push(pageId);
       }
       objects[catalogId - 1] = `<< /Type /Catalog /Pages ${pagesId} 0 R >>`;
@@ -102,23 +110,23 @@
   }
 
   class PDFPage {
-    constructor(cmds) { this.c = cmds; }
+    constructor(cmds, width = PAGE_W, height = PAGE_H) { this.c = cmds; this.width = width; this.height = height; }
     text(x, topY, text, size = 10, opts = {}) {
       const font = opts.bold ? 'F2' : 'F1';
       const width = estimateTextWidth(text, size, opts.bold);
       let tx = x;
       if (opts.align === 'center') tx -= width / 2;
       if (opts.align === 'right') tx -= width;
-      const y = PAGE_H - topY;
+      const y = this.height - topY;
       this.c.push(`BT /${font} ${n(size)} Tf ${opts.color ? rgb(opts.color) + ' rg ' : ''}1 0 0 1 ${n(tx)} ${n(y)} Tm (${pdfEscape(text)}) Tj ET`);
       return width;
     }
     line(x1, y1Top, x2, y2Top, opts = {}) {
-      const y1 = PAGE_H - y1Top, y2 = PAGE_H - y2Top;
+      const y1 = this.height - y1Top, y2 = this.height - y2Top;
       this.c.push(`${opts.color ? rgb(opts.color) + ' RG ' : ''}${n(opts.width || 0.7)} w ${n(x1)} ${n(y1)} m ${n(x2)} ${n(y2)} l S`);
     }
     rect(x, topY, w, h, opts = {}) {
-      const y = PAGE_H - topY - h;
+      const y = this.height - topY - h;
       const parts = [];
       if (opts.fill) parts.push(`${rgb(opts.fill)} rg`);
       if (opts.stroke) parts.push(`${rgb(opts.stroke)} RG`);
@@ -127,7 +135,7 @@
       this.c.push(parts.join(' '));
     }
     image(x, topY, w, h) {
-      const y = PAGE_H - topY - h;
+      const y = this.height - topY - h;
       this.c.push(`q ${n(w)} 0 0 ${n(h)} ${n(x)} ${n(y)} cm /Im1 Do Q`);
     }
   }
@@ -145,7 +153,7 @@
     return units * size * (bold ? 1.03 : 1);
   }
 
-  const api = { PDFDocument, PAGE_W, PAGE_H, estimateTextWidth, asciiish };
+  const api = { PDFDocument, PAGE_W, PAGE_H, LANDSCAPE_W, LANDSCAPE_H, estimateTextWidth, asciiish };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   global.TT99SimplePDF = api;
 }(typeof window !== 'undefined' ? window : globalThis));

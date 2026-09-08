@@ -8,12 +8,13 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.0';
+  const VERSION = '1.1';
   const state = {
     clubId: '33',
     rules: G.clone(G.CLASSIC_PRESETS['33']),
     seed: G.newSeed('33'),
     variants: 1,
+    orientation: 'portrait',
     sheets: [],
     previewVariant: 0,
     previewAnswers: false,
@@ -37,12 +38,13 @@
       const preset = getPreset(state.clubId) || G.CLASSIC_PRESETS['33'];
       state.rules = G.normalizeRules(s.rules || preset);
       state.variants = Math.min(4, Math.max(1, Number(s.variants) || 1));
+      state.orientation = s.orientation === 'landscape' ? 'landscape' : 'portrait';
       state.school = { ...state.school, ...(s.school || {}) };
       state.seed = s.seed || G.newSeed(state.clubId);
     } catch(e) {}
   }
   function persist(){
-    const payload = { clubId: state.clubId, rules: state.rules, variants: state.variants, seed: state.seed, school: { ...state.school } };
+    const payload = { clubId: state.clubId, rules: state.rules, variants: state.variants, orientation: state.orientation, seed: state.seed, school: { ...state.school } };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); } catch(e) {
       // Logo may exceed browser quota; keep text settings if that happens.
       try { payload.school.logoDataUrl=''; localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); } catch(ignore) {}
@@ -170,6 +172,10 @@
   function renderStepGenerate(){
     return `<section class="tt99-card tt99-card--action">
       <div class="tt99-step"><span>4</span><div><h2>Generate & download</h2><p>Create up to four equivalent versions. Answer keys use the same sheet codes.</p></div></div>
+      <div class="tt99-layout-control"><span class="tt99-field-label">Page layout</span><div class="tt99-layout-picker" role="group" aria-label="Page layout">
+        <button type="button" class="tt99-layout-option ${state.orientation==='portrait'?'is-selected':''}" data-page-orientation="portrait" aria-pressed="${state.orientation==='portrait'}"><span class="tt99-page-icon tt99-page-icon--portrait" aria-hidden="true"></span><span><b>Portrait</b><small>Classic worksheet layout</small></span></button>
+        <button type="button" class="tt99-layout-option ${state.orientation==='landscape'?'is-selected':''}" data-page-orientation="landscape" aria-pressed="${state.orientation==='landscape'}"><span class="tt99-page-icon tt99-page-icon--landscape" aria-hidden="true"></span><span><b>Landscape</b><small>Wider, larger working text</small></span></button>
+      </div></div>
       <label class="tt99-field"><span>Equivalent versions</span><select id="tt99-variants">${[1,2,3,4].map(n=>`<option value="${n}" ${state.variants===n?'selected':''}>${n} ${n===1?'version':'versions'}</option>`).join('')}</select></label>
       <div class="tt99-action-row"><button type="button" class="tt99-primary" id="tt99-new">Generate new questions</button><button type="button" class="tt99-secondary" id="tt99-shuffle">Shuffle order</button></div>
       <div class="tt99-recreate"><div><strong>Recreate from sheet code</strong><small>Uses the current rules. Enter the code printed at the bottom of a worksheet.</small></div><div><input id="tt99-sheet-code" type="text" maxlength="90" spellcheck="false" placeholder="e.g. 99-ABCDE-1"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>
@@ -187,16 +193,16 @@
     const sheet = state.sheets[state.previewVariant];
     if (!sheet) return '';
     const r=state.rules, s=state.school;
-    const cols = r.questionCount <= 11 ? 1 : (r.questionCount <= 22 ? 2 : 3);
+    const cols = L.getColumns(r.questionCount,state.orientation);
     const rows = Math.ceil(r.questionCount / cols);
-    const classInfo=[s.yearGroup,s.className].filter(Boolean).join(' · ');
+    const identityMeta=[L.displayYear(s.yearGroup),L.displayClass(s.className),s.teacherName].filter(Boolean).join(' · ');
     const dateText=s.worksheetDate ? formatDate(s.worksheetDate) : '';
     const groups = Array.from({length:cols},(_,c)=>sheet.questions.slice(c*rows, Math.min((c+1)*rows,sheet.questions.length)));
-    return `<article class="tt99-paper rows-${rows}" style="--paper-cols:${cols};--row-count:${rows}">
+    return `<article class="tt99-paper is-${state.orientation} cols-${cols} rows-${rows}" data-orientation="${state.orientation}" style="--paper-cols:${cols};--row-count:${rows}">
       <header class="tt99-paper-head">
-        <div class="tt99-paper-logo">${s.logoDataUrl?`<img src="${s.logoDataUrl}" alt="">`:''}</div>
-        <div class="tt99-paper-title"><div class="tt99-paper-school">${esc(s.schoolName || 'School name')}</div><h2>${esc(r.name || `${r.questionCount} Club`)}</h2><span>${state.previewAnswers?'ANSWER KEY':'MENTAL MATHS CHALLENGE'}</span></div>
-        <div class="tt99-paper-meta">${classInfo?`<b>${esc(classInfo)}</b>`:''}${s.teacherName?`<span>${esc(s.teacherName)}</span>`:''}${dateText?`<span>${esc(dateText)}</span>`:''}</div>
+        <div class="tt99-paper-identity"><div class="tt99-paper-logo">${s.logoDataUrl?`<img src="${s.logoDataUrl}" alt="">`:''}</div><div class="tt99-paper-identity-copy"><div class="tt99-paper-school">${esc(s.schoolName || 'School name')}</div>${identityMeta?`<div class="tt99-paper-classmeta">${esc(identityMeta)}</div>`:''}</div></div>
+        <div class="tt99-paper-title"><h2>${esc(r.name || `${r.questionCount} Club`)}</h2><span>${state.previewAnswers?'ANSWER KEY':'MENTAL MATHS CHALLENGE'}</span></div>
+        <div class="tt99-paper-date">${dateText?esc(dateText):''}</div>
       </header>
       <div class="tt99-paper-student"><span>Name <i></i></span><span>Score <i class="short"></i> / ${r.questionCount}</span></div>
       <div class="tt99-paper-instructions">${esc(G.instructionText(r))}</div>
@@ -218,6 +224,7 @@
     root.querySelectorAll('[data-table]').forEach(input=>input.addEventListener('change',tablesChanged));
     root.querySelectorAll('[data-tables-action]').forEach(btn=>btn.addEventListener('click',()=>tableAction(btn.dataset.tablesAction)));
     root.querySelector('#tt99-save-preset')?.addEventListener('click',savePreset);
+    root.querySelectorAll('[data-page-orientation]').forEach(btn=>btn.addEventListener('click',()=>setOrientation(btn.dataset.pageOrientation)));
     root.querySelector('#tt99-variants')?.addEventListener('change',e=>{state.variants=Number(e.target.value);generateAll();render();});
     root.querySelector('#tt99-new')?.addEventListener('click',newQuestions);
     root.querySelector('#tt99-shuffle')?.addEventListener('click',shuffleCurrent);
@@ -231,6 +238,15 @@
     root.querySelector('#tt99-pdf-both')?.addEventListener('click',()=>downloadPDF('both'));
     root.querySelector('#tt99-export-settings')?.addEventListener('click',exportSettings);
     root.querySelector('#tt99-import-settings')?.addEventListener('change',importSettings);
+  }
+
+  function setOrientation(value){
+    const next=value==='landscape'?'landscape':'portrait';
+    if(state.orientation===next)return;
+    state.orientation=next;
+    persist();
+    state.status=`${next==='landscape'?'Landscape':'Portrait'} layout selected. Questions and sheet codes are unchanged.`;
+    render();
   }
 
   function selectClub(id){
@@ -283,8 +299,8 @@
 
   function downloadPDF(kind){
     try {
-      const doc=L.buildDocument({rules:state.rules,sheets:state.sheets,school:state.school,kind});
-      doc.save(L.filename(state.rules,kind));
+      const doc=L.buildDocument({rules:state.rules,sheets:state.sheets,school:state.school,kind,orientation:state.orientation});
+      doc.save(L.filename(state.rules,kind,state.orientation));
       state.status='PDF created.'; render();
     } catch(err){ console.error(err); state.status='PDF generation failed in this browser. Please refresh and try again.';render(); }
   }
@@ -292,7 +308,7 @@
   function exportSettings(){
     const data={
       app:'Tech Tinker Club 99 Club Generator',version:VERSION,clubId:state.clubId,
-      rules:state.rules,variants:state.variants,seed:state.seed,
+      rules:state.rules,variants:state.variants,orientation:state.orientation,seed:state.seed,
       sheets:state.sheets.map(s=>({seed:s.seed,code:s.code,questions:s.questions})),
       school:{schoolName:state.school.schoolName,yearGroup:state.school.yearGroup,className:state.school.className,teacherName:state.school.teacherName,worksheetDate:state.school.worksheetDate}
     };
@@ -310,6 +326,7 @@
       }
       state.clubId=requestedId&&getPreset(requestedId)?requestedId:(G.CLASSIC_PRESETS[state.rules.id]?state.rules.id:'33');
       state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));
+      state.orientation=d.orientation==='landscape'?'landscape':'portrait';
       if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};
       state.seed=typeof d.seed==='string'&&d.seed?d.seed:G.newSeed(state.clubId);
       const exactSheets=Array.isArray(d.sheets)&&d.sheets.length===state.variants&&d.sheets.every(s=>s&&typeof s.seed==='string'&&typeof s.code==='string'&&Array.isArray(s.questions)&&s.questions.length===state.rules.questionCount);
