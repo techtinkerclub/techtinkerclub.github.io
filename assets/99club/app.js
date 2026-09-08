@@ -8,9 +8,42 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.4';
+  const VERSION = '1.5';
   const FRACTION_DENOMINATOR_CHOICES = Array.from({length:11}, (_,i)=>i+2);
   const PERCENTAGE_STEP_CHOICES = Array.from({length:20}, (_,i)=>(i+1)*5);
+  const HELP_TEXT = {
+    scheme: ['Ruleset scheme','A scheme changes the default 11–99 progression. Classic 99 Club is the standard starting point. Other schemes are optional alternatives; your edits are remembered separately for each scheme and challenge.'],
+    challenge: ['Challenge','Choose the level you want to generate. Bronze, Silver, Gold, Platinum and Diamond are post-99 presets with progressively broader mental-maths content.'],
+    perfectAttempts: ['Perfect attempts to advance','How many perfect scores a pupil should achieve before moving on. The TTC standard is two; changing this updates the instruction printed on the sheet.'],
+    questionType: ['Question type','Controls the broad generator mode. “Mixed mental arithmetic” lets you combine several question families and set their relative frequency.'],
+    unaided: ['Independent / unaided wording','When enabled, the worksheet instruction states that the challenge should be completed independently and without help.'],
+    families: ['Question families','Choose which kinds of questions can appear on a mixed mental-arithmetic sheet. A family that is switched off will not be generated.'],
+    weights: ['Relative question mix','Weight means frequency, not difficulty. A family with weight 4 appears about twice as often as one with weight 2. Weights do not need to add to 100; the app shows the approximate percentage and question count.'],
+    arithmeticRanges: ['Arithmetic ranges','These limits control the number pool for addition, subtraction and related advanced families. The answer limit prevents ordinary arithmetic questions from growing beyond the selected size.'],
+    negativeAnswers: ['Negative subtraction answers','Allows subtraction facts whose result is below zero. Leave this off for a conventional primary arithmetic sheet.'],
+    tables: ['Tables included','Select the multiplication-table families available to multiplication, division and missing-number questions.'],
+    factorRange: ['Factor / quotient range','For multiplication this controls the second factor; for division it controls the quotient. Together with the selected tables it defines the fact pool.'],
+    multiplyShare: ['Multiplication share','For a mixed multiplication/division challenge, this sets the target proportion of multiplication questions. The remainder are division questions.'],
+    missingNumber: ['Missing-number rules','Choose which operations are used and where the blank may appear. For example: 7 × ___ = 42 or 42 ÷ ___ = 7.'],
+    powers: ['Powers & radicals','Squares use n², cubes use n³, and square-root questions use exact roots such as √81 = 9. The base ranges control the numbers used to construct those facts.'],
+    bodmas: ['Order of operations','Builds expressions that test the order in which operations are carried out. You can choose the permitted operations and whether bracketed expressions are included.'],
+    scaled: ['Scaled multiplication / division','Extends known multiplication and division facts by powers of ten, for example 6 × 70 or 4200 ÷ 60. Select the scale factors the generator may use.'],
+    fractionDenominators: ['Fraction denominators','A selected denominator can generate any proper fraction with that denominator, not only a unit fraction. Selecting 5 can therefore produce 1/5, 2/5, 3/5 or 4/5 of a suitable quantity.'],
+    customDenominators: ['Custom denominators','Add extra whole-number denominators as a comma-separated list, for example 13, 15, 20. The generator still chooses quantities that give whole-number answers.'],
+    fractionQuantity: ['Fraction quantity range','Sets the smallest and largest whole quantity used in “fraction of” questions. The generator only keeps combinations that give a whole-number answer.'],
+    percentages: ['Percentages included','Choose the percentage facts that may appear. The standard selector offers 5% steps; only the percentages you enable are used.'],
+    customPercentages: ['Custom percentages','Add extra whole-number percentages from 1% to 100%, separated by commas. You can type 37, 42 or 37%, 42%. The generator pairs them with quantities that give whole-number answers.'],
+    percentageQuantity: ['Percentage quantity range','Sets the smallest and largest quantity used in percentage questions. Unsuitable combinations that would produce a non-whole answer are skipped.'],
+    angleFacts: ['Angle facts','Generates missing-angle facts based on the selected totals: 90° for a right angle, 180° for a straight line, and 360° for a full turn.'],
+    duplicates: ['Duplicate handling','“Exact duplicates” avoids the same question appearing twice where possible. Reversed multiplication duplicates treats facts such as 3 × 7 and 7 × 3 as the same fact.'],
+    savePreset: ['Save these rules','Stores the current rule combination as a custom challenge in this browser. It does not upload anything or alter the built-in preset.'],
+    resetChallenge: ['Reset this challenge','Restores only the currently selected scheme + challenge to its built-in default rules. Other edited challenges are kept.'],
+    resetScheme: ['Reset scheme','Restores every edited 11–99 challenge in the selected scheme. It does not remove your saved custom presets.'],
+    layout: ['Page layout','Portrait uses the traditional taller worksheet. Landscape uses the wider page to give questions more horizontal space and, where possible, larger working text. The maths and sheet code do not change.'],
+    variants: ['Equivalent versions','Creates up to four equivalent sheets from the same rules. Each version has its own reproducible sheet code and matching answer key.'],
+    sheetCode: ['Sheet code','The code printed on each worksheet records the random seed and version. Enter it here with the same rules selected to recreate that exact generated version.'],
+    exportSettings: ['Export / import settings','Settings files preserve your configuration, scheme/challenge edits and exact current worksheet versions so the setup can be moved to another browser without an account.']
+  };
   const state = {
     schemeId: 'classic',
     clubId: '33',
@@ -29,11 +62,34 @@
     rulesError: ''
   };
 
+  root.addEventListener('click',e=>{
+    const help=e.target.closest('[data-help-key]');
+    if(help){ e.preventDefault(); e.stopPropagation(); const key=help.dataset.helpKey; const pop=root.querySelector('#tt99-help-popover'); const same=help.getAttribute('aria-expanded')==='true' && pop && !pop.hidden; if(same)closeHelp(); else showHelp(help,key); return; }
+    if(e.target.closest('.tt99-help-close')){e.preventDefault();closeHelp();return;}
+    if(!e.target.closest('#tt99-help-popover'))closeHelp();
+  });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeHelp(); });
+  addEventListener('resize',closeHelp);
+  addEventListener('scroll',closeHelp,{passive:true});
+
   restoreSettings();
   generateAll();
   render();
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function helpButton(key){ const item=HELP_TEXT[key]; if(!item)return ''; return `<button type="button" class="tt99-help-btn" data-help-key="${esc(key)}" aria-label="Help: ${esc(item[0])}" aria-expanded="false">?</button>`; }
+  function helpLabel(text,key){ return `<span class="tt99-label-help"><span>${esc(text)}</span>${helpButton(key)}</span>`; }
+  function showHelp(button,key){
+    const item=HELP_TEXT[key], pop=root.querySelector('#tt99-help-popover'); if(!item||!pop)return;
+    root.querySelectorAll('[data-help-key]').forEach(b=>b.setAttribute('aria-expanded','false'));
+    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p><a href="/tools/99-club/help/">Open full Help & guide</a>`;
+    pop.hidden=false; button.setAttribute('aria-expanded','true');
+    const r=button.getBoundingClientRect(), gap=9, width=Math.min(330,innerWidth-24);
+    pop.style.width=`${width}px`; let left=Math.min(innerWidth-width-12,Math.max(12,r.left+r.width/2-width/2));
+    let top=r.bottom+gap; const h=pop.offsetHeight||180; if(top+h>innerHeight-12)top=Math.max(12,r.top-gap-h);
+    pop.style.left=`${left}px`; pop.style.top=`${top}px`;
+  }
+  function closeHelp(){ const pop=root.querySelector('#tt99-help-popover'); if(pop)pop.hidden=true; root.querySelectorAll('[data-help-key]').forEach(b=>b.setAttribute('aria-expanded','false')); }
   function loadCustomPresets(){ try { return JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]'); } catch(e){ return []; } }
   function saveCustomPresets(){ try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(state.customPresets)); } catch(e) {} }
   function getSchemeById(id){ return G.SCHEME_PRESETS[id] || G.SCHEME_PRESETS.classic; }
@@ -120,6 +176,7 @@
             <span class="tt99-eyebrow">Tech Tinker Club · Free classroom tool</span>
             <h1>99 Club Sheet Generator</h1>
             <p>Create balanced, personalised 99 Club worksheets and answer keys in seconds. Everything runs in your browser; school details and logos are not uploaded anywhere.</p>
+            <div class="tt99-hero-actions"><a href="/tools/99-club/help/" class="tt99-help-link">Help & guide</a><span>New here? Start with the Classic scheme and a challenge level.</span></div>
           </div>
           <div class="tt99-hero__badge" aria-hidden="true"><span>99</span><small>CLUB</small></div>
         </section>
@@ -137,6 +194,7 @@
             <div class="tt99-privacy"><strong>Private by design.</strong> Questions, names and school logos are processed only on this device.</div>
           </main>
         </div>
+        <div id="tt99-help-popover" class="tt99-help-popover" role="dialog" aria-live="polite" hidden></div>
       </div>`;
     bindEvents();
   }
@@ -148,8 +206,8 @@
     const customs = state.customPresets.map(p => `<div class="tt99-custom-wrap">${clubCard(p, true)}<button type="button" class="tt99-custom-delete" data-delete-preset="${esc(p.id)}" aria-label="Delete ${esc(p.name)} preset" title="Delete custom preset">×</button></div>`).join('');
     const schemeOptions=Object.values(G.SCHEME_PRESETS).map(x=>`<option value="${esc(x.id)}" ${x.id===state.schemeId?'selected':''}>${esc(x.name)}</option>`).join('');
     return `<section class="tt99-card">
-      <div class="tt99-step"><span>2</span><div><h2>Choose the challenge</h2><p>Classic 99 Club is the default. Other published-style progressions are optional.</p></div></div>
-      <label class="tt99-field tt99-scheme-select"><span>Ruleset scheme</span><select id="tt99-scheme">${schemeOptions}</select><small>${esc(scheme.tagline)}</small></label>
+      <div class="tt99-step"><span>2</span><div><h2>Choose the challenge ${helpButton('challenge')}</h2><p>Classic 99 Club is the default. Other published-style progressions are optional.</p></div></div>
+      <label class="tt99-field tt99-scheme-select">${helpLabel('Ruleset scheme','scheme')}<select id="tt99-scheme">${schemeOptions}</select><small>${esc(scheme.tagline)}</small></label>
       <div class="tt99-club-section-label">11–99 progression</div>
       <div class="tt99-club-grid">${classics}</div>
       <div class="tt99-club-section-label tt99-club-section-label--advanced">Post-99 challenges</div>
@@ -193,8 +251,8 @@
       <div class="tt99-step tt99-step--rules"><span>3</span><div><h2>Check / edit rules</h2><p id="tt99-summary">${esc(G.rulesSummary(r))}</p>${edited?'<small class="tt99-rule-state">Edited for this scheme + challenge</small>':''}${state.rulesError?`<div class="tt99-rule-error">${esc(state.rulesError)}</div>`:''}</div></div>
       <div class="tt99-rule-actions">
         <button type="button" class="tt99-secondary" id="tt99-toggle-rules">${state.advancedOpen?'Hide rule editor':'Edit rules'}</button>
-        <button type="button" class="tt99-ghost" id="tt99-reset-rules" ${edited?'':'disabled'}>Reset this challenge</button>
-        <button type="button" class="tt99-ghost" id="tt99-reset-scheme" ${schemeHasOverrides()?'':'disabled'}>Reset scheme</button>
+        <span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-rules" ${edited?'':'disabled'}>Reset this challenge</button>${helpButton('resetChallenge')}</span>
+        <span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-scheme" ${schemeHasOverrides()?'':'disabled'}>Reset scheme</button>${helpButton('resetScheme')}</span>
       </div>
       ${state.advancedOpen ? renderAdvancedRules() : ''}
     </section>`;
@@ -223,43 +281,43 @@
         <div class="tt99-form-grid">
           <label class="tt99-field"><span>Number of questions</span><input data-rule="questionCount" type="number" min="1" max="200" value="${r.questionCount}"></label>
           <label class="tt99-field"><span>Time limit (minutes)</span><input data-rule="timeMinutes" type="number" min="0.25" max="60" step="0.25" value="${r.timeMinutes}"></label>
-          <label class="tt99-field"><span>Perfect attempts to advance</span><input data-rule="perfectAttempts" type="number" min="1" max="10" value="${r.perfectAttempts}"></label>
-          <label class="tt99-field"><span>Question type</span><select data-rule="mode">${mathModes.map(([v,l])=>`<option value="${v}" ${r.mode===v?'selected':''}>${l}</option>`).join('')}</select></label>
+          <label class="tt99-field">${helpLabel('Perfect attempts to advance','perfectAttempts')}<input data-rule="perfectAttempts" type="number" min="1" max="10" value="${r.perfectAttempts}"></label>
+          <label class="tt99-field">${helpLabel('Question type','questionType')}<select data-rule="mode">${mathModes.map(([v,l])=>`<option value="${v}" ${r.mode===v?'selected':''}>${l}</option>`).join('')}</select></label>
         </div>
-        <label class="tt99-check"><input data-rule-check="unaided" type="checkbox" ${r.unaided?'checked':''}><span>State that the sheet should be completed independently/unaided</span></label>
+        <label class="tt99-check"><input data-rule-check="unaided" type="checkbox" ${r.unaided?'checked':''}><span>State that the sheet should be completed independently/unaided ${helpButton('unaided')}</span></label>
       </div>
       ${r.mode==='family_mix'?renderFamilySelector(r)+renderFamilyWeights(r):''}
       ${r.mode==='double'?`<div class="tt99-inline-fields">${numField('Smallest number','numberMin',r.numberMin,0,100)}${numField('Largest number','numberMax',r.numberMax,0,100)}</div>`:''}
       ${r.mode==='repeated_addition'?`<div class="tt99-inline-fields">${numField('Smallest addend','addendMin',r.addendMin,0,100)}${numField('Largest addend','addendMax',r.addendMax,0,100)}${numField('Minimum repeats','repeatsMin',r.repeatsMin,2,20)}${numField('Maximum repeats','repeatsMax',r.repeatsMax,2,20)}</div>`:''}
-      ${needArithmetic?`<div class="tt99-advanced-section"><span class="tt99-field-label">Arithmetic ranges</span><div class="tt99-inline-fields">${numField('Smallest arithmetic operand','arithmeticOperandMin',r.arithmeticOperandMin,0,5000)}${numField('Largest arithmetic operand','arithmeticOperandMax',r.arithmeticOperandMax,1,5000)}${numField('Arithmetic answer limit','arithmeticMax',r.arithmeticMax,1,5000)}</div>${needSubtraction?`<label class="tt99-check"><input data-rule-check="allowNegativeAnswers" type="checkbox" ${r.allowNegativeAnswers?'checked':''}><span>Allow subtraction questions with negative answers</span></label>`:''}</div>`:''}
+      ${needArithmetic?`<div class="tt99-advanced-section"><span class="tt99-field-label">Arithmetic ranges ${helpButton('arithmeticRanges')}</span><div class="tt99-inline-fields">${numField('Smallest arithmetic operand','arithmeticOperandMin',r.arithmeticOperandMin,0,5000)}${numField('Largest arithmetic operand','arithmeticOperandMax',r.arithmeticOperandMax,1,5000)}${numField('Arithmetic answer limit','arithmeticMax',r.arithmeticMax,1,5000)}</div>${needSubtraction?`<label class="tt99-check"><input data-rule-check="allowNegativeAnswers" type="checkbox" ${r.allowNegativeAnswers?'checked':''}><span>Allow subtraction questions with negative answers ${helpButton('negativeAnswers')}</span></label>`:''}</div>`:''}
       ${needTables?renderTableSelector(r):''}
-      ${(needTables||needScaled)?`<div class="tt99-inline-fields">${numField(needTables?'Smallest factor / quotient':'Smallest scaled base','factorMin',r.factorMin,0,100)}${numField(needTables?'Largest factor / quotient':'Largest scaled base','factorMax',r.factorMax,0,100)}${r.mode==='mixed'?`<label class="tt99-field tt99-percent"><span>Multiplication share <b>${r.multiplyPercent}%</b></span><input data-rule="multiplyPercent" type="range" min="0" max="100" step="5" value="${r.multiplyPercent}"></label>`:''}</div>`:''}
-      ${needMissing?`<div class="tt99-advanced-section"><span class="tt99-field-label">Missing-number rules</span>${renderStringChoiceSelector('Operations','missingOperation',[['multiply','Multiplication'],['divide','Division']],r.missingNumberOperations)}${renderStringChoiceSelector('Where the blank can appear','missingPosition',[['multiply_first','First factor'],['multiply_second','Second factor'],['multiply_result','Product / result'],['divide_dividend','Dividend'],['divide_divisor','Divisor'],['divide_result','Quotient / result']],r.missingNumberPositions)}</div>`:''}
-      ${(needSquares||needCubes)?`<div class="tt99-advanced-section"><span class="tt99-field-label">Powers & radicals</span>${needSquares?`<div class="tt99-inline-fields">${numField('Smallest square/root base','squareMin',r.squareMin,0,50)}${numField('Largest square/root base','squareMax',r.squareMax,0,50)}</div>`:''}${needCubes?`<div class="tt99-inline-fields">${numField('Smallest cube base','cubeMin',r.cubeMin,0,20)}${numField('Largest cube base','cubeMax',r.cubeMax,0,20)}</div>`:''}<small class="tt99-help">Square-root questions are always generated with exact whole-number roots.</small></div>`:''}
-      ${needBodmas?`<div class="tt99-advanced-section"><span class="tt99-field-label">Order of operations</span><div class="tt99-inline-fields">${numField('Largest base number','bodmasMax',r.bodmasMax,2,30)}</div>${renderStringChoiceSelector('Operations allowed','bodmasOperation',[['add','+ addition'],['subtract','− subtraction'],['multiply','× multiplication'],['divide','÷ division']],r.bodmasOperations)}<label class="tt99-check"><input data-rule-check="bodmasUseBrackets" type="checkbox" ${r.bodmasUseBrackets?'checked':''}><span>Include bracketed expressions</span></label></div>`:''}
-      ${needScaled?`<div class="tt99-advanced-section"><span class="tt99-field-label">Scaled multiplication / division</span>${renderChoiceSelector('Scale factors','scaledMultiplier',[10,100,1000],r.scaledMultipliers,n=>`×${n}`)}</div>`:''}
-      ${needFractions?`<div class="tt99-advanced-section"><span class="tt99-field-label">Fractions of quantities</span>${renderChoiceSelector('Fraction denominators','fractionDenominator',FRACTION_DENOMINATOR_CHOICES,r.fractionDenominators,n=>`1/${n}`)}${customListField('Add custom denominators','tt99-custom-denominators',r.fractionDenominators.filter(n=>!FRACTION_DENOMINATOR_CHOICES.includes(n)).join(', '),'e.g. 13, 15, 20','Whole-number denominators from 2 to 100. Separate values with commas.')}<div class="tt99-inline-fields">${numField('Smallest quantity','fractionQuantityMin',r.fractionQuantityMin,1,5000)}${numField('Largest quantity','fractionQuantityMax',r.fractionQuantityMax,1,5000)}</div></div>`:''}
-      ${needPercentages?`<div class="tt99-advanced-section"><span class="tt99-field-label">Percentages of quantities</span>${renderChoiceSelector('Percentages included','percentageChoice',PERCENTAGE_STEP_CHOICES,r.percentageChoices,n=>`${n}%`)}${customListField('Add custom percentages','tt99-custom-percentages',r.percentageChoices.filter(n=>!PERCENTAGE_STEP_CHOICES.includes(n)).map(n=>`${n}%`).join(', '),'e.g. 37%, 42%, 67%','Whole-number percentages from 1% to 100%. Separate values with commas; the % sign is optional.')}<div class="tt99-inline-fields">${numField('Smallest quantity','percentageQuantityMin',r.percentageQuantityMin,10,5000)}${numField('Largest quantity','percentageQuantityMax',r.percentageQuantityMax,10,5000)}</div><small class="tt99-help">Generated percentage questions keep whole-number answers, so custom values such as 37% are paired with suitable quantities.</small></div>`:''}
-      ${needAngles?`<div class="tt99-advanced-section"><span class="tt99-field-label">Angle facts</span>${renderChoiceSelector('Whole-turn / angle totals','angleTotal',[90,180,360],r.angleTotals,n=>`${n}°`)}</div>`:''}
+      ${(needTables||needScaled)?`<div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('factorRange')}</span>${numField(needTables?'Smallest factor / quotient':'Smallest scaled base','factorMin',r.factorMin,0,100)}${numField(needTables?'Largest factor / quotient':'Largest scaled base','factorMax',r.factorMax,0,100)}${r.mode==='mixed'?`<label class="tt99-field tt99-percent"><span>Multiplication share <b>${r.multiplyPercent}%</b> ${helpButton('multiplyShare')}</span><input data-rule="multiplyPercent" type="range" min="0" max="100" step="5" value="${r.multiplyPercent}"></label>`:''}</div>`:''}
+      ${needMissing?`<div class="tt99-advanced-section"><span class="tt99-field-label">Missing-number rules ${helpButton('missingNumber')}</span>${renderStringChoiceSelector('Operations','missingOperation',[['multiply','Multiplication'],['divide','Division']],r.missingNumberOperations)}${renderStringChoiceSelector('Where the blank can appear','missingPosition',[['multiply_first','First factor'],['multiply_second','Second factor'],['multiply_result','Product / result'],['divide_dividend','Dividend'],['divide_divisor','Divisor'],['divide_result','Quotient / result']],r.missingNumberPositions)}</div>`:''}
+      ${(needSquares||needCubes)?`<div class="tt99-advanced-section"><span class="tt99-field-label">Powers & radicals ${helpButton('powers')}</span>${needSquares?`<div class="tt99-inline-fields">${numField('Smallest square/root base','squareMin',r.squareMin,0,50)}${numField('Largest square/root base','squareMax',r.squareMax,0,50)}</div>`:''}${needCubes?`<div class="tt99-inline-fields">${numField('Smallest cube base','cubeMin',r.cubeMin,0,20)}${numField('Largest cube base','cubeMax',r.cubeMax,0,20)}</div>`:''}<small class="tt99-help">Square-root questions are always generated with exact whole-number roots.</small></div>`:''}
+      ${needBodmas?`<div class="tt99-advanced-section"><span class="tt99-field-label">Order of operations ${helpButton('bodmas')}</span><div class="tt99-inline-fields">${numField('Largest base number','bodmasMax',r.bodmasMax,2,30)}</div>${renderStringChoiceSelector('Operations allowed','bodmasOperation',[['add','+ addition'],['subtract','− subtraction'],['multiply','× multiplication'],['divide','÷ division']],r.bodmasOperations)}<label class="tt99-check"><input data-rule-check="bodmasUseBrackets" type="checkbox" ${r.bodmasUseBrackets?'checked':''}><span>Include bracketed expressions</span></label></div>`:''}
+      ${needScaled?`<div class="tt99-advanced-section"><span class="tt99-field-label">Scaled multiplication / division ${helpButton('scaled')}</span>${renderChoiceSelector('Scale factors','scaledMultiplier',[10,100,1000],r.scaledMultipliers,n=>`×${n}`)}</div>`:''}
+      ${needFractions?`<div class="tt99-advanced-section"><span class="tt99-field-label">Fractions of quantities ${helpButton('fractionDenominators')}</span>${renderChoiceSelector('Fraction denominators','fractionDenominator',FRACTION_DENOMINATOR_CHOICES,r.fractionDenominators,n=>`1/${n}`,'fractionDenominators')}${customListField('Add custom denominators','tt99-custom-denominators',r.fractionDenominators.filter(n=>!FRACTION_DENOMINATOR_CHOICES.includes(n)).join(', '),'e.g. 13, 15, 20','Whole-number denominators from 2 to 100. Separate values with commas.','customDenominators')}<small class="tt99-help tt99-help--important">Selected denominators generate a varied mix of proper fractions, e.g. denominator 5 may produce 1/5, 2/5, 3/5 or 4/5.</small><div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('fractionQuantity')}</span>${numField('Smallest quantity','fractionQuantityMin',r.fractionQuantityMin,1,5000)}${numField('Largest quantity','fractionQuantityMax',r.fractionQuantityMax,1,5000)}</div></div>`:''}
+      ${needPercentages?`<div class="tt99-advanced-section"><span class="tt99-field-label">Percentages of quantities ${helpButton('percentages')}</span>${renderChoiceSelector('Percentages included','percentageChoice',PERCENTAGE_STEP_CHOICES,r.percentageChoices,n=>`${n}%`,'percentages')}${customListField('Add custom percentages','tt99-custom-percentages',r.percentageChoices.filter(n=>!PERCENTAGE_STEP_CHOICES.includes(n)).map(n=>`${n}%`).join(', '),'e.g. 37%, 42%, 67%','Whole-number percentages from 1% to 100%. Separate values with commas; the % sign is optional.','customPercentages')}<div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('percentageQuantity')}</span>${numField('Smallest quantity','percentageQuantityMin',r.percentageQuantityMin,10,5000)}${numField('Largest quantity','percentageQuantityMax',r.percentageQuantityMax,10,5000)}</div><small class="tt99-help">Generated percentage questions keep whole-number answers, so custom values such as 37% are paired with suitable quantities.</small></div>`:''}
+      ${needAngles?`<div class="tt99-advanced-section"><span class="tt99-field-label">Angle facts ${helpButton('angleFacts')}</span>${renderChoiceSelector('Whole-turn / angle totals','angleTotal',[90,180,360],r.angleTotals,n=>`${n}°`)}</div>`:''}
       <div class="tt99-check-row">
-        <label class="tt99-check"><input data-rule-check="avoidExactDuplicates" type="checkbox" ${r.avoidExactDuplicates?'checked':''}><span>Avoid exact duplicate questions where possible</span></label>
-        ${['multiply','mixed'].includes(r.mode) || (r.mode==='family_mix'&&r.families.includes('multiply'))?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates</span></label>`:''}
+        <label class="tt99-check"><input data-rule-check="avoidExactDuplicates" type="checkbox" ${r.avoidExactDuplicates?'checked':''}><span>Avoid exact duplicate questions where possible ${helpButton('duplicates')}</span></label>
+        ${['multiply','mixed'].includes(r.mode) || (r.mode==='family_mix'&&r.families.includes('multiply'))?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates ${helpButton('duplicates')}</span></label>`:''}
       </div>
-      <div class="tt99-save-preset"><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Year 4 Autumn"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save these rules</button></div>
+      <div class="tt99-save-preset"><span class="tt99-save-preset-help">${helpButton('savePreset')}</span><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Year 4 Autumn"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save these rules</button></div>
     </div>`;
   }
 
   function renderFamilySelector(r){
     const order=['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
-    return `<div class="tt99-family-select"><span class="tt99-field-label">Question families included</span><div class="tt99-family-chips">${order.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Turn families on or off. Use the relative weights below to make a family more or less common.</small></div>`;
+    return `<div class="tt99-family-select"><span class="tt99-field-label">Question families included ${helpButton('families')}</span><div class="tt99-family-chips">${order.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Turn families on or off. Use the relative weights below to make a family more or less common.</small></div>`;
   }
   function renderFamilyWeights(r){
     const total=r.families.reduce((sum,f)=>sum+(Number(r.familyWeights[f])||1),0)||1;
-    return `<div class="tt99-family-weights"><span class="tt99-field-label">Relative question mix</span><div>${r.families.map(f=>{const w=Number(r.familyWeights[f])||1;const pct=100*w/total;const count=Math.round(r.questionCount*w/total);return `<label><span>${esc(G.FAMILY_LABELS[f]||f)}<small>≈ ${pct.toFixed(pct<10?1:0)}% · ${count} q</small></span><input type="number" min="1" max="20" step="1" value="${w}" data-family-weight="${esc(f)}"></label>`;}).join('')}</div><small>Weights set the relative mix; they do not need to add to 100. The percentages and question counts are estimates for the current sheet size.</small></div>`;
+    return `<div class="tt99-family-weights"><span class="tt99-field-label">Relative question mix ${helpButton('weights')}</span><div>${r.families.map(f=>{const w=Number(r.familyWeights[f])||1;const pct=100*w/total;const count=Math.round(r.questionCount*w/total);return `<label><span>${esc(G.FAMILY_LABELS[f]||f)}<small>≈ ${pct.toFixed(pct<10?1:0)}% · ${count} q</small></span><input type="number" min="1" max="20" step="1" value="${w}" data-family-weight="${esc(f)}"></label>`;}).join('')}</div><small><strong>Weight is frequency, not difficulty.</strong> Weights set the relative mix and do not need to add to 100. The percentages and question counts are estimates for the current sheet size.</small></div>`;
   }
-  function renderChoiceSelector(label,key,choices,selected,labelFn){
+  function renderChoiceSelector(label,key,choices,selected,labelFn,helpKey=''){
     const set=new Set((selected||[]).map(Number));
-    return `<div class="tt99-choice-select"><span class="tt99-field-label">${esc(label)}</span><div>${choices.map(n=>`<label><input type="checkbox" data-${key.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())}="${n}" ${set.has(n)?'checked':''}><span>${esc(labelFn(n))}</span></label>`).join('')}</div></div>`;
+    return `<div class="tt99-choice-select"><span class="tt99-field-label">${esc(label)} ${helpButton(helpKey)}</span><div>${choices.map(n=>`<label><input type="checkbox" data-${key.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())}="${n}" ${set.has(n)?'checked':''}><span>${esc(labelFn(n))}</span></label>`).join('')}</div></div>`;
   }
   function renderStringChoiceSelector(label,key,choices,selected){
     const set=new Set((selected||[]).map(String));
@@ -268,23 +326,23 @@
   }
 
   function numField(label,key,value,min,max){ return `<label class="tt99-field"><span>${label}</span><input data-rule="${key}" type="number" min="${min}" max="${max}" value="${value}"></label>`; }
-  function customListField(label,id,value,placeholder,help){ return `<label class="tt99-field tt99-custom-list"><span>${esc(label)}</span><input id="${esc(id)}" type="text" spellcheck="false" value="${esc(value)}" placeholder="${esc(placeholder)}"><small>${esc(help)}</small></label>`; }
+  function customListField(label,id,value,placeholder,help,helpKey=''){ return `<label class="tt99-field tt99-custom-list">${helpLabel(label,helpKey)}<input id="${esc(id)}" type="text" spellcheck="false" value="${esc(value)}" placeholder="${esc(placeholder)}"><small>${esc(help)}</small></label>`; }
   function renderTableSelector(r){
-    return `<div class="tt99-table-select"><span class="tt99-field-label">Tables included</span><div class="tt99-table-chips">${Array.from({length:12},(_,i)=>i+1).map(n=>`<label><input type="checkbox" data-table="${n}" ${r.tables.includes(n)?'checked':''}><span>${n}×</span></label>`).join('')}</div><div class="tt99-mini-actions"><button type="button" data-tables-action="all">1–12</button><button type="button" data-tables-action="core">2, 3, 5, 10</button><button type="button" data-tables-action="single">2× only</button></div></div>`;
+    return `<div class="tt99-table-select"><span class="tt99-field-label">Tables included ${helpButton('tables')}</span><div class="tt99-table-chips">${Array.from({length:12},(_,i)=>i+1).map(n=>`<label><input type="checkbox" data-table="${n}" ${r.tables.includes(n)?'checked':''}><span>${n}×</span></label>`).join('')}</div><div class="tt99-mini-actions"><button type="button" data-tables-action="all">1–12</button><button type="button" data-tables-action="core">2, 3, 5, 10</button><button type="button" data-tables-action="single">2× only</button></div></div>`;
   }
 
   function renderStepGenerate(){
     return `<section class="tt99-card tt99-card--action">
       <div class="tt99-step"><span>4</span><div><h2>Generate and download</h2><p>Create up to four equivalent versions. Answer keys use the same sheet codes.</p></div></div>
-      <div class="tt99-layout-control"><span class="tt99-field-label">Page layout</span><div class="tt99-layout-picker" role="group" aria-label="Page layout">
+      <div class="tt99-layout-control"><span class="tt99-field-label">Page layout ${helpButton('layout')}</span><div class="tt99-layout-picker" role="group" aria-label="Page layout">
         <button type="button" class="tt99-layout-option ${state.orientation==='portrait'?'is-selected':''}" data-page-orientation="portrait" aria-pressed="${state.orientation==='portrait'}"><span class="tt99-page-icon tt99-page-icon--portrait" aria-hidden="true"></span><span><b>Portrait</b><small>Classic worksheet layout</small></span></button>
         <button type="button" class="tt99-layout-option ${state.orientation==='landscape'?'is-selected':''}" data-page-orientation="landscape" aria-pressed="${state.orientation==='landscape'}"><span class="tt99-page-icon tt99-page-icon--landscape" aria-hidden="true"></span><span><b>Landscape</b><small>Wider, larger working text</small></span></button>
       </div></div>
-      <label class="tt99-field"><span>Equivalent versions</span><select id="tt99-variants">${[1,2,3,4].map(n=>`<option value="${n}" ${state.variants===n?'selected':''}>${n} ${n===1?'version':'versions'}</option>`).join('')}</select></label>
+      <label class="tt99-field">${helpLabel('Equivalent versions','variants')}<select id="tt99-variants">${[1,2,3,4].map(n=>`<option value="${n}" ${state.variants===n?'selected':''}>${n} ${n===1?'version':'versions'}</option>`).join('')}</select></label>
       <div class="tt99-action-row"><button type="button" class="tt99-primary" id="tt99-new">Generate new questions</button><button type="button" class="tt99-secondary" id="tt99-shuffle">Shuffle order</button></div>
-      <div class="tt99-recreate"><div><strong>Recreate from sheet code</strong><small>Uses the current rules. Enter the code printed at the bottom of a worksheet.</small></div><div><input id="tt99-sheet-code" type="text" maxlength="90" spellcheck="false" placeholder="e.g. 99-ABCDE-1"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>
+      <div class="tt99-recreate"><div><strong>Recreate from sheet code ${helpButton('sheetCode')}</strong><small>Uses the current rules. Enter the code printed at the bottom of a worksheet.</small></div><div><input id="tt99-sheet-code" type="text" maxlength="90" spellcheck="false" placeholder="e.g. 99-ABCDE-1"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>
       <div class="tt99-downloads"><button id="tt99-pdf-student" class="tt99-download" ${state.rulesError?'disabled':''}><b>Worksheet PDF</b><span>Pupil sheets only</span></button><button id="tt99-pdf-answer" class="tt99-download" ${state.rulesError?'disabled':''}><b>Answer key PDF</b><span>Matching answers</span></button><button id="tt99-pdf-both" class="tt99-download tt99-download--accent" ${state.rulesError?'disabled':''}><b>Worksheet + answers</b><span>One complete PDF</span></button></div>
-      <div class="tt99-config-actions"><button type="button" class="tt99-linkbtn" id="tt99-export-settings">Export settings</button><label class="tt99-linkbtn tt99-import">Import settings<input id="tt99-import-settings" type="file" accept="application/json,.json"></label></div>
+      <div class="tt99-config-actions"><span class="tt99-action-help-wrap tt99-action-help-wrap--link"><button type="button" class="tt99-linkbtn" id="tt99-export-settings">Export settings</button>${helpButton('exportSettings')}</span><label class="tt99-linkbtn tt99-import">Import settings<input id="tt99-import-settings" type="file" accept="application/json,.json"></label></div>
       ${state.status?`<div class="tt99-status" role="status">${esc(state.status)}</div>`:''}
     </section>`;
   }

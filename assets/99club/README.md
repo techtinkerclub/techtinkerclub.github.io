@@ -4,7 +4,7 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version 1.4 extends the v1.3 generator additively. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1/v1.2 baselines. Existing built-in Bronze-Diamond presets are also regression-tested so rule-editor work cannot silently alter their default sheets.
+Version 1.5 is a help-and-guidance pass on the frozen v1.4 generator. The maths engine and PDF engine are unchanged. **Classic 11-99 remains the default** and its deterministic question output is regression-tested against the frozen v1.1/v1.2 baselines. Existing built-in Bronze-Diamond presets are also regression-tested so rule-editor work cannot silently alter their default sheets.
 
 The normal progression shown on first load is still:
 
@@ -17,8 +17,9 @@ with the TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. B
 - `generator.js` - Classic presets, optional 11-99 schemes, Bronze-Diamond presets, rule normalisation, reusable question-family generators, deterministic generation and balancing.
 - `simple-pdf.js` - dependency-free A4 PDF writer using standard PDF fonts, optional JPEG logos, portrait/landscape page sizes and a standard Symbol-font radical glyph for square roots.
 - `pdf-layout.js` - separate portrait and landscape worksheet/answer-key layouts.
-- `app.js` - UI state, personalisation, scheme selection, page-layout selection, custom presets, preview, local storage, settings import/export and PDF downloads.
-- `99club.css` - responsive app and print-preview styling.
+- `app.js` - UI state, personalisation, scheme selection, page-layout selection, contextual help popovers, custom presets, preview, local storage, settings import/export and PDF downloads.
+- `99club.css` - responsive app, contextual help, guide-page and print-preview styling.
+- `../../_pages/99-club-help.md` - full Help & guide page at `/tools/99-club/help/`.
 
 ## Built-in 11-99 ruleset schemes
 
@@ -67,6 +68,18 @@ Mixed mental-arithmetic presets can be composed from:
 
 The rule editor can turn these families on/off and change their relative weighting. It also exposes relevant settings such as arithmetic operand/result limits, tables/factor ranges, missing-number operations and blank positions, square/cube ranges, BODMAS operations/brackets, scaled factors, fraction denominators and quantity ranges, percentage choices and quantity ranges, angle totals, negative subtraction answers, time limit and advancement attempts. Family weights show an estimated percentage and estimated number of questions for the current sheet.
 
+
+## v1.5 help and guidance
+
+The generator now has a three-layer help system without changing worksheet generation:
+
+- a full **Help & guide** page linked from the generator hero;
+- selective `?` popovers beside non-obvious options;
+- short visible explanations for the trickiest concepts, especially question-family weights and fraction denominator behaviour.
+
+The help explicitly explains that **weight controls frequency, not difficulty**, that selected fraction denominators can generate varied proper numerators (for example denominator 5 can produce 1/5 through 4/5), and how custom percentages, sheet codes, independent challenge edits and settings export/import work.
+
+`generator.js`, `pdf-layout.js` and `simple-pdf.js` are unchanged from v1.4.
 
 ## v1.4 fraction and percentage controls
 
