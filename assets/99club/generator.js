@@ -767,6 +767,27 @@
     return q ? { ...q } : null;
   }
 
+  // Portable-recreation helpers. These expose the stable pool position of a question
+  // without changing any worksheet-generation path. v1.10 uses the numeric position
+  // in QR recipes instead of carrying long question-key strings.
+  function questionPoolIndex(kind, inputRules, key) {
+    const rules = normalizeRules(inputRules);
+    return poolForQuestionKind(kind, rules).findIndex(item => item && item.key === key);
+  }
+
+  function questionByPoolIndex(kind, inputRules, index) {
+    const rules = normalizeRules(inputRules);
+    const i = Number(index);
+    const pool = poolForQuestionKind(kind, rules);
+    if (!Number.isInteger(i) || i < 0 || i >= pool.length) return null;
+    return pool[i] ? { ...pool[i] } : null;
+  }
+
+  function questionPool(kind, inputRules) {
+    const rules = normalizeRules(inputRules);
+    return poolForQuestionKind(kind, rules).map(q => ({ ...q }));
+  }
+
   function replaceQuestion(questions, index, inputRules, seed) {
     if (index < 0 || index >= questions.length) return questions.slice();
     const rules = normalizeRules(inputRules);
@@ -858,7 +879,7 @@
   const api = {
     CLASSIC_PRESETS, CHALLENGE_PRESETS, SCHEME_PRESETS, FAMILY_LABELS,
     clone, normalizeRules, generateQuestions, shuffleQuestions,
-    replaceQuestion, questionByKey, rulesSummary, instructionText, newSeed, rngFromSeed, compressNumbers
+    replaceQuestion, questionByKey, questionPoolIndex, questionByPoolIndex, questionPool, rulesSummary, instructionText, newSeed, rngFromSeed, compressNumbers
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

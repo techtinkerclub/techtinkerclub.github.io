@@ -4,13 +4,22 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version 1.8 is the review-usability and teacher-documentation baseline. The built-in worksheet-generation paths remain regression-frozen: Classic 11–99 and Bronze–Diamond are checked with fixed seeds so review/UI changes cannot silently alter the default maths. v1.8 adds same-family manual replacement without changing seeded sheet generation.
+Version 1.10 is the badge-header and compact-recreation baseline. The built-in worksheet-generation paths remain regression-frozen: Classic 11–99 and Bronze–Diamond are checked with fixed seeds so UI/recreation changes cannot silently alter the default maths. v1.10 keeps the v1.8 same-family review behaviour, replaces repeated text challenge titles with the level badge artwork, and changes recreation recipes to encode only the current final worksheet using compact numeric pool references.
 
 The public app name is **99 Club Studio**. Classic 99 Club remains the default scheme, with the normal progression:
 
 `11 -> 22 -> 33 -> 44 -> 55 -> 66 -> 77 -> 88 -> 99`
 
 and TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. Both remain editable.
+
+## v1.10 badge header and compact recreation
+
+- Every built-in 11–99 and Bronze–Diamond sheet uses its matching image from `assets/99club/images/` in the top-right of the worksheet header. The large repeated text title is removed; the badge itself identifies the level.
+- School identity remains at the left and `MENTAL MATHS CHALLENGE` remains the neutral centre heading. Answer sheets use a restrained `ANSWER KEY` heading with the same challenge badge.
+- If an answer-sheet QR cannot be produced, the teacher information panel collapses to a compact strip instead of leaving a large empty box.
+- Recreation recipes are derived from the **final worksheet state**, not the review action history. Base-sheet questions use numeric positions; replaced questions use compact `(position, family, pool-index)` references.
+- New portable codes use `TT99R3…`; new teacher QR payloads use `TT99Q2…`. Studio still reads legacy `TT99R1`, `TT99R2` and `TT99Q1` data.
+- `GENERATION_VERSION` remains `G1` because the built-in question generation algorithm and fixed-seed outputs are unchanged.
 
 
 ## v1.8 review behaviour
@@ -24,7 +33,7 @@ and TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. Both r
 ## Files
 
 - `generator.js` - Classic presets, optional 11-99 schemes, Bronze-Diamond presets, rule normalisation, reusable question-family generators, deterministic generation and balancing.
-- `simple-pdf.js` - dependency-free A4 PDF writer using standard PDF fonts, optional JPEG logos, portrait/landscape page sizes and a standard Symbol-font radical glyph for square roots.
+- `simple-pdf.js` - dependency-free A4 PDF writer using standard PDF fonts, multiple optional JPEG image XObjects (school logo + achievement badge), portrait/landscape page sizes and a standard Symbol-font radical glyph for square roots.
 - `pdf-layout.js` - separate portrait and landscape worksheet/answer-key layouts, including optional teacher-only recreation QR rendering.
 - `app.js` - UI state, personalisation, scheme selection, page-layout selection, contextual help, custom presets, exact-sheet browser persistence, human-readable/versioned sheet codes, portable recreation codes, teacher QR recreation, full backup/restore, setup import/export and PDF downloads.
 - `qr-lite.js` - dependency-free QR encoder used only for local teacher-sheet recreation links.
@@ -88,8 +97,8 @@ For custom/mixed presets the rule editor can turn families on/off and change the
 - **Export this setup** downloads only the current challenge, exact worksheet versions and personalisation text as JSON. It deliberately does not include the school logo, other reusable presets or other challenge edits; importing a setup leaves those other browser-saved items untouched.
 - **Full browser backup** downloads all Studio data saved in this browser: reusable presets, per-scheme/per-challenge edits, exact current sheets, personalisation and the school logo.
 - **Restore full backup** first stores a local pre-restore safety snapshot. **Undo last restore** can swap back if the wrong backup was chosen.
-- **Full recreation code** (`TT99R2…`) contains the active rules, seed and a compact exact-sheet recipe for manual replacements/shuffling. New edits are stored as a small replayable action recipe (replace/shuffle actions) so exact recreation does not require embedding a 100-position question permutation. It is portable across browsers and does not depend on a locally saved preset. The school logo is intentionally excluded.
-- **Teacher answer-sheet QR** contains a compact `TT99Q1…` recreation payload in the URL fragment (`#q=`). Pupil worksheets never receive the QR. The fragment is processed client-side and is not sent to the web server. Printable QR density is capped deliberately: if a complex legacy/custom payload would be unreliable on paper, the PDF is still produced and Studio reports that the QR was omitted. Newly saved custom presets remember their source challenge so their QR payload can usually remain compact.
+- **Full recreation code** (`TT99R3…`) contains the active rules, seed and a compact exact-sheet recipe derived from the final reviewed worksheet. It is portable across browsers and does not depend on a locally saved preset. The school logo is intentionally excluded. Older `TT99R1…` and `TT99R2…` codes remain readable.
+- **Teacher answer-sheet QR** contains a compact `TT99Q2…` recreation payload in the URL fragment (`#q=`). Replacements are stored as numeric references to the final question pool rather than long prompt/key strings, and shuffling is represented by final worksheet order. Pupil worksheets never receive the QR. The fragment is processed client-side and is not sent to the web server. Printable QR density is still capped deliberately; legacy `TT99Q1…` codes remain readable.
 
 ### Human-readable sheet codes
 

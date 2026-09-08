@@ -9,7 +9,7 @@ header:
   show_overlay_text: false
 ---
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=10">
+<link rel="stylesheet" href="/assets/99club/99club.css?v=11">
 
 <div class="tt99-guide">
   <div class="tt99-guide-hero">
@@ -51,6 +51,7 @@ header:
     <div class="tt99-guide-note"><strong>Replacement stays in the same category.</strong> A fraction is replaced by another fraction, a square root by another square root, a multiplication fact by another multiplication fact, and so on. The replacement also follows the rules currently selected for that category.</div>
     <p>You can replace the same question more than once. Studio remembers only the <strong>final reviewed worksheet</strong> for recreation purposes; it does not keep every discarded question in the QR code.</p>
     <p><b>Shuffle questions</b> changes the order without changing the challenge rules. If you later recreate the sheet using its Full recreation code or teacher QR, the final reviewed order is restored.</p>
+    <p>The level is shown by its <strong>achievement badge in the top-right of the sheet</strong>. The badge replaces the old repeated text title, so the worksheet stays cleaner while the child can still see immediately which stage they are working on.</p>
   </section>
 
   <section id="schemes" class="tt99-guide-section">
@@ -150,10 +151,10 @@ header:
     <p>If a code shows that edited/custom rules were used, Studio will not pretend the default rules are equivalent. Use the Full recreation code, teacher QR, or the saved setup so the correct rules travel with the sheet.</p>
 
     <h3>Full recreation code</h3>
-    <p>This is a longer copy-and-paste code for <strong>one exact worksheet</strong>. It carries its rules and final reviewed question set/order. It is useful when you want to send an exact sheet digitally without sending a backup file.</p>
+    <p>This is a longer copy-and-paste code for <strong>one exact worksheet</strong>. It carries its rules and a compact description of the final reviewed question set/order. It is useful when you want to send an exact sheet digitally without sending a backup file.</p>
 
     <h3>Teacher QR</h3>
-    <p>The answer-key PDF can include a QR. Scan it to open Studio and restore that exact reviewed sheet. The QR describes the <strong>current final sheet only</strong>; if you replaced Question 12 five times, the four discarded versions are not stored.</p>
+    <p>The answer-key PDF can include a QR. Scan it to open Studio and restore that exact reviewed sheet. The QR describes the <strong>current final sheet only</strong>; if you replaced Question 12 five times, the four discarded versions are not stored. Replaced questions are saved as compact numeric references rather than full question text, which keeps heavily reviewed sheets much easier to encode reliably.</p>
     <p>The QR is only placed on teacher/answer copies. Pupil worksheets do not contain it. School name, teacher/class details and the logo are deliberately left out of the QR.</p>
   </section>
 

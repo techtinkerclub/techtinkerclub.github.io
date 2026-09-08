@@ -78,3 +78,25 @@
 .tt99-paper.is-landscape .tt99-paper-head{grid-template-columns:minmax(0,1.22fr) minmax(0,.88fr) auto;column-gap:1.5%}
 .tt99-paper.is-landscape .tt99-paper-badge{width:clamp(26px,4.4vw,45px);height:clamp(26px,4.4vw,45px)}
 .tt99-paper.is-landscape .tt99-paper-title .tt99-paper-title--single{font-size:clamp(9.8px,1.02vw,13.2px)}
+
+/* v1.10: polish badge header and collapse empty teacher panel */
+.tt99-paper-head{grid-template-columns:minmax(0,1.2fr) minmax(0,.82fr) auto;column-gap:1.65%}
+.tt99-paper-logo{flex-basis:clamp(20px,3.2vw,43px);height:clamp(20px,3.2vw,43px)}
+.tt99-paper-school{font-size:clamp(6.8px,.8vw,10.8px)}
+.tt99-paper-classmeta{font-size:clamp(5.1px,.58vw,7.9px)}
+.tt99-paper-title h2{font-size:clamp(11.5px,1.25vw,17.8px)}
+.tt99-paper-title .tt99-paper-title--single{font-size:clamp(9.5px,1.02vw,12.6px);letter-spacing:.055em}
+.tt99-paper-title>span{font-size:clamp(4.8px,.51vw,7.5px);letter-spacing:.105em}
+.tt99-paper-badge{width:clamp(31px,5.9vw,59px);height:clamp(31px,5.9vw,59px);margin-right:.65%}
+.tt99-paper-teacher.is-no-qr{min-height:0;margin:.8% 0 .75%;padding:.72% 1.2%;align-items:center}
+.tt99-paper-teacher.is-no-qr>div:first-child{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:1px;align-items:baseline;width:100%}
+.tt99-paper-teacher.is-no-qr b{grid-row:1/3;align-self:center}
+.tt99-paper-teacher.is-no-qr span{grid-column:2;grid-row:1}
+.tt99-paper-teacher.is-no-qr small{grid-column:2;grid-row:2}
+.tt99-paper.is-landscape .tt99-paper-head{grid-template-columns:minmax(0,1.26fr) minmax(0,.76fr) auto;column-gap:1.35%}
+.tt99-paper.is-landscape .tt99-paper-logo{flex-basis:clamp(19px,2.6vw,36px);height:clamp(19px,2.6vw,36px)}
+.tt99-paper.is-landscape .tt99-paper-badge{width:clamp(29px,4.8vw,49px);height:clamp(29px,4.8vw,49px);margin-right:.45%}
+.tt99-paper.is-landscape .tt99-paper-title h2{font-size:clamp(11px,1.12vw,16.8px)}
+.tt99-paper.is-landscape .tt99-paper-title .tt99-paper-title--single{font-size:clamp(9.2px,.94vw,12.1px)}
+.tt99-paper.is-landscape .tt99-paper-teacher.is-no-qr{min-height:0;margin:.45% 0 .55%;padding:.52% 1%}
+@media(max-width:760px){.tt99-paper-teacher.is-no-qr>div:first-child{display:flex;flex-direction:column;gap:1px}.tt99-paper-teacher.is-no-qr b{align-self:flex-start}}

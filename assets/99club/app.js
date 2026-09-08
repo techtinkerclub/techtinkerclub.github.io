@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.9';
+  const VERSION = '1.10';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const GENERATION_VERSION = 1;
@@ -23,6 +23,7 @@
   const badgeImageCache = new Map();
   const ALL_TABLES = Array.from({length:12},(_,i)=>i+1);
   const FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
+  const QUESTION_KIND_ORDER = ['double','repeated_addition',...FAMILY_ORDER];
   const FRACTION_DENOMINATOR_CHOICES = Array.from({length:11}, (_,i)=>i+2);
   const PERCENTAGE_STEP_CHOICES = Array.from({length:20}, (_,i)=>(i+1)*5);
   const CODE_ALPHABET='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -75,8 +76,8 @@
     exportSettings: ['Export / import one setup','Use this when you want to move or share one particular setup. The file includes the current rules and exact worksheet versions, but it does not replace the rest of your saved browser work when imported.'],
     browserStorage: ['Saved in this browser','Studio remembers your work automatically on this browser. This is convenient, but it is not an online account: clearing site data, using private browsing, changing browser profile or moving device can remove it. Download a Full backup for anything important.'],
     fullBackup: ['Full backup','Use this as your safety copy. It contains all Studio data saved in this browser, including reusable presets, challenge edits, the current exact sheets and school personalisation/logo. Restore it on this or another browser when you need everything back.'],
-    portableCode: ['Full recreation code','Use this to recreate one exact worksheet on another browser without sending a setup file. It contains the worksheet rules and the final reviewed question set/order. Replacing the same question several times does not keep the old replacements. The school logo is not included.'],
-    answerQr: ['Recreation QR on answer sheets','Adds a QR to the teacher answer copy only. Scan it to reopen the final reviewed worksheet with the same rules and question order. The QR stores the current sheet, not the history of changes you made while reviewing it. School names and logos are not included, and pupil worksheets never receive the QR.'],
+    portableCode: ['Full recreation code','Use this to recreate one exact worksheet on another browser without sending a setup file. It contains the worksheet rules and a compact description of the final reviewed question set/order. Superseded review changes are never carried forward. The school logo is not included.'],
+    answerQr: ['Recreation QR on answer sheets','Adds a QR to the teacher answer copy only. Scan it to reopen the final reviewed worksheet with the same rules and question order. Studio stores compact final-state references rather than your edit history, so repeated replacements do not steadily make the QR denser. School names and logos are not included, and pupil worksheets never receive the QR.'],
     saveSafety: ['How saving works','For normal weekly use, Studio saves automatically in this browser. Save a reusable preset when you want a rule set again, export one setup when you want to share that setup, and download a Full backup when you want a safety copy of everything.']
   };
   const state = {
@@ -541,7 +542,7 @@
         <div class="tt99-paper-title">${state.previewAnswers?'<h2>ANSWER KEY</h2><span>MENTAL MATHS CHALLENGE</span>':'<h2 class="tt99-paper-title--single">MENTAL MATHS CHALLENGE</h2>'}</div>
         ${renderHeaderBadge()}
       </header>
-      ${state.previewAnswers?`<div class="tt99-paper-teacher"><div><b>Teacher answer copy</b><span>${qrSvg?'Scan to recreate this exact sheet in 99 Club Studio.':(state.includeAnswerQr?'QR omitted because the recreation data is too dense for reliable printing. Use the Full recreation code instead.':'Recreation QR is turned off for this PDF.')}</span><small>Sheet ${esc(sheet.code)}</small></div>${qrSvg?`<div class="tt99-paper-qr">${qrSvg}</div>`:''}</div>`:`<div class="tt99-paper-student"><span>Name <i></i></span><span>Score <i class="short"></i> / ${r.questionCount}</span></div><div class="tt99-paper-instructions">${esc(G.instructionText(r))}</div>`}
+      ${state.previewAnswers?`<div class="tt99-paper-teacher ${qrSvg?'':'is-no-qr'}"><div><b>Teacher answer copy</b><span>${qrSvg?'Scan to recreate this exact sheet in 99 Club Studio.':(state.includeAnswerQr?'QR omitted because the recreation data is too dense for reliable printing. Use the Full recreation code instead.':'Recreation QR is turned off for this PDF.')}</span><small>Sheet ${esc(sheet.code)}</small></div>${qrSvg?`<div class="tt99-paper-qr">${qrSvg}</div>`:''}</div>`:`<div class="tt99-paper-student"><span>Name <i></i></span><span>Score <i class="short"></i> / ${r.questionCount}</span></div><div class="tt99-paper-instructions">${esc(G.instructionText(r))}</div>`}
       <div class="tt99-question-grid">${groups.map(group=>`<div class="tt99-question-col">${group.map(q=>`<div class="tt99-question ${String(q.prompt||'').length>22?'is-very-long':String(q.prompt||'').length>15?'is-long':''}" data-q="${q.number}"><b>${q.number}.</b><span>${esc(q.prompt)}</span>${state.previewAnswers?`<strong>${esc(q.answer)}</strong>`:'<i></i>'}<button type="button" data-replace="${q.number-1}" aria-label="Replace question ${q.number} with another ${esc(questionCategoryLabel(q))} question" title="Replace with another ${esc(questionCategoryLabel(q))} question">↻</button></div>`).join('')}</div>`).join('')}</div>
       <footer class="tt99-paper-foot"><span>Sheet ${esc(sheet.code)}</span><span>Generated by Tech Tinker Club · 99 Club Studio</span></footer>
     </article>`;
@@ -802,6 +803,63 @@
     let b64=String(value||'').replace(/-/g,'+').replace(/_/g,'/');while(b64.length%4)b64+='=';
     const binary=atob(b64),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes;
   }
+  function writeVarUint(out,value){
+    let n=Math.max(0,Number(value)||0)>>>0;
+    while(n>=128){out.push((n&127)|128);n>>>=7;}out.push(n);
+  }
+  function readVarUint(bytes,cursor){
+    let value=0,shift=0;
+    while(cursor.i<bytes.length&&shift<=28){const b=bytes[cursor.i++];value|=(b&127)<<shift;if(!(b&128))return value>>>0;shift+=7;}
+    return null;
+  }
+  function packReplacementRefs(refs){
+    const out=[];
+    for(const entry of refs){writeVarUint(out,entry[0]);writeVarUint(out,entry[1]);writeVarUint(out,entry[2]);}
+    return bytesToBase64Url(Uint8Array.from(out));
+  }
+  function unpackReplacementRefs(value){
+    const bytes=base64UrlToBytes(value),cursor={i:0},out=[];
+    while(cursor.i<bytes.length){const pos=readVarUint(bytes,cursor),kind=readVarUint(bytes,cursor),pool=readVarUint(bytes,cursor);if(pos===null||kind===null||pool===null)break;out.push([pos,kind,pool]);}
+    return out;
+  }
+  function packActionRecipe(actions){
+    const out=[];
+    for(const a of actions){
+      if(a[0]===0){out.push(0);writeVarUint(out,a[1]);writeVarUint(out,a[2]);}
+      else if(a[0]===1){const token=String(a[1]||'');out.push(1);writeVarUint(out,token.length);for(let i=0;i<token.length;i++)out.push(token.charCodeAt(i)&255);}
+    }
+    return bytesToBase64Url(Uint8Array.from(out));
+  }
+  function applyPackedActionRecipe(seed,rules,value){
+    let out=G.generateQuestions(rules,seed);const bytes=base64UrlToBytes(value),cursor={i:0},poolCache=new Map();
+    function poolFor(kind){if(!poolCache.has(kind))poolCache.set(kind,typeof G.questionPool==='function'?G.questionPool(kind,rules):[]);return poolCache.get(kind);}
+    while(cursor.i<bytes.length){
+      const op=bytes[cursor.i++];
+      if(op===0){const pos=readVarUint(bytes,cursor),poolIndex=readVarUint(bytes,cursor);if(pos===null||poolIndex===null||pos>=out.length)break;const kind=out[pos]?.kind,q=poolFor(kind)[poolIndex];if(q)out[pos]={...q,number:pos+1};}
+      else if(op===1){const len=readVarUint(bytes,cursor);if(len===null||cursor.i+len>bytes.length)break;let token='';for(let i=0;i<len;i++)token+=String.fromCharCode(bytes[cursor.i++]);out=G.shuffleQuestions(out,`${seed}:${token}`);}
+      else break;
+    }
+    return out.map((q,i)=>({...q,number:i+1}));
+  }
+  function actionRecipeForSheet(sheet,rules){
+    const actions=compactSheetActions(sheet.actions);if(!actions.length)return null;
+    let out=G.generateQuestions(rules,sheet.seed),packed=[],poolCache=new Map(),keyIndexCache=new Map();
+    function poolFor(kind){if(!poolCache.has(kind))poolCache.set(kind,typeof G.questionPool==='function'?G.questionPool(kind,rules):[]);return poolCache.get(kind);}
+    function indexFor(kind,key){if(!keyIndexCache.has(kind))keyIndexCache.set(kind,new Map(poolFor(kind).map((q,i)=>[q.key,i])));return keyIndexCache.get(kind).get(key) ?? -1;}
+    for(const a of actions){
+      if(!Array.isArray(a)||!a.length)continue;
+      if(a[0]==='k'||a[0]==='i'||a[0]==='r'){
+        const pos=Number(a[1]);if(!Number.isInteger(pos)||pos<0||pos>=out.length)return null;
+        const kind=out[pos]?.kind;let poolIndex=-1;
+        if(a[0]==='i')poolIndex=Number(a[2]);
+        else poolIndex=indexFor(kind,a[0]==='k'?a[2]:a[5]);
+        const q=poolFor(kind)[poolIndex];if(!q)return null;
+        packed.push([0,pos,poolIndex]);out[pos]={...q,number:pos+1};
+      }else if(a[0]==='s'&&a[1]){const token=String(a[1]);packed.push([1,token]);out=G.shuffleQuestions(out,`${sheet.seed}:${token}`);}
+    }
+    if(!sameQuestionSet(out,sheet.questions))return null;
+    return {z:packActionRecipe(packed)};
+  }
   function applySheetActions(seed,rules,actions){
     let out=G.generateQuestions(rules,seed);
     if(!Array.isArray(actions))return out;
@@ -810,6 +868,9 @@
       if(a[0]==='k'){
         const i=Number(a[1]);if(!Number.isInteger(i)||i<0||i>=out.length)continue;
         const q=G.questionByKey(out[i]?.kind,rules,a[2]);if(q)out[i]={...q,number:i+1};
+      }else if(a[0]==='i'){
+        const i=Number(a[1]);if(!Number.isInteger(i)||i<0||i>=out.length)continue;
+        const q=G.questionByPoolIndex(out[i]?.kind,rules,a[2]);if(q)out[i]={...q,number:i+1};
       }else if(a[0]==='r'){
         // Backward compatibility with v1.7 recreation codes that stored the full question.
         const i=Number(a[1]);if(!Number.isInteger(i)||i<0||i>=out.length)continue;
@@ -820,36 +881,46 @@
   }
   function sameQuestionSet(a,b){return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((q,i)=>questionSig(q)===questionSig(b[i]));}
   function sheetRecipe(sheet,rules){
-    // Prefer the compact replay recipe when it exactly matches the final sheet. Repeated
-    // replacements of the same position are collapsed, so discarded review history is not
-    // carried into QR/full recreation data. This also keeps a shuffle compact (one token)
-    // instead of encoding a full 100-position permutation.
-    const compact=compactSheetActions(sheet.actions);
-    if(compact.length){const replay=applySheetActions(sheet.seed,rules,compact);if(sameQuestionSet(replay,sheet.questions))return {a:compact};}
-    const base=G.generateQuestions(rules,sheet.seed),buckets=new Map(),order=[],replacements=[];
+    // First try a minimal replay recipe built from the already-compacted CURRENT actions.
+    // Superseded replacements are removed before encoding, and question keys are converted
+    // to numeric pool positions. If the replay does not exactly match the final sheet we fall
+    // back to a history-independent final-state recipe below.
+    const actionRecipe=actionRecipeForSheet(sheet,rules);
+    const base=G.generateQuestions(rules,sheet.seed),buckets=new Map(),order=[],replacementRefs=[],fallback=[],poolIndexCache=new Map();
     base.forEach((q,i)=>{const k=questionSig(q);if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(i);});
+    function poolIndexFor(q){
+      if(!q||!q.kind||!q.key)return -1;
+      if(!poolIndexCache.has(q.kind)){
+        const pool=typeof G.questionPool==='function'?G.questionPool(q.kind,rules):[];
+        poolIndexCache.set(q.kind,new Map(pool.map((item,idx)=>[item.key,idx])));
+      }
+      return poolIndexCache.get(q.kind).get(q.key) ?? -1;
+    }
     sheet.questions.forEach((q,i)=>{
       const list=buckets.get(questionSig(q));
-      if(list&&list.length)order.push(list.shift());
-      else{order.push(255);replacements.push([i,q.kind,q.prompt,q.answer,q.key||'']);}
+      if(list&&list.length){order.push(list.shift());return;}
+      order.push(255);
+      const kindCode=QUESTION_KIND_ORDER.indexOf(q.kind),poolIndex=kindCode>=0?poolIndexFor(q):-1;
+      if(kindCode>=0&&poolIndex>=0)replacementRefs.push([i,kindCode,poolIndex]);
+      else fallback.push([i,q.kind,q.prompt,q.answer,q.key||'']);
     });
     const identity=order.every((v,i)=>v===i||v===255);
-    if(identity&&!replacements.length)return null;
-    // Sparse replacements need only their changed positions. A shuffled sheet stores the
-    // permutation as raw bytes (question counts are <255), which is far smaller than a
-    // JSON array of 100+ integers and keeps teacher-copy QR codes reliably printable.
+    if(identity&&!replacementRefs.length&&!fallback.length)return actionRecipe||null;
     const recipe={};
     if(!identity)recipe.p=bytesToBase64Url(Uint8Array.from(order));
-    if(replacements.length)recipe.x=replacements;
+    if(replacementRefs.length)recipe.y=packReplacementRefs(replacementRefs);
+    if(fallback.length)recipe.x=fallback; // compatibility escape hatch for an unindexable custom question.
+    if(actionRecipe&&JSON.stringify(actionRecipe).length<JSON.stringify(recipe).length)return actionRecipe;
     return recipe;
   }
   function applySheetRecipe(seed,rules,recipe){
     const base=G.generateQuestions(rules,seed);
     if(!recipe)return base;
-    // Backward compatibility with the earlier array recipe used by TT99R1/R2 drafts.
+    // Backward compatibility with older array/action recipes.
     if(Array.isArray(recipe))return recipe.map((entry,i)=>{let q;if(Number.isInteger(entry)&&base[entry])q=G.clone(base[entry]);else if(Array.isArray(entry)&&entry[0]==='Q')q={kind:entry[1],prompt:entry[2],answer:entry[3],key:entry[4]};else q=G.clone(base[i]||base[0]);return {...q,number:i+1};});
     if(typeof recipe!=='object')return base;
     if(Array.isArray(recipe.a))return applySheetActions(seed,rules,recipe.a);
+    if(recipe.z)return applyPackedActionRecipe(seed,rules,recipe.z);
     let out=base.map(q=>G.clone(q));
     if(recipe.p){
       try{
@@ -857,6 +928,17 @@
         if(order.length===base.length)out=Array.from(order,(idx,i)=>idx!==255&&base[idx]?G.clone(base[idx]):G.clone(base[i]||base[0]));
       }catch(ignore){}
     }
+    if(recipe.y){
+      try{
+        const poolCache=new Map();
+        for(const [i,kindCode,poolIndex] of unpackReplacementRefs(recipe.y)){
+          const kind=QUESTION_KIND_ORDER[kindCode];if(!kind||!Number.isInteger(i)||i<0||i>=out.length)continue;
+          if(!poolCache.has(kind))poolCache.set(kind,typeof G.questionPool==='function'?G.questionPool(kind,rules):[]);
+          const q=poolCache.get(kind)[poolIndex];if(q)out[i]=G.clone(q);
+        }
+      }catch(ignore){}
+    }
+    // Older v1.8/v1.9 fallback recipes stored full replacement records in x.
     if(Array.isArray(recipe.x))for(const entry of recipe.x){
       if(!Array.isArray(entry)||entry.length<4)continue;const i=Number(entry[0]);if(!Number.isInteger(i)||i<0||i>=out.length)continue;
       out[i]={kind:entry[1],prompt:entry[2],answer:entry[3],key:entry[4]||''};
@@ -865,8 +947,8 @@
   }
   function recreationSchool(){return {schoolName:state.school.schoolName,yearGroup:state.school.yearGroup,className:state.school.className,teacherName:state.school.teacherName,worksheetDate:state.school.worksheetDate};}
   function buildFullRecreationCode(){
-    const payload={kind:'TT99R',format:2,generationVersion:GENERATION_VERSION,appVersion:VERSION,schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,school:recreationSchool(),recipes:state.sheets.map(s=>sheetRecipe(s,state.rules))};
-    return `TT99R2.${utf8ToBase64Url(JSON.stringify(payload))}`;
+    const payload={kind:'TT99R',format:3,generationVersion:GENERATION_VERSION,appVersion:VERSION,schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,school:recreationSchool(),recipes:state.sheets.map(s=>sheetRecipe(s,state.rules))};
+    return `TT99R3.${utf8ToBase64Url(JSON.stringify(payload))}`;
   }
   async function copyFullRecreationCode(){
     const code=buildFullRecreationCode();
@@ -879,6 +961,16 @@
   function ensureImportedCustomPreset(requestedId,rules,tagline='Imported recreation rules'){
     if(!requestedId||getBasePreset(state.schemeId,requestedId))return requestedId;
     const imported={...G.clone(rules),id:requestedId,name:rules.name||'Imported preset',tagline};state.customPresets=state.customPresets.filter(p=>p.id!==requestedId);state.customPresets.push(imported);saveCustomPresets();return requestedId;
+  }
+  function applyRecreationV3(d,source='Full recreation code'){
+    if(!d||d.kind!=='TT99R'||d.format!==3||!d.rules)throw new Error('format');
+    if(Number(d.generationVersion||1)!==GENERATION_VERSION)throw new Error('generation');
+    if(d.schemeId&&G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;
+    let requestedId=String(d.clubId||d.rules.id||'').trim()||'33';ensureImportedCustomPreset(requestedId,d.rules);state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';
+    state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));state.previewAnswers=!!d.previewAnswers;state.includeAnswerQr=d.includeAnswerQr!==false;
+    if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};generateAll();
+    if(Array.isArray(d.recipes)){state.sheets=state.sheets.map((s,i)=>{const recipe=d.recipes[i];return {...s,questions:applySheetRecipe(s.seed,state.rules,recipe),actions:[]};});refreshSheetCodes();refreshRulesError();persist();}
+    state.status=`${source} loaded. Rules, seed and exact final reviewed worksheet were restored.`;render();
   }
   function applyRecreationV2(d,source='Full recreation code'){
     if(!d||d.kind!=='TT99R'||d.format!==2||!d.rules)throw new Error('format');
@@ -900,6 +992,7 @@
     try{
       const qMatch=raw.match(/[#&]q=([^&]+)/);if(qMatch){loadQrRecreationCode(decodeURIComponent(qMatch[1]));return;}
       const rMatch=raw.match(/[#&]recreate=([^&]+)/);if(rMatch)raw=decodeURIComponent(rMatch[1]);
+      if(raw.startsWith('TT99R3.')){applyRecreationV3(JSON.parse(base64UrlToUtf8(raw.slice(7))));return;}
       if(raw.startsWith('TT99R2.')){applyRecreationV2(JSON.parse(base64UrlToUtf8(raw.slice(7))));return;}
       if(raw.startsWith('TT99R1.')){applyRecreationV1(JSON.parse(base64UrlToUtf8(raw.slice(7))));return;}
       throw new Error('prefix');
@@ -927,10 +1020,10 @@
     const currentForDiff=isCustom?functionalRules(state.rules,state.clubId):state.rules;
     const baseForDiff=base?(isCustom?functionalRules(base,sourceClubId):base):null;
     const diff=baseForDiff?diffRules(baseForDiff,currentForDiff):undefined,sheet=state.sheets[variantIndex];
-    const d={k:'Q',f:1,g:GENERATION_VERSION,s:state.schemeId,c:isCustom&&base?sourceClubId:state.clubId,z:state.seed,p:variantIndex,o:state.orientation==='landscape'?'l':'p',e:sheetRecipe(sheet,state.rules)};
+    const d={k:'Q',f:2,g:GENERATION_VERSION,s:state.schemeId,c:isCustom&&base?sourceClubId:state.clubId,z:state.seed,p:variantIndex,o:state.orientation==='landscape'?'l':'p',e:sheetRecipe(sheet,state.rules)};
     if(isCustom&&base)d.u=1;
     if(baseForDiff){if(sourceSchemeId!==state.schemeId||sourceClubId!==d.c)d.b=[sourceSchemeId,sourceClubId];if(diff!==undefined)d.d=diff;}else d.r=state.rules;
-    return `TT99Q1.${utf8ToBase64Url(JSON.stringify(d))}`;
+    return `TT99Q2.${utf8ToBase64Url(JSON.stringify(d))}`;
   }
   function buildQrRecreationUrl(variantIndex){return `${APP_URL}#q=${buildQrRecreationCode(variantIndex)}`;}
   function qrResultForVariant(variantIndex){
@@ -942,7 +1035,7 @@
   function qrSvgForVariant(variantIndex){try{const r=qrResultForVariant(variantIndex);return r?Q.svg(r,{className:'tt99-qr-svg',label:'Scan to recreate this worksheet'}):'';}catch(err){return '';}}
   function loadQrRecreationCode(raw){
     try{
-      if(!String(raw).startsWith('TT99Q1.'))throw new Error('prefix');const d=JSON.parse(base64UrlToUtf8(String(raw).slice(7)));if(!d||d.k!=='Q'||d.f!==1||Number(d.g)!==GENERATION_VERSION)throw new Error('format');
+      const qrRaw=String(raw);const qm=qrRaw.match(/^TT99Q([12])\./);if(!qm)throw new Error('prefix');const qFormat=Number(qm[1]);const d=JSON.parse(base64UrlToUtf8(qrRaw.slice(7)));if(!d||d.k!=='Q'||Number(d.f)!==qFormat||Number(d.g)!==GENERATION_VERSION)throw new Error('format');
       if(d.s&&G.SCHEME_PRESETS[d.s])state.schemeId=d.s;
       let rules,requestedId=String(d.c||'33');
       if(d.r)rules=G.normalizeRules(d.r);
