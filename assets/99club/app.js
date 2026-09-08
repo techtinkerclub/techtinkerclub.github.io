@@ -8,8 +8,9 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.1';
+  const VERSION = '1.2';
   const state = {
+    schemeId: 'classic',
     clubId: '33',
     rules: G.clone(G.CLASSIC_PRESETS['33']),
     seed: G.newSeed('33'),
@@ -34,7 +35,8 @@
   function restoreSettings(){
     try {
       const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      if (s.clubId && (G.CLASSIC_PRESETS[s.clubId] || state.customPresets.find(p => p.id === s.clubId))) state.clubId = s.clubId;
+      if (s.schemeId && G.SCHEME_PRESETS[s.schemeId]) state.schemeId = s.schemeId;
+      if (s.clubId && (getSchemePreset(s.clubId) || G.CHALLENGE_PRESETS[s.clubId] || state.customPresets.find(p => p.id === s.clubId))) state.clubId = s.clubId;
       const preset = getPreset(state.clubId) || G.CLASSIC_PRESETS['33'];
       state.rules = G.normalizeRules(s.rules || preset);
       state.variants = Math.min(4, Math.max(1, Number(s.variants) || 1));
@@ -44,13 +46,15 @@
     } catch(e) {}
   }
   function persist(){
-    const payload = { clubId: state.clubId, rules: state.rules, variants: state.variants, orientation: state.orientation, seed: state.seed, school: { ...state.school } };
+    const payload = { schemeId: state.schemeId, clubId: state.clubId, rules: state.rules, variants: state.variants, orientation: state.orientation, seed: state.seed, school: { ...state.school } };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); } catch(e) {
       // Logo may exceed browser quota; keep text settings if that happens.
       try { payload.school.logoDataUrl=''; localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); } catch(ignore) {}
     }
   }
-  function getPreset(id){ return G.CLASSIC_PRESETS[id] || state.customPresets.find(p => p.id === id); }
+  function getScheme(){ return G.SCHEME_PRESETS[state.schemeId] || G.SCHEME_PRESETS.classic; }
+  function getSchemePreset(id){ return getScheme().presets[id]; }
+  function getPreset(id){ return getSchemePreset(id) || G.CHALLENGE_PRESETS[id] || state.customPresets.find(p => p.id === id); }
   function generateAll(){
     state.rules = G.normalizeRules(state.rules);
     state.sheets = Array.from({length: state.variants}, (_, i) => {
@@ -97,13 +101,22 @@
   }
 
   function renderStepClub(){
-    const classics = Object.keys(G.CLASSIC_PRESETS).map(id => clubCard(G.CLASSIC_PRESETS[id])).join('');
+    const scheme=getScheme();
+    const classics = Object.keys(scheme.presets).map(id => clubCard(scheme.presets[id])).join('');
+    const challenges = Object.values(G.CHALLENGE_PRESETS).map(p => clubCard(p)).join('');
     const customs = state.customPresets.map(p => `<div class="tt99-custom-wrap">${clubCard(p, true)}<button type="button" class="tt99-custom-delete" data-delete-preset="${esc(p.id)}" aria-label="Delete ${esc(p.name)} preset" title="Delete custom preset">×</button></div>`).join('');
+    const schemeOptions=Object.values(G.SCHEME_PRESETS).map(x=>`<option value="${esc(x.id)}" ${x.id===state.schemeId?'selected':''}>${esc(x.name)}</option>`).join('');
     return `<section class="tt99-card">
-      <div class="tt99-step"><span>1</span><div><h2>Choose the challenge</h2><p>Start with the Classic 99 Club progression, then adjust it if needed.</p></div></div>
-      <div class="tt99-club-grid">${classics}${customs}</div>
+      <div class="tt99-step"><span>1</span><div><h2>Choose the challenge</h2><p>Classic 99 Club is the default. Other published-style progressions are optional.</p></div></div>
+      <label class="tt99-field tt99-scheme-select"><span>Ruleset scheme</span><select id="tt99-scheme">${schemeOptions}</select><small>${esc(scheme.tagline)}</small></label>
+      <div class="tt99-club-section-label">11–99 progression</div>
+      <div class="tt99-club-grid">${classics}</div>
+      <div class="tt99-club-section-label tt99-club-section-label--advanced">Post-99 challenges</div>
+      <div class="tt99-club-grid tt99-club-grid--advanced">${challenges}</div>
+      ${customs?`<div class="tt99-club-section-label tt99-club-section-label--advanced">Saved custom rules</div><div class="tt99-club-grid">${customs}</div>`:''}
     </section>`;
   }
+
   function clubCard(p, custom=false){
     const selected = state.clubId === p.id;
     return `<button type="button" class="tt99-club ${selected?'is-selected':''} ${custom?'is-custom':''}" data-club="${esc(p.id)}" aria-pressed="${selected}">
@@ -143,8 +156,21 @@
   }
 
   function renderAdvancedRules(){
-    const r=state.rules; const mathModes=[['double','Doubling'],['repeated_addition','Repeated addition'],['multiply','Multiplication'],['divide','Division'],['mixed','Mixed × and ÷']];
-    const needTables=['multiply','divide','mixed'].includes(r.mode);
+    const r=state.rules;
+    const mathModes=[
+      ['double','Doubling'],['repeated_addition','Repeated addition'],['addition','Addition'],['add_subtract','Addition & subtraction'],
+      ['multiply','Multiplication'],['divide','Division'],['mixed','Mixed × and ÷'],['missing_number','Missing-number facts'],['family_mix','Mixed mental arithmetic']
+    ];
+    const tableFamilies=['multiply','divide','missing_number'];
+    const needTables=['multiply','divide','mixed','missing_number'].includes(r.mode) || (r.mode==='family_mix' && r.families.some(f=>tableFamilies.includes(f)));
+    const needArithmetic=['addition','add_subtract'].includes(r.mode) || (r.mode==='family_mix' && r.families.some(f=>['addition','subtraction','negative_numbers','roman_numerals','simple_algebra'].includes(f)));
+    const needSubtraction=r.mode==='add_subtract' || (r.mode==='family_mix' && r.families.includes('subtraction'));
+    const needSquares=r.mode==='family_mix' && r.families.some(f=>['square','square_root'].includes(f));
+    const needCubes=r.mode==='family_mix' && r.families.includes('cube');
+    const needBodmas=r.mode==='family_mix' && r.families.includes('bodmas');
+    const needScaled=r.mode==='family_mix' && r.families.some(f=>['scaled_multiply','scaled_divide'].includes(f));
+    const needFractions=r.mode==='family_mix' && r.families.includes('fraction_of');
+    const needPercentages=r.mode==='family_mix' && r.families.includes('percentage_of');
     return `<div class="tt99-advanced">
       <div class="tt99-form-grid">
         <label class="tt99-field"><span>Number of questions</span><input data-rule="questionCount" type="number" min="1" max="200" value="${r.questionCount}"></label>
@@ -153,17 +179,38 @@
         <label class="tt99-field"><span>Question type</span><select data-rule="mode">${mathModes.map(([v,l])=>`<option value="${v}" ${r.mode===v?'selected':''}>${l}</option>`).join('')}</select></label>
       </div>
       <label class="tt99-check"><input data-rule-check="unaided" type="checkbox" ${r.unaided?'checked':''}><span>State that the sheet should be completed independently/unaided</span></label>
+      ${r.mode==='family_mix'?renderFamilySelector(r)+renderFamilyWeights(r):''}
       ${r.mode==='double'?`<div class="tt99-inline-fields">${numField('Smallest number','numberMin',r.numberMin,0,100)}${numField('Largest number','numberMax',r.numberMax,0,100)}</div>`:''}
       ${r.mode==='repeated_addition'?`<div class="tt99-inline-fields">${numField('Smallest addend','addendMin',r.addendMin,0,100)}${numField('Largest addend','addendMax',r.addendMax,0,100)}${numField('Minimum repeats','repeatsMin',r.repeatsMin,2,20)}${numField('Maximum repeats','repeatsMax',r.repeatsMax,2,20)}</div>`:''}
+      ${needArithmetic?`<div class="tt99-inline-fields">${numField('Arithmetic answer limit','arithmeticMax',r.arithmeticMax,1,5000)}${numField('Largest arithmetic operand','arithmeticOperandMax',r.arithmeticOperandMax,1,5000)}</div>`:''}
+      ${needSubtraction?`<label class="tt99-check"><input data-rule-check="allowNegativeAnswers" type="checkbox" ${r.allowNegativeAnswers?'checked':''}><span>Allow subtraction questions with negative answers</span></label>`:''}
       ${needTables?renderTableSelector(r):''}
-      ${needTables?`<div class="tt99-inline-fields">${numField('Smallest factor / quotient','factorMin',r.factorMin,0,100)}${numField('Largest factor / quotient','factorMax',r.factorMax,0,100)}${r.mode==='mixed'?`<label class="tt99-field tt99-percent"><span>Multiplication share <b>${r.multiplyPercent}%</b></span><input data-rule="multiplyPercent" type="range" min="0" max="100" step="5" value="${r.multiplyPercent}"></label>`:''}</div>`:''}
+      ${(needTables||needScaled)?`<div class="tt99-inline-fields">${numField(needTables?'Smallest factor / quotient':'Smallest scaled base','factorMin',r.factorMin,0,100)}${numField(needTables?'Largest factor / quotient':'Largest scaled base','factorMax',r.factorMax,0,100)}${r.mode==='mixed'?`<label class="tt99-field tt99-percent"><span>Multiplication share <b>${r.multiplyPercent}%</b></span><input data-rule="multiplyPercent" type="range" min="0" max="100" step="5" value="${r.multiplyPercent}"></label>`:''}</div>`:''}
+      ${needSquares?`<div class="tt99-inline-fields">${numField('Smallest square/root base','squareMin',r.squareMin,0,50)}${numField('Largest square/root base','squareMax',r.squareMax,0,50)}</div>`:''}
+      ${needCubes?`<div class="tt99-inline-fields">${numField('Smallest cube base','cubeMin',r.cubeMin,0,20)}${numField('Largest cube base','cubeMax',r.cubeMax,0,20)}</div>`:''}
+      ${needBodmas?`<div class="tt99-inline-fields">${numField('Order-of-operations base limit','bodmasMax',r.bodmasMax,2,30)}</div>`:''}
+      ${needFractions?renderChoiceSelector('Fraction denominators','fractionDenominator',[2,3,4,5,6,8,10,12],r.fractionDenominators,n=>`1/${n}`):''}
+      ${needPercentages?renderChoiceSelector('Percentages included','percentageChoice',[5,10,20,25,50,75],r.percentageChoices,n=>`${n}%`):''}
       <div class="tt99-check-row">
         <label class="tt99-check"><input data-rule-check="avoidExactDuplicates" type="checkbox" ${r.avoidExactDuplicates?'checked':''}><span>Avoid exact duplicate questions where possible</span></label>
-        ${['multiply','mixed'].includes(r.mode)?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates</span></label>`:''}
+        ${['multiply','mixed'].includes(r.mode) || (r.mode==='family_mix'&&r.families.includes('multiply'))?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates</span></label>`:''}
       </div>
       <div class="tt99-save-preset"><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Year 4 Autumn"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save these rules</button></div>
     </div>`;
   }
+
+  function renderFamilySelector(r){
+    const order=['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
+    return `<div class="tt99-family-select"><span class="tt99-field-label">Question families included</span><div class="tt99-family-chips">${order.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Turn families on or off. Use the relative weights below to make a family more or less common.</small></div>`;
+  }
+  function renderFamilyWeights(r){
+    return `<div class="tt99-family-weights"><span class="tt99-field-label">Relative question mix</span><div>${r.families.map(f=>`<label><span>${esc(G.FAMILY_LABELS[f]||f)}</span><input type="number" min="1" max="20" step="1" value="${Number(r.familyWeights[f])||1}" data-family-weight="${esc(f)}"></label>`).join('')}</div><small>These are relative weights, not percentages. For example 2 : 1 gives the first family roughly twice as many questions.</small></div>`;
+  }
+  function renderChoiceSelector(label,key,choices,selected,labelFn){
+    const set=new Set((selected||[]).map(Number));
+    return `<div class="tt99-choice-select"><span class="tt99-field-label">${esc(label)}</span><div>${choices.map(n=>`<label><input type="checkbox" data-${key.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())}="${n}" ${set.has(n)?'checked':''}><span>${esc(labelFn(n))}</span></label>`).join('')}</div></div>`;
+  }
+
   function numField(label,key,value,min,max){ return `<label class="tt99-field"><span>${label}</span><input data-rule="${key}" type="number" min="${min}" max="${max}" value="${value}"></label>`; }
   function renderTableSelector(r){
     return `<div class="tt99-table-select"><span class="tt99-field-label">Tables included</span><div class="tt99-table-chips">${Array.from({length:12},(_,i)=>i+1).map(n=>`<label><input type="checkbox" data-table="${n}" ${r.tables.includes(n)?'checked':''}><span>${n}×</span></label>`).join('')}</div><div class="tt99-mini-actions"><button type="button" data-tables-action="all">1–12</button><button type="button" data-tables-action="core">2, 3, 5, 10</button><button type="button" data-tables-action="single">2× only</button></div></div>`;
@@ -212,6 +259,7 @@
   }
 
   function bindEvents(){
+    root.querySelector('#tt99-scheme')?.addEventListener('change',e=>selectScheme(e.target.value));
     root.querySelectorAll('[data-club]').forEach(btn=>btn.addEventListener('click',()=>selectClub(btn.dataset.club)));
     root.querySelectorAll('[data-delete-preset]').forEach(btn=>btn.addEventListener('click',()=>deletePreset(btn.dataset.deletePreset)));
     root.querySelectorAll('[data-school]').forEach(input=>input.addEventListener('input',()=>{ state.school[input.dataset.school]=input.value; persist(); softRenderPaper(); }));
@@ -221,6 +269,10 @@
     root.querySelector('#tt99-reset-rules')?.addEventListener('click',resetRules);
     root.querySelectorAll('[data-rule]').forEach(input=>input.addEventListener(input.type==='range'?'input':'change',()=>ruleChanged(input.dataset.rule,input.value)));
     root.querySelectorAll('[data-rule-check]').forEach(input=>input.addEventListener('change',()=>ruleChanged(input.dataset.ruleCheck,input.checked)));
+    root.querySelectorAll('[data-family]').forEach(input=>input.addEventListener('change',familiesChanged));
+    root.querySelectorAll('[data-family-weight]').forEach(input=>input.addEventListener('change',()=>familyWeightChanged(input.dataset.familyWeight,input.value)));
+    root.querySelectorAll('[data-fraction-denominator]').forEach(input=>input.addEventListener('change',fractionChoicesChanged));
+    root.querySelectorAll('[data-percentage-choice]').forEach(input=>input.addEventListener('change',percentageChoicesChanged));
     root.querySelectorAll('[data-table]').forEach(input=>input.addEventListener('change',tablesChanged));
     root.querySelectorAll('[data-tables-action]').forEach(btn=>btn.addEventListener('click',()=>tableAction(btn.dataset.tablesAction)));
     root.querySelector('#tt99-save-preset')?.addEventListener('click',savePreset);
@@ -249,14 +301,49 @@
     render();
   }
 
+  function selectScheme(id){
+    if(!G.SCHEME_PRESETS[id] || id===state.schemeId)return;
+    state.schemeId=id;
+    if(getScheme().presets[state.clubId]){
+      state.rules=G.clone(getScheme().presets[state.clubId]);
+      state.seed=G.newSeed(state.clubId);
+      generateAll();
+    } else persist();
+    state.status=`${getScheme().name} rules selected. Standard timing and advancement remain editable.`;
+    render();
+  }
+
   function selectClub(id){
     const p=getPreset(id); if(!p)return;
     state.clubId=id; state.rules=G.clone(p); state.seed=G.newSeed(id); state.status=''; generateAll(); render();
   }
   function resetRules(){ const p=getPreset(state.clubId); if(p){state.rules=G.clone(p);state.seed=G.newSeed(state.clubId);generateAll();state.status='Preset rules restored.';render();} }
   function ruleChanged(key,value){
-    state.rules[key] = ['questionCount','timeMinutes','perfectAttempts','numberMin','numberMax','addendMin','addendMax','repeatsMin','repeatsMax','factorMin','factorMax','multiplyPercent'].includes(key) ? Number(value) : value;
+    state.rules[key] = ['questionCount','timeMinutes','perfectAttempts','numberMin','numberMax','addendMin','addendMax','repeatsMin','repeatsMax','factorMin','factorMax','multiplyPercent','arithmeticMax','arithmeticOperandMax','squareMin','squareMax','cubeMin','cubeMax','bodmasMax'].includes(key) ? Number(value) : value;
     state.rules=G.normalizeRules(state.rules); state.seed=G.newSeed(state.clubId); generateAll(); render(); state.advancedOpen=true;
+  }
+  function familiesChanged(){
+    const selected=Array.from(root.querySelectorAll('[data-family]:checked')).map(x=>x.dataset.family);
+    if(!selected.length){state.status='At least one question family must stay selected.';render();state.advancedOpen=true;return;}
+    const previous=state.rules.familyWeights||{};
+    state.rules.families=selected;
+    state.rules.familyWeights=Object.fromEntries(selected.map(f=>[f,previous[f]||1]));
+    state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+  }
+  function familyWeightChanged(family,value){
+    if(!state.rules.families.includes(family))return;
+    state.rules.familyWeights={...(state.rules.familyWeights||{}),[family]:Math.max(1,Math.min(20,Number(value)||1))};
+    state.rules=G.normalizeRules(state.rules);state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+  }
+  function fractionChoicesChanged(){
+    const selected=Array.from(root.querySelectorAll('[data-fraction-denominator]:checked')).map(x=>Number(x.dataset.fractionDenominator));
+    if(!selected.length){state.status='Keep at least one fraction denominator selected.';render();state.advancedOpen=true;return;}
+    state.rules.fractionDenominators=selected;state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
+  }
+  function percentageChoicesChanged(){
+    const selected=Array.from(root.querySelectorAll('[data-percentage-choice]:checked')).map(x=>Number(x.dataset.percentageChoice));
+    if(!selected.length){state.status='Keep at least one percentage selected.';render();state.advancedOpen=true;return;}
+    state.rules.percentageChoices=selected;state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function tablesChanged(){ const selected=Array.from(root.querySelectorAll('[data-table]:checked')).map(x=>Number(x.dataset.table)); if(!selected.length){state.status='At least one times table must stay selected.';render();state.advancedOpen=true;return;} state.rules.tables=selected; state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true; }
   function tableAction(action){ state.rules.tables=action==='all'?Array.from({length:12},(_,i)=>i+1):action==='core'?[2,3,5,10]:[2]; state.seed=G.newSeed(state.clubId);generateAll();render();state.advancedOpen=true; }
@@ -267,7 +354,7 @@
   function deletePreset(id){
     const p=state.customPresets.find(x=>x.id===id); if(!p)return;
     state.customPresets=state.customPresets.filter(x=>x.id!==id); saveCustomPresets();
-    if(state.clubId===id){state.clubId='33';state.rules=G.clone(G.CLASSIC_PRESETS['33']);state.seed=G.newSeed('33');generateAll();}
+    if(state.clubId===id){state.clubId='33';state.rules=G.clone(getScheme().presets['33']);state.seed=G.newSeed('33');generateAll();}
     state.status=`Deleted custom preset “${p.name}”.`;render();
   }
   function replaceOne(index){ const s=state.sheets[state.previewVariant]; s.questions=G.replaceQuestion(s.questions,index,state.rules,s.seed);state.status=`Question ${index+1} replaced in Version ${String.fromCharCode(65+state.previewVariant)}. Export settings if you want to preserve this manual edit exactly.`;render(); }
@@ -307,7 +394,7 @@
 
   function exportSettings(){
     const data={
-      app:'Tech Tinker Club 99 Club Generator',version:VERSION,clubId:state.clubId,
+      app:'Tech Tinker Club 99 Club Generator',version:VERSION,schemeId:state.schemeId,clubId:state.clubId,
       rules:state.rules,variants:state.variants,orientation:state.orientation,seed:state.seed,
       sheets:state.sheets.map(s=>({seed:s.seed,code:s.code,questions:s.questions})),
       school:{schoolName:state.school.schoolName,yearGroup:state.school.yearGroup,className:state.school.className,teacherName:state.school.teacherName,worksheetDate:state.school.worksheetDate}
@@ -319,12 +406,13 @@
       const d=JSON.parse(reader.result);
       if(!d || typeof d!=='object' || !d.rules) throw new Error('settings');
       state.rules=G.normalizeRules(d.rules);
+      if(d.schemeId && G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;
       let requestedId=String(d.clubId||state.rules.id||'').trim();
       if(requestedId && !getPreset(requestedId)){
         const imported={...G.clone(state.rules),id:requestedId,name:state.rules.name||'Imported preset',tagline:'Imported custom rules'};
         state.customPresets=state.customPresets.filter(p=>p.id!==requestedId);state.customPresets.push(imported);saveCustomPresets();
       }
-      state.clubId=requestedId&&getPreset(requestedId)?requestedId:(G.CLASSIC_PRESETS[state.rules.id]?state.rules.id:'33');
+      state.clubId=requestedId&&getPreset(requestedId)?requestedId:(getSchemePreset(state.rules.id)||G.CHALLENGE_PRESETS[state.rules.id]?state.rules.id:'33');
       state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));
       state.orientation=d.orientation==='landscape'?'landscape':'portrait';
       if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};

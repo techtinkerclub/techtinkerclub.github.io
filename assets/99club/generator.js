@@ -63,6 +63,138 @@
     }
   };
 
+
+  // Post-99 challenge presets. These are deliberately separate from the Classic
+  // 11-99 sequence so the existing default progression remains unchanged.
+  const CHALLENGE_PRESETS = {
+    bronze: {
+      id: 'bronze', name: 'Bronze Club', tagline: 'All tables & related division', questionCount: 100,
+      mode: 'mixed', tables: range(1, 12), factorMin: 1, factorMax: 12, multiplyPercent: 50,
+      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      avoidExactDuplicates: true, avoidReversedDuplicates: false
+    },
+    silver: {
+      id: 'silver', name: 'Silver Club', tagline: 'All four operations', questionCount: 100,
+      mode: 'family_mix', families: ['addition','subtraction','multiply','divide'],
+      familyWeights: { addition:2, subtraction:2, multiply:3, divide:3 },
+      arithmeticMin: 0, arithmeticMax: 200, arithmeticOperandMax: 120,
+      tables: range(1, 12), factorMin: 1, factorMax: 12,
+      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      avoidExactDuplicates: true, avoidReversedDuplicates: false
+    },
+    gold: {
+      id: 'gold', name: 'Gold Club', tagline: 'Four operations, squares & roots', questionCount: 100,
+      mode: 'family_mix', families: ['addition','subtraction','multiply','divide','square','square_root'],
+      familyWeights: { addition:2, subtraction:2, multiply:3, divide:3, square:1, square_root:1 },
+      arithmeticMin: 0, arithmeticMax: 250, arithmeticOperandMax: 160,
+      tables: range(1, 12), factorMin: 1, factorMax: 12, squareMin: 1, squareMax: 12,
+      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      avoidExactDuplicates: true, avoidReversedDuplicates: false
+    },
+    platinum: {
+      id: 'platinum', name: 'Platinum Club', tagline: 'Adds order of operations', questionCount: 100,
+      mode: 'family_mix', families: ['addition','subtraction','multiply','divide','square','square_root','bodmas'],
+      familyWeights: { addition:2, subtraction:2, multiply:3, divide:3, square:1, square_root:1, bodmas:2 },
+      arithmeticMin: 0, arithmeticMax: 300, arithmeticOperandMax: 180,
+      tables: range(1, 12), factorMin: 1, factorMax: 12, squareMin: 1, squareMax: 12, bodmasMax: 12,
+      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      avoidExactDuplicates: true, avoidReversedDuplicates: false
+    },
+    diamond: {
+      id: 'diamond', name: 'Diamond Club', tagline: 'Broad advanced mental maths', questionCount: 100,
+      mode: 'family_mix',
+      families: ['addition','subtraction','multiply','divide','square','square_root','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of'],
+      familyWeights: { addition:2, subtraction:2, multiply:2, divide:2, square:1, square_root:1, bodmas:2, scaled_multiply:2, scaled_divide:1, fraction_of:1, percentage_of:1 },
+      arithmeticMin: 0, arithmeticMax: 1000, arithmeticOperandMax: 850,
+      tables: range(1, 12), factorMin: 1, factorMax: 12, squareMin: 1, squareMax: 12, bodmasMax: 12,
+      fractionDenominators: [2,3,4,5,10], percentageChoices: [10,20,25,50,75],
+      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      avoidExactDuplicates: true, avoidReversedDuplicates: false
+    }
+  };
+
+  function commonPreset(id, name, tagline, questionCount, extra) {
+    return Object.assign({
+      id, name, tagline, questionCount,
+      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      avoidExactDuplicates: true, avoidReversedDuplicates: false
+    }, extra || {});
+  }
+
+  // Optional content schemes found in public UK school implementations. Timing
+  // and advancement intentionally stay at TTC's standard 5 minutes / 2 perfect
+  // attempts; users can edit those independently in the rule editor.
+  const SCHEME_PRESETS = {
+    classic: {
+      id: 'classic', name: 'Classic 99 Club', tagline: 'Doubling → repeated addition → tables → division',
+      presets: CLASSIC_PRESETS
+    },
+    addition_first: {
+      id: 'addition_first', name: 'Addition-first', tagline: 'Addition first, then tables and division',
+      presets: {
+        '11': commonPreset('11','11 Club','Addition to 10',11,{mode:'addition',arithmeticMin:0,arithmeticMax:10,arithmeticOperandMax:10}),
+        '22': commonPreset('22','22 Club','Addition to 20',22,{mode:'addition',arithmeticMin:0,arithmeticMax:20,arithmeticOperandMax:20}),
+        '33': commonPreset('33','33 Club','Addition to 20 + 2× & 10×',33,{mode:'family_mix',families:['addition','multiply'],familyWeights:{addition:2,multiply:1},arithmeticMin:0,arithmeticMax:20,arithmeticOperandMax:20,tables:[2,10],factorMin:1,factorMax:12}),
+        '44': commonPreset('44','44 Club','Addition to 20 + 2×, 5× & 10×',44,{mode:'family_mix',families:['addition','multiply'],familyWeights:{addition:2,multiply:2},arithmeticMin:0,arithmeticMax:20,arithmeticOperandMax:20,tables:[2,5,10],factorMin:1,factorMax:12}),
+        '55': commonPreset('55','55 Club','2×, 3×, 4×, 5× & 10×',55,{mode:'multiply',tables:[2,3,4,5,10],factorMin:1,factorMax:12}),
+        '66': commonPreset('66','66 Club','Adds 6×',66,{mode:'multiply',tables:[2,3,4,5,6,10],factorMin:1,factorMax:12}),
+        '77': commonPreset('77','77 Club','Adds 7×',77,{mode:'multiply',tables:[2,3,4,5,6,7,10],factorMin:1,factorMax:12}),
+        '88': commonPreset('88','88 Club','All tables to 12×',88,{mode:'multiply',tables:range(1,12),factorMin:1,factorMax:12}),
+        '99': commonPreset('99','99 Club','All tables + related division',99,{mode:'mixed',tables:range(1,12),factorMin:1,factorMax:12,multiplyPercent:50})
+      }
+    },
+    arithmetic_first: {
+      id: 'arithmetic_first', name: 'Arithmetic-first', tagline: 'Addition/subtraction before multiplication and division',
+      presets: {
+        '11': commonPreset('11','11 Club','Add two single-digit numbers',11,{mode:'addition',arithmeticMin:0,arithmeticMax:18,arithmeticOperandMax:9}),
+        '22': commonPreset('22','22 Club','Addition & subtraction to 20',22,{mode:'add_subtract',arithmeticMin:0,arithmeticMax:20,arithmeticOperandMax:20}),
+        '33': commonPreset('33','33 Club','Addition & subtraction to 20',33,{mode:'add_subtract',arithmeticMin:0,arithmeticMax:20,arithmeticOperandMax:20}),
+        '44': commonPreset('44','44 Club','Addition to 20 + 2×, 5× & 10×',44,{mode:'family_mix',families:['addition','multiply'],familyWeights:{addition:2,multiply:2},arithmeticMin:0,arithmeticMax:20,arithmeticOperandMax:20,tables:[2,5,10],factorMin:0,factorMax:12}),
+        '55': commonPreset('55','55 Club','Adds 3×, 4× & 6×',55,{mode:'multiply',tables:[2,3,4,5,6,10],factorMin:0,factorMax:12}),
+        '66': commonPreset('66','66 Club','Adds 7×, 8× & 9×',66,{mode:'multiply',tables:[2,3,4,5,6,7,8,9,10],factorMin:0,factorMax:12}),
+        '77': commonPreset('77','77 Club','Mixed multiplication & division',77,{mode:'mixed',tables:range(1,12),factorMin:0,factorMax:12,multiplyPercent:60}),
+        '88': commonPreset('88','88 Club','Mixed facts + missing numbers',88,{mode:'family_mix',families:['multiply','divide','missing_number'],familyWeights:{multiply:3,divide:2,missing_number:2},tables:range(1,12),factorMin:0,factorMax:12}),
+        '99': commonPreset('99','99 Club','Full mixed facts + missing numbers',99,{mode:'family_mix',families:['multiply','divide','missing_number'],familyWeights:{multiply:3,divide:2,missing_number:3},tables:range(1,12),factorMin:0,factorMax:12})
+      }
+    },
+    missing_number: {
+      id: 'missing_number', name: 'Missing-number progression', tagline: 'Tables build-up finishing with missing-number facts',
+      presets: {
+        '11': commonPreset('11','11 Club','Doubling 1-10',11,{mode:'double',numberMin:1,numberMax:10}),
+        '22': commonPreset('22','22 Club','2×, 5× & 10×',22,{mode:'multiply',tables:[2,5,10],factorMin:1,factorMax:12}),
+        '33': commonPreset('33','33 Club','Adds 3× & 4×',33,{mode:'multiply',tables:[2,3,4,5,10],factorMin:1,factorMax:12}),
+        '44': commonPreset('44','44 Club','Adds 1× & 6×',44,{mode:'multiply',tables:[1,2,3,4,5,6,10],factorMin:1,factorMax:12}),
+        '55': commonPreset('55','55 Club','Adds 7×, 8× & 9×',55,{mode:'multiply',tables:range(1,10),factorMin:1,factorMax:12}),
+        '66': commonPreset('66','66 Club','Adds 11× & 12×',66,{mode:'multiply',tables:range(1,12),factorMin:1,factorMax:12}),
+        '77': commonPreset('77','77 Club','Inverse division facts',77,{mode:'divide',tables:range(1,12),factorMin:1,factorMax:12}),
+        '88': commonPreset('88','88 Club','Mixed multiplication & division',88,{mode:'mixed',tables:range(1,12),factorMin:1,factorMax:12,multiplyPercent:50}),
+        '99': commonPreset('99','99 Club','Missing-number multiplication & division',99,{mode:'missing_number',tables:range(1,12),factorMin:1,factorMax:12})
+      }
+    },
+    tables_first: {
+      id: 'tables_first', name: 'Tables-first', tagline: 'Multiplication first, then related division',
+      presets: {
+        '11': commonPreset('11','11 Club','Multiply by 2 & 10',11,{mode:'multiply',tables:[2,10],factorMin:1,factorMax:12}),
+        '22': commonPreset('22','22 Club','Multiply by 2, 5 & 10',22,{mode:'multiply',tables:[2,5,10],factorMin:1,factorMax:12}),
+        '33': commonPreset('33','33 Club','× and ÷ by 2, 5 & 10',33,{mode:'mixed',tables:[2,5,10],factorMin:1,factorMax:12,multiplyPercent:50}),
+        '44': commonPreset('44','44 Club','Adds 3× & 4× families',44,{mode:'mixed',tables:[2,3,4,5,10],factorMin:1,factorMax:12,multiplyPercent:50}),
+        '55': commonPreset('55','55 Club','Adds 8× family',55,{mode:'mixed',tables:[2,3,4,5,8,10],factorMin:1,factorMax:12,multiplyPercent:50}),
+        '66': commonPreset('66','66 Club','Adds 9× family',66,{mode:'mixed',tables:[2,3,4,5,8,9,10],factorMin:1,factorMax:12,multiplyPercent:50}),
+        '77': commonPreset('77','77 Club','Adds 6× family',77,{mode:'mixed',tables:[2,3,4,5,6,8,9,10],factorMin:1,factorMax:12,multiplyPercent:50}),
+        '88': commonPreset('88','88 Club','Adds 7× family',88,{mode:'mixed',tables:[2,3,4,5,6,7,8,9,10],factorMin:1,factorMax:12,multiplyPercent:50}),
+        '99': commonPreset('99','99 Club','All × and ÷ facts to 12×12',99,{mode:'mixed',tables:[2,3,4,5,6,7,8,9,10,11,12],factorMin:1,factorMax:12,multiplyPercent:50})
+      }
+    }
+  };
+
+  const FAMILY_LABELS = {
+    addition:'addition', subtraction:'subtraction', multiply:'multiplication', divide:'division',
+    missing_number:'missing numbers', square:'squares', square_root:'square roots', cube:'cubes',
+    bodmas:'order of operations', scaled_multiply:'scaled multiplication', scaled_divide:'scaled division',
+    fraction_of:'fractions of quantities', percentage_of:'percentages of quantities',
+    negative_numbers:'negative numbers', roman_numerals:'Roman numerals', angle_facts:'angle facts', simple_algebra:'simple algebra'
+  };
+
   function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
   function hashString(str) {
@@ -119,7 +251,7 @@
     r.unaided = r.unaided !== false;
     r.avoidExactDuplicates = r.avoidExactDuplicates !== false;
     r.avoidReversedDuplicates = !!r.avoidReversedDuplicates;
-    r.mode = ['double', 'repeated_addition', 'multiply', 'divide', 'mixed'].includes(r.mode) ? r.mode : 'multiply';
+    r.mode = ['double', 'repeated_addition', 'multiply', 'divide', 'mixed', 'addition', 'add_subtract', 'missing_number', 'family_mix'].includes(r.mode) ? r.mode : 'multiply';
     r.numberMin = clampInt(r.numberMin, 0, 100, 1);
     r.numberMax = clampInt(r.numberMax, r.numberMin, 100, Math.max(10, r.numberMin));
     r.addendMin = clampInt(r.addendMin, 0, 100, 1);
@@ -130,7 +262,23 @@
     r.factorMax = clampInt(r.factorMax, r.factorMin, 100, Math.max(12, r.factorMin));
     r.multiplyPercent = clampInt(r.multiplyPercent, 0, 100, 50);
     r.tables = Array.isArray(r.tables) ? [...new Set(r.tables.map(Number).filter(n => Number.isInteger(n) && n >= 0 && n <= 100))].sort((a,b)=>a-b) : range(1, 12);
-    if (!r.tables.length && ['multiply', 'divide', 'mixed'].includes(r.mode)) r.tables = range(1, 12);
+    if (!r.tables.length && ['multiply', 'divide', 'mixed', 'missing_number', 'family_mix'].includes(r.mode)) r.tables = range(1, 12);
+    r.arithmeticMin = clampInt(r.arithmeticMin, -1000, 1000, 0);
+    r.arithmeticMax = clampInt(r.arithmeticMax, Math.max(1, r.arithmeticMin), 5000, 100);
+    r.arithmeticOperandMax = clampInt(r.arithmeticOperandMax, 1, 5000, Math.min(100, r.arithmeticMax));
+    r.allowNegativeAnswers = !!r.allowNegativeAnswers;
+    r.squareMin = clampInt(r.squareMin, 0, 50, 1);
+    r.squareMax = clampInt(r.squareMax, r.squareMin, 50, Math.max(12, r.squareMin));
+    r.cubeMin = clampInt(r.cubeMin, 0, 20, 1);
+    r.cubeMax = clampInt(r.cubeMax, r.cubeMin, 20, Math.max(10, r.cubeMin));
+    r.bodmasMax = clampInt(r.bodmasMax, 2, 30, 12);
+    r.fractionDenominators = normalizeNumberList(r.fractionDenominators, [2,3,4,5,10], 2, 20);
+    r.percentageChoices = normalizeNumberList(r.percentageChoices, [10,20,25,50,75], 1, 100);
+    const validFamilies = Object.keys(FAMILY_LABELS);
+    r.families = Array.isArray(r.families) ? [...new Set(r.families.filter(f => validFamilies.includes(f)))] : ['addition','subtraction','multiply','divide'];
+    if (!r.families.length && r.mode === 'family_mix') r.families = ['addition','subtraction','multiply','divide'];
+    const weights = r.familyWeights && typeof r.familyWeights === 'object' ? r.familyWeights : {};
+    r.familyWeights = Object.fromEntries(r.families.map(f => [f, clampInt(weights[f], 1, 20, 1)]));
     return r;
   }
 
@@ -143,6 +291,12 @@
     const n = Number(v);
     if (!Number.isFinite(n)) return fallback;
     return Math.max(min, Math.min(max, n));
+  }
+
+  function normalizeNumberList(value, fallback, min, max) {
+    const source = Array.isArray(value) ? value : fallback;
+    const out = [...new Set(source.map(Number).filter(n => Number.isInteger(n) && n >= min && n <= max))].sort((a,b)=>a-b);
+    return out.length ? out : fallback.slice();
   }
 
   function buildDoublePool(rules) {
@@ -197,6 +351,232 @@
       }
     }
     return out;
+  }
+
+
+  function buildAdditionPool(rules) {
+    const out = [];
+    const maxOperand = Math.min(rules.arithmeticOperandMax, rules.arithmeticMax);
+    for (let a = Math.max(0, rules.arithmeticMin); a <= maxOperand; a += 1) {
+      const bMax = Math.min(maxOperand, rules.arithmeticMax - a);
+      for (let b = 0; b <= bMax; b += 1) {
+        if (a === 0 && b === 0) continue;
+        out.push({ kind:'addition', a, b, prompt:`${a} + ${b} =`, answer:a+b, key:`a:${a}:${b}` });
+      }
+    }
+    return out;
+  }
+
+  function buildSubtractionPool(rules) {
+    const out = [];
+    const maxOperand = Math.min(rules.arithmeticOperandMax, rules.arithmeticMax);
+    for (let a = 1; a <= maxOperand; a += 1) {
+      const bStart = rules.allowNegativeAnswers ? 0 : 0;
+      const bMax = rules.allowNegativeAnswers ? maxOperand : a;
+      for (let b = bStart; b <= bMax; b += 1) {
+        const answer = a - b;
+        if (!rules.allowNegativeAnswers && answer < 0) continue;
+        out.push({ kind:'subtraction', a, b, prompt:`${a} - ${b} =`, answer, key:`s:${a}:${b}` });
+      }
+    }
+    return out;
+  }
+
+  function buildMissingNumberPool(rules) {
+    const out = [];
+    for (const table of rules.tables.filter(t => t !== 0)) {
+      for (let factor = Math.max(0, rules.factorMin); factor <= rules.factorMax; factor += 1) {
+        const product = table * factor;
+        out.push({ kind:'missing_number', prompt:`${table} × ___ = ${product}`, answer:factor, key:`mn:m:r:${table}:${factor}`, group:table });
+        out.push({ kind:'missing_number', prompt:`___ × ${factor} = ${product}`, answer:table, key:`mn:m:l:${table}:${factor}`, group:table });
+        if (factor !== 0) out.push({ kind:'missing_number', prompt:`${product} ÷ ___ = ${factor}`, answer:table, key:`mn:d:d:${table}:${factor}`, group:table });
+        out.push({ kind:'missing_number', prompt:`___ ÷ ${table} = ${factor}`, answer:product, key:`mn:d:n:${table}:${factor}`, group:table });
+      }
+    }
+    return out;
+  }
+
+  function buildSquarePool(rules) {
+    return range(rules.squareMin, rules.squareMax).map(n => ({ kind:'square', prompt:`${n}² =`, answer:n*n, key:`sq:${n}` }));
+  }
+
+  function buildSquareRootPool(rules) {
+    return range(rules.squareMin, rules.squareMax).map(n => ({ kind:'square_root', prompt:`√${n*n} =`, answer:n, key:`sr:${n}` }));
+  }
+
+  function buildCubePool(rules) {
+    return range(rules.cubeMin, rules.cubeMax).map(n => ({ kind:'cube', prompt:`${n}³ =`, answer:n*n*n, key:`cu:${n}` }));
+  }
+
+  function buildBodmasPool(rules) {
+    const out = [], m = rules.bodmasMax;
+    for (let a = 2; a <= m; a += 1) {
+      for (let b = 2; b <= m; b += 1) {
+        const c = ((a + b) % Math.max(2, m - 1)) + 2;
+        out.push({ kind:'bodmas', prompt:`${a} + ${b} × ${c} =`, answer:a+b*c, key:`bo:1:${a}:${b}:${c}` });
+        out.push({ kind:'bodmas', prompt:`${a} × (${b} + ${c}) =`, answer:a*(b+c), key:`bo:2:${a}:${b}:${c}` });
+        out.push({ kind:'bodmas', prompt:`(${a} + ${b}) × ${c} =`, answer:(a+b)*c, key:`bo:3:${a}:${b}:${c}` });
+        out.push({ kind:'bodmas', prompt:`${a*b} ÷ ${b} + ${c} =`, answer:a+c, key:`bo:4:${a}:${b}:${c}` });
+        if (a*b > c) out.push({ kind:'bodmas', prompt:`${a*b} - (${b} + ${c}) =`, answer:a*b-b-c, key:`bo:5:${a}:${b}:${c}` });
+      }
+    }
+    return out;
+  }
+
+  function buildScaledMultiplyPool(rules) {
+    const out = [];
+    const bases = range(Math.max(2, rules.factorMin), Math.min(12, rules.factorMax));
+    const scales = [10,100];
+    for (const a of bases) for (const b of bases) for (const sa of scales) {
+      out.push({ kind:'scaled_multiply', prompt:`${a*sa} × ${b} =`, answer:a*sa*b, key:`sm:1:${a}:${sa}:${b}` });
+      out.push({ kind:'scaled_multiply', prompt:`${a*10} × ${b*10} =`, answer:a*b*100, key:`sm:2:${a}:${b}` });
+    }
+    return out;
+  }
+
+  function buildScaledDividePool(rules) {
+    const out = [];
+    const bases = range(Math.max(2, rules.factorMin), Math.min(12, rules.factorMax));
+    for (const divisor of bases) for (const quotient of bases) {
+      for (const scale of [10,100]) {
+        const dividend = divisor * quotient * scale;
+        out.push({ kind:'scaled_divide', prompt:`${dividend} ÷ ${divisor} =`, answer:quotient*scale, key:`sd:1:${divisor}:${quotient}:${scale}` });
+        out.push({ kind:'scaled_divide', prompt:`${dividend} ÷ ${divisor*scale} =`, answer:quotient, key:`sd:2:${divisor}:${quotient}:${scale}` });
+      }
+    }
+    return out;
+  }
+
+  function buildFractionOfPool(rules) {
+    const out = [];
+    for (const d of rules.fractionDenominators) {
+      for (let n = 1; n < d; n += 1) {
+        for (let unit = 2; unit <= 20; unit += 1) {
+          const quantity = d * unit;
+          out.push({ kind:'fraction_of', prompt:`${n}/${d} of ${quantity} =`, answer:n*unit, key:`fr:${n}:${d}:${quantity}` });
+        }
+      }
+    }
+    return out;
+  }
+
+  function buildPercentageOfPool(rules) {
+    const out = [];
+    for (const pct of rules.percentageChoices) {
+      for (let quantity = 20; quantity <= 500; quantity += 10) {
+        const answer = quantity * pct / 100;
+        if (!Number.isInteger(answer)) continue;
+        out.push({ kind:'percentage_of', prompt:`${pct}% of ${quantity} =`, answer, key:`pc:${pct}:${quantity}` });
+      }
+    }
+    return out;
+  }
+
+  function buildNegativeNumberPool(rules) {
+    const out = [];
+    const m = Math.max(5, Math.min(50, rules.arithmeticOperandMax, rules.arithmeticMax));
+    for (let a = 1; a <= m; a += 1) {
+      for (let b = 1; b <= m; b += 1) {
+        if (a + b > Math.max(m, rules.arithmeticMax)) continue;
+        out.push({ kind:'negative_numbers', prompt:`-${a} + ${b} =`, answer:b-a, key:`neg:1:${a}:${b}` });
+        out.push({ kind:'negative_numbers', prompt:`${a} - ${a+b} =`, answer:-b, key:`neg:2:${a}:${b}` });
+        out.push({ kind:'negative_numbers', prompt:`-${a} - ${b} =`, answer:-(a+b), key:`neg:3:${a}:${b}` });
+      }
+    }
+    return out;
+  }
+
+  function toRoman(value) {
+    let n = Math.max(1, Math.min(3999, Number(value) || 1));
+    const map=[[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+    let out='';
+    for(const [v,symbol] of map){ while(n>=v){out+=symbol;n-=v;} }
+    return out;
+  }
+
+  function buildRomanNumeralPool(rules) {
+    const out = [];
+    const max = Math.max(10, Math.min(100, rules.arithmeticMax));
+    for (let n = 1; n <= max; n += 1) {
+      const roman=toRoman(n);
+      out.push({ kind:'roman_numerals', prompt:`${roman} =`, answer:n, key:`rom:n:${n}` });
+      out.push({ kind:'roman_numerals', prompt:`Roman ${n} =`, answer:roman, key:`rom:r:${n}` });
+    }
+    return out;
+  }
+
+  function buildAngleFactsPool(rules) {
+    const out = [];
+    for (const total of [90,180,360]) {
+      const step=total===90?5:10;
+      for(let known=step;known<total;known+=step){
+        out.push({ kind:'angle_facts', prompt:`${total}° - ${known}° =`, answer:total-known, key:`ang:${total}:${known}` });
+      }
+    }
+    return out;
+  }
+
+  function buildSimpleAlgebraPool(rules) {
+    const out = [];
+    const xMax=Math.max(5,Math.min(20,rules.arithmeticOperandMax));
+    const cMax=Math.max(5,Math.min(12,rules.factorMax));
+    for(let x=1;x<=xMax;x+=1){
+      for(let c=1;c<=cMax;c+=1){
+        out.push({ kind:'simple_algebra', prompt:`x + ${c} = ${x+c}, x =`, answer:x, key:`alg:1:${x}:${c}` });
+        if(x>c)out.push({ kind:'simple_algebra', prompt:`x - ${c} = ${x-c}, x =`, answer:x, key:`alg:2:${x}:${c}` });
+      }
+      for(let m=2;m<=Math.min(12,rules.factorMax);m+=1){
+        out.push({ kind:'simple_algebra', prompt:`${m}x = ${m*x}, x =`, answer:x, key:`alg:3:${x}:${m}` });
+        const c=((x+m)%9)+1;
+        out.push({ kind:'simple_algebra', prompt:`${m}x + ${c} = ${m*x+c}, x =`, answer:x, key:`alg:4:${x}:${m}:${c}` });
+      }
+    }
+    return out;
+  }
+
+  function poolForFamily(family, rules) {
+    if (family === 'addition') return buildAdditionPool(rules);
+    if (family === 'subtraction') return buildSubtractionPool(rules);
+    if (family === 'multiply') return buildMultiplyPool(rules);
+    if (family === 'divide') return buildDividePool(rules);
+    if (family === 'missing_number') return buildMissingNumberPool(rules);
+    if (family === 'square') return buildSquarePool(rules);
+    if (family === 'square_root') return buildSquareRootPool(rules);
+    if (family === 'cube') return buildCubePool(rules);
+    if (family === 'bodmas') return buildBodmasPool(rules);
+    if (family === 'scaled_multiply') return buildScaledMultiplyPool(rules);
+    if (family === 'scaled_divide') return buildScaledDividePool(rules);
+    if (family === 'fraction_of') return buildFractionOfPool(rules);
+    if (family === 'percentage_of') return buildPercentageOfPool(rules);
+    if (family === 'negative_numbers') return buildNegativeNumberPool(rules);
+    if (family === 'roman_numerals') return buildRomanNumeralPool(rules);
+    if (family === 'angle_facts') return buildAngleFactsPool(rules);
+    if (family === 'simple_algebra') return buildSimpleAlgebraPool(rules);
+    return [];
+  }
+
+  function weightedFamilyCounts(rules, rng) {
+    const bag = [];
+    for (const family of rules.families) {
+      const weight = Math.max(1, Number(rules.familyWeights[family]) || 1);
+      for (let i = 0; i < weight; i += 1) bag.push(family);
+    }
+    const cycle = shuffle(bag, rng);
+    const counts = Object.fromEntries(rules.families.map(f => [f,0]));
+    for (let i = 0; i < rules.questionCount; i += 1) counts[cycle[i % cycle.length]] += 1;
+    return counts;
+  }
+
+  function generateFamilyMix(rules, rng) {
+    const counts = weightedFamilyCounts(rules, rng);
+    let out = [];
+    for (const family of rules.families) {
+      const count = counts[family] || 0;
+      if (!count) continue;
+      const pool = poolForFamily(family, rules);
+      out = out.concat(balancedPick(pool, count, rng, rules));
+    }
+    return shuffle(out, rng);
   }
 
   function balancedPick(pool, count, rng, rules) {
@@ -261,12 +641,25 @@
       questions = balancedPick(buildMultiplyPool(rules), rules.questionCount, rng, rules);
     } else if (rules.mode === 'divide') {
       questions = balancedPick(buildDividePool(rules), rules.questionCount, rng, rules);
-    } else {
+    } else if (rules.mode === 'mixed') {
+      // Keep this path byte-for-byte equivalent to v1.1 for Classic 88/99 regression safety.
       const multCount = Math.round(rules.questionCount * rules.multiplyPercent / 100);
       const divCount = rules.questionCount - multCount;
       const mult = balancedPick(buildMultiplyPool(rules), multCount, rng, rules);
       const div = balancedPick(buildDividePool(rules), divCount, rng, rules);
       questions = shuffle(mult.concat(div), rng);
+    } else if (rules.mode === 'addition') {
+      questions = balancedPick(buildAdditionPool(rules), rules.questionCount, rng, rules);
+    } else if (rules.mode === 'add_subtract') {
+      const addCount = Math.ceil(rules.questionCount / 2);
+      const subCount = rules.questionCount - addCount;
+      questions = shuffle(
+        balancedPick(buildAdditionPool(rules), addCount, rng, rules)
+          .concat(balancedPick(buildSubtractionPool(rules), subCount, rng, rules)), rng);
+    } else if (rules.mode === 'missing_number') {
+      questions = balancedPick(buildMissingNumberPool(rules), rules.questionCount, rng, rules);
+    } else if (rules.mode === 'family_mix') {
+      questions = generateFamilyMix(rules, rng);
     }
 
     return questions.map((q, idx) => ({ ...q, number: idx + 1 }));
@@ -296,6 +689,10 @@
     if (r.mode === 'multiply') maths = `multiplication · tables ${compressNumbers(r.tables)} · factors ${r.factorMin}-${r.factorMax}`;
     if (r.mode === 'divide') maths = `exact division · tables ${compressNumbers(r.tables)} · quotients ${r.factorMin}-${r.factorMax}`;
     if (r.mode === 'mixed') maths = `mixed multiplication/division · tables ${compressNumbers(r.tables)} · ${r.multiplyPercent}% multiplication`;
+    if (r.mode === 'addition') maths = `addition · answers to ${r.arithmeticMax}`;
+    if (r.mode === 'add_subtract') maths = `addition/subtraction · range to ${r.arithmeticMax}`;
+    if (r.mode === 'missing_number') maths = `missing-number multiplication/division · tables ${compressNumbers(r.tables)}`;
+    if (r.mode === 'family_mix') maths = `mixed mental maths · ${r.families.map(f => FAMILY_LABELS[f] || f).join(', ')}`;
     return `${r.questionCount} questions · ${maths} · ${formatMinutes(r.timeMinutes)} · ${r.perfectAttempts} perfect ${r.perfectAttempts === 1 ? 'attempt' : 'attempts'} to advance`;
   }
 
@@ -336,7 +733,8 @@
   }
 
   const api = {
-    CLASSIC_PRESETS, clone, normalizeRules, generateQuestions, shuffleQuestions,
+    CLASSIC_PRESETS, CHALLENGE_PRESETS, SCHEME_PRESETS, FAMILY_LABELS,
+    clone, normalizeRules, generateQuestions, shuffleQuestions,
     replaceQuestion, rulesSummary, instructionText, newSeed, rngFromSeed, compressNumbers
   };
 

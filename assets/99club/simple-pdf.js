@@ -14,6 +14,7 @@
       .replace(/[\u201C\u201D]/g, '"')
       .replace(/[\u2013\u2014]/g, '-')
       .replace(/\u2026/g, '...')
+      .replace(/\u221A/g, 'sqrt ')
       .replace(/[^\x00-\xFF]/g, '?');
   }
   function pdfEscape(s) {
@@ -68,6 +69,10 @@
       const pagesId = add('');
       const fontRegularId = add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
       const fontBoldId = add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+      // PDF's standard Symbol font gives us a proper radical glyph without
+      // shipping a webfont or external dependency. It is used only for the
+      // optional post-99 square-root question family.
+      const fontSymbolId = add('<< /Type /Font /Subtype /Type1 /BaseFont /Symbol >>');
       let imageId = null;
       if (this.image) {
         const im = this.image;
@@ -80,7 +85,7 @@
         const pageHeight = Array.isArray(entry) ? PAGE_H : entry.height;
         const stream = cmds.join('\n') + '\n';
         const contentId = add(`<< /Length ${stream.length} >>\nstream\n${stream}endstream`);
-        const resources = `<< /Font << /F1 ${fontRegularId} 0 R /F2 ${fontBoldId} 0 R >>${imageId ? ` /XObject << /Im1 ${imageId} 0 R >>` : ''} >>`;
+        const resources = `<< /Font << /F1 ${fontRegularId} 0 R /F2 ${fontBoldId} 0 R /F3 ${fontSymbolId} 0 R >>${imageId ? ` /XObject << /Im1 ${imageId} 0 R >>` : ''} >>`;
         const pageId = add(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${n(pageWidth)} ${n(pageHeight)}] /Resources ${resources} /Contents ${contentId} 0 R >>`);
         pageIds.push(pageId);
       }
@@ -119,6 +124,19 @@
       if (opts.align === 'right') tx -= width;
       const y = this.height - topY;
       this.c.push(`BT /${font} ${n(size)} Tf ${opts.color ? rgb(opts.color) + ' rg ' : ''}1 0 0 1 ${n(tx)} ${n(y)} Tm (${pdfEscape(text)}) Tj ET`);
+      return width;
+    }
+    // Draw one glyph from PDF's standard Symbol font. `code` is the
+    // Symbol-encoding byte (214 = radical / square-root sign).
+    symbol(x, topY, code, size = 10, opts = {}) {
+      const y = this.height - topY;
+      const byte = Math.max(0, Math.min(255, Number(code) || 0));
+      const octal = byte.toString(8).padStart(3, '0');
+      const width = size * (byte === 214 ? 0.549 : 0.6);
+      let tx = x;
+      if (opts.align === 'center') tx -= width / 2;
+      if (opts.align === 'right') tx -= width;
+      this.c.push(`BT /F3 ${n(size)} Tf ${opts.color ? rgb(opts.color) + ' rg ' : ''}1 0 0 1 ${n(tx)} ${n(y)} Tm (\\${octal}) Tj ET`);
       return width;
     }
     line(x1, y1Top, x2, y2Top, opts = {}) {

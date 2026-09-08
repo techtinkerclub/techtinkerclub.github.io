@@ -84,7 +84,7 @@
         const q=sheet.questions[idx], rr=idx-start;
         const y=top+rr*rowH+Math.min(14.5,Math.max(10,rowH*.64));
         page.text(x,y,`${q.number}.`,fonts.number,{bold:true,color:muted});
-        page.text(x+(landscape?24:23),y,q.prompt,fonts.question,{color:ink});
+        drawQuestionPrompt(page,x+(landscape?24:23),y,q.prompt,fonts.question,ink);
         if(answers) page.text(x+colW-6,y,String(q.answer),fonts.answer,{bold:true,align:'right',color:teal});
         else page.line(x+colW-answerLineW,y+2,x+colW-5,y+2,{color:[120,128,136],width:0.6});
       }
@@ -94,6 +94,16 @@
     const footerY=footerLine+(landscape?14:15);
     page.text(margin,footerY,`Sheet ${sheet.code} · Version ${String.fromCharCode(65+variantIndex)}`,landscape?7.2:7.3,{color:muted});
     page.text(right,footerY,'Generated with Tech Tinker Club · techtinker.club',landscape?7.2:7.3,{align:'right',color:muted});
+  }
+
+  function drawQuestionPrompt(page,x,y,prompt,size,color){
+    const raw=String(prompt == null ? '' : prompt);
+    if(raw.charAt(0)==='√' && typeof page.symbol==='function'){
+      const radicalWidth=page.symbol(x,y,214,size,{color});
+      page.text(x+radicalWidth+Math.max(1.1,size*.06),y,raw.slice(1),size,{color});
+      return;
+    }
+    page.text(x,y,raw,size,{color});
   }
 
   function getColumns(count,orientation){
