@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.12';
+  const VERSION = '1.13';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const GENERATION_VERSION = 1;
@@ -230,7 +230,16 @@
     try {
       const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
       if (s.schemeId && G.SCHEME_PRESETS[s.schemeId]) state.schemeId = s.schemeId;
-      if (s.ruleOverrides && typeof s.ruleOverrides==='object' && !Array.isArray(s.ruleOverrides)) state.ruleOverrides=G.clone(s.ruleOverrides);
+      if (s.ruleOverrides && typeof s.ruleOverrides==='object' && !Array.isArray(s.ruleOverrides)) {
+        state.ruleOverrides=G.clone(s.ruleOverrides);
+        Object.entries(state.ruleOverrides).forEach(([key,value])=>{
+          if(!key.startsWith('classic::') || !value || typeof value!=='object') return;
+          if(Number(value.perfectAttempts)===2 && !Object.prototype.hasOwnProperty.call(value,'consecutivePerfectAttempts')){
+            value.perfectAttempts=3;
+            value.consecutivePerfectAttempts=false;
+          }
+        });
+      }
       if (s.clubId && getBasePreset(state.schemeId,s.clubId)) state.clubId = s.clubId;
       const base=getBasePreset(state.schemeId,state.clubId) || G.CLASSIC_PRESETS['33'];
       // v1.2 migration: the active edited rules used to live only in `rules`.
@@ -349,15 +358,17 @@
           <span class="tt99-hero-math tt99-hero-math--99" aria-hidden="true">99</span>
           <span class="tt99-hero-math tt99-hero-math--divide" aria-hidden="true">÷</span>
           <div class="tt99-hero-dots" aria-hidden="true"></div>
-          <svg class="tt99-hero-graph" viewBox="0 0 150 130" aria-hidden="true" focusable="false">
-            <path d="M18 106H134M40 118V18"/>
-            <path class="tt99-hero-graph__curve" d="M41 105 C65 105 80 99 91 88 C106 73 114 48 125 24"/>
+          <svg class="tt99-hero-graph" viewBox="0 0 150 130" aria-hidden="true" focusable="false" fill="none">
+            <path d="M18 106H134M40 118V18" fill="none"/>
+            <path class="tt99-hero-graph__curve" d="M41 105 C65 105 80 99 91 88 C106 73 114 48 125 24" fill="none"/>
           </svg>
-          <div class="tt99-hero__mark"><img src="/assets/99club/images/99club-studio-shield.png" alt="99 Club achievement shield"></div>
+          <div class="tt99-hero__mark">
+            <img src="/assets/99club/images/99club-studio-shield.png" alt="99 Club achievement shield">
+          </div>
           <div class="tt99-hero__copy">
             <span class="tt99-eyebrow">Tech Tinker Club · Free classroom tool</span>
-            <h1 id="tt99-hero-title"><span>99 Club</span> <em>Studio</em></h1>
-            <div class="tt99-hero__tagline" aria-label="Maths for further progress"><i></i><span>Maths for further progress</span><i></i></div>
+            <h1 id="tt99-hero-title" class="tt99-sr-only">99 Club Studio</h1>
+            <img class="tt99-hero__wordmark" src="/assets/99club/images/99club-studio-wordmark.png" alt="99 Club Studio — Maths for further progress">
             <p class="tt99-hero__slogan">Practice. Progress. Confidence.</p>
           </div>
           <a href="/tools/99-club/help/" class="tt99-help-link"><span aria-hidden="true">?</span>Help &amp; guide</a>
