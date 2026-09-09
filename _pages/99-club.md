@@ -15,9 +15,9 @@ sidebar: false
   </article>
 </div>
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=14">
-<script src="/assets/99club/generator.js?v=14"></script>
-<script src="/assets/99club/simple-pdf.js?v=14"></script>
-<script src="/assets/99club/pdf-layout.js?v=14"></script>
-<script src="/assets/99club/qr-lite.js?v=14"></script>
-<script src="/assets/99club/app.js?v=14" defer></script>
+<link rel="stylesheet" href="/assets/99club/99club.css?v=17">
+<script src="/assets/99club/generator.js?v=17"></script>
+<script src="/assets/99club/simple-pdf.js?v=17"></script>
+<script src="/assets/99club/pdf-layout.js?v=17"></script>
+<script src="/assets/99club/qr-lite.js?v=17"></script>
+<script src="/assets/99club/app.js?v=17" defer></script>

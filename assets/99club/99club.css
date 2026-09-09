@@ -355,3 +355,95 @@
   #tt99-root .tt99-hero-math--99{right:1%;top:56%;font-size:3rem}
   #tt99-root .tt99-hero-math--divide{display:none}
 }
+
+/* v1.14 — Custom Worksheet mode + curriculum topic selector */
+#tt99-root .tt99-open-choice{margin-top:8px}
+#tt99-root .tt99-open-choice .tt99-club{
+  width:100%;min-height:78px;padding:13px 14px;
+  border-color:#a9d4cd;background:linear-gradient(135deg,#f4fbf9,#fffdf8);
+}
+#tt99-root .tt99-open-choice .tt99-club strong{font-size:.95rem;color:#17383d}
+#tt99-root .tt99-open-choice .tt99-club span{font-size:.72rem;max-width:92%}
+#tt99-root .tt99-open-choice .tt99-club.is-selected{background:linear-gradient(135deg,#e6f5f1,#fff8e7);box-shadow:0 0 0 2px rgba(20,125,117,.09)}
+#tt99-root .tt99-check--field{min-height:41px;margin:0;padding:9px 10px;border:1px solid #ccd9dc;border-radius:9px;background:#fff;align-items:center}
+#tt99-root .tt99-check--field input{margin-top:0}
+#tt99-root .tt99-family-quick{margin:9px 0 11px;padding:9px 10px;border:1px solid #dce8e6;border-radius:9px;background:#f6fbfa}
+#tt99-root .tt99-family-quick>span{display:flex;align-items:center;gap:6px;font-size:.66rem;font-weight:850;color:#536b70}
+#tt99-root .tt99-family-quick>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+#tt99-root .tt99-family-quick button{padding:5px 8px;border:1px solid #c7d9d7;border-radius:7px;background:#fff;color:#456167;font-size:.64rem;font-weight:800;cursor:pointer}
+#tt99-root .tt99-family-quick button:hover{border-color:#75b9b0;background:#edf8f5;color:#0b6c66}
+#tt99-root .tt99-family-strand{margin-top:10px;padding-top:9px;border-top:1px solid #e6ecec}
+#tt99-root .tt99-family-strand:first-of-type{border-top:0;padding-top:2px}
+#tt99-root .tt99-family-strand>b{display:block;margin-bottom:4px;color:#66787e;font-size:.62rem;text-transform:uppercase;letter-spacing:.045em}
+#tt99-root .tt99-family-strand .tt99-family-chips{margin-top:0}
+#tt99-root .tt99-family-chips label span{justify-content:space-between;gap:7px}
+#tt99-root .tt99-family-chips label span small,#tt99-root .tt99-family-locked small{margin-left:auto;color:#87979b;font-size:.52rem;font-weight:800;white-space:nowrap}
+#tt99-root .tt99-family-chips label input:checked+span small{color:rgba(255,255,255,.78)}
+#tt99-root .tt99-family-locked{gap:6px}
+#tt99-root .tt99-family-locked small{color:#64847e}
+#tt99-root .tt99-family-weights{max-height:430px;overflow:auto;scrollbar-gutter:stable}
+#tt99-root .tt99-family-weights>div{align-items:start}
+@media(max-width:760px){
+  #tt99-root .tt99-open-choice .tt99-club{min-height:70px}
+  #tt99-root .tt99-family-weights{max-height:none;overflow:visible}
+}
+
+/* v1.15 — scalable curriculum selectors for Custom Worksheet mode */
+#tt99-root details.tt99-family-strand{
+  margin-top:8px;padding:0;border:1px solid #e1e9e9;border-radius:9px;background:#fcfdfd;overflow:hidden;
+}
+#tt99-root details.tt99-family-strand:first-of-type{border-top:1px solid #e1e9e9;padding-top:0}
+#tt99-root details.tt99-family-strand>summary{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;list-style:none;cursor:pointer;
+  padding:8px 10px;color:#5f7378;background:#f8fbfb;user-select:none;
+}
+#tt99-root details.tt99-family-strand>summary::-webkit-details-marker{display:none}
+#tt99-root details.tt99-family-strand>summary::before{content:'›';font-size:1rem;font-weight:900;line-height:1;color:#6d8589;transition:transform .15s ease}
+#tt99-root details.tt99-family-strand[open]>summary::before{transform:rotate(90deg)}
+#tt99-root details.tt99-family-strand>summary>b{margin-right:auto;font-size:.63rem;text-transform:uppercase;letter-spacing:.045em}
+#tt99-root details.tt99-family-strand>summary>small{font-size:.55rem;font-weight:800;color:#87979b;white-space:nowrap}
+#tt99-root details.tt99-family-strand .tt99-family-chips{margin:0;padding:8px 9px 10px;border-top:1px solid #edf1f1}
+#tt99-root .tt99-family-quick>small{display:block;margin-top:6px;color:#7d8b90;font-size:.59rem;line-height:1.3}
+
+#tt99-root details.tt99-family-weights{max-height:none;overflow:visible;scrollbar-gutter:auto;padding:0}
+#tt99-root details.tt99-family-weights>summary{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;list-style:none;cursor:pointer;padding:10px;
+}
+#tt99-root details.tt99-family-weights>summary::-webkit-details-marker{display:none}
+#tt99-root details.tt99-family-weights>summary::before{content:'›';font-size:1rem;font-weight:900;line-height:1;color:#6d8589;transition:transform .15s ease}
+#tt99-root details.tt99-family-weights[open]>summary::before{transform:rotate(90deg)}
+#tt99-root details.tt99-family-weights>summary .tt99-field-label{margin-right:auto}
+#tt99-root details.tt99-family-weights>summary>small{margin:0;color:#819095;font-size:.57rem;font-weight:800;white-space:nowrap}
+#tt99-root details.tt99-family-weights>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0;padding:0 10px 10px;max-height:430px;overflow:auto;scrollbar-gutter:stable}
+#tt99-root .tt99-family-weight-note{margin:0;padding:8px 10px 10px;border-top:1px solid #e9eeee;color:#7d8b90;font-size:.61rem;line-height:1.35}
+@media(max-width:760px){
+  #tt99-root details.tt99-family-weights>div{grid-template-columns:1fr;max-height:none;overflow:visible}
+}
+
+/* v1.17 — teacher-only answer-sheet notes */
+#tt99-root .tt99-teacher-note{
+  display:block;
+  margin-top:14px;
+  padding:11px 12px 10px;
+  border:1px solid #d8e4e2;
+  border-radius:10px;
+  background:#fbfdfc;
+}
+#tt99-root .tt99-teacher-note>.tt99-field-label{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+#tt99-root .tt99-teacher-note textarea{
+  width:100%;
+  min-height:66px;
+  resize:vertical;
+  box-sizing:border-box;
+  border:1px solid #cfdcde;
+  border-radius:8px;
+  background:#fff;
+  color:var(--tt99-ink);
+  font:inherit;
+  font-size:.72rem;
+  line-height:1.4;
+  padding:8px 9px;
+}
+#tt99-root .tt99-teacher-note textarea:focus{outline:2px solid rgba(15,118,110,.18);border-color:var(--tt99-teal)}
+#tt99-root .tt99-teacher-note>small{display:flex;justify-content:space-between;gap:10px;margin-top:5px;color:#74858a;font-size:.59rem;line-height:1.3}
+#tt99-root .tt99-teacher-note>small b{font-weight:600;white-space:nowrap;color:#64767b}

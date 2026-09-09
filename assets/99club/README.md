@@ -4,13 +4,50 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version 1.11 is the shared-vector-preview baseline built on the v1.10 badge-header and compact-recreation release. The built-in worksheet-generation paths remain regression-frozen: Classic 11–99 and Bronze–Diamond are checked with fixed seeds so UI/recreation changes cannot silently alter the default maths. v1.11 keeps all v1.10 maths, PDF and recreation behaviour unchanged, but draws the on-screen worksheet preview through the same vector page-layout routine used by the PDF generator so preview geometry cannot drift independently.
+Version **1.17** refines the curriculum-aware **Custom Worksheet** workflow, removes the provisional contextual story-problem family, and adds optional teacher notes to answer sheets while preserving the regression-frozen 99 Club maths paths. The app now has two distinct uses:
 
-The public app name is **99 Club Studio**. Classic 99 Club remains the default scheme, with the normal progression:
+1. **99 Club progression** — Classic 11–99, optional alternative progressions, and Bronze–Diamond challenge presets.
+2. **Custom Worksheet** — neutral starter/quiz/homework/retrieval sheets built by choosing curriculum topics, relative weights, question count and an optional time limit.
+
+The public app name remains **99 Club Studio**. Classic 99 Club remains the default progression:
 
 `11 -> 22 -> 33 -> 44 -> 55 -> 66 -> 77 -> 88 -> 99`
 
-and the Classic default of **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable.
+The TTC Classic default is **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable. Alternative published-school presets keep their own defaults unless edited.
+
+### v1.17 Custom Worksheet, direct-maths scope and teacher notes
+
+- Custom Worksheet is **not a Club level**: no 11/22/33 etc. label, no advancement rule and no Club achievement badge on the pupil sheet.
+- Teachers can set a worksheet title, choose **1–200 questions**, make the sheet timed or untimed, select any available topic families, and set relative topic weights.
+- Quick-picks are provided for **Years 1–6** plus a Core 4 Operations option. The quick-picks use year-aware ranges/question forms, including decimals capped at **2 d.p. in Year 4** and **3 d.p. in Years 5–6**.
+- Topic selection is grouped into collapsible curriculum strands. Large selections keep the weight editor collapsed by default so Year 5/6 quick-picks remain usable rather than producing a huge wall of controls.
+- The direct-maths engine covers statutory content that can be represented honestly as numerical questions or concise mathematical prompts without requiring a diagram, clock face, chart, measured drawing or practical representation. Examples include `Round 673 to the nearest 100` and `What is the value of 6 in 678?`.
+- The provisional contextual/story word-problem family has been removed from all teacher selectors and Year quick-picks. Proper word problems will be designed separately with a richer, structured language/context engine rather than a handful of repeated templates.
+- Teachers can add an optional **240-character teacher note**. It is printed only at the end of answer sheets, never on pupil worksheets. It is saved in browser state, setup files, full backups and Full recreation codes, but omitted from the compact QR so note text cannot make the QR unnecessarily dense.
+- Exact square roots and non-standard rounding remain clearly marked as **Extension** rather than appearing in statutory Year quick-picks.
+- Full scope and deliberately deferred graphical objectives are documented in [`CURRICULUM_COVERAGE.md`](CURRICULUM_COVERAGE.md).
+- New open-worksheet arithmetic uses deterministic sampled pools for large ranges. This avoids the quadratic memory/time cost of exhaustively constructing e.g. every addition pair to 5,000 while keeping the named 99 Club generation paths untouched.
+- Saved Custom Worksheet presets retain their non-progression behaviour when reopened.
+- Custom Worksheet PDFs use adaptive column counts and two-line wrapping for genuinely long curriculum prompts. This keeps starters/homework readable without changing the legacy Club column thresholds.
+- PDF text fallbacks now preserve common mathematical arrows, minus signs and approximate-equality notation when using the dependency-free standard-font PDF writer.
+- Year-aware refinements include Year 3 fraction comparison/addition constraints, Year 6 mixed-number fraction calculations and decimal division, Year 6-only formal angle-sum/cuboid-volume text families, and tighter age-sensitive geometry/measurement variants.
+
+### Regression status for v1.17
+
+The pre-Custom-Worksheet generator and the v1.17 line were compared with fixed seeds across every built-in Classic/alternative 11–99 preset and Bronze–Diamond preset. Existing generated question sequences remain identical. New curriculum families are appended to the family catalogue so historical compact family indices do not shift.
+
+## v1.17 release QA
+
+Before packaging this baseline:
+
+- every one of the **106 active** registered question families was smoke-tested for a non-empty pool and reproducible generation;
+- full Year 1–6 Custom Worksheet quick-picks generated 60-question samples without errors (22/33/41/55/65/90 selected families respectively);
+- Year 1 and Year 6 quick-picks were exercised in a headless Chromium render with no JavaScript page errors;
+- Custom Worksheet portrait and landscape PDFs were rendered and visually checked, including long wrapped text prompts and answer pages;
+- a representative Classic 33 Club PDF was rendered after the PDF-layout changes;
+- fixed-seed regression comparison against the supplied pre-Custom-Worksheet generator reported **0 differences** across every built-in Classic/alternative 11–99 preset and Bronze–Diamond preset.
+
+A local full Jekyll build is still expected as part of deployment/CI. The development container used for this QA did not provide the project Bundler toolchain, so the release checks above focus on the 99 Club JavaScript/browser/PDF subsystem.
 
 ## v1.11 preview/PDF parity and mobile review
 
@@ -42,11 +79,15 @@ and the Classic default of **5 minutes** and **3 perfect attempts that do not ne
 
 - `generator.js` - Classic presets, optional 11-99 schemes, Bronze-Diamond presets, rule normalisation, reusable question-family generators, deterministic generation and balancing.
 - `simple-pdf.js` - dependency-free A4 PDF writer using standard PDF fonts, multiple optional JPEG image XObjects (school logo + achievement badge), portrait/landscape page sizes and a standard Symbol-font radical glyph for square roots.
-- `pdf-layout.js` - separate portrait and landscape worksheet/answer-key layouts, including optional teacher-only recreation QR rendering.
+- `pdf-layout.js` - separate portrait and landscape worksheet/answer-key layouts, including optional teacher-only recreation QR rendering and optional answer-sheet teacher notes.
 - `app.js` - UI state, personalisation, scheme selection, page-layout selection, contextual help, custom presets, exact-sheet browser persistence, human-readable/versioned sheet codes, portable recreation codes, teacher QR recreation, full backup/restore, setup import/export and PDF downloads.
 - `qr-lite.js` - dependency-free QR encoder used only for local teacher-sheet recreation links.
 - `99club.css` - responsive app, contextual help, guide-page and print-preview styling.
 - `../../_pages/99-club-help.md` - full Help & guide page at `/tools/99-club/help/`.
+- `CURRICULUM_COVERAGE.md` - statutory text-only coverage audit, Year 1–6 quick-pick scope, and graphical/practical objectives deliberately deferred.
+- `RELEASE_NOTES_1.17.md` - current public-beta release summary and QA record.
+- `RELEASE_NOTES_1.16.md` - previous Custom Worksheet baseline notes.
+- `tests/smoke.js` - dependency-free Node smoke checks for every family, Year quick-picks, Classic progression defaults and PDF-layout invariants. Run with `node assets/99club/tests/smoke.js`.
 
 ## Built-in 11-99 ruleset schemes
 
@@ -73,29 +114,23 @@ Post-99 naming/content is not universal between schools. These are TTC's researc
 
 ## Reusable question families
 
-Mixed mental-arithmetic presets can be composed from:
+The family catalogue is now intentionally broader than the original 99 Club challenge set. Custom Worksheet groups families under:
 
-- addition
-- subtraction
-- multiplication
-- exact division
-- missing-number multiplication/division
-- squares
-- exact square roots
-- cubes
-- order of operations
-- scaled multiplication
-- scaled division
-- fractions of quantities
-- percentages of quantities
-- negative numbers
-- Roman numerals
-- angle facts
-- simple algebra
+- **Number & place value** — counting/sequences, number words, place value, comparison, rounding, more/less, partitioning, negative-number progression and powers of 10;
+- **Number properties** — odd/even, factors, multiples, factor pairs, common factors/multiples, primes, square/cube numbers;
+- **Calculation** — addition/subtraction, number bonds, three addends, multiplication/division facts, inverse/commutative fact families, missing numbers, multi-digit calculation, remainders, long division, estimation, distributive/correspondence reasoning, order of operations and direct mathematical prompts;
+- **Fractions** — fractions of quantities, equivalence, comparison, sequences, simplification, mixed/improper conversion, addition/subtraction, multiplication and division;
+- **Decimals & percentages** — place value/comparison/rounding, ×/÷ by powers of 10, decimal calculation, decimal↔fraction and fraction↔decimal conversion, FDP equivalence, percentages of quantities and percentage comparison;
+- **Ratio & proportion** — equivalent ratios, unequal sharing, scale factors and unit rates;
+- **Measurement** — unit choice/comparison/conversion, money, time/calendar, perimeter/area/volume, triangle/parallelogram area, missing measures, temperatures and area/perimeter relationships;
+- **Geometry** — text-based shape/line/angle properties, turns/position language, coordinate translations and coordinate reflections;
+- **Algebra** — missing-value algebra, formula substitution, linear sequences and pairs satisfying equations;
+- **Statistics** — text-data interpretation, pie-chart angle groundwork and mean;
+- **Extension** — square roots and non-standard rounding.
 
-For custom/mixed presets the rule editor can turn families on/off and change their relative weighting. Named Bronze–Diamond challenges show their defining families as locked core content and allow optional extras. Relevant controls are separated by family: arithmetic operand/result limits; tables/factor ranges where table selection is meaningful; missing-number operations/blank positions; square/cube ranges; BODMAS operations/brackets; independent scaled base/scale ranges; fraction denominators/quantity ranges; percentage choices/quantity ranges; Roman-numeral maximum; algebra unknown/coefficient limits; angle totals; time limit and advancement attempts. Family weights show an estimated percentage and estimated number of questions for the current sheet.
+For Custom Worksheet the rule editor can turn topics on/off and change their relative weighting. **Weight controls frequency, not difficulty.** Named Bronze–Diamond challenges continue to show their defining families as locked core content with optional extras.
 
-
+See [`CURRICULUM_COVERAGE.md`](CURRICULUM_COVERAGE.md) for the complete family/year table and the list of objectives that remain intentionally visual.
 
 ## v1.7 saving, backup and reproducibility
 

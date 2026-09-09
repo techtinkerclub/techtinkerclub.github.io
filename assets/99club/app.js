@@ -8,11 +8,12 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.13';
+  const VERSION = '1.17';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const GENERATION_VERSION = 1;
   const MAX_PRINT_QR_VERSION = 14;
+  const MAX_TEACHER_NOTE = 240;
   const PRE_RESTORE_KEY = 'tt99-pre-restore-snapshot-v1';
   const Q = window.TT99QR;
   const ADVANCED_CHALLENGE_IDS = new Set(['bronze','silver','gold','platinum','diamond']);
@@ -22,8 +23,11 @@
   };
   const badgeImageCache = new Map();
   const ALL_TABLES = Array.from({length:12},(_,i)=>i+1);
-  const FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
-  const QUESTION_KIND_ORDER = ['double','repeated_addition',...FAMILY_ORDER];
+  const LEGACY_FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
+  const FAMILY_ORDER = Array.isArray(G.FAMILY_ORDER) ? G.FAMILY_ORDER.slice() : LEGACY_FAMILY_ORDER.slice();
+  // Preserve historical compact-recreation family codes; append new families only after the old prefix.
+  const COMPACT_FAMILY_ORDER = Array.isArray(G.FAMILY_COMPACT_ORDER) ? G.FAMILY_COMPACT_ORDER.slice() : FAMILY_ORDER.slice();
+  const QUESTION_KIND_ORDER = ['double','repeated_addition',...LEGACY_FAMILY_ORDER,...COMPACT_FAMILY_ORDER.filter(f=>!LEGACY_FAMILY_ORDER.includes(f)&&!['double','repeated_addition'].includes(f))];
   const FRACTION_DENOMINATOR_CHOICES = Array.from({length:11}, (_,i)=>i+2);
   const PERCENTAGE_STEP_CHOICES = Array.from({length:20}, (_,i)=>(i+1)*5);
   const CODE_ALPHABET='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -39,6 +43,11 @@
   }
   function newStudioSeed(clubId){return `${clubId}-${randomStudioToken(6)}`;}
   const HELP_TEXT = {
+    customWorksheet: ['Custom worksheet','Use this for starters, quizzes, homework and targeted practice. Choose direct numerical or concise mathematical prompts, give topics relative weights and set the number of questions. Contextual story word problems are deliberately excluded until they have a separate, richer problem engine.'],
+    curriculumQuickPick: ['Curriculum quick-picks','A year button selects the main non-graphical statutory maths families associated with that year in England. It is a starting point, not a judgement about what every pupil should practise; you can add/remove topics and change ranges afterwards.'],
+    wholeNumberRange: ['Whole-number difficulty','Sets the upper size used by place-value, rounding, number-property and larger calculation families. Year quick-picks adjust this automatically, and you can override it.'],
+    decimalSettings: ['Decimal difficulty','Primary pupils work with tenths and hundredths from Year 4 and with thousandths / up to 3 decimal places in Year 5–6. These controls cap the generated decimal precision and size.'],
+    ratioSettings: ['Ratio settings','Controls the size of ratio parts and quantities used in Year 6 equivalent-ratio, scale-factor and unequal-sharing questions.'],
     scheme: ['Ruleset scheme','A scheme changes the default 11–99 progression. Classic 99 Club is the standard starting point. Other schemes are optional alternatives; your edits are remembered separately for each scheme and challenge.'],
     challenge: ['Challenge','Choose the level you want to generate. Bronze, Silver, Gold, Platinum and Diamond are post-99 presets with progressively broader mental-maths content.'],
     perfectAttempts: ['Perfect attempts to advance','How many perfect scores a pupil should achieve before moving on. The Classic scheme now defaults to three; changing this updates the instruction printed on the sheet.'],
@@ -47,6 +56,7 @@
     unaided: ['Independent / unaided wording','When enabled, the worksheet instruction states that the challenge should be completed independently and without help.'],
     families: ['Question families','Choose which kinds of questions can appear on a mixed mental-arithmetic sheet. A family that is switched off will not be generated.'],
     weights: ['Relative question mix','Weight means frequency, not difficulty. A family with weight 4 appears about twice as often as one with weight 2. Weights do not need to add to 100; the app shows the approximate percentage and question count.'],
+    teacherNote: ['Teacher note','Optional short note for your own future reference. It is printed only at the end of teacher answer sheets, never on pupil worksheets. The note is saved with browser backups/setup files and Full recreation codes, but is deliberately omitted from the compact answer-sheet QR.'],
     arithmeticRanges: ['Arithmetic ranges','These limits control the number pool for addition, subtraction and related advanced families. The answer limit prevents ordinary arithmetic questions from growing beyond the selected size.'],
     negativeAnswers: ['Negative subtraction answers','Allows subtraction facts whose result is below zero. Leave this off for a conventional primary arithmetic sheet.'],
     tables: ['Tables included','Select the multiplication-table families available to multiplication, division and missing-number questions. Named Bronze–Diamond challenges always use all 1–12 tables, so this control is intentionally hidden there.'],
@@ -93,6 +103,7 @@
     previewVariant: 0,
     previewAnswers: false,
     includeAnswerQr: true,
+    teacherNote: '',
     school: { schoolName:'', yearGroup:'', className:'', teacherName:'', worksheetDate:'', logoDataUrl:'', logoWidth:0, logoHeight:0 },
     customPresets: loadCustomPresets(),
     advancedOpen: false,
@@ -124,6 +135,7 @@
   setTimeout(loadRecreationFromLocation,0);
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function cleanTeacherNote(value){ return String(value==null?'':value).slice(0,MAX_TEACHER_NOTE); }
   function helpButton(key){ const item=HELP_TEXT[key]; if(!item)return ''; return `<button type="button" class="tt99-help-btn" data-help-key="${esc(key)}" aria-label="Help: ${esc(item[0])}" aria-expanded="false">?</button>`; }
   function helpLabel(text,key){ return `<span class="tt99-label-help"><span>${esc(text)}</span>${helpButton(key)}</span>`; }
   function badgeFilenameForClub(clubId){ return BADGE_IMAGE_BY_CLUB[String(clubId||'').toLowerCase()] || ''; }
@@ -148,6 +160,12 @@
   function loadCustomPresets(){ try { return JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]'); } catch(e){ return []; } }
   function saveCustomPresets(){ try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(state.customPresets)); } catch(e) {} }
   function isNamedAdvanced(clubId=state.clubId){ return ADVANCED_CHALLENGE_IDS.has(clubId); }
+  function isOpenWorksheet(clubId=state.clubId){
+    const id=String(clubId);
+    if(id==='worksheet')return true;
+    const saved=state.customPresets.find(p=>String(p.id)===id);
+    return !!(saved && saved.progressionEnabled===false);
+  }
   function advancedCoreFamilies(clubId=state.clubId){
     const base=G.CHALLENGE_PRESETS[clubId];
     return base && base.mode==='family_mix' ? (base.families||[]).slice() : [];
@@ -183,10 +201,10 @@
   function getSchemePreset(id){ return getScheme().presets[id]; }
   function getBasePreset(schemeId,id){
     const scheme=getSchemeById(schemeId);
-    return scheme.presets[id] || G.CHALLENGE_PRESETS[id] || state.customPresets.find(p => p.id === id);
+    return scheme.presets[id] || G.CHALLENGE_PRESETS[id] || (id==='worksheet' ? G.OPEN_WORKSHEET_PRESET : null) || state.customPresets.find(p => p.id === id);
   }
   function getPreset(id){ return getBasePreset(state.schemeId,id); }
-  function overrideKey(schemeId=state.schemeId,clubId=state.clubId){ return `${schemeId}::${clubId}`; }
+  function overrideKey(schemeId=state.schemeId,clubId=state.clubId){ return clubId==='worksheet' ? 'open::worksheet' : `${schemeId}::${clubId}`; }
   function canonical(value){
     if(Array.isArray(value))return value.map(canonical);
     if(value && typeof value==='object')return Object.keys(value).sort().reduce((o,k)=>(o[k]=canonical(value[k]),o),{});
@@ -222,7 +240,7 @@
     return {
       schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,ruleOverrides:state.ruleOverrides,
       variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,
-      previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,school,
+      previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,teacherNote:state.teacherNote,school,
       sheets:includeSheets?state.sheets:undefined
     };
   }
@@ -266,6 +284,7 @@
       state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(s.previewVariant)||0));
       state.previewAnswers=!!s.previewAnswers;
       state.includeAnswerQr=s.includeAnswerQr!==false;
+      state.teacherNote=cleanTeacherNote(s.teacherNote||'');
       if(validExactSheets(s.sheets,state.variants,state.rules)){
         state.sheets=G.clone(s.sheets);
         refreshSheetCodes();
@@ -297,7 +316,8 @@
     let out='';for(let i=0;i<4;i++){out=CODE_ALPHABET[h%CODE_ALPHABET.length]+out;h=Math.floor(h/CODE_ALPHABET.length);}return out;
   }
   function codePrefix(schemeId=state.schemeId,clubId=state.clubId,edited=(hasRuleOverride(schemeId,clubId)||String(clubId).startsWith('custom-'))){
-    let base;if(ADVANCED_CODE[clubId])base=ADVANCED_CODE[clubId];
+    let base;if(String(clubId)==='worksheet')base='WKS';
+    else if(ADVANCED_CODE[clubId])base=ADVANCED_CODE[clubId];
     else if(/^\d+$/.test(String(clubId)))base=`${SCHEME_CODE[schemeId]||'C'}${clubId}`;
     else base='CUS';
     return edited?`${base}X`:base;
@@ -399,9 +419,11 @@
     const customs = state.customPresets.map(p => `<div class="tt99-custom-wrap">${clubCard(p, true)}<button type="button" class="tt99-custom-delete" data-delete-preset="${esc(p.id)}" aria-label="Delete ${esc(p.name)} preset" title="Delete custom preset">×</button></div>`).join('');
     const schemeOptions=Object.values(G.SCHEME_PRESETS).map(x=>`<option value="${esc(x.id)}" ${x.id===state.schemeId?'selected':''}>${esc(x.name)}</option>`).join('');
     return `<section class="tt99-card">
-      <div class="tt99-step"><span>2</span><div><h2>Choose the challenge ${helpButton('challenge')}</h2><p>Classic 99 Club is the default. Other published-style progressions are optional.</p></div></div>
+      <div class="tt99-step"><span>2</span><div><h2>Choose what to make ${helpButton('challenge')}</h2><p>Use the flexible worksheet for ordinary classroom practice, or choose a 99 Club challenge.</p></div></div>
+      <div class="tt99-club-section-label">Flexible classroom worksheet ${helpButton('customWorksheet')}</div>
+      <div class="tt99-open-choice">${clubCard(G.OPEN_WORKSHEET_PRESET)}</div>
+      <div class="tt99-club-section-label tt99-club-section-label--advanced">99 Club progression</div>
       <label class="tt99-field tt99-scheme-select">${helpLabel('Ruleset scheme','scheme')}<select id="tt99-scheme">${schemeOptions}</select><small>${esc(scheme.tagline)}</small></label>
-      <div class="tt99-club-section-label">11–99 progression</div>
       <div class="tt99-club-grid">${classics}</div>
       <div class="tt99-club-section-label tt99-club-section-label--advanced">Post-99 challenges</div>
       <div class="tt99-club-grid tt99-club-grid--advanced">${challenges}</div>
@@ -440,12 +462,13 @@
   function renderStepRules(){
     const r=state.rules;
     const edited=hasRuleOverride();
+    const open=isOpenWorksheet();
     return `<section class="tt99-card">
-      <div class="tt99-step tt99-step--rules"><span>3</span><div><h2>Check / edit rules</h2><p id="tt99-summary">${esc(G.rulesSummary(r))}</p>${edited?'<small class="tt99-rule-state">Edited for this scheme + challenge</small>':''}${state.rulesError?`<div class="tt99-rule-error">${esc(state.rulesError)}</div>`:''}</div></div>
+      <div class="tt99-step tt99-step--rules"><span>3</span><div><h2>${open?'Build the worksheet':'Check / edit rules'}</h2><p id="tt99-summary">${esc(G.rulesSummary(r))}</p>${edited?`<small class="tt99-rule-state">Edited ${open?'worksheet setup':'for this scheme + challenge'}</small>`:''}${state.rulesError?`<div class="tt99-rule-error">${esc(state.rulesError)}</div>`:''}</div></div>
       <div class="tt99-rule-actions">
-        <button type="button" class="tt99-secondary" id="tt99-toggle-rules">${state.advancedOpen?'Hide rule editor':'Edit rules'}</button>
-        <span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-rules" ${edited?'':'disabled'}>Reset this challenge</button>${helpButton('resetChallenge')}</span>
-        <span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-scheme" ${schemeHasOverrides()?'':'disabled'}>Reset scheme</button>${helpButton('resetScheme')}</span>
+        <button type="button" class="tt99-secondary" id="tt99-toggle-rules">${state.advancedOpen?(open?'Hide worksheet options':'Hide rule editor'):(open?'Choose topics & options':'Edit rules')}</button>
+        <span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-rules" ${edited?'':'disabled'}>Reset ${open?'worksheet':'this challenge'}</button>${helpButton('resetChallenge')}</span>
+        ${open?'':`<span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-scheme" ${schemeHasOverrides()?'':'disabled'}>Reset scheme</button>${helpButton('resetScheme')}</span>`}
       </div>
       ${state.advancedOpen ? renderAdvancedRules() : ''}
     </section>`;
@@ -454,71 +477,96 @@
   function renderAdvancedRules(){
     const r=state.rules;
     const namedAdvanced=isNamedAdvanced();
+    const open=isOpenWorksheet();
     const mathModes=[
       ['double','Doubling'],['repeated_addition','Repeated addition'],['addition','Addition'],['add_subtract','Addition & subtraction'],
       ['multiply','Multiplication'],['divide','Division'],['mixed','Mixed × and ÷'],['missing_number','Missing-number facts'],['family_mix','Mixed mental arithmetic']
     ];
-    const tableFamilies=['multiply','divide','missing_number'];
-    const needTables=['multiply','divide','mixed','missing_number'].includes(r.mode) || (r.mode==='family_mix' && r.families.some(f=>tableFamilies.includes(f)));
-    const needArithmetic=['addition','add_subtract'].includes(r.mode) || (r.mode==='family_mix' && r.families.some(f=>['addition','subtraction','negative_numbers'].includes(f)));
-    const needSubtraction=r.mode==='add_subtract' || (r.mode==='family_mix' && r.families.includes('subtraction'));
-    const needMissing=r.mode==='missing_number' || (r.mode==='family_mix' && r.families.includes('missing_number'));
-    const needSquares=r.mode==='family_mix' && r.families.some(f=>['square','square_root'].includes(f));
-    const needCubes=r.mode==='family_mix' && r.families.includes('cube');
-    const needBodmas=r.mode==='family_mix' && r.families.includes('bodmas');
-    const needScaled=r.mode==='family_mix' && r.families.some(f=>['scaled_multiply','scaled_divide'].includes(f));
-    const needFractions=r.mode==='family_mix' && r.families.includes('fraction_of');
-    const needPercentages=r.mode==='family_mix' && r.families.includes('percentage_of');
-    const needAngles=r.mode==='family_mix' && r.families.includes('angle_facts');
-    const needRoman=r.mode==='family_mix' && r.families.includes('roman_numerals');
-    const needAlgebra=r.mode==='family_mix' && r.families.includes('simple_algebra');
+    const hasFamily=(...ids)=>r.mode==='family_mix' && ids.some(id=>r.families.includes(id));
+    const tableFamilies=['multiply','divide','missing_number','fact_families','distributive_law','correspondence'];
+    const needTables=['multiply','divide','mixed','missing_number'].includes(r.mode) || hasFamily(...tableFamilies);
+    const needArithmetic=['addition','add_subtract'].includes(r.mode) || hasFamily('addition','subtraction','negative_numbers','add_sub_missing','number_bonds','three_addends','fact_families');
+    const needSubtraction=r.mode==='add_subtract' || hasFamily('subtraction');
+    const needMissing=r.mode==='missing_number' || hasFamily('missing_number');
+    const needSquares=hasFamily('square','square_root');
+    const needCubes=hasFamily('cube');
+    const needBodmas=hasFamily('bodmas');
+    const needScaled=hasFamily('scaled_multiply','scaled_divide');
+    const needFractionOf=hasFamily('fraction_of');
+    const needAnyFractions=hasFamily('fraction_of','equivalent_fractions','simplify_fractions','fraction_compare','mixed_improper','fraction_add_subtract','fraction_multiply_whole','fraction_multiply','fraction_divide_whole','fraction_sequences');
+    const needPercentages=hasFamily('percentage_of');
+    const needAngles=hasFamily('angle_facts');
+    const needRoman=hasFamily('roman_numerals');
+    const needAlgebra=hasFamily('simple_algebra');
+    const needWholeNumbers=hasFamily('number_words','place_value','compare_numbers','rounding_whole','rounding_custom','number_sequences','more_less','partition_number','odd_even','factor_check','multiple_check','factor_pairs','common_factors','common_multiples','prime_numbers','number_bonds','three_addends','fact_families','distributive_law','correspondence','long_division','powers_of_10','add_sub_missing','multidigit_add_subtract','multidigit_multiply','division_remainders','estimate_calculation');
+    const needDecimals=hasFamily('decimal_place_value','decimal_compare','decimal_rounding','decimal_scale','decimal_add_subtract','decimal_multiply','decimal_divide','fraction_decimal_percent','decimal_to_fraction','fraction_to_decimal','fraction_division_decimal','percentage_compare','powers_of_10');
+    const needRatios=hasFamily('ratio_missing','ratio_share','scale_factor','unit_rate');
+    const needCoordinates=hasFamily('coordinates','coordinate_reflection');
+    const needStats=hasFamily('mean','data_table_questions');
     return `<div class="tt99-advanced">
       ${namedAdvanced?`<div class="tt99-core-note"><strong>${esc(r.name)} core maths is fixed ${helpButton('advancedCore')}</strong><span>All basic multiplication/division uses tables 1–12 and the families that define this named challenge stay enabled. Change weights and meaningful ranges, or add optional extras. Save as a custom preset if you want a completely different structure.</span></div>`:''}
-      <div class="tt99-advanced-section"><span class="tt99-field-label">Challenge settings</span>
+      <div class="tt99-advanced-section"><span class="tt99-field-label">${open?'Worksheet settings':'Challenge settings'}</span>
         <div class="tt99-form-grid">
+          ${open?textRuleField('Worksheet title','worksheetTitle',r.worksheetTitle||'Maths Practice','e.g. Morning Starter'):''}
+          ${open?`<label class="tt99-field"><span>Curriculum level filter</span><select data-rule="curriculumYear"><option value="0" ${!r.curriculumYear?'selected':''}>Mixed / custom</option>${[1,2,3,4,5,6].map(y=>`<option value="${y}" ${Number(r.curriculumYear)===y?'selected':''}>Year ${y}</option>`).join('')}</select><small>Year quick-picks set this automatically and keep age-sensitive question styles appropriate.</small></label>`:''}
           <label class="tt99-field"><span>Number of questions</span><input data-rule="questionCount" type="number" min="1" max="200" value="${r.questionCount}"></label>
-          <label class="tt99-field"><span>Time limit (minutes)</span><input data-rule="timeMinutes" type="number" min="0.25" max="60" step="0.25" value="${r.timeMinutes}"></label>
-          <label class="tt99-field">${helpLabel('Perfect attempts to advance','perfectAttempts')}<input data-rule="perfectAttempts" type="number" min="1" max="10" value="${r.perfectAttempts}"></label>
-          ${namedAdvanced?`<label class="tt99-field tt99-readonly-field"><span>Challenge structure</span><div>${r.mode==='family_mix'?'Mixed mental arithmetic':'Mixed × and ÷'}</div><small>Fixed for the named challenge.</small></label>`:`<label class="tt99-field">${helpLabel('Question type','questionType')}<select data-rule="mode">${mathModes.map(([v,l])=>`<option value="${v}" ${r.mode===v?'selected':''}>${l}</option>`).join('')}</select></label>`}
+          ${open?`<label class="tt99-check tt99-check--field"><input data-rule-check="timeEnabled" type="checkbox" ${r.timeEnabled!==false?'checked':''}><span>Timed worksheet</span></label>${r.timeEnabled!==false?`<label class="tt99-field"><span>Time limit (minutes)</span><input data-rule="timeMinutes" type="number" min="0.25" max="60" step="0.25" value="${r.timeMinutes}"></label>`:''}`:`<label class="tt99-field"><span>Time limit (minutes)</span><input data-rule="timeMinutes" type="number" min="0.25" max="60" step="0.25" value="${r.timeMinutes}"></label><label class="tt99-field">${helpLabel('Perfect attempts to advance','perfectAttempts')}<input data-rule="perfectAttempts" type="number" min="1" max="10" value="${r.perfectAttempts}"></label>${namedAdvanced?`<label class="tt99-field tt99-readonly-field"><span>Challenge structure</span><div>${r.mode==='family_mix'?'Mixed mental arithmetic':'Mixed × and ÷'}</div><small>Fixed for the named challenge.</small></label>`:`<label class="tt99-field">${helpLabel('Question type','questionType')}<select data-rule="mode">${mathModes.map(([v,l])=>`<option value="${v}" ${r.mode===v?'selected':''}>${l}</option>`).join('')}</select></label>`}`}
         </div>
-        <label class="tt99-check"><input data-rule-check="consecutivePerfectAttempts" type="checkbox" ${r.consecutivePerfectAttempts?'checked':''}><span>Perfect attempts must be consecutive ${helpButton('consecutiveAttempts')}</span></label>
+        ${open?'':`<label class="tt99-check"><input data-rule-check="consecutivePerfectAttempts" type="checkbox" ${r.consecutivePerfectAttempts?'checked':''}><span>Perfect attempts must be consecutive ${helpButton('consecutiveAttempts')}</span></label>`}
         <label class="tt99-check"><input data-rule-check="unaided" type="checkbox" ${r.unaided?'checked':''}><span>State that the sheet should be completed independently/unaided ${helpButton('unaided')}</span></label>
       </div>
       ${r.mode==='family_mix'?renderFamilySelector(r)+renderFamilyWeights(r):''}
       ${r.mode==='double'?`<div class="tt99-inline-fields">${numField('Smallest number','numberMin',r.numberMin,0,100)}${numField('Largest number','numberMax',r.numberMax,0,100)}</div>`:''}
       ${r.mode==='repeated_addition'?`<div class="tt99-inline-fields">${numField('Smallest addend','addendMin',r.addendMin,0,100)}${numField('Largest addend','addendMax',r.addendMax,0,100)}${numField('Minimum repeats','repeatsMin',r.repeatsMin,2,20)}${numField('Maximum repeats','repeatsMax',r.repeatsMax,2,20)}</div>`:''}
+      ${needWholeNumbers?`<div class="tt99-advanced-section"><span class="tt99-field-label">Whole-number difficulty ${helpButton('wholeNumberRange')}</span><div class="tt99-inline-fields">${numField('Largest whole number','wholeNumberMax',r.wholeNumberMax||1000,20,10000000)}</div></div>`:''}
       ${needArithmetic?`<div class="tt99-advanced-section"><span class="tt99-field-label">Arithmetic ranges ${helpButton('arithmeticRanges')}</span><div class="tt99-inline-fields">${numField('Smallest arithmetic operand','arithmeticOperandMin',r.arithmeticOperandMin,0,5000)}${numField('Largest arithmetic operand','arithmeticOperandMax',r.arithmeticOperandMax,1,5000)}${numField('Arithmetic answer limit','arithmeticMax',r.arithmeticMax,1,5000)}</div>${needSubtraction?`<label class="tt99-check"><input data-rule-check="allowNegativeAnswers" type="checkbox" ${r.allowNegativeAnswers?'checked':''}><span>Allow subtraction questions with negative answers ${helpButton('negativeAnswers')}</span></label>`:''}</div>`:''}
       ${needTables&&!namedAdvanced?renderTableSelector(r):''}
       ${needTables&&!namedAdvanced?`<div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('factorRange')}</span>${numField('Smallest factor / quotient','factorMin',r.factorMin,0,100)}${numField('Largest factor / quotient','factorMax',r.factorMax,0,100)}</div>`:''}
       ${r.mode==='mixed'?`<div class="tt99-advanced-section"><span class="tt99-field-label">Multiplication / division mix ${helpButton('multiplyShare')}</span><label class="tt99-field tt99-percent"><span>Multiplication share <b>${r.multiplyPercent}%</b></span><input data-rule="multiplyPercent" type="range" min="0" max="100" step="5" value="${r.multiplyPercent}"></label></div>`:''}
       ${needMissing?`<div class="tt99-advanced-section"><span class="tt99-field-label">Missing-number rules ${helpButton('missingNumber')}</span>${renderStringChoiceSelector('Operations','missingOperation',[['multiply','Multiplication'],['divide','Division']],r.missingNumberOperations)}${renderStringChoiceSelector('Where the blank can appear','missingPosition',[['multiply_first','First factor'],['multiply_second','Second factor'],['multiply_result','Product / result'],['divide_dividend','Dividend'],['divide_divisor','Divisor'],['divide_result','Quotient / result']],r.missingNumberPositions)}</div>`:''}
-      ${(needSquares||needCubes)?`<div class="tt99-advanced-section"><span class="tt99-field-label">Powers & radicals ${helpButton('powers')}</span>${needSquares?`<div class="tt99-inline-fields">${numField('Smallest square/root base','squareMin',r.squareMin,0,50)}${numField('Largest square/root base','squareMax',r.squareMax,0,50)}</div>`:''}${needCubes?`<div class="tt99-inline-fields">${numField('Smallest cube base','cubeMin',r.cubeMin,0,20)}${numField('Largest cube base','cubeMax',r.cubeMax,0,20)}</div>`:''}<small class="tt99-help">Square-root questions are always generated with exact whole-number roots.</small></div>`:''}
+      ${(needSquares||needCubes)?`<div class="tt99-advanced-section"><span class="tt99-field-label">Powers & radicals ${helpButton('powers')}</span>${needSquares?`<div class="tt99-inline-fields">${numField('Smallest square/root base','squareMin',r.squareMin,0,50)}${numField('Largest square/root base','squareMax',r.squareMax,0,50)}</div>`:''}${needCubes?`<div class="tt99-inline-fields">${numField('Smallest cube base','cubeMin',r.cubeMin,0,20)}${numField('Largest cube base','cubeMax',r.cubeMax,0,20)}</div>`:''}<small class="tt99-help">Square roots are marked as extension rather than statutory primary content.</small></div>`:''}
       ${needBodmas?`<div class="tt99-advanced-section"><span class="tt99-field-label">Order of operations ${helpButton('bodmas')}</span><div class="tt99-inline-fields">${numField('Largest base number','bodmasMax',r.bodmasMax,2,30)}</div>${renderStringChoiceSelector('Operations allowed','bodmasOperation',[['add','+ addition'],['subtract','− subtraction'],['multiply','× multiplication'],['divide','÷ division']],r.bodmasOperations)}<label class="tt99-check"><input data-rule-check="bodmasUseBrackets" type="checkbox" ${r.bodmasUseBrackets?'checked':''}><span>Include bracketed expressions</span></label></div>`:''}
       ${needScaled?`<div class="tt99-advanced-section"><span class="tt99-field-label">Scaled multiplication / division ${helpButton('scaled')}</span><div class="tt99-inline-fields">${numField('Smallest scaled base','scaledBaseMin',r.scaledBaseMin,0,100)}${numField('Largest scaled base','scaledBaseMax',r.scaledBaseMax,0,100)}</div>${renderChoiceSelector('Scale factors','scaledMultiplier',[10,100,1000],r.scaledMultipliers,n=>`×${n}`)}</div>`:''}
-      ${needFractions?`<div class="tt99-advanced-section"><span class="tt99-field-label">Fractions of quantities ${helpButton('fractionDenominators')}</span>${renderChoiceSelector('Fraction denominators','fractionDenominator',FRACTION_DENOMINATOR_CHOICES,r.fractionDenominators,n=>`${n}`,'fractionDenominators')}${customListField('Add custom denominators','tt99-custom-denominators',r.fractionDenominators.filter(n=>!FRACTION_DENOMINATOR_CHOICES.includes(n)).join(', '),'e.g. 13, 15, 20','Whole-number denominators from 2 to 100. Separate values with commas.','customDenominators')}<small class="tt99-help tt99-help--important">Selected denominators generate a varied mix of proper fractions, e.g. denominator 5 may produce 1/5, 2/5, 3/5 or 4/5.</small><div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('fractionQuantity')}</span>${numField('Smallest quantity','fractionQuantityMin',r.fractionQuantityMin,1,5000)}${numField('Largest quantity','fractionQuantityMax',r.fractionQuantityMax,1,5000)}</div></div>`:''}
-      ${needPercentages?`<div class="tt99-advanced-section"><span class="tt99-field-label">Percentages of quantities ${helpButton('percentages')}</span>${renderChoiceSelector('Percentages included','percentageChoice',PERCENTAGE_STEP_CHOICES,r.percentageChoices,n=>`${n}%`,'percentages')}${customListField('Add custom percentages','tt99-custom-percentages',r.percentageChoices.filter(n=>!PERCENTAGE_STEP_CHOICES.includes(n)).map(n=>`${n}%`).join(', '),'e.g. 37%, 42%, 67%','Whole-number percentages from 1% to 100%. Separate values with commas; the % sign is optional.','customPercentages')}<div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('percentageQuantity')}</span>${numField('Smallest quantity','percentageQuantityMin',r.percentageQuantityMin,10,5000)}${numField('Largest quantity','percentageQuantityMax',r.percentageQuantityMax,10,5000)}</div><small class="tt99-help">Generated percentage questions keep whole-number answers, so custom values such as 37% are paired with suitable quantities.</small></div>`:''}
+      ${needAnyFractions?`<div class="tt99-advanced-section"><span class="tt99-field-label">Fractions ${helpButton('fractionDenominators')}</span>${renderChoiceSelector('Fraction denominators','fractionDenominator',FRACTION_DENOMINATOR_CHOICES,r.fractionDenominators,n=>`${n}`,'fractionDenominators')}${customListField('Add custom denominators','tt99-custom-denominators',r.fractionDenominators.filter(n=>!FRACTION_DENOMINATOR_CHOICES.includes(n)).join(', '),'e.g. 13, 15, 20','Whole-number denominators from 2 to 100. Separate values with commas.','customDenominators')}${needFractionOf?`<div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('fractionQuantity')}</span>${numField('Smallest quantity','fractionQuantityMin',r.fractionQuantityMin,1,5000)}${numField('Largest quantity','fractionQuantityMax',r.fractionQuantityMax,1,5000)}</div>`:''}</div>`:''}
+      ${needPercentages?`<div class="tt99-advanced-section"><span class="tt99-field-label">Percentages of quantities ${helpButton('percentages')}</span>${renderChoiceSelector('Percentages included','percentageChoice',PERCENTAGE_STEP_CHOICES,r.percentageChoices,n=>`${n}%`,'percentages')}${customListField('Add custom percentages','tt99-custom-percentages',r.percentageChoices.filter(n=>!PERCENTAGE_STEP_CHOICES.includes(n)).map(n=>`${n}%`).join(', '),'e.g. 15%, 37%, 42%','Whole-number percentages from 1% to 100%. Separate values with commas; the % sign is optional.','customPercentages')}<div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('percentageQuantity')}</span>${numField('Smallest quantity','percentageQuantityMin',r.percentageQuantityMin,10,5000)}${numField('Largest quantity','percentageQuantityMax',r.percentageQuantityMax,10,5000)}</div></div>`:''}
+      ${needDecimals?`<div class="tt99-advanced-section"><span class="tt99-field-label">Decimals ${helpButton('decimalSettings')}</span><div class="tt99-inline-fields">${numField('Maximum decimal places','decimalPlacesMax',r.decimalPlacesMax||2,1,3)}${numField('Largest whole-number part','decimalWholeMax',r.decimalWholeMax||100,1,10000)}</div><small class="tt99-help">Up to 3 decimal places is statutory in upper KS2; individual families still use age-appropriate constructions.</small></div>`:''}
+      ${needRatios?`<div class="tt99-advanced-section"><span class="tt99-field-label">Ratio & proportion ${helpButton('ratioSettings')}</span><div class="tt99-inline-fields">${numField('Largest ratio part','ratioPartMax',r.ratioPartMax||8,2,30)}${numField('Largest shared/scaled quantity','ratioQuantityMax',r.ratioQuantityMax||120,10,5000)}</div></div>`:''}
       ${needRoman?`<div class="tt99-advanced-section"><span class="tt99-field-label">Roman numerals ${helpButton('roman')}</span><div class="tt99-inline-fields">${numField('Largest Roman-numeral value','romanMax',r.romanMax,10,3999)}</div></div>`:''}
       ${needAlgebra?`<div class="tt99-advanced-section"><span class="tt99-field-label">Simple algebra ${helpButton('algebra')}</span><div class="tt99-inline-fields">${numField('Largest unknown value','algebraUnknownMax',r.algebraUnknownMax,5,100)}${numField('Largest coefficient','algebraCoefficientMax',r.algebraCoefficientMax,2,50)}</div></div>`:''}
       ${needAngles?`<div class="tt99-advanced-section"><span class="tt99-field-label">Angle facts ${helpButton('angleFacts')}</span>${renderChoiceSelector('Whole-turn / angle totals','angleTotal',[90,180,360],r.angleTotals,n=>`${n}°`)}</div>`:''}
+      ${needCoordinates?`<div class="tt99-advanced-section"><span class="tt99-field-label">Coordinates</span><div class="tt99-inline-fields">${numField('Largest coordinate value','coordinateMax',r.coordinateMax||12,4,100)}</div><label class="tt99-check"><input data-rule-check="coordinateFourQuadrants" type="checkbox" ${r.coordinateFourQuadrants?'checked':''}><span>Use all four quadrants (Year 6)</span></label></div>`:''}
+      ${needStats?`<div class="tt99-advanced-section"><span class="tt99-field-label">Statistics</span><div class="tt99-inline-fields">${numField('Largest data value','statsValueMax',r.statsValueMax||30,5,1000)}</div></div>`:''}
       <div class="tt99-check-row">
         <label class="tt99-check"><input data-rule-check="avoidExactDuplicates" type="checkbox" ${r.avoidExactDuplicates?'checked':''}><span>Avoid exact duplicate questions where possible ${helpButton('duplicates')}</span></label>
-        ${['multiply','mixed'].includes(r.mode) || (r.mode==='family_mix'&&r.families.includes('multiply'))?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates ${helpButton('duplicates')}</span></label>`:''}
+        ${['multiply','mixed'].includes(r.mode) || hasFamily('multiply')?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates ${helpButton('duplicates')}</span></label>`:''}
       </div>
-      <div class="tt99-save-preset"><span class="tt99-save-preset-help">${helpButton('savePreset')}</span><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Year 4 Autumn"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save as reusable preset</button></div>
+      <div class="tt99-save-preset"><span class="tt99-save-preset-help">${helpButton('savePreset')}</span><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Year 5 Decimals Starter"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save as reusable preset</button></div>
     </div>`;
   }
 
   function renderFamilySelector(r){
     const core=isNamedAdvanced()?advancedCoreFamilies():[];
-    if(core.length){
-      const extras=FAMILY_ORDER.filter(f=>!core.includes(f));
-      return `<div class="tt99-family-select"><span class="tt99-field-label">Question families ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div><div class="tt99-family-chips tt99-family-chips--locked">${core.map(f=>`<span class="tt99-family-locked">${esc(G.FAMILY_LABELS[f]||f)} <b aria-hidden="true">✓</b></span>`).join('')}</div><div class="tt99-family-group-label">Optional extras</div><div class="tt99-family-chips">${extras.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Named challenges keep their defining core families. Optional extras can be added or removed; use the weights below to control frequency.</small></div>`;
+    const meta=G.FAMILY_META||{};
+    const strandOrder=['Number & place value','Number properties','Calculation','Fractions','Decimals & percentages','Ratio & proportion','Measurement','Geometry','Algebra','Statistics','Extension'];
+    function yearsText(m){const ys=(m?.years||[]);if(!ys.length)return m?.extension?'Extension':'';return ys.length===1?`Y${ys[0]}`:`Y${Math.min(...ys)}–${Math.max(...ys)}`;}
+    function grouped(ids,locked=false){
+      return strandOrder.map(strand=>{
+        const list=ids.filter(f=>(meta[f]?.strand||'Other')===strand);if(!list.length)return '';
+        const selected=list.filter(f=>r.families.includes(f)).length;
+        const shouldOpen=locked || (list.length<=8 && selected>0);
+        const chips=list.map(f=>locked?`<span class="tt99-family-locked">${esc(G.FAMILY_LABELS[f]||f)} <small>${esc(yearsText(meta[f]))}</small><b aria-hidden="true">✓</b></span>`:`<label title="${esc(`${strand} · ${yearsText(meta[f])}`)}"><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}<small>${esc(yearsText(meta[f]))}</small></span></label>`).join('');
+        return `<details class="tt99-family-strand" ${shouldOpen?'open':''}><summary><b>${esc(strand)}</b><small>${locked?`${list.length} core`:`${selected}/${list.length} selected`}</small></summary><div class="tt99-family-chips ${locked?'tt99-family-chips--locked':''}">${chips}</div></details>`;
+      }).join('');
     }
-    return `<div class="tt99-family-select"><span class="tt99-field-label">Question families included ${helpButton('families')}</span><div class="tt99-family-chips">${FAMILY_ORDER.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Turn families on or off. Use the relative weights below to make a family more or less common.</small></div>`;
+    if(core.length){const extras=FAMILY_ORDER.filter(f=>!core.includes(f));return `<div class="tt99-family-select"><span class="tt99-field-label">Question families ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div>${grouped(core,true)}<div class="tt99-family-group-label">Optional extras</div>${grouped(extras,false)}<small>Named challenges keep their defining core families. Optional extras can be added or removed; use the weights below to control frequency.</small></div>`;}
+    const quick=isOpenWorksheet()?`<div class="tt99-family-quick"><span>Curriculum quick-picks ${helpButton('curriculumQuickPick')}</span><div>${[1,2,3,4,5,6].map(y=>`<button type="button" data-family-preset="year-${y}">Year ${y}</button>`).join('')}<button type="button" data-family-preset="core">Core 4 operations</button></div><small>Quick-picks select the direct non-graphical practice topics aligned with that year. Open a strand below to fine-tune the mix.</small></div>`:'';
+    return `<div class="tt99-family-select"><span class="tt99-field-label">Question topics included ${helpButton('families')}</span>${quick}${grouped(FAMILY_ORDER,false)}<small>Choose direct numerical and concise mathematical-prompt topics. Weights below control frequency, not difficulty. Contextual story word problems are deliberately deferred to a separate problem engine, and topics that genuinely require diagrams, clocks, charts, measured drawings or other visual representations are deferred to the visual-generator stage.</small></div>`;
   }
   function renderFamilyWeights(r){
     const total=r.families.reduce((sum,f)=>sum+(Number(r.familyWeights[f])||1),0)||1;
-    return `<div class="tt99-family-weights"><span class="tt99-field-label">Relative question mix ${helpButton('weights')}</span><div>${r.families.map(f=>{const w=Number(r.familyWeights[f])||1;const pct=100*w/total;const count=Math.round(r.questionCount*w/total);return `<label><span>${esc(G.FAMILY_LABELS[f]||f)}<small>≈ ${pct.toFixed(pct<10?1:0)}% · ${count} q</small></span><input type="number" min="1" max="20" step="1" value="${w}" data-family-weight="${esc(f)}"></label>`;}).join('')}</div><small><strong>Weight is frequency, not difficulty.</strong> Weights set the relative mix and do not need to add to 100. The percentages and question counts are estimates for the current sheet size.</small></div>`;
+    const rows=r.families.map(f=>{const w=Number(r.familyWeights[f])||1;const pct=100*w/total;const count=Math.round(r.questionCount*w/total);return `<label><span>${esc(G.FAMILY_LABELS[f]||f)}<small>≈ ${pct.toFixed(pct<10?1:0)}% · ${count} q</small></span><input type="number" min="1" max="20" step="1" value="${w}" data-family-weight="${esc(f)}"></label>`;}).join('');
+    const open=r.families.length<=12;
+    return `<details class="tt99-family-weights" ${open?'open':''}><summary><span class="tt99-field-label">Adjust topic weights ${helpButton('weights')}</span><small>${r.families.length} topic${r.families.length===1?'':'s'} selected</small></summary><div>${rows}</div><p class="tt99-family-weight-note"><strong>Weight is frequency, not difficulty.</strong> Weights set the relative mix and do not need to add to 100. Percentages and question counts are estimates for the current sheet size.</p></details>`;
   }
   function renderChoiceSelector(label,key,choices,selected,labelFn,helpKey=''){
     const set=new Set((selected||[]).map(Number));
@@ -531,6 +579,7 @@
   }
 
   function numField(label,key,value,min,max){ return `<label class="tt99-field"><span>${label}</span><input data-rule="${key}" type="number" min="${min}" max="${max}" value="${value}"></label>`; }
+  function textRuleField(label,key,value,placeholder=''){ return `<label class="tt99-field wide"><span>${esc(label)}</span><input data-rule="${esc(key)}" type="text" maxlength="60" value="${esc(value)}" placeholder="${esc(placeholder)}"></label>`; }
   function customListField(label,id,value,placeholder,help,helpKey=''){ return `<label class="tt99-field tt99-custom-list">${helpLabel(label,helpKey)}<input id="${esc(id)}" type="text" spellcheck="false" value="${esc(value)}" placeholder="${esc(placeholder)}"><small>${esc(help)}</small></label>`; }
   function renderTableSelector(r){
     return `<div class="tt99-table-select"><span class="tt99-field-label">Tables included ${helpButton('tables')}</span><div class="tt99-table-chips">${Array.from({length:12},(_,i)=>i+1).map(n=>`<label><input type="checkbox" data-table="${n}" ${r.tables.includes(n)?'checked':''}><span>${n}×</span></label>`).join('')}</div><div class="tt99-mini-actions"><button type="button" data-tables-action="all">1–12</button><button type="button" data-tables-action="core">2, 3, 5, 10</button><button type="button" data-tables-action="single">2× only</button></div></div>`;
@@ -547,6 +596,7 @@
       </div></div>
       <label class="tt99-field tt99-variants-control">${helpLabel('Equivalent versions','variants')}<select id="tt99-variants">${[1,2,3,4].map(n=>`<option value="${n}" ${state.variants===n?'selected':''}>${n} ${n===1?'version':'versions'}</option>`).join('')}</select></label>
       <label class="tt99-check tt99-answer-qr"><input id="tt99-answer-qr" type="checkbox" ${state.includeAnswerQr?'checked':''}><span><b>Recreation QR on answer sheets ${helpButton('answerQr')}</b><small>Recommended. Teacher copies can be scanned back into 99 Club Studio; pupil worksheets never include the QR. School personalisation is not embedded in the QR.</small></span></label>
+      <label class="tt99-teacher-note"><span class="tt99-field-label">Teacher note ${helpButton('teacherNote')}</span><textarea id="tt99-teacher-note" rows="3" maxlength="${MAX_TEACHER_NOTE}" placeholder="Optional note for the answer sheet, e.g. revisit decimal place value next week.">${esc(state.teacherNote)}</textarea><small><span>Printed only on teacher answer sheets.</span><b id="tt99-teacher-note-count">${state.teacherNote.length} / ${MAX_TEACHER_NOTE}</b></small></label>
       <div class="tt99-action-row"><button type="button" class="tt99-primary" id="tt99-new">Generate new questions</button><button type="button" class="tt99-secondary" id="tt99-shuffle">Shuffle order</button></div>
       <div class="tt99-recreate"><div><strong>Recreate from sheet code ${helpButton('sheetCode')}</strong><small>${shortCodeNeedsRules?'This sheet uses customised rules. The short code alone is not enough on another browser; use the Full recreation code or the teacher QR so those rules travel with the sheet.':'For an unchanged built-in challenge, this short code is enough to rebuild the same questions.'}</small></div><div><input id="tt99-sheet-code" type="text" maxlength="100" spellcheck="false" placeholder="e.g. C99-G1-7FK2M9-A"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>
       <div class="tt99-downloads"><button id="tt99-pdf-student" class="tt99-download" ${state.rulesError?'disabled':''}><b>Worksheet PDF</b><span>Pupil sheets only</span></button><button id="tt99-pdf-answer" class="tt99-download" ${state.rulesError?'disabled':''}><b>Answer key PDF</b><span>Matching answers${state.includeAnswerQr?' + QR':''}</span></button><button id="tt99-pdf-both" class="tt99-download tt99-download--accent" ${state.rulesError?'disabled':''}><b>Worksheet + answers</b><span>One complete PDF</span></button></div>
@@ -554,7 +604,7 @@
       <details class="tt99-portability"><summary>Save, import, reuse & move your work ${helpButton('browserStorage')}</summary>
         <div class="tt99-portability__body">
           <div class="tt99-save-map"><div><b>Reuse rules</b><span>Save as a reusable preset in Step 3.</span></div><div><b>Move one setup</b><span>Export / import the current setup below.</span></div><div><b>Protect everything</b><span>Use Full backup above.</span></div><div><b>Recreate one sheet</b><span>Use its sheet code, full recreation code, or teacher QR.</span></div></div>
-          <div class="tt99-portable-block"><div><strong>Full recreation code ${helpButton('portableCode')}</strong><small>Copy/paste method for one exact reviewed worksheet. It includes the rules and final question order, but not the school logo.</small></div><button type="button" class="tt99-secondary" id="tt99-copy-full-code">Copy full recreation code</button><div class="tt99-portable-load"><textarea id="tt99-full-code" rows="3" spellcheck="false" placeholder="Paste a TT99R recreation code here"></textarea><button type="button" class="tt99-secondary" id="tt99-load-full-code">Recreate</button></div></div>
+          <div class="tt99-portable-block"><div><strong>Full recreation code ${helpButton('portableCode')}</strong><small>Copy/paste method for one exact reviewed worksheet. It includes the rules, final question order and teacher note, but not the school logo.</small></div><button type="button" class="tt99-secondary" id="tt99-copy-full-code">Copy full recreation code</button><div class="tt99-portable-load"><textarea id="tt99-full-code" rows="3" spellcheck="false" placeholder="Paste a TT99R recreation code here"></textarea><button type="button" class="tt99-secondary" id="tt99-load-full-code">Recreate</button></div></div>
           <div class="tt99-portable-block"><div><strong>Full browser backup ${helpButton('fullBackup')}</strong><small>Your complete Studio safety copy: reusable presets, challenge edits, exact sheets, school details and logo. Restore it when moving browser/device or recovering cleared site data.</small></div><div class="tt99-config-actions"><label class="tt99-linkbtn tt99-import">Restore full backup<input id="tt99-restore-backup" type="file" accept="application/json,.json"></label>${canUndo?'<button type="button" class="tt99-linkbtn" id="tt99-undo-restore">Undo last restore</button>':''}</div></div>
           <div class="tt99-portable-block"><div><strong>One setup file ${helpButton('exportSettings')}</strong><small>A file for this one current setup. Use it to archive or share one challenge without replacing the rest of the recipient's saved Studio work.</small></div><div class="tt99-config-actions"><button type="button" class="tt99-linkbtn" id="tt99-export-settings">Export this setup</button><label class="tt99-linkbtn tt99-import">Import a setup<input id="tt99-import-settings" type="file" accept="application/json,.json"></label></div></div>
         </div>
@@ -581,7 +631,8 @@
       answers:state.previewAnswers,
       orientation:state.orientation,
       qrMatrix,
-      badgeUrl:badgeUrlForClub(state.clubId)
+      badgeUrl:badgeUrlForClub(state.clubId),
+      teacherNote:state.teacherNote
     });
   }
   function bindEvents(){
@@ -598,6 +649,7 @@
     root.querySelectorAll('[data-rule-check]').forEach(input=>input.addEventListener('change',()=>ruleChanged(input.dataset.ruleCheck,input.checked)));
     root.querySelectorAll('[data-family]').forEach(input=>input.addEventListener('change',familiesChanged));
     root.querySelectorAll('[data-family-weight]').forEach(input=>input.addEventListener('change',()=>familyWeightChanged(input.dataset.familyWeight,input.value)));
+    root.querySelectorAll('[data-family-preset]').forEach(btn=>btn.addEventListener('click',()=>applyFamilyPreset(btn.dataset.familyPreset)));
     root.querySelectorAll('[data-fraction-denominator]').forEach(input=>input.addEventListener('change',fractionChoicesChanged));
     root.querySelector('#tt99-custom-denominators')?.addEventListener('change',fractionChoicesChanged);
     root.querySelectorAll('[data-percentage-choice]').forEach(input=>input.addEventListener('change',percentageChoicesChanged));
@@ -613,6 +665,7 @@
     root.querySelectorAll('[data-page-orientation]').forEach(btn=>btn.addEventListener('click',()=>setOrientation(btn.dataset.pageOrientation)));
     root.querySelector('#tt99-variants')?.addEventListener('change',e=>{state.variants=Number(e.target.value);generateAll();render();});
     root.querySelector('#tt99-answer-qr')?.addEventListener('change',e=>{state.includeAnswerQr=!!e.target.checked;persist();render();});
+    root.querySelector('#tt99-teacher-note')?.addEventListener('input',e=>{state.teacherNote=cleanTeacherNote(e.target.value);if(e.target.value!==state.teacherNote)e.target.value=state.teacherNote;const count=root.querySelector('#tt99-teacher-note-count');if(count)count.textContent=`${state.teacherNote.length} / ${MAX_TEACHER_NOTE}`;persist();softRenderPaper();});
     root.querySelector('#tt99-new')?.addEventListener('click',newQuestions);
     root.querySelector('#tt99-shuffle')?.addEventListener('click',shuffleCurrent);
     root.querySelector('#tt99-recreate')?.addEventListener('click',recreateFromCode);
@@ -658,6 +711,7 @@
     commitCurrentRules();
     state.clubId=id;
     state.rules=loadRulesFor(state.schemeId,id);
+    if(id==='worksheet') state.advancedOpen=true;
     state.seed=newStudioSeed(id); state.status=''; generateAll(); render();
   }
   function resetRules(){
@@ -673,10 +727,35 @@
     state.rules=loadRulesFor(state.schemeId,state.clubId);state.seed=newStudioSeed(state.clubId);generateAll();state.status=`All edited rules in ${getScheme().name} have been reset.`;render();
   }
   function ruleChanged(key,value){
-    const numeric=['questionCount','timeMinutes','perfectAttempts','numberMin','numberMax','addendMin','addendMax','repeatsMin','repeatsMax','factorMin','factorMax','multiplyPercent','arithmeticMax','arithmeticOperandMin','arithmeticOperandMax','squareMin','squareMax','cubeMin','cubeMax','bodmasMax','scaledBaseMin','scaledBaseMax','fractionQuantityMin','fractionQuantityMax','percentageQuantityMin','percentageQuantityMax','romanMax','algebraUnknownMax','algebraCoefficientMax'];
+    const numeric=['curriculumYear','questionCount','timeMinutes','perfectAttempts','numberMin','numberMax','addendMin','addendMax','repeatsMin','repeatsMax','factorMin','factorMax','multiplyPercent','arithmeticMax','arithmeticOperandMin','arithmeticOperandMax','squareMin','squareMax','cubeMin','cubeMax','bodmasMax','scaledBaseMin','scaledBaseMax','fractionQuantityMin','fractionQuantityMax','percentageQuantityMin','percentageQuantityMax','romanMax','algebraUnknownMax','algebraCoefficientMax','wholeNumberMax','decimalPlacesMax','decimalWholeMax','ratioPartMax','ratioQuantityMax','coordinateMax','statsValueMax'];
     state.rules[key] = numeric.includes(key) ? Number(value) : value;
     state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
+  function applyFamilyPreset(token){
+    if(!isOpenWorksheet())return;
+    const meta=G.FAMILY_META||{};
+    let selected=[];
+    if(/^year-[1-6]$/.test(token)){
+      const year=Number(token.slice(-1));
+      selected=FAMILY_ORDER.filter(f=>(meta[f]?.years||[]).includes(year) && !meta[f]?.extension);
+      const profiles={
+        1:{curriculumYear:1,wholeNumberMax:100,arithmeticMax:20,arithmeticOperandMax:20,tables:[2,5,10],factorMax:10,fractionDenominators:[2,4],fractionQuantityMax:40,coordinateFourQuadrants:false},
+        2:{curriculumYear:2,wholeNumberMax:100,arithmeticMax:100,arithmeticOperandMax:100,tables:[2,5,10],factorMax:12,fractionDenominators:[2,3,4],fractionQuantityMax:100,coordinateFourQuadrants:false},
+        3:{curriculumYear:3,wholeNumberMax:1000,arithmeticMax:1000,arithmeticOperandMax:1000,tables:[2,3,4,5,8,10],factorMax:12,fractionDenominators:[2,3,4,5,8,10],fractionQuantityMax:240,romanMax:12,coordinateFourQuadrants:false},
+        4:{curriculumYear:4,wholeNumberMax:10000,arithmeticMax:5000,arithmeticOperandMax:5000,tables:ALL_TABLES.slice(),factorMax:12,fractionDenominators:[2,3,4,5,6,8,10,12],fractionQuantityMax:500,decimalPlacesMax:2,decimalWholeMax:100,coordinateFourQuadrants:false},
+        5:{curriculumYear:5,wholeNumberMax:1000000,arithmeticMax:5000,arithmeticOperandMax:5000,tables:ALL_TABLES.slice(),factorMax:12,fractionDenominators:[2,3,4,5,6,8,10,12],fractionQuantityMax:1000,decimalPlacesMax:3,decimalWholeMax:1000,romanMax:1000,coordinateFourQuadrants:false},
+        6:{curriculumYear:6,wholeNumberMax:10000000,arithmeticMax:5000,arithmeticOperandMax:5000,tables:ALL_TABLES.slice(),factorMax:12,fractionDenominators:[2,3,4,5,6,8,10,12],fractionQuantityMax:2000,decimalPlacesMax:3,decimalWholeMax:1000,ratioPartMax:10,ratioQuantityMax:360,coordinateMax:20,coordinateFourQuadrants:true,statsValueMax:60}
+      };
+      Object.assign(state.rules,profiles[year]||{});
+      state.rules.worksheetTitle=`Year ${year} Maths Practice`;
+    }else if(token==='core'){selected=['addition','subtraction','multiply','divide'];state.rules.curriculumYear=0;state.rules.worksheetTitle='Maths Practice';}
+    if(!selected.length)return;
+    const previous=state.rules.familyWeights||{};
+    state.rules.families=selected;
+    state.rules.familyWeights=Object.fromEntries(selected.map(f=>[f,previous[f]||1]));
+    state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();state.status=token==='core'?'Core four operations selected.':'Curriculum quick-pick applied. Adjust topics, weights and ranges as needed.';render();state.advancedOpen=true;
+  }
+
   function familiesChanged(){
     const selectedExtras=Array.from(root.querySelectorAll('[data-family]:checked')).map(x=>x.dataset.family);
     const core=isNamedAdvanced()?advancedCoreFamilies():[];
@@ -775,7 +854,8 @@
     if(!m)return null;
     const basePrefix=m[1],edited=m[2]==='X',gen=Number(m[3]),token=m[4],variant=m[5].charCodeAt(0)-64,fingerprint=m[6]||'';
     let schemeId=null,clubId=null;
-    if(ADVANCED_CODE_REV[basePrefix]){schemeId=state.schemeId;clubId=ADVANCED_CODE_REV[basePrefix];}
+    if(basePrefix==='WKS'){schemeId=state.schemeId;clubId='worksheet';}
+    else if(ADVANCED_CODE_REV[basePrefix]){schemeId=state.schemeId;clubId=ADVANCED_CODE_REV[basePrefix];}
     else if(basePrefix==='CUS'){schemeId=state.schemeId;clubId=String(state.clubId).startsWith('custom-')?state.clubId:null;}
     else{
       const mm=basePrefix.match(/^(AF|AR|MN|TF|C)(11|22|33|44|55|66|77|88|99)$/);
@@ -984,7 +1064,7 @@
   }
   function recreationSchool(){return {schoolName:state.school.schoolName,yearGroup:state.school.yearGroup,className:state.school.className,teacherName:state.school.teacherName,worksheetDate:state.school.worksheetDate};}
   function buildFullRecreationCode(){
-    const payload={kind:'TT99R',format:3,generationVersion:GENERATION_VERSION,appVersion:VERSION,schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,school:recreationSchool(),recipes:state.sheets.map(s=>sheetRecipe(s,state.rules))};
+    const payload={kind:'TT99R',format:3,generationVersion:GENERATION_VERSION,appVersion:VERSION,schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,teacherNote:state.teacherNote,school:recreationSchool(),recipes:state.sheets.map(s=>sheetRecipe(s,state.rules))};
     return `TT99R3.${utf8ToBase64Url(JSON.stringify(payload))}`;
   }
   async function copyFullRecreationCode(){
@@ -1004,7 +1084,7 @@
     if(Number(d.generationVersion||1)!==GENERATION_VERSION)throw new Error('generation');
     if(d.schemeId&&G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;
     let requestedId=String(d.clubId||d.rules.id||'').trim()||'33';ensureImportedCustomPreset(requestedId,d.rules);state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';
-    state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));state.previewAnswers=!!d.previewAnswers;state.includeAnswerQr=d.includeAnswerQr!==false;
+    state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));state.previewAnswers=!!d.previewAnswers;state.includeAnswerQr=d.includeAnswerQr!==false;state.teacherNote=cleanTeacherNote(d.teacherNote||'');
     if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};generateAll();
     if(Array.isArray(d.recipes)){state.sheets=state.sheets.map((s,i)=>{const recipe=d.recipes[i];return {...s,questions:applySheetRecipe(s.seed,state.rules,recipe),actions:[]};});refreshSheetCodes();refreshRulesError();persist();}
     state.status=`${source} loaded. Rules, seed and exact final reviewed worksheet were restored.`;render();
@@ -1014,14 +1094,14 @@
     if(Number(d.generationVersion||1)!==GENERATION_VERSION)throw new Error('generation');
     if(d.schemeId&&G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;
     let requestedId=String(d.clubId||d.rules.id||'').trim()||'33';ensureImportedCustomPreset(requestedId,d.rules);state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';
-    state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));state.previewAnswers=!!d.previewAnswers;state.includeAnswerQr=d.includeAnswerQr!==false;
+    state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));state.previewAnswers=!!d.previewAnswers;state.includeAnswerQr=d.includeAnswerQr!==false;state.teacherNote=cleanTeacherNote(d.teacherNote||'');
     if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};generateAll();
     if(Array.isArray(d.recipes)){state.sheets=state.sheets.map((s,i)=>{const recipe=d.recipes[i];return {...s,questions:applySheetRecipe(s.seed,state.rules,recipe),actions:Array.isArray(recipe?.a)?G.clone(recipe.a):[]};});refreshSheetCodes();refreshRulesError();persist();}
     state.status=`${source} loaded. Rules, seed and exact manual question changes were restored.`;render();
   }
   function applyRecreationV1(d,source='Legacy recreation code'){
     if(!d||d.kind!=='TT99R'||d.format!==1||!d.rules)throw new Error('format');
-    if(d.schemeId&&G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;let requestedId=String(d.clubId||d.rules.id||'').trim()||'33';ensureImportedCustomPreset(requestedId,d.rules);state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};
+    if(d.schemeId&&G.SCHEME_PRESETS[d.schemeId])state.schemeId=d.schemeId;let requestedId=String(d.clubId||d.rules.id||'').trim()||'33';ensureImportedCustomPreset(requestedId,d.rules);state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';state.rules=normalizeForContext(d.rules,state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));state.orientation=d.orientation==='landscape'?'landscape':'portrait';state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(d.previewVariant)||0));state.teacherNote=cleanTeacherNote(d.teacherNote||'');if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};
     if(validExactSheets(d.sheets,state.variants,state.rules)){state.sheets=G.clone(d.sheets);refreshSheetCodes();refreshRulesError();persist();}else generateAll();state.status=`${source} loaded. This was created by an earlier 99 Club Studio/Generator version.`;render();
   }
   function loadFullRecreationCode(rawOverride){
@@ -1037,7 +1117,7 @@
   }
 
   function builtInBaseRules(schemeId,clubId){
-    const scheme=G.SCHEME_PRESETS[schemeId];if(scheme?.presets?.[clubId])return normalizeForContext(G.clone(scheme.presets[clubId]),clubId);if(G.CHALLENGE_PRESETS[clubId])return normalizeForContext(G.clone(G.CHALLENGE_PRESETS[clubId]),clubId);return null;
+    const scheme=G.SCHEME_PRESETS[schemeId];if(scheme?.presets?.[clubId])return normalizeForContext(G.clone(scheme.presets[clubId]),clubId);if(G.CHALLENGE_PRESETS[clubId])return normalizeForContext(G.clone(G.CHALLENGE_PRESETS[clubId]),clubId);if(clubId==='worksheet'&&G.OPEN_WORKSHEET_PRESET)return normalizeForContext(G.clone(G.OPEN_WORKSHEET_PRESET),clubId);return null;
   }
   function diffRules(base,current){
     if(JSON.stringify(canonical(base))===JSON.stringify(canonical(current)))return undefined;
@@ -1087,7 +1167,7 @@
         rules={...rules,id:tempId,name:'Recreated custom sheet',tagline:'Imported from teacher QR',sourceSchemeId:baseSpec[0],sourceClubId:baseSpec[1]};
         requestedId=tempId;ensureImportedCustomPreset(requestedId,rules,'Imported from teacher QR');
       }else if(String(requestedId).startsWith('custom-')&&!getBasePreset(state.schemeId,requestedId))ensureImportedCustomPreset(requestedId,rules,'Imported from teacher QR');
-      state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:(getBasePreset(state.schemeId,rules.id)?rules.id:'33');state.rules=normalizeForContext(rules,state.clubId);commitCurrentRules();state.seed=String(d.z||newStudioSeed(state.clubId));const qrVariant=Math.max(0,Math.min(3,Number(d.p)||0));state.variants=Math.min(4,Math.max(qrVariant+1,Number(d.v)||1));state.previewVariant=qrVariant;state.orientation=d.o==='l'?'landscape':'portrait';if(Array.isArray(d.m))state.school={...state.school,schoolName:d.m[0]||'',yearGroup:d.m[1]||'',className:d.m[2]||'',teacherName:d.m[3]||'',worksheetDate:d.m[4]||'',logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};generateAll();if(d.e){const i=state.previewVariant,stateSheet=state.sheets[i];stateSheet.questions=applySheetRecipe(stateSheet.seed,state.rules,d.e);stateSheet.actions=Array.isArray(d.e?.a)?G.clone(d.e.a):[];refreshSheetCodes();refreshRulesError();persist();}state.previewAnswers=true;state.status='Teacher QR recreation loaded. This exact sheet and its rules are ready in 99 Club Studio.';render();
+      state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:(getBasePreset(state.schemeId,rules.id)?rules.id:'33');state.rules=normalizeForContext(rules,state.clubId);commitCurrentRules();state.seed=String(d.z||newStudioSeed(state.clubId));const qrVariant=Math.max(0,Math.min(3,Number(d.p)||0));state.variants=Math.min(4,Math.max(qrVariant+1,Number(d.v)||1));state.previewVariant=qrVariant;state.orientation=d.o==='l'?'landscape':'portrait';state.teacherNote='';if(Array.isArray(d.m))state.school={...state.school,schoolName:d.m[0]||'',yearGroup:d.m[1]||'',className:d.m[2]||'',teacherName:d.m[3]||'',worksheetDate:d.m[4]||'',logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};generateAll();if(d.e){const i=state.previewVariant,stateSheet=state.sheets[i];stateSheet.questions=applySheetRecipe(stateSheet.seed,state.rules,d.e);stateSheet.actions=Array.isArray(d.e?.a)?G.clone(d.e.a):[];refreshSheetCodes();refreshRulesError();persist();}state.previewAnswers=true;state.status='Teacher QR recreation loaded. This exact sheet and its rules are ready in 99 Club Studio.';render();
     }catch(err){state.status='That teacher QR recreation data is not valid or is from an unsupported generation version.';render();}
   }
   function loadRecreationFromLocation(){
@@ -1102,7 +1182,7 @@
   function downloadFullBackup(){downloadJson(`99-club-studio-full-backup-${safeDateStamp()}.json`,fullBackupData());state.status='Full backup downloaded. Keep this file somewhere independent of the browser if the saved presets matter.';render();}
   function hasPreRestoreSnapshot(){try{const d=JSON.parse(localStorage.getItem(PRE_RESTORE_KEY)||'null');return !!(d&&d.kind==='tt99-full-backup'&&d.settings);}catch(e){return false;}}
   function applyBackupData(d,statusText){
-    if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');state.customPresets=Array.isArray(d.customPresets)?G.clone(d.customPresets):[];saveCustomPresets();const x=d.settings;state.schemeId=x.schemeId&&G.SCHEME_PRESETS[x.schemeId]?x.schemeId:'classic';state.ruleOverrides=x.ruleOverrides&&typeof x.ruleOverrides==='object'&&!Array.isArray(x.ruleOverrides)?G.clone(x.ruleOverrides):{};const requestedId=String(x.clubId||x.rules?.id||'33');state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';state.rules=normalizeForContext(x.rules||getBasePreset(state.schemeId,state.clubId),state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(x.variants)||1));state.orientation=x.orientation==='landscape'?'landscape':'portrait';state.seed=typeof x.seed==='string'&&x.seed?x.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(x.previewVariant)||0));state.previewAnswers=!!x.previewAnswers;state.includeAnswerQr=x.includeAnswerQr!==false;if(x.school)state.school={...state.school,...x.school};if(validExactSheets(x.sheets,state.variants,state.rules)){state.sheets=G.clone(x.sheets);refreshSheetCodes();refreshRulesError();persist();}else generateAll();state.status=statusText;render();
+    if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');state.customPresets=Array.isArray(d.customPresets)?G.clone(d.customPresets):[];saveCustomPresets();const x=d.settings;state.schemeId=x.schemeId&&G.SCHEME_PRESETS[x.schemeId]?x.schemeId:'classic';state.ruleOverrides=x.ruleOverrides&&typeof x.ruleOverrides==='object'&&!Array.isArray(x.ruleOverrides)?G.clone(x.ruleOverrides):{};const requestedId=String(x.clubId||x.rules?.id||'33');state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';state.rules=normalizeForContext(x.rules||getBasePreset(state.schemeId,state.clubId),state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(x.variants)||1));state.orientation=x.orientation==='landscape'?'landscape':'portrait';state.seed=typeof x.seed==='string'&&x.seed?x.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(x.previewVariant)||0));state.previewAnswers=!!x.previewAnswers;state.includeAnswerQr=x.includeAnswerQr!==false;state.teacherNote=cleanTeacherNote(x.teacherNote||'');if(x.school)state.school={...state.school,...x.school};if(validExactSheets(x.sheets,state.variants,state.rules)){state.sheets=G.clone(x.sheets);refreshSheetCodes();refreshRulesError();persist();}else generateAll();state.status=statusText;render();
   }
   function restoreFullBackup(e){
     const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');try{localStorage.setItem(PRE_RESTORE_KEY,JSON.stringify(fullBackupData()));}catch(ignore){}applyBackupData(d,'Full backup restored. The browser state it replaced is kept as a local safety snapshot; use “Undo last restore” if needed.');}catch(err){state.status='That file is not a valid 99 Club Studio full backup.';render();}};reader.readAsText(file);
@@ -1137,7 +1217,7 @@
         try{return qrResultForVariant(i)?.matrix||null;}catch(err){console.warn('QR omitted for variant',i,err);qrOmitted++;return null;}
       }) : [];
       const badge=await badgeImageForPdf();
-      const doc=L.buildDocument({rules:state.rules,sheets:state.sheets,school:state.school,kind,orientation:state.orientation,qrByVariant,badge:badge?{imageDataUrl:badge.dataUrl,width:badge.width,height:badge.height}:{}});
+      const doc=L.buildDocument({rules:state.rules,sheets:state.sheets,school:state.school,kind,orientation:state.orientation,qrByVariant,teacherNote:state.teacherNote,badge:badge?{imageDataUrl:badge.dataUrl,width:badge.width,height:badge.height}:{}});
       doc.save(L.filename(state.rules,kind,state.orientation));
       state.status=qrOmitted?`PDF created. ${qrOmitted} answer-sheet QR ${qrOmitted===1?'code was':'codes were'} omitted because the recreation data was too large.`:'PDF created.'; render();
     } catch(err){ console.error(err); state.status='PDF generation failed in this browser. Please refresh and try again.';render(); }
@@ -1146,7 +1226,7 @@
     const data={
       kind:'tt99-current-setup',setupVersion:2,app:'Tech Tinker Club · 99 Club Studio',version:VERSION,generationVersion:GENERATION_VERSION,
       schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,variants:state.variants,
-      orientation:state.orientation,includeAnswerQr:state.includeAnswerQr,seed:state.seed,
+      orientation:state.orientation,includeAnswerQr:state.includeAnswerQr,teacherNote:state.teacherNote,seed:state.seed,
       sheets:state.sheets.map(s=>({seed:s.seed,code:s.code,questions:s.questions,actions:Array.isArray(s.actions)?s.actions:[]})),
       school:{schoolName:state.school.schoolName,yearGroup:state.school.yearGroup,className:state.school.className,teacherName:state.school.teacherName,worksheetDate:state.school.worksheetDate}
     };
@@ -1172,7 +1252,7 @@
       state.rules=normalizeForContext(importedRulesRaw,state.clubId);commitCurrentRules();
       state.variants=Math.min(4,Math.max(1,Number(d.variants)||1));
       state.orientation=d.orientation==='landscape'?'landscape':'portrait';
-      state.includeAnswerQr=d.includeAnswerQr!==false;
+      state.includeAnswerQr=d.includeAnswerQr!==false;state.teacherNote=cleanTeacherNote(d.teacherNote||'');
       if(d.school)state.school={...state.school,...d.school,logoDataUrl:state.school.logoDataUrl,logoWidth:state.school.logoWidth,logoHeight:state.school.logoHeight};
       state.seed=typeof d.seed==='string'&&d.seed?d.seed:newStudioSeed(state.clubId);
       const exactSheets=validExactSheets(d.sheets,state.variants,state.rules);
