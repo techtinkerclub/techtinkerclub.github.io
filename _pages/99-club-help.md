@@ -9,7 +9,7 @@ header:
   show_overlay_text: false
 ---
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=12">
+<link rel="stylesheet" href="/assets/99club/99club.css?v=13">
 
 <div class="tt99-guide">
   <div class="tt99-guide-hero">

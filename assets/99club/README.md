@@ -10,7 +10,7 @@ The public app name is **99 Club Studio**. Classic 99 Club remains the default s
 
 `11 -> 22 -> 33 -> 44 -> 55 -> 66 -> 77 -> 88 -> 99`
 
-and TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. Both remain editable.
+and the Classic default of **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable.
 
 ## v1.11 preview/PDF parity and mobile review
 
@@ -57,7 +57,7 @@ and TTC defaults of **5 minutes** and **2 consecutive perfect attempts**. Both r
 - `Missing-number progression`
 - `Tables-first`
 
-These are content presets, not claims of an official national standard. Public UK school implementations vary. Their published timing/advancement conventions also vary, so the optional schemes intentionally retain TTC's standard 5-minute / two-perfect-attempt defaults unless the user edits them.
+These are content presets, not claims of an official national standard. Public UK school implementations vary. Their published timing/advancement conventions also vary. The Classic scheme now uses a 5-minute / three-perfect-attempt default with no consecutive requirement; the optional alternative schemes retain their previous 5-minute / two-consecutive-perfect-attempt defaults unless the user edits them.
 
 ## Post-99 challenge presets
 

@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.11';
+  const VERSION = '1.12';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const GENERATION_VERSION = 1;
@@ -41,7 +41,8 @@
   const HELP_TEXT = {
     scheme: ['Ruleset scheme','A scheme changes the default 11–99 progression. Classic 99 Club is the standard starting point. Other schemes are optional alternatives; your edits are remembered separately for each scheme and challenge.'],
     challenge: ['Challenge','Choose the level you want to generate. Bronze, Silver, Gold, Platinum and Diamond are post-99 presets with progressively broader mental-maths content.'],
-    perfectAttempts: ['Perfect attempts to advance','How many perfect scores a pupil should achieve before moving on. The TTC standard is two; changing this updates the instruction printed on the sheet.'],
+    perfectAttempts: ['Perfect attempts to advance','How many perfect scores a pupil should achieve before moving on. The Classic scheme now defaults to three; changing this updates the instruction printed on the sheet.'],
+    consecutiveAttempts: ['Consecutive perfect attempts','When enabled, the required perfect scores must happen in a row. Leave this off when successful attempts can be accumulated across separate sessions.'],
     questionType: ['Question type','Controls the broad generator mode. “Mixed mental arithmetic” lets you combine several question families and set their relative frequency.'],
     unaided: ['Independent / unaided wording','When enabled, the worksheet instruction states that the challenge should be completed independently and without help.'],
     families: ['Question families','Choose which kinds of questions can appear on a mixed mental-arithmetic sheet. A family that is switched off will not be generated.'],
@@ -235,8 +236,17 @@
       // v1.2 migration: the active edited rules used to live only in `rules`.
       // Preserve them as this scheme/challenge's override on first v1.3+ load.
       if(s.rules && typeof s.rules==='object'){
-        state.rules=normalizeForContext(s.rules,state.clubId);
         const key=overrideKey();
+        const restored=G.clone(s.rules);
+        const legacyClassicDefault = state.schemeId==='classic'
+          && !state.ruleOverrides[key]
+          && Number(restored.perfectAttempts)===2
+          && !Object.prototype.hasOwnProperty.call(restored,'consecutivePerfectAttempts');
+        if(legacyClassicDefault){
+          restored.perfectAttempts=base.perfectAttempts;
+          restored.consecutivePerfectAttempts=base.consecutivePerfectAttempts;
+        }
+        state.rules=normalizeForContext(restored,state.clubId);
         if(sameRules(state.rules,base,state.clubId)) delete state.ruleOverrides[key];
         else state.ruleOverrides[key]=G.clone(state.rules);
       } else state.rules=loadRulesFor(state.schemeId,state.clubId);
@@ -332,14 +342,25 @@
   function render(){
     root.innerHTML = `
       <div class="tt99-shell">
-        <section class="tt99-hero">
+        <section class="tt99-hero" aria-labelledby="tt99-hero-title">
+          <span class="tt99-hero-math tt99-hero-math--x2" aria-hidden="true">x²</span>
+          <span class="tt99-hero-math tt99-hero-math--sum" aria-hidden="true">a + b</span>
+          <span class="tt99-hero-math tt99-hero-math--plus" aria-hidden="true">+</span>
+          <span class="tt99-hero-math tt99-hero-math--99" aria-hidden="true">99</span>
+          <span class="tt99-hero-math tt99-hero-math--divide" aria-hidden="true">÷</span>
+          <div class="tt99-hero-dots" aria-hidden="true"></div>
+          <svg class="tt99-hero-graph" viewBox="0 0 150 130" aria-hidden="true" focusable="false">
+            <path d="M18 106H134M40 118V18"/>
+            <path class="tt99-hero-graph__curve" d="M41 105 C65 105 80 99 91 88 C106 73 114 48 125 24"/>
+          </svg>
+          <div class="tt99-hero__mark"><img src="/assets/99club/images/99club-studio-shield.png" alt="99 Club achievement shield"></div>
           <div class="tt99-hero__copy">
             <span class="tt99-eyebrow">Tech Tinker Club · Free classroom tool</span>
-            <h1>99 Club Studio</h1>
-            <p>Create, customise, save and reproduce balanced 99 Club and advanced mental-maths worksheets. Everything runs in your browser; school details and logos are not uploaded anywhere.</p>
-            <div class="tt99-hero-actions"><a href="/tools/99-club/help/" class="tt99-help-link">Help & guide</a><span>New here? Start with the Classic scheme and a challenge level.</span></div>
+            <h1 id="tt99-hero-title"><span>99 Club</span> <em>Studio</em></h1>
+            <div class="tt99-hero__tagline" aria-label="Maths for further progress"><i></i><span>Maths for further progress</span><i></i></div>
+            <p class="tt99-hero__slogan">Practice. Progress. Confidence.</p>
           </div>
-          <div class="tt99-hero__badge" aria-hidden="true"><span>99</span><small>CLUB</small></div>
+          <a href="/tools/99-club/help/" class="tt99-help-link"><span aria-hidden="true">?</span>Help &amp; guide</a>
         </section>
 
         <div class="tt99-workspace">
@@ -449,6 +470,7 @@
           <label class="tt99-field">${helpLabel('Perfect attempts to advance','perfectAttempts')}<input data-rule="perfectAttempts" type="number" min="1" max="10" value="${r.perfectAttempts}"></label>
           ${namedAdvanced?`<label class="tt99-field tt99-readonly-field"><span>Challenge structure</span><div>${r.mode==='family_mix'?'Mixed mental arithmetic':'Mixed × and ÷'}</div><small>Fixed for the named challenge.</small></label>`:`<label class="tt99-field">${helpLabel('Question type','questionType')}<select data-rule="mode">${mathModes.map(([v,l])=>`<option value="${v}" ${r.mode===v?'selected':''}>${l}</option>`).join('')}</select></label>`}
         </div>
+        <label class="tt99-check"><input data-rule-check="consecutivePerfectAttempts" type="checkbox" ${r.consecutivePerfectAttempts?'checked':''}><span>Perfect attempts must be consecutive ${helpButton('consecutiveAttempts')}</span></label>
         <label class="tt99-check"><input data-rule-check="unaided" type="checkbox" ${r.unaided?'checked':''}><span>State that the sheet should be completed independently/unaided ${helpButton('unaided')}</span></label>
       </div>
       ${r.mode==='family_mix'?renderFamilySelector(r)+renderFamilyWeights(r):''}
@@ -512,7 +534,7 @@
         <button type="button" class="tt99-layout-option ${state.orientation==='portrait'?'is-selected':''}" data-page-orientation="portrait" aria-pressed="${state.orientation==='portrait'}"><span class="tt99-page-icon tt99-page-icon--portrait" aria-hidden="true"></span><span><b>Portrait</b><small>Classic worksheet layout</small></span></button>
         <button type="button" class="tt99-layout-option ${state.orientation==='landscape'?'is-selected':''}" data-page-orientation="landscape" aria-pressed="${state.orientation==='landscape'}"><span class="tt99-page-icon tt99-page-icon--landscape" aria-hidden="true"></span><span><b>Landscape</b><small>Wider, larger working text</small></span></button>
       </div></div>
-      <label class="tt99-field">${helpLabel('Equivalent versions','variants')}<select id="tt99-variants">${[1,2,3,4].map(n=>`<option value="${n}" ${state.variants===n?'selected':''}>${n} ${n===1?'version':'versions'}</option>`).join('')}</select></label>
+      <label class="tt99-field tt99-variants-control">${helpLabel('Equivalent versions','variants')}<select id="tt99-variants">${[1,2,3,4].map(n=>`<option value="${n}" ${state.variants===n?'selected':''}>${n} ${n===1?'version':'versions'}</option>`).join('')}</select></label>
       <label class="tt99-check tt99-answer-qr"><input id="tt99-answer-qr" type="checkbox" ${state.includeAnswerQr?'checked':''}><span><b>Recreation QR on answer sheets ${helpButton('answerQr')}</b><small>Recommended. Teacher copies can be scanned back into 99 Club Studio; pupil worksheets never include the QR. School personalisation is not embedded in the QR.</small></span></label>
       <div class="tt99-action-row"><button type="button" class="tt99-primary" id="tt99-new">Generate new questions</button><button type="button" class="tt99-secondary" id="tt99-shuffle">Shuffle order</button></div>
       <div class="tt99-recreate"><div><strong>Recreate from sheet code ${helpButton('sheetCode')}</strong><small>${shortCodeNeedsRules?'This sheet uses customised rules. The short code alone is not enough on another browser; use the Full recreation code or the teacher QR so those rules travel with the sheet.':'For an unchanged built-in challenge, this short code is enough to rebuild the same questions.'}</small></div><div><input id="tt99-sheet-code" type="text" maxlength="100" spellcheck="false" placeholder="e.g. C99-G1-7FK2M9-A"><button type="button" id="tt99-recreate" class="tt99-secondary">Recreate</button></div></div>

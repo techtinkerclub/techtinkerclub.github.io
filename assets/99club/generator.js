@@ -10,55 +10,55 @@
     '11': {
       id: '11', name: '11 Club', tagline: 'Doubling 1-10', questionCount: 11,
       mode: 'double', numberMin: 1, numberMax: 10,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     },
     '22': {
       id: '22', name: '22 Club', tagline: 'Repeated addition', questionCount: 22,
       mode: 'repeated_addition', addendMin: 1, addendMax: 10, repeatsMin: 2, repeatsMax: 7,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     },
     '33': {
       id: '33', name: '33 Club', tagline: '2x, 3x, 5x & 10x', questionCount: 33,
       mode: 'multiply', tables: [2, 3, 5, 10], factorMin: 1, factorMax: 12,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     },
     '44': {
       id: '44', name: '44 Club', tagline: 'Adds 1x, 4x & 6x', questionCount: 44,
       mode: 'multiply', tables: [1, 2, 3, 4, 5, 6, 10], factorMin: 1, factorMax: 12,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     },
     '55': {
       id: '55', name: '55 Club', tagline: 'Adds 7x & 8x', questionCount: 55,
       mode: 'multiply', tables: [1, 2, 3, 4, 5, 6, 7, 8, 10], factorMin: 1, factorMax: 12,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     },
     '66': {
       id: '66', name: '66 Club', tagline: 'All tables to 12x', questionCount: 66,
       mode: 'multiply', tables: range(1, 12), factorMin: 1, factorMax: 12,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     },
     '77': {
       id: '77', name: '77 Club', tagline: 'Inverse division facts', questionCount: 77,
       mode: 'divide', tables: range(1, 12), factorMin: 1, factorMax: 12,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     },
     '88': {
       id: '88', name: '88 Club', tagline: 'Mixed multiplication & division', questionCount: 88,
       mode: 'mixed', tables: range(1, 12), factorMin: 1, factorMax: 12, multiplyPercent: 50,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     },
     '99': {
       id: '99', name: '99 Club', tagline: 'The full mixed challenge', questionCount: 99,
       mode: 'mixed', tables: range(1, 12), factorMin: 1, factorMax: 12, multiplyPercent: 50,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 3, consecutivePerfectAttempts: false, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     }
   };
@@ -116,14 +116,14 @@
   function commonPreset(id, name, tagline, questionCount, extra) {
     return Object.assign({
       id, name, tagline, questionCount,
-      timeMinutes: 5, perfectAttempts: 2, unaided: true,
+      timeMinutes: 5, perfectAttempts: 2, consecutivePerfectAttempts: true, unaided: true,
       avoidExactDuplicates: true, avoidReversedDuplicates: false
     }, extra || {});
   }
 
   // Optional content schemes found in public UK school implementations. Timing
-  // and advancement intentionally stay at TTC's standard 5 minutes / 2 perfect
-  // attempts; users can edit those independently in the rule editor.
+  // and advancement intentionally keep their existing 5 minutes / 2 consecutive
+  // perfect-attempt defaults; users can edit those independently in the rule editor.
   const SCHEME_PRESETS = {
     classic: {
       id: 'classic', name: 'Classic 99 Club', tagline: 'Doubling → repeated addition → tables → division',
@@ -248,6 +248,7 @@
     r.questionCount = clampInt(r.questionCount, 1, 200, 33);
     r.timeMinutes = clampNumber(r.timeMinutes, 0.25, 60, 5);
     r.perfectAttempts = clampInt(r.perfectAttempts, 1, 10, 2);
+    r.consecutivePerfectAttempts = r.consecutivePerfectAttempts !== false;
     r.unaided = r.unaided !== false;
     r.avoidExactDuplicates = r.avoidExactDuplicates !== false;
     r.avoidReversedDuplicates = !!r.avoidReversedDuplicates;
@@ -837,18 +838,27 @@
     if (r.mode === 'add_subtract') maths = `addition/subtraction · range to ${r.arithmeticMax}`;
     if (r.mode === 'missing_number') maths = `missing-number ${r.missingNumberOperations.join('/')} · tables ${compressNumbers(r.tables)}`;
     if (r.mode === 'family_mix') maths = `mixed mental maths · ${r.families.map(f => FAMILY_LABELS[f] || f).join(', ')}`;
-    return `${r.questionCount} questions · ${maths} · ${formatMinutes(r.timeMinutes)} · ${r.perfectAttempts} perfect ${r.perfectAttempts === 1 ? 'attempt' : 'attempts'} to advance`;
+    const advanceSummary = r.perfectAttempts === 1
+      ? '1 perfect attempt to advance'
+      : `${r.perfectAttempts} perfect attempts to advance${r.consecutivePerfectAttempts ? ' · consecutive' : ' · not necessarily consecutive'}`;
+    return `${r.questionCount} questions · ${maths} · ${formatMinutes(r.timeMinutes)} · ${advanceSummary}`;
   }
 
   function instructionText(inputRules) {
     const r = normalizeRules(inputRules);
     const time = formatMinutes(r.timeMinutes);
     const solo = r.unaided ? ' Work independently and without help.' : '';
-    const advance = r.perfectAttempts === 1
-      ? 'A perfect score moves you to the next club.'
-      : r.perfectAttempts === 2
-        ? 'Get a perfect score twice in a row to move to the next club.'
-        : `Get a perfect score ${r.perfectAttempts} times in a row to move to the next club.`;
+    let advance;
+    if (r.perfectAttempts === 1) {
+      advance = 'A perfect score moves you to the next club.';
+    } else {
+      const countPhrase = r.perfectAttempts === 2 ? 'twice' : `${numberWord(r.perfectAttempts)} times`;
+      if (r.consecutivePerfectAttempts) {
+        advance = `Get a perfect score ${countPhrase} in a row to move to the next club.`;
+      } else {
+        advance = `Get a perfect score ${countPhrase} to move to the next club. The perfect scores do not need to be consecutive.`;
+      }
+    }
     return `Try to complete all ${r.questionCount} questions in ${time}.${solo} ${advance}`.replace(/\s+/g, ' ').trim();
   }
 
