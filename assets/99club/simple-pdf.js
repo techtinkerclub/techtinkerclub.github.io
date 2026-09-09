@@ -14,6 +14,10 @@
       .replace(/[\u201C\u201D]/g, '"')
       .replace(/[\u2013\u2014]/g, '-')
       .replace(/\u2026/g, '...')
+      .replace(/\u2192/g, '->')
+      .replace(/\u2194/g, '<->')
+      .replace(/\u2212/g, '-')
+      .replace(/\u2248/g, '~')
       .replace(/\u221A/g, 'sqrt ')
       .replace(/[^\x00-\xFF]/g, '?');
   }

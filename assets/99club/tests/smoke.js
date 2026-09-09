@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.18 maintainer smoke test.
+/* 99 Club Studio v1.19 maintainer smoke test.
  * Run from repository root with: node assets/99club/tests/smoke.js
  */
 'use strict';
@@ -87,6 +87,15 @@ try{
   assert(L.getColumns(24,'landscape',true)===3,'Custom 24-question landscape sheet should use 3 columns');
   assert(L.getColumns(33,'portrait',false)===3,'Classic 33 portrait column count changed');
   assert(P.asciiish('a→b ↔ c − d ≈ e')==='a->b <-> c - d ~ e','PDF mathematical ASCII fallbacks are incorrect');
+  const fs=require('fs');
+  const appSource=fs.readFileSync(path.join(ROOT,'app.js'),'utf8');
+  const helpSource=fs.readFileSync(path.resolve(ROOT,'../../_pages/99-club-help.md'),'utf8');
+  assert(/POST99_EXTRA_GROUPS/.test(appSource),'Post-99 extras registry missing');
+  for(const family of ['add_sub_missing','negative_numbers','roman_numerals','decimal_scale','metric_conversion','time_duration','money','fraction_of','percentage_of','factor_check','square','cube','bodmas','angle_facts','ratio_missing','mean']) assert(appSource.includes(`'${family}'`),`Expected post-99 extra missing from registry: ${family}`);
+  assert(!/POST99_EXTRA_GROUPS[\s\S]{0,5000}'decimal_compare'/.test(appSource),'Decimal comparison must not be a 99 Club post-99 extra');
+  assert(!/POST99_EXTRA_GROUPS[\s\S]{0,5000}'area'/.test(appSource),'Area must not be a 99 Club post-99 extra');
+  assert(/target=\"_blank\" rel=\"noopener\"/.test(appSource),'Main Help link should open safely in a new tab');
+
 }catch(err){failures.push(err.message);}
 
 if(failures.length){

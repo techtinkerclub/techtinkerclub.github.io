@@ -5,22 +5,20 @@ permalink: /tools/99-club/help/
 sidebar: false
 ---
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=18">
+<link rel="stylesheet" href="/assets/99club/99club.css?v=19">
 
+<div id="main" class="tt99-page-main" role="main">
+  <article class="splash">
+    <section class="page__content">
 <div class="tt99-guide">
   <div class="tt99-guide-hero">
     <div>
       <span class="tt99-eyebrow">Tech Tinker Club · 99 Club Studio</span>
       <h1>Help for teachers</h1>
-      <p>Everything you need to create, review, save and recreate 99 Club progression sheets. The progression tool is now deliberately kept separate from the broader Custom Worksheets workspace.</p>
+      <p>Everything you need to create, review, save and recreate 99 Club progression sheets, including post-99 mental-maths extras and teacher answer-sheet notes.</p>
     </div>
-    <a class="tt99-guide-back" href="/tools/99-club/">← Back to 99 Club</a>
+    <a class="tt99-secondary tt99-guide-action" href="/tools/99-club/">← Back to 99 Club</a>
   </div>
-  <nav class="tt99-workspace-tabs tt99-workspace-tabs--guide" aria-label="99 Club Studio tools">
-    <a class="is-active" href="/tools/99-club/"><b>99 Club</b><span>Progression challenges</span></a>
-    <a href="/tools/99-club/custom/"><b>Custom worksheets</b><span>Starters, quizzes & homework <em>Beta</em></span></a>
-  </nav>
-
   <div class="tt99-guide-note"><strong>Quick start:</strong> add your school details, leave <b>Classic 99 Club</b> selected, choose a challenge, check the short rule summary, then generate and download. The standard Classic default is 5 minutes and three perfect attempts; the attempts do not need to be consecutive.</div>
 
   <nav class="tt99-guide-nav" aria-label="Help topics">
@@ -28,6 +26,7 @@ sidebar: false
     <a href="#review">Reviewing questions</a>
     <a href="#schemes">Challenges</a>
     <a href="#rules">Changing rules</a>
+    <a href="#extras">Post-99 extras</a>
     <a href="#fractions">Fractions & percentages</a>
     <a href="#saving">Saving & sharing</a>
     <a href="#recreate">Recreating a sheet</a>
@@ -42,13 +41,6 @@ sidebar: false
       <article><b>3</b><h3>Check the setup</h3><p>Read the short rule summary and edit only if your school uses different timings, progression rules or question families.</p></article>
       <article><b>4</b><h3>Generate and download</h3><p>Choose portrait or landscape, create one to four equivalent versions, review the questions and download the worksheet, answer key, or both.</p></article>
     </div>
-  </section>
-
-  <section id="custom" class="tt99-guide-section tt99-guide-highlight">
-    <h2>Custom Worksheets is a separate workspace</h2>
-    <p>Starters, quizzes, homework and curriculum-targeted practice now live in <strong>Custom Worksheets</strong>. Separating the two tools keeps the 99 Club progression stable while the wider worksheet generator can grow independently.</p>
-    <p>The Custom Worksheets beta currently focuses on direct numerical and concise mathematical prompts. Story word problems and questions that genuinely require diagrams, charts, clocks, rulers or other visual representations are intentionally deferred until they have dedicated generators.</p>
-    <p><a class="tt99-guide-back" href="/tools/99-club/custom/">Open Custom Worksheets →</a></p>
   </section>
 
   <section id="review" class="tt99-guide-section tt99-guide-highlight">
@@ -108,6 +100,24 @@ sidebar: false
     </div>
   </section>
 
+
+  <section id="extras" class="tt99-guide-section tt99-guide-highlight">
+    <h2>Optional post-99 mental-maths extras</h2>
+    <p>Bronze, Silver, Gold, Platinum and Diamond keep their defining core content, but teachers can add extra categories when they suit their school. These extras are <strong>not offered inside the 11–99 progression</strong>. That separation is deliberate: 11–99 stays simple and recognisable, while post-99 can broaden into concise mental maths.</p>
+    <div class="tt99-guide-note"><strong>The inclusion rule is simple:</strong> an extra should be short to read, quick to understand, realistically solvable mentally, and not depend on a diagram. Comparison-heavy, formal written-calculation and verbose problem-solving families are intentionally outside the rapid 99 Club extras.</div>
+    <div class="tt99-guide-family-grid">
+      <article><h3>Missing numbers & number</h3><p>Missing +/− and ×/÷ values, negative numbers, Roman numerals, factors, multiples, factor pairs, common factors/multiples, squares, cubes, powers of 10 and simple algebraic missing values.</p></article>
+      <article><h3>Decimals, fractions & percentages</h3><p>Decimal place value and rounding, decimal ×/÷ 10/100/1000, concise decimal calculations, fractions of quantities, percentages of quantities and fraction↔decimal↔percentage equivalence. Number-comparison families are not included here.</p></article>
+      <article><h3>Mental calculation</h3><p>Scaled multiplication/division, order of operations and short angle facts such as complements to 90°, 180° or 360°.</p></article>
+      <article><h3>Ratio & proportion</h3><p>Compact equivalent-ratio, ratio-sharing and scale-factor calculations. Longer contextual ratio/rate problems are intentionally outside the rapid 99 Club extras.</p></article>
+      <article><h3>Measurement & time</h3><p>Metric unit conversions, time-unit conversions, durations, 12/24-hour time, time words, calendar facts, money/change, temperature intervals and simple stated metric/imperial approximations. No clocks, rulers or other graphical measuring tasks are generated here.</p></article>
+      <article><h3>Mean</h3><p>Short arithmetic-mean calculations from a small list of values. Broader statistics interpretation is intentionally excluded here because it normally depends on tables or graphs.</p></article>
+    </div>
+    <h3>Options appear only when relevant</h3>
+    <p>For example, decimal extras expose decimal-place and size limits; fractions expose denominator/quantity choices; percentage questions expose percentage and quantity choices; ratio questions expose ratio size limits; Roman numerals expose a maximum value; angle facts expose 90°/180°/360° totals; and mean exposes the largest data value. Measurement/time extras use deliberately small, fixed mental-maths constructions rather than adding a large set of range controls.</p>
+    <p>The optional-extra list is maintained as a single registry in the app, so a future teacher-feedback change can add or remove a category without redesigning the whole 99 Club interface.</p>
+  </section>
+
   <section id="weights" class="tt99-guide-section">
     <h2>What does “weight” mean?</h2>
     <p><strong>Weight controls frequency, not difficulty.</strong> A type with weight 4 is chosen about twice as often as a type with weight 2. The numbers do not need to add to 100.</p>
@@ -119,7 +129,7 @@ sidebar: false
   <section id="fractions" class="tt99-guide-section">
     <h2>Fractions, decimals and percentages</h2>
     <h3>Decimals</h3>
-<p>Decimal families are available as optional additions to mixed/advanced 99 Club rules, including place value, comparison, rounding, ×/÷ by 10/100/1000, decimal addition/subtraction, upper-KS2 multiplication/division and fraction/decimal/percentage equivalence. The standard Classic progression is unchanged unless you explicitly edit its rules.</p>
+<p>Decimal families are available as optional additions to mixed/advanced 99 Club rules, including place value, rounding, ×/÷ by 10/100/1000, decimal addition/subtraction, upper-KS2 multiplication/division and fraction/decimal/percentage equivalence. Decimal comparison is intentionally excluded from the rapid mental-maths extras. The standard Classic progression is unchanged unless you explicitly edit its rules.</p>
 
     <h3>Fractions of quantities</h3>
     <p>The denominator buttons choose which denominator families may appear. Selecting denominator <b>5</b> can produce <code>1/5</code>, <code>2/5</code>, <code>3/5</code> or <code>4/5</code>; it does not mean “1/5 only”.</p>
@@ -190,6 +200,9 @@ sidebar: false
     <h2>Privacy</h2>
     <p>99 Club Studio runs in your browser. School details, logos and questions are processed on the device rather than uploaded to Tech Tinker Club. The teacher QR uses the part of the web address after <code>#</code>, which is not sent to the website server.</p>
     <p>A downloaded Full backup is an ordinary JSON file and may contain the school/class/teacher text and logo you entered. Store or share it as you would any other school working file.</p>
-    <p><a class="tt99-guide-back" href="/tools/99-club/">Back to 99 Club Studio →</a></p>
+    <p><a class="tt99-secondary tt99-guide-action" href="/tools/99-club/">Back to 99 Club Studio →</a></p>
   </section>
+</div>
+    </section>
+  </article>
 </div>

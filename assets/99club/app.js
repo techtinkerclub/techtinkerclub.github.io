@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.18';
+  const VERSION = '1.19';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const CUSTOM_WORKSPACE_KEY = 'tt99-custom-settings-v1';
@@ -27,10 +27,20 @@
   const LEGACY_FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
   const FAMILY_ORDER = Array.isArray(G.FAMILY_ORDER) ? G.FAMILY_ORDER.slice() : LEGACY_FAMILY_ORDER.slice();
   // The public 99 Club editor deliberately stays focused. The larger curriculum catalogue lives in Custom Worksheets.
-  const CLUB_FAMILY_ORDER = [...LEGACY_FAMILY_ORDER,
-    'decimal_place_value','decimal_compare','decimal_rounding','decimal_scale',
-    'decimal_add_subtract','decimal_multiply','decimal_divide','fraction_decimal_percent'
-  ].filter((id,i,arr)=>arr.indexOf(id)===i && G.FAMILY_META?.[id] && !G.FAMILY_META[id].retired);
+  // Keep 11–99 focused on the traditional progression. Optional extras are deliberately
+  // restricted to post-99 challenges so the stable Club workflow does not turn into a curriculum picker.
+  const BASE_11_99_FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number'];
+  // One registry controls the post-99 extras UI. Adding/removing a concise mental-maths family later
+  // should normally require changing this list, not redesigning the editor.
+  const POST99_EXTRA_GROUPS = [
+    {label:'Missing numbers & number', ids:['add_sub_missing','missing_number','negative_numbers','roman_numerals','factor_check','multiple_check','factor_pairs','common_factors','common_multiples','square','cube','powers_of_10','simple_algebra']},
+    {label:'Decimals, fractions & percentages', ids:['decimal_place_value','decimal_rounding','decimal_scale','decimal_add_subtract','decimal_multiply','decimal_divide','fraction_of','percentage_of','fraction_decimal_percent']},
+    {label:'Mental calculation', ids:['scaled_multiply','scaled_divide','bodmas','angle_facts']},
+    {label:'Ratio & proportion', ids:['ratio_missing','ratio_share','scale_factor']},
+    {label:'Measurement & time', ids:['metric_conversion','time_conversion','time_duration','time_12_24','time_words','calendar_facts','money','temperature_interval','imperial_conversion']},
+    {label:'Statistics', ids:['mean']}
+  ].map(group=>({...group,ids:group.ids.filter(id=>G.FAMILY_META?.[id]&&!G.FAMILY_META[id].retired)}));
+  const POST99_EXTRA_FAMILY_ORDER = [...new Set(POST99_EXTRA_GROUPS.flatMap(group=>group.ids))];
   // Preserve historical compact-recreation family codes; append new families only after the old prefix.
   const COMPACT_FAMILY_ORDER = Array.isArray(G.FAMILY_COMPACT_ORDER) ? G.FAMILY_COMPACT_ORDER.slice() : FAMILY_ORDER.slice();
   const QUESTION_KIND_ORDER = ['double','repeated_addition',...LEGACY_FAMILY_ORDER,...COMPACT_FAMILY_ORDER.filter(f=>!LEGACY_FAMILY_ORDER.includes(f)&&!['double','repeated_addition'].includes(f))];
@@ -155,7 +165,7 @@
   function showHelp(button,key){
     const item=HELP_TEXT[key], pop=root.querySelector('#tt99-help-popover'); if(!item||!pop)return;
     root.querySelectorAll('[data-help-key]').forEach(b=>b.setAttribute('aria-expanded','false'));
-    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p><a href="/tools/99-club/help/">Open full Help & guide</a>`;
+    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p><a href="/tools/99-club/help/" target="_blank" rel="noopener">Open full Help & guide</a>`;
     pop.hidden=false; button.setAttribute('aria-expanded','true');
     const r=button.getBoundingClientRect(), gap=9, width=Math.min(330,innerWidth-24);
     pop.style.width=`${width}px`; let left=Math.min(innerWidth-width-12,Math.max(12,r.left+r.width/2-width/2));
@@ -174,34 +184,60 @@
   }
   function advancedCoreFamilies(clubId=state.clubId){
     const base=G.CHALLENGE_PRESETS[clubId];
-    return base && base.mode==='family_mix' ? (base.families||[]).slice() : [];
+    if(!base)return [];
+    if(base.mode==='family_mix')return (base.families||[]).slice();
+    if(base.mode==='mixed')return ['multiply','divide'];
+    if(base.mode==='multiply')return ['multiply'];
+    if(base.mode==='divide')return ['divide'];
+    return [];
+  }
+  function isStandard1199Club(clubId=state.clubId){return /^(11|22|33|44|55|66|77|88|99)$/.test(String(clubId));}
+  function post99SelectedExtras(r=state.rules,clubId=state.clubId){
+    const core=new Set(advancedCoreFamilies(clubId));
+    return (r.mode==='family_mix'?(r.families||[]):[]).filter(f=>POST99_EXTRA_FAMILY_ORDER.includes(f)&&!core.has(f));
   }
   function constrainNamedChallengeRules(input,clubId=state.clubId){
     let r=G.normalizeRules(input);
     if(!isNamedAdvanced(clubId)) return r;
     const base=G.normalizeRules(G.CHALLENGE_PRESETS[clubId]);
+    const core=advancedCoreFamilies(clubId);
     const hadScaled=(r.families||[]).some(f=>f==='scaled_multiply'||f==='scaled_divide');
     const hadAlgebra=(r.families||[]).includes('simple_algebra');
     const hadRoman=(r.families||[]).includes('roman_numerals');
-    r.mode=base.mode;
-    r.tables=ALL_TABLES.slice();
-    r.factorMin=1;r.factorMax=12;
-    if(base.mode==='family_mix'){
-      const core=base.families||[];
-      const extras=(r.families||[]).filter(f=>!core.includes(f));
+    const extras=(r.mode==='family_mix'?(r.families||[]):[]).filter(f=>POST99_EXTRA_FAMILY_ORDER.includes(f)&&!core.includes(f));
+
+    if(base.mode==='family_mix' || extras.length){
+      r.mode='family_mix';
+      r.tables=ALL_TABLES.slice();
+      r.factorMin=1;r.factorMax=12;
       r.families=[...core,...extras];
       const previous=r.familyWeights||{};
-      r.familyWeights=Object.fromEntries(r.families.map(f=>[f,previous[f]||base.familyWeights?.[f]||1]));
+      const bronzeCoreWeight=(family)=>family==='multiply'?Math.max(1,Math.round((base.multiplyPercent||50)/10)):family==='divide'?Math.max(1,Math.round((100-(base.multiplyPercent||50))/10)):1;
+      r.familyWeights=Object.fromEntries(r.families.map(f=>[f,previous[f]||base.familyWeights?.[f]||bronzeCoreWeight(f)||1]));
+    }else{
+      // Bronze's unchanged state remains the original mixed ×/÷ generator, preserving its established output.
+      r.mode=base.mode;
+      r.tables=ALL_TABLES.slice();
+      r.factorMin=1;r.factorMax=12;
+      r.multiplyPercent=base.multiplyPercent||r.multiplyPercent||50;
+      r.families=[];r.familyWeights={};
     }
     // Remove legacy cross-coupling where old factor/arithmetic controls fed unrelated families.
-    // Preserve the old value only when that family is actually present so existing intentional
-    // advanced edits migrate naturally; otherwise keep the named preset's neutral defaults.
     if(!hadScaled){r.scaledBaseMin=base.scaledBaseMin;r.scaledBaseMax=base.scaledBaseMax;}
     if(!hadAlgebra){r.algebraUnknownMax=base.algebraUnknownMax;r.algebraCoefficientMax=base.algebraCoefficientMax;}
     if(!hadRoman){r.romanMax=base.romanMax;}
     return G.normalizeRules(r);
   }
-  function normalizeForContext(input,clubId=state.clubId){ return constrainNamedChallengeRules(input,clubId); }
+  function constrain1199Rules(input,clubId=state.clubId){
+    let r=G.normalizeRules(input);
+    if(!isStandard1199Club(clubId) || r.mode!=='family_mix')return r;
+    const allowed=new Set(BASE_11_99_FAMILY_ORDER);
+    r.families=(r.families||[]).filter(f=>allowed.has(f));
+    if(!r.families.length)r.families=['multiply','divide'];
+    r.familyWeights=Object.fromEntries(r.families.map(f=>[f,Number(r.familyWeights?.[f])||1]));
+    return G.normalizeRules(r);
+  }
+  function normalizeForContext(input,clubId=state.clubId){ return constrain1199Rules(constrainNamedChallengeRules(input,clubId),clubId); }
   function getSchemeById(id){ return G.SCHEME_PRESETS[id] || G.SCHEME_PRESETS.classic; }
   function getScheme(){ return getSchemeById(state.schemeId); }
   function getSchemePreset(id){ return getScheme().presets[id]; }
@@ -399,13 +435,8 @@
             <img class="tt99-hero__wordmark" src="/assets/99club/images/99club-studio-wordmark.png" alt="99 Club Studio — Maths for further progress">
             <p class="tt99-hero__slogan">Practice. Progress. Confidence.</p>
           </div>
-          <a href="/tools/99-club/help/" class="tt99-help-link"><span aria-hidden="true">?</span>Help &amp; guide</a>
+          <a href="/tools/99-club/help/" class="tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
         </section>
-        <nav class="tt99-workspace-tabs" aria-label="99 Club Studio tools">
-          <a class="is-active" href="/tools/99-club/" aria-current="page"><b>99 Club</b><span>Progression challenges</span></a>
-          <a href="/tools/99-club/custom/"><b>Custom worksheets</b><span>Starters, quizzes & homework <em>Beta</em></span></a>
-        </nav>
-
         <div class="tt99-workspace">
           <aside class="tt99-controls">
             ${renderStepPersonalise()}
@@ -496,6 +527,7 @@
     const needArithmetic=['addition','add_subtract'].includes(r.mode) || hasFamily('addition','subtraction','negative_numbers','add_sub_missing','number_bonds','three_addends','fact_families');
     const needSubtraction=r.mode==='add_subtract' || hasFamily('subtraction');
     const needMissing=r.mode==='missing_number' || hasFamily('missing_number');
+    const needAddSubMissing=hasFamily('add_sub_missing');
     const needSquares=hasFamily('square','square_root');
     const needCubes=hasFamily('cube');
     const needBodmas=hasFamily('bodmas');
@@ -511,6 +543,7 @@
     const needRatios=hasFamily('ratio_missing','ratio_share','scale_factor','unit_rate');
     const needCoordinates=hasFamily('coordinates','coordinate_reflection');
     const needStats=hasFamily('mean');
+    const needMeasurement=hasFamily('metric_conversion','time_conversion','time_duration','time_12_24','time_words','calendar_facts','money','temperature_interval','imperial_conversion');
     return `<div class="tt99-advanced">
       ${namedAdvanced?`<div class="tt99-core-note"><strong>${esc(r.name)} core maths is fixed ${helpButton('advancedCore')}</strong><span>All basic multiplication/division uses tables 1–12 and the families that define this named challenge stay enabled. Change weights and meaningful ranges, or add optional extras. Save as a custom preset if you want a completely different structure.</span></div>`:''}
       <div class="tt99-advanced-section"><span class="tt99-field-label">${open?'Worksheet settings':'Challenge settings'}</span>
@@ -523,7 +556,7 @@
         ${open?'':`<label class="tt99-check"><input data-rule-check="consecutivePerfectAttempts" type="checkbox" ${r.consecutivePerfectAttempts?'checked':''}><span>Perfect attempts must be consecutive ${helpButton('consecutiveAttempts')}</span></label>`}
         <label class="tt99-check"><input data-rule-check="unaided" type="checkbox" ${r.unaided?'checked':''}><span>State that the sheet should be completed independently/unaided ${helpButton('unaided')}</span></label>
       </div>
-      ${r.mode==='family_mix'?renderFamilySelector(r)+renderFamilyWeights(r):''}
+      ${namedAdvanced?renderFamilySelector(r)+(r.mode==='family_mix'?renderFamilyWeights(r):''):(r.mode==='family_mix'?renderFamilySelector(r)+renderFamilyWeights(r):'')}
       ${r.mode==='double'?`<div class="tt99-inline-fields">${numField('Smallest number','numberMin',r.numberMin,0,100)}${numField('Largest number','numberMax',r.numberMax,0,100)}</div>`:''}
       ${r.mode==='repeated_addition'?`<div class="tt99-inline-fields">${numField('Smallest addend','addendMin',r.addendMin,0,100)}${numField('Largest addend','addendMax',r.addendMax,0,100)}${numField('Minimum repeats','repeatsMin',r.repeatsMin,2,20)}${numField('Maximum repeats','repeatsMax',r.repeatsMax,2,20)}</div>`:''}
       ${needWholeNumbers?`<div class="tt99-advanced-section"><span class="tt99-field-label">Whole-number difficulty ${helpButton('wholeNumberRange')}</span><div class="tt99-inline-fields">${numField('Largest whole number','wholeNumberMax',r.wholeNumberMax||1000,20,10000000)}</div></div>`:''}
@@ -531,7 +564,7 @@
       ${needTables&&!namedAdvanced?renderTableSelector(r):''}
       ${needTables&&!namedAdvanced?`<div class="tt99-inline-fields tt99-inline-fields--with-help"><span class="tt99-inline-help">${helpButton('factorRange')}</span>${numField('Smallest factor / quotient','factorMin',r.factorMin,0,100)}${numField('Largest factor / quotient','factorMax',r.factorMax,0,100)}</div>`:''}
       ${r.mode==='mixed'?`<div class="tt99-advanced-section"><span class="tt99-field-label">Multiplication / division mix ${helpButton('multiplyShare')}</span><label class="tt99-field tt99-percent"><span>Multiplication share <b>${r.multiplyPercent}%</b></span><input data-rule="multiplyPercent" type="range" min="0" max="100" step="5" value="${r.multiplyPercent}"></label></div>`:''}
-      ${needMissing?`<div class="tt99-advanced-section"><span class="tt99-field-label">Missing-number rules ${helpButton('missingNumber')}</span>${renderStringChoiceSelector('Operations','missingOperation',[['multiply','Multiplication'],['divide','Division']],r.missingNumberOperations)}${renderStringChoiceSelector('Where the blank can appear','missingPosition',[['multiply_first','First factor'],['multiply_second','Second factor'],['multiply_result','Product / result'],['divide_dividend','Dividend'],['divide_divisor','Divisor'],['divide_result','Quotient / result']],r.missingNumberPositions)}</div>`:''}
+      ${needMissing?`<div class="tt99-advanced-section"><span class="tt99-field-label">Missing-number × / ÷ rules ${helpButton('missingNumber')}</span>${renderStringChoiceSelector('Operations','missingOperation',[['multiply','Multiplication'],['divide','Division']],r.missingNumberOperations)}${renderStringChoiceSelector('Where the blank can appear','missingPosition',[['multiply_first','First factor'],['multiply_second','Second factor'],['multiply_result','Product / result'],['divide_dividend','Dividend'],['divide_divisor','Divisor'],['divide_result','Quotient / result']],r.missingNumberPositions)}</div>`:''}${needAddSubMissing?`<div class="tt99-advanced-section"><span class="tt99-field-label">Missing-number + / −</span><small class="tt99-help">Uses concise addition and subtraction facts with the blank before or after the operation, for example <b>___ + 7 = 19</b> or <b>23 − ___ = 8</b>. The arithmetic range above controls the size.</small></div>`:''}
       ${(needSquares||needCubes)?`<div class="tt99-advanced-section"><span class="tt99-field-label">Powers & radicals ${helpButton('powers')}</span>${needSquares?`<div class="tt99-inline-fields">${numField('Smallest square/root base','squareMin',r.squareMin,0,50)}${numField('Largest square/root base','squareMax',r.squareMax,0,50)}</div>`:''}${needCubes?`<div class="tt99-inline-fields">${numField('Smallest cube base','cubeMin',r.cubeMin,0,20)}${numField('Largest cube base','cubeMax',r.cubeMax,0,20)}</div>`:''}<small class="tt99-help">Square roots are marked as extension rather than statutory primary content.</small></div>`:''}
       ${needBodmas?`<div class="tt99-advanced-section"><span class="tt99-field-label">Order of operations ${helpButton('bodmas')}</span><div class="tt99-inline-fields">${numField('Largest base number','bodmasMax',r.bodmasMax,2,30)}</div>${renderStringChoiceSelector('Operations allowed','bodmasOperation',[['add','+ addition'],['subtract','− subtraction'],['multiply','× multiplication'],['divide','÷ division']],r.bodmasOperations)}<label class="tt99-check"><input data-rule-check="bodmasUseBrackets" type="checkbox" ${r.bodmasUseBrackets?'checked':''}><span>Include bracketed expressions</span></label></div>`:''}
       ${needScaled?`<div class="tt99-advanced-section"><span class="tt99-field-label">Scaled multiplication / division ${helpButton('scaled')}</span><div class="tt99-inline-fields">${numField('Smallest scaled base','scaledBaseMin',r.scaledBaseMin,0,100)}${numField('Largest scaled base','scaledBaseMax',r.scaledBaseMax,0,100)}</div>${renderChoiceSelector('Scale factors','scaledMultiplier',[10,100,1000],r.scaledMultipliers,n=>`×${n}`)}</div>`:''}
@@ -543,7 +576,7 @@
       ${needAlgebra?`<div class="tt99-advanced-section"><span class="tt99-field-label">Simple algebra ${helpButton('algebra')}</span><div class="tt99-inline-fields">${numField('Largest unknown value','algebraUnknownMax',r.algebraUnknownMax,5,100)}${numField('Largest coefficient','algebraCoefficientMax',r.algebraCoefficientMax,2,50)}</div></div>`:''}
       ${needAngles?`<div class="tt99-advanced-section"><span class="tt99-field-label">Angle facts ${helpButton('angleFacts')}</span>${renderChoiceSelector('Whole-turn / angle totals','angleTotal',[90,180,360],r.angleTotals,n=>`${n}°`)}</div>`:''}
       ${needCoordinates?`<div class="tt99-advanced-section"><span class="tt99-field-label">Coordinates</span><div class="tt99-inline-fields">${numField('Largest coordinate value','coordinateMax',r.coordinateMax||12,4,100)}</div><label class="tt99-check"><input data-rule-check="coordinateFourQuadrants" type="checkbox" ${r.coordinateFourQuadrants?'checked':''}><span>Use all four quadrants (Year 6)</span></label></div>`:''}
-      ${needStats?`<div class="tt99-advanced-section"><span class="tt99-field-label">Statistics</span><div class="tt99-inline-fields">${numField('Largest data value','statsValueMax',r.statsValueMax||30,5,1000)}</div></div>`:''}
+      ${needStats?`<div class="tt99-advanced-section"><span class="tt99-field-label">Mean</span><div class="tt99-inline-fields">${numField('Largest value used','statsValueMax',r.statsValueMax||30,5,1000)}</div></div>`:''}${needMeasurement?`<div class="tt99-advanced-section tt99-mental-note"><span class="tt99-field-label">Measurement & time extras</span><small class="tt99-help">These families deliberately use short mental prompts: exact unit conversions, time conversions/durations, 12/24-hour time, money/change, calendar facts, temperature intervals and simple stated metric/imperial approximations. No rulers, clocks, diagrams or comparison tasks are included here.</small></div>`:''}
       <div class="tt99-check-row">
         <label class="tt99-check"><input data-rule-check="avoidExactDuplicates" type="checkbox" ${r.avoidExactDuplicates?'checked':''}><span>Avoid exact duplicate questions where possible ${helpButton('duplicates')}</span></label>
         ${['multiply','mixed'].includes(r.mode) || hasFamily('multiply')?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates ${helpButton('duplicates')}</span></label>`:''}
@@ -553,14 +586,21 @@
   }
 
   function renderFamilySelector(r){
-    const core=isNamedAdvanced()?advancedCoreFamilies():[];
-    const selectedLegacy=(r.families||[]).filter(f=>!CLUB_FAMILY_ORDER.includes(f) && !core.includes(f) && !G.FAMILY_META?.[f]?.retired);
-    const visible=[...CLUB_FAMILY_ORDER,...selectedLegacy];
-    if(core.length){
-      const extras=visible.filter(f=>!core.includes(f));
-      return `<div class="tt99-family-select"><span class="tt99-field-label">Question families ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div><div class="tt99-family-chips tt99-family-chips--locked">${core.map(f=>`<span class="tt99-family-locked">${esc(G.FAMILY_LABELS[f]||f)} <b aria-hidden="true">✓</b></span>`).join('')}</div><div class="tt99-family-group-label">Optional extras</div><div class="tt99-family-chips">${extras.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Named challenges keep their defining core families. The Club editor stays deliberately focused; the full curriculum catalogue is in Custom Worksheets.</small></div>`;
+    const namedAdvanced=isNamedAdvanced();
+    if(namedAdvanced){
+      const core=advancedCoreFamilies();
+      const selected=new Set(r.mode==='family_mix'?(r.families||[]):[]);
+      const groups=POST99_EXTRA_GROUPS.map(group=>{
+        const ids=group.ids.filter(f=>!core.includes(f));
+        if(!ids.length)return '';
+        return `<div class="tt99-post99-extra-group"><b>${esc(group.label)}</b><div class="tt99-family-chips">${ids.map(f=>`<label><input type="checkbox" data-family="${f}" ${selected.has(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div></div>`;
+      }).join('');
+      const count=[...selected].filter(f=>POST99_EXTRA_FAMILY_ORDER.includes(f)&&!core.includes(f)).length;
+      return `<div class="tt99-family-select tt99-post99-extras"><span class="tt99-field-label">Post-99 mental-maths extras ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div><div class="tt99-family-chips tt99-family-chips--locked">${core.map(f=>`<span class="tt99-family-locked">${esc(G.FAMILY_LABELS[f]||f)} <b aria-hidden="true">✓</b></span>`).join('')}</div><details ${count?'open':''}><summary>Optional extras <small>${count?`${count} selected`:'none selected'}</small></summary><div class="tt99-post99-extra-body">${groups}</div></details><small>Extras are available only for Bronze–Diamond and saved post-99 presets. They are intentionally limited to concise mental maths; wider curriculum work belongs in Custom Worksheets.</small></div>`;
     }
-    return `<div class="tt99-family-select"><span class="tt99-field-label">Question families included ${helpButton('families')}</span><div class="tt99-family-chips">${visible.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Core 99 Club families plus optional decimal practice. For wider curriculum worksheets, use the separate Custom Worksheets workspace.</small></div>`;
+    // 11–99 editing remains deliberately narrow: no post-99 extras are offered here.
+    const visible=BASE_11_99_FAMILY_ORDER.filter(f=>G.FAMILY_META?.[f]&&!G.FAMILY_META[f].retired);
+    return `<div class="tt99-family-select"><span class="tt99-field-label">Question families included ${helpButton('families')}</span><div class="tt99-family-chips">${visible.map(f=>`<label><input type="checkbox" data-family="${f}" ${(r.families||[]).includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>The 11–99 progression stays focused on its core arithmetic. Post-99 extras appear only in Bronze–Diamond.</small></div>`;
   }
   function renderFamilyWeights(r){
     const total=r.families.reduce((sum,f)=>sum+(Number(r.familyWeights[f])||1),0)||1;
@@ -757,14 +797,28 @@
   }
 
   function familiesChanged(){
-    const selectedExtras=Array.from(root.querySelectorAll('[data-family]:checked')).map(x=>x.dataset.family);
-    const core=isNamedAdvanced()?advancedCoreFamilies():[];
-    const selected=[...core,...selectedExtras.filter(f=>!core.includes(f))];
-    if(!selected.length){state.status='At least one question family must stay selected.';render();state.advancedOpen=true;return;}
-    const previous=state.rules.familyWeights||{};
-    const base=G.CHALLENGE_PRESETS[state.clubId];
-    state.rules.families=selected;
-    state.rules.familyWeights=Object.fromEntries(selected.map(f=>[f,previous[f]||base?.familyWeights?.[f]||1]));
+    const selectedInputs=Array.from(root.querySelectorAll('[data-family]:checked')).map(x=>x.dataset.family);
+    if(isNamedAdvanced()){
+      const core=advancedCoreFamilies();
+      const extras=selectedInputs.filter(f=>POST99_EXTRA_FAMILY_ORDER.includes(f)&&!core.includes(f));
+      const base=G.CHALLENGE_PRESETS[state.clubId];
+      if(base?.mode==='mixed'&&!extras.length){
+        // Restore Bronze to its exact original mixed ×/÷ mode when the last optional extra is removed.
+        state.rules.mode='mixed';state.rules.families=[];state.rules.familyWeights={};
+      }else{
+        const selected=[...core,...extras];
+        const previous=state.rules.familyWeights||{};
+        state.rules.mode='family_mix';
+        state.rules.families=selected;
+        state.rules.familyWeights=Object.fromEntries(selected.map(f=>[f,previous[f]||base?.familyWeights?.[f]||1]));
+      }
+    }else{
+      const selected=selectedInputs.filter(f=>BASE_11_99_FAMILY_ORDER.includes(f));
+      if(!selected.length){state.status='At least one core question family must stay selected.';render();state.advancedOpen=true;return;}
+      const previous=state.rules.familyWeights||{};
+      state.rules.families=selected;
+      state.rules.familyWeights=Object.fromEntries(selected.map(f=>[f,previous[f]||1]));
+    }
     state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();render();state.advancedOpen=true;
   }
   function familyWeightChanged(family,value){

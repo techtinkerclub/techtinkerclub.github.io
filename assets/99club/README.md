@@ -4,10 +4,10 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version **1.18** deliberately separates the product into two workspaces:
+Version **1.19** keeps the public 99 Club workflow stable while retaining the separate Custom Worksheets beta route:
 
 1. **99 Club** at `/tools/99-club/` — the stable progression tool for Classic 11–99, optional alternative progressions and Bronze–Diamond challenges.
-2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice.
+2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice. In v1.19 this route is intentionally **unlinked from the public 99 Club UI and Help page**; it is available only when its URL is entered/shared directly while the module continues to mature.
 
 The stable 99 Club interface is now feature-frozen in spirit: future curriculum, graphical and word-problem work should normally be added to Custom Worksheets rather than expanding the Club screen. Both workspaces share the deterministic generator/PDF infrastructure where that is safe, but keep separate browser state and UI flows.
 
@@ -17,10 +17,10 @@ Classic 99 Club remains the default progression:
 
 The TTC Classic default is **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable. Alternative published-school presets keep their own defaults unless edited.
 
-### v1.18 workspace split and retained improvements
+### v1.19 workspace split and retained improvements
 
 - The full curriculum selector, year-starting selections and topic weights are no longer embedded in the stable 99 Club screen.
-- The 99 Club rule editor keeps the traditional Club families plus a restrained set of optional decimal families.
+- The 11–99 rule editor stays focused on the traditional Club progression. Bronze–Diamond can optionally add concise post-99 mental-maths extras (missing values, negatives, Roman numerals, decimals, fractions/percentages, factors/multiples, powers, order of operations, angle facts, ratio, measurement/time/money and mean).
 - Teacher notes remain available in both workspaces: up to **240 characters**, answer-sheet only, persisted in setup/full-backup/full-recreation data, and omitted from compact QR payloads.
 - Equivalent versions, question review/replacement, QR recreation, backups, setup import/export, reset controls and portrait/landscape PDFs remain in the stable Club workflow.
 - Existing v1.17 Custom Worksheet browser state is migrated into the new Custom Worksheets storage before the main tool returns to a normal Club challenge.
@@ -31,21 +31,22 @@ The TTC Classic default is **5 minutes** and **3 perfect attempts that do not ne
 - Exact square roots and non-standard rounding remain clearly marked as **Extension** in the Custom Worksheets catalogue.
 - Full scope and deliberately deferred graphical objectives are documented in [`CURRICULUM_COVERAGE.md`](CURRICULUM_COVERAGE.md).
 
-### Regression status for v1.18
+### Regression status for v1.19
 
-The v1.17 generator and the v1.18 line were compared with fixed seeds across every built-in Classic/alternative 11–99 preset and Bronze–Diamond preset. Existing generated question sequences remain identical: **0 regression differences**. Retired pre-release family IDs remain in the compact ordering only where needed to avoid shifting later recreation indices.
+The v1.17 generator and the v1.19 line were compared with fixed seeds across every built-in Classic/alternative 11–99 preset and Bronze–Diamond preset. Existing generated question sequences remain identical: **0 regression differences**. Retired pre-release family IDs remain in the compact ordering only where needed to avoid shifting later recreation indices.
 
-## v1.18 release QA
+## v1.19 release QA
 
 Before packaging this baseline:
 
 - every one of the **105 active** registered direct-maths families was smoke-tested for a non-empty pool and reproducible generation;
 - all Year 1–6 Custom Worksheets starting selections generated 60-question stress-test samples without errors;
-- the stable 99 Club and separate Custom Worksheets beta were exercised in headless Chromium with no JavaScript page errors;
-- category open-state persistence and selected-category highlighting were explicitly checked in the Custom Worksheets UI;
+- the stable 99 Club, direct-URL Custom Worksheets beta and redesigned Help page were exercised in headless Chromium with no JavaScript page errors;
+- the Custom Worksheets category open-state/selection-highlight behaviour retained from v1.18 was preserved;
 - retired story-word-problem and pseudo text-data families are absent from the active catalogue and return no question pool;
 - Custom Worksheet portrait/landscape PDFs and Club answer sheets with teacher notes were rendered during release QA;
 - fixed-seed regression comparison against v1.17 reported **0 differences** across every built-in Classic/alternative 11–99 preset and Bronze–Diamond preset.
+- the public 99 Club UI and Help page contain no link to `/tools/99-club/custom/`; the direct-URL beta page is excluded from site search/sitemap while hidden.
 
 A local full Jekyll build is still expected as part of deployment/CI. The development container used for this QA may not provide the project Bundler toolchain, so the release checks above focus on the 99 Club JavaScript/browser/PDF subsystem.
 
@@ -224,3 +225,10 @@ These URLs are maintenance references for the *rule patterns only*. The generato
 - Optional advanced-Platinum families (negative numbers, Roman numerals, degrees/angles, BIDMAS and algebra): `https://www.bosburyprimaryschool.co.uk/News/The-Platinum-Club-is-Here/` and `https://www.tredworth-jun.gloucs.sch.uk/maths-1/`
 
 Because these public schemes disagree with one another, TTC presents them as optional presets rather than as an "official" standard.
+
+
+## v1.19 post-99 extras boundary
+
+The 11–99 progression remains intentionally focused. Optional concise mental-maths extras are exposed only for Bronze–Diamond and post-99 presets. The extras registry includes missing-number, negative-number, Roman-numeral, decimal, fraction/percentage, factors/multiples, powers, order-of-operations, angle, ratio, measurement/time and mean families that are suitable for rapid mental work. Comparison-heavy, graphical, formal written-calculation and verbose problem-solving content remains in Custom Worksheets.
+
+The Help & guide uses the same page width and button language as the main Studio page, and Help links from the app open in a new tab.

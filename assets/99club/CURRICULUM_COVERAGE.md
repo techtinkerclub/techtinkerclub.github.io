@@ -236,6 +236,10 @@ In particular, **Year 5 volume estimation** and diagram-led **angle-sum reasonin
 
 Adding curriculum families must not silently alter historical Classic 11–99 or Bronze–Diamond fixed-seed output. New families are appended to the family catalogue and Custom Worksheet uses a separate non-progression generation path. Regression tests compare fixed seeds against the pre-Custom-Worksheet generator before release.
 
-## v1.18 boundary
+## v1.19 boundary
 
-Curriculum-wide coverage belongs to the separate **Custom Worksheets** beta workspace. The stable **99 Club** interface exposes only its traditional mental-arithmetic families plus a restrained set of decimal options. `data_table_questions` is retired because text-only pseudo-data does not faithfully represent the graphical/table interpretation objectives. `pie_chart_angles` remains as **pie-chart angle calculations** because converting angle/fraction/percentage relationships is a valid direct calculation; actual pie-chart interpretation remains visual/deferred.
+Curriculum-wide coverage belongs to the separate **Custom Worksheets** beta workspace. The stable **11–99** interface remains focused on the traditional progression. Only **post-99 Bronze–Diamond challenges** can add optional concise mental-maths extras: missing values, negatives, Roman numerals, decimal calculations, fractions/percentages and FDP equivalence, factors/multiples, squares/cubes/powers of 10, order of operations, angle facts, compact ratio work, unit/time/money conversions and calculations, temperature intervals, approximate metric/imperial conversions and mean.
+
+The inclusion test is deliberately narrow: an extra must be short to read, quick to understand, realistically solvable mentally and not depend on a diagram. Comparison-heavy families, area/perimeter, formal written methods, longer problem-solving, story word problems and graphical/statistical interpretation remain outside the 99 Club extras.
+
+`data_table_questions` is retired because text-only pseudo-data does not faithfully represent the graphical/table interpretation objectives. `pie_chart_angles` remains as **pie-chart angle calculations** in the broader Custom Worksheets catalogue because converting angle/fraction/percentage relationships is valid direct maths; actual pie-chart interpretation remains visual/deferred.

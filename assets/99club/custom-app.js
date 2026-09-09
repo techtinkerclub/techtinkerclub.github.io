@@ -9,7 +9,7 @@
   const STORAGE_KEY = 'tt99-custom-settings-v1';
   const LEGACY_MAIN_STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.18';
+  const VERSION = '1.19';
   const APP_NAME = '99 Club Studio · Custom Worksheets';
   const APP_URL = 'https://techtinker.club/tools/99-club/custom/';
   const GENERATION_VERSION = 1;
@@ -152,7 +152,7 @@
   function showHelp(button,key){
     const item=HELP_TEXT[key], pop=root.querySelector('#tt99-help-popover'); if(!item||!pop)return;
     root.querySelectorAll('[data-help-key]').forEach(b=>b.setAttribute('aria-expanded','false'));
-    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p><a href="/tools/99-club/help/#custom">Open full Help & guide</a>`;
+    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p><a href="/tools/99-club/help/#custom" target="_blank" rel="noopener">Open full Help & guide</a>`;
     pop.hidden=false; button.setAttribute('aria-expanded','true');
     const r=button.getBoundingClientRect(), gap=9, width=Math.min(330,innerWidth-24);
     pop.style.width=`${width}px`; let left=Math.min(innerWidth-width-12,Math.max(12,r.left+r.width/2-width/2));
@@ -361,12 +361,11 @@
       <div class="tt99-shell tt99-shell--custom">
         <section class="tt99-custom-hero" aria-labelledby="tt99-custom-title">
           <div><span class="tt99-eyebrow">Tech Tinker Club · 99 Club Studio</span><div class="tt99-custom-title-row"><h1 id="tt99-custom-title">Custom Worksheets</h1><span class="tt99-beta-pill">Beta</span></div><p>Build targeted starters, homework, quizzes and retrieval practice. This workspace is separate so new curriculum, visual and future word-problem generators can grow without changing the stable 99 Club workflow.</p></div>
-          <a href="/tools/99-club/help/#custom" class="tt99-help-link"><span aria-hidden="true">?</span>Help &amp; guide</a>
+          <div class="tt99-custom-hero-actions">
+            <a class="tt99-secondary tt99-custom-back" href="/tools/99-club/">← Back to 99 Club</a>
+            <a href="/tools/99-club/help/" class="tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
+          </div>
         </section>
-        <nav class="tt99-workspace-tabs" aria-label="99 Club Studio tools">
-          <a href="/tools/99-club/"><b>99 Club</b><span>Progression challenges</span></a>
-          <a class="is-active" href="/tools/99-club/custom/" aria-current="page"><b>Custom worksheets</b><span>Starters, quizzes & homework <em>Beta</em></span></a>
-        </nav>
         <div class="tt99-custom-intro-note"><strong>Direct maths first.</strong><span>Story word problems and questions that genuinely require diagrams, charts, clock faces, rulers or other visuals are intentionally deferred until they have dedicated generators.</span></div>
         <div class="tt99-workspace tt99-workspace--custom">
           <aside class="tt99-controls">
