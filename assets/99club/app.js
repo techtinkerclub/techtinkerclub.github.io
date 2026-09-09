@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.19';
+  const VERSION = '1.19.1';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const CUSTOM_WORKSPACE_KEY = 'tt99-custom-settings-v1';
@@ -33,14 +33,16 @@
   // One registry controls the post-99 extras UI. Adding/removing a concise mental-maths family later
   // should normally require changing this list, not redesigning the editor.
   const POST99_EXTRA_GROUPS = [
-    {label:'Missing numbers & number', ids:['add_sub_missing','missing_number','negative_numbers','roman_numerals','factor_check','multiple_check','factor_pairs','common_factors','common_multiples','square','cube','powers_of_10','simple_algebra']},
-    {label:'Decimals, fractions & percentages', ids:['decimal_place_value','decimal_rounding','decimal_scale','decimal_add_subtract','decimal_multiply','decimal_divide','fraction_of','percentage_of','fraction_decimal_percent']},
-    {label:'Mental calculation', ids:['scaled_multiply','scaled_divide','bodmas','angle_facts']},
-    {label:'Ratio & proportion', ids:['ratio_missing','ratio_share','scale_factor']},
-    {label:'Measurement & time', ids:['metric_conversion','time_conversion','time_duration','time_12_24','time_words','calendar_facts','money','temperature_interval','imperial_conversion']},
-    {label:'Statistics', ids:['mean']}
+    {key:'number',label:'Missing numbers & number', ids:['add_sub_missing','missing_number','negative_numbers','roman_numerals','factor_check','multiple_check','factor_pairs','common_factors','common_multiples','square','cube','powers_of_10','simple_algebra']},
+    {key:'fdp',label:'Decimals, fractions & percentages', ids:['decimal_place_value','decimal_rounding','decimal_scale','decimal_add_subtract','decimal_multiply','decimal_divide','fraction_of','percentage_of','fraction_decimal_percent']},
+    {key:'calculation',label:'Mental calculation', ids:['scaled_multiply','scaled_divide','bodmas','angle_facts']},
+    {key:'ratio',label:'Ratio & proportion', ids:['ratio_missing','ratio_share','scale_factor']},
+    {key:'measurement',label:'Measurement & time', ids:['metric_conversion','time_conversion','time_duration','time_12_24','time_words','calendar_facts','money','temperature_interval','imperial_conversion']},
+    {key:'statistics',label:'Statistics', ids:['mean']}
   ].map(group=>({...group,ids:group.ids.filter(id=>G.FAMILY_META?.[id]&&!G.FAMILY_META[id].retired)}));
   const POST99_EXTRA_FAMILY_ORDER = [...new Set(POST99_EXTRA_GROUPS.flatMap(group=>group.ids))];
+  // UI-only state: an extra category stays open while its checkboxes cause the editor to re-render.
+  const openPost99ExtraGroups = new Set();
   // Preserve historical compact-recreation family codes; append new families only after the old prefix.
   const COMPACT_FAMILY_ORDER = Array.isArray(G.FAMILY_COMPACT_ORDER) ? G.FAMILY_COMPACT_ORDER.slice() : FAMILY_ORDER.slice();
   const QUESTION_KIND_ORDER = ['double','repeated_addition',...LEGACY_FAMILY_ORDER,...COMPACT_FAMILY_ORDER.filter(f=>!LEGACY_FAMILY_ORDER.includes(f)&&!['double','repeated_addition'].includes(f))];
@@ -593,10 +595,12 @@
       const groups=POST99_EXTRA_GROUPS.map(group=>{
         const ids=group.ids.filter(f=>!core.includes(f));
         if(!ids.length)return '';
-        return `<div class="tt99-post99-extra-group"><b>${esc(group.label)}</b><div class="tt99-family-chips">${ids.map(f=>`<label><input type="checkbox" data-family="${f}" ${selected.has(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div></div>`;
+        const count=ids.filter(f=>selected.has(f)).length;
+        const shouldOpen=openPost99ExtraGroups.has(group.key);
+        return `<details class="tt99-family-strand tt99-post99-extra-group ${count?'has-selected':''}" data-post99-group="${esc(group.key)}" ${shouldOpen?'open':''}><summary><b>${esc(group.label)}</b><small>${count}/${ids.length} selected</small></summary><div class="tt99-family-chips">${ids.map(f=>`<label><input type="checkbox" data-family="${f}" ${selected.has(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div></details>`;
       }).join('');
       const count=[...selected].filter(f=>POST99_EXTRA_FAMILY_ORDER.includes(f)&&!core.includes(f)).length;
-      return `<div class="tt99-family-select tt99-post99-extras"><span class="tt99-field-label">Post-99 mental-maths extras ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div><div class="tt99-family-chips tt99-family-chips--locked">${core.map(f=>`<span class="tt99-family-locked">${esc(G.FAMILY_LABELS[f]||f)} <b aria-hidden="true">✓</b></span>`).join('')}</div><details ${count?'open':''}><summary>Optional extras <small>${count?`${count} selected`:'none selected'}</small></summary><div class="tt99-post99-extra-body">${groups}</div></details><small>Extras are available only for Bronze–Diamond and saved post-99 presets. They are intentionally limited to concise mental maths; wider curriculum work belongs in Custom Worksheets.</small></div>`;
+      return `<div class="tt99-family-select tt99-post99-extras"><span class="tt99-field-label">Post-99 mental-maths extras ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div><div class="tt99-family-chips tt99-family-chips--locked">${core.map(f=>`<span class="tt99-family-locked">${esc(G.FAMILY_LABELS[f]||f)} <b aria-hidden="true">✓</b></span>`).join('')}</div><div class="tt99-family-group-label tt99-post99-extra-heading">Optional extras <small>${count?`${count} selected`:'none selected'}</small></div>${groups}<small>Extras are available only for Bronze–Diamond and saved post-99 presets. Selected categories are highlighted; open categories stay open until you close them yourself. Wider curriculum work belongs in Custom Worksheets.</small></div>`;
     }
     // 11–99 editing remains deliberately narrow: no post-99 extras are offered here.
     const visible=BASE_11_99_FAMILY_ORDER.filter(f=>G.FAMILY_META?.[f]&&!G.FAMILY_META[f].retired);
@@ -688,6 +692,7 @@
     root.querySelectorAll('[data-rule]').forEach(input=>input.addEventListener(input.type==='range'?'input':'change',()=>ruleChanged(input.dataset.rule,input.value)));
     root.querySelectorAll('[data-rule-check]').forEach(input=>input.addEventListener('change',()=>ruleChanged(input.dataset.ruleCheck,input.checked)));
     root.querySelectorAll('[data-family]').forEach(input=>input.addEventListener('change',familiesChanged));
+    root.querySelectorAll('details[data-post99-group]').forEach(d=>d.addEventListener('toggle',()=>{const key=d.dataset.post99Group;if(!key)return;if(d.open)openPost99ExtraGroups.add(key);else openPost99ExtraGroups.delete(key);}));
     root.querySelectorAll('[data-family-weight]').forEach(input=>input.addEventListener('change',()=>familyWeightChanged(input.dataset.familyWeight,input.value)));
     root.querySelectorAll('[data-family-preset]').forEach(btn=>btn.addEventListener('click',()=>applyFamilyPreset(btn.dataset.familyPreset)));
     root.querySelectorAll('[data-fraction-denominator]').forEach(input=>input.addEventListener('change',fractionChoicesChanged));
@@ -796,7 +801,8 @@
     state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();state.status=token==='core'?'Core four operations selected.':'Year starting selection applied. Adjust topics, weights and ranges as needed.';render();state.advancedOpen=true;
   }
 
-  function familiesChanged(){
+  function familiesChanged(event){
+    const groupKey=event?.target?.closest?.('details[data-post99-group]')?.dataset?.post99Group;if(groupKey)openPost99ExtraGroups.add(groupKey);
     const selectedInputs=Array.from(root.querySelectorAll('[data-family]:checked')).map(x=>x.dataset.family);
     if(isNamedAdvanced()){
       const core=advancedCoreFamilies();

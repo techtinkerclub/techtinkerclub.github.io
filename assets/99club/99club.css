@@ -513,3 +513,13 @@
 #tt99-root .tt99-custom-back{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;white-space:nowrap}
 #tt99-root .tt99-custom-back:hover{text-decoration:none;transform:translateY(-1px)}
 @media(max-width:760px){.tt99-page-main:has(.tt99-guide){width:100%!important}#tt99-root .tt99-custom-hero-actions{width:100%;justify-content:flex-start}#tt99-root .tt99-custom-back{width:100%}}
+
+
+/* v1.19.1 — compact post-99 extras accordion */
+#tt99-root .tt99-post99-extra-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+#tt99-root .tt99-post99-extra-heading small{color:#7d8f93;font-size:.58rem;font-weight:800;text-transform:none;letter-spacing:0}
+#tt99-root .tt99-post99-extras details.tt99-family-strand{margin:6px 0 0;padding:0;border:1px solid #e1e9e9;border-radius:9px;background:#fff;overflow:hidden}
+#tt99-root .tt99-post99-extras details.tt99-family-strand.has-selected{border-color:#b8d9d4;box-shadow:inset 3px 0 0 #43a89e}
+#tt99-root .tt99-post99-extras details.tt99-family-strand.has-selected>summary{background:#eef8f5;color:#205f59}
+#tt99-root .tt99-post99-extras details.tt99-family-strand>summary{margin:0}
+#tt99-root .tt99-post99-extras details.tt99-family-strand .tt99-family-chips{padding:8px 9px 10px}
