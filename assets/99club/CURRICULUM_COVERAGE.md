@@ -15,11 +15,11 @@ Primary sources:
 
 Custom Worksheet currently aims to cover curriculum content that can be represented honestly as **direct numerical questions or concise mathematical prompts**. Examples include `Round 673 to the nearest 100` and `What is the value of 6 in 678?`. Contextual/story word problems are deliberately excluded from this engine: they need a separate structured problem-language system with enough contexts and phrasing to avoid repetitive templates. Content whose mathematical meaning depends on a diagram, physical measurement, clock face, chart, scale, construction or other visual representation is deliberately deferred to the future visual-generator stage.
 
-The Year 1–6 quick-picks select all non-extension families tagged for that year. Several builders then narrow their numbers and question forms using `curriculumYear` so a Year 2 quick-pick does not simply use the same questions as Year 6 with smaller numbers.
+The optional Year 1–6 starting selections choose all non-extension families tagged for that year. Several builders then narrow their numbers and question forms using `curriculumYear` so a Year 2 starting selection does not simply use the same questions as Year 6 with smaller numbers.
 
 ## What is covered
 
-The active family catalogue contains **106 question families** (104 curriculum families plus 2 explicit extension families). The retired pre-release `word_problems` ID remains only as an internal index placeholder so later compact family numbers do not shift; its sentence-template generator has been removed and it is not exposed in the app or Year quick-picks.
+The active family catalogue contains **105 question families** (103 curriculum/direct-maths families plus 2 explicit extension families). The retired pre-release `word_problems` ID remains only as an internal index placeholder so later compact family numbers do not shift; its sentence-template generator has been removed and it is not exposed in the app or Year starting selections.
 
 ### Number & place value
 
@@ -173,7 +173,7 @@ The active family catalogue contains **106 question families** (104 curriculum f
 |---|---|---|
 | `mean` | mean average | Y6 |
 | `pie_chart_angles` | pie-chart fraction/% angles | Y6 |
-| `data_table_questions` | interpret small text data sets | Y2, Y3, Y4, Y5, Y6 |
+| `data_table_questions` | retired placeholder — real statistics interpretation should use rendered tables/charts | Retired / no active years |
 
 ### Extension
 
@@ -182,14 +182,14 @@ The active family catalogue contains **106 question families** (104 curriculum f
 | `square_root` | square roots (extension) | Extension |
 | `rounding_custom` | round to non-standard multiples (extension) | Extension |
 
-## Year quick-pick intent
+## Year starting-selection intent
 
 - **Year 1:** counting and number language to 100, comparison/place value, one-more/less, number bonds and addition/subtraction within 20, early grouping/sharing and doubling, halves/quarters of quantities, money values, unit/measure language, calendar/time words, simple shape/property vocabulary, position and turns.
-- **Year 2:** adds two-digit arithmetic, three addends, 2/5/10 multiplication and inverse facts, unit/non-unit fractions and simple equivalence, money/change, 5-minute time language/durations, measurement comparisons, shape properties and text-table interpretation.
-- **Year 3:** extends to 1,000, 3/4/8 tables, 2-digit × 1-digit work, tenths/fraction sequences, same-denominator fraction addition/subtraction within one whole plus appropriate unit-fraction comparison, metric conversion/perimeter, minute/time facts, angle/line vocabulary and text data.
+- **Year 2:** adds two-digit arithmetic, three addends, 2/5/10 multiplication and inverse facts, unit/non-unit fractions and simple equivalence, money/change, 5-minute time language/durations, measurement comparisons, shape properties. Table/chart interpretation remains visual/deferred.
+- **Year 3:** extends to 1,000, 3/4/8 tables, 2-digit × 1-digit work, tenths/fraction sequences, same-denominator fraction addition/subtraction within one whole plus appropriate unit-fraction comparison, metric conversion/perimeter, minute/time facts, angle/line vocabulary. Data interpretation remains visual/deferred.
 - **Year 4:** extends to 10,000, all 12×12 facts, factor pairs/remainders/distributive reasoning, hundredths and decimals (up to 2 d.p. where appropriate), negative-number counting through zero, unit conversion, money/time, area/perimeter, angle classification and first-quadrant coordinate translations.
 - **Year 5:** extends to 1,000,000, powers of 10, primes/squares/cubes, formal multiplication/division, fractions/mixed numbers, decimals to thousandths, percentages/common equivalences, rate/scaling, metric/imperial conversion, area/measure relationships, polygon properties and coordinate reflection/translation. Practical volume estimation remains deferred because the statutory Year 5 emphasis is representation/practical comparison rather than a text-only cuboid-volume formula exercise.
-- **Year 6:** extends to 10,000,000, long multiplication/division, order of operations, full fraction calculation including mixed-number variants, decimal calculation/division to 3 d.p. where appropriate, FDP/percentage work, ratio/proportion, algebra, unit conversion, triangle/parallelogram/cuboid calculations, formal angle-sum/circle facts, four-quadrant coordinates/reflections, text data and mean.
+- **Year 6:** extends to 10,000,000, long multiplication/division, order of operations, full fraction calculation including mixed-number variants, decimal calculation/division to 3 d.p. where appropriate, FDP/percentage work, ratio/proportion, algebra, unit conversion, triangle/parallelogram/cuboid calculations, formal angle-sum/circle facts, four-quadrant coordinates/reflections and mean. Chart/table interpretation remains visual/deferred.
 
 
 ## Deliberately deferred: contextual/story word problems
@@ -227,11 +227,15 @@ In particular, **Year 5 volume estimation** and diagram-led **angle-sum reasonin
 
 ## Important interpretation notes
 
-- **Decimals:** Year 4 includes tenths/hundredths and decimal work up to two places; Year 5 explicitly includes thousandths and reading/writing/ordering/comparing numbers with up to three decimal places; Year 6 continues place value and calculation with decimals. The quick-picks therefore cap Year 4 at 2 d.p. and Years 5–6 at 3 d.p.
-- **Square roots:** exact square roots remain an **Extension** family. Square and cube numbers are statutory upper-KS2 content; square-root fluency is not presented as a normal statutory Year 1–6 quick-pick topic.
-- **99 Club rules are separate from curriculum coverage.** Classic and post-99 challenges preserve their existing, reproducible maths paths. Curriculum quick-picks apply to Custom Worksheet mode only.
+- **Decimals:** Year 4 includes tenths/hundredths and decimal work up to two places; Year 5 explicitly includes thousandths and reading/writing/ordering/comparing numbers with up to three decimal places; Year 6 continues place value and calculation with decimals. The Year starting selections therefore cap Year 4 at 2 d.p. and Years 5–6 at 3 d.p.
+- **Square roots:** exact square roots remain an **Extension** family. Square and cube numbers are statutory upper-KS2 content; square-root fluency is not presented as a normal statutory Year 1–6 starting-selection topic.
+- **99 Club rules are separate from curriculum coverage.** Classic and post-99 challenges preserve their existing, reproducible maths paths. Curriculum Year starting selections apply to Custom Worksheets only.
 - A year tag means the family can provide age-appropriate practice connected to that year. It does not mean every question family exhaustively assesses every sentence of the statutory objective.
 
 ## Regression requirement
 
 Adding curriculum families must not silently alter historical Classic 11–99 or Bronze–Diamond fixed-seed output. New families are appended to the family catalogue and Custom Worksheet uses a separate non-progression generation path. Regression tests compare fixed seeds against the pre-Custom-Worksheet generator before release.
+
+## v1.18 boundary
+
+Curriculum-wide coverage belongs to the separate **Custom Worksheets** beta workspace. The stable **99 Club** interface exposes only its traditional mental-arithmetic families plus a restrained set of decimal options. `data_table_questions` is retired because text-only pseudo-data does not faithfully represent the graphical/table interpretation objectives. `pie_chart_angles` remains as **pie-chart angle calculations** because converting angle/fraction/percentage relationships is a valid direct calculation; actual pie-chart interpretation remains visual/deferred.

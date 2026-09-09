@@ -1,35 +1,33 @@
 ---
-layout: splash
+layout: default
 title: "99 Club Studio Help"
 permalink: /tools/99-club/help/
 sidebar: false
-header:
-  overlay_image: /assets/images/banner.png
-  show_overlay_excerpt: false
-  show_overlay_text: false
 ---
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=17">
+<link rel="stylesheet" href="/assets/99club/99club.css?v=18">
 
 <div class="tt99-guide">
   <div class="tt99-guide-hero">
     <div>
       <span class="tt99-eyebrow">Tech Tinker Club · 99 Club Studio</span>
       <h1>Help for teachers</h1>
-      <p>Everything you need to make, review, save and reuse 99 Club challenges or flexible classroom maths worksheets. For normal use you only need the four main steps; the detailed topic/rule controls are there when you want them.</p>
+      <p>Everything you need to create, review, save and recreate 99 Club progression sheets. The progression tool is now deliberately kept separate from the broader Custom Worksheets workspace.</p>
     </div>
-    <a class="tt99-guide-back" href="/tools/99-club/">← Back to 99 Club Studio</a>
+    <a class="tt99-guide-back" href="/tools/99-club/">← Back to 99 Club</a>
   </div>
+  <nav class="tt99-workspace-tabs tt99-workspace-tabs--guide" aria-label="99 Club Studio tools">
+    <a class="is-active" href="/tools/99-club/"><b>99 Club</b><span>Progression challenges</span></a>
+    <a href="/tools/99-club/custom/"><b>Custom worksheets</b><span>Starters, quizzes & homework <em>Beta</em></span></a>
+  </nav>
 
-  <div class="tt99-guide-note"><strong>Quick start:</strong> for normal 99 Club use, add your school details, leave <b>Classic 99 Club</b> selected, choose a challenge, check the summary and download the PDF. For a starter, quiz or homework sheet, choose <b>Custom Worksheet</b>, apply a Year 1–6 quick-pick (or choose topics yourself), set the question count and download. You only need the detailed controls when you want to fine-tune the mix.</div>
+  <div class="tt99-guide-note"><strong>Quick start:</strong> add your school details, leave <b>Classic 99 Club</b> selected, choose a challenge, check the short rule summary, then generate and download. The standard Classic default is 5 minutes and three perfect attempts; the attempts do not need to be consecutive.</div>
 
   <nav class="tt99-guide-nav" aria-label="Help topics">
     <a href="#workflow">Making a sheet</a>
-    <a href="#custom">Custom Worksheet</a>
     <a href="#review">Reviewing questions</a>
     <a href="#schemes">Challenges</a>
     <a href="#rules">Changing rules</a>
-    <a href="#weights">Weights</a>
     <a href="#fractions">Fractions & percentages</a>
     <a href="#saving">Saving & sharing</a>
     <a href="#recreate">Recreating a sheet</a>
@@ -40,24 +38,17 @@ header:
     <h2>Make a worksheet in four steps</h2>
     <div class="tt99-guide-steps">
       <article><b>1</b><h3>Personalise the sheet</h3><p>Add the school name, year group, class, teacher, date and optional logo. Leave any field blank if you do not want it printed.</p></article>
-      <article><b>2</b><h3>Choose what to make</h3><p>Choose <b>Custom Worksheet</b> for a neutral starter/quiz/homework sheet, or choose 11–99 Club / Bronze–Diamond for progression challenges. Classic 99 Club is the default progression.</p></article>
-      <article><b>3</b><h3>Check the setup</h3><p>For Club challenges, read the short rule summary and edit only if needed. For Custom Worksheet, choose the curriculum topics, relative weights, question count and optional timer.</p></article>
+      <article><b>2</b><h3>Choose what to make</h3><p>Choose an 11–99 Club level or a Bronze–Diamond post-99 challenge. Classic 99 Club is the default progression.</p></article>
+      <article><b>3</b><h3>Check the setup</h3><p>Read the short rule summary and edit only if your school uses different timings, progression rules or question families.</p></article>
       <article><b>4</b><h3>Generate and download</h3><p>Choose portrait or landscape, create one to four equivalent versions, review the questions and download the worksheet, answer key, or both.</p></article>
     </div>
   </section>
 
   <section id="custom" class="tt99-guide-section tt99-guide-highlight">
-    <h2>Custom Worksheet: starters, quizzes and homework</h2>
-    <p><strong>Custom Worksheet is deliberately separate from the Club progression.</strong> It does not use an 11/22/33 etc. level, does not print an advancement rule, and does not place a Club achievement badge on the pupil sheet. You choose the worksheet title yourself.</p>
-    <div class="tt99-guide-family-grid">
-      <article><h3>Curriculum quick-picks</h3><p>Choose Year 1–6 to select the direct non-graphical practice topics aligned with that year. The quick-pick also applies useful ranges, such as up to 2 decimal places in Year 4 and up to 3 decimal places in Years 5–6. You can then untick individual topics.</p></article>
-      <article><h3>Choose your own mix</h3><p>Open curriculum strands such as Calculation, Fractions, Decimals & percentages, Measurement or Geometry and select exactly the topics you want. <b>Core 4 operations</b> is a quick way to start with +, −, × and ÷.</p></article>
-      <article><h3>Relative weights</h3><p>Weights decide how often a selected topic should appear. For example, weight 3 for decimals and weight 1 for fractions asks for roughly three decimal questions for each fraction question. Weight does not set difficulty.</p></article>
-      <article><h3>Question count and timer</h3><p>Choose from 1 to 200 questions. A sheet can be timed or untimed. Equivalent versions still use the same topic mix and rules but different reproducible questions.</p></article>
-    </div>
-    <p>The current Custom Worksheet engine focuses on direct numerical questions and concise mathematical prompts. For example, it can ask <code>Round 673 to the nearest 100</code> or <code>What is the value of 6 in 678?</code>. Contextual story word problems are deliberately not included yet; they will be designed separately with a richer problem engine so children do not keep seeing the same handful of stories with different numbers. Topics that genuinely require a diagram, clock face, ruler/scale, chart, shape construction or other visual representation are also intentionally deferred.</p>
-    <div class="tt99-guide-note"><strong>Examples:</strong> a Year 5 decimal starter, a 20-question fractions-and-times-tables homework sheet, a 10-question end-of-lesson check, or a retrieval sheet weighted 50% toward a known gap and 50% across previously taught topics.</div>
-    <p><strong>Teacher note:</strong> Step 4 has an optional short note (maximum 240 characters). It is printed only at the end of the answer sheet for future reference, never on the pupil worksheet. It is saved in normal setup/backup files and Full recreation codes, but not in the compact answer-sheet QR.</p>
+    <h2>Custom Worksheets is a separate workspace</h2>
+    <p>Starters, quizzes, homework and curriculum-targeted practice now live in <strong>Custom Worksheets</strong>. Separating the two tools keeps the 99 Club progression stable while the wider worksheet generator can grow independently.</p>
+    <p>The Custom Worksheets beta currently focuses on direct numerical and concise mathematical prompts. Story word problems and questions that genuinely require diagrams, charts, clocks, rulers or other visual representations are intentionally deferred until they have dedicated generators.</p>
+    <p><a class="tt99-guide-back" href="/tools/99-club/custom/">Open Custom Worksheets →</a></p>
   </section>
 
   <section id="review" class="tt99-guide-section tt99-guide-highlight">
@@ -107,13 +98,12 @@ header:
     <h2>Changing the rules</h2>
     <p>Most teachers will rarely need every control. Studio only shows controls that are relevant to the selected challenge.</p>
     <div class="tt99-guide-family-grid">
-      <article><h3>Question count and time</h3><p>For Club challenges, change the number of questions, time limit, perfect attempts and whether those attempts must be consecutive. For Custom Worksheet, set the question count and choose timed or untimed. The pupil instruction updates automatically.</p></article>
+      <article><h3>Question count and time</h3><p>Change the number of questions, time limit, perfect attempts and whether those attempts must be consecutive. The pupil instruction updates automatically.</p></article>
       <article><h3>Tables and number ranges</h3><p>For the 11–99 progression, choose the table families and relevant factor/quotient ranges. Bronze–Diamond use all 1–12 basic facts as fixed core content.</p></article>
       <article><h3>Missing numbers</h3><p>Choose multiplication and/or division and where the blank may appear, for example <code>7 × □ = 42</code> or <code>42 ÷ □ = 7</code>.</p></article>
       <article><h3>Powers and roots</h3><p>Set the base ranges for squares, square roots and cubes. Square-root questions use exact whole-number roots.</p></article>
       <article><h3>Order of operations</h3><p>Choose which operations may appear and whether brackets are used.</p></article>
       <article><h3>Scaled facts</h3><p>Controls questions such as <code>6 × 70</code> or <code>4200 ÷ 60</code>. These settings are separate from the basic 1–12 table facts.</p></article>
-      <article><h3>Curriculum topic families</h3><p>Custom Worksheet includes direct numerical and concise mathematical-prompt families across place value, number properties, calculation, fractions, decimals/percentages, ratio, measurement, geometry, algebra and statistics. Contextual story word problems are deliberately excluded for now. Square roots and non-standard rounding are marked as extension topics.</p></article>
       <article><h3>Duplicate handling</h3><p>Studio can avoid exact repeats and can treat reversed multiplication facts such as <code>3 × 7</code> and <code>7 × 3</code> as the same fact.</p></article>
     </div>
   </section>
@@ -129,11 +119,11 @@ header:
   <section id="fractions" class="tt99-guide-section">
     <h2>Fractions, decimals and percentages</h2>
     <h3>Decimals</h3>
-    <p>Custom Worksheet includes decimal place value, comparison, rounding, ×/÷ by 10/100/1000, decimal addition/subtraction, upper-KS2 multiplication/division and fraction/decimal/percentage equivalence. Year quick-picks cap Year 4 at 2 decimal places and Years 5–6 at 3 decimal places.</p>
+<p>Decimal families are available as optional additions to mixed/advanced 99 Club rules, including place value, comparison, rounding, ×/÷ by 10/100/1000, decimal addition/subtraction, upper-KS2 multiplication/division and fraction/decimal/percentage equivalence. The standard Classic progression is unchanged unless you explicitly edit its rules.</p>
 
     <h3>Fractions of quantities</h3>
     <p>The denominator buttons choose which denominator families may appear. Selecting denominator <b>5</b> can produce <code>1/5</code>, <code>2/5</code>, <code>3/5</code> or <code>4/5</code>; it does not mean “1/5 only”.</p>
-    <p>The <strong>fractions-of-quantities</strong> generator uses proper fractions, so the numerator is smaller than the denominator. Other Custom Worksheet fraction families also cover equivalence, comparison, mixed/improper numbers and the age-appropriate calculation objectives selected by the Year quick-picks. The fractions-of-quantities family varies numerator, denominator and quantity automatically. Custom denominators can be entered as a comma-separated list such as <code>7, 9, 11, 15</code>.</p>
+<p>The <strong>fractions-of-quantities</strong> generator uses proper fractions, so the numerator is smaller than the denominator. It varies numerator, denominator and quantity automatically. Custom denominators can be entered as a comma-separated list such as <code>7, 9, 11, 15</code>.</p>
     <div class="tt99-guide-example"><span>Examples:</span><code>2/3 of 60</code><code>5/7 of 56</code><code>7/12 of 96</code></div>
     <p>Studio only uses combinations that give a whole-number answer.</p>
 
@@ -141,6 +131,11 @@ header:
     <p>The standard buttons cover 5% steps from 5% to 100%. You can add other whole-number percentages, for example <code>37%, 42%</code>, in the custom box. The % sign is optional when typing them.</p>
     <div class="tt99-guide-example"><span>Examples:</span><code>37% of 200 = 74</code><code>42% of 50 = 21</code></div>
     <p>As with fractions, Studio chooses suitable quantities so the generated answer is a whole number.</p>
+  </section>
+
+  <section id="teacher-note" class="tt99-guide-section">
+    <h2>Teacher note on the answer sheet</h2>
+    <p>Step 4 includes an optional teacher note of up to <strong>240 characters</strong>. It prints only at the end of the answer sheet, never on the pupil worksheet. Use it for brief future-reference notes such as a class misconception, a reminder to revisit a topic, or the reason a particular variant was used.</p>
   </section>
 
   <section id="saving" class="tt99-guide-section tt99-guide-highlight">

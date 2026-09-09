@@ -6,12 +6,12 @@
   const root = document.getElementById('tt99-root');
   if (!root || !G || !P || !L) return;
 
-  const STORAGE_KEY = 'tt99-settings-v1';
+  const STORAGE_KEY = 'tt99-custom-settings-v1';
+  const LEGACY_MAIN_STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
   const VERSION = '1.18';
-  const APP_NAME = '99 Club Studio';
-  const APP_URL = 'https://techtinker.club/tools/99-club/';
-  const CUSTOM_WORKSPACE_KEY = 'tt99-custom-settings-v1';
+  const APP_NAME = '99 Club Studio · Custom Worksheets';
+  const APP_URL = 'https://techtinker.club/tools/99-club/custom/';
   const GENERATION_VERSION = 1;
   const MAX_PRINT_QR_VERSION = 14;
   const MAX_TEACHER_NOTE = 240;
@@ -26,11 +26,6 @@
   const ALL_TABLES = Array.from({length:12},(_,i)=>i+1);
   const LEGACY_FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
   const FAMILY_ORDER = Array.isArray(G.FAMILY_ORDER) ? G.FAMILY_ORDER.slice() : LEGACY_FAMILY_ORDER.slice();
-  // The public 99 Club editor deliberately stays focused. The larger curriculum catalogue lives in Custom Worksheets.
-  const CLUB_FAMILY_ORDER = [...LEGACY_FAMILY_ORDER,
-    'decimal_place_value','decimal_compare','decimal_rounding','decimal_scale',
-    'decimal_add_subtract','decimal_multiply','decimal_divide','fraction_decimal_percent'
-  ].filter((id,i,arr)=>arr.indexOf(id)===i && G.FAMILY_META?.[id] && !G.FAMILY_META[id].retired);
   // Preserve historical compact-recreation family codes; append new families only after the old prefix.
   const COMPACT_FAMILY_ORDER = Array.isArray(G.FAMILY_COMPACT_ORDER) ? G.FAMILY_COMPACT_ORDER.slice() : FAMILY_ORDER.slice();
   const QUESTION_KIND_ORDER = ['double','repeated_addition',...LEGACY_FAMILY_ORDER,...COMPACT_FAMILY_ORDER.filter(f=>!LEGACY_FAMILY_ORDER.includes(f)&&!['double','repeated_addition'].includes(f))];
@@ -49,6 +44,9 @@
   }
   function newStudioSeed(clubId){return `${clubId}-${randomStudioToken(6)}`;}
   const HELP_TEXT = {
+    customWorksheet: ['Custom worksheet','Use this for starters, quizzes, homework and targeted practice. Choose direct numerical or concise mathematical prompts, give topics relative weights and set the number of questions. Contextual story word problems are deliberately excluded until they have a separate, richer problem engine.'],
+    curriculumQuickPick: ['Start from a year group','A year button loads a broad, age-aware starting selection of direct/non-graphical maths topics. It is only a starting point: add or remove topics to match what you actually want to practise.'],
+    wholeNumberRange: ['Whole-number difficulty','Sets the upper size used by place-value, rounding, number-property and larger calculation families. A Year starting selection adjusts this automatically, and you can override it.'],
     decimalSettings: ['Decimal difficulty','Primary pupils work with tenths and hundredths from Year 4 and with thousandths / up to 3 decimal places in Year 5–6. These controls cap the generated decimal precision and size.'],
     ratioSettings: ['Ratio settings','Controls the size of ratio parts and quantities used in Year 6 equivalent-ratio, scale-factor and unequal-sharing questions.'],
     scheme: ['Ruleset scheme','A scheme changes the default 11–99 progression. Classic 99 Club is the standard starting point. Other schemes are optional alternatives; your edits are remembered separately for each scheme and challenge.'],
@@ -96,10 +94,10 @@
   };
   const state = {
     schemeId: 'classic',
-    clubId: '33',
-    rules: G.clone(G.CLASSIC_PRESETS['33']),
+    clubId: 'worksheet',
+    rules: G.clone(G.OPEN_WORKSHEET_PRESET),
     ruleOverrides: {},
-    seed: newStudioSeed('33'),
+    seed: newStudioSeed('worksheet'),
     variants: 1,
     orientation: 'portrait',
     sheets: [],
@@ -109,10 +107,11 @@
     teacherNote: '',
     school: { schoolName:'', yearGroup:'', className:'', teacherName:'', worksheetDate:'', logoDataUrl:'', logoWidth:0, logoHeight:0 },
     customPresets: loadCustomPresets(),
-    advancedOpen: false,
+    advancedOpen: true,
     status: '',
     rulesError: ''
   };
+  const openCurriculumStrands = new Set();
 
   root.addEventListener('click',e=>{
     const reviewRow=e.target.closest('.tt99-svg-row-review');
@@ -131,9 +130,7 @@
   addEventListener('resize',closeHelp);
   addEventListener('scroll',closeHelp,{passive:true});
 
-  // v1.18: if v1.16/1.17 was last left in Custom Worksheet mode, preserve that
-  // setup in the new separate workspace before returning the main tool to a Club challenge.
-  migrateLegacyCustomWorkspace();
+  migrateLegacyMainCustomWorkspace();
   const restoredExactSheets = restoreSettings();
   if (!restoredExactSheets) generateAll();
   else { refreshSheetCodes(); refreshRulesError(); persist(); }
@@ -155,7 +152,7 @@
   function showHelp(button,key){
     const item=HELP_TEXT[key], pop=root.querySelector('#tt99-help-popover'); if(!item||!pop)return;
     root.querySelectorAll('[data-help-key]').forEach(b=>b.setAttribute('aria-expanded','false'));
-    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p><a href="/tools/99-club/help/">Open full Help & guide</a>`;
+    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p><a href="/tools/99-club/help/#custom">Open full Help & guide</a>`;
     pop.hidden=false; button.setAttribute('aria-expanded','true');
     const r=button.getBoundingClientRect(), gap=9, width=Math.min(330,innerWidth-24);
     pop.style.width=`${width}px`; let left=Math.min(innerWidth-width-12,Math.max(12,r.left+r.width/2-width/2));
@@ -240,14 +237,14 @@
     const shortest=state.sheets.length?Math.min(...state.sheets.map(s=>s.questions.length)):0;
     state.rulesError=shortest<state.rules.questionCount?`These rules are too restrictive to create ${state.rules.questionCount} valid questions (currently ${shortest}). Widen one or more ranges or enable another question family.`:'';
   }
-  function migrateLegacyCustomWorkspace(){
+  function migrateLegacyMainCustomWorkspace(){
     try{
-      if(localStorage.getItem(CUSTOM_WORKSPACE_KEY))return;
-      const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;
+      if(localStorage.getItem(STORAGE_KEY))return;
+      const raw=localStorage.getItem(LEGACY_MAIN_STORAGE_KEY);if(!raw)return;
       const s=JSON.parse(raw);
       const saved=(state.customPresets||[]).find(p=>String(p.id)===String(s?.clubId||''));
       const open=String(s?.clubId||'')==='worksheet' || s?.rules?.progressionEnabled===false || saved?.progressionEnabled===false;
-      if(open)localStorage.setItem(CUSTOM_WORKSPACE_KEY,raw);
+      if(open)localStorage.setItem(STORAGE_KEY,raw);
     }catch(e){}
   }
   function settingsPayload(includeLogo=true,includeSheets=true){
@@ -263,41 +260,24 @@
   function restoreSettings(){
     try {
       const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      if (s.schemeId && G.SCHEME_PRESETS[s.schemeId]) state.schemeId = s.schemeId;
-      if (s.ruleOverrides && typeof s.ruleOverrides==='object' && !Array.isArray(s.ruleOverrides)) {
-        state.ruleOverrides=G.clone(s.ruleOverrides);
-        Object.entries(state.ruleOverrides).forEach(([key,value])=>{
-          if(!key.startsWith('classic::') || !value || typeof value!=='object') return;
-          if(Number(value.perfectAttempts)===2 && !Object.prototype.hasOwnProperty.call(value,'consecutivePerfectAttempts')){
-            value.perfectAttempts=3; value.consecutivePerfectAttempts=false;
-          }
-        });
-      }
-      const requestedId=String(s.clubId||'');
+      state.schemeId='classic';
+      if (s.ruleOverrides && typeof s.ruleOverrides==='object' && !Array.isArray(s.ruleOverrides)) state.ruleOverrides=G.clone(s.ruleOverrides);
+      const requestedId=String(s.clubId||'worksheet');
       const saved=(state.customPresets||[]).find(p=>String(p.id)===requestedId);
-      const wasOpen=requestedId==='worksheet' || s.rules?.progressionEnabled===false || saved?.progressionEnabled===false;
-      if(!wasOpen && requestedId && getBasePreset(state.schemeId,requestedId)) state.clubId=requestedId;
-      else if(wasOpen){ state.schemeId='classic'; state.clubId='33'; state.status='Custom Worksheets now has its own workspace. Your previous custom setup was preserved there.'; }
-      const base=getBasePreset(state.schemeId,state.clubId) || G.CLASSIC_PRESETS['33'];
-      if(!wasOpen && s.rules && typeof s.rules==='object'){
-        const key=overrideKey(); const restored=G.clone(s.rules);
-        const legacyClassicDefault = state.schemeId==='classic' && !state.ruleOverrides[key]
-          && Number(restored.perfectAttempts)===2
-          && !Object.prototype.hasOwnProperty.call(restored,'consecutivePerfectAttempts');
-        if(legacyClassicDefault){ restored.perfectAttempts=base.perfectAttempts; restored.consecutivePerfectAttempts=base.consecutivePerfectAttempts; }
-        state.rules=normalizeForContext(restored,state.clubId);
-        if(sameRules(state.rules,base,state.clubId)) delete state.ruleOverrides[key];
-        else state.ruleOverrides[key]=G.clone(state.rules);
-      } else state.rules=loadRulesFor(state.schemeId,state.clubId);
+      state.clubId = (requestedId==='worksheet' || saved?.progressionEnabled===false) ? requestedId : 'worksheet';
+      const base=getBasePreset(state.schemeId,state.clubId) || G.OPEN_WORKSHEET_PRESET;
+      if(s.rules && typeof s.rules==='object' && s.rules.progressionEnabled===false){
+        state.rules=normalizeForContext(G.clone(s.rules),state.clubId); commitCurrentRules();
+      } else state.rules=normalizeForContext(G.clone(base),state.clubId);
       state.variants = Math.min(4, Math.max(1, Number(s.variants) || 1));
       state.orientation = s.orientation === 'landscape' ? 'landscape' : 'portrait';
       state.school = { ...state.school, ...(s.school || {}) };
-      state.seed = wasOpen ? newStudioSeed(state.clubId) : (s.seed || newStudioSeed(state.clubId));
+      state.seed = s.seed || newStudioSeed(state.clubId);
       state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(s.previewVariant)||0));
       state.previewAnswers=!!s.previewAnswers;
       state.includeAnswerQr=s.includeAnswerQr!==false;
       state.teacherNote=cleanTeacherNote(s.teacherNote||'');
-      if(!wasOpen && validExactSheets(s.sheets,state.variants,state.rules)){ state.sheets=G.clone(s.sheets); refreshSheetCodes(); return true; }
+      if(validExactSheets(s.sheets,state.variants,state.rules)){state.sheets=G.clone(s.sheets);refreshSheetCodes();return true;}
     } catch(e) {}
     return false;
   }
@@ -378,38 +358,20 @@
 
   function render(){
     root.innerHTML = `
-      <div class="tt99-shell">
-        <section class="tt99-hero" aria-labelledby="tt99-hero-title">
-          <span class="tt99-hero-math tt99-hero-math--x2" aria-hidden="true">x²</span>
-          <span class="tt99-hero-math tt99-hero-math--sum" aria-hidden="true">a + b</span>
-          <span class="tt99-hero-math tt99-hero-math--plus" aria-hidden="true">+</span>
-          <span class="tt99-hero-math tt99-hero-math--99" aria-hidden="true">99</span>
-          <span class="tt99-hero-math tt99-hero-math--divide" aria-hidden="true">÷</span>
-          <div class="tt99-hero-dots" aria-hidden="true"></div>
-          <svg class="tt99-hero-graph" viewBox="0 0 150 130" aria-hidden="true" focusable="false" fill="none">
-            <path d="M18 106H134M40 118V18" fill="none"/>
-            <path class="tt99-hero-graph__curve" d="M41 105 C65 105 80 99 91 88 C106 73 114 48 125 24" fill="none"/>
-          </svg>
-          <div class="tt99-hero__mark">
-            <img src="/assets/99club/images/99club-studio-shield.png" alt="99 Club achievement shield">
-          </div>
-          <div class="tt99-hero__copy">
-            <span class="tt99-eyebrow">Tech Tinker Club · Free classroom tool</span>
-            <h1 id="tt99-hero-title" class="tt99-sr-only">99 Club Studio</h1>
-            <img class="tt99-hero__wordmark" src="/assets/99club/images/99club-studio-wordmark.png" alt="99 Club Studio — Maths for further progress">
-            <p class="tt99-hero__slogan">Practice. Progress. Confidence.</p>
-          </div>
-          <a href="/tools/99-club/help/" class="tt99-help-link"><span aria-hidden="true">?</span>Help &amp; guide</a>
+      <div class="tt99-shell tt99-shell--custom">
+        <section class="tt99-custom-hero" aria-labelledby="tt99-custom-title">
+          <div><span class="tt99-eyebrow">Tech Tinker Club · 99 Club Studio</span><div class="tt99-custom-title-row"><h1 id="tt99-custom-title">Custom Worksheets</h1><span class="tt99-beta-pill">Beta</span></div><p>Build targeted starters, homework, quizzes and retrieval practice. This workspace is separate so new curriculum, visual and future word-problem generators can grow without changing the stable 99 Club workflow.</p></div>
+          <a href="/tools/99-club/help/#custom" class="tt99-help-link"><span aria-hidden="true">?</span>Help &amp; guide</a>
         </section>
         <nav class="tt99-workspace-tabs" aria-label="99 Club Studio tools">
-          <a class="is-active" href="/tools/99-club/" aria-current="page"><b>99 Club</b><span>Progression challenges</span></a>
-          <a href="/tools/99-club/custom/"><b>Custom worksheets</b><span>Starters, quizzes & homework <em>Beta</em></span></a>
+          <a href="/tools/99-club/"><b>99 Club</b><span>Progression challenges</span></a>
+          <a class="is-active" href="/tools/99-club/custom/" aria-current="page"><b>Custom worksheets</b><span>Starters, quizzes & homework <em>Beta</em></span></a>
         </nav>
-
-        <div class="tt99-workspace">
+        <div class="tt99-custom-intro-note"><strong>Direct maths first.</strong><span>Story word problems and questions that genuinely require diagrams, charts, clock faces, rulers or other visuals are intentionally deferred until they have dedicated generators.</span></div>
+        <div class="tt99-workspace tt99-workspace--custom">
           <aside class="tt99-controls">
             ${renderStepPersonalise()}
-            ${renderStepClub()}
+            ${renderSavedWorksheetPresets()}
             ${renderStepRules()}
             ${renderStepGenerate()}
           </aside>
@@ -424,16 +386,24 @@
     bindEvents();
   }
 
+  function renderSavedWorksheetPresets(){
+    const saved=(state.customPresets||[]).filter(p=>p.progressionEnabled===false);
+    if(!saved.length)return '';
+    return `<section class="tt99-card tt99-card--saved-custom"><div class="tt99-saved-custom-head"><div><strong>Saved worksheet setups</strong><small>Reuse a topic mix you saved in this browser.</small></div><button type="button" class="tt99-linkbtn" id="tt99-new-custom-setup">Start fresh</button></div><div class="tt99-saved-custom-grid">${saved.map(p=>`<div class="tt99-custom-wrap">${clubCard(p,true)}<button type="button" class="tt99-custom-delete" data-delete-preset="${esc(p.id)}" aria-label="Delete ${esc(p.name)} preset" title="Delete saved worksheet setup">×</button></div>`).join('')}</div></section>`;
+  }
+
   function renderStepClub(){
     const scheme=getScheme();
     const classics = Object.keys(scheme.presets).map(id => clubCard(scheme.presets[id])).join('');
     const challenges = Object.values(G.CHALLENGE_PRESETS).map(p => clubCard(p)).join('');
-    const customs = state.customPresets.filter(p=>p.progressionEnabled!==false).map(p => `<div class="tt99-custom-wrap">${clubCard(p, true)}<button type="button" class="tt99-custom-delete" data-delete-preset="${esc(p.id)}" aria-label="Delete ${esc(p.name)} preset" title="Delete custom preset">×</button></div>`).join('');
+    const customs = state.customPresets.map(p => `<div class="tt99-custom-wrap">${clubCard(p, true)}<button type="button" class="tt99-custom-delete" data-delete-preset="${esc(p.id)}" aria-label="Delete ${esc(p.name)} preset" title="Delete custom preset">×</button></div>`).join('');
     const schemeOptions=Object.values(G.SCHEME_PRESETS).map(x=>`<option value="${esc(x.id)}" ${x.id===state.schemeId?'selected':''}>${esc(x.name)}</option>`).join('');
     return `<section class="tt99-card">
-      <div class="tt99-step"><span>2</span><div><h2>Choose the challenge ${helpButton('challenge')}</h2><p>Classic 99 Club is the default. Other published-style progressions are optional.</p></div></div>
+      <div class="tt99-step"><span>2</span><div><h2>Choose what to make ${helpButton('challenge')}</h2><p>Use the flexible worksheet for ordinary classroom practice, or choose a 99 Club challenge.</p></div></div>
+      <div class="tt99-club-section-label">Flexible classroom worksheet ${helpButton('customWorksheet')}</div>
+      <div class="tt99-open-choice">${clubCard(G.OPEN_WORKSHEET_PRESET)}</div>
+      <div class="tt99-club-section-label tt99-club-section-label--advanced">99 Club progression</div>
       <label class="tt99-field tt99-scheme-select">${helpLabel('Ruleset scheme','scheme')}<select id="tt99-scheme">${schemeOptions}</select><small>${esc(scheme.tagline)}</small></label>
-      <div class="tt99-club-section-label">11–99 progression</div>
       <div class="tt99-club-grid">${classics}</div>
       <div class="tt99-club-section-label tt99-club-section-label--advanced">Post-99 challenges</div>
       <div class="tt99-club-grid tt99-club-grid--advanced">${challenges}</div>
@@ -469,14 +439,23 @@
   }
   function field(label,key,value,placeholder,cls=''){ return `<label class="tt99-field ${cls}"><span>${label}</span><input data-school="${key}" type="text" maxlength="80" value="${esc(value)}" placeholder="${esc(placeholder)}"></label>`; }
 
+  function customRulesSummary(r){
+    const topics=Array.isArray(r.families)?r.families.length:0;
+    const year=Number(r.curriculumYear)||0;
+    const timing=r.timeEnabled===false?'Untimed':`${Number(r.timeMinutes)||5} min`;
+    return `${Number(r.questionCount)||0} questions · ${topics} topic${topics===1?'':'s'} · ${timing}${year?` · Year ${year} starting profile`:''}`;
+  }
+
   function renderStepRules(){
-    const r=state.rules; const edited=hasRuleOverride();
+    const r=state.rules;
+    const edited=hasRuleOverride();
+    const open=isOpenWorksheet();
     return `<section class="tt99-card">
-      <div class="tt99-step tt99-step--rules"><span>3</span><div><h2>Check / edit rules</h2><p id="tt99-summary">${esc(G.rulesSummary(r))}</p>${edited?'<small class="tt99-rule-state">Edited for this scheme + challenge</small>':''}${state.rulesError?`<div class="tt99-rule-error">${esc(state.rulesError)}</div>`:''}</div></div>
+      <div class="tt99-step tt99-step--rules"><span>2</span><div><h2>Build the worksheet</h2><p id="tt99-summary">${esc(customRulesSummary(r))}</p>${edited?`<small class="tt99-rule-state">Edited ${open?'worksheet setup':'for this scheme + challenge'}</small>`:''}${state.rulesError?`<div class="tt99-rule-error">${esc(state.rulesError)}</div>`:''}</div></div>
       <div class="tt99-rule-actions">
-        <button type="button" class="tt99-secondary" id="tt99-toggle-rules">${state.advancedOpen?'Hide rule editor':'Edit rules'}</button>
-        <span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-rules" ${edited?'':'disabled'}>Reset this challenge</button>${helpButton('resetChallenge')}</span>
-        <span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-scheme" ${schemeHasOverrides()?'':'disabled'}>Reset scheme</button>${helpButton('resetScheme')}</span>
+        <button type="button" class="tt99-secondary" id="tt99-toggle-rules">${state.advancedOpen?'Hide worksheet options':'Choose topics & options'}</button>
+        <span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-rules" ${edited?'':'disabled'}>Reset worksheet</button>${helpButton('resetChallenge')}</span>
+        ${open?'':`<span class="tt99-action-help-wrap"><button type="button" class="tt99-ghost" id="tt99-reset-scheme" ${schemeHasOverrides()?'':'disabled'}>Reset scheme</button>${helpButton('resetScheme')}</span>`}
       </div>
       ${state.advancedOpen ? renderAdvancedRules() : ''}
     </section>`;
@@ -524,6 +503,7 @@
         <label class="tt99-check"><input data-rule-check="unaided" type="checkbox" ${r.unaided?'checked':''}><span>State that the sheet should be completed independently/unaided ${helpButton('unaided')}</span></label>
       </div>
       ${r.mode==='family_mix'?renderFamilySelector(r)+renderFamilyWeights(r):''}
+      <details class="tt99-custom-advanced-settings"><summary><b>Advanced difficulty & number ranges</b><span>Usually leave these at the year/profile defaults</span></summary><div class="tt99-custom-advanced-settings__body">
       ${r.mode==='double'?`<div class="tt99-inline-fields">${numField('Smallest number','numberMin',r.numberMin,0,100)}${numField('Largest number','numberMax',r.numberMax,0,100)}</div>`:''}
       ${r.mode==='repeated_addition'?`<div class="tt99-inline-fields">${numField('Smallest addend','addendMin',r.addendMin,0,100)}${numField('Largest addend','addendMax',r.addendMax,0,100)}${numField('Minimum repeats','repeatsMin',r.repeatsMin,2,20)}${numField('Maximum repeats','repeatsMax',r.repeatsMax,2,20)}</div>`:''}
       ${needWholeNumbers?`<div class="tt99-advanced-section"><span class="tt99-field-label">Whole-number difficulty ${helpButton('wholeNumberRange')}</span><div class="tt99-inline-fields">${numField('Largest whole number','wholeNumberMax',r.wholeNumberMax||1000,20,10000000)}</div></div>`:''}
@@ -544,23 +524,32 @@
       ${needAngles?`<div class="tt99-advanced-section"><span class="tt99-field-label">Angle facts ${helpButton('angleFacts')}</span>${renderChoiceSelector('Whole-turn / angle totals','angleTotal',[90,180,360],r.angleTotals,n=>`${n}°`)}</div>`:''}
       ${needCoordinates?`<div class="tt99-advanced-section"><span class="tt99-field-label">Coordinates</span><div class="tt99-inline-fields">${numField('Largest coordinate value','coordinateMax',r.coordinateMax||12,4,100)}</div><label class="tt99-check"><input data-rule-check="coordinateFourQuadrants" type="checkbox" ${r.coordinateFourQuadrants?'checked':''}><span>Use all four quadrants (Year 6)</span></label></div>`:''}
       ${needStats?`<div class="tt99-advanced-section"><span class="tt99-field-label">Statistics</span><div class="tt99-inline-fields">${numField('Largest data value','statsValueMax',r.statsValueMax||30,5,1000)}</div></div>`:''}
+      </div></details>
       <div class="tt99-check-row">
         <label class="tt99-check"><input data-rule-check="avoidExactDuplicates" type="checkbox" ${r.avoidExactDuplicates?'checked':''}><span>Avoid exact duplicate questions where possible ${helpButton('duplicates')}</span></label>
         ${['multiply','mixed'].includes(r.mode) || hasFamily('multiply')?`<label class="tt99-check"><input data-rule-check="avoidReversedDuplicates" type="checkbox" ${r.avoidReversedDuplicates?'checked':''}><span>Treat 3 × 7 and 7 × 3 as duplicates ${helpButton('duplicates')}</span></label>`:''}
       </div>
-      <div class="tt99-save-preset"><span class="tt99-save-preset-help">${helpButton('savePreset')}</span><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Mixed 99 practice"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save as reusable preset</button></div>
+      <div class="tt99-save-preset"><span class="tt99-save-preset-help">${helpButton('savePreset')}</span><input id="tt99-preset-name" type="text" maxlength="40" placeholder="Preset name, e.g. Year 5 Decimals Starter"><button type="button" id="tt99-save-preset" class="tt99-secondary">Save as reusable preset</button></div>
     </div>`;
   }
 
   function renderFamilySelector(r){
     const core=isNamedAdvanced()?advancedCoreFamilies():[];
-    const selectedLegacy=(r.families||[]).filter(f=>!CLUB_FAMILY_ORDER.includes(f) && !core.includes(f) && !G.FAMILY_META?.[f]?.retired);
-    const visible=[...CLUB_FAMILY_ORDER,...selectedLegacy];
-    if(core.length){
-      const extras=visible.filter(f=>!core.includes(f));
-      return `<div class="tt99-family-select"><span class="tt99-field-label">Question families ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div><div class="tt99-family-chips tt99-family-chips--locked">${core.map(f=>`<span class="tt99-family-locked">${esc(G.FAMILY_LABELS[f]||f)} <b aria-hidden="true">✓</b></span>`).join('')}</div><div class="tt99-family-group-label">Optional extras</div><div class="tt99-family-chips">${extras.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Named challenges keep their defining core families. The Club editor stays deliberately focused; the full curriculum catalogue is in Custom Worksheets.</small></div>`;
+    const meta=G.FAMILY_META||{};
+    const strandOrder=['Number & place value','Number properties','Calculation','Fractions','Decimals & percentages','Ratio & proportion','Measurement','Geometry','Algebra','Statistics','Extension'];
+    function yearsText(m){const ys=(m?.years||[]);if(!ys.length)return m?.extension?'Extension':'';return ys.length===1?`Y${ys[0]}`:`Y${Math.min(...ys)}–${Math.max(...ys)}`;}
+    function grouped(ids,locked=false){
+      return strandOrder.map(strand=>{
+        const list=ids.filter(f=>(meta[f]?.strand||'Other')===strand);if(!list.length)return '';
+        const selected=list.filter(f=>r.families.includes(f)).length;
+        const shouldOpen=locked || openCurriculumStrands.has(strand) || (list.length<=8 && selected>0);
+        const chips=list.map(f=>locked?`<span class="tt99-family-locked">${esc(G.FAMILY_LABELS[f]||f)} <small>${esc(yearsText(meta[f]))}</small><b aria-hidden="true">✓</b></span>`:`<label title="${esc(`${strand} · ${yearsText(meta[f])}`)}"><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}<small>${esc(yearsText(meta[f]))}</small></span></label>`).join('');
+        return `<details class="tt99-family-strand ${selected?'has-selected':''}" data-strand="${esc(strand)}" ${shouldOpen?'open':''}><summary><b>${esc(strand)}</b><small>${locked?`${list.length} core`:`${selected}/${list.length} selected`}</small></summary><div class="tt99-family-chips ${locked?'tt99-family-chips--locked':''}">${chips}</div></details>`;
+      }).join('');
     }
-    return `<div class="tt99-family-select"><span class="tt99-field-label">Question families included ${helpButton('families')}</span><div class="tt99-family-chips">${visible.map(f=>`<label><input type="checkbox" data-family="${f}" ${r.families.includes(f)?'checked':''}><span>${esc(G.FAMILY_LABELS[f]||f)}</span></label>`).join('')}</div><small>Core 99 Club families plus optional decimal practice. For wider curriculum worksheets, use the separate Custom Worksheets workspace.</small></div>`;
+    if(core.length){const extras=FAMILY_ORDER.filter(f=>!core.includes(f));return `<div class="tt99-family-select"><span class="tt99-field-label">Question families ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div>${grouped(core,true)}<div class="tt99-family-group-label">Optional extras</div>${grouped(extras,false)}<small>Named challenges keep their defining core families. Optional extras can be added or removed; use the weights below to control frequency.</small></div>`;}
+    const quick=isOpenWorksheet()?`<div class="tt99-family-quick"><span>Start from a year group (optional) ${helpButton('curriculumQuickPick')}</span><div>${[1,2,3,4,5,6].map(y=>`<button type="button" data-family-preset="year-${y}">Year ${y}</button>`).join('')}<button type="button" data-family-preset="core">Core 4 operations</button></div><small>Choose a year to load a sensible starting selection, then fine-tune the strands below. You can also ignore this and choose topics manually.</small></div>`:'';
+    return `<div class="tt99-family-select"><span class="tt99-field-label">Choose topics ${helpButton('families')}</span>${quick}${grouped(FAMILY_ORDER,false)}<small>Choose direct numerical and concise mathematical-prompt topics. Weights below control frequency, not difficulty. Contextual story word problems are deliberately deferred to a separate problem engine, and topics that genuinely require diagrams, clocks, charts, measured drawings or other visual representations are deferred to the visual-generator stage.</small></div>`;
   }
   function renderFamilyWeights(r){
     const total=r.families.reduce((sum,f)=>sum+(Number(r.familyWeights[f])||1),0)||1;
@@ -589,7 +578,7 @@
     const shortCodeNeedsRules=hasRuleOverride() || state.clubId.startsWith('custom-');
     const canUndo=hasPreRestoreSnapshot();
     return `<section class="tt99-card tt99-card--action">
-      <div class="tt99-step"><span>4</span><div><h2>Generate and download</h2><p>Create up to four equivalent versions. Answer keys use matching sheet codes.</p></div></div>
+      <div class="tt99-step"><span>3</span><div><h2>Review, generate and download</h2><p>Create up to four equivalent versions. Answer keys use matching sheet codes.</p></div></div>
       <div class="tt99-layout-control"><span class="tt99-field-label">Page layout ${helpButton('layout')}</span><div class="tt99-layout-picker" role="group" aria-label="Page layout">
         <button type="button" class="tt99-layout-option ${state.orientation==='portrait'?'is-selected':''}" data-page-orientation="portrait" aria-pressed="${state.orientation==='portrait'}"><span class="tt99-page-icon tt99-page-icon--portrait" aria-hidden="true"></span><span><b>Portrait</b><small>Classic worksheet layout</small></span></button>
         <button type="button" class="tt99-layout-option ${state.orientation==='landscape'?'is-selected':''}" data-page-orientation="landscape" aria-pressed="${state.orientation==='landscape'}"><span class="tt99-page-icon tt99-page-icon--landscape" aria-hidden="true"></span><span><b>Landscape</b><small>Wider, larger working text</small></span></button>
@@ -647,7 +636,9 @@
     root.querySelector('#tt99-reset-scheme')?.addEventListener('click',resetScheme);
     root.querySelectorAll('[data-rule]').forEach(input=>input.addEventListener(input.type==='range'?'input':'change',()=>ruleChanged(input.dataset.rule,input.value)));
     root.querySelectorAll('[data-rule-check]').forEach(input=>input.addEventListener('change',()=>ruleChanged(input.dataset.ruleCheck,input.checked)));
-    root.querySelectorAll('[data-family]').forEach(input=>input.addEventListener('change',familiesChanged));
+    root.querySelectorAll('[data-family]').forEach(input=>input.addEventListener('change',e=>familiesChanged(e)));
+    root.querySelectorAll('details.tt99-family-strand').forEach(d=>d.addEventListener('toggle',()=>{const strand=d.dataset.strand;if(!strand)return;if(d.open)openCurriculumStrands.add(strand);else openCurriculumStrands.delete(strand);}));
+    root.querySelector('#tt99-new-custom-setup')?.addEventListener('click',()=>{state.clubId='worksheet';state.rules=normalizeForContext(G.clone(G.OPEN_WORKSHEET_PRESET),'worksheet');state.ruleOverrides={};state.seed=newStudioSeed('worksheet');state.advancedOpen=true;generateAll();state.status='Fresh Custom Worksheet setup started.';render();});
     root.querySelectorAll('[data-family-weight]').forEach(input=>input.addEventListener('change',()=>familyWeightChanged(input.dataset.familyWeight,input.value)));
     root.querySelectorAll('[data-family-preset]').forEach(btn=>btn.addEventListener('click',()=>applyFamilyPreset(btn.dataset.familyPreset)));
     root.querySelectorAll('[data-fraction-denominator]').forEach(input=>input.addEventListener('change',fractionChoicesChanged));
@@ -756,7 +747,8 @@
     state.rules=normalizeForContext(state.rules,state.clubId);commitCurrentRules();state.seed=newStudioSeed(state.clubId);generateAll();state.status=token==='core'?'Core four operations selected.':'Year starting selection applied. Adjust topics, weights and ranges as needed.';render();state.advancedOpen=true;
   }
 
-  function familiesChanged(){
+  function familiesChanged(event){
+    const strand=event?.target?.closest?.('details.tt99-family-strand')?.dataset?.strand;if(strand)openCurriculumStrands.add(strand);
     const selectedExtras=Array.from(root.querySelectorAll('[data-family]:checked')).map(x=>x.dataset.family);
     const core=isNamedAdvanced()?advancedCoreFamilies():[];
     const selected=[...core,...selectedExtras.filter(f=>!core.includes(f))];
@@ -827,7 +819,7 @@
     const p=state.customPresets.find(x=>x.id===id); if(!p)return;
     state.customPresets=state.customPresets.filter(x=>x.id!==id); saveCustomPresets();
     Object.keys(state.ruleOverrides).filter(k=>k.endsWith(`::${id}`)).forEach(k=>delete state.ruleOverrides[k]);
-    if(state.clubId===id){state.clubId='33';state.rules=loadRulesFor(state.schemeId,'33');state.seed=newStudioSeed('33');generateAll();}
+    if(state.clubId===id){state.clubId='worksheet';state.rules=normalizeForContext(G.clone(G.OPEN_WORKSHEET_PRESET),'worksheet');state.seed=newStudioSeed('worksheet');generateAll();}
     state.status=`Deleted custom preset “${p.name}”.`;render();
   }
   function questionCategoryLabel(q){

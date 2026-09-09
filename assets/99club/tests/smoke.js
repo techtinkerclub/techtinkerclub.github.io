@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.17 maintainer smoke test.
+/* 99 Club Studio v1.18 maintainer smoke test.
  * Run from repository root with: node assets/99club/tests/smoke.js
  */
 'use strict';
@@ -38,7 +38,7 @@ for(const family of G.FAMILY_ORDER){
 for(let year=1;year<=6;year++){
   try{
     const families=G.FAMILY_ORDER.filter(f=>(G.FAMILY_META[f]?.years||[]).includes(year)&&!G.FAMILY_META[f]?.extension);
-    assert(families.length>0,`Year ${year}: no quick-pick families`);
+    assert(families.length>0,`Year ${year}: no year-starting-selection families`);
     let rules=G.clone(G.OPEN_WORKSHEET_PRESET);
     Object.assign(rules,profiles[year],{families,familyWeights:Object.fromEntries(families.map(f=>[f,1])),questionCount:60,progressionEnabled:false});
     rules=G.normalizeRules(rules);
@@ -64,6 +64,10 @@ try{
   assert(G.FAMILY_META.square_root.extension===true,'Square roots must remain extension');
   assert(G.FAMILY_META.rounding_custom.extension===true,'Non-standard rounding must remain extension');
   assert(!G.FAMILY_ORDER.includes('word_problems'),'Contextual story word problems must not be exposed in the active catalogue');
+  assert(!G.FAMILY_ORDER.includes('data_table_questions'),'Pseudo text-data interpretation must not be exposed in the active catalogue');
+  assert((G.FAMILY_COMPACT_ORDER||[]).includes('data_table_questions'),'Retired text-data compact index should remain stable for pre-release recreation compatibility');
+  assert(G.questionPool('data_table_questions',G.OPEN_WORKSHEET_PRESET).length===0,'Retired pseudo-data generator should not produce questions');
+  assert(G.FAMILY_LABELS.pie_chart_angles==='pie-chart angle calculations','Pie-chart calculation family label should be explicit');
   assert((G.FAMILY_COMPACT_ORDER||[]).includes('word_problems'),'Retired word-problem compact index should remain available for pre-release recreation compatibility');
   assert(G.questionPool('word_problems',G.OPEN_WORKSHEET_PRESET).length===0,'Retired word-problem generator should not produce questions');
   const migrated=G.normalizeRules({...G.OPEN_WORKSHEET_PRESET,families:['word_problems'],familyWeights:{word_problems:1}});
@@ -90,4 +94,4 @@ if(failures.length){
   failures.forEach(x=>console.error(' - '+x));
   process.exit(2);
 }
-console.log(`99 Club Studio smoke test passed: ${G.FAMILY_ORDER.length} families + Year 1–6 quick-picks + progression/PDF invariants.`);
+console.log(`99 Club Studio smoke test passed: ${G.FAMILY_ORDER.length} families + Year 1–6 starting selections + progression/PDF invariants.`);

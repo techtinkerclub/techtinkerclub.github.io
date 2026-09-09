@@ -1,16 +1,14 @@
 ---
 layout: default
-title: "99 Club Studio"
-permalink: /tools/99-club/
+title: "Custom Worksheets · 99 Club Studio"
+permalink: /tools/99-club/custom/
 sidebar: false
 ---
 
 <div id="main" class="tt99-page-main" role="main">
   <article class="splash">
     <section class="page__content">
-      <div id="tt99-root">
-        <noscript>This worksheet generator needs JavaScript enabled in your browser.</noscript>
-      </div>
+      <div id="tt99-root"></div>
     </section>
   </article>
 </div>
@@ -20,4 +18,4 @@ sidebar: false
 <script src="/assets/99club/simple-pdf.js?v=18"></script>
 <script src="/assets/99club/pdf-layout.js?v=18"></script>
 <script src="/assets/99club/qr-lite.js?v=18"></script>
-<script src="/assets/99club/app.js?v=18" defer></script>
+<script src="/assets/99club/custom-app.js?v=18" defer></script>

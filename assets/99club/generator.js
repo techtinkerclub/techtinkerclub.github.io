@@ -208,7 +208,7 @@
 
 
   // Text-only primary-maths topic map. `years` is the main National Curriculum year span
-  // in England; it is used only for the Custom Worksheet quick-picks, not to gate teachers.
+  // in England; it is used only for optional Custom Worksheets Year starting selections, not to gate teachers.
   // Graph/diagram-dependent objectives are intentionally left for a later visual-question layer.
   const FAMILY_META = {
     addition:{label:'addition',strand:'Calculation',years:[1,2,3,4,5,6]},
@@ -282,7 +282,7 @@
     equation_pairs:{label:'pairs satisfying equations',strand:'Algebra',years:[6]},
 
     mean:{label:'mean average',strand:'Statistics',years:[6]},
-    pie_chart_angles:{label:'pie-chart fraction/% angles',strand:'Statistics',years:[6]},
+    pie_chart_angles:{label:'pie-chart angle calculations',strand:'Statistics',years:[6]},
 
     more_less:{label:'more / less from a number',strand:'Number & place value',years:[1,2,3,4]},
     partition_number:{label:'partition numbers by place value',strand:'Number & place value',years:[2,3,4]},
@@ -309,7 +309,7 @@
     line_properties:{label:'parallel / perpendicular / line facts',strand:'Geometry',years:[3,4,5,6]},
     angle_relationships:{label:'angles at a point / line / opposite',strand:'Geometry',years:[5,6]},
     circle_properties:{label:'circle radius / diameter facts',strand:'Geometry',years:[6]},
-    data_table_questions:{label:'interpret small text data sets',strand:'Statistics',years:[2,3,4,5,6]},
+    data_table_questions:{label:'retired statistics placeholder',strand:'Statistics',years:[],retired:true},
 
     // Additional text-only families needed to cover statutory objectives that do not require diagrams.
     // Keep these appended so older compact recreation family indices remain stable.
@@ -457,7 +457,7 @@
       r.ratioQuantityMax = clampInt(r.ratioQuantityMax, 10, 5000, 120);
     }
     if (hasAnyFamily('coordinates','coordinate_reflection')) { r.coordinateMax = clampInt(r.coordinateMax, 4, 100, 12); r.coordinateFourQuadrants = !!r.coordinateFourQuadrants; }
-    if (hasAnyFamily('mean','data_table_questions')) r.statsValueMax = clampInt(r.statsValueMax, 5, 1000, 30);
+    if (hasAnyFamily('mean')) r.statsValueMax = clampInt(r.statsValueMax, 5, 1000, 30);
     const validFamilies = FAMILY_ORDER;
     r.families = Array.isArray(r.families) ? [...new Set(r.families.filter(f => validFamilies.includes(f)))] : ['addition','subtraction','multiply','divide'];
     if (!r.families.length && r.mode === 'family_mix') r.families = ['addition','subtraction','multiply','divide'];
@@ -1305,10 +1305,9 @@
 
   function buildCirclePropertiesPool(){const out=[];for(let r=1;r<=30;r++){out.push({kind:'circle_properties',prompt:`Circle radius ${r} cm. Diameter =`,answer:`${2*r} cm`,key:`cir:d:${r}`});out.push({kind:'circle_properties',prompt:`Circle diameter ${2*r} cm. Radius =`,answer:`${r} cm`,key:`cir:r:${r}`});}out.push({kind:'circle_properties',prompt:'Distance around a circle is called =',answer:'circumference',key:'cir:c'});return out;}
 
-  function buildDataTableQuestionsPool(rules){
-    const out=[],m=Math.min(100,Number(rules.statsValueMax)||30),cats=['Red','Blue','Green'];
-    for(let a=2;a<=m;a+=3)for(let b=3;b<=Math.min(m,a+12);b+=4){const c=Math.max(1,Math.floor((a+b)/3));const data=`Red=${a}, Blue=${b}, Green=${c}.`;out.push({kind:'data_table_questions',prompt:`Data: ${data} Total =`,answer:a+b+c,key:`dt:t:${a}:${b}:${c}`});out.push({kind:'data_table_questions',prompt:`Data: ${data} Blue − Green =`,answer:b-c,key:`dt:d:${a}:${b}:${c}`});out.push({kind:'data_table_questions',prompt:`Data: ${data} Largest category =`,answer:b>=a&&b>=c?'Blue':(a>=c?'Red':'Green'),key:`dt:l:${a}:${b}:${c}`});}return out;
-  }
+  // Retained only as a compact-family ID placeholder for pre-release recreation compatibility.
+  // Statistics interpretation that depends on tables/charts belongs to the future visual renderer.
+  function buildDataTableQuestionsPool(){ return []; }
 
 
   function buildNumberBondsPool(rules){
