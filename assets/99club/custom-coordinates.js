@@ -1,5 +1,5 @@
 /* Tech Tinker Club - Custom Worksheets coordinate geometry engine
- * v0.1 / visual coordinates stage 1
+ * v0.2 / visual coordinates stage 2
  *
  * Adds curriculum-mapped coordinate/translation/reflection questions to the
  * hidden Custom Worksheets workspace.  It depends on custom-graphs.js for the
@@ -11,11 +11,12 @@
   const G=global.TT99Generator;
   if(!G) return;
 
-  const VERSION='0.1.0';
+  const VERSION='0.2.0';
   const COORD_FAMILIES={
     coordinates_y4:{label:'coordinates & translation',strand:'Geometry',years:[4],curriculumId:'Y4.PD.01'},
     transformations_y5:{label:'reflection & translation',strand:'Geometry',years:[5],curriculumId:'Y5.PD.01'},
-    coordinates_y6:{label:'four-quadrant coordinates & transformations',strand:'Geometry',years:[6],curriculumId:'Y6.PD.01/Y6.PD.02'}
+    coordinates_y6:{label:'four-quadrant coordinates & transformations',strand:'Geometry',years:[6],curriculumId:'Y6.PD.01/Y6.PD.02'},
+    coordinates_extension:{label:'coordinate reasoning (extension)',strand:'Extension',years:[],curriculumId:'',extension:true}
   };
   const COORD_FAMILY_IDS=Object.keys(COORD_FAMILIES);
   const isCoordKind=kind=>COORD_FAMILY_IDS.includes(String(kind||''));
@@ -29,6 +30,7 @@
   const translate=(points,dx,dy)=>points.map(([x,y])=>[x+dx,y+dy]);
   const reflectX=(points,k=0)=>points.map(([x,y])=>[x,2*k-y]);
   const reflectY=(points,k=0)=>points.map(([x,y])=>[2*k-x,y]);
+  const rotate90=(points,cx=0,cy=0,clockwise=true)=>points.map(([x,y])=>clockwise?[cx+(y-cy),cy-(x-cx)]:[cx-(y-cy),cy+(x-cx)]);
   const inBounds=(points,xMin,xMax,yMin,yMax)=>points.every(([x,y])=>x>=xMin&&x<=xMax&&y>=yMin&&y<=yMax);
   const moveText=(dx,dy)=>{
     const parts=[];
@@ -41,6 +43,7 @@
     // Year 4 - first quadrant and translation.
     {id:'cg_y4_read_coordinate',family:'coordinates_y4',title:'Read a marked coordinate',category:'read'},
     {id:'cg_y4_xy_order',family:'coordinates_y4',title:'Distinguish x-y coordinate order',category:'diagnostic'},
+    {id:'cg_y4_identify_label',family:'coordinates_y4',title:'Identify a labelled point from its coordinates',category:'read'},
     {id:'cg_y4_plot_point',family:'coordinates_y4',title:'Plot a specified point',category:'construct'},
     {id:'cg_y4_draw_polygon',family:'coordinates_y4',title:'Plot coordinates and draw a polygon',category:'construct'},
     {id:'cg_y4_missing_vertex',family:'coordinates_y4',title:'Complete a polygon with a missing vertex',category:'reasoning'},
@@ -49,12 +52,14 @@
     {id:'cg_y4_translate_shape_to_point',family:'coordinates_y4',title:'Translate a polygon so one vertex reaches a target',category:'translation_construct'},
     {id:'cg_y4_describe_translation',family:'coordinates_y4',title:'Describe a shown translation',category:'translation_reasoning'},
     {id:'cg_y4_translated_vertices',family:'coordinates_y4',title:'Give coordinates after translating a polygon',category:'translation_reasoning'},
+    {id:'cg_y4_same_displacement_endpoint',family:'coordinates_y4',title:'Find an endpoint using the same displacement',category:'translation_reasoning'},
 
     // Year 5 - first quadrant reflection and translation.
     {id:'cg_y5_translate_shape',family:'transformations_y5',title:'Represent a translated shape',category:'translation_construct'},
     {id:'cg_y5_describe_translation',family:'transformations_y5',title:'Describe a translation',category:'translation_reasoning'},
     {id:'cg_y5_reflect_vertical',family:'transformations_y5',title:'Reflect in a vertical line parallel to the y-axis',category:'reflection_construct'},
     {id:'cg_y5_reflect_horizontal',family:'transformations_y5',title:'Reflect in a horizontal line parallel to the x-axis',category:'reflection_construct'},
+    {id:'cg_y5_reflection_coordinate_set',family:'transformations_y5',title:'Write all coordinates after an offset-line reflection',category:'reflection_reasoning'},
     {id:'cg_y5_reflected_vertex',family:'transformations_y5',title:'Find a reflected vertex coordinate',category:'reflection_reasoning'},
     {id:'cg_y5_describe_reflection',family:'transformations_y5',title:'Describe a shown reflection',category:'reflection_reasoning'},
     {id:'cg_y5_identify_transform',family:'transformations_y5',title:'Identify reflection or translation',category:'classification'},
@@ -63,22 +68,34 @@
     // Year 6 - all four quadrants, missing coordinates and axes reflections.
     {id:'cg_y6_read_coordinate',family:'coordinates_y6',title:'Read a coordinate in four quadrants',category:'read'},
     {id:'cg_y6_xy_order',family:'coordinates_y6',title:'Distinguish signed x-y coordinate order',category:'diagnostic'},
+    {id:'cg_y6_identify_label',family:'coordinates_y6',title:'Identify a labelled point in four quadrants',category:'read'},
+    {id:'cg_y6_spot_plotting_error',family:'coordinates_y6',title:'Spot a coordinate plotting error',category:'diagnostic'},
     {id:'cg_y6_plot_point',family:'coordinates_y6',title:'Plot a point in four quadrants',category:'construct'},
+    {id:'cg_y6_plot_join_identify_polygon',family:'coordinates_y6',title:'Plot, join and identify a polygon',category:'construct'},
     {id:'cg_y6_missing_rectangle',family:'coordinates_y6',title:'Predict a missing rectangle vertex',category:'shape_reasoning'},
     {id:'cg_y6_missing_parallelogram',family:'coordinates_y6',title:'Predict a missing parallelogram vertex',category:'shape_reasoning'},
     {id:'cg_y6_missing_rhombus',family:'coordinates_y6',title:'Predict a missing rhombus vertex',category:'shape_reasoning'},
+    {id:'cg_y6_missing_kite',family:'coordinates_y6',title:'Predict a missing kite vertex',category:'shape_reasoning'},
     {id:'cg_y6_translate_shape',family:'coordinates_y6',title:'Translate a shape across four quadrants',category:'translation_construct'},
     {id:'cg_y6_describe_translation',family:'coordinates_y6',title:'Describe a translation in four quadrants',category:'translation_reasoning'},
     {id:'cg_y6_reflect_x_axis',family:'coordinates_y6',title:'Reflect a shape in the x-axis',category:'reflection_construct'},
     {id:'cg_y6_reflect_y_axis',family:'coordinates_y6',title:'Reflect a shape in the y-axis',category:'reflection_construct'},
     {id:'cg_y6_reflected_point',family:'coordinates_y6',title:'Find a reflected point coordinate',category:'reflection_reasoning'},
-    {id:'cg_y6_missing_component',family:'coordinates_y6',title:'Reason about a missing coordinate component',category:'shape_reasoning'}
+    {id:'cg_y6_reflection_sign_rule',family:'coordinates_y6',title:'Reason about sign changes under axis reflection',category:'reflection_reasoning'},
+    {id:'cg_y6_complete_reflection_pattern',family:'coordinates_y6',title:'Complete a four-quadrant reflection pattern',category:'reflection_construct'},
+    {id:'cg_y6_missing_component',family:'coordinates_y6',title:'Reason about a missing coordinate component',category:'shape_reasoning'},
+
+    // Deliberately separate from the ordinary year families: useful historical/booster reasoning, not a normal statutory preset.
+    {id:'cg_ext_midpoint',family:'coordinates_extension',title:'Find a midpoint from two endpoints',category:'extension_midpoint'},
+    {id:'cg_ext_rectangle_centre',family:'coordinates_extension',title:'Find the centre of a rectangle',category:'extension_midpoint'},
+    {id:'cg_ext_equally_spaced_line',family:'coordinates_extension',title:'Infer a point on an equally spaced coordinate line',category:'extension_pattern'},
+    {id:'cg_ext_rotation_90',family:'coordinates_extension',title:'Rotate a point 90 degrees about a centre',category:'extension_rotation'}
   ];
   const TYPES_BY_FAMILY=Object.fromEntries(COORD_FAMILY_IDS.map(f=>[f,CATALOGUE.filter(x=>x.family===f).map(x=>x.id)]));
 
   // Register the visual curriculum families before custom-app.js reads the registry.
   for(const [id,meta] of Object.entries(COORD_FAMILIES)){
-    if(!G.FAMILY_META[id])G.FAMILY_META[id]={label:meta.label,strand:meta.strand,years:meta.years.slice(),visual:true,curriculumId:meta.curriculumId};
+    if(!G.FAMILY_META[id])G.FAMILY_META[id]={label:meta.label,strand:meta.strand,years:meta.years.slice(),visual:true,curriculumId:meta.curriculumId,extension:!!meta.extension};
     G.FAMILY_LABELS[id]=meta.label;
     if(Array.isArray(G.FAMILY_ORDER)&&!G.FAMILY_ORDER.includes(id))G.FAMILY_ORDER.push(id);
     if(Array.isArray(G.FAMILY_COMPACT_ORDER)&&!G.FAMILY_COMPACT_ORDER.includes(id))G.FAMILY_COMPACT_ORDER.push(id);
@@ -128,6 +145,11 @@
       const points=target==='P'?[pt(x,y,'P'),pt(y,x,'Q')]:[pt(y,x,'P'),pt(x,y,'Q')];
       return q('coordinates_y4',typeId,`Which labelled point is at (${x}, ${y})?`,target,idx,makeVisual(4,{points}),'M',{misconception:'coordinate_order'});
     }
+    if(typeId==='cg_y4_identify_label'){
+      const sets=[[[2,7,'A'],[7,2,'B'],[4,5,'C'],[8,8,'D']],[[1,6,'P'],[6,4,'Q'],[3,2,'R'],[8,5,'S']],[[2,3,'J'],[5,7,'K'],[8,2,'L'],[4,8,'M']],[[1,1,'W'],[3,6,'X'],[6,3,'Y'],[9,7,'Z']],[[2,8,'A'],[5,4,'B'],[7,7,'C'],[9,2,'D']],[[1,4,'P'],[4,1,'Q'],[6,8,'R'],[8,5,'S']]][idx];
+      const target=sets[(idx+2)%sets.length];
+      return q('coordinates_y4',typeId,`Which labelled point is at (${target[0]}, ${target[1]})?`,target[2],idx,makeVisual(4,{points:sets.map(v=>pt(v[0],v[1],v[2]))}),'M');
+    }
     if(typeId==='cg_y4_plot_point'){
       const x=[3,8,2,6,5,7][idx],y=[7,2,5,8,3,6][idx];
       return q('coordinates_y4',typeId,`Plot point P at (${x}, ${y}).`,`P = (${x}, ${y})`,idx,makeVisual(4,{answerPoints:[pt(x,y,'P','answer')]}),'L',{marking:{mode:'construction',answer:[x,y]}});
@@ -165,6 +187,10 @@
       const mv=[[4,-3],[-4,4],[3,4],[-4,-5],[4,2],[-3,5]][idx],base=bases[idx],moved=translate(base,mv[0],mv[1]);
       return q('coordinates_y4',typeId,'Shape A has been translated to shape B. Describe the translation.',moveText(mv[0],mv[1]),idx,makeVisual(4,{polygons:[poly(base,[],'given'),poly(moved,[],'image')],shapeLabels:[{x:base[0][0],y:base[0][1],text:'A'},{x:moved[0][0],y:moved[0][1],text:'B'}]}),'L');
     }
+    if(typeId==='cg_y4_same_displacement_endpoint'){
+      const rows=[{a:[1,2],b:[4,5],c:[5,2]},{a:[2,7],b:[5,5],c:[6,7]},{a:[1,5],b:[4,7],c:[5,2]},{a:[6,2],b:[3,5],c:[8,4]},{a:[2,2],b:[5,4],c:[4,6]},{a:[7,7],b:[4,5],c:[8,4]}],r=rows[idx],mv=[r.b[0]-r.a[0],r.b[1]-r.a[1]],d=[r.c[0]+mv[0],r.c[1]+mv[1]];
+      return q('coordinates_y4',typeId,'AB and CD show the same translation. What are the coordinates of D?',`(${d[0]}, ${d[1]})`,idx,makeVisual(4,{polygons:[poly([r.a,r.b],['A','B'],'given',false)],points:[pt(...r.a,'A'),pt(...r.b,'B'),pt(...r.c,'C')],answerPolygons:[poly([r.c,d],['C','D'],'answer',false)],answerPoints:[pt(...d,'D','answer')]}),'L',{marking:{mode:'exact-coordinate',answer:d}});
+    }
     return null;
   }
 
@@ -196,6 +222,10 @@
       const k=[5,5,4,5,5,4][idx],base=[[[2,1],[4,1],[3,3]],[[5,1],[7,1],[6,4]],[[1,1],[3,1],[3,3],[1,3]],[[5,1],[8,1],[7,3]],[[1,2],[3,2],[2,4]],[[6,1],[8,2],[7,3]]][idx],moved=reflectX(base,k);
       return q('transformations_y5',typeId,`Reflect the shape in the horizontal line y = ${k}. Draw its image.`,'Correct reflected shape',idx,makeVisual(5,{polygons:[poly(base,[],'given')],mirrorLine:{axis:'y',value:k,label:`y = ${k}`},answerPolygons:[poly(moved,[],'answer')]}),'L',{marking:{mode:'construction',answer:moved}});
     }
+    if(typeId==='cg_y5_reflection_coordinate_set'){
+      const vertical=idx%2===0,k=vertical?[5,0,4,0,6,0][idx]:[0,5,0,4,0,5][idx],base=vertical?[[[1,2],[3,2],[2,5]],[[1,1],[3,1],[2,4]],[[2,2],[4,2],[3,5]]][Math.floor(idx/2)]:[[[2,1],[4,1],[3,3]],[[5,1],[7,1],[6,4]],[[1,2],[3,2],[2,4]]][Math.floor(idx/2)],moved=vertical?reflectY(base,k):reflectX(base,k),labels=['A','B','C'];
+      return q('transformations_y5',typeId,`The triangle is reflected in the ${vertical?`vertical line x = ${k}`:`horizontal line y = ${k}`}. Write the coordinates of A', B' and C'.`,coords(moved),idx,makeVisual(5,{polygons:[poly(base,labels,'given')],mirrorLine:{axis:vertical?'x':'y',value:k,label:vertical?`x = ${k}`:`y = ${k}`},answerPolygons:[poly(moved,labels.map(x=>x+"'"),'answer')]}),'L',{marking:{mode:'coordinate-set',answer:moved}});
+    }
     if(typeId==='cg_y5_identify_transform'){
       if(idx%2===0){
         const base=Y5_BASES[idx],mv=idx===0?[4,2]:idx===2?[4,-3]:[-4,-3],moved=translate(base,mv[0],mv[1]);
@@ -217,8 +247,23 @@
       const p=Y6_POINTS[idx],swap=[p[1],p[0]],target=idx%2?'Q':'P',points=target==='P'?[pt(p[0],p[1],'P'),pt(swap[0],swap[1],'Q')]:[pt(swap[0],swap[1],'P'),pt(p[0],p[1],'Q')];
       return q('coordinates_y6',typeId,`Which labelled point is at (${p[0]}, ${p[1]})?`,target,idx,makeVisual(6,{points}),'M',{misconception:'coordinate_order'});
     }
+    if(typeId==='cg_y6_identify_label'){
+      const sets=[[[ -4,3,'A'],[3,-4,'B'],[-2,-5,'C'],[5,2,'D']],[[ -5,-1,'P'],[2,5,'Q'],[4,-3,'R'],[-1,4,'S']],[[ -3,5,'J'],[5,-2,'K'],[-5,-4,'L'],[2,3,'M']],[[ -4,-2,'W'],[4,4,'X'],[-1,5,'Y'],[5,-5,'Z']],[[ -5,2,'A'],[3,5,'B'],[4,-4,'C'],[-2,-3,'D']],[[ -1,-5,'P'],[5,1,'Q'],[-4,4,'R'],[2,-2,'S']]][idx];
+      const target=sets[(idx+1)%sets.length];
+      return q('coordinates_y6',typeId,`Which labelled point is at (${target[0]}, ${target[1]})?`,target[2],idx,makeVisual(6,{points:sets.map(v=>pt(v[0],v[1],v[2]))}),'M');
+    }
+    if(typeId==='cg_y6_spot_plotting_error'){
+      const correct=[[-4,3],[0,2],[3,-4],[5,1]],labels=['A','B','C','D'],wrongIndex=idx%4,shown=correct.map(v=>v.slice());
+      const w=shown[wrongIndex]; shown[wrongIndex]=idx%2===0?[w[1],w[0]]:[clamp(w[0]+(w[0]<5?1:-1),-6,6),w[1]];
+      const listing=correct.map((v,j)=>`${labels[j]} (${v[0]}, ${v[1]})`).join(', ');
+      return q('coordinates_y6',typeId,`${listing}. One point has been plotted incorrectly. Which one?`,labels[wrongIndex],idx,makeVisual(6,{points:shown.map((v,j)=>pt(v[0],v[1],labels[j])),answerPoints:[pt(correct[wrongIndex][0],correct[wrongIndex][1],labels[wrongIndex]+' correct','answer')]}),'L',{misconception:'coordinate_plotting_error'});
+    }
     if(typeId==='cg_y6_plot_point'){
       const p=Y6_POINTS[(idx+2)%6];return q('coordinates_y6',typeId,`Plot point P at (${p[0]}, ${p[1]}).`,`P = (${p[0]}, ${p[1]})`,idx,makeVisual(6,{answerPoints:[pt(p[0],p[1],'P','answer')]}),'L',{marking:{mode:'construction',answer:p}});
+    }
+    if(typeId==='cg_y6_plot_join_identify_polygon'){
+      const shapes=[{name:'rectangle',p:[[-4,-2],[2,-2],[2,2],[-4,2]]},{name:'parallelogram',p:[[-5,-2],[-1,2],[4,2],[0,-2]]},{name:'kite',p:[[-4,0],[-1,4],[3,0],[-1,-3]]},{name:'rectangle',p:[[-2,-5],[4,-5],[4,-1],[-2,-1]]},{name:'parallelogram',p:[[-4,3],[0,5],[4,1],[0,-1]]},{name:'kite',p:[[0,5],[3,1],[0,-4],[-2,1]]}],sh=shapes[idx];
+      return q('coordinates_y6',typeId,`Plot ${coords(sh.p)}. Join the points in order and name the quadrilateral.`,sh.name,idx,makeVisual(6,{answerPolygons:[poly(sh.p,['A','B','C','D'],'answer')]}),'L',{marking:{mode:'construction+label',answer:sh.name}});
     }
     if(typeId==='cg_y6_missing_rectangle'){
       const sets=[[[ -5,3],[3,3],[3,-1],[-5,-1]],[[-4,5],[2,5],[2,1],[-4,1]],[[-3,2],[5,2],[5,-4],[-3,-4]],[[-5,-2],[1,-2],[1,-5],[-5,-5]],[[-2,5],[4,5],[4,-2],[-2,-2]],[[-5,1],[2,1],[2,-3],[-5,-3]]];
@@ -234,6 +279,11 @@
       const sets=[[[0,5],[3,1],[0,-3],[-3,1]],[[-1,5],[3,1],[-1,-3],[-5,1]],[[1,5],[5,1],[1,-3],[-3,1]],[[0,4],[4,0],[0,-4],[-4,0]],[[1,4],[4,1],[1,-2],[-2,1]],[[-1,4],[2,1],[-1,-2],[-4,1]]];
       const p=sets[idx],shown=p.slice(0,3),answer=p[3];
       return q('coordinates_y6',typeId,'A, B and C are consecutive vertices of a rhombus. What are the coordinates of D?',`(${answer[0]}, ${answer[1]})`,idx,makeVisual(6,{polygons:[poly(shown,['A','B','C'],'given',false)],points:shown.map((v,j)=>pt(v[0],v[1],['A','B','C'][j])),answerPolygons:[poly(p,['A','B','C','D'],'answer')],answerPoints:[pt(answer[0],answer[1],'D','answer')]}),'L');
+    }
+    if(typeId==='cg_y6_missing_kite'){
+      const sets=[[[ -4,1],[-1,5],[3,1],[-1,-3]],[[-5,-1],[-2,4],[2,-1],[-2,-4]],[[-3,0],[0,5],[4,0],[0,-3]],[[-4,2],[-1,5],[2,2],[-1,-4]],[[-5,1],[-2,4],[3,1],[-2,-2]],[[-4,-1],[-1,4],[4,-1],[-1,-5]]];
+      const p=sets[idx],shown=[p[0],p[1],p[3]],answer=p[2];
+      return q('coordinates_y6',typeId,'A, B and D are vertices of a kite with BD as its line of symmetry. Find the coordinates of C.',`(${answer[0]}, ${answer[1]})`,idx,makeVisual(6,{polygons:[poly(shown,['A','B','D'],'given',false)],points:shown.map((v,j)=>pt(v[0],v[1],['A','B','D'][j])),answerPolygons:[poly(p,['A','B','C','D'],'answer')],answerPoints:[pt(answer[0],answer[1],'C','answer')]}),'L',{marking:{mode:'exact-coordinate',answer}});
     }
     if(typeId==='cg_y6_translate_shape'||typeId==='cg_y6_describe_translation'){
       const bases=[[[ -5,1],[-3,1],[-4,3]],[[1,-5],[3,-5],[2,-3]],[[-5,-4],[-2,-4],[-3,-2]],[[2,2],[4,2],[3,4]],[[-4,2],[-2,2],[-2,4],[-4,4]],[[1,-1],[3,-1],[3,1],[1,1]]];
@@ -253,9 +303,39 @@
       const p=Y6_POINTS[idx],axis=idx%2===0?'x':'y',ans=axis==='x'?[p[0],-p[1]]:[-p[0],p[1]];
       return q('coordinates_y6',typeId,`Point A is reflected in the ${axis}-axis. What are the coordinates of A'?`,`(${ans[0]}, ${ans[1]})`,idx,makeVisual(6,{points:[pt(p[0],p[1],'A')],mirrorLine:{axis:axis==='x'?'y':'x',value:0,label:`${axis}-axis`},answerPoints:[pt(ans[0],ans[1],"A'",'answer')]}),'M');
     }
+    if(typeId==='cg_y6_reflection_sign_rule'){
+      const axis=idx%2===0?'y':'x',p=Y6_POINTS[idx],ans=axis==='y'?[-p[0],p[1]]:[p[0],-p[1]],changed=axis==='y'?'x-coordinate':'y-coordinate';
+      return q('coordinates_y6',typeId,`A is reflected in the ${axis}-axis to A'. Which coordinate changes sign?`,changed,idx,makeVisual(6,{points:[pt(...p,'A'),pt(...ans,"A'",'target')],mirrorLine:{axis:axis==='x'?'y':'x',value:0,label:`${axis}-axis`}}),'M',{marking:{mode:'exact',answer:changed}});
+    }
+    if(typeId==='cg_y6_complete_reflection_pattern'){
+      const bases=[[[1,1],[3,1],[2,3]],[[2,1],[5,1],[4,3]],[[1,2],[3,2],[3,4],[1,4]],[[2,1],[4,2],[3,4]],[[1,1],[4,1],[3,3]],[[2,2],[4,2],[3,5]]],base=bases[idx],rx=reflectX(base,0),ry=reflectY(base,0),rxy=reflectX(ry,0);
+      return q('coordinates_y6',typeId,'Complete the reflection pattern so the shape appears in all four quadrants.','Copies reflected in both axes',idx,makeVisual(6,{polygons:[poly(base,[],'given')],mirrorLine:{axis:'x',value:0,label:'y-axis'},answerPolygons:[poly(rx,[],'answer'),poly(ry,[],'answer'),poly(rxy,[],'answer')]}),'XL',{marking:{mode:'construction',answer:[rx,ry,rxy]}});
+    }
     if(typeId==='cg_y6_missing_component'){
       const sets=[{p:[[-5,3],[2,3],[2,-2],[-5,-2]],miss:'x'},{p:[[-4,5],[3,5],[3,1],[-4,1]],miss:'y'},{p:[[-3,2],[5,2],[5,-4],[-3,-4]],miss:'x'},{p:[[-5,-1],[1,-1],[1,-5],[-5,-5]],miss:'y'},{p:[[-2,5],[4,5],[4,-2],[-2,-2]],miss:'x'},{p:[[-5,1],[2,1],[2,-3],[-5,-3]],miss:'y'}][idx],p=sets.p,answer=p[3],shown=p.slice(0,3),asked=sets.miss,ans=asked==='x'?answer[0]:answer[1];
       return q('coordinates_y6',typeId,`ABCD is a rectangle. D is (${asked==='x'?'?':answer[0]}, ${asked==='y'?'?':answer[1]}). What is the missing ${asked}-coordinate?`,String(ans),idx,makeVisual(6,{polygons:[poly(shown,['A','B','C'],'given',false)],points:shown.map((v,j)=>pt(v[0],v[1],['A','B','C'][j])),answerPolygons:[poly(p,['A','B','C','D'],'answer')],answerPoints:[pt(answer[0],answer[1],'D','answer')]}),'L');
+    }
+    return null;
+  }
+
+  function extensionQuestion(typeId,i){
+    const idx=i%6;
+    if(typeId==='cg_ext_midpoint'){
+      const pairs=[[[-4,2],[4,-2]],[[-5,-3],[3,5]],[[-2,4],[6,0]],[[1,-5],[5,3]],[[-6,0],[2,4]],[[-3,-5],[5,1]]],p=pairs[idx],m=[(p[0][0]+p[1][0])/2,(p[0][1]+p[1][1])/2];
+      return q('coordinates_extension',typeId,'Find the midpoint M of AB.',`(${m[0]}, ${m[1]})`,idx,makeVisual(6,{polygons:[poly(p,['A','B'],'given',false)],points:[pt(...p[0],'A'),pt(...p[1],'B')],answerPoints:[pt(...m,'M','answer')]}),'M',{marking:{mode:'exact-coordinate',answer:m}});
+    }
+    if(typeId==='cg_ext_rectangle_centre'){
+      const rects=[[[ -4,4],[4,4],[4,-2],[-4,-2]],[[-5,3],[3,3],[3,-3],[-5,-3]],[[-2,5],[6,5],[6,-1],[-2,-1]],[[-6,2],[2,2],[2,-4],[-6,-4]],[[-4,5],[2,5],[2,-3],[-4,-3]],[[-5,4],[5,4],[5,-2],[-5,-2]]],p=rects[idx],m=[(p[0][0]+p[2][0])/2,(p[0][1]+p[2][1])/2];
+      return q('coordinates_extension',typeId,'ABCD is a rectangle. Find the coordinates of its centre M.',`(${m[0]}, ${m[1]})`,idx,makeVisual(6,{polygons:[poly(p,['A','B','C','D'],'given')],answerPoints:[pt(...m,'M','answer')]}),'L',{marking:{mode:'exact-coordinate',answer:m}});
+    }
+    if(typeId==='cg_ext_equally_spaced_line'){
+      const rows=[{a:[-4,-2],b:[-1,0],c:[2,2]},{a:[-5,3],b:[-2,1],c:[1,-1]},{a:[-3,3],b:[-1,2],c:[1,1]},{a:[-3,-4],b:[0,-1],c:[3,2]},{a:[-4,-1],b:[-2,0],c:[0,1]},{a:[-3,1],b:[-1,0],c:[1,-1]}],r=rows[idx],next=[r.c[0]+(r.c[0]-r.b[0]),r.c[1]+(r.c[1]-r.b[1])];
+      const all=[r.a,r.b,r.c];
+      return q('coordinates_extension',typeId,'A, B and C are equally spaced on a straight line. Continue the pattern to point D. What are the coordinates of D?',`(${next[0]}, ${next[1]})`,idx,makeVisual(6,{polygons:[poly(all,['A','B','C'],'given',false)],points:all.map((v,j)=>pt(...v,['A','B','C'][j])),answerPoints:[pt(...next,'D','answer')]}),'L',{marking:{mode:'exact-coordinate',answer:next}});
+    }
+    if(typeId==='cg_ext_rotation_90'){
+      const rows=[{p:[2,1],c:[0,0]},{p:[-3,1],c:[0,0]},{p:[2,-4],c:[0,0]},{p:[4,1],c:[1,1]},{p:[-2,3],c:[-1,1]},{p:[1,-3],c:[1,-1]}],r=rows[idx],clockwise=idx%2===0,ans=rotate90([r.p],r.c[0],r.c[1],clockwise)[0];
+      return q('coordinates_extension',typeId,`Point A is rotated 90° ${clockwise?'clockwise':'anticlockwise'} about C. What are the coordinates of A'?`,`(${ans[0]}, ${ans[1]})`,idx,makeVisual(6,{points:[pt(...r.p,'A'),pt(...r.c,'C','target')],answerPoints:[pt(...ans,"A'",'answer')]}),'M',{marking:{mode:'exact-coordinate',answer:ans}});
     }
     return null;
   }
@@ -265,7 +345,7 @@
     const out=[];
     for(const typeId of TYPES_BY_FAMILY[kind]||[]){
       for(let i=0;i<6;i++){
-        const item=kind==='coordinates_y4'?y4Question(typeId,i):kind==='transformations_y5'?y5Question(typeId,i):y6Question(typeId,i);
+        const item=kind==='coordinates_y4'?y4Question(typeId,i):kind==='transformations_y5'?y5Question(typeId,i):kind==='coordinates_y6'?y6Question(typeId,i):extensionQuestion(typeId,i);
         if(item)out.push(item);
       }
     }
@@ -375,5 +455,5 @@
     return {ok,error:ok?'':'point-out-of-bounds',pointCount:all.length};
   }
 
-  global.TT99CustomCoordinates={VERSION,COORD_FAMILIES,CATALOGUE,TYPES_BY_FAMILY,coordinatePool,renderCoordinate,validateVisual,translate,reflectX,reflectY};
+  global.TT99CustomCoordinates={VERSION,COORD_FAMILIES,CATALOGUE,TYPES_BY_FAMILY,coordinatePool,renderCoordinate,validateVisual,translate,reflectX,reflectY,rotate90};
 }(typeof window!=='undefined'?window:globalThis));

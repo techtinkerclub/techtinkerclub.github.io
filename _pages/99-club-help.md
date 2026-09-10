@@ -5,7 +5,7 @@ permalink: /tools/99-club/help/
 sidebar: false
 ---
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=19">
+<link rel="stylesheet" href="/assets/99club/99club.css?v=20">
 
 <div id="main" class="tt99-page-main" role="main">
   <article class="splash">
@@ -19,10 +19,15 @@ sidebar: false
     </div>
     <a class="tt99-secondary tt99-guide-action" href="/tools/99-club/">← Back to 99 Club</a>
   </div>
+  <div class="tt99-workspace-tabs" aria-label="99 Club Studio workspaces">
+    <a href="/tools/99-club/"><b>99 Club</b><span>11–99 progression and post-99 challenges</span></a>
+    <a href="/tools/99-club/custom/"><b>Custom Worksheets <em>Beta</em></b><span>Choose curriculum topics and generated visual questions</span></a>
+  </div>
   <div class="tt99-guide-note"><strong>Quick start:</strong> add your school details, leave <b>Classic 99 Club</b> selected, choose a challenge, check the short rule summary, then generate and download. The standard Classic default is 5 minutes and three perfect attempts; the attempts do not need to be consecutive.</div>
 
   <nav class="tt99-guide-nav" aria-label="Help topics">
     <a href="#workflow">Making a sheet</a>
+    <a href="#custom">Custom Worksheets</a>
     <a href="#review">Reviewing questions</a>
     <a href="#schemes">Challenges</a>
     <a href="#rules">Changing rules</a>
@@ -41,6 +46,16 @@ sidebar: false
       <article><b>3</b><h3>Check the setup</h3><p>Read the short rule summary and edit only if your school uses different timings, progression rules or question families.</p></article>
       <article><b>4</b><h3>Generate and download</h3><p>Choose portrait or landscape, create one to four equivalent versions, review the questions and download the worksheet, answer key, or both.</p></article>
     </div>
+  </section>
+
+
+  <section id="custom" class="tt99-guide-section tt99-guide-highlight">
+    <h2>Custom Worksheets: choose your own content</h2>
+    <p><strong>Custom Worksheets starts blank.</strong> No year group and no curriculum topic is selected automatically. Open any curriculum category and tick only the topics you actually want to practise, including supported graphical Statistics and coordinate-geometry families.</p>
+    <p>Categories with selected topics are highlighted. An open category stays open while you select or deselect topics and closes only when you close it yourself.</p>
+    <div class="tt99-guide-note"><strong>Clearing selections:</strong> remove individual topics normally, use <b>Clear selected in …</b> to empty one curriculum category, or use <b>Clear all selections</b> to return the whole topic selector to a clean state.</div>
+    <p>The optional <strong>Generation profile</strong> changes age-sensitive ranges for the topics you selected; it does not select topics. Leave it at <b>Mixed / custom</b> when you deliberately want to combine content across years.</p>
+    <p>Bar charts, time graphs, line graphs and coordinate geometry use generated visual questions with automatic multi-page packing. Other diagram-heavy areas are added only when their dedicated renderer is ready.</p>
   </section>
 
   <section id="review" class="tt99-guide-section tt99-guide-highlight">

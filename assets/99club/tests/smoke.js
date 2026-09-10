@@ -57,6 +57,8 @@ try{
   assert(/three times/i.test(classicInstruction) && /do not need to be consecutive/i.test(classicInstruction),'Classic pupil instruction does not match default progression rule');
 
   const open=G.normalizeRules({...G.OPEN_WORKSHEET_PRESET,questionCount:12,timeEnabled:false});
+  assert(open.families.length===0,'Custom Worksheet should start with no topics selected');
+  assert(G.generateQuestions(open,'blank-custom').length===0,'Blank Custom Worksheet should generate zero questions without error');
   assert(!/next club|perfect score/i.test(G.instructionText(open)),'Custom Worksheet instruction leaked Club progression wording');
 
   assert((G.FAMILY_META.volume.years||[]).join(',')==='6','Cuboid volume should be Year 6 text family only');
@@ -103,4 +105,4 @@ if(failures.length){
   failures.forEach(x=>console.error(' - '+x));
   process.exit(2);
 }
-console.log(`99 Club Studio smoke test passed: ${G.FAMILY_ORDER.length} families + Year 1–6 starting selections + progression/PDF invariants.`);
+console.log(`99 Club Studio smoke test passed: ${G.FAMILY_ORDER.length} base families + Year 1–6 generation profiles + blank Custom Worksheet + progression/PDF invariants.`);

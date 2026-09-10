@@ -4,7 +4,7 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version **1.19** keeps the public 99 Club workflow stable while retaining the separate Custom Worksheets beta route:
+Version **1.20** keeps the public 99 Club workflow stable while retaining the separate Custom Worksheets beta route:
 
 1. **99 Club** at `/tools/99-club/` — the stable progression tool for Classic 11–99, optional alternative progressions and Bronze–Diamond challenges.
 2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice. In v1.19 this route is intentionally **unlinked from the public 99 Club UI and Help page**; it is available only when its URL is entered/shared directly while the module continues to mature.
@@ -17,9 +17,15 @@ Classic 99 Club remains the default progression:
 
 The TTC Classic default is **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable. Alternative published-school presets keep their own defaults unless edited.
 
-### v1.19 workspace split and retained improvements
+### v1.20 Custom Worksheet visual/selection update
 
 - The full curriculum selector, year-starting selections and topic weights are no longer embedded in the stable 99 Club screen.
+
+- Custom Worksheets now opens as a true blank canvas: no curriculum topic is selected by default and the former Year quick-select buttons are removed.
+- Teachers can clear one selected curriculum category or clear all topic selections in one action; accordion open/closed state is controlled only by the teacher.
+- Graphical Statistics Stage 1 remains available (Y3–4 bar charts, Y4 time graphs, Y5–6 line graphs).
+- Coordinate geometry is expanded from the Stage 1 set with labelled-point lookup, plotting-error diagnostics, four-quadrant polygon construction, kite completion, reflection sign reasoning, reflection patterns and same-displacement reasoning.
+- A separate **coordinate reasoning (extension)** family contains midpoint/centre, equally-spaced-line and 90° rotation material so these do not leak into normal statutory year families.
 - The 11–99 rule editor stays focused on the traditional Club progression. Bronze–Diamond can optionally add concise post-99 mental-maths extras (missing values, negatives, Roman numerals, decimals, fractions/percentages, factors/multiples, powers, order of operations, angle facts, ratio, measurement/time/money and mean).
 - Teacher notes remain available in both workspaces: up to **240 characters**, answer-sheet only, persisted in setup/full-backup/full-recreation data, and omitted from compact QR payloads.
 - Equivalent versions, question review/replacement, QR recreation, backups, setup import/export, reset controls and portrait/landscape PDFs remain in the stable Club workflow.
@@ -88,7 +94,7 @@ A local full Jekyll build is still expected as part of deployment/CI. The develo
 - `CURRICULUM_COVERAGE.md` - direct/non-graphical curriculum coverage audit, Year 1–6 starting-selection scope, and graphical/practical objectives deliberately deferred.
 - `RELEASE_NOTES_1.18.md` - current stable-Club / Custom-Worksheets-beta release summary.
 - `RELEASE_NOTES_1.16.md` - previous Custom Worksheet baseline notes.
-- `tests/smoke.js` - dependency-free Node smoke checks for every active family, Year starting selections, Classic progression defaults and PDF-layout invariants. Run with `node assets/99club/tests/smoke.js`.
+- `tests/smoke.js` - dependency-free Node smoke checks for every active base family, Year generation profiles, the blank Custom Worksheet state, Classic progression defaults and PDF-layout invariants. Run with `node assets/99club/tests/smoke.js`.
 
 ## Built-in 11-99 ruleset schemes
 

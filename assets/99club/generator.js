@@ -120,8 +120,8 @@
   const OPEN_WORKSHEET_PRESET = {
     id: 'worksheet', name: 'Custom Worksheet', tagline: 'Choose curriculum topics, weights and question count',
     questionCount: 15, mode: 'family_mix',
-    families: ['addition','subtraction','multiply','divide'],
-    familyWeights: { addition:1, subtraction:1, multiply:1, divide:1 },
+    families: [],
+    familyWeights: {},
     arithmeticMin: 0, arithmeticMax: 100, arithmeticOperandMin: 0, arithmeticOperandMax: 100,
     tables: range(1, 12), factorMin: 1, factorMax: 12,
     timeMinutes: 10, timeEnabled: false, progressionEnabled: false, unaided: false,
@@ -459,8 +459,9 @@
     if (hasAnyFamily('coordinates','coordinate_reflection')) { r.coordinateMax = clampInt(r.coordinateMax, 4, 100, 12); r.coordinateFourQuadrants = !!r.coordinateFourQuadrants; }
     if (hasAnyFamily('mean')) r.statsValueMax = clampInt(r.statsValueMax, 5, 1000, 30);
     const validFamilies = FAMILY_ORDER;
-    r.families = Array.isArray(r.families) ? [...new Set(r.families.filter(f => validFamilies.includes(f)))] : ['addition','subtraction','multiply','divide'];
-    if (!r.families.length && r.mode === 'family_mix') r.families = ['addition','subtraction','multiply','divide'];
+    const blankFamilyMixAllowed = r.id === 'worksheet' || r.progressionEnabled === false;
+    r.families = Array.isArray(r.families) ? [...new Set(r.families.filter(f => validFamilies.includes(f)))] : (blankFamilyMixAllowed ? [] : ['addition','subtraction','multiply','divide']);
+    if (!r.families.length && r.mode === 'family_mix' && !blankFamilyMixAllowed) r.families = ['addition','subtraction','multiply','divide'];
     const weights = r.familyWeights && typeof r.familyWeights === 'object' ? r.familyWeights : {};
     r.familyWeights = Object.fromEntries(r.families.map(f => [f, clampInt(weights[f], 1, 20, 1)]));
     return r;
@@ -1583,13 +1584,14 @@
   }
 
   function weightedFamilyCounts(rules, rng) {
+    const counts = Object.fromEntries((rules.families || []).map(f => [f,0]));
+    if (!(rules.families || []).length) return counts;
     const bag = [];
     for (const family of rules.families) {
       const weight = Math.max(1, Number(rules.familyWeights[family]) || 1);
       for (let i = 0; i < weight; i += 1) bag.push(family);
     }
     const cycle = shuffle(bag, rng);
-    const counts = Object.fromEntries(rules.families.map(f => [f,0]));
     for (let i = 0; i < rules.questionCount; i += 1) counts[cycle[i % cycle.length]] += 1;
     return counts;
   }

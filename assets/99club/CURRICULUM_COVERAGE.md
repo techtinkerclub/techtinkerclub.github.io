@@ -19,7 +19,7 @@ The optional Year 1–6 starting selections choose all non-extension families ta
 
 ## What is covered
 
-The active family catalogue contains **105 question families** (103 curriculum/direct-maths families plus 2 explicit extension families). The retired pre-release `word_problems` ID remains only as an internal index placeholder so later compact family numbers do not shift; its sentence-template generator has been removed and it is not exposed in the app or Year starting selections.
+The active family catalogue contains **105 question families** (103 curriculum/direct-maths families plus 2 explicit extension families). The retired pre-release `word_problems` ID remains only as an internal index placeholder so later compact family numbers do not shift; its sentence-template generator has been removed and it is not exposed in the app or normal Year-tagged curriculum families.
 
 ### Number & place value
 
@@ -216,9 +216,9 @@ The following statutory content is **not claimed as fully covered** by the curre
 - visual recognition, composition and construction of **2D/3D shapes**;
 - **nets** and 2D representations/views of 3D shapes;
 - drawing/measuring angles with a protractor and visually reasoning from angle diagrams;
-- completing **line symmetry** and graphical reflection/translation tasks;
-- plotting/drawing shapes on coordinate grids where the shape itself is essential;
-- **pictograms, tally charts, block diagrams, bar charts, time graphs and line graphs** where the chart must be read;
+- completing **line symmetry** beyond the implemented coordinate-reflection families;
+- coordinate geometry now has dedicated visual families for Y4 first-quadrant coordinates/translation, Y5 translation/reflection and Y6 four-quadrant coordinates/transformations; midpoint/rotation and similar non-core structures are isolated in an explicit Extension family;
+- **pictograms, tally charts and block diagrams** remain deferred; bar charts (Y3–4), time graphs (Y4) and line graphs (Y5–6) now have dedicated generated visual families;
 - interpreting/constructing actual **pie charts** (the text engine currently covers percentage/fraction-to-angle groundwork only);
 - visual **scale drawings/similar shapes** where proportional geometry depends on the drawing;
 - practical volume/capacity estimation and irregular-area estimation.
@@ -227,10 +227,11 @@ In particular, **Year 5 volume estimation** and diagram-led **angle-sum reasonin
 
 ## Important interpretation notes
 
-- **Decimals:** Year 4 includes tenths/hundredths and decimal work up to two places; Year 5 explicitly includes thousandths and reading/writing/ordering/comparing numbers with up to three decimal places; Year 6 continues place value and calculation with decimals. The Year starting selections therefore cap Year 4 at 2 d.p. and Years 5–6 at 3 d.p.
+- **Decimals:** Year 4 includes tenths/hundredths and decimal work up to two places; Year 5 explicitly includes thousandths and reading/writing/ordering/comparing numbers with up to three decimal places; Year 6 continues place value and calculation with decimals. When a teacher chooses an optional Year generation profile, Year 4 is capped at 2 d.p. and Years 5–6 at 3 d.p.; the profile does not select curriculum topics.
 - **Square roots:** exact square roots remain an **Extension** family. Square and cube numbers are statutory upper-KS2 content; square-root fluency is not presented as a normal statutory Year 1–6 starting-selection topic.
-- **99 Club rules are separate from curriculum coverage.** Classic and post-99 challenges preserve their existing, reproducible maths paths. Curriculum Year starting selections apply to Custom Worksheets only.
+- **99 Club rules are separate from curriculum coverage.** Classic and post-99 challenges preserve their existing, reproducible maths paths. Custom Worksheets uses an optional Year generation profile for age-sensitive ranges; it does not auto-select curriculum topics.
 - A year tag means the family can provide age-appropriate practice connected to that year. It does not mean every question family exhaustively assesses every sentence of the statutory objective.
+- Custom Worksheets begins with zero selected topics. Teachers may mix any catalogue families manually; normal Y4/Y5/Y6 coordinate families remain separate from coordinate Extension reasoning.
 
 ## Regression requirement
 
