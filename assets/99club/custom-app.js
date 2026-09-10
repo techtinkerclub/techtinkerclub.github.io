@@ -9,7 +9,7 @@
   const STORAGE_KEY = 'tt99-custom-settings-v1';
   const LEGACY_MAIN_STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.20';
+  const VERSION = '1.21';
   const APP_NAME = '99 Club Studio · Custom Worksheets';
   const APP_URL = 'https://techtinker.club/tools/99-club/custom/';
   const GENERATION_VERSION = 1;
@@ -366,7 +366,7 @@
             <a href="/tools/99-club/help/" class="tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
           </div>
         </section>
-        <div class="tt99-custom-intro-note"><strong>Build exactly what you need.</strong><span>Custom Worksheets now starts with no topics selected. Choose freely across the curriculum catalogue; supported charts and coordinate geometry use deterministic generated visuals.</span></div>
+        <div class="tt99-custom-intro-note"><strong>Build exactly what you need.</strong><span>Custom Worksheets now starts with no topics selected. Choose freely across the curriculum catalogue; supported charts, pie charts and coordinate geometry use deterministic generated visuals.</span></div>
         <div class="tt99-workspace tt99-workspace--custom">
           <aside class="tt99-controls">
             ${renderStepPersonalise()}
@@ -550,7 +550,7 @@
     if(core.length){const extras=FAMILY_ORDER.filter(f=>!core.includes(f));return `<div class="tt99-family-select"><span class="tt99-field-label">Question families ${helpButton('families')}</span><div class="tt99-family-group-label">Core families — always included</div>${grouped(core,true)}<div class="tt99-family-group-label">Optional extras</div>${grouped(extras,false)}<small>Named challenges keep their defining core families. Optional extras can be added or removed; use the weights below to control frequency.</small></div>`;}
     const selectedTotal=r.families.length;
     const selectionTools=isOpenWorksheet()?`<div class="tt99-family-selection-tools"><div><b>${selectedTotal} topic${selectedTotal===1?'':'s'} selected</b><small>Nothing is selected automatically. Open any category and choose exactly the content you want.</small></div><button type="button" class="tt99-secondary" id="tt99-clear-all-families" ${selectedTotal?'':'disabled'}>Clear all selections</button></div>`:'';
-    return `<div class="tt99-family-select"><span class="tt99-field-label">Choose topics ${helpButton('families')}</span>${selectionTools}${grouped(FAMILY_ORDER,false)}<small>Choose freely across the curriculum catalogue. Weights control frequency, not difficulty. Supported charts and coordinate geometry use generated visuals; other diagram-heavy topics remain staged until their dedicated renderers are ready.</small></div>`;
+    return `<div class="tt99-family-select"><span class="tt99-field-label">Choose topics ${helpButton('families')}</span>${selectionTools}${grouped(FAMILY_ORDER,false)}<small>Choose freely across the curriculum catalogue. Weights control frequency, not difficulty. Supported charts, pie charts and coordinate geometry use generated visuals; other diagram-heavy topics remain staged until their dedicated renderers are ready.</small></div>`;
   }
   function renderFamilyWeights(r){
     if(!r.families.length)return `<div class="tt99-family-weights-empty"><b>Topic weights will appear here after you select at least one topic.</b></div>`;

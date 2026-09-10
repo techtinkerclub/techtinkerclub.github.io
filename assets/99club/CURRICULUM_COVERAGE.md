@@ -172,7 +172,10 @@ The active family catalogue contains **105 question families** (103 curriculum/d
 | Family ID | Teacher label | Years |
 |---|---|---|
 | `mean` | mean average | Y6 |
-| `pie_chart_angles` | pie-chart fraction/% angles | Y6 |
+| `pie_chart_angles` | pie-chart angle calculations (text-only practice) | Extension |
+| `pie_charts_y6` | pie charts — interpret & construct | Y6 |
+| `pie_charts_reasoning_y6` | pie charts — reasoning & problem solving | Y6 |
+| `pie_charts_extension` | pie-chart reasoning (extension) | Extension |
 | `data_table_questions` | retired placeholder — real statistics interpretation should use rendered tables/charts | Retired / no active years |
 
 ### Extension
@@ -189,7 +192,7 @@ The active family catalogue contains **105 question families** (103 curriculum/d
 - **Year 3:** extends to 1,000, 3/4/8 tables, 2-digit × 1-digit work, tenths/fraction sequences, same-denominator fraction addition/subtraction within one whole plus appropriate unit-fraction comparison, metric conversion/perimeter, minute/time facts, angle/line vocabulary. Data interpretation remains visual/deferred.
 - **Year 4:** extends to 10,000, all 12×12 facts, factor pairs/remainders/distributive reasoning, hundredths and decimals (up to 2 d.p. where appropriate), negative-number counting through zero, unit conversion, money/time, area/perimeter, angle classification and first-quadrant coordinate translations.
 - **Year 5:** extends to 1,000,000, powers of 10, primes/squares/cubes, formal multiplication/division, fractions/mixed numbers, decimals to thousandths, percentages/common equivalences, rate/scaling, metric/imperial conversion, area/measure relationships, polygon properties and coordinate reflection/translation. Practical volume estimation remains deferred because the statutory Year 5 emphasis is representation/practical comparison rather than a text-only cuboid-volume formula exercise.
-- **Year 6:** extends to 10,000,000, long multiplication/division, order of operations, full fraction calculation including mixed-number variants, decimal calculation/division to 3 d.p. where appropriate, FDP/percentage work, ratio/proportion, algebra, unit conversion, triangle/parallelogram/cuboid calculations, formal angle-sum/circle facts, four-quadrant coordinates/reflections and mean. Chart/table interpretation remains visual/deferred.
+- **Year 6:** extends to 10,000,000, long multiplication/division, order of operations, full fraction calculation including mixed-number variants, decimal calculation/division to 3 d.p. where appropriate, FDP/percentage work, ratio/proportion, algebra, unit conversion, triangle/parallelogram/cuboid calculations, formal angle-sum/circle facts, four-quadrant coordinates/reflections, generated pie-chart interpretation/construction, line graphs and mean. Pictograms/tally/block diagrams and some table/timetable work remain staged.
 
 
 ## Deliberately deferred: contextual/story word problems
@@ -219,7 +222,7 @@ The following statutory content is **not claimed as fully covered** by the curre
 - completing **line symmetry** beyond the implemented coordinate-reflection families;
 - coordinate geometry now has dedicated visual families for Y4 first-quadrant coordinates/translation, Y5 translation/reflection and Y6 four-quadrant coordinates/transformations; midpoint/rotation and similar non-core structures are isolated in an explicit Extension family;
 - **pictograms, tally charts and block diagrams** remain deferred; bar charts (Y3–4), time graphs (Y4) and line graphs (Y5–6) now have dedicated generated visual families;
-- interpreting/constructing actual **pie charts** (the text engine currently covers percentage/fraction-to-angle groundwork only);
+- Year 6 **pie charts are now implemented** as dedicated generated visual families covering interpretation, construction and opt-in reasoning/problem solving; the older text-only angle family remains in Extension for compatibility/practice;
 - visual **scale drawings/similar shapes** where proportional geometry depends on the drawing;
 - practical volume/capacity estimation and irregular-area estimation.
 
@@ -243,4 +246,4 @@ Curriculum-wide coverage belongs to the separate **Custom Worksheets** beta work
 
 The inclusion test is deliberately narrow: an extra must be short to read, quick to understand, realistically solvable mentally and not depend on a diagram. Comparison-heavy families, area/perimeter, formal written methods, longer problem-solving, story word problems and graphical/statistical interpretation remain outside the 99 Club extras.
 
-`data_table_questions` is retired because text-only pseudo-data does not faithfully represent the graphical/table interpretation objectives. `pie_chart_angles` remains as **pie-chart angle calculations** in the broader Custom Worksheets catalogue because converting angle/fraction/percentage relationships is valid direct maths; actual pie-chart interpretation remains visual/deferred.
+`data_table_questions` is retired because text-only pseudo-data does not faithfully represent the graphical/table interpretation objectives. `pie_chart_angles` remains only as **text-only pie-chart angle practice** in Extension for saved-sheet compatibility and focused arithmetic. The curriculum-facing Year 6 Pie Charts families now use rendered sectors, tables and construction circles.

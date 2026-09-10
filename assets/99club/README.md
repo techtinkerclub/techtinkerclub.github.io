@@ -4,7 +4,7 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version **1.20** keeps the public 99 Club workflow stable while retaining the separate Custom Worksheets beta route:
+Version **1.21** keeps the public 99 Club workflow stable while expanding the separate Custom Worksheets beta route:
 
 1. **99 Club** at `/tools/99-club/` — the stable progression tool for Classic 11–99, optional alternative progressions and Bronze–Diamond challenges.
 2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice. In v1.19 this route is intentionally **unlinked from the public 99 Club UI and Help page**; it is available only when its URL is entered/shared directly while the module continues to mature.
@@ -16,6 +16,17 @@ Classic 99 Club remains the default progression:
 `11 -> 22 -> 33 -> 44 -> 55 -> 66 -> 77 -> 88 -> 99`
 
 The TTC Classic default is **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable. Alternative published-school presets keep their own defaults unless edited.
+
+
+### v1.21 Pie Charts + restrained visual colour
+
+- Adds a dedicated **Year 6 Pie Charts** visual subsystem to Custom Worksheets only.
+- Curriculum-facing families are split into **interpret & construct** and **reasoning & problem solving**, with 11+/cross-topic material isolated in an explicit Extension family.
+- The pie renderer supports exact proportional sectors, direct labels + legends, fractions/percentages/angles, linked tables, two-pie comparison, estimation tasks, blank/partially-started construction circles and answer-state sectors.
+- The old `pie_chart_angles` direct-maths family is retained for saved-sheet compatibility but moved to Extension as text-only practice.
+- Shared visual questions use a slightly richer, restrained palette. Colour remains a secondary cue: labels, geometry, bar position and chart structure still carry the mathematical meaning, so colour is not required to answer the question.
+- Single-series bar charts use gentle category colours; multi-series graphs keep series colours; coordinate original/image/target/mirror cues are more distinct without becoming visually busy.
+- Public `/tools/99-club/`, QR behaviour, classic/post-99 maths and dense text-only PDF paths are not changed.
 
 ### v1.20 Custom Worksheet visual/selection update
 
@@ -32,8 +43,8 @@ The TTC Classic default is **5 minutes** and **3 perfect attempts that do not ne
 - Existing v1.17 Custom Worksheet browser state is migrated into the new Custom Worksheets storage before the main tool returns to a normal Club challenge.
 - Custom Worksheets is a separate beta route with its own state, full curriculum catalogue and room for future graphical and proper word-problem generators.
 - Story word problems remain deliberately excluded pending a structured problem-language engine.
-- `data_table_questions` is retired and produces no questions; real statistics interpretation that depends on tables/charts is deferred to visual rendering.
-- `pie_chart_angles` remains as **pie-chart angle calculations** because angle/fraction/percentage conversion is valid direct maths; actual pie-chart interpretation is visual/deferred.
+- `data_table_questions` is retired and produces no questions; dedicated graphical modules now cover bar/time/line graphs and Year 6 pie charts.
+- `pie_chart_angles` remains only as **text-only pie-chart angle practice** in Extension; curriculum-facing pie-chart work uses the generated visual module.
 - Exact square roots and non-standard rounding remain clearly marked as **Extension** in the Custom Worksheets catalogue.
 - Full scope and deliberately deferred graphical objectives are documented in [`CURRICULUM_COVERAGE.md`](CURRICULUM_COVERAGE.md).
 
@@ -132,7 +143,7 @@ The family catalogue is now intentionally broader than the original 99 Club chal
 - **Measurement** — unit choice/comparison/conversion, money, time/calendar, perimeter/area/volume, triangle/parallelogram area, missing measures, temperatures and area/perimeter relationships;
 - **Geometry** — text-based shape/line/angle properties, turns/position language, coordinate translations and coordinate reflections;
 - **Algebra** — missing-value algebra, formula substitution, linear sequences and pairs satisfying equations;
-- **Statistics** — text-data interpretation, pie-chart angle groundwork and mean;
+- **Statistics** — generated bar/time/line graphs, Year 6 pie-chart interpretation/construction/reasoning, and mean;
 - **Extension** — square roots and non-standard rounding.
 
 In Custom Worksheets the rule editor can turn topics on/off and change their relative weighting. **Weight controls frequency, not difficulty.** Named Bronze–Diamond challenges continue to show their defining families as locked core content with optional extras.

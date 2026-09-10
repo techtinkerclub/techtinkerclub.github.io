@@ -11,7 +11,7 @@
   const G=global.TT99Generator;
   if(!G) return;
 
-  const VERSION='0.2.0';
+  const VERSION='0.2.1';
   const COORD_FAMILIES={
     coordinates_y4:{label:'coordinates & translation',strand:'Geometry',years:[4],curriculumId:'Y4.PD.01'},
     transformations_y5:{label:'reflection & translation',strand:'Geometry',years:[5],curriculumId:'Y5.PD.01'},
@@ -363,7 +363,8 @@
     const pad={l:30,r:18,t:11,b:27},availW=Math.max(70,w-pad.l-pad.r),availH=Math.max(70,h-pad.t-pad.b),unit=Math.min(availW/xSpan,availH/ySpan),plotW=unit*xSpan,plotH=unit*ySpan;
     const left=x+pad.l+(availW-plotW)/2,top=y+pad.t+(availH-plotH)/2,right=left+plotW,bottom=top+plotH;
     const xp=n=>left+(Number(n)-xMin)*unit,yp=n=>bottom-(Number(n)-yMin)*unit;
-    const grid=[221,227,230],axis=[58,72,79],ink=[39,54,61],muted=[92,105,112],teal=[15,118,110],image=[93,111,118],mirror=[150,104,74];
+    const pal=global.TT99VisualPalette||{};
+    const grid=pal.grid||[221,227,230],axis=pal.axis||[58,72,79],ink=pal.image||[83,128,184],muted=pal.muted||[92,105,112],teal=pal.answer||[15,118,110],image=(pal.series||[])[3]||[202,104,101],mirror=pal.mirror||[132,108,177],target=pal.target||[204,139,55];
     const tick=Number(v.tickEvery||1),labelEvery=Number(v.labelEvery||1);
 
     for(let xv=Math.ceil(xMin/tick)*tick;xv<=xMax+.0001;xv+=tick)C.line(xp(xv),top,xp(xv),bottom,{color:grid,width:.45});
@@ -393,7 +394,7 @@
     }
 
     function drawPoint(p,answer=false){
-      const xx=xp(p.x),yy=yp(p.y),col=answer?teal:(p.role==='target'?mirror:ink),sz=answer?5:4.5;C.rect(xx-sz/2,yy-sz/2,sz,sz,{fill:col});
+      const xx=xp(p.x),yy=yp(p.y),col=answer?teal:(p.role==='target'?target:ink),sz=answer?5:4.5;C.rect(xx-sz/2,yy-sz/2,sz,sz,{fill:col});
       if(p.label)C.text(xx+4.5,yy-4,String(p.label),6.4,{bold:true,color:col});
     }
     function drawPolygon(pg,answer=false){

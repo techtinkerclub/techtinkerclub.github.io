@@ -21,6 +21,7 @@ search: false
 <script src="/assets/99club/simple-pdf.js?v=19"></script>
 <script src="/assets/99club/pdf-layout.js?v=19"></script>
 <script src="/assets/99club/qr-lite.js?v=19"></script>
-<script src="/assets/99club/custom-graphs.js?v=4"></script>
-<script src="/assets/99club/custom-coordinates.js?v=2"></script>
-<script src="/assets/99club/custom-app.js?v=20" defer></script>
+<script src="/assets/99club/custom-graphs.js?v=5"></script>
+<script src="/assets/99club/custom-coordinates.js?v=3"></script>
+<script src="/assets/99club/custom-piecharts.js?v=2"></script>
+<script src="/assets/99club/custom-app.js?v=21" defer></script>
