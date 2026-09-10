@@ -1,0 +1,9 @@
+/* Custom Worksheets graphical statistics stage 1 - loaded on /custom/ only */
+.tt99-visual-preview-stack{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+.tt99-visual-preview-stack .tt99-visual-paper{display:block;width:min(100%,760px);height:auto;flex:none}
+.tt99-visual-preview-stack .tt99-visual-paper.is-landscape{width:min(100%,1040px)}
+.tt99-visual-preview-stack .tt99-visual-paper+.tt99-visual-paper{margin-top:4px}
+.tt99-graph-layout-note{margin-top:12px;padding:10px 12px;border:1px solid #cfe2df;border-radius:10px;background:#f3faf8;color:#40565b;font-size:.7rem;line-height:1.4}
+.tt99-graph-layout-note b{display:block;margin-bottom:2px;color:#0d6c66;font-size:.72rem}
+.tt99-graph-layout-note span{display:block}
+@media(max-width:720px){.tt99-visual-preview-stack{gap:12px}.tt99-graph-layout-note{font-size:.68rem}}

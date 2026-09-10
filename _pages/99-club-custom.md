@@ -16,8 +16,10 @@ search: false
 </div>
 
 <link rel="stylesheet" href="/assets/99club/99club.css?v=19">
+<link rel="stylesheet" href="/assets/99club/custom-graphs.css?v=1">
 <script src="/assets/99club/generator.js?v=19"></script>
 <script src="/assets/99club/simple-pdf.js?v=19"></script>
 <script src="/assets/99club/pdf-layout.js?v=19"></script>
 <script src="/assets/99club/qr-lite.js?v=19"></script>
+<script src="/assets/99club/custom-graphs.js?v=1"></script>
 <script src="/assets/99club/custom-app.js?v=19" defer></script>
