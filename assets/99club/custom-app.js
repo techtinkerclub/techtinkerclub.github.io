@@ -9,7 +9,7 @@
   const STORAGE_KEY = 'tt99-custom-settings-v1';
   const LEGACY_MAIN_STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.21.1';
+  const VERSION = '1.21.2';
   const APP_NAME = '99 Club Studio · Custom Worksheets';
   const APP_URL = 'https://techtinker.club/tools/99-club/custom/';
   const GENERATION_VERSION = 1;
@@ -114,6 +114,12 @@
   const openCurriculumStrands = new Set();
 
   root.addEventListener('click',e=>{
+    const workspaceViewButton=e.target.closest('[data-workspace-view]');
+    if(workspaceViewButton){
+      e.preventDefault();
+      setWorkspaceView(workspaceViewButton.dataset.workspaceView);
+      return;
+    }
     const reviewRow=e.target.closest('.tt99-svg-row-review');
     if(reviewRow && !e.target.closest('[data-replace]')){
       const wasActive=reviewRow.classList.contains('is-review-active');
@@ -661,7 +667,6 @@
     const logo=root.querySelector('#tt99-logo'); if(logo) logo.addEventListener('change',handleLogo);
     root.querySelector('#tt99-remove-logo')?.addEventListener('click',()=>{ state.school.logoDataUrl='';state.school.logoWidth=0;state.school.logoHeight=0;persist();render(); });
     root.querySelector('#tt99-toggle-rules')?.addEventListener('click',()=>{state.advancedOpen=!state.advancedOpen;render();});
-    root.querySelectorAll('[data-workspace-view]').forEach(btn=>btn.addEventListener('click',()=>setWorkspaceView(btn.dataset.workspaceView))); 
     root.querySelector('#tt99-reset-rules')?.addEventListener('click',resetRules);
     root.querySelector('#tt99-reset-scheme')?.addEventListener('click',resetScheme);
     root.querySelectorAll('[data-rule]').forEach(input=>input.addEventListener(input.type==='range'?'input':'change',()=>ruleChanged(input.dataset.rule,input.value)));

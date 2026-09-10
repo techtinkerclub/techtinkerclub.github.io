@@ -18,6 +18,14 @@ Classic 99 Club remains the default progression:
 The TTC Classic default is **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable. Alternative published-school presets keep their own defaults unless edited.
 
 
+
+### v1.21.2 Workspace switcher deployment hotfix
+
+- Fixes the Custom Worksheet Options / Balanced / Preview switcher when the v1.21.1 standalone workspace stylesheet is missing or stale in deployment.
+- Moves the switcher/layout rules into the established Custom-only `custom-graphs.css` asset and bumps its cache version.
+- Uses persistent delegated click handling so the switcher survives Custom UI re-renders.
+- Public 99 Club generation/layout files remain unchanged.
+
 ### v1.21.1 Pie visibility + Custom workspace layout hotfix
 
 - Fixes the failure mode where Pie Chart questions/legends could appear but the circular sectors were blank if the browser had a stale pre-polygon visual canvas. The page now cache-busts the visual engine and the Pie renderer has a line-outline fallback.
