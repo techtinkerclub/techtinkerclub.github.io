@@ -440,7 +440,7 @@
           <div class="tt99-hero-tools" aria-label="99 Club Studio links">
             <a href="/tools/99-club/help/" class="tt99-hero-tool tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
             <button type="button" id="tt99-contact-open" class="tt99-hero-tool tt99-contact-link"><span aria-hidden="true">✉</span>Contact</button>
-            <a href="https://ko-fi.com/bogdan2618" class="tt99-hero-tool tt99-support-link" target="_blank" rel="noopener"><img class="tt99-kofi-cup" src="/assets/99club/images/kofi-cup.png?v=19.3" alt="" aria-hidden="true">Buy me a coffee</a>
+            <button type="button" id="tt99-kofi-open" class="tt99-hero-tool tt99-support-link"><img class="tt99-kofi-cup" src="/assets/99club/images/kofi-cup.png?v=19.4" alt="" aria-hidden="true">Buy me a coffee</button>
           </div>
         </section>
         <div class="tt99-workspace">
@@ -457,6 +457,24 @@
           </main>
         </div>
         <div id="tt99-help-popover" class="tt99-help-popover" role="dialog" aria-live="polite" hidden></div>
+        <div id="tt99-kofi-modal" class="tt99-kofi-modal" hidden>
+          <button type="button" class="tt99-kofi-backdrop" data-kofi-close aria-label="Close Ko-fi support panel"></button>
+          <section class="tt99-kofi-card" role="dialog" aria-modal="true" aria-labelledby="tt99-kofi-title">
+            <button type="button" class="tt99-kofi-close" data-kofi-close aria-label="Close Ko-fi support panel">×</button>
+            <div class="tt99-kofi-heading">
+              <img src="/assets/99club/images/kofi-cup.png?v=19.4" alt="" aria-hidden="true">
+              <div>
+                <span>Support Tech Tinker Club</span>
+                <h2 id="tt99-kofi-title">Buy me a coffee</h2>
+              </div>
+            </div>
+            <p>Support the free classroom tools without leaving this page. The payment panel below is provided securely by Ko-fi.</p>
+            <div id="tt99-kofi-panel" class="tt99-kofi-panel">
+              <div class="tt99-kofi-loading">Loading Ko-fi…</div>
+            </div>
+            <div class="tt99-kofi-fallback">If the panel does not load, <a href="https://ko-fi.com/bogdan2618" target="_blank" rel="noopener">open Ko-fi in a new tab</a>.</div>
+          </section>
+        </div>
         <div id="tt99-contact-modal" class="tt99-contact-modal" hidden>
           <button type="button" class="tt99-contact-backdrop" data-contact-close aria-label="Close contact form"></button>
           <section class="tt99-contact-card" role="dialog" aria-modal="true" aria-labelledby="tt99-contact-title">
@@ -716,6 +734,37 @@
     });
   }
   function bindEvents(){
+    const kofiButton=root.querySelector('#tt99-kofi-open');
+    const kofiModal=root.querySelector('#tt99-kofi-modal');
+    const closeKofi=()=>{
+      if(!kofiModal)return;
+      kofiModal.hidden=true;
+      document.body.classList.remove('tt99-kofi-open');
+      kofiButton?.focus();
+    };
+    const ensureKofiPanel=()=>{
+      const panel=root.querySelector('#tt99-kofi-panel');
+      if(!panel || panel.querySelector('iframe'))return;
+      const iframe=document.createElement('iframe');
+      iframe.id='tt99-kofi-iframe';
+      iframe.className='tt99-kofi-iframe';
+      iframe.src='https://ko-fi.com/bogdan2618/?hidefeed=true&widget=true&embed=true&preview=true';
+      iframe.title='Support Tech Tinker Club on Ko-fi';
+      iframe.loading='eager';
+      iframe.setAttribute('allow','payment');
+      iframe.addEventListener('load',()=>panel.querySelector('.tt99-kofi-loading')?.remove(),{once:true});
+      panel.appendChild(iframe);
+    };
+    kofiButton?.addEventListener('click',()=>{
+      if(!kofiModal)return;
+      kofiModal.hidden=false;
+      document.body.classList.add('tt99-kofi-open');
+      ensureKofiPanel();
+      window.setTimeout(()=>root.querySelector('.tt99-kofi-close')?.focus(),0);
+    });
+    root.querySelectorAll('[data-kofi-close]').forEach(btn=>btn.addEventListener('click',closeKofi));
+    kofiModal?.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();closeKofi();}});
+
     const contactButton=root.querySelector('#tt99-contact-open');
     const contactModal=root.querySelector('#tt99-contact-modal');
     const closeContact=()=>{

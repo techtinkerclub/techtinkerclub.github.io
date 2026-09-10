@@ -15,12 +15,12 @@ sidebar: false
   </article>
 </div>
 
-<link rel="stylesheet" href="/assets/99club/99club.css?v=19.3">
-<script src="/assets/99club/generator.js?v=19.3"></script>
-<script src="/assets/99club/simple-pdf.js?v=19.3"></script>
-<script src="/assets/99club/pdf-layout.js?v=19.3"></script>
-<script src="/assets/99club/qr-lite.js?v=19.3"></script>
-<script src="/assets/99club/app.js?v=19.3" defer></script>
+<link rel="stylesheet" href="/assets/99club/99club.css?v=19.4">
+<script src="/assets/99club/generator.js?v=19.4"></script>
+<script src="/assets/99club/simple-pdf.js?v=19.4"></script>
+<script src="/assets/99club/pdf-layout.js?v=19.4"></script>
+<script src="/assets/99club/qr-lite.js?v=19.4"></script>
+<script src="/assets/99club/app.js?v=19.4" defer></script>
 
 <!-- Ko-fi support widget. This intentionally appears only on the public 99 Club Studio page. -->
 <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>

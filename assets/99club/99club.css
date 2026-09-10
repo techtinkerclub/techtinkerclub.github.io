@@ -611,6 +611,142 @@
   box-shadow:0 0 0 3px rgba(240,90,40,.14),0 7px 18px rgba(240,90,40,.12);
 }
 
+
+/* v1.19.4 — header Ko-fi button opens the embedded Ko-fi tip panel in-page */
+body.tt99-kofi-open{overflow:hidden}
+#tt99-root .tt99-kofi-modal[hidden]{display:none!important}
+#tt99-root .tt99-kofi-modal{
+  position:fixed;
+  z-index:20010;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
+#tt99-root .tt99-kofi-backdrop{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:rgba(8,35,45,.52);
+  cursor:default;
+  backdrop-filter:blur(2px);
+}
+#tt99-root .tt99-kofi-card{
+  position:relative;
+  z-index:1;
+  width:min(100%,560px);
+  max-height:calc(100vh - 40px);
+  overflow:auto;
+  padding:22px 22px 18px;
+  border:1px solid #ffc1aa;
+  border-radius:20px;
+  background:#fffdfb;
+  color:var(--tt99-ink);
+  box-shadow:0 26px 80px rgba(13,51,58,.30);
+}
+#tt99-root .tt99-kofi-heading{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:0 42px 8px 0;
+}
+#tt99-root .tt99-kofi-heading>img{
+  display:block;
+  width:48px;
+  height:38px;
+  object-fit:contain;
+  flex:0 0 48px;
+}
+#tt99-root .tt99-kofi-heading span{
+  display:block;
+  margin-bottom:3px;
+  color:#d94d20;
+  font-size:.65rem;
+  font-weight:850;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+#tt99-root .tt99-kofi-heading h2{
+  margin:0;
+  color:#f05a28;
+  font-size:1.48rem;
+  line-height:1.05;
+}
+#tt99-root .tt99-kofi-card>p{
+  margin:0 38px 13px 0;
+  color:#5e7075;
+  font-size:.82rem;
+  line-height:1.42;
+}
+#tt99-root .tt99-kofi-close{
+  position:absolute;
+  top:13px;
+  right:13px;
+  display:grid;
+  place-items:center;
+  width:32px;
+  height:32px;
+  padding:0;
+  border:1px solid #ffd0bf;
+  border-radius:50%;
+  background:#fff7f3;
+  color:#d94d20;
+  font:700 21px/1 system-ui;
+  cursor:pointer;
+}
+#tt99-root .tt99-kofi-close:hover,
+#tt99-root .tt99-kofi-close:focus-visible{
+  border-color:#ff9a75;
+  background:#fff1eb;
+  color:#bf3e13;
+  outline:none;
+}
+#tt99-root .tt99-kofi-panel{
+  position:relative;
+  width:100%;
+  height:min(632px,calc(100vh - 190px));
+  min-height:460px;
+  overflow:hidden;
+  border:1px solid #f1dfd7;
+  border-radius:14px;
+  background:#fff;
+}
+#tt99-root .tt99-kofi-loading{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:#9a6b5c;
+  font-size:.78rem;
+  font-weight:750;
+  background:#fffaf7;
+}
+#tt99-root .tt99-kofi-iframe{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:100%;
+  height:100%;
+  border:0;
+  background:#fff;
+}
+#tt99-root .tt99-kofi-fallback{
+  margin-top:9px;
+  color:#89979a;
+  font-size:.66rem;
+  line-height:1.4;
+  text-align:center;
+}
+#tt99-root .tt99-kofi-fallback a{
+  color:#d94d20;
+  font-weight:800;
+}
+
 body.tt99-contact-open{overflow:hidden}
 #tt99-root .tt99-contact-modal[hidden]{display:none!important}
 #tt99-root .tt99-contact-modal{
@@ -840,6 +976,12 @@ body.tt99-contact-open{overflow:hidden}
     height:18px;
     flex-basis:22px;
   }
+  #tt99-root .tt99-kofi-card{
+    padding:18px 12px 12px;
+    border-radius:16px;
+  }
+  #tt99-root .tt99-kofi-heading{margin-right:34px}
+  #tt99-root .tt99-kofi-panel{height:calc(100vh - 175px);min-height:420px}
   #tt99-root .tt99-contact-card{
     padding:23px 18px 20px;
     border-radius:16px;
@@ -853,5 +995,6 @@ body.tt99-contact-open{overflow:hidden}
 }
 @media print{
   #tt99-root .tt99-hero-tools,
-  #tt99-root .tt99-contact-modal{display:none!important}
+  #tt99-root .tt99-contact-modal,
+  #tt99-root .tt99-kofi-modal{display:none!important}
 }
