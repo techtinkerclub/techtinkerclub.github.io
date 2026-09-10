@@ -10,7 +10,7 @@
   const G=global.TT99Generator;
   if(!G) return;
 
-  const VERSION='0.1.2';
+  const VERSION='0.1.3';
   const PIE_FAMILIES={
     pie_charts_y6:{label:'pie charts — interpret & construct',strand:'Statistics',years:[6],curriculumId:'Y6.S.01'},
     pie_charts_reasoning_y6:{label:'pie charts — reasoning & problem solving',strand:'Statistics',years:[6],curriculumId:'Y6.S.01'},
@@ -349,14 +349,18 @@
     if(close)C.line(points[points.length-1].x,points[points.length-1].y,points[0].x,points[0].y,{color:stroke,width});
   }
   function drawLegend(C,x,y,w,sectors,pie){
-    const pal=global.TT99VisualPalette||{},colors=pal.series||[[45,134,125],[225,161,65],[83,128,184],[202,104,101],[132,108,177],[105,153,103]],cols=2,cw=w/cols,rowH=10;
+    const pal=global.TT99VisualPalette||{},colors=pal.series||[[45,134,125],[225,161,65],[83,128,184],[202,104,101],[132,108,177],[105,153,103]],cols=2,cw=w/cols,rowH=11;
     sectors.forEach((s,j)=>{const col=j%cols,row=Math.floor(j/cols),xx=x+col*cw,yy=y+row*rowH,color=colors[(j+(pie.colorOffset||0))%colors.length],ann=pie.annotations?pie.annotations[j]:annotationFor(s,pie.annotationMode);C.rect(xx,yy,7,7,{fill:color,stroke:[75,85,90],width:.35});C.text(xx+10,yy+6.2,`${s.label}${ann?` · ${ann}`:''}`,6.1,{color:[54,66,72]});});
     return y+Math.ceil(sectors.length/cols)*rowH;
   }
   function drawOnePie(C,x,y,w,h,pie,answers){
     const pal=global.TT99VisualPalette||{},colors=pal.series||[[45,134,125],[225,161,65],[83,128,184],[202,104,101],[132,108,177],[105,153,103]],ink=pal.ink||[39,54,61],muted=pal.muted||[92,105,112];
-    const sectors=pie.sectors||[],legendH=pie.showLegend===false?0:Math.ceil(sectors.length/2)*10+3,titleH=pie.title?13:2,totalH=pie.showTotal&&pie.total!=null?10:0;
-    const maxR=Math.min(w*.34,(h-titleH-legendH-totalH-4)*.43),r=Math.max(28,maxR),cx=x+w/2,cy=y+titleH+r+2;
+    const sectors=pie.sectors||[],showLegend=pie.showLegend!==false,showTotal=pie.showTotal&&pie.total!=null;
+    const legendH=showLegend?Math.ceil(sectors.length/2)*11:0,titleH=pie.title?14:3,totalH=showTotal?9:0;
+    const circleToMetaGap=10,legendGap=showLegend?(showTotal?8:11):0,bottomPad=3;
+    const reservedAfterCircle=circleToMetaGap+totalH+legendGap+legendH+bottomPad;
+    const availableDiameter=Math.max(56,h-titleH-reservedAfterCircle-2);
+    const maxR=Math.min(w*.35,availableDiameter/2),r=Math.max(28,maxR),cx=x+w/2,cy=y+titleH+r+2;
     if(pie.title)C.text(cx,y+8,pie.title,7.1,{bold:true,align:'center',color:ink});
     const construction=pie.construction&&!answers;
     if(construction){
@@ -366,11 +370,12 @@
       let start=0;
       sectors.forEach((s,j)=>{const end=start+Number(s.angle||0),color=colors[(j+(pie.colorOffset||0))%colors.length],pts=circlePoints(cx,cy,r,start,end,true);drawPolyline(C,pts,{fill:color,stroke:[255,255,255],width:1},true);start=end;});
       drawPolyline(C,circlePoints(cx,cy,r),{stroke:[62,73,80],width:.75},true);
-      let a0=0;sectors.forEach((s,j)=>{const mid=a0+Number(s.angle||0)/2,rad=(mid-90)*Math.PI/180,rr=r*(Number(s.angle)>=55?.58:.72),tx=cx+rr*Math.cos(rad),ty=cy+rr*Math.sin(rad),ann=pie.annotations?pie.annotations[j]:annotationFor(s,pie.annotationMode);if(!pie.hideLabels&&Number(s.angle)>=48)C.text(tx,ty-1,s.label,5.8,{bold:true,align:'center',color:[30,40,44]});if(ann&&Number(s.angle)>=30)C.text(tx,ty+7,ann,5.6,{align:'center',color:[30,40,44]});a0+=Number(s.angle||0);});
+      const labelSize=r>=50?6.1:5.8,annotationSize=r>=50?5.9:5.6;
+      let a0=0;sectors.forEach((s,j)=>{const mid=a0+Number(s.angle||0)/2,rad=(mid-90)*Math.PI/180,rr=r*(Number(s.angle)>=55?.58:.72),tx=cx+rr*Math.cos(rad),ty=cy+rr*Math.sin(rad),ann=pie.annotations?pie.annotations[j]:annotationFor(s,pie.annotationMode);if(!pie.hideLabels&&Number(s.angle)>=48)C.text(tx,ty-1,s.label,labelSize,{bold:true,align:'center',color:[30,40,44]});if(ann&&Number(s.angle)>=30)C.text(tx,ty+7,ann,annotationSize,{align:'center',color:[30,40,44]});a0+=Number(s.angle||0);});
     }
-    let below=cy+r+5;
-    if(pie.showTotal&&pie.total!=null){C.text(cx,below,`Total: ${fmt(pie.total)}${pie.unit?` ${pie.unit}`:''}`,6.3,{bold:true,align:'center',color:muted});below+=9;}
-    if(pie.showLegend!==false)below=drawLegend(C,x+4,below,w-8,sectors,pie);
+    let below=cy+r+circleToMetaGap;
+    if(showTotal){C.text(cx,below,`Total: ${fmt(pie.total)}${pie.unit?` ${pie.unit}`:''}`,6.3,{bold:true,align:'center',color:muted});below+=totalH;}
+    if(showLegend){below+=legendGap;below=drawLegend(C,x+4,below,w-8,sectors,pie);}
     return below;
   }
   function drawMiniBar(C,x,y,w,h,bar,answers){

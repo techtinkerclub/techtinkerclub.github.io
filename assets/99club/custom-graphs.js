@@ -14,7 +14,7 @@
   const L=global.TT99PDFLayout;
   if(!G) return;
 
-  const VERSION='0.1.4';
+  const VERSION='0.1.5';
   // Shared restrained palette for all generated visual questions. Colour is used
   // as a secondary cue only: labels, position, line style and geometry remain
   // sufficient for greyscale printing.
@@ -386,16 +386,34 @@
   function footprintHeight(item,answers,orientation){
     const landscape=orientation==='landscape';
     if(!item?.visual)return answers?(landscape?27:31):(landscape?30:34);
-    const fp=item.footprint||'L';
-    const tableBonus=item.visual.table||item.visual.rawData?34:0;
+    const fp=item.footprint||'L',v=item.visual;
     const map=landscape
       ? (answers?{M:112,L:145,XL:255}:{M:135,L:175,XL:335})
       : (answers?{M:145,L:190,XL:355}:{M:190,L:260,XL:545});
-    // Pie charts need a little more answer-key height than bar/line graphs because
-    // sector labels plus the legend sit below the circle. Keep this local to the
-    // Custom visual compositor so the stable public 99 Club PDF path is untouched.
-    const pieAnswerBonus=answers&&item.visual.type==='pie'?(fp==='M'?(landscape?28:42):fp==='L'?(landscape?18:24):0):0;
-    return (map[fp]||map.L)+tableBonus+pieAnswerBonus;
+
+    // Most visual families have compact fixed-size tables, so retain the established
+    // 34 pt allowance for them. Pie-chart tables vary much more (and may switch to an
+    // answer table), therefore reserve the height actually consumed by the pie renderer.
+    const activeTable=answers&&v.answerTable?v.answerTable:v.table;
+    const pieTableRows=v.type==='pie'&&activeTable?.rows?.length
+      ? activeTable.rows.length+(activeTable.headers?.length?1:0)
+      :0;
+    const tableBonus=v.type==='pie'
+      ? (pieTableRows?pieTableRows*14+5:0)
+      : (v.table||v.rawData?34:0);
+
+    if(v.type!=='pie')return (map[fp]||map.L)+tableBonus;
+
+    // Pie charts need a protected drawing area. Without this, M footprints and
+    // statement/table questions can compress the circle until labels and sectors are
+    // technically present but too small to read. Keep the extra space local to pies.
+    const pies=Array.isArray(v.pies)?v.pies:[],maxSectors=Math.max(0,...pies.map(p=>p?.sectors?.length||0));
+    const statementBonus=Array.isArray(v.statements)&&v.statements.length?v.statements.length*10+4:0;
+    const breathingRoom=fp==='XL'?0:(fp==='M'?(landscape?38:35):(landscape?34:25));
+    const sectorBonus=maxSectors>=5?(landscape?10:12):0;
+    const multiPieBonus=pies.length>1?(landscape?10:12):0;
+    const answerBonus=answers&&fp!=='XL'?(fp==='M'?(landscape?20:24):(landscape?14:16)):0;
+    return (map[fp]||map.L)+tableBonus+statementBonus+breathingRoom+sectorBonus+multiPieBonus+answerBonus;
   }
   function packQuestions(questions,answers,orientation,firstCapacity,nextCapacity){
     const pages=[];let page=[],used=0,cap=firstCapacity;
