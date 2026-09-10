@@ -437,7 +437,11 @@
             <img class="tt99-hero__wordmark" src="/assets/99club/images/99club-studio-wordmark.png" alt="99 Club Studio — Maths for further progress">
             <p class="tt99-hero__slogan">Practice. Progress. Confidence.</p>
           </div>
-          <a href="/tools/99-club/help/" class="tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
+          <div class="tt99-hero-tools" aria-label="99 Club Studio links">
+            <a href="/tools/99-club/help/" class="tt99-hero-tool tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
+            <button type="button" id="tt99-contact-open" class="tt99-hero-tool tt99-contact-link"><span aria-hidden="true">✉</span>Contact</button>
+            <a href="https://ko-fi.com/bogdan2618" class="tt99-hero-tool tt99-support-link" target="_blank" rel="noopener"><span aria-hidden="true">☕</span>Buy me a coffee</a>
+          </div>
         </section>
         <div class="tt99-workspace">
           <aside class="tt99-controls">
@@ -453,6 +457,34 @@
           </main>
         </div>
         <div id="tt99-help-popover" class="tt99-help-popover" role="dialog" aria-live="polite" hidden></div>
+        <div id="tt99-contact-modal" class="tt99-contact-modal" hidden>
+          <button type="button" class="tt99-contact-backdrop" data-contact-close aria-label="Close contact form"></button>
+          <section class="tt99-contact-card" role="dialog" aria-modal="true" aria-labelledby="tt99-contact-title">
+            <button type="button" class="tt99-contact-close" data-contact-close aria-label="Close contact form">×</button>
+            <span class="tt99-contact-kicker">Tech Tinker Club</span>
+            <h2 id="tt99-contact-title">Contact</h2>
+            <p>Questions, feedback or something not working? Send me a message about 99 Club Studio.</p>
+            <form id="tt99-contact-form">
+              <label>
+                <span>Name <small>(optional)</small></span>
+                <input id="tt99-contact-name" type="text" maxlength="80" autocomplete="name">
+              </label>
+              <label>
+                <span>Your email <small>(optional)</small></span>
+                <input id="tt99-contact-email" type="email" maxlength="160" autocomplete="email" placeholder="So I can reply">
+              </label>
+              <label>
+                <span>Message</span>
+                <textarea id="tt99-contact-message" rows="6" maxlength="2000" required placeholder="What would you like to tell me?"></textarea>
+              </label>
+              <div class="tt99-contact-actions">
+                <button type="submit" class="tt99-contact-send">Open email to send</button>
+                <a href="mailto:techtinkerclub@gmail.com">techtinkerclub@gmail.com</a>
+              </div>
+              <small class="tt99-contact-note">This opens your normal email app with the message filled in. Nothing is sent until you press Send there.</small>
+            </form>
+          </section>
+        </div>
       </div>`;
     bindEvents();
   }
@@ -680,6 +712,42 @@
     });
   }
   function bindEvents(){
+    const contactButton=root.querySelector('#tt99-contact-open');
+    const contactModal=root.querySelector('#tt99-contact-modal');
+    const closeContact=()=>{
+      if(!contactModal)return;
+      contactModal.hidden=true;
+      document.body.classList.remove('tt99-contact-open');
+      contactButton?.focus();
+    };
+    contactButton?.addEventListener('click',()=>{
+      if(!contactModal)return;
+      contactModal.hidden=false;
+      document.body.classList.add('tt99-contact-open');
+      window.setTimeout(()=>root.querySelector('#tt99-contact-name')?.focus(),0);
+    });
+    root.querySelectorAll('[data-contact-close]').forEach(btn=>btn.addEventListener('click',closeContact));
+    contactModal?.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();closeContact();}});
+    root.querySelector('#tt99-contact-form')?.addEventListener('submit',e=>{
+      e.preventDefault();
+      const form=e.currentTarget;
+      if(!form.reportValidity())return;
+      const name=(root.querySelector('#tt99-contact-name')?.value||'').trim();
+      const reply=(root.querySelector('#tt99-contact-email')?.value||'').trim();
+      const message=(root.querySelector('#tt99-contact-message')?.value||'').trim();
+      const to=['techtinkerclub','gmail.com'].join('@');
+      const subject=`99 Club Studio contact${name?` — ${name}`:''}`;
+      const body=[
+        `Name: ${name||'Not provided'}`,
+        `Reply email: ${reply||'Not provided'}`,
+        '',
+        message,
+        '',
+        'Sent from the 99 Club Studio contact form.'
+      ].join('\n');
+      window.location.href=`mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+
     root.querySelector('#tt99-scheme')?.addEventListener('change',e=>selectScheme(e.target.value));
     root.querySelectorAll('[data-club]').forEach(btn=>btn.addEventListener('click',()=>selectClub(btn.dataset.club)));
     root.querySelectorAll('[data-delete-preset]').forEach(btn=>btn.addEventListener('click',()=>deletePreset(btn.dataset.deletePreset)));
