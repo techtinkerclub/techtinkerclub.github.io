@@ -14,7 +14,7 @@
   const L=global.TT99PDFLayout;
   if(!G) return;
 
-  const VERSION='0.1.3';
+  const VERSION='0.1.4';
   // Shared restrained palette for all generated visual questions. Colour is used
   // as a secondary cue only: labels, position, line style and geometry remain
   // sufficient for greyscale printing.

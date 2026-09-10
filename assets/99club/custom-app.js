@@ -9,7 +9,7 @@
   const STORAGE_KEY = 'tt99-custom-settings-v1';
   const LEGACY_MAIN_STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.21';
+  const VERSION = '1.21.1';
   const APP_NAME = '99 Club Studio · Custom Worksheets';
   const APP_URL = 'https://techtinker.club/tools/99-club/custom/';
   const GENERATION_VERSION = 1;
@@ -102,6 +102,7 @@
     sheets: [],
     previewVariant: 0,
     previewAnswers: false,
+    workspaceView: 'balanced',
     includeAnswerQr: true,
     teacherNote: '',
     school: { schoolName:'', yearGroup:'', className:'', teacherName:'', worksheetDate:'', logoDataUrl:'', logoWidth:0, logoHeight:0 },
@@ -151,7 +152,7 @@
   function showHelp(button,key){
     const item=HELP_TEXT[key], pop=root.querySelector('#tt99-help-popover'); if(!item||!pop)return;
     root.querySelectorAll('[data-help-key]').forEach(b=>b.setAttribute('aria-expanded','false'));
-    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p><a href="/tools/99-club/help/#custom" target="_blank" rel="noopener">Open full Help & guide</a>`;
+    pop.innerHTML=`<div class="tt99-help-popover__head"><strong>${esc(item[0])}</strong><button type="button" class="tt99-help-close" aria-label="Close help">×</button></div><p>${esc(item[1])}</p>`;
     pop.hidden=false; button.setAttribute('aria-expanded','true');
     const r=button.getBoundingClientRect(), gap=9, width=Math.min(330,innerWidth-24);
     pop.style.width=`${width}px`; let left=Math.min(innerWidth-width-12,Math.max(12,r.left+r.width/2-width/2));
@@ -253,7 +254,7 @@
     return {
       schemeId:state.schemeId,clubId:state.clubId,rules:state.rules,ruleOverrides:state.ruleOverrides,
       variants:state.variants,orientation:state.orientation,seed:state.seed,previewVariant:state.previewVariant,
-      previewAnswers:state.previewAnswers,includeAnswerQr:state.includeAnswerQr,teacherNote:state.teacherNote,school,
+      previewAnswers:state.previewAnswers,workspaceView:state.workspaceView,includeAnswerQr:state.includeAnswerQr,teacherNote:state.teacherNote,school,
       sheets:includeSheets?state.sheets:undefined
     };
   }
@@ -275,6 +276,7 @@
       state.seed = s.seed || newStudioSeed(state.clubId);
       state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(s.previewVariant)||0));
       state.previewAnswers=!!s.previewAnswers;
+      state.workspaceView=['options','preview'].includes(s.workspaceView)?s.workspaceView:'balanced';
       state.includeAnswerQr=s.includeAnswerQr!==false;
       state.teacherNote=cleanTeacherNote(s.teacherNote||'');
       if(validExactSheets(s.sheets,state.variants,state.rules)){state.sheets=G.clone(s.sheets);refreshSheetCodes();return true;}
@@ -356,6 +358,30 @@
     persist();state.status='Question order shuffled. The recreation recipe keeps only the compact steps needed to rebuild the current sheet.'; render();
   }
 
+  function workspaceViewClass(){
+    return state.workspaceView==='options'?'is-options-focus':state.workspaceView==='preview'?'is-preview-focus':'is-balanced';
+  }
+  function renderWorkspaceViewSwitcher(){
+    const current=state.workspaceView||'balanced';
+    const button=(value,label,title)=>`<button type="button" data-workspace-view="${value}" class="${current===value?'is-active':''}" aria-pressed="${current===value?'true':'false'}" title="${title}">${label}</button>`;
+    return `<div class="tt99-workspace-view-switcher" aria-label="Workspace panel size"><span>Workspace</span>${button('options','Options','Give more room to worksheet options')}${button('balanced','Balanced','Use the normal 99 Club panel proportions')}${button('preview','Preview','Give more room to the worksheet preview')}</div>`;
+  }
+  function setWorkspaceView(value){
+    const next=['options','balanced','preview'].includes(value)?value:'balanced';
+    state.workspaceView=next;
+    persist();
+    const workspace=root.querySelector('.tt99-workspace--custom');
+    if(workspace){
+      workspace.classList.remove('is-options-focus','is-balanced','is-preview-focus');
+      workspace.classList.add(workspaceViewClass());
+    }
+    root.querySelectorAll('[data-workspace-view]').forEach(btn=>{
+      const active=btn.dataset.workspaceView===next;
+      btn.classList.toggle('is-active',active);
+      btn.setAttribute('aria-pressed',active?'true':'false');
+    });
+  }
+
   function render(){
     root.innerHTML = `
       <div class="tt99-shell tt99-shell--custom">
@@ -363,11 +389,11 @@
           <div><span class="tt99-eyebrow">Tech Tinker Club · 99 Club Studio</span><div class="tt99-custom-title-row"><h1 id="tt99-custom-title">Custom Worksheets</h1><span class="tt99-beta-pill">Beta</span></div><p>Build targeted starters, homework, quizzes and retrieval practice. This workspace is separate so new curriculum, visual and future word-problem generators can grow without changing the stable 99 Club workflow.</p></div>
           <div class="tt99-custom-hero-actions">
             <a class="tt99-secondary tt99-custom-back" href="/tools/99-club/">← Back to 99 Club</a>
-            <a href="/tools/99-club/help/" class="tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
           </div>
         </section>
         <div class="tt99-custom-intro-note"><strong>Build exactly what you need.</strong><span>Custom Worksheets now starts with no topics selected. Choose freely across the curriculum catalogue; supported charts, pie charts and coordinate geometry use deterministic generated visuals.</span></div>
-        <div class="tt99-workspace tt99-workspace--custom">
+        ${renderWorkspaceViewSwitcher()}
+        <div class="tt99-workspace tt99-workspace--custom ${workspaceViewClass()}">
           <aside class="tt99-controls">
             ${renderStepPersonalise()}
             ${renderSavedWorksheetPresets()}
@@ -635,6 +661,7 @@
     const logo=root.querySelector('#tt99-logo'); if(logo) logo.addEventListener('change',handleLogo);
     root.querySelector('#tt99-remove-logo')?.addEventListener('click',()=>{ state.school.logoDataUrl='';state.school.logoWidth=0;state.school.logoHeight=0;persist();render(); });
     root.querySelector('#tt99-toggle-rules')?.addEventListener('click',()=>{state.advancedOpen=!state.advancedOpen;render();});
+    root.querySelectorAll('[data-workspace-view]').forEach(btn=>btn.addEventListener('click',()=>setWorkspaceView(btn.dataset.workspaceView))); 
     root.querySelector('#tt99-reset-rules')?.addEventListener('click',resetRules);
     root.querySelector('#tt99-reset-scheme')?.addEventListener('click',resetScheme);
     root.querySelectorAll('[data-rule]').forEach(input=>input.addEventListener(input.type==='range'?'input':'change',()=>ruleChanged(input.dataset.rule,input.value)));
@@ -1169,7 +1196,7 @@
   function downloadFullBackup(){downloadJson(`99-club-studio-full-backup-${safeDateStamp()}.json`,fullBackupData());state.status='Full backup downloaded. Keep this file somewhere independent of the browser if the saved presets matter.';render();}
   function hasPreRestoreSnapshot(){try{const d=JSON.parse(localStorage.getItem(PRE_RESTORE_KEY)||'null');return !!(d&&d.kind==='tt99-full-backup'&&d.settings);}catch(e){return false;}}
   function applyBackupData(d,statusText){
-    if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');state.customPresets=Array.isArray(d.customPresets)?G.clone(d.customPresets):[];saveCustomPresets();const x=d.settings;state.schemeId=x.schemeId&&G.SCHEME_PRESETS[x.schemeId]?x.schemeId:'classic';state.ruleOverrides=x.ruleOverrides&&typeof x.ruleOverrides==='object'&&!Array.isArray(x.ruleOverrides)?G.clone(x.ruleOverrides):{};const requestedId=String(x.clubId||x.rules?.id||'33');state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';state.rules=normalizeForContext(x.rules||getBasePreset(state.schemeId,state.clubId),state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(x.variants)||1));state.orientation=x.orientation==='landscape'?'landscape':'portrait';state.seed=typeof x.seed==='string'&&x.seed?x.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(x.previewVariant)||0));state.previewAnswers=!!x.previewAnswers;state.includeAnswerQr=x.includeAnswerQr!==false;state.teacherNote=cleanTeacherNote(x.teacherNote||'');if(x.school)state.school={...state.school,...x.school};if(validExactSheets(x.sheets,state.variants,state.rules)){state.sheets=G.clone(x.sheets);refreshSheetCodes();refreshRulesError();persist();}else generateAll();state.status=statusText;render();
+    if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');state.customPresets=Array.isArray(d.customPresets)?G.clone(d.customPresets):[];saveCustomPresets();const x=d.settings;state.schemeId=x.schemeId&&G.SCHEME_PRESETS[x.schemeId]?x.schemeId:'classic';state.ruleOverrides=x.ruleOverrides&&typeof x.ruleOverrides==='object'&&!Array.isArray(x.ruleOverrides)?G.clone(x.ruleOverrides):{};const requestedId=String(x.clubId||x.rules?.id||'33');state.clubId=getBasePreset(state.schemeId,requestedId)?requestedId:'33';state.rules=normalizeForContext(x.rules||getBasePreset(state.schemeId,state.clubId),state.clubId);commitCurrentRules();state.variants=Math.min(4,Math.max(1,Number(x.variants)||1));state.orientation=x.orientation==='landscape'?'landscape':'portrait';state.seed=typeof x.seed==='string'&&x.seed?x.seed:newStudioSeed(state.clubId);state.previewVariant=Math.max(0,Math.min(state.variants-1,Number(x.previewVariant)||0));state.previewAnswers=!!x.previewAnswers;state.workspaceView=['options','preview'].includes(x.workspaceView)?x.workspaceView:'balanced';state.includeAnswerQr=x.includeAnswerQr!==false;state.teacherNote=cleanTeacherNote(x.teacherNote||'');if(x.school)state.school={...state.school,...x.school};if(validExactSheets(x.sheets,state.variants,state.rules)){state.sheets=G.clone(x.sheets);refreshSheetCodes();refreshRulesError();persist();}else generateAll();state.status=statusText;render();
   }
   function restoreFullBackup(e){
     const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!d||d.kind!=='tt99-full-backup'||d.backupVersion!==1||!d.settings)throw new Error('backup');try{localStorage.setItem(PRE_RESTORE_KEY,JSON.stringify(fullBackupData()));}catch(ignore){}applyBackupData(d,'Full backup restored. The browser state it replaced is kept as a local safety snapshot; use “Undo last restore” if needed.');}catch(err){state.status='That file is not a valid 99 Club Studio full backup.';render();}};reader.readAsText(file);

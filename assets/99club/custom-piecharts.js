@@ -10,7 +10,7 @@
   const G=global.TT99Generator;
   if(!G) return;
 
-  const VERSION='0.1.1';
+  const VERSION='0.1.2';
   const PIE_FAMILIES={
     pie_charts_y6:{label:'pie charts — interpret & construct',strand:'Statistics',years:[6],curriculumId:'Y6.S.01'},
     pie_charts_reasoning_y6:{label:'pie charts — reasoning & problem solving',strand:'Statistics',years:[6],curriculumId:'Y6.S.01'},
@@ -341,6 +341,13 @@
     const span=endDeg-startDeg,steps=Math.max(8,Math.ceil(Math.abs(span)/7.5)),pts=includeCentre?[{x:cx,y:cy}]:[];
     for(let i=0;i<=steps;i++){const a=(startDeg+span*i/steps-90)*Math.PI/180;pts.push({x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)});}return pts;
   }
+  function drawPolyline(C,points,o={},close=false){
+    if(!Array.isArray(points)||points.length<2)return;
+    if(typeof C.polygon==='function'){C.polygon(points,o);return;}
+    const requested=o.stroke||[65,76,82],stroke=Array.isArray(requested)&&requested.every(v=>Number(v)>225)?[92,103,108]:requested,width=o.width||.7;
+    for(let i=1;i<points.length;i++)C.line(points[i-1].x,points[i-1].y,points[i].x,points[i].y,{color:stroke,width});
+    if(close)C.line(points[points.length-1].x,points[points.length-1].y,points[0].x,points[0].y,{color:stroke,width});
+  }
   function drawLegend(C,x,y,w,sectors,pie){
     const pal=global.TT99VisualPalette||{},colors=pal.series||[[45,134,125],[225,161,65],[83,128,184],[202,104,101],[132,108,177],[105,153,103]],cols=2,cw=w/cols,rowH=10;
     sectors.forEach((s,j)=>{const col=j%cols,row=Math.floor(j/cols),xx=x+col*cw,yy=y+row*rowH,color=colors[(j+(pie.colorOffset||0))%colors.length],ann=pie.annotations?pie.annotations[j]:annotationFor(s,pie.annotationMode);C.rect(xx,yy,7,7,{fill:color,stroke:[75,85,90],width:.35});C.text(xx+10,yy+6.2,`${s.label}${ann?` · ${ann}`:''}`,6.1,{color:[54,66,72]});});
@@ -353,12 +360,12 @@
     if(pie.title)C.text(cx,y+8,pie.title,7.1,{bold:true,align:'center',color:ink});
     const construction=pie.construction&&!answers;
     if(construction){
-      const outline=circlePoints(cx,cy,r);C.polygon?.(outline,{stroke:[65,76,82],width:.9});
+      const outline=circlePoints(cx,cy,r);drawPolyline(C,outline,{stroke:[65,76,82],width:.9},true);
       if(pie.baseline!==false)C.line(cx,cy,cx,cy-r,{color:[75,86,92],width:.75});C.rect(cx-1.5,cy-1.5,3,3,{fill:[80,90,96]});
     }else{
       let start=0;
-      sectors.forEach((s,j)=>{const end=start+Number(s.angle||0),color=colors[(j+(pie.colorOffset||0))%colors.length],pts=circlePoints(cx,cy,r,start,end,true);C.polygon?.(pts,{fill:color,stroke:[255,255,255],width:1});start=end;});
-      C.polygon?.(circlePoints(cx,cy,r),{stroke:[62,73,80],width:.75});
+      sectors.forEach((s,j)=>{const end=start+Number(s.angle||0),color=colors[(j+(pie.colorOffset||0))%colors.length],pts=circlePoints(cx,cy,r,start,end,true);drawPolyline(C,pts,{fill:color,stroke:[255,255,255],width:1},true);start=end;});
+      drawPolyline(C,circlePoints(cx,cy,r),{stroke:[62,73,80],width:.75},true);
       let a0=0;sectors.forEach((s,j)=>{const mid=a0+Number(s.angle||0)/2,rad=(mid-90)*Math.PI/180,rr=r*(Number(s.angle)>=55?.58:.72),tx=cx+rr*Math.cos(rad),ty=cy+rr*Math.sin(rad),ann=pie.annotations?pie.annotations[j]:annotationFor(s,pie.annotationMode);if(!pie.hideLabels&&Number(s.angle)>=48)C.text(tx,ty-1,s.label,5.8,{bold:true,align:'center',color:[30,40,44]});if(ann&&Number(s.angle)>=30)C.text(tx,ty+7,ann,5.6,{align:'center',color:[30,40,44]});a0+=Number(s.angle||0);});
     }
     let below=cy+r+5;

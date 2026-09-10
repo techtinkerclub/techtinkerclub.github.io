@@ -4,7 +4,7 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version **1.21** keeps the public 99 Club workflow stable while expanding the separate Custom Worksheets beta route:
+Version **1.21.1** keeps the public 99 Club workflow stable while expanding the separate Custom Worksheets beta route:
 
 1. **99 Club** at `/tools/99-club/` — the stable progression tool for Classic 11–99, optional alternative progressions and Bronze–Diamond challenges.
 2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice. In v1.19 this route is intentionally **unlinked from the public 99 Club UI and Help page**; it is available only when its URL is entered/shared directly while the module continues to mature.
@@ -17,6 +17,15 @@ Classic 99 Club remains the default progression:
 
 The TTC Classic default is **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable. Alternative published-school presets keep their own defaults unless edited.
 
+
+### v1.21.1 Pie visibility + Custom workspace layout hotfix
+
+- Fixes the failure mode where Pie Chart questions/legends could appear but the circular sectors were blank if the browser had a stale pre-polygon visual canvas. The page now cache-busts the visual engine and the Pie renderer has a line-outline fallback.
+- Restores the Custom Worksheet default panel proportions to the same balanced layout used by the public 99 Club page.
+- Adds three user-controlled workspace views: **Options**, **Balanced** and **Preview**. The choice is remembered locally and does not affect worksheet/recreation maths.
+- Removes Custom Worksheets from the public Help page again while the workspace remains private beta; Custom retains its inline contextual `?` help only.
+- Adds a Custom-only `custom-workspace.css` file so the new panel behaviour cannot alter the public 99 Club page.
+- Public `/tools/99-club/`, generator maths, QR behaviour and PDF layout remain unchanged.
 
 ### v1.21 Pie Charts + restrained visual colour
 
