@@ -43,3 +43,20 @@ table td:first-child a {
   flex: 1;               /* makes each button expand equally */
   text-align: center;    /* centers the text */
 }
+
+/* 99 Club Studio v1.19.4.1 — modal stacking fix
+   Minimal Mistakes gives .masthead z-index:20 and #main an intro animation,
+   which creates a separate stacking context. Raise #main only while either
+   99 Club modal is open so the modal backdrop/card sit above the site masthead. */
+body.tt99-contact-open #main,
+body.tt99-kofi-open #main {
+  position: relative;
+  z-index: 30;
+}
+
+/* The backdrop now covers the masthead visually; also prevent accidental
+   navigation clicks while a modal is active. */
+body.tt99-contact-open .masthead,
+body.tt99-kofi-open .masthead {
+  pointer-events: none;
+}
