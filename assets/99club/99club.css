@@ -589,18 +589,26 @@
   box-shadow:0 0 0 3px rgba(15,139,131,.18),0 7px 18px rgba(28,79,76,.10);
 }
 #tt99-root .tt99-support-link{
-  border-color:#e7cc87;
-  color:#73561b;
+  border-color:#ffb39a;
+  background:rgba(255,252,250,.96);
+  color:#f05a28;
 }
-#tt99-root .tt99-support-link>span{
-  background:#e4b54c;
-  color:#21323a;
+#tt99-root .tt99-kofi-cup{
+  display:block;
+  width:27px;
+  height:22px;
+  flex:0 0 27px;
+  object-fit:contain;
 }
 #tt99-root .tt99-support-link:hover,
 #tt99-root .tt99-support-link:focus-visible{
-  border-color:#d6ae45;
-  color:#624813;
-  background:#fffdf7;
+  border-color:#ff8057;
+  color:#df4516;
+  background:#fff7f3;
+  box-shadow:0 7px 18px rgba(240,90,40,.12);
+}
+#tt99-root .tt99-support-link:focus-visible{
+  box-shadow:0 0 0 3px rgba(240,90,40,.14),0 7px 18px rgba(240,90,40,.12);
 }
 
 body.tt99-contact-open{overflow:hidden}
@@ -759,12 +767,48 @@ body.tt99-contact-open{overflow:hidden}
   font-size:.68rem;
   line-height:1.4;
 }
+#tt99-root .tt99-contact-honey{
+  position:absolute!important;
+  left:-10000px!important;
+  width:1px!important;
+  height:1px!important;
+  overflow:hidden!important;
+}
+#tt99-root .tt99-contact-send:disabled{
+  opacity:.62;
+  cursor:wait;
+}
+#tt99-root .tt99-contact-status{
+  min-height:0;
+  border-radius:9px;
+  font-size:.72rem;
+  font-weight:750;
+  line-height:1.4;
+}
+#tt99-root .tt99-contact-status:empty{display:none}
+#tt99-root .tt99-contact-status.is-success{
+  padding:9px 10px;
+  border:1px solid #b7d9d4;
+  background:#eef8f5;
+  color:#27645e;
+}
+#tt99-root .tt99-contact-status.is-error{
+  padding:9px 10px;
+  border:1px solid #efc3b8;
+  background:#fff4f1;
+  color:#8a3f31;
+}
+#tt99-root .tt99-contact-status a{
+  color:inherit;
+  font-weight:850;
+}
 
 @media(max-width:1120px){
   #tt99-root .tt99-hero__copy{padding-right:0;padding-bottom:48px}
   #tt99-root .tt99-hero-tools{right:16px;bottom:15px;gap:6px}
   #tt99-root .tt99-hero-tool{min-height:38px;padding:7px 10px;font-size:.70rem;gap:6px}
   #tt99-root .tt99-hero-tool>span{width:21px;height:21px;flex-basis:21px;font-size:.76rem}
+  #tt99-root .tt99-kofi-cup{width:24px;height:20px;flex-basis:24px}
 }
 @media(max-width:760px){
   #tt99-root .tt99-hero{
@@ -790,6 +834,11 @@ body.tt99-contact-open{overflow:hidden}
     height:19px;
     flex-basis:19px;
     font-size:.68rem;
+  }
+  #tt99-root .tt99-kofi-cup{
+    width:22px;
+    height:18px;
+    flex-basis:22px;
   }
   #tt99-root .tt99-contact-card{
     padding:23px 18px 20px;

@@ -8,7 +8,7 @@
 
   const STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.19.1';
+  const VERSION = '1.19.3';
   const APP_NAME = '99 Club Studio';
   const APP_URL = 'https://techtinker.club/tools/99-club/';
   const CUSTOM_WORKSPACE_KEY = 'tt99-custom-settings-v1';
@@ -440,7 +440,7 @@
           <div class="tt99-hero-tools" aria-label="99 Club Studio links">
             <a href="/tools/99-club/help/" class="tt99-hero-tool tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
             <button type="button" id="tt99-contact-open" class="tt99-hero-tool tt99-contact-link"><span aria-hidden="true">✉</span>Contact</button>
-            <a href="https://ko-fi.com/bogdan2618" class="tt99-hero-tool tt99-support-link" target="_blank" rel="noopener"><span aria-hidden="true">☕</span>Buy me a coffee</a>
+            <a href="https://ko-fi.com/bogdan2618" class="tt99-hero-tool tt99-support-link" target="_blank" rel="noopener"><img class="tt99-kofi-cup" src="/assets/99club/images/kofi-cup.png?v=19.3" alt="" aria-hidden="true">Buy me a coffee</a>
           </div>
         </section>
         <div class="tt99-workspace">
@@ -467,21 +467,25 @@
             <form id="tt99-contact-form">
               <label>
                 <span>Name <small>(optional)</small></span>
-                <input id="tt99-contact-name" type="text" maxlength="80" autocomplete="name">
+                <input id="tt99-contact-name" name="name" type="text" maxlength="80" autocomplete="name">
               </label>
               <label>
-                <span>Your email <small>(optional)</small></span>
-                <input id="tt99-contact-email" type="email" maxlength="160" autocomplete="email" placeholder="So I can reply">
+                <span>Your email</span>
+                <input id="tt99-contact-email" name="email" type="email" maxlength="160" autocomplete="email" required placeholder="So I can reply">
               </label>
               <label>
                 <span>Message</span>
-                <textarea id="tt99-contact-message" rows="6" maxlength="2000" required placeholder="What would you like to tell me?"></textarea>
+                <textarea id="tt99-contact-message" name="message" rows="6" maxlength="2000" required placeholder="What would you like to tell me?"></textarea>
+              </label>
+              <label class="tt99-contact-honey" aria-hidden="true">
+                <span>Leave this empty</span>
+                <input id="tt99-contact-honey" name="_honey" type="text" tabindex="-1" autocomplete="off">
               </label>
               <div class="tt99-contact-actions">
-                <button type="submit" class="tt99-contact-send">Open email to send</button>
-                <a href="mailto:techtinkerclub@gmail.com">techtinkerclub@gmail.com</a>
+                <button type="submit" class="tt99-contact-send">Send message</button>
               </div>
-              <small class="tt99-contact-note">This opens your normal email app with the message filled in. Nothing is sent until you press Send there.</small>
+              <div id="tt99-contact-status" class="tt99-contact-status" role="status" aria-live="polite"></div>
+              <small class="tt99-contact-note">Only the details you enter in this contact form are sent through FormSubmit to Tech Tinker Club. Worksheet, school and logo data stay on your device. Please do not include pupil personal information.</small>
             </form>
           </section>
         </div>
@@ -728,24 +732,81 @@
     });
     root.querySelectorAll('[data-contact-close]').forEach(btn=>btn.addEventListener('click',closeContact));
     contactModal?.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();closeContact();}});
-    root.querySelector('#tt99-contact-form')?.addEventListener('submit',e=>{
+    root.querySelector('#tt99-contact-form')?.addEventListener('submit',async e=>{
       e.preventDefault();
       const form=e.currentTarget;
       if(!form.reportValidity())return;
+
       const name=(root.querySelector('#tt99-contact-name')?.value||'').trim();
       const reply=(root.querySelector('#tt99-contact-email')?.value||'').trim();
       const message=(root.querySelector('#tt99-contact-message')?.value||'').trim();
-      const to=['techtinkerclub','gmail.com'].join('@');
-      const subject=`99 Club Studio contact${name?` — ${name}`:''}`;
-      const body=[
-        `Name: ${name||'Not provided'}`,
-        `Reply email: ${reply||'Not provided'}`,
-        '',
-        message,
-        '',
-        'Sent from the 99 Club Studio contact form.'
-      ].join('\n');
-      window.location.href=`mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const honey=(root.querySelector('#tt99-contact-honey')?.value||'').trim();
+      const status=root.querySelector('#tt99-contact-status');
+      const sendButton=form.querySelector('.tt99-contact-send');
+
+      // Quietly accept bot-filled honeypots without transmitting them.
+      if(honey){
+        if(status){
+          status.className='tt99-contact-status is-success';
+          status.textContent='Thanks — your message was submitted.';
+        }
+        form.reset();
+        return;
+      }
+
+      const endpoint=['https://formsubmit.co/ajax/','techtinkerclub','@','gmail.com'].join('');
+      const originalText=sendButton?.textContent||'Send message';
+
+      if(status){
+        status.className='tt99-contact-status';
+        status.textContent='';
+      }
+      if(sendButton){
+        sendButton.disabled=true;
+        sendButton.textContent='Sending…';
+      }
+
+      try{
+        const response=await fetch(endpoint,{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'Accept':'application/json'
+          },
+          body:JSON.stringify({
+            name:name||'Not provided',
+            email:reply,
+            _replyto:reply,
+            message,
+            _subject:`99 Club Studio contact${name?` — ${name}`:''}`,
+            _template:'table',
+            _url:window.location.href
+          })
+        });
+
+        let data=null;
+        try{data=await response.json();}catch(_err){data=null;}
+        if(!response.ok || (data && (data.success===false || data.success==='false'))){
+          throw new Error((data&&data.message)||`Contact form returned ${response.status}`);
+        }
+
+        form.reset();
+        if(status){
+          status.className='tt99-contact-status is-success';
+          status.textContent='Thanks — your message was submitted.';
+        }
+      }catch(err){
+        console.error('99 Club contact form:',err);
+        if(status){
+          status.className='tt99-contact-status is-error';
+          status.innerHTML='Sorry, the message could not be sent just now. Please try again, or email <a href="mailto:techtinkerclub@gmail.com">techtinkerclub@gmail.com</a>.';
+        }
+      }finally{
+        if(sendButton){
+          sendButton.disabled=false;
+          sendButton.textContent=originalText;
+        }
+      }
     });
 
     root.querySelector('#tt99-scheme')?.addEventListener('change',e=>selectScheme(e.target.value));
