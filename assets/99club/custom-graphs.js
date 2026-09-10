@@ -443,7 +443,7 @@
     C.text(left,plotTop-7,v.yLabel,6.7,{bold:true,color:[75,88,92]});C.text((left+right)/2,plotBottom+24,v.xLabel,6.7,{bold:true,align:'center',color:[75,88,92]});
     if(v.showLegend!==false&&(v.series||[]).length>1){let lx=right-100;(v.series||[]).forEach((s,k)=>{C.rect(lx,y+2+k*10,7,7,{fill:colors[k%colors.length]});C.text(lx+10,y+8+k*10,s.name,6.4,{color:[55,65,70]});});}
   }
-  function renderGraph(C,x,y,w,h,v,answers){if(v.type==='bar')renderBar(C,x,y,w,h,v,answers);else renderLine(C,x,y,w,h,v,answers);}
+  function renderGraph(C,x,y,w,h,v,answers){if(v.type==='bar')renderBar(C,x,y,w,h,v,answers);else if(v.type==='line')renderLine(C,x,y,w,h,v,answers);else if(global.TT99VisualRenderers&&typeof global.TT99VisualRenderers[v.type]==='function')global.TT99VisualRenderers[v.type](C,x,y,w,h,v,answers);}
 
   class SvgCanvas{
     constructor(width,height,images={}){this.width=width;this.height=height;this.images=images;this.e=[];this.r=[];}
@@ -503,16 +503,9 @@
   // Keep the Custom Worksheets copy honest now that the first visual engine exists.
   function polishCustomUi(){
     if(typeof document==='undefined')return;const root=document.getElementById('tt99-root');if(!root)return;
-    const intro=root.querySelector('.tt99-custom-intro-note');
-    // IMPORTANT: make this DOM polish idempotent. The observer below watches childList
-    // mutations; rewriting innerHTML on every callback causes the observer to trigger
-    // itself continuously and can make the Custom Worksheet page appear to hang.
-    if(intro&&intro.dataset.tt99GraphPolished!=='1'){
-      intro.innerHTML='<strong>Visual maths has started.</strong><span>Bar charts, Year 4 time graphs and Year 5–6 line graphs now use deterministic generated visuals. Other diagram-heavy topics are still added only when they have dedicated validated renderers.</span>';
-      intro.dataset.tt99GraphPolished='1';
-    }
-    for(const note of root.querySelectorAll('.tt99-family-select > small'))if(note.textContent.includes('deferred to the visual-generator stage'))note.textContent='Choose curriculum topics. Weights control frequency, not difficulty. Bar charts, time graphs and line graphs now use generated visuals; other diagram-heavy topics remain staged until their dedicated renderers are ready.';
-    const selector=root.querySelector('.tt99-family-select');if(selector&&!selector.querySelector('.tt99-graph-layout-note')&&root.querySelector('[data-family="bar_charts"], [data-family="time_graphs"], [data-family="line_graphs"]')){const d=document.createElement('div');d.className='tt99-graph-layout-note';d.innerHTML='<b>Graph questions use automatic multi-page layout.</b><span>Compact graphs can fit 3 per page, larger graphs normally 2, and construction tasks may use a full page. Answer sheets are packed more tightly.</span>';selector.appendChild(d);}
+    const intro=root.querySelector('.tt99-custom-intro-note');if(intro&&intro.dataset.tt99GraphPolished!=='1'){intro.innerHTML='<strong>Visual maths has started.</strong><span>Bar charts, time/line graphs and curriculum-mapped coordinate geometry now use deterministic generated visuals. Other diagram-heavy topics are still added only when they have dedicated validated renderers.</span>';intro.dataset.tt99GraphPolished='1';}
+    for(const note of root.querySelectorAll('.tt99-family-select > small'))if(note.textContent.includes('deferred to the visual-generator stage'))note.textContent='Choose curriculum topics. Weights control frequency, not difficulty. Supported charts and coordinate geometry now use generated visuals; other diagram-heavy topics remain staged until their dedicated renderers are ready.';
+    const selector=root.querySelector('.tt99-family-select');if(selector&&!selector.querySelector('.tt99-graph-layout-note')&&root.querySelector('[data-family="bar_charts"], [data-family="time_graphs"], [data-family="line_graphs"], [data-family="coordinates_y4"], [data-family="transformations_y5"], [data-family="coordinates_y6"]')){const d=document.createElement('div');d.className='tt99-graph-layout-note';d.innerHTML='<b>Visual questions use automatic multi-page layout.</b><span>Compact visuals can fit 3 per page, larger charts and coordinate grids normally 2, and construction tasks may use a full page. Answer sheets are packed more tightly.</span>';selector.appendChild(d);}
     const pop=root.querySelector('#tt99-help-popover');if(pop&&pop.textContent.includes('direct/non-graphical maths topics')){for(const el of pop.querySelectorAll('p,div,span'))if(el.textContent.includes('direct/non-graphical maths topics')&&el.children.length===0)el.textContent='A year button loads a broad, age-aware starting selection of implemented curriculum topics, including supported graph families. It is only a starting point: add or remove topics to match what you actually want to practise.';}
   }
   if(typeof document!=='undefined'){
