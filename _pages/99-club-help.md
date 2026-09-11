@@ -24,6 +24,7 @@ sidebar: false
 
   <nav class="tt99-guide-nav" aria-label="Help topics">
     <a href="#workflow">Making a sheet</a>
+    <a href="#games">Games & puzzles</a>
     <a href="#review">Reviewing questions</a>
     <a href="#schemes">Challenges</a>
     <a href="#rules">Changing rules</a>
@@ -46,6 +47,16 @@ sidebar: false
 
 
 
+
+  <section id="games" class="tt99-guide-section tt99-guide-highlight">
+    <h2>Maths Games &amp; Puzzles</h2>
+    <p>The separate <a href="/tools/99-club/games/">Games &amp; Puzzles</a> page creates printable independent activities from the same curriculum-minded Studio approach. Current engines are Word Search, Number Pyramid and Crossword.</p>
+    <p><strong>Each game has its own setup.</strong> Difficulty and specialist options are configured inside that game card, so adding more puzzle engines does not create one giant shared settings form.</p>
+    <p>Word Search can show <strong>words + definitions</strong> or <strong>definitions only</strong>. Its direction control can stay automatic (Easy = straight; Standard = diagonals added; Challenge = all directions including backwards) or be overridden independently.</p>
+    <p><strong>Worked examples</strong> can be added at the front of a pack. When enabled, Studio generates one example for each selected game using separate practice data.</p>
+    <div class="tt99-guide-note"><strong>Review before printing:</strong> use ↻ on a whole game to replace only that activity. In Word Search, a smaller ↻ beside an individual clue replaces only that term + definition pair while keeping the other selected terms.</div>
+    <p>The built-in vocabulary catalogue is curated with the site. Teacher-added terms remain local to that browser unless explicitly exported, and the same local vocabulary can feed both Word Search and Crossword.</p>
+  </section>
 
   <section id="review" class="tt99-guide-section tt99-guide-highlight">
     <h2>Review the questions before you print</h2>

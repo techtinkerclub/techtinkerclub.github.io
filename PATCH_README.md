@@ -1,18 +1,22 @@
-# 99 Club Studio v1.23.1 patch
+# 99 Club Studio v1.24.0 — Games review + Crossword patch
 
-Apply this overlay on top of v1.23.0.
+Apply this overlay directly on top of the accepted **v1.23.1** repository.
 
-Main changes:
-- per-game configuration cards instead of one global difficulty control;
-- Word Search: Words + definitions or Definitions only;
-- Word Search: independent difficulty, number of terms and grid size;
-- Number Pyramid: independent difficulty, level count and clue density;
-- one selected game repeats; several selected games are mixed;
-- browser-local settings migration and persistence;
-- Games page cache versions bumped.
+This patch changes only the Games & Puzzles area plus the Help page. It does not modify public 99 Club question generation or Custom Worksheet maths.
 
-Run after applying:
+## Added
+- 591-entry curated primary-maths vocabulary module.
+- Maths Crossword game engine using the shared vocabulary provider.
+- Pack-level Worked examples option (one example per selected game at the front).
+- Word Search direction setting: automatic, straight, straight+diagonal, or all directions including backwards.
+- Preview ↻ replacement for one whole activity.
+- Word Search clue-level ↻ replacement for one term + definition only.
 
-    node assets/99club/tests/games-smoke.js
+## Important replacement behaviour
+- Replacing a whole activity regenerates only that slot with the same game engine and settings.
+- Replacing one Word Search clue keeps every other selected term. The grid is rebuilt because the new word can have a different length/placement.
+- Review buttons are preview-only and are hidden from print/PDF.
+- Changing pack/game settings or generating a wholly new version intentionally starts a fresh reviewed pack.
 
-No Custom Worksheet or 99 Club timed-fluency generator files are modified by this patch.
+## QA
+See `V1_24_0_QA_REPORT.md`. All Node regression suites pass. The supplied standalone preview should be checked in a normal browser before production deployment.

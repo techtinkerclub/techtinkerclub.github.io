@@ -104,3 +104,59 @@
   .tt99-game-activities.count-3 .tt99-word-pairs b{font-size:5.3pt}
   .tt99-game-activities.count-3 .tt99-word-pairs span{font-size:4.9pt}
 }
+
+/* v1.2 — curated vocabulary, Crossword, worked examples and selective replacement */
+.tt99-games-grid2>.wide{grid-column:1/-1}
+.tt99-preview-edit-hint{display:block;margin-top:2px;color:#71868a;font-size:.56rem;line-height:1.3}
+.tt99-game-activity{position:relative}
+.tt99-preview-replace{appearance:none;display:grid;place-items:center;width:24px;height:24px;padding:0;border:1px solid #c8d7d8;border-radius:999px;background:rgba(255,255,255,.96);color:#0f766e;font:900 15px/1 system-ui;cursor:pointer;box-shadow:0 1px 3px rgba(18,50,75,.08);transition:transform .12s ease,border-color .12s ease,background .12s ease}
+.tt99-preview-replace:hover,.tt99-preview-replace:focus-visible{border-color:#0f8a83;background:#eff9f7;transform:rotate(18deg);outline:none}
+.tt99-replace-activity{position:absolute;z-index:5;right:8px;top:8px;opacity:.42}
+.tt99-game-activity:hover>.tt99-replace-activity,.tt99-game-activity:focus-within>.tt99-replace-activity{opacity:1}
+.tt99-replace-word{flex:0 0 20px;width:20px;height:20px;font-size:12px;opacity:.35}
+.tt99-word-pairs>div{display:flex;align-items:flex-start;gap:5px}
+.tt99-word-pair-copy{display:block;min-width:0;flex:1}
+.tt99-word-pairs>div:hover .tt99-replace-word,.tt99-word-clues li:hover .tt99-replace-word{opacity:1}
+.tt99-word-clues li{position:relative;padding-right:23px}
+.tt99-word-clues li>.tt99-replace-word{position:absolute;right:0;top:-2px}
+
+.tt99-crossword-layout{display:grid;grid-template-columns:minmax(160px,.9fr) minmax(190px,1.1fr);gap:12px;align-items:start;height:calc(100% - 58px)}
+.tt99-crossword-grid{display:grid;grid-template-columns:repeat(var(--cw),1fr);aspect-ratio:1;border:1.5px solid #49676c;background:#49676c;gap:1px;max-width:100%;max-height:100%;justify-self:center}
+.tt99-crossword-grid>span{position:relative;display:grid;place-items:center;min-width:0;background:#fff}
+.tt99-crossword-grid>span.black{background:#486268}
+.tt99-crossword-grid>span.open{border:0}
+.tt99-crossword-grid i{position:absolute;left:2px;top:1px;color:#51666a;font:700 clamp(3.5px,.35vw,5.5px)/1 system-ui;font-style:normal}
+.tt99-crossword-grid b{color:#203f44;font:850 clamp(5px,.6vw,8px)/1 system-ui}
+.tt99-crossword-clues{min-width:0;overflow:hidden}
+.tt99-crossword-clue-group h4{margin:0 0 3px;color:#2e5756;font-size:clamp(5px,.62vw,8px)}
+.tt99-crossword-clue-group ol{margin:0 0 7px;padding-left:22px}
+.tt99-crossword-clue-group li{margin:0 0 2px;color:#455b61;font-size:clamp(4px,.49vw,6.5px);line-height:1.18}
+.tt99-crossword-bank{margin-top:5px;padding:5px 6px;border:1px solid #dce6e6;border-radius:6px;background:#f7fbfa;color:#52686c;font-size:clamp(4px,.48vw,6.4px);line-height:1.25}
+
+.tt99-worked-page .tt99-worked-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7mm;height:246mm;padding-top:5mm;align-content:start}
+.tt99-worked-page .tt99-worked-grid.count-1{grid-template-columns:1fr}
+.tt99-worked-example{min-height:0;padding:5mm;border:1.5px solid #c9dcda;border-radius:4mm;background:#fbfdfc;break-inside:avoid}
+.tt99-worked-example h3{margin:0 0 2mm;color:#183f43;font-size:12pt}
+.tt99-worked-example p,.tt99-worked-example li{color:#4c6165;font-size:8pt;line-height:1.35}
+.tt99-worked-example ol{margin:3mm 0 0;padding-left:5mm}
+.tt99-worked-example .tt99-word-grid.worked{width:min(56mm,100%);margin:3mm auto}
+.tt99-worked-pyramid{display:flex;flex-direction:column;align-items:center;gap:2mm;margin:4mm 0}
+.tt99-worked-answer{display:flex;justify-content:center;gap:1mm;margin:4mm 0}
+.tt99-worked-answer span{display:grid;place-items:center;width:7mm;height:7mm;border:1px solid #6e8c8a;background:#fff;font-weight:800}
+
+.tt99-game-activities.count-2 .tt99-crossword-layout{grid-template-columns:minmax(130px,.85fr) minmax(170px,1.15fr);gap:8px}
+.tt99-game-activities.count-3 .tt99-crossword-layout{grid-template-columns:minmax(100px,.8fr) minmax(130px,1.2fr);gap:6px}
+.tt99-game-activities.count-3 .tt99-crossword-clue-group li{font-size:clamp(3.6px,.41vw,5.4px)}
+
+@media(max-width:720px){
+  .tt99-crossword-layout{grid-template-columns:1fr}.tt99-crossword-grid{width:min(100%,360px)}
+  .tt99-worked-page .tt99-worked-grid{grid-template-columns:1fr;height:auto}
+}
+@media print{
+  .tt99-preview-replace,.tt99-preview-edit-hint{display:none!important}
+  .tt99-crossword-grid i{font-size:4.8pt}.tt99-crossword-grid b{font-size:7pt}.tt99-crossword-clue-group h4{font-size:7pt}.tt99-crossword-clue-group li,.tt99-crossword-bank{font-size:5.8pt}
+  .tt99-game-activities.count-1 .tt99-crossword-grid{width:min(100%,92mm)}
+  .tt99-game-activities.count-2 .tt99-crossword-grid{width:min(100%,69mm)}
+  .tt99-game-activities.count-3 .tt99-crossword-grid{width:min(100%,48mm)}
+  .tt99-worked-page .tt99-worked-grid{height:246mm}.tt99-worked-example .tt99-word-grid.worked span{font-size:7pt}
+}

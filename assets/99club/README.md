@@ -305,3 +305,7 @@ Because these public schemes disagree with one another, TTC presents them as opt
 The 11–99 progression remains intentionally focused. Optional concise mental-maths extras are exposed only for Bronze–Diamond and post-99 presets. The extras registry includes missing-number, negative-number, Roman-numeral, decimal, fraction/percentage, factors/multiples, powers, order-of-operations, angle, ratio, measurement/time and mean families that are suitable for rapid mental work. Comparison-heavy, graphical, formal written-calculation and verbose problem-solving content remains in Custom Worksheets.
 
 The Help & guide uses the same page width and button language as the main Studio page, and Help links from the app open in a new tab.
+
+## v1.24 Games & Puzzles review model
+
+Games & Puzzles uses a shared game-engine/content-provider architecture. v1.24 provides Word Search, Number Pyramid and Crossword, a 591-entry curated primary-maths vocabulary catalogue, per-engine settings, optional front-of-pack worked examples and selective preview replacement. A whole-game ↻ regenerates only that activity using the same engine/settings. Word Search also exposes a clue-level ↻ that swaps only one term/definition pair while preserving the other selected vocabulary. Word direction can remain automatic by difficulty or be overridden independently. Teacher-added vocabulary remains browser-local/importable/exportable and never edits the curated catalogue.
