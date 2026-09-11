@@ -1,30 +1,21 @@
-# 99 Club Studio v1.25.0 — Magic Squares patch
+# 99 Club Studio v1.25.1 patch
 
-Apply this overlay directly over the accepted **v1.24.2** repository.
+Apply this overlay directly on top of **v1.25.0**.
 
-## Adds
+Purpose:
+- keep Word Search / Crossword vocabulary strictly within selected curriculum topic(s);
+- prevent numeral/symbol terms such as `3-D shape` from entering letter-grid puzzles;
+- reject unsafe teacher-added local vocabulary rather than silently stripping characters;
+- add regression coverage including 1,000 Statistics-only Word Searches.
 
-- Magic Squares as the fourth Games & Puzzles engine.
-- 3x3 and 4x4 generated squares.
-- Fill missing values, find the magic total, spot & fix an error, and transform-the-square variants.
-- Classic, shifted, scaled and age-appropriate decimal number patterns.
-- Per-game difficulty, square size, puzzle style, number pattern and clue-density controls.
-- Richer pupil worked examples for all four current game engines.
-- Automatic clue enumeration such as `(5, 5)` for multi-word crossword answers.
-- Enumeration on Definitions-only Word Searches where the hidden answer has multiple words/hyphens.
+Changed runtime files:
+- `_pages/99-club-games.md`
+- `assets/99club/games-engine.js`
+- `assets/99club/games-app.js`
 
-## Preserved
+QA/test:
+- `assets/99club/tests/games-smoke.js`
+- `RELEASE_NOTES_1.25.1.md`
+- `V1_25_1_QA_REPORT.md`
 
-- Existing Word Search, Number Pyramid and Crossword behaviour.
-- Selective single-activity replacement in Games preview.
-- Pupil / answer / combined direct PDF downloads.
-- The 591-entry curated vocabulary catalogue.
-- Public 99 Club generator maths and Custom Worksheet question engines.
-
-## Deployment
-
-Copy this ZIP over the v1.24.2 repository, preserving paths. Then hard-refresh:
-
-`/tools/99-club/games/`
-
-The cache-busted Games assets are already referenced by `_pages/99-club-games.md`.
+No PDF renderer or other 99 Club / Custom mathematics files are changed.

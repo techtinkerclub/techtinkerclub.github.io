@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.25.0 Maths Games & Puzzles smoke/regression test. */
+/* 99 Club Studio v1.25.1 Maths Games & Puzzles smoke/regression test. */
 'use strict';
 const fs=require('fs'),path=require('path');
 const ROOT=path.resolve(__dirname,'..'),REPO=path.resolve(ROOT,'../..');
@@ -6,7 +6,7 @@ const G=require(path.join(ROOT,'games-engine.js')),GPDF=require(path.join(ROOT,'
 function assert(ok,msg){if(!ok)throw new Error(msg);}const failures=[];function check(fn){try{fn();}catch(e){failures.push(e.stack||e.message);}}
 
 check(()=>{
-  assert(G.VERSION==='1.3.0','Unexpected games engine version');
+  assert(G.VERSION==='1.3.1','Unexpected games engine version');
   assert(Object.keys(G.ENGINES).join(',')==='wordsearch,pyramid,crossword,magic','Expected Word Search + Number Pyramid + Crossword + Magic Squares');
   assert(G.VOCABULARY.length===591,'Curated vocabulary database should expose 591 entries');
   for(const id of ['wordsearch','pyramid','crossword','magic']){const e=G.ENGINES[id];assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: common output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: first games remain print → pencil → solve`);assert(e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: per-game settings missing`);}
@@ -72,6 +72,26 @@ check(()=>{
 
 check(()=>{
   const custom=G.sanitizeCustomVocabulary([{topic:'fractions',term:'My special term',definition:'A teacher-created definition.',minYear:4,maxYear:6},{topic:'fractions',term:'My special term',definition:'Duplicate.',minYear:4,maxYear:6}]);assert(custom.length===1&&custom[0].source==='mine','Custom vocabulary dedupe/source failed');const pool=G.vocabularyFor({minYear:4,maxYear:6,topics:['fractions'],engineSettings:{wordsearch:{difficulty:'standard'}}},custom);assert(pool.some(x=>x.source==='built-in')&&pool.some(x=>x.source==='mine'),'Vocabulary provider should distinguish built-in and My vocabulary');
+  const rejected=G.sanitizeCustomVocabulary([{topic:'geometry',term:'3-D shape',definition:'A solid shape.',minYear:1,maxYear:6},{topic:'measurement',term:'24-hour clock',definition:'A clock notation.',minYear:3,maxYear:6}]);assert(rejected.length===0,'Numeral-bearing custom vocabulary should be rejected for letter-grid games');
+});
+
+check(()=>{
+  // Topic-purity: every automatic vocabulary answer must belong to one of the teacher-selected curriculum topics.
+  for(const [topic,meta] of Object.entries(G.TOPICS))for(const year of meta.years){
+    const wsPool=G.vocabularyFor({minYear:year,maxYear:year,topics:[topic],engineSettings:{wordsearch:{difficulty:'challenge',gridSize:'16'}}});
+    assert(wsPool.length>=4,`${topic} Y${year}: strict topical Word Search pool too small`);
+    for(const item of wsPool){assert(item.primaryTopic===topic,`${topic} Y${year}: leaked ${item.term} from ${item.primaryTopic||item.sourceTopic}`);assert(G.puzzleTermSuitable(item.term),`${topic} Y${year}: unsafe puzzle term ${item.term}`);}
+    const cwPool=G.crosswordVocabularyFor({minYear:year,maxYear:year,topics:[topic],engineSettings:{crossword:{difficulty:'challenge',gridSize:'17'}}});
+    assert(cwPool.length>=4,`${topic} Y${year}: strict topical Crossword pool too small`);
+    for(const item of cwPool){assert(item.primaryTopic===topic,`${topic} Y${year}: crossword leaked ${item.term}`);assert(G.puzzleTermSuitable(item.term),`${topic} Y${year}: unsafe crossword term ${item.term}`);}
+  }
+  for(const bad of ['2-D shape','3-D shape','2-D representation','12-hour clock','24-hour clock']){const item=G.VOCABULARY.find(x=>x.term===bad);assert(item,`Expected catalogue term ${bad}`);assert(item.wordsearchSuitable===false&&item.crosswordSuitable===false,`${bad}: should remain in master vocabulary but be disabled for letter-grid games`);}
+});
+
+check(()=>{
+  // Regression for the reported Statistics contamination: 1,000 different word searches must stay Statistics-only.
+  const settings={minYear:2,maxYear:6,topics:['statistics'],engineSettings:{wordsearch:{difficulty:'challenge',clueMode:'words_definitions',wordCount:'12',gridSize:'16',directionMode:'all'}}};
+  for(let i=0;i<1000;i++){const a=G.generateWordSearch(settings,`stats-purity-${i}`);assert(!a.error,`Statistics purity ${i}: ${a.error}`);for(const p of a.placements){assert(p.topic==='statistics',`Statistics purity ${i}: leaked ${p.term} from ${p.topic}`);assert(G.puzzleTermSuitable(p.term),`Statistics purity ${i}: unsafe term ${p.term}`);}}
 });
 
 
@@ -97,4 +117,4 @@ check(()=>{
   assert(!/fetch\s*\(|XMLHttpRequest|navigator\.sendBeacon/.test(ui),'Games UI must not upload teacher vocabulary');assert((angles.match(/strand:'Geometry'/g)||[]).length===8,'All 8 graphical angle families should belong to Geometry');assert(!/strandOrder=\[[^\]]*'Angles & turns'/.test(custom),'Custom selector should not expose standalone Angles & turns');
 });
 
-if(failures.length){console.error(`Games smoke FAILED (${failures.length})`);for(const f of failures)console.error(' - '+f);process.exit(2);}console.log(`Games smoke passed: ${G.VOCABULARY.length} curated vocabulary entries + Word Search + Number Pyramid + Crossword + Magic Squares derivatives + clue enumeration + richer worked examples.`);
+if(failures.length){console.error(`Games smoke FAILED (${failures.length})`);for(const f of failures)console.error(' - '+f);process.exit(2);}console.log(`Games smoke passed: ${G.VOCABULARY.length} curated vocabulary entries + strict topic-safe Word Search/Crossword pools + Number Pyramid + Magic Squares derivatives + clue enumeration + richer worked examples.`);

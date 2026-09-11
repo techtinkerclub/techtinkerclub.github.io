@@ -1,11 +1,11 @@
 /* 99 Club Studio · Maths Games & Puzzles
- * v1.3.0 — Magic Squares & derivatives + richer worked examples.
+ * v1.3.1 — strict topical vocabulary + puzzle-safe term filtering.
  * Architecture: game engine + maths content provider + applicability rules.
  */
 (function(global){
   'use strict';
 
-  const VERSION='1.3.0';
+  const VERSION='1.3.1';
   let VOCAB_DATA=global.TT99GamesVocabularyV2||null;
   if(!VOCAB_DATA && typeof require==='function'){
     try{VOCAB_DATA=require('./games-vocabulary.js');}catch(e){}
@@ -82,6 +82,9 @@
   function shuffle(arr,rng){const out=arr.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
   function randInt(rng,a,b){return Math.floor(rng()*(b-a+1))+a;}
   function normalizeTerm(term){return String(term||'').toUpperCase().replace(/[^A-Z]/g,'');}
+  // Vocabulary grids are letter puzzles. Keep numerals / mathematical symbols in the master
+  // vocabulary catalogue for other uses, but do not turn e.g. "3-D shape" into "DSHAPE".
+  function puzzleTermSuitable(term){const text=String(term||'').trim();return /^[A-Za-z][A-Za-z '\u2019-]*$/.test(text)&&!/[0-9]/.test(text)&&normalizeTerm(text).length>=2;}
   function answerEnumeration(term){const words=String(term||'').trim().split(/\s+/).filter(Boolean).map(word=>word.split('-').map(part=>(part.match(/[A-Za-z]/g)||[]).length).filter(Boolean).join('-')).filter(Boolean);return words.length?`(${words.join(', ')})`:'';}
   function needsEnumeration(term){return /[\s-]/.test(String(term||'').trim());}
   function formatNumber(value){const n=Number(value);if(!Number.isFinite(n))return String(value??'');const r=Math.round(n*1000)/1000;return Number.isInteger(r)?String(r):String(r).replace(/0+$/,'').replace(/\.$/,'');}
@@ -90,13 +93,15 @@
   function mapBuiltInVocabulary(raw){
     const term=String(raw?.term||'').trim(),definition=String(raw?.definition||'').trim();
     if(!term||!definition)return null;
-    const appTopics=[...new Set([...(Array.isArray(raw.app_topics)?raw.app_topics:[]),raw.topic].filter(t=>TOPICS[t]))];
+    const primaryTopic=TOPICS[raw.topic]?raw.topic:null;
+    const appTopics=[...new Set([...(Array.isArray(raw.app_topics)?raw.app_topics:[]),primaryTopic].filter(t=>TOPICS[t]))];
+    const puzzleSafe=puzzleTermSuitable(term);
     return {
       id:raw.id||`${raw.topic||appTopics[0]}.${term.toLowerCase().replace(/[^a-z0-9]+/g,'_')}`,
-      topic:TOPICS[raw.topic]?raw.topic:(appTopics[0]||'number_place_value'),appTopics:appTopics.length?appTopics:['number_place_value'],subtopic:raw.subtopic||'',
+      topic:primaryTopic||(appTopics[0]||'number_place_value'),primaryTopic,sourceTopic:String(raw.topic||''),appTopics:appTopics.length?appTopics:['number_place_value'],subtopic:raw.subtopic||'',
       term,definition,crosswordClue:String(raw.crossword_clue||definition),gridAnswer:String(raw.grid_answer||normalizeTerm(term)),
       minYear:clamp(Number(raw.min_year)||1,1,6),maxYear:clamp(Number(raw.max_year)||6,1,6),priority:raw.priority||'core',source:'built-in',
-      wordsearchSuitable:raw.wordsearch_suitable!==false,crosswordSuitable:raw.crossword_suitable!==false,minimumWordsearchGrid:Number(raw.minimum_wordsearch_grid)||Math.max(8,normalizeTerm(term).length),aliases:raw.aliases||[]
+      wordsearchSuitable:raw.wordsearch_suitable!==false&&puzzleSafe,crosswordSuitable:raw.crossword_suitable!==false&&puzzleSafe,minimumWordsearchGrid:Number(raw.minimum_wordsearch_grid)||Math.max(8,normalizeTerm(term).length),aliases:raw.aliases||[]
     };
   }
   const VOCABULARY=((VOCAB_DATA&&Array.isArray(VOCAB_DATA.entries))?VOCAB_DATA.entries:[]).map(mapBuiltInVocabulary).filter(Boolean);
@@ -172,16 +177,19 @@
     for(const raw of Array.isArray(entries)?entries:[]){
       const topic=TOPICS[raw?.topic]?raw.topic:'number_place_value',term=String(raw?.term||'').trim().replace(/\s+/g,' '),definition=String(raw?.definition||'').trim().replace(/\s+/g,' ');
       const minYear=clamp(Number(raw?.minYear??raw?.min_year)||1,1,6),maxYear=clamp(Number(raw?.maxYear??raw?.max_year)||6,minYear,6),normalized=normalizeTerm(term);
-      if(term&&definition&&normalized.length>=2&&normalized.length<=24)out.push({id:`mine.${topic}.${term.toLowerCase().replace(/[^a-z0-9]+/g,'_')}`,topic,appTopics:[topic],term,definition,crosswordClue:definition,gridAnswer:normalized,minYear,maxYear,priority:'core',source:'mine',wordsearchSuitable:true,crosswordSuitable:normalized.length>=3,minimumWordsearchGrid:Math.max(8,normalized.length)});
+      if(term&&definition&&puzzleTermSuitable(term)&&normalized.length>=2&&normalized.length<=24)out.push({id:`mine.${topic}.${term.toLowerCase().replace(/[^a-z0-9]+/g,'_')}`,topic,primaryTopic:topic,sourceTopic:topic,appTopics:[topic],term,definition,crosswordClue:definition,gridAnswer:normalized,minYear,maxYear,priority:'core',source:'mine',wordsearchSuitable:true,crosswordSuitable:normalized.length>=3,minimumWordsearchGrid:Math.max(8,normalized.length)});
     }
     const seen=new Set();return out.filter(x=>{const k=`${x.topic}|${x.term.toLowerCase()}`;if(seen.has(k))return false;seen.add(k);return true;});
   }
 
-  function vocabularyCountForTopic(topic){return VOCABULARY.filter(x=>x.appTopics.includes(topic)).length;}
+  // Automatic topic packs are deliberately topic-pure. General mathematical-language
+  // records stay in the master catalogue, but do not leak into every subject pack.
+  function vocabularyMatchesSelectedTopic(entry,topics){return !!entry?.primaryTopic&&topics.includes(entry.primaryTopic);}
+  function vocabularyCountForTopic(topic){return VOCABULARY.filter(x=>x.primaryTopic===topic&&x.wordsearchSuitable).length;}
   function vocabularyPool(settings,customVocabulary=[],purpose='wordsearch'){
     const s=normalizeSettings(settings),all=VOCABULARY.concat(sanitizeCustomVocabulary(customVocabulary));
     const engineId=purpose==='crossword'?'crossword':'wordsearch',difficulty=s.engineSettings[engineId].difficulty;
-    return all.filter(x=>x.appTopics.some(t=>s.topics.includes(t))&&x.minYear<=s.maxYear&&x.maxYear>=s.minYear&&
+    return all.filter(x=>vocabularyMatchesSelectedTopic(x,s.topics)&&x.minYear<=s.maxYear&&x.maxYear>=s.minYear&&
       (purpose==='crossword'?x.crosswordSuitable:x.wordsearchSuitable)&&
       (difficulty==='challenge'||x.priority!=='extension'));
   }
@@ -362,6 +370,6 @@
     return {version:VERSION,seed,settings:s,workedExamples,sheets};
   }
 
-  const api={VERSION,TOPICS,ENGINES,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateWorkedExample,generateActivity,generatePack,normalizeTerm,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows};
+  const api={VERSION,TOPICS,ENGINES,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;global.TT99Games=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

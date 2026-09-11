@@ -17,7 +17,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/99club.css?v=19.4">
 <link rel="stylesheet" href="/assets/99club/games.css?v=6">
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
-<script src="/assets/99club/games-engine.js?v=6"></script>
+<script src="/assets/99club/games-engine.js?v=7"></script>
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
 <script src="/assets/99club/games-pdf.js?v=3"></script>
-<script src="/assets/99club/games-app.js?v=6" defer></script>
+<script src="/assets/99club/games-app.js?v=7" defer></script>
