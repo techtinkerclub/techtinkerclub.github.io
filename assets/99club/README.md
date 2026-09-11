@@ -4,11 +4,11 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version **1.23.0** keeps the core 99 Club workflow stable, keeps Custom Worksheets separate, and introduces a public printable Games & Puzzles area:
+Version **1.27.0** keeps the core 99 Club workflow stable, keeps Custom Worksheets separate, and expands the public printable Games & Puzzles area:
 
 1. **99 Club** at `/tools/99-club/` — the stable progression tool for Classic 11–99, optional alternative progressions and Bronze–Diamond challenges.
 2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice.
-3. **Maths Games & Puzzles** at `/tools/99-club/games/` — printable independent practice built from reusable game engines and maths-content providers. Current engines are Word Search, Number Pyramid, Crossword, Magic Squares and Sudoku / Latin Squares, with local teacher vocabulary support for the vocabulary-based games.
+3. **Maths Games & Puzzles** at `/tools/99-club/games/` — printable independent practice built from reusable game engines and maths-content providers. v1.27.0 provides 18 engines spanning vocabulary, number/arithmetic, arithmetic reasoning, algebra/relationships and Sudoku/Latin-style logic, with local teacher vocabulary support for vocabulary games.
 
 The stable 99 Club interface is now feature-frozen in spirit: future curriculum, graphical and word-problem work should normally be added to Custom Worksheets rather than expanding the Club screen. Both workspaces share the deterministic generator/PDF infrastructure where that is safe, but keep separate browser state and UI flows.
 
@@ -21,6 +21,16 @@ The TTC Classic default is **5 minutes** and **3 perfect attempts that do not ne
 
 
 
+
+### v1.27.0 Arithmetic Games expansion
+
+- Adds 13 numerical/arithmetic/algebraic engines: **Arithmagons, Magic Number Shapes, Correct-Answer Maze, Maths Crossnumber, Number Trails & Snakes, Target Number Challenge, Broken Calculator, Symbol Equations, Arithmetic Domino Chain, Missing Operations, Number Wheels / Flowers / Diamonds, Function Machines, and Balance the Equation**.
+- Keeps Sudoku/Latin Squares as the existing logic family; this expansion deliberately excludes broader logic-only formats such as Futoshiki, Kakuro, nonograms and skyscrapers.
+- Uses year/topic applicability rules so a game is only offered where it genuinely practises the selected mathematics.
+- Adds per-engine settings, deterministic generation, answer rendering, selective whole-activity replacement and worked-example contracts for every new engine.
+- Correct-Answer Maze uses an orthogonally connected answer route from START to FINISH. Maths Crossnumber uses a connected numerical criss-cross layout. Missing Operations is validated for a unique operator solution. Broken Calculator prevents trivially typing the target with surviving digit keys.
+- Adds grouped game-library headings so the growing engine catalogue remains manageable.
+- Strengthens worked-example typography and preserves the existing pupil / answer / combined PDF download model.
 
 ### v1.23.0 Maths Games & Puzzles foundation
 

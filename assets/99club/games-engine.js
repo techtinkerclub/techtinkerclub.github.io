@@ -1,14 +1,16 @@
 /* 99 Club Studio · Maths Games & Puzzles
- * v1.4.1 — Games runtime recovery + full 4×4 / 6×6 / 9×9 Sudoku support.
+ * v1.5.0 — arithmetic games expansion + shared numerical content providers.
  * Architecture: game engine + maths content provider + applicability rules.
  */
 (function(global){
   'use strict';
 
-  const VERSION='1.4.1';
+  const VERSION='1.5.0';
   let VOCAB_DATA=global.TT99GamesVocabularyV2||null;
+  let ARITH=global.TT99ArithmeticGames||null;
   if(!VOCAB_DATA && typeof require==='function'){
     try{VOCAB_DATA=require('./games-vocabulary.js');}catch(e){}
+    try{ARITH=require('./games-arithmetic.js');}catch(e){}
   }
 
   const TOPICS={
@@ -23,7 +25,7 @@
     algebra:{label:'Algebra & sequences',years:[2,3,4,5,6]}
   };
 
-  const ENGINES={
+  const CORE_ENGINES={
     wordsearch:{
       id:'wordsearch',title:'Maths Word Search',group:'Vocabulary & language',kind:'independent',printableMode:'grid',answerSheetSupport:true,workedExampleSupport:true,
       supportedAnswerTypes:['vocabulary'],minItems:6,maxItems:14,difficultyOptions:['easy','standard','challenge'],needsCutting:false,needsDice:false,needsPartner:false,
@@ -86,6 +88,7 @@
       compatibility:{number_place_value:'excellent',calculation:'reasonable',fractions:'poor',decimals_percentages:'poor',ratio_proportion:'poor',measurement:'poor',geometry:'poor',statistics:'poor',algebra:'reasonable'}
     }
   };
+  const ENGINES={...CORE_ENGINES,...((ARITH&&ARITH.DEFINITIONS)||{})};
 
   function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
   function clone(v){return JSON.parse(JSON.stringify(v));}
@@ -121,6 +124,7 @@
 
   function normalizeEngineSettings(engineId,raw={}){
     const defaults=ENGINES[engineId]?.defaultSettings||{};
+    if(ARITH&&ARITH.DEFINITIONS&&ARITH.DEFINITIONS[engineId])return ARITH.normalise(engineId,raw);
     if(engineId==='wordsearch'){
       const legacyMode=raw.clueMode||raw.wordSearchMode;
       return {
@@ -171,6 +175,7 @@
       magic:normalizeEngineSettings('magic',{difficulty:legacyDifficulty,...rawEngineSettings.magic}),
       sudoku:normalizeEngineSettings('sudoku',{difficulty:legacyDifficulty,...rawEngineSettings.sudoku})
     };
+    if(ARITH&&ARITH.DEFINITIONS)for(const id of Object.keys(ARITH.DEFINITIONS))engineSettings[id]=normalizeEngineSettings(id,{difficulty:legacyDifficulty,...(rawEngineSettings[id]||{})});
     let selectedEngines=Array.isArray(input.selectedEngines)?input.selectedEngines.filter(id=>ENGINES[id]):[];
     if(!selectedEngines.length&&input.gameMode==='single'&&ENGINES[input.gameId])selectedEngines=[input.gameId];
     if(!selectedEngines.length)selectedEngines=['wordsearch','pyramid'];
@@ -181,7 +186,7 @@
   }
 
   function compatibleEngines(settings){
-    const s=normalizeSettings(settings);return Object.values(ENGINES).filter(engine=>s.topics.some(t=>['excellent','reasonable'].includes(engine.compatibility[t]))).map(x=>x.id);
+    const s=normalizeSettings(settings);return Object.values(ENGINES).filter(engine=>s.topics.some(t=>{if(!['excellent','reasonable'].includes(engine.compatibility[t]))return false;const min=Number(engine.topicYearMin?.[t]||1),max=Number(engine.topicYearMax?.[t]||6);return s.maxYear>=min&&s.minYear<=max;})).map(x=>x.id);
   }
   function selectedCompatibleEngines(settings){
     const s=normalizeSettings(settings),eligible=new Set(compatibleEngines(s)),selected=s.selectedEngines.filter(id=>eligible.has(id));
@@ -432,6 +437,7 @@
 
   function generateWorkedExample(engineId,settings,seed,customVocabulary=[]){
     const s=normalizeSettings(settings);
+    if(ARITH&&ARITH.DEFINITIONS&&ARITH.DEFINITIONS[engineId])return ARITH.workedExample(engineId,s,seed);
     if(engineId==='pyramid'){
       const rng=rngFromSeed(seed),a=randInt(rng,2,6),b=randInt(rng,2,6),c=randInt(rng,2,6),rows=buildPyramid([a,b,c]),missingValue=b;
       return {engineId,title:'Number Pyramid worked example',kind:'pyramid',rows,exampleMissing:'2:1',goal:'Fill every empty brick using the addition rule.',rules:['A brick is the sum of the two bricks directly below it.','If a lower brick is missing, use subtraction to work backwards.'],steps:[`${a} + ${b} = ${a+b}, so the left middle brick is ${a+b}.`,`${b} + ${c} = ${b+c}, so the right middle brick is ${b+c}.`,`${a+b} + ${b+c} = ${rows[0][0]}, so the top brick is ${rows[0][0]}.`,`Working backwards also works: ${a+b} - ${a} = ${missingValue}.`],tip:'Check each completed brick against the two bricks below it.',commonMistake:'Do not add bricks that are not directly next to each other.'};
@@ -454,7 +460,7 @@
   }
 
   function generateSudoku(settings,seed){return generateMiniSudoku(settings,seed);}
-  function generateActivity(engineId,settings,seed,customVocabulary=[]){if(engineId==='pyramid')return generateNumberPyramid(settings,seed);if(engineId==='crossword')return generateCrossword(settings,seed,customVocabulary);if(engineId==='magic')return generateMagicSquare(settings,seed);if(engineId==='sudoku')return generateSudoku(settings,seed);return generateWordSearch(settings,seed,customVocabulary);}
+  function generateActivity(engineId,settings,seed,customVocabulary=[]){if(ARITH&&ARITH.DEFINITIONS&&ARITH.DEFINITIONS[engineId])return ARITH.generate(engineId,normalizeSettings(settings),seed);if(engineId==='pyramid')return generateNumberPyramid(settings,seed);if(engineId==='crossword')return generateCrossword(settings,seed,customVocabulary);if(engineId==='magic')return generateMagicSquare(settings,seed);if(engineId==='sudoku')return generateSudoku(settings,seed);return generateWordSearch(settings,seed,customVocabulary);}
   function generatePack(settings,seed='games',customVocabulary=[]){
     const s=normalizeSettings(settings),sheets=[];let globalIndex=0;
     for(let sheetIndex=0;sheetIndex<s.sheets;sheetIndex++){const activities=[];for(let i=0;i<s.activitiesPerSheet;i++,globalIndex++){const engineId=chooseEngine(s,globalIndex,seed),activitySeed=`${seed}:S${sheetIndex+1}:A${i+1}:${engineId}`;activities.push(generateActivity(engineId,s,activitySeed,customVocabulary));}sheets.push({index:sheetIndex+1,activities});}
@@ -462,6 +468,6 @@
     return {version:VERSION,seed,settings:s,workedExamples,sheets};
   }
 
-  const api={VERSION,TOPICS,ENGINES,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateSudoku,generateMiniSudoku,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows,_countSudokuSolutions:countSudokuSolutions,_sudokuBoxShape:sudokuBoxShape};
+  const api={VERSION,TOPICS,ENGINES,ARITH,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateSudoku,generateMiniSudoku,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows,_countSudokuSolutions:countSudokuSolutions,_sudokuBoxShape:sudokuBoxShape};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;global.TT99Games=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
