@@ -1,11 +1,11 @@
 /* 99 Club Studio · Maths Games & Puzzles
- * v1.3.1 — strict topical vocabulary + puzzle-safe term filtering.
+ * v1.4.0 — Magic-square reasoning refresh + Mini Sudoku / Latin Squares.
  * Architecture: game engine + maths content provider + applicability rules.
  */
 (function(global){
   'use strict';
 
-  const VERSION='1.3.1';
+  const VERSION='1.4.0';
   let VOCAB_DATA=global.TT99GamesVocabularyV2||null;
   if(!VOCAB_DATA && typeof require==='function'){
     try{VOCAB_DATA=require('./games-vocabulary.js');}catch(e){}
@@ -67,11 +67,23 @@
       settingsSchema:[
         {id:'difficulty',type:'choice',label:'Difficulty',options:['easy','standard','challenge']},
         {id:'gridSize',type:'select',label:'Square size',options:['auto','3','4']},
-        {id:'puzzleType',type:'select',label:'Puzzle style',options:['auto','missing','find_total','repair','transform']},
+        {id:'puzzleType',type:'select',label:'Puzzle style',options:['auto','missing','check','repair','transform']},
         {id:'numberPattern',type:'select',label:'Numbers',options:['auto','classic','shifted','scaled','decimal']},
         {id:'clueLevel',type:'choice',label:'Clues shown',options:['more','balanced','fewer']}
       ],
       compatibility:{number_place_value:'excellent',calculation:'excellent',fractions:'poor',decimals_percentages:'reasonable',ratio_proportion:'poor',measurement:'poor',geometry:'poor',statistics:'poor',algebra:'reasonable'}
+    },
+    sudoku:{
+      id:'sudoku',title:'Mini Sudoku & Latin Squares',group:'Logic & patterns',kind:'independent',printableMode:'puzzle',answerSheetSupport:true,workedExampleSupport:true,
+      supportedAnswerTypes:['number','logic'],minItems:1,maxItems:3,difficultyOptions:['easy','standard','challenge'],needsCutting:false,needsDice:false,needsPartner:false,
+      defaultSettings:{difficulty:'standard',gridSize:'auto',puzzleStyle:'auto',clueLevel:'balanced'},
+      settingsSchema:[
+        {id:'difficulty',type:'choice',label:'Difficulty',options:['easy','standard','challenge']},
+        {id:'gridSize',type:'select',label:'Grid size',options:['auto','4','6']},
+        {id:'puzzleStyle',type:'select',label:'Puzzle style',options:['auto','sudoku','latin']},
+        {id:'clueLevel',type:'choice',label:'Clues shown',options:['more','balanced','fewer']}
+      ],
+      compatibility:{number_place_value:'excellent',calculation:'reasonable',fractions:'poor',decimals_percentages:'poor',ratio_proportion:'poor',measurement:'poor',geometry:'poor',statistics:'poor',algebra:'reasonable'}
     }
   };
 
@@ -133,8 +145,14 @@
     if(engineId==='magic')return {
       difficulty:['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:defaults.difficulty,
       gridSize:['auto','3','4'].includes(String(raw.gridSize??'auto'))?String(raw.gridSize??'auto'):'auto',
-      puzzleType:['auto','missing','find_total','repair','transform'].includes(raw.puzzleType)?raw.puzzleType:'auto',
+      puzzleType:['auto','missing','check','repair','transform'].includes(raw.puzzleType)?raw.puzzleType:(raw.puzzleType==='find_total'?'check':'auto'),
       numberPattern:['auto','classic','shifted','scaled','decimal'].includes(raw.numberPattern)?raw.numberPattern:'auto',
+      clueLevel:['more','balanced','fewer'].includes(raw.clueLevel)?raw.clueLevel:'balanced'
+    };
+    if(engineId==='sudoku')return {
+      difficulty:['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:defaults.difficulty,
+      gridSize:['auto','4','6'].includes(String(raw.gridSize??'auto'))?String(raw.gridSize??'auto'):'auto',
+      puzzleStyle:['auto','sudoku','latin'].includes(raw.puzzleStyle)?raw.puzzleStyle:'auto',
       clueLevel:['more','balanced','fewer'].includes(raw.clueLevel)?raw.clueLevel:'balanced'
     };
     return {...defaults,...raw};
@@ -150,7 +168,8 @@
       wordsearch:normalizeEngineSettings('wordsearch',{difficulty:legacyDifficulty,clueMode:legacyWordMode,...rawEngineSettings.wordsearch}),
       pyramid:normalizeEngineSettings('pyramid',{difficulty:legacyDifficulty,...rawEngineSettings.pyramid}),
       crossword:normalizeEngineSettings('crossword',{difficulty:legacyDifficulty,...rawEngineSettings.crossword}),
-      magic:normalizeEngineSettings('magic',{difficulty:legacyDifficulty,...rawEngineSettings.magic})
+      magic:normalizeEngineSettings('magic',{difficulty:legacyDifficulty,...rawEngineSettings.magic}),
+      sudoku:normalizeEngineSettings('sudoku',{difficulty:legacyDifficulty,...rawEngineSettings.sudoku})
     };
     let selectedEngines=Array.isArray(input.selectedEngines)?input.selectedEngines.filter(id=>ENGINES[id]):[];
     if(!selectedEngines.length&&input.gameMode==='single'&&ENGINES[input.gameId])selectedEngines=[input.gameId];
@@ -279,18 +298,82 @@
     else if(kind==='decimal'){const choices=year===4?[0.1,0.2,0.5]:[0.1,0.2,0.25,0.5];step=choices[randInt(rng,0,choices.length-1)];offset=Math.round(step*randInt(rng,0,10)*100)/100;label=`decimal step ${formatNumber(step)}`;}
     return {kind,offset,step,label};
   }
-  function magicPuzzleType(settings,seed,size){const s=normalizeSettings(settings),o=s.engineSettings.magic;if(o.puzzleType!=='auto')return o.puzzleType;const rng=rngFromSeed(`${seed}:type`),d=o.difficulty,r=rng();if(d==='easy')return r<.72?'missing':'find_total';if(d==='standard')return r<.50?'missing':r<.70?'find_total':r<.88?'repair':'transform';return r<.38?'missing':r<.58?'repair':r<.83?'transform':'find_total';}
+  function magicPuzzleType(settings,seed,size){const s=normalizeSettings(settings),o=s.engineSettings.magic;if(o.puzzleType!=='auto')return o.puzzleType;const rng=rngFromSeed(`${seed}:type`),d=o.difficulty,r=rng();if(d==='easy')return r<.68?'missing':r<.90?'check':'repair';if(d==='standard')return r<.46?'missing':r<.72?'check':r<.90?'repair':'transform';return r<.34?'missing':r<.62?'check':r<.82?'repair':'transform';}
   function magicEquationRows(size,hiddenSet){const vars=[...hiddenSet].map(k=>k.split(':').map(Number)),index=new Map(vars.map((rc,i)=>[`${rc[0]}:${rc[1]}`,i])),rows=[];const addLine=cells=>{const row=Array(vars.length).fill(0);for(const [r,c] of cells){const idx=index.get(`${r}:${c}`);if(idx!==undefined)row[idx]=1;}if(row.some(Boolean))rows.push(row);};for(let r=0;r<size;r++)addLine(Array.from({length:size},(_,c)=>[r,c]));for(let c=0;c<size;c++)addLine(Array.from({length:size},(_,r)=>[r,c]));addLine(Array.from({length:size},(_,i)=>[i,i]));addLine(Array.from({length:size},(_,i)=>[i,size-1-i]));return rows;}
   function uniquelySolvableMagicMask(size,target,rng){const all=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++)all.push([r,c]);const hidden=new Set();for(const [r,c] of shuffle(all,rng)){if(hidden.size>=target)break;const k=`${r}:${c}`;hidden.add(k);const rows=magicEquationRows(size,hidden);if(matrixRank(rows)<hidden.size)hidden.delete(k);}return [...hidden];}
   function magicMissingCount(settings,size){const o=magicOptions(settings),total=size*size,ratio=o.clueLevel==='more'?.26:o.clueLevel==='fewer'?.56:(o.difficulty==='easy'?.30:o.difficulty==='challenge'?.52:.42);const cap=size===3?5:8;return Math.max(1,Math.min(cap,Math.round(total*ratio)));}
   function magicTransform(settings,seed,source){const s=normalizeSettings(settings),rng=rngFromSeed(`${seed}:transform`),year=s.maxYear,isDecimal=source.some(row=>row.some(v=>!Number.isInteger(v)));let operation='add',amount;if(rng()<.48){operation='multiply';amount=randInt(rng,2,year<=2?3:5);}else{if(isDecimal)amount=[0.5,1,2][randInt(rng,0,2)];else amount=randInt(rng,1,year<=2?5:year<=4?12:25);}const grid=source.map(row=>row.map(v=>Math.round((operation==='add'?v+amount:v*amount)*1000)/1000));return {operation,amount,grid,label:operation==='add'?`Add ${formatNumber(amount)} to every number`:`Multiply every number by ${formatNumber(amount)}`};}
+  function magicCheckEvidence(grid){
+    const sums=magicLineSums(grid),all=[...sums.rows,...sums.cols,...sums.diags],first=all[0],same=all.every(v=>Math.abs(v-first)<1e-8);
+    if(same)return {isMagic:true,evidence:`Yes. Every row, column and main diagonal totals ${formatNumber(first)}.`,sums};
+    const labels=[...sums.rows.map((_,i)=>`row ${i+1}`),...sums.cols.map((_,i)=>`column ${i+1}`),'main diagonal','other diagonal'];
+    let other=1;while(other<all.length&&Math.abs(all[other]-first)<1e-8)other++;
+    return {isMagic:false,evidence:`No. ${labels[0]} totals ${formatNumber(first)}, but ${labels[other]} totals ${formatNumber(all[other])}.`,sums};
+  }
   function generateMagicSquare(settings,seed){const s=normalizeSettings(settings),rng=rngFromSeed(seed),size=magicGridSize(s,seed),profile=magicNumberProfile(s,seed,size),base=magicVariant(size===4?MAGIC4:MAGIC3,rng),solutionGrid=mapMagicValues(base,profile.offset,profile.step),magicSum=magicLineSums(solutionGrid).rows[0],puzzleType=magicPuzzleType(s,seed,size),o=s.engineSettings.magic;
     const common={engineId:'magic',title:'Magic Squares',topicIds:s.topics.filter(t=>['number_place_value','calculation','decimals_percentages','algebra'].includes(t)),size,difficulty:o.difficulty,puzzleType,numberPattern:profile.kind,numberPatternLabel:profile.label,solutionGrid,magicSum,yearText:yearText(s.minYear,s.maxYear),seed,options:o};
-    if(puzzleType==='find_total')return {...common,displayGrid:cloneGrid(solutionGrid),missingSet:[],instruction:'Every row, column and main diagonal has the same total. Find the magic total.',answerText:`Magic total = ${formatNumber(magicSum)}`};
-    if(puzzleType==='repair'){const candidates=size===3?[[0,0],[0,size-1],[size-1,0],[size-1,size-1],[1,1]]:[[0,0],[0,size-1],[size-1,0],[size-1,size-1]],cell=candidates[randInt(rng,0,candidates.length-1)],delta=profile.step*randInt(rng,1,3)*(rng()<.5?-1:1),displayGrid=cloneGrid(solutionGrid),correct=displayGrid[cell[0]][cell[1]],wrong=Math.round((correct+delta)*1000)/1000;displayGrid[cell[0]][cell[1]]=wrong;return {...common,displayGrid,missingSet:[],wrongCell:`${cell[0]}:${cell[1]}`,wrongValue:wrong,correctValue:correct,instruction:`One number is wrong. Find it and correct it so every line totals ${formatNumber(magicSum)}.`,answerText:`Replace ${formatNumber(wrong)} with ${formatNumber(correct)}.`};}
-    if(puzzleType==='transform'){const tx=magicTransform(s,seed,solutionGrid),target=tx.grid,targetSum=magicLineSums(target).rows[0],givenCount=o.clueLevel==='more'?Math.ceil(size*size*.45):o.clueLevel==='fewer'?Math.ceil(size*size*.18):Math.ceil(size*size*.30),positions=shuffle(Array.from({length:size*size},(_,i)=>[Math.floor(i/size),i%size]),rng).slice(0,givenCount),given=new Set(positions.map(([r,c])=>`${r}:${c}`));return {...common,sourceGrid:solutionGrid,solutionGrid:target,displayGrid:target.map((row,r)=>row.map((v,c)=>given.has(`${r}:${c}`)?v:null)),missingSet:Array.from({length:size*size},(_,i)=>`${Math.floor(i/size)}:${i%size}`).filter(k=>!given.has(k)),magicSum:targetSum,sourceMagicSum:magicSum,transform:tx,instruction:`${tx.label}. Complete the new magic square and find its magic total.`,answerText:`New magic total = ${formatNumber(targetSum)}`};}
+    if(puzzleType==='check'){
+      const makeBroken=o.difficulty==='easy'?rng()<.42:o.difficulty==='challenge'?rng()<.68:rng()<.56;
+      let displayGrid=cloneGrid(solutionGrid),brokenCell='',correctValue=null,shownValue=null;
+      if(makeBroken){
+        const candidates=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++)candidates.push([r,c]);
+        const [r,c]=candidates[randInt(rng,0,candidates.length-1)],delta=profile.step*randInt(rng,1,o.difficulty==='challenge'?2:1)*(rng()<.5?-1:1);
+        correctValue=displayGrid[r][c];shownValue=Math.round((correctValue+delta)*1000)/1000;displayGrid[r][c]=shownValue;brokenCell=`${r}:${c}`;
+      }
+      const evidence=magicCheckEvidence(displayGrid);
+      return {...common,displayGrid,missingSet:[],checkIsMagic:evidence.isMagic,checkEvidence:evidence.evidence,checkSums:evidence.sums,brokenCell,correctValue,shownValue,instruction:'Is this a magic square? Check rows, columns and both main diagonals. If you find two different totals, you can stop and explain why.'};
+    }
+    if(puzzleType==='repair'){const candidates=size===3?[[0,0],[0,size-1],[size-1,0],[size-1,size-1],[1,1]]:[[0,0],[0,size-1],[size-1,0],[size-1,size-1]],cell=candidates[randInt(rng,0,candidates.length-1)],delta=profile.step*randInt(rng,1,3)*(rng()<.5?-1:1),displayGrid=cloneGrid(solutionGrid),correct=displayGrid[cell[0]][cell[1]],wrong=Math.round((correct+delta)*1000)/1000;displayGrid[cell[0]][cell[1]]=wrong;return {...common,displayGrid,missingSet:[],wrongCell:`${cell[0]}:${cell[1]}`,wrongValue:wrong,correctValue:correct,instruction:`One number is wrong. Find it and correct it so every row, column and main diagonal has the same total.`,answerText:`Replace ${formatNumber(wrong)} with ${formatNumber(correct)}. The magic total is ${formatNumber(magicSum)}.`};}
+    if(puzzleType==='transform'){const tx=magicTransform(s,seed,solutionGrid),target=tx.grid,targetSum=magicLineSums(target).rows[0],givenCount=o.clueLevel==='more'?Math.ceil(size*size*.45):o.clueLevel==='fewer'?Math.ceil(size*size*.18):Math.ceil(size*size*.30),positions=shuffle(Array.from({length:size*size},(_,i)=>[Math.floor(i/size),i%size]),rng).slice(0,givenCount),given=new Set(positions.map(([r,c])=>`${r}:${c}`));return {...common,sourceGrid:solutionGrid,solutionGrid:target,displayGrid:target.map((row,r)=>row.map((v,c)=>given.has(`${r}:${c}`)?v:null)),missingSet:Array.from({length:size*size},(_,i)=>`${Math.floor(i/size)}:${i%size}`).filter(k=>!given.has(k)),magicSum:targetSum,sourceMagicSum:magicSum,transform:tx,instruction:`${tx.label}. Complete the new magic square, then work out its magic total.`,answerText:`New magic total = ${formatNumber(targetSum)}`};}
     const target=magicMissingCount(s,size),hidden=uniquelySolvableMagicMask(size,target,rng),hiddenSet=new Set(hidden),displayGrid=solutionGrid.map((row,r)=>row.map((v,c)=>hiddenSet.has(`${r}:${c}`)?null:v));return {...common,displayGrid,missingSet:[...hiddenSet],instruction:`Every row, column and main diagonal totals ${formatNumber(magicSum)}. Fill the missing numbers.`,answerText:`Magic total = ${formatNumber(magicSum)}`};
   }
+
+  function sudokuOptions(settings){return normalizeSettings(settings).engineSettings.sudoku;}
+  function sudokuGridSize(settings){const s=normalizeSettings(settings),o=s.engineSettings.sudoku;if(o.gridSize!=='auto')return Number(o.gridSize);if(s.maxYear<=2)return 4;return o.difficulty==='easy'?4:6;}
+  function sudokuStyle(settings,seed){const o=sudokuOptions(settings);if(o.puzzleStyle!=='auto')return o.puzzleStyle;return rngFromSeed(`${seed}:style`)()<.72?'sudoku':'latin';}
+  function sudokuBoxShape(size){return size===6?{rows:2,cols:3}:{rows:2,cols:2};}
+  function shuffledRange(n,rng){return shuffle(Array.from({length:n},(_,i)=>i),rng);}
+  function permuteSudokuSolution(size,style,seed){
+    const rng=rngFromSeed(`${seed}:solution`),box=sudokuBoxShape(size);
+    let base;
+    if(style==='latin')base=Array.from({length:size},(_,r)=>Array.from({length:size},(_,c)=>(r+c)%size+1));
+    else base=Array.from({length:size},(_,r)=>Array.from({length:size},(_,c)=>((box.cols*(r%box.rows)+Math.floor(r/box.rows)+c)%size)+1));
+    const symbols=shuffle(Array.from({length:size},(_,i)=>i+1),rng),map=v=>symbols[v-1];
+    let rows,cols;
+    if(style==='latin'){
+      rows=shuffledRange(size,rng);cols=shuffledRange(size,rng);
+    }else{
+      const bandCount=size/box.rows,stackCount=size/box.cols,bands=shuffledRange(bandCount,rng),stacks=shuffledRange(stackCount,rng);
+      rows=bands.flatMap(b=>shuffle(Array.from({length:box.rows},(_,i)=>b*box.rows+i),rng));
+      cols=stacks.flatMap(s=>shuffle(Array.from({length:box.cols},(_,i)=>s*box.cols+i),rng));
+    }
+    return rows.map(r=>cols.map(c=>map(base[r][c])));
+  }
+  function sudokuCandidates(grid,r,c,style,box){
+    const n=grid.length,used=new Set(grid[r].filter(Boolean));for(let rr=0;rr<n;rr++)if(grid[rr][c])used.add(grid[rr][c]);
+    if(style==='sudoku'){const r0=Math.floor(r/box.rows)*box.rows,c0=Math.floor(c/box.cols)*box.cols;for(let rr=r0;rr<r0+box.rows;rr++)for(let cc=c0;cc<c0+box.cols;cc++)if(grid[rr][cc])used.add(grid[rr][cc]);}
+    return Array.from({length:n},(_,i)=>i+1).filter(v=>!used.has(v));
+  }
+  function countSudokuSolutions(grid,style='sudoku',limit=2){
+    const n=grid.length,box=sudokuBoxShape(n);
+    let best=null,bestCandidates=null;
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(!grid[r][c]){
+      const cand=sudokuCandidates(grid,r,c,style,box);if(!cand.length)return 0;if(!bestCandidates||cand.length<bestCandidates.length){best=[r,c];bestCandidates=cand;if(cand.length===1)break;}
+    }
+    if(!best)return 1;
+    let count=0;const [r,c]=best;for(const v of bestCandidates){grid[r][c]=v;count+=countSudokuSolutions(grid,style,limit-count);grid[r][c]=0;if(count>=limit)return count;}return count;
+  }
+  function sudokuTargetBlanks(settings,size){
+    const o=sudokuOptions(settings),base=size===4?(o.difficulty==='easy'?5:o.difficulty==='challenge'?9:7):(o.difficulty==='easy'?12:o.difficulty==='challenge'?23:18),adjust=o.clueLevel==='more'?(size===4?-2:-4):o.clueLevel==='fewer'?(size===4?2:4):0;
+    return clamp(base+adjust,3,size*size-4);
+  }
+  function generateMiniSudoku(settings,seed){
+    const s=normalizeSettings(settings),o=s.engineSettings.sudoku,size=sudokuGridSize(s),style=sudokuStyle(s,seed),solutionGrid=permuteSudokuSolution(size,style,seed),rng=rngFromSeed(`${seed}:mask`),displayGrid=cloneGrid(solutionGrid),positions=shuffle(Array.from({length:size*size},(_,i)=>[Math.floor(i/size),i%size]),rng),target=sudokuTargetBlanks(s,size),removed=[];
+    for(const [r,c] of positions){if(removed.length>=target)break;const old=displayGrid[r][c];displayGrid[r][c]=0;const test=cloneGrid(displayGrid);if(countSudokuSolutions(test,style,2)===1)removed.push(`${r}:${c}`);else displayGrid[r][c]=old;}
+    const box=sudokuBoxShape(size),title=style==='latin'?'Latin Square':'Mini Sudoku',instruction=style==='latin'?`Fill the grid with the numbers 1 to ${size}. Each number must appear once in every row and once in every column.`:`Fill the grid with the numbers 1 to ${size}. Each number must appear once in every row, every column and every outlined box.`;
+    return {engineId:'sudoku',title,topicIds:s.topics.filter(t=>['number_place_value','calculation','algebra'].includes(t)),size,style,boxRows:box.rows,boxCols:box.cols,difficulty:o.difficulty,solutionGrid,displayGrid,givenSet:Array.from({length:size*size},(_,i)=>`${Math.floor(i/size)}:${i%size}`).filter(k=>!removed.includes(k)),missingSet:removed,instruction,yearText:yearText(s.minYear,s.maxYear),seed,options:o};
+  }
+
 
   function crosswordOptions(settings){return normalizeSettings(settings).engineSettings.crossword;}
   function crosswordGridSize(settings){const o=crosswordOptions(settings);if(o.gridSize!=='auto')return Number(o.gridSize);return o.difficulty==='easy'?13:o.difficulty==='challenge'?17:15;}
@@ -355,14 +438,18 @@
     }
     if(engineId==='magic'){
       const grid=[[8,1,6],[3,5,7],[4,9,2]],magicSum=15;
-      return {engineId,title:'Magic Squares worked example',kind:'magic',grid,displayGrid:[[8,1,6],[3,5,null],[4,9,2]],magicSum,goal:'Fill the missing number so every row, column and main diagonal has the same total.',rules:['First find or use the magic total.','Each complete row, column and main diagonal must equal that same total.','Use subtraction when one value is missing from a line.'],steps:['The top row is 8 + 1 + 6 = 15, so the magic total is 15.','The middle row must also total 15: 3 + 5 + □ = 15.','3 + 5 = 8, so □ = 15 − 8 = 7.','Check the right column: 6 + 7 + 2 = 15.'],tip:'Use a row or column with only one missing number first.',commonMistake:'Do not forget the two main diagonals — they must match the magic total too.'};
+      return {engineId,title:'Magic Squares worked example',kind:'magic',grid,displayGrid:[[8,1,6],[3,5,null],[4,9,2]],magicSum,goal:'Fill the missing number so every row, column and main diagonal has the same total.',rules:['Find or use the magic total.','Every row, every column and both main diagonals must match that total.','When one number is missing, subtract the known numbers from the magic total.'],steps:['The top row is 8 + 1 + 6 = 15, so the magic total is 15.','The middle row must also total 15: 3 + 5 + □ = 15.','3 + 5 = 8, so □ = 15 − 8 = 7.','Check another direction: 6 + 7 + 2 = 15, so the answer fits.'],tip:'Start with a row, column or diagonal that has only one missing number.',commonMistake:'A square is only magic if the rows, columns and both main diagonals all have the same total.'};
+    }
+    if(engineId==='sudoku'){
+      const style=s.engineSettings.sudoku.puzzleStyle==='latin'?'latin':'sudoku',solutionGrid=[[1,2,3,4],[3,4,1,2],[2,1,4,3],[4,3,2,1]],displayGrid=cloneGrid(solutionGrid);displayGrid[0][3]=0;
+      return {engineId,title:style==='latin'?'Latin Square worked example':'Mini Sudoku worked example',kind:'sudoku',style,size:4,boxRows:2,boxCols:2,solutionGrid,displayGrid,goal:'Work out which number belongs in the empty cell without repeating a number where it is not allowed.',rules:style==='latin'?['Use the numbers 1, 2, 3 and 4.','Each number appears once in every row.','Each number appears once in every column.']:['Use the numbers 1, 2, 3 and 4.','Each number appears once in every row and every column.','In Mini Sudoku, each outlined 2 × 2 box must also contain 1, 2, 3 and 4 once.'],steps:['Look at the first row: it already contains 1, 2 and 3.','The only number missing from that row is 4.',style==='latin'?'Check the last column: putting 4 there does not repeat a 4.':'Check the last column and the top-right 2 × 2 box: 4 is allowed in both.', 'Write 4 in the empty cell, then re-check the row and column.'],tip:'Scan the row first, then the column, then the box if the puzzle uses boxes.',commonMistake:style==='latin'?'Latin Squares do not use Sudoku boxes — only rows and columns matter.':'Do not forget the outlined box rule when a row or column gives more than one possibility.'};
     }
     const pool=vocabularyFor(s,customVocabulary),item=pool.length?shuffle(pool,rngFromSeed(seed))[0]:null;if(!item)return null;const answer=normalizeTerm(item.term),size=Math.max(8,Math.min(12,answer.length+2)),grid=Array.from({length:size},()=>Array(size).fill(''));
     const rng=rngFromSeed(`${seed}:grid`),row=randInt(rng,1,size-2),maxStart=Math.max(0,size-answer.length),start=randInt(rng,0,maxStart);for(let i=0;i<answer.length;i++)grid[row][start+i]=answer[i];const alphabet='ETAOINSHRDLUCMFPGWYBVKXJQZ';for(let y=0;y<size;y++)for(let x=0;x<size;x++)if(!grid[y][x])grid[y][x]=alphabet[randInt(rng,0,alphabet.length-1)];const enumeration=answerEnumeration(item.term);
     return {engineId:'wordsearch',title:'Maths Word Search worked example',kind:'wordsearch',term:item.term,definition:item.definition,enumeration,answer,row,start,grid,size,mode:s.engineSettings.wordsearch.clueMode,goal:'Find the mathematical vocabulary hidden in the letter grid.',rules:[s.engineSettings.wordsearch.clueMode==='definitions'?'Use each definition to work out the hidden word first.':'Read the word and its definition before searching.',`The word may run in the allowed directions for this puzzle. Spaces and punctuation are removed in the grid.${needsEnumeration(item.term)?` ${enumeration} shows the word lengths.`:''}`],steps:s.engineSettings.wordsearch.clueMode==='definitions'?['Read the definition carefully.',`The mathematical term is “${item.term}” ${enumeration}.`,`Look for the letters ${answer} in one straight line.`,'Trace or circle the complete word.']:['Read the term and its meaning.',`Look for ${answer} in one straight line.`,'Trace or circle the complete word.'],tip:'Start by looking for an unusual first letter or a long group of letters.',commonMistake:'Do not change direction halfway through a hidden word.'};
   }
 
-  function generateActivity(engineId,settings,seed,customVocabulary=[]){if(engineId==='pyramid')return generateNumberPyramid(settings,seed);if(engineId==='crossword')return generateCrossword(settings,seed,customVocabulary);if(engineId==='magic')return generateMagicSquare(settings,seed);return generateWordSearch(settings,seed,customVocabulary);}
+  function generateActivity(engineId,settings,seed,customVocabulary=[]){if(engineId==='pyramid')return generateNumberPyramid(settings,seed);if(engineId==='crossword')return generateCrossword(settings,seed,customVocabulary);if(engineId==='magic')return generateMagicSquare(settings,seed);if(engineId==='sudoku')return generateMiniSudoku(settings,seed);return generateWordSearch(settings,seed,customVocabulary);}
   function generatePack(settings,seed='games',customVocabulary=[]){
     const s=normalizeSettings(settings),sheets=[];let globalIndex=0;
     for(let sheetIndex=0;sheetIndex<s.sheets;sheetIndex++){const activities=[];for(let i=0;i<s.activitiesPerSheet;i++,globalIndex++){const engineId=chooseEngine(s,globalIndex,seed),activitySeed=`${seed}:S${sheetIndex+1}:A${i+1}:${engineId}`;activities.push(generateActivity(engineId,s,activitySeed,customVocabulary));}sheets.push({index:sheetIndex+1,activities});}
@@ -370,6 +457,6 @@
     return {version:VERSION,seed,settings:s,workedExamples,sheets};
   }
 
-  const api={VERSION,TOPICS,ENGINES,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows};
+  const api={VERSION,TOPICS,ENGINES,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateMiniSudoku,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows,_countSudokuSolutions:countSudokuSolutions,_sudokuBoxShape:sudokuBoxShape};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;global.TT99Games=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

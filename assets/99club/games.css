@@ -290,3 +290,48 @@
 
 @media(max-width:900px){.tt99-magic-main{grid-template-columns:1fr;height:auto}.tt99-magic-transform{grid-template-columns:1fr;height:auto}.tt99-magic-operation{justify-self:center}.tt99-worked-page .tt99-worked-grid{height:auto;grid-template-rows:none}}
 @media print{.tt99-magic-grid>span{border:.7pt solid #596e73!important;background:#fff!important}.tt99-magic-grid>span.answer-highlight{background:#eef9f6!important}.tt99-worked-page .tt99-worked-grid{grid-template-columns:1fr!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;height:246mm!important}}
+
+
+/* v1.26.0 — proper setup collapse, Magic reasoning refresh, Mini Sudoku / Latin Squares */
+.tt99-engine-panel-head .tt99-engine-done{
+  width:auto;height:29px;padding:0 10px;border-radius:8px;
+  font:800 .72rem/1 system-ui;color:#25635f;background:#fff;border:1px solid #b9d9d4
+}
+.tt99-magic-evidence-line{font-size:clamp(7px,.72vw,10px)!important;font-weight:650!important;color:#64777c!important;margin-top:4px}
+.tt99-magic-check-answer{font-size:clamp(7px,.78vw,11px)!important;font-weight:800!important;line-height:1.35;color:#14786f!important}
+
+.tt99-sudoku-wrap{display:flex;align-items:center;justify-content:center;height:calc(100% - 76px);padding:8px}
+.tt99-sudoku-grid{
+  --sudoku-size:4;
+  display:grid;grid-template-columns:repeat(var(--sudoku-size),1fr);
+  width:min(100%,390px);aspect-ratio:1;border:2.4px solid #4d676d;background:#fff
+}
+.tt99-sudoku-grid>span{
+  display:grid;place-items:center;aspect-ratio:1;
+  border-right:1px solid #9aabad;border-bottom:1px solid #9aabad;
+  font-size:clamp(12px,1.35vw,21px);font-weight:850;color:#24464d;background:#fff
+}
+.tt99-sudoku-grid>span:nth-child(n){min-width:0}
+.tt99-sudoku-grid>span.box-right{border-right:2.4px solid #4d676d}
+.tt99-sudoku-grid>span.box-bottom{border-bottom:2.4px solid #4d676d}
+.tt99-sudoku-grid>span.answer-fill{background:#eef9f6;color:#0f756f}
+.tt99-sudoku-grid.is-latin{border-color:#647b80}
+.tt99-sudoku-grid.is-latin>span{border-color:#9aabad}
+.tt99-sudoku-answer-note{text-align:center;font-size:8px;color:#708287;margin:2px 0 0}
+.tt99-game-activities.count-2 .tt99-sudoku-grid{width:min(100%,250px)}
+.tt99-game-activities.count-3 .tt99-sudoku-grid{width:min(100%,180px)}
+.tt99-worked-sudoku{display:flex;justify-content:center;margin:2mm 0}
+.tt99-worked-sudoku .tt99-sudoku-grid{width:45mm}
+.tt99-worked-sudoku .tt99-sudoku-grid>span{font-size:8pt}
+
+@media(max-width:900px){
+  .tt99-sudoku-wrap{height:auto}
+  .tt99-sudoku-grid{width:min(100%,360px)}
+}
+@media print{
+  .tt99-sudoku-grid{border:1.5pt solid #4d676d!important;background:#fff!important}
+  .tt99-sudoku-grid>span{border-right:.55pt solid #83979b!important;border-bottom:.55pt solid #83979b!important;background:#fff!important}
+  .tt99-sudoku-grid>span.box-right{border-right:1.5pt solid #4d676d!important}
+  .tt99-sudoku-grid>span.box-bottom{border-bottom:1.5pt solid #4d676d!important}
+  .tt99-sudoku-grid>span.answer-fill{background:#eef9f6!important}
+}

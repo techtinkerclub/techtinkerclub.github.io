@@ -1,21 +1,14 @@
-# 99 Club Studio v1.25.1 patch
+# 99 Club Studio v1.26.0 patch
 
-Apply this overlay directly on top of **v1.25.0**.
+Apply this overlay directly on top of **v1.25.1**.
 
-Purpose:
-- keep Word Search / Crossword vocabulary strictly within selected curriculum topic(s);
-- prevent numeral/symbol terms such as `3-D shape` from entering letter-grid puzzles;
-- reject unsafe teacher-added local vocabulary rather than silently stripping characters;
-- add regression coverage including 1,000 Statistics-only Word Searches.
+## Main changes
 
-Changed runtime files:
-- `_pages/99-club-games.md`
-- `assets/99club/games-engine.js`
-- `assets/99club/games-app.js`
+- replaces Magic Squares `Find the magic total` with **Check: is it a magic square?** reasoning;
+- removes internal Magic number-generation metadata from pupil/answer resources;
+- fixes game setup collapse: **Configure → Done** genuinely closes the specialist setup panel;
+- adds **Mini Sudoku & Latin Squares** with 4×4/6×6, per-game difficulty/style/clue controls and unique-solution validation;
+- adds worked examples and PDF/answer rendering for the new logic engine;
+- updates Help and regression tests.
 
-QA/test:
-- `assets/99club/tests/games-smoke.js`
-- `RELEASE_NOTES_1.25.1.md`
-- `V1_25_1_QA_REPORT.md`
-
-No PDF renderer or other 99 Club / Custom mathematics files are changed.
+After deployment, hard-refresh `/tools/99-club/games/` so the bumped asset versions are loaded.

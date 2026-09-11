@@ -1,5 +1,5 @@
 /* 99 Club Studio · Maths Games & Puzzles PDF exporter
- * v1.1.0 — Magic Squares, clue enumeration and richer worked examples.
+ * v1.2.0 — Magic-square reasoning refresh + Mini Sudoku / Latin Squares.
  */
 (function(global){
   'use strict';
@@ -121,30 +121,52 @@
       const v=grid?.[r]?.[c],key=`${r}:${c}`,isHighlight=highlight===key;
       page.rect(sx+c*cell,sy+r*cell,cell,cell,{fill:isHighlight?[232,247,243]:WHITE,stroke:[91,113,118],width:.75});
       if(v!==null&&v!==undefined&&v!=='')page.text(sx+c*cell+cell/2,sy+r*cell+cell*.64,formatNumber(v),Math.max(7,Math.min(13,cell*.34)),{bold:true,color:isHighlight?TEAL:INK,align:'center'});
+      else if(opts.questionMarks)page.text(sx+c*cell+cell/2,sy+r*cell+cell*.64,'?',Math.max(7,Math.min(12,cell*.32)),{bold:true,color:MUTED,align:'center'});
     }
     return {x:sx,y:sy,w:gw,h:gh,cell};
   }
   function drawMagic(page,a,answers,x,y,w,h,index){
-    const top=activityFrame(page,x,y,w,h,index,a),typeLabel={missing:'Fill missing values',find_total:'Find magic total',repair:'Spot & fix error',transform:'Transform square'}[a.puzzleType]||'Magic Square';
+    const top=activityFrame(page,x,y,w,h,index,a),typeLabel={missing:'Fill missing values',check:'Is it a magic square?',repair:'Spot & fix error',transform:'Transform square'}[a.puzzleType]||'Magic Square';
     drawWrapped(page,x+12,top,a.instruction||'Complete the magic square.',w-24,7,{color:MUTED,maxLines:2});
     const bodyY=top+28,bodyH=h-(bodyY-y)-14;
     if(a.puzzleType==='transform'){
-      const gap=22,blockW=(w-36-gap)/2,labelH=20,gridH=bodyH-46,target=answers?a.solutionGrid:a.displayGrid;
+      const gap=22,blockW=(w-36-gap)/2,gridH=bodyH-36,target=answers?a.solutionGrid:a.displayGrid;
       page.text(x+12,bodyY,'Starting square',6.6,{bold:true,color:DARK});
-      const left=drawMagicGrid(page,a.sourceGrid,x+12,bodyY+10,blockW,gridH,{maxCell:38});
-      page.text(x+12+blockW/2,left.y+left.h+13,`Magic total: ${formatNumber(a.sourceMagicSum)}`,6.2,{bold:true,color:MUTED,align:'center'});
+      drawMagicGrid(page,a.sourceGrid,x+12,bodyY+10,blockW,gridH,{maxCell:38});
       page.text(x+12+blockW+gap/2,bodyY+bodyH*.46,clean(a.transform?.label||'Transform'),6.3,{bold:true,color:TEAL,align:'center'});
       page.text(x+12+blockW+gap,bodyY,'New square',6.6,{bold:true,color:DARK});
       const right=drawMagicGrid(page,target,x+12+blockW+gap,bodyY+10,blockW,gridH,{maxCell:38});
       page.text(x+12+blockW+gap+blockW/2,right.y+right.h+13,answers?`New magic total: ${formatNumber(a.magicSum)}`:'New magic total: __________',6.2,{bold:true,color:answers?TEAL:MUTED,align:'center'});
       return;
     }
-    const grid=answers?a.solutionGrid:a.displayGrid,gridMax=Math.min(w*.58,bodyH),left=drawMagicGrid(page,grid,x+12,bodyY,gridMax,bodyH,{maxCell:h<230?34:50,highlight:answers&&a.puzzleType==='repair'?a.wrongCell:''}),sideX=x+24+gridMax,sideW=w-(sideX-x)-14;let sy=bodyY+10;
+    const grid=a.puzzleType==='check'?a.displayGrid:(answers?a.solutionGrid:a.displayGrid),gridMax=Math.min(w*.58,bodyH),left=drawMagicGrid(page,grid,x+12,bodyY,gridMax,bodyH,{maxCell:h<230?34:50,highlight:answers&&a.puzzleType==='repair'?a.wrongCell:''}),sideX=x+24+gridMax,sideW=w-(sideX-x)-14;let sy=bodyY+10;
     page.text(sideX,sy,clean(typeLabel),7.5,{bold:true,color:DARK});sy+=16;
-    if(a.puzzleType==='find_total')drawWrapped(page,sideX,sy,answers?`Magic total = ${formatNumber(a.magicSum)}`:'Magic total = __________',sideW,8,{bold:true,color:answers?TEAL:INK,maxLines:2});
-    else if(a.puzzleType==='repair')drawWrapped(page,sideX,sy,answers?a.answerText:`Target magic total: ${formatNumber(a.magicSum)}`,sideW,7.3,{bold:true,color:answers?TEAL:INK,maxLines:3});
+    if(a.puzzleType==='check'){
+      if(answers)drawWrapped(page,sideX,sy,a.checkEvidence||'',sideW,7.0,{bold:true,color:TEAL,maxLines:4});
+      else{page.text(sideX,sy,'Magic square?   Yes / No',7.2,{bold:true,color:INK});sy+=19;page.text(sideX,sy,'Evidence: ____________________',6.6,{color:MUTED});}
+    }else if(a.puzzleType==='repair')drawWrapped(page,sideX,sy,answers?a.answerText:'Find the incorrect value and replace it.',sideW,7.0,{bold:true,color:answers?TEAL:INK,maxLines:4});
     else drawWrapped(page,sideX,sy,`Magic total: ${formatNumber(a.magicSum)}`,sideW,7.3,{bold:true,color:INK,maxLines:2});
-    sy+=34;drawWrapped(page,sideX,sy,`Numbers: ${a.numberPatternLabel||''}`,sideW,6.2,{color:MUTED,maxLines:3});
+  }
+
+  function drawSudokuGrid(page,display,solution,answers,style,boxRows,boxCols,x,y,maxW,maxH,opts={}){
+    const n=display?.length||4,cell=Math.min(maxW/n,maxH/n,opts.maxCell||52),gw=cell*n,gh=cell*n,sx=x+(maxW-gw)/2,sy=y+(maxH-gh)/2,boxR=boxRows||2,boxC=boxCols||(n===6?3:2);
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+      const given=!!display[r][c],v=answers?(solution?.[r]?.[c]||display[r][c]):display[r][c],fill=answers&&!given?HIT:WHITE;
+      page.rect(sx+c*cell,sy+r*cell,cell,cell,{fill,stroke:[142,161,164],width:.5});
+      if(v)page.text(sx+c*cell+cell/2,sy+r*cell+cell*.65,String(v),Math.max(7,Math.min(13,cell*.36)),{bold:true,color:answers&&!given?TEAL:INK,align:'center'});
+    }
+    page.rect(sx,sy,gw,gh,{stroke:[73,99,105],width:1.4});
+    if(style==='sudoku'){
+      for(let c=boxC;c<n;c+=boxC)page.line(sx+c*cell,sy,sx+c*cell,sy+gh,{color:[73,99,105],width:1.4});
+      for(let r=boxR;r<n;r+=boxR)page.line(sx,sy+r*cell,sx+gw,sy+r*cell,{color:[73,99,105],width:1.4});
+    }
+    return {x:sx,y:sy,w:gw,h:gh,cell};
+  }
+  function drawSudoku(page,a,answers,x,y,w,h,index){
+    const top=activityFrame(page,x,y,w,h,index,a);
+    drawWrapped(page,x+12,top,a.instruction||'Complete the grid.',w-24,7,{color:MUTED,maxLines:3});
+    const bodyY=top+32,bodyH=h-(bodyY-y)-14;
+    drawSudokuGrid(page,a.displayGrid,a.solutionGrid,answers,a.style,a.boxRows,a.boxCols,x+20,bodyY,w-40,bodyH,{maxCell:h<230?34:52});
   }
 
   function drawActivity(page,a,answers,x,y,w,h,index){
@@ -152,6 +174,7 @@
     if(a.engineId==='pyramid')return drawPyramid(page,a,answers,x,y,w,h,index);
     if(a.engineId==='crossword')return drawCrossword(page,a,answers,x,y,w,h,index);
     if(a.engineId==='magic')return drawMagic(page,a,answers,x,y,w,h,index);
+    if(a.engineId==='sudoku')return drawSudoku(page,a,answers,x,y,w,h,index);
     return drawWordSearch(page,a,answers,x,y,w,h,index);
   }
 
@@ -173,7 +196,9 @@
     }else if(ex.kind==='pyramid'){
       const rows=ex.rows||[],maxCols=rows.at(-1)?.length||3,cellW=Math.min(38,(w-40)/maxCols),cellH=23;rows.forEach((row,r)=>{const sw=row.length*cellW,sx=x+w/2-sw/2;row.forEach((n,i)=>{const miss=ex.exampleMissing===`${r}:${i}`;page.rect(sx+i*cellW,cy,cellW-2,cellH-2,{fill:miss?PALE:WHITE,stroke:[110,140,140],width:.7});page.text(sx+i*cellW+(cellW-2)/2,cy+15,miss?'?':String(n),8,{bold:true,color:INK,align:'center'});});cy+=cellH;});cy+=6;
     }else if(ex.kind==='magic'){
-      page.text(x+12,cy,`Magic total: ${formatNumber(ex.magicSum)}`,7,{bold:true,color:TEAL});cy+=8;const g=drawMagicGrid(page,ex.displayGrid,x+w/2-82,cy,164,98,{maxCell:32});cy+=g.h+7;
+      page.text(x+12,cy,`Magic total: ${formatNumber(ex.magicSum)}`,7,{bold:true,color:TEAL});cy+=8;const g=drawMagicGrid(page,ex.displayGrid,x+w/2-82,cy,164,98,{maxCell:32,questionMarks:true});cy+=g.h+7;
+    }else if(ex.kind==='sudoku'){
+      const g=drawSudokuGrid(page,ex.displayGrid,ex.solutionGrid,false,ex.style,ex.boxRows,ex.boxCols,x+w/2-78,cy,156,102,{maxCell:25});cy+=g.h+7;
     }else{
       const intro=ex.mode==='definitions'?`Definition: ${ex.definition}${needsEnumeration(ex.term)?` ${ex.enumeration||enumeration(ex.term)}`:''}`:`${ex.term} - ${ex.definition}`;cy+=drawWrapped(page,x+12,cy,intro,w-24,7,{color:DARK,maxLines:2})+6;
       const size=ex.size||5,cell=Math.min(20,(w-50)/size,92/size),sx=x+w/2-size*cell/2;for(let gy=0;gy<size;gy++)for(let gx=0;gx<size;gx++){const hit=gy===ex.row&&gx>=ex.start&&gx<ex.start+String(ex.answer||'').length;page.rect(sx+gx*cell,cy+gy*cell,cell,cell,{fill:hit?HIT:WHITE,stroke:[190,206,208],width:.4});page.text(sx+gx*cell+cell/2,cy+gy*cell+cell*.68,ex.grid?.[gy]?.[gx]||'',Math.max(3.8,cell*.42),{bold:true,color:INK,align:'center'});}cy+=size*cell+6;
