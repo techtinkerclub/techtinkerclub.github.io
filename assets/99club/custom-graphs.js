@@ -14,7 +14,7 @@
   const L=global.TT99PDFLayout;
   if(!G) return;
 
-  const VERSION='0.1.5';
+  const VERSION='0.1.7';
   // Shared restrained palette for all generated visual questions. Colour is used
   // as a secondary cue only: labels, position, line style and geometry remain
   // sufficient for greyscale printing.
@@ -133,7 +133,7 @@
     }
     if(typeId==='bc_choose_or_complete_scale'){
       const table={headers:['Category',d.yLabel],rows:d.categories.map((c,j)=>[c,String(d.values[j])])};
-      return q('bar_charts',typeId,'Choose a sensible equal scale for the vertical axis, then draw the bars.',`Suggested interval: ${d.step}`,`${i}`,barVisual(d,{hideAllBars:true,showYLabels:false,table}),'XL',{marking:{mode:'rubric',answer:`Any sensible uniform scale that fits the data; suggested ${d.step} per major division.`}});
+      return q('bar_charts',typeId,'Choose a sensible equal scale for the vertical axis, then draw the bars.',`Suggested interval: ${d.step}`,`${i}`,barVisual(d,{hideAllBars:true,showYLabels:false,table}),'XL',{response:false,marking:{mode:'rubric',answer:`Any sensible uniform scale that fits the data; suggested ${d.step} per major division.`,rule:'Mark correct if the scale is uniform, sensible for the supplied data and all bars are plotted consistently.',criteria:['Equal intervals are used on the vertical axis.','The chosen scale includes every data value.','Bar heights match the table values.'],accept:`Different sensible intervals are acceptable; ${d.step} per major division is one valid choice.`}});
     }
     if(typeId==='bc_complete_labels_title'){
       return q('bar_charts',typeId,'What label should be written on the vertical axis?',d.yLabel,`${i}`,barVisual(d,{showYLabel:false}),'M');
@@ -162,7 +162,7 @@
     }
     if(typeId==='bc_reasoning_multiplicative_claim'){
       const low=Math.min(...d.values),li=d.values.indexOf(low),hi=Math.max(...d.values),hii=d.values.indexOf(hi),twice=hi===2*low;
-      return q('bar_charts',typeId,`${d.categories[hii]} has twice as many as ${d.categories[li]}. Is this statement correct? Explain.`,twice?'Yes.':'No.',`${i}`,barVisual(d),'L',{marking:{mode:'rubric',answer:`Compare ${hi} with twice ${low} (${2*low}).`}});
+      return q('bar_charts',typeId,`${d.categories[hii]} has twice as many as ${d.categories[li]}. Is this statement correct? Explain.`,twice?'Yes.':'No.',`${i}`,barVisual(d),'L',{response:{kind:'explanation',size:'M',label:'Explain using values from the chart'},marking:{mode:'rubric',answer:`Compare ${hi} with twice ${low} (${2*low}).`,rule:'Mark correct only when the conclusion is supported by the chart values. Equivalent wording is acceptable.',criteria:[`States the correct conclusion: ${twice?'yes':'no'}.`,`Compares ${hi} with 2 × ${low} = ${2*low}.`]}});
     }
     if(typeId==='bc_decompose_group_total'){
       const idx=a,groupTotal=d.values[idx]+2*d.step,known=d.values[idx];
@@ -179,7 +179,8 @@
     if(typeId==='bc_estimate_combined_values'){
       const ed={...d,values:d.values.map((v,j)=>v+(j%2?d.step/2:0)),yMax:d.yMax+d.step};
       const ans=ed.values[a]+ed.values[b];
-      return q('bar_charts',typeId,`Estimate the combined value for ${ed.categories[a]} and ${ed.categories[b]}.`,`About ${fmt(ans)}`,`${i}`,barVisual(ed),'L',{marking:{mode:'range',answer:ans,tolerance:d.step/2}});
+      const best=Math.round(ans/d.step)*d.step,choices=[best-d.step,best,best+d.step,best+2*d.step].map(fmt),correctChoice=1;
+      return q('bar_charts',typeId,`Which is the best estimate for the combined value of ${ed.categories[a]} and ${ed.categories[b]}?`,`B. ${choices[correctChoice]}`,`${i}`,barVisual(ed),'L',{choices,correctChoice,marking:{mode:'multiple-choice',answer:choices[correctChoice]}});
     }
     if(typeId.startsWith('bc_paired_series_')){
       const cats=d.categories,step=d.step,A=[4,7,5,6,3].slice(0,n).map(v=>v*step),B=[5,4,6,3,5].slice(0,n).map(v=>v*step);
@@ -203,7 +204,7 @@
     }
     if(typeId==='bc_interpret_ordered_trend'){
       const td={...d,categories:['Jan','Feb','Mar','Apr','May'],values:[2,3,5,6,8].map(v=>v*d.step),title:'Monthly total',yMax:9*d.step};
-      return q('bar_charts',typeId,'Describe the overall trend from January to May.','The values increase overall.',`${i}`,barVisual(td,{ordered:true}),'M',{marking:{mode:'rubric',answer:'Recognises an overall increase.'}});
+      return q('bar_charts',typeId,'Describe the overall trend from January to May.','The values increase overall.',`${i}`,barVisual(td,{ordered:true}),'M',{response:{kind:'short',size:'S',label:'Describe the trend'},marking:{mode:'rubric',answer:'The values increase overall.',rule:'Mark correct if the pupil identifies the overall direction of change. Equivalent wording is acceptable.',criteria:['States that the values increase/rise overall from January to May.']}});
     }
     return null;
   }
@@ -249,7 +250,8 @@
     }
     if(typeId==='lg_interpolate_between_points'){
       const x=[0,2,4,6],vals=[12,16,22,28];
-      return q(kind,typeId,'Between 2 and 4 minutes the temperature rose steadily. Estimate the temperature at 3 minutes.','About 19 °C',`${i}`,lineVisual({title:'Water temperature',xLabel:'Minutes',yLabel:'Temperature (°C)',xValues:x,xLabels:x.map(String),xTicks:[0,1,2,3,4,5,6],xTickLabels:['0','1','2','3','4','5','6'],series:[{name:'Temperature',values:vals}],yMin:10,yMax:30,yStep:5,showLegend:false}),'L',{marking:{mode:'range',answer:19,tolerance:1}});
+      const choices=['16 °C','19 °C','22 °C','25 °C'],correctChoice=1;
+      return q(kind,typeId,'Between 2 and 4 minutes the temperature rose steadily. Which is the best estimate for the temperature at 3 minutes?',`B. ${choices[correctChoice]}`,`${i}`,lineVisual({title:'Water temperature',xLabel:'Minutes',yLabel:'Temperature (°C)',xValues:x,xLabels:x.map(String),xTicks:[0,1,2,3,4,5,6],xTickLabels:['0','1','2','3','4','5','6'],series:[{name:'Temperature',values:vals}],yMin:10,yMax:30,yStep:5,showLegend:false}),'L',{choices,correctChoice,marking:{mode:'multiple-choice',answer:choices[correctChoice]}});
     }
     if(typeId==='lg_round_change_between_points'){
       const dd={...d,values:[12.4,14.1,16.8,19.7,22.6,25.3,27.8],yMin:10,yMax:30,yStep:5,title:'Plant height',yLabel:'Height (cm)',xLabel:'Week',xLabels:['1','2','3','4','5','6','7']};
@@ -269,7 +271,8 @@
     }
     if(typeId==='lg_duration_above_or_below_threshold'){
       const vals=[85,76,68,60,53,47,42,38],xs=[0,5,10,15,20,25,30,35];
-      return q(kind,typeId,'For approximately how long was the drink above 60 °C?','About 15 minutes',`${i}`,lineVisual({title:'Cooling drink',xLabel:'Minutes',yLabel:'Temperature (°C)',xValues:xs,xLabels:xs.map(String),series:[{name:'Temperature',values:vals}],yMin:35,yMax:90,yStep:10,threshold:60,showLegend:false}),'L',{marking:{mode:'range',answer:15,tolerance:2}});
+      const choices=['5 minutes','10 minutes','15 minutes','25 minutes'],correctChoice=2;
+      return q(kind,typeId,'Which is the best estimate for how long the drink was above 60 °C?',`C. ${choices[correctChoice]}`,`${i}`,lineVisual({title:'Cooling drink',xLabel:'Minutes',yLabel:'Temperature (°C)',xValues:xs,xLabels:xs.map(String),series:[{name:'Temperature',values:vals}],yMin:35,yMax:90,yStep:10,threshold:60,showLegend:false}),'L',{choices,correctChoice,marking:{mode:'multiple-choice',answer:choices[correctChoice]}});
     }
     if(typeId==='lg_greatest_change_interval'){
       const vals=[5,9,18,21,25,27],labs=['W1','W2','W3','W4','W5','W6'],changes=vals.slice(1).map((v,j)=>v-vals[j]),m=Math.max(...changes),idx=changes.indexOf(m);
@@ -277,7 +280,7 @@
     }
     if(typeId==='lg_explain_compare_interval_changes'){
       const vals=[0,18,30,45];
-      return q(kind,typeId,'Sam says, “The cyclist travelled farther in the first hour than in the second hour.” Is Sam correct? Explain using values from the graph.','Yes: 18 km in the first hour and 12 km in the second.',`${i}`,lineVisual({title:'Distance cycled',xLabel:'Time',yLabel:'Distance (km)',xValues:[0,1,2,3],xLabels:['0h','1h','2h','3h'],series:[{name:'Distance',values:vals}],yMin:0,yMax:50,yStep:10,showLegend:false}),'L',{marking:{mode:'rubric',answer:'Uses 18 km and 12 km to justify the comparison.'}});
+      return q(kind,typeId,'Sam says, “The cyclist travelled farther in the first hour than in the second hour.” Is Sam correct? Explain using values from the graph.','Yes: 18 km in the first hour and 12 km in the second.',`${i}`,lineVisual({title:'Distance cycled',xLabel:'Time',yLabel:'Distance (km)',xValues:[0,1,2,3],xLabels:['0h','1h','2h','3h'],series:[{name:'Distance',values:vals}],yMin:0,yMax:50,yStep:10,showLegend:false}),'L',{response:{kind:'explanation',size:'M',label:'Explain using values from the graph'},marking:{mode:'rubric',answer:'Yes: 18 km in the first hour and 12 km in the second.',rule:'Mark correct only when the conclusion is supported by both interval values. Equivalent wording is acceptable.',criteria:['States that Sam is correct.','Uses 18 km for the first hour and 12 km for the second hour (or equivalent differences from the graph).']}});
     }
     if(typeId==='lg_count_x_positions_by_condition'){
       const vals=[12,18,9,15,21,14,7],labs=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],lo=10,hi=20,count=vals.filter(v=>v>=lo&&v<=hi).length;
@@ -385,7 +388,8 @@
   // --- Shared visual layout --------------------------------------------------
   function footprintHeight(item,answers,orientation){
     const landscape=orientation==='landscape';
-    if(!item?.visual)return answers?(landscape?27:31):(landscape?30:34);
+    const responseBonus=answers?0:responseHeight(item,orientation),teacherBonus=answers?markingGuidanceHeight(item,orientation):0;
+    if(!item?.visual)return (answers?(landscape?27:31):(landscape?30:34))+responseBonus+teacherBonus;
     const fp=item.footprint||'L',v=item.visual;
     const map=landscape
       ? (answers?{M:112,L:145,XL:255}:{M:135,L:175,XL:335})
@@ -401,8 +405,17 @@
     const tableBonus=v.type==='pie'
       ? (pieTableRows?pieTableRows*14+5:0)
       : (v.table||v.rawData?34:0);
+    // Multiple-choice visual questions reserve their own answer-option rows so the
+    // graph/diagram itself never has to shrink to make room for choices.
+    const choiceRows=Array.isArray(item?.choices)&&item.choices.length?Math.ceil(item.choices.length/2):0;
+    const choiceBonus=choiceRows?choiceRows*14+5:0;
 
-    if(v.type!=='pie')return (map[fp]||map.L)+tableBonus;
+    if(v.type==='angle'){
+      const els=[...(v.elements||[]),...(v.answerElements||[]).flat(Infinity)],hasProtractor=els.some(e=>e?.kind==='protractor'),multiAngle=els.filter(e=>e?.kind==='angle').length>=3||els.filter(e=>e?.kind==='line').length>=4,turnLike=String(v.visualClass||'')==='turn';
+      const base=(map[fp]||map.L),protect=hasProtractor?(landscape?90:125):multiAngle?(landscape?34:52):turnLike?(landscape?24:34):(landscape?20:30);
+      return base+protect+tableBonus+choiceBonus+responseBonus+teacherBonus;
+    }
+    if(v.type!=='pie')return (map[fp]||map.L)+tableBonus+choiceBonus+responseBonus+teacherBonus;
 
     // Pie charts need a protected drawing area. Without this, M footprints and
     // statement/table questions can compress the circle until labels and sectors are
@@ -413,7 +426,7 @@
     const sectorBonus=maxSectors>=5?(landscape?10:12):0;
     const multiPieBonus=pies.length>1?(landscape?10:12):0;
     const answerBonus=answers&&fp!=='XL'?(fp==='M'?(landscape?20:24):(landscape?14:16)):0;
-    return (map[fp]||map.L)+tableBonus+statementBonus+breathingRoom+sectorBonus+multiPieBonus+answerBonus;
+    return (map[fp]||map.L)+tableBonus+statementBonus+breathingRoom+sectorBonus+multiPieBonus+answerBonus+choiceBonus+responseBonus+teacherBonus;
   }
   function packQuestions(questions,answers,orientation,firstCapacity,nextCapacity){
     const pages=[];let page=[],used=0,cap=firstCapacity;
@@ -425,6 +438,61 @@
     const width=t=>P?.estimateTextWidth?P.estimateTextWidth(t,size,bold):t.length*size*.53;
     for(const word of words){const test=line?`${line} ${word}`:word;if(!line||width(test)<=maxWidth)line=test;else{lines.push(line);line=word;}}
     if(line)lines.push(line);return lines;
+  }
+
+  // --- Response-space and marking contract ---------------------------------
+  // Custom Worksheet questions may explicitly provide `response`, but the
+  // compositor also recognises common explanation/working verbs so future
+  // modules cannot accidentally ask for reasoning and leave only a tiny line.
+  // `response:false` is an explicit opt-out for construction tasks where the
+  // diagram itself is the pupil response area.
+  function responseSpec(item){
+    if(!item||item.response===false)return null;
+    if(item.response&&typeof item.response==='object')return {...item.response};
+    if(Array.isArray(item.choices)&&item.choices.length)return null;
+    const prompt=String(item.prompt||'');
+    if(/show\s+(?:your\s+)?(?:working|method|calculation)|show\s+a\s+(?:calculation|proportion)/i.test(prompt))return {kind:'working',size:'M',label:'Show your working / reasoning'};
+    if(/\b(?:explain|justify|give\s+(?:a|your)\s+(?:mathematical\s+)?reason|how do you know)\b/i.test(prompt))return {kind:'explanation',size:'M',label:'Explain your reasoning'};
+    if(/\bdescribe\b/i.test(prompt))return {kind:'short',size:'S',label:'Write your answer'};
+    if(item.marking?.mode==='rubric')return {kind:'reasoning',size:'S',label:'Write your reasoning'};
+    return null;
+  }
+  function responseHeight(item,orientation){
+    const r=responseSpec(item);if(!r)return 0;const landscape=orientation==='landscape',size=String(r.size||'M').toUpperCase();
+    const map=landscape?{S:34,M:49,L:70}:{S:38,M:56,L:82};return map[size]||map.M;
+  }
+  function markingGuidanceLines(item,maxWidth){
+    const m=item?.marking||{},out=[];
+    if(m.mode==='rubric'){
+      const criteria=Array.isArray(m.criteria)?m.criteria.filter(Boolean):[];
+      if(m.rule)out.push(...wrapLines(String(m.rule),maxWidth,6.4,true));
+      else out.push('Mark correct when the required mathematical idea(s) are clear. Equivalent wording is acceptable.');
+      if(criteria.length)for(const c of criteria)out.push(...wrapLines(`- ${c}`,maxWidth,6.35,false));
+      else if(m.answer)out.push(...wrapLines(`• ${m.answer}`,maxWidth,6.35,false));
+      if(m.accept)out.push(...wrapLines(`Accept: ${m.accept}`,maxWidth,6.25,false));
+    }else if(m.mode==='measure-angle'||Number.isFinite(Number(m.toleranceDeg))){
+      const tol=Number(m.toleranceDeg),range=Array.isArray(m.acceptedRange)?m.acceptedRange:null;
+      const text=range&&range.length>=2?`Accept ${range[0]}°–${range[1]}° (±${tol}°).`:`Accept answers within ±${tol}° of ${m.answer}.`;
+      out.push(text);
+    }else if(m.guidance){out.push(...wrapLines(String(m.guidance),maxWidth,6.35,false));}
+    return out;
+  }
+  function markingGuidanceHeight(item,orientation){
+    const maxWidth=orientation==='landscape'?730:485,lines=markingGuidanceLines(item,maxWidth);return lines.length?26+lines.length*8:0;
+  }
+  function drawResponseFrame(C,item,x,y,w,h){
+    const r=responseSpec(item);if(!r||h<=0)return;
+    const ink=[74,88,94],line=[190,202,207],rule=[226,232,234],fill=[250,252,252],label=String(r.label||'Show your reasoning');
+    C.rect(x,y+3,w,Math.max(18,h-7),{fill,stroke:line,width:.55});C.text(x+7,y+14,label,6.4,{bold:true,color:ink});
+    if(r.kind!=='working'){
+      const usable=Math.max(0,h-24),rows=Math.max(1,Math.floor(usable/13));
+      for(let j=0;j<rows;j++){const yy=y+24+j*13;if(yy<y+h-6)C.line(x+7,yy,x+w-7,yy,{color:rule,width:.35});}
+    }
+  }
+  function drawMarkingGuidance(C,item,x,y,w,h){
+    const lines=markingGuidanceLines(item,w-14);if(!lines.length||h<=0)return;
+    C.rect(x,y+2,w,Math.max(16,h-4),{fill:[244,249,248],stroke:[187,211,207],width:.5});C.text(x+7,y+12,'Marking guide',6.4,{bold:true,color:[15,118,110]});
+    let yy=y+22;for(const line of lines){if(yy>y+h-5)break;C.text(x+7,yy,line,6.25,{color:[56,73,78]});yy+=8;}
   }
   function displayYear(value){const v=String(value||'').trim();if(!v)return'';return/^year\b/i.test(v)?v:`Year ${v}`;}
   function displayClass(value){const v=String(value||'').trim();if(!v)return'';return/^class\b/i.test(v)?v:`Class ${v}`;}
@@ -441,7 +509,7 @@
   }
   function renderBar(C,x,y,w,h,v,answers){
     let top=y;if(v.table)top=drawTable(C,x,top,w,v.table);if(v.rawData)top=drawRawData(C,x,top,w,v.rawData);if(v.note){C.text(x,top,v.note,7.2,{color:[90,93,98]});top+=12;}
-    const gh=Math.max(68,h-(top-y)),left=x+38,right=x+w-10,plotTop=top+14,plotBottom=y+h-28,plotH=Math.max(40,plotBottom-plotTop),plotW=Math.max(80,right-left);
+    const gh=Math.max(68,h-(top-y)),left=x+50,right=x+w-10,plotTop=top+14,plotBottom=y+h-28,plotH=Math.max(40,plotBottom-plotTop),plotW=Math.max(80,right-left);
     const yMin=Number(v.yMin??0),yMax=Number(v.yMax??100),step=Number(v.yStep||10),yp=val=>plotBottom-(Number(val)-yMin)/(yMax-yMin||1)*plotH;
     C.text((left+right)/2,top+7,v.showTitle===false?'':v.title,8.4,{bold:true,align:'center',color:[35,55,60]});
     for(let t=Math.ceil(yMin/step)*step;t<=yMax+.0001;t+=step){const yy=yp(t);C.line(left,yy,right,yy,{color:[224,230,232],width:.45});if(v.showYLabels!==false)C.text(left-5,yy+2,fmt(t),6.6,{align:'right',color:[90,102,108]});}
@@ -453,12 +521,12 @@
       series.forEach((s,k)=>{const hidden=!answers&&(v.hideAllBars||v.hiddenBars?.includes(j));if(hidden)return;const val=Number(s.values[j]||0),yy=yp(val),bx=left+j*groupW+(groupW-usable)/2+k*barW+1,bw=Math.max(3,barW-2),bt=Math.min(zero,yy),bh=Math.max(1,Math.abs(zero-yy)),fill=series.length===1?fills[j%fills.length]:fills[k%fills.length];C.rect(bx,bt,bw,bh,{fill,stroke:[60,78,82],width:.4});});
       C.text(left+j*groupW+groupW/2,plotBottom+12,String(cat),6.5,{align:'center',color:[60,72,78]});
     });
-    if(v.showYLabel!==false&&v.yLabel)C.text(left,plotTop-7,v.yLabel,6.7,{bold:true,color:[75,88,92]});
+    if(v.showYLabel!==false&&v.yLabel)C.text(x+9,(plotTop+plotBottom)/2,v.yLabel,6.7,{bold:true,align:'center',rotate:-90,color:[75,88,92]});
     if(series.length>1){let lx=right-95;series.forEach((s,k)=>{C.rect(lx,top+1+k*10,7,7,{fill:fills[k%fills.length]});C.text(lx+10,top+7+k*10,s.name,6.5,{color:[55,65,70]});});}
   }
   function renderLine(C,x,y,w,h,v,answers){
     if(v.note){C.text(x,y,v.note,7.2,{color:[90,93,98]});y+=12;h-=12;}
-    const left=x+43,right=x+w-10,plotTop=y+21,plotBottom=y+h-29,plotH=Math.max(45,plotBottom-plotTop),plotW=Math.max(80,right-left);
+    const left=x+52,right=x+w-10,plotTop=y+21,plotBottom=y+h-29,plotH=Math.max(45,plotBottom-plotTop),plotW=Math.max(80,right-left);
     const xs=v.xValues||[],xMin=Math.min(...xs),xMax=Math.max(...xs),xp=val=>left+(Number(val)-xMin)/(xMax-xMin||1)*plotW;
     const yMin=Number(v.yMin??0),yMax=Number(v.yMax??100),step=Number(v.yStep||10),yp=val=>plotBottom-(Number(val)-yMin)/(yMax-yMin||1)*plotH;
     C.text((left+right)/2,y+9,v.title,8.4,{bold:true,align:'center',color:[35,55,60]});
@@ -471,14 +539,14 @@
       let prev=null;s.values.forEach((val,j)=>{const pt={x:xp(xs[j]),y:yp(val)};if(v.joinPoints!==false&&prev)C.line(prev.x,prev.y,pt.x,pt.y,{color:colors[k%colors.length],width:k===0?1.5:1.2});C.rect(pt.x-2,pt.y-2,4,4,{fill:colors[k%colors.length]});prev=pt;});
     });
     if(v.segmentLabels&&v.segmentLabels.length){v.segmentLabels.forEach((lab,j)=>{if(j>=xs.length-1)return;const xx=(xp(xs[j])+xp(xs[j+1]))/2,yy=Math.min(yp(v.series[0].values[j]),yp(v.series[0].values[j+1]))-5;C.text(xx,yy,lab,6.2,{bold:true,align:'center',color:[72,82,87]});});}
-    C.text(left,plotTop-7,v.yLabel,6.7,{bold:true,color:[75,88,92]});C.text((left+right)/2,plotBottom+24,v.xLabel,6.7,{bold:true,align:'center',color:[75,88,92]});
+    C.text(x+9,(plotTop+plotBottom)/2,v.yLabel,6.7,{bold:true,align:'center',rotate:-90,color:[75,88,92]});C.text((left+right)/2,plotBottom+24,v.xLabel,6.7,{bold:true,align:'center',color:[75,88,92]});
     if(v.showLegend!==false&&(v.series||[]).length>1){let lx=right-100;(v.series||[]).forEach((s,k)=>{C.rect(lx,y+2+k*10,7,7,{fill:colors[k%colors.length]});C.text(lx+10,y+8+k*10,s.name,6.4,{color:[55,65,70]});});}
   }
   function renderGraph(C,x,y,w,h,v,answers){if(v.type==='bar')renderBar(C,x,y,w,h,v,answers);else if(v.type==='line')renderLine(C,x,y,w,h,v,answers);else if(global.TT99VisualRenderers&&typeof global.TT99VisualRenderers[v.type]==='function')global.TT99VisualRenderers[v.type](C,x,y,w,h,v,answers);}
 
   class SvgCanvas{
     constructor(width,height,images={}){this.width=width;this.height=height;this.images=images;this.e=[];this.r=[];}
-    text(x,y,text,size=10,o={}){const fill=o.color?`rgb(${o.color.join(',')})`:'#000',anchor=o.align==='center'?'middle':o.align==='right'?'end':'start';this.e.push(`<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-family="Helvetica,Arial,sans-serif" font-size="${size}" font-weight="${o.bold?700:400}" text-anchor="${anchor}" fill="${fill}">${esc(text)}</text>`);}
+    text(x,y,text,size=10,o={}){const fill=o.color?`rgb(${o.color.join(',')})`:'#000',anchor=o.align==='center'?'middle':o.align==='right'?'end':'start',rot=Number(o.rotate)||0,transform=rot?` transform="rotate(${rot} ${x.toFixed(2)} ${y.toFixed(2)})"`:'';this.e.push(`<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-family="Helvetica,Arial,sans-serif" font-size="${size}" font-weight="${o.bold?700:400}" text-anchor="${anchor}" fill="${fill}"${transform}>${esc(text)}</text>`);}
     line(x1,y1,x2,y2,o={}){this.e.push(`<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${o.color?`rgb(${o.color.join(',')})`:'#000'}" stroke-width="${o.width||.7}"/>`);}
     rect(x,y,w,h,o={}){const fill=o.fill?`rgb(${o.fill.join(',')})`:'none',stroke=o.stroke?`rgb(${o.stroke.join(',')})`:'none';this.e.push(`<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${Math.max(0,w).toFixed(2)}" height="${Math.max(0,h).toFixed(2)}" fill="${fill}" stroke="${stroke}" stroke-width="${o.width||.7}"/>`);}
     polygon(points,o={}){if(!Array.isArray(points)||points.length<2)return;const fill=o.fill?`rgb(${o.fill.join(',')})`:'none',stroke=o.stroke?`rgb(${o.stroke.join(',')})`:'none',pts=points.map(p=>`${Number(p.x).toFixed(2)},${Number(p.y).toFixed(2)}`).join(' ');this.e.push(`<polygon points="${pts}" fill="${fill}" stroke="${stroke}" stroke-width="${o.width||.7}"/>`);}
@@ -489,7 +557,16 @@
   function pdfNum(v){return Number(v).toFixed(2).replace(/\.00$/,'');}
   function pdfRgb(c){return c.map(v=>Math.max(0,Math.min(255,Number(v)))/255).map(pdfNum).join(' ');}
   function PdfCanvas(page){return {
-    text:(...a)=>page.text(...a),line:(...a)=>page.line(...a),rect:(...a)=>page.rect(...a),image:(...a)=>page.image(...a),replaceButton:()=>{},
+    text:(x,topY,text,size=10,o={})=>{
+      const rot=Number(o.rotate)||0;if(!rot)return page.text(x,topY,text,size,o);
+      if(!Array.isArray(page.c))return page.text(x,topY,text,size,o);
+      const font=o.bold?'F2':'F1',width=P?.estimateTextWidth?P.estimateTextWidth(text,size,!!o.bold):String(text).length*size*.53;
+      const alignShift=o.align==='center'?-width/2:o.align==='right'?-width:0;
+      const rad=(-rot)*Math.PI/180,a=Math.cos(rad),b=Math.sin(rad),c=-Math.sin(rad),d=Math.cos(rad);
+      const e=x+a*alignShift,f=page.height-topY+b*alignShift;
+      const escaped=String(text==null?'':text).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+      page.c.push(`BT /${font} ${pdfNum(size)} Tf ${o.color?pdfRgb(o.color)+' rg ':''}${pdfNum(a)} ${pdfNum(b)} ${pdfNum(c)} ${pdfNum(d)} ${pdfNum(e)} ${pdfNum(f)} Tm (${escaped}) Tj ET`);return width;
+    },line:(...a)=>page.line(...a),rect:(...a)=>page.rect(...a),image:(...a)=>page.image(...a),replaceButton:()=>{},
     polygon:(points,o={})=>{
       if(!Array.isArray(points)||points.length<2||!Array.isArray(page.c))return;
       const p0=points[0],parts=[];
@@ -517,12 +594,36 @@
     }else if(first&&answers&&qrMatrix){C.rect(margin,72,right-margin,54,{fill:pale,stroke:[222,232,230],width:.5});C.text(margin+9,88,'Teacher answer copy',9.6,{bold:true,color:ink});C.text(margin+9,103,`Sheet ${sheet.code}`,7.3,{color:muted});C.text(margin+9,116,'QR recreates the exact reviewed sheet.',7.2,{color:ink});drawQr(C,right-48,75,45,qrMatrix);contentTop=138;}
     return {contentTop,margin,right,footerY:H-31};
   }
-  function drawQuestionBlock(C,item,index,x,y,w,h,answers){
+  function drawQuestionChoices(C,item,x,y,w,answers){
+    const choices=Array.isArray(item?.choices)?item.choices:[];if(!choices.length)return 0;
+    const rows=Math.ceil(choices.length/2),rowH=14,colW=w/2,ink=[46,59,66],muted=[95,105,112],teal=[15,118,110];
+    choices.forEach((choice,j)=>{const row=Math.floor(j/2),col=j%2,xx=x+col*colW,yy=y+row*rowH,isCorrect=answers&&Number(item.correctChoice)===j,label=`${String.fromCharCode(65+j)}. ${choice}`;C.text(xx,yy+9,label,7,{bold:isCorrect,color:isCorrect?teal:ink});if(isCorrect)C.rect(xx-9,yy+3,5,5,{fill:teal});});
+    return rows*rowH+5;
+  }
+  function drawQuestionBlock(C,item,index,x,y,w,h,answers,orientation='portrait'){
     const ink=[31,41,55],muted=[95,105,120],teal=[15,118,110],line=[224,230,232];
     C.line(x,y+h-1,x+w,y+h-1,{color:line,width:.45});C.text(x,y+13,`${item.number}.`,8.5,{bold:true,color:muted});
-    const promptX=x+23,promptW=w-31,promptLines=wrapLines(item.prompt,promptW,8.5,false),maxPrompt=item.visual?3:2;let py=y+13;for(const ln of promptLines.slice(0,maxPrompt)){C.text(promptX,py,ln,8.5,{color:ink});py+=10;}
-    if(item.visual){const graphTop=py+2,answerArea=answers?22:20,graphH=Math.max(55,h-(graphTop-y)-answerArea-4);renderGraph(C,promptX,graphTop,promptW,graphH,item.visual,answers);if(answers){const answerText=`Answer: ${String(item.answer)}`,answerLines=wrapLines(answerText,promptW,7.2,true).slice(0,2);let ay=y+h-7-(answerLines.length-1)*8;for(const lineText of answerLines){C.text(promptX,ay,lineText,7.2,{bold:true,color:teal});ay+=8;}}else C.line(x+w-125,y+h-8,x+w-5,y+h-8,{color:[125,132,138],width:.55});}
-    else{if(answers)C.text(x+w-5,y+13,String(item.answer),8.5,{bold:true,align:'right',color:teal});else C.line(x+w-125,y+15,x+w-5,y+15,{color:[125,132,138],width:.55});}
+    const promptX=x+23,promptW=w-31,promptLines=wrapLines(item.prompt,promptW,8.5,false),maxPrompt=item.visual?3:3;let py=y+13;for(const ln of promptLines.slice(0,maxPrompt)){C.text(promptX,py,ln,8.5,{color:ink});py+=10;}
+    const responseArea=answers?0:responseHeight(item,orientation),teacherArea=answers?markingGuidanceHeight(item,orientation):0;
+    if(item.visual){
+      const choiceRows=Array.isArray(item.choices)&&item.choices.length?Math.ceil(item.choices.length/2):0,choiceArea=choiceRows?choiceRows*14+5:0;
+      const answerLineArea=answers?22:((choiceArea||responseArea)?4:20),graphTop=py+2,graphH=Math.max(55,h-(graphTop-y)-answerLineArea-choiceArea-responseArea-teacherArea-4);
+      renderGraph(C,promptX,graphTop,promptW,graphH,item.visual,answers);
+      const responseTop=y+h-responseArea;
+      const teacherTop=y+h-teacherArea;
+      if(choiceArea){const cy=answers?teacherTop-answerLineArea-choiceArea:responseTop-answerLineArea-choiceArea;drawQuestionChoices(C,item,promptX,cy,promptW,answers);}
+      if(!answers&&responseArea)drawResponseFrame(C,item,promptX,responseTop,promptW,responseArea);
+      if(answers){
+        const answerText=`Answer: ${String(item.answer)}`,answerLines=wrapLines(answerText,promptW,7.2,true).slice(0,3);let ay=teacherTop-7-(answerLines.length-1)*8;for(const lineText of answerLines){C.text(promptX,ay,lineText,7.2,{bold:true,color:teal});ay+=8;}
+        if(teacherArea)drawMarkingGuidance(C,item,promptX,teacherTop,promptW,teacherArea);
+      }else if(!choiceArea&&!responseArea)C.line(x+w-125,y+h-8,x+w-5,y+h-8,{color:[125,132,138],width:.55});
+    }
+    else{
+      if(answers&&teacherArea){C.text(promptX,py+1,`Answer: ${String(item.answer)}`,7.2,{bold:true,color:teal});drawMarkingGuidance(C,item,promptX,y+h-teacherArea,promptW,teacherArea);}
+      else if(answers)C.text(x+w-5,y+13,String(item.answer),8.5,{bold:true,align:'right',color:teal});
+      else if(responseArea)drawResponseFrame(C,item,promptX,y+h-responseArea,promptW,responseArea);
+      else C.line(x+w-125,y+15,x+w-5,y+15,{color:[125,132,138],width:.55});
+    }
     C.replaceButton?.(x,y,w,h,index,item.number);
   }
   function buildLayoutForSheet(sheet,rules,school,answers,orientation,qrMatrix,teacherNote=''){
@@ -532,22 +633,22 @@
   function buildVisualDocument(options){
     const {rules,sheets,school={},kind='student',qrByVariant=[],teacherNote=''}=options,orientation=L.normalizeOrientation?L.normalizeOrientation(options.orientation):options.orientation==='landscape'?'landscape':'portrait',doc=new P.PDFDocument();
     if(school.logoDataUrl)doc.setJpeg(school.logoDataUrl,school.logoWidth,school.logoHeight,'logo');
-    function addSheet(sheet,answers,qrMatrix){const layout=buildLayoutForSheet(sheet,rules,school,answers,orientation,qrMatrix,teacherNote);layout.pages.forEach((items,pidx)=>{const page=doc.addPage({orientation}),C=PdfCanvas(page),chrome=drawPageChrome(C,{...layout,rules,sheet,school,answers,pageNo:pidx+1,pageCount:layout.pages.length,first:pidx===0,qrMatrix:pidx===0?qrMatrix:null});let y=chrome.contentTop;for(const item of items){const globalIndex=sheet.questions.indexOf(item),h=footprintHeight(item,answers,orientation);drawQuestionBlock(C,item,globalIndex,chrome.margin,y,chrome.right-chrome.margin,h,answers);y+=h;}C.line(chrome.margin,chrome.footerY,chrome.right,chrome.footerY,{color:[202,211,215],width:.5});C.text(chrome.margin,chrome.footerY+14,`Sheet ${sheet.code}`,7,{color:[95,105,120]});C.text(chrome.right,chrome.footerY+14,`Page ${pidx+1} of ${layout.pages.length} · Tech Tinker Club`,7,{align:'right',color:[95,105,120]});if(answers&&teacherNote&&pidx===layout.pages.length-1){const noteLines=wrapLines(`Teacher note: ${String(teacherNote).replace(/\s+/g,' ').trim().slice(0,240)}`,chrome.right-chrome.margin,6.5,false).slice(0,2);let ny=chrome.footerY-18;for(const lineText of noteLines){C.text(chrome.margin,ny,lineText,6.5,{color:[95,105,120]});ny+=8;}}});}
+    function addSheet(sheet,answers,qrMatrix){const layout=buildLayoutForSheet(sheet,rules,school,answers,orientation,qrMatrix,teacherNote);layout.pages.forEach((items,pidx)=>{const page=doc.addPage({orientation}),C=PdfCanvas(page),chrome=drawPageChrome(C,{...layout,rules,sheet,school,answers,pageNo:pidx+1,pageCount:layout.pages.length,first:pidx===0,qrMatrix:pidx===0?qrMatrix:null});let y=chrome.contentTop;for(const item of items){const globalIndex=sheet.questions.indexOf(item),h=footprintHeight(item,answers,orientation);drawQuestionBlock(C,item,globalIndex,chrome.margin,y,chrome.right-chrome.margin,h,answers,orientation);y+=h;}C.line(chrome.margin,chrome.footerY,chrome.right,chrome.footerY,{color:[202,211,215],width:.5});C.text(chrome.margin,chrome.footerY+14,`Sheet ${sheet.code}`,7,{color:[95,105,120]});C.text(chrome.right,chrome.footerY+14,`Page ${pidx+1} of ${layout.pages.length} · Tech Tinker Club`,7,{align:'right',color:[95,105,120]});if(answers&&teacherNote&&pidx===layout.pages.length-1){const noteLines=wrapLines(`Teacher note: ${String(teacherNote).replace(/\s+/g,' ').trim().slice(0,240)}`,chrome.right-chrome.margin,6.5,false).slice(0,2);let ny=chrome.footerY-18;for(const lineText of noteLines){C.text(chrome.margin,ny,lineText,6.5,{color:[95,105,120]});ny+=8;}}});}
     if(kind==='student'||kind==='both')sheets.forEach(s=>addSheet(s,false,null));if(kind==='answers'||kind==='both')sheets.forEach((s,i)=>addSheet(s,true,qrByVariant[i]||null));return doc;
   }
   function renderVisualPreview(options){
     const {rules,sheet,school={},answers=false,orientation='portrait',qrMatrix=null,teacherNote=''}=options,ori=orientation==='landscape'?'landscape':'portrait',layout=buildLayoutForSheet(sheet,rules,school,!!answers,ori,qrMatrix,teacherNote),images={logo:school.logoDataUrl||''};
-    const svgs=layout.pages.map((items,pidx)=>{const C=new SvgCanvas(layout.W,layout.H,images),chrome=drawPageChrome(C,{...layout,rules,sheet,school,answers:!!answers,pageNo:pidx+1,pageCount:layout.pages.length,first:pidx===0,qrMatrix:pidx===0?qrMatrix:null});let y=chrome.contentTop;for(const item of items){const idx=sheet.questions.indexOf(item),h=footprintHeight(item,!!answers,ori);drawQuestionBlock(C,item,idx,chrome.margin,y,chrome.right-chrome.margin,h,!!answers);y+=h;}C.line(chrome.margin,chrome.footerY,chrome.right,chrome.footerY,{color:[202,211,215],width:.5});C.text(chrome.margin,chrome.footerY+14,`Sheet ${sheet.code}`,7,{color:[95,105,120]});C.text(chrome.right,chrome.footerY+14,`Page ${pidx+1} of ${layout.pages.length} · Tech Tinker Club`,7,{align:'right',color:[95,105,120]});if(answers&&teacherNote&&pidx===layout.pages.length-1){const noteLines=wrapLines(`Teacher note: ${String(teacherNote).replace(/\s+/g,' ').trim().slice(0,240)}`,chrome.right-chrome.margin,6.5,false).slice(0,2);let ny=chrome.footerY-18;for(const lineText of noteLines){C.text(chrome.margin,ny,lineText,6.5,{color:[95,105,120]});ny+=8;}}return C.svg(ori==='landscape'?'is-landscape':'is-portrait');});
+    const svgs=layout.pages.map((items,pidx)=>{const C=new SvgCanvas(layout.W,layout.H,images),chrome=drawPageChrome(C,{...layout,rules,sheet,school,answers:!!answers,pageNo:pidx+1,pageCount:layout.pages.length,first:pidx===0,qrMatrix:pidx===0?qrMatrix:null});let y=chrome.contentTop;for(const item of items){const idx=sheet.questions.indexOf(item),h=footprintHeight(item,!!answers,ori);drawQuestionBlock(C,item,idx,chrome.margin,y,chrome.right-chrome.margin,h,!!answers,ori);y+=h;}C.line(chrome.margin,chrome.footerY,chrome.right,chrome.footerY,{color:[202,211,215],width:.5});C.text(chrome.margin,chrome.footerY+14,`Sheet ${sheet.code}`,7,{color:[95,105,120]});C.text(chrome.right,chrome.footerY+14,`Page ${pidx+1} of ${layout.pages.length} · Tech Tinker Club`,7,{align:'right',color:[95,105,120]});if(answers&&teacherNote&&pidx===layout.pages.length-1){const noteLines=wrapLines(`Teacher note: ${String(teacherNote).replace(/\s+/g,' ').trim().slice(0,240)}`,chrome.right-chrome.margin,6.5,false).slice(0,2);let ny=chrome.footerY-18;for(const lineText of noteLines){C.text(chrome.margin,ny,lineText,6.5,{color:[95,105,120]});ny+=8;}}return C.svg(ori==='landscape'?'is-landscape':'is-portrait');});
     return `<div class="tt99-visual-preview-stack" data-visual-pages="${svgs.length}">${svgs.join('')}</div>`;
   }
 
   if(P&&L){
     const originalBuild=L.buildDocument.bind(L),originalPreview=L.renderPreviewSvg.bind(L);
-    L.buildDocument=function(options){const visual=options?.sheets?.some(s=>s?.questions?.some(q=>q?.visual));return visual?buildVisualDocument(options):originalBuild(options);};
-    L.renderPreviewSvg=function(options){const visual=options?.sheet?.questions?.some(q=>q?.visual);return visual?renderVisualPreview(options):originalPreview(options);};
+    L.buildDocument=function(options){const enhanced=options?.sheets?.some(s=>s?.questions?.some(q=>q?.visual||q?.response||q?.marking?.mode==='rubric'||responseSpec(q)));return enhanced?buildVisualDocument(options):originalBuild(options);};
+    L.renderPreviewSvg=function(options){const enhanced=options?.sheet?.questions?.some(q=>q?.visual||q?.response||q?.marking?.mode==='rubric'||responseSpec(q));return enhanced?renderVisualPreview(options):originalPreview(options);};
   }
 
   // UI copy is owned by custom-app.js. Keep this module focused on visual generation/layout.
 
-  global.TT99CustomGraphs={VERSION,VISUAL_PALETTE,BAR_CATALOGUE,LINE_CATALOGUE,ELIGIBLE,GRAPH_FAMILIES,IMPLEMENTED_BAR:[...IMPLEMENTED_BAR],IMPLEMENTED_LINE:[...IMPLEMENTED_LINE],allowedTypes,graphPool,packQuestions,footprintHeight,renderVisualPreview,buildVisualDocument};
+  global.TT99CustomGraphs={VERSION,VISUAL_PALETTE,BAR_CATALOGUE,LINE_CATALOGUE,ELIGIBLE,GRAPH_FAMILIES,IMPLEMENTED_BAR:[...IMPLEMENTED_BAR],IMPLEMENTED_LINE:[...IMPLEMENTED_LINE],allowedTypes,graphPool,packQuestions,footprintHeight,responseSpec,responseHeight,markingGuidanceLines,markingGuidanceHeight,renderVisualPreview,buildVisualDocument};
 }(typeof window!=='undefined'?window:globalThis));

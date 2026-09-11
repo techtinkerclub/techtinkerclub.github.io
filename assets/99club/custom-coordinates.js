@@ -11,7 +11,7 @@
   const G=global.TT99Generator;
   if(!G) return;
 
-  const VERSION='0.2.1';
+  const VERSION='0.2.2';
   const COORD_FAMILIES={
     coordinates_y4:{label:'coordinates & translation',strand:'Geometry',years:[4],curriculumId:'Y4.PD.01'},
     transformations_y5:{label:'reflection & translation',strand:'Geometry',years:[5],curriculumId:'Y5.PD.01'},
@@ -207,7 +207,7 @@
       if(typeId!=='cg_y5_translate_shape')v.polygons.push(poly(moved,[],'image'));
       if(typeId==='cg_y5_translate_shape')return q('transformations_y5',typeId,`Translate the shape ${moveText(mv[0],mv[1])}. Draw its image.`,'Correct translated shape',idx,v,'L',{marking:{mode:'construction',answer:moved}});
       if(typeId==='cg_y5_describe_translation')return q('transformations_y5',typeId,'Describe the translation that maps shape A to shape B.',moveText(mv[0],mv[1]),idx,{...v,shapeLabels:[{x:base[0][0],y:base[0][1],text:'A'},{x:moved[0][0],y:moved[0][1],text:'B'}]},'L');
-      return q('transformations_y5',typeId,'A shape has been translated. Have its side lengths changed? Explain.','No. A translation changes position but not the shape or its side lengths.',idx,v,'L',{marking:{mode:'rubric',answer:'No; translation preserves the shape and side lengths.'}});
+      return q('transformations_y5',typeId,'A shape has been translated. Have its side lengths changed? Explain.','No. A translation changes position but not the shape or its side lengths.',idx,v,'L',{response:{kind:'explanation',size:'M',label:'Explain your reasoning'},marking:{mode:'rubric',answer:'No. A translation changes position but preserves shape and side lengths.',rule:'Mark correct if the pupil gives the correct conclusion and identifies the invariant property.',criteria:['States that the side lengths do not change.','Explains that a translation changes position but preserves the shape/size.'],accept:'Equivalent language such as “the shape slides without changing size” is acceptable.'}});
     }
     if(typeId==='cg_y5_reflect_vertical'||typeId==='cg_y5_reflected_vertex'||typeId==='cg_y5_describe_reflection'){
       const k=[5,4,5,5,4,6][idx];

@@ -13,7 +13,7 @@ Primary sources:
 
 ## Scope rule
 
-Custom Worksheet currently aims to cover curriculum content that can be represented honestly as **direct numerical questions or concise mathematical prompts**. Examples include `Round 673 to the nearest 100` and `What is the value of 6 in 678?`. Contextual/story word problems are deliberately excluded from this engine: they need a separate structured problem-language system with enough contexts and phrasing to avoid repetitive templates. Content whose mathematical meaning depends on a diagram, physical measurement, clock face, chart, scale, construction or other visual representation is deliberately deferred to the future visual-generator stage.
+Custom Worksheet currently aims to cover curriculum content that can be represented honestly as **direct numerical questions or concise mathematical prompts**. Examples include `Round 673 to the nearest 100` and `What is the value of 6 in 678?`. Contextual/story word problems are deliberately excluded from this engine: they need a separate structured problem-language system with enough contexts and phrasing to avoid repetitive templates. Content whose mathematical meaning depends on a diagram, physical measurement, clock face, chart, scale, construction or other visual representation is added only when a dedicated visual generator exists; bar/time/line graphs, coordinates, pie charts and Angles Stage 1 now have such modules, while the remaining visual topics stay deferred.
 
 The optional Year 1–6 starting selections choose all non-extension families tagged for that year. Several builders then narrow their numbers and question forms using `curriculumYear` so a Year 2 starting selection does not simply use the same questions as Year 6 with smaller numbers.
 
@@ -157,6 +157,14 @@ The active family catalogue contains **105 question families** (103 curriculum/d
 | `turns_direction` | turns & direction vocabulary | Y1, Y2 |
 | `angle_classification` | classify angles | Y3, Y4, Y5, Y6 |
 | `coordinate_reflection` | coordinate reflections (text) | Y5, Y6 |
+| `angles_turns_y1_2` | turns & orientation (visual) | Y1, Y2 |
+| `angles_right_y3` | right angles & turns (visual) | Y3 |
+| `angles_compare_y4` | identify, compare & order angles (visual) | Y4 |
+| `angles_degrees_y5` | degrees: classify, estimate, measure & draw (visual) | Y5 |
+| `angles_lines_points_y5_6` | angles on lines & around points (visual) | Y5, Y6 |
+| `angles_triangles_y6` | angles in triangles (visual) | Y6 |
+| `angles_quads_polygons_y6` | angles in quadrilaterals & polygons (visual) | Y6 |
+| `angles_reasoning_y5_6` | angle reasoning & problem solving (visual) | Y5, Y6 |
 
 ### Algebra
 
@@ -189,10 +197,10 @@ The active family catalogue contains **105 question families** (103 curriculum/d
 
 - **Year 1:** counting and number language to 100, comparison/place value, one-more/less, number bonds and addition/subtraction within 20, early grouping/sharing and doubling, halves/quarters of quantities, money values, unit/measure language, calendar/time words, simple shape/property vocabulary, position and turns.
 - **Year 2:** adds two-digit arithmetic, three addends, 2/5/10 multiplication and inverse facts, unit/non-unit fractions and simple equivalence, money/change, 5-minute time language/durations, measurement comparisons, shape properties. Table/chart interpretation remains visual/deferred.
-- **Year 3:** extends to 1,000, 3/4/8 tables, 2-digit × 1-digit work, tenths/fraction sequences, same-denominator fraction addition/subtraction within one whole plus appropriate unit-fraction comparison, metric conversion/perimeter, minute/time facts, angle/line vocabulary. Data interpretation remains visual/deferred.
-- **Year 4:** extends to 10,000, all 12×12 facts, factor pairs/remainders/distributive reasoning, hundredths and decimals (up to 2 d.p. where appropriate), negative-number counting through zero, unit conversion, money/time, area/perimeter, angle classification and first-quadrant coordinate translations.
-- **Year 5:** extends to 1,000,000, powers of 10, primes/squares/cubes, formal multiplication/division, fractions/mixed numbers, decimals to thousandths, percentages/common equivalences, rate/scaling, metric/imperial conversion, area/measure relationships, polygon properties and coordinate reflection/translation. Practical volume estimation remains deferred because the statutory Year 5 emphasis is representation/practical comparison rather than a text-only cuboid-volume formula exercise.
-- **Year 6:** extends to 10,000,000, long multiplication/division, order of operations, full fraction calculation including mixed-number variants, decimal calculation/division to 3 d.p. where appropriate, FDP/percentage work, ratio/proportion, algebra, unit conversion, triangle/parallelogram/cuboid calculations, formal angle-sum/circle facts, four-quadrant coordinates/reflections, generated pie-chart interpretation/construction, line graphs and mean. Pictograms/tally/block diagrams and some table/timetable work remain staged.
+- **Year 3:** extends to 1,000, 3/4/8 tables, 2-digit × 1-digit work, tenths/fraction sequences, same-denominator fraction addition/subtraction within one whole plus appropriate unit-fraction comparison, metric conversion/perimeter, minute/time facts, and generated right-angle/turn/line-property visuals. Pictogram/tally/block-diagram interpretation remains staged.
+- **Year 4:** extends to 10,000, all 12×12 facts, factor pairs/remainders/distributive reasoning, hundredths and decimals (up to 2 d.p. where appropriate), negative-number counting through zero, unit conversion, money/time, area/perimeter, generated acute/right/obtuse comparison/classification and first-quadrant coordinate translations.
+- **Year 5:** extends to 1,000,000, powers of 10, primes/squares/cubes, formal multiplication/division, fractions/mixed numbers, decimals to thousandths, percentages/common equivalences, rate/scaling, metric/imperial conversion, area/measure relationships, degree/reflex-angle work, explicit-estimate angle questions, line/point angle facts, selected protractor measurement/drawing, polygon properties and coordinate reflection/translation. Practical volume estimation remains deferred because the statutory Year 5 emphasis is representation/practical comparison rather than a text-only cuboid-volume formula exercise.
+- **Year 6:** extends to 10,000,000, long multiplication/division, order of operations, full fraction calculation including mixed-number variants, decimal calculation/division to 3 d.p. where appropriate, FDP/percentage work, ratio/proportion, algebra, unit conversion, triangle/parallelogram/cuboid calculations, generated line/point/triangle/quadrilateral/polygon angle reasoning, four-quadrant coordinates/reflections, generated pie-chart interpretation/construction, line graphs and mean. Pictograms/tally/block diagrams and some table/timetable work remain staged.
 
 
 ## Deliberately deferred: contextual/story word problems
@@ -218,15 +226,30 @@ The following statutory content is **not claimed as fully covered** by the curre
 - reading or drawing **analogue clock faces** and clock hands;
 - visual recognition, composition and construction of **2D/3D shapes**;
 - **nets** and 2D representations/views of 3D shapes;
-- drawing/measuring angles with a protractor and visually reasoning from angle diagrams;
+- **Angles Stage 1 reliability build is now implemented** as dedicated Y1-Y6 visual families covering turns/orientation, right angles, classification/comparison, degrees/reflex angles, explicit-estimate MCQs, protractor interpretation and selected calibrated measurement/drawing, line/point facts, triangles, quadrilaterals/polygons and reasoning/diagnostics. v1.22.2 adds protected diagram footprints, clearer label spacing and a classroom-style protractor with 1°/5°/10° graduations and dual scales. More elaborate full-size ruler+protractor constructions and open multi-answer constructions remain staged;
 - completing **line symmetry** beyond the implemented coordinate-reflection families;
 - coordinate geometry now has dedicated visual families for Y4 first-quadrant coordinates/translation, Y5 translation/reflection and Y6 four-quadrant coordinates/transformations; midpoint/rotation and similar non-core structures are isolated in an explicit Extension family;
 - **pictograms, tally charts and block diagrams** remain deferred; bar charts (Y3–4), time graphs (Y4) and line graphs (Y5–6) now have dedicated generated visual families;
-- Year 6 **pie charts are now implemented** as dedicated generated visual families covering interpretation, construction and opt-in reasoning/problem solving; the older text-only angle family remains in Extension for compatibility/practice;
+- Year 6 **pie charts are now implemented** as dedicated generated visual families covering interpretation, construction and opt-in reasoning/problem solving. v1.22.2 expands each subtype to 16 deterministic visual variants and deliberately varies sector count/distribution/order/rotation/legend layout so repeated sheets do not merely relabel the same chart shape; the older text-only angle family remains in Extension for compatibility/practice;
 - visual **scale drawings/similar shapes** where proportional geometry depends on the drawing;
 - practical volume/capacity estimation and irregular-area estimation.
 
-In particular, **Year 5 volume estimation** and diagram-led **angle-sum reasoning** are not brought forward merely to increase topic counts. The text family for cuboid volume and the formal triangle/quadrilateral angle-sum family are reserved for Year 6; earlier visual/practical objectives remain in the deferred list above.
+In particular, **Year 5 volume estimation** is not brought forward merely to increase topic counts. Diagram-led angle reasoning now uses the dedicated Angles visual subsystem with year-aware routing; the old text-only angle families are retained only as Extension/fallback content.
+
+
+## Custom response-space and marking policy
+
+Custom Worksheet questions must make the expected pupil response explicit. If a prompt asks the pupil to **show working, explain, justify, prove, describe a method or give a substantial written response**, the renderer reserves an appropriately sized framed response area. The response area counts towards page layout/packing and must not be created by shrinking the mathematical diagram. A construction task may instead declare that the diagram itself is the response area.
+
+Marking must also be deterministic for the teacher:
+
+- exact numerical work uses an exact answer unless a rounding instruction says otherwise;
+- visual estimation normally uses a single-best-answer multiple-choice question rather than an undefined “approximately” answer;
+- genuine physical measurement/construction states an explicit tolerance (Angles Stage 1 currently uses ±2° for protractor tasks);
+- explanations/justifications use a structured rubric with a marking rule and required mathematical criteria, while explicitly allowing equivalent wording/methods where appropriate;
+- genuinely open or multiple-solution tasks are not activated until their valid-answer rule can be represented unambiguously.
+
+From v1.22 each generated question still contributes one score point. A rubric-marked reasoning item receives that point only when all of its required criteria are satisfied.
 
 ## Important interpretation notes
 

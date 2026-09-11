@@ -4,7 +4,7 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version **1.21.1** keeps the public 99 Club workflow stable while expanding the separate Custom Worksheets beta route:
+Version **1.22.2** keeps the public 99 Club workflow stable while expanding the separate Custom Worksheets beta route:
 
 1. **99 Club** at `/tools/99-club/` — the stable progression tool for Classic 11–99, optional alternative progressions and Bronze–Diamond challenges.
 2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice. In v1.19 this route is intentionally **unlinked from the public 99 Club UI and Help page**; it is available only when its URL is entered/shared directly while the module continues to mature.
@@ -18,6 +18,34 @@ Classic 99 Club remains the default progression:
 The TTC Classic default is **5 minutes** and **3 perfect attempts that do not need to be consecutive**. Both remain editable. Alternative published-school presets keep their own defaults unless edited.
 
 
+
+
+### v1.22.2 Angles visual polish + Pie Chart variety expansion
+
+- This release is designed to apply **directly over v1.21.3**. The withdrawn internal v1.22/v1.22.1 Angles builds are not deployment prerequisites.
+- Keeps **104 active Angles/Turns subtypes / 416 deterministic entries**, but tightens the visual renderer rather than adding more breadth: larger protected diagram footprints, clearer turn diagrams, improved spacing around angle labels, cleaner right-angle/line-point scenes and a rebuilt protractor.
+- The protractor now uses **1-degree graduations**, 5-degree intermediate ticks, 10-degree major ticks and both reading scales. Protractor/measurement questions receive a larger protected page footprint so the scale remains usable in print.
+- Turn questions no longer rely on the crowded “Start = dark · End = blue” caption; start/end are labelled at the actual rays.
+- Pie Charts now use a procedural **visual-archetype variation system** rather than four near-identical canned layouts per subtype. Each of the 37 pie-chart subtypes has **16 deterministic variants**, giving **592 pool entries** across 3-6 sector structures, balanced/dominant/long-tail distributions, varied sector ordering, start rotation, colour offset, internal-label behaviour and bottom/right legends.
+- Pie construction/angle questions use dedicated integer-angle or percentage-friendly data banks so visual variety does not create awkward non-integer construction values.
+- Pie selection uses an anti-repetition visual signature so adjacent questions are less likely to repeat the same overall chart shape/layout.
+- Retains the v1.22 improvements that removed fuzzy visual-estimation marking, added explicit protractor tolerances, introduced framed working/explanation areas with teacher rubrics, and made bar/time/line y-axis titles vertical and centred beside the axis.
+- Public 99 Club generation, compact QR/recreation, public Help and the stable 99 Club page remain unchanged.
+
+#### Custom response-space and marking contract
+
+From v1.22 onward, Custom Worksheets treats the expected pupil response as part of the question specification rather than an afterthought. Questions that ask pupils to **show working, explain, justify, prove, describe a method or give a non-trivial written response** reserve a framed response area whose height contributes to page packing. Construction questions may explicitly opt out when the diagram itself is the response area.
+
+Reasoning answers are not exact-string marked. A question may use `marking.mode = "rubric"` with:
+
+- a concise model answer;
+- an explicit marking rule;
+- one or more required mathematical criteria;
+- optional alternative/equivalent methods that are accepted.
+
+The teacher answer sheet prints this as a **Marking guide**. Equivalent mathematical wording is accepted where stated; open questions can explicitly allow more than one valid route or answer. The current worksheet score remains one question = one score point, so a rubric-marked item is awarded that point only when all required criteria for that item are met.
+
+Estimation and measurement use the same explicitness rule: visual estimates normally use a single-best-answer MCQ, while genuine physical measurement uses a stated tolerance on the teacher copy. No Custom question should rely on an undefined meaning of “approximately”.
 
 ### v1.21.2 Workspace switcher deployment hotfix
 
