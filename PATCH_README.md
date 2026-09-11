@@ -1,15 +1,18 @@
-# 99 Club Studio v1.23.0 patch
+# 99 Club Studio v1.23.1 patch
 
-Apply this overlay at the repository root, on top of the v1.22.2d Custom-entrypoint/Angles recovery state.
+Apply this overlay on top of v1.23.0.
 
-Headline changes:
+Main changes:
+- per-game configuration cards instead of one global difficulty control;
+- Word Search: Words + definitions or Definitions only;
+- Word Search: independent difficulty, number of terms and grid size;
+- Number Pyramid: independent difficulty, level count and clue density;
+- one selected game repeats; several selected games are mixed;
+- browser-local settings migration and persistence;
+- Games page cache versions bumped.
 
-- graphical Angles & Turns families now sit inside **Geometry** in Custom Worksheets;
-- adds `/tools/99-club/games/`;
-- adds the main-page **Games & puzzles** button;
-- first engines: **Maths Word Search** and **Number Pyramid**;
-- Games supports year range, topic(s), Easy/Standard/Challenge, 1–6 sheets, 1–3 activities per sheet, mixed/same-game packs and optional teacher answers;
-- Word Search supports curated built-in vocabulary plus browser-local **My vocabulary** with JSON import/export;
-- teacher-added vocabulary is never uploaded or written into the public catalogue.
+Run after applying:
 
-QA: see `V1_23_0_QA_REPORT.md`.
+    node assets/99club/tests/games-smoke.js
+
+No Custom Worksheet or 99 Club timed-fluency generator files are modified by this patch.
