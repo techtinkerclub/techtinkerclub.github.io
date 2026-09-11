@@ -1,12 +1,12 @@
-/* 99 Club Studio v1.24.0 Maths Games & Puzzles smoke/regression test. */
+/* 99 Club Studio v1.24.2 Maths Games & Puzzles smoke/regression test. */
 'use strict';
 const fs=require('fs'),path=require('path');
 const ROOT=path.resolve(__dirname,'..'),REPO=path.resolve(ROOT,'../..');
-const G=require(path.join(ROOT,'games-engine.js'));
+const G=require(path.join(ROOT,'games-engine.js')),GPDF=require(path.join(ROOT,'games-pdf.js'));
 function assert(ok,msg){if(!ok)throw new Error(msg);}const failures=[];function check(fn){try{fn();}catch(e){failures.push(e.stack||e.message);}}
 
 check(()=>{
-  assert(G.VERSION==='1.2.0','Unexpected games engine version');
+  assert(G.VERSION==='1.2.1','Unexpected games engine version');
   assert(Object.keys(G.ENGINES).join(',')==='wordsearch,pyramid,crossword','Expected Word Search + Number Pyramid + Crossword');
   assert(G.VOCABULARY.length===591,'Curated vocabulary database should expose 591 entries');
   for(const id of ['wordsearch','pyramid','crossword']){const e=G.ENGINES[id];assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: common output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: first games remain print → pencil → solve`);assert(e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: per-game settings missing`);}
@@ -41,6 +41,7 @@ check(()=>{
 check(()=>{
   for(const [topic,meta] of Object.entries(G.TOPICS)){
     const year=meta.years[Math.floor(meta.years.length/2)],settings={minYear:year,maxYear:year,topics:[topic],engineSettings:{crossword:{difficulty:'standard',gridSize:'17',wordCount:'8'}}};const a=G.generateCrossword(settings,`cw-${topic}-${year}`),b=G.generateCrossword(settings,`cw-${topic}-${year}`);assert(!a.error,`${topic} crossword: ${a.error}`);assert(JSON.stringify(a)===JSON.stringify(b),`${topic} crossword nondeterministic`);assert(a.entries.length>=4,`${topic} crossword too small`);for(const e of a.entries)e.cells.forEach(([x,y],i)=>assert(a.grid[y][x]===e.answer[i],`${topic}: crossword cell mismatch for ${e.term}`));
+    const used=a.entries.flatMap(e=>e.cells),xs=used.map(c=>c[0]),ys=used.map(c=>c[1]);assert(Math.min(...xs)===0&&Math.min(...ys)===0&&Math.max(...xs)===a.width-1&&Math.max(...ys)===a.height-1,`${topic}: crossword footprint should trim exactly to occupied cells`);
   }
 });
 
@@ -53,10 +54,21 @@ check(()=>{
   const custom=G.sanitizeCustomVocabulary([{topic:'fractions',term:'My special term',definition:'A teacher-created definition.',minYear:4,maxYear:6},{topic:'fractions',term:'My special term',definition:'Duplicate.',minYear:4,maxYear:6}]);assert(custom.length===1&&custom[0].source==='mine','Custom vocabulary dedupe/source failed');const pool=G.vocabularyFor({minYear:4,maxYear:6,topics:['fractions'],engineSettings:{wordsearch:{difficulty:'standard'}}},custom);assert(pool.some(x=>x.source==='built-in')&&pool.some(x=>x.source==='mine'),'Vocabulary provider should distinguish built-in and My vocabulary');
 });
 
+
+check(()=>{
+  const settings=G.normalizeSettings({minYear:3,maxYear:6,topics:['statistics'],sheets:2,activitiesPerSheet:2,selectedEngines:['crossword'],workedExamples:'front'}),pack=G.generatePack(settings,'pdf-crossword-pack');
+  for(const kind of ['student','answers','both']){
+    const doc=GPDF.buildDocument({pack,settings,kind,topics:G.TOPICS,seed:'pdf-crossword-pack'}),bytes=doc.outputBytes(),text=Buffer.from(bytes).toString('latin1');
+    assert(bytes.length>8000,`${kind} PDF unexpectedly small`);assert(text.startsWith('%PDF-1.4'),`${kind} PDF header missing`);assert((text.match(/ re /g)||[]).length>50,`${kind} PDF did not draw crossword cells/boxes`);
+  }
+});
+
 check(()=>{
   const page=fs.readFileSync(path.join(REPO,'_pages/99-club-games.md'),'utf8'),ui=fs.readFileSync(path.join(ROOT,'games-app.js'),'utf8'),main=fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),angles=fs.readFileSync(path.join(ROOT,'custom-angles.js'),'utf8'),custom=fs.readFileSync(path.join(ROOT,'custom-app.js'),'utf8');
-  assert(/permalink:\s*\/tools\/99-club\/games\//.test(page),'Games page permalink missing');assert(page.includes('/assets/99club/games-vocabulary.js')&&page.includes('/assets/99club/games-engine.js')&&page.includes('/assets/99club/games-app.js'),'Games page asset stack incomplete');assert(main.includes('/tools/99-club/games/'),'Main 99 Club hero should link Games');
-  for(const phrase of ['Maths Crossword','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
+  assert(/permalink:\s*\/tools\/99-club\/games\//.test(page),'Games page permalink missing');assert(page.includes('/assets/99club/games-vocabulary.js')&&page.includes('/assets/99club/games-engine.js')&&page.includes('/assets/99club/simple-pdf.js')&&page.includes('/assets/99club/games-pdf.js')&&page.includes('/assets/99club/games-app.js'),'Games page asset stack incomplete');assert(main.includes('/tools/99-club/games/'),'Main 99 Club hero should link Games');
+  assert(!/class=\"black\"/.test(ui),'Crossword browser renderer must not create blocked cells');
+  const pdf=fs.readFileSync(path.join(ROOT,'games-pdf.js'),'utf8');assert(pdf.includes('Freeform classroom criss-cross')&&!pdf.includes("fill:[64,88,93],stroke:[64,88,93]"),'Crossword PDF renderer must draw active cells only');
+  for(const phrase of ['Maths Crossword','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
   assert(!/fetch\s*\(|XMLHttpRequest|navigator\.sendBeacon/.test(ui),'Games UI must not upload teacher vocabulary');assert((angles.match(/strand:'Geometry'/g)||[]).length===8,'All 8 graphical angle families should belong to Geometry');assert(!/strandOrder=\[[^\]]*'Angles & turns'/.test(custom),'Custom selector should not expose standalone Angles & turns');
 });
 

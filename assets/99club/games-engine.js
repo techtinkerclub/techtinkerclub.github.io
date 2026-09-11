@@ -1,11 +1,11 @@
 /* 99 Club Studio · Maths Games & Puzzles
- * v1.2.0 — deterministic game-engine layer.
+ * v1.2.1 — deterministic game-engine layer.
  * Architecture: game engine + maths content provider + applicability rules.
  */
 (function(global){
   'use strict';
 
-  const VERSION='1.2.0';
+  const VERSION='1.2.1';
   let VOCAB_DATA=global.TT99GamesVocabularyV2||null;
   if(!VOCAB_DATA && typeof require==='function'){
     try{VOCAB_DATA=require('./games-vocabulary.js');}catch(e){}
@@ -259,7 +259,9 @@
   }
   function finaliseCrossword(raw,size){
     const used=raw.entries.flatMap(e=>e.cells),xs=used.map(c=>c[0]),ys=used.map(c=>c[1]);if(!used.length)return {grid:[],entries:[]};
-    const minX=Math.max(0,Math.min(...xs)-1),maxX=Math.min(size-1,Math.max(...xs)+1),minY=Math.max(0,Math.min(...ys)-1),maxY=Math.min(size-1,Math.max(...ys)+1),w=maxX-minX+1,h=maxY-minY+1;
+    // Trim to the exact occupied footprint. The renderer is a printer-friendly
+    // freeform criss-cross: unused cells are white page, not blocked squares.
+    const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys),w=maxX-minX+1,h=maxY-minY+1;
     const grid=Array.from({length:h},(_,yy)=>Array.from({length:w},(_,xx)=>raw.grid[yy+minY][xx+minX].ch||''));
     const entries=raw.entries.map(e=>({...e,x:e.x-minX,y:e.y-minY,cells:e.cells.map(([x,y])=>[x-minX,y-minY])}));
     const starts=new Map();for(const e of entries){const k=`${e.x}:${e.y}`;if(!starts.has(k))starts.set(k,[]);starts.get(k).push(e);}

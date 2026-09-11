@@ -160,3 +160,116 @@
   .tt99-game-activities.count-3 .tt99-crossword-grid{width:min(100%,48mm)}
   .tt99-worked-page .tt99-worked-grid{height:246mm}.tt99-worked-example .tt99-word-grid.worked span{font-size:7pt}
 }
+
+/* v1.3 — Crossword preview/print reliability + 99 Club style PDF downloads */
+.tt99-games-actions-single{grid-template-columns:1fr}
+.tt99-games-download-heading{display:flex;flex-direction:column;gap:2px;margin:16px 0 8px;padding-top:13px;border-top:1px solid #e2e9ea}
+.tt99-games-download-heading strong{font-size:.76rem;color:#314f55}
+.tt99-games-download-heading small{font-size:.58rem;color:#7b8c90;line-height:1.35}
+.tt99-games-downloads{margin-top:0}
+
+/* A crossword is usually rectangular after trimming. Give the grid a real
+   width and row definition instead of allowing CSS Grid to shrink to min-content. */
+.tt99-crossword-grid{
+  width:100%;
+  max-width:430px;
+  grid-template-rows:repeat(var(--ch),1fr);
+  aspect-ratio:var(--cw) / var(--ch);
+  align-self:start;
+}
+.tt99-crossword-grid>span{aspect-ratio:1;border:.7px solid #49676c}
+.tt99-crossword-grid>span.open{border:.7px solid #49676c}
+.tt99-crossword-grid>span.black{border:.7px solid #40585d;background:#40585d}
+.tt99-game-activities.count-1 .tt99-crossword-layout{grid-template-columns:minmax(260px,1.05fr) minmax(250px,.95fr);gap:18px}
+.tt99-game-activities.count-1 .tt99-crossword-grid{width:min(100%,440px)}
+.tt99-game-activities.count-1 .tt99-crossword-clue-group h4{font-size:clamp(7px,.78vw,10px)}
+.tt99-game-activities.count-1 .tt99-crossword-clue-group li{font-size:clamp(6px,.63vw,8.5px);line-height:1.28}
+.tt99-game-activities.count-2 .tt99-crossword-grid{width:min(100%,330px)}
+.tt99-game-activities.count-3 .tt99-crossword-grid{width:min(100%,245px)}
+
+@media(max-width:720px){
+  .tt99-crossword-grid{width:min(100%,430px)}
+}
+
+/* Browser-print remains a safe fallback, even though v1.24.1 now downloads
+   PDFs directly. Borders make the crossword visible even when a browser has
+   background graphics disabled; print-color-adjust preserves blocked cells. */
+@media print{
+  .tt99-crossword-grid{display:grid!important;grid-template-columns:repeat(var(--cw),1fr)!important;grid-template-rows:repeat(var(--ch),1fr)!important;aspect-ratio:var(--cw) / var(--ch)!important;background:#40585d!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .tt99-crossword-grid>span{border:.45pt solid #40585d!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .tt99-crossword-grid>span.open{background:#fff!important}
+  .tt99-crossword-grid>span.black{background:#40585d!important;box-shadow:inset 0 0 0 1000px #40585d!important}
+  .tt99-game-activities.count-1 .tt99-crossword-grid{width:min(100%,100mm)!important}
+  .tt99-game-activities.count-2 .tt99-crossword-grid{width:min(100%,72mm)!important}
+  .tt99-game-activities.count-3 .tt99-crossword-grid{width:min(100%,50mm)!important}
+}
+
+
+/* v1.24.2 — printer-friendly classroom criss-cross house style.
+   Only active answer cells are drawn. Unused grid positions remain white page. */
+.tt99-crossword-grid{
+  display:grid;
+  grid-template-columns:repeat(var(--cw),1fr);
+  grid-template-rows:repeat(var(--ch),1fr);
+  width:100%;
+  max-width:560px;
+  aspect-ratio:var(--cw) / var(--ch);
+  border:0;
+  background:transparent;
+  gap:0;
+  justify-self:center;
+  align-self:start;
+  overflow:visible;
+}
+.tt99-crossword-grid>span.open{
+  position:relative;
+  display:grid;
+  place-items:center;
+  min-width:0;
+  aspect-ratio:1;
+  border:1px solid #60767b;
+  background:#fff;
+}
+.tt99-crossword-grid>span.black{display:none!important}
+.tt99-crossword-grid i{
+  position:absolute;
+  left:3px;
+  top:2px;
+  color:#52686e;
+  font:700 clamp(6px,.52vw,9px)/1 system-ui;
+  font-style:normal;
+}
+.tt99-crossword-grid b{color:#203f44;font:850 clamp(10px,.95vw,15px)/1 system-ui}
+.tt99-game-activities.count-1 .tt99-crossword-layout{grid-template-columns:minmax(360px,1.05fr) minmax(330px,.95fr);gap:28px}
+.tt99-game-activities.count-1 .tt99-crossword-grid{width:min(100%,560px)}
+.tt99-game-activities.count-1 .tt99-crossword-clue-group h4{font-size:14px;margin-bottom:7px}
+.tt99-game-activities.count-1 .tt99-crossword-clue-group li{font-size:12px;line-height:1.38;margin-bottom:6px}
+.tt99-game-activities.count-1 .tt99-crossword-bank{font-size:11px;line-height:1.4}
+.tt99-game-activities.count-2 .tt99-crossword-grid{width:min(100%,380px)}
+.tt99-game-activities.count-2 .tt99-crossword-clue-group h4{font-size:9px}
+.tt99-game-activities.count-2 .tt99-crossword-clue-group li,.tt99-game-activities.count-2 .tt99-crossword-bank{font-size:7.2px;line-height:1.25}
+.tt99-game-activities.count-3 .tt99-crossword-grid{width:min(100%,275px)}
+.tt99-game-activities.count-3 .tt99-crossword-clue-group h4{font-size:7px}
+.tt99-game-activities.count-3 .tt99-crossword-clue-group li,.tt99-game-activities.count-3 .tt99-crossword-bank{font-size:5.5px;line-height:1.18}
+@media(max-width:900px){
+  .tt99-game-activities.count-1 .tt99-crossword-layout,.tt99-crossword-layout{grid-template-columns:1fr;gap:18px;height:auto}
+  .tt99-crossword-grid{width:min(100%,560px)}
+  .tt99-crossword-clue-group h4{font-size:13px}
+  .tt99-crossword-clue-group li,.tt99-crossword-bank{font-size:11px;line-height:1.35}
+}
+@media print{
+  .tt99-crossword-grid{
+    display:grid!important;
+    grid-template-columns:repeat(var(--cw),1fr)!important;
+    grid-template-rows:repeat(var(--ch),1fr)!important;
+    aspect-ratio:var(--cw) / var(--ch)!important;
+    border:0!important;
+    background:transparent!important;
+    gap:0!important;
+  }
+  .tt99-crossword-grid>span.open{background:#fff!important;border:.55pt solid #53676d!important;box-shadow:none!important}
+  .tt99-crossword-grid>span.black{display:none!important;background:transparent!important;box-shadow:none!important}
+  .tt99-game-activities.count-1 .tt99-crossword-grid{width:min(100%,110mm)!important}
+  .tt99-game-activities.count-2 .tt99-crossword-grid{width:min(100%,76mm)!important}
+  .tt99-game-activities.count-3 .tt99-crossword-grid{width:min(100%,52mm)!important}
+}
