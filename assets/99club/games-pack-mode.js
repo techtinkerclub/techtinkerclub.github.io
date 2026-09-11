@@ -1,4 +1,4 @@
-/* 99 Club Studio · Games pack mode v1.0.0
+/* 99 Club Studio · Games pack mode v1.1.0
  * Adds exact activity counts and a deterministic random-compatible pack mode
  * without changing the individual game engines.
  */
@@ -10,6 +10,8 @@
 
   const STORAGE_MODE='tt99-games-pack-mode-v1';
   const STORAGE_COUNT='tt99-games-activity-count-v1';
+  const STORAGE_DIFFICULTY='tt99-games-random-difficulty-v1';
+  const DIFFICULTIES=['easy','standard','challenge'];
   const baseNormalize=G.normalizeSettings.bind(G);
   const baseSelected=G.selectedCompatibleEngines.bind(G);
   const baseCompatible=G.compatibleEngines.bind(G);
@@ -34,10 +36,16 @@
     const stored=storageGet(STORAGE_COUNT);
     return clampCount(stored??input.activityCount??legacy,legacy);
   }
+  function resolveDifficulty(input={}){
+    if(DIFFICULTIES.includes(input._forceRandomDifficulty))return input._forceRandomDifficulty;
+    const stored=storageGet(STORAGE_DIFFICULTY);
+    if(DIFFICULTIES.includes(stored))return stored;
+    return DIFFICULTIES.includes(input.randomDifficulty)?input.randomDifficulty:'standard';
+  }
   function normalizeSettings(input={}){
     const base=baseNormalize(input);
     const activityCount=resolveCount(input,base);
-    return {...base,activityCount,packMode:resolveMode(input),activitiesPerSheet:2,sheets:Math.ceil(activityCount/2)};
+    return {...base,activityCount,packMode:resolveMode(input),randomDifficulty:resolveDifficulty(input),activitiesPerSheet:2,sheets:Math.ceil(activityCount/2)};
   }
   function manualSettings(settings){
     const s=normalizeSettings(settings);
@@ -70,23 +78,33 @@
     }
     return ids;
   }
+  function applyRandomDifficulty(settings,engineIds,difficulty){
+    const engineSettings={...(settings.engineSettings||{})};
+    for(const id of engineIds){
+      const current=engineSettings[id]||G.ENGINES[id]?.defaultSettings||{};
+      engineSettings[id]={...current,difficulty};
+    }
+    return {...settings,engineSettings};
+  }
   function generatePack(settings,seed='games',customVocabulary=[]){
     const s=normalizeSettings(settings);
-    const requested={...s,activitiesPerSheet:2,sheets:Math.ceil(s.activityCount/2),workedExamples:'none',_forcePackMode:'manual',packMode:'manual'};
+    let requested={...s,activitiesPerSheet:2,sheets:Math.ceil(s.activityCount/2),workedExamples:'none',_forcePackMode:'manual',packMode:'manual'};
 
     if(s.packMode==='random'){
       const compatible=baseCompatible(requested);
       requested.selectedEngines=shuffleDeterministic(compatible,seed);
+      requested=applyRandomDifficulty(requested,compatible,s.randomDifficulty);
     }
 
     const raw=baseGeneratePack(requested,seed,customVocabulary);
     const sheets=trimSheets(raw.sheets,s.activityCount);
     const usedIds=uniqueUsedEngines(sheets);
+    const exampleSettings=s.packMode==='random'?applyRandomDifficulty(s,usedIds,s.randomDifficulty):s;
     const workedExamples=s.workedExamples==='front'
-      ? usedIds.map((id,i)=>G.generateWorkedExample(id,s,`${seed}:worked:${i}:${id}`,customVocabulary)).filter(Boolean)
+      ? usedIds.map((id,i)=>G.generateWorkedExample(id,exampleSettings,`${seed}:worked:${i}:${id}`,customVocabulary)).filter(Boolean)
       : [];
 
-    return {...raw,settings:s,sheets,workedExamples,activityCount:s.activityCount,packMode:s.packMode,usedEngineIds:usedIds};
+    return {...raw,settings:s,sheets,workedExamples,activityCount:s.activityCount,packMode:s.packMode,randomDifficulty:s.randomDifficulty,usedEngineIds:usedIds};
   }
   function generateRandomPack(settings,seed='games',customVocabulary=[]){
     return generatePack({...settings,_forcePackMode:'random'},seed,customVocabulary);
@@ -97,7 +115,7 @@
     selectedCompatibleEngines,
     generatePack,
     generateRandomPack,
-    PACK_MODE:{version:'1.0.0',storageModeKey:STORAGE_MODE,storageCountKey:STORAGE_COUNT,maxActivities:40}
+    PACK_MODE:{version:'1.1.0',storageModeKey:STORAGE_MODE,storageCountKey:STORAGE_COUNT,storageDifficultyKey:STORAGE_DIFFICULTY,difficulties:DIFFICULTIES.slice(),maxActivities:40}
   });
   G.__packModeV1=true;
 })(typeof globalThis!=='undefined'?globalThis:this);
