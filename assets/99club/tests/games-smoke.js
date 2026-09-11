@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.24.2 Maths Games & Puzzles smoke/regression test. */
+/* 99 Club Studio v1.25.0 Maths Games & Puzzles smoke/regression test. */
 'use strict';
 const fs=require('fs'),path=require('path');
 const ROOT=path.resolve(__dirname,'..'),REPO=path.resolve(ROOT,'../..');
@@ -6,10 +6,10 @@ const G=require(path.join(ROOT,'games-engine.js')),GPDF=require(path.join(ROOT,'
 function assert(ok,msg){if(!ok)throw new Error(msg);}const failures=[];function check(fn){try{fn();}catch(e){failures.push(e.stack||e.message);}}
 
 check(()=>{
-  assert(G.VERSION==='1.2.1','Unexpected games engine version');
-  assert(Object.keys(G.ENGINES).join(',')==='wordsearch,pyramid,crossword','Expected Word Search + Number Pyramid + Crossword');
+  assert(G.VERSION==='1.3.0','Unexpected games engine version');
+  assert(Object.keys(G.ENGINES).join(',')==='wordsearch,pyramid,crossword,magic','Expected Word Search + Number Pyramid + Crossword + Magic Squares');
   assert(G.VOCABULARY.length===591,'Curated vocabulary database should expose 591 entries');
-  for(const id of ['wordsearch','pyramid','crossword']){const e=G.ENGINES[id];assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: common output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: first games remain print → pencil → solve`);assert(e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: per-game settings missing`);}
+  for(const id of ['wordsearch','pyramid','crossword','magic']){const e=G.ENGINES[id];assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: common output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: first games remain print → pencil → solve`);assert(e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: per-game settings missing`);}
 });
 
 check(()=>{
@@ -46,8 +46,28 @@ check(()=>{
 });
 
 check(()=>{
-  const settings={minYear:4,maxYear:4,topics:['calculation'],sheets:2,activitiesPerSheet:3,selectedEngines:['wordsearch','pyramid','crossword'],workedExamples:'front'};const pack=G.generatePack(settings,'mixed-pack'),ids=pack.sheets.flatMap(s=>s.activities.map(a=>a.engineId));for(const id of ['wordsearch','pyramid','crossword'])assert(ids.includes(id),`mixed pack missing ${id}`);assert(pack.workedExamples.length===3,'worked examples should include one per selected compatible game');
-  const geometry=G.generatePack({minYear:4,maxYear:4,topics:['geometry'],sheets:2,activitiesPerSheet:2,selectedEngines:['wordsearch','pyramid','crossword']},'geo-pack');assert(geometry.sheets.flatMap(s=>s.activities).every(a=>['wordsearch','crossword'].includes(a.engineId)),'Geometry pack should not force Number Pyramid');
+  assert(G.answerEnumeration('right angle')==='(5, 5)','Two-word enumeration failed');
+  assert(G.answerEnumeration('right-angled triangle')==='(5-6, 8)','Hyphenated enumeration failed');
+  const cw=G.generateCrossword({minYear:3,maxYear:6,topics:['geometry'],engineSettings:{crossword:{difficulty:'standard',gridSize:'17',wordCount:'8'}}},'enumeration-cw');
+  assert(!cw.error,'Enumeration crossword failed');for(const e of cw.entries)assert(e.enumeration===G.answerEnumeration(e.term),`Enumeration missing for ${e.term}`);
+});
+
+check(()=>{
+  for(let year=1;year<=6;year++)for(const difficulty of ['easy','standard','challenge'])for(const style of ['missing','find_total','repair','transform']){
+    const settings={minYear:year,maxYear:year,topics:['calculation'],engineSettings:{magic:{difficulty,gridSize:'auto',puzzleType:style,numberPattern:'auto',clueLevel:'balanced'}}};
+    const a=G.generateMagicSquare(settings,`magic-${year}-${difficulty}-${style}`),b=G.generateMagicSquare(settings,`magic-${year}-${difficulty}-${style}`);
+    assert(JSON.stringify(a)===JSON.stringify(b),`Magic ${year} ${difficulty} ${style}: nondeterministic`);assert([3,4].includes(a.size),'Magic square size invalid');assert(G._isMagicGrid(a.solutionGrid),`Magic ${year} ${difficulty} ${style}: solution is not magic`);
+    const sums=G._magicLineSums(a.solutionGrid),all=[...sums.rows,...sums.cols,...sums.diags];assert(all.every(v=>Math.abs(v-a.magicSum)<1e-8),`Magic ${style}: magic sum mismatch`);
+    if(style==='missing'){const hs=new Set(a.missingSet);assert(hs.size>=1,'Magic missing variant has no blanks');assert(G._matrixRank(G._magicEquationRows(a.size,hs))===hs.size,'Magic missing clues are not uniquely determined by line equations');}
+    if(style==='find_total')assert((a.missingSet||[]).length===0,'Find-total should show complete square');
+    if(style==='repair'){assert(!G._isMagicGrid(a.displayGrid),'Repair puzzle should actually be broken');assert(a.wrongCell&&a.wrongValue!==a.correctValue,'Repair metadata missing');}
+    if(style==='transform'){assert(G._isMagicGrid(a.sourceGrid),'Transform source not magic');assert(a.transform&&a.missingSet.length>=1,'Transform variant metadata missing');}
+  }
+});
+
+check(()=>{
+  const settings={minYear:4,maxYear:4,topics:['calculation'],sheets:2,activitiesPerSheet:3,selectedEngines:['wordsearch','pyramid','crossword','magic'],workedExamples:'front'};const pack=G.generatePack(settings,'mixed-pack'),ids=pack.sheets.flatMap(s=>s.activities.map(a=>a.engineId));for(const id of ['wordsearch','pyramid','crossword','magic'])assert(ids.includes(id),`mixed pack missing ${id}`);assert(pack.workedExamples.length===4,'worked examples should include one per selected compatible game');
+  const geometry=G.generatePack({minYear:4,maxYear:4,topics:['geometry'],sheets:2,activitiesPerSheet:2,selectedEngines:['wordsearch','pyramid','crossword','magic']},'geo-pack');assert(geometry.sheets.flatMap(s=>s.activities).every(a=>['wordsearch','crossword'].includes(a.engineId)),'Geometry pack should not force Number Pyramid');
 });
 
 check(()=>{
@@ -64,12 +84,17 @@ check(()=>{
 });
 
 check(()=>{
+  const settings=G.normalizeSettings({minYear:4,maxYear:6,topics:['calculation'],sheets:2,activitiesPerSheet:2,selectedEngines:['magic'],workedExamples:'front'}),pack=G.generatePack(settings,'pdf-magic-pack');
+  for(const kind of ['student','answers','both']){const doc=GPDF.buildDocument({pack,settings,kind,topics:G.TOPICS,seed:'pdf-magic-pack'}),bytes=doc.outputBytes(),text=Buffer.from(bytes).toString('latin1');assert(bytes.length>5000,`${kind} magic PDF unexpectedly small`);assert(text.startsWith('%PDF-1.4'),`${kind} magic PDF header missing`);assert((text.match(/ re /g)||[]).length>20,`${kind} magic PDF did not draw enough square cells/boxes`);}
+});
+
+check(()=>{
   const page=fs.readFileSync(path.join(REPO,'_pages/99-club-games.md'),'utf8'),ui=fs.readFileSync(path.join(ROOT,'games-app.js'),'utf8'),main=fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),angles=fs.readFileSync(path.join(ROOT,'custom-angles.js'),'utf8'),custom=fs.readFileSync(path.join(ROOT,'custom-app.js'),'utf8');
   assert(/permalink:\s*\/tools\/99-club\/games\//.test(page),'Games page permalink missing');assert(page.includes('/assets/99club/games-vocabulary.js')&&page.includes('/assets/99club/games-engine.js')&&page.includes('/assets/99club/simple-pdf.js')&&page.includes('/assets/99club/games-pdf.js')&&page.includes('/assets/99club/games-app.js'),'Games page asset stack incomplete');assert(main.includes('/tools/99-club/games/'),'Main 99 Club hero should link Games');
   assert(!/class=\"black\"/.test(ui),'Crossword browser renderer must not create blocked cells');
   const pdf=fs.readFileSync(path.join(ROOT,'games-pdf.js'),'utf8');assert(pdf.includes('Freeform classroom criss-cross')&&!pdf.includes("fill:[64,88,93],stroke:[64,88,93]"),'Crossword PDF renderer must draw active cells only');
-  for(const phrase of ['Maths Crossword','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
+  for(const phrase of ['Maths Crossword','Magic Squares','Mixed variants','Spot &amp; fix the error','Transform the square','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
   assert(!/fetch\s*\(|XMLHttpRequest|navigator\.sendBeacon/.test(ui),'Games UI must not upload teacher vocabulary');assert((angles.match(/strand:'Geometry'/g)||[]).length===8,'All 8 graphical angle families should belong to Geometry');assert(!/strandOrder=\[[^\]]*'Angles & turns'/.test(custom),'Custom selector should not expose standalone Angles & turns');
 });
 
-if(failures.length){console.error(`Games smoke FAILED (${failures.length})`);for(const f of failures)console.error(' - '+f);process.exit(2);}console.log(`Games smoke passed: ${G.VOCABULARY.length} curated vocabulary entries + Word Search direction presets + selective term/activity replacement contract + Number Pyramid + Crossword + worked examples.`);
+if(failures.length){console.error(`Games smoke FAILED (${failures.length})`);for(const f of failures)console.error(' - '+f);process.exit(2);}console.log(`Games smoke passed: ${G.VOCABULARY.length} curated vocabulary entries + Word Search + Number Pyramid + Crossword + Magic Squares derivatives + clue enumeration + richer worked examples.`);

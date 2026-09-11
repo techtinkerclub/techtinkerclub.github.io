@@ -1,15 +1,30 @@
-# v1.24.2 printer-friendly Crossword patch
+# 99 Club Studio v1.25.0 — Magic Squares patch
 
-Apply directly over **99 Club Studio v1.24.1**.
+Apply this overlay directly over the accepted **v1.24.2** repository.
 
-This patch replaces the newspaper-style blocked Crossword presentation with the accepted classroom freeform criss-cross design:
-- only answer cells are drawn;
-- no black squares;
-- no large enclosing crossword square;
-- thin printer-friendly cell outlines;
-- exact occupied footprint for better scaling;
-- same footprint in pupil and teacher-answer PDFs.
+## Adds
 
-The existing three PDF download choices remain unchanged: pupil sheets, answer key, and combined pupil + answers.
+- Magic Squares as the fourth Games & Puzzles engine.
+- 3x3 and 4x4 generated squares.
+- Fill missing values, find the magic total, spot & fix an error, and transform-the-square variants.
+- Classic, shifted, scaled and age-appropriate decimal number patterns.
+- Per-game difficulty, square size, puzzle style, number pattern and clue-density controls.
+- Richer pupil worked examples for all four current game engines.
+- Automatic clue enumeration such as `(5, 5)` for multi-word crossword answers.
+- Enumeration on Definitions-only Word Searches where the hidden answer has multiple words/hyphens.
 
-After deploying, hard-refresh `/tools/99-club/games/`.
+## Preserved
+
+- Existing Word Search, Number Pyramid and Crossword behaviour.
+- Selective single-activity replacement in Games preview.
+- Pupil / answer / combined direct PDF downloads.
+- The 591-entry curated vocabulary catalogue.
+- Public 99 Club generator maths and Custom Worksheet question engines.
+
+## Deployment
+
+Copy this ZIP over the v1.24.2 repository, preserving paths. Then hard-refresh:
+
+`/tools/99-club/games/`
+
+The cache-busted Games assets are already referenced by `_pages/99-club-games.md`.

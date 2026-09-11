@@ -1,11 +1,11 @@
 /* 99 Club Studio · Maths Games & Puzzles
- * v1.2.1 — deterministic game-engine layer.
+ * v1.3.0 — Magic Squares & derivatives + richer worked examples.
  * Architecture: game engine + maths content provider + applicability rules.
  */
 (function(global){
   'use strict';
 
-  const VERSION='1.2.1';
+  const VERSION='1.3.0';
   let VOCAB_DATA=global.TT99GamesVocabularyV2||null;
   if(!VOCAB_DATA && typeof require==='function'){
     try{VOCAB_DATA=require('./games-vocabulary.js');}catch(e){}
@@ -59,6 +59,19 @@
         {id:'wordBank',type:'select',label:'Word bank',options:['auto','show','hide']}
       ],
       compatibility:Object.fromEntries(Object.keys(TOPICS).map(t=>[t,'excellent']))
+    },
+    magic:{
+      id:'magic',title:'Magic Squares',group:'Logic & patterns',kind:'independent',printableMode:'puzzle',answerSheetSupport:true,workedExampleSupport:true,
+      supportedAnswerTypes:['number','reasoning'],minItems:1,maxItems:3,difficultyOptions:['easy','standard','challenge'],needsCutting:false,needsDice:false,needsPartner:false,
+      defaultSettings:{difficulty:'standard',gridSize:'auto',puzzleType:'auto',numberPattern:'auto',clueLevel:'balanced'},
+      settingsSchema:[
+        {id:'difficulty',type:'choice',label:'Difficulty',options:['easy','standard','challenge']},
+        {id:'gridSize',type:'select',label:'Square size',options:['auto','3','4']},
+        {id:'puzzleType',type:'select',label:'Puzzle style',options:['auto','missing','find_total','repair','transform']},
+        {id:'numberPattern',type:'select',label:'Numbers',options:['auto','classic','shifted','scaled','decimal']},
+        {id:'clueLevel',type:'choice',label:'Clues shown',options:['more','balanced','fewer']}
+      ],
+      compatibility:{number_place_value:'excellent',calculation:'excellent',fractions:'poor',decimals_percentages:'reasonable',ratio_proportion:'poor',measurement:'poor',geometry:'poor',statistics:'poor',algebra:'reasonable'}
     }
   };
 
@@ -69,6 +82,9 @@
   function shuffle(arr,rng){const out=arr.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
   function randInt(rng,a,b){return Math.floor(rng()*(b-a+1))+a;}
   function normalizeTerm(term){return String(term||'').toUpperCase().replace(/[^A-Z]/g,'');}
+  function answerEnumeration(term){const words=String(term||'').trim().split(/\s+/).filter(Boolean).map(word=>word.split('-').map(part=>(part.match(/[A-Za-z]/g)||[]).length).filter(Boolean).join('-')).filter(Boolean);return words.length?`(${words.join(', ')})`:'';}
+  function needsEnumeration(term){return /[\s-]/.test(String(term||'').trim());}
+  function formatNumber(value){const n=Number(value);if(!Number.isFinite(n))return String(value??'');const r=Math.round(n*1000)/1000;return Number.isInteger(r)?String(r):String(r).replace(/0+$/,'').replace(/\.$/,'');}
   function yearText(minYear,maxYear){return minYear===maxYear?`Year ${minYear}`:`Years ${minYear}–${maxYear}`;}
 
   function mapBuiltInVocabulary(raw){
@@ -109,6 +125,13 @@
       gridSize:['auto','13','15','17'].includes(String(raw.gridSize??'auto'))?String(raw.gridSize??'auto'):'auto',
       wordBank:['auto','show','hide'].includes(raw.wordBank)?raw.wordBank:'auto'
     };
+    if(engineId==='magic')return {
+      difficulty:['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:defaults.difficulty,
+      gridSize:['auto','3','4'].includes(String(raw.gridSize??'auto'))?String(raw.gridSize??'auto'):'auto',
+      puzzleType:['auto','missing','find_total','repair','transform'].includes(raw.puzzleType)?raw.puzzleType:'auto',
+      numberPattern:['auto','classic','shifted','scaled','decimal'].includes(raw.numberPattern)?raw.numberPattern:'auto',
+      clueLevel:['more','balanced','fewer'].includes(raw.clueLevel)?raw.clueLevel:'balanced'
+    };
     return {...defaults,...raw};
   }
 
@@ -121,7 +144,8 @@
     const engineSettings={
       wordsearch:normalizeEngineSettings('wordsearch',{difficulty:legacyDifficulty,clueMode:legacyWordMode,...rawEngineSettings.wordsearch}),
       pyramid:normalizeEngineSettings('pyramid',{difficulty:legacyDifficulty,...rawEngineSettings.pyramid}),
-      crossword:normalizeEngineSettings('crossword',{difficulty:legacyDifficulty,...rawEngineSettings.crossword})
+      crossword:normalizeEngineSettings('crossword',{difficulty:legacyDifficulty,...rawEngineSettings.crossword}),
+      magic:normalizeEngineSettings('magic',{difficulty:legacyDifficulty,...rawEngineSettings.magic})
     };
     let selectedEngines=Array.isArray(input.selectedEngines)?input.selectedEngines.filter(id=>ENGINES[id]):[];
     if(!selectedEngines.length&&input.gameMode==='single'&&ENGINES[input.gameId])selectedEngines=[input.gameId];
@@ -225,6 +249,41 @@
     return {engineId:'pyramid',title:'Number Pyramid',topicIds:['calculation'],rows,missing,missingSet:[...missingSet],difficulty:profile.difficulty,yearText:yearText(s.minYear,s.maxYear),seed,instruction:'Each brick is the sum of the two bricks directly below it.',options:s.engineSettings.pyramid};
   }
 
+
+  const MAGIC3=[[8,1,6],[3,5,7],[4,9,2]];
+  const MAGIC4=[[16,2,3,13],[5,11,10,8],[9,7,6,12],[4,14,15,1]];
+  function cloneGrid(grid){return grid.map(row=>row.slice());}
+  function rotateGrid(grid){const n=grid.length;return Array.from({length:n},(_,r)=>Array.from({length:n},(_,c)=>grid[n-1-c][r]));}
+  function reflectGrid(grid){return grid.map(row=>row.slice().reverse());}
+  function magicVariant(base,rng){let g=cloneGrid(base);const turns=randInt(rng,0,3);for(let i=0;i<turns;i++)g=rotateGrid(g);if(rng()<.5)g=reflectGrid(g);return g;}
+  function mapMagicValues(grid,offset,step){return grid.map(row=>row.map(v=>Math.round((offset+step*(v-1))*1000)/1000));}
+  function magicLineSums(grid){const n=grid.length,rows=grid.map(row=>row.reduce((a,b)=>a+b,0)),cols=Array.from({length:n},(_,c)=>grid.reduce((sum,row)=>sum+row[c],0)),diag1=grid.reduce((sum,row,i)=>sum+row[i],0),diag2=grid.reduce((sum,row,i)=>sum+row[n-1-i],0);return {rows,cols,diags:[diag1,diag2]};}
+  function isMagicGrid(grid,eps=1e-8){if(!grid?.length)return false;const sums=magicLineSums(grid),all=[...sums.rows,...sums.cols,...sums.diags];return all.every(x=>Math.abs(x-all[0])<eps);}
+  function magicOptions(settings){return normalizeSettings(settings).engineSettings.magic;}
+  function magicGridSize(settings,seed='magic'){const s=normalizeSettings(settings),o=s.engineSettings.magic;if(o.gridSize!=='auto')return Number(o.gridSize);if(o.difficulty==='challenge'&&s.maxYear>=4)return rngFromSeed(`${seed}:size`)()<.62?4:3;return 3;}
+  function magicNumberProfile(settings,seed,size){const s=normalizeSettings(settings),o=s.engineSettings.magic,rng=rngFromSeed(`${seed}:numbers`),year=s.maxYear;let kind=o.numberPattern;
+    if(kind==='auto'){if(s.topics.includes('decimals_percentages')&&year>=4)kind='decimal';else if(o.difficulty==='easy')kind=rng()<.7?'classic':'shifted';else if(o.difficulty==='challenge')kind=rng()<.65?'scaled':'shifted';else kind=rng()<.5?'shifted':'scaled';}
+    if(kind==='decimal'&&year<4)kind='shifted';
+    let offset=1,step=1,label='consecutive numbers';
+    if(kind==='classic'){offset=1;step=1;label=size===3?'1 to 9':'1 to 16';}
+    else if(kind==='shifted'){const maxStart=year<=2?5:year===3?15:year===4?30:year===5?60:100;offset=randInt(rng,2,maxStart);step=1;label=`consecutive numbers from ${formatNumber(offset)}`;}
+    else if(kind==='scaled'){const choices=year<=2?[2]:year===3?[2,3,5]:year===4?[2,3,5,10]:[2,3,5,10,25];step=choices[randInt(rng,0,choices.length-1)];offset=(o.difficulty==='challenge'&&year>=4&&rng()<.4)?randInt(rng,0,Math.max(5,year*5)):step;label=`step ${formatNumber(step)}${offset!==step?`, starting ${formatNumber(offset)}`:''}`;}
+    else if(kind==='decimal'){const choices=year===4?[0.1,0.2,0.5]:[0.1,0.2,0.25,0.5];step=choices[randInt(rng,0,choices.length-1)];offset=Math.round(step*randInt(rng,0,10)*100)/100;label=`decimal step ${formatNumber(step)}`;}
+    return {kind,offset,step,label};
+  }
+  function magicPuzzleType(settings,seed,size){const s=normalizeSettings(settings),o=s.engineSettings.magic;if(o.puzzleType!=='auto')return o.puzzleType;const rng=rngFromSeed(`${seed}:type`),d=o.difficulty,r=rng();if(d==='easy')return r<.72?'missing':'find_total';if(d==='standard')return r<.50?'missing':r<.70?'find_total':r<.88?'repair':'transform';return r<.38?'missing':r<.58?'repair':r<.83?'transform':'find_total';}
+  function magicEquationRows(size,hiddenSet){const vars=[...hiddenSet].map(k=>k.split(':').map(Number)),index=new Map(vars.map((rc,i)=>[`${rc[0]}:${rc[1]}`,i])),rows=[];const addLine=cells=>{const row=Array(vars.length).fill(0);for(const [r,c] of cells){const idx=index.get(`${r}:${c}`);if(idx!==undefined)row[idx]=1;}if(row.some(Boolean))rows.push(row);};for(let r=0;r<size;r++)addLine(Array.from({length:size},(_,c)=>[r,c]));for(let c=0;c<size;c++)addLine(Array.from({length:size},(_,r)=>[r,c]));addLine(Array.from({length:size},(_,i)=>[i,i]));addLine(Array.from({length:size},(_,i)=>[i,size-1-i]));return rows;}
+  function uniquelySolvableMagicMask(size,target,rng){const all=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++)all.push([r,c]);const hidden=new Set();for(const [r,c] of shuffle(all,rng)){if(hidden.size>=target)break;const k=`${r}:${c}`;hidden.add(k);const rows=magicEquationRows(size,hidden);if(matrixRank(rows)<hidden.size)hidden.delete(k);}return [...hidden];}
+  function magicMissingCount(settings,size){const o=magicOptions(settings),total=size*size,ratio=o.clueLevel==='more'?.26:o.clueLevel==='fewer'?.56:(o.difficulty==='easy'?.30:o.difficulty==='challenge'?.52:.42);const cap=size===3?5:8;return Math.max(1,Math.min(cap,Math.round(total*ratio)));}
+  function magicTransform(settings,seed,source){const s=normalizeSettings(settings),rng=rngFromSeed(`${seed}:transform`),year=s.maxYear,isDecimal=source.some(row=>row.some(v=>!Number.isInteger(v)));let operation='add',amount;if(rng()<.48){operation='multiply';amount=randInt(rng,2,year<=2?3:5);}else{if(isDecimal)amount=[0.5,1,2][randInt(rng,0,2)];else amount=randInt(rng,1,year<=2?5:year<=4?12:25);}const grid=source.map(row=>row.map(v=>Math.round((operation==='add'?v+amount:v*amount)*1000)/1000));return {operation,amount,grid,label:operation==='add'?`Add ${formatNumber(amount)} to every number`:`Multiply every number by ${formatNumber(amount)}`};}
+  function generateMagicSquare(settings,seed){const s=normalizeSettings(settings),rng=rngFromSeed(seed),size=magicGridSize(s,seed),profile=magicNumberProfile(s,seed,size),base=magicVariant(size===4?MAGIC4:MAGIC3,rng),solutionGrid=mapMagicValues(base,profile.offset,profile.step),magicSum=magicLineSums(solutionGrid).rows[0],puzzleType=magicPuzzleType(s,seed,size),o=s.engineSettings.magic;
+    const common={engineId:'magic',title:'Magic Squares',topicIds:s.topics.filter(t=>['number_place_value','calculation','decimals_percentages','algebra'].includes(t)),size,difficulty:o.difficulty,puzzleType,numberPattern:profile.kind,numberPatternLabel:profile.label,solutionGrid,magicSum,yearText:yearText(s.minYear,s.maxYear),seed,options:o};
+    if(puzzleType==='find_total')return {...common,displayGrid:cloneGrid(solutionGrid),missingSet:[],instruction:'Every row, column and main diagonal has the same total. Find the magic total.',answerText:`Magic total = ${formatNumber(magicSum)}`};
+    if(puzzleType==='repair'){const candidates=size===3?[[0,0],[0,size-1],[size-1,0],[size-1,size-1],[1,1]]:[[0,0],[0,size-1],[size-1,0],[size-1,size-1]],cell=candidates[randInt(rng,0,candidates.length-1)],delta=profile.step*randInt(rng,1,3)*(rng()<.5?-1:1),displayGrid=cloneGrid(solutionGrid),correct=displayGrid[cell[0]][cell[1]],wrong=Math.round((correct+delta)*1000)/1000;displayGrid[cell[0]][cell[1]]=wrong;return {...common,displayGrid,missingSet:[],wrongCell:`${cell[0]}:${cell[1]}`,wrongValue:wrong,correctValue:correct,instruction:`One number is wrong. Find it and correct it so every line totals ${formatNumber(magicSum)}.`,answerText:`Replace ${formatNumber(wrong)} with ${formatNumber(correct)}.`};}
+    if(puzzleType==='transform'){const tx=magicTransform(s,seed,solutionGrid),target=tx.grid,targetSum=magicLineSums(target).rows[0],givenCount=o.clueLevel==='more'?Math.ceil(size*size*.45):o.clueLevel==='fewer'?Math.ceil(size*size*.18):Math.ceil(size*size*.30),positions=shuffle(Array.from({length:size*size},(_,i)=>[Math.floor(i/size),i%size]),rng).slice(0,givenCount),given=new Set(positions.map(([r,c])=>`${r}:${c}`));return {...common,sourceGrid:solutionGrid,solutionGrid:target,displayGrid:target.map((row,r)=>row.map((v,c)=>given.has(`${r}:${c}`)?v:null)),missingSet:Array.from({length:size*size},(_,i)=>`${Math.floor(i/size)}:${i%size}`).filter(k=>!given.has(k)),magicSum:targetSum,sourceMagicSum:magicSum,transform:tx,instruction:`${tx.label}. Complete the new magic square and find its magic total.`,answerText:`New magic total = ${formatNumber(targetSum)}`};}
+    const target=magicMissingCount(s,size),hidden=uniquelySolvableMagicMask(size,target,rng),hiddenSet=new Set(hidden),displayGrid=solutionGrid.map((row,r)=>row.map((v,c)=>hiddenSet.has(`${r}:${c}`)?null:v));return {...common,displayGrid,missingSet:[...hiddenSet],instruction:`Every row, column and main diagonal totals ${formatNumber(magicSum)}. Fill the missing numbers.`,answerText:`Magic total = ${formatNumber(magicSum)}`};
+  }
+
   function crosswordOptions(settings){return normalizeSettings(settings).engineSettings.crossword;}
   function crosswordGridSize(settings){const o=crosswordOptions(settings);if(o.gridSize!=='auto')return Number(o.gridSize);return o.difficulty==='easy'?13:o.difficulty==='challenge'?17:15;}
   function crosswordCount(settings,available){const o=crosswordOptions(settings),target=o.wordCount!=='auto'?Number(o.wordCount):(o.difficulty==='easy'?6:o.difficulty==='challenge'?10:8);return Math.max(4,Math.min(target,available));}
@@ -244,7 +303,7 @@
     }
     return !requireCross||crosses>0;
   }
-  function placeCrosswordEntry(grid,item,x,y,dir){const word=normalizeTerm(item.term),dx=dir==='across'?1:0,dy=dir==='down'?1:0,cells=[];for(let i=0;i<word.length;i++){const xx=x+dx*i,yy=y+dy*i;grid[yy][xx].ch=word[i];grid[yy][xx].dirs.add(dir);cells.push([xx,yy]);}return {id:item.id,term:item.term,answer:word,clue:item.crosswordClue||item.definition,definition:item.definition,source:item.source,topic:item.topic,appTopics:item.appTopics,x,y,dir,cells};}
+  function placeCrosswordEntry(grid,item,x,y,dir){const word=normalizeTerm(item.term),dx=dir==='across'?1:0,dy=dir==='down'?1:0,cells=[];for(let i=0;i<word.length;i++){const xx=x+dx*i,yy=y+dy*i;grid[yy][xx].ch=word[i];grid[yy][xx].dirs.add(dir);cells.push([xx,yy]);}return {id:item.id,term:item.term,answer:word,clue:item.crosswordClue||item.definition,enumeration:answerEnumeration(item.term),definition:item.definition,source:item.source,topic:item.topic,appTopics:item.appTopics,x,y,dir,cells};}
   function crosswordAttempt(items,size,seed,target){
     const rng=rngFromSeed(seed),grid=emptyCrossword(size),entries=[];if(!items.length)return {grid,entries};
     const first=items.slice().sort((a,b)=>normalizeTerm(b.term).length-normalizeTerm(a.term).length)[0],fw=normalizeTerm(first.term),fx=Math.floor((size-fw.length)/2),fy=Math.floor(size/2);entries.push(placeCrosswordEntry(grid,first,fx,fy,'across'));
@@ -279,19 +338,23 @@
   function generateWorkedExample(engineId,settings,seed,customVocabulary=[]){
     const s=normalizeSettings(settings);
     if(engineId==='pyramid'){
-      const rng=rngFromSeed(seed),a=randInt(rng,2,7),b=randInt(rng,2,7),c=randInt(rng,2,7),rows=buildPyramid([a,b,c]);
-      return {engineId,title:'Number Pyramid worked example',kind:'pyramid',rows,steps:[`${a} + ${b} = ${a+b}`,`${b} + ${c} = ${b+c}`,`${a+b} + ${b+c} = ${rows[0][0]}`],explanation:'Add neighbouring bricks to make the brick directly above.'};
+      const rng=rngFromSeed(seed),a=randInt(rng,2,6),b=randInt(rng,2,6),c=randInt(rng,2,6),rows=buildPyramid([a,b,c]),missingValue=b;
+      return {engineId,title:'Number Pyramid worked example',kind:'pyramid',rows,exampleMissing:'2:1',goal:'Fill every empty brick using the addition rule.',rules:['A brick is the sum of the two bricks directly below it.','If a lower brick is missing, use subtraction to work backwards.'],steps:[`${a} + ${b} = ${a+b}, so the left middle brick is ${a+b}.`,`${b} + ${c} = ${b+c}, so the right middle brick is ${b+c}.`,`${a+b} + ${b+c} = ${rows[0][0]}, so the top brick is ${rows[0][0]}.`,`Working backwards also works: ${a+b} - ${a} = ${missingValue}.`],tip:'Check each completed brick against the two bricks below it.',commonMistake:'Do not add bricks that are not directly next to each other.'};
     }
     if(engineId==='crossword'){
-      const pool=crosswordVocabularyFor(s,customVocabulary);const item=pool.length?shuffle(pool,rngFromSeed(seed))[0]:null;if(!item)return null;
-      return {engineId,title:'Maths Crossword worked example',kind:'crossword',term:item.term,answer:normalizeTerm(item.term),clue:item.crosswordClue||item.definition,steps:['Read the clue carefully.',`The mathematical word is “${item.term}”.`,'Write the letters into the numbered spaces. Crossing letters can help with other clues.']};
+      const pool=crosswordVocabularyFor(s,customVocabulary);const item=pool.length?shuffle(pool,rngFromSeed(seed))[0]:null;if(!item)return null;const enumeration=answerEnumeration(item.term);
+      return {engineId,title:'Maths Crossword worked example',kind:'crossword',term:item.term,answer:normalizeTerm(item.term),enumeration,clue:item.crosswordClue||item.definition,goal:'Use each definition to work out a mathematical word, then write it into the grid.',rules:['The number tells you where an answer starts.','Across answers run left to right; Down answers run top to bottom.',`The pattern ${enumeration} tells you the word length${needsEnumeration(item.term)?'s':''}. Spaces and punctuation are not written in the grid.`],steps:['Read the definition and look at the answer pattern.',`This clue describes “${item.term}”.`,'Write the letters into the numbered cells.','Use crossing letters to help solve another clue.'],tip:'If you are unsure of a clue, solve a crossing word first and use the letters you gain.',commonMistake:'Do not put spaces or punctuation into crossword cells.'};
+    }
+    if(engineId==='magic'){
+      const grid=[[8,1,6],[3,5,7],[4,9,2]],magicSum=15;
+      return {engineId,title:'Magic Squares worked example',kind:'magic',grid,displayGrid:[[8,1,6],[3,5,null],[4,9,2]],magicSum,goal:'Fill the missing number so every row, column and main diagonal has the same total.',rules:['First find or use the magic total.','Each complete row, column and main diagonal must equal that same total.','Use subtraction when one value is missing from a line.'],steps:['The top row is 8 + 1 + 6 = 15, so the magic total is 15.','The middle row must also total 15: 3 + 5 + □ = 15.','3 + 5 = 8, so □ = 15 − 8 = 7.','Check the right column: 6 + 7 + 2 = 15.'],tip:'Use a row or column with only one missing number first.',commonMistake:'Do not forget the two main diagonals — they must match the magic total too.'};
     }
     const pool=vocabularyFor(s,customVocabulary),item=pool.length?shuffle(pool,rngFromSeed(seed))[0]:null;if(!item)return null;const answer=normalizeTerm(item.term),size=Math.max(8,Math.min(12,answer.length+2)),grid=Array.from({length:size},()=>Array(size).fill(''));
-    const rng=rngFromSeed(`${seed}:grid`),row=randInt(rng,1,size-2),maxStart=Math.max(0,size-answer.length),start=randInt(rng,0,maxStart);for(let i=0;i<answer.length;i++)grid[row][start+i]=answer[i];const alphabet='ETAOINSHRDLUCMFPGWYBVKXJQZ';for(let y=0;y<size;y++)for(let x=0;x<size;x++)if(!grid[y][x])grid[y][x]=alphabet[randInt(rng,0,alphabet.length-1)];
-    return {engineId:'wordsearch',title:'Maths Word Search worked example',kind:'wordsearch',term:item.term,definition:item.definition,answer,row,start,grid,size,mode:s.engineSettings.wordsearch.clueMode,steps:s.engineSettings.wordsearch.clueMode==='definitions'?['Read the definition.',`Work out the word: “${item.term}”.`,'Search the grid and trace the letters in order.']:['Read the term and its definition.','Search the grid for the term.','Trace the letters in order.']};
+    const rng=rngFromSeed(`${seed}:grid`),row=randInt(rng,1,size-2),maxStart=Math.max(0,size-answer.length),start=randInt(rng,0,maxStart);for(let i=0;i<answer.length;i++)grid[row][start+i]=answer[i];const alphabet='ETAOINSHRDLUCMFPGWYBVKXJQZ';for(let y=0;y<size;y++)for(let x=0;x<size;x++)if(!grid[y][x])grid[y][x]=alphabet[randInt(rng,0,alphabet.length-1)];const enumeration=answerEnumeration(item.term);
+    return {engineId:'wordsearch',title:'Maths Word Search worked example',kind:'wordsearch',term:item.term,definition:item.definition,enumeration,answer,row,start,grid,size,mode:s.engineSettings.wordsearch.clueMode,goal:'Find the mathematical vocabulary hidden in the letter grid.',rules:[s.engineSettings.wordsearch.clueMode==='definitions'?'Use each definition to work out the hidden word first.':'Read the word and its definition before searching.',`The word may run in the allowed directions for this puzzle. Spaces and punctuation are removed in the grid.${needsEnumeration(item.term)?` ${enumeration} shows the word lengths.`:''}`],steps:s.engineSettings.wordsearch.clueMode==='definitions'?['Read the definition carefully.',`The mathematical term is “${item.term}” ${enumeration}.`,`Look for the letters ${answer} in one straight line.`,'Trace or circle the complete word.']:['Read the term and its meaning.',`Look for ${answer} in one straight line.`,'Trace or circle the complete word.'],tip:'Start by looking for an unusual first letter or a long group of letters.',commonMistake:'Do not change direction halfway through a hidden word.'};
   }
 
-  function generateActivity(engineId,settings,seed,customVocabulary=[]){if(engineId==='pyramid')return generateNumberPyramid(settings,seed);if(engineId==='crossword')return generateCrossword(settings,seed,customVocabulary);return generateWordSearch(settings,seed,customVocabulary);}
+  function generateActivity(engineId,settings,seed,customVocabulary=[]){if(engineId==='pyramid')return generateNumberPyramid(settings,seed);if(engineId==='crossword')return generateCrossword(settings,seed,customVocabulary);if(engineId==='magic')return generateMagicSquare(settings,seed);return generateWordSearch(settings,seed,customVocabulary);}
   function generatePack(settings,seed='games',customVocabulary=[]){
     const s=normalizeSettings(settings),sheets=[];let globalIndex=0;
     for(let sheetIndex=0;sheetIndex<s.sheets;sheetIndex++){const activities=[];for(let i=0;i<s.activitiesPerSheet;i++,globalIndex++){const engineId=chooseEngine(s,globalIndex,seed),activitySeed=`${seed}:S${sheetIndex+1}:A${i+1}:${engineId}`;activities.push(generateActivity(engineId,s,activitySeed,customVocabulary));}sheets.push({index:sheetIndex+1,activities});}
@@ -299,6 +362,6 @@
     return {version:VERSION,seed,settings:s,workedExamples,sheets};
   }
 
-  const api={VERSION,TOPICS,ENGINES,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateWorkedExample,generateActivity,generatePack,normalizeTerm,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows};
+  const api={VERSION,TOPICS,ENGINES,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateWorkedExample,generateActivity,generatePack,normalizeTerm,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;global.TT99Games=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

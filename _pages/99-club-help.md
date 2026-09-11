@@ -50,12 +50,13 @@ sidebar: false
 
   <section id="games" class="tt99-guide-section tt99-guide-highlight">
     <h2>Maths Games &amp; Puzzles</h2>
-    <p>The separate <a href="/tools/99-club/games/">Games &amp; Puzzles</a> page creates printable independent activities from the same curriculum-minded Studio approach. Current engines are Word Search, Number Pyramid and Crossword.</p>
+    <p>The separate <a href="/tools/99-club/games/">Games &amp; Puzzles</a> page creates printable independent activities from the same curriculum-minded Studio approach. Current engines are Word Search, Number Pyramid, Crossword and Magic Squares.</p>
     <p><strong>Each game has its own setup.</strong> Difficulty and specialist options are configured inside that game card, so adding more puzzle engines does not create one giant shared settings form.</p>
     <p>Word Search can show <strong>words + definitions</strong> or <strong>definitions only</strong>. Its direction control can stay automatic (Easy = straight; Standard = diagonals added; Challenge = all directions including backwards) or be overridden independently.</p>
+    <p><strong>Magic Squares</strong> includes several printable reasoning variants: fill missing values, find the magic total, spot and fix an incorrect entry, and transform a valid square by adding to or multiplying every value. Teachers can choose 3×3 or 4×4, number patterns and clue density, or leave them on Auto.</p>
     <p><strong>Worked examples</strong> can be added at the front of a pack. When enabled, Studio generates one example for each selected game using separate practice data.</p>
     <div class="tt99-guide-note"><strong>Review before printing:</strong> use ↻ on a whole game to replace only that activity. In Word Search, a smaller ↻ beside an individual clue replaces only that term + definition pair while keeping the other selected terms.</div>
-    <p>The built-in vocabulary catalogue is curated with the site. Teacher-added terms remain local to that browser unless explicitly exported, and the same local vocabulary can feed both Word Search and Crossword.</p>
+    <p>The built-in vocabulary catalogue is curated with the site. Teacher-added terms remain local to that browser unless explicitly exported, and the same local vocabulary can feed both Word Search and Crossword. Multi-word vocabulary clues show an answer-length pattern such as <strong>(5, 5)</strong>.</p>
   </section>
 
   <section id="review" class="tt99-guide-section tt99-guide-highlight">

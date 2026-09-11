@@ -1,5 +1,5 @@
 /* 99 Club Studio · Maths Games & Puzzles PDF exporter
- * v1.0.1 — direct PDF output using the same dependency-free writer as 99 Club Studio.
+ * v1.1.0 — Magic Squares, clue enumeration and richer worked examples.
  */
 (function(global){
   'use strict';
@@ -17,6 +17,9 @@
   function yearLabel(settings){return settings.minYear===settings.maxYear?`Year ${settings.minYear}`:`Years ${settings.minYear}-${settings.maxYear}`;}
   function topicLabel(settings,topics){return (settings.topics||[]).map(id=>topics?.[id]?.label||id).join(' · ');}
   function safeName(s){return String(s||'games').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'games';}
+  function formatNumber(value){const n=Number(value);if(!Number.isFinite(n))return clean(value);const r=Math.round(n*1000)/1000;return Number.isInteger(r)?String(r):String(r).replace(/0+$/,'').replace(/\.$/,'');}
+  function enumeration(term){const words=String(term||'').trim().split(/\s+/).filter(Boolean).map(word=>word.split('-').map(part=>(part.match(/[A-Za-z]/g)||[]).length).filter(Boolean).join('-')).filter(Boolean);return words.length?`(${words.join(', ')})`:'';}
+  function needsEnumeration(term){return /[\s-]/.test(String(term||'').trim());}
 
   function wrap(text,maxWidth,size,bold=false){
     const words=clean(text).split(/\s+/).filter(Boolean),out=[];let line='';
@@ -74,7 +77,7 @@
     let cy=bodyY+2,fs=h<220?5.2:h<360?5.7:6.3,lh=fs*1.22;
     const entries=a.placements||[];
     for(let i=0;i<entries.length;i++){
-      const p=entries[i],label=a.mode==='definitions'?`${i+1}. ${p.definition}`:`${i+1}. ${p.term} — ${p.definition}`;
+      const p=entries[i],label=a.mode==='definitions'?`${i+1}. ${p.definition}${needsEnumeration(p.term)?` ${enumeration(p.term)}`:''}`:`${i+1}. ${p.term} — ${p.definition}`;
       const lines=wrap(label,rightW,fs,false).slice(0,h<220?2:3);
       for(const line of lines){if(cy+lh>y+h-15)break;page.text(rightX,cy,line,fs,{color:DARK});cy+=lh;}
       cy+=1.5;if(cy>y+h-15)break;
@@ -107,15 +110,48 @@
     }
     const across=(a.entries||[]).filter(e=>e.dir==='across'),down=(a.entries||[]).filter(e=>e.dir==='down');let cy=bodyY+3;
     const fs=h<220?5.0:h<360?5.7:6.8,lh=fs*1.22;
-    const group=(label,items)=>{if(cy>y+h-18)return;page.text(rightX,cy,label,7,{bold:true,color:[46,87,86]});cy+=10;for(const e of items){const lines=wrap(`${e.number}. ${e.clue}`,rightW,fs,false).slice(0,h<220?2:3);for(const line of lines){if(cy+lh>y+h-14)return;page.text(rightX,cy,line,fs,{color:DARK});cy+=lh;}cy+=1.2;}cy+=4;};
+    const group=(label,items)=>{if(cy>y+h-18)return;page.text(rightX,cy,label,7,{bold:true,color:[46,87,86]});cy+=10;for(const e of items){const lines=wrap(`${e.number}. ${e.clue} ${e.enumeration||enumeration(e.term)}`,rightW,fs,false).slice(0,h<220?2:3);for(const line of lines){if(cy+lh>y+h-14)return;page.text(rightX,cy,line,fs,{color:DARK});cy+=lh;}cy+=1.2;}cy+=4;};
     group('Across',across);group('Down',down);
     if(a.wordBank&&!answers&&cy<y+h-18)drawWrapped(page,rightX,cy,`Word bank: ${(a.entries||[]).map(e=>e.term).sort().join(', ')}`,rightW,fs,{bold:true,color:TEAL,maxLines:3});
+  }
+
+  function drawMagicGrid(page,grid,x,y,maxW,maxH,opts={}){
+    const n=grid?.length||3,cell=Math.min(maxW/n,maxH/n,opts.maxCell||48),gw=cell*n,gh=cell*n,sx=x+(maxW-gw)/2,sy=y+(maxH-gh)/2,highlight=opts.highlight||'';
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+      const v=grid?.[r]?.[c],key=`${r}:${c}`,isHighlight=highlight===key;
+      page.rect(sx+c*cell,sy+r*cell,cell,cell,{fill:isHighlight?[232,247,243]:WHITE,stroke:[91,113,118],width:.75});
+      if(v!==null&&v!==undefined&&v!=='')page.text(sx+c*cell+cell/2,sy+r*cell+cell*.64,formatNumber(v),Math.max(7,Math.min(13,cell*.34)),{bold:true,color:isHighlight?TEAL:INK,align:'center'});
+    }
+    return {x:sx,y:sy,w:gw,h:gh,cell};
+  }
+  function drawMagic(page,a,answers,x,y,w,h,index){
+    const top=activityFrame(page,x,y,w,h,index,a),typeLabel={missing:'Fill missing values',find_total:'Find magic total',repair:'Spot & fix error',transform:'Transform square'}[a.puzzleType]||'Magic Square';
+    drawWrapped(page,x+12,top,a.instruction||'Complete the magic square.',w-24,7,{color:MUTED,maxLines:2});
+    const bodyY=top+28,bodyH=h-(bodyY-y)-14;
+    if(a.puzzleType==='transform'){
+      const gap=22,blockW=(w-36-gap)/2,labelH=20,gridH=bodyH-46,target=answers?a.solutionGrid:a.displayGrid;
+      page.text(x+12,bodyY,'Starting square',6.6,{bold:true,color:DARK});
+      const left=drawMagicGrid(page,a.sourceGrid,x+12,bodyY+10,blockW,gridH,{maxCell:38});
+      page.text(x+12+blockW/2,left.y+left.h+13,`Magic total: ${formatNumber(a.sourceMagicSum)}`,6.2,{bold:true,color:MUTED,align:'center'});
+      page.text(x+12+blockW+gap/2,bodyY+bodyH*.46,clean(a.transform?.label||'Transform'),6.3,{bold:true,color:TEAL,align:'center'});
+      page.text(x+12+blockW+gap,bodyY,'New square',6.6,{bold:true,color:DARK});
+      const right=drawMagicGrid(page,target,x+12+blockW+gap,bodyY+10,blockW,gridH,{maxCell:38});
+      page.text(x+12+blockW+gap+blockW/2,right.y+right.h+13,answers?`New magic total: ${formatNumber(a.magicSum)}`:'New magic total: __________',6.2,{bold:true,color:answers?TEAL:MUTED,align:'center'});
+      return;
+    }
+    const grid=answers?a.solutionGrid:a.displayGrid,gridMax=Math.min(w*.58,bodyH),left=drawMagicGrid(page,grid,x+12,bodyY,gridMax,bodyH,{maxCell:h<230?34:50,highlight:answers&&a.puzzleType==='repair'?a.wrongCell:''}),sideX=x+24+gridMax,sideW=w-(sideX-x)-14;let sy=bodyY+10;
+    page.text(sideX,sy,clean(typeLabel),7.5,{bold:true,color:DARK});sy+=16;
+    if(a.puzzleType==='find_total')drawWrapped(page,sideX,sy,answers?`Magic total = ${formatNumber(a.magicSum)}`:'Magic total = __________',sideW,8,{bold:true,color:answers?TEAL:INK,maxLines:2});
+    else if(a.puzzleType==='repair')drawWrapped(page,sideX,sy,answers?a.answerText:`Target magic total: ${formatNumber(a.magicSum)}`,sideW,7.3,{bold:true,color:answers?TEAL:INK,maxLines:3});
+    else drawWrapped(page,sideX,sy,`Magic total: ${formatNumber(a.magicSum)}`,sideW,7.3,{bold:true,color:INK,maxLines:2});
+    sy+=34;drawWrapped(page,sideX,sy,`Numbers: ${a.numberPatternLabel||''}`,sideW,6.2,{color:MUTED,maxLines:3});
   }
 
   function drawActivity(page,a,answers,x,y,w,h,index){
     if(a?.error){const top=activityFrame(page,x,y,w,h,index,a||{});drawWrapped(page,x+12,top,clean(a.error),w-24,8,{color:[140,70,60]});return;}
     if(a.engineId==='pyramid')return drawPyramid(page,a,answers,x,y,w,h,index);
     if(a.engineId==='crossword')return drawCrossword(page,a,answers,x,y,w,h,index);
+    if(a.engineId==='magic')return drawMagic(page,a,answers,x,y,w,h,index);
     return drawWordSearch(page,a,answers,x,y,w,h,index);
   }
 
@@ -128,31 +164,39 @@
   }
 
   function drawWorkedExample(page,ex,x,y,w,h){
-    box(page,x,y,w,h,[251,253,252],[201,220,218],.8);page.text(x+12,y+20,clean(ex.kind==='pyramid'?'Number Pyramid':ex.kind==='crossword'?'Maths Crossword':'Maths Word Search'),11,{bold:true,color:INK});let cy=y+39;
+    box(page,x,y,w,h,[251,253,252],[201,220,218],.8);
+    const title=clean(ex.title||'Worked example').replace(/ worked example$/i,'');page.text(x+12,y+20,title,12,{bold:true,color:INK});let cy=y+39;
+    if(ex.goal){cy+=drawWrapped(page,x+12,cy,`Goal: ${ex.goal}`,w-24,7.2,{bold:true,color:DARK,maxLines:2})+7;}
     if(ex.kind==='crossword'){
-      cy+=drawWrapped(page,x+12,cy,`Clue: ${ex.clue}`,w-24,7,{color:DARK,maxLines:3})+8;
-      const chars=String(ex.answer||'').split(''),cell=Math.min(24,(w-24)/Math.max(1,chars.length)),sx=x+w/2-chars.length*cell/2;chars.forEach((ch,i)=>{page.rect(sx+i*cell,cy,cell-1,cell-1,{fill:WHITE,stroke:[110,140,140],width:.7});page.text(sx+i*cell+(cell-1)/2,cy+cell*.65,ch,8,{bold:true,color:INK,align:'center'});});cy+=cell+10;
+      cy+=drawWrapped(page,x+12,cy,`Clue: ${ex.clue} ${ex.enumeration||enumeration(ex.term)}`,w-24,7,{color:DARK,maxLines:2})+6;
+      const chars=String(ex.answer||'').split(''),cell=Math.min(22,(w-28)/Math.max(1,chars.length)),sx=x+w/2-chars.length*cell/2;chars.forEach((ch,i)=>{page.rect(sx+i*cell,cy,cell-1,cell-1,{fill:WHITE,stroke:[110,140,140],width:.7});page.text(sx+i*cell+(cell-1)/2,cy+cell*.65,ch,8,{bold:true,color:INK,align:'center'});});cy+=cell+8;
     }else if(ex.kind==='pyramid'){
-      cy+=drawWrapped(page,x+12,cy,ex.explanation||'',w-24,7,{color:DARK,maxLines:3})+8;
-      const rows=ex.rows||[],maxCols=rows.at(-1)?.length||3,cellW=Math.min(42,(w-36)/maxCols),cellH=26;rows.forEach(row=>{const sw=row.length*cellW,sx=x+w/2-sw/2;row.forEach((n,i)=>{page.rect(sx+i*cellW,cy,cellW-2,cellH-2,{fill:WHITE,stroke:[110,140,140],width:.7});page.text(sx+i*cellW+(cellW-2)/2,cy+17,String(n),8,{bold:true,color:INK,align:'center'});});cy+=cellH;});cy+=6;
+      const rows=ex.rows||[],maxCols=rows.at(-1)?.length||3,cellW=Math.min(38,(w-40)/maxCols),cellH=23;rows.forEach((row,r)=>{const sw=row.length*cellW,sx=x+w/2-sw/2;row.forEach((n,i)=>{const miss=ex.exampleMissing===`${r}:${i}`;page.rect(sx+i*cellW,cy,cellW-2,cellH-2,{fill:miss?PALE:WHITE,stroke:[110,140,140],width:.7});page.text(sx+i*cellW+(cellW-2)/2,cy+15,miss?'?':String(n),8,{bold:true,color:INK,align:'center'});});cy+=cellH;});cy+=6;
+    }else if(ex.kind==='magic'){
+      page.text(x+12,cy,`Magic total: ${formatNumber(ex.magicSum)}`,7,{bold:true,color:TEAL});cy+=8;const g=drawMagicGrid(page,ex.displayGrid,x+w/2-82,cy,164,98,{maxCell:32});cy+=g.h+7;
     }else{
-      const intro=ex.mode==='definitions'?`Definition: ${ex.definition}`:`${ex.term} — ${ex.definition}`;cy+=drawWrapped(page,x+12,cy,intro,w-24,7,{color:DARK,maxLines:3})+8;
-      const size=ex.size||5,cell=Math.min(20,(w-40)/size,70/size),sx=x+w/2-size*cell/2;for(let gy=0;gy<size;gy++)for(let gx=0;gx<size;gx++){const hit=gy===ex.row&&gx>=ex.start&&gx<ex.start+String(ex.answer||'').length;page.rect(sx+gx*cell,cy+gy*cell,cell,cell,{fill:hit?HIT:WHITE,stroke:[190,206,208],width:.4});page.text(sx+gx*cell+cell/2,cy+gy*cell+cell*.68,ex.grid?.[gy]?.[gx]||'',Math.max(4,cell*.45),{bold:true,color:INK,align:'center'});}cy+=size*cell+8;
+      const intro=ex.mode==='definitions'?`Definition: ${ex.definition}${needsEnumeration(ex.term)?` ${ex.enumeration||enumeration(ex.term)}`:''}`:`${ex.term} - ${ex.definition}`;cy+=drawWrapped(page,x+12,cy,intro,w-24,7,{color:DARK,maxLines:2})+6;
+      const size=ex.size||5,cell=Math.min(20,(w-50)/size,92/size),sx=x+w/2-size*cell/2;for(let gy=0;gy<size;gy++)for(let gx=0;gx<size;gx++){const hit=gy===ex.row&&gx>=ex.start&&gx<ex.start+String(ex.answer||'').length;page.rect(sx+gx*cell,cy+gy*cell,cell,cell,{fill:hit?HIT:WHITE,stroke:[190,206,208],width:.4});page.text(sx+gx*cell+cell/2,cy+gy*cell+cell*.68,ex.grid?.[gy]?.[gx]||'',Math.max(3.8,cell*.42),{bold:true,color:INK,align:'center'});}cy+=size*cell+6;
     }
-    for(const step of ex.steps||[]){const used=drawWrapped(page,x+17,cy,`• ${step}`,w-30,6.5,{color:DARK,maxLines:2});cy+=used+3;if(cy>y+h-12)break;}
+    if(ex.rules?.length){page.text(x+12,cy,'Rules',7,{bold:true,color:[46,87,86]});cy+=10;for(const rule of ex.rules){cy+=drawWrapped(page,x+17,cy,`- ${rule}`,w-30,6.2,{color:DARK,maxLines:2})+2;if(cy>y+h-100)break;}cy+=3;}
+    if(ex.steps?.length&&cy<y+h-70){page.text(x+12,cy,'Worked steps',7,{bold:true,color:[46,87,86]});cy+=10;for(let i=0;i<ex.steps.length;i++){cy+=drawWrapped(page,x+17,cy,`${i+1}. ${ex.steps[i]}`,w-30,6.2,{color:DARK,maxLines:2})+2;if(cy>y+h-60)break;}cy+=3;}
+    if(ex.tip&&cy<y+h-35){cy+=drawWrapped(page,x+12,cy,`Tip: ${ex.tip}`,w-24,6.1,{bold:true,color:TEAL,maxLines:2})+2;}
+    if(ex.commonMistake&&cy<y+h-18)drawWrapped(page,x+12,cy,`Watch out: ${ex.commonMistake}`,w-24,6.0,{bold:true,color:[130,84,60],maxLines:2});
   }
 
-  function addWorkedPage(doc,examples,settings,topics){
-    if(!examples?.length)return;const page=doc.addPage({orientation:'portrait'});drawPageHeader(page,'Worked examples',`${yearLabel(settings)} · How to get started`,'Read these before you begin');
-    const count=examples.length,cols=count===1?1:2,rows=Math.ceil(count/cols),gap=14,bodyTop=112,bodyBottom=PAGE_H-42,w=(PAGE_W-2*M-gap*(cols-1))/cols,h=(bodyBottom-bodyTop-gap*(rows-1))/rows;
-    examples.forEach((ex,i)=>{const col=i%cols,row=Math.floor(i/cols);drawWorkedExample(page,ex,M+col*(w+gap),bodyTop+row*(h+gap),w,h);});drawFooter(page,'Worked examples use separate practice data');
+  function addWorkedPages(doc,examples,settings,topics){
+    if(!examples?.length)return;const perPage=2,totalPages=Math.ceil(examples.length/perPage);
+    for(let start=0,pageNo=0;start<examples.length;start+=perPage,pageNo++){
+      const chunk=examples.slice(start,start+perPage),page=doc.addPage({orientation:'portrait'});drawPageHeader(page,totalPages>1?`Worked examples ${pageNo+1}`:'Worked examples',`${yearLabel(settings)} · How to get started`,'Read these before you begin');
+      const gap=14,bodyTop=112,bodyBottom=PAGE_H-42,w=PAGE_W-2*M,h=(bodyBottom-bodyTop-gap*(chunk.length-1))/chunk.length;chunk.forEach((ex,i)=>drawWorkedExample(page,ex,M,bodyTop+i*(h+gap),w,h));drawFooter(page,'Worked examples use separate practice data');
+    }
   }
 
   function buildDocument(opts={}){
     const pack=opts.pack||{},settings=opts.settings||{},kind=['student','answers','both'].includes(opts.kind)?opts.kind:'student',topics=opts.topics||{},seed=opts.seed||pack.seed||'GAMES';
     const doc=new P.PDFDocument();
     if(kind==='student'||kind==='both'){
-      if(settings.workedExamples==='front'&&pack.workedExamples?.length)addWorkedPage(doc,pack.workedExamples,settings,topics);
+      if(settings.workedExamples==='front'&&pack.workedExamples?.length)addWorkedPages(doc,pack.workedExamples,settings,topics);
       for(const sheet of pack.sheets||[])addSheetPage(doc,sheet,false,settings,topics,seed);
     }
     if(kind==='answers'||kind==='both')for(const sheet of pack.sheets||[])addSheetPage(doc,sheet,true,settings,topics,seed);
