@@ -4,10 +4,11 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version **1.22.2** keeps the public 99 Club workflow stable while expanding the separate Custom Worksheets beta route:
+Version **1.23.0** keeps the core 99 Club workflow stable, keeps Custom Worksheets separate, and introduces a public printable Games & Puzzles area:
 
 1. **99 Club** at `/tools/99-club/` — the stable progression tool for Classic 11–99, optional alternative progressions and Bronze–Diamond challenges.
-2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice. In v1.19 this route is intentionally **unlinked from the public 99 Club UI and Help page**; it is available only when its URL is entered/shared directly while the module continues to mature.
+2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice.
+3. **Maths Games & Puzzles** at `/tools/99-club/games/` — printable independent practice built from reusable game engines and maths-content providers. The first release includes Word Search and Number Pyramid, with local teacher vocabulary support.
 
 The stable 99 Club interface is now feature-frozen in spirit: future curriculum, graphical and word-problem work should normally be added to Custom Worksheets rather than expanding the Club screen. Both workspaces share the deterministic generator/PDF infrastructure where that is safe, but keep separate browser state and UI flows.
 
@@ -19,6 +20,16 @@ The TTC Classic default is **5 minutes** and **3 perfect attempts that do not ne
 
 
 
+
+
+### v1.23.0 Maths Games & Puzzles foundation
+
+- Adds the public `/tools/99-club/games/` workspace and a Games & puzzles button on the main Studio hero.
+- Adds reusable Word Search and Number Pyramid engines with year-range, topic, difficulty, sheet-count and activities-per-sheet controls.
+- Supports mixed packs or repeated copies of one compatible game engine.
+- Adds 128 built-in maths-vocabulary entries plus private **My vocabulary** stored locally in the teacher browser with JSON import/export.
+- Keeps teacher-added definitions out of the public/GitHub catalogue.
+- Moves the eight graphical angle families into the existing **Geometry** Custom Worksheet accordion while preserving the full 104-subtype / 416-variant angle engine.
 
 ### v1.22.2 Angles visual polish + Pie Chart variety expansion
 

@@ -27,7 +27,7 @@ const checks={
 for(const [id,ans] of Object.entries(checks))assert(first(id).answer===ans,`${id}: mathematical invariant regression`);
 assert(first('ang_y5_measure_angle_actual_size').marking.toleranceDeg===2,'measure angle explicit tolerance');
 assert(first('ang_y5_draw_given_angle_actual_size').marking.toleranceDeg===2,'draw angle explicit tolerance');
-assert(G.FAMILY_META.angles_compare_y4?.visual===true,'Angle visual family not registered');for(const id of ['angle_facts','angle_sums','angle_relationships','angle_classification'])assert(G.FAMILY_META[id]?.extension===true,`${id} should be fallback/Extension`);
+assert(G.FAMILY_META.angles_compare_y4?.visual===true,'Angle visual family not registered');for(const id of Object.keys(A.ANGLE_FAMILIES))assert(G.FAMILY_META[id]?.strand==='Geometry',`${id}: graphical angle family should belong to Geometry`);for(const id of ['angle_facts','angle_sums','angle_relationships','angle_classification'])assert(G.FAMILY_META[id]?.extension===true,`${id} should be fallback/Extension`);
 // Diagram completeness audit: if a prompt refers to named point/line letters,
 // those letters must exist as visible labels in the pupil visual.
 function visibleLabels(q){

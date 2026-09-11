@@ -438,6 +438,7 @@
             <p class="tt99-hero__slogan">Practice. Progress. Confidence.</p>
           </div>
           <div class="tt99-hero-tools" aria-label="99 Club Studio links">
+            <a href="/tools/99-club/games/" class="tt99-hero-tool tt99-games-link"><span aria-hidden="true">▦</span>Games &amp; puzzles</a>
             <a href="/tools/99-club/help/" class="tt99-hero-tool tt99-help-link" target="_blank" rel="noopener"><span aria-hidden="true">?</span>Help &amp; guide</a>
             <button type="button" id="tt99-contact-open" class="tt99-hero-tool tt99-contact-link"><span aria-hidden="true">✉</span>Contact</button>
             <button type="button" id="tt99-kofi-open" class="tt99-hero-tool tt99-support-link"><img class="tt99-kofi-cup" src="/assets/99club/images/kofi-cup.png?v=19.4" alt="" aria-hidden="true">Buy me a coffee</button>

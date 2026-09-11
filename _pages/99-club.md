@@ -20,7 +20,7 @@ sidebar: false
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
 <script src="/assets/99club/pdf-layout.js?v=19.4"></script>
 <script src="/assets/99club/qr-lite.js?v=19.4"></script>
-<script src="/assets/99club/app.js?v=19.4" defer></script>
+<script src="/assets/99club/app.js?v=19.5" defer></script>
 
 <!-- Ko-fi support widget. This intentionally appears only on the public 99 Club Studio page. -->
 <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>

@@ -11,6 +11,6 @@ assert(a===b,'Duplicate /tools/99-club/custom/ source pages have drifted');
 for(const file of ['custom-graphs.js','custom-coordinates.js','custom-piecharts.js','custom-angles.js','custom-app.js']){
   assert(a.includes(`/assets/99club/${file}`),`Custom page does not load ${file}`);
 }
-assert(/custom-angles\.js\?v=7/.test(a),'Angles asset cache version is not v7');
-assert(/custom-app\.js\?v=226/.test(a),'Custom app cache version is not v226');
+assert(/custom-angles\.js\?v=8/.test(a),'Angles asset cache version is not v8');
+assert(/custom-app\.js\?v=227/.test(a),'Custom app cache version is not v227');
 console.log('Custom entrypoint smoke: PASS');

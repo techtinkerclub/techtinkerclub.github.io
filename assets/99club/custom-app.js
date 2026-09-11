@@ -9,7 +9,7 @@
   const STORAGE_KEY = 'tt99-custom-settings-v1';
   const LEGACY_MAIN_STORAGE_KEY = 'tt99-settings-v1';
   const CUSTOM_KEY = 'tt99-custom-presets-v1';
-  const VERSION = '1.22.2';
+  const VERSION = '1.23.0';
   const APP_NAME = '99 Club Studio · Custom Worksheets';
   const APP_URL = 'https://techtinker.club/tools/99-club/custom/';
   const GENERATION_VERSION = 1;
@@ -398,10 +398,10 @@
         <section class="tt99-custom-hero" aria-labelledby="tt99-custom-title">
           <div><span class="tt99-eyebrow">Tech Tinker Club · 99 Club Studio</span><div class="tt99-custom-title-row"><h1 id="tt99-custom-title">Custom Worksheets</h1><span class="tt99-beta-pill">Beta</span></div><p>Build targeted starters, homework, quizzes and retrieval practice. This workspace is separate so new curriculum, visual and future word-problem generators can grow without changing the stable 99 Club workflow.</p></div>
           <div class="tt99-custom-hero-actions">
-            <a class="tt99-secondary tt99-custom-back" href="/tools/99-club/">← Back to 99 Club</a>
+            <a class="tt99-secondary tt99-custom-back" href="/tools/99-club/">← Back to 99 Club</a><a class="tt99-secondary tt99-custom-back" href="/tools/99-club/games/">Games &amp; puzzles</a>
           </div>
         </section>
-        <div class="tt99-custom-intro-note"><strong>Build exactly what you need.</strong><span>Custom Worksheets now starts with no topics selected. Choose freely across the curriculum catalogue; supported charts, pie charts and coordinate geometry use deterministic generated visuals.</span></div>
+        <div class="tt99-custom-intro-note"><strong>Build exactly what you need.</strong><span>Custom Worksheets now starts with no topics selected. Choose freely across the curriculum catalogue; supported charts, pie charts, coordinates and angle geometry use deterministic generated visuals.</span></div>
         ${renderWorkspaceViewSwitcher()}
         <div class="tt99-workspace tt99-workspace--custom ${workspaceViewClass()}">
           <aside class="tt99-controls">
@@ -571,7 +571,7 @@
   function renderFamilySelector(r){
     const core=isNamedAdvanced()?advancedCoreFamilies():[];
     const meta=G.FAMILY_META||{};
-    const strandOrder=['Number & place value','Number properties','Calculation','Fractions','Decimals & percentages','Ratio & proportion','Measurement','Geometry','Angles & turns','Algebra','Statistics','Extension'];
+    const strandOrder=['Number & place value','Number properties','Calculation','Fractions','Decimals & percentages','Ratio & proportion','Measurement','Geometry','Algebra','Statistics','Extension'];
     function yearsText(m){const ys=(m?.years||[]);if(!ys.length)return m?.extension?'Extension':'';return ys.length===1?`Y${ys[0]}`:`Y${Math.min(...ys)}–${Math.max(...ys)}`;}
     function grouped(ids,locked=false){
       return strandOrder.map(strand=>{
