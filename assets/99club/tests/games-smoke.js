@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.26.0 Maths Games & Puzzles smoke/regression test. */
+/* 99 Club Studio v1.26.1 Maths Games & Puzzles smoke/regression test. */
 'use strict';
 const fs=require('fs'),path=require('path');
 const ROOT=path.resolve(__dirname,'..'),REPO=path.resolve(ROOT,'../..');
@@ -6,8 +6,8 @@ const G=require(path.join(ROOT,'games-engine.js')),GPDF=require(path.join(ROOT,'
 function assert(ok,msg){if(!ok)throw new Error(msg);}const failures=[];function check(fn){try{fn();}catch(e){failures.push(e.stack||e.message);}}
 
 check(()=>{
-  assert(G.VERSION==='1.4.0','Unexpected games engine version');
-  assert(Object.keys(G.ENGINES).join(',')==='wordsearch,pyramid,crossword,magic,sudoku','Expected Word Search + Number Pyramid + Crossword + Magic Squares + Mini Sudoku / Latin Squares');
+  assert(G.VERSION==='1.4.1','Unexpected games engine version');
+  assert(Object.keys(G.ENGINES).join(',')==='wordsearch,pyramid,crossword,magic,sudoku','Expected Word Search + Number Pyramid + Crossword + Magic Squares + Sudoku / Latin Squares');
   assert(G.VOCABULARY.length===591,'Curated vocabulary database should expose 591 entries');
   for(const id of ['wordsearch','pyramid','crossword','magic','sudoku']){const e=G.ENGINES[id];assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: common output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: first games remain print → pencil → solve`);assert(e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: per-game settings missing`);}
 });
@@ -70,12 +70,27 @@ check(()=>{
     const settings={minYear:year,maxYear:year,topics:['number_place_value'],engineSettings:{sudoku:{difficulty,gridSize:'auto',puzzleStyle:style,clueLevel:'balanced'}}};
     const a=G.generateMiniSudoku(settings,`sdk-${year}-${difficulty}-${style}`),b=G.generateMiniSudoku(settings,`sdk-${year}-${difficulty}-${style}`);
     assert(JSON.stringify(a)===JSON.stringify(b),`Sudoku ${year} ${difficulty} ${style}: nondeterministic`);
-    assert([4,6].includes(a.size),`Sudoku ${style}: invalid size`);
+    assert([4,6,9].includes(a.size),`Sudoku ${style}: invalid size`);
     assert(a.missingSet.length>=3,`Sudoku ${style}: too few blanks`);
     assert(G._countSudokuSolutions(a.displayGrid.map(r=>r.slice()),style,2)===1,`Sudoku ${style}: puzzle should have exactly one solution`);
     for(let r=0;r<a.size;r++){assert(new Set(a.solutionGrid[r]).size===a.size,`Sudoku ${style}: row duplicate`);assert(new Set(a.solutionGrid.map(row=>row[r])).size===a.size,`Sudoku ${style}: column duplicate`);}
     if(style==='sudoku'){const box=G._sudokuBoxShape(a.size);for(let br=0;br<a.size;br+=box.rows)for(let bc=0;bc<a.size;bc+=box.cols){const vals=[];for(let r=br;r<br+box.rows;r++)for(let c=bc;c<bc+box.cols;c++)vals.push(a.solutionGrid[r][c]);assert(new Set(vals).size===a.size,`Sudoku ${a.size}: box duplicate`);}}
   }
+});
+
+check(()=>{
+  // Full-size Sudoku regression: force 9×9 and verify 3×3 boxes + a unique solution.
+  for(const difficulty of ['easy','standard','challenge'])for(let i=0;i<20;i++){
+    const settings={minYear:5,maxYear:6,topics:['number_place_value'],engineSettings:{sudoku:{difficulty,gridSize:'9',puzzleStyle:'sudoku',clueLevel:'balanced'}}};
+    const a=G.generateSudoku(settings,`sdk-9-${difficulty}-${i}`);
+    assert(a.size===9&&a.style==='sudoku',`9×9 ${difficulty}: wrong size/style`);
+    assert(a.boxRows===3&&a.boxCols===3,`9×9 ${difficulty}: expected 3×3 boxes`);
+    assert(G._countSudokuSolutions(a.displayGrid.map(r=>r.slice()),'sudoku',2)===1,`9×9 ${difficulty}: puzzle should have exactly one solution`);
+    for(let r=0;r<9;r++){assert(new Set(a.solutionGrid[r]).size===9,`9×9 ${difficulty}: row duplicate`);assert(new Set(a.solutionGrid.map(row=>row[r])).size===9,`9×9 ${difficulty}: column duplicate`);}
+    for(let br=0;br<9;br+=3)for(let bc=0;bc<9;bc+=3){const vals=[];for(let r=br;r<br+3;r++)for(let c=bc;c<bc+3;c++)vals.push(a.solutionGrid[r][c]);assert(new Set(vals).size===9,`9×9 ${difficulty}: box duplicate`);}
+  }
+  const auto=G.generateSudoku({minYear:6,maxYear:6,topics:['number_place_value'],engineSettings:{sudoku:{difficulty:'challenge',gridSize:'auto',puzzleStyle:'auto',clueLevel:'balanced'}}},'sdk-auto-y6-challenge');
+  assert(auto.size===9&&auto.style==='sudoku','Year 6 Challenge Auto should be allowed to choose full 9×9 Sudoku');
 });
 
 check(()=>{
@@ -131,11 +146,11 @@ check(()=>{
   assert(/permalink:\s*\/tools\/99-club\/games\//.test(page),'Games page permalink missing');assert(page.includes('/assets/99club/games-vocabulary.js')&&page.includes('/assets/99club/games-engine.js')&&page.includes('/assets/99club/simple-pdf.js')&&page.includes('/assets/99club/games-pdf.js')&&page.includes('/assets/99club/games-app.js'),'Games page asset stack incomplete');assert(main.includes('/tools/99-club/games/'),'Main 99 Club hero should link Games');
   assert(!/class=\"black\"/.test(ui),'Crossword browser renderer must not create blocked cells');
   const pdf=fs.readFileSync(path.join(ROOT,'games-pdf.js'),'utf8');assert(pdf.includes('Freeform classroom criss-cross')&&!pdf.includes("fill:[64,88,93],stroke:[64,88,93]"),'Crossword PDF renderer must draw active cells only');
-  for(const phrase of ['Maths Crossword','Magic Squares','Check: is it a magic square?','Mixed Mini Sudoku / Latin Square','Mixed variants','Spot &amp; fix the error','Transform the square','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
+  for(const phrase of ['Maths Crossword','Magic Squares','Check: is it a magic square?','Mixed Sudoku / Latin Square','Mixed variants','Spot &amp; fix the error','Transform the square','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
   assert(!ui.includes('Find the magic total'),'Old find-total Magic Square mode should not remain in the UI');
   assert(!ui.includes('numberPatternLabel'),'Internal Magic Square number-pattern metadata must not be rendered to pupils');
-  assert(ui.includes("${active?'Done':'Configure'}"),'Game cards should use Done to collapse an open setup panel');
+  assert(ui.includes("${active?'Done':'Configure'}"),'Game cards should use Done to collapse an open setup panel');assert(ui.includes("G.ENGINES[id]?.defaultSettings"),'Engine settings lookup must tolerate no active setup panel');assert(/const id=state\.activeEngine,e=G\.ENGINES\[id\];if\(!e\|\|!compatibleSet\(\)\.has\(id\)\)return '';const o=engineSettings\(id\);/.test(ui),'Setup renderer must check for an active engine before reading its settings');assert(ui.includes('9 × 9'),'Sudoku setup must expose full 9×9');
   assert(!/fetch\s*\(|XMLHttpRequest|navigator\.sendBeacon/.test(ui),'Games UI must not upload teacher vocabulary');assert((angles.match(/strand:'Geometry'/g)||[]).length===8,'All 8 graphical angle families should belong to Geometry');assert(!/strandOrder=\[[^\]]*'Angles & turns'/.test(custom),'Custom selector should not expose standalone Angles & turns');
 });
 
-if(failures.length){console.error(`Games smoke FAILED (${failures.length})`);for(const f of failures)console.error(' - '+f);process.exit(2);}console.log(`Games smoke passed: ${G.VOCABULARY.length} curated vocabulary entries + strict topic-safe Word Search/Crossword pools + Number Pyramid + Magic Square reasoning + Mini Sudoku / Latin Squares + clue enumeration + richer worked examples.`);
+if(failures.length){console.error(`Games smoke FAILED (${failures.length})`);for(const f of failures)console.error(' - '+f);process.exit(2);}console.log(`Games smoke passed: ${G.VOCABULARY.length} curated vocabulary entries + strict topic-safe Word Search/Crossword pools + Number Pyramid + Magic Square reasoning + full Sudoku / Latin Squares + clue enumeration + richer worked examples.`);

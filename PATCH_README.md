@@ -1,14 +1,16 @@
-# 99 Club Studio v1.26.0 patch
+# v1.26.1 patch instructions
 
-Apply this overlay directly on top of **v1.25.1**.
+Apply this patch **on top of v1.26.0**.
 
-## Main changes
+It fixes the v1.26.0 Games & Puzzles startup crash and expands the Sudoku engine to full 9×9 support.
 
-- replaces Magic Squares `Find the magic total` with **Check: is it a magic square?** reasoning;
-- removes internal Magic number-generation metadata from pupil/answer resources;
-- fixes game setup collapse: **Configure → Done** genuinely closes the specialist setup panel;
-- adds **Mini Sudoku & Latin Squares** with 4×4/6×6, per-game difficulty/style/clue controls and unique-solution validation;
-- adds worked examples and PDF/answer rendering for the new logic engine;
-- updates Help and regression tests.
+After deployment, hard-refresh `/tools/99-club/games/` once so the bumped asset versions are loaded.
 
-After deployment, hard-refresh `/tools/99-club/games/` so the bumped asset versions are loaded.
+Quick deployment checks:
+
+1. Games & Puzzles loads with no setup panel open.
+2. Configure any game, then press Done; the panel should disappear completely.
+3. Open Sudoku & Latin Squares → Grid size → choose 9×9.
+4. Generate a new version and confirm a 9×9 grid with 3×3 heavy box boundaries.
+5. Download pupil and answer PDFs and confirm both render the same Sudoku footprint.
+

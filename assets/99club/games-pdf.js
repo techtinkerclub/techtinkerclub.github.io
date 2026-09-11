@@ -1,5 +1,5 @@
 /* 99 Club Studio · Maths Games & Puzzles PDF exporter
- * v1.2.0 — Magic-square reasoning refresh + Mini Sudoku / Latin Squares.
+ * v1.2.1 — Games runtime recovery + full 9×9 Sudoku rendering.
  */
 (function(global){
   'use strict';
@@ -149,7 +149,7 @@
   }
 
   function drawSudokuGrid(page,display,solution,answers,style,boxRows,boxCols,x,y,maxW,maxH,opts={}){
-    const n=display?.length||4,cell=Math.min(maxW/n,maxH/n,opts.maxCell||52),gw=cell*n,gh=cell*n,sx=x+(maxW-gw)/2,sy=y+(maxH-gh)/2,boxR=boxRows||2,boxC=boxCols||(n===6?3:2);
+    const n=display?.length||4,cell=Math.min(maxW/n,maxH/n,opts.maxCell||52),gw=cell*n,gh=cell*n,sx=x+(maxW-gw)/2,sy=y+(maxH-gh)/2,boxR=boxRows||(n===9?3:2),boxC=boxCols||(n===9?3:n===6?3:2);
     for(let r=0;r<n;r++)for(let c=0;c<n;c++){
       const given=!!display[r][c],v=answers?(solution?.[r]?.[c]||display[r][c]):display[r][c],fill=answers&&!given?HIT:WHITE;
       page.rect(sx+c*cell,sy+r*cell,cell,cell,{fill,stroke:[142,161,164],width:.5});
