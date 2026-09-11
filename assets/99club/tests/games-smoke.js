@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.27.0 Maths Games & Puzzles smoke/regression test. */
+/* 99 Club Studio v1.28.0 Maths Games & Puzzles smoke/regression test. */
 'use strict';
 const fs=require('fs'),path=require('path');
 const ROOT=path.resolve(__dirname,'..'),REPO=path.resolve(ROOT,'../..');
@@ -6,10 +6,14 @@ const G=require(path.join(ROOT,'games-engine.js')),GPDF=require(path.join(ROOT,'
 function assert(ok,msg){if(!ok)throw new Error(msg);}const failures=[];function check(fn){try{fn();}catch(e){failures.push(e.stack||e.message);}}
 
 check(()=>{
-  assert(G.VERSION==='1.5.0','Unexpected games engine version');
-  const expected=['wordsearch','pyramid','crossword','magic','sudoku','arithmagon','magicshape','maze','crossnumber','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance'];assert(JSON.stringify(Object.keys(G.ENGINES))===JSON.stringify(expected),'Expected the complete 18-engine Games library');
+  assert(G.VERSION==='1.7.0','Unexpected games engine version');
+  const expected=['wordsearch','pyramid','crossword','magic','sudoku','arithmagon','magicshape','maze','crossnumber','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance','kakuro','futoshiki','arithmeticcages','nonogram','numberpath'];assert(JSON.stringify(Object.keys(G.ENGINES))===JSON.stringify(expected),'Expected the complete 23-engine Games library');
   assert(G.VOCABULARY.length===591,'Curated vocabulary database should expose 591 entries');
   for(const id of Object.keys(G.ENGINES)){const e=G.ENGINES[id];assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: common output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: first games remain print → pencil → solve`);assert(e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: per-game settings missing`);}
+  assert(G.ENGINES.domino.hiddenFromLibrary===true,'Domino chain should be parked outside the one-player library');
+  assert(!G.compatibleEngines({minYear:4,maxYear:4,topics:['calculation']}).includes('domino'),'Hidden domino chain leaked into compatible one-player games');
+  const blank=G.normalizeSettings({minYear:4,maxYear:4,topics:['calculation'],selectedEngines:[]});assert(blank.selectedEngines.length===0,'Explicit Clear all should remain empty');assert(G.generatePack(blank,'empty-pack').sheets.length===0,'Empty game selection should not silently generate another engine');
+  const personal=G.normalizeSettings({personalisation:{schoolName:'Oakfield Primary',packTitle:'Friday Maths Games',classLabel:'Year 5',worksheetDate:'2026-09-11'}}).personalisation;assert(personal.schoolName==='Oakfield Primary'&&personal.packTitle==='Friday Maths Games'&&personal.classLabel==='Year 5'&&personal.worksheetDate==='2026-09-11','Games personalisation normalization failed');
 });
 
 check(()=>{
@@ -146,7 +150,8 @@ check(()=>{
   assert(/permalink:\s*\/tools\/99-club\/games\//.test(page),'Games page permalink missing');assert(page.includes('/assets/99club/games-vocabulary.js')&&page.includes('/assets/99club/games-arithmetic.js')&&page.includes('/assets/99club/games-engine.js')&&page.includes('/assets/99club/simple-pdf.js')&&page.includes('/assets/99club/games-pdf.js')&&page.includes('/assets/99club/games-app.js'),'Games page asset stack incomplete');assert(main.includes('/tools/99-club/games/'),'Main 99 Club hero should link Games');
   assert(!/class=\"black\"/.test(ui),'Crossword browser renderer must not create blocked cells');
   const pdf=fs.readFileSync(path.join(ROOT,'games-pdf.js'),'utf8');assert(pdf.includes('Freeform classroom criss-cross')&&!pdf.includes("fill:[64,88,93],stroke:[64,88,93]"),'Crossword PDF renderer must draw active cells only');
-  for(const phrase of ['Maths Crossword','Magic Squares','Check: is it a magic square?','Mixed Sudoku / Latin Square','Mixed variants','Spot &amp; fix the error','Transform the square','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
+  for(const phrase of ['Number patterns & structures','Arithmetic & calculation','Number logic & grids','Selected games','Clear all games','Personalise the pack','School name','Pack title','Date on sheet','Maths Crossword','Magic Squares','Check: is it a magic square?','Mixed Sudoku / Latin Square','Mixed variants','Spot &amp; fix the error','Transform the square','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
+  assert(!ui.includes('Arithmetic Domino Chain</b>'),'Domino chain should not be rendered as a selectable one-player card');
   assert(!ui.includes('Find the magic total'),'Old find-total Magic Square mode should not remain in the UI');
   assert(!ui.includes('numberPatternLabel'),'Internal Magic Square number-pattern metadata must not be rendered to pupils');
   assert(ui.includes("${active?'Done':'Configure'}"),'Game cards should use Done to collapse an open setup panel');assert(ui.includes("G.ENGINES[id]?.defaultSettings"),'Engine settings lookup must tolerate no active setup panel');assert(/const id=state\.activeEngine,e=G\.ENGINES\[id\];if\(!e\|\|!compatibleSet\(\)\.has\(id\)\)return '';const o=engineSettings\(id\);/.test(ui),'Setup renderer must check for an active engine before reading its settings');assert(ui.includes('9 × 9'),'Sudoku setup must expose full 9×9');

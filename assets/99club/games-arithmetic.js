@@ -67,7 +67,7 @@
       settingsSchema:[{id:'difficulty',type:'difficulty',label:'Difficulty'},{id:'symbolCount',type:'select',label:'Unknowns',options:choiceOptions([['auto','Auto'],['2','2 unknowns'],['3','3 unknowns']])},{id:'equationStyle',type:'select',label:'Equations',options:choiceOptions([['auto','Auto'],['additive','Additive relationships'],['coefficients','Include multiples / coefficients']])}],
       difficultyDescriptions:{easy:'Two unknowns, simple sums',standard:'Two / three linked unknowns',challenge:'Coefficients and three unknowns'},topicYearMin:{algebra:6},compatibility:compat(['algebra'],[])},
 
-    domino:{id:'domino',title:'Arithmetic Domino Chain',group:'Number & arithmetic',kind:'independent',printableMode:'cards',answerSheetSupport:true,workedExampleSupport:true,needsCutting:false,needsDice:false,needsPartner:false,
+    domino:{id:'domino',title:'Arithmetic Domino Chain',group:'Number & arithmetic',hiddenFromLibrary:true,kind:'independent',printableMode:'cards',answerSheetSupport:true,workedExampleSupport:true,needsCutting:false,needsDice:false,needsPartner:false,
       supportedAnswerTypes:['number'],difficultyOptions:['easy','standard','challenge'],defaultSettings:{difficulty:'standard',dominoCount:'auto'},
       settingsSchema:[{id:'difficulty',type:'difficulty',label:'Difficulty'},{id:'dominoCount',type:'select',label:'Dominoes',options:choiceOptions([['auto','Auto'],['6','6'],['8','8'],['10','10']])}],
       difficultyDescriptions:{easy:'Short chain',standard:'Balanced chain',challenge:'Longer mixed arithmetic'},topicYearMin:{calculation:2,fractions:2,decimals_percentages:4,ratio_proportion:6,measurement:3,geometry:3,statistics:2,algebra:6},compatibility:compat(NUMERIC_TOPICS,[])},

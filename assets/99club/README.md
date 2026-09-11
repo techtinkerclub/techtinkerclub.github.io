@@ -4,11 +4,11 @@ Client-side worksheet generator used by `/tools/99-club/`.
 
 ## Current baseline
 
-Version **1.27.0** keeps the core 99 Club workflow stable, keeps Custom Worksheets separate, and expands the public printable Games & Puzzles area:
+Version **1.28.0** keeps the core 99 Club workflow stable, keeps Custom Worksheets separate, and expands the public printable Games & Puzzles area:
 
 1. **99 Club** at `/tools/99-club/` — the stable progression tool for Classic 11–99, optional alternative progressions and Bronze–Diamond challenges.
 2. **Custom Worksheets (Beta)** at `/tools/99-club/custom/` — the broader curriculum workspace for starters, quizzes, homework and targeted practice.
-3. **Maths Games & Puzzles** at `/tools/99-club/games/` — printable independent practice built from reusable game engines and maths-content providers. v1.27.0 provides 18 engines spanning vocabulary, number/arithmetic, arithmetic reasoning, algebra/relationships and Sudoku/Latin-style logic, with local teacher vocabulary support for vocabulary games.
+3. **Maths Games & Puzzles** at `/tools/99-club/games/` — printable independent practice built from reusable game engines and maths-content providers. v1.28.0 contains 23 engine definitions, with **22 selectable one-player engines** after parking Arithmetic Domino Chain for future cut-and-match use. The public library now spans vocabulary, number/arithmetic, algebra and compact numeric-logic grids, with local teacher vocabulary and pack personalisation.
 
 The stable 99 Club interface is now feature-frozen in spirit: future curriculum, graphical and word-problem work should normally be added to Custom Worksheets rather than expanding the Club screen. Both workspaces share the deterministic generator/PDF infrastructure where that is safe, but keep separate browser state and UI flows.
 
@@ -21,6 +21,17 @@ The TTC Classic default is **5 minutes** and **3 perfect attempts that do not ne
 
 
 
+
+### v1.28.0 Numeric logic, library scaling and personalisation
+
+- Adds five compact numerical/spatial logic engines: **Kakuro / Cross Sums, Futoshiki, Arithmetic Cages, Nonogram / Number Picture, and Number Path**. The scope remains deliberately non-verbal: story-logic/truth-table puzzles are not generated.
+- Reorganises the Games library into highlighted accordion categories with `x/y selected`, **Select compatible**, per-category **Clear**, global **Clear all games**, and a compact selected-games tray. Selecting/deselecting a game never collapses its category.
+- Keeps per-game settings independent. **Configure** opens one setup and **Done** fully collapses it while retaining the chosen values.
+- Adds Games-pack personalisation: editable pack title, school name, optional class/year label, optional date and locally resized school logo. Personalisation is used in browser preview and in pupil, answer and combined PDFs.
+- Allows an intentionally empty game selection; generation/download remains disabled until at least one compatible game is selected.
+- Parks **Arithmetic Domino Chain** from the selectable one-player library while retaining its generator code for a possible future cut-and-match/classroom mode.
+- Numeric-logic generation uses deterministic validation. Futoshiki, Arithmetic Cages, Nonograms and Number Paths use solution checks/uniqueness checks as appropriate; Kakuro/Cross Sums validates run totals and no-repeat rules and can add the minimum starting digits needed for a single solution.
+- Existing main 99 Club, Custom Worksheet and graphical engines remain isolated from the Games UI changes.
 
 ### v1.27.0 Arithmetic Games expansion
 

@@ -1,29 +1,14 @@
-# 99 Club Studio v1.27.0 arithmetic-games expansion patch
+# 99 Club Studio v1.28.0 patch
 
-Apply this overlay **directly over v1.26.1**.
+Apply this overlay directly over the accepted **v1.27.0** repository.
 
-## What it adds
+## Main changes
 
-13 new numerical/arithmetic/algebraic Games & Puzzles engines:
+- Adds five compact numeric-logic engines: Kakuro / Cross Sums, Futoshiki, Arithmetic Cages, Nonograms and Number Paths.
+- Reorganises the Games library into highlighted accordion categories with category select/clear, global Clear all, and a Selected games tray.
+- Adds optional Games-pack personalisation: pack title, school name, class/year label, date and locally processed school logo.
+- Parks Arithmetic Domino Chain from the selectable one-player library while retaining the experimental engine for possible future cut-and-match use.
+- Keeps per-game Configure / Done settings and selective activity replacement.
+- Retains separate pupil, answer and combined PDF downloads.
 
-- Arithmagons
-- Magic Number Shapes
-- Correct-Answer Maze
-- Maths Crossnumber
-- Number Trails & Snakes
-- Target Number Challenge
-- Broken Calculator
-- Symbol Equations
-- Arithmetic Domino Chain
-- Missing Operations
-- Number Wheels, Flowers & Diamonds
-- Function Machines
-- Balance the Equation
-
-Together with the five existing engines, Games & Puzzles now contains 18 engines.
-
-## Important deployment detail
-
-Copy the overlay at repository root so `_pages/...` and `assets/99club/...` land in their existing locations. Then hard-refresh `/tools/99-club/games/` once so the new cache-busted assets are loaded.
-
-The patch does not alter the public 99 Club maths generator or the Custom Worksheet mathematical generators.
+After deployment, hard-refresh `/tools/99-club/games/` once because the Games assets are cache-bumped.

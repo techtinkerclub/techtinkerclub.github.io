@@ -373,3 +373,112 @@
 
 @media(max-width:900px){.tt99-arithmagon-wrap,.tt99-magicshape-wrap{grid-template-columns:1fr;height:auto}.tt99-maze-layout{grid-template-columns:1fr;height:auto}.tt99-maze-grid{max-width:340px}.tt99-target-list>div{grid-template-columns:24px 1fr auto}.tt99-target-list .work{grid-column:2/-1}.tt99-wheel-items{grid-template-columns:1fr}}
 @media print{.tt99-arithmagon-svg circle,.tt99-magicshape-svg circle{fill:#fff!important}.tt99-maze-cell.correct-route{background:#eaf7f3!important}.tt99-trail-grid>span,.tt99-equation-list>div,.tt99-domino-card,.tt99-wheel,.tt99-machine-table td,.tt99-machine-table th{background:#fff!important}}
+
+/* v1.28.0 — numeric logic puzzle engines */
+.tt99-logic-answer-note,.tt99-nonogram-key{margin:4px 0 0;text-align:center;font-size:clamp(5px,.52vw,7px);color:#71868b}
+.tt99-kakuro-grid,.tt99-cage-grid,.tt99-numberpath-grid{--logic-n:5;display:grid;grid-template-columns:repeat(var(--logic-n),1fr);width:min(100%,360px);aspect-ratio:1;margin:8px auto;border:1.4px solid #5d7479;background:#fff}
+.tt99-kakuro-grid>span,.tt99-cage-grid>span,.tt99-numberpath-grid>span{position:relative;display:grid;place-items:center;min-width:0;min-height:0;font-weight:850;color:#294a51;background:#fff}
+.tt99-kakuro-grid>span{border-right:.75px solid #9eafb2;border-bottom:.75px solid #9eafb2}
+.tt99-kakuro-grid .block{background:#eef2f2}.tt99-kakuro-grid .block.has-clue{background:#f6f9f9}.tt99-kakuro-grid .block.has-clue:after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom right,transparent 49%,#84999d 49.5%,#84999d 50.5%,transparent 51%)}
+.tt99-kakuro-grid .block i{position:absolute;z-index:1;font-style:normal;font-size:clamp(5px,.54vw,8px);line-height:1;color:#34535a;font-weight:850}.tt99-kakuro-grid .block i.down{left:5px;bottom:4px}.tt99-kakuro-grid .block i.across{right:5px;top:4px}.tt99-kakuro-grid .play b{font-size:clamp(10px,1.15vw,17px)}
+.tt99-game-activities.count-2 .tt99-kakuro-grid,.tt99-game-activities.count-2 .tt99-cage-grid,.tt99-game-activities.count-2 .tt99-numberpath-grid{width:min(100%,255px)}
+.tt99-game-activities.count-3 .tt99-kakuro-grid,.tt99-game-activities.count-3 .tt99-cage-grid,.tt99-game-activities.count-3 .tt99-numberpath-grid{width:min(100%,175px);margin-top:3px}
+
+.tt99-futoshiki-grid{--logic-wide:7;display:grid;grid-template-columns:repeat(var(--logic-wide),auto);grid-template-rows:repeat(var(--logic-wide),auto);width:min(100%,360px);aspect-ratio:1;margin:8px auto;align-items:center;justify-items:center}
+.tt99-futoshiki-grid .cell{display:grid;place-items:center;width:100%;height:100%;border:1px solid #93a7aa;background:#fff;font-size:clamp(10px,1.1vw,16px);font-weight:850;color:#294b51}.tt99-futoshiki-grid .cell.given{background:#f1f8f6;color:#176f67}.tt99-futoshiki-grid .sign{display:grid;place-items:center;color:#2f5960;font-size:clamp(9px,1vw,15px);font-weight:900}.tt99-futoshiki-grid .gap{width:100%;height:100%}
+.tt99-futoshiki-grid{grid-template-columns:repeat(var(--logic-wide),minmax(9px,1fr));grid-template-rows:repeat(var(--logic-wide),minmax(9px,1fr))}
+.tt99-game-activities.count-2 .tt99-futoshiki-grid{width:min(100%,250px)}.tt99-game-activities.count-3 .tt99-futoshiki-grid{width:min(100%,170px);margin-top:3px}
+
+.tt99-cage-grid .cage-cell{border:.5px solid #d8e0e1;font-size:clamp(10px,1.1vw,16px)}.tt99-cage-grid .cage-cell.top{border-top:2px solid #4f696f}.tt99-cage-grid .cage-cell.right{border-right:2px solid #4f696f}.tt99-cage-grid .cage-cell.bottom{border-bottom:2px solid #4f696f}.tt99-cage-grid .cage-cell.left{border-left:2px solid #4f696f}.tt99-cage-grid .cage-cell i{position:absolute;left:3px;top:2px;font-style:normal;font-size:clamp(5px,.48vw,7px);font-weight:900;color:#43656b}.tt99-cage-grid .cage-cell b{font-size:inherit}
+
+.tt99-nonogram-grid{display:grid;grid-template-columns:repeat(var(--ng-cols),1fr);grid-template-rows:repeat(var(--ng-rows),1fr);width:min(100%,390px);aspect-ratio:1;margin:6px auto;background:#fff}.tt99-nonogram-grid .pixel{border-right:.8px solid #aebdc0;border-bottom:.8px solid #aebdc0;background:#fff}.tt99-nonogram-grid .pixel.filled{background:#35575d}.tt99-nonogram-grid .row-clue,.tt99-nonogram-grid .col-clue{display:grid;place-items:center;font-size:clamp(5px,.5vw,8px);font-weight:850;color:#39585e}.tt99-nonogram-grid .row-clue{align-items:center}.tt99-nonogram-grid .corner{background:#fff}.tt99-game-activities.count-2 .tt99-nonogram-grid{width:min(100%,275px)}.tt99-game-activities.count-3 .tt99-nonogram-grid{width:min(100%,185px);margin-top:2px}
+
+.tt99-numberpath-grid>span{border-right:.8px solid #aababc;border-bottom:.8px solid #aababc;font-size:clamp(9px,1vw,15px)}.tt99-numberpath-grid>span.given{background:#eef8f6;color:#176f67}.tt99-numberpath-grid>span:first-child,.tt99-numberpath-grid>span:last-child{font-weight:950}
+
+@media(max-width:900px){.tt99-kakuro-grid,.tt99-cage-grid,.tt99-numberpath-grid,.tt99-futoshiki-grid,.tt99-nonogram-grid{width:min(100%,340px)}}
+@media print{
+  .tt99-kakuro-grid .block{background:#f4f4f4!important}.tt99-kakuro-grid .block.has-clue{background:#fff!important}.tt99-cage-grid .cage-cell,.tt99-futoshiki-grid .cell,.tt99-numberpath-grid>span,.tt99-nonogram-grid .pixel{background:#fff!important}.tt99-futoshiki-grid .cell.given,.tt99-numberpath-grid>span.given{background:#fff!important}.tt99-nonogram-grid .pixel.filled{background:#3c3c3c!important}
+}
+
+/* v1.28 numeric-logic worked-example mini visuals */
+.tt99-worked-logic-mini{display:flex;align-items:center;justify-content:center;gap:0;margin:8px auto 4px;min-height:50px}
+.tt99-worked-logic-mini>span{display:grid;place-items:center;width:44px;height:44px;border:1.4px solid #748d92;background:#fff;font-weight:900;color:#294b51;font-size:18px}
+.tt99-worked-logic-mini.kakuro .clue{position:relative;background:#f4f7f7;color:#31555c}.tt99-worked-logic-mini.kakuro .clue:after{content:"→";position:absolute;right:-12px;top:-12px;font-size:11px;color:#54737a;background:#fff;border-radius:10px;padding:1px 3px;z-index:2}.tt99-worked-logic-mini.kakuro>span+span{margin-left:-1px}
+.tt99-worked-logic-mini.futoshiki{gap:8px}.tt99-worked-logic-mini.futoshiki>span{width:38px;height:38px}.tt99-worked-logic-mini.futoshiki i{font-style:normal;font-size:20px;font-weight:900;color:#315960}
+.tt99-worked-cage-mini{position:relative;display:grid;grid-template-columns:repeat(2,48px);width:max-content;margin:8px auto 4px;border:2px solid #4f696f}.tt99-worked-cage-mini span{display:grid;place-items:center;height:48px;font-size:18px;font-weight:900;color:#294b51;border-right:1px solid #d7e0e1}.tt99-worked-cage-mini span:last-child{border-right:0}.tt99-worked-cage-mini i{position:absolute;left:3px;top:2px;font-style:normal;font-size:9px;font-weight:900;color:#315960}
+.tt99-worked-nonogram-mini{display:grid;grid-template-columns:auto repeat(5,30px);align-items:center;width:max-content;margin:8px auto 4px}.tt99-worked-nonogram-mini b{padding-right:10px;color:#315960}.tt99-worked-nonogram-mini span{width:30px;height:30px;border:1px solid #91a5a8;background:#fff}.tt99-worked-nonogram-mini span.fill{background:#35575d}
+.tt99-worked-numberpath-mini{display:grid;grid-template-columns:repeat(3,34px);width:max-content;margin:8px auto 4px;border:1.4px solid #83999d}.tt99-worked-numberpath-mini span{display:grid;place-items:center;width:34px;height:34px;border-right:1px solid #aababc;border-bottom:1px solid #aababc;font-weight:900;color:#294b51}.tt99-worked-numberpath-mini span:nth-child(3n){border-right:0}.tt99-worked-numberpath-mini span:nth-last-child(-n+3){border-bottom:0}.tt99-worked-mini-caption{max-width:520px;margin:2px auto 8px;text-align:center;font-size:12px;line-height:1.3;color:#62777c}
+
+/* nonogram clarity, especially 10x10 and dense multi-activity sheets */
+.tt99-nonogram-grid .pixel{border-color:#8fa3a7}.tt99-nonogram-grid .pixel.major-c{border-left:1.8px solid #536d72}.tt99-nonogram-grid .pixel.major-r{border-top:1.8px solid #536d72}.tt99-nonogram-grid .row-clue,.tt99-nonogram-grid .col-clue{font-size:clamp(6px,.58vw,9px)}
+.tt99-game-activities.count-3 .tt99-nonogram-grid{width:min(100%,210px)}
+
+/* v1.28.0 — scalable game-library accordions + pack personalisation */
+.tt99-games-library-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 10px;color:#718489;font-size:.62rem}
+.tt99-game-categories{display:flex;flex-direction:column;gap:8px}
+.tt99-game-category{border:1px solid #d7e2e3;border-radius:12px;background:#fbfdfd;overflow:hidden;transition:border-color .12s ease,box-shadow .12s ease,background .12s ease}
+.tt99-game-category.has-selection{border-color:#8dc9c3;background:#f5fbfa;box-shadow:inset 3px 0 0 #0f8a83}
+.tt99-game-category.is-open{background:#fff}
+.tt99-game-category-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border-bottom:0 solid #e6eeee}
+.tt99-game-category.is-open .tt99-game-category-head{border-bottom-width:1px}
+.tt99-game-category-toggle{appearance:none;border:0;background:transparent;display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:7px;text-align:left;padding:11px 12px;color:#284c53;cursor:pointer}
+.tt99-game-category-toggle:hover,.tt99-game-category-toggle:focus-visible{background:#f3f9f8;outline:none}
+.tt99-category-chevron{font-size:.9rem;color:#587278}
+.tt99-game-category-toggle strong{display:block;font-size:.72rem}
+.tt99-game-category-toggle small{display:block;margin-top:2px;color:#7a8d91;font-size:.54rem;line-height:1.25;font-weight:500}
+.tt99-game-category-toggle em{font-style:normal;white-space:nowrap;color:#72858a;font-size:.56rem;font-weight:800}
+.tt99-game-category.has-selection .tt99-game-category-toggle em{color:#0c756f}
+.tt99-category-actions{display:flex;align-items:center;gap:4px;padding:7px 8px 7px 0}
+.tt99-category-actions button{appearance:none;border:1px solid #d0dddd;border-radius:7px;background:#fff;color:#526b70;padding:6px 7px;font:700 .52rem/1 system-ui;cursor:pointer;white-space:nowrap}
+.tt99-category-actions button:hover:not(:disabled){border-color:#8dbdb8;color:#0d756f;background:#f4faf9}
+.tt99-category-actions button:disabled{opacity:.38;cursor:default}
+.tt99-game-category .tt99-engine-library{padding:10px;margin:0;background:#fbfdfd}
+
+.tt99-selected-games{margin-top:12px;border:1px solid #dce6e7;border-radius:11px;background:#f8fbfb;padding:9px}
+.tt99-selected-games-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;color:#39585e;font-size:.65rem}
+.tt99-selected-games-head span{display:grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#e5f4f1;color:#0b756e;font-weight:900}
+.tt99-selected-engine{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 8px;border-top:1px solid #e4ecec;background:#fff}
+.tt99-selected-engine:first-of-type{border-top:0;border-radius:7px 7px 0 0}
+.tt99-selected-engine:last-of-type{border-radius:0 0 7px 7px}
+.tt99-selected-engine strong{display:block;color:#294d54;font-size:.62rem}
+.tt99-selected-engine .tt99-engine-summary{margin-top:3px}
+.tt99-selected-engine>div:last-child{display:flex;align-items:center;gap:4px}
+.tt99-selected-engine button{appearance:none;border:1px solid #cbdadb;border-radius:7px;background:#fff;color:#4c666c;padding:5px 7px;font:750 .52rem/1 system-ui;cursor:pointer}
+.tt99-selected-engine button:last-child{width:25px;height:25px;padding:0;border-radius:999px;font-size:.72rem}
+.tt99-selected-engine button:hover{border-color:#8abdb8;color:#0d756f;background:#f2f9f8}
+.tt99-selected-empty{margin:0;padding:8px;color:#7a8a8f;font-size:.57rem;line-height:1.35}
+
+.tt99-personalise-card>details>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer}
+.tt99-personalise-card>details>summary::-webkit-details-marker{display:none}
+.tt99-personalise-card>details>summary .tt99-games-step{margin:0;flex:1}
+.tt99-details-state{color:#0d766f;font-size:.55rem;font-weight:800}
+.tt99-personalise-body{margin-top:12px;padding-top:12px;border-top:1px solid #e2e9ea}
+.tt99-personal-date-actions{display:flex;gap:6px;margin:7px 0 12px}
+.tt99-games-logo-row{display:grid;grid-template-columns:70px minmax(0,1fr);gap:10px;align-items:center;padding-top:10px;border-top:1px solid #e5ecec}
+.tt99-games-logo-preview{display:grid;place-items:center;width:68px;height:52px;border:1px dashed #bdcdcf;border-radius:8px;background:#f8fbfb;overflow:hidden;color:#9aa7aa;font-size:.54rem;font-weight:800}
+.tt99-games-logo-preview img{display:block;max-width:100%;max-height:100%;object-fit:contain}
+.tt99-games-logo-upload{display:inline-flex;position:relative;overflow:hidden;margin-right:5px}
+.tt99-games-logo-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.tt99-games-logo-row small{display:block;margin-top:5px;color:#839397;font-size:.53rem}
+
+.tt99-game-paper-header{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:4mm}
+.tt99-game-paper-logo{display:grid;place-items:center;width:14mm;height:14mm}
+.tt99-game-paper-logo img{max-width:100%;max-height:100%;object-fit:contain}
+.tt99-game-paper-identity{min-width:0}
+.tt99-game-paper-identity>span{display:block;color:#597278;font-weight:800;font-size:7pt;letter-spacing:.02em;text-transform:none}
+.tt99-game-paper-identity h2{margin:1mm 0 .8mm!important}
+.tt99-game-paper-identity p{margin:0!important;color:#6f8185!important}
+.tt99-games-empty-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;padding:28px;border:1px dashed #cbd9da;border-radius:14px;background:#fbfdfd;text-align:center;color:#708388}
+.tt99-games-empty-preview strong{color:#34565d;font-size:1rem}
+.tt99-games-empty-preview span{margin-top:5px;max-width:430px;font-size:.72rem;line-height:1.45}
+
+@media(max-width:720px){
+  .tt99-game-category-head{grid-template-columns:1fr}.tt99-category-actions{padding:0 10px 9px 35px}.tt99-game-category-toggle{grid-template-columns:18px minmax(0,1fr)}.tt99-game-category-toggle em{grid-column:2;margin-top:2px}
+  .tt99-selected-engine{grid-template-columns:1fr}.tt99-selected-engine>div:last-child{justify-content:flex-end}
+  .tt99-game-paper-header{grid-template-columns:auto minmax(0,1fr)}.tt99-game-name-line{grid-column:1/-1;text-align:right}
+}
+@media print{
+  .tt99-game-paper-logo{width:13mm;height:13mm}
+  .tt99-games-empty-preview{display:none!important}
+}
+.tt99-game-paper-identity>span{text-transform:none!important;letter-spacing:0!important}
