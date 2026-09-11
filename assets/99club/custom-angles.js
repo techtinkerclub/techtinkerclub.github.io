@@ -16,16 +16,16 @@
   const G=global.TT99Generator;
   if(!G) return;
 
-  const VERSION='0.1.3';
+  const VERSION='0.1.4';
   const ANGLE_FAMILIES={
-    angles_turns_y1_2:{label:'turns & orientation',strand:'Geometry',years:[1,2],curriculumId:'Y1/Y2 Position & direction'},
-    angles_right_y3:{label:'right angles & turns',strand:'Geometry',years:[3],curriculumId:'Y3.G.01 / 3G-1'},
-    angles_compare_y4:{label:'identify, compare & order angles',strand:'Geometry',years:[4],curriculumId:'Y4.G.02'},
-    angles_degrees_y5:{label:'degrees: classify, estimate, measure & draw',strand:'Geometry',years:[5],curriculumId:'Y5 Geometry - angles'},
-    angles_lines_points_y5_6:{label:'angles on lines & around points',strand:'Geometry',years:[5,6],curriculumId:'Y5/Y6 Geometry - angle facts'},
-    angles_triangles_y6:{label:'angles in triangles',strand:'Geometry',years:[6],curriculumId:'Y6.G.02 / 6G-1'},
-    angles_quads_polygons_y6:{label:'angles in quadrilaterals & polygons',strand:'Geometry',years:[6],curriculumId:'Y6.G.02 / 6G-1'},
-    angles_reasoning_y5_6:{label:'angle reasoning & problem solving',strand:'Geometry',years:[5,6],curriculumId:'Y5/Y6 Geometry reasoning'}
+    angles_turns_y1_2:{label:'turns & orientation',strand:'Angles & turns',years:[1,2],curriculumId:'Y1/Y2 Position & direction'},
+    angles_right_y3:{label:'right angles & turns',strand:'Angles & turns',years:[3],curriculumId:'Y3.G.01 / 3G-1'},
+    angles_compare_y4:{label:'identify, compare & order angles',strand:'Angles & turns',years:[4],curriculumId:'Y4.G.02'},
+    angles_degrees_y5:{label:'degrees: classify, estimate, measure & draw',strand:'Angles & turns',years:[5],curriculumId:'Y5 Geometry - angles'},
+    angles_lines_points_y5_6:{label:'angles on lines & around points',strand:'Angles & turns',years:[5,6],curriculumId:'Y5/Y6 Geometry - angle facts'},
+    angles_triangles_y6:{label:'angles in triangles',strand:'Angles & turns',years:[6],curriculumId:'Y6.G.02 / 6G-1'},
+    angles_quads_polygons_y6:{label:'angles in quadrilaterals & polygons',strand:'Angles & turns',years:[6],curriculumId:'Y6.G.02 / 6G-1'},
+    angles_reasoning_y5_6:{label:'angle reasoning & problem solving',strand:'Angles & turns',years:[5,6],curriculumId:'Y5/Y6 Geometry reasoning'}
   };
   const ANGLE_FAMILY_IDS=Object.keys(ANGLE_FAMILIES);
   const isAngleKind=kind=>ANGLE_FAMILY_IDS.includes(String(kind||''));
