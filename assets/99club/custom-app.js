@@ -26,6 +26,10 @@
   const ALL_TABLES = Array.from({length:12},(_,i)=>i+1);
   const LEGACY_FAMILY_ORDER = ['addition','subtraction','multiply','divide','missing_number','square','square_root','cube','bodmas','scaled_multiply','scaled_divide','fraction_of','percentage_of','negative_numbers','roman_numerals','angle_facts','simple_algebra'];
   const FAMILY_ORDER = Array.isArray(G.FAMILY_ORDER) ? G.FAMILY_ORDER.slice() : LEGACY_FAMILY_ORDER.slice();
+  // v1.22.2c: recover the graphical Angles & turns families safely in browsers.
+  // custom-angles.js loads before this file and registers the families with the generator;
+  // this defensive merge also covers catalogue snapshots made before that registration.
+  Object.keys(window.TT99CustomAngles?.ANGLE_FAMILIES || {}).forEach(id=>{ if(!FAMILY_ORDER.includes(id)) FAMILY_ORDER.push(id); });
   // Preserve historical compact-recreation family codes; append new families only after the old prefix.
   const COMPACT_FAMILY_ORDER = Array.isArray(G.FAMILY_COMPACT_ORDER) ? G.FAMILY_COMPACT_ORDER.slice() : FAMILY_ORDER.slice();
   const QUESTION_KIND_ORDER = ['double','repeated_addition',...LEGACY_FAMILY_ORDER,...COMPACT_FAMILY_ORDER.filter(f=>!LEGACY_FAMILY_ORDER.includes(f)&&!['double','repeated_addition'].includes(f))];

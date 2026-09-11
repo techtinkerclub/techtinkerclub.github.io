@@ -24,5 +24,5 @@ search: false
 <script src="/assets/99club/custom-graphs.js?v=10"></script>
 <script src="/assets/99club/custom-coordinates.js?v=4"></script>
 <script src="/assets/99club/custom-piecharts.js?v=7"></script>
-<script src="/assets/99club/custom-angles.js?v=5"></script>
-<script src="/assets/99club/custom-app.js?v=224" defer></script>
+<script src="/assets/99club/custom-angles.js?v=6"></script>
+<script src="/assets/99club/custom-app.js?v=225" defer></script>
