@@ -80,9 +80,10 @@
   function makeMask(n,rng,difficulty){
     const keepP=difficulty==='easy'?.58:difficulty==='challenge'?.48:.53;
     const mask=Array.from({length:n},()=>Array.from({length:n},()=>rng()<keepP));
-    // Every row and column must contain at least one kept and one crossed cell.
+    // Nudge obvious all-kept/all-crossed lines away from triviality. A final
+    // strict check below rejects any mask where these local repairs conflict.
     for(let r=0;r<n;r++){
-      let kept=mask[r].filter(Boolean).length;
+      const kept=mask[r].filter(Boolean).length;
       if(kept===0)mask[r][randInt(rng,0,n-1)]=true;
       else if(kept===n)mask[r][randInt(rng,0,n-1)]=false;
     }
@@ -91,13 +92,13 @@
       if(kept===0)mask[randInt(rng,0,n-1)][c]=true;
       else if(kept===n)mask[randInt(rng,0,n-1)][c]=false;
     }
-    // Repair rows once more because a column repair can make a row uniform.
-    for(let r=0;r<n;r++){
-      const kept=mask[r].filter(Boolean).length;
-      if(kept===0)mask[r][randInt(rng,0,n-1)]=true;
-      else if(kept===n)mask[r][randInt(rng,0,n-1)]=false;
-    }
     return mask;
+  }
+  function maskIsNonTrivial(mask){
+    const n=mask.length;
+    for(let r=0;r<n;r++){const kept=mask[r].filter(Boolean).length;if(kept===0||kept===n)return false;}
+    for(let c=0;c<n;c++){let kept=0;for(let r=0;r<n;r++)if(mask[r][c])kept++;if(kept===0||kept===n)return false;}
+    return true;
   }
 
   function makeValues(n,rng,min,max){
@@ -172,7 +173,9 @@
     const o=normalise(settings?.engineSettings?.sumplete),n=sizeFor(o),min=minValueFor(o),max=maxValueFor(o,n);
     let best=null,bestRank=o.difficulty==='challenge'?-Infinity:Infinity;
     for(let attempt=0;attempt<260;attempt++){
-      const rng=rngFromSeed(`${seed}:sumplete:${attempt}`),values=makeValues(n,rng,min,max),mask=makeMask(n,rng,o.difficulty),targets=targetsFor(values,mask),analysis=analyseSolutions(values,targets.rowTargets,targets.colTargets,2);
+      const rng=rngFromSeed(`${seed}:sumplete:${attempt}`),values=makeValues(n,rng,min,max),mask=makeMask(n,rng,o.difficulty);
+      if(!maskIsNonTrivial(mask))continue;
+      const targets=targetsFor(values,mask),analysis=analyseSolutions(values,targets.rowTargets,targets.colTargets,2);
       if(analysis.count!==1)continue;
       const score=complexityScore(analysis,n),candidate={values,mask,...targets,analysis,score};
       if(desiredComplexity(o,n,score)){best=candidate;break;}
@@ -198,6 +201,7 @@
       if(a.valueGrid[r]?.length!==n||a.solutionMask[r]?.length!==n)return {ok:false,error:'sumplete row shape invalid'};
       for(let c=0;c<n;c++)if(!Number.isInteger(a.valueGrid[r][c])||a.valueGrid[r][c]<=0)return {ok:false,error:'sumplete values must be positive integers'};
     }
+    if(!maskIsNonTrivial(a.solutionMask))return {ok:false,error:'sumplete contains a trivial all-kept/all-crossed row or column'};
     const t=targetsFor(a.valueGrid,a.solutionMask);
     if(JSON.stringify(t.rowTargets)!==JSON.stringify(a.rowTargets)||JSON.stringify(t.colTargets)!==JSON.stringify(a.colTargets))return {ok:false,error:'sumplete targets do not match solution'};
     const analysis=analyseSolutions(a.valueGrid,a.rowTargets,a.colTargets,2);
