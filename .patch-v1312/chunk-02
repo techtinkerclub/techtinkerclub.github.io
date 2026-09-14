@@ -1,0 +1,109 @@
+-    const seedRow=size===5?0:size===8?1:2,seedCol=size===5?0:Math.max(0,Math.floor((size-5)/2)),seedCoords=canPlaceCrossEquation(board,[seedRow,seedCol],[0,1],true),seedA=randInt(rng,4,diff==='challenge'?28:20),seedEq=makeCrossEquation(seedA,ops,rng,diff,requireAllOps?ops[0]:null);
+-    if(!seedCoords||!seedEq)return null;placeCrossEquation(board,seedCoords,seedEq.cells);lines.push({cells:seedCoords,op:seedEq.op});usedOps.push(seedEq.op);
+-    const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+-    for(let guard=0;guard<targetLines*220&&lines.length<targetLines;guard++){
+-      const numeric=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++)if(typeof board[r][c]==='number')numeric.push([r,c]);
+-      let placed=false;
+-      for(const start of shuffle(numeric,rng)){
+-        const a=board[start[0]][start[1]];
+-        for(const dir of shuffle(dirs,rng)){
+-          const coords=canPlaceCrossEquation(board,start,dir,false);if(!coords)continue;
+-          let preferred=null;
+-          if(requireAllOps){const missing=ops.filter(op=>!usedOps.includes(op));if(missing.length)preferred=choose(missing,rng);}
+-          const eq=makeCrossEquation(a,ops,rng,diff,preferred);if(!eq)continue;
+-          placeCrossEquation(board,coords,eq.cells);lines.push({cells:coords,op:eq.op});usedOps.push(eq.op);placed=true;break;
+-        }
+-        if(placed)break;
++    const rng=rngFromSeed(seed),board=Array.from({length:size},()=>Array(size).fill('#')),lines=[],usedOps=[],lineKeys=new Set(),seedRow=Math.max(0,Math.floor(size/2)-2),seedCol=Math.max(0,Math.floor((size-5)/2)),seedCoords=crossgridCoords([seedRow,seedCol],[0,1]),seedA=randInt(rng,4,diff==='challenge'?28:20),seedEq=makeCrossEquation(seedA,ops,rng,diff,requireAllOps?ops[0]:null);
++    if(seedCoords.some(([r,c])=>r<0||c<0||r>=size||c>=size)||!seedEq)return null;placeCrossEquation(board,seedCoords,seedEq.cells);lines.push({cells:seedCoords,op:seedEq.op});usedOps.push(seedEq.op);lineKeys.add(seedCoords.map(x=>x.join(':')).join('|'));
++    const dirs=[[0,1],[1,0]];
++    for(let guard=0;guard<targetLines*80&&lines.length<targetLines;guard++){
++      const numeric=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++)if(typeof board[r][c]==='number')numeric.push([r,c]);const candidates=[];
++      for(const anchor of shuffle(numeric,rng))for(const dir of dirs)for(const anchorPos of [0,2,4]){
++        const start=[anchor[0]-dir[0]*anchorPos,anchor[1]-dir[1]*anchorPos],cand=crossgridCandidate(board,start,dir);if(!cand)continue;const key=cand.coords.map(x=>x.join(':')).join('|');if(lineKeys.has(key))continue;let preferred=null;if(requireAllOps){const missing=ops.filter(op=>!usedOps.includes(op));if(missing.length)preferred=choose(missing,rng);}const eq=crossgridEquationFromKnown(board,cand.coords,ops,rng,diff,preferred);if(!eq)continue;
++        const before=crossgridUsedBounds(board),after=crossgridUsedBounds(board,cand.coords),growth=after.area-before.area,crossBonus=(cand.existing-1)*620,compact=Math.max(0,150-growth*10),centre=(cand.coords[0][0]+cand.coords[4][0])/2+(cand.coords[0][1]+cand.coords[4][1])/2,centrePenalty=Math.abs(centre-(size-1)),opBonus=preferred&&eq.op===preferred?280:0,score=cand.existing*520+crossBonus+compact-growth*15-centrePenalty*2+opBonus-randInt(rng,0,25);candidates.push({...cand,eq,key,score});
+       }
+-      if(!placed)break;
+-    }
+-    if(lines.length<Math.max(3,Math.min(targetLines,size===5?4:targetLines-1)))return null;
+-    if(requireAllOps&&ops.length===4&&!ops.every(op=>usedOps.includes(op)))return null;
+-    return {board,lines,usedOps};
++      if(!candidates.length)break;candidates.sort((a,b)=>b.score-a.score);const best=choose(candidates.slice(0,Math.min(4,candidates.length)),rng);placeCrossEquation(board,best.coords,best.eq.cells);lines.push({cells:best.coords,op:best.eq.op});usedOps.push(best.eq.op);lineKeys.add(best.key);
++    }
++    const used=board.flat().filter(v=>v!=='#').length,occupancy=used/(size*size);if(lines.length<Math.max(3,Math.min(targetLines,size===5?4:targetLines-2)))return null;if(size>=8&&occupancy<(size===10?.48:.42))return null;if(requireAllOps&&ops.length===4&&!ops.every(op=>usedOps.includes(op)))return null;return {board,lines,usedOps,occupancy};
+   }
+   function crossgridResolvableLines(lines,hidden){
+     const unsolved=new Set(hidden);let changed=true;
+@@ -380,8 +404,8 @@
+     const [aPos,opPos,bPos,,resPos]=line.cells,a=Number(board[aPos[0]][aPos[1]]),b=Number(board[bPos[0]][bPos[1]]),res=Number(board[resPos[0]][resPos[1]]),actual=board[opPos[0]][opPos[1]],matches=['+','-','×','÷'].filter(op=>Math.abs(crossgridApply(a,op,b)-res)<1e-9);return matches.length===1&&matches[0]===actual;
+   }
+   function generateEquationCrossgrid(settings,seed){
+-    const rng=rngFromSeed(seed),o=normalise('equationcrossgrid',settings?.engineSettings?.equationcrossgrid),size=crossgridBoardSize(o),ops=crossgridAllowedOps(settings,o),targetLines=size===5?4:size===8?(o.difficulty==='easy'?5:7):(o.difficulty==='challenge'?11:9),requireAllOps=o.operationFamily==='mixed'||(o.operationFamily==='auto'&&o.difficulty==='challenge'&&ops.length===4);let built=null;
+-    for(let attempt=0;attempt<90;attempt++){const candidate=buildEquationCrossgrid(size,ops,o.difficulty,`${seed}:layout:${attempt}`,targetLines,requireAllOps);if(!built||candidate&&candidate.lines.length>built.lines.length)built=candidate;if(candidate&&candidate.lines.length>=targetLines){built=candidate;break;}}
++    const rng=rngFromSeed(seed),o=normalise('equationcrossgrid',settings?.engineSettings?.equationcrossgrid),size=crossgridBoardSize(o),ops=crossgridAllowedOps(settings,o),targetLines=size===5?4:size===8?(o.difficulty==='easy'?6:o.difficulty==='challenge'?10:9):(o.difficulty==='challenge'?18:15),requireAllOps=o.operationFamily==='mixed'||(o.operationFamily==='auto'&&o.difficulty==='challenge'&&ops.length===4);let built=null;
++    for(let attempt=0;attempt<140;attempt++){const candidate=buildEquationCrossgrid(size,ops,o.difficulty,`${seed}:layout:${attempt}`,targetLines,requireAllOps);if(candidate&&(!built||candidate.lines.length>built.lines.length||candidate.lines.length===built.lines.length&&candidate.occupancy>built.occupancy))built=candidate;if(candidate&&candidate.lines.length>=targetLines&&candidate.occupancy>=(size===10?.56:size===8?.48:.5)){built=candidate;break;}}
+     if(!built)return {engineId:'equationcrossgrid',title:'Arithmetic Equation Crossgrid',error:'Could not build a connected equation grid. Generate another version.',seed,options:o};
+     const solution=built.board,numberKeys=[],opKeys=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++){const v=solution[r][c],k=`${r}:${c}`;if(typeof v==='number')numberKeys.push(k);}
+     for(const line of built.lines){const [r,c]=line.cells[1],k=`${r}:${c}`;if(crossgridOpUnique(solution,line)&&!opKeys.includes(k))opKeys.push(k);}
+@@ -389,7 +413,7 @@
+     for(const k of shuffle(opKeys,rng)){if(hidden.filter(x=>opKeys.includes(x)).length>=opTarget)break;const trial=[...hidden,k];if(crossgridResolvableLines(built.lines,trial))hidden.push(k);}
+     for(const k of shuffle(numberKeys,rng)){if(hidden.length>=baseTarget)break;const trial=[...hidden,k];if(crossgridResolvableLines(built.lines,trial))hidden.push(k);}
+     const hiddenSet=new Set(hidden),display=solution.map((row,r)=>row.map((v,c)=>hiddenSet.has(`${r}:${c}`)?null:v)),instruction=hidden.some(k=>opKeys.includes(k))?'Fill the missing numbers and operation signs so every connected equation is true. Black squares are not used.':'Fill the missing numbers so every connected equation is true. Black squares are not used.';
+-    return {engineId:'equationcrossgrid',title:'Arithmetic Equation Crossgrid',difficulty:o.difficulty,size,operationsUsed:[...new Set(built.usedOps)],solutionGrid:solution,displayGrid:display,lines:built.lines,hiddenKeys:hidden,instruction,seed,options:o};
++    return {engineId:'equationcrossgrid',title:'Arithmetic Equation Crossgrid',difficulty:o.difficulty,size,occupancy:built.occupancy,operationsUsed:[...new Set(built.usedOps)],solutionGrid:solution,displayGrid:display,lines:built.lines,hiddenKeys:hidden,instruction,seed,options:o};
+   }
+ 
+   function trailRule(settings,o,rng){const y=years(settings).max,mode=o.ruleMode==='auto'?(o.difficulty==='challenge'&&y>=3&&rng()<.55?'alternating':'constant'):o.ruleMode;if(mode==='alternating'){const a=randInt(rng,2,y<=2?5:12),b=randInt(rng,1,Math.max(2,a-1));return {mode,steps:[a,-b],label:`+${a}, then −${b}, repeat`};}const mult=y>=3&&o.difficulty==='challenge'&&rng()<.3;if(mult){const k=choose(y===3?[2]:[2,3],rng);return {mode:'constant',multiplier:k,label:`×${k} each step`};}const step=randInt(rng,1,y<=1?5:y<=2?10:y<=4?25:50)*(rng()<.15&&y>=4?-1:1);return {mode:'constant',steps:[step],label:`${step>=0?'+':''}${step} each step`};}
+--- a/assets/99club/games.css
++++ b/assets/99club/games.css
+@@ -734,3 +734,60 @@
+   }
+   .tt99-cage-grid .cage-cell{border-color:#999!important}
+ }
++
++/* v1.31.2 — Arithmetic review follow-up: preview containment and logic-grid polish */
++.tt99-crossnumber .tt99-crossword-layout{
++  min-height:0!important;
++  overflow:hidden!important;
++  align-items:stretch!important;
++}
++.tt99-crossnumber .tt99-crossword-grid{
++  max-width:100%!important;
++  max-height:100%!important;
++  align-self:center!important;
++  justify-self:center!important;
++}
++.tt99-crossnumber .tt99-crossword-grid.is-tall{
++  height:100%!important;
++  width:auto!important;
++}
++.tt99-crossnumber .tt99-crossword-grid.is-balanced,
++.tt99-crossnumber .tt99-crossword-grid.is-wide{
++  width:100%!important;
++  height:auto!important;
++}
++.tt99-game-activities.count-2 .tt99-crossnumber .tt99-crossword-grid.is-tall,
++.tt99-game-activities.count-3 .tt99-crossnumber .tt99-crossword-grid.is-tall{height:100%!important;width:auto!important}
++
++/* Kakuro preview: use the available activity space and follow conventional dark clue blocks. */
++.tt99-kakuro .tt99-kakuro-grid{
++  width:min(100%,520px)!important;
++  border:2px solid #344c52!important;
++  background:#344c52!important;
++  gap:0!important;
++  margin:10px auto 5px!important;
++}
++.tt99-kakuro-grid>span{box-sizing:border-box}
++.tt99-kakuro-grid .play{border-right:1px solid #9fb0b3!important;border-bottom:1px solid #9fb0b3!important;background:#fff!important}
++.tt99-kakuro-grid .block,.tt99-kakuro-grid .block.has-clue{background:#344c52!important;border:0!important}
++.tt99-kakuro-grid .block.has-clue:after{
++  background:linear-gradient(to bottom right,transparent 49%,#f2f6f6 49.4%,#f2f6f6 50.6%,transparent 51%)!important;
++}
++.tt99-kakuro-grid .block i{font-size:clamp(7px,.72vw,11px)!important;color:#fff!important;text-shadow:none!important;z-index:2}
++.tt99-kakuro-grid .block i.down{left:8%!important;bottom:7%!important}
++.tt99-kakuro-grid .block i.across{right:8%!important;top:7%!important}
++.tt99-kakuro-grid .play b{font-size:clamp(13px,1.45vw,22px)!important}
++.tt99-game-activities.count-2 .tt99-kakuro .tt99-kakuro-grid{width:min(100%,360px)!important}
++.tt99-game-activities.count-3 .tt99-kakuro .tt99-kakuro-grid{width:min(100%,250px)!important;margin-top:4px!important}
++
++/* Arithmetic Cages: ordinary cell lines stay visible, but cage walls remain dominant. */
