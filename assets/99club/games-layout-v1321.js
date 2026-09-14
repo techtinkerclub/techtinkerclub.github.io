@@ -1,6 +1,6 @@
-/* 99 Club Studio · v1.32.1 layout corrections
+/* 99 Club Studio · v1.32.2 layout corrections
  * Browser: explicit nonogram frame.
- * Direct PDF: compact nonogram clue stacks and corner hints for missing operators.
+ * Direct PDF: aligned nonogram clue slots and corner hints for missing operators.
  */
 (function(global){
   'use strict';
@@ -39,18 +39,32 @@
   function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 
   function nonogramGeometry(a,x,y,w,h){
-    const n=a.size||a.solutionGrid?.length||10,rows=a.rowClues||[],cols=a.colClues||[],maxC=Math.max(1,...cols.map(c=>(c||[]).filter(v=>v!==0).length));
+    const n=a.size||a.solutionGrid?.length||10,rows=a.rowClues||[],cols=a.colClues||[];
+    const maxR=Math.max(1,...rows.map(c=>(c||[]).filter(v=>v!==0).length));
+    const maxC=Math.max(1,...cols.map(c=>(c||[]).filter(v=>v!==0).length));
     const top=y+50,overlayTop=top+24,availH=Math.max(80,y+h-8-overlayTop);
-    let cell=Math.min((w-82)/n,(availH-46)/n,30);
+
+    let cell=Math.min((w-96)/n,(availH-46)/n,30);
     let fs=clamp(cell*.34,6.2,8.2),gap=fs+2.1,topClueH=maxC*gap+5;
-    const longest=rows.reduce((best,c)=>{const s=(c||[]).filter(v=>v!==0).join(' ');return estimate(s,fs,true)>estimate(best,fs,true)?s:best;},'');
-    let rowW=clamp(estimate(longest,fs,true)+12,38,84);
+    let rowSlotW=clamp(Math.max(fs*1.8,estimate(String(n),fs,true)+4),13,18);
+    let rowGap=clamp(fs*1.8,14,18);
+    let rowW=maxR*rowSlotW+rowGap;
+
     cell=Math.max(8,Math.min((w-24-rowW)/n,(availH-topClueH-6)/n,30));
     fs=clamp(cell*.34,6.2,8.2);gap=fs+2.1;topClueH=maxC*gap+5;
-    rowW=clamp(estimate(longest,fs,true)+12,38,84);
+    rowSlotW=clamp(Math.max(fs*1.8,estimate(String(n),fs,true)+4),13,18);
+    rowGap=clamp(fs*1.8,14,18);
+    rowW=maxR*rowSlotW+rowGap;
     cell=Math.max(8,Math.min((w-24-rowW)/n,(availH-topClueH-6)/n,30));
+
     const totalW=rowW+n*cell,gx=x+(w-totalW)/2+rowW,usedH=topClueH+n*cell,gy=overlayTop+topClueH+Math.max(0,(availH-usedH)/2);
-    return {n,top,overlayTop,availH,cell,fs,gap,topClueH,rowW,gx,gy};
+    return {n,top,overlayTop,availH,cell,fs,gap,topClueH,maxR,rowSlotW,rowGap,rowW,gx,gy};
+  }
+
+  function rowClueX(g,clueCount,index){
+    const first=g.maxR-clueCount;
+    const start=g.gx-g.rowGap-g.maxR*g.rowSlotW;
+    return start+(first+index+.5)*g.rowSlotW;
   }
 
   function redrawNonogram(entry,a,answers,x,y,w,h){
@@ -58,9 +72,11 @@
     // Cover only the old puzzle body; preserve title, instruction and activity frame.
     rawRect(entry,x+1,overlayTop,w-2,Math.max(1,y+h-overlayTop-2),{fill:WHITE,width:.1});
 
+    // Row clues use fixed columns, right-aligned as a group. This makes every final
+    // clue line up cleanly and keeps a deliberate writing gap before the grid.
     for(let r=0;r<n;r++){
-      const clues=(a.rowClues?.[r]||[]).filter(v=>v!==0),txt=clues.join(' ');
-      if(txt)rawText(entry,gx-8,gy+r*cell+cell*.66,txt,fs,{bold:true,color:DARK,align:'right'});
+      const clues=(a.rowClues?.[r]||[]).filter(v=>v!==0),baseline=gy+r*cell+cell*.5+fs*.34;
+      clues.forEach((v,k)=>rawText(entry,rowClueX(g,clues.length,k),baseline,String(v),fs,{bold:true,color:DARK,align:'center'}));
     }
     for(let c=0;c<n;c++){
       const clues=(a.colClues?.[c]||[]).filter(v=>v!==0),len=clues.length;
@@ -114,7 +130,7 @@
     const originalBuild=PDF.buildDocument.bind(PDF);
     PDF.buildDocument=function(opts={}){
       const doc=originalBuild(opts);
-      try{patchPdfDocument(doc,opts);}catch(err){if(global.console?.warn)console.warn('99 Club v1.32.1 PDF layout patch skipped:',err);}
+      try{patchPdfDocument(doc,opts);}catch(err){if(global.console?.warn)console.warn('99 Club v1.32.2 PDF layout patch skipped:',err);}
       return doc;
     };
     PDF.__layoutV1321=true;
@@ -138,5 +154,5 @@
   const root=global.document?.getElementById('tt99-games-root');
   if(root){new MutationObserver(enhanceNonogramFrames).observe(root,{childList:true,subtree:true});queueMicrotask(enhanceNonogramFrames);}
 
-  global.TT99GamesLayoutV1321={patchPdfDocument,nonogramGeometry,enhanceNonogramFrames};
+  global.TT99GamesLayoutV1321={patchPdfDocument,nonogramGeometry,rowClueX,enhanceNonogramFrames};
 })(typeof window!=='undefined'?window:globalThis);
