@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.32.1 crossgrid / nonogram usability regression. */
+/* 99 Club Studio v1.32.2 crossgrid / nonogram usability regression. */
 'use strict';
 const fs=require('fs');
 const path=require('path');
@@ -41,20 +41,27 @@ const n=10,nonogram={
 const settings={minYear:4,maxYear:6,topics:['number_place_value'],workedExamples:'none',personalisation:{packTitle:'QA'}};
 const doc=PDF.buildDocument({pack:{seed:'QA',sheets:[{index:1,activities:[nonogram]}]},settings,topics:{number_place_value:{label:'Number & place value'}},kind:'student',seed:'QA'});
 const commands=doc.pages[0].cmds.join('\n');
-assert(commands.includes('(1 1 1 1)'),'Redrawn nonogram row clue missing from direct PDF commands');
+assert(commands.includes('(1)'),'Redrawn nonogram row-clue digits missing from direct PDF commands');
+assert(!commands.includes('(1 1 1 1)'),'Nonogram row clues should be emitted in fixed individual slots, not as one unaligned text string');
 assert(commands.includes('1.45 w'),'Redrawn nonogram outer frame missing from direct PDF commands');
-const g=global.TT99GamesLayoutV1321.nonogramGeometry(nonogram,34,110,527.28,689.89);
+const layout=global.TT99GamesLayoutV1321;
+const g=layout.nonogramGeometry(nonogram,34,110,527.28,689.89);
 assert(g.gx-g.rowW>=34,`Nonogram left clue area escapes frame: ${g.gx-g.rowW}`);
 assert(g.gx+n*g.cell<=595.28-34+.01,'Nonogram grid escapes right activity edge');
 assert(g.gy-g.topClueH>=g.overlayTop-.01,'Nonogram top clues overlap instruction area');
+assert(g.rowGap>=14,'Nonogram row clues do not keep a deliberate gap from the grid');
+const lastOfFour=layout.rowClueX(g,4,3),single=layout.rowClueX(g,1,0);
+assert(Math.abs(lastOfFour-single)<.001,'Nonogram row-clue groups are not right-aligned to a common final clue column');
+assert(g.gx-lastOfFour>=g.rowGap+g.rowSlotW*.49,'Nonogram last row clue sits too close to the grid');
+for(let k=1;k<4;k++)assert(layout.rowClueX(g,4,k)-layout.rowClueX(g,4,k-1)>=g.rowSlotW-.001,'Nonogram row-clue slots are collapsing together');
 
 const crossDoc=PDF.buildDocument({pack:{seed:'QA2',sheets:[{index:1,activities:[operatorPuzzle]}]},settings,topics:{calculation:{label:'Calculation'}},kind:'student',seed:'QA2'});
 assert(crossDoc.pages[0].cmds.join('\n').includes('(?)'),'Direct PDF does not draw the small corner question mark for a hidden operator');
 
 const page=fs.readFileSync(path.resolve(ROOT,'../../_pages/99-club-games.md'),'utf8');
 assert(page.includes('games-crossgrid-v1321.js?v=1'),'Games page does not load crossgrid patch');
-assert(page.includes('games-layout-v1321.css?v=1')&&page.includes('games-layout-v1321.js?v=1'),'Games page does not load v1.32.1 layout assets');
+assert(page.includes('games-layout-v1321.css?v=1')&&page.includes('games-layout-v1321.js?v=2'),'Games page does not load current layout assets');
 const css=fs.readFileSync(path.join(ROOT,'games-layout-v1321.css'),'utf8');
 assert(css.includes('.pixel.ng-frame-top')&&css.includes('.pixel.ng-frame-left'),'Browser nonogram outer-frame rules missing');
 
-console.log(`Games v1.32.1 layout regression: PASS · ${operatorPuzzle.hiddenOperatorKeys.length} hidden operator hint(s), compact nonogram PDF clues and explicit browser frame.`);
+console.log(`Games v1.32.2 layout regression: PASS · ${operatorPuzzle.hiddenOperatorKeys.length} hidden operator hint(s), aligned nonogram row-clue slots, compact column clues and explicit browser frame.`);
