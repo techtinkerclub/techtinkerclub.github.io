@@ -20,7 +20,7 @@ assert(/size=Math\.max\(84,Math\.min\(slotW\*\.86,slotH\*1\.05,152\)\)/.test(pdf
 assert(/innerR=42\*s,outerR=63\*s,innerNode=9\.5\*s,outerNode=10\.5\*s,centreR=29\*s/.test(pdf),'rule-wheel centre clearance geometry missing');
 assert(/fitDiagramText\(page,cx,cy-5\.0\*s,'RULE',centreR\*1\.50/.test(pdf),'RULE label fit guard missing');
 assert(/fitDiagramText\(page,cx,cy\+8\.7\*s,clean\(it\.rule\),centreR\*1\.48/.test(pdf),'rule expression fit guard missing');
-assert(/games-pdf\.js\?v=14/.test(page),'PDF cache bust not advanced to v14');
+assert(/games-pdf\.js\?v=(?:1[4-9]|[2-9]\d)/.test(page),'PDF cache bust not advanced to v14');
 
 // Exercise both scaled layouts through the actual direct-PDF writer.
 const factor={engineId:'numberwheels',style:'factor',title:'Factor Pair Webs',difficulty:'Standard',instruction:'Complete the factor pairs.',items:[

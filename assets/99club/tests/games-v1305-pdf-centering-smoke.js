@@ -29,5 +29,5 @@ assert(/diagramText\(page,leftX,py\+fs\*\.36/.test(pdf)&&/diagramText\(page,righ
 assert(/diagramText\(page,cx,cy-ry-nodeR-4\*sc,'PRODUCT'/.test(pdf),'PRODUCT exact centring missing');
 assert(/diagramText\(page,cx,cy\+ry\+nodeR\+7\*sc,'SUM'/.test(pdf),'SUM exact centring missing');
 
-assert(/games-pdf\.js\?v=1[34]/.test(page),'PDF cache bust is older than the v1.30.5 centring baseline');
+assert(/games-pdf\.js\?v=(?:1[3-9]|[2-9]\d)/.test(page),'PDF cache bust is older than the v1.30.5 centring baseline');
 console.log('Number Patterns direct-PDF centring v1.30.5 regression passed.');

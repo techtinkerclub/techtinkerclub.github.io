@@ -1,55 +1,82 @@
-# 99 Club Studio v1.30.6 - direct-PDF scale polish
+# 99 Club Studio v1.31.0 — Arithmetic Search & Crossgrid
 
 ## Baseline
 
-Built against the current online `master` state after v1.30.5:
+Built directly against the current online `master` state:
 
-`33825454a170ad578ae5947c5e296edecdc4a103`
+`eca75751b367e16bf7a15736ba9a35f0a59f2197`
 
-The live Games page at that baseline loads `games-pdf.js?v=13`.
+That is the uploaded **v1.30.6 PDF scale polish** baseline. Apply this ZIP at the repository root, replacing matching files.
 
-Apply this ZIP at the repository root, replacing matching files. It is intended to go directly on top of v1.30.5.
+## What this introduces
 
-## What this fixes
+### Maths Crossnumber — equation clue mode
+The existing Maths Crossnumber is extended rather than duplicated.
 
-This is a **PDF-only** visual correction. The browser preview is deliberately unchanged.
+New **Clue type** setting:
+- Auto for selected maths
+- Arithmetic calculations
+- Solve equations
+- Mixed calculations + equations
 
-### Factor Pair Webs
-- Uses more of the available activity space in PDF output.
-- Enlarges the complete web, factor-pair capsules and writing areas.
-- Enlarges the centre circle relative to its label.
-- Fits `FACTOR PAIRS` to the available circle width instead of allowing it to overrun the edge.
-- Fits the centre value independently so 2- and 3-digit targets remain centred.
-- Keeps spokes clipped cleanly between centre circle and capsules.
-- Keeps the first starter pair and the clearer instruction introduced earlier.
+For Year 6 / Algebra selections, Auto can now favour equation clues such as `3x + 4 = 25`, with the solved numerical value entered into the crossing digit grid.
 
-### Rule Wheels
-- Gives the PDF wheel a larger centre circle and slightly larger overall print scale where room permits.
-- Keeps inner/outer nodes clear of the larger centre.
-- Fits both `RULE` and the rule expression to the usable centre-circle width.
-- Retains the accurate Helvetica diagram centring added in v1.30.5.
+### Number Search — new engine
+Pupils solve numerical questions first, then locate each answer as a string of digits in a search grid.
 
-## Files changed
+Options include:
+- Easy / Standard / Challenge / Mixed difficulty
+- 8 / 10 / 12 / 15 calculations
+- 9×9 / 11×11 / 13×13 / 15×15 grid
+- horizontal + vertical only
+- add diagonals
+- add backwards directions
 
-- `_pages/99-club-games.md` - bumps only the PDF asset cache to `v=14`.
-- `assets/99club/games-pdf.js` - PDF diagram scale/fit changes.
-- `assets/99club/tests/games-v1302-pdf-parity-smoke.js` - removes obsolete fixed-size assertion while retaining capsule/parity checks.
-- `assets/99club/tests/games-v1304-number-structures-polish-smoke.js` - keeps spoke/capsule regression without pinning the old print dimensions.
-- `assets/99club/tests/games-v1305-pdf-centering-smoke.js` - preserves centring checks across later print geometry revisions.
-- `assets/99club/tests/games-v1306-pdf-scale-smoke.js` - new targeted scale/fit regression.
+The generator explicitly prevents duplicate/accidental occurrences of the intended answers. Filler digits remain visually varied rather than being restricted to a tiny digit set.
 
-## Regression boundary
+### Arithmetic Equation Crossgrid — new engine
+A compact interlocking across/down equation grid. Number cells are shared between horizontal and vertical equations, so solving one line unlocks another.
 
-No intended change to:
-- browser preview;
-- puzzle generation, answers or difficulty;
-- public 99 Club;
-- Custom Worksheets / Angles;
-- vocabulary/crosswords;
-- Random Pack;
-- personalisation;
-- unrelated Games engines.
+Options include:
+- additive relationships
+- multiplication/division relationships when appropriate
+- adjustable clue density
+- harder levels can hide operation signs as well as numbers
+
+The hidden-cell selection is validated so the puzzle retains a sequential solving route.
+
+## Browser + PDF
+
+Both new engines include:
+- browser pupil preview
+- browser answer preview
+- direct PDF pupil rendering
+- direct PDF answer rendering
+- worked-example support
+- Random Pack / pack generation compatibility
+- per-engine configuration controls
+
+## Existing behaviour preserved
+
+No intended regression to:
+- Number Patterns & Structures v1.30.6 PDF fixes
+- Word Search / vocabulary Crossword
+- public 99 Club fluency sheets
+- Custom Worksheets / Angles
+- Number Logic engines
+- personalisation
+- Random Pack
+
+## Cache changes
+
+- `games.css`: v17 → v18
+- `games-arithmetic.js`: v3 → v4
+- `games-pdf.js`: v14 → v15
+- `games-app.js`: v16 → v17
 
 ## After upload
 
-Hard-refresh `/tools/99-club/games/`, then generate a PDF containing **Factor Pair Webs** and **Rule Wheels**. The web diagrams should be visibly larger and the centre labels/rules should remain comfortably inside their circles.
+Hard-refresh `/tools/99-club/games/` once, then review the **Arithmetic & calculation** category. It should now include Number Search and Arithmetic Equation Crossgrid, and Maths Crossnumber should expose the new clue-type option.
+
+### Regression housekeeping
+The v1.30.5/v1.30.6 cache-bust assertions are relaxed to accept later PDF asset versions while still rejecting versions older than their respective fixes.

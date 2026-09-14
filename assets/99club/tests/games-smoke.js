@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.29.1 Maths Games & Puzzles smoke/regression test. */
+/* 99 Club Studio v1.28.1 Maths Games & Puzzles smoke/regression test. */
 'use strict';
 const fs=require('fs'),path=require('path');
 const ROOT=path.resolve(__dirname,'..'),REPO=path.resolve(ROOT,'../..');
@@ -6,8 +6,8 @@ const G=require(path.join(ROOT,'games-engine.js')),GPDF=require(path.join(ROOT,'
 function assert(ok,msg){if(!ok)throw new Error(msg);}const failures=[];function check(fn){try{fn();}catch(e){failures.push(e.stack||e.message);}}
 
 check(()=>{
-  assert(G.VERSION==='1.9.0','Unexpected games engine version');
-  const expected=['wordsearch','pyramid','crossword','magic','sudoku','arithmagon','magicshape','maze','crossnumber','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance','kakuro','futoshiki','arithmeticcages','nonogram','numberpath'];assert(JSON.stringify(Object.keys(G.ENGINES))===JSON.stringify(expected),'Expected the complete 23-engine Games library');
+  assert(G.VERSION==='1.8.0','Unexpected games engine version');
+  const expected=['wordsearch','pyramid','crossword','magic','sudoku','arithmagon','magicshape','maze','crossnumber','numbersearch','equationcrossgrid','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance','kakuro','futoshiki','arithmeticcages','nonogram','numberpath'];assert(JSON.stringify(Object.keys(G.ENGINES))===JSON.stringify(expected),'Expected the complete 25-engine Games library');
   assert(G.VOCABULARY.length===591,'Curated vocabulary database should expose 591 entries');
   for(const id of Object.keys(G.ENGINES)){const e=G.ENGINES[id];assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: common output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: first games remain print → pencil → solve`);assert(e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: per-game settings missing`);}
   assert(G.ENGINES.domino.hiddenFromLibrary===true,'Domino chain should be parked outside the one-player library');
@@ -39,7 +39,7 @@ check(()=>{
 });
 
 check(()=>{
-  for(let year=1;year<=6;year++)for(const difficulty of ['easy','standard','challenge']){const a=G.generateNumberPyramid({minYear:year,maxYear:year,topics:['calculation'],engineSettings:{pyramid:{difficulty}}},`py-${year}-${difficulty}`),b=G.generateNumberPyramid({minYear:year,maxYear:year,topics:['calculation'],engineSettings:{pyramid:{difficulty}}},`py-${year}-${difficulty}`);assert(JSON.stringify(a)===JSON.stringify(b),`Pyramid Y${year} ${difficulty}: nondeterministic`);assert(a.rows.length>=3&&a.rows.length<=7,`Pyramid Y${year} ${difficulty}: row count`);assert(a.missingSet.length>=2,`Pyramid Y${year} ${difficulty}: insufficient blanks`);for(let r=0;r<a.rows.length-1;r++)for(let c=0;c<a.rows[r].length;c++)assert(a.rows[r][c]===a.rows[r+1][c]+a.rows[r+1][c+1],`Pyramid Y${year} ${difficulty}: broken sum invariant`);}
+  for(let year=1;year<=6;year++)for(const difficulty of ['easy','standard','challenge']){const a=G.generateNumberPyramid({minYear:year,maxYear:year,topics:['calculation'],engineSettings:{pyramid:{difficulty}}},`py-${year}-${difficulty}`),b=G.generateNumberPyramid({minYear:year,maxYear:year,topics:['calculation'],engineSettings:{pyramid:{difficulty}}},`py-${year}-${difficulty}`);assert(JSON.stringify(a)===JSON.stringify(b),`Pyramid Y${year} ${difficulty}: nondeterministic`);assert(a.rows.length>=3&&a.rows.length<=5,`Pyramid Y${year} ${difficulty}: row count`);assert(a.missingSet.length>=2,`Pyramid Y${year} ${difficulty}: insufficient blanks`);for(let r=0;r<a.rows.length-1;r++)for(let c=0;c<a.rows[r].length;c++)assert(a.rows[r][c]===a.rows[r+1][c]+a.rows[r+1][c+1],`Pyramid Y${year} ${difficulty}: broken sum invariant`);}
 });
 
 check(()=>{

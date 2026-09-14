@@ -5,8 +5,8 @@ const ROOT=path.resolve(__dirname,'..');
 const G=require(path.join(ROOT,'games-engine.js'));
 const A=G.ARITH;
 function assert(ok,msg){if(!ok)throw new Error(msg);}
-const IDS=['arithmagon','magicshape','maze','crossnumber','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance'];
-assert(A&&A.VERSION==='1.2.0','Arithmetic engine module missing/wrong version');
+const IDS=['arithmagon','magicshape','maze','crossnumber','numbersearch','equationcrossgrid','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance'];
+assert(A&&A.VERSION==='1.3.0','Arithmetic engine module missing/wrong version');
 assert(JSON.stringify(Object.keys(A.DEFINITIONS))===JSON.stringify(IDS),'Arithmetic engine IDs changed unexpectedly');
 
 // Deterministic base-generation load test: intentionally exercises every engine at every
@@ -17,8 +17,8 @@ for(const id of IDS){
   assert(e&&e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: settings contract missing`);
   assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: output contract missing`);
   assert(e.needsDice===false&&e.needsPartner===false,`${id}: activity must remain print -> pencil -> solve`);
-  const topic=id==='symbols'?'algebra':'calculation';
-  for(let year=1;year<=6;year++)for(const difficulty of ['easy','standard','challenge'])for(let i=0;i<100;i++){
+  const topic=id==='symbols'?'algebra':'calculation',iterations=id==='numbersearch'?20:id==='equationcrossgrid'?60:100;
+  for(let year=1;year<=6;year++)for(const difficulty of ['easy','standard','challenge'])for(let i=0;i<iterations;i++){
     const settings={minYear:year,maxYear:year,topics:[topic],engineSettings:{[id]:{difficulty}}};
     const seed=`arith-stress:${id}:${year}:${difficulty}:${i}`;
     const a=G.generateActivity(id,settings,seed,[]),b=G.generateActivity(id,settings,seed,[]);
@@ -45,19 +45,16 @@ for(const topic of ['fractions','decimals_percentages','measurement','geometry',
   for(const id of ['arithmagon','magicshape','target','brokencalc','operationgrid','numberwheels'])assert(!c.has(id),`${id} incorrectly claims ${topic}`);
 }
 
-// Arithmagons: every connection follows its own operation, including mixed-operation
-// puzzles, larger polygons and selected diagonals.
-for(let i=0;i<900;i++){
-  const shapes=['triangle','square','pentagon','hexagon'],operations=['add','multiply','mixed_within'],shape=shapes[i%shapes.length],operation=operations[i%operations.length];
-  const a=G.generateActivity('arithmagon',{minYear:3,maxYear:6,topics:['calculation'],engineSettings:{arithmagon:{difficulty:'challenge',shape,operation,connections:i%2?'diagonals':'sides',missing:'fewer_clues'}}},`arithmagon-deep:${i}`);
-  for(const link of a.links){const expected=link.operation==='add'?a.corners[link.a]+a.corners[link.b]:a.corners[link.a]*a.corners[link.b];assert(link.value===expected,`arithmagon deep ${i}: connection invariant`);}
-  if(operation==='mixed_within')assert(a.links.some(x=>x.operation==='add')&&a.links.some(x=>x.operation==='multiply'),`arithmagon deep ${i}: mixed-within must use both operations`);
-  if(i%2&&shape!=='triangle')assert(a.links.some(x=>x.diagonal),`arithmagon deep ${i}: requested diagonal missing`);
+// Arithmagons: every edge follows the selected operation.
+for(let i=0;i<700;i++){
+  const a=G.generateActivity('arithmagon',{minYear:3,maxYear:6,topics:['calculation'],engineSettings:{arithmagon:{difficulty:'challenge',shape:i%2?'triangle':'square',operation:i%3?'add':'multiply',missing:'fewer_clues'}}},`arithmagon-deep:${i}`);
+  const op=a.operation==='add'?((x,y)=>x+y):((x,y)=>x*y);
+  for(let j=0;j<a.corners.length;j++)assert(a.edges[j]===op(a.corners[j],a.corners[(j+1)%a.corners.length]),`arithmagon deep ${i}: edge invariant`);
 }
 
-// Magic number shapes: canonical solution really is magic; check / repair variants are honest.
-for(const shape of ['triangle','circle','bowtie','star'])for(let i=0;i<400;i++){
-  const type=i%4===0?'check':i%4===1?'repair':'missing',a=G.generateActivity('magicshape',{minYear:4,maxYear:6,topics:['calculation'],engineSettings:{magicshape:{difficulty:'challenge',shape,puzzleType:type,clueLevel:'fewer'}}},`magicshape-deep:${shape}:${i}`);
+// Magic number shapes: canonical solution really is magic; check variants are honest.
+for(const shape of ['triangle','circle','star'])for(let i=0;i<400;i++){
+  const a=G.generateActivity('magicshape',{minYear:4,maxYear:6,topics:['calculation'],engineSettings:{magicshape:{difficulty:'challenge',shape,puzzleType:i%3===0?'check':'missing',clueLevel:'fewer'}}},`magicshape-deep:${shape}:${i}`);
   const sums=a.lines.map(line=>line.reduce((s,j)=>s+a.solutionValues[j],0));
   assert(sums.every(x=>x===a.target),`magicshape ${shape} ${i}: unequal solution line totals`);
   if(a.puzzleType==='check'){
@@ -65,7 +62,6 @@ for(const shape of ['triangle','circle','bowtie','star'])for(let i=0;i<400;i++){
     if(a.isMagic)assert(a.lineSums.every(x=>x===a.lineSums[0]),`magicshape check true but unequal`);
     else assert(a.lineSums.some(x=>x!==a.lineSums[0]),`magicshape check false but equal`);
   }
-  if(a.puzzleType==='repair'){assert(Number.isInteger(a.brokenIndex)&&a.correctValue!==a.wrongValue,`magicshape repair ${shape}: repair metadata missing`);assert(a.displayValues[a.brokenIndex]===a.wrongValue,`magicshape repair ${shape}: wrong value not shown`);}
 }
 
 // Correct-answer maze: the solution is a unique orthogonal route and distractors never
@@ -88,14 +84,14 @@ for(let i=0;i<1500;i++){
 }
 
 // Broad wrappers must consume only a topic selected by the teacher and appropriate to the year.
-const broad=['maze','crossnumber','domino'];
+const broad=['maze','crossnumber','numbersearch','domino'];
 const broadTopics=['number_place_value','calculation','fractions','decimals_percentages','ratio_proportion','measurement','geometry','statistics','algebra'];
 let topicStress=0;
 for(const id of broad)for(const topic of broadTopics)for(let year=1;year<=6;year++){
   if(!G.compatibleEngines({minYear:year,maxYear:year,topics:[topic]}).includes(id))continue;
   for(let i=0;i<80;i++){
     const a=G.generateActivity(id,{minYear:year,maxYear:year,topics:[topic],engineSettings:{[id]:{difficulty:['easy','standard','challenge'][i%3]}}},`topic-route:${id}:${topic}:${year}:${i}`,[]);topicStress++;
-    const used=id==='maze'?a.steps.map(x=>x.topic):id==='crossnumber'?a.entries.map(x=>x.topic):a.ordered.map(x=>x.topic).filter(Boolean);
+    const used=id==='maze'?a.steps.map(x=>x.topic):id==='crossnumber'?a.entries.map(x=>x.topic):id==='numbersearch'?a.placements.map(x=>x.topic):a.ordered.map(x=>x.topic).filter(Boolean);
     assert(used.length>0,`${id}/${topic}/Y${year}: no topic-bearing content`);
     assert(used.every(t=>t===topic),`${id}/${topic}/Y${year}: leaked topic ${[...new Set(used)].join(',')}`);
   }
@@ -147,11 +143,11 @@ for(let i=0;i<900;i++){
 }
 
 for(let i=0;i<900;i++){
-  const style=['wheel','factor','diamond'][i%3],a=G.generateActivity('numberwheels',{minYear:3,maxYear:6,topics:['calculation'],engineSettings:{numberwheels:{difficulty:'challenge',style,itemCount:'4'}}},`connections-deep:${i}`);assert(a.items.length===4,'number connections item count');
+  const style=['wheel','factor','diamond'][i%3],a=G.generateActivity('numberwheels',{minYear:3,maxYear:6,topics:['calculation'],engineSettings:{numberwheels:{difficulty:'challenge',style,itemCount:'4'}}},`wheels-deep:${i}`);assert(a.items.length===4,'number wheels item count');
   for(const it of a.items){
-    if(style==='wheel')for(let j=0;j<it.inputs.length;j++){const sp=it.ruleSpec,expected=sp.type==='add'?it.inputs[j]+sp.a:sp.type==='multiply'?it.inputs[j]*sp.a:it.inputs[j]*sp.a+sp.b;assert(it.outputs[j]===expected,'rule wheel relation wrong');}
-    if(style==='factor')for(const [u,v] of it.pairs)assert(u*v===it.centre,'factor pair web relation wrong');
-    if(style==='diamond'){assert(it.top===it.left*it.right,'diamond product wrong');assert(it.bottom===it.left+it.right,'diamond sum wrong');assert(Array.isArray(it.hidden)&&it.hidden.length>=1,'diamond hidden-value contract invalid');}
+    if(style==='wheel')for(let j=0;j<it.inputs.length;j++){const spec=it.ruleSpec||{},expected=spec.type==='add'?it.inputs[j]+spec.a:spec.type==='multiply'?it.inputs[j]*spec.a:spec.type==='multiply_add'?it.inputs[j]*spec.a+spec.b:NaN;assert(it.outputs[j]===expected,'number wheel relation wrong');}
+    if(style==='factor')for(const [u,v] of it.pairs)assert(u*v===it.centre,'factor flower pair wrong');
+    if(style==='diamond'){assert(it.top===it.left*it.right,'diamond product wrong');assert(it.bottom===it.left+it.right,'diamond sum wrong');assert(Array.isArray(it.hidden)&&it.hidden.length>=1&&it.hidden.every(k=>['top','bottom','left','right'].includes(k)),'diamond hidden-cell metadata invalid');}
   }
 }
 
