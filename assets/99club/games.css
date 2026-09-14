@@ -734,3 +734,60 @@
   }
   .tt99-cage-grid .cage-cell{border-color:#999!important}
 }
+
+/* v1.31.2 — Arithmetic review follow-up: preview containment and logic-grid polish */
+.tt99-crossnumber .tt99-crossword-layout{
+  min-height:0!important;
+  overflow:hidden!important;
+  align-items:stretch!important;
+}
+.tt99-crossnumber .tt99-crossword-grid{
+  max-width:100%!important;
+  max-height:100%!important;
+  align-self:center!important;
+  justify-self:center!important;
+}
+.tt99-crossnumber .tt99-crossword-grid.is-tall{
+  height:100%!important;
+  width:auto!important;
+}
+.tt99-crossnumber .tt99-crossword-grid.is-balanced,
+.tt99-crossnumber .tt99-crossword-grid.is-wide{
+  width:100%!important;
+  height:auto!important;
+}
+.tt99-game-activities.count-2 .tt99-crossnumber .tt99-crossword-grid.is-tall,
+.tt99-game-activities.count-3 .tt99-crossnumber .tt99-crossword-grid.is-tall{height:100%!important;width:auto!important}
+
+/* Kakuro preview: use the available activity space and follow conventional dark clue blocks. */
+.tt99-kakuro .tt99-kakuro-grid{
+  width:min(100%,520px)!important;
+  border:2px solid #344c52!important;
+  background:#344c52!important;
+  gap:0!important;
+  margin:10px auto 5px!important;
+}
+.tt99-kakuro-grid>span{box-sizing:border-box}
+.tt99-kakuro-grid .play{border-right:1px solid #9fb0b3!important;border-bottom:1px solid #9fb0b3!important;background:#fff!important}
+.tt99-kakuro-grid .block,.tt99-kakuro-grid .block.has-clue{background:#344c52!important;border:0!important}
+.tt99-kakuro-grid .block.has-clue:after{
+  background:linear-gradient(to bottom right,transparent 49%,#f2f6f6 49.4%,#f2f6f6 50.6%,transparent 51%)!important;
+}
+.tt99-kakuro-grid .block i{font-size:clamp(7px,.72vw,11px)!important;color:#fff!important;text-shadow:none!important;z-index:2}
+.tt99-kakuro-grid .block i.down{left:8%!important;bottom:7%!important}
+.tt99-kakuro-grid .block i.across{right:8%!important;top:7%!important}
+.tt99-kakuro-grid .play b{font-size:clamp(13px,1.45vw,22px)!important}
+.tt99-game-activities.count-2 .tt99-kakuro .tt99-kakuro-grid{width:min(100%,360px)!important}
+.tt99-game-activities.count-3 .tt99-kakuro .tt99-kakuro-grid{width:min(100%,250px)!important;margin-top:4px!important}
+
+/* Arithmetic Cages: ordinary cell lines stay visible, but cage walls remain dominant. */
+.tt99-cage-grid .cage-cell{border:.8px solid #9eafb3!important}
+.tt99-cage-grid .cage-cell.top{border-top:2.4px solid #4f696f!important}
+.tt99-cage-grid .cage-cell.right{border-right:2.4px solid #4f696f!important}
+.tt99-cage-grid .cage-cell.bottom{border-bottom:2.4px solid #4f696f!important}
+.tt99-cage-grid .cage-cell.left{border-left:2.4px solid #4f696f!important}
+
+@media(max-width:900px){
+  .tt99-crossnumber .tt99-crossword-grid.is-tall{height:auto!important;width:min(100%,430px)!important}
+  .tt99-kakuro .tt99-kakuro-grid{width:min(100%,430px)!important}
+}

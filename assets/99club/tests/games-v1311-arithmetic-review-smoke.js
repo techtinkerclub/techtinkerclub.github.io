@@ -89,7 +89,7 @@ assert(pdf.includes('stroke:[170,186,189],width:.55'),'Arithmetic Cage PDF inter
 assert(app.includes('items-${a.items.length}')&&css.includes('.tt99-wheel-items.visual.items-6'),'six-item Number Connections layout hook missing');
 assert(/a\.items\.length===6\?3/.test(pdf),'six-wheel PDF 3x2 layout missing');
 assert(css.includes('repeat(var(--crossgrid-size,5),1fr)'),'variable-size Crossgrid CSS missing');
-assert(/games\.css\?v=19/.test(page)&&/games-arithmetic\.js\?v=5/.test(page)&&/games-number-logic\.js\?v=3/.test(page)&&/games-pdf\.js\?v=16/.test(page)&&/games-app\.js\?v=18/.test(page),'v1.31.1 cache versions missing');
+assert(/games\.css\?v=(?:19|[2-9]\d)/.test(page)&&/games-arithmetic\.js\?v=(?:[5-9]|[1-9]\d)/.test(page)&&/games-number-logic\.js\?v=(?:[3-9]|[1-9]\d)/.test(page)&&/games-pdf\.js\?v=(?:1[6-9]|[2-9]\d)/.test(page)&&/games-app\.js\?v=(?:1[8-9]|[2-9]\d)/.test(page),'v1.31.1-or-later cache versions missing');
 
 // Representative direct-PDF generation across the reviewed activities.
 const settings={minYear:6,maxYear:6,topics:['calculation','algebra'],workedExamples:'none',personalisation:{packTitle:'Arithmetic review QA'}};

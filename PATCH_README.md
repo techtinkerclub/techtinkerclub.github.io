@@ -1,81 +1,63 @@
-# 99 Club Studio v1.31.1 — Arithmetic & Calculation review patch
+# 99 Club Studio v1.31.2 — Arithmetic density + preview correction
 
 ## Baseline
 
-Built directly against the current online `master` state of `techtinkerclub/techtinkerclub.github.io`:
+Built directly against the current online `master` state:
 
-`8bec53c7af567216bbf2ba4900c7c0a8e92269a7`
+`62d38a7c11aa832722579cb9aeeab48fdfa22f65`
 
-That is the uploaded **v1.31.0 Arithmetic Search & Crossgrid** build reviewed in the browser and PDF.
+That commit is the uploaded **v1.31.1 Arithmetic & Calculation review** build. Apply this patch at the repository root, replacing matching files.
 
-Apply this ZIP at the repository root, replacing matching files, then hard-refresh `/tools/99-club/games/` once.
-
-## Review fixes included
-
-### Correct-Answer Maze
-- Adds explicit 8×8 and 10×10 grid options.
-- Adds 12- and 15-question path options.
-- Challenge Auto can use a larger/longer route.
-- Keeps the existing unambiguous-step validation: every question has exactly one valid neighbouring answer.
+## What this fixes
 
 ### Maths Crossnumber
-- Expands clue choices to 8 / 12 / 16 / 20.
-- Expands working grids to 11×11 through 17×17.
-- Auto now targets approximately 8 / 12 / 16 clues by difficulty.
-- Candidate and layout search is strengthened so larger Challenge grids can place more connected entries.
-- Browser preview is constrained/scaled so larger grids and clue lists do not escape the activity frame.
-
-### Number Search
-- Keeps the v1.31.0 ambiguity guard.
-- Adds an independent regression scanner that exhaustively checks every permitted direction and verifies each intended numerical answer occurs exactly once.
+- Reworks the placement strategy so Challenge grids branch and cross repeatedly instead of commonly forming staircase / ladder layouts.
+- Scores candidate placements for compactness, balanced Across/Down use, multiple crossings and branching.
+- Challenge answers now deliberately favour 3- and 4-digit values, including equation clues with larger unknown values.
+- Keeps requested 20-clue Challenge grids when possible.
+- Adds preview shape-awareness so tall grids scale to the available activity height instead of escaping the frame.
 
 ### Arithmetic Equation Crossgrid
-- Adds 5×5, 8×8 and 10×10 choices.
-- Adds **All four operations mixed** (`+ − × ÷`) within one puzzle.
-- Larger grids generate connected equation lattices rather than simply adding unused space.
-- Unused cells are rendered dark/black in preview and PDF.
+- Reworks the 8x8 / 10x10 constructor so new equations may intersect existing equations at more than one number cell.
+- Challenge 10x10 now targets a much denser lattice (normally about 17-18 connected equations and ~59% active cells in stress QA).
+- Retains genuine mixed `+ - × ÷` mode and sequentially-solvable hidden cells.
 
-### Target Number Challenge
-- Moves allowed operations into the main pupil instruction.
-- Direct PDF is redesigned to match the browser card layout more closely: given-number tiles, target card and working space.
+### Kakuro preview
+- Leaves the direct PDF renderer unchanged.
+- Enlarges browser-preview Kakuro grids and uses the available activity space better.
+- Keeps conventional dark clue/blocked cells, white diagonal separators and clearer clue positioning.
 
-### Broken Calculator
-- Direct PDF now uses calculator-key tiles and larger target/work cards, much closer to the preview presentation.
+### Arithmetic Cages preview
+- Fixes the v1.31.1 CSS regression where an `!important` thin cell border overrode the heavier cage boundaries.
+- Internal cell lines remain visible, while cage walls are again clearly dominant.
 
-### Missing Operations → Operation Codebreaker
-- Renamed/reframed as **Operation Codebreaker**.
-- Missing operation signs use large, proper operator slots rather than a tiny square or PDF `?`.
-- Each equation is an individual lock.
-- Solved signs are copied in order into a final **Unlock Code** strip.
-- Answer PDF fills the operator tiles and final code.
+## Files changed
 
-### Kakuro · Cross Sums
-- Adds an explicit 9×9 grid option.
-- Keeps Challenge Auto at 7×7 for practical generation speed; teachers can request 9×9 explicitly.
-- Blocked/clue cells are dark in preview and direct PDF, with light clue text/diagonals for normal Kakuro readability.
-
-### Arithmetic Cages
-- Darkens the normal internal cell grid in preview and PDF.
-- Cage outlines remain substantially heavier so cage boundaries are still visually dominant.
-
-### Missed Number Patterns items
-- **Magic Number Shapes:** star geometry now uses safe drawing bounds in preview and PDF so outer nodes cannot leave the activity frame.
-- **Number Connections:** six-item preview gets a dedicated non-overlapping 3×2 layout; six Rule Wheels use a larger 3×2 PDF layout instead of six tiny diagrams.
+- `_pages/99-club-games.md` — cache bumps for CSS / arithmetic / app.
+- `assets/99club/games-arithmetic.js` — Crossnumber and Crossgrid generator improvements.
+- `assets/99club/games-app.js` — Crossnumber preview shape hook.
+- `assets/99club/games.css` — Crossnumber containment, Kakuro preview polish, Arithmetic Cage wall fix.
+- `assets/99club/tests/games-v1311-arithmetic-review-smoke.js` — later-version cache compatibility.
+- `assets/99club/tests/games-v1312-arithmetic-density-preview-smoke.js` — new regression coverage.
 
 ## Cache versions
 
-- `games.css`: 18 → 19
-- `games-arithmetic.js`: 4 → 5
-- `games-number-logic.js`: 2 → 3
-- `games-pdf.js`: 15 → 16
-- `games-app.js`: 17 → 18
+- `games.css`: v19 -> v20
+- `games-arithmetic.js`: v5 -> v6
+- `games-app.js`: v18 -> v19
+- PDF and number-logic asset versions are unchanged because their renderers/engines are not modified in this patch.
 
 ## Regression boundary
 
-No intentional changes to:
-- public 99 Club fluency sheets;
+No intended changes to:
+- Number Search uniqueness logic;
+- Target Number, Broken Calculator or Operation Codebreaker maths;
+- direct PDF styling for Kakuro / Arithmetic Cages;
+- Number Patterns fixes already accepted;
 - Custom Worksheets / Angles;
-- vocabulary Word Search/Crossword content;
-- Number Logic engines other than the explicit Kakuro option/styling and Arithmetic Cages grid-line styling;
-- personalisation;
-- Random Pack behaviour.
+- Vocabulary / Crossword;
+- Random Pack or personalisation.
+
+## After upload
+
+Hard-refresh `/tools/99-club/games/`. Review a Challenge Crossnumber, a 10x10 Challenge Equation Crossgrid, a 9x9 Kakuro and a 6x6 Arithmetic Cages preview.

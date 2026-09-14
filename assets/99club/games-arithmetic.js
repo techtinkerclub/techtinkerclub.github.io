@@ -5,7 +5,7 @@
 (function(global){
   'use strict';
 
-  const VERSION='1.3.1';
+  const VERSION='1.3.2';
   const NUMERIC_TOPICS=['number_place_value','calculation','fractions','decimals_percentages','ratio_proportion','measurement','geometry','statistics','algebra'];
   const PRIMARY_ARITH=['number_place_value','calculation','fractions','decimals_percentages','ratio_proportion','algebra'];
 
@@ -280,13 +280,31 @@
   function placeDigitEntry(grid,item,x,y,dir){const word=String(item.answer),dx=dir==='across'?1:0,dy=dir==='down'?1:0,cells=[];for(let i=0;i<word.length;i++){const xx=x+dx*i,yy=y+dy*i;grid[yy][xx]=word[i];cells.push([xx,yy]);}return {...item,answerText:word,x,y,dir,cells};}
   function canPlaceDigits(grid,word,x,y,dir){const n=grid.length,dx=dir==='across'?1:0,dy=dir==='down'?1:0;let crosses=0;for(let i=0;i<word.length;i++){const xx=x+dx*i,yy=y+dy*i;if(xx<0||xx>=n||yy<0||yy>=n)return null;const cur=grid[yy][xx];if(cur&&cur!==word[i])return null;if(cur)crosses++;else if(dir==='across'){if((yy>0&&grid[yy-1][xx])||(yy<n-1&&grid[yy+1][xx]))return null;}else{if((xx>0&&grid[yy][xx-1])||(xx<n-1&&grid[yy][xx+1]))return null;}}
     const bx=x-dx,by=y-dy,ax=x+dx*word.length,ay=y+dy*word.length;if(bx>=0&&bx<n&&by>=0&&by<n&&grid[by][bx])return null;if(ax>=0&&ax<n&&ay>=0&&ay<n&&grid[ay][ax])return null;return crosses;}
-  function buildCrossnumber(items,size,seed,target){const rng=rngFromSeed(seed),grid=emptyGrid(size),entries=[];if(!items.length)return {grid,entries};const first=items[0],word=String(first.answer),x=Math.max(0,Math.floor((size-word.length)/2)),y=Math.floor(size/2);entries.push(placeDigitEntry(grid,first,x,y,'across'));
-    for(const item of items.slice(1)){if(entries.length>=target)break;const digits=String(item.answer);let best=null;for(let wi=0;wi<digits.length;wi++)for(const e of entries){for(let ei=0;ei<e.answerText.length;ei++){if(digits[wi]!==e.answerText[ei])continue;const dir=e.dir==='across'?'down':'across',xx=dir==='across'?e.x-wi:e.x+ei,yy=dir==='down'?e.y-wi:e.y+ei;const crosses=canPlaceDigits(grid,digits,xx,yy,dir);if(crosses>=1){const score=crosses*120-randInt(rng,0,20);if(!best||score>best.score)best={score,x:xx,y:yy,dir};}}}if(best)entries.push(placeDigitEntry(grid,item,best.x,best.y,best.dir));}
-    return {grid,entries};}
+  function crossnumberBounds(entries,extra=null){
+    const cells=entries.flatMap(e=>e.cells||[]).concat(extra||[]);if(!cells.length)return {minX:0,maxX:0,minY:0,maxY:0,width:1,height:1,area:1};
+    const xs=cells.map(c=>c[0]),ys=cells.map(c=>c[1]),minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys),width=maxX-minX+1,height=maxY-minY+1;return {minX,maxX,minY,maxY,width,height,area:width*height};
+  }
+  function crossnumberPlacementCandidates(grid,entries,item,size,rng){
+    const digits=String(item.answer),seen=new Set(),out=[],before=crossnumberBounds(entries),across=entries.filter(e=>e.dir==='across').length,down=entries.length-across;
+    for(let wi=0;wi<digits.length;wi++)for(const e of entries)for(let ei=0;ei<e.answerText.length;ei++){
+      if(digits[wi]!==e.answerText[ei])continue;const dir=e.dir==='across'?'down':'across',x=dir==='across'?e.x-wi:e.x+ei,y=dir==='down'?e.y-wi:e.y+ei,key=`${x}:${y}:${dir}`;if(seen.has(key))continue;seen.add(key);
+      const crosses=canPlaceDigits(grid,digits,x,y,dir);if(crosses===null||crosses<1)continue;const dx=dir==='across'?1:0,dy=dir==='down'?1:0,cells=Array.from({length:digits.length},(_,i)=>[x+dx*i,y+dy*i]),after=crossnumberBounds(entries,cells),growth=after.area-before.area,centreX=(after.minX+after.maxX)/2,centreY=(after.minY+after.maxY)/2,centrePenalty=Math.abs(centreX-(size-1)/2)+Math.abs(centreY-(size-1)/2),balanceBonus=dir==='across'?(across<=down?45:0):(down<=across?45:0),multiBonus=crosses>1?(crosses-1)*420:0,compactBonus=Math.max(0,120-growth*9),shapePenalty=Math.max(0,Math.max(after.width/after.height,after.height/after.width)-1.5)*320;
+      const score=crosses*520+multiBonus+balanceBonus+compactBonus-growth*16-centrePenalty*5-shapePenalty-randInt(rng,0,18);out.push({score,x,y,dir,crosses,cells,item});
+    }
+    return out;
+  }
+  function crossnumberLayoutStats(raw){
+    const entries=raw.entries||[],used=new Map();for(let i=0;i<entries.length;i++)for(const [x,y] of entries[i].cells||[]){const k=`${x}:${y}`;if(!used.has(k))used.set(k,[]);used.get(k).push(i);}const crossings=[...used.values()].filter(v=>v.length>1),degrees=Array(entries.length).fill(0);for(const ids of crossings)for(const id of ids)degrees[id]+=ids.length-1;const bounds=crossnumberBounds(entries),fill=used.size/Math.max(1,bounds.area),balance=Math.min(entries.filter(e=>e.dir==='across').length,entries.filter(e=>e.dir==='down').length)/Math.max(1,Math.max(entries.filter(e=>e.dir==='across').length,entries.filter(e=>e.dir==='down').length)),branches=degrees.filter(d=>d>=3).length,aspect=Math.max(bounds.width/bounds.height,bounds.height/bounds.width),quality=entries.length*1200+crossings.length*110+branches*170+fill*900+balance*350-Math.max(0,aspect-1.55)*900-bounds.area*.9;return {crossings:crossings.length,branches,fill,balance,aspect,bounds,quality};
+  }
+  function buildCrossnumber(items,size,seed,target){
+    const rng=rngFromSeed(seed),grid=emptyGrid(size),entries=[];if(!items.length)return {grid,entries};
+    const pool=items.slice(),firstPool=pool.slice(0,Math.min(36,pool.length)).sort((a,b)=>String(b.answer).length-String(a.answer).length),first=firstPool[0]||pool[0],firstIndex=pool.indexOf(first),word=String(first.answer),x=Math.max(0,Math.floor((size-word.length)/2)),y=Math.floor(size/2);pool.splice(firstIndex,1);entries.push(placeDigitEntry(grid,first,x,y,'across'));
+    while(entries.length<target&&pool.length){let all=[];const scan=pool.slice(0,Math.min(pool.length,110));for(const item of scan)all.push(...crossnumberPlacementCandidates(grid,entries,item,size,rng));if(!all.length)break;const multi=all.filter(c=>c.crosses>=2),candidates=(entries.length>=5&&multi.length?multi:all).sort((a,b)=>b.score-a.score),top=candidates.slice(0,Math.min(5,candidates.length)),pick=choose(top,rng),idx=pool.indexOf(pick.item);entries.push(placeDigitEntry(grid,pick.item,pick.x,pick.y,pick.dir));if(idx>=0)pool.splice(idx,1);}
+    return {grid,entries,layoutStats:crossnumberLayoutStats({entries})};}
   function trimCrossGrid(raw){if(!raw.entries.length)return {grid:[],entries:[],width:0,height:0};const used=raw.entries.flatMap(e=>e.cells),minX=Math.min(...used.map(c=>c[0])),maxX=Math.max(...used.map(c=>c[0])),minY=Math.min(...used.map(c=>c[1])),maxY=Math.max(...used.map(c=>c[1])),w=maxX-minX+1,h=maxY-minY+1,grid=Array.from({length:h},()=>Array(w).fill(''));for(const e of raw.entries){e.x-=minX;e.y-=minY;e.cells=e.cells.map(([x,y])=>[x-minX,y-minY]);for(let i=0;i<e.answerText.length;i++){const [x,y]=e.cells[i];grid[y][x]=e.answerText[i];}}
     const starts=new Map();for(const e of raw.entries){const k=`${e.x}:${e.y}`;if(!starts.has(k))starts.set(k,[]);starts.get(k).push(e);}let num=1;[...starts.keys()].sort((a,b)=>{const [ax,ay]=a.split(':').map(Number),[bx,by]=b.split(':').map(Number);return ay-by||ax-bx;}).forEach(k=>{starts.get(k).forEach(e=>e.number=num);num++;});raw.entries.sort((a,b)=>a.number-b.number||(a.dir==='across'?-1:1));return {grid,entries:raw.entries,width:w,height:h};}
   function equationClue(settings,rng,diff){
-    const y=years(settings).max,letter=y>=6?choose(['x','n','a','b','c','m','p','t'],rng):'?',cap=diff==='challenge'?99:diff==='easy'?30:60,x=randInt(rng,y<=2?5:2,cap),simple=y<=2?['add','sub']:y<=4?['add','sub','mul']:y<=5?['add','sub','mul','div']:diff==='challenge'?['add','sub','mul','div','coeff_add','coeff_sub']:['add','sub','mul','coeff_add'],style=choose(simple,rng),name=letter;
+    const y=years(settings).max,letter=y>=6?choose(['x','n','a','b','c','m','p','t'],rng):'?',lo=diff==='challenge'?100:diff==='standard'?20:y<=2?5:10,cap=diff==='challenge'?850:diff==='easy'?99:260,x=randInt(rng,Math.min(lo,cap),cap),simple=y<=2?['add','sub']:y<=4?['add','sub','mul']:y<=5?['add','sub','mul','div']:diff==='challenge'?['add','sub','mul','div','coeff_add','coeff_sub']:['add','sub','mul','coeff_add'],style=choose(simple,rng),name=letter;
     if(style==='add'){const b=randInt(rng,2,y<=2?20:30),total=x+b;return {topic:'algebra',prompt:`${name} + ${b} = ${total}`,answer:x,explanation:`${total} − ${b} = ${x}`,clueKind:'equation'};}
     if(style==='sub'){const b=randInt(rng,1,Math.max(1,Math.min(x-1,y<=2?15:25))),total=x-b;return {topic:'algebra',prompt:`${name} − ${b} = ${total}`,answer:x,explanation:`${total} + ${b} = ${x}`,clueKind:'equation'};}
     if(style==='mul'){const k=randInt(rng,2,y<=3?5:9),total=x*k;return {topic:'algebra',prompt:`${name} × ${k} = ${total}`,answer:x,explanation:`${total} ÷ ${k} = ${x}`,clueKind:'equation'};}
@@ -294,9 +312,10 @@
     const k=randInt(rng,2,5),b=randInt(rng,1,12),total=style==='coeff_sub'?k*x-b:k*x+b,op=style==='coeff_sub'?'−':'+';return {topic:'algebra',prompt:`${k}${name} ${op} ${b} = ${total}`,answer:x,explanation:style==='coeff_sub'?`(${total} + ${b}) ÷ ${k} = ${x}`:`(${total} − ${b}) ÷ ${k} = ${x}`,clueKind:'equation'};
   }
   function crossnumberClueStyle(settings,o,rng){const raw=['auto','arithmetic','equations','mixed'].includes(o.clueStyle)?o.clueStyle:'auto';if(raw!=='auto')return raw;const topics=settings?.topics||[],y=years(settings).max;if(topics.includes('algebra')&&y>=5)return rng()<.72?'equations':'mixed';return 'arithmetic';}
-  function generateCrossnumber(settings,seed){const rng=rngFromSeed(seed),o=normalise('crossnumber',settings?.engineSettings?.crossnumber),target=o.clueCount!=='auto'?Number(o.clueCount):(o.difficulty==='easy'?8:o.difficulty==='challenge'?16:12),size=o.gridSize!=='auto'?Number(o.gridSize):(o.difficulty==='easy'?11:o.difficulty==='challenge'?17:13),candidates=[],seenAnswers=new Set(),topics=eligibleTopics('crossnumber',settings),maxDigits=o.difficulty==='challenge'?4:3,cap=o.difficulty==='challenge'?9999:999,style=crossnumberClueStyle(settings,o,rng);
-    for(let i=0;i<420;i++){const useEquation=style==='equations'||(style==='mixed'&&rng()<.5),topic=choose(topics,rng),item=useEquation?equationClue(settings,rng,o.difficulty):makeNumericItem({...settings,__difficulty:o.difficulty},rng,{integerOnly:true,topic,minDigits:o.difficulty==='easy'?1:2,maxDigits,valueCap:o.difficulty==='easy'?200:o.difficulty==='challenge'?2500:600,answerCap:cap}),ans=Math.abs(Math.trunc(Number(item.answer))),key=String(ans);if(ans<0||!Number.isFinite(ans)||seenAnswers.has(key)||key.length>maxDigits)continue;seenAnswers.add(key);candidates.push({clue:item.prompt,answer:ans,explanation:item.explanation,topic:item.topic,clueKind:item.clueKind||'arithmetic'});}
-    let best=null;for(let attempt=0;attempt<180;attempt++){const raw=buildCrossnumber(shuffle(candidates,rngFromSeed(`${seed}:${attempt}`)),size,`${seed}:layout:${attempt}`,target);if(!best||raw.entries.length>best.entries.length)best=raw;if(best.entries.length>=target)break;}if(!best||best.entries.length<4)return {engineId:'crossnumber',title:'Maths Crossnumber',error:'Could not build a connected number grid. Generate another version.'};const final=trimCrossGrid(best),instruction=style==='equations'?'Solve each equation and write the value of the unknown into the grid.':style==='mixed'?'Solve each calculation or equation and write its numerical answer into the grid.':'Solve the arithmetic clues and write each numerical answer into the grid.';return {engineId:'crossnumber',title:'Maths Crossnumber',difficulty:o.difficulty,clueStyle:style,...final,instruction,seed,options:o};}
+  function generateCrossnumber(settings,seed){const rng=rngFromSeed(seed),o=normalise('crossnumber',settings?.engineSettings?.crossnumber),target=o.clueCount!=='auto'?Number(o.clueCount):(o.difficulty==='easy'?8:o.difficulty==='challenge'?16:12),size=o.gridSize!=='auto'?Number(o.gridSize):(o.difficulty==='easy'?11:o.difficulty==='challenge'?17:13),candidates=[],seenAnswers=new Set(),topics=eligibleTopics('crossnumber',settings),minDigits=o.difficulty==='challenge'?3:2,maxDigits=o.difficulty==='challenge'?4:3,cap=o.difficulty==='challenge'?9999:999,style=crossnumberClueStyle(settings,o,rng);
+    for(let i=0;i<760;i++){const useEquation=style==='equations'||(style==='mixed'&&rng()<.55),topic=choose(topics,rng),item=useEquation?equationClue(settings,rng,o.difficulty):makeNumericItem({...settings,__difficulty:o.difficulty},rng,{integerOnly:true,topic,minDigits,maxDigits,valueCap:o.difficulty==='easy'?250:o.difficulty==='challenge'?5000:900,answerCap:cap}),ans=Math.abs(Math.trunc(Number(item.answer))),key=String(ans);if(ans<0||!Number.isFinite(ans)||seenAnswers.has(key)||key.length>maxDigits||key.length<minDigits)continue;seenAnswers.add(key);candidates.push({clue:item.prompt,answer:ans,explanation:item.explanation,topic:item.topic,clueKind:item.clueKind||'arithmetic'});}
+    let best=null;for(let attempt=0;attempt<12;attempt++){const raw=buildCrossnumber(shuffle(candidates,rngFromSeed(`${seed}:${attempt}`)),size,`${seed}:layout:${attempt}`,target),stats=raw.layoutStats||crossnumberLayoutStats(raw),candidate={...raw,layoutStats:stats};if(!best||candidate.entries.length>best.entries.length||candidate.entries.length===best.entries.length&&stats.quality>best.layoutStats.quality)best=candidate;}
+    if(!best||best.entries.length<Math.max(4,Math.min(target-2,8)))return {engineId:'crossnumber',title:'Maths Crossnumber',error:'Could not build a compact connected number grid. Generate another version.'};const final=trimCrossGrid(best),instruction=style==='equations'?'Solve each equation and write the value of the unknown into the grid.':style==='mixed'?'Solve each calculation or equation and write its numerical answer into the grid.':'Solve the arithmetic clues and write each numerical answer into the grid.';return {engineId:'crossnumber',title:'Maths Crossnumber',difficulty:o.difficulty,clueStyle:style,layoutStats:best.layoutStats,...final,instruction,seed,options:o};}
 
   const NUMBER_SEARCH_DIRS={straight:[[1,0,'right'],[0,1,'down']],diagonal:[[1,0,'right'],[0,1,'down'],[1,1,'down-right'],[-1,1,'down-left']],all:[[1,0,'right'],[-1,0,'left'],[0,1,'down'],[0,-1,'up'],[1,1,'down-right'],[-1,1,'down-left'],[1,-1,'up-right'],[-1,-1,'up-left']]};
   function numberSearchMode(o){if(['straight','diagonal','all'].includes(o.directionMode))return o.directionMode;return o.difficulty==='easy'?'straight':o.difficulty==='challenge'?'all':'diagonal';}
@@ -340,36 +359,41 @@
     return null;
   }
   function crossgridCoords(start,dir){const [r,c]=start,[dr,dc]=dir;return Array.from({length:5},(_,i)=>[r+dr*i,c+dc*i]);}
-  function canPlaceCrossEquation(board,start,dir,allowEmptyStart=false){
-    const n=board.length,coords=crossgridCoords(start,dir);
-    for(let i=0;i<coords.length;i++){const [r,c]=coords[i];if(r<0||c<0||r>=n||c>=n)return null;const cur=board[r][c];if(i===0){if(allowEmptyStart){if(cur!=='#')return null;}else if(typeof cur!=='number')return null;}else if(cur!=='#')return null;}
-    return coords;
+  function crossgridCandidate(board,start,dir){
+    const n=board.length,coords=crossgridCoords(start,dir);for(const [r,c] of coords)if(r<0||c<0||r>=n||c>=n)return null;
+    let existing=0,newNumeric=0;for(let i=0;i<coords.length;i++){const [r,c]=coords[i],cur=board[r][c];if(i===1||i===3){if(cur!=='#')return null;}else{if(cur!=='#'&&typeof cur!=='number')return null;if(typeof cur==='number')existing++;else newNumeric++;}}
+    if(!existing||!newNumeric)return null;return {coords,existing,newNumeric};
   }
-  function placeCrossEquation(board,coords,values){coords.forEach(([r,c],i)=>board[r][c]=values[i]);}
-  function buildEquationCrossgrid(size,ops,diff,seed,targetLines,requireAllOps){
-    const rng=rngFromSeed(seed),board=Array.from({length:size},()=>Array(size).fill('#')),lines=[],usedOps=[];
-    const seedRow=size===5?0:size===8?1:2,seedCol=size===5?0:Math.max(0,Math.floor((size-5)/2)),seedCoords=canPlaceCrossEquation(board,[seedRow,seedCol],[0,1],true),seedA=randInt(rng,4,diff==='challenge'?28:20),seedEq=makeCrossEquation(seedA,ops,rng,diff,requireAllOps?ops[0]:null);
-    if(!seedCoords||!seedEq)return null;placeCrossEquation(board,seedCoords,seedEq.cells);lines.push({cells:seedCoords,op:seedEq.op});usedOps.push(seedEq.op);
-    const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
-    for(let guard=0;guard<targetLines*220&&lines.length<targetLines;guard++){
-      const numeric=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++)if(typeof board[r][c]==='number')numeric.push([r,c]);
-      let placed=false;
-      for(const start of shuffle(numeric,rng)){
-        const a=board[start[0]][start[1]];
-        for(const dir of shuffle(dirs,rng)){
-          const coords=canPlaceCrossEquation(board,start,dir,false);if(!coords)continue;
-          let preferred=null;
-          if(requireAllOps){const missing=ops.filter(op=>!usedOps.includes(op));if(missing.length)preferred=choose(missing,rng);}
-          const eq=makeCrossEquation(a,ops,rng,diff,preferred);if(!eq)continue;
-          placeCrossEquation(board,coords,eq.cells);lines.push({cells:coords,op:eq.op});usedOps.push(eq.op);placed=true;break;
-        }
-        if(placed)break;
-      }
-      if(!placed)break;
+  function crossgridEquationFromKnown(board,coords,ops,rng,diff,preferred=null){
+    const known={};for(const i of [0,2,4]){const [r,c]=coords[i],v=board[r][c];if(typeof v==='number')known[i]=v;}
+    const maxAdd=diff==='easy'?18:diff==='challenge'?60:35,maxMul=diff==='easy'?5:diff==='challenge'?12:9,maxVal=999,ordered=preferred&&ops.includes(preferred)?[preferred,...shuffle(ops.filter(x=>x!==preferred),rng)]:shuffle(ops,rng);
+    const good=(a,b,res)=>Number.isInteger(a)&&Number.isInteger(b)&&Number.isInteger(res)&&a>=0&&b>0&&res>=0&&a<=maxVal&&b<=maxVal&&res<=maxVal&&(!Object.hasOwn(known,0)||known[0]===a)&&(!Object.hasOwn(known,2)||known[2]===b)&&(!Object.hasOwn(known,4)||known[4]===res);
+    for(const op of ordered){
+      let a=known[0],b=known[2],res=known[4];
+      if(a!==undefined&&b!==undefined){res=crossgridApply(a,op,b);if(good(a,b,res))return {cells:[a,op,b,'=',res],op};continue;}
+      if(a!==undefined&&res!==undefined){if(op==='+')b=res-a;else if(op==='-')b=a-res;else if(op==='×')b=a&&res%a===0?res/a:NaN;else b=res&&a%res===0?a/res:NaN;if(good(a,b,res))return {cells:[a,op,b,'=',res],op};continue;}
+      if(b!==undefined&&res!==undefined){if(op==='+')a=res-b;else if(op==='-')a=res+b;else if(op==='×')a=b&&res%b===0?res/b:NaN;else a=res*b;if(good(a,b,res))return {cells:[a,op,b,'=',res],op};continue;}
+      if(a!==undefined){const eq=makeCrossEquation(a,[op],rng,diff,op);if(eq&&good(eq.cells[0],eq.cells[2],eq.cells[4]))return eq;continue;}
+      if(b!==undefined){for(let tries=0;tries<30;tries++){if(op==='+'){a=randInt(rng,1,maxAdd*2);res=a+b;}else if(op==='-'){const delta=randInt(rng,1,maxAdd);a=b+delta;res=delta;}else if(op==='×'){a=randInt(rng,2,maxMul);res=a*b;}else{res=randInt(rng,1,maxMul);a=b*res;}if(good(a,b,res))return {cells:[a,op,b,'=',res],op};}continue;}
+      if(res!==undefined){for(let tries=0;tries<30;tries++){if(op==='+'){if(res<2)continue;b=randInt(rng,1,Math.min(maxAdd,res-1));a=res-b;}else if(op==='-'){b=randInt(rng,1,maxAdd);a=res+b;}else if(op==='×'){const ds=[];for(let d=2;d<=maxMul;d++)if(res%d===0)ds.push(d);if(!ds.length)continue;b=choose(ds,rng);a=res/b;}else{b=randInt(rng,2,maxMul);a=res*b;}if(good(a,b,res))return {cells:[a,op,b,'=',res],op};}continue;}
     }
-    if(lines.length<Math.max(3,Math.min(targetLines,size===5?4:targetLines-1)))return null;
-    if(requireAllOps&&ops.length===4&&!ops.every(op=>usedOps.includes(op)))return null;
-    return {board,lines,usedOps};
+    return null;
+  }
+  function placeCrossEquation(board,coords,values){coords.forEach(([r,c],i)=>{if(board[r][c]==='#')board[r][c]=values[i];});}
+  function crossgridUsedBounds(board,extra=[]){const cells=[];for(let r=0;r<board.length;r++)for(let c=0;c<board.length;c++)if(board[r][c]!=='#')cells.push([r,c]);cells.push(...extra);if(!cells.length)return {area:1,width:1,height:1};const rs=cells.map(x=>x[0]),cs=cells.map(x=>x[1]),height=Math.max(...rs)-Math.min(...rs)+1,width=Math.max(...cs)-Math.min(...cs)+1;return {area:width*height,width,height};}
+  function buildEquationCrossgrid(size,ops,diff,seed,targetLines,requireAllOps){
+    const rng=rngFromSeed(seed),board=Array.from({length:size},()=>Array(size).fill('#')),lines=[],usedOps=[],lineKeys=new Set(),seedRow=Math.max(0,Math.floor(size/2)-2),seedCol=Math.max(0,Math.floor((size-5)/2)),seedCoords=crossgridCoords([seedRow,seedCol],[0,1]),seedA=randInt(rng,4,diff==='challenge'?28:20),seedEq=makeCrossEquation(seedA,ops,rng,diff,requireAllOps?ops[0]:null);
+    if(seedCoords.some(([r,c])=>r<0||c<0||r>=size||c>=size)||!seedEq)return null;placeCrossEquation(board,seedCoords,seedEq.cells);lines.push({cells:seedCoords,op:seedEq.op});usedOps.push(seedEq.op);lineKeys.add(seedCoords.map(x=>x.join(':')).join('|'));
+    const dirs=[[0,1],[1,0]];
+    for(let guard=0;guard<targetLines*80&&lines.length<targetLines;guard++){
+      const numeric=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++)if(typeof board[r][c]==='number')numeric.push([r,c]);const candidates=[];
+      for(const anchor of shuffle(numeric,rng))for(const dir of dirs)for(const anchorPos of [0,2,4]){
+        const start=[anchor[0]-dir[0]*anchorPos,anchor[1]-dir[1]*anchorPos],cand=crossgridCandidate(board,start,dir);if(!cand)continue;const key=cand.coords.map(x=>x.join(':')).join('|');if(lineKeys.has(key))continue;let preferred=null;if(requireAllOps){const missing=ops.filter(op=>!usedOps.includes(op));if(missing.length)preferred=choose(missing,rng);}const eq=crossgridEquationFromKnown(board,cand.coords,ops,rng,diff,preferred);if(!eq)continue;
+        const before=crossgridUsedBounds(board),after=crossgridUsedBounds(board,cand.coords),growth=after.area-before.area,crossBonus=(cand.existing-1)*620,compact=Math.max(0,150-growth*10),centre=(cand.coords[0][0]+cand.coords[4][0])/2+(cand.coords[0][1]+cand.coords[4][1])/2,centrePenalty=Math.abs(centre-(size-1)),opBonus=preferred&&eq.op===preferred?280:0,score=cand.existing*520+crossBonus+compact-growth*15-centrePenalty*2+opBonus-randInt(rng,0,25);candidates.push({...cand,eq,key,score});
+      }
+      if(!candidates.length)break;candidates.sort((a,b)=>b.score-a.score);const best=choose(candidates.slice(0,Math.min(4,candidates.length)),rng);placeCrossEquation(board,best.coords,best.eq.cells);lines.push({cells:best.coords,op:best.eq.op});usedOps.push(best.eq.op);lineKeys.add(best.key);
+    }
+    const used=board.flat().filter(v=>v!=='#').length,occupancy=used/(size*size);if(lines.length<Math.max(3,Math.min(targetLines,size===5?4:targetLines-2)))return null;if(size>=8&&occupancy<(size===10?.48:.42))return null;if(requireAllOps&&ops.length===4&&!ops.every(op=>usedOps.includes(op)))return null;return {board,lines,usedOps,occupancy};
   }
   function crossgridResolvableLines(lines,hidden){
     const unsolved=new Set(hidden);let changed=true;
@@ -380,8 +404,8 @@
     const [aPos,opPos,bPos,,resPos]=line.cells,a=Number(board[aPos[0]][aPos[1]]),b=Number(board[bPos[0]][bPos[1]]),res=Number(board[resPos[0]][resPos[1]]),actual=board[opPos[0]][opPos[1]],matches=['+','-','×','÷'].filter(op=>Math.abs(crossgridApply(a,op,b)-res)<1e-9);return matches.length===1&&matches[0]===actual;
   }
   function generateEquationCrossgrid(settings,seed){
-    const rng=rngFromSeed(seed),o=normalise('equationcrossgrid',settings?.engineSettings?.equationcrossgrid),size=crossgridBoardSize(o),ops=crossgridAllowedOps(settings,o),targetLines=size===5?4:size===8?(o.difficulty==='easy'?5:7):(o.difficulty==='challenge'?11:9),requireAllOps=o.operationFamily==='mixed'||(o.operationFamily==='auto'&&o.difficulty==='challenge'&&ops.length===4);let built=null;
-    for(let attempt=0;attempt<90;attempt++){const candidate=buildEquationCrossgrid(size,ops,o.difficulty,`${seed}:layout:${attempt}`,targetLines,requireAllOps);if(!built||candidate&&candidate.lines.length>built.lines.length)built=candidate;if(candidate&&candidate.lines.length>=targetLines){built=candidate;break;}}
+    const rng=rngFromSeed(seed),o=normalise('equationcrossgrid',settings?.engineSettings?.equationcrossgrid),size=crossgridBoardSize(o),ops=crossgridAllowedOps(settings,o),targetLines=size===5?4:size===8?(o.difficulty==='easy'?6:o.difficulty==='challenge'?10:9):(o.difficulty==='challenge'?18:15),requireAllOps=o.operationFamily==='mixed'||(o.operationFamily==='auto'&&o.difficulty==='challenge'&&ops.length===4);let built=null;
+    for(let attempt=0;attempt<140;attempt++){const candidate=buildEquationCrossgrid(size,ops,o.difficulty,`${seed}:layout:${attempt}`,targetLines,requireAllOps);if(candidate&&(!built||candidate.lines.length>built.lines.length||candidate.lines.length===built.lines.length&&candidate.occupancy>built.occupancy))built=candidate;if(candidate&&candidate.lines.length>=targetLines&&candidate.occupancy>=(size===10?.56:size===8?.48:.5)){built=candidate;break;}}
     if(!built)return {engineId:'equationcrossgrid',title:'Arithmetic Equation Crossgrid',error:'Could not build a connected equation grid. Generate another version.',seed,options:o};
     const solution=built.board,numberKeys=[],opKeys=[];for(let r=0;r<size;r++)for(let c=0;c<size;c++){const v=solution[r][c],k=`${r}:${c}`;if(typeof v==='number')numberKeys.push(k);}
     for(const line of built.lines){const [r,c]=line.cells[1],k=`${r}:${c}`;if(crossgridOpUnique(solution,line)&&!opKeys.includes(k))opKeys.push(k);}
@@ -389,7 +413,7 @@
     for(const k of shuffle(opKeys,rng)){if(hidden.filter(x=>opKeys.includes(x)).length>=opTarget)break;const trial=[...hidden,k];if(crossgridResolvableLines(built.lines,trial))hidden.push(k);}
     for(const k of shuffle(numberKeys,rng)){if(hidden.length>=baseTarget)break;const trial=[...hidden,k];if(crossgridResolvableLines(built.lines,trial))hidden.push(k);}
     const hiddenSet=new Set(hidden),display=solution.map((row,r)=>row.map((v,c)=>hiddenSet.has(`${r}:${c}`)?null:v)),instruction=hidden.some(k=>opKeys.includes(k))?'Fill the missing numbers and operation signs so every connected equation is true. Black squares are not used.':'Fill the missing numbers so every connected equation is true. Black squares are not used.';
-    return {engineId:'equationcrossgrid',title:'Arithmetic Equation Crossgrid',difficulty:o.difficulty,size,operationsUsed:[...new Set(built.usedOps)],solutionGrid:solution,displayGrid:display,lines:built.lines,hiddenKeys:hidden,instruction,seed,options:o};
+    return {engineId:'equationcrossgrid',title:'Arithmetic Equation Crossgrid',difficulty:o.difficulty,size,occupancy:built.occupancy,operationsUsed:[...new Set(built.usedOps)],solutionGrid:solution,displayGrid:display,lines:built.lines,hiddenKeys:hidden,instruction,seed,options:o};
   }
 
   function trailRule(settings,o,rng){const y=years(settings).max,mode=o.ruleMode==='auto'?(o.difficulty==='challenge'&&y>=3&&rng()<.55?'alternating':'constant'):o.ruleMode;if(mode==='alternating'){const a=randInt(rng,2,y<=2?5:12),b=randInt(rng,1,Math.max(2,a-1));return {mode,steps:[a,-b],label:`+${a}, then −${b}, repeat`};}const mult=y>=3&&o.difficulty==='challenge'&&rng()<.3;if(mult){const k=choose(y===3?[2]:[2,3],rng);return {mode:'constant',multiplier:k,label:`×${k} each step`};}const step=randInt(rng,1,y<=1?5:y<=2?10:y<=4?25:50)*(rng()<.15&&y>=4?-1:1);return {mode:'constant',steps:[step],label:`${step>=0?'+':''}${step} each step`};}
