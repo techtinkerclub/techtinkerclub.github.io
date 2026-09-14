@@ -1,5 +1,5 @@
 /* 99 Club Studio · Arithmetic Equation Crossgrid usability patch
- * v1.1.0 — true active grid sizes, missing-cell modes, operator corner hints.
+ * v1.1.1 — true active grid sizes, missing-cell modes, operator corner hints.
  */
 (function(global){
   'use strict';
@@ -8,6 +8,7 @@
 
   const originalGenerate=A.generate.bind(A);
   const originalWorked=A.workedExample.bind(A);
+  const originalNormalise=A.normalise.bind(A);
   const OPS=new Set(['+','-','×','÷']);
 
   const def=A.DEFINITIONS?.equationcrossgrid;
@@ -38,14 +39,30 @@
     };
   }
 
+  function migrateGridSize(v){
+    v=String(v??'auto');
+    if(v==='8')return '7';
+    if(v==='10')return '9';
+    return ['auto','5','7','9'].includes(v)?v:'auto';
+  }
+  A.normalise=function(id,raw={}){
+    if(id!=='equationcrossgrid')return originalNormalise(id,raw);
+    const migrated={...raw,gridSize:migrateGridSize(raw.gridSize)};
+    if(!['auto','numbers','numbers_operators'].includes(String(migrated.missingType||'auto')))migrated.missingType='auto';
+    const out=originalNormalise(id,migrated);
+    out.gridSize=migrateGridSize(out.gridSize);
+    out.missingType=['auto','numbers','numbers_operators'].includes(String(out.missingType||'auto'))?String(out.missingType||'auto'):'auto';
+    return out;
+  };
+
   function copySettings(settings){
     return {...(settings||{}),engineSettings:{...(settings?.engineSettings||{}),equationcrossgrid:{...(settings?.engineSettings?.equationcrossgrid||{})}}};
   }
   function requestedSize(settings){
-    const raw=settings?.engineSettings?.equationcrossgrid||{},difficulty=raw.difficulty||'standard',v=String(raw.gridSize??'auto');
+    const raw=settings?.engineSettings?.equationcrossgrid||{},difficulty=raw.difficulty||'standard',v=migrateGridSize(raw.gridSize);
     if(v==='5')return 5;
-    if(v==='7'||v==='8')return 7; // migrate the old 8 × 8 selector value
-    if(v==='9'||v==='10')return 9; // migrate the old 10 × 10 selector value
+    if(v==='7')return 7;
+    if(v==='9')return 9;
     return difficulty==='easy'?5:difficulty==='challenge'?9:7;
   }
   function internalSize(target){return target===5?5:target===7?8:10;}
@@ -104,8 +121,6 @@
     if(!candidates.length)return;
     let h=2166136261>>>0;for(const ch of String(seed)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}
     const line=candidates[(h>>>0)%candidates.length],cells=line.cells||[];
-    // Keep the surrounding numbers visible so the missing sign is a fair,
-    // directly inferable operator question rather than a compound ambiguity.
     for(const p of [cells[0],cells[2],cells[4]])if(p)revealKey(activity,makeKey(p[0],p[1]));
     if(cells[1])hideKey(activity,makeKey(cells[1][0],cells[1][1]));
   }
@@ -159,6 +174,6 @@
     return {...ex,rules,steps,commonMistake:ex.commonMistake||'Do not write over the small ?; it is only a hint that the centre of that square needs an operation sign.'};
   };
 
-  A.CROSSGRID_USABILITY={VERSION:'1.1.0',requestedSize,activeBounds,cropActivity};
+  A.CROSSGRID_USABILITY={VERSION:'1.1.1',requestedSize,activeBounds,cropActivity,migrateGridSize};
   A.__crossgridCornerHintV1=true;
 })(typeof globalThis!=='undefined'?globalThis:this);
