@@ -226,7 +226,9 @@
   grid-template-columns:repeat(var(--cw),1fr);
   grid-template-rows:repeat(var(--ch),1fr);
   width:100%;
+  height:auto;
   max-width:560px;
+  max-height:none;
   aspect-ratio:var(--cw) / var(--ch);
   border:0;
   background:transparent;
@@ -498,10 +500,12 @@
 }
 .tt99-game-paper-identity>span{text-transform:none!important;letter-spacing:0!important}
 
-/* v1.28.1 — final crossword containment overrides.
-   Crossword footprint must stay inside each activity regardless of aspect ratio. */
+/* v1.29.2 — crossword browser geometry fix.
+   Do not stretch the grid to the full activity height: doing so makes rectangular
+   row tracks and separates the cells of Down answers. The crossword keeps its
+   true width:height ratio, so Across and Down cells meet as one connected grid. */
 .tt99-crossword-layout{min-height:0!important;overflow:hidden!important}
-.tt99-crossword-grid{width:auto!important;height:100%!important;max-width:100%!important;max-height:100%!important;min-width:0!important;min-height:0!important;align-self:stretch!important;justify-self:center!important}
+.tt99-crossword-grid{width:100%!important;height:auto!important;max-width:100%!important;max-height:none!important;min-width:0!important;min-height:0!important;aspect-ratio:var(--cw) / var(--ch)!important;align-self:start!important;justify-self:center!important}
 .tt99-game-activities.count-1 .tt99-crossword-grid{max-width:min(100%,440px)!important}
 .tt99-game-activities.count-2 .tt99-crossword-grid{max-width:min(100%,330px)!important}
 .tt99-game-activities.count-3 .tt99-crossword-grid{max-width:min(100%,245px)!important}

@@ -15,7 +15,7 @@ sitemap: true
 </div>
 
 <link rel="stylesheet" href="/assets/99club/99club.css?v=19.4">
-<link rel="stylesheet" href="/assets/99club/games.css?v=13">
+<link rel="stylesheet" href="/assets/99club/games.css?v=14">
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=1"></script>
 <script src="/assets/99club/games-number-logic.js?v=2"></script>
