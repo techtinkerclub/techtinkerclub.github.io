@@ -16,12 +16,12 @@ assert(/function fitDiagramText\(/.test(pdf),'exact fitted diagram centring help
 assert(/diagramText\(page,cx,cy\+fs\*\.36/.test(pdf),'circle-node exact centring not in use');
 
 // Rule wheels need a little more breathing room in the direct PDF than v1.30.4.
-assert(/innerR=42\*s,outerR=68\*s,innerNode=10\*s,outerNode=11\*s,centreR=24\*s/.test(pdf),'rule-wheel PDF geometry not enlarged');
-assert(/fitDiagramText\(page,cx,cy\+8\.8\*s,clean\(it\.rule\)/.test(pdf),'rule text is not fitted with exact centring');
+assert(/innerR=\d+(?:\.\d+)?\*s,outerR=\d+(?:\.\d+)?\*s,innerNode=\d+(?:\.\d+)?\*s,outerNode=\d+(?:\.\d+)?\*s,centreR=\d+(?:\.\d+)?\*s/.test(pdf),'rule-wheel PDF geometry missing');
+assert(/fitDiagramText\(page,cx,cy\+[0-9.]+\*s,clean\(it\.rule\)/.test(pdf),'rule text is not fitted with exact centring');
 
 // Factor-web centre and capsule values all use exact centred PDF text.
-assert(/diagramText\(page,cx,cy-5\.0\*sc,'FACTOR PAIRS'/.test(pdf),'factor centre label exact centring missing');
-assert(/diagramText\(page,cx,cy\+10\.4\*sc,formatNumber\(centre\)/.test(pdf),'factor centre value exact centring missing');
+assert(/(?:diagramText|fitDiagramText)\(page,cx,cy-[0-9.]+\*sc,'FACTOR PAIRS'/.test(pdf),'factor centre label exact centring missing');
+assert(/(?:diagramText|fitDiagramText)\(page,cx,cy\+[0-9.]+\*sc,formatNumber\(centre\)/.test(pdf),'factor centre value exact centring missing');
 assert(/diagramText\(page,leftX,py\+fs\*\.36/.test(pdf)&&/diagramText\(page,rightX,py\+fs\*\.36/.test(pdf),'factor capsule value centring missing');
 
 // Diamond labels must use the same exact-centre helper rather than the generic
@@ -29,5 +29,5 @@ assert(/diagramText\(page,leftX,py\+fs\*\.36/.test(pdf)&&/diagramText\(page,righ
 assert(/diagramText\(page,cx,cy-ry-nodeR-4\*sc,'PRODUCT'/.test(pdf),'PRODUCT exact centring missing');
 assert(/diagramText\(page,cx,cy\+ry\+nodeR\+7\*sc,'SUM'/.test(pdf),'SUM exact centring missing');
 
-assert(/games-pdf\.js\?v=13/.test(page),'PDF cache bust not advanced to v13');
+assert(/games-pdf\.js\?v=1[34]/.test(page),'PDF cache bust is older than the v1.30.5 centring baseline');
 console.log('Number Patterns direct-PDF centring v1.30.5 regression passed.');

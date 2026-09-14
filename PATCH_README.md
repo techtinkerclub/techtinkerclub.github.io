@@ -1,58 +1,49 @@
-# 99 Club Studio v1.30.5 - direct-PDF diagram centring fix
+# 99 Club Studio v1.30.6 - direct-PDF scale polish
 
 ## Baseline
 
-This patch was built from and verified against the current online `master` state after v1.30.4.
+Built against the current online `master` state after v1.30.5:
 
-Verified live blobs before patching:
+`33825454a170ad578ae5947c5e296edecdc4a103`
 
-- `_pages/99-club-games.md`: `0bfb4f6a3feb3f20813220545d777d08f5fa8b0a`
-- `assets/99club/games-pdf.js`: `195ac365b91810c613731029cb75cdc775d8a364`
+The live Games page at that baseline loads `games-pdf.js?v=13`.
 
-Apply this patch at the repository root, replacing matching files.
+Apply this ZIP at the repository root, replacing matching files. It is intended to go directly on top of v1.30.5.
 
-## What it fixes
+## What this fixes
 
-This is deliberately a **PDF-only visual correction**. Browser preview geometry is not changed.
+This is a **PDF-only** visual correction. The browser preview is deliberately unchanged.
 
-### 1. Correct centring of numbers in circular PDF nodes
-The tiny direct-PDF writer uses a deliberately rough width estimate for general layout. That approximation treated `1` as narrower than the other digits, but Helvetica's digits all use the same 556-unit advance. As a result values such as `11`, `14`, `110` and `165` could be visibly shifted inside circles.
+### Factor Pair Webs
+- Uses more of the available activity space in PDF output.
+- Enlarges the complete web, factor-pair capsules and writing areas.
+- Enlarges the centre circle relative to its label.
+- Fits `FACTOR PAIRS` to the available circle width instead of allowing it to overrun the edge.
+- Fits the centre value independently so 2- and 3-digit targets remain centred.
+- Keeps spokes clipped cleanly between centre circle and capsules.
+- Keeps the first starter pair and the clearer instruction introduced earlier.
 
-v1.30.5 adds diagram-specific Helvetica AFM width metrics and uses them when centring visual puzzle labels and values.
-
-This improves:
-- Rule Wheel inner/outer values;
-- Factor Pair Web centre values and capsule values;
-- Sum & Product Diamond values;
-- Arithmagon and Magic Number Shape circular values which use the shared PDF circle-node helper.
-
-### 2. Rule Wheels
-- PDF centre rule circle enlarged from 20 to 24 scale units.
-- inner/outer radii adjusted to preserve breathing room;
-- `RULE` and the actual rule are centred using the accurate diagram metrics;
-- long-ish rules are fitted against the usable circle width rather than the generic text estimate.
-
-### 3. Factor Pair Webs
-- `FACTOR PAIRS` and the centre number now use accurate horizontal centring;
-- values and multiplication signs inside each capsule use the same accurate centring;
-- the accepted v1.30.4 web geometry/spacing is otherwise unchanged.
-
-### 4. Sum & Product Diamonds
-- `PRODUCT` and `SUM` now use accurate diagram centring instead of the generic PDF estimator;
-- circular values use the corrected shared node-centre helper.
+### Rule Wheels
+- Gives the PDF wheel a larger centre circle and slightly larger overall print scale where room permits.
+- Keeps inner/outer nodes clear of the larger centre.
+- Fits both `RULE` and the rule expression to the usable centre-circle width.
+- Retains the accurate Helvetica diagram centring added in v1.30.5.
 
 ## Files changed
 
-- `_pages/99-club-games.md` - advances only `games-pdf.js` cache version from 12 to 13.
-- `assets/99club/games-pdf.js` - direct-PDF diagram typography/geometry correction.
-- `assets/99club/tests/games-v1305-pdf-centering-smoke.js` - targeted regression guard.
+- `_pages/99-club-games.md` - bumps only the PDF asset cache to `v=14`.
+- `assets/99club/games-pdf.js` - PDF diagram scale/fit changes.
+- `assets/99club/tests/games-v1302-pdf-parity-smoke.js` - removes obsolete fixed-size assertion while retaining capsule/parity checks.
+- `assets/99club/tests/games-v1304-number-structures-polish-smoke.js` - keeps spoke/capsule regression without pinning the old print dimensions.
+- `assets/99club/tests/games-v1305-pdf-centering-smoke.js` - preserves centring checks across later print geometry revisions.
+- `assets/99club/tests/games-v1306-pdf-scale-smoke.js` - new targeted scale/fit regression.
 
 ## Regression boundary
 
-No intentional changes to:
+No intended change to:
 - browser preview;
-- puzzle generation or answers;
-- Number Connections browser geometry;
+- puzzle generation, answers or difficulty;
+- public 99 Club;
 - Custom Worksheets / Angles;
 - vocabulary/crosswords;
 - Random Pack;
@@ -61,9 +52,4 @@ No intentional changes to:
 
 ## After upload
 
-Hard-refresh the Games page once. Generate a PDF containing Rule Wheels and Number Connections, then check:
-
-1. `1`, `11`, `14`, `110`, `165`, etc. sit visually in the centre of circles;
-2. centre rules remain comfortably inside the Rule Wheel centre circle;
-3. `FACTOR PAIRS` and the centre value sit on the same visual axis;
-4. `PRODUCT` and `SUM` are centred over/under the diamond node axis.
+Hard-refresh `/tools/99-club/games/`, then generate a PDF containing **Factor Pair Webs** and **Rule Wheels**. The web diagrams should be visibly larger and the centre labels/rules should remain comfortably inside their circles.

@@ -22,6 +22,6 @@ sitemap: true
 <script src="/assets/99club/games-engine.js?v=14"></script>
 <script src="/assets/99club/games-pack-mode.js?v=1"></script>
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
-<script src="/assets/99club/games-pdf.js?v=13"></script>
+<script src="/assets/99club/games-pdf.js?v=14"></script>
 <script src="/assets/99club/games-app.js?v=16" defer></script>
 <script src="/assets/99club/games-random-ui.js?v=1" defer></script>

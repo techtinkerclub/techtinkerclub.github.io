@@ -23,7 +23,7 @@ assert(/function drawDashedLine\(/.test(pdfSrc),'PDF dashed diagonal primitive m
 assert(/size=Math\.max\(120,Math\.min\(availW,bodyH\)\)/.test(pdfSrc),'Arithmagon PDF no longer preserves a square drawing area');
 assert(/drawCircleNode\(page,scaleX\(p\[0\]\),scaleY\(p\[1\]\),corners\[i\]/.test(pdfSrc),'Arithmagon PDF corner circles missing');
 assert(/nodeR=Math\.max\(9,Math\.min\(16,size\*\.058\)\)/.test(pdfSrc),'Magic Shape PDF proportional nodes missing');
-assert(/pairRX=76\*sc,pairRY=62\*sc/.test(pdfSrc)&&/drawRoundRect\(page,capsuleX,capsuleY,pairW,pairH/.test(pdfSrc),'Factor Pair PDF capsule geometry missing');
+assert(/pairRX=\d+\*sc,pairRY=\d+\*sc/.test(pdfSrc)&&/drawRoundRect\(page,capsuleX,capsuleY,pairW,pairH/.test(pdfSrc),'Factor Pair PDF capsule geometry missing');
 assert(/drawCircleNode\(page,nx,ny,value,nodeR/.test(pdfSrc),'Diamond PDF circular nodes missing');
 
 // Generate representative activities and ensure the PDF exporter can consume

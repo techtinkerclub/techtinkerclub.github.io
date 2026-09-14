@@ -29,7 +29,8 @@ assert(/arithmagonOpPoint\(link/.test(pdf),'PDF arithmagon operation placement h
 
 // PDF parity guards for all visual structures touched in this review round.
 assert(/function drawCircle\(/.test(pdf)&&/function drawRoundRect\(/.test(pdf)&&/function drawDashedLine\(/.test(pdf),'PDF vector parity helpers missing');
-assert(/pairRX=76\*sc,pairRY=62\*sc,centreR=25\*sc,pairW=66\*sc,pairH=27\*sc/.test(pdf),'PDF factor-web spacing does not mirror preview');
+assert(/pairRX=\d+\*sc,pairRY=\d+\*sc,centreR=\d+\*sc,pairW=\d+\*sc,pairH=\d+\*sc/.test(pdf),'PDF factor-web grouped geometry missing');
+assert(/startX=cx\+ux\*\(centreR\+2\*sc\)/.test(pdf)&&/endX=px-ux\*t/.test(pdf),'PDF factor-web spoke clipping missing');
 assert(/drawCircleNode\(page,nx,ny,value,nodeR/.test(pdf),'PDF diamond circular nodes missing');
 
 console.log('Number Patterns & Structures v1.30.4 polish regression passed.');
