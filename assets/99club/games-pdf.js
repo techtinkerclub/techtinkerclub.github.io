@@ -1,5 +1,5 @@
 /* 99 Club Studio · Maths Games & Puzzles PDF exporter
- * v1.6.0 — mixed-difficulty packs + vocabulary layout refinements.
+ * v1.6.1 — print readability pass for instructions, clues and question text.
  */
 (function(global){
   'use strict';
@@ -30,13 +30,25 @@
     }
     if(line)out.push(line);return out;
   }
+  function readableProseSize(text,size,opts={}){
+    const original=Number(size)||0,value=clean(text);
+    if(opts.compact||original>=8.7||!/[A-Za-z]/.test(value))return original;
+    const words=value.trim().split(/\s+/).filter(Boolean);
+    if(words.length<2&&value.length<9)return original;
+    if(original<5.5)return 7.6;
+    if(original<6.5)return 8.0;
+    if(original<7.5)return 8.4;
+    return 8.6;
+  }
   function drawWrapped(page,x,y,text,maxWidth,size,opts={}){
+    size=readableProseSize(text,size,opts);
     const lines=wrap(text,maxWidth,size,!!opts.bold),lh=opts.lineHeight||size*1.22,max=opts.maxLines||999;
     lines.slice(0,max).forEach((line,i)=>page.text(x,y+i*lh,line,size,opts));
     return Math.min(lines.length,max)*lh;
   }
   function fitText(page,x,y,text,maxWidth,size,opts={}){
-    let s=size;while(s>4.5&&P.estimateTextWidth(clean(text),s,!!opts.bold)>maxWidth)s-=.25;
+    const original=Number(size)||0;size=readableProseSize(text,size,opts);
+    const floor=size>original?6.8:4.5;let s=size;while(s>floor&&P.estimateTextWidth(clean(text),s,!!opts.bold)>maxWidth)s-=.25;
     page.text(x,y,text,s,opts);return s;
   }
   function box(page,x,y,w,h,fill=WHITE,stroke=LINE,width=.8){page.rect(x,y,w,h,{fill,stroke,width});}
@@ -115,9 +127,9 @@
 
   function activityFrame(page,x,y,w,h,index,a){
     box(page,x,y,w,h,WHITE,LINE,.8);
-    page.text(x+12,y+18,`ACTIVITY ${index}`,7,{bold:true,color:MUTED});
-    page.text(x+12,y+37,clean(a.title||'Activity'),13,{bold:true,color:INK});
-    page.text(x+w-12,y+19,cap(a.difficulty||''),7,{color:MUTED,align:'right'});
+    page.text(x+12,y+18,`ACTIVITY ${index}`,8.4,{bold:true,color:MUTED});
+    page.text(x+12,y+37,clean(a.title||'Activity'),14,{bold:true,color:INK});
+    page.text(x+w-12,y+19,cap(a.difficulty||''),8.4,{color:MUTED,align:'right'});
     return y+50;
   }
 
@@ -134,11 +146,13 @@
       page.rect(cx,cy,cell,cell,{fill:hit?HIT:WHITE,stroke:[190,206,208],width:.35});
       page.text(cx+cell/2,cy+cell*.68,clean(a.grid?.[gy]?.[gx]||''),Math.max(4.4,Math.min(8,cell*.48)),{bold:true,color:INK,align:'center'});
     }
-    let cy=bodyY+2,fs=h<220?5.2:h<360?5.7:6.3,lh=fs*1.22;
-    const entries=a.placements||[];
+    const entries=a.placements||[],maxPer=h<220?2:3,labels=entries.map((p,i)=>a.mode==='definitions'?`${i+1}. ${p.definition}${needsEnumeration(p.term)?` ${enumeration(p.term)}`:''}`:`${i+1}. ${p.term} — ${p.definition}`),availTextH=Math.max(40,y+h-17-(bodyY+2));
+    let fs=h<220?7.2:h<360?8.0:8.6;
+    const needed=size=>labels.reduce((sum,label)=>sum+Math.min(maxPer,wrap(label,rightW,size,false).length)*(size*1.18)+1.5,0);
+    while(fs>6.8&&needed(fs)>availTextH)fs-=.2;
+    const lh=fs*1.18;let cy=bodyY+2;
     for(let i=0;i<entries.length;i++){
-      const p=entries[i],label=a.mode==='definitions'?`${i+1}. ${p.definition}${needsEnumeration(p.term)?` ${enumeration(p.term)}`:''}`:`${i+1}. ${p.term} — ${p.definition}`;
-      const lines=wrap(label,rightW,fs,false).slice(0,h<220?2:3);
+      const lines=wrap(labels[i],rightW,fs,false).slice(0,maxPer);
       for(const line of lines){if(cy+lh>y+h-15)break;page.text(rightX,cy,line,fs,{color:DARK});cy+=lh;}
       cy+=1.5;if(cy>y+h-15)break;
     }
@@ -170,7 +184,7 @@
     }
     const across=(a.entries||[]).filter(e=>e.dir==='across'),down=(a.entries||[]).filter(e=>e.dir==='down'),maxY=y+h-14,bankText=a.wordBank&&!answers?`Word bank: ${(a.entries||[]).map(e=>e.term).sort().join(', ')}`:'';
     const neededHeight=fs=>{const lh=fs*1.18;let total=0;for(const items of [across,down]){if(!items.length)continue;total+=10;for(const e of items)total+=wrap(`${e.number}. ${e.clue} ${e.enumeration||enumeration(e.term)}`,rightW,fs,false).length*lh+1;total+=3;}if(bankText)total+=wrap(bankText,rightW,fs,true).length*lh+2;return total;};
-    let fs=h<220?5.0:h<360?5.7:6.8;while(fs>4.1&&bodyY+3+neededHeight(fs)>maxY)fs-=.2;const lh=fs*1.18;let cy=bodyY+3;
+    let fs=h<220?7.2:h<360?8.0:8.8;while(fs>6.8&&bodyY+3+neededHeight(fs)>maxY)fs-=.2;const lh=fs*1.18;let cy=bodyY+3;
     const group=(label,items)=>{if(!items.length)return;page.text(rightX,cy,label,Math.max(5.6,fs+1),{bold:true,color:[46,87,86]});cy+=10;for(const e of items){const lines=wrap(`${e.number}. ${e.clue} ${e.enumeration||enumeration(e.term)}`,rightW,fs,false);for(const line of lines){page.text(rightX,cy,line,fs,{color:DARK});cy+=lh;}cy+=1;}cy+=3;};
     group('Across',across);group('Down',down);
     if(bankText)drawWrapped(page,rightX,cy,bankText,rightW,fs,{bold:true,color:TEAL,maxLines:99,lineHeight:lh});
@@ -273,15 +287,15 @@
       fitText(page,gx+c*cell+cell/2,gy+r*cell+cell*.62,label,cell-5,fs,{bold:true,color:cellData.kind==='start'||cellData.kind==='finish'?TEAL:INK,align:'center'});
       if(answers&&cellData.kind==='answer'&&cellData.step)page.text(gx+c*cell+2.4,gy+r*cell+6,String(cellData.step),3.8,{bold:true,color:TEAL});
     }
-    const qx=x+gridAvailW+22,qw=w-gridAvailW-35;page.text(qx,bodyY+7,'Questions',6.2,{bold:true,color:DARK});
-    const noteH=8,usableQH=Math.max(32,bodyH-22-noteH),qh=usableQH/Math.max(1,a.steps.length),qfs=Math.max(3.5,Math.min(5.4,qh*.48));let cy=bodyY+14;
+    const qx=x+gridAvailW+22,qw=w-gridAvailW-35;page.text(qx,bodyY+8,'Questions',8.5,{bold:true,color:DARK});
+    const noteH=10,usableQH=Math.max(32,bodyH-24-noteH),qh=usableQH/Math.max(1,a.steps.length),qfs=Math.max(7.0,Math.min(8.5,qh*.42));let cy=bodyY+18;
     for(let i=0;i<a.steps.length;i++){
       const st=a.steps[i],baseline=cy+Math.min(qh*.66,qfs+1.1);page.text(qx,baseline,`${i+1}.`,Math.max(3.4,qfs-.15),{bold:true,color:TEAL});
       fitText(page,qx+12,baseline,clean(st.question),qw-(answers?43:14),qfs,{bold:true,color:DARK});
       if(answers)fitText(page,qx+qw-2,baseline,formatNumber(st.answer),28,qfs,{bold:true,color:TEAL,align:'right'});
       cy+=qh;
     }
-    page.text(qx,bodyY+bodyH-2,answers?'Highlighted cells = route':'Only up / down / left / right',Math.max(3.6,Math.min(4.4,qfs)),{color:MUTED});
+    page.text(qx,bodyY+bodyH-2,answers?'Highlighted cells = route':'Only up / down / left / right',Math.max(6.8,Math.min(7.6,qfs)),{color:MUTED});
   }
 
   function crossStarts(a){const m=new Map();for(const e of a.entries||[]){const k=`${e.x}:${e.y}`;if(!m.has(k))m.set(k,e.number);}return m;}
@@ -290,13 +304,13 @@
     const bodyY=top+28,bodyH=h-(bodyY-y)-12,leftMax=w*.48,gap=12,cols=a.width||1,rows=a.height||1,cell=Math.min((leftMax-2)/cols,bodyH/rows,28),gw=cell*cols,gh=cell*rows,gx=x+12+(leftMax-gw)/2,gy=bodyY+(bodyH-gh)/2,starts=crossStarts(a);
     for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const ch=a.grid?.[r]?.[c];if(!ch)continue;const cx=gx+c*cell,cy=gy+r*cell;page.rect(cx,cy,cell,cell,{fill:answers?HIT:WHITE,stroke:[83,103,109],width:.6});const n=starts.get(`${c}:${r}`);if(n)page.text(cx+1.4,cy+4.2,String(n),Math.max(3.1,Math.min(3.7,cell*.16)),{bold:true,color:MUTED});if(answers)diagramText(page,cx+cell/2,cy+cell*.67,ch,Math.max(5.2,Math.min(8.8,cell*.44)),{bold:true,color:TEAL});}
     const rx=x+12+leftMax+gap,rw=w-24-leftMax-gap,groups=[['Across',a.entries.filter(e=>e.dir==='across')],['Down',a.entries.filter(e=>e.dir==='down')]],cgap=8,cw=(rw-cgap)/2;
-    groups.forEach(([label,list],gi)=>{const xx=rx+gi*(cw+cgap);page.text(xx,bodyY+5,label,6.2,{bold:true,color:[46,87,86]});const usable=bodyH-12,rowH=Math.max(7.5,usable/Math.max(1,list.length)),fs=Math.max(3.8,Math.min(5.25,rowH*.55));let cy=bodyY+14;for(const e of list){drawWrapped(page,xx,cy,`${e.number}. ${e.clue}`,cw,fs,{color:DARK,lineHeight:fs*1.08,maxLines:2});cy+=rowH;if(cy>bodyY+bodyH-4)break;}});
+    groups.forEach(([label,list],gi)=>{const xx=rx+gi*(cw+cgap);page.text(xx,bodyY+7,label,8.4,{bold:true,color:[46,87,86]});const usable=bodyH-16,rowH=Math.max(12,usable/Math.max(1,list.length)),fs=Math.max(6.6,Math.min(8.4,rowH*.43));let cy=bodyY+18;for(const e of list){drawWrapped(page,xx,cy,`${e.number}. ${e.clue}`,cw,fs,{color:DARK,lineHeight:fs*1.08,maxLines:2,compact:true});cy+=rowH;if(cy>bodyY+bodyH-4)break;}});
   }
   function drawNumberSearch(page,a,answers,x,y,w,h,index){
     const top=activityFrame(page,x,y,w,h,index,a);drawWrapped(page,x+12,top,a.instruction,w-24,6.7,{color:MUTED,maxLines:1});drawWrapped(page,x+12,top+11,a.directionTip||'',w-24,5.6,{bold:true,color:[46,112,108],maxLines:1});
     const bodyY=top+27,bodyH=h-(bodyY-y)-12,leftW=Math.min(w*.51,bodyH),gap=15,size=a.size||10,cell=Math.min((leftW-4)/size,bodyH/size,25),gw=cell*size,gx=x+12+(leftW-gw)/2,gy=bodyY+Math.max(0,(bodyH-gw)/2),hit=new Set((a.placements||[]).flatMap(q=>(q.cells||[]).map(([cx,cy])=>`${cx}:${cy}`)));
     for(let r=0;r<size;r++)for(let c=0;c<size;c++){const cx=gx+c*cell,cy=gy+r*cell,isHit=answers&&hit.has(`${c}:${r}`);page.rect(cx,cy,cell,cell,{fill:isHit?HIT:WHITE,stroke:[157,176,179],width:.45});diagramText(page,cx+cell/2,cy+cell*.66,clean(a.grid?.[r]?.[c]||''),Math.max(5.2,Math.min(8.2,cell*.42)),{bold:true,color:isHit?TEAL:INK});}
-    const rx=x+12+leftW+gap,rw=w-24-leftW-gap,list=a.placements||[],rowH=Math.max(10,Math.min(18,bodyH/Math.max(1,list.length))),fs=Math.max(4.3,Math.min(5.8,rowH*.38));let cy=bodyY+5;for(let i=0;i<list.length;i++){const q=list[i],baseline=cy+Math.min(rowH*.58,fs+1);page.text(rx,baseline,`${i+1}.`,Math.max(4.1,fs-.15),{bold:true,color:TEAL});fitText(page,rx+12,baseline,clean(q.question),rw-(answers?47:34),fs,{color:DARK});fitText(page,rx+rw-1,baseline,answers?`= ${formatNumber(q.answer)}`:'= ____',answers?43:30,fs,{bold:answers,color:answers?TEAL:MUTED,align:'right'});cy+=rowH;}
+    const rx=x+12+leftW+gap,rw=w-24-leftW-gap,list=a.placements||[],rowH=Math.max(12,Math.min(20,bodyH/Math.max(1,list.length))),fs=Math.max(6.8,Math.min(8.2,rowH*.48));let cy=bodyY+5;for(let i=0;i<list.length;i++){const q=list[i],baseline=cy+Math.min(rowH*.58,fs+1);page.text(rx,baseline,`${i+1}.`,Math.max(4.1,fs-.15),{bold:true,color:TEAL});fitText(page,rx+12,baseline,clean(q.question),rw-(answers?47:34),fs,{color:DARK});fitText(page,rx+rw-1,baseline,answers?`= ${formatNumber(q.answer)}`:'= ____',answers?43:30,fs,{bold:answers,color:answers?TEAL:MUTED,align:'right'});cy+=rowH;}
   }
 
   function drawEquationCrossgrid(page,a,answers,x,y,w,h,index){
@@ -366,7 +380,7 @@
     }
   }
 
-  function drawFunctionMachine(page,a,answers,x,y,w,h,index){const top=activityFrame(page,x,y,w,h,index,a);drawWrapped(page,x+12,top,a.instruction,w-24,6.5,{color:MUTED,maxLines:2});const rule=a.operations.map(o=>`${o.op} ${o.value}`).join(' -> ');page.text(x+w/2,top+34,clean(`INPUT -> ${rule} -> OUTPUT`),7.2,{bold:true,color:TEAL,align:'center'});const tableW=Math.min(260,w*.62),tx=x+w/2-tableW/2,ty=top+48,rowH=Math.min(28,(h-(ty-y)-12)/(a.rows.length+1));page.rect(tx,ty,tableW,rowH,{fill:[240,247,246],stroke:[167,188,190],width:.6});page.text(tx+tableW*.25,ty+rowH*.65,'Input',6.5,{bold:true,color:DARK,align:'center'});page.text(tx+tableW*.75,ty+rowH*.65,'Output',6.5,{bold:true,color:DARK,align:'center'});page.line(tx+tableW/2,ty,tx+tableW/2,ty+rowH*(a.rows.length+1),{color:[167,188,190],width:.6});for(let i=0;i<a.rows.length;i++){const r=a.rows[i],cy=ty+rowH*(i+1),inFill=answers&&r.hide==='input',outFill=answers&&r.hide==='output';page.rect(tx,cy,tableW/2,rowH,{fill:inFill?HIT:WHITE,stroke:[195,210,212],width:.45});page.rect(tx+tableW/2,cy,tableW/2,rowH,{fill:outFill?HIT:WHITE,stroke:[195,210,212],width:.45});page.text(tx+tableW*.25,cy+rowH*.65,answers||r.hide!=='input'?formatNumber(r.input):'____',6.5,{bold:inFill,color:inFill?TEAL:INK,align:'center'});page.text(tx+tableW*.75,cy+rowH*.65,answers||r.hide!=='output'?formatNumber(r.output):'____',6.5,{bold:outFill,color:outFill?TEAL:INK,align:'center'});}}
+  function drawFunctionMachine(page,a,answers,x,y,w,h,index){const top=activityFrame(page,x,y,w,h,index,a);drawWrapped(page,x+12,top,a.instruction,w-24,7.2,{color:MUTED,maxLines:2});const rule=a.operations.map(o=>`${o.op} ${o.value}`).join(' -> ');page.text(x+w/2,top+36,clean(`INPUT -> ${rule} -> OUTPUT`),9.6,{bold:true,color:TEAL,align:'center'});const tableW=Math.min(300,w*.70),tx=x+w/2-tableW/2,ty=top+53,rowH=Math.min(32,(h-(ty-y)-12)/(a.rows.length+1));page.rect(tx,ty,tableW,rowH,{fill:[240,247,246],stroke:[167,188,190],width:.6});page.text(tx+tableW*.25,ty+rowH*.65,'Input',8.8,{bold:true,color:DARK,align:'center'});page.text(tx+tableW*.75,ty+rowH*.65,'Output',8.8,{bold:true,color:DARK,align:'center'});page.line(tx+tableW/2,ty,tx+tableW/2,ty+rowH*(a.rows.length+1),{color:[167,188,190],width:.6});for(let i=0;i<a.rows.length;i++){const r=a.rows[i],cy=ty+rowH*(i+1),inFill=answers&&r.hide==='input',outFill=answers&&r.hide==='output';page.rect(tx,cy,tableW/2,rowH,{fill:inFill?HIT:WHITE,stroke:[195,210,212],width:.45});page.rect(tx+tableW/2,cy,tableW/2,rowH,{fill:outFill?HIT:WHITE,stroke:[195,210,212],width:.45});page.text(tx+tableW*.25,cy+rowH*.65,answers||r.hide!=='input'?formatNumber(r.input):'____',8.8,{bold:inFill,color:inFill?TEAL:INK,align:'center'});page.text(tx+tableW*.75,cy+rowH*.65,answers||r.hide!=='output'?formatNumber(r.output):'____',8.8,{bold:outFill,color:outFill?TEAL:INK,align:'center'});}}
 
   function drawBalance(page,a,answers,x,y,w,h,index){const top=activityFrame(page,x,y,w,h,index,a);drawWrapped(page,x+12,top,a.instruction,w-24,6.8,{color:MUTED,maxLines:2});let cy=top+32,rowH=(h-(cy-y)-12)/a.rows.length;for(const r of a.rows){page.rect(x+w*.15,cy,w*.70,Math.min(30,rowH-4),{fill:WHITE,stroke:[216,227,228],width:.5});page.text(x+w/2,cy+Math.min(20,rowH*.62),clean(answers?r.solution:r.display),8.2,{bold:true,color:answers?TEAL:INK,align:'center'});cy+=rowH;}}
 
