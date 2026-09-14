@@ -19,6 +19,7 @@ sitemap: true
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
+<script src="/assets/99club/games-number-path-v2.js?v=1"></script>
 <script src="/assets/99club/games-engine.js?v=14"></script>
 <script src="/assets/99club/games-pack-mode.js?v=2"></script>
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
