@@ -6,7 +6,7 @@ const G=require(path.join(ROOT,'games-engine.js'));
 const L=G.NUMLOGIC;
 function assert(ok,msg){if(!ok)throw new Error(msg);}
 const IDS=['kakuro','futoshiki','arithmeticcages','nonogram','numberpath'];
-assert(L&&L.VERSION==='1.1.0','Numeric logic module missing/wrong version');
+assert(L&&L.VERSION==='1.1.1','Numeric logic module missing/wrong version');
 assert(JSON.stringify(Object.keys(L.DEFINITIONS))===JSON.stringify(IDS),'Numeric logic IDs changed unexpectedly');
 for(const id of IDS){const e=G.ENGINES[id];assert(e&&e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: settings contract missing`);assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: must remain print -> pencil -> solve`);}
 
@@ -47,8 +47,8 @@ for(let i=0;i<45;i++){
 for(const n of [5,7,10])for(let i=0;i<24;i++){
   const a=G.generateActivity('nonogram',{minYear:4,maxYear:6,topics:['number_place_value'],engineSettings:{nonogram:{difficulty:n===10?'challenge':'standard',gridSize:String(n),pictureStyle:['symmetric','geometric','random'][i%3]}}},`nonogram-deep:${n}:${i}`);assert(L.validate(a).ok,`Nonogram ${n} deep validation failed`);
 }
-for(const n of [5,6,7])for(let i=0;i<4;i++){
-  const a=G.generateActivity('kakuro',{minYear:4,maxYear:6,topics:['calculation'],engineSettings:{kakuro:{difficulty:n===7?'challenge':'standard',gridSize:String(n),givenLevel:['more','balanced','minimum'][i%3]}}},`kakuro-deep:${n}:${i}`);assert(!a.error,`Kakuro ${n}: ${a.error}`);assert(L.validate(a).ok,`Kakuro ${n} validation failed`);
+for(const n of [5,6,7,9])for(let i=0;i<(n===9?1:4);i++){
+  const a=G.generateActivity('kakuro',{minYear:4,maxYear:6,topics:['calculation'],engineSettings:{kakuro:{difficulty:n>=7?'challenge':'standard',gridSize:String(n),givenLevel:['more','balanced','minimum'][i%3]}}},`kakuro-deep:${n}:${i}`);assert(!a.error,`Kakuro ${n}: ${a.error}`);assert(L.validate(a).ok,`Kakuro ${n} validation failed`);
 }
 
 // Every new engine must have a concise child-facing worked example.

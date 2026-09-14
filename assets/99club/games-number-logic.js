@@ -5,7 +5,7 @@
 (function(global){
   'use strict';
 
-  const VERSION='1.1.0';
+  const VERSION='1.1.1';
   const TOPICS=['number_place_value','calculation','geometry','algebra'];
   const choiceOptions=values=>values.map(([value,label])=>({value,label}));
   const compat=(excellent=[],reasonable=[])=>Object.fromEntries(['number_place_value','calculation','fractions','decimals_percentages','ratio_proportion','measurement','geometry','statistics','algebra'].map(t=>[t,excellent.includes(t)?'excellent':reasonable.includes(t)?'reasonable':'poor']));
@@ -13,8 +13,8 @@
   const DEFINITIONS={
     kakuro:{id:'kakuro',title:'Kakuro · Cross Sums',group:'Numeric logic',kind:'independent',printableMode:'grid',answerSheetSupport:true,workedExampleSupport:true,needsCutting:false,needsDice:false,needsPartner:false,
       supportedAnswerTypes:['number','logic'],difficultyOptions:['easy','standard','challenge'],defaultSettings:{difficulty:'standard',gridSize:'auto',givenLevel:'auto'},
-      settingsSchema:[{id:'difficulty',type:'difficulty',label:'Difficulty'},{id:'gridSize',type:'select',label:'Grid size',options:choiceOptions([['auto','Auto'],['5','5 × 5'],['6','6 × 6'],['7','7 × 7']])},{id:'givenLevel',type:'select',label:'Starting digits',options:choiceOptions([['auto','Auto'],['more','More'],['balanced','Balanced'],['minimum','Minimum needed for one solution']])}],
-      difficultyDescriptions:{easy:'Small cross-sums + a few starting digits',standard:'More intersections, fewer starting digits',challenge:'Larger grid with the minimum starter digits needed for one solution'},topicYearMin:{calculation:3},compatibility:compat(['calculation'],[])},
+      settingsSchema:[{id:'difficulty',type:'difficulty',label:'Difficulty'},{id:'gridSize',type:'select',label:'Grid size',options:choiceOptions([['auto','Auto'],['5','5 × 5'],['6','6 × 6'],['7','7 × 7'],['9','9 × 9']])},{id:'givenLevel',type:'select',label:'Starting digits',options:choiceOptions([['auto','Auto'],['more','More'],['balanced','Balanced'],['minimum','Minimum needed for one solution']])}],
+      difficultyDescriptions:{easy:'Small cross-sums + a few starting digits',standard:'More intersections, fewer starting digits',challenge:'Can use a 9 × 9 grid with the minimum starter digits needed for one solution'},topicYearMin:{calculation:3},compatibility:compat(['calculation'],[])},
 
     futoshiki:{id:'futoshiki',title:'Futoshiki · Inequality Grid',group:'Numeric logic',kind:'independent',printableMode:'grid',answerSheetSupport:true,workedExampleSupport:true,needsCutting:false,needsDice:false,needsPartner:false,
       supportedAnswerTypes:['number','logic'],difficultyOptions:['easy','standard','challenge'],defaultSettings:{difficulty:'standard',gridSize:'auto',signLevel:'auto',givenLevel:'auto'},
@@ -109,7 +109,8 @@
   const KAKURO_MASKS={
     5:[[0,0,0,0,0],[0,0,1,1,1],[0,0,1,1,1],[0,1,1,1,0],[0,1,1,1,0]],
     6:[[0,0,0,0,0,0],[0,1,1,0,1,1],[0,1,1,1,1,1],[0,0,1,1,1,0],[0,1,1,1,1,1],[0,1,1,0,1,1]],
-    7:[[0,0,0,0,0,0,0],[0,0,1,1,1,0,0],[0,0,1,1,1,1,1],[0,1,1,0,1,1,1],[0,1,1,1,1,1,1],[0,0,1,1,1,1,1],[0,0,1,1,0,1,1]]
+    7:[[0,0,0,0,0,0,0],[0,0,1,1,1,0,0],[0,0,1,1,1,1,1],[0,1,1,0,1,1,1],[0,1,1,1,1,1,1],[0,0,1,1,1,1,1],[0,0,1,1,0,1,1]],
+    9:[[0,0,0,0,0,0,0,0,0],[0,0,1,1,1,0,1,1,0],[0,1,1,1,1,0,1,1,1],[0,1,1,0,1,1,1,1,1],[0,0,1,1,1,1,1,1,1],[0,1,1,1,0,1,1,1,0],[0,1,1,1,1,1,0,1,1],[0,0,1,1,1,1,1,1,1],[0,0,1,1,0,1,1,1,0]]
   };
   function kakuroSize(settings,o){const y=years(settings).max;if(o.gridSize!=='auto')return Number(o.gridSize);if(o.difficulty==='easy'||y<=3)return 5;if(o.difficulty==='challenge'&&y>=5)return 7;return 6;}
   function kakuroRuns(mask){const n=mask.length,runs=[];for(let r=0;r<n;r++){let c=0;while(c<n){if(!mask[r][c]){c++;continue;}const start=c,cs=[];while(c<n&&mask[r][c]){cs.push([r,c]);c++;}if(cs.length>=2)runs.push({dir:'across',cells:cs,clueCell:[r,start-1]});}}for(let c=0;c<n;c++){let r=0;while(r<n){if(!mask[r][c]){r++;continue;}const start=r,cs=[];while(r<n&&mask[r][c]){cs.push([r,c]);r++;}if(cs.length>=2)runs.push({dir:'down',cells:cs,clueCell:[start-1,c]});}}return runs;}

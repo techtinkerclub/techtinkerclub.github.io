@@ -6,7 +6,7 @@ const G=require(path.join(ROOT,'games-engine.js'));
 const A=G.ARITH;
 function assert(ok,msg){if(!ok)throw new Error(msg);}
 const IDS=['arithmagon','magicshape','maze','crossnumber','numbersearch','equationcrossgrid','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance'];
-assert(A&&A.VERSION==='1.3.0','Arithmetic engine module missing/wrong version');
+assert(A&&A.VERSION==='1.3.1','Arithmetic engine module missing/wrong version');
 assert(JSON.stringify(Object.keys(A.DEFINITIONS))===JSON.stringify(IDS),'Arithmetic engine IDs changed unexpectedly');
 
 // Deterministic base-generation load test: intentionally exercises every engine at every

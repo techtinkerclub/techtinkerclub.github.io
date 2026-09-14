@@ -16,7 +16,7 @@ assert(/fitDiagramText\(page,cx,cy\+9\.5\*sc,formatNumber\(centre\),centreR\*1\.
 
 // Rule wheels get a larger centre circle and both centre lines are fitted to
 // the usable diameter rather than assuming a fixed font will always fit.
-assert(/size=Math\.max\(84,Math\.min\(slotW\*\.86,slotH\*1\.05,152\)\)/.test(pdf),'rule-wheel PDF scale-up missing');
+assert(/size=Math\.max\(84,Math\.min\(slotW\*\.94,slotH\*1\.08,a\.items\.length===6\?170:152\)\)/.test(pdf),'rule-wheel PDF scale-up missing');
 assert(/innerR=42\*s,outerR=63\*s,innerNode=9\.5\*s,outerNode=10\.5\*s,centreR=29\*s/.test(pdf),'rule-wheel centre clearance geometry missing');
 assert(/fitDiagramText\(page,cx,cy-5\.0\*s,'RULE',centreR\*1\.50/.test(pdf),'RULE label fit guard missing');
 assert(/fitDiagramText\(page,cx,cy\+8\.7\*s,clean\(it\.rule\),centreR\*1\.48/.test(pdf),'rule expression fit guard missing');
