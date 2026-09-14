@@ -1,0 +1,24 @@
+name: Sumplete PDF QA artifact
+
+on:
+  push:
+    branches:
+      - chatgpt/v1.32.0-sumplete
+    paths:
+      - 'scripts/generate-sumplete-qa.js'
+      - '.github/workflows/chatgpt-sumplete-pdf-qa.yml'
+
+jobs:
+  pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate actual Games PDF output
+        run: node scripts/generate-sumplete-qa.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sumplete-pdf-qa
+          path: qa-output/
