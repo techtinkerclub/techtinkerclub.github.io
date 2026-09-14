@@ -1,0 +1,6 @@
+97b06193b901d0b85d9280cbe29d3b6f664f554a7953e66bbad6fe679ca3a998  _pages/99-club-games.md
+1253a817ae0bc20bd2823d47a2cf65ee79028a389895ac64c26adc6bdbc3677e  assets/99club/games-arithmetic.js
+b9041b738b112f44d6db9e92b12d90cd1c81adb940a7c9b225ed2a781268e927  assets/99club/games-app.js
+ab2f805a53a75bbfc454e13cc41e27cf714de2ff1326b69a5cc9575e6d102c13  assets/99club/games-pdf.js
+73959352ef3885ecbb238e3c13fe8e8a59eb8d2f44c484317eb4123f47b8deee  assets/99club/games.css
+29d0cfa3ed67b0f892ea7552b8268c8724172b965877d16eef2913d2493de8c0  assets/99club/tests/games-v1301-review-smoke.js
