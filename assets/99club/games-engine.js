@@ -5,7 +5,7 @@
 (function(global){
   'use strict';
 
-  const VERSION='1.8.1';
+  const VERSION='1.9.0';
   let VOCAB_DATA=global.TT99GamesVocabularyV2||null;
   let ARITH=global.TT99ArithmeticGames||null;
   let NUMLOGIC=global.TT99NumberLogicGames||null;
@@ -47,7 +47,7 @@
       defaultSettings:{difficulty:'standard',levels:'auto',clueLevel:'balanced'},
       settingsSchema:[
         {id:'difficulty',type:'choice',label:'Difficulty',options:['easy','standard','challenge']},
-        {id:'levels',type:'select',label:'Pyramid levels',options:['auto','3','4','5']},
+        {id:'levels',type:'select',label:'Pyramid levels',options:['auto','3','4','5','6','7']},
         {id:'clueLevel',type:'choice',label:'Clues shown',options:['more','balanced','fewer']}
       ],
       compatibility:{number_place_value:'excellent',calculation:'excellent',fractions:'poor',decimals_percentages:'poor',ratio_proportion:'poor',measurement:'poor',geometry:'poor',statistics:'poor',algebra:'poor'}
@@ -154,7 +154,7 @@
     }
     if(engineId==='pyramid')return attachDifficultyProfile(raw,{
       difficulty:['easy','standard','challenge'].includes(generationRaw.difficulty)?generationRaw.difficulty:defaults.difficulty,
-      levels:['auto','3','4','5'].includes(String(raw.levels??'auto'))?String(raw.levels??'auto'):'auto',
+      levels:['auto','3','4','5','6','7'].includes(String(raw.levels??'auto'))?String(raw.levels??'auto'):'auto',
       clueLevel:['more','balanced','fewer'].includes(raw.clueLevel)?raw.clueLevel:defaults.clueLevel
     });
     if(engineId==='crossword')return attachDifficultyProfile(raw,{
@@ -293,9 +293,20 @@
   }
 
   function pyramidProfile(settings){
-    const s=normalizeSettings(settings),year=s.maxYear,o=s.engineSettings.pyramid,d=o.difficulty;let rows=year<=2?3:4,maxApex=year===1?20:year===2?100:year===3?500:year===4?2000:year===5?5000:10000;
-    if(o.levels!=='auto')rows=Number(o.levels);else if(d==='challenge'&&year>=4)rows=5;if(d==='easy')maxApex=Math.max(10,Math.floor(maxApex*.35));if(d==='challenge'&&year>=4)maxApex=Math.min(20000,Math.floor(maxApex*1.5));
-    const missingRatio=o.clueLevel==='more'?.28:o.clueLevel==='fewer'?.62:(d==='easy'?.34:d==='challenge'?.56:.45);return {rows,maxApex,missingRatio,difficulty:d,clueLevel:o.clueLevel};
+    const s=normalizeSettings(settings),year=s.maxYear,o=s.engineSettings.pyramid,d=o.difficulty;
+    let rows;
+    if(o.levels!=='auto')rows=Number(o.levels);
+    else if(d==='easy')rows=year<=2?3:4;
+    else if(d==='challenge')rows=year<=2?4:year===3?5:year===4?6:7;
+    else rows=year<=2?3:year===3?4:5;
+    rows=clamp(rows,3,7);
+    const baseApex=year===1?20:year===2?100:year===3?500:year===4?2000:year===5?5000:10000;
+    const depthScale=rows<=4?1:rows===5?.72:rows===6?.42:.24;
+    let maxApex=Math.max(rows>=6?Math.pow(2,rows-1):10,Math.floor(baseApex*depthScale));
+    if(d==='easy')maxApex=Math.max(Math.pow(2,rows-1),Math.floor(maxApex*.55));
+    if(d==='challenge'&&rows<=5&&year>=4)maxApex=Math.min(20000,Math.floor(maxApex*1.25));
+    const baseMissing=o.clueLevel==='more'?.28:o.clueLevel==='fewer'?.62:(d==='easy'?.34:d==='challenge'?.56:.45),depthFactor=rows<=4?1:rows===5?.90:rows===6?.72:.58,missingRatio=baseMissing*depthFactor;
+    return {rows,maxApex,missingRatio,difficulty:d,clueLevel:o.clueLevel};
   }
   function buildPyramid(bottom){const rows=[bottom.slice()];let current=bottom.slice();while(current.length>1){const next=[];for(let i=0;i<current.length-1;i++)next.push(current[i]+current[i+1]);rows.unshift(next);current=next;}return rows;}
   function matrixRank(matrix,eps=1e-9){const a=matrix.map(row=>row.map(Number));if(!a.length)return 0;const rows=a.length,cols=a[0].length;let rank=0,col=0;while(rank<rows&&col<cols){let pivot=rank;for(let r=rank+1;r<rows;r++)if(Math.abs(a[r][col])>Math.abs(a[pivot][col]))pivot=r;if(Math.abs(a[pivot][col])<=eps){col++;continue;}[a[rank],a[pivot]]=[a[pivot],a[rank]];const div=a[rank][col];for(let c=col;c<cols;c++)a[rank][c]/=div;for(let r=0;r<rows;r++){if(r===rank)continue;const f=a[r][col];if(Math.abs(f)<=eps)continue;for(let c=col;c<cols;c++)a[r][c]-=f*a[rank][c];}rank++;col++;}return rank;}
@@ -303,7 +314,7 @@
   function uniquelySolvablePyramidMask(rowCount,candidates,targetMissing,rng){const coeff=pyramidCoefficientRows(rowCount),all=[];for(let r=0;r<coeff.length;r++)for(let c=0;c<coeff[r].length;c++)all.push([r,c]);const missing=new Set(),order=shuffle(candidates,rng);for(const [r,c] of order){if(missing.size>=targetMissing)break;const key=`${r}:${c}`;missing.add(key);const visible=all.filter(([rr,cc])=>!missing.has(`${rr}:${cc}`)).map(([rr,cc])=>coeff[rr][cc]);if(matrixRank(visible)<rowCount)missing.delete(key);}return [...missing].map(k=>k.split(':').map(Number));}
   function generateNumberPyramid(settings,seed){
     const s=normalizeSettings(settings),rng=rngFromSeed(seed),profile=pyramidProfile(s);let rows=null;
-    for(let tries=0;tries<500;tries++){const maxBottom=Math.max(3,Math.floor(profile.maxApex/Math.pow(2,profile.rows-1))),minBottom=s.minYear<=1?0:1,bottom=Array.from({length:profile.rows},()=>randInt(rng,minBottom,maxBottom));rows=buildPyramid(bottom);if(rows[0][0]<=profile.maxApex)break;}
+    for(let tries=0;tries<700;tries++){const minBottom=profile.rows>=6?0:(s.minYear<=1?0:1),depthCap=profile.rows>=7?8:profile.rows===6?12:profile.rows===5?25:Infinity,maxBottom=Math.max(minBottom+1,Math.min(depthCap,Math.floor(profile.maxApex/Math.pow(2,profile.rows-1)))),bottom=Array.from({length:profile.rows},()=>randInt(rng,minBottom,maxBottom));rows=buildPyramid(bottom);if(rows[0][0]<=profile.maxApex)break;}
     const all=[];for(let r=0;r<rows.length;r++)for(let c=0;c<rows[r].length;c++)all.push([r,c]);const candidates=all.filter(([r])=>!(profile.difficulty==='easy'&&r===0));
     const missingCount=Math.min(all.length-profile.rows,Math.max(2,Math.round(all.length*profile.missingRatio))),missing=uniquelySolvablePyramidMask(profile.rows,candidates,missingCount,rng),missingSet=new Set(missing.map(([r,c])=>`${r}:${c}`));
     return {engineId:'pyramid',title:'Number Pyramid',topicIds:['calculation'],rows,missing,missingSet:[...missingSet],difficulty:profile.difficulty,yearText:yearText(s.minYear,s.maxYear),seed,instruction:'Each brick is the sum of the two bricks directly below it.',options:s.engineSettings.pyramid};
@@ -512,19 +523,27 @@
     const plan=[];allowed.forEach((d,i)=>{for(let n=0;n<counts[i];n++)plan.push(d);});return shuffle(plan,rngFromSeed(`${seed}:${engineId}:difficulty-mix`));
   }
   function resolveSingleDifficulty(settings,engineId,seed){const plan=weightedDifficultyPlan(settings,engineId,100,seed);return plan[Math.floor(rngFromSeed(`${seed}:single-difficulty`)()*plan.length)]||'standard';}
+  function arithmagonOperationPlan(settings,count,seed='mix'){
+    const s=normalizeSettings(settings),o=s.engineSettings?.arithmagon||{},requested=o.operation||'auto';
+    if(requested!=='auto')return Array(count).fill(requested);
+    if(s.maxYear<=1)return Array(count).fill('add');
+    const addCount=s.maxYear===2?Math.round(count*.6):Math.ceil(count/2),plan=[...Array(addCount).fill('add'),...Array(Math.max(0,count-addCount)).fill('multiply')];
+    return shuffle(plan,rngFromSeed(`${seed}:arithmagon-operation-mix`));
+  }
+  function settingsWithEngineOption(settings,engineId,key,value){const s=normalizeSettings(settings),copy=clone(s);copy.engineSettings[engineId]={...copy.engineSettings[engineId],[key]:value};return copy;}
   function generateActivity(engineId,settings,seed,customVocabulary=[]){
     let s=normalizeSettings(settings);if(s.engineSettings[engineId]?.difficulty==='mixed')s=settingsWithDifficulty(s,engineId,resolveSingleDifficulty(s,engineId,seed));
     if(ARITH&&ARITH.DEFINITIONS&&ARITH.DEFINITIONS[engineId])return ARITH.generate(engineId,s,seed);if(NUMLOGIC&&NUMLOGIC.DEFINITIONS&&NUMLOGIC.DEFINITIONS[engineId])return NUMLOGIC.generate(engineId,s,seed);if(engineId==='pyramid')return generateNumberPyramid(s,seed);if(engineId==='crossword')return generateCrossword(s,seed,customVocabulary);if(engineId==='magic')return generateMagicSquare(s,seed);if(engineId==='sudoku')return generateSudoku(s,seed);return generateWordSearch(s,seed,customVocabulary);}
   function generatePack(settings,seed='games',customVocabulary=[]){
     const s=normalizeSettings(settings),selected=selectedCompatibleEngines(s),sheets=[];
     if(!selected.length)return {version:VERSION,seed,settings:s,workedExamples:[],sheets:[]};
-    const total=s.sheets*s.activitiesPerSheet,enginePlan=Array.from({length:total},(_,i)=>chooseEngine(s,i,seed)),counts={},seen={},difficultyPlans={};
-    enginePlan.forEach(id=>counts[id]=(counts[id]||0)+1);for(const [id,count] of Object.entries(counts))difficultyPlans[id]=weightedDifficultyPlan(s,id,count,seed);
-    let globalIndex=0;for(let sheetIndex=0;sheetIndex<s.sheets;sheetIndex++){const activities=[];for(let i=0;i<s.activitiesPerSheet;i++,globalIndex++){const engineId=enginePlan[globalIndex],activitySeed=`${seed}:S${sheetIndex+1}:A${i+1}:${engineId}`,pos=seen[engineId]||0,difficulty=difficultyPlans[engineId]?.[pos]||'standard';seen[engineId]=pos+1;activities.push(generateActivity(engineId,settingsWithDifficulty(s,engineId,difficulty),activitySeed,customVocabulary));}sheets.push({index:sheetIndex+1,activities});}
+    const total=s.sheets*s.activitiesPerSheet,enginePlan=Array.from({length:total},(_,i)=>chooseEngine(s,i,seed)),counts={},seen={},difficultyPlans={},operationPlans={};
+    enginePlan.forEach(id=>counts[id]=(counts[id]||0)+1);for(const [id,count] of Object.entries(counts)){difficultyPlans[id]=weightedDifficultyPlan(s,id,count,seed);if(id==='arithmagon')operationPlans[id]=arithmagonOperationPlan(s,count,seed);}
+    let globalIndex=0;for(let sheetIndex=0;sheetIndex<s.sheets;sheetIndex++){const activities=[];for(let i=0;i<s.activitiesPerSheet;i++,globalIndex++){const engineId=enginePlan[globalIndex],activitySeed=`${seed}:S${sheetIndex+1}:A${i+1}:${engineId}`,pos=seen[engineId]||0,difficulty=difficultyPlans[engineId]?.[pos]||'standard',operation=operationPlans[engineId]?.[pos];seen[engineId]=pos+1;let activitySettings=settingsWithDifficulty(s,engineId,difficulty);if(engineId==='arithmagon'&&operation)activitySettings=settingsWithEngineOption(activitySettings,engineId,'operation',operation);activities.push(generateActivity(engineId,activitySettings,activitySeed,customVocabulary));}sheets.push({index:sheetIndex+1,activities});}
     const workedExamples=s.workedExamples==='front'?selected.map((id,i)=>{const ws=s.engineSettings[id]?.difficulty==='mixed'?settingsWithDifficulty(s,id,'standard'):s;return generateWorkedExample(id,ws,`${seed}:worked:${i}:${id}`,customVocabulary);}).filter(Boolean):[];
     return {version:VERSION,seed,settings:s,workedExamples,sheets};
   }
 
-  const api={VERSION,TOPICS,ENGINES,ARITH,NUMLOGIC,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,normalizeDifficultyWeights,weightedDifficultyPlan,settingsWithDifficulty,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateSudoku,generateMiniSudoku,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows,_countSudokuSolutions:countSudokuSolutions,_sudokuBoxShape:sudokuBoxShape};
+  const api={VERSION,TOPICS,ENGINES,ARITH,NUMLOGIC,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,normalizeDifficultyWeights,weightedDifficultyPlan,settingsWithDifficulty,arithmagonOperationPlan,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateSudoku,generateMiniSudoku,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows,_countSudokuSolutions:countSudokuSolutions,_sudokuBoxShape:sudokuBoxShape};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;global.TT99Games=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -514,3 +514,30 @@
   .tt99-game-activities.count-2 .tt99-crossword-grid{max-width:69mm!important}
   .tt99-game-activities.count-3 .tt99-crossword-grid{max-width:48mm!important}
 }
+
+/* v1.30.0 — Number patterns & structures refinement + answer-sheet clarity */
+.tt99-pyramid-row span.answer-fill,.tt99-magic-grid>span.answer-fill,.tt99-trail-grid>span.answer-fill{background:#e8f7f3;color:#0f756f;border-color:#62aaa3;font-weight:950}
+.tt99-arithmagon-svg line.diagonal{stroke-dasharray:2.4 1.8;stroke:#8aa0a4}
+.tt99-arithmagon-svg .edge .op{font-size:5px;fill:#6d8186;font-weight:900}
+.tt99-arithmagon-svg .answer-fill circle,.tt99-magicshape-svg .answer-fill circle,.tt99-wheel-svg .answer-fill circle,.tt99-factor-svg .answer-fill circle,.tt99-diamond-svg .answer-fill circle{fill:#e8f7f3;stroke:#52a39a;stroke-width:1.35}
+.tt99-arithmagon-svg .answer-fill text,.tt99-magicshape-svg .answer-fill text,.tt99-wheel-svg .answer-fill text,.tt99-factor-svg .answer-fill text,.tt99-diamond-svg .answer-fill text,.tt99-factor-svg .answer-fill-text{fill:#0f756f;font-weight:950}
+.tt99-magicshape-svg .bad.answer-fill circle{fill:#e8f7f3;stroke:#52a39a}.tt99-magicshape-svg .bad.answer-fill text{fill:#0f756f}
+
+.tt99-wheel-items.visual,.tt99-factor-items.visual,.tt99-diamond-items.visual{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;row-gap:18px;margin:8px 10px;height:calc(100% - 68px);align-items:center;align-content:center}
+.tt99-factor-items.visual{grid-template-columns:repeat(var(--factor-cols,2),minmax(0,1fr))}
+.tt99-factor-items.visual>.tt99-factor-visual{border:0!important;border-radius:0!important;padding:0!important;min-height:0!important;background:transparent!important}
+.tt99-wheel-visual,.tt99-factor-visual,.tt99-diamond-visual{display:grid;place-items:center;min-width:0;min-height:0}
+.tt99-wheel-svg,.tt99-factor-svg,.tt99-diamond-svg{width:min(100%,210px);height:auto;max-height:185px;overflow:visible}
+.tt99-wheel-svg .rule-text{font-size:6.2px!important}.tt99-factor-svg .centre text:first-of-type{font-size:4.5px}.tt99-factor-svg .petal .factor-op{font-size:7px;fill:#6c8084}.tt99-factor-svg .petal .factor-value{font-size:7px}.tt99-factor-svg .petal rect{fill:#fff}
+.tt99-diamond-svg .diamond-shape{fill:none;stroke:#7a9297;stroke-width:2}.tt99-diamond-svg .diamond-node circle{fill:#fff;stroke:#789397;stroke-width:1.2}.tt99-diamond-svg .diamond-node .value{font:900 9px/1 system-ui;text-anchor:middle;fill:#294b52}.tt99-diamond-svg .diamond-node .label{font:800 5px/1 system-ui;text-anchor:middle;fill:#70858a;letter-spacing:.03em}
+.tt99-game-activities.count-3 .tt99-wheel-items.visual,.tt99-game-activities.count-3 .tt99-factor-items.visual,.tt99-game-activities.count-3 .tt99-diamond-items.visual{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:3px;row-gap:7px;margin:2px 4px}.tt99-game-activities.count-3 .tt99-wheel-svg,.tt99-game-activities.count-3 .tt99-factor-svg,.tt99-game-activities.count-3 .tt99-diamond-svg{max-height:105px}
+
+/* Answer keys: original givens stay in the normal ink style; values supplied by the key are heavier and tinted. */
+.tt99-kakuro-grid .play.answer-fill b,.tt99-futoshiki-grid .cell.answer-fill,.tt99-cage-grid .answer-fill,.tt99-numberpath-grid>span.answer-fill,.tt99-machine-table td.answer-fill{color:#0f756f!important;font-weight:950!important;background:#eef9f6!important}
+.tt99-crossnumber .tt99-crossword-grid>span.answer-fill b{color:#0f756f;font-weight:950}
+
+@media print{
+  .tt99-pyramid-row span.answer-fill,.tt99-magic-grid>span.answer-fill,.tt99-trail-grid>span.answer-fill,.tt99-kakuro-grid .play.answer-fill,.tt99-futoshiki-grid .cell.answer-fill,.tt99-cage-grid .answer-fill,.tt99-numberpath-grid>span.answer-fill,.tt99-machine-table td.answer-fill{background:#f1f1f1!important;color:#111!important;font-weight:950!important}
+  .tt99-arithmagon-svg .answer-fill circle,.tt99-magicshape-svg .answer-fill circle,.tt99-wheel-svg .answer-fill circle,.tt99-factor-svg .answer-fill circle,.tt99-diamond-svg .answer-fill circle{fill:#f1f1f1!important;stroke:#555!important}
+  .tt99-arithmagon-svg .answer-fill text,.tt99-magicshape-svg .answer-fill text,.tt99-wheel-svg .answer-fill text,.tt99-factor-svg .answer-fill text,.tt99-diamond-svg .answer-fill text,.tt99-factor-svg .answer-fill-text{fill:#111!important;font-weight:950!important}
+}

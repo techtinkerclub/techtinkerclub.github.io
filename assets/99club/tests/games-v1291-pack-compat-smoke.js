@@ -10,7 +10,7 @@ global.TT99NumberLogicGames=require(path.join(ROOT,'games-number-logic.js'));
 global.TT99Games=require(path.join(ROOT,'games-engine.js'));
 require(path.join(ROOT,'games-pack-mode.js'));
 const G=global.TT99Games;
-assert(G.VERSION==='1.8.1','wrong engine version');
+assert(G.VERSION==='1.9.0','wrong engine version');
 assert(G.PACK_MODE?.version==='1.1.0','live pack-mode compatibility missing');
 // Manual mixed: exact allocation across 20 same-type puzzles through v1.29 exact-count wrapper.
 store.set(G.PACK_MODE.storageModeKey,'manual');store.set(G.PACK_MODE.storageCountKey,'20');
