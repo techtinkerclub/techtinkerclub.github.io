@@ -1,0 +1,40 @@
+name: ChatGPT PDF readability QA
+
+on:
+  push:
+    branches:
+      - chatgpt/v1.31.4-pdf-text-readability
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate representative PDFs
+        shell: bash
+        run: |
+          mkdir -p qa-output
+          node <<'NODE'
+          const fs=require('fs');
+          const G=require('./assets/99club/games-engine.js');
+          const PDF=require('./assets/99club/games-pdf.js');
+          const ids=['nonogram','functionmachine','maze','crossnumber','numbersearch','crossword','equationcrossgrid'];
+          const base={minYear:6,maxYear:6,topics:['calculation','number-properties','fractions','measurement','geometry','statistics'],workedExamples:'none',personalisation:{schoolName:'Readability QA',packTitle:'Printed puzzle text check'},engineSettings:{}};
+          function make(id,i){const s=JSON.parse(JSON.stringify(base));s.engineSettings[id]={...(G.ENGINES[id]?.defaultSettings||{}),difficulty:'standard'};return G.generateActivity(id,s,`readability-${i}-${id}`);}
+          const activities=ids.map(make);
+          const single={seed:'readability-single',sheets:activities.map((a,i)=>({index:i+1,activities:[a]}))};
+          const paired={seed:'readability-paired',sheets:[]};for(let i=0;i<activities.length;i+=2)paired.sheets.push({index:paired.sheets.length+1,activities:activities.slice(i,i+2)});
+          for(const [name,pack] of [['single',single],['paired',paired]]){
+            const doc=PDF.buildDocument({pack,settings:base,kind:'student',topics:G.TOPICS,seed:pack.seed});
+            fs.writeFileSync(`qa-output/readability-${name}.pdf`,Buffer.from(doc.outputBytes()));
+          }
+          NODE
+          ls -lh qa-output
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pdf-readability-qa
+          path: qa-output/*.pdf
+          retention-days: 2
