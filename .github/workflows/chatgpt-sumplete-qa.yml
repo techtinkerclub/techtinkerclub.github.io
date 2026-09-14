@@ -1,0 +1,37 @@
+name: Sumplete v1.32 QA
+
+on:
+  push:
+    branches:
+      - chatgpt/v1.32.0-sumplete
+    paths:
+      - 'assets/99club/games-sumplete.js'
+      - 'assets/99club/games-sumplete.css'
+      - 'assets/99club/games-app.js'
+      - 'assets/99club/games-pdf.js'
+      - 'assets/99club/tests/games-sumplete-smoke.js'
+      - '_pages/99-club-games.md'
+      - '.github/workflows/chatgpt-sumplete-qa.yml'
+
+jobs:
+  sumplete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax checks
+        run: |
+          node --check assets/99club/games-sumplete.js
+          node --check assets/99club/games-app.js
+          node --check assets/99club/games-pdf.js
+          node --check assets/99club/tests/games-sumplete-smoke.js
+      - name: Sumplete stress and uniqueness regression
+        run: node assets/99club/tests/games-sumplete-smoke.js
+      - name: Existing Games regressions
+        run: |
+          node assets/99club/tests/games-number-logic-smoke.js
+          node assets/99club/tests/games-random-pack-smoke.js
+          node assets/99club/tests/games-v1302-pdf-parity-smoke.js
+          node assets/99club/tests/games-v1314-pdf-readability-smoke.js
