@@ -553,3 +553,22 @@
   .tt99-factor-svg .petal .factor-slot{fill:#fff!important;stroke:#666!important}
   .tt99-factor-svg .petal .factor-slot.answer-fill{fill:#f1f1f1!important;stroke:#555!important}
 }
+
+/* v1.30.4 — consolidated Number Patterns visual polish from live v1.30.1 */
+.tt99-factor-svg{width:min(100%,235px);height:auto;overflow:visible}
+.tt99-factor-svg .factor-spoke{stroke:#bdccce;stroke-width:1.1}
+.tt99-factor-svg .factor-pair-capsule{fill:#fff;stroke:#789397;stroke-width:1.2}
+.tt99-factor-svg .factor-field{fill:#fff;stroke:none}
+.tt99-factor-svg .factor-field.answer-fill{fill:#e8f7f3}
+.tt99-factor-svg .factor-divider{stroke:#d5e0e1;stroke-width:.8}
+.tt99-factor-svg .factor-pair-unit .factor-value{font-size:7.4px}
+.tt99-factor-svg .factor-pair-unit .factor-op{font-size:7.2px;fill:#61777c}
+.tt99-factor-svg .centre .centre-label{font-size:5.1px;fill:#647a7f;font-weight:800;text-anchor:middle}
+.tt99-factor-svg .centre .centre-value{font-size:10px;fill:#176e66;font-weight:900;text-anchor:middle}
+.tt99-diamond-svg .diamond-node .label{letter-spacing:0!important;text-anchor:middle!important}
+.tt99-diamond-svg .diamond-node .product-label,.tt99-diamond-svg .diamond-node .sum-label{text-anchor:middle!important}
+@media print{
+  .tt99-factor-svg .factor-pair-capsule{fill:#fff!important;stroke:#666!important}
+  .tt99-factor-svg .factor-field.answer-fill{fill:#f1f1f1!important}
+  .tt99-factor-svg .factor-divider{stroke:#aaa!important}
+}

@@ -1,59 +1,73 @@
-# 99 Club Studio v1.30.1 — Number Patterns & Structures review patch
+# 99 Club Studio v1.30.4 — consolidated Number Patterns visual correction
 
-## Baseline
+## Baseline verified against the online repository
 
-Apply this patch **on top of the accepted v1.30.0 Number Patterns & Structures patch**.
+This patch was built against the current `master` state of:
 
-Do not apply it directly to v1.29.2 or an older Games snapshot.
+`techtinkerclub/techtinkerclub.github.io`
 
-## What this review patch fixes
+Verified live commit before patching:
 
-### 1. Arithmagons — cleaner diagonal mode
-- Keeps diagonal connections as a genuine higher-complexity option.
-- Square Arithmagons now use only one interior diagonal.
-- Pentagon/hexagon diagonal sets are sparse and deliberately non-crossing.
-- Diagonal operation glyphs are omitted in the diagram to reduce centre clutter; the rule/instruction still defines the operation.
-- Browser and direct-PDF renderers follow the same rule.
+`4c53012a280da102a147ac38ac471787ef25f8e3`
 
-### 2. Magic Number Shapes — bow-tie geometry
-- Replaces the confusing bent top/bottom routes with a true bow-tie made entirely from straight three-node marked lines.
-- Retains the same four linked magic-line equations and therefore the same puzzle family rather than removing it.
-- Bow-tie generation now rejects overly repetitive value sets where practical.
+That commit contains the uploaded **v1.30.1 Number Patterns & Structures review patch**.
 
-### 3. Number Connections
+Apply **v1.30.4 directly to that live state**. You do **not** need to apply the previously supplied local v1.30.2 or v1.30.3 ZIPs first; those were review builds and are superseded by this consolidated patch.
 
-#### Sum & Product Diamonds
-- Pulls the four nodes and PRODUCT/SUM labels safely inside the SVG frame.
-- Direct-PDF layout uses a smaller protected vertical footprint and two columns for four-diamond sheets.
+## Fixes included
 
-#### Factor Pair Webs
-- Each spoke now visibly contains **two separate writing boxes** with × between them, rather than one pill that can look like an unexplained × box when both values are blank.
-- Instruction explicitly explains that each spoke is one factor pair and that its two numbers multiply to the centre.
-- Easy/Standard find-pairs activities keep one completed pair in the first suitable web as a visual starter example; Challenge remains unprompted.
-- Browser and direct-PDF renderers use the same two-box convention.
+### Arithmagons
+- Keeps the v1.30.1 sparse / non-crossing diagonal selection.
+- Restores an explicit operation sign on diagonal connections.
+- Moves perimeter operation signs to the outside of the polygon rather than into the working area.
+- Mirrors the same notation in direct PDF output.
+
+### Magic Number Shapes
+- Retains the corrected v1.30.1 straight-line bow-tie topology and repeated-value guard.
+- Direct PDF output now uses circular nodes and preserved aspect ratio so the shape matches the browser visual language much more closely.
+
+### Factor Pair Webs
+- Keeps the clearer instruction and first-web starter pair introduced in v1.30.1.
+- Replaces disconnected factor boxes with one grouped capsule per spoke: `[ factor ] × [ factor ]`.
+- Moves capsules farther away from the centre circle.
+- Clips each spoke cleanly between the centre-circle boundary and the factor-pair capsule; no line runs through the answer area.
+- Centres the `FACTOR PAIRS` label and centre value as one balanced two-line block.
+- Uses the same geometry in browser preview and direct PDF output.
+
+### Sum & Product Diamonds
+- Keeps circular nodes and safe activity bounds.
+- Removes the optical shift caused by letter spacing on `PRODUCT` / `SUM`.
+- Explicitly centres both labels on the top/bottom node axis in the browser renderer.
+- Direct PDF labels remain centre-aligned with the matching nodes.
+
+### PDF parity
+The direct Games PDF renderer now uses vector circles / rounded rectangles / dashed diagonals for the Number Patterns visual families instead of rectangular stand-ins and stretched geometry. This covers:
+- Arithmagons;
+- Magic Number Shapes;
+- Rule Wheels;
+- Factor Pair Webs;
+- Sum & Product Diamonds.
 
 ## Files changed
-- `_pages/99-club-games.md` — cache-busts changed Games assets.
-- `assets/99club/games-arithmetic.js` — Arithmagon diagonals, bow-tie geometry/value variety, Factor Pair Web guidance.
-- `assets/99club/games-app.js` — browser diagram refinements.
-- `assets/99club/games-pdf.js` — matching direct-PDF refinements.
-- `assets/99club/games.css` — Factor Pair Web slots and diamond containment.
-- `assets/99club/tests/games-v1301-review-smoke.js` — targeted review regression.
+- `_pages/99-club-games.md` — cache-bust only for changed assets.
+- `assets/99club/games-app.js` — browser visual geometry / notation.
+- `assets/99club/games-pdf.js` — direct-PDF visual parity and matching geometry.
+- `assets/99club/games.css` — Factor Pair capsule styling and Diamond label centring.
+- `assets/99club/tests/games-v1301-review-smoke.js` — updates the earlier diagonal-sign expectation.
+- `assets/99club/tests/games-v1302-pdf-parity-smoke.js` — PDF parity regression.
+- `assets/99club/tests/games-v1304-number-structures-polish-smoke.js` — final layout regression.
+
+The arithmetic generator itself (`games-arithmetic.js`) is **not changed** because the current online v1.30.1 already contains the accepted sparse-diagonal, bow-tie and Factor Pair instruction/generation fixes.
 
 ## Regression boundary
-This patch does **not** intentionally change:
-- public 99 Club fluency generation;
+No intentional changes to:
+- public 99 Club fluency;
 - Custom Worksheets / Angles;
-- vocabulary/crossword generation;
+- vocabulary / crosswords;
 - Random Pack;
 - personalisation;
-- other Games engines;
-- v1.29.2 crossword geometry.
+- number-logic engines;
+- other arithmetic game generation.
 
-## Deployment check
-After overlaying the patch and hard-refreshing the Games page:
-1. Generate Challenge Arithmagons with diagonals: confirm interior lines do not cross and the centre is less crowded.
-2. Generate Magic Number Shapes with **Magic bow-tie**: confirm all four marked routes are visually straight.
-3. Generate Standard **Factor Pair Webs**: confirm each spoke visibly shows two answer boxes with × between them and one first-web example pair is shown.
-4. Generate **Sum & Product Diamonds** with four items: confirm PRODUCT/SUM labels stay inside every activity frame in browser and PDF.
-5. Spot-check Random Pack and a Maths Crossword to confirm no unrelated layout regression.
+## Deployment
+Overlay this ZIP at the repository root and replace matching files. Then hard-refresh `/tools/99-club/games/` once.

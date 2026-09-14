@@ -1,6 +1,10 @@
-97b06193b901d0b85d9280cbe29d3b6f664f554a7953e66bbad6fe679ca3a998  _pages/99-club-games.md
-1253a817ae0bc20bd2823d47a2cf65ee79028a389895ac64c26adc6bdbc3677e  assets/99club/games-arithmetic.js
-b9041b738b112f44d6db9e92b12d90cd1c81adb940a7c9b225ed2a781268e927  assets/99club/games-app.js
-ab2f805a53a75bbfc454e13cc41e27cf714de2ff1326b69a5cc9575e6d102c13  assets/99club/games-pdf.js
-73959352ef3885ecbb238e3c13fe8e8a59eb8d2f44c484317eb4123f47b8deee  assets/99club/games.css
-29d0cfa3ed67b0f892ea7552b8268c8724172b965877d16eef2913d2493de8c0  assets/99club/tests/games-v1301-review-smoke.js
+669880b3482ef96fdad350bf4c8d4c5a36652402dd54e122276512a0784eeec5  ./PATCH_README.md
+7ed6424e6d13ef6aa48e12320f687ca4f73a1a034430896912ee9e9f86ff9f7f  ./RELEASE_NOTES_1.30.4.md
+15d5c906109b644e1ba1c25408c75b147acb135a64e99952a73f518b10fdeb7d  ./V1_30_4_QA_REPORT.md
+441c17fc26c10bab603f305c45754727c41128d59afa1b02e74c94166cb10c1e  ./_pages/99-club-games.md
+0c7e23be506e584c17fd7d1cceb5da8ba2d3a5df50309bb0b0ad1485eeabb22f  ./assets/99club/games-app.js
+c599d4b0bc90cb2637b14b94b056da791c74d5b6c561804beeefdaa6ac325fdb  ./assets/99club/games-pdf.js
+24be79575911b7293a309596a0cd9eab2a57eb8d64c784a378b5a6e678116809  ./assets/99club/games.css
+94d393304528eb06d8a31fa3c1c1e59eb0d3414e674806149ccbe0110651d7bf  ./assets/99club/tests/games-v1301-review-smoke.js
+3e207559d2e582e94268d460ef8fbaeb919adc3b446da6d955c9fe469650d6c2  ./assets/99club/tests/games-v1302-pdf-parity-smoke.js
+22506bef2a03794b99fb9f4c9c0e73d16cbb220458199b9e278ac966d00a9929  ./assets/99club/tests/games-v1304-number-structures-polish-smoke.js

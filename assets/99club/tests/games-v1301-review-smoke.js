@@ -39,11 +39,12 @@ for(let i=0;i<80;i++){
 
 // Static renderer guards for the reviewed visual defects.
 const app=fs.readFileSync(path.join(ROOT,'games-app.js'),'utf8'),pdf=fs.readFileSync(path.join(ROOT,'games-pdf.js'),'utf8'),css=fs.readFileSync(path.join(ROOT,'games.css'),'utf8');
-assert(/link\.diagonal\?'':`<text class="op"/.test(app),'browser still puts operation labels on diagonals');
-assert(/if\(!link\.diagonal\)page\.text\(mx,my-11/.test(pdf),'PDF still puts operation labels on diagonals');
-assert((app.match(/class="factor-slot/g)||[]).length>=2,'factor web does not render two distinct answer slots');
+assert(/opPoint=\(link,p,q,mx,my\)/.test(app),'browser arithmagon operation positioning helper missing');
+assert(/<text class=\"op\" x=\"\$\{opx\}/.test(app),'browser no longer renders operation labels on every connection');
+assert(/arithmagonOpPoint\(link/.test(pdf),'PDF arithmagon operation positioning helper missing');
+assert(/factor-pair-capsule/.test(app)&&/factor-divider/.test(app),'factor web does not render grouped factor-pair capsules');
 assert(/\['top',80,28,'PRODUCT'\]/.test(app)&&/\['bottom',80,132,'SUM'\]/.test(app),'diamond labels/nodes were not pulled inside the SVG frame');
-assert(/ry=Math\.min\(slotH\*\.25,36\)/.test(pdf),'PDF diamond vertical footprint guard missing');
+assert(/drawCircleNode\(page,nx,ny,value,nodeR/.test(pdf),'PDF diamonds are not using circular nodes');
 assert(/v1\.30\.1 — Number Patterns & Structures review fixes/.test(css),'review-fix CSS marker missing');
 
 console.log('Number Patterns & Structures v1.30.1 review regression passed.');
