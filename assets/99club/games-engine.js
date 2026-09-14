@@ -1,11 +1,11 @@
 /* 99 Club Studio · Maths Games & Puzzles
- * v1.7.0 — numeric-logic expansion, empty-selection workflow and personalisation.
+ * v1.8.1 — mixed-difficulty profiles + vocabulary-game refinements + 40-activity pack compatibility.
  * Architecture: game engine + maths content provider + applicability rules.
  */
 (function(global){
   'use strict';
 
-  const VERSION='1.7.0';
+  const VERSION='1.8.1';
   let VOCAB_DATA=global.TT99GamesVocabularyV2||null;
   let ARITH=global.TT99ArithmeticGames||null;
   let NUMLOGIC=global.TT99NumberLogicGames||null;
@@ -124,45 +124,59 @@
   const VOCABULARY=((VOCAB_DATA&&Array.isArray(VOCAB_DATA.entries))?VOCAB_DATA.entries:[]).map(mapBuiltInVocabulary).filter(Boolean);
   const VOCABULARY_METADATA=(VOCAB_DATA&&VOCAB_DATA.metadata)||{};
 
+  function normalizeDifficultyWeights(raw={}){
+    const src=raw&&typeof raw==='object'?raw:{};
+    let vals=['easy','standard','challenge'].map(k=>Math.max(0,Number(src[k])||0));
+    if(vals.reduce((a,b)=>a+b,0)<=0)vals=[25,50,25];
+    const sum=vals.reduce((a,b)=>a+b,0),scaled=vals.map(v=>v*100/sum),whole=scaled.map(Math.floor);
+    let left=100-whole.reduce((a,b)=>a+b,0);
+    const order=scaled.map((v,i)=>({i,r:v-Math.floor(v)})).sort((a,b)=>b.r-a.r||a.i-b.i);
+    for(let i=0;i<left;i++)whole[order[i%order.length].i]++;
+    return {easy:whole[0],standard:whole[1],challenge:whole[2]};
+  }
+  function attachDifficultyProfile(raw,base){
+    const requested=raw?.difficulty;
+    return {...base,difficulty:requested==='mixed'?'mixed':base.difficulty,difficultyWeights:normalizeDifficultyWeights(raw?.difficultyWeights)};
+  }
   function normalizeEngineSettings(engineId,raw={}){
-    const defaults=ENGINES[engineId]?.defaultSettings||{};
-    if(ARITH&&ARITH.DEFINITIONS&&ARITH.DEFINITIONS[engineId])return ARITH.normalise(engineId,raw);
-    if(NUMLOGIC&&NUMLOGIC.DEFINITIONS&&NUMLOGIC.DEFINITIONS[engineId])return NUMLOGIC.normalise(engineId,raw);
+    const defaults=ENGINES[engineId]?.defaultSettings||{},generationRaw=raw?.difficulty==='mixed'?{...raw,difficulty:'standard'}:raw;
+    if(ARITH&&ARITH.DEFINITIONS&&ARITH.DEFINITIONS[engineId])return attachDifficultyProfile(raw,ARITH.normalise(engineId,generationRaw));
+    if(NUMLOGIC&&NUMLOGIC.DEFINITIONS&&NUMLOGIC.DEFINITIONS[engineId])return attachDifficultyProfile(raw,NUMLOGIC.normalise(engineId,generationRaw));
     if(engineId==='wordsearch'){
       const legacyMode=raw.clueMode||raw.wordSearchMode;
-      return {
-        difficulty:['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:defaults.difficulty,
+      return attachDifficultyProfile(raw,{
+        difficulty:['easy','standard','challenge'].includes(generationRaw.difficulty)?generationRaw.difficulty:defaults.difficulty,
         clueMode:['words_definitions','definitions'].includes(legacyMode)?legacyMode:(legacyMode==='words'?'words_definitions':defaults.clueMode),
         wordCount:['auto','6','8','10','12'].includes(String(raw.wordCount??'auto'))?String(raw.wordCount??'auto'):'auto',
         gridSize:['auto','12','14','16'].includes(String(raw.gridSize??'auto'))?String(raw.gridSize??'auto'):'auto',
         directionMode:['auto','straight','diagonal','all'].includes(raw.directionMode)?raw.directionMode:'auto'
-      };
+      });
     }
-    if(engineId==='pyramid')return {
-      difficulty:['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:defaults.difficulty,
+    if(engineId==='pyramid')return attachDifficultyProfile(raw,{
+      difficulty:['easy','standard','challenge'].includes(generationRaw.difficulty)?generationRaw.difficulty:defaults.difficulty,
       levels:['auto','3','4','5'].includes(String(raw.levels??'auto'))?String(raw.levels??'auto'):'auto',
       clueLevel:['more','balanced','fewer'].includes(raw.clueLevel)?raw.clueLevel:defaults.clueLevel
-    };
-    if(engineId==='crossword')return {
-      difficulty:['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:defaults.difficulty,
+    });
+    if(engineId==='crossword')return attachDifficultyProfile(raw,{
+      difficulty:['easy','standard','challenge'].includes(generationRaw.difficulty)?generationRaw.difficulty:defaults.difficulty,
       wordCount:['auto','6','8','10','12'].includes(String(raw.wordCount??'auto'))?String(raw.wordCount??'auto'):'auto',
       gridSize:['auto','13','15','17'].includes(String(raw.gridSize??'auto'))?String(raw.gridSize??'auto'):'auto',
       wordBank:['auto','show','hide'].includes(raw.wordBank)?raw.wordBank:'auto'
-    };
-    if(engineId==='magic')return {
-      difficulty:['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:defaults.difficulty,
+    });
+    if(engineId==='magic')return attachDifficultyProfile(raw,{
+      difficulty:['easy','standard','challenge'].includes(generationRaw.difficulty)?generationRaw.difficulty:defaults.difficulty,
       gridSize:['auto','3','4'].includes(String(raw.gridSize??'auto'))?String(raw.gridSize??'auto'):'auto',
       puzzleType:['auto','missing','check','repair','transform'].includes(raw.puzzleType)?raw.puzzleType:(raw.puzzleType==='find_total'?'check':'auto'),
       numberPattern:['auto','classic','shifted','scaled','decimal'].includes(raw.numberPattern)?raw.numberPattern:'auto',
       clueLevel:['more','balanced','fewer'].includes(raw.clueLevel)?raw.clueLevel:'balanced'
-    };
-    if(engineId==='sudoku')return {
-      difficulty:['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:defaults.difficulty,
+    });
+    if(engineId==='sudoku')return attachDifficultyProfile(raw,{
+      difficulty:['easy','standard','challenge'].includes(generationRaw.difficulty)?generationRaw.difficulty:defaults.difficulty,
       gridSize:['auto','4','6','9'].includes(String(raw.gridSize??'auto'))?String(raw.gridSize??'auto'):'auto',
       puzzleStyle:['auto','sudoku','latin'].includes(raw.puzzleStyle)?raw.puzzleStyle:'auto',
       clueLevel:['more','balanced','fewer'].includes(raw.clueLevel)?raw.clueLevel:'balanced'
-    };
-    return {...defaults,...raw};
+    });
+    return attachDifficultyProfile(raw,{...defaults,...generationRaw});
   }
 
   function normalizeSettings(input={}){
@@ -194,7 +208,7 @@
       logoWidth:Math.max(0,Number(rawPersonal.logoWidth)||0),logoHeight:Math.max(0,Number(rawPersonal.logoHeight)||0)
     };
     return {
-      minYear,maxYear,topics:topics.length?topics:['calculation'],sheets:clamp(Number(input.sheets)||1,1,6),activitiesPerSheet:clamp(Number(input.activitiesPerSheet)||1,1,3),
+      minYear,maxYear,topics:topics.length?topics:['calculation'],sheets:clamp(Number(input.sheets)||1,1,20),activitiesPerSheet:clamp(Number(input.activitiesPerSheet)||1,1,3),
       selectedEngines:[...new Set(selectedEngines)],includeAnswers:input.includeAnswers!==false,workedExamples:input.workedExamples==='front'?'front':'none',engineSettings,personalisation
     };
   }
@@ -237,9 +251,9 @@
   function wordSearchCount(settings,available){const o=wordSearchOptions(settings),target=o.wordCount!=='auto'?Number(o.wordCount):(o.difficulty==='easy'?7:o.difficulty==='challenge'?11:9);return Math.max(4,Math.min(target,available));}
   function wordSearchDirections(settings){
     const o=wordSearchOptions(settings),mode=o.directionMode==='auto'?(o.difficulty==='easy'?'straight':o.difficulty==='challenge'?'all':'diagonal'):o.directionMode;
-    if(mode==='straight')return {mode,dirs:[[1,0],[0,1]],label:'left→right / top→bottom'};
-    if(mode==='diagonal')return {mode,dirs:[[1,0],[0,1],[1,1],[-1,1]],label:'straight + diagonals'};
-    return {mode:'all',dirs:[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]],label:'all directions, including backwards'};
+    if(mode==='straight')return {mode,dirs:[[1,0],[0,1]],label:'left→right / top→bottom',tip:'Search directions: → ↓ · No backwards words.',pdfTip:'Directions: left to right and top to bottom. No backwards words.'};
+    if(mode==='diagonal')return {mode,dirs:[[1,0],[0,1],[1,1],[-1,1]],label:'straight + diagonals',tip:'Search directions: → ↓ ↘ ↙ · No backwards words.',pdfTip:'Directions: left to right, top to bottom and diagonally down. No backwards words.'};
+    return {mode:'all',dirs:[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]],label:'all directions, including backwards',tip:'Search directions: → ← ↓ ↑ ↘ ↙ ↗ ↖ · Words may be backwards.',pdfTip:'Directions: horizontal, vertical and diagonal - forwards or backwards.'};
   }
   function vocabularyFor(settings,customVocabulary=[]){
     const size=wordSearchGridSize(settings);return vocabularyPool(settings,customVocabulary,'wordsearch').filter(x=>normalizeTerm(x.term).length<=size&&x.minimumWordsearchGrid<=size);
@@ -262,7 +276,7 @@
     placements.sort((a,b)=>a._displayOrder-b._displayOrder);for(const p of placements)delete p._displayOrder;
     const alphabet='EEEEEEEEAAAAAAIIIIIOOOONNNNRRRRTTTTSSSSLLLCCDDMPUFGHBVYWKXJQZ';
     for(let y=0;y<size;y++)for(let x=0;x<size;x++)if(!grid[y][x])grid[y][x]=alphabet[randInt(rng,0,alphabet.length-1)];
-    const o=wordSearchOptions(s);return {engineId:'wordsearch',title:'Maths Word Search',topicIds:[...new Set(placements.flatMap(x=>x.appTopics||[x.topic]))],grid,size,placements,mode:o.clueMode,difficulty:o.difficulty,yearText:yearText(s.minYear,s.maxYear),seed,options:o,directionMode:direction.mode,directionLabel:direction.label};
+    const o=wordSearchOptions(s);return {engineId:'wordsearch',title:'Maths Word Search',topicIds:[...new Set(placements.flatMap(x=>x.appTopics||[x.topic]))],grid,size,placements,mode:o.clueMode,difficulty:o.difficulty,yearText:yearText(s.minYear,s.maxYear),seed,options:o,directionMode:direction.mode,directionLabel:direction.label,directionTip:direction.tip,directionTipPdf:direction.pdfTip};
   }
   function generateWordSearch(settings,seed,customVocabulary=[]){
     const s=normalizeSettings(settings),rng=rngFromSeed(seed),available=vocabularyFor(s,customVocabulary);
@@ -418,6 +432,18 @@
     return !requireCross||crosses>0;
   }
   function placeCrosswordEntry(grid,item,x,y,dir){const word=normalizeTerm(item.term),dx=dir==='across'?1:0,dy=dir==='down'?1:0,cells=[];for(let i=0;i<word.length;i++){const xx=x+dx*i,yy=y+dy*i;grid[yy][xx].ch=word[i];grid[yy][xx].dirs.add(dir);cells.push([xx,yy]);}return {id:item.id,term:item.term,answer:word,clue:item.crosswordClue||item.definition,enumeration:answerEnumeration(item.term),definition:item.definition,source:item.source,topic:item.topic,appTopics:item.appTopics,x,y,dir,cells};}
+  function crosswordPlacementScore(grid,word,x,y,dir,entries){
+    const dx=dir==='across'?1:0,dy=dir==='down'?1:0;let crosses=0;for(let i=0;i<word.length;i++)if(grid[y+dy*i][x+dx*i].ch)crosses++;
+    const current=entries.flatMap(e=>e.cells),next=current.concat(Array.from({length:word.length},(_,i)=>[x+dx*i,y+dy*i]));
+    const xs=next.map(c=>c[0]),ys=next.map(c=>c[1]),width=Math.max(...xs)-Math.min(...xs)+1,height=Math.max(...ys)-Math.min(...ys)+1,area=width*height,skew=Math.abs(width-height);
+    // Crossings are the main quality signal. Compactness is a secondary tiebreaker.
+    return {crosses,area,skew,score:crosses*1000-area*2-skew*3};
+  }
+  function crosswordQuality(raw){
+    const counts=new Map();for(const e of raw.entries||[])for(const [x,y] of e.cells){const k=`${x}:${y}`;counts.set(k,(counts.get(k)||0)+1);}
+    const crossings=[...counts.values()].filter(v=>v>1).length,used=[...counts.keys()].map(k=>k.split(':').map(Number)),xs=used.map(c=>c[0]),ys=used.map(c=>c[1]),area=used.length?(Math.max(...xs)-Math.min(...xs)+1)*(Math.max(...ys)-Math.min(...ys)+1):Infinity;
+    return {entries:raw.entries?.length||0,crossings,area,score:(raw.entries?.length||0)*100000+crossings*1000-area};
+  }
   function crosswordAttempt(items,size,seed,target){
     const rng=rngFromSeed(seed),grid=emptyCrossword(size),entries=[];if(!items.length)return {grid,entries};
     const first=items.slice().sort((a,b)=>normalizeTerm(b.term).length-normalizeTerm(a.term).length)[0],fw=normalizeTerm(first.term),fx=Math.floor((size-fw.length)/2),fy=Math.floor(size/2);entries.push(placeCrosswordEntry(grid,first,fx,fy,'across'));
@@ -426,7 +452,10 @@
       for(let i=0;i<word.length;i++)for(let yy=0;yy<size;yy++)for(let xx=0;xx<size;xx++)if(grid[yy][xx].ch===word[i]){
         for(const dir of ['across','down']){if(grid[yy][xx].dirs.has(dir))continue;const x=xx-(dir==='across'?i:0),y=yy-(dir==='down'?i:0);if(canPlaceCrossword(grid,word,x,y,dir,true))candidates.push({x,y,dir});}
       }
-      if(candidates.length){const p=candidates[randInt(rng,0,candidates.length-1)];entries.push(placeCrosswordEntry(grid,item,p.x,p.y,p.dir));}
+      if(candidates.length){
+        const ranked=candidates.map(p=>({...p,...crosswordPlacementScore(grid,word,p.x,p.y,p.dir,entries)})).sort((a,b)=>b.score-a.score);
+        const bestScore=ranked[0].score,top=ranked.filter(p=>p.score===bestScore),p=top[randInt(rng,0,top.length-1)];entries.push(placeCrosswordEntry(grid,item,p.x,p.y,p.dir));
+      }
     }
     return {grid,entries};
   }
@@ -443,10 +472,10 @@
   }
   function generateCrossword(settings,seed,customVocabulary=[]){
     const s=normalizeSettings(settings),available=crosswordVocabularyFor(s,customVocabulary);if(available.length<4)return {engineId:'crossword',title:'Maths Crossword',error:'Not enough crossword vocabulary is available for this year/topic selection.'};
-    const size=crosswordGridSize(s),target=crosswordCount(s,available.length),rng=rngFromSeed(seed),candidatePool=shuffle(available,rng).slice(0,Math.min(36,available.length));let best=null;
-    for(let attempt=0;attempt<40;attempt++){const raw=crosswordAttempt(shuffle(candidatePool,rngFromSeed(`${seed}:order:${attempt}`)),size,`${seed}:cw:${attempt}`,target);if(!best||raw.entries.length>best.entries.length)best=raw;if(best.entries.length>=target)break;}
+    const size=crosswordGridSize(s),target=crosswordCount(s,available.length),rng=rngFromSeed(seed),candidatePool=shuffle(available,rng).slice(0,Math.min(40,available.length));let best=null,bestQ=null;
+    for(let attempt=0;attempt<64;attempt++){const raw=crosswordAttempt(shuffle(candidatePool,rngFromSeed(`${seed}:order:${attempt}`)),size,`${seed}:cw:${attempt}`,target),q=crosswordQuality(raw);if(!best||q.score>bestQ.score){best=raw;bestQ=q;}}
     if(!best||best.entries.length<4)return {engineId:'crossword',title:'Maths Crossword',error:'A connected crossword could not be built from this selection. Try a wider year/topic range or generate a new version.'};
-    const final=finaliseCrossword(best,size),o=crosswordOptions(s);return {engineId:'crossword',title:'Maths Crossword',topicIds:[...new Set(final.entries.flatMap(x=>x.appTopics||[x.topic]))],grid:final.grid,entries:final.entries,width:final.width,height:final.height,difficulty:o.difficulty,wordBank:crosswordWordBank(s),yearText:yearText(s.minYear,s.maxYear),seed,options:o};
+    const final=finaliseCrossword(best,size),o=crosswordOptions(s);return {engineId:'crossword',title:'Maths Crossword',topicIds:[...new Set(final.entries.flatMap(x=>x.appTopics||[x.topic]))],grid:final.grid,entries:final.entries,width:final.width,height:final.height,difficulty:o.difficulty,wordBank:crosswordWordBank(s),crossings:bestQ?.crossings||0,yearText:yearText(s.minYear,s.maxYear),seed,options:o};
   }
 
   function generateWorkedExample(engineId,settings,seed,customVocabulary=[]){
@@ -475,15 +504,27 @@
   }
 
   function generateSudoku(settings,seed){return generateMiniSudoku(settings,seed);}
-  function generateActivity(engineId,settings,seed,customVocabulary=[]){if(ARITH&&ARITH.DEFINITIONS&&ARITH.DEFINITIONS[engineId])return ARITH.generate(engineId,normalizeSettings(settings),seed);if(NUMLOGIC&&NUMLOGIC.DEFINITIONS&&NUMLOGIC.DEFINITIONS[engineId])return NUMLOGIC.generate(engineId,normalizeSettings(settings),seed);if(engineId==='pyramid')return generateNumberPyramid(settings,seed);if(engineId==='crossword')return generateCrossword(settings,seed,customVocabulary);if(engineId==='magic')return generateMagicSquare(settings,seed);if(engineId==='sudoku')return generateSudoku(settings,seed);return generateWordSearch(settings,seed,customVocabulary);}
+  function settingsWithDifficulty(settings,engineId,difficulty){const s=normalizeSettings(settings),copy=clone(s);copy.engineSettings[engineId]={...copy.engineSettings[engineId],difficulty};return copy;}
+  function weightedDifficultyPlan(settings,engineId,count,seed='mix'){
+    const s=normalizeSettings(settings),o=s.engineSettings[engineId]||{},allowed=['easy','standard','challenge'];if(o.difficulty!=='mixed')return Array(count).fill(allowed.includes(o.difficulty)?o.difficulty:'standard');
+    const w=normalizeDifficultyWeights(o.difficultyWeights),exact=allowed.map(k=>count*w[k]/100),counts=exact.map(Math.floor);let left=count-counts.reduce((a,b)=>a+b,0);
+    const order=exact.map((v,i)=>({i,r:v-Math.floor(v)})).sort((a,b)=>b.r-a.r||a.i-b.i);for(let i=0;i<left;i++)counts[order[i%order.length].i]++;
+    const plan=[];allowed.forEach((d,i)=>{for(let n=0;n<counts[i];n++)plan.push(d);});return shuffle(plan,rngFromSeed(`${seed}:${engineId}:difficulty-mix`));
+  }
+  function resolveSingleDifficulty(settings,engineId,seed){const plan=weightedDifficultyPlan(settings,engineId,100,seed);return plan[Math.floor(rngFromSeed(`${seed}:single-difficulty`)()*plan.length)]||'standard';}
+  function generateActivity(engineId,settings,seed,customVocabulary=[]){
+    let s=normalizeSettings(settings);if(s.engineSettings[engineId]?.difficulty==='mixed')s=settingsWithDifficulty(s,engineId,resolveSingleDifficulty(s,engineId,seed));
+    if(ARITH&&ARITH.DEFINITIONS&&ARITH.DEFINITIONS[engineId])return ARITH.generate(engineId,s,seed);if(NUMLOGIC&&NUMLOGIC.DEFINITIONS&&NUMLOGIC.DEFINITIONS[engineId])return NUMLOGIC.generate(engineId,s,seed);if(engineId==='pyramid')return generateNumberPyramid(s,seed);if(engineId==='crossword')return generateCrossword(s,seed,customVocabulary);if(engineId==='magic')return generateMagicSquare(s,seed);if(engineId==='sudoku')return generateSudoku(s,seed);return generateWordSearch(s,seed,customVocabulary);}
   function generatePack(settings,seed='games',customVocabulary=[]){
-    const s=normalizeSettings(settings),selected=selectedCompatibleEngines(s),sheets=[];let globalIndex=0;
+    const s=normalizeSettings(settings),selected=selectedCompatibleEngines(s),sheets=[];
     if(!selected.length)return {version:VERSION,seed,settings:s,workedExamples:[],sheets:[]};
-    for(let sheetIndex=0;sheetIndex<s.sheets;sheetIndex++){const activities=[];for(let i=0;i<s.activitiesPerSheet;i++,globalIndex++){const engineId=chooseEngine(s,globalIndex,seed),activitySeed=`${seed}:S${sheetIndex+1}:A${i+1}:${engineId}`;activities.push(generateActivity(engineId,s,activitySeed,customVocabulary));}sheets.push({index:sheetIndex+1,activities});}
-    const workedExamples=s.workedExamples==='front'?selected.map((id,i)=>generateWorkedExample(id,s,`${seed}:worked:${i}:${id}`,customVocabulary)).filter(Boolean):[];
+    const total=s.sheets*s.activitiesPerSheet,enginePlan=Array.from({length:total},(_,i)=>chooseEngine(s,i,seed)),counts={},seen={},difficultyPlans={};
+    enginePlan.forEach(id=>counts[id]=(counts[id]||0)+1);for(const [id,count] of Object.entries(counts))difficultyPlans[id]=weightedDifficultyPlan(s,id,count,seed);
+    let globalIndex=0;for(let sheetIndex=0;sheetIndex<s.sheets;sheetIndex++){const activities=[];for(let i=0;i<s.activitiesPerSheet;i++,globalIndex++){const engineId=enginePlan[globalIndex],activitySeed=`${seed}:S${sheetIndex+1}:A${i+1}:${engineId}`,pos=seen[engineId]||0,difficulty=difficultyPlans[engineId]?.[pos]||'standard';seen[engineId]=pos+1;activities.push(generateActivity(engineId,settingsWithDifficulty(s,engineId,difficulty),activitySeed,customVocabulary));}sheets.push({index:sheetIndex+1,activities});}
+    const workedExamples=s.workedExamples==='front'?selected.map((id,i)=>{const ws=s.engineSettings[id]?.difficulty==='mixed'?settingsWithDifficulty(s,id,'standard'):s;return generateWorkedExample(id,ws,`${seed}:worked:${i}:${id}`,customVocabulary);}).filter(Boolean):[];
     return {version:VERSION,seed,settings:s,workedExamples,sheets};
   }
 
-  const api={VERSION,TOPICS,ENGINES,ARITH,NUMLOGIC,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateSudoku,generateMiniSudoku,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows,_countSudokuSolutions:countSudokuSolutions,_sudokuBoxShape:sudokuBoxShape};
+  const api={VERSION,TOPICS,ENGINES,ARITH,NUMLOGIC,VOCABULARY,VOCABULARY_METADATA,normalizeSettings,normalizeEngineSettings,normalizeDifficultyWeights,weightedDifficultyPlan,settingsWithDifficulty,compatibleEngines,selectedCompatibleEngines,sanitizeCustomVocabulary,vocabularyCountForTopic,vocabularyFor,crosswordVocabularyFor,generateWordSearch,replaceWordSearchEntry,generateNumberPyramid,generateCrossword,generateMagicSquare,generateSudoku,generateMiniSudoku,generateWorkedExample,generateActivity,generatePack,normalizeTerm,puzzleTermSuitable,answerEnumeration,needsEnumeration,formatNumber,rngFromSeed,clone,wordSearchDirections,_matrixRank:matrixRank,_pyramidCoefficientRows:pyramidCoefficientRows,_isMagicGrid:isMagicGrid,_magicLineSums:magicLineSums,_magicEquationRows:magicEquationRows,_countSudokuSolutions:countSudokuSolutions,_sudokuBoxShape:sudokuBoxShape};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;global.TT99Games=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -1,5 +1,5 @@
 /* 99 Club Studio · Maths Games & Puzzles PDF exporter
- * v1.5.0 — numeric logic renderers + 99 Club style personalisation.
+ * v1.6.0 — mixed-difficulty packs + vocabulary layout refinements.
  */
 (function(global){
   'use strict';
@@ -71,8 +71,9 @@
   function drawWordSearch(page,a,answers,x,y,w,h,index){
     const top=activityFrame(page,x,y,w,h,index,a);
     const instruction=a.mode==='definitions'?'Work out each maths word from its definition, then find it in the grid.':'Read each maths word and its meaning, then find the word in the grid.';
-    drawWrapped(page,x+12,top, instruction,w-24,7,{color:MUTED,maxLines:2});
-    const bodyY=top+24, bodyH=h-(bodyY-y)-12, leftW=Math.min(w*.54,bodyH), gap=14, rightX=x+12+leftW+gap, rightW=w-24-leftW-gap;
+    drawWrapped(page,x+12,top,instruction,w-24,7,{color:MUTED,maxLines:1});
+    drawWrapped(page,x+12,top+12,a.directionTipPdf||a.directionLabel||'',w-24,6.2,{bold:true,color:TEAL,maxLines:1});
+    const bodyY=top+28, bodyH=h-(bodyY-y)-12, leftW=Math.min(w*.54,bodyH), gap=14, rightX=x+12+leftW+gap, rightW=w-24-leftW-gap;
     const gridX=x+12, gridY=bodyY, size=a.size||a.grid?.length||12, cell=Math.min(leftW/size,bodyH/size), gridW=cell*size;
     const answerCells=new Set((a.placements||[]).flatMap(p=>(p.cells||[]).map(([cx,cy])=>`${cx}:${cy}`)));
     for(let gy=0;gy<size;gy++)for(let gx=0;gx<size;gx++){
@@ -103,8 +104,8 @@
   function drawCrossword(page,a,answers,x,y,w,h,index){
     const top=activityFrame(page,x,y,w,h,index,a);
     drawWrapped(page,x+12,top,'Use the definitions to complete the crossword. Ignore spaces and punctuation in answers.',w-24,7,{color:MUTED,maxLines:2});
-    const bodyY=top+28,bodyH=h-(bodyY-y)-12,gap=16,leftMax=w*.55,cols=a.width||a.grid?.[0]?.length||1,rows=a.height||a.grid?.length||1;
-    const cell=Math.min(leftMax/cols,bodyH/rows,30),gridW=cell*cols,gridH=cell*rows,gridX=x+12+(leftMax-gridW)/2,gridY=bodyY+14,rightX=x+12+leftMax+gap,rightW=w-24-leftMax-gap,starts=crosswordStarts(a);
+    const bodyY=top+28,bodyH=h-(bodyY-y)-12,gap=16,leftMax=w*.51,cols=a.width||a.grid?.[0]?.length||1,rows=a.height||a.grid?.length||1,gridAvailH=Math.max(24,bodyH-8);
+    const cell=Math.min((leftMax-4)/cols,gridAvailH/rows,30),gridW=cell*cols,gridH=cell*rows,gridX=x+12+(leftMax-gridW)/2,gridY=bodyY+4+(gridAvailH-gridH)/2,rightX=x+12+leftMax+gap,rightW=w-24-leftMax-gap,starts=crosswordStarts(a);
     // Freeform classroom criss-cross: draw only answer cells. Empty locations
     // remain plain white paper, avoiding heavy newspaper-style black blocks.
     for(let gy=0;gy<rows;gy++)for(let gx=0;gx<cols;gx++){
@@ -114,11 +115,12 @@
       const num=starts.get(`${gx}:${gy}`);if(num)page.text(cx+1.7,cy+4.8,String(num),Math.max(3.4,Math.min(5.2,cell*.24)),{bold:true,color:MUTED});
       if(answers)page.text(cx+cell/2,cy+cell*.69,ch,Math.max(5.5,Math.min(10,cell*.48)),{bold:true,color:INK,align:'center'});
     }
-    const across=(a.entries||[]).filter(e=>e.dir==='across'),down=(a.entries||[]).filter(e=>e.dir==='down');let cy=bodyY+3;
-    const fs=h<220?5.0:h<360?5.7:6.8,lh=fs*1.22;
-    const group=(label,items)=>{if(cy>y+h-18)return;page.text(rightX,cy,label,7,{bold:true,color:[46,87,86]});cy+=10;for(const e of items){const lines=wrap(`${e.number}. ${e.clue} ${e.enumeration||enumeration(e.term)}`,rightW,fs,false).slice(0,h<220?2:3);for(const line of lines){if(cy+lh>y+h-14)return;page.text(rightX,cy,line,fs,{color:DARK});cy+=lh;}cy+=1.2;}cy+=4;};
+    const across=(a.entries||[]).filter(e=>e.dir==='across'),down=(a.entries||[]).filter(e=>e.dir==='down'),maxY=y+h-14,bankText=a.wordBank&&!answers?`Word bank: ${(a.entries||[]).map(e=>e.term).sort().join(', ')}`:'';
+    const neededHeight=fs=>{const lh=fs*1.18;let total=0;for(const items of [across,down]){if(!items.length)continue;total+=10;for(const e of items)total+=wrap(`${e.number}. ${e.clue} ${e.enumeration||enumeration(e.term)}`,rightW,fs,false).length*lh+1;total+=3;}if(bankText)total+=wrap(bankText,rightW,fs,true).length*lh+2;return total;};
+    let fs=h<220?5.0:h<360?5.7:6.8;while(fs>4.1&&bodyY+3+neededHeight(fs)>maxY)fs-=.2;const lh=fs*1.18;let cy=bodyY+3;
+    const group=(label,items)=>{if(!items.length)return;page.text(rightX,cy,label,Math.max(5.6,fs+1),{bold:true,color:[46,87,86]});cy+=10;for(const e of items){const lines=wrap(`${e.number}. ${e.clue} ${e.enumeration||enumeration(e.term)}`,rightW,fs,false);for(const line of lines){page.text(rightX,cy,line,fs,{color:DARK});cy+=lh;}cy+=1;}cy+=3;};
     group('Across',across);group('Down',down);
-    if(a.wordBank&&!answers&&cy<y+h-18)drawWrapped(page,rightX,cy,`Word bank: ${(a.entries||[]).map(e=>e.term).sort().join(', ')}`,rightW,fs,{bold:true,color:TEAL,maxLines:3});
+    if(bankText)drawWrapped(page,rightX,cy,bankText,rightW,fs,{bold:true,color:TEAL,maxLines:99,lineHeight:lh});
   }
 
   function drawMagicGrid(page,grid,x,y,maxW,maxH,opts={}){

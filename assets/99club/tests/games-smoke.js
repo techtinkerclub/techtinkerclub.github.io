@@ -1,4 +1,4 @@
-/* 99 Club Studio v1.28.0 Maths Games & Puzzles smoke/regression test. */
+/* 99 Club Studio v1.29.1 Maths Games & Puzzles smoke/regression test. */
 'use strict';
 const fs=require('fs'),path=require('path');
 const ROOT=path.resolve(__dirname,'..'),REPO=path.resolve(ROOT,'../..');
@@ -6,7 +6,7 @@ const G=require(path.join(ROOT,'games-engine.js')),GPDF=require(path.join(ROOT,'
 function assert(ok,msg){if(!ok)throw new Error(msg);}const failures=[];function check(fn){try{fn();}catch(e){failures.push(e.stack||e.message);}}
 
 check(()=>{
-  assert(G.VERSION==='1.7.0','Unexpected games engine version');
+  assert(G.VERSION==='1.8.1','Unexpected games engine version');
   const expected=['wordsearch','pyramid','crossword','magic','sudoku','arithmagon','magicshape','maze','crossnumber','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance','kakuro','futoshiki','arithmeticcages','nonogram','numberpath'];assert(JSON.stringify(Object.keys(G.ENGINES))===JSON.stringify(expected),'Expected the complete 23-engine Games library');
   assert(G.VOCABULARY.length===591,'Curated vocabulary database should expose 591 entries');
   for(const id of Object.keys(G.ENGINES)){const e=G.ENGINES[id];assert(e.answerSheetSupport&&e.workedExampleSupport,`${id}: common output contract missing`);assert(e.needsDice===false&&e.needsPartner===false,`${id}: first games remain print → pencil → solve`);assert(e.defaultSettings&&Array.isArray(e.settingsSchema),`${id}: per-game settings missing`);}
@@ -20,7 +20,7 @@ check(()=>{
   const directionCases={straight:new Set(['1,0','0,1']),diagonal:new Set(['1,0','0,1','1,1','-1,1']),all:new Set(['1,0','-1,0','0,1','0,-1','1,1','-1,1','1,-1','-1,-1'])};
   for(const [mode,allowed] of Object.entries(directionCases)){
     const a=G.generateWordSearch({minYear:4,maxYear:4,topics:['fractions'],engineSettings:{wordsearch:{difficulty:'standard',directionMode:mode,wordCount:'10',gridSize:'16'}}},`dir-${mode}`);
-    assert(!a.error,`wordsearch ${mode}: ${a.error}`);assert(a.placements.length>=6,`wordsearch ${mode}: too few placements`);for(const p of a.placements)assert(allowed.has(`${p.dx},${p.dy}`),`${mode}: illegal direction ${p.dx},${p.dy}`);
+    assert(!a.error,`wordsearch ${mode}: ${a.error}`);assert(a.placements.length>=6,`wordsearch ${mode}: too few placements`);assert(a.directionTip&&a.directionTip.includes('Search directions:'),`${mode}: child-facing direction tip missing`);if(mode==='all')assert(a.directionTip.includes('backwards'),`${mode}: backwards warning missing`);else assert(a.directionTip.includes('No backwards'),`${mode}: no-backwards rule missing`);for(const p of a.placements)assert(allowed.has(`${p.dx},${p.dy}`),`${mode}: illegal direction ${p.dx},${p.dy}`);
   }
 });
 
@@ -45,7 +45,7 @@ check(()=>{
 check(()=>{
   for(const [topic,meta] of Object.entries(G.TOPICS)){
     const year=meta.years[Math.floor(meta.years.length/2)],settings={minYear:year,maxYear:year,topics:[topic],engineSettings:{crossword:{difficulty:'standard',gridSize:'17',wordCount:'8'}}};const a=G.generateCrossword(settings,`cw-${topic}-${year}`),b=G.generateCrossword(settings,`cw-${topic}-${year}`);assert(!a.error,`${topic} crossword: ${a.error}`);assert(JSON.stringify(a)===JSON.stringify(b),`${topic} crossword nondeterministic`);assert(a.entries.length>=4,`${topic} crossword too small`);for(const e of a.entries)e.cells.forEach(([x,y],i)=>assert(a.grid[y][x]===e.answer[i],`${topic}: crossword cell mismatch for ${e.term}`));
-    const used=a.entries.flatMap(e=>e.cells),xs=used.map(c=>c[0]),ys=used.map(c=>c[1]);assert(Math.min(...xs)===0&&Math.min(...ys)===0&&Math.max(...xs)===a.width-1&&Math.max(...ys)===a.height-1,`${topic}: crossword footprint should trim exactly to occupied cells`);
+    const used=a.entries.flatMap(e=>e.cells),xs=used.map(c=>c[0]),ys=used.map(c=>c[1]),counts=new Map();for(const [x,y] of used){const k=`${x}:${y}`;counts.set(k,(counts.get(k)||0)+1);}const crossings=[...counts.values()].filter(v=>v>1).length;assert(Math.min(...xs)===0&&Math.min(...ys)===0&&Math.max(...xs)===a.width-1&&Math.max(...ys)===a.height-1,`${topic}: crossword footprint should trim exactly to occupied cells`);assert(crossings>=a.entries.length-1,`${topic}: crossword should provide a useful connected network of crossing letters`);
   }
 });
 
@@ -103,6 +103,19 @@ check(()=>{
 });
 
 check(()=>{
+  const weights={easy:20,standard:50,challenge:30};
+  for(const id of ['wordsearch','crossword','pyramid','magic','sudoku','arithmagon','kakuro']){
+    const normal=G.normalizeSettings({minYear:4,maxYear:6,topics:['calculation'],engineSettings:{[id]:{difficulty:'mixed',difficultyWeights:weights}}});
+    assert(normal.engineSettings[id].difficulty==='mixed',`${id}: mixed difficulty profile was lost`);assert(JSON.stringify(normal.engineSettings[id].difficultyWeights)===JSON.stringify(weights),`${id}: mixed weights changed unexpectedly`);
+    const plan=G.weightedDifficultyPlan(normal,id,20,'weights-test'),counts=plan.reduce((o,d)=>(o[d]=(o[d]||0)+1,o),{});assert(counts.easy===4&&counts.standard===10&&counts.challenge===6,`${id}: weighted count allocation incorrect`);
+  }
+  const pack=G.generatePack({minYear:4,maxYear:4,topics:['calculation'],sheets:5,activitiesPerSheet:2,selectedEngines:['crossword'],engineSettings:{crossword:{difficulty:'mixed',difficultyWeights:{easy:30,standard:50,challenge:20}}}},'mixed-crossword-pack'),counts=pack.sheets.flatMap(s=>s.activities).reduce((o,a)=>(o[a.difficulty]=(o[a.difficulty]||0)+1,o),{});
+  assert(counts.easy===3&&counts.standard===5&&counts.challenge===2,'Crossword mixed pack should allocate exact 30/50/20 counts across 10 puzzles');
+  const twentySettings=G.normalizeSettings({minYear:4,maxYear:4,topics:['calculation'],sheets:10,activitiesPerSheet:2,selectedEngines:['crossword'],engineSettings:{crossword:{difficulty:'mixed',difficultyWeights:{easy:25,standard:50,challenge:25}}}}),twentyPack=G.generatePack(twentySettings,'mixed-crossword-20'),twentyCounts=twentyPack.sheets.flatMap(s=>s.activities).reduce((o,a)=>(o[a.difficulty]=(o[a.difficulty]||0)+1,o),{});
+  assert(twentySettings.sheets===10,'Games settings should allow up to 10 sheets');assert(twentyPack.sheets.length===10&&twentyPack.sheets.flatMap(s=>s.activities).length===20,'Single-game packs should support 20 puzzles at 2 per sheet');assert(twentyCounts.easy===5&&twentyCounts.standard===10&&twentyCounts.challenge===5,'20-puzzle mixed pack should allocate exact 25/50/25 counts');
+});
+
+check(()=>{
   const custom=G.sanitizeCustomVocabulary([{topic:'fractions',term:'My special term',definition:'A teacher-created definition.',minYear:4,maxYear:6},{topic:'fractions',term:'My special term',definition:'Duplicate.',minYear:4,maxYear:6}]);assert(custom.length===1&&custom[0].source==='mine','Custom vocabulary dedupe/source failed');const pool=G.vocabularyFor({minYear:4,maxYear:6,topics:['fractions'],engineSettings:{wordsearch:{difficulty:'standard'}}},custom);assert(pool.some(x=>x.source==='built-in')&&pool.some(x=>x.source==='mine'),'Vocabulary provider should distinguish built-in and My vocabulary');
   const rejected=G.sanitizeCustomVocabulary([{topic:'geometry',term:'3-D shape',definition:'A solid shape.',minYear:1,maxYear:6},{topic:'measurement',term:'24-hour clock',definition:'A clock notation.',minYear:3,maxYear:6}]);assert(rejected.length===0,'Numeral-bearing custom vocabulary should be rejected for letter-grid games');
 });
@@ -150,7 +163,7 @@ check(()=>{
   assert(/permalink:\s*\/tools\/99-club\/games\//.test(page),'Games page permalink missing');assert(page.includes('/assets/99club/games-vocabulary.js')&&page.includes('/assets/99club/games-arithmetic.js')&&page.includes('/assets/99club/games-engine.js')&&page.includes('/assets/99club/simple-pdf.js')&&page.includes('/assets/99club/games-pdf.js')&&page.includes('/assets/99club/games-app.js'),'Games page asset stack incomplete');assert(main.includes('/tools/99-club/games/'),'Main 99 Club hero should link Games');
   assert(!/class=\"black\"/.test(ui),'Crossword browser renderer must not create blocked cells');
   const pdf=fs.readFileSync(path.join(ROOT,'games-pdf.js'),'utf8');assert(pdf.includes('Freeform classroom criss-cross')&&!pdf.includes("fill:[64,88,93],stroke:[64,88,93]"),'Crossword PDF renderer must draw active cells only');
-  for(const phrase of ['Number patterns & structures','Arithmetic & calculation','Number logic & grids','Selected games','Clear all games','Personalise the pack','School name','Pack title','Date on sheet','Maths Crossword','Magic Squares','Check: is it a magic square?','Mixed Sudoku / Latin Square','Mixed variants','Spot &amp; fix the error','Transform the square','Word directions','Any direction incl. backwards','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
+  for(const phrase of ['Number patterns & structures','Arithmetic & calculation','Number logic & grids','Selected games','Clear all games','Personalise the pack','School name','Pack title','Date on sheet','Maths Crossword','Magic Squares','Check: is it a magic square?','Mixed Sudoku / Latin Square','Mixed variants','Spot &amp; fix the error','Transform the square','Word directions','Any direction incl. backwards','Weighted mix across generated puzzles','Difficulty mix','Worked examples','At front — one example for each selected game','data-replace-activity','data-replace-word','curated built-in entries','Pupil sheets PDF','Answer key PDF','Pupil sheets + answers'])assert(ui.includes(phrase),`Games UI missing requirement: ${phrase}`);
   assert(!ui.includes('Arithmetic Domino Chain</b>'),'Domino chain should not be rendered as a selectable one-player card');
   assert(!ui.includes('Find the magic total'),'Old find-total Magic Square mode should not remain in the UI');
   assert(!ui.includes('numberPatternLabel'),'Internal Magic Square number-pattern metadata must not be rendered to pupils');

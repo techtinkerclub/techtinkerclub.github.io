@@ -71,14 +71,20 @@
 .tt99-engine-panel-head small{display:block;color:#7d9093;font-size:.56rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 .tt99-engine-panel-head h3{margin:1px 0 0;font-size:.88rem}
 .tt99-engine-panel-head button{appearance:none;display:grid;place-items:center;width:27px;height:27px;border:1px solid #d7e2e2;border-radius:8px;background:#fff;color:#65777b;font:700 1rem/1 system-ui;cursor:pointer}
-.tt99-engine-choice3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px}
-.tt99-engine-choice3 button{appearance:none;text-align:left;min-height:57px;padding:8px 9px;border:1.5px solid #d5e0e2;border-radius:9px;background:#fff;color:var(--tt99-ink);font:inherit;cursor:pointer}
-.tt99-engine-choice3 button.is-selected{border-color:var(--tt99-teal);background:var(--tt99-mint)}
-.tt99-engine-choice3 b,.tt99-engine-choice3 small{display:block}
-.tt99-engine-choice3 b{font-size:.69rem}
-.tt99-engine-choice3 small{margin-top:2px;color:#748488;font-size:.54rem;line-height:1.22}
+.tt99-engine-choice3,.tt99-engine-choice4{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px}
+.tt99-engine-choice4{grid-template-columns:repeat(4,1fr)}
+.tt99-engine-choice3 button,.tt99-engine-choice4 button{appearance:none;text-align:left;min-height:57px;padding:8px 9px;border:1.5px solid #d5e0e2;border-radius:9px;background:#fff;color:var(--tt99-ink);font:inherit;cursor:pointer}
+.tt99-engine-choice3 button.is-selected,.tt99-engine-choice4 button.is-selected{border-color:var(--tt99-teal);background:var(--tt99-mint)}
+.tt99-engine-choice3 b,.tt99-engine-choice3 small,.tt99-engine-choice4 b,.tt99-engine-choice4 small{display:block}
+.tt99-engine-choice3 b,.tt99-engine-choice4 b{font-size:.69rem}
+.tt99-engine-choice3 small,.tt99-engine-choice4 small{margin-top:2px;color:#748488;font-size:.54rem;line-height:1.22}
 .tt99-engine-panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}
 .tt99-engine-panel-grid .tt99-field:first-child:nth-last-child(3){grid-column:1/-1}
+
+.tt99-mixed-difficulty{margin-top:9px;padding:10px;border:1px solid #d7e5e3;border-radius:10px;background:#fff}
+.tt99-mixed-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.tt99-mixed-head strong{font-size:.65rem;color:#31575a}.tt99-mixed-head small{max-width:360px;color:#7a8c90;font-size:.52rem;line-height:1.3;text-align:right}
+.tt99-mixed-weights{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}.tt99-mixed-weights label{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:5px;padding:6px 7px;border:1px solid #e0e9e8;border-radius:8px;background:#fbfdfc}.tt99-mixed-weights label.is-derived{background:#f4f8f7}.tt99-mixed-weights span{font-size:.56rem;font-weight:800;color:#5d7478}.tt99-mixed-weights input{min-width:0;width:100%;padding:4px;border:1px solid #d2dedd;border-radius:6px;background:#fff;font:700 .62rem system-ui;color:#294b50;text-align:center}.tt99-mixed-weights input[readonly]{border-color:transparent;background:transparent}.tt99-mixed-weights b{font-size:.56rem;color:#6d8084}
+.tt99-mixed-presets{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.tt99-mixed-presets button{appearance:none;border:1px solid #d4e0df;border-radius:999px;background:#f8fbfa;color:#536d70;padding:4px 7px;font:700 .5rem system-ui;cursor:pointer}.tt99-mixed-presets button:hover{border-color:#8ebdb6;background:#eef8f5}
 .tt99-field small{display:block;margin-top:4px;color:#819095;font-size:.56rem;line-height:1.3}
 .tt99-word-pairs{display:flex;flex-direction:column;gap:4px}
 .tt99-word-pairs>div{padding:4px 6px;border-left:2px solid #b9dcd7;background:#f8fbfa}
@@ -92,10 +98,10 @@
 .tt99-game-activities.count-3 .tt99-word-pairs span{font-size:clamp(3.7px,.43vw,5.5px)}
 @media(max-width:720px){
   .tt99-engine-library{grid-template-columns:1fr}
-  .tt99-engine-choice3{grid-template-columns:1fr 1fr 1fr}
+  .tt99-engine-choice3{grid-template-columns:1fr 1fr 1fr}.tt99-engine-choice4{grid-template-columns:1fr 1fr}
 }
 @media(max-width:470px){
-  .tt99-engine-choice3,.tt99-engine-panel-grid{grid-template-columns:1fr}
+  .tt99-engine-choice3,.tt99-engine-choice4,.tt99-engine-panel-grid{grid-template-columns:1fr}
   .tt99-engine-panel-grid .tt99-field:first-child:nth-last-child(3){grid-column:auto}
 }
 @media print{
@@ -119,6 +125,7 @@
 .tt99-word-pairs>div:hover .tt99-replace-word,.tt99-word-clues li:hover .tt99-replace-word{opacity:1}
 .tt99-word-clues li{position:relative;padding-right:23px}
 .tt99-word-clues li>.tt99-replace-word{position:absolute;right:0;top:-2px}
+.tt99-word-direction-tip{margin:2px 0 6px!important;color:#496a6e!important;font-size:clamp(5px,.54vw,7px)!important;font-weight:800;line-height:1.2}
 
 .tt99-crossword-layout{display:grid;grid-template-columns:minmax(160px,.9fr) minmax(190px,1.1fr);gap:12px;align-items:start;height:calc(100% - 58px)}
 .tt99-crossword-grid{display:grid;grid-template-columns:repeat(var(--cw),1fr);aspect-ratio:1;border:1.5px solid #49676c;background:#49676c;gap:1px;max-width:100%;max-height:100%;justify-self:center}
@@ -155,9 +162,9 @@
 @media print{
   .tt99-preview-replace,.tt99-preview-edit-hint{display:none!important}
   .tt99-crossword-grid i{font-size:4.8pt}.tt99-crossword-grid b{font-size:7pt}.tt99-crossword-clue-group h4{font-size:7pt}.tt99-crossword-clue-group li,.tt99-crossword-bank{font-size:5.8pt}
-  .tt99-game-activities.count-1 .tt99-crossword-grid{width:min(100%,92mm)}
-  .tt99-game-activities.count-2 .tt99-crossword-grid{width:min(100%,69mm)}
-  .tt99-game-activities.count-3 .tt99-crossword-grid{width:min(100%,48mm)}
+  .tt99-game-activities.count-1 .tt99-crossword-grid{max-width:92mm}
+  .tt99-game-activities.count-2 .tt99-crossword-grid{max-width:69mm}
+  .tt99-game-activities.count-3 .tt99-crossword-grid{max-width:48mm}
   .tt99-worked-page .tt99-worked-grid{height:246mm}.tt99-worked-example .tt99-word-grid.worked span{font-size:7pt}
 }
 
@@ -170,18 +177,25 @@
 
 /* A crossword is usually rectangular after trimming. Give the grid a real
    width and row definition instead of allowing CSS Grid to shrink to min-content. */
+.tt99-crossword-layout{min-height:0;overflow:hidden}
 .tt99-crossword-grid{
-  width:100%;
-  max-width:430px;
+  width:auto;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  min-width:0;
+  min-height:0;
   grid-template-rows:repeat(var(--ch),1fr);
   aspect-ratio:var(--cw) / var(--ch);
-  align-self:start;
+  align-self:stretch;
+  justify-self:center;
 }
+.tt99-crossword-clues{max-height:100%;overflow:hidden}
 .tt99-crossword-grid>span{aspect-ratio:1;border:.7px solid #49676c}
 .tt99-crossword-grid>span.open{border:.7px solid #49676c}
 .tt99-crossword-grid>span.black{border:.7px solid #40585d;background:#40585d}
 .tt99-game-activities.count-1 .tt99-crossword-layout{grid-template-columns:minmax(260px,1.05fr) minmax(250px,.95fr);gap:18px}
-.tt99-game-activities.count-1 .tt99-crossword-grid{width:min(100%,440px)}
+.tt99-game-activities.count-1 .tt99-crossword-grid{max-width:440px}
 .tt99-game-activities.count-1 .tt99-crossword-clue-group h4{font-size:clamp(7px,.78vw,10px)}
 .tt99-game-activities.count-1 .tt99-crossword-clue-group li{font-size:clamp(6px,.63vw,8.5px);line-height:1.28}
 .tt99-game-activities.count-2 .tt99-crossword-grid{width:min(100%,330px)}
@@ -473,6 +487,7 @@
 .tt99-games-empty-preview span{margin-top:5px;max-width:430px;font-size:.72rem;line-height:1.45}
 
 @media(max-width:720px){
+  .tt99-mixed-weights{grid-template-columns:1fr}.tt99-mixed-head{display:block}.tt99-mixed-head small{display:block;margin-top:3px;text-align:left}
   .tt99-game-category-head{grid-template-columns:1fr}.tt99-category-actions{padding:0 10px 9px 35px}.tt99-game-category-toggle{grid-template-columns:18px minmax(0,1fr)}.tt99-game-category-toggle em{grid-column:2;margin-top:2px}
   .tt99-selected-engine{grid-template-columns:1fr}.tt99-selected-engine>div:last-child{justify-content:flex-end}
   .tt99-game-paper-header{grid-template-columns:auto minmax(0,1fr)}.tt99-game-name-line{grid-column:1/-1;text-align:right}
@@ -482,3 +497,16 @@
   .tt99-games-empty-preview{display:none!important}
 }
 .tt99-game-paper-identity>span{text-transform:none!important;letter-spacing:0!important}
+
+/* v1.28.1 — final crossword containment overrides.
+   Crossword footprint must stay inside each activity regardless of aspect ratio. */
+.tt99-crossword-layout{min-height:0!important;overflow:hidden!important}
+.tt99-crossword-grid{width:auto!important;height:100%!important;max-width:100%!important;max-height:100%!important;min-width:0!important;min-height:0!important;align-self:stretch!important;justify-self:center!important}
+.tt99-game-activities.count-1 .tt99-crossword-grid{max-width:min(100%,440px)!important}
+.tt99-game-activities.count-2 .tt99-crossword-grid{max-width:min(100%,330px)!important}
+.tt99-game-activities.count-3 .tt99-crossword-grid{max-width:min(100%,245px)!important}
+@media print{
+  .tt99-game-activities.count-1 .tt99-crossword-grid{max-width:92mm!important}
+  .tt99-game-activities.count-2 .tt99-crossword-grid{max-width:69mm!important}
+  .tt99-game-activities.count-3 .tt99-crossword-grid{max-width:48mm!important}
+}
