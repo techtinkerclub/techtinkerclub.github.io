@@ -1,6 +1,6 @@
-/* 99 Club Studio · Games pack mode v1.1.0
- * Adds exact activity counts and a deterministic random-compatible pack mode
- * without changing the individual game engines.
+/* 99 Club Studio · Games pack mode v1.2.0
+ * Adds exact activity counts and deterministic random-compatible packs.
+ * Random packs can use one fixed difficulty or a quota-based mixed profile.
  */
 (function(global){
   'use strict';
@@ -11,7 +11,10 @@
   const STORAGE_MODE='tt99-games-pack-mode-v1';
   const STORAGE_COUNT='tt99-games-activity-count-v1';
   const STORAGE_DIFFICULTY='tt99-games-random-difficulty-v1';
-  const DIFFICULTIES=['easy','standard','challenge'];
+  const STORAGE_WEIGHTS='tt99-games-random-difficulty-weights-v1';
+  const SINGLE_DIFFICULTIES=['easy','standard','challenge'];
+  const RANDOM_DIFFICULTIES=[...SINGLE_DIFFICULTIES,'mixed'];
+  const DEFAULT_WEIGHTS={easy:25,standard:50,challenge:25};
   const baseNormalize=G.normalizeSettings.bind(G);
   const baseSelected=G.selectedCompatibleEngines.bind(G);
   const baseCompatible=G.compatibleEngines.bind(G);
@@ -23,6 +26,20 @@
   function clampCount(value,fallback=4){
     const n=Math.round(Number(value));
     return Math.max(1,Math.min(40,Number.isFinite(n)?n:fallback));
+  }
+  function normalizeDifficultyWeights(raw={}){
+    const src=raw&&typeof raw==='object'?raw:{};
+    let vals=SINGLE_DIFFICULTIES.map(k=>Math.max(0,Number(src[k])||0));
+    if(vals.reduce((a,b)=>a+b,0)<=0)vals=SINGLE_DIFFICULTIES.map(k=>DEFAULT_WEIGHTS[k]);
+    const sum=vals.reduce((a,b)=>a+b,0),scaled=vals.map(v=>v*100/sum),whole=scaled.map(Math.floor);
+    let left=100-whole.reduce((a,b)=>a+b,0);
+    const order=scaled.map((v,i)=>({i,r:v-Math.floor(v)})).sort((a,b)=>b.r-a.r||a.i-b.i);
+    for(let i=0;i<left;i++)whole[order[i%order.length].i]++;
+    return {easy:whole[0],standard:whole[1],challenge:whole[2]};
+  }
+  function parseStoredWeights(){
+    const raw=storageGet(STORAGE_WEIGHTS);if(!raw)return null;
+    try{return normalizeDifficultyWeights(JSON.parse(raw));}catch(e){return null;}
   }
   function resolveMode(input={}){
     if(input._forcePackMode==='random')return 'random';
@@ -37,15 +54,19 @@
     return clampCount(stored??input.activityCount??legacy,legacy);
   }
   function resolveDifficulty(input={}){
-    if(DIFFICULTIES.includes(input._forceRandomDifficulty))return input._forceRandomDifficulty;
+    if(RANDOM_DIFFICULTIES.includes(input._forceRandomDifficulty))return input._forceRandomDifficulty;
     const stored=storageGet(STORAGE_DIFFICULTY);
-    if(DIFFICULTIES.includes(stored))return stored;
-    return DIFFICULTIES.includes(input.randomDifficulty)?input.randomDifficulty:'standard';
+    if(RANDOM_DIFFICULTIES.includes(stored))return stored;
+    return RANDOM_DIFFICULTIES.includes(input.randomDifficulty)?input.randomDifficulty:'standard';
+  }
+  function resolveDifficultyWeights(input={}){
+    if(input._forceRandomDifficultyWeights)return normalizeDifficultyWeights(input._forceRandomDifficultyWeights);
+    return parseStoredWeights()||normalizeDifficultyWeights(input.randomDifficultyWeights||DEFAULT_WEIGHTS);
   }
   function normalizeSettings(input={}){
     const base=baseNormalize(input);
     const activityCount=resolveCount(input,base);
-    return {...base,activityCount,packMode:resolveMode(input),randomDifficulty:resolveDifficulty(input),activitiesPerSheet:2,sheets:Math.ceil(activityCount/2)};
+    return {...base,activityCount,packMode:resolveMode(input),randomDifficulty:resolveDifficulty(input),randomDifficultyWeights:resolveDifficultyWeights(input),activitiesPerSheet:2,sheets:Math.ceil(activityCount/2)};
   }
   function manualSettings(settings){
     const s=normalizeSettings(settings);
@@ -60,6 +81,28 @@
     const out=items.slice(),rng=G.rngFromSeed(`${seed}:random-engine-bag`);
     for(let i=out.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[out[i],out[j]]=[out[j],out[i]];}
     return out;
+  }
+  function difficultyPlan(total,difficulty,weights,seed){
+    if(difficulty!=='mixed')return Array(total).fill(SINGLE_DIFFICULTIES.includes(difficulty)?difficulty:'standard');
+    const w=normalizeDifficultyWeights(weights),exact=SINGLE_DIFFICULTIES.map(k=>total*w[k]/100),counts=exact.map(Math.floor);
+    let left=total-counts.reduce((a,b)=>a+b,0);
+    const order=exact.map((v,i)=>({i,r:v-Math.floor(v)})).sort((a,b)=>b.r-a.r||a.i-b.i);
+    for(let i=0;i<left;i++)counts[order[i%order.length].i]++;
+    const plan=[];SINGLE_DIFFICULTIES.forEach((d,i)=>{for(let n=0;n<counts[i];n++)plan.push(d);});
+    const rng=G.rngFromSeed(`${seed}:random-difficulty-plan`);
+    for(let i=plan.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[plan[i],plan[j]]=[plan[j],plan[i]];}
+    return plan;
+  }
+  function supportedDifficulties(engineId){
+    const engine=G.ENGINES?.[engineId]||{},direct=Array.isArray(engine.difficultyOptions)?engine.difficultyOptions:[];
+    if(direct.length)return direct.filter(d=>SINGLE_DIFFICULTIES.includes(d));
+    const spec=(engine.settingsSchema||[]).find(s=>s.id==='difficulty'),opts=(spec?.options||[]).map(o=>typeof o==='string'?o:o?.value).filter(Boolean);
+    const filtered=opts.filter(d=>SINGLE_DIFFICULTIES.includes(d));return filtered.length?filtered:SINGLE_DIFFICULTIES.slice();
+  }
+  function closestSupportedDifficulty(engineId,difficulty){
+    const allowed=supportedDifficulties(engineId);if(allowed.includes(difficulty))return difficulty;
+    const rank={easy:0,standard:1,challenge:2},target=rank[difficulty]??1;
+    return allowed.slice().sort((a,b)=>Math.abs((rank[a]??1)-target)-Math.abs((rank[b]??1)-target)||(rank[a]??1)-(rank[b]??1))[0]||'standard';
   }
   function trimSheets(sheets,total){
     let remaining=total,index=1;const out=[];
@@ -86,6 +129,18 @@
     }
     return {...settings,engineSettings};
   }
+  function regenerateRandomDifficulties(sheets,settings,seed,plan,customVocabulary){
+    let k=0;const difficultyByEngine={};
+    const out=sheets.map((sheet,si)=>({...sheet,activities:(sheet.activities||[]).map((activity,ai)=>{
+      const engineId=activity?.engineId;if(!engineId)return activity;
+      const requested=plan[k++]||'standard',difficulty=closestSupportedDifficulty(engineId,requested);
+      if(!difficultyByEngine[engineId])difficultyByEngine[engineId]=difficulty;
+      if(typeof G.generateActivity!=='function')return {...activity,difficulty};
+      const activitySettings=applyRandomDifficulty(settings,[engineId],difficulty),activitySeed=`${seed}:S${si+1}:A${ai+1}:${engineId}`;
+      return G.generateActivity(engineId,activitySettings,activitySeed,customVocabulary);
+    })}));
+    return {sheets:out,difficultyByEngine};
+  }
   function generatePack(settings,seed='games',customVocabulary=[]){
     const s=normalizeSettings(settings);
     let requested={...s,activitiesPerSheet:2,sheets:Math.ceil(s.activityCount/2),workedExamples:'none',_forcePackMode:'manual',packMode:'manual'};
@@ -93,18 +148,27 @@
     if(s.packMode==='random'){
       const compatible=baseCompatible(requested);
       requested.selectedEngines=shuffleDeterministic(compatible,seed);
-      requested=applyRandomDifficulty(requested,compatible,s.randomDifficulty);
+      requested=applyRandomDifficulty(requested,compatible,s.randomDifficulty==='mixed'?'standard':s.randomDifficulty);
     }
 
     const raw=baseGeneratePack(requested,seed,customVocabulary);
-    const sheets=trimSheets(raw.sheets,s.activityCount);
+    let sheets=trimSheets(raw.sheets,s.activityCount),difficultyByEngine={};
+    const randomPlan=s.packMode==='random'?difficultyPlan(s.activityCount,s.randomDifficulty,s.randomDifficultyWeights,seed):[];
+    if(s.packMode==='random'&&s.randomDifficulty==='mixed'){
+      ({sheets,difficultyByEngine}=regenerateRandomDifficulties(sheets,requested,seed,randomPlan,customVocabulary));
+    }else if(s.packMode==='random'){
+      for(const id of uniqueUsedEngines(sheets))difficultyByEngine[id]=closestSupportedDifficulty(id,s.randomDifficulty);
+    }
     const usedIds=uniqueUsedEngines(sheets);
-    const exampleSettings=s.packMode==='random'?applyRandomDifficulty(s,usedIds,s.randomDifficulty):s;
     const workedExamples=s.workedExamples==='front'
-      ? usedIds.map((id,i)=>G.generateWorkedExample(id,exampleSettings,`${seed}:worked:${i}:${id}`,customVocabulary)).filter(Boolean)
+      ? usedIds.map((id,i)=>{
+          const difficulty=s.packMode==='random'?(difficultyByEngine[id]||closestSupportedDifficulty(id,s.randomDifficulty==='mixed'?'standard':s.randomDifficulty)):null;
+          const exampleSettings=s.packMode==='random'?applyRandomDifficulty(s,[id],difficulty):s;
+          return G.generateWorkedExample(id,exampleSettings,`${seed}:worked:${i}:${id}`,customVocabulary);
+        }).filter(Boolean)
       : [];
 
-    return {...raw,settings:s,sheets,workedExamples,activityCount:s.activityCount,packMode:s.packMode,randomDifficulty:s.randomDifficulty,usedEngineIds:usedIds};
+    return {...raw,settings:s,sheets,workedExamples,activityCount:s.activityCount,packMode:s.packMode,randomDifficulty:s.randomDifficulty,randomDifficultyWeights:s.randomDifficultyWeights,randomDifficultyPlan:randomPlan,usedEngineIds:usedIds};
   }
   function generateRandomPack(settings,seed='games',customVocabulary=[]){
     return generatePack({...settings,_forcePackMode:'random'},seed,customVocabulary);
@@ -115,7 +179,7 @@
     selectedCompatibleEngines,
     generatePack,
     generateRandomPack,
-    PACK_MODE:{version:'1.1.0',storageModeKey:STORAGE_MODE,storageCountKey:STORAGE_COUNT,storageDifficultyKey:STORAGE_DIFFICULTY,difficulties:DIFFICULTIES.slice(),maxActivities:40}
+    PACK_MODE:{version:'1.2.0',storageModeKey:STORAGE_MODE,storageCountKey:STORAGE_COUNT,storageDifficultyKey:STORAGE_DIFFICULTY,storageDifficultyWeightsKey:STORAGE_WEIGHTS,difficulties:RANDOM_DIFFICULTIES.slice(),singleDifficulties:SINGLE_DIFFICULTIES.slice(),defaultDifficultyWeights:{...DEFAULT_WEIGHTS},maxActivities:40}
   });
   G.__packModeV1=true;
 })(typeof globalThis!=='undefined'?globalThis:this);
