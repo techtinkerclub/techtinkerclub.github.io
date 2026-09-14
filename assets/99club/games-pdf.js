@@ -413,7 +413,27 @@
     const top=activityFrame(page,x,y,w,h,index,a);drawWrapped(page,x+12,top,a.instruction,w-24,7,{color:MUTED,maxLines:2});const n=a.size,bodyTop=top+27,availH=h-(bodyTop-y)-14,cell=Math.min((w-90)/n,availH/n,48),gw=cell*n,sx=x+w/2-gw/2,sy=bodyTop+Math.max(0,(availH-gw)/2);for(let r=0;r<n;r++)for(let c=0;c<n;c++){const cx=sx+c*cell,cy=sy+r*cell,given=!!a.displayGrid[r][c],answerFill=answers&&!given,v=answers?a.solutionGrid[r][c]:a.displayGrid[r][c];page.rect(cx,cy,cell,cell,{fill:answerFill?HIT:WHITE,stroke:[148,168,171],width:.55});if(v)page.text(cx+cell/2,cy+cell*.66,String(v),Math.min(10,cell*.32),{bold:answerFill,color:answerFill?TEAL:(v===1||v===n*n?TEAL:INK),align:'center'});}
   }
 
-  function drawNumberLogicActivity(page,a,answers,x,y,w,h,index){if(a.engineId==='kakuro')return drawKakuro(page,a,answers,x,y,w,h,index);if(a.engineId==='futoshiki')return drawFutoshiki(page,a,answers,x,y,w,h,index);if(a.engineId==='arithmeticcages')return drawArithmeticCages(page,a,answers,x,y,w,h,index);if(a.engineId==='nonogram')return drawNonogram(page,a,answers,x,y,w,h,index);if(a.engineId==='numberpath')return drawNumberPath(page,a,answers,x,y,w,h,index);}
+  function drawSumplete(page,a,answers,x,y,w,h,index){
+    const top=activityFrame(page,x,y,w,h,index,a);
+    drawWrapped(page,x+12,top,a.instruction,w-24,7,{color:MUTED,maxLines:2});
+    const n=a.size,bodyTop=top+31,availH=h-(bodyTop-y)-14,cell=Math.min((w-88)/(n+1),availH/(n+1),45),gw=cell*(n+1),sx=x+w/2-gw/2,sy=bodyTop+Math.max(0,(availH-gw)/2);
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+      const cx=sx+c*cell,cy=sy+r*cell,keep=!!a.solutionMask?.[r]?.[c],fill=answers&&keep?HIT:WHITE;
+      page.rect(cx,cy,cell,cell,{fill,stroke:[148,168,171],width:.6});
+      const v=formatNumber(a.valueGrid?.[r]?.[c]);
+      diagramText(page,cx+cell/2,cy+cell*.64,v,Math.max(6,Math.min(10,cell*.28)),{bold:answers&&keep,color:answers&&!keep?[145,155,158]:answers&&keep?TEAL:INK});
+      if(answers&&!keep){page.line(cx+cell*.18,cy+cell*.20,cx+cell*.82,cy+cell*.80,{color:[158,102,94],width:1});page.line(cx+cell*.82,cy+cell*.20,cx+cell*.18,cy+cell*.80,{color:[158,102,94],width:1});}
+    }
+    for(let r=0;r<n;r++){
+      const cx=sx+n*cell,cy=sy+r*cell;page.rect(cx,cy,cell,cell,{fill:PALE,stroke:[111,150,146],width:.75});fitDiagramText(page,cx+cell/2,cy+cell*.64,formatNumber(a.rowTargets?.[r]),cell-5,Math.max(6,Math.min(10,cell*.27)),{bold:true,color:TEAL});
+    }
+    for(let c=0;c<n;c++){
+      const cx=sx+c*cell,cy=sy+n*cell;page.rect(cx,cy,cell,cell,{fill:PALE,stroke:[111,150,146],width:.75});fitDiagramText(page,cx+cell/2,cy+cell*.64,formatNumber(a.colTargets?.[c]),cell-5,Math.max(6,Math.min(10,cell*.27)),{bold:true,color:TEAL});
+    }
+    const cx=sx+n*cell,cy=sy+n*cell;page.rect(cx,cy,cell,cell,{fill:[232,243,241],stroke:[111,150,146],width:.75});diagramText(page,cx+cell/2,cy+cell*.61,'SUM',Math.max(4.5,Math.min(6.8,cell*.18)),{bold:true,color:DARK});
+  }
+
+  function drawNumberLogicActivity(page,a,answers,x,y,w,h,index){if(a.engineId==='kakuro')return drawKakuro(page,a,answers,x,y,w,h,index);if(a.engineId==='futoshiki')return drawFutoshiki(page,a,answers,x,y,w,h,index);if(a.engineId==='arithmeticcages')return drawArithmeticCages(page,a,answers,x,y,w,h,index);if(a.engineId==='nonogram')return drawNonogram(page,a,answers,x,y,w,h,index);if(a.engineId==='numberpath')return drawNumberPath(page,a,answers,x,y,w,h,index);if(a.engineId==='sumplete')return drawSumplete(page,a,answers,x,y,w,h,index);}
 
   function drawArithmeticActivity(page,a,answers,x,y,w,h,index){if(a.engineId==='arithmagon')return drawArithmagon(page,a,answers,x,y,w,h,index);if(a.engineId==='magicshape')return drawMagicShape(page,a,answers,x,y,w,h,index);if(a.engineId==='maze')return drawMaze(page,a,answers,x,y,w,h,index);if(a.engineId==='crossnumber')return drawCrossnumber(page,a,answers,x,y,w,h,index);if(a.engineId==='numbersearch')return drawNumberSearch(page,a,answers,x,y,w,h,index);if(a.engineId==='equationcrossgrid')return drawEquationCrossgrid(page,a,answers,x,y,w,h,index);if(a.engineId==='numbertrail')return drawNumberTrail(page,a,answers,x,y,w,h,index);if(a.engineId==='target')return drawTarget(page,a,answers,x,y,w,h,index);if(a.engineId==='brokencalc')return drawBrokenCalc(page,a,answers,x,y,w,h,index);if(a.engineId==='symbols')return drawSymbols(page,a,answers,x,y,w,h,index);if(a.engineId==='domino')return drawDomino(page,a,answers,x,y,w,h,index);if(a.engineId==='operationgrid')return drawOperationGrid(page,a,answers,x,y,w,h,index);if(a.engineId==='numberwheels')return drawNumberWheels(page,a,answers,x,y,w,h,index);if(a.engineId==='functionmachine')return drawFunctionMachine(page,a,answers,x,y,w,h,index);if(a.engineId==='balance')return drawBalance(page,a,answers,x,y,w,h,index);}
 
@@ -424,7 +444,7 @@
     if(a.engineId==='magic')return drawMagic(page,a,answers,x,y,w,h,index);
     if(a.engineId==='sudoku')return drawSudoku(page,a,answers,x,y,w,h,index);
     if(['arithmagon','magicshape','maze','crossnumber','numbersearch','equationcrossgrid','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance'].includes(a.engineId))return drawArithmeticActivity(page,a,answers,x,y,w,h,index);
-    if(['kakuro','futoshiki','arithmeticcages','nonogram','numberpath'].includes(a.engineId))return drawNumberLogicActivity(page,a,answers,x,y,w,h,index);
+    if(['kakuro','futoshiki','arithmeticcages','nonogram','numberpath','sumplete'].includes(a.engineId))return drawNumberLogicActivity(page,a,answers,x,y,w,h,index);
     return drawWordSearch(page,a,answers,x,y,w,h,index);
   }
 

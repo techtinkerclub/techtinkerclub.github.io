@@ -19,7 +19,7 @@
   const GAME_CATEGORIES=[
     {id:'vocabulary',label:'Vocabulary & language',description:'Words, definitions and mathematical terminology.',engines:['wordsearch','crossword']},
     {id:'patterns',label:'Number patterns & structures',description:'Number relationships, sequences and visual arithmetic structures.',engines:['pyramid','magic','arithmagon','magicshape','numbertrail','numberwheels']},
-    {id:'arithmetic',label:'Arithmetic & calculation',description:'Calculation, inverse reasoning and numerical problem solving.',engines:['maze','crossnumber','numbersearch','equationcrossgrid','target','brokencalc','operationgrid','kakuro','arithmeticcages']},
+    {id:'arithmetic',label:'Arithmetic & calculation',description:'Calculation, inverse reasoning and numerical problem solving.',engines:['maze','crossnumber','numbersearch','equationcrossgrid','target','brokencalc','operationgrid','kakuro','arithmeticcages','sumplete']},
     {id:'algebra',label:'Algebra & relationships',description:'Unknowns, functions and balancing relationships.',engines:['symbols','functionmachine','balance']},
     {id:'logic',label:'Number logic & grids',description:'Compact number-grid puzzles with short rules and validated solutions.',engines:['sudoku','futoshiki','nonogram','numberpath']}
   ];
@@ -324,7 +324,21 @@
 
   function renderNumberPath(a,answers,index,si,ai){const n=a.size,cells=a.solutionGrid.flatMap((row,r)=>row.map((v,c)=>{const shown=answers?v:a.displayGrid[r][c];const wasGiven=!!a.displayGrid[r][c],fill=answers&&!wasGiven;return `<span class="${wasGiven?'given':''} ${fill?'answer-fill':''}">${shown||''}</span>`;})).join('');return `<section class="tt99-game-activity tt99-numberpath">${activityReplaceButton(si,ai)}${logicHead(a,index)}<div class="tt99-numberpath-grid" style="--logic-n:${n}">${cells}</div>${answers?'<p class="tt99-logic-answer-note">Completed path shown above.</p>':''}</section>`;}
 
-  function renderNumberLogicActivity(a,answers,index,si,ai){if(a.engineId==='kakuro')return renderKakuro(a,answers,index,si,ai);if(a.engineId==='futoshiki')return renderFutoshiki(a,answers,index,si,ai);if(a.engineId==='arithmeticcages')return renderArithmeticCages(a,answers,index,si,ai);if(a.engineId==='nonogram')return renderNonogram(a,answers,index,si,ai);if(a.engineId==='numberpath')return renderNumberPath(a,answers,index,si,ai);return `<section class="tt99-game-activity">${activityReplaceButton(si,ai)}${logicHead(a,index)}</section>`;}
+  function renderSumplete(a,answers,index,si,ai){
+    const n=a.size,parts=[];
+    for(let r=0;r<n;r++){
+      for(let c=0;c<n;c++){
+        const keep=!!a.solutionMask?.[r]?.[c],cls=answers?(keep?'answer-keep':'answer-cross'):'';
+        parts.push(`<span class="value ${cls}">${esc(G.formatNumber(a.valueGrid?.[r]?.[c]))}</span>`);
+      }
+      parts.push(`<span class="target row-target" title="Row target">${esc(G.formatNumber(a.rowTargets?.[r]))}</span>`);
+    }
+    for(let c=0;c<n;c++)parts.push(`<span class="target col-target" title="Column target">${esc(G.formatNumber(a.colTargets?.[c]))}</span>`);
+    parts.push('<span class="corner">SUM</span>');
+    return `<section class="tt99-game-activity tt99-sumplete">${activityReplaceButton(si,ai)}${logicHead(a,index)}<div class="tt99-sumplete-grid" style="--sumplete-n:${n}">${parts.join('')}</div>${answers?'<p class="tt99-sumplete-key">Crossed numbers are removed; highlighted numbers are kept.</p>':'<p class="tt99-sumplete-key">Targets on the right are row sums; targets underneath are column sums.</p>'}</section>`;
+  }
+
+  function renderNumberLogicActivity(a,answers,index,si,ai){if(a.engineId==='kakuro')return renderKakuro(a,answers,index,si,ai);if(a.engineId==='futoshiki')return renderFutoshiki(a,answers,index,si,ai);if(a.engineId==='arithmeticcages')return renderArithmeticCages(a,answers,index,si,ai);if(a.engineId==='nonogram')return renderNonogram(a,answers,index,si,ai);if(a.engineId==='numberpath')return renderNumberPath(a,answers,index,si,ai);if(a.engineId==='sumplete')return renderSumplete(a,answers,index,si,ai);return `<section class="tt99-game-activity">${activityReplaceButton(si,ai)}${logicHead(a,index)}</section>`;}
 
   function renderArithmeticActivity(a,answers,index,si,ai){if(a.engineId==='arithmagon')return renderArithmagon(a,answers,index,si,ai);if(a.engineId==='magicshape')return renderMagicShape(a,answers,index,si,ai);if(a.engineId==='maze')return renderMaze(a,answers,index,si,ai);if(a.engineId==='crossnumber')return renderCrossnumber(a,answers,index,si,ai);if(a.engineId==='numbersearch')return renderNumberSearch(a,answers,index,si,ai);if(a.engineId==='equationcrossgrid')return renderEquationCrossgrid(a,answers,index,si,ai);if(a.engineId==='numbertrail')return renderNumberTrail(a,answers,index,si,ai);if(a.engineId==='target')return renderTarget(a,answers,index,si,ai);if(a.engineId==='brokencalc')return renderBrokenCalc(a,answers,index,si,ai);if(a.engineId==='symbols')return renderSymbols(a,answers,index,si,ai);if(a.engineId==='domino')return renderDomino(a,answers,index,si,ai);if(a.engineId==='operationgrid')return renderOperationGrid(a,answers,index,si,ai);if(a.engineId==='numberwheels')return renderNumberWheels(a,answers,index,si,ai);if(a.engineId==='functionmachine')return renderFunctionMachine(a,answers,index,si,ai);if(a.engineId==='balance')return renderBalance(a,answers,index,si,ai);return `<section class="tt99-game-activity">${activityReplaceButton(si,ai)}${arithmeticHead(a,index)}</section>`;}
 
