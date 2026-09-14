@@ -1,73 +1,69 @@
-# 99 Club Studio v1.30.4 — consolidated Number Patterns visual correction
+# 99 Club Studio v1.30.5 - direct-PDF diagram centring fix
 
-## Baseline verified against the online repository
+## Baseline
 
-This patch was built against the current `master` state of:
+This patch was built from and verified against the current online `master` state after v1.30.4.
 
-`techtinkerclub/techtinkerclub.github.io`
+Verified live blobs before patching:
 
-Verified live commit before patching:
+- `_pages/99-club-games.md`: `0bfb4f6a3feb3f20813220545d777d08f5fa8b0a`
+- `assets/99club/games-pdf.js`: `195ac365b91810c613731029cb75cdc775d8a364`
 
-`4c53012a280da102a147ac38ac471787ef25f8e3`
+Apply this patch at the repository root, replacing matching files.
 
-That commit contains the uploaded **v1.30.1 Number Patterns & Structures review patch**.
+## What it fixes
 
-Apply **v1.30.4 directly to that live state**. You do **not** need to apply the previously supplied local v1.30.2 or v1.30.3 ZIPs first; those were review builds and are superseded by this consolidated patch.
+This is deliberately a **PDF-only visual correction**. Browser preview geometry is not changed.
 
-## Fixes included
+### 1. Correct centring of numbers in circular PDF nodes
+The tiny direct-PDF writer uses a deliberately rough width estimate for general layout. That approximation treated `1` as narrower than the other digits, but Helvetica's digits all use the same 556-unit advance. As a result values such as `11`, `14`, `110` and `165` could be visibly shifted inside circles.
 
-### Arithmagons
-- Keeps the v1.30.1 sparse / non-crossing diagonal selection.
-- Restores an explicit operation sign on diagonal connections.
-- Moves perimeter operation signs to the outside of the polygon rather than into the working area.
-- Mirrors the same notation in direct PDF output.
+v1.30.5 adds diagram-specific Helvetica AFM width metrics and uses them when centring visual puzzle labels and values.
 
-### Magic Number Shapes
-- Retains the corrected v1.30.1 straight-line bow-tie topology and repeated-value guard.
-- Direct PDF output now uses circular nodes and preserved aspect ratio so the shape matches the browser visual language much more closely.
+This improves:
+- Rule Wheel inner/outer values;
+- Factor Pair Web centre values and capsule values;
+- Sum & Product Diamond values;
+- Arithmagon and Magic Number Shape circular values which use the shared PDF circle-node helper.
 
-### Factor Pair Webs
-- Keeps the clearer instruction and first-web starter pair introduced in v1.30.1.
-- Replaces disconnected factor boxes with one grouped capsule per spoke: `[ factor ] × [ factor ]`.
-- Moves capsules farther away from the centre circle.
-- Clips each spoke cleanly between the centre-circle boundary and the factor-pair capsule; no line runs through the answer area.
-- Centres the `FACTOR PAIRS` label and centre value as one balanced two-line block.
-- Uses the same geometry in browser preview and direct PDF output.
+### 2. Rule Wheels
+- PDF centre rule circle enlarged from 20 to 24 scale units.
+- inner/outer radii adjusted to preserve breathing room;
+- `RULE` and the actual rule are centred using the accurate diagram metrics;
+- long-ish rules are fitted against the usable circle width rather than the generic text estimate.
 
-### Sum & Product Diamonds
-- Keeps circular nodes and safe activity bounds.
-- Removes the optical shift caused by letter spacing on `PRODUCT` / `SUM`.
-- Explicitly centres both labels on the top/bottom node axis in the browser renderer.
-- Direct PDF labels remain centre-aligned with the matching nodes.
+### 3. Factor Pair Webs
+- `FACTOR PAIRS` and the centre number now use accurate horizontal centring;
+- values and multiplication signs inside each capsule use the same accurate centring;
+- the accepted v1.30.4 web geometry/spacing is otherwise unchanged.
 
-### PDF parity
-The direct Games PDF renderer now uses vector circles / rounded rectangles / dashed diagonals for the Number Patterns visual families instead of rectangular stand-ins and stretched geometry. This covers:
-- Arithmagons;
-- Magic Number Shapes;
-- Rule Wheels;
-- Factor Pair Webs;
-- Sum & Product Diamonds.
+### 4. Sum & Product Diamonds
+- `PRODUCT` and `SUM` now use accurate diagram centring instead of the generic PDF estimator;
+- circular values use the corrected shared node-centre helper.
 
 ## Files changed
-- `_pages/99-club-games.md` — cache-bust only for changed assets.
-- `assets/99club/games-app.js` — browser visual geometry / notation.
-- `assets/99club/games-pdf.js` — direct-PDF visual parity and matching geometry.
-- `assets/99club/games.css` — Factor Pair capsule styling and Diamond label centring.
-- `assets/99club/tests/games-v1301-review-smoke.js` — updates the earlier diagonal-sign expectation.
-- `assets/99club/tests/games-v1302-pdf-parity-smoke.js` — PDF parity regression.
-- `assets/99club/tests/games-v1304-number-structures-polish-smoke.js` — final layout regression.
 
-The arithmetic generator itself (`games-arithmetic.js`) is **not changed** because the current online v1.30.1 already contains the accepted sparse-diagonal, bow-tie and Factor Pair instruction/generation fixes.
+- `_pages/99-club-games.md` - advances only `games-pdf.js` cache version from 12 to 13.
+- `assets/99club/games-pdf.js` - direct-PDF diagram typography/geometry correction.
+- `assets/99club/tests/games-v1305-pdf-centering-smoke.js` - targeted regression guard.
 
 ## Regression boundary
+
 No intentional changes to:
-- public 99 Club fluency;
+- browser preview;
+- puzzle generation or answers;
+- Number Connections browser geometry;
 - Custom Worksheets / Angles;
-- vocabulary / crosswords;
+- vocabulary/crosswords;
 - Random Pack;
 - personalisation;
-- number-logic engines;
-- other arithmetic game generation.
+- unrelated Games engines.
 
-## Deployment
-Overlay this ZIP at the repository root and replace matching files. Then hard-refresh `/tools/99-club/games/` once.
+## After upload
+
+Hard-refresh the Games page once. Generate a PDF containing Rule Wheels and Number Connections, then check:
+
+1. `1`, `11`, `14`, `110`, `165`, etc. sit visually in the centre of circles;
+2. centre rules remain comfortably inside the Rule Wheel centre circle;
+3. `FACTOR PAIRS` and the centre value sit on the same visual axis;
+4. `PRODUCT` and `SUM` are centred over/under the diamond node axis.

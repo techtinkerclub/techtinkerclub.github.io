@@ -62,9 +62,36 @@
   function drawDashedLine(page,x1,y1,x2,y2,opts={}){
     if(!page?.c)return page.line(x1,y1,x2,y2,opts);const yy1=page.height-y1,yy2=page.height-y2,dash=opts.dash||[4,3];page.c.push(`${opts.color?pdfRgb(opts.color)+' RG ':''}${pdfN(opts.width||.7)} w [${dash.map(pdfN).join(' ')}] 0 d ${pdfN(x1)} ${pdfN(yy1)} m ${pdfN(x2)} ${pdfN(yy2)} l S [] 0 d`);
   }
+  // The tiny PDF writer intentionally uses a rough text-width estimator for
+  // general layout.  That is fine for paragraphs but not for diagram centres:
+  // Helvetica's digits are all 556 units wide, while the rough estimator treats
+  // '1' as unusually narrow.  Use standard Helvetica AFM widths for diagram
+  // labels/numbers so circles and axis labels are genuinely centred.
+  const HELV_BOLD_UPPER={A:722,B:722,C:722,D:722,E:667,F:611,G:778,H:722,I:278,J:556,K:722,L:611,M:833,N:722,O:778,P:667,Q:778,R:722,S:667,T:611,U:722,V:722,W:1000,X:722,Y:722,Z:667};
+  const HELV_UPPER={A:667,B:667,C:722,D:722,E:667,F:611,G:778,H:722,I:278,J:500,K:667,L:556,M:833,N:722,O:778,P:667,Q:778,R:722,S:667,T:611,U:722,V:667,W:944,X:667,Y:667,Z:611};
+  const HELV_BOLD_LOWER={a:556,b:611,c:556,d:611,e:556,f:333,g:611,h:611,i:278,j:278,k:556,l:278,m:889,n:611,o:611,p:611,q:611,r:389,s:556,t:333,u:611,v:556,w:778,x:556,y:556,z:500};
+  const HELV_LOWER={a:556,b:556,c:500,d:556,e:556,f:278,g:556,h:556,i:222,j:222,k:500,l:222,m:833,n:556,o:556,p:556,q:556,r:333,s:500,t:278,u:556,v:500,w:722,x:500,y:500,z:500};
+  function diagramGlyphWidth(ch,bold){
+    if(ch>='0'&&ch<='9')return 556;
+    if(ch===' ')return 278;
+    if(ch==='+'||ch==='-'||ch==='='||ch==='×')return 584;
+    if(ch==='.'||ch===','||ch===':'||ch===';')return 278;
+    if(ch==='/'||ch==='\\')return 278;
+    if(ch==='('||ch===')')return 333;
+    const upper=(bold?HELV_BOLD_UPPER:HELV_UPPER)[ch];if(upper)return upper;
+    const lower=(bold?HELV_BOLD_LOWER:HELV_LOWER)[ch];if(lower)return lower;
+    return bold?556:500;
+  }
+  function diagramTextWidth(text,size,bold=true){return [...clean(text)].reduce((sum,ch)=>sum+diagramGlyphWidth(ch,bold),0)*size/1000;}
+  function diagramText(page,cx,baseline,text,size,opts={}){
+    const value=clean(text),bold=!!opts.bold,w=diagramTextWidth(value,size,bold),o={...opts};delete o.align;page.text(cx-w/2,baseline,value,size,o);return w;
+  }
+  function fitDiagramText(page,cx,baseline,text,maxWidth,size,opts={}){
+    let fs=size;while(fs>4.2&&diagramTextWidth(text,fs,!!opts.bold)>maxWidth)fs-=.25;diagramText(page,cx,baseline,text,fs,opts);return fs;
+  }
   function drawCircleNode(page,cx,cy,text,r,opts={}){
     drawCircle(page,cx,cy,r,{fill:opts.fill||WHITE,stroke:opts.stroke||[92,119,124],width:opts.width||.8});
-    if(text!==null&&text!==undefined&&text!==''){const fs=opts.fontSize||Math.max(6,Math.min(12,r*.62));page.text(cx,cy+fs*.34,clean(text),fs,{bold:opts.bold!==false,color:opts.color||INK,align:'center'});}
+    if(text!==null&&text!==undefined&&text!==''){const fs=opts.fontSize||Math.max(6,Math.min(12,r*.62));diagramText(page,cx,cy+fs*.36,clean(text),fs,{bold:opts.bold!==false,color:opts.color||INK});}
   }
 
   function displayDate(value){if(!value)return '';const m=String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return clean(value);const months=['January','February','March','April','May','June','July','August','September','October','November','December'];return `${Number(m[3])} ${months[Number(m[2])-1]} ${m[1]}`;}
@@ -220,7 +247,7 @@
     const top=activityFrame(page,x,y,w,h,index,a);drawWrapped(page,x+12,top,a.instruction,w-24,7,{color:MUTED,maxLines:2});
     const coords=a.coords||[],links=a.links||[],corners=answers?a.corners:a.displayCorners,shownLinks=answers?links.map(l=>l.value):(a.displayLinks||links.map(l=>l.value)),leftW=w*.72,bodyY=top+31,bodyH=h-(bodyY-y)-14,availW=leftW-28,size=Math.max(120,Math.min(availW,bodyH)),bx=x+14+(availW-size)/2,by=bodyY+(bodyH-size)/2,scaleX=v=>bx+(v/100)*size,scaleY=v=>by+(v/100)*size,centre=coords.length?coords.reduce((p,c)=>[p[0]+c[0],p[1]+c[1]],[0,0]).map(v=>v/coords.length):[50,50],ccx=scaleX(centre[0]),ccy=scaleY(centre[1]),cornerR=Math.max(12,Math.min(22,size*.087)),edgeR=Math.max(10,Math.min(19,size*.076));
     links.forEach((link,i)=>{const p=coords[link.a],q=coords[link.b],px=scaleX(p[0]),py=scaleY(p[1]),qx=scaleX(q[0]),qy=scaleY(q[1]);if(link.diagonal)drawDashedLine(page,px,py,qx,qy,{color:[138,160,164],width:1.15,dash:[5,4]});else page.line(px,py,qx,qy,{color:[88,115,120],width:1.45});});
-    links.forEach((link,i)=>{const p=coords[link.a],q=coords[link.b],px=scaleX(p[0]),py=scaleY(p[1]),qx=scaleX(q[0]),qy=scaleY(q[1]),mx=(px+qx)/2,my=(py+qy)/2,wasBlank=(a.displayLinks||[])[i]==null,answerFill=answers&&wasBlank;drawCircleNode(page,mx,my,shownLinks[i],edgeR,{fill:answerFill?HIT:[238,248,246],stroke:[105,159,151],color:answerFill?TEAL:INK,bold:true,width:1.15,fontSize:Math.max(7,Math.min(11.5,edgeR*.62))});const [ox,oy]=arithmagonOpPoint(link,[px,py],[qx,qy],mx,my,ccx,ccy,edgeR);page.text(ox,oy+3,link.operation==='add'?'+':'x',Math.max(7,Math.min(10.5,edgeR*.58)),{bold:true,color:[104,129,134],align:'center'});});
+    links.forEach((link,i)=>{const p=coords[link.a],q=coords[link.b],px=scaleX(p[0]),py=scaleY(p[1]),qx=scaleX(q[0]),qy=scaleY(q[1]),mx=(px+qx)/2,my=(py+qy)/2,wasBlank=(a.displayLinks||[])[i]==null,answerFill=answers&&wasBlank;drawCircleNode(page,mx,my,shownLinks[i],edgeR,{fill:answerFill?HIT:[238,248,246],stroke:[105,159,151],color:answerFill?TEAL:INK,bold:true,width:1.15,fontSize:Math.max(7,Math.min(11.5,edgeR*.62))});const [ox,oy]=arithmagonOpPoint(link,[px,py],[qx,qy],mx,my,ccx,ccy,edgeR);diagramText(page,ox,oy+3,link.operation==='add'?'+':'x',Math.max(7,Math.min(10.5,edgeR*.58)),{bold:true,color:[104,129,134]});});
     coords.forEach((p,i)=>{const wasBlank=(a.displayCorners||[])[i]==null,answerFill=answers&&wasBlank;drawCircleNode(page,scaleX(p[0]),scaleY(p[1]),corners[i],cornerR,{fill:answerFill?HIT:WHITE,stroke:[78,107,112],color:answerFill?TEAL:INK,bold:true,width:1.35,fontSize:Math.max(8,Math.min(13,cornerR*.62))});});
     const sx=x+leftW+5,sw=w-leftW-18;page.text(sx,bodyY+12,'Rule',8,{bold:true,color:DARK});const rule=a.operationMode==='mixed_within'?'Use the + or x shown on each connection.':a.operation==='add'?'Each result = corner + corner.':'Each result = corner x corner.';drawWrapped(page,sx,bodyY+29,rule,sw,6.8,{color:TEAL,bold:true,maxLines:4});if(a.connections==='diagonals')drawWrapped(page,sx,bodyY+72,'Dashed diagonals are connections too.',sw,5.9,{color:MUTED,maxLines:3});
   }
@@ -277,7 +304,7 @@
     const top=activityFrame(page,x,y,w,h,index,a);drawWrapped(page,x+12,top,a.instruction,w-24,6.8,{color:MUTED,maxLines:2});const bodyY=top+31,bodyH=h-(bodyY-y)-10;
     if(a.style==='wheel'){
       const cols=a.items.length<=3?Math.min(3,a.items.length):2,rows=Math.ceil(a.items.length/cols),slotW=(w-30-(cols-1)*10)/cols,slotH=(bodyH-(rows-1)*10)/rows;
-      a.items.forEach((it,i)=>{const r=Math.floor(i/cols),c=i%cols,cx=x+15+c*(slotW+10)+slotW/2,cy=bodyY+r*(slotH+10)+slotH/2,size=Math.max(72,Math.min(slotW*.82,slotH*.92,145)),s=size/160,n=it.inputs.length,innerR=38*s,outerR=66*s,innerNode=10*s,outerNode=11*s,centreR=20*s;for(let j=0;j<n;j++){const ang=-Math.PI/2+j*2*Math.PI/n,ix=cx+Math.cos(ang)*innerR,iy=cy+Math.sin(ang)*innerR,ox=cx+Math.cos(ang)*outerR,oy=cy+Math.sin(ang)*outerR,inBlank=it.displayInputs?.[j]==null,outBlank=it.displayOutputs?.[j]==null,input=answers?it.inputs[j]:it.displayInputs?.[j],out=answers?it.outputs[j]:it.displayOutputs?.[j];page.line(ix,iy,ox,oy,{color:[177,194,196],width:.85});drawCircleNode(page,ix,iy,input,innerNode,{fill:answers&&inBlank?HIT:WHITE,stroke:[140,165,168],color:answers&&inBlank?TEAL:INK,width:.8,fontSize:Math.max(5.5,8*s)});drawCircleNode(page,ox,oy,out,outerNode,{fill:answers&&outBlank?HIT:(out==null?WHITE:[242,250,248]),stroke:[104,158,151],color:answers&&outBlank?TEAL:INK,width:.9,fontSize:Math.max(5.5,8*s)});}drawCircle(page,cx,cy,centreR,{fill:[229,245,241],stroke:[76,132,126],width:1.15});page.text(cx,cy-3*s,'RULE',Math.max(3.8,5*s),{bold:true,color:MUTED,align:'center'});fitText(page,cx,cy+8*s,clean(it.rule),centreR*1.55,Math.max(5.2,8*s),{bold:true,color:TEAL,align:'center'});});
+      a.items.forEach((it,i)=>{const r=Math.floor(i/cols),c=i%cols,cx=x+15+c*(slotW+10)+slotW/2,cy=bodyY+r*(slotH+10)+slotH/2,size=Math.max(72,Math.min(slotW*.82,slotH*.92,145)),s=size/160,n=it.inputs.length,innerR=42*s,outerR=68*s,innerNode=10*s,outerNode=11*s,centreR=24*s;for(let j=0;j<n;j++){const ang=-Math.PI/2+j*2*Math.PI/n,ix=cx+Math.cos(ang)*innerR,iy=cy+Math.sin(ang)*innerR,ox=cx+Math.cos(ang)*outerR,oy=cy+Math.sin(ang)*outerR,inBlank=it.displayInputs?.[j]==null,outBlank=it.displayOutputs?.[j]==null,input=answers?it.inputs[j]:it.displayInputs?.[j],out=answers?it.outputs[j]:it.displayOutputs?.[j];page.line(ix,iy,ox,oy,{color:[177,194,196],width:.85});drawCircleNode(page,ix,iy,input,innerNode,{fill:answers&&inBlank?HIT:WHITE,stroke:[140,165,168],color:answers&&inBlank?TEAL:INK,width:.8,fontSize:Math.max(5.5,8*s)});drawCircleNode(page,ox,oy,out,outerNode,{fill:answers&&outBlank?HIT:(out==null?WHITE:[242,250,248]),stroke:[104,158,151],color:answers&&outBlank?TEAL:INK,width:.9,fontSize:Math.max(5.5,8*s)});}drawCircle(page,cx,cy,centreR,{fill:[229,245,241],stroke:[76,132,126],width:1.15});diagramText(page,cx,cy-4.2*s,'RULE',Math.max(3.8,5*s),{bold:true,color:MUTED});fitDiagramText(page,cx,cy+8.8*s,clean(it.rule),centreR*1.60,Math.max(5.2,8*s),{bold:true,color:TEAL});});
     }else if(a.style==='factor'){
       const cols=a.items.length>=5?3:a.items.length<=3?Math.min(3,a.items.length):2,rows=Math.ceil(a.items.length/cols),slotW=(w-30-(cols-1)*10)/cols,slotH=(bodyH-(rows-1)*10)/rows;
       a.items.forEach((it,i)=>{
@@ -291,15 +318,15 @@
           page.line(px-opW/2,capsuleY+4*sc,px-opW/2,capsuleY+pairH-4*sc,{color:[213,224,225],width:.55});
           page.line(px+opW/2,capsuleY+4*sc,px+opW/2,capsuleY+pairH-4*sc,{color:[213,224,225],width:.55});
           const fs=Math.max(5.4,7.4*sc),leftX=capsuleX+fieldW/2+1*sc,rightX=capsuleX+pairW-fieldW/2-1*sc;
-          if(left!=null)page.text(leftX,py+fs*.34,formatNumber(left),fs,{bold:true,color:leftFill?TEAL:INK,align:'center'});
-          page.text(px,py+fs*.31,'x',Math.max(5.1,7.2*sc),{bold:true,color:MUTED,align:'center'});
-          if(right!=null)page.text(rightX,py+fs*.34,formatNumber(right),fs,{bold:true,color:rightFill?TEAL:INK,align:'center'});
+          if(left!=null)diagramText(page,leftX,py+fs*.36,formatNumber(left),fs,{bold:true,color:leftFill?TEAL:INK});
+          diagramText(page,px,py+fs*.34,'x',Math.max(5.1,7.2*sc),{bold:true,color:MUTED});
+          if(right!=null)diagramText(page,rightX,py+fs*.36,formatNumber(right),fs,{bold:true,color:rightFill?TEAL:INK});
         }
-        const centre=answers?it.centre:it.displayCentre,centreFill=answers&&it.displayCentre==null,labelFs=Math.max(3.4,5.1*sc),valueFs=Math.max(6.8,10*sc);drawCircle(page,cx,cy,centreR,{fill:centreFill?HIT:[229,245,241],stroke:[76,132,126],width:1.15});page.text(cx,cy-5.2*sc,'FACTOR PAIRS',labelFs,{bold:true,color:MUTED,align:'center'});if(centre!=null)page.text(cx,cy+10.2*sc,formatNumber(centre),valueFs,{bold:true,color:centreFill?TEAL:INK,align:'center'});
+        const centre=answers?it.centre:it.displayCentre,centreFill=answers&&it.displayCentre==null,labelFs=Math.max(3.4,5.1*sc),valueFs=Math.max(6.8,10*sc);drawCircle(page,cx,cy,centreR,{fill:centreFill?HIT:[229,245,241],stroke:[76,132,126],width:1.15});diagramText(page,cx,cy-5.0*sc,'FACTOR PAIRS',labelFs,{bold:true,color:MUTED});if(centre!=null)diagramText(page,cx,cy+10.4*sc,formatNumber(centre),valueFs,{bold:true,color:centreFill?TEAL:INK});
       });
     }else{
       const cols=a.items.length<=4?2:3,rows=Math.ceil(a.items.length/cols),slotW=(w-34-(cols-1)*9)/cols,slotH=(bodyH-(rows-1)*10)/rows;
-      a.items.forEach((it,i)=>{const r=Math.floor(i/cols),c=i%cols,cx=x+17+c*(slotW+9)+slotW/2,cy=bodyY+r*(slotH+10)+slotH/2,size=Math.max(76,Math.min(slotW*.80,slotH*.92,142)),sc=size/160,rx=52*sc,ry=52*sc,nodeR=16*sc,hidden=new Set(it.hidden||[]);page.line(cx,cy-ry,cx+rx,cy,{color:[122,146,151],width:1.1});page.line(cx+rx,cy,cx,cy+ry,{color:[122,146,151],width:1.1});page.line(cx,cy+ry,cx-rx,cy,{color:[122,146,151],width:1.1});page.line(cx-rx,cy,cx,cy-ry,{color:[122,146,151],width:1.1});for(const [key,nx,ny] of [['top',cx,cy-ry],['left',cx-rx,cy],['right',cx+rx,cy],['bottom',cx,cy+ry]]){const answerFill=answers&&hidden.has(key),value=answers?it[key]:(hidden.has(key)?null:it[key]);drawCircleNode(page,nx,ny,value,nodeR,{fill:answerFill?HIT:WHITE,stroke:[101,132,136],color:answerFill?TEAL:INK,bold:true,width:1,fontSize:Math.max(5.8,9*sc)});}const labFs=Math.max(3.3,5*sc);page.text(cx,cy-ry-nodeR-4*sc,'PRODUCT',labFs,{bold:true,color:MUTED,align:'center'});page.text(cx,cy+ry+nodeR+7*sc,'SUM',labFs,{bold:true,color:MUTED,align:'center'});});
+      a.items.forEach((it,i)=>{const r=Math.floor(i/cols),c=i%cols,cx=x+17+c*(slotW+9)+slotW/2,cy=bodyY+r*(slotH+10)+slotH/2,size=Math.max(76,Math.min(slotW*.80,slotH*.92,142)),sc=size/160,rx=52*sc,ry=52*sc,nodeR=16*sc,hidden=new Set(it.hidden||[]);page.line(cx,cy-ry,cx+rx,cy,{color:[122,146,151],width:1.1});page.line(cx+rx,cy,cx,cy+ry,{color:[122,146,151],width:1.1});page.line(cx,cy+ry,cx-rx,cy,{color:[122,146,151],width:1.1});page.line(cx-rx,cy,cx,cy-ry,{color:[122,146,151],width:1.1});for(const [key,nx,ny] of [['top',cx,cy-ry],['left',cx-rx,cy],['right',cx+rx,cy],['bottom',cx,cy+ry]]){const answerFill=answers&&hidden.has(key),value=answers?it[key]:(hidden.has(key)?null:it[key]);drawCircleNode(page,nx,ny,value,nodeR,{fill:answerFill?HIT:WHITE,stroke:[101,132,136],color:answerFill?TEAL:INK,bold:true,width:1,fontSize:Math.max(5.8,9*sc)});}const labFs=Math.max(3.3,5*sc);diagramText(page,cx,cy-ry-nodeR-4*sc,'PRODUCT',labFs,{bold:true,color:MUTED});diagramText(page,cx,cy+ry+nodeR+7*sc,'SUM',labFs,{bold:true,color:MUTED});});
     }
   }
 
