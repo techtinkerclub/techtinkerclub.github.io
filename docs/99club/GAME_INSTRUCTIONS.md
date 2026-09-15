@@ -33,6 +33,10 @@ This is the reviewed wording baseline for pupil-facing instructions. The aim is 
 | Number Path | Fill the missing numbers from 1 to N². Consecutive numbers must touch horizontally or vertically, not diagonally. |
 | Number Towers / Skyscrapers | Fill the grid with 1–N, using each height once in every row and column. Each edge tab shows how many towers are visible looking in that direction. |
 | Binary Puzzle / Takuzu | Fill every blank with 0 or 1. Each row and column must contain the same number of 0s and 1s. Never make 000 or 111. No two completed rows or columns can be identical. |
+| Killer Sudoku / Sum Sudoku | Fill the grid with 1–N. Use each number once in every row, column and outlined box. Digits in each cage add to its target and cannot repeat. |
+| Bridges / Hashi | Join the islands with horizontal or vertical bridges. Match each island number, use at most two bridges between a pair, do not cross bridges, and connect every island. |
+| Maths Mines / Hidden Gems | Find the stated number of hidden gems. Each clue tells how many gems touch that square, including diagonally. Clue squares cannot contain gems. |
+| Word Codes / Alphametics | Replace each letter with a digit so the addition is correct. The same letter keeps the same digit, different letters use different digits, and a word cannot start with 0. |
 
 ## Style rules
 
@@ -40,8 +44,8 @@ This is the reviewed wording baseline for pupil-facing instructions. The aim is 
 - Avoid explaining the history or name of a puzzle in the instruction line.
 - State only rules the pupil needs to begin.
 - Prefer familiar primary-school language over puzzle-community jargon.
-- Keep specialist rules explicit where omission would make the puzzle unfair, for example Kakuro's no-repeat rule, Takuzu's three rules, or Futoshiki inequality direction.
+- Keep specialist rules explicit where omission would make the puzzle unfair, for example Kakuro's no-repeat rule, Takuzu's three rules, Hashi connectivity or Futoshiki inequality direction.
 - Put hints, strategies and examples in worked examples, not in the main instruction.
 - Preview and PDF must use the same wording.
 
-The v1.39 instruction layer applies this reviewed wording after generation so legacy generators cannot drift independently.
+The shared instruction layer applies this reviewed wording after generation so individual generators cannot drift independently.
