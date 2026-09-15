@@ -100,10 +100,13 @@ const baseGeneratePack=G.generatePack.bind(G);
 G.normalizeSettings=function(input={}){
   const raw={...(input||{})};
   let yearFilter=global.__tt99PendingGameYearFilter;
-  if(yearFilter===undefined||yearFilter===null)yearFilter=Number(raw.yearFilter);
+  if(yearFilter===undefined||yearFilter===null){
+    if(raw.yearFilter!==undefined)yearFilter=Number(raw.yearFilter);
+    else yearFilter=Number(raw.minYear)===Number(raw.maxYear)&&Number(raw.minYear)>=1&&Number(raw.minYear)<=6?Number(raw.minYear):0;
+  }
   yearFilter=Number.isInteger(Number(yearFilter))?Number(yearFilter):0;
   if(yearFilter>=1&&yearFilter<=6){raw.minYear=yearFilter;raw.maxYear=yearFilter;}
-  else if(yearFilter===0&&raw.yearFilter!==undefined){raw.minYear=1;raw.maxYear=6;}
+  else{raw.minYear=1;raw.maxYear=6;}
   let base=baseNormalize(raw);
   let focus=validFocus(global.__tt99PendingGameFocusTopics||raw.focusTopics);
   if(!focus.length)focus=migrateFromParents(base.topics);
