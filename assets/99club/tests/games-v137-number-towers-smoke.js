@@ -4,6 +4,7 @@ const assert=require('assert');
 const path=require('path');
 const NL=require(path.join(__dirname,'..','games-number-logic.js'));
 require(path.join(__dirname,'..','games-number-towers-v137.js'));
+require(path.join(__dirname,'..','games-number-towers-v137-unique.js'));
 
 assert(NL.DEFINITIONS.numbertowers,'Number Towers definition missing');
 const kGrid=(NL.DEFINITIONS.kakuro.settingsSchema||[]).find(x=>x.id==='gridSize');
@@ -14,7 +15,7 @@ for(const difficulty of ['easy','standard','challenge']){
   for(let i=0;i<18;i++){
     const settings={minYear:3,maxYear:6,engineSettings:{numbertowers:{difficulty,gridSize:'auto',clueLevel:'auto'}}};
     const a=NL.generate('numbertowers',settings,`v137:${difficulty}:${i}`);
-    assert(a&&a.engineId==='numbertowers',`Number Towers generation failed (${difficulty})`);
+    assert(a&&a.engineId==='numbertowers'&&!a.error,`Number Towers generation failed (${difficulty})`);
     assert.strictEqual(a.size,difficulty==='easy'?4:difficulty==='challenge'?6:5,'Unexpected auto grid size');
     assert.strictEqual(NL.validate(a).ok,true,`Invalid/ambiguous Number Towers (${difficulty}, ${i})`);
     assert(a.instruction.includes('[[TT99TOWERS:'),'Browser payload marker missing');
