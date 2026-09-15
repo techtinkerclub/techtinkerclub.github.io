@@ -1,4 +1,4 @@
-/* 99 Club Studio · Shikaku online-play adapter v1.0.2 */
+/* 99 Club Studio · Shikaku online-play adapter v1.0.3 */
 (function(global){
 'use strict';
 const Play=global.TT99GamesPlay,NL=global.TT99NumberLogicGames;if(!Play||!NL)return;
@@ -7,14 +7,14 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const sameRect=(a,b)=>a&&b&&a.r===b.r&&a.c===b.c&&a.h===b.h&&a.w===b.w;
 const rectKey=r=>`${r.r}:${r.c}:${r.h}:${r.w}`;
 const overlaps=(a,b)=>a.r<b.r+b.h&&a.r+a.h>b.r&&a.c<b.c+b.w&&a.c+a.w>b.c;
-function normalise(config={}){return {year:clamp(Number(config.year)||4,3,6),difficulty:DIFFS.includes(config.difficulty)?config.difficulty:'standard',gridSize:SIZES.includes(String(config.gridSize))?String(config.gridSize):'auto',rectangleCount:COUNTS.includes(String(config.rectangleCount))?String(config.rectangleCount):'auto'};}
-function fromQuery(q){const out={};if(q.has('y'))out.year=q.get('y');if(q.has('d'))out.difficulty=q.get('d');if(q.has('n'))out.gridSize=q.get('n');if(q.has('r'))out.rectangleCount=q.get('r');return out;}
-function toQuery(c){c=normalise(c);return {y:c.year,d:c.difficulty,n:c.gridSize,r:c.rectangleCount};}
-function settingsFor(c){c=normalise(c);return {minYear:c.year,maxYear:c.year,engineSettings:{shikaku:{difficulty:c.difficulty,gridSize:c.gridSize,rectangleCount:c.rectangleCount}}};}
+function normalise(config={}){return {difficulty:DIFFS.includes(config.difficulty)?config.difficulty:'standard',gridSize:SIZES.includes(String(config.gridSize))?String(config.gridSize):'auto',rectangleCount:COUNTS.includes(String(config.rectangleCount))?String(config.rectangleCount):'auto'};}
+function fromQuery(q){const out={};if(q.has('d'))out.difficulty=q.get('d');if(q.has('n'))out.gridSize=q.get('n');if(q.has('r'))out.rectangleCount=q.get('r');return out;}
+function toQuery(c){c=normalise(c);return {d:c.difficulty,n:c.gridSize,r:c.rectangleCount};}
+function settingsFor(c){c=normalise(c);return {minYear:1,maxYear:5,engineSettings:{shikaku:{difficulty:c.difficulty,gridSize:c.gridSize,rectangleCount:c.rectangleCount}}};}
 function createPuzzle(config,seed){const settings=settingsFor(config);for(let i=0;i<16;i++){const a=NL.generate('shikaku',settings,`${seed}:online:${i}`);if(a&&!a.error)return a;}throw new Error('A Shikaku puzzle could not be generated. Try a new puzzle.');}
-function renderOptions(root,config,onChange){const c=normalise(config);root.innerHTML=`<label><span>Year group</span><select data-play-opt="year">${[3,4,5,6].map(y=>`<option value="${y}" ${c.year===y?'selected':''}>Year ${y}</option>`).join('')}</select></label><label><span>Difficulty</span><select data-play-opt="difficulty">${DIFFS.map(v=>`<option value="${v}" ${c.difficulty===v?'selected':''}>${v[0].toUpperCase()+v.slice(1)}</option>`).join('')}</select></label><label><span>Grid size</span><select data-play-opt="gridSize">${SIZES.map(v=>`<option value="${v}" ${c.gridSize===v?'selected':''}>${v==='auto'?'Auto':`${v} × ${v}`}</option>`).join('')}</select></label><label><span>Rectangles</span><select data-play-opt="rectangleCount">${COUNTS.map(v=>`<option value="${v}" ${c.rectangleCount===v?'selected':''}>${v==='auto'?'Auto':v}</option>`).join('')}</select></label>`;root.querySelectorAll('[data-play-opt]').forEach(el=>el.addEventListener('change',()=>{const next={...c,[el.dataset.playOpt]:el.dataset.playOpt==='year'?Number(el.value):el.value};onChange(normalise(next));}));}
+function renderOptions(root,config,onChange){const c=normalise(config);root.innerHTML=`<label><span>Difficulty</span><select data-play-opt="difficulty">${DIFFS.map(v=>`<option value="${v}" ${c.difficulty===v?'selected':''}>${v[0].toUpperCase()+v.slice(1)}</option>`).join('')}</select></label><label><span>Grid size</span><select data-play-opt="gridSize">${SIZES.map(v=>`<option value="${v}" ${c.gridSize===v?'selected':''}>${v==='auto'?'Auto':`${v} × ${v}`}</option>`).join('')}</select></label><label><span>Rectangles</span><select data-play-opt="rectangleCount">${COUNTS.map(v=>`<option value="${v}" ${c.rectangleCount===v?'selected':''}>${v==='auto'?'Auto':v}</option>`).join('')}</select></label>`;root.querySelectorAll('[data-play-opt]').forEach(el=>el.addEventListener('change',()=>{const next={...c,[el.dataset.playOpt]:el.value};onChange(normalise(next));}));}
 function meta(p,c){return `${String(c.difficulty||'standard').replace(/^./,x=>x.toUpperCase())} · ${p.rows} × ${p.cols} · ${p.clues.length} rectangles`;}
-function recordKey(c){c=normalise(c);return `${c.year}:${c.difficulty}:${c.gridSize}:${c.rectangleCount}`;}
+function recordKey(c){c=normalise(c);return `${c.difficulty}:${c.gridSize}:${c.rectangleCount}`;}
 
 function mount(root,puzzle,ctx){const rows=puzzle.rows,cols=puzzle.cols,total=rows*cols,solution=(puzzle.solutionRects||[]).map(r=>({r:r.r,c:r.c,h:r.h,w:r.w})),clues=puzzle.clues||[],clueAt=new Map(clues.map((q,i)=>[`${q.r}:${q.c}`,{...q,index:i}]));let rects=[],draft=null,finished=false,keyboardStart=null,hintClue=-1,checkBad=new Set();
   root.className='tt99-play-shikaku';root.style.setProperty('--rows',rows);root.style.setProperty('--cols',cols);
