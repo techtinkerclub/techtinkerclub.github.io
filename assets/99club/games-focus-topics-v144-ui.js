@@ -4,10 +4,12 @@
 const root=document.getElementById('tt99-games-root'),G=global.TT99Games;if(!root||!G?.FOCUS_TOPICS||root.dataset.focusTopicsV144==='1')return;
 root.dataset.focusTopicsV144='1';let scheduled=false;
 const SETTINGS_KEY='tt99-games-settings-v4';
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));}
 function stored(){try{return G.normalizeSettings(JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'));}catch(e){return G.normalizeSettings({});}}
 function yearValue(s){return Number(s.yearFilter)||0;}
 function available(id,year){return G.focusAllowedForYear(id,year);}
+function focusLabels(s){return (s.focusTopics||[]).map(id=>G.FOCUS_TOPICS[id]?.label||id).filter(Boolean);}
+function focusSummary(s){const labels=focusLabels(s);if(!labels.length)return 'Maths teaching focus';const joined=labels.join(' · ');if(joined.length<=82)return joined;if(labels.length<=2)return joined;return `${labels[0]} · ${labels[1]} · +${labels.length-2} more`;}
 function applyFocus(ids){
   const s=stored(),year=yearValue(s),clean=[...new Set(ids.filter(id=>G.FOCUS_TOPICS[id]&&available(id,year)))];if(!clean.length)return;
   global.__tt99PendingGameFocusTopics=clean;
@@ -36,7 +38,20 @@ function build(){
   el.querySelector('[data-focus-all]')?.addEventListener('click',()=>applyFocus(Object.keys(G.FOCUS_TOPICS).filter(id=>available(id,year))));
   el.querySelector('[data-focus-core]')?.addEventListener('click',()=>applyFocus(['addition_subtraction','multiplication_division','inverse_missing'].filter(id=>available(id,year))));
 }
-function enhance(){build();}
+function patchVisibleMetadata(){
+  const s=stored(),summary=focusSummary(s),broad=new Set(Object.values(G.TOPICS||{}).map(m=>m?.label).filter(Boolean));
+  root.querySelectorAll('.tt99-game-paper-identity p,.tt99-games-preview-toolbar>div:first-child>span:first-of-type').forEach(el=>{
+    if(el.dataset.focusMetaV144===summary)return;
+    const parts=String(el.textContent||'').split(' · ').filter(Boolean),kept=[];let insertAt=-1;
+    for(const part of parts){const isOld=broad.has(part)||/^\d+ selected maths topics$/i.test(part)||/^All maths topics$/i.test(part)||/^Maths topics$/i.test(part);if(isOld){if(insertAt<0)insertAt=kept.length;continue;}kept.push(part);}
+    if(insertAt<0)insertAt=Math.min(2,kept.length);kept.splice(insertAt,0,summary);el.textContent=kept.join(' · ');el.dataset.focusMetaV144=summary;
+  });
+}
+function patchPdfMetadata(){
+  const PDF=global.TT99GamesPDF;if(!PDF?.buildDocument||PDF.__focusTopicsV144)return;
+  const base=PDF.buildDocument.bind(PDF);PDF.buildDocument=function(opts={}){const s=G.normalizeSettings(opts.settings||{}),label=focusSummary(s),key='__tt99_focus_summary__';return base({...opts,settings:{...(opts.settings||{}),minYear:s.minYear,maxYear:s.maxYear,topics:[key],focusTopics:s.focusTopics,yearFilter:s.yearFilter},topics:{...(opts.topics||{}),[key]:{label,years:[1,2,3,4,5,6]}}});};PDF.__focusTopicsV144=true;
+}
+function enhance(){build();patchVisibleMetadata();}
 function schedule(){if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;enhance();});}
-new MutationObserver(schedule).observe(root,{childList:true,subtree:true});schedule();
+patchPdfMetadata();new MutationObserver(schedule).observe(root,{childList:true,subtree:true});schedule();
 })(typeof globalThis!=='undefined'?globalThis:this);
