@@ -31,7 +31,7 @@
   function weightsLabel(w){return `${w.easy}% Easy · ${w.standard}% Standard · ${w.challenge}% Challenge`;}
 
   function mixedControls(w){return `<section class="tt99-random-pack-mix-v134" aria-label="Mixed difficulty weights">
-    <div class="tt99-random-pack-mix-head-v134"><strong>Difficulty mix</strong><small>Easy and Challenge are editable. Standard is calculated automatically so the total stays at 100%.</small></div>
+    <div class="tt99-random-pack-mix-head-v134"><strong>Difficulty mix</strong><small>Easy and Challenge are editable. Standard is the remaining percentage, calculated automatically so the total stays at 100%.</small></div>
     <div class="tt99-random-pack-weights-v134">
       <label class="tt99-random-pack-weight-v134"><span>Easy</span><input id="games-random-easy" type="number" min="0" max="100" step="5" value="${w.easy}"><b>${w.easy}%</b></label>
       <label class="tt99-random-pack-weight-v134 is-derived"><span>Standard</span><output id="games-random-standard">${w.standard}%</output><b>Calculated</b></label>
