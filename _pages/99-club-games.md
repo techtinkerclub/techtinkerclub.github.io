@@ -74,16 +74,18 @@ sitemap: true
 <script>
 window.addEventListener('DOMContentLoaded',function(){
   const root=document.getElementById('tt99-games-root');
-  function addGuideLink(){
+  function tidyHeaderNav(){
     const nav=root&&root.querySelector('.tt99-games-nav');
-    if(!nav||nav.querySelector('[data-game-guides-link]'))return;
+    if(!nav)return;
+    nav.querySelector('a[href="/tools/99-club/custom/"]')?.remove();
+    if(nav.querySelector('[data-game-guides-link]'))return;
     const link=document.createElement('a');
     link.href='/tools/99-club/help/#game-guides';
     link.textContent='How to play';
     link.setAttribute('data-game-guides-link','');
     nav.appendChild(link);
   }
-  addGuideLink();
-  if(root&&window.MutationObserver)new MutationObserver(addGuideLink).observe(root,{childList:true,subtree:true});
+  tidyHeaderNav();
+  if(root&&window.MutationObserver)new MutationObserver(tidyHeaderNav).observe(root,{childList:true,subtree:true});
 });
 </script>
