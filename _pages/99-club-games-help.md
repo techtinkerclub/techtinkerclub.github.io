@@ -22,7 +22,7 @@ sitemap: true
           <a class="tt99-secondary tt99-guide-action" href="/tools/99-club/games/">← Back to Games &amp; Puzzles</a>
         </div>
 
-        <div class="tt99-guide-note"><strong>Quick start:</strong> choose an optional year filter, select one or more teaching focuses, pick compatible games, configure their difficulty, then generate and download the pupil sheets and matching answers.</div>
+        <div class="tt99-guide-note"><strong>Quick start:</strong> choose a Year group, select one or more teaching focuses, pick compatible games, configure their difficulty, then generate and download the pupil sheets and matching answers.</div>
 
         <nav class="tt99-guide-nav" aria-label="Games help topics">
           <a href="#quick-start">Quick start</a>
@@ -41,7 +41,7 @@ sitemap: true
         <section id="quick-start" class="tt99-guide-section">
           <h2>Make a printable puzzle pack in four steps</h2>
           <div class="tt99-guide-steps">
-            <article><b>1</b><h3>Choose the maths</h3><p>Use the optional year filter and select precise teaching focuses such as multiplication &amp; division, factors &amp; multiples, fractions, angles or area &amp; rectangles.</p></article>
+            <article><b>1</b><h3>Choose the maths</h3><p>Choose one Year group and select precise teaching focuses such as multiplication &amp; division, factors &amp; multiples, fractions, angles or area &amp; rectangles.</p></article>
             <article><b>2</b><h3>Choose the games</h3><p>Open a game category and tick any compatible puzzle. Selected categories stay highlighted so you can see the pack structure at a glance.</p></article>
             <article><b>3</b><h3>Configure each game</h3><p>Choose Easy, Standard, Challenge or Mixed where available, then adjust specialist settings such as grid size, clue level or number of items.</p></article>
             <article><b>4</b><h3>Generate and download</h3><p>Review the pages, replace anything you do not want, then download pupil sheets, the matching answer key, or one combined PDF.</p></article>
@@ -51,9 +51,9 @@ sitemap: true
         <section id="choose-maths" class="tt99-guide-section tt99-guide-highlight">
           <h2>Choose the maths</h2>
           <p>The Games section uses a <strong>teaching-focus selector</strong> rather than the old broad “Calculation / Geometry / Measurement” list. The visible choices are deliberately more precise so that a teacher can ask for something meaningful such as <strong>Factors, multiples &amp; primes</strong> or <strong>Area, rectangles &amp; factor pairs</strong>.</p>
-          <h3>Year filter</h3>
-          <p>The year selector is optional. <strong>All primary · Years 1–6</strong> keeps the widest choice of games. Selecting one year hides teaching focuses that are normally introduced later and also lets automatic game settings choose a more suitable scale.</p>
-          <div class="tt99-guide-note"><strong>The year is a compatibility filter, not a promise that every child in that year will find every puzzle equally easy.</strong> Use each game’s own difficulty control to tune the actual challenge.</div>
+          <h3>Year group</h3>
+          <p>The old <strong>From year / To year</strong> range has been replaced by one Year group selector. The selected year does two jobs: it hides teaching focuses that are normally introduced later, and it gives automatic puzzle settings a sensible number scale.</p>
+          <div class="tt99-guide-note"><strong>Year group and puzzle difficulty are separate.</strong> Year controls curriculum fit and number scale; use each game’s own Easy / Standard / Challenge setting to tune the actual reasoning difficulty.</div>
           <h3>Teaching-focus groups</h3>
           <div class="tt99-guide-family-grid">
             <article><h3>Number</h3><p>Place value &amp; number order; factors, multiples &amp; primes; square numbers.</p></article>
@@ -70,7 +70,7 @@ sitemap: true
         <section id="choose-games" class="tt99-guide-section">
           <h2>Choose games without losing track of the library</h2>
           <p>The library is organised into accordion categories: <strong>Vocabulary &amp; language</strong>, <strong>Number patterns &amp; structures</strong>, <strong>Arithmetic &amp; calculation</strong>, <strong>Algebra &amp; relationships</strong>, and <strong>Number logic &amp; grids</strong>.</p>
-          <p>Open a category to see its compatible games. Tick games one by one, use <strong>Select compatible</strong> when you want the whole category, or use <strong>Clear</strong> / <strong>Clear all games</strong> to start again. Categories containing selected games remain highlighted and show a selected count.</p>
+          <p>Open a category to see its compatible games. Tick games one by one, use <strong>Select compatible</strong> when you want the whole category, or use <strong>Clear</strong> / <strong>Clear all games</strong> to start again. Categories containing selected games remain highlighted and show their selected count.</p>
           <p>The <strong>Selected games</strong> tray is the quickest way to review the final pack. It shows each included puzzle and a short summary of the saved configuration.</p>
         </section>
 
@@ -83,7 +83,7 @@ sitemap: true
             <article><h3>Challenge</h3><p>Larger or denser puzzles, fewer givens, richer operations and more competing possibilities before a deduction becomes forced.</p></article>
             <article><h3>Mixed</h3><p>Where offered, a pack can deliberately mix Easy, Standard and Challenge versions of the same game using the chosen proportions.</p></article>
           </div>
-          <p>Many games add specialist controls: grid size, number of clues, allowed operations, number of rectangles, route length, word directions and similar settings. <strong>Auto</strong> is normally the safest starting point because it combines the year filter and the game difficulty.</p>
+          <p>Many games add specialist controls: grid size, number of clues, allowed operations, number of rectangles, route length, word directions and similar settings. <strong>Auto</strong> is normally the safest starting point because it combines the Year group and the game difficulty.</p>
         </section>
 
         <section id="packs" class="tt99-guide-section">
@@ -137,7 +137,7 @@ sitemap: true
         <section id="troubleshooting" class="tt99-guide-section">
           <h2>Troubleshooting</h2>
           <div class="tt99-guide-family-grid">
-            <article><h3>A game is greyed out</h3><p>It does not currently fit the chosen year / teaching-focus combination. Broaden the teaching focus or use All primary to inspect the full library.</p></article>
+            <article><h3>A game is greyed out</h3><p>It does not currently fit the chosen Year group / teaching-focus combination. Broaden the teaching focus or choose the appropriate Year group.</p></article>
             <article><h3>No games are selected</h3><p>Open a category and tick at least one compatible game. You can also use Select compatible inside a category.</p></article>
             <article><h3>The preview looks cramped</h3><p>The browser preview is a working preview. Check the PDF before judging print layout; the PDF exporter uses its own fixed A4 geometry.</p></article>
             <article><h3>A puzzle is not suitable</h3><p>Use ↻ to replace only that activity, or change that game’s difficulty/options and generate a new version.</p></article>
