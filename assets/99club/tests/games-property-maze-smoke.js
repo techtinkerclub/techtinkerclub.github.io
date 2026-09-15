@@ -48,10 +48,20 @@ const generated=G.generateActivity('propertymaze',gSettings,'engine-integration'
 assert(generated.engineId==='propertymaze'&&!generated.error,'Main engine cannot generate Property Maze');
 assert(A.validate(generated).ok,'Main-engine Property Maze failed validation');
 
-// Preview/PDF integration is patched into the shared renderers.
+// Preview integration: renderer classes and stylesheet selectors must remain in lock-step.
 const app=fs.readFileSync(path.join(ROOT,'games-app.js'),'utf8');
+const css=fs.readFileSync(path.join(ROOT,'games-property-maze.css'),'utf8');
 assert(app.includes("engines:['maze','propertymaze'"),'Property Maze missing from the Arithmetic category');
 assert(app.includes('function renderPropertyMaze(')&&app.includes("a.engineId==='propertymaze'"),'Property Maze browser renderer missing');
+for(const cls of ['tt99-propertymaze-layout','tt99-propertymaze-grid','tt99-propertymaze-cell','tt99-propertymaze-side']){
+  assert(app.includes(cls),`Property Maze renderer no longer emits ${cls}`);
+  assert(css.includes(`.${cls}`),`Property Maze stylesheet does not style ${cls}`);
+}
+assert(/\.tt99-propertymaze-grid\s*\{[^}]*display:grid/.test(css),'Property Maze grid is not explicitly rendered as CSS grid');
+assert(css.includes('repeat(var(--propertymaze-size),1fr)'),'Property Maze grid does not honour the generated maze size');
+assert(/\.tt99-propertymaze-cell\s*\{[^}]*display:grid/.test(css),'Property Maze cells do not have explicit cell layout');
+
+// PDF integration remains independent of browser preview styling.
 require(path.join(ROOT,'simple-pdf.js'));
 require(path.join(ROOT,'games-pdf.js'));
 const PDF=global.TT99GamesPDF;
@@ -63,5 +73,5 @@ fs.writeFileSync('/tmp/property-maze-qa.pdf',Buffer.from(doc.outputBytes()));
 
 const page=fs.readFileSync(path.resolve(ROOT,'../../_pages/99-club-games.md'),'utf8');
 assert(page.includes('games-property-maze.js?v=1'),'Games page does not load Property Maze engine');
-assert(page.includes('games-property-maze.css?v=1'),'Games page does not load Property Maze styles');
-console.log('Games v1.33.0 Number Property Maze regression: PASS · all modes, unique routes, difficulty progression, preview and PDF integration.');
+assert(page.includes('games-property-maze.css?v=2'),'Games page does not load the repaired Property Maze styles');
+console.log('Games v1.33.1 Number Property Maze regression: PASS · generation, unique routes, preview class/CSS contract and PDF integration.');
