@@ -17,17 +17,19 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/99club.css?v=19.4">
 <link rel="stylesheet" href="/assets/99club/games.css?v=20">
 <link rel="stylesheet" href="/assets/99club/games-sumplete.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-property-maze.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-layout-v1321.css?v=1">
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
 <script src="/assets/99club/games-crossgrid-v1321.js?v=2"></script>
+<script src="/assets/99club/games-property-maze.js?v=1"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
 <script src="/assets/99club/games-number-path-v2.js?v=1"></script>
 <script src="/assets/99club/games-sumplete.js?v=1"></script>
 <script src="/assets/99club/games-engine.js?v=15"></script>
 <script src="/assets/99club/games-pack-mode.js?v=2"></script>
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
-<script src="/assets/99club/games-pdf.js?v=18"></script>
+<script src="/assets/99club/games-pdf.js?v=19"></script>
 <script src="/assets/99club/games-layout-v1321.js?v=2"></script>
-<script src="/assets/99club/games-app.js?v=20" defer></script>
+<script src="/assets/99club/games-app.js?v=21" defer></script>
 <script src="/assets/99club/games-random-ui.js?v=2" defer></script>
