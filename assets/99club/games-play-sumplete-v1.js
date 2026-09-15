@@ -1,4 +1,4 @@
-/* 99 Club Studio · Sumplete online-play adapter v1.0.0 */
+/* 99 Club Studio · Sumplete online-play adapter v1.0.1 */
 (function(global){
 'use strict';
 const Play=global.TT99GamesPlay,NL=global.TT99NumberLogicGames;if(!Play||!NL)return;
@@ -23,7 +23,7 @@ function mount(root,p,ctx){const n=p.size,solution=p.solutionMask,state=Array.fr
   function emptySnapshot(){return Array.from({length:n},()=>Array(n).fill(0));}
   function complete(){const sm=sums();return sm.rows.every((v,r)=>v===p.rowTargets[r])&&sm.cols.every((v,c)=>v===p.colTargets[c]);}
   function progress(){const sm=sums(),done=sm.rows.filter((v,r)=>v===p.rowTargets[r]).length+sm.cols.filter((v,c)=>v===p.colTargets[c]).length,crossed=state.flat().filter(Boolean).length;return `${done} of ${n*2} targets matched · ${crossed} crossed out`;}
-  function check({silent=false}={}){if(complete())return {complete:true,message:'Solved! Every row and column matches its target.'};const wrong=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(!!state[r][c]===!!solution[r][c])wrong.push(`${r}:${c}`);if(!silent){bad=new Set(wrong);render();}return {complete:false,wrong:wrong.length>0,message:wrong.length?`${wrong.length} cell${wrong.length===1?' is':'s are'} currently on the wrong side of the keep/cross decision.`:'The totals are not all matched yet.'};}
+  function check({silent=false}={}){if(complete())return {complete:true,message:'Solved! Every row and column matches its target.'};const wrong=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(state[r][c]===1&&solution[r][c])wrong.push(`${r}:${c}`);if(!silent){bad=new Set(wrong);render();}return {complete:false,wrong:wrong.length>0,message:wrong.length?`${wrong.length} crossed-out number${wrong.length===1?' should':'s should'} stay in the puzzle.`:'Everything you have crossed out is consistent so far. Some totals still need work.'};}
   function hint(){const sm=sums(),candidates=[];for(let r=0;r<n;r++)if(sm.rows[r]!==p.rowTargets[r])candidates.push({key:`r${r}`,delta:Math.abs(sm.rows[r]-p.rowTargets[r]),msg:`Look at row ${r+1}: its current sum is ${sm.rows[r]}, target ${p.rowTargets[r]}.`});for(let c=0;c<n;c++)if(sm.cols[c]!==p.colTargets[c])candidates.push({key:`c${c}`,delta:Math.abs(sm.cols[c]-p.colTargets[c]),msg:`Look at column ${c+1}: its current sum is ${sm.cols[c]}, target ${p.colTargets[c]}.`});candidates.sort((a,b)=>a.delta-b.delta);const pick=candidates[0];hintLine=pick?.key||null;render();return {tone:'hint',message:pick?.msg||'All totals match — try Check.'};}
   function setFinished(v){finished=!!v;bad.clear();hintLine=null;render();}
   function destroy(){root.removeEventListener('click',click);}
