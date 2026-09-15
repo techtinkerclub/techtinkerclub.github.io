@@ -61,6 +61,7 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - Adds **Binary Puzzle / Takuzu** as a deterministic unique-solution engine.
 - Easy = 4×4, Standard = 6×6, Challenge = 8×8 by default.
 - Supports manual 4×4 / 6×6 / 8×8 sizes and starting-digit density controls.
+- Every accepted puzzle is both uniquely solvable and completable by deterministic Takuzu deductions without guessing; extra starter digits are revealed automatically if the deduction solver stalls.
 - Preview, answer preview and PDF use the same puzzle data.
 - Adds a reviewed pupil-instruction layer and a canonical instruction wording document at `docs/99club/GAME_INSTRUCTIONS.md`.
 
@@ -87,7 +88,7 @@ Core rules:
 - each row and column contains equal numbers of 0s and 1s;
 - no three identical values appear consecutively horizontally or vertically;
 - no two completed rows are identical and no two completed columns are identical;
-- every generated pupil puzzle has a verified unique solution.
+- every generated pupil puzzle has a verified unique solution and must be solvable by the normal deterministic Takuzu rules without branching or guessing.
 
 Default progression:
 - **Easy:** 4×4 with generous starting digits.
