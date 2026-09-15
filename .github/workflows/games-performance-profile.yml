@@ -1,0 +1,20 @@
+name: Games performance profile
+on:
+  push:
+    branches: [chatgpt/games-performance]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax
+        run: node --check assets/99club/tests/games-performance-profile.js
+      - name: Profile puzzle generation
+        run: node assets/99club/tests/games-performance-profile.js
