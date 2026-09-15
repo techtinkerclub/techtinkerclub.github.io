@@ -1,23 +1,16 @@
 # Contributing
 
-Found a typo in the documentation or interested in [fixing a bug](https://github.com/mmistakes/minimal-mistakes/issues)? Then by all means [submit an issue](https://github.com/mmistakes/minimal-mistakes/issues/new) or [pull request](https://help.github.com/articles/using-pull-requests/). If this is your first pull request, it may be helpful to read up on the [GitHub Flow](https://guides.github.com/introduction/flow/) first.
+This repository is the Tech Tinker Club website and 99 Club Studio codebase.
 
-For help with using the theme or general Jekyll support questions, please use the [Jekyll Talk forums](https://talk.jekyllrb.com/).
+For project structure and current maintainer guidance, start with [`../docs/README.md`](../docs/README.md).
 
-Minimal Mistakes has been designed as a base for you to customize and fit your 
-site's unique needs. Please keep this in mind when requesting features and/or 
-submitting pull requests. If it's not something that most people will use, I 
-probably won't consider it. When in doubt ask.
+When changing 99 Club Studio:
 
-This goes for author sidebar links and "share button" additions -- I have no 
-intention of merging in every possibly option, the essentials are there to get 
-you started :smile:.
+1. Work on a branch and keep the change focused.
+2. Preserve deterministic generation unless the change intentionally modifies the maths engine.
+3. Check browser preview and generated PDF for visual or worksheet changes.
+4. Run the relevant regression tests under `assets/99club/tests/`.
+5. Add or update invariant-based tests for new behaviour; avoid tests that only pin cache strings or obsolete internal version numbers.
+6. Do not add maintainer release notes or roadmaps to repository root. Put current documentation under `docs/` and historical material under `docs/archive/`.
 
-## Pull Requests
-
-When submitting a pull request:
-
-1. Clone the repo.
-2. Create a branch off of `master` and give it a meaningful name (e.g. 
-   `my-awesome-new-feature`) and describe the feature or fix.
-3. Open a pull request on GitHub.
+For Games & Puzzles work, see [`../docs/99club/GAMES.md`](../docs/99club/GAMES.md).
