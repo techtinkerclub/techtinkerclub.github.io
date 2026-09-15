@@ -15,8 +15,8 @@ sitemap: true
 </div>
 
 <link rel="stylesheet" href="/assets/99club/99club.css?v=19.4">
-<link rel="stylesheet" href="/assets/99club/games-play-v1.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-v1.css?v=2">
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
 <script src="/assets/99club/games-shikaku-v143.js?v=1"></script>
 <script src="/assets/99club/games-play-core-v1.js?v=1"></script>
-<script src="/assets/99club/games-play-shikaku-v1.js?v=1"></script>
+<script src="/assets/99club/games-play-shikaku-v1.js?v=2"></script>
