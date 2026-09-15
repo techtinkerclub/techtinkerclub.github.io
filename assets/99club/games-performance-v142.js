@@ -1,7 +1,7 @@
 /* 99 Club Studio · v1.42 large-pack performance layer
  * Keeps the UI responsive by removing repeated expensive generation work.
  * - caches deterministic numeric/arithmetic activities by engine settings + seed;
- * - uses solver-verified Hashi templates for large packs instead of hundreds of random layout attempts;
+ * - uses solver-verified Hashi templates for medium/large packs instead of hundreds of random layout attempts;
  * - bounds caches so long classroom sessions do not grow memory indefinitely.
  */
 (function(global){
@@ -9,7 +9,7 @@
 const G=global.TT99Games,NL=global.TT99NumberLogicGames,AR=global.TT99ArithmeticGames;
 if(!G||G.__performanceV142)return;
 G.__performanceV142=true;
-const LARGE_PACK=12,MAX_CACHE=240;
+const LARGE_PACK=8,MAX_CACHE=240;
 const activityCache=new Map();
 function clone(v){return v==null?v:JSON.parse(JSON.stringify(v));}
 function remember(key,value){if(activityCache.has(key))activityCache.delete(key);activityCache.set(key,clone(value));while(activityCache.size>MAX_CACHE)activityCache.delete(activityCache.keys().next().value);return value;}
@@ -17,7 +17,7 @@ function cached(key){if(!activityCache.has(key))return null;const v=activityCach
 function stableEngineKey(id,settings,seed){const o=settings?.engineSettings?.[id]||{};return `${id}|${seed}|${JSON.stringify(o)}`;}
 function activityCount(settings){const explicit=Math.round(Number(settings?.activityCount));if(Number.isFinite(explicit)&&explicit>0)return explicit;return Math.max(1,(Number(settings?.sheets)||1)*(Number(settings?.activitiesPerSheet)||1));}
 
-// Large packs previously ran the expensive generators twice in Random + Mixed mode.
+// Medium/large packs previously ran the expensive generators twice in Random + Mixed mode.
 // The first pass and the second pass use the same deterministic seed for Standard
 // activities, so caching at the engine boundary removes that duplicate work without
 // changing the exact mixed-difficulty quota or the generated worksheet content.
@@ -26,7 +26,7 @@ if(AR?.generate){const base=AR.generate.bind(AR);AR.generate=function(id,setting
 
 // A Hashi random-layout search can legitimately try hundreds of solver-checked
 // networks. That is useful when producing one puzzle, but disastrous inside a
-// 20–40 activity pack. These three templates were already the engine's validated
+// multi-activity pack. These three templates were already the engine's validated
 // deterministic fallbacks. Rotation/reflection provides eight visual variants per
 // difficulty while preserving the exact graph and its unique solution.
 const HASHI={
@@ -42,5 +42,5 @@ function fastHashi(settings,seed){if(!NL?.DEFINITIONS?.hashi)return null;const r
 
 const basePack=G.generatePack.bind(G);
 G.generatePack=function(settings,seed='games',customVocabulary=[]){const count=activityCount(settings),previous=G.__fastPackGeneration;G.__fastPackGeneration=count>=LARGE_PACK;try{return basePack(settings,seed,customVocabulary);}finally{G.__fastPackGeneration=previous;}};
-G.PERFORMANCE={version:'1.42.0',largePackThreshold:LARGE_PACK,maxCache:MAX_CACHE,clearCache(){activityCache.clear();},cacheSize(){return activityCache.size;}};
+G.PERFORMANCE={version:'1.42.1',largePackThreshold:LARGE_PACK,maxCache:MAX_CACHE,clearCache(){activityCache.clear();},cacheSize(){return activityCache.size;}};
 })(typeof globalThis!=='undefined'?globalThis:this);
