@@ -6,6 +6,7 @@ sidebar: false
 ---
 
 <link rel="stylesheet" href="/assets/99club/99club.css?v=20">
+<link rel="stylesheet" href="/assets/99club/games-help-guides.css?v=1.0.1">
 
 <div id="main" class="tt99-page-main" role="main">
   <article class="splash">
@@ -15,7 +16,7 @@ sidebar: false
     <div>
       <span class="tt99-eyebrow">Tech Tinker Club · 99 Club Studio</span>
       <h1>Help for teachers</h1>
-      <p>Everything you need to create, review, save and recreate 99 Club progression sheets, including post-99 mental-maths extras and teacher answer-sheet notes.</p>
+      <p>Everything you need to create, review, save and recreate 99 Club progression sheets, plus searchable, printable guides for every current Maths Games &amp; Puzzles activity.</p>
     </div>
     <a class="tt99-secondary tt99-guide-action" href="/tools/99-club/">← Back to 99 Club</a>
   </div>
@@ -24,7 +25,8 @@ sidebar: false
 
   <nav class="tt99-guide-nav" aria-label="Help topics">
     <a href="#workflow">Making a sheet</a>
-    <a href="#games">Games & puzzles</a>
+    <a href="#games">Games &amp; puzzles</a>
+    <a href="#game-guides">How to play guides</a>
     <a href="#review">Reviewing questions</a>
     <a href="#schemes">Challenges</a>
     <a href="#rules">Changing rules</a>
@@ -45,23 +47,30 @@ sidebar: false
     </div>
   </section>
 
-
-
-
   <section id="games" class="tt99-guide-section tt99-guide-highlight">
     <h2>Maths Games &amp; Puzzles</h2>
     <p>The separate <a href="/tools/99-club/games/">Games &amp; Puzzles</a> page builds printable independent activities from reusable game engines. The library is organised into <strong>accordion categories</strong> so a large puzzle catalogue stays manageable.</p>
     <p><strong>Choose games by category.</strong> Open a category, tick individual games, use <strong>Select compatible</strong> to include the games that genuinely fit the chosen year/topics, or use <strong>Clear</strong> / <strong>Clear all games</strong>. Categories with selected games are highlighted and show their selected count. Opening or selecting a game does not collapse the category.</p>
     <p><strong>Each game keeps its own setup.</strong> Press <strong>Configure</strong> beside a selected game to change its difficulty and specialist options, then press <strong>Done</strong> to fully collapse the setup. The selected-games tray keeps a compact summary of the saved choices.</p>
-    <p><strong>Vocabulary &amp; language:</strong> Word Search and Maths Crossword share the curated maths vocabulary catalogue. Word Search can show <strong>words + definitions</strong> or <strong>definitions only</strong>, with automatic or teacher-selected directions. Multi-word clues show answer lengths such as <strong>(5, 5)</strong>.</p>
+    <p><strong>Vocabulary &amp; language:</strong> Maths Word Search and Maths Crossword share the curated maths vocabulary catalogue. Word Search can show <strong>words + definitions</strong> or <strong>definitions only</strong>, with automatic or teacher-selected directions. Multi-word crossword clues show answer lengths such as <strong>(5, 5)</strong>.</p>
     <p><strong>Number patterns &amp; structures:</strong> Number Pyramid, Magic Squares, Arithmagons, Magic Number Shapes, Number Trails &amp; Snakes, and Number Wheels / Flowers / Diamonds practise arithmetic relationships, inverse reasoning and patterns.</p>
-    <p><strong>Arithmetic &amp; calculation:</strong> Correct-Answer Maze, Maths Crossnumber, Target Number Challenge, Broken Calculator, Missing Operations, <strong>Kakuro / Cross Sums</strong> and <strong>Arithmetic Cages</strong> turn calculations into puzzles. Arithmetic Domino Chain is parked from the one-player library for now because it is better suited to a future cut-and-match classroom activity.</p>
-    <p><strong>Algebra &amp; relationships:</strong> Symbol Equations, Function Machines and Balance the Equation introduce unknowns, inverse operations and equality where the selected year/topic makes them appropriate.</p>
-    <p><strong>Number logic &amp; grids:</strong> Sudoku &amp; Latin Squares, <strong>Futoshiki</strong>, <strong>Nonograms / Number Pictures</strong> and <strong>Number Paths</strong> use short numerical/spatial rules rather than story-based logic. Generated puzzles are validated, and uniqueness is checked where the puzzle type requires one solution.</p>
+    <p><strong>Arithmetic &amp; calculation:</strong> Correct-Answer Maze, Number Property Maze, Maths Crossnumber, Number Search, Arithmetic Equation Crossgrid, Target Number Challenge, Broken Calculator, Missing Operations, Kakuro / Cross Sums, Arithmetic Cages and Sumplete / Cross-Out Sums turn calculation into compact puzzles.</p>
+    <p><strong>Algebra &amp; relationships:</strong> Symbol Equations, Function Machines, Balance the Equation and Word Codes / Alphametics introduce unknowns, inverse operations, equality and digit reasoning where the selected year/topic makes them appropriate.</p>
+    <p><strong>Number logic &amp; grids:</strong> Sudoku &amp; Latin Squares, Futoshiki, Nonograms / Number Pictures, Number Path, Number Towers / Skyscrapers, Binary Puzzle / Takuzu, Killer Sudoku / Sum Sudoku, Bridges / Hashi and Maths Mines / Hidden Gems use concise numerical and spatial rules rather than story-based logic. Generated puzzles are validated, and uniqueness is checked where the puzzle type requires one solution.</p>
     <p><strong>Worked examples</strong> can be added at the front of a pack. Each selected game provides child-facing Goal, Rules, Worked steps, Tip and Watch-out guidance using separate practice data.</p>
     <p><strong>Personalise the pack</strong> with an editable title, school name, optional class/year label, optional date and school logo. These details are remembered locally on that browser and appear consistently on pupil sheets, worked examples and teacher answers.</p>
     <div class="tt99-guide-note"><strong>Review before printing:</strong> use ↻ on a whole game to replace only that activity. In Word Search, a smaller ↻ beside an individual clue replaces only that term + definition pair while keeping the other selected terms.</div>
     <p>Downloads follow the main 99 Club model: <strong>Pupil sheets PDF</strong>, <strong>Answer key PDF</strong>, or <strong>Pupil sheets + answers</strong> in one combined pack.</p>
+  </section>
+
+  <section id="game-guides" class="tt99-guide-section tt99-guide-highlight">
+    <h2>How to play every game</h2>
+    <div class="tt99-game-guide-intro">
+      <p>This library covers all <strong>32 current one-player games</strong>. Search by game name or filter by category, then open a pupil-friendly one-page guide. Every guide uses a fixed worked example, so the explanation never changes underneath a teacher or pupil, and <strong>Print this guide</strong> produces a clean A4 reference sheet without the surrounding Help page.</p>
+      <span class="tt99-game-guide-count" aria-label="32 game guides">32</span>
+    </div>
+    <div class="tt99-guide-note"><strong>These guides explain the rules; they do not generate puzzles.</strong> The guide library is deliberately separate from the game engines, so opening or printing help cannot change the current worksheet, seed or answers.</div>
+    <div id="tt99-game-guide-root"><noscript>Enable JavaScript to search and open the individual game guides.</noscript></div>
   </section>
 
   <section id="review" class="tt99-guide-section tt99-guide-highlight">
@@ -121,7 +130,6 @@ sidebar: false
     </div>
   </section>
 
-
   <section id="extras" class="tt99-guide-section tt99-guide-highlight">
     <h2>Optional post-99 mental-maths extras</h2>
     <p>Bronze, Silver, Gold, Platinum and Diamond keep their defining core content, but teachers can add extra categories when they suit their school. These extras are <strong>not offered inside the 11–99 progression</strong>. That separation is deliberate: 11–99 stays simple and recognisable, while post-99 can broaden into concise mental maths.</p>
@@ -150,11 +158,11 @@ sidebar: false
   <section id="fractions" class="tt99-guide-section">
     <h2>Fractions, decimals and percentages</h2>
     <h3>Decimals</h3>
-<p>Decimal families are available as optional additions to mixed/advanced 99 Club rules, including place value, rounding, ×/÷ by 10/100/1000, decimal addition/subtraction, upper-KS2 multiplication/division and fraction/decimal/percentage equivalence. Decimal comparison is intentionally excluded from the rapid mental-maths extras. The standard Classic progression is unchanged unless you explicitly edit its rules.</p>
+    <p>Decimal families are available as optional additions to mixed/advanced 99 Club rules, including place value, rounding, ×/÷ by 10/100/1000, decimal addition/subtraction, upper-KS2 multiplication/division and fraction/decimal/percentage equivalence. Decimal comparison is intentionally excluded from the rapid mental-maths extras. The standard Classic progression is unchanged unless you explicitly edit its rules.</p>
 
     <h3>Fractions of quantities</h3>
     <p>The denominator buttons choose which denominator families may appear. Selecting denominator <b>5</b> can produce <code>1/5</code>, <code>2/5</code>, <code>3/5</code> or <code>4/5</code>; it does not mean “1/5 only”.</p>
-<p>The <strong>fractions-of-quantities</strong> generator uses proper fractions, so the numerator is smaller than the denominator. It varies numerator, denominator and quantity automatically. Custom denominators can be entered as a comma-separated list such as <code>7, 9, 11, 15</code>.</p>
+    <p>The <strong>fractions-of-quantities</strong> generator uses proper fractions, so the numerator is smaller than the denominator. It varies numerator, denominator and quantity automatically. Custom denominators can be entered as a comma-separated list such as <code>7, 9, 11, 15</code>.</p>
     <div class="tt99-guide-example"><span>Examples:</span><code>2/3 of 60</code><code>5/7 of 56</code><code>7/12 of 96</code></div>
     <p>Studio only uses combinations that give a whole-number answer.</p>
 
@@ -227,3 +235,5 @@ sidebar: false
     </section>
   </article>
 </div>
+
+<script src="/assets/99club/games-help-guides.js?v=1.0.0" defer></script>
