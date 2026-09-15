@@ -21,14 +21,3 @@ sidebar: false
 <script src="/assets/99club/pdf-layout.js?v=19.4"></script>
 <script src="/assets/99club/qr-lite.js?v=19.4"></script>
 <script src="/assets/99club/app.js?v=19.5" defer></script>
-
-<!-- Ko-fi support widget. This intentionally appears only on the public 99 Club Studio page. -->
-<script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
-<script>
-  kofiWidgetOverlay.draw('bogdan2618', {
-    'type': 'floating-chat',
-    'floating-chat.donateButton.text': 'Support me',
-    'floating-chat.donateButton.background-color': '#00b9fe',
-    'floating-chat.donateButton.text-color': '#fff'
-  });
-</script>
