@@ -1,0 +1,17 @@
+/* v1.40 Hashi reliability layer
+ * Uses three solver-verified base networks and rotates/mirrors them by seed.
+ * This keeps Easy/Standard/Challenge predictable while the core Hashi solver
+ * still validates uniqueness for every generated activity.
+ */
+(function(global){'use strict';const NL=global.TT99NumberLogicGames;if(!NL?.V140?.HASHI||NL.__hashiTemplatesV140)return;const baseGenerate=NL.generate.bind(NL),baseValidate=NL.validate.bind(NL);
+const TEMPLATES={
+ easy:{islands:[[4,4],[4,2],[2,2],[2,0],[0,2],[1,4],[0,0]],values:{'0:1':1,'0:5':1,'1:2':1,'2:3':1,'2:4':2,'3:6':0,'4:6':1}},
+ standard:{islands:[[0,2],[0,3],[0,6],[1,2],[1,3],[1,6],[4,2],[5,6],[6,3],[6,6]],values:{'0:1':1,'0:3':2,'1:2':2,'1:4':0,'2:5':1,'3:4':1,'3:6':1,'4:5':0,'4:8':2,'5:7':2,'7:9':0,'8:9':1}},
+ challenge:{islands:[[4,3],[7,3],[7,5],[4,5],[2,5],[2,3],[2,7],[4,1],[1,1],[7,7],[0,7],[0,3]],values:{'0:1':1,'0:3':1,'0:5':1,'0:7':1,'1:2':1,'2:3':1,'2:9':1,'3:4':1,'4:5':0,'4:6':1,'5:11':1,'6:9':1,'6:10':1,'7:8':1,'10:11':0}}
+};
+function hash(s){let h=2166136261>>>0;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function candidates(islands){const out=new Set();for(let i=0;i<islands.length;i++){const [r,c]=islands[i];for(const [dr,dc] of [[0,1],[0,-1],[1,0],[-1,0]]){let best=-1,dist=1e9;for(let j=0;j<islands.length;j++){if(i===j)continue;const [rr,cc]=islands[j];let d=1e9;if(dr===0&&rr===r&&(cc-c)*dc>0)d=Math.abs(cc-c);else if(dc===0&&cc===c&&(rr-r)*dr>0)d=Math.abs(rr-r);if(d<dist){dist=d;best=j;}}if(best>=0)out.add([Math.min(i,best),Math.max(i,best)].join(':'));}}return [...out].map(x=>x.split(':').map(Number)).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);}
+function transform(points,seed){let pts=points.map(p=>p.slice()),max=Math.max(...pts.flat()),h=hash(seed),turns=h%4;for(let k=0;k<turns;k++)pts=pts.map(([r,c])=>[c,max-r]);if((h>>>3)&1)pts=pts.map(([r,c])=>[r,max-c]);return pts;}
+function profile(settings){const o=settings?.engineSettings?.hashi||{},want=String(o.islandCount||'auto');if(want==='7')return'easy';if(want==='12')return'challenge';if(want==='10')return'standard';return ['easy','standard','challenge'].includes(o.difficulty)?o.difficulty:'standard';}
+function generate(settings,seed){const difficulty=profile(settings),t=TEMPLATES[difficulty],islands=transform(t.islands,seed),edges=candidates(islands),values=edges.map(e=>t.values[e.join(':')]??0),clues=Array(islands.length).fill(0);edges.forEach(([a,b],i)=>{clues[a]+=values[i];clues[b]+=values[i];});const a={engineId:'hashi',title:'Bridges · Hashi',difficulty,islands:islands.map((p,i)=>({r:p[0],c:p[1],clue:clues[i]})),edges:edges.map((e,i)=>({a:e[0],b:e[1],solution:values[i]})),seed,options:{...(settings?.engineSettings?.hashi||{}),islandCount:String(islands.length)},engineVersion:'1.0.1',instruction:'Join the islands with horizontal or vertical bridges. Each number tells how many bridges touch that island. Use at most two between a pair, do not cross bridges, and connect every island.'};const v=baseValidate(a);return v.ok?a:{...a,error:`Hashi template validation failed: ${v.error}`};}
+NL.generate=function(id,settings,seed){return id==='hashi'?generate(settings,seed):baseGenerate(id,settings,seed);};NL.V140.HASHI.generate=generate;NL.__hashiTemplatesV140=true;if(typeof module!=='undefined'&&module.exports)module.exports=NL;})(typeof globalThis!=='undefined'?globalThis:this);
