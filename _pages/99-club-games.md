@@ -62,6 +62,7 @@ sitemap: true
 <script src="/assets/99club/games-pdf-v1401.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v141.js?v=1"></script>
 <script src="/assets/99club/games-pdf-shikaku-v143.js?v=2"></script>
+<script src="/assets/99club/games-pdf-worked-v146.js?v=1"></script>
 <script src="/assets/99club/games-pdf-no-year-v145.js?v=1"></script>
 <script src="/assets/99club/games-layout-v1321.js?v=2"></script>
 <script src="/assets/99club/games-app.js?v=21" defer></script>
