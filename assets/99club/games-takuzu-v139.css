@@ -1,8 +1,7 @@
 /* 99 Club Studio · v1.39 Binary Puzzle / Takuzu */
 .tt99-takuzu-grid{--takuzu-n:6;display:grid;grid-template-columns:repeat(var(--takuzu-n),1fr);width:min(100%,390px);aspect-ratio:1;margin:10px auto 7px;border:2px solid #4f7075;background:#fff}
 .tt99-takuzu-grid .takuzu-cell{display:grid;place-items:center;border-right:1px solid #a9bec1;border-bottom:1px solid #a9bec1;color:#294b51;font-size:clamp(13px,1.45vw,21px);font-weight:900;line-height:1;background:#fff}
-.tt99-takuzu-grid .takuzu-cell:nth-child(var(--takuzu-n)n){border-right:0}
-.tt99-takuzu-grid .takuzu-cell.is-last-row{border-bottom:0}
+.tt99-takuzu-grid .takuzu-cell.is-last-col{border-right:0}.tt99-takuzu-grid .takuzu-cell.is-last-row{border-bottom:0}
 .tt99-takuzu-grid .takuzu-cell.given{background:#f2f7f6;color:#244b50}
 .tt99-takuzu-grid .takuzu-cell.answer-fill{background:#e2f3ef;color:#0e746b}
 .tt99-takuzu-rules{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:4px auto 0;max-width:560px;color:#5f777b;font-size:clamp(5px,.55vw,7.5px)}
