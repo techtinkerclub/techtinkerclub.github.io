@@ -1,7 +1,8 @@
 /* 99 Club Studio · v1.42 large-pack performance layer
- * Keeps the UI responsive by removing repeated expensive generation work.
+ * Keeps the UI responsive by removing repeated expensive generation/render work.
  * - caches deterministic numeric/arithmetic activities by engine settings + seed;
  * - uses solver-verified Hashi templates for medium/large packs instead of hundreds of random layout attempts;
+ * - limits the browser preview to a representative set of pages while PDFs still contain the full pack;
  * - bounds caches so long classroom sessions do not grow memory indefinitely.
  */
 (function(global){
@@ -9,7 +10,7 @@
 const G=global.TT99Games,NL=global.TT99NumberLogicGames,AR=global.TT99ArithmeticGames;
 if(!G||G.__performanceV142)return;
 G.__performanceV142=true;
-const LARGE_PACK=8,MAX_CACHE=240;
+const LARGE_PACK=8,MAX_CACHE=240,MAX_PUPIL_PREVIEW=6,MAX_ANSWER_PREVIEW=6,MAX_WORKED_PREVIEW=2;
 const activityCache=new Map();
 function clone(v){return v==null?v:JSON.parse(JSON.stringify(v));}
 function remember(key,value){if(activityCache.has(key))activityCache.delete(key);activityCache.set(key,clone(value));while(activityCache.size>MAX_CACHE)activityCache.delete(activityCache.keys().next().value);return value;}
@@ -42,5 +43,13 @@ function fastHashi(settings,seed){if(!NL?.DEFINITIONS?.hashi)return null;const r
 
 const basePack=G.generatePack.bind(G);
 G.generatePack=function(settings,seed='games',customVocabulary=[]){const count=activityCount(settings),previous=G.__fastPackGeneration;G.__fastPackGeneration=count>=LARGE_PACK;try{return basePack(settings,seed,customVocabulary);}finally{G.__fastPackGeneration=previous;}};
-G.PERFORMANCE={version:'1.42.1',largePackThreshold:LARGE_PACK,maxCache:MAX_CACHE,clearCache(){activityCache.clear();},cacheSize(){return activityCache.size;}};
+
+// The old preview rendered every pupil sheet and every answer sheet at the same time.
+// A 40-activity pack therefore created roughly forty full A4 DOM pages (plus worked
+// examples), even though half of them were hidden. Keep the first representative
+// pages in the live preview; the PDF builder still receives the untouched full pack.
+function trimPreviewHTML(input){let html=String(input??''),pupil=0,answer=0,worked=0,omittedPupil=0,omittedAnswer=0,omittedWorked=0;const page=/<article class="tt99-game-paper([^\"]*)">[\s\S]*?<\/article>/g;html=html.replace(page,(m,classes)=>{const c=String(classes||'');if(c.includes('is-answer')){answer++;if(answer>MAX_ANSWER_PREVIEW){omittedAnswer++;return '';}return m;}if(c.includes('tt99-worked-page')){worked++;if(worked>MAX_WORKED_PREVIEW){omittedWorked++;return '';}return m;}pupil++;if(pupil>MAX_PUPIL_PREVIEW){omittedPupil++;return '';}return m;});const omitted=omittedPupil+omittedAnswer+omittedWorked;if(omitted){const details=[omittedPupil?`${omittedPupil} pupil sheet${omittedPupil===1?'':'s'}`:'',omittedAnswer?`${omittedAnswer} answer sheet${omittedAnswer===1?'':'s'}`:'',omittedWorked?`${omittedWorked} worked-example page${omittedWorked===1?'':'s'}`:''].filter(Boolean).join(', ');const note=`<div class="tt99-preview-performance-note"><strong>Fast preview</strong><span>${details} hidden from the live preview to keep the browser responsive. The downloaded PDF still contains the complete pack.</span></div>`;html=html.replace('<div class="tt99-games-preview-stack tt99-games-pupil-pages">',`${note}<div class="tt99-games-preview-stack tt99-games-pupil-pages">`);}return html;}
+function installPreviewLimiter(){if(typeof Element==='undefined'||typeof document==='undefined')return;const root=document.getElementById('tt99-games-root');if(!root||root.__tt99PreviewLimiter)return;const desc=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');if(!desc?.get||!desc?.set)return;root.__tt99PreviewLimiter=true;Object.defineProperty(root,'innerHTML',{configurable:true,get(){return desc.get.call(this);},set(value){desc.set.call(this,trimPreviewHTML(value));}});const style=document.createElement('style');style.id='tt99-performance-v142-style';style.textContent='.tt99-preview-performance-note{display:flex;gap:8px;align-items:flex-start;margin:0 2px 10px;padding:8px 10px;border:1px solid #cfe1de;border-radius:9px;background:#f5faf9;color:#526a6e;font-size:.65rem;line-height:1.35}.tt99-preview-performance-note strong{flex:0 0 auto;color:#176f67}.tt99-preview-performance-note span{min-width:0}';document.head.appendChild(style);}
+installPreviewLimiter();
+G.PERFORMANCE={version:'1.42.2',largePackThreshold:LARGE_PACK,maxCache:MAX_CACHE,maxPupilPreview:MAX_PUPIL_PREVIEW,maxAnswerPreview:MAX_ANSWER_PREVIEW,maxWorkedPreview:MAX_WORKED_PREVIEW,clearCache(){activityCache.clear();},cacheSize(){return activityCache.size;},trimPreviewHTML};
 })(typeof globalThis!=='undefined'?globalThis:this);
