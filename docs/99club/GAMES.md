@@ -32,75 +32,82 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 ### Algebra & relationships
 - Symbol Equations
 - Function Machines
-- Equation Repair (engine id remains `balance` while the redesign is being evaluated)
+- Equation Repair (engine id remains `balance`)
 
 ### Number logic & grids
 - Sudoku
 - Futoshiki
 - Nonogram / Number Picture
 - Number Path
+- Number Towers / Skyscrapers
 
 `Arithmetic Domino Chain` remains hidden from the one-player library. It is a possible future cut-and-match classroom resource, not part of the current pupil puzzle catalogue.
 
-## Current repair/refinement batch
+## v1.37 repair/refinement batch
 
-These items should be fixed before or alongside the next new engine:
+The v1.37 batch closes the outstanding review items before moving to the next puzzle engine:
 
-1. **Operation Codebreaker — critical Challenge repair**
-   - Challenge may contain two missing operation slots.
-   - Every slot must be visible in preview and PDF.
-   - Final unlock-code box count must exactly match visible operation blanks.
-   - Replace tiny compact mappings such as `+:4 -:5 x:1 /:7` with larger, clearly separated key tiles.
-   - Strengthen lock labels and final code hierarchy.
-   - Add regression coverage for two-operation Challenge locks.
+1. **Operation Codebreaker**
+   - Challenge equations with two missing operation slots are rendered in full in PDF.
+   - Every missing operation contributes one visible final-code position.
+   - Operation→digit keys are larger and more legible in preview and PDF.
 
-2. **Function Machines visual refinement**
-   - Keep the input/output table.
-   - Turn the rule graphic into one connected machine/process rather than a row of independent rectangles.
-   - Use distinct input/output ports, stronger operation chambers and clear flow arrows.
-   - Tighten spacing between machine and table.
-   - Maintain preview/PDF parity.
+2. **Function Machines**
+   - The rule graphic is now one connected process/machine rather than unrelated boxes.
+   - Input/output ports remain visually distinct and the existing input/output table is retained.
+   - Preview and PDF use the same visual concept.
 
-3. **Arithmagons diagonal operation markers**
-   - On dashed diagonal connections, place +/x operation indicators inward toward the centre of the shape so they remain visible and clearly associated with the connection.
-   - Apply the same placement rule in preview and PDF.
+3. **Arithmagons**
+   - Diagonal `+ / ×` indicators are moved inward toward the centre of the shape in preview and PDF.
 
-4. **Kakuro 8x8**
-   - Add 8x8 to manual grid-size options.
-   - Verify generation, uniqueness/validity, preview, answer preview and PDF.
-   - Review whether Auto should select 8x8 at suitable difficulty/year combinations.
+4. **Kakuro**
+   - 8×8 is available as a manual grid-size option.
+   - Challenge/Year 6 Auto may use 8×8.
+   - The 8×8 mask goes through the same uniqueness/validity checks as the existing sizes.
 
 5. **Symbol Equations / Equation Repair**
-   - Continue visual and classroom-usefulness review before treating the current redesigns as final.
+   - The existing symbol-decoding/mystery-value and repair-tile redesigns are retained after review, with small presentation polish rather than another structural rewrite.
 
-## Next new engine: Number Towers / Skyscrapers
+6. **Number Towers / Skyscrapers**
+   - Added as a new deterministic number-logic engine.
+   - Easy = 4×4, Standard = 5×5, Challenge = 6×6 by default.
+   - Uses edge visibility clues and a Latin-square rule (1–N once in every row/column).
+   - Clues are reduced only while a unique solution is preserved.
+   - Preview, answer preview and PDF ship together.
 
-The next new puzzle after Sumplete is **Skyscrapers / Towers**, preferably presented to teachers/pupils as **Number Towers** with the familiar puzzle name available in supporting text.
+## Curriculum mapping: Number Towers
 
-Core rule: each row and column contains each tower height exactly once; clues around the grid show how many towers are visible from that direction because taller towers hide shorter towers behind them.
+The mapping is deliberately modest:
+- **Number & place value** — ordering/comparing values and reasoning about relative magnitude.
+- **Mathematical reasoning/problem solving** — systematic deduction, elimination and checking constraints.
+- **Geometry/spatial reasoning** — supporting viewpoint/position reasoning.
 
-### Curriculum mapping
-Primary mapping should be honest rather than overstated:
-- Number & place value: ordering/comparing numbers and reasoning with relative magnitude.
-- Mathematical reasoning/problem solving: systematic deduction, elimination and checking constraints.
-- Position/spatial reasoning as a supporting skill.
+Primary compatibility is Years 3–6. The puzzle is reasoning practice; it is not presented as a replacement for a statutory lesson objective.
 
-Provisional compatibility: Years 3–6, subject to generation and classroom review.
+## Next new engine: Binary Puzzle / Takuzu
 
-### Difficulty model
-- **Easy:** 4x4, generous edge clues and straightforward deductions.
-- **Standard:** 5x5, reduced clue set while retaining a unique solution.
-- **Challenge:** 6x6, carefully reduced clues and deeper deduction.
+After the v1.37 batch, the next new game is **Binary Puzzle / Takuzu**.
 
-Every accepted puzzle must have a mathematically verified unique solution. Preview, answer view and PDF must ship together.
+Core rules:
+- fill the grid with 0s and 1s;
+- each row and column contains equal numbers of 0s and 1s;
+- no three identical values appear consecutively horizontally or vertically;
+- no two completed rows are identical and no two completed columns are identical;
+- every generated pupil puzzle must have a verified unique solution.
+
+Provisional progression:
+- **Easy:** 4×4 / 6×6 with generous givens and explicit rule reminder.
+- **Standard:** 6×6 with balanced givens.
+- **Challenge:** 8×8 with fewer givens and deeper interaction between rules.
+
+Curriculum mapping should remain under number/place-value pattern reasoning and mathematical problem solving rather than overstating a direct statutory objective.
 
 ## Ordered future puzzle roadmap
 
-After Number Towers:
+After Takuzu:
 
-1. **Binary Puzzle / Takuzu** — balanced 0/1 rows and columns, no triples, no duplicate rows/columns.
-2. **Killer Sudoku / Sum Sudoku** — Sudoku plus sum cages; reuse Sudoku and cage machinery where sensible.
-3. **Bridges / Hashi** — connect numbered islands with horizontal/vertical bridges, no crossings.
+1. **Killer Sudoku / Sum Sudoku** — Sudoku plus sum cages; reuse Sudoku and cage machinery where sensible.
+2. **Bridges / Hashi** — connect numbered islands with horizontal/vertical bridges, no crossings.
 
 Further candidates retained for later evaluation include Maths Mines, alphametics/number-code addition, region sums/number partition, domino placement, honeycomb/hex puzzles, equation loops, factor/prime chains, fraction-match grids and coordinate treasure puzzles.
 
