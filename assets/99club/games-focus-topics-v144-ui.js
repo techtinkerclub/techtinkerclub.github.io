@@ -4,7 +4,7 @@
 const root=document.getElementById('tt99-games-root'),G=global.TT99Games;if(!root||!G?.FOCUS_TOPICS||root.dataset.focusTopicsV144==='1')return;
 root.dataset.focusTopicsV144='1';let scheduled=false;
 const SETTINGS_KEY='tt99-games-settings-v4';
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function stored(){try{return G.normalizeSettings(JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'));}catch(e){return G.normalizeSettings({});}}
 function yearValue(s){return Number(s.yearFilter)||0;}
 function available(id,year){return G.focusAllowedForYear(id,year);}
