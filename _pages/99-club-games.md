@@ -67,3 +67,14 @@ sitemap: true
 <script src="/assets/99club/games-towers-direction-v138.js?v=1" defer></script>
 <script src="/assets/99club/games-takuzu-v139-ui.js?v=1" defer></script>
 <script src="/assets/99club/games-puzzle-pack-v140-ui.js?v=2" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded',function(){
+  const nav=document.querySelector('.tt99-games-nav');
+  if(!nav||nav.querySelector('[data-game-guides-link]'))return;
+  const link=document.createElement('a');
+  link.href='/tools/99-club/help/#game-guides';
+  link.textContent='How to play';
+  link.setAttribute('data-game-guides-link','');
+  nav.appendChild(link);
+});
+</script>
