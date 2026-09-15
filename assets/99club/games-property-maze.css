@@ -1,0 +1,14 @@
+/* 99 Club Studio · Number Property Maze preview */
+.tt99-propertymaze .tt99-maze-cell{background:#fff}
+.tt99-propertymaze .tt99-maze-cell.start,.tt99-propertymaze .tt99-maze-cell.finish{background:#eef8f6}
+.tt99-propertymaze .tt99-maze-cell.start b,.tt99-propertymaze .tt99-maze-cell.finish b{font-size:clamp(6px,.77vw,11px);letter-spacing:0}
+.tt99-propertymaze .tt99-maze-cell i{left:3px;top:2px;padding:1px 2px;border-radius:3px;background:#edf8f6;color:#16756d;font-size:clamp(3.7px,.38vw,5.5px);letter-spacing:.02em}
+.tt99-propertymaze .tt99-maze-cell.finish i{left:auto;right:3px}
+.tt99-propertymaze-rule{justify-content:center;gap:7px}
+.tt99-propertymaze-rule .rule-card{padding:9px 10px;border:1px solid #cfe3df;border-radius:9px;background:#f4faf9;color:#315b5a}
+.tt99-propertymaze-rule .rule-card strong{display:block;font-size:clamp(7px,.75vw,10px);color:#1e6d66}
+.tt99-propertymaze-rule .rule-card span{display:block;margin-top:3px;font-size:clamp(6px,.64vw,8.5px);font-weight:800}
+.tt99-propertymaze-rule p{margin:0;color:#667d81;font-size:clamp(5px,.55vw,7.5px);line-height:1.35}
+.tt99-propertymaze-rule .answer-note{color:#16756d;font-weight:800}
+.tt99-game-activities.count-3 .tt99-propertymaze-rule{gap:3px}.tt99-game-activities.count-3 .tt99-propertymaze-rule .rule-card{padding:4px 5px}.tt99-game-activities.count-3 .tt99-propertymaze-rule p{font-size:4.6px}
+@media print{.tt99-propertymaze .tt99-maze-cell.correct-route{background:#eaf7f3!important}}
