@@ -25,7 +25,7 @@ jobs:
           while IFS= read -r -d '' file; do
             echo "Checking $file"
             node --check "$file"
-          done < <(find assets/99club -type f -name '*.js' -print0 | sort -z)
+          done < <(find assets/99club -type f -name '*.js' -not -path '*/tests/archive/*' -print0 | sort -z)
 
           for file in custom-app.js custom-coordinates.js custom-graphs.js custom-piecharts.js custom-visual-smoke.js; do
             if [ -f "$file" ]; then
@@ -42,45 +42,34 @@ jobs:
           const fs=require('fs');
           const cp=require('child_process');
           const files=cp.execSync("find . -type f -name '*.json' -not -path './node_modules/*' -not -path './vendor/*' -print",{encoding:'utf8'}).trim().split(/\n/).filter(Boolean);
-          for(const file of files){
-            console.log('Parsing',file);
-            JSON.parse(fs.readFileSync(file,'utf8'));
-          }
+          for(const file of files){ console.log('Parsing',file); JSON.parse(fs.readFileSync(file,'utf8')); }
           NODE
 
-      - name: Run every 99 Club test
+      - name: Run current 99 Club tests
         shell: bash
         run: |
-          set +e
-          failures=0
+          set -euo pipefail
           count=0
           for test in assets/99club/tests/*.js; do
             [ -f "$test" ] || continue
             count=$((count+1))
-            echo
             echo "===== TEST $count: $test ====="
             node "$test"
-            rc=$?
-            if [ $rc -ne 0 ]; then
-              echo "FAIL: $test (exit $rc)"
-              failures=$((failures+1))
-            else
-              echo "PASS: $test"
-            fi
           done
-          echo
-          echo "Executed $count tests; failures: $failures"
-          exit $failures
+          echo "Executed $count current tests; failures: 0"
+          test "$count" -ge 20
 
-      - name: Documentation inventory
-        if: always()
+      - name: Documentation hygiene
         shell: bash
         run: |
-          echo 'Root Markdown files:'
-          find . -maxdepth 1 -type f -name '*.md' -printf '%f\n' | sort
-          echo
-          echo 'Documentation Markdown files:'
-          find docs -type f -name '*.md' -printf '%p\n' 2>/dev/null | sort || true
-          echo
-          echo '99 Club Markdown files under assets:'
-          find assets/99club -maxdepth 1 -type f -name '*.md' -printf '%p\n' | sort
+          set -euo pipefail
+          mapfile -t root_md < <(find . -maxdepth 1 -type f -name '*.md' -printf '%f\n' | sort)
+          printf 'Root Markdown files:\n%s\n' "${root_md[*]}"
+          expected=(99-club-custom.md 99-club-help.md README.md index.md)
+          test "${root_md[*]}" = "${expected[*]}"
+          test -f docs/README.md
+          test -f docs/99club/README.md
+          test -f docs/99club/GAMES.md
+          test -f docs/99club/CURRICULUM.md
+          test -f docs/99club/CUSTOM_WORKSHEETS.md
+          test -f docs/archive/README.md
