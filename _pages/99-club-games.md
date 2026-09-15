@@ -28,7 +28,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-takuzu-v139.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-puzzle-pack-v140.css?v=3">
 <link rel="stylesheet" href="/assets/99club/games-shikaku-v143.css?v=1">
-<link rel="stylesheet" href="/assets/99club/games-focus-topics-v144.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-focus-topics-v145.css?v=1">
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
 <script src="/assets/99club/games-crossgrid-v1321.js?v=2"></script>
@@ -45,13 +45,13 @@ sitemap: true
 <script src="/assets/99club/games-sumplete.js?v=1"></script>
 <script src="/assets/99club/games-shikaku-v143.js?v=1"></script>
 <script src="/assets/99club/games-engine.js?v=15"></script>
-<script src="/assets/99club/games-focus-topics-v144.js?v=1"></script>
+<script src="/assets/99club/games-focus-topics-v145.js?v=1"></script>
 <script src="/assets/99club/games-pack-mode.js?v=2"></script>
 <script src="/assets/99club/games-performance-v142.js?v=1"></script>
 <script src="/assets/99club/games-instructions-v139.js?v=1"></script>
 <script src="/assets/99club/games-puzzle-redesign-v135-logic.js?v=1"></script>
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
-<script src="/assets/99club/games-pdf.js?v=19"></script>
+<script src="/assets/99club/games-pdf.js?v=20"></script>
 <script src="/assets/99club/games-pdf-v136.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v137.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v138.js?v=1"></script>
@@ -73,7 +73,7 @@ sitemap: true
 <script src="/assets/99club/games-takuzu-v139-ui.js?v=1" defer></script>
 <script src="/assets/99club/games-puzzle-pack-v140-ui.js?v=2" defer></script>
 <script src="/assets/99club/games-shikaku-v143-ui.js?v=1" defer></script>
-<script src="/assets/99club/games-focus-topics-v144-ui.js?v=1" defer></script>
+<script src="/assets/99club/games-focus-topics-v145-ui.js?v=1" defer></script>
 <script>
 window.addEventListener('DOMContentLoaded',function(){
   const root=document.getElementById('tt99-games-root');
@@ -99,6 +99,6 @@ window.addEventListener('DOMContentLoaded',function(){
     link.textContent='Help';
   }
   tidyHeaderNav();
-  if(root&&window.MutationObserver)new MutationObserver(tidyHeaderNav).observe(root,{childList:true,subtree:true});
+  if(root&&window.MutationObserver)new MutationObserver(tidyHeaderNav).observe(root,{childList:true});
 });
 </script>
