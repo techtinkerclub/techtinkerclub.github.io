@@ -19,13 +19,13 @@ function drawMachine(c,a,answers,x,y,w,h,index){
   const top=frame(c,x,y,w,h,index,a,'Follow the process from Input to Output. If the input is missing, undo the operations in reverse order.');
   const ops=a.operations||[],cy=top+28,portW=72,portH=34,stageW=Math.min(72,(w-2*portW-95)/Math.max(1,ops.length)),stageH=34,link=24,total=2*portW+ops.length*stageW+(ops.length+1)*link,start=x+w/2-total/2;
   let xx=start;
-  roundRect(c,xx,cy,portW,portH,17,CREAM,[91,143,137],1);text(c,xx+portW/2,cy+22,'Input',8.3,{bold:true,align:'center'});xx+=portW;
+  roundRect(c,xx,cy,portW,portH,17,CREAM,[91,143,137],1);text(c,xx+portW/2,cy+22.5,'Input',9.3,{bold:true,align:'center'});xx+=portW;
   for(let i=0;i<ops.length;i++){
     arrow(c,xx+2,cy+portH/2,xx+link-2,TEALD,1);xx+=link;
-    roundRect(c,xx,cy,stageW,stageH,7,BLUE,BLUEB,1);text(c,xx+stageW/2,cy+22,`${ops[i].op} ${ops[i].value}`,9.2,{bold:true,align:'center'});xx+=stageW;
+    roundRect(c,xx,cy,stageW,stageH,7,BLUE,BLUEB,1);text(c,xx+stageW/2,cy+22.5,`${ops[i].op} ${ops[i].value}`,10.2,{bold:true,align:'center'});xx+=stageW;
   }
   arrow(c,xx+2,cy+portH/2,xx+link-2,TEALD,1);xx+=link;
-  roundRect(c,xx,cy,portW,portH,17,CREAM,[91,143,137],1);text(c,xx+portW/2,cy+22,'Output',8.3,{bold:true,align:'center'});
+  roundRect(c,xx,cy,portW,portH,17,CREAM,[91,143,137],1);text(c,xx+portW/2,cy+22.5,'Output',9.3,{bold:true,align:'center'});
 
   const ty=cy+56,tableW=Math.min(300,w*.62),tx=x+w/2-tableW/2,rowH=Math.min(31,(h-(ty-y)-12)/(a.rows.length+1));
   rect(c,tx,ty,tableW,rowH,SOFT,[180,197,199],.55);text(c,tx+tableW*.25,ty+19,'Input',7.6,{bold:true,align:'center'});text(c,tx+tableW*.75,ty+19,'Output',7.6,{bold:true,align:'center'});
@@ -35,12 +35,9 @@ function drawMachine(c,a,answers,x,y,w,h,index){
 function tag(c,side,cx,cy,value){if(!value)return;const v=String(value);if(side==='top'){polygon(c,[[cx-10,cy-23],[cx+10,cy-23],[cx+10,cy-8],[cx,cy],[cx-10,cy-8]],TAG,TAGB,.75);text(c,cx,cy-10,v,7.2,{bold:true,align:'center'});}else if(side==='bottom'){polygon(c,[[cx,cy],[cx+10,cy+8],[cx+10,cy+23],[cx-10,cy+23],[cx-10,cy+8]],TAG,TAGB,.75);text(c,cx,cy+17,v,7.2,{bold:true,align:'center'});}else if(side==='left'){polygon(c,[[cx-23,cy-10],[cx-8,cy-10],[cx,cy],[cx-8,cy+10],[cx-23,cy+10]],TAG,TAGB,.75);text(c,cx-14,cy+3,v,7.2,{bold:true,align:'center'});}else{polygon(c,[[cx,cy],[cx+8,cy-10],[cx+23,cy-10],[cx+23,cy+10],[cx+8,cy+10]],TAG,TAGB,.75);text(c,cx+14,cy+3,v,7.2,{bold:true,align:'center'});}}
 function drawTowers(c,a,answers,x,y,w,h,index){
   const size=a.size||0;if(!size)return;const top=frame(c,x,y,w,h,index,a,`Fill the grid with 1-${size}, using each height once in every row and column. Each edge tab points in the direction you are looking.`),availH=h-(top-y)-18,outer=Math.min(w*.68,availH),pad=31,cell=(outer-2*pad)/size,gw=cell*size,gx=x+w/2-gw/2,gy=top+pad+Math.max(0,(availH-outer)/2),clues=a.clues||{},sol=a.solutionGrid||[];
-  // Clean body completely so older plain clue labels cannot interfere with the border.
   rect(c,x+5,top-3,w-10,h-(top-y)-4,WHITE,WHITE,.1);
-  // Grid: light inner lines, strong uninterrupted outer frame.
   for(let r=0;r<size;r++)for(let col=0;col<size;col++){rect(c,gx+col*cell,gy+r*cell,cell,cell,WHITE,[118,143,147],.55);if(answers)text(c,gx+col*cell+cell/2,gy+r*cell+cell*.64,String(sol[r][col]),Math.min(12,cell*.34),{bold:true,color:TEALD,align:'center'});}
   line(c,gx,gy,gx+gw,gy,[71,103,108],1.25);line(c,gx,gy+gw,gx+gw,gy+gw,[71,103,108],1.25);line(c,gx,gy,gx,gy+gw,[71,103,108],1.25);line(c,gx+gw,gy,gx+gw,gy+gw,[71,103,108],1.25);
-  // A deliberate 5pt air-gap between tag tip and grid border prevents visual collisions.
   for(let i=0;i<size;i++){const ccx=gx+i*cell+cell/2,rcy=gy+i*cell+cell/2;if(clues.top?.[i])tag(c,'top',ccx,gy-5,clues.top[i]);if(clues.bottom?.[i])tag(c,'bottom',ccx,gy+gw+5,clues.bottom[i]);if(clues.left?.[i])tag(c,'left',gx-5,rcy,clues.left[i]);if(clues.right?.[i])tag(c,'right',gx+gw+5,rcy,clues.right[i]);}
 }
 function overlaySheet(doc,pageIndex,sheet,answers){const entry=doc.pages[pageIndex];if(!entry)return;const acts=sheet.activities||[],count=Math.max(1,acts.length),bodyTop=110,bodyBottom=PH-42,gap=12,ah=(bodyBottom-bodyTop-gap*(count-1))/count,w=PW-2*M;acts.forEach((a,i)=>{if(!['functionmachine','numbertowers'].includes(a.engineId))return;const yy=bodyTop+i*(ah+gap);rect(entry.cmds,M,yy,w,ah,WHITE,WHITE,.1);if(a.engineId==='functionmachine')drawMachine(entry.cmds,a,answers,M,yy,w,ah,i+1);else drawTowers(entry.cmds,a,answers,M,yy,w,ah,i+1);});}
