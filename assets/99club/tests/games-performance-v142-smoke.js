@@ -2,12 +2,12 @@
 'use strict';
 const assert=require('assert'),path=require('path');
 let numericCalls=0,arithCalls=0;
-const NL={DEFINITIONS:{hashi:{id:'hashi'}},generate(id,settings,seed){numericCalls++;return {engineId:id,difficulty:settings?.engineSettings?.[id]?.difficulty||'standard',seed};}};
+const NL={DEFINITIONS:{hashi:{id:'hashi'}},generate(id,settings,seed){numericCalls++;return {engineId:id,difficulty:settings?.engineSettings?.[id]?.difficulty||'standard',seed,year:settings?.maxYear,topics:settings?.topics};}};
 const AR={generate(id,settings,seed){arithCalls++;return {engineId:id,difficulty:settings?.engineSettings?.[id]?.difficulty||'standard',seed};}};
-const G={__fastPackGeneration:false,generatePack(settings,seed){const s={engineSettings:{demo:{difficulty:'standard'}}};return {sheets:[{activities:[NL.generate('demo',s,seed+':same'),NL.generate('demo',s,seed+':same'),AR.generate('arith',s,seed+':same'),AR.generate('arith',s,seed+':same')]}]};}};
+const G={__fastPackGeneration:false,generatePack(settings,seed){const s={minYear:settings?.minYear||3,maxYear:settings?.maxYear||6,topics:settings?.topics||['calculation'],engineSettings:{demo:{difficulty:'standard'}}};return {sheets:[{activities:[NL.generate('demo',s,seed+':same'),NL.generate('demo',s,seed+':same'),AR.generate('arith',s,seed+':same'),AR.generate('arith',s,seed+':same')]}]};}};
 globalThis.TT99Games=G;globalThis.TT99NumberLogicGames=NL;globalThis.TT99ArithmeticGames=AR;
 require(path.join(__dirname,'..','games-performance-v142.js'));
-assert.strictEqual(G.PERFORMANCE.version,'1.42.2');
+assert.strictEqual(G.PERFORMANCE.version,'1.42.3');
 assert.strictEqual(G.PERFORMANCE.largePackThreshold,8);
 
 // Below the threshold, normal generator behaviour remains untouched.
@@ -16,22 +16,32 @@ assert.strictEqual(numericCalls,2,'small packs must retain normal numeric genera
 assert.strictEqual(arithCalls,2,'small packs must retain normal arithmetic generation path');
 
 // At/above the threshold, deterministic duplicate work is cached.
-G.PERFORMANCE.clearCache();numericCalls=arithCalls=0;G.generatePack({activityCount:8},'large');
+G.PERFORMANCE.clearCache();numericCalls=arithCalls=0;G.generatePack({activityCount:8,minYear:3,maxYear:6,topics:['calculation']},'large');
 assert.strictEqual(numericCalls,1,'large packs should cache duplicate numeric generation');
 assert.strictEqual(arithCalls,1,'large packs should cache duplicate arithmetic generation');
 
-// Hashi in a large pack must use the fast validated-template path rather than the expensive base generator.
-G.PERFORMANCE.clearCache();numericCalls=0;
-let captured;
-const oldPack=G.generatePack;
-// The wrapped pack function captures its base at installation, so drive Hashi through a temporary
-// base-like call by enabling the flag explicitly. This also proves the engine wrapper is installed.
-G.__fastPackGeneration=true;captured=NL.generate('hashi',{engineSettings:{hashi:{difficulty:'challenge'}}},'hashi-fast');G.__fastPackGeneration=false;
-assert.strictEqual(numericCalls,0,'fast Hashi must bypass the expensive base generator');
+// Cache identity must include curriculum context, not only engine options + seed.
+G.PERFORMANCE.clearCache();numericCalls=0;G.__fastPackGeneration=true;
+const ctxA=NL.generate('demo',{minYear:3,maxYear:4,topics:['calculation'],engineSettings:{demo:{difficulty:'standard'}}},'same-seed');
+const ctxB=NL.generate('demo',{minYear:5,maxYear:6,topics:['fractions'],engineSettings:{demo:{difficulty:'standard'}}},'same-seed');
+G.__fastPackGeneration=false;
+assert.strictEqual(numericCalls,2,'different year/topic contexts must not share a cached puzzle');
+assert.notDeepStrictEqual({year:ctxA.year,topics:ctxA.topics},{year:ctxB.year,topics:ctxB.topics});
+
+// Hashi in an auto-configured large pack may use the fast validated-template path.
+G.PERFORMANCE.clearCache();numericCalls=0;let captured;
+G.__fastPackGeneration=true;captured=NL.generate('hashi',{engineSettings:{hashi:{difficulty:'challenge',boardSize:'auto',islandCount:'auto'}}},'hashi-fast');G.__fastPackGeneration=false;
+assert.strictEqual(numericCalls,0,'auto fast Hashi must bypass the expensive base generator');
 assert.strictEqual(captured.engineId,'hashi');
 assert.strictEqual(captured.islands.length,12);
 assert(captured.instruction.includes('TT99V140:hashi:'),'fast Hashi must preserve the v1.40 render payload');
 assert(captured.edges.some(e=>e.solution>0),'fast Hashi must include a bridge solution');
+
+// Explicit manual Hashi dimensions/counts must never be silently replaced by a template.
+G.PERFORMANCE.clearCache();numericCalls=0;G.__fastPackGeneration=true;
+const manual=NL.generate('hashi',{engineSettings:{hashi:{difficulty:'challenge',boardSize:'8',islandCount:'10'}}},'hashi-manual');G.__fastPackGeneration=false;
+assert.strictEqual(numericCalls,1,'manual Hashi settings that do not match the template must use the base generator');
+assert.strictEqual(manual.engineId,'hashi');
 
 // Large-pack live preview is deliberately capped before DOM parsing. Full pack data is not touched.
 function page(classes='',body='x'){return `<article class="tt99-game-paper${classes?' '+classes:''}"><section>${body}</section></article>`;}
@@ -47,4 +57,4 @@ assert(trimmed.includes('Fast preview'),'large preview must explain the cap');
 assert(trimmed.includes('downloaded PDF still contains the complete pack'),'preview notice must state that PDF remains complete');
 assert(!trimmed.includes('p9')&&!trimmed.includes('a9')&&!trimmed.includes('w3'),'omitted preview pages must not be parsed into the live DOM');
 
-console.log('PASS v1.42 performance: large-pack cache, fast Hashi and preview cap contracts verified.');
+console.log('PASS v1.42 performance: cache/context, manual Hashi preservation and preview cap contracts verified.');
