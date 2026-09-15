@@ -19,6 +19,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-sumplete.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-property-maze.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-layout-v1321.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-ui-v134.css?v=1">
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
 <script src="/assets/99club/games-crossgrid-v1321.js?v=2"></script>
@@ -32,4 +33,5 @@ sitemap: true
 <script src="/assets/99club/games-pdf.js?v=19"></script>
 <script src="/assets/99club/games-layout-v1321.js?v=2"></script>
 <script src="/assets/99club/games-app.js?v=21" defer></script>
-<script src="/assets/99club/games-random-ui.js?v=2" defer></script>
+<script src="/assets/99club/games-random-ui.js?v=3" defer></script>
+<script src="/assets/99club/games-ui-v134.js?v=1" defer></script>
