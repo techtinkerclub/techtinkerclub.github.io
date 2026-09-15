@@ -16,6 +16,7 @@ jobs:
       - name: Syntax
         run: |
           node --check assets/99club/games-puzzle-pack-v140.js
+          node --check assets/99club/games-puzzle-pack-v140-hashi.js
           node --check assets/99club/games-puzzle-pack-v140-ui.js
           node --check assets/99club/games-pdf-v140.js
       - name: v1.40 puzzle tests
@@ -27,3 +28,9 @@ jobs:
           node assets/99club/tests/games-property-maze-smoke.js
           node assets/99club/tests/games-sumplete-smoke.js
           node assets/99club/tests/games-random-pack-smoke.js
+      - name: Build implementation QA PDF
+        run: node assets/99club/tests/build-v140-puzzle-qa-pdf.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v140-puzzle-qa
+          path: artifacts/v140-puzzle-qa.pdf
