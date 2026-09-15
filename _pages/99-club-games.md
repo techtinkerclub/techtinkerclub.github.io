@@ -32,6 +32,7 @@ sitemap: true
 <script src="/assets/99club/games-property-maze.js?v=1"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
 <script src="/assets/99club/games-takuzu-v139.js?v=1"></script>
+<script src="/assets/99club/games-takuzu-v139-logic.js?v=1"></script>
 <script src="/assets/99club/games-number-towers-v137.js?v=1"></script>
 <script src="/assets/99club/games-number-towers-v137-unique.js?v=1"></script>
 <script src="/assets/99club/games-number-path-v2.js?v=1"></script>
