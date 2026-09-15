@@ -18,7 +18,7 @@ const FOCUS_GROUPS=[
 // `level` is an internal generation scale only. It is deliberately not shown
 // to teachers and is not a curriculum/year claim.
 const FOCUS_TOPICS={
-  place_value:{label:'Place value & number order',group:'number',parent:'number_place_value',level:3},
+  place_value:{label:'Place value & number order',group:'number',parent:'number_place_value',level:4},
   factors_multiples:{label:'Factors, multiples & primes',group:'number',parent:'number_place_value',level:5},
   square_numbers:{label:'Square numbers',group:'number',parent:'number_place_value',level:5},
   addition_subtraction:{label:'Addition & subtraction',group:'calculation',parent:'calculation',level:3},
@@ -29,7 +29,7 @@ const FOCUS_TOPICS={
   decimals_percentages:{label:'Decimals & percentages',group:'fractions',parent:'decimals_percentages',level:5},
   ratio_scale:{label:'Ratio & scale',group:'fractions',parent:'ratio_proportion',level:6},
   measures_units:{label:'Measures & unit conversions',group:'measurement',parent:'measurement',level:4},
-  angles_turns:{label:'Angles & turns',group:'geometry',parent:'geometry',level:4},
+  angles_turns:{label:'Angles & turns',group:'geometry',parent:'geometry',level:5},
   area_rectangles:{label:'Area, rectangles & factor pairs',group:'geometry',parent:'geometry',level:4},
   spatial_grids:{label:'Shape, space & grid reasoning',group:'geometry',parent:'geometry',level:4},
   statistics_averages:{label:'Statistics & averages',group:'patterns',parent:'statistics',level:4},
@@ -87,10 +87,8 @@ function migrateFromParents(parents){
 }
 function parentsForFocus(ids){return [...new Set(validFocus(ids).map(id=>FOCUS_TOPICS[id].parent))];}
 function generationLevel(ids){
-  const levels=validFocus(ids).map(id=>Number(FOCUS_TOPICS[id].level)||4).sort((a,b)=>a-b);
-  if(!levels.length)return 4;
-  const mid=Math.floor(levels.length/2),value=levels.length%2?levels[mid]:(levels[mid-1]+levels[mid])/2;
-  return Math.max(1,Math.min(6,Math.round(value)));
+  const levels=validFocus(ids).map(id=>Number(FOCUS_TOPICS[id].level)||4);
+  return Math.max(1,Math.min(6,levels.length?Math.max(...levels):4));
 }
 for(const [id,e] of Object.entries(G.ENGINES||{})){
   const explicit=ENGINE_FOCUS[id];
