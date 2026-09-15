@@ -33,7 +33,7 @@ const FOCUS_TOPICS={
   area_rectangles:{label:'Area, rectangles & factor pairs',group:'geometry',parent:'geometry',level:4},
   spatial_grids:{label:'Shape, space & grid reasoning',group:'geometry',parent:'geometry',level:4},
   statistics_averages:{label:'Statistics & averages',group:'patterns',parent:'statistics',level:4},
-  sequences_patterns:{label:'Sequences & patterns',group:'patterns',parent:'algebra',level:4},
+  sequences_patterns:{label:'Sequences & patterns',group:'patterns',parent:'algebra',level:6},
   algebra_equations:{label:'Algebra & equations',group:'patterns',parent:'algebra',level:6}
 };
 const ALL=Object.keys(FOCUS_TOPICS);
