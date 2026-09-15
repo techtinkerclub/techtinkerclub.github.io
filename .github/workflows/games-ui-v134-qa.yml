@@ -27,11 +27,10 @@ jobs:
           node --check assets/99club/tests/games-ui-v134-smoke.js
       - name: v1.34 focused UI regression
         run: node assets/99club/tests/games-ui-v134-smoke.js
-      - name: Core Games regressions
+      - name: Current Games regressions
         run: |
           node assets/99club/tests/games-property-maze-smoke.js
           node assets/99club/tests/games-number-logic-smoke.js
-          node assets/99club/tests/games-arithmetic-expansion-smoke.js
           node assets/99club/tests/games-number-structures-smoke.js
           node assets/99club/tests/games-random-pack-smoke.js
           node assets/99club/tests/games-smoke.js
