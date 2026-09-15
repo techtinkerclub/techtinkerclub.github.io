@@ -1,0 +1,26 @@
+name: v1.37 Visual QA PDF
+on:
+  push:
+    branches: [chatgpt/v137-qa-pdf]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Generate QA PDF
+        run: node tools/generate-v137-qa-pdf.js v1.37-visual-qa-pack.pdf
+      - name: Verify PDF exists
+        run: |
+          test -s v1.37-visual-qa-pack.pdf
+          file v1.37-visual-qa-pack.pdf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v1.37-visual-qa-pack
+          path: v1.37-visual-qa-pack.pdf
+          if-no-files-found: error
