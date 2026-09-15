@@ -60,4 +60,6 @@ assert(pack.sheets?.length===4,'pack-mode generation regressed');
 assert(pack.sheets.flatMap(s=>s.activities||[]).length===8,'activity count regressed');
 for(const a of pack.sheets.flatMap(s=>s.activities||[]))assert(!a.error,`generation regression in ${a.engineId}: ${a.error}`);
 
+// Marker used to ensure the final branch state receives a push-triggered QA run.
+assert(app.includes('function renderGamesCard()'),'base Games UI structure missing');
 console.log('Games v1.34 UI batch regression: PASS · pack UI, contextual vocabulary, inline settings, topic cleanup, PDF metadata strategy and preview containment.');
