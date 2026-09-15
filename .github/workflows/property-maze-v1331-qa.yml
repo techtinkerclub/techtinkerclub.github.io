@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - chatgpt/v1.33.1-property-maze-render-fix
+  pull_request:
+    branches:
+      - master
   workflow_dispatch: {}
 
 permissions:
