@@ -34,6 +34,20 @@ function build(){
   el.querySelector('[data-focus-all]')?.addEventListener('click',()=>applyFocus(Object.keys(G.FOCUS_TOPICS)));
   el.querySelector('[data-focus-core]')?.addEventListener('click',()=>applyFocus(['addition_subtraction','multiplication_division','inverse_missing']));
 }
+function removeYearControlsAndWording(){
+  // The vocabulary editor used to expose its own year range. With no Games year
+  // filter this would be misleading, so new personal terms simply span primary.
+  const min=root.querySelector('#vocab-min-year'),max=root.querySelector('#vocab-max-year');
+  if(min){min.value='1';min.closest('.tt99-field')?.classList.add('tt99-year-legacy-v145');}
+  if(max){max.value='6';max.closest('.tt99-field')?.classList.add('tt99-year-legacy-v145');}
+  // Preserve underlying `auto` values but remove obsolete Year wording from
+  // specialist game settings.
+  root.querySelectorAll('option').forEach(opt=>{
+    const text=String(opt.textContent||'').trim();
+    if(/^Auto for year\s*\/\s*difficulty$/i.test(text))opt.textContent='Auto for difficulty';
+    else if(/^Auto for year$/i.test(text))opt.textContent='Auto';
+  });
+}
 function patchVisibleMetadata(){
   const s=stored(),summary=focusSummary(s),broad=new Set(Object.values(G.TOPICS||{}).map(m=>m?.label).filter(Boolean));
   root.querySelectorAll('.tt99-game-paper-identity p,.tt99-games-preview-toolbar>div:first-child>span:first-of-type').forEach(el=>{
@@ -48,7 +62,7 @@ function patchPdfMetadata(){
   const PDF=global.TT99GamesPDF;if(!PDF?.buildDocument||PDF.__focusTopicsV145)return;
   const base=PDF.buildDocument.bind(PDF);PDF.buildDocument=function(opts={}){const s=G.normalizeSettings(opts.settings||{}),label=focusSummary(s),key='__tt99_focus_summary__';return base({...opts,settings:{...(opts.settings||{}),minYear:s.minYear,maxYear:s.maxYear,hideYearLabel:true,topics:[key],focusTopics:s.focusTopics,generationLevel:s.generationLevel},topics:{...(opts.topics||{}),[key]:{label}}});};PDF.__focusTopicsV145=true;
 }
-function enhance(){build();patchVisibleMetadata();}
+function enhance(){build();removeYearControlsAndWording();patchVisibleMetadata();}
 function schedule(){if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;enhance();});}
 patchPdfMetadata();
 // games-app replaces the root's first child on render. Watching only root-level
