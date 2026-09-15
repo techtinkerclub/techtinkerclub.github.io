@@ -1,4 +1,4 @@
-/* 99 Club Studio · v1.40.1 — four puzzle engines visual refinement */
+/* 99 Club Studio · v1.41 — four puzzle engines visual refinement */
 .tt99-v140-grid{display:grid;margin:10px auto 7px;background:#fff;border:2px solid #4f7075;box-sizing:border-box}
 .tt99-v140-cell{display:grid;place-items:center;position:relative;box-sizing:border-box;border-right:1px solid #afc4c6;border-bottom:1px solid #afc4c6;color:#294b51;font-weight:800;background:#fff}
 .tt99-v140-cell.given{background:#f2f7f6}
@@ -28,14 +28,14 @@
 
 /* Alphametics */
 .tt99-alpha-card{width:min(100%,490px);margin:12px auto;padding:18px 22px 14px;border:1px solid #cedddd;border-radius:10px;background:#fafcfc}
-.tt99-alpha-sum-grid{--alpha-cols:5;display:grid;grid-template-columns:28px repeat(var(--alpha-cols),44px);gap:5px;justify-content:center;align-items:center;margin:0 auto;color:#294b51}
-.tt99-alpha-grid-row{display:contents}.tt99-alpha-op{display:grid;place-items:center;font-weight:900;font-size:20px;color:#294b51}
+.tt99-alpha-sum-grid{--alpha-cols:5;display:grid;grid-template-columns:36px repeat(var(--alpha-cols),44px);gap:5px;justify-content:center;align-items:center;margin:0 auto;color:#294b51}
+.tt99-alpha-grid-row{display:contents}.tt99-alpha-op{display:grid;place-items:center;font-weight:950;font-size:30px;line-height:1;color:#294b51}
 .tt99-alpha-cell{display:grid;place-items:center;width:44px;height:44px;border:1.5px solid #75989c;border-radius:5px;background:#fff;font:900 20px/1 Arial,sans-serif;color:#294b51;box-sizing:border-box}
 .tt99-alpha-cell.empty{border-color:transparent;background:transparent}.tt99-alpha-cell.answer{background:#e6f4f1;color:#0c746b;border-color:#76aaa5}
 .tt99-alpha-rule{grid-column:1/-1;height:2px;background:#456a70;margin:2px 0 3px}.tt99-alpha-grid-row.result .tt99-alpha-cell{border-width:2px}
 .tt99-alpha-hints{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}.tt99-alpha-hints span{padding:4px 8px;border:1px solid #d1e1df;border-radius:999px;background:#fff;color:#49696e;font-size:clamp(5px,.58vw,8px);font-weight:800}.tt99-alpha-hints .answer{background:#e6f4f1;color:#0c746b}
 
 .tt99-game-activities.count-2 .tt99-v140-grid{width:min(100%,270px)}.tt99-game-activities.count-2 .tt99-hashi-board{width:min(100%,300px)}
-.tt99-game-activities.count-2 .tt99-alpha-sum-grid{grid-template-columns:22px repeat(var(--alpha-cols),32px);gap:4px}.tt99-game-activities.count-2 .tt99-alpha-cell{width:32px;height:32px;font-size:15px}
-.tt99-game-activities.count-3 .tt99-v140-grid{width:min(100%,185px);margin-top:4px}.tt99-game-activities.count-3 .tt99-hashi-board{width:min(100%,195px);margin-top:3px}.tt99-game-activities.count-3 .tt99-hashi-island{width:23px;height:23px;font-size:8px}.tt99-game-activities.count-3 .tt99-alpha-card{padding:8px 9px;margin-top:4px}.tt99-game-activities.count-3 .tt99-alpha-sum-grid{grid-template-columns:16px repeat(var(--alpha-cols),23px);gap:2px}.tt99-game-activities.count-3 .tt99-alpha-cell{width:23px;height:23px;font-size:10px;border-radius:3px}.tt99-game-activities.count-3 .tt99-alpha-op{font-size:12px}.tt99-game-activities.count-3 .tt99-v140-note,.tt99-game-activities.count-3 .tt99-hashi-key{display:none}
+.tt99-game-activities.count-2 .tt99-alpha-sum-grid{grid-template-columns:28px repeat(var(--alpha-cols),32px);gap:4px}.tt99-game-activities.count-2 .tt99-alpha-cell{width:32px;height:32px;font-size:15px}.tt99-game-activities.count-2 .tt99-alpha-op{font-size:22px}
+.tt99-game-activities.count-3 .tt99-v140-grid{width:min(100%,185px);margin-top:4px}.tt99-game-activities.count-3 .tt99-hashi-board{width:min(100%,195px);margin-top:3px}.tt99-game-activities.count-3 .tt99-hashi-island{width:23px;height:23px;font-size:8px}.tt99-game-activities.count-3 .tt99-alpha-card{padding:8px 9px;margin-top:4px}.tt99-game-activities.count-3 .tt99-alpha-sum-grid{grid-template-columns:20px repeat(var(--alpha-cols),23px);gap:2px}.tt99-game-activities.count-3 .tt99-alpha-cell{width:23px;height:23px;font-size:10px;border-radius:3px}.tt99-game-activities.count-3 .tt99-alpha-op{font-size:16px}.tt99-game-activities.count-3 .tt99-v140-note,.tt99-game-activities.count-3 .tt99-hashi-key{display:none}
 @media print{.tt99-v140-cell,.tt99-hashi-island,.tt99-alpha-card,.tt99-alpha-cell{background:#fff!important}.tt99-v140-cell.answer-fill,.tt99-alpha-cell.answer{background:#edf7f4!important}}
