@@ -32,7 +32,7 @@ This is the reviewed wording baseline for pupil-facing instructions. The aim is 
 | Nonogram / Number Picture | Shade cells to match the row and column clues. Each clue gives a block of shaded cells; separate blocks by at least one blank cell. |
 | Number Path | Fill the missing numbers from 1 to N². Consecutive numbers must touch horizontally or vertically, not diagonally. |
 | Number Towers / Skyscrapers | Fill the grid with 1–N, using each height once in every row and column. Each edge tab shows how many towers are visible looking in that direction. |
-| Binary Puzzle / Takuzu | Fill every blank with 0 or 1. Keep equal numbers of 0s and 1s in each row and column; never make 000 or 111; no two completed rows or columns may match. |
+| Binary Puzzle / Takuzu | Fill every blank with 0 or 1. Each row and column must contain the same number of 0s and 1s. Never make 000 or 111. No two completed rows or columns can be identical. |
 
 ## Style rules
 
