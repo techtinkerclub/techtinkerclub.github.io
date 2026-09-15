@@ -1,30 +1,22 @@
-<!--
-  Thanks for creating a Pull Request! Before you submit, please make sure
-  you've done the following:
-
-  - Read the contributing document at https://github.com/mmistakes/minimal-mistakes#contributing
--->
-
-<!--
-  Choose one of the following by uncommenting it:
--->
-
-<!-- This is a bug fix. -->
-<!-- This is an enhancement or feature. -->
-<!-- This is a documentation change. -->
-
 ## Summary
 
-<!--
-  Provide a description of what your pull request changes.
--->
+Describe what this change does and why it is needed.
 
-## Context
+## Area affected
 
-<!--
-  Is this related to any GitHub issue(s)?
--->
+- [ ] Tech Tinker Club website/content
+- [ ] 99 Club
+- [ ] Custom Worksheets
+- [ ] Maths Games & Puzzles
+- [ ] Documentation / repository maintenance
 
-<!--
-  Please confirm that you want to submit this Pull Request to Minimal Mistakes, the free Jekyll theme by Michael Rose, by deleting this comment block.
--->
+## Checks
+
+- [ ] I checked the affected browser UI where relevant.
+- [ ] I checked generated PDF output where relevant.
+- [ ] I ran or updated the relevant regression tests.
+- [ ] I did not intentionally change unrelated behaviour.
+
+## Notes / screenshots
+
+Add anything useful for reviewing the change, especially before/after screenshots for visual work.
