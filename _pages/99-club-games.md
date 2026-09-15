@@ -81,6 +81,14 @@ window.addEventListener('DOMContentLoaded',function(){
     const nav=root&&root.querySelector('.tt99-games-nav');
     if(!nav)return;
     nav.querySelector('a[href="/tools/99-club/custom/"]')?.remove();
+    let play=nav.querySelector('[data-game-play-link]');
+    if(!play){
+      play=document.createElement('a');
+      play.setAttribute('data-game-play-link','');
+      nav.appendChild(play);
+    }
+    play.href='/tools/99-club/games/play/';
+    play.textContent='Play online';
     let link=nav.querySelector('[data-game-guides-link]');
     if(!link){
       link=document.createElement('a');
