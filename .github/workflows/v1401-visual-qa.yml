@@ -1,0 +1,35 @@
+name: v1.40.1 visual QA
+on:
+  push:
+    branches: [chatgpt/v1401-visual-refine]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax
+        run: |
+          node --check assets/99club/games-puzzle-pack-v140-ui.js
+          node --check assets/99club/games-pdf-v1401.js
+      - name: Existing v1.40 and regressions
+        run: |
+          node assets/99club/tests/games-v140-puzzle-pack-smoke.js
+          node assets/99club/tests/games-v139-takuzu-smoke.js
+          node assets/99club/tests/games-number-logic-smoke.js
+      - name: Build Hashi and Alphametics QA PDF
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),R='assets/99club/';
+          require('./'+R+'games-arithmetic.js');require('./'+R+'games-number-logic.js');require('./'+R+'games-takuzu-v139.js');require('./'+R+'games-takuzu-v139-logic.js');require('./'+R+'games-puzzle-pack-v140.js');require('./'+R+'games-puzzle-pack-v140-hashi.js');require('./'+R+'games-number-towers-v137.js');require('./'+R+'games-number-towers-v137-unique.js');require('./'+R+'games-number-path-v2.js');require('./'+R+'games-sumplete.js');const G=require('./'+R+'games-engine.js');require('./'+R+'games-pack-mode.js');require('./'+R+'games-instructions-v139.js');require('./'+R+'games-puzzle-redesign-v135-logic.js');require('./'+R+'simple-pdf.js');require('./'+R+'games-pdf.js');require('./'+R+'games-pdf-v136.js');require('./'+R+'games-pdf-v137.js');require('./'+R+'games-pdf-v138.js');require('./'+R+'games-pdf-towers-direction-v138.js');require('./'+R+'games-pdf-v138-flowfix.js');require('./'+R+'games-pdf-takuzu-v139.js');require('./'+R+'games-pdf-v140.js');require('./'+R+'games-pdf-v1401.js');
+          const ids=['hashi','alphametics'];const settings=G.normalizeSettings({minYear:3,maxYear:6,topics:['number_place_value','calculation','geometry','algebra'],includeAnswers:true,workedExamples:'none',selectedEngines:ids,sheets:2,activitiesPerSheet:1,personalisation:{schoolName:'99 Club Studio',packTitle:'v1.40.1 visual QA',classLabel:'Pupil / teacher review',worksheetDate:'',logoDataUrl:'',logoWidth:0,logoHeight:0},engineSettings:{hashi:{difficulty:'challenge',boardSize:'8',islandCount:'12'},alphametics:{difficulty:'challenge',hintLevel:'none',template:'cross_roads'}}});const acts=ids.map((id,i)=>G.generateActivity(id,settings,'v1401-'+id+'-'+i));for(const a of acts)if(a.error)throw new Error(a.error);const pack={version:'1.40.1-QA',seed:'v1401-qa',settings,workedExamples:[],sheets:acts.map((a,i)=>({index:i+1,activities:[a]}))};const doc=globalThis.TT99GamesPDF.buildDocument({pack,settings,topics:G.TOPICS,seed:pack.seed,kind:'both'});fs.mkdirSync('artifacts',{recursive:true});fs.writeFileSync('artifacts/v1401-visual-qa.pdf',Buffer.from(doc.outputBytes()));console.log('pages',doc.pages.length);
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v1401-visual-qa
+          path: artifacts/v1401-visual-qa.pdf
