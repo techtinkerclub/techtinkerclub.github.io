@@ -33,6 +33,7 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - Symbol Equations
 - Function Machines
 - Equation Repair (engine id remains `balance`)
+- Word Codes / Alphametics
 
 ### Number logic & grids
 - Sudoku
@@ -41,6 +42,9 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - Number Path
 - Number Towers / Skyscrapers
 - Binary Puzzle / Takuzu
+- Killer Sudoku / Sum Sudoku
+- Bridges / Hashi
+- Maths Mines / Hidden Gems
 
 `Arithmetic Domino Chain` remains hidden from the one-player library. It is a possible future cut-and-match classroom resource, not part of the current pupil puzzle catalogue.
 
@@ -58,57 +62,29 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - Added inward-pointing Number Towers clue tabs and cleaned the grid edge rendering.
 
 ### v1.39
-- Adds **Binary Puzzle / Takuzu** as a deterministic unique-solution engine.
+- Added **Binary Puzzle / Takuzu** as a deterministic unique-solution engine.
 - Easy = 4×4, Standard = 6×6, Challenge = 8×8 by default.
-- Supports manual 4×4 / 6×6 / 8×8 sizes and starting-digit density controls.
-- Every accepted puzzle is both uniquely solvable and completable by deterministic Takuzu deductions without guessing; extra starter digits are revealed automatically if the deduction solver stalls.
-- Preview, answer preview and PDF use the same puzzle data.
-- Adds a reviewed pupil-instruction layer and a canonical instruction wording document at `docs/99club/GAME_INSTRUCTIONS.md`.
+- Every accepted Takuzu puzzle is both unique and completable by deterministic Takuzu deductions without guessing.
+- Added a reviewed pupil-instruction layer and canonical wording document.
 
-## Curriculum mapping: Number Towers
+### v1.40
+- Adds **Killer Sudoku / Sum Sudoku** with 4×4, 6×6 and optional 9×9 grids. Sudoku row/column/box rules and sum-cage constraints are validated together and every accepted puzzle has one solution.
+- Adds **Bridges / Hashi** with 7-, 10- and 12-island solver-verified layouts. Rotations/reflections provide visual variation while a Hashi solver checks uniqueness.
+- Adds **Maths Mines / Hidden Gems** with 5×5, 6×6 and 7×7 grids. Clues are removed only while uniqueness remains, then restored as needed until the built-in local-deduction solver can complete the puzzle without guessing.
+- Adds **Word Codes / Alphametics** using a curated library of meaningful word equations rather than random letter strings. Current templates include `TWO + TWO = FOUR`, `BASE + BALL = GAMES`, `SEND + MORE = MONEY`, `CROSS + ROADS = DANGER` and `FORTY + TEN + TEN = SIXTY`.
+- All four engines ship with pupil preview, answer preview, PDF rendering, settings, worked-example data and automated validation.
 
-The mapping is deliberately modest:
-- **Number & place value** — ordering/comparing values and reasoning about relative magnitude.
-- **Mathematical reasoning/problem solving** — systematic deduction, elimination and checking constraints.
-- **Geometry/spatial reasoning** — supporting viewpoint/position reasoning.
+## Curriculum mapping principle
 
-Primary compatibility is Years 3–6. The puzzle is reasoning practice; it is not presented as a replacement for a statutory lesson objective.
+Puzzle engines are mapped conservatively. They are reasoning/fluency resources that exercise curriculum mathematics; they are not presented as replacements for teaching a statutory objective.
 
-## Curriculum mapping: Binary Puzzle / Takuzu
+The present Games UI still uses broad topics plus a Year 1–6 range for compatibility. This is increasingly coarse compared with the detailed Custom Worksheet catalogue. A planned Games taxonomy refactor should move toward finer teacher-selected strands/subtopics, with year tags retained internally only where they genuinely control mathematical content or vocabulary.
 
-Takuzu is mapped conservatively rather than presented as a direct statutory objective:
-- **Number & place value / number patterns** — reasoning with two values and balanced quantities.
-- **Mathematical reasoning/problem solving** — systematic deduction, elimination and checking multiple simultaneous constraints.
-- **Algebraic/pattern reasoning** — recognising and extending constrained patterns.
-
-Primary compatibility is Years 3–6. The puzzle is intended as compact mathematical reasoning practice.
-
-Core rules:
-- fill the grid with 0s and 1s;
-- each row and column contains equal numbers of 0s and 1s;
-- no three identical values appear consecutively horizontally or vertically;
-- no two completed rows are identical and no two completed columns are identical;
-- every generated pupil puzzle has a verified unique solution and must be solvable by the normal deterministic Takuzu rules without branching or guessing.
-
-Default progression:
-- **Easy:** 4×4 with generous starting digits.
-- **Standard:** 6×6 with balanced starting digits.
-- **Challenge:** 8×8 with fewer starting digits and deeper interaction between rules.
-
-## Next new engine: Killer Sudoku / Sum Sudoku
-
-The next planned engine after Takuzu is **Killer Sudoku / Sum Sudoku** — Sudoku combined with outlined sum cages. Reuse the existing Sudoku and arithmetic-cage machinery where sensible, while still validating every generated puzzle for a unique solution.
-
-## Ordered future puzzle roadmap
-
-1. **Killer Sudoku / Sum Sudoku**
-2. **Bridges / Hashi** — connect numbered islands with horizontal/vertical bridges, no crossings.
-
-Further candidates retained for later evaluation include Maths Mines, alphametics/number-code addition, region sums/number partition, domino placement, honeycomb/hex puzzles, equation loops, factor/prime chains, fraction-match grids and coordinate treasure puzzles.
+The statutory curriculum itself is organised by both year and mathematical domain, but many puzzle mechanics cut across several years and are better chosen by the exact skill being practised than by a single year label.
 
 ## Pupil instruction standard
 
-The reviewed instruction wording is maintained in `docs/99club/GAME_INSTRUCTIONS.md`.
+Reviewed instruction wording is maintained in `docs/99club/GAME_INSTRUCTIONS.md`.
 
 The standard is:
 - start with the pupil action;
@@ -119,4 +95,8 @@ The standard is:
 
 ## QA expectation for every game engine
 
-Before an engine is called complete, check Easy/Standard/Challenge where applicable, manual variants, boundary year/topic compatibility, pupil preview, answer preview, generated PDF, instruction clarity, mathematical validity and any uniqueness requirement. Maximum grid sizes and dense/long-number cases must be included because they are where clipping and layout drift most often appear.
+Before an engine is called complete, check Easy/Standard/Challenge where applicable, manual variants, boundary compatibility, pupil preview, answer preview, generated PDF, instruction clarity, mathematical validity and any uniqueness requirement. Maximum grid sizes and dense/long-number cases must be included because they are where clipping and layout drift most often appear.
+
+## Future candidates
+
+After the v1.40 batch, the next expansion should be chosen from the remaining distinct mechanics rather than adding near-duplicates. Candidates retained for later evaluation include region sums/number partition, domino placement, honeycomb/hex puzzles, equation loops, factor/prime chains, fraction-match grids and coordinate treasure puzzles.
