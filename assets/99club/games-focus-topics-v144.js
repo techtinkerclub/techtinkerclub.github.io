@@ -83,7 +83,7 @@ function migrateFromParents(parents){
   return validFocus(out.length?out:['addition_subtraction','multiplication_division']);
 }
 function parentsForFocus(ids){return [...new Set(validFocus(ids).map(id=>FOCUS_TOPICS[id].parent))];}
-function focusAllowedForYear(id,yearFilter){const ys=FOCUS_TOPICS[id]?.years||[];return !yearFilter||ys.includes(Number(yearFilter));}
+function focusAllowedForYear(id,yearFilter){const ys=FOCUS_TOPICS[id]?.years||[];return ys.includes(Number(yearFilter));}
 
 for(const [id,e] of Object.entries(G.ENGINES||{})){
   const explicit=ENGINE_FOCUS[id];
@@ -102,18 +102,17 @@ G.normalizeSettings=function(input={}){
   let yearFilter=global.__tt99PendingGameYearFilter;
   if(yearFilter===undefined||yearFilter===null){
     if(raw.yearFilter!==undefined)yearFilter=Number(raw.yearFilter);
-    else yearFilter=Number(raw.minYear)===Number(raw.maxYear)&&Number(raw.minYear)>=1&&Number(raw.minYear)<=6?Number(raw.minYear):0;
+    else yearFilter=Number(raw.maxYear)||Number(raw.minYear)||4;
   }
-  yearFilter=Number.isInteger(Number(yearFilter))?Number(yearFilter):0;
-  if(yearFilter>=1&&yearFilter<=6){raw.minYear=yearFilter;raw.maxYear=yearFilter;}
-  else{raw.minYear=1;raw.maxYear=6;}
+  yearFilter=Math.max(1,Math.min(6,Number(yearFilter)||4));
+  raw.minYear=yearFilter;raw.maxYear=yearFilter;
   let base=baseNormalize(raw);
   let focus=validFocus(global.__tt99PendingGameFocusTopics||raw.focusTopics);
   if(!focus.length)focus=migrateFromParents(base.topics);
-  if(yearFilter>=1&&yearFilter<=6){const pruned=focus.filter(id=>focusAllowedForYear(id,yearFilter));if(pruned.length)focus=pruned;}
+  const pruned=focus.filter(id=>focusAllowedForYear(id,yearFilter));if(pruned.length)focus=pruned;
   const parents=parentsForFocus(focus);if(parents.length)base.topics=parents;
   base.focusTopics=focus;
-  base.yearFilter=(yearFilter>=1&&yearFilter<=6)?yearFilter:0;
+  base.yearFilter=yearFilter;
   return base;
 };
 G.compatibleEngines=function(settings){
