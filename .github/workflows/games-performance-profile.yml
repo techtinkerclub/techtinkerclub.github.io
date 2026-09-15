@@ -3,6 +3,9 @@ on:
   push:
     branches: [chatgpt/games-performance]
   workflow_dispatch: {}
+concurrency:
+  group: games-performance-profile
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
