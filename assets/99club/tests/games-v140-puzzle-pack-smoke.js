@@ -6,6 +6,7 @@ require(path.join(ROOT,'games-number-logic.js'));
 require(path.join(ROOT,'games-takuzu-v139.js'));
 require(path.join(ROOT,'games-takuzu-v139-logic.js'));
 require(path.join(ROOT,'games-puzzle-pack-v140.js'));
+require(path.join(ROOT,'games-puzzle-pack-v140-hashi.js'));
 require(path.join(ROOT,'games-number-towers-v137.js'));
 require(path.join(ROOT,'games-number-towers-v137-unique.js'));
 require(path.join(ROOT,'games-number-path-v2.js'));
@@ -16,7 +17,7 @@ for(const id of ids)assert(G.ENGINES[id],`${id} definition missing`);
 for(const difficulty of ['easy','standard','challenge']){
   for(let i=0;i<8;i++){
     const base={minYear:3,maxYear:6,topics:['number_place_value','calculation','geometry','algebra'],selectedEngines:ids,engineSettings:{}};
-    for(const id of ids){base.engineSettings[id]={...(G.ENGINES[id].defaultSettings||{}),difficulty};const s=G.normalizeSettings(base),a=G.generateActivity(id,s,`v140-${id}-${difficulty}-${i}`);assert(!a.error,`${id} ${difficulty} generation failed: ${a.error}`);const v=NL.validate(a);assert(v.ok,`${id} ${difficulty} invalid: ${v.error}`);assert(/TT99V140/.test(a.instruction),`${id} render marker missing`);if(id==='alphametics'){const words=[...(a.addends||[]),a.result];assert(words.every(w=>/^[A-Z]+$/.test(w)),`alphametics contains non-word token`);assert(!words.some(w=>/^A+$/.test(w)),`alphametics looks synthetic`);}}
+    for(const id of ids){base.engineSettings[id]={...(G.ENGINES[id].defaultSettings||{}),difficulty};const s=G.normalizeSettings(base),a=G.generateActivity(id,s,`v140-${id}-${difficulty}-${i}`);assert(!a.error,`${id} ${difficulty} generation failed: ${a.error}`);const v=NL.validate(a);assert(v.ok,`${id} ${difficulty} invalid: ${v.error}`);if(id!=='hashi')assert(/TT99V140/.test(a.instruction),`${id} render marker missing`);if(id==='alphametics'){const words=[...(a.addends||[]),a.result];assert(words.every(w=>/^[A-Z]+$/.test(w)),`alphametics contains non-word token`);assert(!words.some(w=>/^A+$/.test(w)),`alphametics looks synthetic`);}}
   }
 }
 const alphaLabels=NL.V140.ALPHAMETICS.templates.map(t=>t.label);assert(alphaLabels.includes('BASE + BALL = GAMES'),'BASE/BALL template missing');assert(alphaLabels.includes('CROSS + ROADS = DANGER'),'CROSS/ROADS template missing');
