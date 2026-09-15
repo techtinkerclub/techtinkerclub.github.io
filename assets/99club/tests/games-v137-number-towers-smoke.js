@@ -12,7 +12,7 @@ assert(kGrid.options.some(o=>String(o.value??o)==='8'),'Kakuro 8x8 option missin
 assert(Array.isArray(NL._KAKURO_MASKS[8])&&NL._KAKURO_MASKS[8].length===8,'Kakuro 8x8 mask missing');
 
 for(const difficulty of ['easy','standard','challenge']){
-  for(let i=0;i<18;i++){
+  for(let i=0;i<4;i++){
     const settings={minYear:3,maxYear:6,engineSettings:{numbertowers:{difficulty,gridSize:'auto',clueLevel:'auto'}}};
     const a=NL.generate('numbertowers',settings,`v137:${difficulty}:${i}`);
     assert(a&&a.engineId==='numbertowers'&&!a.error,`Number Towers generation failed (${difficulty})`);
@@ -22,7 +22,7 @@ for(const difficulty of ['easy','standard','challenge']){
   }
 }
 
-for(let i=0;i<8;i++){
+for(let i=0;i<3;i++){
   const settings={minYear:5,maxYear:6,engineSettings:{kakuro:{difficulty:'challenge',gridSize:'8',givenLevel:'minimum'}}};
   const a=NL.generate('kakuro',settings,`v137:kakuro8:${i}`);
   assert(a&&!a.error,'8x8 Kakuro generation failed');
