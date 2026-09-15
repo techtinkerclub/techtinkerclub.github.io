@@ -1,22 +1,22 @@
-/* 99 Club Studio PWA service worker v1 */
+/* 99 Club Studio PWA service worker v1.0.1 */
 'use strict';
 
 const CACHE_PREFIX='tt99-studio-';
-const CACHE_NAME=CACHE_PREFIX+'v1';
+const CACHE_NAME=CACHE_PREFIX+'v1.0.1';
 const SCOPE_PATH='/tools/99-club/';
 const CORE_PAGES=[
   '/tools/99-club/',
   '/tools/99-club/games/',
   '/tools/99-club/games/play/',
-  '/tools/99-club/games/help/'
+  '/tools/99-club/games/help/',
+  '/tools/99-club/custom/'
 ];
 const CORE_FILES=[
   '/tools/99-club/manifest.webmanifest',
-  '/assets/99club/pwa/icon-180.png',
   '/assets/99club/pwa/icon-192.png',
-  '/assets/99club/pwa/icon-512.png',
-  '/assets/99club/pwa/pwa.css',
-  '/assets/99club/pwa/pwa-register.js'
+  '/assets/99club/pwa/icon-512.svg',
+  '/assets/99club/pwa/pwa.css?v=1',
+  '/assets/99club/pwa/pwa-register.js?v=1'
 ];
 
 function sameOriginAsset(ref){
@@ -81,9 +81,10 @@ async function staleWhileRevalidate(request){
   const cached=await cache.match(request);
   const update=fetch(request).then(async response=>{
     if(response&&response.ok)await cache.put(request,response.clone());
-    return response;
+    return response&&response.ok?response:null;
   }).catch(()=>null);
-  return cached||update||Response.error();
+  if(cached){update.catch(()=>null);return cached;}
+  return (await update)||Response.error();
 }
 
 self.addEventListener('fetch',event=>{
