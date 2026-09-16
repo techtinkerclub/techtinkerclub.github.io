@@ -37,7 +37,7 @@ sitemap: true
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
 <script src="/assets/99club/games-operationgrid-v153.js?v=1"></script>
 <script src="/assets/99club/games-operationgrid-print-v155.js?v=1"></script>
-<script src="/assets/99club/games-operationgrid-print-v158.js?v=1"></script>
+<script src="/assets/99club/games-operationgrid-print-v158.js?v=2"></script>
 <script src="/assets/99club/games-crossgrid-v1321.js?v=2"></script>
 <script src="/assets/99club/games-property-maze.js?v=1"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>

@@ -5,7 +5,7 @@
 'use strict';
 const A=global.TT99ArithmeticGames;if(!A||A.__operationGridPrintV158)return;
 const baseGenerate=A.generate.bind(A);
-const TERMS={5:['PRIME','ANGLE','SHAPE','COUNT'],6:['NUMBER','FACTOR','DIGITS','PUZZLE'],7:['ALGEBRA','INTEGER','DECIMAL','PRODUCT'],8:['FRACTION','MULTIPLE','EQUATION','GEOMETRY'],9:['NUMERATOR','CALCULATE'],10:['PERCENTAGE','COORDINATE'],11:['DENOMINATOR'],12:['NUMBERPUZZLE','MATHSPUZZLES']};
+const TERMS={4:['SUMS','AREA','DATA','MEAN'],5:['PRIME','ANGLE','SHAPE','COUNT'],6:['NUMBER','FACTOR','DIGITS','PUZZLE'],7:['ALGEBRA','INTEGER','DECIMAL','PRODUCT'],8:['FRACTION','MULTIPLE','EQUATION','GEOMETRY'],9:['NUMERATOR','CALCULATE'],10:['PERCENTAGE','COORDINATE'],11:['DENOMINATOR'],12:['NUMBERPUZZLE','MATHSPUZZLES']};
 function mod26(n){return ((n%26)+26)%26;}
 function shift(ch,d){return String.fromCharCode(65+mod26(ch.charCodeAt(0)-65+d));}
 function chooseTerm(p,n){const bank=TERMS[n]||[];if(bank.length){const rng=A.rngFromSeed(`${p.seed||'operationgrid'}:paper-term-v158`);return bank[Math.floor(rng()*bank.length)%bank.length];}return 'MATHS'.repeat(Math.ceil(n/5)).slice(0,n);}
