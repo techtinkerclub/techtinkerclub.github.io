@@ -1,64 +1,71 @@
 /* 99 Club Studio · Killer Sudoku cage-outline polish v1.79
- * Keep Sudoku row/column/box rails intact while replacing the noisy inset
- * dashed cage rectangles with one clean, solid cage boundary.
+ * Keep the Sudoku grid and heavy box rails intact while replacing the noisy
+ * dashed cage marks with a thin, solid inset outline.
  *
- * Cage boundaries are drawn slightly inside the cell, so a cage edge that
- * happens to sit on a thick Sudoku box rail is still visually distinct.
- * Only top/left cage edges are drawn: the neighbouring cage supplies the
- * shared boundary, avoiding doubled parallel outlines.
+ * Each cage edge is drawn a few pixels inside its own cells. This means a cage
+ * boundary never has to replace or paint over a Sudoku row/column/box line.
+ * Adjacent cages therefore remain distinct without creating one competing set
+ * of rails on top of another.
  */
 .tt99-play-killer .cage-edge{
   z-index:8;
   border:0!important;
   pointer-events:none;
-  opacity:.96;
+  opacity:.9;
 }
 
-/* Horizontal cage boundary: 4 px inside the cell, clear of Sudoku rails. */
-.tt99-play-killer .cage-edge.top{
+/* Join neighbouring edge segments slightly across the cell seam so a cage
+   reads as one continuous shape rather than a collection of cell rectangles. */
+.tt99-play-killer .cage-edge.top,
+.tt99-play-killer .cage-edge.bottom{
   display:block!important;
-  top:4px!important;
-  left:0!important;
-  right:0!important;
-  border-top:2px solid #4f8580!important;
+  left:-1px!important;
+  right:-1px!important;
+  height:0!important;
 }
-
-/* Vertical cage boundary: 4 px inside the cell, clear of Sudoku rails. */
-.tt99-play-killer .cage-edge.left{
-  display:block!important;
-  top:0!important;
-  bottom:0!important;
-  left:4px!important;
-  border-left:2px solid #4f8580!important;
-}
-
-/* A shared top/left boundary is enough for every internal cage edge.
-   The main Sudoku border supplies the outer bottom/right boundary. */
-.tt99-play-killer .cage-edge.bottom,
+.tt99-play-killer .cage-edge.left,
 .tt99-play-killer .cage-edge.right{
-  display:none!important;
+  display:block!important;
+  top:-1px!important;
+  bottom:-1px!important;
+  width:0!important;
 }
 
-/* Give the cage target a small clean mask so it does not sit on top of either
-   the normal cell grid or the inset cage boundary. */
+.tt99-play-killer .cage-edge.top{
+  top:4px!important;
+  border-top:1.6px solid #4f8580!important;
+}
+.tt99-play-killer .cage-edge.bottom{
+  bottom:4px!important;
+  border-top:1.6px solid #4f8580!important;
+}
+.tt99-play-killer .cage-edge.left{
+  left:4px!important;
+  border-left:1.6px solid #4f8580!important;
+}
+.tt99-play-killer .cage-edge.right{
+  right:4px!important;
+  border-left:1.6px solid #4f8580!important;
+}
+
+/* Mask the line immediately behind the cage total. */
 .tt99-play-killer .cage-target{
   z-index:10!important;
   left:8px!important;
   top:7px!important;
   padding:1px 3px!important;
   border-radius:4px!important;
-  background:rgba(255,255,255,.96)!important;
+  background:rgba(255,255,255,.97)!important;
   color:#376d67!important;
   font-size:clamp(.52rem,1.7vw,.7rem)!important;
   line-height:1!important;
   font-weight:950!important;
 }
 .tt99-play-killer .tt99-numbergrid-cell.is-given .cage-target{
-  background:rgba(241,246,245,.97)!important;
+  background:rgba(241,246,245,.98)!important;
 }
 
-/* Keep cage lines above selected/related backgrounds without competing with
-   the much heavier Sudoku box boundaries. */
+/* Sudoku box rails stay visually dominant. */
 .tt99-play-killer .tt99-numbergrid-cell.box-top,
 .tt99-play-killer .tt99-numbergrid-cell.box-left,
 .tt99-play-killer .tt99-numbergrid-cell.box-bottom,
@@ -67,14 +74,14 @@
 }
 
 @media(max-width:560px){
-  .tt99-play-killer .cage-edge.top{
-    top:3px!important;
-    border-top-width:1.75px!important;
-  }
-  .tt99-play-killer .cage-edge.left{
-    left:3px!important;
-    border-left-width:1.75px!important;
-  }
+  .tt99-play-killer .cage-edge.top{top:3px!important}
+  .tt99-play-killer .cage-edge.bottom{bottom:3px!important}
+  .tt99-play-killer .cage-edge.left{left:3px!important}
+  .tt99-play-killer .cage-edge.right{right:3px!important}
+  .tt99-play-killer .cage-edge.top,
+  .tt99-play-killer .cage-edge.bottom{border-top-width:1.4px!important}
+  .tt99-play-killer .cage-edge.left,
+  .tt99-play-killer .cage-edge.right{border-left-width:1.4px!important}
   .tt99-play-killer .cage-target{
     left:6px!important;
     top:5px!important;
