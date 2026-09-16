@@ -72,4 +72,4 @@ sitemap: true
 <script src="/assets/99club/games-play-instructions-v154.js?v=1"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="/assets/99club/games-play-share-v157.js?v=2"></script>
+<script src="/assets/99club/games-play-share-v157.js?v=3"></script>
