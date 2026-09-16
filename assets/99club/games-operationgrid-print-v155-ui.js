@@ -4,7 +4,7 @@
 const root=document.getElementById('tt99-games-root');if(!root)return;
 const MARK=/\s*\[\[TT99OC155:([^\]]+)\]\]/;
 function decode(s){try{const json=decodeURIComponent(escape(atob(s)));return JSON.parse(json);}catch(_){try{return JSON.parse(s);}catch(__){return null;}}}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function opLabel(op){return op==='-'?'−':op;}
 function enhanceActivity(section){
   if(section.dataset.opPrint155==='1')return;
