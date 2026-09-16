@@ -1,4 +1,4 @@
-/* 99 Club Studio PWA registration + install/update helper v3 */
+/* 99 Club Studio PWA registration + install/update helper v4 */
 (function(){
 'use strict';
 if(!location.pathname.startsWith('/tools/99-club/'))return;
@@ -21,9 +21,31 @@ function safeGet(store,key){try{return store.getItem(key)||'';}catch(e){return '
 function safeSet(store,key,value){try{store.setItem(key,value);}catch(e){}}
 function safeRemove(store,key){try{store.removeItem(key);}catch(e){}}
 
+function lockStandaloneViewport(){
+  if(!standalone)return;
+  let viewport=document.querySelector('meta[name="viewport"]');
+  if(!viewport){
+    viewport=document.createElement('meta');
+    viewport.name='viewport';
+    document.head.appendChild(viewport);
+  }
+  viewport.setAttribute('content','width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover');
+
+  const preventGesture=e=>{if(e.cancelable)e.preventDefault();};
+  document.addEventListener('gesturestart',preventGesture,{passive:false});
+  document.addEventListener('gesturechange',preventGesture,{passive:false});
+  document.addEventListener('gestureend',preventGesture,{passive:false});
+  document.addEventListener('touchmove',e=>{
+    if(e.touches?.length>1&&e.cancelable)e.preventDefault();
+  },{passive:false});
+}
+
 // Installed desktop/Android/iOS apps are deliberately isolated from the host
 // website chrome. The normal browser site is unchanged.
-if(standalone)document.documentElement.classList.add('tt99-standalone');
+if(standalone){
+  document.documentElement.classList.add('tt99-standalone');
+  lockStandaloneViewport();
+}
 
 function appliedBuild(){return safeGet(localStorage,appliedKey);}
 function markApplied(version){if(version)safeSet(localStorage,appliedKey,version);}
