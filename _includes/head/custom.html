@@ -8,8 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="99 Club">
 <link rel="apple-touch-icon" sizes="192x192" href="/assets/99club/pwa/icon-192.png">
-<link rel="stylesheet" href="/assets/99club/pwa/pwa.css?v=1">
-<script src="/assets/99club/pwa/pwa-register.js?v=1" defer></script>
+<link rel="stylesheet" href="/assets/99club/pwa/pwa.css?v=2">
+<script src="/assets/99club/pwa/pwa-register.js?v=2" defer></script>
 {% endif %}
 
 {% if page.url == '/tools/99-club/games/' or page.url == '/tools/99-club/games/play/' %}
@@ -20,11 +20,17 @@
 {% if page.url == '/tools/99-club/games/' %}
 <script src="/assets/99club/games-numbersearch-quality-v151.js?v=1" defer></script>
 <script src="/assets/99club/games-pdf-sum-grids-v148.js?v=1" defer></script>
+<script src="/assets/99club/games-pdf-v162.js?v=1" defer></script>
+<script src="/assets/99club/games-selector-ux-v162.js?v=1" defer></script>
 {% endif %}
 
 {% if page.url == '/tools/99-club/games/play/' %}
 <link rel="stylesheet" href="/assets/99club/games-play-top-instructions-v1.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-ux-v162.css?v=1">
 <script src="/assets/99club/games-play-top-instructions-v1.js?v=2" defer></script>
+<script src="/assets/99club/games-play-feedback-v162.js?v=1" defer></script>
+<script src="/assets/99club/games-play-share-v162.js?v=1" defer></script>
+<script src="/assets/99club/games-play-share-v162-guard.js?v=1" defer></script>
 {% endif %}
 
 {% if page.url == '/tools/99-club/games/help/' %}

@@ -1,4 +1,4 @@
-/* 99 Club Studio PWA registration + install helper v1 */
+/* 99 Club Studio PWA registration + install helper v2 */
 (function(){
 'use strict';
 if(!location.pathname.startsWith('/tools/99-club/'))return;
@@ -8,6 +8,10 @@ const isiOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
 const isSafari=/safari/i.test(navigator.userAgent)&&!/crios|fxios|edgios|opios/i.test(navigator.userAgent);
 let deferredPrompt=null;
 let installCard=null;
+
+// Installed desktop/Android/iOS apps are deliberately isolated from the host
+// website chrome. The normal browser site is unchanged.
+if(standalone)document.documentElement.classList.add('tt99-standalone');
 
 function registerSW(){
   if(!('serviceWorker' in navigator))return;
