@@ -1,0 +1,52 @@
+name: Diagnose Games 40-pack performance
+
+on:
+  push:
+    branches:
+      - diagnose/games-40-pack-performance
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Benchmark current Games generation
+        run: |
+          node <<'NODE'
+          const {performance}=require('node:perf_hooks');
+          global.localStorage=undefined;
+          const load=[
+            'games-vocabulary.js','games-arithmetic.js','games-crossgrid-v1321.js','games-property-maze.js','games-number-logic.js',
+            'games-takuzu-v139.js','games-takuzu-v139-logic.js','games-puzzle-pack-v140.js','games-puzzle-pack-v140-hashi.js',
+            'games-alphametics-library-v141.js','games-number-towers-v137.js','games-number-towers-v137-unique.js','games-number-path-v2.js',
+            'games-sumplete.js','games-shikaku-v143.js','games-sum-grids-v147.js','games-engine.js','games-focus-topics-v145.js',
+            'games-pack-mode.js','games-performance-v142.js'
+          ];
+          for(const f of load) require('./assets/99club/'+f);
+          const G=global.TT99Games;
+          const ALL=Object.keys(G.FOCUS_TOPICS||{});
+          const base={packMode:'random',activityCount:40,focusTopics:ALL,topics:['calculation'],workedExamples:'none',selectedEngines:[],engineSettings:{}};
+          function ms(v){return `${v.toFixed(1)} ms`;}
+          function one(label,settings,seed){G.PERFORMANCE?.clearCache?.();const t0=performance.now();const p=G.generatePack(settings,seed,[]);const dt=performance.now()-t0;console.log(`${label}: ${ms(dt)} | activities=${p.sheets.reduce((n,s)=>n+s.activities.length,0)} | engines=${[...new Set(p.sheets.flatMap(s=>s.activities.map(a=>a.engineId)))].length}`);return dt;}
+          console.log('PERFORMANCE',G.PERFORMANCE);
+          for(const d of ['standard','mixed']){
+            const vals=[];for(let i=0;i<3;i++)vals.push(one(`random ${d} 40 #${i+1}`,{...base,randomDifficulty:d,randomDifficultyWeights:{easy:25,standard:50,challenge:25}},`diag:${d}:${i}`));
+            console.log(`SUMMARY random ${d} 40 avg=${ms(vals.reduce((a,b)=>a+b,0)/vals.length)} max=${ms(Math.max(...vals))}`);
+          }
+          console.log('\nENGINE PROBE (3 Challenge activities each)');
+          const rows=[];
+          for(const [id,e] of Object.entries(G.ENGINES||{})){
+            if(e.hiddenFromLibrary)continue;
+            const focus=(e.focusTopics&&e.focusTopics.length)?[e.focusTopics[0]]:['mixed_calculation'];
+            const settings=G.normalizeSettings({packMode:'manual',activityCount:3,focusTopics:focus,topics:['calculation'],selectedEngines:[id],workedExamples:'none',engineSettings:{[id]:{...(e.defaultSettings||{}),difficulty:'challenge'}}});
+            if(!G.compatibleEngines(settings).includes(id))continue;
+            const t0=performance.now();let ok=0;
+            for(let i=0;i<3;i++){const a=G.generateActivity(id,settings,`engine:${id}:${i}`,[]);if(a&&!a.error)ok++;}
+            rows.push({id,ms:performance.now()-t0,ok});
+          }
+          rows.sort((a,b)=>b.ms-a.ms);
+          for(const r of rows)console.log(`${r.id.padEnd(20)} ${ms(r.ms).padStart(12)} ok=${r.ok}/3`);
+          NODE
