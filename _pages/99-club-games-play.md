@@ -86,6 +86,7 @@ sitemap: true
 <script src="/assets/99club/games-play-maze-v171.js?v=1"></script>
 <script src="/assets/99club/games-play-crossnumber-v171.js?v=1"></script>
 <script src="/assets/99club/games-play-number-structures-v173.js?v=1"></script>
+<script src="/assets/99club/games-play-number-structures-v173-profile.js?v=1"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=4"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=1"></script>
