@@ -31,6 +31,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-wave5.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-play-kakuro-v170.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-arithmeticcages-v169.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-killer-v179.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-existing-wave-v171.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-modal-v164.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-square-grid-fix-v172.css?v=1">
@@ -71,7 +72,7 @@ sitemap: true
 <script src="/assets/99club/games-play-takuzu-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-sudoku-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-futoshiki-v1.js?v=1"></script>
-<script src="/assets/99club/games-play-killer-v1.js?v=1"></script>
+<script src="/assets/99club/games-play-killer-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-kakuro-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-arithmeticcages-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-alphametics-v1.js?v=1"></script>
