@@ -1,4 +1,4 @@
-/* 99 Club Studio · Online Play instruction cleanup v1.54
+/* 99 Club Studio · Online Play instruction cleanup v1.54.1
  * One concise instruction block above the board for every playable game.
  * Removes duplicated under-board helper copy while preserving genuinely
  * puzzle-specific live information (currently Word Search directions).
@@ -16,6 +16,9 @@ const COPY={
   sudoku:'Place each number once in every row and column; Sudoku also requires each outlined box to contain every number once. Select a blank, then choose a number from the keypad.',
   futoshiki:'Use each number once in every row and column, and obey every inequality sign — the point faces the smaller number. Select a blank, then use the keypad.',
   killersudoku:'Use normal Sudoku rules, and make the digits in each dashed cage add to its target without repeating a digit inside that cage. Select a blank, then use the keypad.',
+  kakuro:'Fill each white square with 1–9. Every across or down run must add to its clue, and a digit cannot repeat within one run. Select a white square, then use the keypad.',
+  arithmeticcages:'Fill the grid with 1–N, using each number once in every row and column. Each outlined cage must make its target using the operation shown.',
+  alphametics:'Replace each letter with a digit so the written addition is correct. The same letter keeps the same digit, different letters use different digits, and a word cannot start with 0.',
   cornersum:'Place the digits 1–9 exactly once. Each circle is the total of the four cells around it; use the overlapping sums to work out the missing digits.',
   linkedsum:'Place the digits 1–9 exactly once. Each circle totals its four surrounding cells, and the A/B/C coloured groups must also match their totals.',
   hashi:'Connect every island into one network. An island’s number is the total number of bridge lines touching it; bridges never cross and a pair can have at most two. Tap a bridge space to cycle one line → two → none.',
