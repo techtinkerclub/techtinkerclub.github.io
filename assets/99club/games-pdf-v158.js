@@ -12,8 +12,8 @@ function n(v){return Number(v).toFixed(2).replace(/\.00$/,'');}function rgb(c){r
 function clean(pack){const saved=[];for(const sh of pack?.sheets||[])for(const a of sh.activities||[])if(a?.engineId==='operationgrid'&&typeof a.instruction==='string'){saved.push([a,a.instruction]);a.instruction=a.instruction.replace(MARK,'').trim();}return()=>saved.forEach(([a,s])=>a.instruction=s);}
 function drawEquation(e,row,answers,x,y,w,h,startIndex){
  rect(e,x,y,w,h,{fill:[252,253,253],stroke:C.line,width:.7});text(e,x+9,y+12,'EQUATION',4.8,{bold:true,color:C.muted});
- const parts=String(row.text||'').split('□'),slots=parts.length-1,slotW=h<42?17:20,slotH=h<42?19:22,fs=h<42?6.2:7.1,partW=parts.map(p=>P.estimateTextWidth(P.asciiish(p),fs,true)),total=partW.reduce((s,v)=>s+v,0)+slots*slotW,start=x+(w-total)/2,base=y+h*.64;let xx=start,idx=startIndex;
- parts.forEach((part,j)=>{text(e,xx,base,part,fs,{bold:true});xx+=partW[j];if(j<slots){rect(e,xx,y+h/2-slotH/2,slotW,slotH,{fill:answers?C.hit:C.white,stroke:[77,139,132],width:1});text(e,xx+2,y+h/2-slotH/2+5,`#${idx}`,3.8,{bold:true,color:C.muted});if(answers)center(e,xx+slotW/2,y+h/2+4,opLabel(row.ops?.[j]||''),8,{bold:true,color:C.teal});xx+=slotW;idx++;}});return idx;
+ const parts=String(row.text||'').split('□'),slots=parts.length-1,compact=h<42,slotW=compact?18:21,slotH=compact?20:23,fs=compact?6.8:7.8,gap=compact?3.5:4.5,partW=parts.map(p=>P.estimateTextWidth(P.asciiish(p),fs,true)),total=partW.reduce((s,v)=>s+v,0)+slots*(slotW+gap*2),start=x+(w-total)/2,base=y+h*.64;let xx=start,idx=startIndex;
+ parts.forEach((part,j)=>{text(e,xx,base,part,fs,{bold:true});xx+=partW[j];if(j<slots){xx+=gap;rect(e,xx,y+h/2-slotH/2,slotW,slotH,{fill:answers?C.hit:C.white,stroke:[77,139,132],width:1});text(e,xx+2,y+h/2-slotH/2+5,`#${idx}`,3.8,{bold:true,color:C.muted});if(answers)center(e,xx+slotW/2,y+h/2+4.5,opLabel(row.ops?.[j]||''),8.4,{bold:true,color:C.teal});xx+=slotW+gap;idx++;}});return idx;
 }
 function redraw(e,a,answers,x,y,w,h,index){
  const p=a.printCipher;if(!p)return;rect(e,x,y,w,h,{fill:C.white,stroke:C.line,width:.8});
