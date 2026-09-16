@@ -27,6 +27,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-brokencalc-v152.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-instructions-v154.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-cipher-v154.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-share-v156.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
@@ -44,6 +45,8 @@ sitemap: true
 <script src="/assets/99club/games-engine.js?v=15"></script>
 <script src="/assets/99club/games-wordsearch-quality-v150.js?v=1"></script>
 
+<script src="/assets/99club/games-play-share-codec-v156.js?v=1"></script>
+<script src="/assets/99club/games-play-qr-v156.js?v=1"></script>
 <script src="/assets/99club/games-play-core-v2.js?v=1"></script>
 <script src="/assets/99club/games-play-number-grid-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-arithmetic-core-v1.js?v=1"></script>
@@ -68,3 +71,4 @@ sitemap: true
 <script src="/assets/99club/games-play-library-v4.js?v=1"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=1"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=1"></script>
+<script src="/assets/99club/games-play-share-v156.js?v=1"></script>
