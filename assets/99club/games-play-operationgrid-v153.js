@@ -5,7 +5,7 @@
 'use strict';
 const Play=global.TT99GamesPlay,A=global.TT99ArithmeticGames,U=global.TT99PlayArithmetic,OG=A?.OPERATIONGRID_V153;if(!Play||!A||!U||!OG)return;
 const DIFFS=['easy','standard','challenge'],ROWS=['auto','5','6','8'],OPS=['auto','addsub','four'],MISS=['auto','one','up2','up3'],STRUCT=['auto','precedence','mixed','brackets'];
-const WORDS={easy:['MATH','CODE','SUMS','SHAPE','ANGLE','COUNT'],standard:['PRIME','LOGIC','NUMBER','EQUALS','FACTOR','PUZZLE','DIGITS'],challenge:['ALGEBRA','INTEGER','DECIMAL','FACTORS','MULTIPLE','EQUATION','PRODUCT','FRACTION']};
+const WORDS={easy:['AREA','CODE','SUMS','SHAPE','ANGLE','COUNT'],standard:['PRIME','LOGIC','NUMBER','EQUALS','FACTOR','PUZZLE','DIGITS'],challenge:['ALGEBRA','INTEGER','DECIMAL','FACTORS','MULTIPLE','EQUATION','PRODUCT','FRACTION']};
 function normalise(c={}){return OG.normalise(c);}
 function fromQuery(q){const o={};if(q.has('d'))o.difficulty=q.get('d');if(q.has('r'))o.rowCount=q.get('r');if(q.has('o'))o.operations=q.get('o');if(q.has('m'))o.missingOps=q.get('m');if(q.has('s'))o.structure=q.get('s');return o;}
 function toQuery(c){c=normalise(c);return {d:c.difficulty,r:c.rowCount,o:c.operations,m:c.missingOps,s:c.structure};}
