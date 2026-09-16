@@ -1,0 +1,50 @@
+name: Check Operation Codebreaker v2
+
+on:
+  push:
+    branches:
+      - fix/operation-codebreaker-mechanics
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: |
+          node --check assets/99club/games-play-operationgrid-v1.js
+      - name: Validate generated puzzles and adapter contract
+        run: |
+          node <<'NODE'
+          global.localStorage=undefined;
+          require('./assets/99club/games-arithmetic.js');
+          global.TT99PlayArithmetic={label:x=>x};
+          let adapter=null;
+          global.TT99GamesPlay={registerAdapter:(id,obj)=>{if(id==='operationgrid')adapter=obj;}};
+          require('./assets/99club/games-play-operationgrid-v1.js');
+          if(!adapter)throw new Error('operationgrid adapter did not register');
+          const A=global.TT99ArithmeticGames;
+          const diffs=['easy','standard','challenge'];
+          let total=0;
+          for(const difficulty of diffs)for(let i=0;i<100;i++){
+            const config={difficulty,rowCount:'auto',operations:'auto'};
+            const p=adapter.createPuzzle(config,`opv2:${difficulty}:${i}`);
+            const v=A.validate(p);if(!v.ok)throw new Error(`${difficulty}/${i}: ${v.error}`);
+            const pool=difficulty==='easy'?['+','-']:difficulty==='challenge'?['+','-','×','÷']:['+','-','×'];
+            for(const row of p.rows){
+              const actualPool=pool.slice();for(const op of row.ops||[])if(!actualPool.includes(op))actualPool.push(op);
+              const sols=A._operationSolutions(row,actualPool);
+              if(sols.length!==1)throw new Error(`${difficulty}/${i}: expected unique operation solution, got ${sols.length}`);
+            }
+            total++;
+          }
+          console.log(`validated ${total} codebreaker puzzles`);
+          const fs=require('fs'),src=fs.readFileSync('assets/99club/games-play-operationgrid-v1.js','utf8');
+          if(!src.includes("if(silent)return {complete:false"))throw new Error('silent check can still complete the puzzle');
+          if(src.includes("b.textContent=op==null?'□'"))throw new Error('nested square placeholder still present');
+          if(!src.includes('operator-code'))throw new Error('deterministic operator code mapping missing');
+          console.log('silent-check, blank-button and code-map contracts passed');
+          NODE
