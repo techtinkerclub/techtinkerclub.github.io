@@ -1,0 +1,71 @@
+name: Check share cards v1.56
+
+on:
+  push:
+    branches:
+      - feature/share-cards-v156
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check share scripts
+        run: |
+          node --check assets/99club/games-play-share-codec-v156.js
+          node --check assets/99club/games-play-qr-v156.js
+          node --check assets/99club/games-play-share-v156.js
+      - name: Verify compact challenge links
+        run: |
+          node <<'NODE'
+          global.location={href:'https://techtinker.club/tools/99-club/games/play/',search:'',origin:'https://techtinker.club',pathname:'/tools/99-club/games/play/'};
+          global.history={replaceState(){}};
+          require('./assets/99club/games-play-share-codec-v156.js');
+          const C=global.TT99PlayShareCodec;
+          const cases=[
+            'https://techtinker.club/tools/99-club/games/play/?game=killersudoku&seed=mabc-123xyz&mode=challenge&d=standard&n=9&cl=fewer',
+            'https://techtinker.club/tools/99-club/games/play/?game=operationgrid&seed=mz99-abc123&mode=challenge&d=challenge&r=8&o=four&mo=up3&st=mixed',
+            'https://techtinker.club/tools/99-club/games/play/?game=wordsearch&seed=mseed-55&mode=relaxed&d=easy&n=8&dir=straight'
+          ];
+          for(const long of cases){
+            const short=C.compactUrl(long);if(short.length>=long.length)throw new Error(`not shorter: ${short.length}/${long.length}`);
+            const token=new URL(short).searchParams.get('c'),expanded=C.expandToken(token,long);const a=new URL(long),b=new URL(expanded);
+            for(const [k,v] of a.searchParams)if(b.searchParams.get(k)!==v)throw new Error(`round trip mismatch ${k}: ${v}/${b.searchParams.get(k)}`);
+            console.log(`${a.searchParams.get('game')}: ${long.length} -> ${short.length}`);
+          }
+          NODE
+      - name: Verify local QR matrix
+        run: |
+          node <<'NODE'
+          const crypto=require('crypto');require('./assets/99club/games-play-qr-v156.js');
+          const text='https://techtinker.club/tools/99-club/games/play/?c=1~8~c~abc123~d:s,n:9,cl:f';
+          const m=global.TT99PlayQR.make(text),bits=m.flat().map(v=>v?'1':'0').join(''),hash=crypto.createHash('sha256').update(bits).digest('hex');
+          const expected='8115489aa4d3f87ab3c4b57ac2927b2ffef458cd3decb691d6a8c272ac117d5e';
+          if(m.length!==57||m.some(r=>r.length!==57))throw new Error('QR dimensions wrong');
+          if(hash!==expected)throw new Error(`QR reference mismatch ${hash}`);
+          console.log(`QR reference matched (${m.flat().filter(Boolean).length} dark modules)`);
+          NODE
+      - name: Verify page wiring
+        run: |
+          grep -q 'games-play-share-v156.css' _pages/99-club-games-play.md
+          grep -q 'games-play-share-codec-v156.js' _pages/99-club-games-play.md
+          grep -q 'games-play-qr-v156.js' _pages/99-club-games-play.md
+          grep -q 'games-play-share-v156.js' _pages/99-club-games-play.md
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('_pages/99-club-games-play.md').read_text()
+          assert s.index('games-play-share-codec-v156.js') < s.index('games-play-core-v2.js')
+          assert s.index('games-play-completion-preview-v1.js') < s.index('games-play-share-v156.js')
+          print('load order verified')
+          PY
+      - name: Verify sharing feature contract
+        run: |
+          grep -q 'Create share card' assets/99club/games-play-share-v156.js
+          grep -q 'Challenge someone' assets/99club/games-play-share-v156.js
+          grep -q 'Download PNG' assets/99club/games-play-share-v156.js
+          grep -q 'Facebook' assets/99club/games-play-share-v156.js
+          grep -q 'LinkedIn' assets/99club/games-play-share-v156.js
+          grep -q 'Instagram' assets/99club/games-play-share-v156.js
