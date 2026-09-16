@@ -1,6 +1,7 @@
-/* 99 Club Studio · Online Play completion preview v1.0.0 */
+/* 99 Club Studio · Online Play completion preview v1.0.1 */
 (function(){
 'use strict';
+const watched=new WeakSet();
 function sanitiseClone(node){
   node.removeAttribute?.('id');
   node.querySelectorAll?.('[id]').forEach(el=>el.removeAttribute('id'));
@@ -9,7 +10,7 @@ function sanitiseClone(node){
     el.setAttribute('aria-hidden','true');
     if('disabled' in el)el.disabled=true;
   });
-  node.querySelectorAll?.('.tt99-number-keypad,.tt99-cycle-note,.tt99-hashi-note,.tt99-play-board-tip').forEach(el=>el.remove());
+  node.querySelectorAll?.('.tt99-number-keypad,.tt99-cycle-note,.tt99-hashi-note,.tt99-hashi-hitlayer,.tt99-play-board-tip').forEach(el=>el.remove());
 }
 function injectPreview(){
   const popup=document.getElementById('tt99-play-complete');
@@ -30,9 +31,18 @@ function injectPreview(){
 function watch(){
   const popup=document.getElementById('tt99-play-complete');
   if(!popup)return false;
+  if(watched.has(popup)){injectPreview();return true;}
+  watched.add(popup);
   new MutationObserver(injectPreview).observe(popup,{childList:true,subtree:false,attributes:true,attributeFilter:['hidden']});
   injectPreview();
   return true;
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{if(!watch()){const root=document.getElementById('tt99-play-root');if(root)new MutationObserver(()=>watch()).observe(root,{childList:true,subtree:true});}},{once:true});else if(!watch()){const root=document.getElementById('tt99-play-root');if(root)new MutationObserver(()=>watch()).observe(root,{childList:true,subtree:true});}
+function boot(){
+  if(watch())return;
+  const root=document.getElementById('tt99-play-root');
+  if(!root)return;
+  const observer=new MutationObserver(()=>{if(watch())observer.disconnect();});
+  observer.observe(root,{childList:true,subtree:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
