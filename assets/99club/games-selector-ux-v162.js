@@ -44,7 +44,8 @@ function refreshCategoryCounts(){
     const inputs=[...cat.querySelectorAll('.tt99-engine-card input[type="checkbox"]')];
     const compatible=inputs.filter(i=>!i.disabled),selected=compatible.filter(i=>i.checked);
     const count=cat.querySelector('.tt99-game-category-toggle em');
-    if(count)count.textContent=`${selected.length}/${compatible.length} selected`;
+    const nextCount=`${selected.length}/${compatible.length} selected`;
+    if(count&&count.textContent!==nextCount)count.textContent=nextCount;
     cat.classList.toggle('has-selection',selected.length>0);
     const clear=cat.querySelector('[data-category-clear]');if(clear)clear.disabled=selected.length===0;
   });
