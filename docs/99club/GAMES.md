@@ -74,6 +74,16 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - Adds **Word Codes / Alphametics** using a curated library of meaningful word equations rather than random letter strings. Current templates include `TWO + TWO = FOUR`, `BASE + BALL = GAMES`, `SEND + MORE = MONEY`, `CROSS + ROADS = DANGER` and `FORTY + TEN + TEN = SIXTY`.
 - All four engines ship with pupil preview, answer preview, PDF rendering, settings, worked-example data and automated validation.
 
+### v1.71 — Online Play existing-game wave
+- Ports **Number Towers / Skyscrapers**, **Number Property Maze**, **Correct-Answer Maze** and **Maths Crossnumber** into Online Play without replacing their mature printable generators.
+- Online generation calls the same deterministic engines and validates generated puzzles before accepting them.
+- Interactive square grids use explicit equal row and column tracks so entered values cannot resize cells on mobile.
+- Number Towers keeps inward-facing edge-clue directions and solver-verified uniqueness.
+- Maze movement is orthogonal only; Number Property Maze preserves the generator's unique valid route and deliberate matching-number dead ends.
+- Crossnumber uses one fixed square per digit and keeps blocked cells structurally separate from playable cells.
+- `Check` marks only work the pupil has entered or selected. It never fills untouched solution cells.
+- `Hint` highlights a useful clue, line or current position and explains a strategy without disclosing the next hidden value or route square.
+
 ## Curriculum mapping principle
 
 Puzzle engines are mapped conservatively. They are reasoning/fluency resources that exercise curriculum mathematics; they are not presented as replacements for teaching a statutory objective.
@@ -99,4 +109,4 @@ Before an engine is called complete, check Easy/Standard/Challenge where applica
 
 ## Future candidates
 
-After the v1.40 batch, the next expansion should be chosen from the remaining distinct mechanics rather than adding near-duplicates. Candidates retained for later evaluation include region sums/number partition, domino placement, honeycomb/hex puzzles, equation loops, factor/prime chains, fraction-match grids and coordinate treasure puzzles.
+After the existing printable catalogue is fully represented in Online Play, the next expansion should be chosen from distinct mechanics rather than adding near-duplicates. Candidates retained for later evaluation include region sums/number partition, domino placement, honeycomb/hex puzzles, equation loops, factor/prime chains, fraction-match grids and coordinate treasure puzzles.
