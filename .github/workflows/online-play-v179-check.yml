@@ -1,0 +1,26 @@
+name: Temporary Online Play v1.79 check
+
+on:
+  push:
+    branches:
+      - fix/killer-sudoku-cage-outlines-v179
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: JavaScript syntax
+        run: node --check assets/99club/games-play-killer-v1.js
+      - name: Killer Sudoku cage-outline guards
+        run: |
+          grep -q 'tt99-play-killer .cage-edge.top' assets/99club/games-play-killer-v179.css
+          grep -q 'tt99-play-killer .cage-edge.bottom' assets/99club/games-play-killer-v179.css
+          grep -q 'border-top:1.6px solid #4f8580' assets/99club/games-play-killer-v179.css
+          grep -q 'border-left:1.6px solid #4f8580' assets/99club/games-play-killer-v179.css
+          ! grep -q 'dashed cage' assets/99club/games-play-killer-v1.js
+          grep -q 'games-play-killer-v179.css?v=1' _pages/99-club-games-play.md
+          grep -q 'games-play-killer-v1.js?v=2' _pages/99-club-games-play.md
