@@ -35,6 +35,7 @@ sitemap: true
 <script src="/assets/99club/games-shikaku-v143.js?v=1"></script>
 <script src="/assets/99club/games-sum-grids-v147.js?v=1"></script>
 <script src="/assets/99club/games-engine.js?v=15"></script>
+<script src="/assets/99club/games-wordsearch-quality-v150.js?v=1"></script>
 
 <script src="/assets/99club/games-play-core-v2.js?v=1"></script>
 <script src="/assets/99club/games-play-number-grid-v1.js?v=1"></script>
@@ -51,7 +52,7 @@ sitemap: true
 <script src="/assets/99club/games-play-sum-grids-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-hashi-v1.js?v=3"></script>
 <script src="/assets/99club/games-play-numberpath-v1.js?v=1"></script>
-<script src="/assets/99club/games-play-wordsearch-v1.js?v=1"></script>
+<script src="/assets/99club/games-play-wordsearch-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-brokencalc-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-target-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-operationgrid-v1.js?v=1"></script>
