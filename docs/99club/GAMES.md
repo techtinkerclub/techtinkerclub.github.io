@@ -84,6 +84,15 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - `Check` marks only work the pupil has entered or selected. It never fills untouched solution cells.
 - `Hint` highlights a useful clue, line or current position and explains a strategy without disclosing the next hidden value or route square.
 
+### v1.73 — Online Play number-structures wave
+- Ports **Number Pyramid**, **Magic Squares**, **Arithmagons** and **Magic Number Shapes** into Online Play while continuing to use their mature printable generators as the source of puzzle data and answers.
+- Number Pyramid supports forward addition and inverse subtraction reasoning across 3–7 levels, with the existing uniquely-solvable clue masks retained.
+- Magic Squares supports fill-missing, check-is-it-magic, repair-one-value and transform variants, including shifted/scaled number patterns and explicit decimal patterns.
+- Arithmagons supports triangle through hexagon layouts, addition, multiplication, mixed-operation connections and the existing optional diagonal connections.
+- Magic Number Shapes supports triangle, web, bow-tie and star layouts with fill-missing, check and repair variants.
+- All four adapters use the shared Online Play shell for Relaxed/Challenge modes, Check, Hint, Undo, Redo, Reset, completion, personal bests and reproducible challenge links.
+- Interactive grids and diagrams are responsive on narrow screens; Magic Squares use explicit equal zero-minimum row and column tracks to prevent content-driven mobile distortion.
+
 ## Curriculum mapping principle
 
 Puzzle engines are mapped conservatively. They are reasoning/fluency resources that exercise curriculum mathematics; they are not presented as replacements for teaching a statutory objective.
