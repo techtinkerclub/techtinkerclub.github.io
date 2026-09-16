@@ -17,3 +17,27 @@ jobs:
           node --check assets/99club/games-play-target-v1.js
           node --check assets/99club/games-play-operationgrid-v1.js
           node --check assets/99club/games-play-library-v4.js
+      - name: Generate and validate Wave 4 puzzle matrix
+        run: |
+          node <<'NODE'
+          const A=require('./assets/99club/games-arithmetic.js');
+          const diffs=['easy','standard','challenge'];
+          let total=0;
+          function test(id,settings,seed){
+            const p=A.generate(id,settings,seed);
+            const v=A.validate(p);
+            if(!v.ok) throw new Error(`${id} ${seed}: ${v.error}`);
+            total++;
+          }
+          for(const d of diffs){
+            const level=d==='easy'?2:d==='challenge'?6:4;
+            for(let i=0;i<100;i++){
+              test('brokencalc',{minYear:1,maxYear:level,topics:['calculation'],engineSettings:{brokencalc:{difficulty:d,targets:'3',keyLevel:'auto'}}},`bc:${d}:${i}`);
+              const targetOps=d==='easy'?'addsub':d==='challenge'?'mixed':'times';
+              test('target',{minYear:1,maxYear:level,topics:['calculation'],engineSettings:{target:{difficulty:d,numberCount:'auto',challengeCount:'3',operations:targetOps}}},`target:${d}:${i}`);
+              const opLevel=d==='easy'?2:d==='challenge'?6:3;
+              test('operationgrid',{minYear:1,maxYear:opLevel,topics:['calculation'],engineSettings:{operationgrid:{difficulty:d,rowCount:'auto',operations:'auto'}}},`ops:${d}:${i}`);
+            }
+          }
+          console.log(`Validated ${total} generated Wave 4 puzzles.`);
+          NODE
