@@ -1,0 +1,60 @@
+name: Check Codebreaker paper v1.58
+on:
+  push:
+    branches: [fix/operation-codebreaker-paper-v158]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check assets/99club/games-operationgrid-print-v158.js
+          node --check assets/99club/games-operationgrid-print-v158-ui.js
+          node --check assets/99club/games-pdf-v158.js
+      - name: Generate and validate representative PDFs
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-operationgrid-v153.js');
+          require('./assets/99club/games-operationgrid-print-v155.js');
+          require('./assets/99club/games-operationgrid-print-v158.js');
+          const A=globalThis.TT99ArithmeticGames;
+          let a=null;
+          for(let i=0;i<200;i++){
+            const settings={minYear:1,maxYear:6,engineSettings:{operationgrid:{difficulty:'challenge',rowCount:'6',operations:'four',missingOps:'up3',structure:'mixed'}}};
+            const q=A.generate('operationgrid',settings,'paper-v158-'+i);
+            if(q.printCipher?.code?.length===12){a=q;break;}
+          }
+          if(!a) throw new Error('Could not generate 12-position Challenge example');
+          if(a.printCipher.version!==158) throw new Error('Wrong print cipher version');
+          const p=a.printCipher;
+          if(p.code.length!==12||p.word.length!==12||p.cipher.length!==12||p.moves.length!==12) throw new Error('Code/cipher length mismatch');
+          p.moves.forEach((m,i)=>{if(m.codeIndex!==i+1)throw new Error('Bad code position reference');if(Math.abs(Number(m.digit)-Number(p.code[i]))>0)throw new Error('Move digit does not match code');});
+          if(!p.moves.some(m=>m.direction===1)||!p.moves.some(m=>m.direction===-1))throw new Error('Cipher must use both directions');
+          require('./assets/99club/simple-pdf.js');
+          require('./assets/99club/games-pdf.js');
+          require('./assets/99club/games-puzzle-redesign-v135-logic.js');
+          require('./assets/99club/games-pdf-v136.js');
+          require('./assets/99club/games-pdf-v155.js');
+          require('./assets/99club/games-pdf-v158.js');
+          const PDF=globalThis.TT99GamesPDF;
+          const pack={seed:'paper-v158',sheets:[{index:1,activities:[a]}],workedExamples:[]};
+          const settings={minYear:1,maxYear:6,workedExamples:'none',personalisation:{packTitle:'Codebreaker QA'}};
+          for(const kind of ['student','answers']){
+            const doc=PDF.buildDocument({pack,settings,kind,topics:{},seed:'paper-v158'});
+            const stream=doc.pages[0].cmds.join('\n');
+            for(const label of ['OPERATOR KEY','NUMBER CODE','SECRET WORD','Decoded:'])if(!stream.includes(label))throw new Error(`Missing ${label}`);
+            if(!stream.includes('#12'))throw new Error('Missing code position #12');
+            fs.writeFileSync(`codebreaker-${kind}.pdf`,Buffer.from(doc.outputBytes()));
+          }
+          console.log('PASS: 12-position Challenge codebreaker, matching cipher, pupil + answer PDFs');
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codebreaker-v158-pdfs
+          path: codebreaker-*.pdf
