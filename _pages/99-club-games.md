@@ -50,6 +50,7 @@ sitemap: true
 <script src="/assets/99club/games-focus-topics-v145.js?v=1"></script>
 <script src="/assets/99club/games-pack-mode.js?v=2"></script>
 <script src="/assets/99club/games-performance-v142.js?v=1"></script>
+<script src="/assets/99club/games-performance-v149.js?v=1"></script>
 <script src="/assets/99club/games-instructions-v139.js?v=1"></script>
 <script src="/assets/99club/games-puzzle-redesign-v135-logic.js?v=1"></script>
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
