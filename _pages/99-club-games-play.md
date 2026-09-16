@@ -29,6 +29,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-cipher-v154.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-share-v156.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-wave5.css?v=2">
+<link rel="stylesheet" href="/assets/99club/games-play-arithmeticcages-v169.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-modal-v164.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
