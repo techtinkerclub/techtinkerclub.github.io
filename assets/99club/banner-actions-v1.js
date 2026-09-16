@@ -1,7 +1,7 @@
-/* 99 Club Studio · shared banner actions v1.0.0
+/* 99 Club Studio · shared banner actions v1.1.0
  * Reuses the main Studio Contact and embedded Ko-fi interaction on child banners.
- * The modal class names intentionally match assets/99club/99club.css so the
- * child pages render the same panels as the main 99 Club Studio page.
+ * The modal class names intentionally match assets/99club/99club.css so child
+ * pages render the same panels and submit through the same endpoints as Studio.
  */
 (function(){
 'use strict';
@@ -218,6 +218,31 @@ function bindInjectedModals(root){
   });
 }
 
+function actionButton(kind,classes){
+  const b=document.createElement('button');
+  b.type='button';
+  b.className=classes;
+  b.setAttribute(kind==='contact'?'data-tt99-contact-open':'data-tt99-kofi-open','');
+  b.setAttribute('aria-haspopup','dialog');
+  b.innerHTML=kind==='contact'?'<span aria-hidden="true">✉</span>Contact':'<img class="tt99-shared-kofi-cup" src="/assets/99club/images/kofi-cup.png?v=19.4" alt="" aria-hidden="true">Buy me a coffee';
+  return b;
+}
+
+function ensureSharedStyles(){
+  if(document.getElementById('tt99-shared-banner-action-styles'))return;
+  const style=document.createElement('style');
+  style.id='tt99-shared-banner-action-styles';
+  style.textContent=`
+    .tt99-shared-kofi-cup{display:block;width:24px;height:20px;object-fit:contain;flex:0 0 24px}
+    .tt99-guide-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
+    .tt99-guide-actions .tt99-guide-action{margin:0!important}
+    .tt99-guide-actions button.tt99-guide-action{cursor:pointer}
+    .tt99-custom-hero-actions button.tt99-custom-back{cursor:pointer}
+    @media(max-width:720px){.tt99-guide-actions{justify-content:flex-start}}
+  `;
+  document.head.appendChild(style);
+}
+
 function enhanceBrandTools(){
   document.querySelectorAll('.tt99-brand-tools').forEach(tools=>{
     const support=tools.querySelector('.tt99-brand-tool--support');
@@ -226,15 +251,41 @@ function enhanceBrandTools(){
       support.setAttribute('aria-haspopup','dialog');
     }
     if(!tools.querySelector('.tt99-brand-tool--contact')){
-      const contact=document.createElement('a');
-      contact.href='#tt99-contact';
-      contact.className='tt99-brand-tool tt99-brand-tool--contact';
-      contact.setAttribute('data-tt99-contact-open','');
-      contact.setAttribute('aria-haspopup','dialog');
+      const contact=actionButton('contact','tt99-brand-tool tt99-brand-tool--contact');
       contact.innerHTML='<span aria-hidden="true">✉</span>Contact';
       if(support)tools.insertBefore(contact,support);else tools.appendChild(contact);
     }
   });
+}
+
+function enhanceCustomHero(){
+  document.querySelectorAll('.tt99-custom-hero-actions').forEach(actions=>{
+    if(!actions.querySelector('[data-tt99-contact-open]'))actions.appendChild(actionButton('contact','tt99-secondary tt99-custom-back'));
+    if(!actions.querySelector('[data-tt99-kofi-open]'))actions.appendChild(actionButton('kofi','tt99-secondary tt99-custom-back'));
+  });
+}
+
+function enhanceGuideHero(){
+  document.querySelectorAll('.tt99-guide-hero').forEach(hero=>{
+    let actions=hero.querySelector(':scope > .tt99-guide-actions');
+    if(!actions){
+      const existing=hero.querySelector(':scope > .tt99-guide-action');
+      if(!existing)return;
+      actions=document.createElement('div');
+      actions.className='tt99-guide-actions';
+      hero.insertBefore(actions,existing);
+      actions.appendChild(existing);
+    }
+    if(!actions.querySelector('[data-tt99-contact-open]'))actions.appendChild(actionButton('contact','tt99-secondary tt99-guide-action'));
+    if(!actions.querySelector('[data-tt99-kofi-open]'))actions.appendChild(actionButton('kofi','tt99-secondary tt99-guide-action'));
+  });
+}
+
+function enhanceAllBanners(){
+  ensureSharedStyles();
+  enhanceBrandTools();
+  enhanceCustomHero();
+  enhanceGuideHero();
 }
 
 function delegatedClick(e){
@@ -252,14 +303,14 @@ function delegatedClick(e){
 }
 
 function boot(){
-  enhanceBrandTools();
+  enhanceAllBanners();
   document.addEventListener('click',delegatedClick);
   if(document.body&&window.MutationObserver){
-    observer=new MutationObserver(enhanceBrandTools);
+    observer=new MutationObserver(enhanceAllBanners);
     observer.observe(document.body,{childList:true,subtree:true});
   }
 }
 
-window.TT99BannerActions={openKofi,closeKofi,openContact,closeContact,enhance:enhanceBrandTools};
+window.TT99BannerActions={openKofi,closeKofi,openContact,closeContact,enhance:enhanceAllBanners};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
