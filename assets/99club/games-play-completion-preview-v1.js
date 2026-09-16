@@ -1,7 +1,12 @@
-/* 99 Club Studio · Online Play completion preview v1.0.1 */
+/* 99 Club Studio · Online Play completion preview v1.0.2 */
 (function(){
 'use strict';
 const watched=new WeakSet();
+const TRANSIENT='.is-selected,.is-related,.is-same,.is-current,.is-hint,.is-wrong,.is-keypad-active';
+function clearTransient(node){
+  document.activeElement?.blur?.();
+  node.querySelectorAll?.(TRANSIENT).forEach(el=>el.classList.remove('is-selected','is-related','is-same','is-current','is-hint','is-wrong','is-keypad-active'));
+}
 function sanitiseClone(node){
   node.removeAttribute?.('id');
   node.querySelectorAll?.('[id]').forEach(el=>el.removeAttribute('id'));
@@ -10,7 +15,8 @@ function sanitiseClone(node){
     el.setAttribute('aria-hidden','true');
     if('disabled' in el)el.disabled=true;
   });
-  node.querySelectorAll?.('.tt99-number-keypad,.tt99-cycle-note,.tt99-hashi-note,.tt99-hashi-hitlayer,.tt99-play-board-tip').forEach(el=>el.remove());
+  node.querySelectorAll?.('.tt99-number-keypad,.tt99-structure-keypad,.tt99-cycle-note,.tt99-hashi-note,.tt99-hashi-hitlayer,.tt99-play-board-tip').forEach(el=>el.remove());
+  clearTransient(node);
 }
 function injectPreview(){
   const popup=document.getElementById('tt99-play-complete');
@@ -18,6 +24,7 @@ function injectPreview(){
   const card=popup.querySelector('.tt99-play-complete-card');
   const source=document.getElementById('tt99-play-board');
   if(!card||!source||!source.firstElementChild)return;
+  clearTransient(source);
   const clone=source.cloneNode(true);
   sanitiseClone(clone);
   clone.classList.add('tt99-play-complete-snapshot');
