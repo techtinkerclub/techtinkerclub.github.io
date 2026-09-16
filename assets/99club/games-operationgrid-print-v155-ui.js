@@ -4,7 +4,7 @@
 const root=document.getElementById('tt99-games-root');if(!root)return;
 const MARK=/\s*\[\[TT99OC155:([^\]]+)\]\]/;
 function decode(s){try{const json=decodeURIComponent(escape(atob(s)));return JSON.parse(json);}catch(_){try{return JSON.parse(s);}catch(__){return null;}}}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));}
 function opLabel(op){return op==='-'?'−':op;}
 function enhanceActivity(section){
   if(section.dataset.opPrint155==='1')return;
@@ -19,5 +19,5 @@ function enhanceActivity(section){
 }
 let raf=0;function scan(){raf=0;root.querySelectorAll('.tt99-operationgrid').forEach(enhanceActivity);}function schedule(){if(!raf)raf=requestAnimationFrame(scan);}
 new MutationObserver(schedule).observe(root,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
-global.TT99OperationGridPrintUIV155={version:'1.55',refresh:schedule};
+global.TT99OperationGridPrintUIV155={version:'1.55',refresh:schedule,scan};
 })(typeof globalThis!=='undefined'?globalThis:this);
