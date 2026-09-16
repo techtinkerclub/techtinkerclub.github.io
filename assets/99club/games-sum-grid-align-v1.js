@@ -1,4 +1,4 @@
-/* 99 Club Studio · exact Corner/Linked Sum circle alignment v1.0.0
+/* 99 Club Studio · exact Corner/Linked Sum circle alignment v1.0.1
  * Positions each circle from the rendered cell boundaries rather than percentage
  * estimates. This avoids Safari/sub-pixel drift on narrow screens.
  */
@@ -11,9 +11,11 @@ function positionBoard(board){
   const host=online?board:board.parentElement;
   const clues=[...host.querySelectorAll(online?'.tt99-play-sumgrid-clue':'.tt99-sumgrid-clue')];
   if(cells.length<9||clues.length<4)return;
-  const hostRect=host.getBoundingClientRect();
-  const c0=cells[0].getBoundingClientRect(),c1=cells[1].getBoundingClientRect(),c3=cells[3].getBoundingClientRect();
-  const x1=c0.right-hostRect.left,x2=c1.right-hostRect.left,y1=c0.bottom-hostRect.top,y2=c3.bottom-hostRect.top;
+  const c0=cells[0],c1=cells[1],c3=cells[3];
+  const x1=c0.offsetLeft+c0.offsetWidth;
+  const x2=c1.offsetLeft+c1.offsetWidth;
+  const y1=c0.offsetTop+c0.offsetHeight;
+  const y2=c3.offsetTop+c3.offsetHeight;
   [[x1,y1],[x2,y1],[x1,y2],[x2,y2]].forEach(([x,y],i)=>{
     clues[i].style.left=`${x}px`;
     clues[i].style.top=`${y}px`;
