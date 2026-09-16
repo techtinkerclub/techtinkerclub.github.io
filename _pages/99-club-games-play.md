@@ -33,6 +33,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-arithmeticcages-v169.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-existing-wave-v171.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-modal-v164.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-square-grid-fix-v172.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
