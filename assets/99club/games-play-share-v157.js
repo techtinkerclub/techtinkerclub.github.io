@@ -1,13 +1,15 @@
-/* 99 Club Studio · result cards + challenge sharing v1.57
+/* 99 Club Studio · result cards + challenge sharing v1.57.1
  * Uses html2canvas for DOM capture instead of SVG foreignObject, which can taint
  * canvases in installed Chromium/Edge apps. Card generation always falls back to
  * a board-free PNG so Download/Share never become dead controls.
+ * v1.57.1 prevents the completion/share observer from retriggering itself.
  */
 (function(global){
 'use strict';
 const Codec=global.TT99PlayShareCodec,QR=global.TT99PlayQR;if(!Codec||!QR)return;
 let dialog=null,currentMode='solved',currentBlob=null,currentUrl='',currentObjectUrl='',renderToken=0;
 function status(text,tone='success'){const el=document.getElementById('tt99-play-status');if(el){el.textContent=text;el.dataset.tone=tone;}}
+function setText(el,value){if(el&&el.textContent!==value)el.textContent=value;}
 function copyText(text){if(navigator.clipboard?.writeText)return navigator.clipboard.writeText(text);const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();return Promise.resolve();}
 function challengeUrl(){return Codec.currentCompactUrl();}
 function title(){return document.getElementById('tt99-play-game-title')?.textContent?.trim()||'Maths Challenge';}
@@ -63,9 +65,9 @@ function downloadCurrent(){if(!currentBlob)return status('The share image is sti
 async function nativeShare(){if(!currentBlob)return status('The share image is still being prepared.','warn');const file=new File([currentBlob],`99-club-${safeName()}.png`,{type:'image/png'}),data={title:`99 Club Studio · ${title()}`,text:currentMode==='solved'?`I solved ${title()} on 99 Club Studio. Can you solve the same puzzle?`:shortText(),url:currentUrl};try{if(navigator.canShare?.({files:[file]}))await navigator.share({...data,files:[file]});else if(navigator.share)await navigator.share(data);else return downloadCurrent();status('Share sheet opened.');}catch(err){if(err?.name!=='AbortError')status('Could not open the share sheet. You can download the PNG instead.','warn');}}
 function socialShare(which){const url=encodeURIComponent(currentUrl||challengeUrl()),text=encodeURIComponent(shortText());if(which==='instagram')return nativeShare();let target='';if(which==='x')target=`https://twitter.com/intent/tweet?text=${text}&url=${url}`;if(which==='facebook')target=`https://www.facebook.com/sharer/sharer.php?u=${url}`;if(which==='linkedin')target=`https://www.linkedin.com/sharing/share-offsite/?url=${url}`;if(target)global.open(target,'_blank','noopener,noreferrer');}
 function copyCompact(){const link=challengeUrl();return copyText(link).then(()=>status('Short challenge link copied. Anyone opening it gets the same puzzle.')).catch(()=>status('Could not copy the challenge link in this browser.','warn'));}
-function injectCompletion(){const box=document.getElementById('tt99-play-complete');if(!box||box.hidden)return;const actions=box.querySelector('.tt99-play-complete-actions');if(!actions)return;const old=actions.querySelector('[data-play-share]');if(old)old.textContent='Copy short challenge link';if(actions.querySelector('[data-share-card]'))return;const solved=document.createElement('button');solved.type='button';solved.className='tt99-secondary';solved.dataset.shareCard='1';solved.textContent='📸 Create share card';solved.addEventListener('click',()=>renderDialog('solved'));const challenge=document.createElement('button');challenge.type='button';challenge.className='tt99-secondary';challenge.dataset.challengeCard='1';challenge.textContent='Challenge someone';challenge.addEventListener('click',()=>renderDialog('challenge'));actions.append(solved,challenge);}
-let raf=0;function schedule(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;injectCompletion();const setup=document.getElementById('tt99-play-share');if(setup)setup.textContent='Copy short challenge link';});}
+function injectCompletion(){const box=document.getElementById('tt99-play-complete');if(!box||box.hidden)return;const actions=box.querySelector('.tt99-play-complete-actions');if(!actions)return;setText(actions.querySelector('[data-play-share]'),'Copy short challenge link');if(actions.querySelector('[data-share-card]'))return;const solved=document.createElement('button');solved.type='button';solved.className='tt99-secondary';solved.dataset.shareCard='1';solved.textContent='📸 Create share card';solved.addEventListener('click',()=>renderDialog('solved'));const challenge=document.createElement('button');challenge.type='button';challenge.className='tt99-secondary';challenge.dataset.challengeCard='1';challenge.textContent='Challenge someone';challenge.addEventListener('click',()=>renderDialog('challenge'));actions.append(solved,challenge);}
+let raf=0;function schedule(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;injectCompletion();setText(document.getElementById('tt99-play-share'),'Copy short challenge link');});}
 document.addEventListener('click',e=>{const b=e.target.closest?.('#tt99-play-share,[data-play-share]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();copyCompact();},{capture:true});
-new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
-global.TT99PlayShareV156={version:'1.57',open:renderDialog,challengeUrl,makeCard};
+const playRoot=document.getElementById('tt99-play-root');if(playRoot&&global.MutationObserver)new MutationObserver(schedule).observe(playRoot,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
+global.TT99PlayShareV156={version:'1.57.1',open:renderDialog,challengeUrl,makeCard};
 })(typeof globalThis!=='undefined'?globalThis:this);
