@@ -16,6 +16,7 @@ sitemap: true
 
 <link rel="stylesheet" href="/assets/99club/99club.css?v=19.4">
 <link rel="stylesheet" href="/assets/99club/games.css?v=20">
+<link rel="stylesheet" href="/assets/99club/games-kakuro-orientation-v168.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-sumplete.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-property-maze.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-layout-v1321.css?v=1">
