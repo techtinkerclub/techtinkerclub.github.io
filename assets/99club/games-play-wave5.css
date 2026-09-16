@@ -4,7 +4,7 @@
 .tt99-kakuro-play,.tt99-kakuro-block,.tt99-kakuro-clue{position:relative;min-width:0;min-height:0;background:#fff}
 .tt99-kakuro-block{background:#405f64}.tt99-kakuro-clue{background:#e9efef;color:#31575c;overflow:hidden}
 .tt99-kakuro-clue .diag{position:absolute;inset:0;background:linear-gradient(to top right,transparent 49.2%,#698186 49.7%,#698186 50.3%,transparent 50.8%)}
-.tt99-kakuro-clue b{position:absolute;font:850 clamp(.44rem,1.55vw,.72rem)/1 Arial,sans-serif;color:#35565b}.tt99-kakuro-clue b.down{top:13%;right:11%}.tt99-kakuro-clue b.across{left:11%;bottom:13%}
+.tt99-kakuro-clue b{position:absolute;font:850 clamp(.44rem,1.55vw,.72rem)/1 Arial,sans-serif;color:#35565b}.tt99-kakuro-clue b.down{left:11%;bottom:13%}.tt99-kakuro-clue b.across{top:13%;right:11%}
 .tt99-kakuro-play{appearance:none;border:0;color:var(--play-ink);display:grid;place-items:center;font:850 clamp(.84rem,3.5vw,1.42rem)/1 inherit;cursor:pointer}.tt99-kakuro-play.is-given{background:#f1f6f5;color:#31575c;font-weight:950;cursor:default}.tt99-kakuro-play.is-selected{background:#eaf4ff;box-shadow:inset 0 0 0 3px #5c9ccc;z-index:4}.tt99-kakuro-play.is-wrong{background:#fff0eb!important;box-shadow:inset 0 0 0 3px #cd7a64!important;color:#8d4939}.tt99-kakuro-play.is-hint{animation:tt99-num-hint 1.05s ease-in-out infinite;background:#eef5ff}
 .tt99-kakuro-keypad{width:min(100%,470px)}
 
