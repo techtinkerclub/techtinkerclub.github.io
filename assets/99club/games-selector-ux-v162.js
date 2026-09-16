@@ -8,7 +8,7 @@ const root=document.getElementById('tt99-games-root'),G=global.TT99Games;
 if(!root||!G||root.dataset.selectorUxV162==='1')return;
 root.dataset.selectorUxV162='1';
 const SETTINGS_KEY='tt99-games-settings-v4',RESTORE_KEY='tt99-games-open-once-v162';
-let scheduled=false,gamesInitialised=false,focusInitialised=false;
+let scheduled=false,gamesInitialised=false;
 let focusOpen=new Set();
 
 function loadSettings(){try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')||{};}catch(_){return {};}}
@@ -21,6 +21,7 @@ function readRestore(){try{const raw=sessionStorage.getItem(RESTORE_KEY);if(!raw
 const pending=readRestore();
 if(Array.isArray(pending?.focus))focusOpen=new Set(pending.focus);
 
+function gameToggle(id){return root.querySelector(`[data-category-toggle="${String(id).replace(/"/g,'\\"')}"]`);}
 function initialiseGameAccordions(){
   if(gamesInitialised)return;
   const toggles=[...root.querySelectorAll('[data-category-toggle]')];if(!toggles.length)return;
@@ -29,13 +30,12 @@ function initialiseGameAccordions(){
   // older extension card has forced a page reload during a selection change.
   toggles.filter(b=>b.getAttribute('aria-expanded')==='true').forEach(b=>b.click());
   if(Array.isArray(pending?.games)){
-    for(const id of pending.games){const b=root.querySelector(`[data-category-toggle="${CSS.escape(id)}"]`);if(b&&b.getAttribute('aria-expanded')!=='true')b.click();}
+    for(const id of pending.games){const b=gameToggle(id);if(b&&b.getAttribute('aria-expanded')!=='true')b.click();}
   }
 }
 
 function applyFocusAccordionState(){
   const groups=[...root.querySelectorAll('.tt99-focus-group')];if(!groups.length)return;
-  if(!focusInitialised)focusInitialised=true;
   for(const details of groups){const key=focusKey(details);const should=!!key&&focusOpen.has(key);if(details.open!==should)details.open=should;}
 }
 
@@ -52,11 +52,9 @@ function refreshCategoryCounts(){
 
 function removeUnsupportedThreeUp(){
   const select=root.querySelector('#games-activities');if(!select)return;
+  const wasThree=select.value==='3';
   select.querySelector('option[value="3"]')?.remove();
-  if(select.value==='3'){
-    select.value='2';
-    select.dispatchEvent(new Event('change',{bubbles:true}));
-  }
+  if(wasThree){select.value='2';select.dispatchEvent(new Event('change',{bubbles:true}));}
 }
 
 function engineIdForCard(card){
@@ -83,11 +81,20 @@ function bulkCategory(btn,selecting){
   if(saveSettings(s)){storeOpenOnce();location.reload();}
 }
 
-// Track only explicit summary clicks. Re-renders are then free to recreate the
-// details elements without changing the state the teacher chose.
+// Track only explicit accordion actions. Re-renders are then free to recreate
+// controls without silently opening or closing categories.
 root.addEventListener('click',e=>{
   const summary=e.target.closest?.('.tt99-focus-group > summary');
   if(summary){const details=summary.parentElement,key=focusKey(details);setTimeout(()=>{if(!key)return;if(details.open)focusOpen.add(key);else focusOpen.delete(key);},0);return;}
+
+  const configure=e.target.closest?.('[data-configure-engine],[data-v140-configure],[data-takuzu-configure],[data-v137-configure],[data-shikaku-configure]');
+  if(configure){const before=new Set(openGameIds());setTimeout(()=>{
+    for(const b of root.querySelectorAll('[data-category-toggle]')){
+      const should=before.has(b.dataset.categoryToggle),isOpen=b.getAttribute('aria-expanded')==='true';
+      if(should!==isOpen)b.click();
+    }
+  },0);return;}
+
   const bulk=e.target.closest?.('[data-category-select],[data-category-clear]');
   if(bulk){const cat=bulk.closest('.tt99-game-category');if(cat&&categoryHasExtensionCards(cat)){e.preventDefault();e.stopImmediatePropagation();bulkCategory(bulk,bulk.hasAttribute('data-category-select'));}}
 },{capture:true});
