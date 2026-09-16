@@ -1,0 +1,19 @@
+name: Wave 4 JS check
+
+on:
+  push:
+    branches:
+      - feature/online-play-wave4-arithmetic
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Wave 4 JavaScript
+        run: |
+          node --check assets/99club/games-play-arithmetic-core-v1.js
+          node --check assets/99club/games-play-brokencalc-v1.js
+          node --check assets/99club/games-play-target-v1.js
+          node --check assets/99club/games-play-operationgrid-v1.js
+          node --check assets/99club/games-play-library-v4.js
