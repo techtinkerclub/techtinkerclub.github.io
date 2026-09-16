@@ -1,13 +1,22 @@
-/* 99 Club Studio · Online Play completion preview v1.0.2 */
+/* 99 Club Studio · Online Play completion preview v1.0.3 */
 (function(){
 'use strict';
 const watched=new WeakSet();
-const TRANSIENT='.is-selected,.is-related,.is-same,.is-current,.is-hint,.is-wrong,.is-keypad-active';
+const TRANSIENT='.is-selected,.is-related,.is-same,.is-current,.is-hint,.is-wrong,.is-keypad-active,.tt99-entry-host-active';
 function clearTransient(node){
   document.activeElement?.blur?.();
-  node.querySelectorAll?.(TRANSIENT).forEach(el=>el.classList.remove('is-selected','is-related','is-same','is-current','is-hint','is-wrong','is-keypad-active'));
+  node.querySelectorAll?.(TRANSIENT).forEach(el=>el.classList.remove('is-selected','is-related','is-same','is-current','is-hint','is-wrong','is-keypad-active','tt99-entry-host-active'));
 }
-function sanitiseClone(node){
+function freezeStructureInputs(node,values){
+  node.querySelectorAll?.('.tt99-structure-entry').forEach((el,i)=>{
+    const frozen=document.createElement('span');
+    frozen.className='tt99-capture-value';
+    frozen.textContent=values[i]??el.value??'';
+    el.replaceWith(frozen);
+  });
+}
+function sanitiseClone(node,structureValues=[]){
+  freezeStructureInputs(node,structureValues);
   node.removeAttribute?.('id');
   node.querySelectorAll?.('[id]').forEach(el=>el.removeAttribute('id'));
   node.querySelectorAll?.('button,input,select,textarea,a').forEach(el=>{
@@ -24,9 +33,10 @@ function injectPreview(){
   const card=popup.querySelector('.tt99-play-complete-card');
   const source=document.getElementById('tt99-play-board');
   if(!card||!source||!source.firstElementChild)return;
+  const structureValues=[...source.querySelectorAll('.tt99-structure-entry')].map(el=>String(el.value??''));
   clearTransient(source);
   const clone=source.cloneNode(true);
-  sanitiseClone(clone);
+  sanitiseClone(clone,structureValues);
   clone.classList.add('tt99-play-complete-snapshot');
   clone.setAttribute('aria-hidden','true');
   const wrap=document.createElement('section');
