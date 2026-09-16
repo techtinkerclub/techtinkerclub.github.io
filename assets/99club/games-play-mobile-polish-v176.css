@@ -1,7 +1,31 @@
 /* 99 Club Studio · Online Play mobile polish v1.76
  * - restores compact Arithmagon connection bubbles after v1.75 input-focus hardening
  * - enlarges Maths Crossnumber clue numbers inside grid cells
+ * - makes frozen solved values html2canvas-safe
  */
+
+/* Frozen values are used by completion previews/share-card capture. Flexbox is
+   more reliable than CSS Grid in html2canvas on iOS, especially inside
+   absolutely positioned/transformed puzzle nodes. */
+.tt99-capture-value{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:inherit!important;
+  text-align:center!important;
+  font:inherit!important;
+  font-weight:900!important;
+  line-height:1!important;
+  box-sizing:border-box!important;
+}
 
 /* Arithmagon connection entries are compact result bubbles, not full-cell inputs.
    v1.75's generic 100% input rule made blank links expand across the stage on iOS. */
