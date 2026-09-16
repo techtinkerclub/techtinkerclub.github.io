@@ -34,6 +34,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-existing-wave-v171.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-modal-v164.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-square-grid-fix-v172.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-number-structures-v173.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
@@ -84,7 +85,8 @@ sitemap: true
 <script src="/assets/99club/games-play-propertymaze-v171.js?v=1"></script>
 <script src="/assets/99club/games-play-maze-v171.js?v=1"></script>
 <script src="/assets/99club/games-play-crossnumber-v171.js?v=1"></script>
-<script src="/assets/99club/games-play-library-v4.js?v=3"></script>
+<script src="/assets/99club/games-play-number-structures-v173.js?v=1"></script>
+<script src="/assets/99club/games-play-library-v4.js?v=4"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
