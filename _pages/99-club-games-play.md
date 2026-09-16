@@ -21,6 +21,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-wave3.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-sum-grids-v1.css?v=2">
 
+<script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
 <script src="/assets/99club/games-takuzu-v139.js?v=1"></script>
 <script src="/assets/99club/games-takuzu-v139-logic.js?v=1"></script>
