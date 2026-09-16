@@ -31,13 +31,17 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-wave5.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-play-kakuro-v170.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-arithmeticcages-v169.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-existing-wave-v171.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-modal-v164.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
+<script src="/assets/99club/games-property-maze.js?v=1"></script>
 <script src="/assets/99club/games-operationgrid-v153.js?v=1"></script>
 <script src="/assets/99club/games-brokencalc-quality-v152.js?v=1"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
+<script src="/assets/99club/games-number-towers-v137.js?v=1"></script>
+<script src="/assets/99club/games-number-towers-v137-unique.js?v=1"></script>
 <script src="/assets/99club/games-takuzu-v139.js?v=1"></script>
 <script src="/assets/99club/games-takuzu-v139-logic.js?v=1"></script>
 <script src="/assets/99club/games-puzzle-pack-v140.js?v=1"></script>
@@ -75,7 +79,11 @@ sitemap: true
 <script src="/assets/99club/games-play-operationgrid-v1.js?v=3"></script>
 <script src="/assets/99club/games-play-operationgrid-v153.js?v=2"></script>
 <script src="/assets/99club/games-play-operationgrid-v154.js?v=2"></script>
-<script src="/assets/99club/games-play-library-v4.js?v=2"></script>
+<script src="/assets/99club/games-play-numbertowers-v171.js?v=1"></script>
+<script src="/assets/99club/games-play-propertymaze-v171.js?v=1"></script>
+<script src="/assets/99club/games-play-maze-v171.js?v=1"></script>
+<script src="/assets/99club/games-play-crossnumber-v171.js?v=1"></script>
+<script src="/assets/99club/games-play-library-v4.js?v=3"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
