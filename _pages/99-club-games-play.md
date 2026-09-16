@@ -23,9 +23,11 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-ux-v4.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-wave4.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-operationgrid-v2.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-brokencalc-v152.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
+<script src="/assets/99club/games-brokencalc-quality-v152.js?v=1"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
 <script src="/assets/99club/games-takuzu-v139.js?v=1"></script>
 <script src="/assets/99club/games-takuzu-v139-logic.js?v=1"></script>
@@ -54,7 +56,7 @@ sitemap: true
 <script src="/assets/99club/games-play-hashi-v1.js?v=3"></script>
 <script src="/assets/99club/games-play-numberpath-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-wordsearch-v1.js?v=2"></script>
-<script src="/assets/99club/games-play-brokencalc-v1.js?v=1"></script>
+<script src="/assets/99club/games-play-brokencalc-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-target-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-operationgrid-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=1"></script>
