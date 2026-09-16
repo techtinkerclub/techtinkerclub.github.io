@@ -36,7 +36,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-square-grid-fix-v172.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-number-structures-v173.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-polish-v174.css?v=2">
-<link rel="stylesheet" href="/assets/99club/games-play-mobile-polish-v176.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-mobile-polish-v176.css?v=2">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
