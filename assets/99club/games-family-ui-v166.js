@@ -1,9 +1,8 @@
-/* 99 Club Studio · Games family UI v1.66 */
+/* 99 Club Studio · Games family UI v1.66.1 */
 (function(){
 'use strict';
-const KOFI_URL='https://ko-fi.com/bogdan2618';
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function tool(href,icon,label,extra=''){return `<a href="${href}" class="tt99-brand-tool ${extra}"${href.startsWith('http')?' target="_blank" rel="noopener"':''}><span aria-hidden="true">${icon}</span>${label}</a>`;}
+function tool(href,icon,label,extra=''){return `<a href="${href}" class="tt99-brand-tool ${extra}"><span aria-hidden="true">${icon}</span>${label}</a>`;}
 function brandHero(mode){
   const play=mode==='play';
   const title=play?'Play Online':'Maths Games & Puzzles';
@@ -27,12 +26,14 @@ function brandHero(mode){
       ${tool('/tools/99-club/','99','99 Club')}
       ${alternate}
       ${tool('/tools/99-club/games/help/','?','Help & guide')}
-      <a href="${KOFI_URL}" class="tt99-brand-tool tt99-brand-tool--support" target="_blank" rel="noopener"><img class="tt99-brand-kofi" src="/assets/99club/images/kofi-cup.png?v=19.4" alt="" aria-hidden="true">Buy me a coffee</a>
+      <button type="button" class="tt99-brand-tool tt99-brand-tool--contact" data-tt99-contact-open aria-haspopup="dialog"><span aria-hidden="true">✉</span>Contact</button>
+      <button type="button" class="tt99-brand-tool tt99-brand-tool--support" data-tt99-kofi-open aria-haspopup="dialog"><img class="tt99-brand-kofi" src="/assets/99club/images/kofi-cup.png?v=19.4" alt="" aria-hidden="true">Buy me a coffee</button>
     </nav>`;
 }
 function enhancePrintable(){
   const root=document.getElementById('tt99-games-root'),hero=root?.querySelector('.tt99-games-hero');if(!hero||hero.dataset.family166==='1')return;
   hero.dataset.family166='1';hero.className='tt99-games-hero tt99-brand-hero tt99-brand-hero--print';hero.setAttribute('aria-label','99 Club Studio · Maths Games & Puzzles');hero.innerHTML=brandHero('print');
+  window.TT99BannerActions?.enhance?.();
 }
 function optionSummary(){
   const host=document.getElementById('tt99-play-options');if(!host)return 'Default settings';
@@ -52,6 +53,7 @@ function wrapLibrary(){
 function enhancePlay(){
   const root=document.getElementById('tt99-play-root'),hero=root?.querySelector('.tt99-play-hero');if(!root||!hero||hero.dataset.family166==='1')return;
   hero.dataset.family166='1';hero.className='tt99-play-hero tt99-brand-hero tt99-brand-hero--play';hero.setAttribute('aria-label','99 Club Studio · Play Online');hero.innerHTML=brandHero('play');
+  window.TT99BannerActions?.enhance?.();
   const gamebar=root.querySelector('.tt99-play-gamebar'),setup=root.querySelector('.tt99-play-setup');if(gamebar&&setup&&!gamebar.parentElement.classList.contains('tt99-play-control-deck')){const deck=document.createElement('section');deck.className='tt99-play-control-deck';gamebar.before(deck);deck.append(gamebar,setup);}
   const current=root.querySelector('.tt99-play-current>div');if(current&&!current.querySelector('.tt99-play-current-meta'))current.insertAdjacentHTML('beforeend','<div class="tt99-play-current-meta"></div>');
   const change=document.getElementById('tt99-play-change-game');if(change&&change.textContent!=='Choose game')change.textContent='Choose game';
