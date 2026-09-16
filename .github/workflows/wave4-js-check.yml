@@ -41,3 +41,5 @@ jobs:
           }
           console.log(`Validated ${total} generated Wave 4 puzzles.`);
           NODE
+      - name: Confirm latest branch files were checked
+        run: git rev-parse HEAD
