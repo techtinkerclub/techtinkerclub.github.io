@@ -1,8 +1,8 @@
-/* 99 Club Studio PWA service worker v1.0.2 */
+/* 99 Club Studio PWA service worker v1.0.3 */
 'use strict';
 
 const CACHE_PREFIX='tt99-studio-';
-const CACHE_NAME=CACHE_PREFIX+'v1.0.2';
+const CACHE_NAME=CACHE_PREFIX+'v1.0.3';
 const SCOPE_PATH='/tools/99-club/';
 const CORE_PAGES=[
   '/tools/99-club/',
@@ -15,8 +15,8 @@ const CORE_FILES=[
   '/tools/99-club/manifest.webmanifest',
   '/assets/99club/pwa/icon-192.png',
   '/assets/99club/pwa/icon-512.svg',
-  '/assets/99club/pwa/pwa.css?v=2',
-  '/assets/99club/pwa/pwa-register.js?v=2'
+  '/assets/99club/pwa/pwa.css?v=3',
+  '/assets/99club/pwa/pwa-register.js?v=3'
 ];
 
 function sameOriginAsset(ref){
