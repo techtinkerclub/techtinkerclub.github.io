@@ -1,0 +1,22 @@
+name: Temporary v1.73 Online Play check
+
+on:
+  push:
+    branches:
+      - feature/online-number-structures-v173
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: JavaScript syntax
+        run: |
+          node --check assets/99club/games-play-number-structures-v173.js
+          node --check assets/99club/games-play-number-structures-v173-profile.js
+          node --check assets/99club/games-play-library-v4.js
+      - name: Online Play v1.73 smoke test
+        run: node assets/99club/tests/games-play-number-structures-v173-smoke.js
