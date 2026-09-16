@@ -29,11 +29,9 @@ const COPY={
 for(const [id,text] of Object.entries(COPY)){
   const a=Play.adapters.get(id);if(!a)continue;
   a.instruction=text;
-  // The old How-to-play paragraph is intentionally not rendered by this layer.
-  // Keep the property for backwards compatibility with any older shell.
 }
 
-let panel=null,liveRule=null;
+let panel=null,liveRule=null,scheduled=false;
 function arrange(){
   const card=document.querySelector('.tt99-play-board-card'),head=card?.querySelector('.tt99-play-board-head'),instruction=document.getElementById('tt99-play-instruction');
   if(!card||!head||!instruction)return;
@@ -43,25 +41,33 @@ function arrange(){
     head.insertAdjacentElement('afterend',panel);
   }
   if(instruction.parentElement!==panel)panel.appendChild(instruction);
-  if(liveRule.parentElement!==panel)panel.appendChild(liveRule);
+  if(liveRule&&liveRule.parentElement!==panel)panel.appendChild(liveRule);
   instruction.classList.add('is-top');
 
-  // The sidebar How-to-play copy is now superseded by the single curated block.
-  const how=document.querySelector('.tt99-play-how');if(how)how.hidden=true;
+  // One instruction block is enough; the older sidebar paragraph duplicates it.
+  const how=document.querySelector('.tt99-play-how');if(how&&!how.hidden)how.hidden=true;
 
+  // Word Search has a genuinely puzzle-specific direction rule. Mirror it at
+  // the top, then CSS hides the old copy under the board with the other notes.
   const board=document.getElementById('tt99-play-board');
   const directionTip=board?.querySelector('.tt99-play-wordsearch .tt99-play-board-tip');
-  if(directionTip){
-    const text=directionTip.textContent?.trim()||'';
-    liveRule.textContent=text;liveRule.hidden=!text;
-  }else{
-    liveRule.textContent='';liveRule.hidden=true;
+  const text=directionTip?.textContent?.trim()||'';
+  if(liveRule){
+    if(text){if(liveRule.textContent!==text)liveRule.textContent=text;if(liveRule.hidden)liveRule.hidden=false;}
+    else{if(liveRule.textContent)liveRule.textContent='';if(!liveRule.hidden)liveRule.hidden=true;}
   }
+}
+function scheduleArrange(){
+  if(scheduled)return;scheduled=true;
+  const run=()=>{scheduled=false;arrange();};
+  if(typeof requestAnimationFrame==='function')requestAnimationFrame(run);else setTimeout(run,0);
 }
 function boot(){
   arrange();
   const root=document.getElementById('tt99-play-root');
-  if(root&&window.MutationObserver)new MutationObserver(arrange).observe(root,{childList:true,subtree:true});
+  // Mutations inside arrange() can themselves be observed. Scheduling once per
+  // frame prevents observer cascades and keeps this layer cheap even on phones.
+  if(root&&window.MutationObserver)new MutationObserver(scheduleArrange).observe(root,{childList:true,subtree:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })(typeof globalThis!=='undefined'?globalThis:this);
