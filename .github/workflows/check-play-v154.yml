@@ -1,0 +1,47 @@
+name: Check Online Play v1.54
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: |
+          node --check assets/99club/games-play-operationgrid-v154.js
+          node --check assets/99club/games-play-instructions-v154.js
+      - name: Test bidirectional cipher
+        run: |
+          node <<'NODE'
+          global.TT99GamesPlay={adapters:new Map(),registerAdapter(id,obj){this.adapters.set(id,obj);}};
+          global.TT99PlayArithmetic={esc:s=>String(s),label:s=>s};
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-operationgrid-v153.js');
+          require('./assets/99club/games-play-operationgrid-v154.js');
+          const C=global.TT99OperationCipherV154;
+          if(!C)throw new Error('cipher helper missing');
+          if(C.shiftChar('Z',1)!=='A'||C.shiftChar('A',-1)!=='Z')throw new Error('alphabet wraparound failed');
+          const words=['MATH','PRIME','NUMBER','ALGEBRA','FRACTION'];
+          for(let i=0;i<200;i++)for(const word of words){
+            const key=[1+(i%9),1+((i*3)%9),1+((i*7)%9)];
+            const moves=C.signedMovesFor(`seed:${i}`,key,word.length);
+            if(word.length>1&&(!moves.some(m=>m.direction>0)||!moves.some(m=>m.direction<0)))throw new Error('cipher did not contain both directions');
+            const encrypted=C.encryptSigned(word,moves),decoded=C.decodeSigned(encrypted,moves);
+            if(decoded!==word)throw new Error(`${word} round trip failed: ${encrypted} -> ${decoded}`);
+          }
+          console.log('1000 signed cipher round trips passed, including wraparound');
+          NODE
+      - name: Check page wiring and duplicate-note selectors
+        run: |
+          grep -q 'games-play-operationgrid-v154.js' _pages/99-club-games-play.md
+          grep -q 'games-play-instructions-v154.js' _pages/99-club-games-play.md
+          grep -q 'games-play-cipher-v154.css' _pages/99-club-games-play.md
+          grep -q '#tt99-play-board .tt99-cycle-note' assets/99club/games-play-instructions-v154.css
+          grep -q 'requestAnimationFrame' assets/99club/games-play-instructions-v154.js
