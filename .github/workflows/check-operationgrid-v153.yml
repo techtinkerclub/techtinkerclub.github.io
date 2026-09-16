@@ -1,0 +1,77 @@
+name: Check Operation Codebreaker v1.53
+
+on:
+  push:
+    branches:
+      - feature/operation-codebreaker-multiop
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: |
+          node --check assets/99club/games-operationgrid-v153.js
+          node --check assets/99club/games-play-operationgrid-v153.js
+      - name: Validate generator matrix
+        run: |
+          node <<'NODE'
+          global.localStorage=undefined;
+          require('./assets/99club/games-vocabulary.js');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-operationgrid-v153.js');
+          require('./assets/99club/games-number-logic.js');
+          require('./assets/99club/games-engine.js');
+          const A=global.TT99ArithmeticGames, O=A.OPERATIONGRID_V153, G=global.TT99Games;
+          if(!O)throw new Error('v1.53 engine missing');
+          const schema=A.DEFINITIONS.operationgrid.settingsSchema.map(x=>x.id);
+          for(const id of ['missingOps','structure'])if(!schema.includes(id))throw new Error(`paper schema missing ${id}`);
+          const captured=G.ENGINES.operationgrid.settingsSchema.map(x=>x.id);
+          for(const id of ['missingOps','structure'])if(!captured.includes(id))throw new Error(`games engine did not capture ${id}`);
+
+          const diffs=['easy','standard','challenge'], missing=['auto','one','up2','up3'], structures=['auto','precedence','mixed','brackets'], operations=['auto','addsub','four'];
+          let puzzles=0, rows=0, bracketRows=0, threeRows=0, autoStandardMulti=0, autoChallengeMulti=0;
+          for(const difficulty of diffs)for(const missingOps of missing)for(const structure of structures)for(const opsMode of operations)for(let seed=0;seed<5;seed++){
+            const settings={minYear:1,maxYear:difficulty==='easy'?2:difficulty==='challenge'?6:4,topics:['calculation'],engineSettings:{operationgrid:{difficulty,rowCount:'auto',operations:opsMode,missingOps,structure}}};
+            const p=A.generate('operationgrid',settings,`matrix:${difficulty}:${missingOps}:${structure}:${opsMode}:${seed}`);
+            const v=A.validate(p);if(!v.ok)throw new Error(`${difficulty}/${missingOps}/${structure}/${opsMode}/${seed}: ${v.error}`);
+            const slots=p.rows.reduce((s,r)=>s+r.ops.length,0);if(slots>12)throw new Error(`slot budget ${slots}`);
+            for(const r of p.rows){
+              const sols=O.enumerateSolutions(r,p.operatorPool);if(sols.length!==1)throw new Error(`nonunique row ${r.text}`);
+              if(missingOps==='one'&&r.ops.length!==1)throw new Error('Exactly 1 produced multi-op row');
+              if(missingOps==='up2'&&r.ops.length>2)throw new Error('Up to 2 produced 3-op row');
+              if(difficulty!=='challenge'&&r.ops.length>2)throw new Error('3-op row outside Challenge');
+              if(structure==='precedence'&&r.structure!=='precedence')throw new Error('precedence mode produced brackets');
+              if(r.structure!=='precedence'){
+                bracketRows++;
+                const un=O.evaluate(r.values,r.ops,'precedence');if(un===r.result)throw new Error(`decorative brackets: ${r.text}`);
+              }
+              if(r.ops.length===3)threeRows++;
+              rows++;
+            }
+            if(difficulty==='standard'&&missingOps==='auto'&&p.rows.some(r=>r.ops.length===2))autoStandardMulti++;
+            if(difficulty==='challenge'&&missingOps==='auto'&&p.rows.some(r=>r.ops.length>=2))autoChallengeMulti++;
+            puzzles++;
+          }
+          if(!threeRows)throw new Error('No 3-operator Challenge rows generated');
+          if(!bracketRows)throw new Error('No meaningful bracket rows generated');
+          if(!autoStandardMulti)throw new Error('Standard Auto never produced multi-op rows');
+          if(!autoChallengeMulti)throw new Error('Challenge Auto never produced multi-op rows');
+          const ex=A.workedExample('operationgrid',{},'x');if(!ex?.steps?.some(s=>/bracket/i.test(s)))throw new Error('worked example not updated');
+          console.log(`validated ${puzzles} puzzles / ${rows} rows; bracket rows ${bracketRows}; 3-op rows ${threeRows}`);
+          NODE
+      - name: Check generation speed
+        run: |
+          node <<'NODE'
+          global.localStorage=undefined;
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-operationgrid-v153.js');
+          const A=global.TT99ArithmeticGames;
+          const settings={minYear:1,maxYear:6,topics:['calculation'],engineSettings:{operationgrid:{difficulty:'challenge',rowCount:'8',operations:'four',missingOps:'up3',structure:'mixed'}}};
+          const t=Date.now();for(let i=0;i<50;i++){const p=A.generate('operationgrid',settings,`speed:${i}`);const v=A.validate(p);if(!v.ok)throw new Error(v.error);}const ms=Date.now()-t;
+          console.log(`50 challenge puzzles: ${ms} ms`);if(ms>12000)throw new Error(`generation too slow: ${ms} ms`);
+          NODE
