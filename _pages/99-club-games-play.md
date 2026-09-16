@@ -62,10 +62,10 @@ sitemap: true
 <script src="/assets/99club/games-play-killer-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-sum-grids-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-hashi-v1.js?v=3"></script>
-<script src="/assets/99club/games-play-numberpath-v1.js?v=1"></script>
-<script src="/assets/99club/games-play-wordsearch-v1.js?v=2"></script>
-<script src="/assets/99club/games-play-brokencalc-v1.js?v=2"></script>
-<script src="/assets/99club/games-play-target-v1.js?v=1"></script>
+<script src="/assets/99club/games-play-numberpath-v1.js?v=2"></script>
+<script src="/assets/99club/games-play-wordsearch-v1.js?v=3"></script>
+<script src="/assets/99club/games-play-brokencalc-v1.js?v=3"></script>
+<script src="/assets/99club/games-play-target-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-operationgrid-v1.js?v=3"></script>
 <script src="/assets/99club/games-play-operationgrid-v153.js?v=2"></script>
 <script src="/assets/99club/games-play-operationgrid-v154.js?v=1"></script>
