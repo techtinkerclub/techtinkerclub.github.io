@@ -1,0 +1,92 @@
+/* 99 Club Studio · Online Play mobile polish v1.76
+ * - restores compact Arithmagon connection bubbles after v1.75 input-focus hardening
+ * - enlarges Maths Crossnumber clue numbers inside grid cells
+ * - makes frozen solved values html2canvas-safe
+ */
+
+/* Frozen values are used by completion previews/share-card capture. Flexbox is
+   more reliable than CSS Grid in html2canvas on iOS, especially inside
+   absolutely positioned/transformed puzzle nodes. */
+.tt99-capture-value{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:inherit!important;
+  text-align:center!important;
+  font:inherit!important;
+  font-weight:900!important;
+  line-height:1!important;
+  box-sizing:border-box!important;
+}
+
+/* Arithmagon connection entries are compact result bubbles, not full-cell inputs.
+   v1.75's generic 100% input rule made blank links expand across the stage on iOS. */
+.tt99-arith-link.is-entry{
+  width:auto!important;
+  min-width:58px!important;
+  max-width:88px!important;
+  grid-template-columns:20px 46px!important;
+  justify-content:center;
+}
+.tt99-arith-link .tt99-structure-entry,
+.tt99-arith-link .tt99-capture-value{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  width:46px!important;
+  min-width:46px!important;
+  max-width:46px!important;
+  height:30px!important;
+  min-height:30px!important;
+  max-height:30px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  border-radius:7px!important;
+  color:inherit!important;
+  text-align:center!important;
+  font:900 .84rem/1 system-ui!important;
+  box-sizing:border-box!important;
+}
+
+/* Crossnumber clue indices need to remain obvious even on a large 4×6 board. */
+.tt99-crossnumber-cell small{
+  top:4px!important;
+  left:5px!important;
+  font-size:clamp(.62rem,2vw,.85rem)!important;
+  line-height:1!important;
+  font-weight:900!important;
+}
+
+@media(max-width:560px){
+  .tt99-arith-link.is-entry{
+    min-width:51px!important;
+    max-width:72px!important;
+    grid-template-columns:17px 39px!important;
+  }
+  .tt99-arith-link .tt99-structure-entry,
+  .tt99-arith-link .tt99-capture-value{
+    width:39px!important;
+    min-width:39px!important;
+    max-width:39px!important;
+    height:27px!important;
+    min-height:27px!important;
+    max-height:27px!important;
+    font-size:.72rem!important;
+  }
+  .tt99-crossnumber-cell small{
+    top:3px!important;
+    left:4px!important;
+    font-size:clamp(.62rem,2.6vw,.8rem)!important;
+  }
+}
