@@ -1,0 +1,23 @@
+name: Temporary Online Play v1.77 check
+
+on:
+  push:
+    branches:
+      - fix/online-play-consistency-v177
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Online Play consistency guards
+        run: |
+          grep -q '#tt99-play-board{' assets/99club/games-play-mobile-polish-v176.css
+          grep -q 'width:100%!important' assets/99club/games-play-mobile-polish-v176.css
+          grep -q '.tt99-play-arithmagon' assets/99club/games-play-mobile-polish-v176.css
+          grep -q '.tt99-play-magicshape' assets/99club/games-play-mobile-polish-v176.css
+          grep -q 'grid-template-columns:repeat(3,minmax(52px,1fr))!important' assets/99club/games-play-mobile-polish-v176.css
+          grep -q 'background:#eaf4ff!important' assets/99club/games-play-mobile-polish-v176.css
+          grep -q 'border-color:#5c9ccc!important' assets/99club/games-play-mobile-polish-v176.css
+          grep -q 'tt99-arith-link.is-entry' assets/99club/games-play-mobile-polish-v176.css
+          grep -q 'games-play-mobile-polish-v176.css?v=2' _pages/99-club-games-play.md
