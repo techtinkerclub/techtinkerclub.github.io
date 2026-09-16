@@ -155,7 +155,6 @@ function arithOptions(root,c,onChange){
 function mountArith(root,p,ctx){
   const missingCorners=new Set(p.displayCorners.map((v,i)=>v==null?i:null).filter(v=>v!==null)),missingLinks=new Set(p.displayLinks.map((v,i)=>v==null?i:null).filter(v=>v!==null));
   let state={corners:p.displayCorners.map(v=>v==null?'':String(v)),links:p.displayLinks.map(v=>v==null?'':String(v))},wrong=new Set(),hint=null,finished=false;
-  const n=p.corners.length;
   const lineSvg=p.links.map((l,i)=>{const a=p.coords[l.a],b=p.coords[l.b];return `<line class="tt99-arith-line ${l.diagonal?'is-diagonal':''}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"></line>`;}).join('');
   const nodes=p.coords.map(([x,y],i)=>`<div class="tt99-arith-node ${missingCorners.has(i)?'is-entry':'is-given'}" style="left:${x}%;top:${y}%">${missingCorners.has(i)?entryValueHtml('',`c:${i}`,`Arithmagon corner ${i+1}`):`<span>${esc(fmt(p.corners[i]))}</span>`}</div>`).join('');
   const bubbles=p.links.map((l,i)=>{const a=p.coords[l.a],b=p.coords[l.b],x=(a[0]+b[0])/2,y=(a[1]+b[1])/2,op=l.operation==='multiply'?'×':'+';return `<div class="tt99-arith-link ${l.diagonal?'is-diagonal':''} ${missingLinks.has(i)?'is-entry':'is-given'}" style="left:${x}%;top:${y}%"><small>${op}</small>${missingLinks.has(i)?entryValueHtml('',`l:${i}`,`Connection ${i+1} result`):`<strong>${esc(fmt(l.value))}</strong>`}</div>`;}).join('');
@@ -254,7 +253,7 @@ Play.registerAdapter('magic',{
   id:'magic',order:22,icon:'□',title:'Magic Squares',shortTitle:'Magic Squares',category:'Number patterns',blurb:'Balance rows, columns and diagonals to one total.',completionTitle:'Magic Square solved',completeMessage:'Solved! The magic-square relationships are correct.',
   startMessage:'Use the line totals to solve the square.',instruction:'Make every row, column and main diagonal total the same amount.',howTitle:'Use the magic total',howText:'Find or use the common total. Solve lines with one unknown first, then use crossing rows, columns and diagonals to check your work.',
   normalizeConfig:normaliseMagic,fromQuery:q=>({difficulty:q.get('d'),gridSize:q.get('n'),puzzleType:q.get('pt'),numberPattern:q.get('np'),clueLevel:q.get('cl')}),toQuery:c=>{c=normaliseMagic(c);return {d:c.difficulty,n:c.gridSize,pt:c.puzzleType,np:c.numberPattern,cl:c.clueLevel};},renderOptions:magicOptions,
-  createPuzzle:(c,s)=>generated('magic',normaliseMagic(c),s,['number_place_value','calculation','decimals_percentages','algebra'],1),mount:mountMagic,meta:(p,c)=>`${cap(c.difficulty)} · ${p.size} × ${p.size} · ${p.puzzleType} · ${p.numberPatternLabel||p.numberPattern}`,recordKey:c=>{c=normaliseMagic(c);return `${c.difficulty}:${c.gridSize}:${c.puzzleType}:${c.numberPattern}:${c.clueLevel}`;}
+  createPuzzle:(c,s)=>generated('magic',normaliseMagic(c),s,['number_place_value','calculation','algebra'],1),mount:mountMagic,meta:(p,c)=>`${cap(c.difficulty)} · ${p.size} × ${p.size} · ${p.puzzleType} · ${p.numberPatternLabel||p.numberPattern}`,recordKey:c=>{c=normaliseMagic(c);return `${c.difficulty}:${c.gridSize}:${c.puzzleType}:${c.numberPattern}:${c.clueLevel}`;}
 });
 
 Play.registerAdapter('arithmagon',{
