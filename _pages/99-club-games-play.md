@@ -46,7 +46,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-balance-lab-v192.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v196.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v197-fix.css?v=2">
-<link rel="stylesheet" href="/assets/99club/games-play-context-keypad-v201.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-context-keypad-v201.css?v=2">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
