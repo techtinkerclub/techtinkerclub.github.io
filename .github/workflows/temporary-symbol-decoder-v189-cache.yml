@@ -1,0 +1,43 @@
+name: Symbol Decoder v1.89 cache update
+
+on:
+  push:
+    branches: [ feat/symbol-decoder-print-v189 ]
+
+permissions:
+  contents: write
+
+jobs:
+  cache-and-check:
+    if: ${{ !contains(github.event.head_commit.message, '[v1.89 cache]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/symbol-decoder-print-v189
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bump printable cache keys
+        run: |
+          sed -i 's#games-pdf.js?v=20#games-pdf.js?v=21#' _pages/99-club-games.md
+          sed -i 's#games-app.js?v=21#games-app.js?v=22#' _pages/99-club-games.md
+      - name: Validate Symbol Decoder
+        run: |
+          node --check assets/99club/games-symbol-decoder-v189.js
+          node --check assets/99club/games-play-symbol-decoder-v189.js
+          node --check assets/99club/games-app.js
+          node --check assets/99club/games-pdf.js
+          node assets/99club/tests/games-symbol-decoder-v189-smoke.js
+          grep -q 'games-pdf.js?v=21' _pages/99-club-games.md
+          grep -q 'games-app.js?v=22' _pages/99-club-games.md
+          grep -q 'games-symbol-decoder-v189.js?v=1' _pages/99-club-games.md
+          grep -q 'games-play-symbol-decoder-v189.js?v=1' _pages/99-club-games-play.md
+      - name: Commit cache keys
+        run: |
+          if git diff --quiet -- _pages/99-club-games.md; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add _pages/99-club-games.md
+          git commit -m '[v1.89 cache] Refresh printable Symbol Decoder assets'
+          git push origin HEAD:feat/symbol-decoder-print-v189
