@@ -68,7 +68,7 @@ sitemap: true
 <script src="/assets/99club/games-puzzle-redesign-v135-logic.js?v=1"></script>
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
 <script src="/assets/99club/games-pdf.js?v=21"></script>
-<script src="/assets/99club/games-pdf-v136.js?v=1"></script>
+<script src="/assets/99club/games-pdf-v136.js?v=2"></script>
 <script src="/assets/99club/games-pdf-v137.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v138.js?v=1"></script>
 <script src="/assets/99club/games-pdf-towers-direction-v138.js?v=1"></script>
