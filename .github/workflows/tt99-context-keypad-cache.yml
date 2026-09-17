@@ -1,0 +1,30 @@
+name: Bump contextual keypad cache
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/tt99-context-keypad-cache.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump asset version
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('_pages/99-club-games-play.md')
+          s=p.read_text().replace('/assets/99club/games-play-context-keypad-v200.js?v=1','/assets/99club/games-play-context-keypad-v200.js?v=2')
+          p.write_text(s)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/tt99-context-keypad-cache.yml
+          git add _pages/99-club-games-play.md
+          git commit -m "Bump contextual keypad cache version"
+          git push origin master
