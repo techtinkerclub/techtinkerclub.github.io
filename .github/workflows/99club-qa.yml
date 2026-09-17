@@ -1,0 +1,45 @@
+name: 99 Club QA
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'assets/99club/**'
+      - '_pages/99-club-games*.md'
+      - 'scripts/99club/**'
+      - '.github/workflows/99club-qa.yml'
+  pull_request:
+    paths:
+      - 'assets/99club/**'
+      - '_pages/99-club-games*.md'
+      - 'scripts/99club/**'
+      - '.github/workflows/99club-qa.yml'
+  workflow_dispatch:
+    inputs:
+      samples:
+        description: 'Samples per engine difficulty'
+        required: false
+        default: '20'
+
+permissions:
+  contents: read
+
+jobs:
+  engine-and-contract-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run 99 Club QA
+        env:
+          QA_SAMPLES: ${{ github.event.inputs.samples || '20' }}
+        run: node scripts/99club/qa.js
+      - name: Upload QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 99club-qa-report
+          path: 99club-qa-report.json
+          if-no-files-found: ignore
