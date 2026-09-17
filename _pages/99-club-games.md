@@ -73,7 +73,7 @@ sitemap: true
 <script src="/assets/99club/games-pdf-v138-flowfix.js?v=1"></script>
 <script src="/assets/99club/games-pdf-takuzu-v139.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v140.js?v=1"></script>
-<script src="/assets/99club/games-pdf-killer-v181.js?v=1"></script>
+<script src="/assets/99club/games-pdf-killer-v181.js?v=2"></script>
 <script src="/assets/99club/games-pdf-v1401.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v141.js?v=1"></script>
 <script src="/assets/99club/games-pdf-shikaku-v143.js?v=2"></script>
