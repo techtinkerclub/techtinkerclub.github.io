@@ -7,8 +7,8 @@
   --tt99-killer-cage:#7f8b8e;
 }
 
-/* The shared renderer draws cages as inset edge elements, so the solid cage
-   boundary stays visually separate from both normal grid lines and box rails. */
+/* The shared renderer draws cages as inset edge elements. Keep them solid,
+   neutral and deliberately lighter than the structural Sudoku rails. */
 .tt99-play-killer .cage-edge{
   border-color:var(--tt99-killer-cage)!important;
 }
@@ -19,6 +19,15 @@
 .tt99-play-killer .cage-edge.left,
 .tt99-play-killer .cage-edge.right{
   border-left:1px solid var(--tt99-killer-cage)!important;
+}
+
+/* Where a cage boundary coincides with a Sudoku box rail, the rail itself is
+   the boundary. Hiding the inset cage segment avoids doubled/parallel lines. */
+.tt99-play-killer .tt99-numbergrid-cell.box-top > .cage-edge.top,
+.tt99-play-killer .tt99-numbergrid-cell.box-bottom > .cage-edge.bottom,
+.tt99-play-killer .tt99-numbergrid-cell.box-left > .cage-edge.left,
+.tt99-play-killer .tt99-numbergrid-cell.box-right > .cage-edge.right{
+  display:none!important;
 }
 
 /* Cage targets are annotations rather than another puzzle-grid colour. */
