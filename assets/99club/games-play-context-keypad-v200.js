@@ -21,7 +21,9 @@ function showPad(entry){
   if(!board||!board.contains(entry))return;
   const pad=board.querySelector(pads);if(!pad)return;
   const pr=pad.getBoundingClientRect(),er=entry.getBoundingClientRect(),screen=window.innerHeight;
-  const longPuzzle=pr.top>screen-20||Math.abs(pr.top-er.bottom)>screen*.48||board.scrollHeight>screen*1.45;
+  /* Only float when the inline keypad is genuinely far from the selected answer.
+     A puzzle that is merely a little taller than the phone keeps its normal inline keypad. */
+  const gap=pr.top-er.bottom,longPuzzle=gap>screen*.48;
   if(!longPuzzle){hidePad();return;}
   hidePad();activePad=pad;pad.classList.add('tt99-context-pad-active');board.classList.add('tt99-has-context-pad');
   requestAnimationFrame(function(){
