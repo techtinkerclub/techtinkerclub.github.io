@@ -39,6 +39,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-mobile-polish-v176.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-play-arithmagon-v178.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-killer-cages-v181.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-arithmetic-wave-v184.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
@@ -59,7 +60,7 @@ sitemap: true
 <script src="/assets/99club/games-engine.js?v=15"></script>
 <script src="/assets/99club/games-wordsearch-quality-v150.js?v=1"></script>
 
-<script src="/assets/99club/games-play-share-codec-v156.js?v=2"></script>
+<script src="/assets/99club/games-play-share-codec-v156.js?v=3"></script>
 <script src="/assets/99club/games-play-qr-v156.js?v=1"></script>
 <script src="/assets/99club/games-play-core-v2.js?v=1"></script>
 <script src="/assets/99club/games-play-number-grid-v1.js?v=1"></script>
@@ -93,7 +94,8 @@ sitemap: true
 <script src="/assets/99club/games-play-number-structures-v173-profile.js?v=1"></script>
 <script src="/assets/99club/games-play-number-structures-v174-fix.js?v=2"></script>
 <script src="/assets/99club/games-play-arithmagon-v178.js?v=1"></script>
-<script src="/assets/99club/games-play-library-v4.js?v=4"></script>
+<script src="/assets/99club/games-play-arithmetic-wave-v184.js?v=1"></script>
+<script src="/assets/99club/games-play-library-v4.js?v=5"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>

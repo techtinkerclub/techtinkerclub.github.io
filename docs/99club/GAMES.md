@@ -93,6 +93,17 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - All four adapters use the shared Online Play shell for Relaxed/Challenge modes, Check, Hint, Undo, Redo, Reset, completion, personal bests and reproducible challenge links.
 - Interactive grids and diagrams are responsive on narrow screens; Magic Squares use explicit equal zero-minimum row and column tracks to prevent content-driven mobile distortion.
 
+### v1.84 — Online Play arithmetic/patterns wave
+- Ports **Number Trail**, **Number Connections**, **Number Search** and **Arithmetic Equation Crossgrid** into Online Play while continuing to use their established printable generators and validators.
+- Number Trail supports 12–25-cell snakes, constant and alternating rules, inverse reasoning and the existing clue-density settings.
+- Number Connections supports rule wheels, factor-pair webs and sum/product diamonds, including challenge inverse reasoning.
+- Number Search keeps the printable generator's unique answer placements and lets pupils calculate first, then drag across the matching digit sequence using the allowed directions.
+- Arithmetic Equation Crossgrid preserves the generator's linked equation lattice and only hides values/operators when the existing sequential-resolvability check accepts the puzzle.
+- All numeric-entry games use the shared non-native-focus interaction pattern: puzzle cells/buttons are the selection surface and the 4-column virtual keypad is used on touch/PWA, avoiding iOS input zoom.
+- Square boards use explicit equal `minmax(0,1fr)` row and column tracks and `aspect-ratio:1` so mobile content cannot distort grid cells.
+- `Check` evaluates only entered work; untouched blanks remain untouched. `Hint` highlights a productive next location or relationship and explains the strategy without filling the answer.
+- All four support Relaxed/Challenge modes, Undo, Redo, Reset, completion, personal bests and compact reproducible challenge links.
+
 ## Curriculum mapping principle
 
 Puzzle engines are mapped conservatively. They are reasoning/fluency resources that exercise curriculum mathematics; they are not presented as replacements for teaching a statutory objective.
