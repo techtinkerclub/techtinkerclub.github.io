@@ -104,6 +104,17 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - `Check` evaluates only entered work; untouched blanks remain untouched. `Hint` highlights a productive next location or relationship and explains the strategy without filling the answer.
 - All four support Relaxed/Challenge modes, Undo, Redo, Reset, completion, personal bests and compact reproducible challenge links.
 
+### v1.86 — Online Play catalogue completion wave
+- Ports **Symbol Equations**, **Function Machines**, **Equation Repair** and **Maths Crossword** into Online Play, completing Online Play coverage of every visible one-player printable game in the current catalogue.
+- Symbol Equations reuses the existing two-/three-unknown generator, including coefficient variants, and asks pupils to solve the linked system rather than treating each equation separately.
+- Function Machines supports one to three stages, forward and reverse rows, and explicitly teaches inverse-operation reasoning when the input is missing.
+- Equation Repair uses the existing `balance` engine and presents the missing value as the pupil's editable repair while preserving the equality structure around it.
+- Maths Crossword uses the same curated 591-entry UK-primary maths vocabulary source and the existing connected-crossword generator. It provides Across/Down clue selection, crossing-letter highlighting, optional word banks, physical-keyboard support and a touch-friendly on-screen letter keyboard.
+- Numeric games continue to use the non-native-focus 4-column keypad pattern on touch devices. Crossword uses button-based cells rather than native text inputs, so iOS does not invoke input zoom or alter grid geometry.
+- `Check` marks only pupil-entered work; `Hint` identifies a useful equation, row or clue and gives a strategy without inserting an answer or letter.
+- All four support Relaxed/Challenge modes, Undo, Redo, Reset, completion, personal bests and compact reproducible challenge links.
+- `Arithmetic Domino Chain` remains deliberately excluded from the one-player Online Play catalogue because its intended use is a printable/cut-and-match classroom activity.
+
 ## Curriculum mapping principle
 
 Puzzle engines are mapped conservatively. They are reasoning/fluency resources that exercise curriculum mathematics; they are not presented as replacements for teaching a statutory objective.
