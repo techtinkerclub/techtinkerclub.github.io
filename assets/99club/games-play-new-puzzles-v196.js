@@ -28,7 +28,7 @@ function clMount(root,p,ctx){
   root.className='tt99-colourlogic-online';
   const key=`<div class="tt99-cl-key">${(p.colors||[]).map(c=>`<span style="--cl:${esc(c.hex)}"><b>${esc(c.id)}</b>${esc(c.name)}</span>`).join('')}</div>`;
   const rules=`<ol class="tt99-cl-rules">${p.clues.map((c,i)=>`<li data-cl-rule="${i}">${esc(c.text)}</li>`).join('')}</ol>`;
-  const board=p.variant==='row'?`<div class="tt99-cl-row">${p.solution.map((_,i)=>`<button type="button" data-cl-cell="${i}"><small>${i+1}</small><b></b></button>`).join('')}</div>`:`<div class="tt99-cl-grid" style="--cl-n:${p.size}">${Array.from({length:p.size*p.size},(_,i)=>`<button type="button" data-cl-cell="${i}"><b></b></button>`).join('')}</div>`;
+  const board=p.variant==='row'?`<div class="tt99-cl-row" style="--cl-count:${p.solution.length}">${p.solution.map((_,i)=>`<button type="button" data-cl-cell="${i}"><small>${i+1}</small><b></b></button>`).join('')}</div>`:`<div class="tt99-cl-grid" style="--cl-n:${p.size}">${Array.from({length:p.size*p.size},(_,i)=>`<button type="button" data-cl-cell="${i}"><b></b></button>`).join('')}</div>`;
   root.innerHTML=`${key}<div class="tt99-cl-layout"><div>${board}<p class="tt99-cl-tap">Tap a box to cycle through the available colours.</p></div><div><small>RULES</small>${rules}</div></div>`;
   const cells=[...root.querySelectorAll('[data-cl-cell]')],ruleEls=[...root.querySelectorAll('[data-cl-rule]')];
   function get(i){return p.variant==='row'?state[i]:state[Math.floor(i/p.size)][i%p.size];}
