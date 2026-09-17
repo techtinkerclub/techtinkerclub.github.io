@@ -1,0 +1,126 @@
+name: New puzzles v1.96 final validation
+
+on:
+  push:
+    branches: [ feat/colour-logic-mobile-balance-v196 ]
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    if: ${{ !contains(github.event.head_commit.message, '[v1.96 final]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/colour-logic-mobile-balance-v196
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply final polish
+        run: python assets/99club/tests/polish-new-puzzles-v196.py
+      - name: Syntax checks
+        run: |
+          node --check assets/99club/games-new-puzzles-v196.js
+          node --check assets/99club/games-play-new-puzzles-v196.js
+          node --check assets/99club/games-app.js
+          node --check assets/99club/games-pdf.js
+      - name: Exhaustive uniqueness and mobile validation
+        run: |
+          node - <<'NODE'
+          const assert=require('assert');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-new-puzzles-v196.js');
+          const A=global.TT99ArithmeticGames;
+          function perms(items){const out=[];function rec(p,l){if(!l.length){out.push(p);return;}for(let i=0;i<l.length;i++)rec(p.concat(l[i]),l.slice(0,i).concat(l.slice(i+1)));}rec([],items);return out;}
+          for(const d of ['easy','standard','challenge']){
+            for(const layout of ['row','grid'])for(const style of ['mixed','position','neighbour','count'])for(let k=0;k<4;k++){
+              const settings={engineSettings:{colourlogic:{difficulty:d,layout,ruleStyle:style}}};
+              const p=A.generate('colourlogic',settings,`final-cl-${d}-${layout}-${style}-${k}`);
+              assert(A.validate(p).ok,JSON.stringify(p));
+              let count=0;
+              if(p.variant==='row'){
+                for(const s of perms(p.solution))if(p.clues.every(c=>A._colourRowClueTestV196(c,s)))count++;
+              } else {
+                const n=p.size,total=1<<(n*n);
+                for(let mask=0;mask<total&&count<2;mask++){
+                  const s=Array.from({length:n*n},(_,i)=>(mask>>i)&1?'B':'R');
+                  if(p.clues.every(c=>A._gridClueTestV196(c,s,n)))count++;
+                }
+              }
+              assert.equal(count,1,`Colour Logic not unique: ${d}/${layout}/${style}/${k} -> ${count}`);
+            }
+            for(const givenMode of ['shape','total'])for(let k=0;k<20;k++){
+              const p=A.generate('mobilebalance',{engineSettings:{mobilebalance:{difficulty:d,layout:'auto',givenMode}}},`final-mb-${d}-${givenMode}-${k}`);
+              assert(A.validate(p).ok,JSON.stringify(p));
+              assert(p.shapeIds.every(id=>Number.isInteger(p.values[id])&&p.values[id]>0));
+              if(d==='easy')assert.equal(p.barCount,1);
+              if(d==='standard')assert(p.barCount>=2);
+              if(d==='challenge')assert(p.barCount>=3);
+            }
+          }
+          const forced=A.normalise('mobilebalance',{difficulty:'challenge',layout:'simple',givenMode:'shape'});
+          assert.equal(forced.layout,'multiple','Challenge must visibly normalize to multiple balances');
+          console.log('All solver / difficulty validations passed');
+          NODE
+      - name: Generate paper packs
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),assert=require('assert');
+          require('./assets/99club/simple-pdf.js');
+          require('./assets/99club/games-vocabulary.js');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-new-puzzles-v196.js');
+          require('./assets/99club/games-number-logic.js');
+          require('./assets/99club/games-engine.js');
+          require('./assets/99club/games-puzzle-redesign-v135-logic.js');
+          require('./assets/99club/games-pdf.js');
+          require('./assets/99club/games-pdf-v136.js');
+          const G=global.TT99Games,PDF=global.TT99GamesPDF;
+          for(const id of ['colourlogic','mobilebalance'])for(const d of ['easy','standard','challenge']){
+            const settings=G.normalizeSettings({minYear:4,maxYear:6,topics:['calculation','geometry','algebra'],sheets:1,activitiesPerSheet:2,selectedEngines:[id],includeAnswers:true,engineSettings:{[id]:{difficulty:d,layout:'auto'}}});
+            assert(G.ENGINES[id],`${id} missing from pack registry`);
+            const pack=G.generatePack(settings,`final-pdf-${id}-${d}`);
+            assert.equal(pack.sheets[0].activities.length,2);
+            assert(pack.sheets[0].activities.every(a=>a.engineId===id));
+            const doc=PDF.buildDocument({pack,settings:pack.settings,kind:'both',topics:G.TOPICS,seed:pack.seed});
+            assert.equal(doc.pages.length,2);
+            const bytes=doc.outputBytes();assert(bytes.length>5000);
+            fs.writeFileSync(`/tmp/${id}-${d}.pdf`,Buffer.from(bytes));
+          }
+          console.log('All printable PDF packs generated');
+          NODE
+      - name: Verify page load order and production wiring
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          paper=Path('_pages/99-club-games.md').read_text()
+          play=Path('_pages/99-club-games-play.md').read_text()
+          assert paper.index('games-arithmetic.js') < paper.index('games-new-puzzles-v196.js') < paper.index('games-engine.js')
+          assert play.index('games-arithmetic.js') < play.index('games-new-puzzles-v196.js') < play.index('games-engine.js')
+          assert play.index('games-play-new-puzzles-v196.js') < play.index('games-play-library-v4.js')
+          app=Path('assets/99club/games-app.js').read_text()
+          assert "'mobilebalance'" in app and "'colourlogic'" in app
+          assert 'renderMobileBalance' in app and 'renderColourLogic' in app
+          pdf=Path('assets/99club/games-pdf.js').read_text()
+          assert 'drawMobileBalance' in pdf and 'drawColourLogic' in pdf
+          assert 'answers_dummy' not in pdf
+          print('Wiring checks passed')
+          PY
+      - name: Upload visual samples
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-puzzles-v196-final-samples
+          path: |
+            /tmp/colourlogic-standard.pdf
+            /tmp/colourlogic-challenge.pdf
+            /tmp/mobilebalance-standard.pdf
+            /tmp/mobilebalance-challenge.pdf
+      - name: Commit production polish
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/99club/games-new-puzzles-v196.js assets/99club/games-new-puzzles-v196.css assets/99club/games-play-new-puzzles-v196.js assets/99club/games-pdf.js
+          git commit -m '[v1.96 final] Polish and validate Colour Logic and Mobile Balance'
+          git push origin HEAD:feat/colour-logic-mobile-balance-v196
