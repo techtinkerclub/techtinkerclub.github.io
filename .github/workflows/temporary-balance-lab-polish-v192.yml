@@ -1,0 +1,56 @@
+name: Balance Lab v1.92 reward polish
+
+on:
+  push:
+    branches:
+      - feat/balance-lab-v192
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/balance-lab-v192
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Hide weights until earned
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/99club/games-balance-lab-v192.js');t=p.read_text()
+          old='''<div>${weights.map((v,i)=>`<button type="button" data-bl-weight="${i}" disabled><b>${v}</b><span>TRAY</span></button>`).join('')}</div>'''
+          new='''<div>${weights.map((v,i)=>`<button type="button" data-bl-weight="${i}" disabled><b data-bl-weight-value>?</b><span>LOCKED</span></button>`).join('')}</div>'''
+          if old in t:t=t.replace(old,new,1)
+          old2="""weightBtns.forEach((b,i)=>{b.disabled=finished||!unlocked;b.classList.toggle('is-left',sides[i]==='L');b.classList.toggle('is-right',sides[i]==='R');b.querySelector('span').textContent=sides[i]==='L'?'LEFT':sides[i]==='R'?'RIGHT':'TRAY';});"""
+          new2="""weightBtns.forEach((b,i)=>{const earned=rowSolved(i);b.disabled=finished||!unlocked;b.classList.toggle('is-earned',earned);b.classList.toggle('is-left',sides[i]==='L');b.classList.toggle('is-right',sides[i]==='R');b.querySelector('[data-bl-weight-value]').textContent=earned?weights[i]:'?';b.querySelector('span').textContent=!earned?'LOCKED':sides[i]==='L'?'LEFT':sides[i]==='R'?'RIGHT':'TRAY';});"""
+          if old2 in t:t=t.replace(old2,new2,1)
+          p.write_text(t)
+          p=Path('assets/99club/games-balance-lab-v192.css');t=p.read_text()
+          anchor='.tt99-balance-weight-tray button:disabled{cursor:not-allowed}\n'
+          if '.tt99-balance-weight-tray button:not(.is-earned)' not in t:
+              if anchor not in t: raise SystemExit('CSS anchor missing')
+              t=t.replace(anchor,anchor+'.tt99-balance-weight-tray button:not(.is-earned){opacity:.55}\n',1)
+          p.write_text(t)
+          PY
+      - name: Validate
+        run: |
+          node --check assets/99club/games-balance-lab-v192.js
+          node assets/99club/tests/games-balance-lab-v192-smoke.js
+          grep -q 'data-bl-weight-value' assets/99club/games-balance-lab-v192.js
+          grep -q "earned?weights\[i\]:'?'" assets/99club/games-balance-lab-v192.js
+      - name: Commit if changed
+        run: |
+          if git diff --quiet; then
+            echo 'No reward-polish changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/99club/games-balance-lab-v192.js assets/99club/games-balance-lab-v192.css
+          git commit -m '[v1.92 polish] Reveal final weights as they are earned'
+          git push origin HEAD:feat/balance-lab-v192
