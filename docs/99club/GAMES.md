@@ -125,6 +125,14 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - Correct symbol values reveal immediately in the coded message. The finished puzzle reveals the full word plus its curriculum-friendly definition, giving the algebra a visible payoff rather than ending at the numeric values.
 - The game keeps the shared non-native numeric keypad, Relaxed/Challenge modes, Check, Hint, Undo, Redo, Reset, completion, personal-best and reproducible challenge-link behaviour.
 
+### v1.89 — Symbol Decoder shared paper/online design
+- Symbol Decoder now uses one deterministic puzzle generator for Online Play, browser worksheet preview and PDF export.
+- The printable Symbol Equations activity is replaced by the same decode-a-secret-word mechanic rather than remaining a separate worksheet-only variant.
+- Decoded Online Play words are forced onto one responsive row; long words shrink their tiles instead of wrapping a final letter onto a second line.
+- Once the word is decoded, its curriculum-friendly definition appears directly beneath the word.
+- Printable pupil sheets show the coded word, linked clues, A1Z26 key and symbol-value working slots; answer sheets/PDFs reveal the word and definition.
+- PDF symbols are drawn as vector shapes so output does not depend on Unicode glyph support in the built-in Helvetica font.
+
 ## Curriculum mapping principle
 
 Puzzle engines are mapped conservatively. They are reasoning/fluency resources that exercise curriculum mathematics; they are not presented as replacements for teaching a statutory objective.

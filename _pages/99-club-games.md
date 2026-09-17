@@ -29,6 +29,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-takuzu-v139.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-puzzle-pack-v140.css?v=3">
 <link rel="stylesheet" href="/assets/99club/games-killer-cages-v181.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-symbol-decoder-v189.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-shikaku-v143.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-sum-grids-v147.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-focus-topics-v145.css?v=1">
@@ -56,6 +57,7 @@ sitemap: true
 <script src="/assets/99club/games-shikaku-v143.js?v=1"></script>
 <script src="/assets/99club/games-sum-grids-v147.js?v=1"></script>
 <script src="/assets/99club/games-engine.js?v=15"></script>
+<script src="/assets/99club/games-symbol-decoder-v189.js?v=1"></script>
 <script src="/assets/99club/games-focus-topics-v145.js?v=1"></script>
 <script src="/assets/99club/games-pack-mode.js?v=2"></script>
 <script src="/assets/99club/games-performance-v142.js?v=1"></script>

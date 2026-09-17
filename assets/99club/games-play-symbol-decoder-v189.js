@@ -3,10 +3,11 @@
  */
 (function(global){
 'use strict';
-const Play=global.TT99GamesPlay;
+const Play=global.TT99GamesPlay,Shared=global.TT99SymbolDecoder;
 const adapter=Play?.adapters?.get?.('symbols');
 if(!adapter||adapter.__decoderV189)return;
-const previousMount=adapter.mount.bind(adapter);
+const previousMount=adapter.mount.bind(adapter),previousCreate=adapter.createPuzzle.bind(adapter);
+adapter.createPuzzle=function(config,seed){return Shared?.generate?Shared.generate(config,seed):previousCreate(config,seed);};
 adapter.mount=function(root,p,ctx){
   const view=previousMount(root,p,ctx);
   const code=root.querySelector('[data-dec-code]');
