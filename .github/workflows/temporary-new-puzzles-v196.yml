@@ -1,0 +1,128 @@
+name: New puzzles v1.96
+
+on:
+  push:
+    branches: [ feat/colour-logic-mobile-balance-v196 ]
+
+permissions:
+  contents: write
+
+jobs:
+  integrate-and-validate:
+    if: ${{ !contains(github.event.head_commit.message, '[v1.96 integrated]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/colour-logic-mobile-balance-v196
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply integration patch
+        run: |
+          python assets/99club/tests/apply-new-puzzles-v196.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/99club/games-play-new-puzzles-v196.js')
+          t=p.read_text()
+          old='const board=p.variant===\'row\'?`<div class="tt99-cl-row">${p.solution.map((_,i)=>`<button type="button" data-cl-cell="${i}"><small>${i+1}</small><b></b></button>`).join(\'\')}</div>`'
+          new='const board=p.variant===\'row\'?`<div class="tt99-cl-row" style="--cl-count:${p.solution.length}">${p.solution.map((_,i)=>`<button type="button" data-cl-cell="${i}"><small>${i+1}</small><b></b></button>`).join(\'\')}</div>`'
+          if old not in t: raise SystemExit('row count anchor missing')
+          p.write_text(t.replace(old,new,1))
+          PY
+      - name: JavaScript syntax checks
+        run: |
+          node --check assets/99club/games-new-puzzles-v196.js
+          node --check assets/99club/games-play-new-puzzles-v196.js
+          node --check assets/99club/games-app.js
+          node --check assets/99club/games-pdf.js
+      - name: Validate generators and uniqueness
+        run: |
+          node - <<'NODE'
+          const assert=require('assert');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-new-puzzles-v196.js');
+          const A=global.TT99ArithmeticGames;
+          function perms(items){const out=[];function rec(p,l){if(!l.length){out.push(p);return;}for(let i=0;i<l.length;i++)rec(p.concat(l[i]),l.slice(0,i).concat(l.slice(i+1)));}rec([],items);return out;}
+          for(const d of ['easy','standard','challenge']){
+            for(const layout of ['row','grid']){
+              for(let k=0;k<6;k++){
+                const settings={minYear:3,maxYear:6,topics:['geometry','algebra'],engineSettings:{colourlogic:{difficulty:d,layout,ruleStyle:'mixed'}}};
+                const p=A.generate('colourlogic',settings,`cl-${d}-${layout}-${k}`);
+                assert(A.validate(p).ok,JSON.stringify(p));
+                let count=0;
+                if(p.variant==='row'){
+                  for(const s of perms(p.solution))if(p.clues.every(c=>A._colourRowClueTestV196(c,s)))count++;
+                }else{
+                  const n=p.size,total=1<<(n*n);
+                  for(let mask=0;mask<total&&count<2;mask++){
+                    const s=Array.from({length:n*n},(_,i)=>(mask>>i)&1?'B':'R');
+                    if(p.clues.every(c=>A._gridClueTestV196(c,s,n)))count++;
+                  }
+                }
+                assert.equal(count,1,`not unique ${d}/${layout}/${k}: ${count}`);
+              }
+            }
+            for(let k=0;k<16;k++){
+              const settings={minYear:3,maxYear:6,topics:['calculation','algebra'],engineSettings:{mobilebalance:{difficulty:d,layout:'auto',givenMode:k%2?'shape':'total'}}};
+              const p=A.generate('mobilebalance',settings,`mb-${d}-${k}`);
+              assert(A.validate(p).ok,JSON.stringify(p));
+              assert(p.shapeIds.every(id=>Number.isInteger(p.values[id])&&p.values[id]>0));
+              if(d==='easy')assert.equal(p.barCount,1);
+              if(d==='standard')assert(p.barCount>=2);
+              if(d==='challenge')assert(p.barCount>=3,'challenge must use multiple balances');
+            }
+          }
+          console.log('Generator + uniqueness validation passed');
+          NODE
+      - name: Generate printable PDFs
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),assert=require('assert');
+          require('./assets/99club/simple-pdf.js');
+          require('./assets/99club/games-vocabulary.js');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-new-puzzles-v196.js');
+          require('./assets/99club/games-number-logic.js');
+          require('./assets/99club/games-engine.js');
+          require('./assets/99club/games-puzzle-redesign-v135-logic.js');
+          require('./assets/99club/games-pdf.js');
+          require('./assets/99club/games-pdf-v136.js');
+          const G=global.TT99Games,PDF=global.TT99GamesPDF;
+          for(const id of ['colourlogic','mobilebalance']){
+            for(const d of ['easy','standard','challenge']){
+              const settings=G.normalizeSettings({minYear:4,maxYear:6,topics:['calculation','geometry','algebra'],sheets:1,activitiesPerSheet:2,selectedEngines:[id],includeAnswers:true,engineSettings:{[id]:{difficulty:d,layout:'auto'}}});
+              assert(G.ENGINES[id],`engine ${id} missing from pack registry`);
+              const pack=G.generatePack(settings,`pdf-${id}-${d}`);
+              assert.equal(pack.sheets[0].activities.length,2);
+              const doc=PDF.buildDocument({pack,settings:pack.settings,kind:'both',topics:G.TOPICS,seed:pack.seed});
+              assert.equal(doc.pages.length,2);
+              const bytes=doc.outputBytes();assert(bytes.length>5000,`${id}/${d} PDF too small`);
+              fs.writeFileSync(`/tmp/${id}-${d}.pdf`,Buffer.from(bytes));
+            }
+          }
+          console.log('Printable PDF generation passed');
+          NODE
+      - name: Check page wiring
+        run: |
+          grep -q 'games-new-puzzles-v196.js?v=1' _pages/99-club-games.md
+          grep -q 'games-new-puzzles-v196.js?v=1' _pages/99-club-games-play.md
+          grep -q 'games-play-new-puzzles-v196.js?v=1' _pages/99-club-games-play.md
+          grep -q "mobilebalance'" assets/99club/games-app.js
+          grep -q "colourlogic'" assets/99club/games-app.js
+      - name: Upload printable samples
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-puzzles-v196-pdf-samples
+          path: |
+            /tmp/colourlogic-standard.pdf
+            /tmp/colourlogic-challenge.pdf
+            /tmp/mobilebalance-standard.pdf
+            /tmp/mobilebalance-challenge.pdf
+      - name: Commit production integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/99club/games-new-puzzles-v196.js assets/99club/games-new-puzzles-v196.css assets/99club/games-play-new-puzzles-v196.js assets/99club/games-app.js assets/99club/games-pdf.js _pages/99-club-games.md _pages/99-club-games-play.md
+          git commit -m '[v1.96 integrated] Add Colour Logic and Mobile Balance online and on paper'
+          git push origin HEAD:feat/colour-logic-mobile-balance-v196
