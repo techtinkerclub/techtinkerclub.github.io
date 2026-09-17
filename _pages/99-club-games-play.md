@@ -41,6 +41,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-killer-cages-v181.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-arithmetic-wave-v184.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-final-catalogue-v186.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-play-symbol-decoder-v188.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
@@ -100,6 +101,7 @@ sitemap: true
 <script src="/assets/99club/games-play-equationcrossgrid-v185.js?v=1"></script>
 <script src="/assets/99club/games-play-equationcrossgrid-v187.js?v=1"></script>
 <script src="/assets/99club/games-play-final-catalogue-v186.js?v=1"></script>
+<script src="/assets/99club/games-play-symbol-decoder-v188.js?v=1"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=6"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=3"></script>
