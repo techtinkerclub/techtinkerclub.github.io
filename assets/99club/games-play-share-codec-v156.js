@@ -1,7 +1,7 @@
-/* 99 Club Studio · compact Online Play challenge links v1.57 */
+/* 99 Club Studio · compact Online Play challenge links v1.58 */
 (function(global){
 'use strict';
-const GAME_TO_CODE={shikaku:'0',sumplete:'1',nonogram:'2',mathsmines:'3',takuzu:'4',sudoku:'5',futoshiki:'6',killersudoku:'7',cornersum:'8',linkedsum:'9',hashi:'a',numberpath:'b',wordsearch:'c',brokencalc:'d',target:'e',operationgrid:'f',kakuro:'g',arithmeticcages:'h',alphametics:'i',numbertowers:'j',propertymaze:'k',maze:'l',crossnumber:'m',pyramid:'n',magic:'o',arithmagon:'p',magicshape:'q'};
+const GAME_TO_CODE={shikaku:'0',sumplete:'1',nonogram:'2',mathsmines:'3',takuzu:'4',sudoku:'5',futoshiki:'6',killersudoku:'7',cornersum:'8',linkedsum:'9',hashi:'a',numberpath:'b',wordsearch:'c',brokencalc:'d',target:'e',operationgrid:'f',kakuro:'g',arithmeticcages:'h',alphametics:'i',numbertowers:'j',propertymaze:'k',maze:'l',crossnumber:'m',pyramid:'n',magic:'o',arithmagon:'p',magicshape:'q',numbertrail:'r',numberwheels:'s',numbersearch:'t',equationcrossgrid:'u'};
 const CODE_TO_GAME=Object.fromEntries(Object.entries(GAME_TO_CODE).map(([k,v])=>[v,k]));
 const VALUE_TO_CODE={auto:'a',easy:'e',standard:'s',challenge:'h',more:'m',balanced:'b',fewer:'f'};
 const CODE_TO_VALUE=Object.fromEntries(Object.entries(VALUE_TO_CODE).map(([k,v])=>[v,k]));
@@ -18,5 +18,5 @@ function expandIncoming(){const q=new URLSearchParams(global.location.search),to
 expandIncoming();
 history.replaceState=function(state,title,url){if(url!=null){const p=longParts(url);if(p)return nativeReplace(state,title,compactUrl(url));}return nativeReplace(state,title,url);};
 function currentCompactUrl(){return shareUrl(global.location.href);}
-global.TT99PlayShareCodec={version:'1.57',compactUrl,shareUrl,expandToken,currentCompactUrl,GAME_TO_CODE,CODE_TO_GAME};
+global.TT99PlayShareCodec={version:'1.58',compactUrl,shareUrl,expandToken,currentCompactUrl,GAME_TO_CODE,CODE_TO_GAME};
 })(typeof globalThis!=='undefined'?globalThis:this);
