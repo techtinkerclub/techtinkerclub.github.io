@@ -78,6 +78,8 @@ jobs:
             --window-size=390,844 --virtual-time-budget=120000 --dump-dom \
             http://127.0.0.1:8765/99club-browser-qa.html > /tmp/99club-browser-dom.html
           node scripts/99club/browser-qa.js check /tmp/99club-browser-dom.html
+      - name: Compare runtime catalogue with help guides
+        run: node scripts/99club/help-coverage.js
       - name: Upload browser QA report
         if: always()
         uses: actions/upload-artifact@v4
