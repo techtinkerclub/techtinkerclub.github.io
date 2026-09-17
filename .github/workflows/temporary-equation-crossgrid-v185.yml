@@ -1,0 +1,23 @@
+name: Equation Crossgrid v1.85 hotfix checks
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check assets/99club/games-play-equationcrossgrid-v185.js
+          node --check assets/99club/tests/games-play-equationcrossgrid-v185-smoke.js
+      - name: Regression smoke test
+        run: node assets/99club/tests/games-play-equationcrossgrid-v185-smoke.js
+      - name: Wiring check
+        run: grep -q 'games-play-equationcrossgrid-v185.js?v=1' _pages/99-club-games-play.md
