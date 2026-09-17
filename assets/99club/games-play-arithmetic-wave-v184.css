@@ -23,23 +23,23 @@
 .tt99-wave184-keypad{
   display:grid;
   gap:7px;
-  width:min(100%,470px);
+  width:min(100%,430px);
   margin:14px auto 0;
 }
 .tt99-wave184-digits{
   display:grid;
-  grid-template-columns:repeat(5,minmax(44px,1fr));
-  gap:6px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
 }
 .tt99-wave184-keypad button{
   appearance:none;
   min-width:0;
-  min-height:44px;
+  min-height:46px;
   border:1px solid #c6d7d8;
   border-radius:10px;
   background:#fff;
   color:#294d52;
-  font:850 .9rem/1 inherit;
+  font:850 .95rem/1 inherit;
   cursor:pointer;
 }
 .tt99-wave184-keypad button:hover:not(:disabled),
@@ -50,12 +50,9 @@
 }
 .tt99-wave184-keypad button:disabled{opacity:.43;cursor:not-allowed}
 .tt99-wave184-keypad [data-wave-clear]{color:#657d81;font-size:.72rem}
-.tt99-wave184-keypad.has-ops{
-  grid-template-columns:minmax(0,1fr) minmax(54px,78px);
-  align-items:start;
-}
-.tt99-wave184-keypad.has-ops .tt99-wave184-digits{grid-template-columns:repeat(3,minmax(44px,1fr))}
-.tt99-wave184-ops{display:grid;grid-template-columns:1fr;gap:6px}
+.tt99-wave184-keypad.has-ops{grid-template-columns:1fr;align-items:start}
+.tt99-wave184-keypad.has-ops .tt99-wave184-digits{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tt99-wave184-ops{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
 .tt99-wave184-ops button{font-size:1.08rem;color:#176e67}
 
 /* ---------- Number Trail ---------- */
@@ -268,8 +265,7 @@ button.tt99-crossgrid-cell{appearance:none;cursor:pointer}
 }
 @media(max-width:560px){
   .tt99-wave184-keypad{position:sticky;bottom:6px;z-index:20;padding:7px;border-radius:14px;background:rgba(248,251,251,.95);backdrop-filter:blur(7px);box-shadow:0 4px 16px rgba(36,68,75,.12);box-sizing:border-box}
-  .tt99-wave184-keypad.has-ops{grid-template-columns:minmax(0,1fr) 58px}
-  .tt99-wave184-keypad.has-ops .tt99-wave184-digits{grid-template-columns:repeat(3,minmax(42px,1fr))}
+  .tt99-wave184-keypad button{min-height:48px;font-size:1rem}
   .tt99-trail-board,.tt99-numbersearch-grid,.tt99-crossgrid-board{width:100%}
   .tt99-trail-board{gap:5px}
   .tt99-trail-cell{border-radius:10px;padding:2px}
@@ -277,7 +273,7 @@ button.tt99-crossgrid-cell{appearance:none;cursor:pointer}
   .tt99-conn-value{min-width:42px;min-height:40px;padding-inline:5px}
 }
 @media(max-width:390px){
-  .tt99-wave184-digits{gap:5px}.tt99-wave184-keypad button{min-height:41px}
+  .tt99-wave184-digits,.tt99-wave184-ops{gap:5px}.tt99-wave184-keypad button{min-height:44px}
   .tt99-trail-cell{font-size:clamp(.72rem,5vw,1rem)}
   .tt99-numbersearch-cell{font-size:clamp(.43rem,3.1vw,.72rem)}
   .tt99-play-equationcrossgrid.is-size-10 .tt99-crossgrid-cell{font-size:clamp(.42rem,2.55vw,.68rem)}
