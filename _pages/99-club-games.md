@@ -96,7 +96,6 @@ sitemap: true
 <script src="/assets/99club/games-towers-direction-v138.js?v=1" defer></script>
 <script src="/assets/99club/games-takuzu-v139-ui.js?v=1" defer></script>
 <script src="/assets/99club/games-puzzle-pack-v140-ui.js?v=2" defer></script>
-<script src="/assets/99club/games-killer-cages-v181.js?v=1" defer></script>
 <script src="/assets/99club/games-shikaku-v143-ui.js?v=1" defer></script>
 <script src="/assets/99club/games-sum-grids-v147-ui.js?v=2" defer></script>
 <script src="/assets/99club/games-focus-topics-v145-ui.js?v=1" defer></script>
