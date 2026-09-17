@@ -19,7 +19,9 @@ jobs:
         with:
           node-version: '22'
       - name: Apply source patch
-        run: python assets/99club/tests/apply-symbol-decoder-v189.py
+        run: |
+          sed -i 's/re.subn(pat,new,text/re.subn(pat,lambda _m:new,text/g' assets/99club/tests/apply-symbol-decoder-v189.py
+          python assets/99club/tests/apply-symbol-decoder-v189.py
       - name: Syntax and generation checks
         run: |
           node --check assets/99club/games-symbol-decoder-v189.js
