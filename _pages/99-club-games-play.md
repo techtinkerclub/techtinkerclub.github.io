@@ -44,6 +44,7 @@ sitemap: true
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
+<script src="/assets/99club/games-crossgrid-v1321.js?v=3"></script>
 <script src="/assets/99club/games-property-maze.js?v=1"></script>
 <script src="/assets/99club/games-operationgrid-v153.js?v=1"></script>
 <script src="/assets/99club/games-brokencalc-quality-v152.js?v=1"></script>
@@ -97,6 +98,7 @@ sitemap: true
 <script src="/assets/99club/games-play-arithmagon-v178.js?v=1"></script>
 <script src="/assets/99club/games-play-arithmetic-wave-v184.js?v=1"></script>
 <script src="/assets/99club/games-play-equationcrossgrid-v185.js?v=1"></script>
+<script src="/assets/99club/games-play-equationcrossgrid-v187.js?v=1"></script>
 <script src="/assets/99club/games-play-final-catalogue-v186.js?v=1"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=6"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
