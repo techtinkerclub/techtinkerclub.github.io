@@ -44,9 +44,11 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-play-symbol-decoder-v188.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-play-symbol-decoder-v189.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-balance-lab-v192.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-new-puzzles-v196.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
+<script src="/assets/99club/games-new-puzzles-v196.js?v=1"></script>
 <script src="/assets/99club/games-crossgrid-v1321.js?v=3"></script>
 <script src="/assets/99club/games-property-maze.js?v=1"></script>
 <script src="/assets/99club/games-operationgrid-v153.js?v=1"></script>
@@ -107,6 +109,7 @@ sitemap: true
 <script src="/assets/99club/games-play-symbol-decoder-v188.js?v=1"></script>
 <script src="/assets/99club/games-play-symbol-decoder-v189.js?v=1"></script>
 <script src="/assets/99club/games-balance-lab-v192.js?v=1"></script>
+<script src="/assets/99club/games-play-new-puzzles-v196.js?v=1"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=6"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=3"></script>
