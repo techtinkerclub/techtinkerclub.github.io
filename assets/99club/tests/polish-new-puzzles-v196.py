@@ -9,6 +9,12 @@ if old not in t: raise SystemExit('grid cache anchor missing')
 t=t.replace(old,new,1)
 t=t.replace("const states=GRID_STATE_CACHE[n],all=gridPool(solution,n)","const states=gridStates(n),all=gridPool(solution,n)",1)
 t=t.replace("const n=c.difficulty==='challenge'?4:3,states=GRID_STATE_CACHE[n];", "const n=c.difficulty==='challenge'?4:3,states=gridStates(n);",1)
+# Row clue pools must contain only statements that are true of the hidden solution.
+# The original pool added `notEnd` for every colour, including actual end colours.
+old="const seen=new Set();return pool.filter(c=>{const k=rowClueText(c);if(!k||seen.has(k))return false;seen.add(k);return true;});"
+new="const seen=new Set();return pool.filter(c=>{if(!rowClueTest(c,solution))return false;const k=rowClueText(c);if(!k||seen.has(k))return false;seen.add(k);return true;});"
+if old not in t: raise SystemExit('row clue truth filter anchor missing')
+t=t.replace(old,new,1)
 # Count rules are grid-specific. If a row is explicitly requested, gracefully use a mixed row clue pool.
 t=t.replace("picked=chooseUniqueRow(solution,c.difficulty,c.ruleStyle,rng)","picked=chooseUniqueRow(solution,c.difficulty,c.ruleStyle==='count'?'mixed':c.ruleStyle,rng)",1)
 # If the user selects Count focus with Auto layout, give them the grid where count rules are meaningful.
