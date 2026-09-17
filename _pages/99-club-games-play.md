@@ -113,7 +113,7 @@ sitemap: true
 <script src="/assets/99club/games-balance-lab-v192.js?v=1"></script>
 <script src="/assets/99club/games-play-new-puzzles-v196.js?v=1"></script>
 <script src="/assets/99club/games-play-mobile-balance-fix-v197.js?v=3"></script>
-<script src="/assets/99club/games-play-context-keypad-v200.js?v=1"></script>
+<script src="/assets/99club/games-play-context-keypad-v200.js?v=2"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=6"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=3"></script>
