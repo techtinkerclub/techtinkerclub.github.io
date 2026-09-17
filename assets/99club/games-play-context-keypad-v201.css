@@ -33,6 +33,18 @@
   #tt99-play-board .tt99-context-pad-active.tt99-wave184-keypad,
   #tt99-play-board .tt99-context-pad-active.tt99-wave186-keypad,
   #tt99-play-board .tt99-context-pad-active.tt99-v196-keypad{gap:6px}
+
+  /* Width safety for controls that use width:100% together with padding/borders.
+     Without border-box these can spill a few pixels outside the phone viewport. */
+  .tt99-numbergrid,.tt99-number-keypad,
+  .tt99-kakuro-board,.tt99-kakuro-keypad,
+  .tt99-alpha-equation,.tt99-alpha-pad,
+  .tt99-calc-shell,.tt99-target-card,
+  .tt99-propertymaze-rule,.tt99-towers-keypad,.tt99-crossnumber-keypad,
+  .tt99-pyramid-board{
+    box-sizing:border-box;
+    max-width:100%;
+  }
 }
 @media(max-width:390px){
   #tt99-play-board .tt99-context-pad-active{width:calc(100vw - 12px)!important;padding:29px 7px 7px!important;bottom:max(5px,env(safe-area-inset-bottom))!important}
