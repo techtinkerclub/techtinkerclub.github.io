@@ -1,0 +1,66 @@
+name: Balance Lab final layout v1.95
+
+on:
+  push:
+    branches: [ fix/balance-lab-final-balance-v195 ]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-validate:
+    if: ${{ !contains(github.event.head_commit.message, '[v1.95 final]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/balance-lab-final-balance-v195
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply final balance polish
+        run: python assets/99club/tests/apply-balance-final-v195.py
+      - name: Validate JavaScript
+        run: |
+          node --check assets/99club/games-pdf.js
+          node --check assets/99club/games-app.js
+          node --check assets/99club/games-balance-lab-v192.js
+      - name: Generate Balance Lab PDF sample
+        run: |
+          node assets/99club/tests/generate-balance-paper-v194.js
+          cp /tmp/balance-lab-v194-standard.pdf /tmp/balance-lab-v195-standard.pdf
+      - name: Validate final-balance command structure
+        run: |
+          node - <<'NODE'
+          require('./assets/99club/simple-pdf.js');
+          require('./assets/99club/games-vocabulary.js');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-balance-lab-v192.js');
+          require('./assets/99club/games-number-logic.js');
+          require('./assets/99club/games-engine.js');
+          require('./assets/99club/games-puzzle-redesign-v135-logic.js');
+          require('./assets/99club/games-pdf.js');
+          require('./assets/99club/games-pdf-v136.js');
+          const G=global.TT99Games, PDF=global.TT99GamesPDF;
+          const settings=G.normalizeSettings({minYear:4,maxYear:6,topics:['calculation','algebra'],sheets:1,activitiesPerSheet:2,selectedEngines:['balance'],includeAnswers:true,engineSettings:{balance:{difficulty:'standard',rowCount:'auto',style:'auto'}}});
+          const pack=G.generatePack(settings,'v195-layout-check');
+          const doc=PDF.buildDocument({pack,settings:pack.settings,kind:'both',topics:G.TOPICS||{},seed:pack.seed});
+          const commands=doc.pages.flatMap(p=>p.cmds||[]).join('\n');
+          for(const marker of ['FINAL BALANCE','LEFT','RIGHT','TOTAL','YOUR WEIGHTS']) if(!commands.includes(marker)) throw new Error(`Missing ${marker}`);
+          if(commands.includes('Weight letters:')) throw new Error('Legacy pan text returned');
+          if(commands.includes('REPAIR TILES')) throw new Error('Legacy repair content returned');
+          if(doc.pages.length!==2) throw new Error(`Expected 2 pages, got ${doc.pages.length}`);
+          console.log('Final balance v1.95 structure OK');
+          NODE
+      - name: Upload sample PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: balance-lab-v195-standard
+          path: /tmp/balance-lab-v195-standard.pdf
+      - name: Commit implementation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/99club/games-pdf.js assets/99club/games-balance-lab-v192.css _pages/99-club-games.md
+          git commit -m '[v1.95 final] Polish Balance Lab final scale layout'
+          git push origin HEAD:fix/balance-lab-final-balance-v195
