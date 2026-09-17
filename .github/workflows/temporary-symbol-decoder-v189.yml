@@ -1,0 +1,59 @@
+name: Symbol Decoder v1.89 checks
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check assets/99club/games-symbol-decoder-v189.js
+          node --check assets/99club/games-play-symbol-decoder-v189.js
+          node --check assets/99club/games-app.js
+          node --check assets/99club/games-pdf.js
+          node --check assets/99club/tests/games-symbol-decoder-v189-smoke.js
+      - name: Shared generator smoke tests
+        run: node assets/99club/tests/games-symbol-decoder-v189-smoke.js
+      - name: Printable PDF runtime smoke
+        run: |
+          node - <<'NODE'
+          require('./assets/99club/simple-pdf.js');
+          require('./assets/99club/games-vocabulary.js');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-number-logic.js');
+          require('./assets/99club/games-engine.js');
+          require('./assets/99club/games-symbol-decoder-v189.js');
+          const PDF=require('./assets/99club/games-pdf.js');
+          const G=global.TT99Games;
+          for(const difficulty of ['easy','standard','challenge']){
+            const settings=G.normalizeSettings({minYear:4,maxYear:6,topics:['algebra','calculation'],sheets:2,activitiesPerSheet:2,selectedEngines:['symbols'],includeAnswers:true,engineSettings:{symbols:{difficulty,theme:'mixed',equationStyle:'auto'}}});
+            const pack=G.generatePack(settings,`pdf-v189-${difficulty}`);
+            if(pack.sheets.flatMap(s=>s.activities).some(a=>a.title!=='Symbol Decoder'||!a.word||!a.definition))throw new Error('print pack is not using Symbol Decoder');
+            const doc=PDF.buildDocument({pack,settings:pack.settings,kind:'both',topics:G.TOPICS||{},seed:pack.seed});
+            const bytes=doc.outputBytes();
+            if(bytes.length<5000)throw new Error(`PDF unexpectedly small: ${bytes.length}`);
+            console.log(difficulty,bytes.length);
+          }
+          NODE
+      - name: Integration and layout guards
+        run: |
+          grep -q 'games-pdf.js?v=21' _pages/99-club-games.md
+          grep -q 'games-app.js?v=22' _pages/99-club-games.md
+          grep -q 'games-symbol-decoder-v189.js?v=1' _pages/99-club-games.md
+          grep -q 'games-symbol-decoder-v189.css?v=1' _pages/99-club-games.md
+          grep -q 'games-symbol-decoder-v189.js?v=1' _pages/99-club-games-play.md
+          grep -q 'games-play-symbol-decoder-v189.js?v=1' _pages/99-club-games-play.md
+          grep -q 'games-play-symbol-decoder-v189.css?v=1' _pages/99-club-games-play.md
+          grep -q 'grid-template-columns:repeat(var(--tt99-decoder-length' assets/99club/games-play-symbol-decoder-v189.css
+          grep -q 'tt99-decoder-inline-definition' assets/99club/games-play-symbol-decoder-v189.css
+          grep -q 'tt99-symbol-decoder-print' assets/99club/games-app.js
+          grep -q 'SECRET WORD' assets/99club/games-pdf.js
+          grep -q 'v1.89 — Symbol Decoder shared paper/online design' docs/99club/GAMES.md
