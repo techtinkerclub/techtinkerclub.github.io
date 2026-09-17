@@ -42,6 +42,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-preview-pager-v155.css?v=1">
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
+<script src="/assets/99club/games-brokencalc-quality-v152.js?v=2"></script>
 <script src="/assets/99club/games-new-puzzles-v196.js?v=1"></script>
 <script src="/assets/99club/games-balance-lab-v192.js?v=2"></script>
 <script src="/assets/99club/games-operationgrid-v153.js?v=1"></script>

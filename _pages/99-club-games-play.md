@@ -46,6 +46,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-balance-lab-v192.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v196.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v197-fix.css?v=2">
+<link rel="stylesheet" href="/assets/99club/games-play-context-keypad-v200.css?v=1">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
@@ -53,7 +54,7 @@ sitemap: true
 <script src="/assets/99club/games-crossgrid-v1321.js?v=3"></script>
 <script src="/assets/99club/games-property-maze.js?v=1"></script>
 <script src="/assets/99club/games-operationgrid-v153.js?v=1"></script>
-<script src="/assets/99club/games-brokencalc-quality-v152.js?v=1"></script>
+<script src="/assets/99club/games-brokencalc-quality-v152.js?v=2"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
 <script src="/assets/99club/games-number-towers-v137.js?v=1"></script>
 <script src="/assets/99club/games-number-towers-v137-unique.js?v=1"></script>
@@ -90,7 +91,7 @@ sitemap: true
 <script src="/assets/99club/games-play-hashi-v1.js?v=3"></script>
 <script src="/assets/99club/games-play-numberpath-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-wordsearch-v1.js?v=3"></script>
-<script src="/assets/99club/games-play-brokencalc-v1.js?v=4"></script>
+<script src="/assets/99club/games-play-brokencalc-v1.js?v=5"></script>
 <script src="/assets/99club/games-play-target-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-operationgrid-v1.js?v=3"></script>
 <script src="/assets/99club/games-play-operationgrid-v153.js?v=2"></script>
@@ -112,6 +113,7 @@ sitemap: true
 <script src="/assets/99club/games-balance-lab-v192.js?v=1"></script>
 <script src="/assets/99club/games-play-new-puzzles-v196.js?v=1"></script>
 <script src="/assets/99club/games-play-mobile-balance-fix-v197.js?v=3"></script>
+<script src="/assets/99club/games-play-context-keypad-v200.js?v=1"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=6"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=3"></script>
