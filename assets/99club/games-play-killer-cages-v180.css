@@ -1,41 +1,33 @@
 /* 99 Club Studio · Killer / Sum Sudoku cage outlines v1.80
- * Keep Sudoku hierarchy clear: box rails strongest, cell grid next,
+ * Keep Sudoku hierarchy clear: box rails strongest, normal cell grid next,
  * cage boundaries thin, solid and neutral grey.
  */
 
 .tt99-play-killer{
   --tt99-killer-cage:#7f8b8e;
-  --tt99-killer-box:#335e62;
 }
 
-/* Override the older teal/dashed cage treatment only for Killer Sudoku. */
-.tt99-play-killer .tt99-numbergrid-cell.cage-top{
-  box-shadow:none!important;
+/* The shared renderer draws cages as inset edge elements, so the solid cage
+   boundary stays visually separate from both normal grid lines and box rails. */
+.tt99-play-killer .cage-edge{
+  border-color:var(--tt99-killer-cage)!important;
+}
+.tt99-play-killer .cage-edge.top,
+.tt99-play-killer .cage-edge.bottom{
   border-top:1px solid var(--tt99-killer-cage)!important;
 }
-.tt99-play-killer .tt99-numbergrid-cell.cage-left{
+.tt99-play-killer .cage-edge.left,
+.tt99-play-killer .cage-edge.right{
   border-left:1px solid var(--tt99-killer-cage)!important;
 }
-.tt99-play-killer .tt99-numbergrid-cell.cage-right{
-  border-right:1px solid var(--tt99-killer-cage)!important;
-}
-.tt99-play-killer .tt99-numbergrid-cell.cage-bottom{
-  border-bottom:1px solid var(--tt99-killer-cage)!important;
-}
 
-/* Never let a cage edge weaken the heavier Sudoku box rails. */
-.tt99-play-killer .tt99-numbergrid-cell.cage-right.box-right{
-  border-right:3px solid var(--tt99-killer-box)!important;
-}
-.tt99-play-killer .tt99-numbergrid-cell.cage-bottom.box-bottom{
-  border-bottom:3px solid var(--tt99-killer-box)!important;
-}
-
-/* Cage targets should read as annotations, not as another grid colour. */
-.tt99-play-killer .tt99-cage-target{
+/* Cage targets are annotations rather than another puzzle-grid colour. */
+.tt99-play-killer .cage-target{
   color:#566568!important;
-  background:rgba(255,255,255,.9);
-  padding:0 2px;
-  border-radius:2px;
-  line-height:1.05;
+  background:rgba(255,255,255,.92)!important;
+  padding:1px 2px;
+  border-radius:3px;
+}
+.tt99-play-killer .tt99-numbergrid-cell.is-given .cage-target{
+  background:rgba(241,246,245,.94)!important;
 }
