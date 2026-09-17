@@ -84,12 +84,63 @@ function makeRow(target,difficulty,style,rng,index){
   const display=`${left} = ${right}`;
   return {display,answer:blank.answer,solution:display.replace('□',String(blank.answer)),balancedValue:target};
 }
+
+function paperFinalWeights(difficulty,rng){
+  const min=difficulty==='easy'?2:difficulty==='challenge'?6:4;
+  const max=difficulty==='easy'?12:difficulty==='challenge'?26:20;
+  let best=null;
+  for(let attempt=0;attempt<30;attempt++){
+    const target=randInt(rng,min*2,max*2),left=composition(target,2,min,max,rng),right=composition(target,2,min,max,rng);
+    const tagged=shuffle(rng,left.map(value=>({value,side:'L'})).concat(right.map(value=>({value,side:'R'}))));
+    const candidate={weights:tagged.map(x=>x.value),target,solutionSides:tagged.map(x=>x.side),solutionLeft:tagged.filter(x=>x.side==='L').map(x=>x.value),solutionRight:tagged.filter(x=>x.side==='R').map(x=>x.value)};
+    best=candidate;
+    const leftKey=left.slice().sort((a,b)=>a-b).join(','),rightKey=right.slice().sort((a,b)=>a-b).join(',');
+    if(new Set(candidate.weights).size>=3&&leftKey!==rightKey)return candidate;
+  }
+  return best;
+}
+function paperKnownExpr(total,difficulty,rng){
+  const candidates=[];
+  const a=randInt(rng,2,Math.max(2,total-2));candidates.push(`${total-a} + ${a}`);
+  const s=randInt(rng,2,difficulty==='easy'?10:18);candidates.push(`${total+s} − ${s}`);
+  if(difficulty!=='easy'){
+    const ds=divisors(total);if(ds.length){const d=choose(rng,ds);candidates.push(`${d} × ${total/d}`);}
+    const d=randInt(rng,2,difficulty==='challenge'?8:5);candidates.push(`${total*d} ÷ ${d}`);
+  }
+  return choose(rng,candidates);
+}
+function makePaperRow(weight,difficulty,style,rng,index){
+  const allowMul=style==='mixed'||(style==='auto'&&difficulty!=='easy'),modes=['add_after','add_before','subtract'];
+  if(allowMul)modes.push('multiply');
+  if(difficulty==='challenge'&&weight>=6)modes.push('divide');
+  let mode=modes[index%modes.length],target,blank;
+  if(mode==='multiply'){
+    const m=randInt(rng,2,difficulty==='challenge'?6:4);target=weight*m;blank=(index%2?`□ × ${m}`:`${m} × □`);
+  }else if(mode==='divide'){
+    const divis=[2,3,4,5].filter(d=>weight%d===0&&weight/d>=2);
+    if(divis.length){const d=choose(rng,divis);target=weight/d;blank=`□ ÷ ${d}`;}else mode='add_after';
+  }
+  if(mode==='add_after'){
+    const k=randInt(rng,2,difficulty==='easy'?10:15);target=weight+k;blank=`${k} + □`;
+  }else if(mode==='add_before'){
+    const k=randInt(rng,2,difficulty==='easy'?10:15);target=weight+k;blank=`□ + ${k}`;
+  }else if(mode==='subtract'){
+    target=randInt(rng,Math.max(5,Math.ceil(weight/2)),difficulty==='challenge'?35:25);blank=`${target+weight} − □`;
+  }
+  const known=paperKnownExpr(target,difficulty,rng),swap=(index%4===3)||(rng()<.28),left=swap?known:blank,right=swap?blank:known,display=`${left} = ${right}`;
+  return {display,answer:weight,solution:display.replace('□',String(weight)),balancedValue:target,weightValue:weight,weightLabel:'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[index]||String(index+1)};
+}
+function generatePaperBalanceLab(c,seed){
+  const rng=rngFromSeed(`${seed}:balance-lab-paper-v194`),final=paperFinalWeights(c.difficulty,rng),rows=final.weights.map((v,i)=>makePaperRow(v,c.difficulty,c.style,rng,i));
+  return {rows,finalChallenge:final,instruction:'Find the four weight values, then use A, B, C and D exactly once to make the final scale balance.',version:'1.94'};
+}
 function generateBalanceLab(settings,seed){
   const raw=settings?.engineSettings?.balance||{},c=normalise(raw),rng=rngFromSeed(`${seed}:balance-lab-v192`),n=rowCount(c),final=finalWeights(n,c.difficulty,rng);
   const rows=final.weights.map((v,i)=>makeRow(v,c.difficulty,c.style,rng,i));
   return {
     engineId:'balance',title:'Balance Lab',difficulty:c.difficulty,rows,
     finalChallenge:{...final,instruction:'Use every collected weight once. Split them between the two pans so both totals are equal.'},
+    paper:generatePaperBalanceLab(c,seed),
     instruction:'Balance each equation to collect its weight. Then use every weight in the Final Balance.',seed,options:c,balanceLabVersion:'1.92'
   };
 }
