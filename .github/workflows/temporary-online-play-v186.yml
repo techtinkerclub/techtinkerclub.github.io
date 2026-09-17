@@ -1,0 +1,33 @@
+name: Online Play v1.86 checks
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check assets/99club/games-play-final-catalogue-v186.js
+          node --check assets/99club/games-play-share-codec-v156.js
+          node --check assets/99club/games-play-library-v4.js
+          node --check assets/99club/tests/games-play-final-catalogue-v186-smoke.js
+      - name: Generator and adapter smoke tests
+        run: node assets/99club/tests/games-play-final-catalogue-v186-smoke.js
+      - name: Integration guards
+        run: |
+          grep -q 'games-play-final-catalogue-v186.css?v=1' _pages/99-club-games-play.md
+          grep -q 'games-play-final-catalogue-v186.js?v=1' _pages/99-club-games-play.md
+          grep -q "symbols:'v'" assets/99club/games-play-share-codec-v156.js
+          grep -q "functionmachine:'w'" assets/99club/games-play-share-codec-v156.js
+          grep -q "balance:'x'" assets/99club/games-play-share-codec-v156.js
+          grep -q "crossword:'y'" assets/99club/games-play-share-codec-v156.js
+          ! grep -q '96vw' assets/99club/games-play-final-catalogue-v186.css
+          grep -q 'v1.86 — Online Play catalogue completion wave' docs/99club/GAMES.md
