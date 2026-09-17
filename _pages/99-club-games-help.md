@@ -125,8 +125,8 @@ sitemap: true
         <section id="game-guides" class="tt99-guide-section tt99-guide-highlight">
           <h2>How to play every game</h2>
           <div class="tt99-game-guide-intro">
-            <p>This searchable library covers all <strong>33 current one-player games</strong>. Open any game for a pupil-friendly guide with the goal, rules, a concrete example, solving strategy, tip and common mistake. Each guide can also be printed as a clean A4 reference sheet.</p>
-            <span class="tt99-game-guide-count" aria-label="33 game guides">33</span>
+            <p>This searchable library covers all <strong>35 current one-player games</strong>. Open any game for a pupil-friendly guide with the goal, rules, a concrete example, solving strategy, tip and common mistake. Each guide can also be printed as a clean A4 reference sheet.</p>
+            <span class="tt99-game-guide-count" aria-label="35 game guides">35</span>
           </div>
           <div class="tt99-guide-note"><strong>The guides are static reference material.</strong> Opening or printing one cannot change the puzzle currently selected on the Games page.</div>
           <div id="tt99-game-guide-root"><noscript>Enable JavaScript to search and open the individual game guides.</noscript></div>
@@ -148,5 +148,5 @@ sitemap: true
   </article>
 </div>
 
-<script src="/assets/99club/games-help-guides.js?v=1.1.0" defer></script>
+<script src="/assets/99club/games-help-guides.js?v=1.2.0" defer></script>
 <script src="/assets/99club/games-help-operationgrid-v153.js?v=1" defer></script>
