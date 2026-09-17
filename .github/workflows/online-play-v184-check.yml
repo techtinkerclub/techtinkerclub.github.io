@@ -1,0 +1,28 @@
+name: Online Play v1.84 checks
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check assets/99club/games-play-arithmetic-wave-v184.js
+          node --check assets/99club/games-play-share-codec-v156.js
+          node --check assets/99club/games-play-library-v4.js
+          node --check assets/99club/tests/games-play-arithmetic-wave-v184-smoke.js
+      - name: Arithmetic wave smoke tests
+        run: node assets/99club/tests/games-play-arithmetic-wave-v184-smoke.js
+      - name: Integration guards
+        run: |
+          grep -q 'games-play-arithmetic-wave-v184.css?v=1' _pages/99-club-games-play.md
+          grep -q 'games-play-arithmetic-wave-v184.js?v=1' _pages/99-club-games-play.md
+          ! grep -q '96vw' assets/99club/games-play-arithmetic-wave-v184.css
