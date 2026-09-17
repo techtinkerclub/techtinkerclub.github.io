@@ -30,7 +30,7 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - Sumplete / Cross-Out Sums
 
 ### Algebra & relationships
-- Symbol Equations
+- Symbol Equations (Online Play presents this as **Symbol Decoder**)
 - Function Machines
 - Equation Repair (engine id remains `balance`)
 - Word Codes / Alphametics
@@ -114,6 +114,16 @@ This file is the source of truth for the Games & Puzzles roadmap. Historical bac
 - `Check` marks only pupil-entered work; `Hint` identifies a useful equation, row or clue and gives a strategy without inserting an answer or letter.
 - All four support Relaxed/Challenge modes, Undo, Redo, Reset, completion, personal bests and compact reproducible challenge links.
 - `Arithmetic Domino Chain` remains deliberately excluded from the one-player Online Play catalogue because its intended use is a printable/cut-and-match classroom activity.
+
+### v1.88 — Symbol Decoder gameplay
+- Reworks the Online Play presentation of **Symbol Equations** into **Symbol Decoder**, while leaving the printable Symbol Equations engine unchanged.
+- Each hidden symbol has a value from 1–26. Correct values use an A1Z26 mapping (`1=A`, `2=B`, …, `26=Z`) to reveal letters in a coded word.
+- Repeated letters reuse the same symbol, so one successful deduction can reveal several positions in the final message at once.
+- The clue set is generated as a solvable chain: the first clue exposes one symbol, then later clues use already-solvable symbols to unlock the next. Standard and Challenge can introduce coefficients while preserving a clear deduction path.
+- The secret-word pool combines the existing 591-entry UK-primary maths vocabulary catalogue with a separate curated primary-science bank. Online settings allow Maths, Science or mixed STEM words.
+- Easy uses shorter words with fewer distinct symbols; Standard increases the word length and symbol count; Challenge uses longer words, more distinct symbols and coefficient-based clues.
+- Correct symbol values reveal immediately in the coded message. The finished puzzle reveals the full word plus its curriculum-friendly definition, giving the algebra a visible payoff rather than ending at the numeric values.
+- The game keeps the shared non-native numeric keypad, Relaxed/Challenge modes, Check, Hint, Undo, Redo, Reset, completion, personal-best and reproducible challenge-link behaviour.
 
 ## Curriculum mapping principle
 
