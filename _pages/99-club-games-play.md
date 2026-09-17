@@ -95,6 +95,7 @@ sitemap: true
 <script src="/assets/99club/games-play-number-structures-v174-fix.js?v=2"></script>
 <script src="/assets/99club/games-play-arithmagon-v178.js?v=1"></script>
 <script src="/assets/99club/games-play-arithmetic-wave-v184.js?v=1"></script>
+<script src="/assets/99club/games-play-equationcrossgrid-v185.js?v=1"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=5"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
 <script src="/assets/99club/games-play-completion-preview-v1.js?v=3"></script>
