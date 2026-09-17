@@ -1,0 +1,61 @@
+/* 99 Club Studio · Colour Logic + Mobile Balance corrections v1.97 */
+
+/* Colour Logic: fill the entire selected box, keeping the letter as a
+   non-colour accessibility cue. */
+.tt99-cl-row button.has-colour,
+.tt99-cl-grid button.has-colour{
+  background:var(--cl);
+  border-color:#6f8f91;
+}
+.tt99-cl-row button.has-colour b,
+.tt99-cl-grid button.has-colour b{
+  width:100%;
+  height:100%;
+  border-radius:inherit;
+  background:transparent;
+  color:#fff;
+  opacity:1;
+  text-shadow:0 1px 2px rgba(0,0,0,.32);
+  font-size:clamp(1rem,3.3vw,1.28rem);
+}
+.tt99-cl-row button.has-colour small{
+  color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.42);
+}
+.tt99-cl-row button.has-colour.is-wrong,
+.tt99-cl-grid button.has-colour.is-wrong{
+  background:var(--cl);
+  box-shadow:inset 0 0 0 4px #b64d3c;
+}
+
+/* Mobile Balance: the v1.97 renderer moves a complete subtree as one SVG group,
+   so bars, strings and hanging shapes stay connected during the tilt. */
+.tt99-mobile-total-note{
+  margin:2px 8px 7px;
+  text-align:center;
+  color:#526f73;
+  font-size:.73rem;
+  line-height:1.35;
+  font-weight:750;
+}
+.tt99-mobile-svg .tt99-mobile-pivot{
+  fill:#f7fbfb;
+  stroke:#607e82;
+  stroke-width:2;
+}
+.tt99-mobile-svg .tt99-mobile-subtree,
+.tt99-mobile-svg .tt99-mobile-leaf{
+  transform-box:view-box;
+}
+
+/* Printable HTML preview: larger grids/text and a more generous mobile. */
+.tt99-cl-paper-grid{width:min(300px,58%)}
+.tt99-cl-print-rules{font-size:.7rem;line-height:1.35;gap:4px}
+.tt99-cl-print-key span{font-size:.64rem}
+.tt99-mobilebalance-print .tt99-mobile-paper-wrap{grid-template-columns:minmax(0,1fr) 170px;gap:16px}
+.tt99-mobile-paper-svg{max-height:220px}
+.tt99-mobile-paper-values span{font-size:.7rem;padding:6px 8px}
+
+@media(max-width:700px){
+  .tt99-mobile-total-note{font-size:.7rem}
+}
