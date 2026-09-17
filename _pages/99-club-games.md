@@ -32,6 +32,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-symbol-decoder-v189.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-balance-lab-v192.css?v=4">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v196.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-new-puzzles-v197-fix.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-shikaku-v143.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-sum-grids-v147.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-focus-topics-v145.css?v=1">
@@ -89,6 +90,7 @@ sitemap: true
 <script src="/assets/99club/games-pdf-v155.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v158.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v160.js?v=1"></script>
+<script src="/assets/99club/games-pdf-new-puzzles-v197.js?v=1"></script>
 <script src="/assets/99club/games-layout-v1321.js?v=2"></script>
 <script src="/assets/99club/games-app.js?v=27" defer></script>
 <script src="/assets/99club/games-operationgrid-print-v158-ui.js?v=1" defer></script>
