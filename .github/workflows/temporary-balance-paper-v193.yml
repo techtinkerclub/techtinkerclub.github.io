@@ -18,110 +18,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Patch printable Balance Lab
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          app=Path('assets/99club/games-app.js')
-          t=app.read_text()
-          pat=r"  function renderBalance\(a,answers,index,si,ai\)\{.*?\n\n  function logicHead"
-          new=r'''  function renderBalance(a,answers,index,si,ai){
-    const f=a.finalChallenge||{},labels='ABCDEFGHIJKLMNOPQRSTUVWXYZ',label=i=>labels[i]||String(i+1),side=s=>a.rows.map((r,i)=>({r,i})).filter(x=>f.solutionSides?.[x.i]===s),cardValue=(r,i)=>answers?esc(r.balancedValue):'____',cards=a.rows.map((r,i)=>`<div class="tt99-balance-print-card"><div class="tt99-balance-print-card-title"><small>Weight ${label(i)}</small><span>Balance ${i+1}</span></div><div class="tt99-balance-print-eq">${esc(answers?r.solution:r.display)}</div><div class="tt99-balance-print-weight-token"><i>${label(i)}</i><span>balanced value</span><b>${cardValue(r,i)}</b></div></div>`).join(''),left=side('L'),right=side('R'),pan=(name,items)=>answers?`<div class="tt99-balance-paper-pan ${name.toLowerCase()}"><small>${name} pan</small><div class="tt99-balance-paper-pan-bowl">${items.map(x=>`<span><b>${label(x.i)}</b><em>${esc(x.r.balancedValue)}</em></span>`).join('')}</div><strong>Total ${esc(f.target)}</strong></div>`:`<div class="tt99-balance-paper-pan ${name.toLowerCase()}"><small>${name} pan</small><div class="tt99-balance-paper-pan-bowl"><span class="write-line">Write weight letters here</span></div><strong>Total ______</strong></div>`,bank=a.rows.map((r,i)=>`<span><b>${label(i)}</b>${answers?`<em>${esc(r.balancedValue)}</em>`:''}</span>`).join(''),final=`<div class="tt99-balance-print-final"><small>${answers?'Final balance · example solution':'Final balance'}</small><p>${answers?'One valid way to use every weight exactly once:':'Use every weight exactly once. Write each weight letter on a pan, then add the values. The totals must match.'}</p><div class="tt99-balance-print-bank"><strong>Weights</strong>${bank}</div><div class="tt99-balance-paper-scale">${pan('Left',left)}<div class="tt99-balance-paper-centre"><span class="beam"></span><span class="stand">▲</span><b>=</b></div>${pan('Right',right)}</div>${answers?`<div class="tt99-balance-paper-proof">${left.map(x=>label(x.i)).join(' + ')} = ${right.map(x=>label(x.i)).join(' + ')} &nbsp; · &nbsp; ${esc(f.target)} = ${esc(f.target)}</div>`:''}</div>`;
-    return `<section class="tt99-game-activity tt99-balance tt99-balance-lab-print">${activityReplaceButton(si,ai)}${arithmeticHead({...a,instruction:'Balance each equation. The value both sides equal becomes that weight. Record it, then use every weight once on the final scale.'},index)}<div class="tt99-balance-print-list">${cards}</div>${final}</section>`;
-  }
-
-  function logicHead'''
-          t2,n=re.subn(pat,new,t,count=1,flags=re.S)
-          if n!=1: raise SystemExit(f'app renderBalance replacement count {n}')
-          app.write_text(t2)
-
-          pdf=Path('assets/99club/games-pdf.js')
-          t=pdf.read_text()
-          pat=r"  function drawBalance\(page,a,answers,x,y,w,h,index\)\{.*?\n  \}\n\n\n  function drawKakuro"
-          new=r'''  function drawBalance(page,a,answers,x,y,w,h,index){
-    const labels='ABCDEFGHIJKLMNOPQRSTUVWXYZ',label=i=>labels[i]||String(i+1),f=a.finalChallenge||{},top=activityFrame(page,x,y,w,h,index,{...a,title:'Balance Lab'});
-    drawWrapped(page,x+12,top,'Balance each equation. The value both sides equal becomes that weight. Record it, then use every weight once on the final scale.',w-24,6.15,{color:MUTED,maxLines:2});
-    const cols=2,rowCount=Math.ceil(a.rows.length/cols),bodyY=top+31,finalH=105,gapX=7,gapY=6,cardW=(w-30-gapX)/2,available=h-(bodyY-y)-finalH-7,cardH=Math.max(34,Math.min(48,(available-gapY*(rowCount-1))/Math.max(1,rowCount)));
-    function weightShape(cx,cy,lab,value,filled){
-      const ww=42,hh=24,neck=5,Y=page.height;
-      rawPath(page,[`${pdfN(cx-ww*.35)} ${pdfN(Y-(cy-hh/2))} m`,`${pdfN(cx+ww*.35)} ${pdfN(Y-(cy-hh/2))} l`,`${pdfN(cx+ww/2)} ${pdfN(Y-(cy+hh/2))} l`,`${pdfN(cx-ww/2)} ${pdfN(Y-(cy+hh/2))} l`,'h'],{fill:filled?HIT:WHITE,stroke:[94,151,144],width:.8});
-      drawRoundRect(page,cx-10,cy-hh/2-neck,20,neck+2,2,{fill:filled?HIT:WHITE,stroke:[94,151,144],width:.8});
-      page.text(cx-ww/2+4,cy+3,lab,5.5,{bold:true,color:TEAL});
-      if(filled)diagramText(page,cx+5,cy+4,formatNumber(value),7.2,{bold:true,color:TEAL});
-      else page.line(cx-4,cy+6,cx+15,cy+6,{color:[106,141,141],width:.65});
-    }
-    a.rows.forEach((r,i)=>{const rr=Math.floor(i/cols),cc=i%cols,cx=x+15+cc*(cardW+gapX),cy=bodyY+rr*(cardH+gapY);drawRoundRect(page,cx,cy,cardW,cardH,6,{fill:WHITE,stroke:[207,224,223],width:.65});page.text(cx+7,cy+10,`WEIGHT ${label(i)}`,5,{bold:true,color:MUTED});page.text(cx+cardW-7,cy+10,`Balance ${i+1}`,4.5,{color:MUTED,align:'right'});fitDiagramText(page,cx+cardW*.46,cy+cardH*.58,clean(answers?r.solution:r.display),cardW-62,7.1,{bold:true,color:answers?TEAL:INK});weightShape(cx+cardW-31,cy+cardH*.58,label(i),r.balancedValue,answers);});
-    const fy=y+h-finalH+4;drawRoundRect(page,x+15,fy,w-30,finalH-9,7,{fill:answers?[248,252,251]:[245,250,249],stroke:[178,207,203],width:.75});page.text(x+w/2,fy+11,answers?'FINAL BALANCE - EXAMPLE SOLUTION':'FINAL BALANCE',5.4,{bold:true,color:MUTED,align:'center'});page.text(x+w/2,fy+23,answers?'One valid way to use every weight exactly once:':'Write each weight letter on a pan, then add the values. Both totals must match.',5.2,{color:DARK,align:'center'});
-    const bankY=fy+33,bankStart=x+w/2-(a.rows.length*31)/2;page.text(bankStart-37,bankY+10,'WEIGHTS',4.6,{bold:true,color:MUTED});a.rows.forEach((r,i)=>{const bx=bankStart+i*31;drawRoundRect(page,bx,bankY,25,18,4,{fill:answers?HIT:WHITE,stroke:[124,166,161],width:.6});page.text(bx+5,bankY+12,label(i),5.2,{bold:true,color:TEAL});if(answers)page.text(bx+20,bankY+12,formatNumber(r.balancedValue),5.2,{bold:true,color:TEAL,align:'right'});});
-    const scaleY=fy+57,centre=x+w/2,beamY=scaleY+13,beamHalf=Math.min(72,w*.18),panW=Math.min(112,w*.27),panTop=scaleY+34;
-    page.line(centre-beamHalf,beamY,centre+beamHalf,beamY,{color:[105,137,139],width:2.2});
-    rawPath(page,[`${pdfN(centre)} ${pdfN(page.height-(beamY+2))} m`,`${pdfN(centre-13)} ${pdfN(page.height-(panTop+19))} l`,`${pdfN(centre+13)} ${pdfN(page.height-(panTop+19))} l`,'h'],{fill:[120,148,150],stroke:[120,148,150],width:.5});
-    function drawPan(cx,side){const attach=side==='L'?centre-beamHalf:centre+beamHalf,items=a.rows.map((r,i)=>({r,i})).filter(z=>f.solutionSides?.[z.i]===side);page.line(attach,beamY,attach-22,panTop-3,{color:[128,153,154],width:.7});page.line(attach,beamY,attach+22,panTop-3,{color:[128,153,154],width:.7});rawPath(page,[`${pdfN(cx-panW/2)} ${pdfN(page.height-panTop)} m`,`${pdfN(cx+panW/2)} ${pdfN(page.height-panTop)} l`,`${pdfN(cx+panW*.38)} ${pdfN(page.height-(panTop+15))} l`,`${pdfN(cx-panW*.38)} ${pdfN(page.height-(panTop+15))} l`,'h'],{fill:WHITE,stroke:[112,148,149],width:1});page.text(cx,panTop+11,side==='L'?'LEFT PAN':'RIGHT PAN',4.3,{bold:true,color:MUTED,align:'center'});if(answers){const txt=items.map(z=>`${label(z.i)}(${formatNumber(z.r.balancedValue)})`).join(' + ');fitDiagramText(page,cx,panTop+26,txt,panW-5,5.6,{bold:true,color:TEAL});page.text(cx,panTop+39,`TOTAL ${formatNumber(f.target)}`,5.5,{bold:true,color:DARK,align:'center'});}else{page.text(cx,panTop+27,'Weight letters: __________',5,{color:DARK,align:'center'});page.text(cx,panTop+40,'TOTAL ______',5.5,{bold:true,color:DARK,align:'center'});}}
-    drawPan(centre-beamHalf,'L');drawPan(centre+beamHalf,'R');page.text(centre,panTop+31,'=',9,{bold:true,color:TEAL,align:'center'});
-  }
-
-
-  function drawKakuro'''
-          t2,n=re.subn(pat,new,t,count=1,flags=re.S)
-          if n!=1: raise SystemExit(f'pdf drawBalance replacement count {n}')
-          pdf.write_text(t2)
-
-          css=Path('assets/99club/games-balance-lab-v192.css')
-          t=css.read_text()
-          marker='/* Printable/browser preview */'
-          if marker not in t: raise SystemExit('balance css marker missing')
-          head=t.split(marker)[0]
-          tail=r'''/* Printable/browser preview · v1.93 */
-.tt99-balance-lab-print .tt99-balance-print-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}
-.tt99-balance-lab-print .tt99-balance-print-card{display:grid;grid-template-columns:minmax(0,1fr) 74px;grid-template-areas:"title token" "eq token";gap:5px 8px;align-items:center;padding:8px 9px;border:1px solid #d5e3e2;border-radius:9px;background:#fff}
-.tt99-balance-print-card-title{grid-area:title;display:flex;justify-content:space-between;gap:8px;align-items:center}.tt99-balance-print-card-title small{font-size:.57rem;font-weight:900;color:#597579;text-transform:uppercase;letter-spacing:.05em}.tt99-balance-print-card-title span{font-size:.52rem;color:#829396}.tt99-balance-lab-print .tt99-balance-print-eq{grid-area:eq;text-align:center;color:#294f54;font-weight:900;font-size:.82rem}
-.tt99-balance-print-weight-token{grid-area:token;justify-self:end;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"letter note" "letter value";align-items:center;min-width:66px;padding:5px 7px 6px;clip-path:polygon(20% 0,80% 0,100% 100%,0 100%);border:1px solid #7fa9a4;background:#f8fcfb;color:#176f67}.tt99-balance-print-weight-token i{grid-area:letter;font-style:normal;font-size:.8rem;font-weight:950}.tt99-balance-print-weight-token span{grid-area:note;font-size:.43rem;text-transform:uppercase;letter-spacing:.04em;color:#71878a}.tt99-balance-print-weight-token b{grid-area:value;border-bottom:1px solid #789c99;min-width:35px;text-align:center;font-size:.72rem}
-.tt99-balance-print-final{margin-top:9px;padding:8px 10px;border:1px solid #c9dcda;border-radius:10px;background:#f5faf9;text-align:center}.tt99-balance-print-final>small{display:block;margin-bottom:3px;font-size:.57rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#687f82}.tt99-balance-print-final>p{margin:0 0 6px;color:#4f6c70;font-size:.61rem}.tt99-balance-print-bank{display:flex;justify-content:center;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:5px}.tt99-balance-print-bank>strong{font-size:.52rem;color:#71868a;text-transform:uppercase}.tt99-balance-print-bank>span{display:inline-flex;gap:4px;align-items:center;min-width:36px;padding:3px 6px;border:1px solid #9ebdb9;border-radius:6px;background:#fff}.tt99-balance-print-bank b{color:#176f67;font-size:.65rem}.tt99-balance-print-bank em{font-style:normal;color:#416468;font-size:.59rem}
-.tt99-balance-paper-scale{display:grid;grid-template-columns:1fr 70px 1fr;gap:5px;align-items:end}.tt99-balance-paper-pan{display:grid;gap:2px;align-content:end}.tt99-balance-paper-pan>small{font-size:.49rem;font-weight:900;color:#71868a;text-transform:uppercase}.tt99-balance-paper-pan-bowl{display:flex;justify-content:center;align-items:center;gap:4px;min-height:34px;padding:5px 7px;border:1px solid #9bb5b4;border-top:3px solid #77999a;border-radius:0 0 24px 24px;background:#fff}.tt99-balance-paper-pan-bowl span:not(.write-line){display:inline-grid;place-items:center;min-width:30px;padding:3px 4px;border:1px solid #99bdb7;border-radius:6px;background:#eef8f5}.tt99-balance-paper-pan-bowl span b{font-size:.56rem;color:#176f67}.tt99-balance-paper-pan-bowl span em{font-size:.5rem;font-style:normal;color:#48686b}.tt99-balance-paper-pan-bowl .write-line{font-size:.5rem;color:#71868a;border-bottom:1px solid #9aafaf;min-width:80%}.tt99-balance-paper-pan>strong{font-size:.56rem;color:#385d61}.tt99-balance-paper-centre{position:relative;height:51px;display:grid;place-items:end center}.tt99-balance-paper-centre .beam{position:absolute;top:7px;width:68px;height:3px;border-radius:99px;background:#78999a}.tt99-balance-paper-centre .stand{font-size:1.7rem;line-height:1;color:#78999a}.tt99-balance-paper-centre>b{position:absolute;bottom:3px;color:#176f67}.tt99-balance-paper-proof{margin-top:4px;font-size:.54rem;font-weight:800;color:#176f67}
-@media(max-width:620px){.tt99-balance-lab-list{grid-template-columns:1fr}.tt99-balance-scale{grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr)}.tt99-balance-beam{width:66px}.tt99-balance-equation{grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr)}.tt99-balance-lab-print .tt99-balance-print-list{grid-template-columns:1fr}.tt99-balance-paper-scale{grid-template-columns:1fr 55px 1fr}}
-@media print{.tt99-balance-print-final{background:#fff}.tt99-balance-lab-print .tt99-balance-print-card{break-inside:avoid}}
-'''
-          css.write_text(head+tail)
-
-          page=Path('_pages/99-club-games.md')
-          t=page.read_text()
-          for old,new in [('games-balance-lab-v192.css?v=1','games-balance-lab-v192.css?v=2'),('games-pdf.js?v=23','games-pdf.js?v=24'),('games-app.js?v=24','games-app.js?v=25')]:
-              if old not in t: raise SystemExit(f'cache anchor missing: {old}')
-              t=t.replace(old,new,1)
-          page.write_text(t)
-          PY
-      - name: Validate generation and PDF
+      - name: Apply printable redesign
+        run: python assets/99club/tests/apply-balance-paper-v193.py
+      - name: Validate JavaScript
         run: |
           node --check assets/99club/games-app.js
           node --check assets/99club/games-pdf.js
           node --check assets/99club/games-balance-lab-v192.js
-          node - <<'NODE'
-          require('./assets/99club/simple-pdf.js');
-          require('./assets/99club/games-vocabulary.js');
-          require('./assets/99club/games-arithmetic.js');
-          require('./assets/99club/games-balance-lab-v192.js');
-          require('./assets/99club/games-number-logic.js');
-          require('./assets/99club/games-engine.js');
-          require('./assets/99club/games-puzzle-redesign-v135-logic.js');
-          require('./assets/99club/games-pdf.js');
-          require('./assets/99club/games-pdf-v136.js');
-          const G=global.TT99Games,PDF=global.TT99GamesPDF,fs=require('fs');
-          for(const difficulty of ['easy','standard','challenge']){
-            const settings=G.normalizeSettings({minYear:4,maxYear:6,topics:['calculation','algebra'],sheets:1,activitiesPerSheet:1,selectedEngines:['balance'],includeAnswers:true,engineSettings:{balance:{difficulty,rowCount:'auto',style:'auto'}}});
-            const pack=G.generatePack(settings,`paper-v193-${difficulty}`);
-            const a=pack.sheets[0].activities[0];
-            if(!a.finalChallenge?.solutionSides||a.finalChallenge.solutionSides.length!==a.rows.length)throw new Error('missing final side mapping');
-            const doc=PDF.buildDocument({pack,settings:pack.settings,kind:'both',topics:G.TOPICS||{},seed:pack.seed});
-            const commands=doc.pages.flatMap(p=>p.cmds||[]).join('\n');
-            for(const marker of ['WEIGHT A','FINAL BALANCE','LEFT PAN','RIGHT PAN','TOTAL']) if(!commands.includes(marker))throw new Error(`missing ${marker}`);
-            if(commands.includes('REPAIR TILES'))throw new Error('legacy repair overlay returned');
-            const bytes=doc.outputBytes();if(bytes.length<5000)throw new Error('PDF unexpectedly small');
-            fs.writeFileSync(`/tmp/balance-lab-${difficulty}.pdf`,Buffer.from(bytes));
-          }
-          console.log('Balance Lab paper v1.93 checks passed');
-          NODE
+      - name: Generate and validate sample PDFs
+        run: node assets/99club/tests/generate-balance-paper-v193.js
       - name: Upload sample PDF
         uses: actions/upload-artifact@v4
         with:
