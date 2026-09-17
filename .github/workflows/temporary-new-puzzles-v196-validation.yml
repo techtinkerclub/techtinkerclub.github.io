@@ -1,0 +1,64 @@
+name: Validate new puzzles v1.96
+
+on:
+  push:
+    branches: [ feat/colour-logic-mobile-balance-v196 ]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/colour-logic-mobile-balance-v196
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check assets/99club/games-new-puzzles-v196.js
+          node --check assets/99club/games-play-new-puzzles-v196.js
+          node --check assets/99club/games-app.js
+          node --check assets/99club/games-pdf.js
+      - name: Generator solver and PDF smoke tests
+        run: node assets/99club/tests/games-new-puzzles-v196-smoke.js
+      - name: Validate page wiring
+        run: |
+          grep -q 'games-new-puzzles-v196.css?v=1' _pages/99-club-games.md
+          grep -q 'games-new-puzzles-v196.js?v=1' _pages/99-club-games.md
+          grep -q 'games-new-puzzles-v196.css?v=1' _pages/99-club-games-play.md
+          grep -q 'games-new-puzzles-v196.js?v=1' _pages/99-club-games-play.md
+          grep -q 'games-play-new-puzzles-v196.js?v=1' _pages/99-club-games-play.md
+      - name: Generate focused printable samples
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),assert=require('assert');
+          require('./assets/99club/simple-pdf.js');
+          require('./assets/99club/games-vocabulary.js');
+          require('./assets/99club/games-arithmetic.js');
+          require('./assets/99club/games-new-puzzles-v196.js');
+          require('./assets/99club/games-number-logic.js');
+          require('./assets/99club/games-engine.js');
+          require('./assets/99club/games-puzzle-redesign-v135-logic.js');
+          require('./assets/99club/games-pdf.js');
+          require('./assets/99club/games-pdf-v136.js');
+          const G=global.TT99Games,PDF=global.TT99GamesPDF;
+          for(const [id,d,layout] of [['colourlogic','standard','row'],['colourlogic','challenge','grid'],['mobilebalance','standard','nested'],['mobilebalance','challenge','multiple']]){
+            const settings=G.normalizeSettings({minYear:4,maxYear:6,topics:['calculation','geometry','algebra'],sheets:1,activitiesPerSheet:2,selectedEngines:[id],includeAnswers:true,engineSettings:{[id]:{difficulty:d,layout}}});
+            const pack=G.generatePack(settings,`v196-${id}-${d}-${layout}`);
+            assert.equal(pack.sheets.length,1);assert.equal(pack.sheets[0].activities.length,2);
+            for(const a of pack.sheets[0].activities)assert(global.TT99ArithmeticGames.validate(a).ok);
+            const doc=PDF.buildDocument({pack,settings:pack.settings,kind:'both',topics:G.TOPICS,seed:pack.seed});
+            assert.equal(doc.pages.length,2);
+            const bytes=doc.outputBytes();assert(bytes.length>5000);
+            fs.writeFileSync(`/tmp/${id}-${d}-${layout}.pdf`,Buffer.from(bytes));
+          }
+          NODE
+      - name: Upload printable samples
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-puzzles-v196-pdf-samples-final
+          path: /tmp/*.pdf
