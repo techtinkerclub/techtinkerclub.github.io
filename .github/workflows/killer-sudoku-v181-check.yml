@@ -1,0 +1,31 @@
+name: Temporary Killer Sudoku v1.81 check
+
+on:
+  push:
+    branches:
+      - fix/killer-sudoku-cages-v181
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: JavaScript syntax
+        run: |
+          node --check assets/99club/games-play-killer-v1.js
+          node --check assets/99club/games-killer-cages-v181.js
+          node --check assets/99club/games-pdf-killer-v181.js
+      - name: Killer Sudoku presentation guards
+        run: |
+          grep -q 'border-top:1px solid var(--tt99-killer-cage)' assets/99club/games-killer-cages-v181.css
+          grep -q 'border-left:1px solid var(--tt99-killer-cage)' assets/99club/games-killer-cages-v181.css
+          ! grep -q 'dashed cage' assets/99club/games-play-killer-v1.js
+          grep -q "OLD='0.09 0.52 0.48 RG 1.05 w \[2 1.5\] 0 d'" assets/99club/games-pdf-killer-v181.js
+          grep -q "NEW='0.53 0.58 0.59 RG 0.65 w \[\] 0 d'" assets/99club/games-pdf-killer-v181.js
+          grep -q 'games-killer-cages-v181.css?v=1' _pages/99-club-games-play.md
+          grep -q 'games-killer-cages-v181.css?v=1' _pages/99-club-games.md
+          grep -q 'games-pdf-killer-v181.js?v=1' _pages/99-club-games.md
+          grep -q 'games-killer-cages-v181.js?v=1' _pages/99-club-games.md
