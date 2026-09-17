@@ -20,7 +20,8 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function normalise(raw={}){
   const difficulty=['easy','standard','challenge'].includes(raw.difficulty)?raw.difficulty:'standard';
   const validRows=['auto','4','5','6','8'];
-  return {difficulty,rowCount:validRows.includes(String(raw.rowCount))?String(raw.rowCount):'auto',style:['auto','number','expression'].includes(raw.style)?raw.style:'auto'};
+  const style=raw.style==='number'?'additive':raw.style==='expression'?'mixed':raw.style;
+  return {difficulty,rowCount:validRows.includes(String(raw.rowCount))?String(raw.rowCount):'auto',style:['auto','additive','mixed'].includes(style)?style:'auto'};
 }
 function rowCount(c){if(c.rowCount!=='auto')return Number(c.rowCount);return c.difficulty==='easy'?4:c.difficulty==='challenge'?6:4;}
 
@@ -51,17 +52,17 @@ function finalWeights(n,difficulty,rng){
   };
 }
 function divisors(target){const out=[];for(let d=2;d<=9;d++)if(target%d===0)out.push(d);return out;}
-function completeExpr(target,difficulty,rng){
+function completeExpr(target,difficulty,rng,allowMul){
   const candidates=[];
   const add=randInt(rng,2,Math.max(2,target-2));candidates.push(`${target-add} + ${add}`);
   const sub=randInt(rng,2,difficulty==='easy'?12:24);candidates.push(`${target+sub} − ${sub}`);
-  if(difficulty!=='easy'){
+  if(allowMul){
     const ds=divisors(target);if(ds.length){const d=choose(rng,ds);candidates.push(`${d} × ${target/d}`);}
     const d=randInt(rng,2,difficulty==='challenge'?9:6);candidates.push(`${target*d} ÷ ${d}`);
   }
   return choose(rng,candidates);
 }
-function blankExpr(target,difficulty,rng){
+function blankExpr(target,difficulty,rng,allowMul){
   const candidates=[];
   const k=randInt(rng,2,Math.max(2,Math.min(target-1,difficulty==='easy'?14:28)));
   candidates.push({text:`${target-k} + □`,answer:k});
@@ -69,22 +70,23 @@ function blankExpr(target,difficulty,rng){
   const sub=randInt(rng,2,difficulty==='easy'?12:24);
   candidates.push({text:`□ − ${sub}`,answer:target+sub});
   candidates.push({text:`${target+sub} − □`,answer:sub});
-  if(difficulty!=='easy'){
+  if(allowMul){
     const ds=divisors(target);if(ds.length){const d=choose(rng,ds);candidates.push({text:`${d} × □`,answer:target/d});candidates.push({text:`□ × ${d}`,answer:target/d});}
     const d=randInt(rng,2,difficulty==='challenge'?9:6);candidates.push({text:`□ ÷ ${d}`,answer:target*d});
     if(difficulty==='challenge')candidates.push({text:`${target*d} ÷ □`,answer:d});
   }
   return choose(rng,candidates.filter(x=>Number.isFinite(x.answer)&&x.answer>=0&&Number.isInteger(x.answer)));
 }
-function makeRow(target,difficulty,rng,index){
-  const blank=blankExpr(target,difficulty,rng),known=completeExpr(target,difficulty,rng),swap=(index+rng())%2>1;
+function makeRow(target,difficulty,style,rng,index){
+  const allowMul=style==='mixed'||(style==='auto'&&difficulty!=='easy');
+  const blank=blankExpr(target,difficulty,rng,allowMul),known=completeExpr(target,difficulty,rng,allowMul),swap=(index+rng())%2>1;
   const left=swap?known:blank.text,right=swap?blank.text:known;
   const display=`${left} = ${right}`;
   return {display,answer:blank.answer,solution:display.replace('□',String(blank.answer)),balancedValue:target};
 }
 function generateBalanceLab(settings,seed){
   const raw=settings?.engineSettings?.balance||{},c=normalise(raw),rng=rngFromSeed(`${seed}:balance-lab-v192`),n=rowCount(c),final=finalWeights(n,c.difficulty,rng);
-  const rows=final.weights.map((v,i)=>makeRow(v,c.difficulty,rng,i));
+  const rows=final.weights.map((v,i)=>makeRow(v,c.difficulty,c.style,rng,i));
   return {
     engineId:'balance',title:'Balance Lab',difficulty:c.difficulty,rows,
     finalChallenge:{...final,instruction:'Use every collected weight once. Split them between the two pans so both totals are equal.'},
@@ -103,7 +105,7 @@ if(def){
   const rows=def.settingsSchema?.find(x=>x.id==='rowCount');
   if(rows)rows.options=[{value:'auto',label:'Auto for difficulty'},{value:'4',label:'4 balances'},{value:'5',label:'5 balances'},{value:'6',label:'6 balances'},{value:'8',label:'8 balances'}];
   const style=def.settingsSchema?.find(x=>x.id==='style');
-  if(style){style.label='Puzzle mix';style.options=[{value:'auto',label:'Mixed operations'},{value:'number',label:'Missing values'},{value:'expression',label:'Inverse-heavy'}];}
+  if(style){style.label='Operations';style.options=[{value:'auto',label:'Auto for difficulty'},{value:'additive',label:'Addition + subtraction'},{value:'mixed',label:'Mixed + − × ÷'}];}
   def.difficultyDescriptions={easy:'Four + / − balances, then split the collected weights',standard:'Operations on both sides plus a final weight balance',challenge:'Richer × / ÷ balances and a larger final partition'};
 }
 A.__balanceLabV192=true;
@@ -118,7 +120,7 @@ function appendDigit(cur,d){const s=cur==null?'':String(cur);return (s==='0'?Str
 function backspace(cur){const s=cur==null?'':String(cur);return s.length>1?s.slice(0,-1):null;}
 function selectOptions(root,c,onChange){
   c=normalise(c);
-  root.innerHTML=`<label><span>Difficulty</span><select data-bl-opt="difficulty">${['easy','standard','challenge'].map(v=>`<option value="${v}" ${c.difficulty===v?'selected':''}>${v[0].toUpperCase()+v.slice(1)}</option>`).join('')}</select></label><label><span>Balances</span><select data-bl-opt="rowCount">${[['auto','Auto'],['4','4'],['5','5'],['6','6'],['8','8']].map(([v,l])=>`<option value="${v}" ${c.rowCount===v?'selected':''}>${l}</option>`).join('')}</select></label>`;
+  root.innerHTML=`<label><span>Difficulty</span><select data-bl-opt="difficulty">${['easy','standard','challenge'].map(v=>`<option value="${v}" ${c.difficulty===v?'selected':''}>${v[0].toUpperCase()+v.slice(1)}</option>`).join('')}</select></label><label><span>Balances</span><select data-bl-opt="rowCount">${[['auto','Auto'],['4','4'],['5','5'],['6','6'],['8','8']].map(([v,l])=>`<option value="${v}" ${c.rowCount===v?'selected':''}>${l}</option>`).join('')}</select></label><label><span>Operations</span><select data-bl-opt="style"><option value="auto" ${c.style==='auto'?'selected':''}>Auto</option><option value="additive" ${c.style==='additive'?'selected':''}>+ and −</option><option value="mixed" ${c.style==='mixed'?'selected':''}>+ − × ÷</option></select></label>`;
   root.querySelectorAll('[data-bl-opt]').forEach(el=>el.addEventListener('change',()=>onChange(normalise({...c,[el.dataset.blOpt]:el.value}))));
 }
 function mount(root,p,ctx){
@@ -156,5 +158,6 @@ function mount(root,p,ctx){
   render();return {snapshot,restore,emptySnapshot,progress,check,hint:hintFn,setFinished,destroy};
 }
 
+adapter.normalizeConfig=normalise;adapter.fromQuery=q=>({difficulty:q.get('d')||undefined,rowCount:q.get('rc')||undefined,style:q.get('s')||undefined});adapter.toQuery=c=>{c=normalise(c);return {d:c.difficulty,rc:c.rowCount,s:c.style};};adapter.recordKey=c=>{c=normalise(c);return `${c.difficulty}:${c.rowCount}:${c.style}:v192`;};adapter.createPuzzle=(c,seed)=>generateBalanceLab({minYear:c?.difficulty==='easy'?2:4,maxYear:6,topics:['calculation','algebra'],engineSettings:{balance:normalise(c)}},seed);
 adapter.title='Balance Lab';adapter.shortTitle='Balance Lab';adapter.icon='⚖';adapter.blurb='Balance equations, collect their common values, then use every weight to level the final scale.';adapter.completionTitle='Perfect balance';adapter.completeMessage='Every equation and the final scale are balanced.';adapter.startMessage='Balance the equations first. Correct answers unlock weights for the final challenge.';adapter.instruction='Make both sides of each equation equal. Each solved balance gives you a weight; use all the weights in the Final Balance.';adapter.howTitle='Solve → collect → balance';adapter.howText='Find the missing number so both sides have the same value. That common value becomes a weight. After all weights are collected, split them between the two pans so the totals match.';adapter.renderOptions=selectOptions;adapter.mount=mount;adapter.meta=(p,c)=>`${(c?.difficulty||p.difficulty||'standard').replace(/^./,x=>x.toUpperCase())} · ${p.rows.length} balances · final weight challenge`;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -159,3 +159,7 @@ Before an engine is called complete, check Easy/Standard/Challenge where applica
 ## Future candidates
 
 After the existing printable catalogue is fully represented in Online Play, the next expansion should be chosen from distinct mechanics rather than adding near-duplicates. Candidates retained for later evaluation include region sums/number partition, domino placement, honeycomb/hex puzzles, equation loops, factor/prime chains, fraction-match grids and coordinate treasure puzzles.
+
+
+### v1.92 — Balance Lab
+Balance the Equation now uses operations on both sides. Each solved equation yields its common balanced value as a weight; all weights feed a final equal-partition challenge. Online accepts any valid equal split; printable answers show an example solution.
