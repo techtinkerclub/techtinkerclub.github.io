@@ -6,20 +6,21 @@ sitemap: false
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>Opening 99 Club Studio challenge…</title>
-<style>html,body{margin:0;min-height:100%;font-family:system-ui,sans-serif;background:#f4faf8;color:#17484c}body{display:grid;place-items:center;padding:24px;box-sizing:border-box}.card{max-width:520px;text-align:center;padding:28px;border:1px solid #d5e6e3;border-radius:20px;background:#fff}.card strong{display:block;font-size:1.2rem;margin-bottom:8px}.card span{color:#708387}</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <title>99 Club Studio has moved</title>
+  <link rel="canonical" href="https://99studio.uk/c/">
+  <meta http-equiv="refresh" content="0; url=https://99studio.uk/c/">
+  <script>
+    (function(){
+      var target="https://99studio.uk/c/";
+      var suffix=(window.location.search||'')+(window.location.hash||'');
+      window.location.replace(target+suffix);
+    })();
+  </script>
 </head>
 <body>
-<div class="card"><strong>Opening your 99 Club Studio challenge…</strong><span>If nothing happens, return to 99 Club Studio and paste the challenge link again.</span></div>
-<script>
-(function(){
-  const q=new URLSearchParams(location.search),token=q.get('c');
-  if(!token){location.replace('/tools/99-club/games/play/');return;}
-  location.replace('/tools/99-club/games/play/?c='+encodeURIComponent(token));
-})();
-</script>
+  <p>99 Club Studio has moved to <a href="https://99studio.uk/c/">99studio.uk</a>.</p>
 </body>
 </html>

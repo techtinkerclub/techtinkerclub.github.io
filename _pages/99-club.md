@@ -1,23 +1,26 @@
 ---
-layout: default
-title: "99 Club Studio"
+layout: null
 permalink: /tools/99-club/
-sidebar: false
+sitemap: false
 ---
-
-<div id="main" class="tt99-page-main" role="main">
-  <article class="splash">
-    <section class="page__content">
-      <div id="tt99-root">
-        <noscript>This worksheet generator needs JavaScript enabled in your browser.</noscript>
-      </div>
-    </section>
-  </article>
-</div>
-
-<link rel="stylesheet" href="/assets/99club/99club.css?v=19.4">
-<script src="/assets/99club/generator.js?v=19.4"></script>
-<script src="/assets/99club/simple-pdf.js?v=19.4"></script>
-<script src="/assets/99club/pdf-layout.js?v=19.4"></script>
-<script src="/assets/99club/qr-lite.js?v=19.4"></script>
-<script src="/assets/99club/app.js?v=19.5" defer></script>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <title>99 Club Studio has moved</title>
+  <link rel="canonical" href="https://99studio.uk/">
+  <meta http-equiv="refresh" content="0; url=https://99studio.uk/">
+  <script>
+    (function(){
+      var target="https://99studio.uk/";
+      var suffix=(window.location.search||'')+(window.location.hash||'');
+      window.location.replace(target+suffix);
+    })();
+  </script>
+</head>
+<body>
+  <p>99 Club Studio has moved to <a href="https://99studio.uk/">99studio.uk</a>.</p>
+</body>
+</html>
