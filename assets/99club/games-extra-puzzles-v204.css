@@ -48,11 +48,11 @@
 }
 .tt99-extra-perimeter-controls{position:absolute;inset:0;z-index:4;pointer-events:none}
 .tt99-extra-perimeter-edge{position:absolute;appearance:none;border:0;background:transparent;padding:0;margin:0;pointer-events:auto;touch-action:none;cursor:pointer}
-.tt99-extra-perimeter-edge.v{top:calc(var(--r) * 100% / var(--n));left:calc(var(--c) * 100% / var(--n) - 13px);width:26px;height:calc(100% / var(--n))}
-.tt99-extra-perimeter-edge.h{left:calc(var(--c) * 100% / var(--n));top:calc(var(--r) * 100% / var(--n) - 13px);width:calc(100% / var(--n));height:26px}
+.tt99-extra-perimeter-edge.v{top:calc(var(--r) * 100% / var(--n));left:calc(var(--c) * 100% / var(--n) - 18px);width:36px;height:calc(100% / var(--n))}
+.tt99-extra-perimeter-edge.h{left:calc(var(--c) * 100% / var(--n));top:calc(var(--r) * 100% / var(--n) - 18px);width:calc(100% / var(--n));height:36px}
 .tt99-extra-perimeter-edge:before{content:"";position:absolute;border-radius:999px;background:transparent;transition:background .08s ease,box-shadow .08s ease}
-.tt99-extra-perimeter-edge.v:before{top:0;bottom:0;left:11px;width:4px}
-.tt99-extra-perimeter-edge.h:before{left:0;right:0;top:11px;height:4px}
+.tt99-extra-perimeter-edge.v:before{top:0;bottom:0;left:16px;width:4px}
+.tt99-extra-perimeter-edge.h:before{left:0;right:0;top:16px;height:4px}
 .tt99-extra-perimeter-edge:hover:before,.tt99-extra-perimeter-edge:focus-visible:before{background:#9bc9c6}
 .tt99-extra-perimeter-edge.is-on:before{background:#0f7770}
 .tt99-extra-perimeter-edge.wrong:before{background:#c9624c}
