@@ -183,7 +183,7 @@ if(!/multiplication and division before addition and subtraction/i.test(helpSrc)
 if(/brokencalc[^\n]+bracket/i.test(helpSrc))warn('help-guides','Broken Calculator guide still appears to mention brackets');
 
 const drawer=read('assets/99club/games-play-context-keypad-v201.js');
-const requiredDrawerSelectors=['data-conn-entry','data-trail-i','data-cg-key','data-machine','data-sym','data-mobile-answer','data-bl-answer','.tt99-number-keypad','.tt99-alpha-pad','.tt99-towers-keypad','.tt99-crossnumber-keypad','.tt99-letter-keypad','.tt99-extra-op-pad'];
+const requiredDrawerSelectors=['data-conn-entry','data-trail-i','data-cg-key','data-machine','data-sym','data-mobile-answer','data-bl-answer','data-entry','.tt99-number-keypad','.tt99-alpha-pad','.tt99-towers-keypad','.tt99-crossnumber-keypad','.tt99-letter-keypad','.tt99-extra-op-pad'];
 for(const s of requiredDrawerSelectors)if(!drawer.includes(s))fail('input-ux',`Unified keypad lost selector ${s}`);
 if(!drawer.includes('tt99-context-pad-handle'))fail('input-ux','Unified keypad drawer handle missing');
 if(!drawer.includes('tt99-context-pad-launcher'))fail('input-ux','Desktop keypad launcher missing');
