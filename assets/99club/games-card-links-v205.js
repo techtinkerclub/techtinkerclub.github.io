@@ -85,7 +85,7 @@ function enhanceCard(card){
   actions.className='tt99-engine-card-actions';
   actions.append(
     link('/tools/99-club/games/play/?game='+encodeURIComponent(id),'▶ Play online','is-play',id),
-    link('/tools/99-club/games/help/?guide='+encodeURIComponent(id),'? Guide','is-guide',id)
+    link('/tools/99-club/games/?worked='+encodeURIComponent(id),'? Guide','is-guide',id)
   );
   configure.insertAdjacentElement('beforebegin',actions);
   actions.appendChild(configure);
@@ -107,5 +107,5 @@ function schedule(){
 new MutationObserver(schedule).observe(root,{childList:true,subtree:true});
 schedule();
 
-global.TT99GameCardLinks={version:'2.05.2',ids:LINK_IDS.slice()};
+global.TT99GameCardLinks={version:'2.06.0',ids:LINK_IDS.slice()};
 })(typeof globalThis!=='undefined'?globalThis:this);
