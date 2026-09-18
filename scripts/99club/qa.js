@@ -219,6 +219,8 @@ for(const id of guideIds)if(!quickIds.includes(id))fail('game-card-links',`Guide
 if(!cardLinks.includes("target='_blank'")&&!cardLinks.includes("a.target='_blank'"))fail('game-card-links','Quick links do not open separately from the pack builder');
 if(!cardLinks.includes('/tools/99-club/games/play/?game='))fail('game-card-links','Per-game online-play URL missing');
 if(!cardLinks.includes('/tools/99-club/games/help/#guide-'))fail('game-card-links','Per-game guide URL missing');
+if(!cardLinks.includes('preventDefault()')||!cardLinks.includes('stopPropagation()'))fail('game-card-links','Quick-link click interception is missing');
+if(!cardLinks.includes("global.open(url,'_blank'"))fail('game-card-links','Quick links are not explicitly opened in a separate context');
 ok('game-card-links',`Selector quick links cover all ${adapterIds.length} online games / guides`);
 
 /* ---------- output ---------- */
