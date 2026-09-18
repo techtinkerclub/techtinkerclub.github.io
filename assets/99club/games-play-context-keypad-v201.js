@@ -37,7 +37,8 @@ const ENTRY_SELECTOR=[
   '.tt99-crossnumber-cell',
   '[data-cw]',
   '[data-cw-clue]',
-  '[data-slot]'
+  '[data-slot]',
+  '[data-entry]'
 ].join(',');
 
 let activePad=null;
