@@ -56,6 +56,23 @@ function link(href,label,kind,id){
   return a;
 }
 
+function openSeparateContext(url){
+  // Installed PWAs do not treat target="_blank" consistently. Handle the
+  // navigation ourselves so the pack-builder window is never also navigated.
+  global.open(url,'_blank','noopener,noreferrer');
+}
+
+function interceptQuicklink(e){
+  const a=e.target.closest?.('.tt99-engine-quicklink');
+  if(!a||!root.contains(a))return;
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation?.();
+  openSeparateContext(a.href);
+}
+
+root.addEventListener('click',interceptQuicklink,true);
+
 function enhanceCard(card){
   if(card.dataset.tt99Quicklinks==='1')return;
   const id=idForCard(card);
@@ -90,5 +107,5 @@ function schedule(){
 new MutationObserver(schedule).observe(root,{childList:true,subtree:true});
 schedule();
 
-global.TT99GameCardLinks={version:'2.05',ids:LINK_IDS.slice()};
+global.TT99GameCardLinks={version:'2.05.1',ids:LINK_IDS.slice()};
 })(typeof globalThis!=='undefined'?globalThis:this);
