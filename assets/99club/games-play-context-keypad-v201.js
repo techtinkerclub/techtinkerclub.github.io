@@ -47,6 +47,9 @@ let lastPointerType='';
 let observer=null;
 let manageQueued=false;
 let padId=0;
+let dragPos=null;
+let dragState=null;
+let suppressHandleClick=false;
 
 function board(){return document.getElementById('tt99-play-board');}
 function mq(q){try{return window.matchMedia(q).matches;}catch(_){return false;}}
@@ -94,10 +97,9 @@ function ensureHandle(pad){
   if(h)return h;
   h=document.createElement('div');
   h.className='tt99-context-pad-handle';
-  h.setAttribute('role','button');
-  h.setAttribute('tabindex','0');
-  h.setAttribute('aria-label',`Close ${padLabel(pad).toLowerCase()}`);
-  h.innerHTML='<span class="tt99-context-handle-bar" aria-hidden="true"></span><span class="tt99-context-handle-text">Close</span>';
+  h.setAttribute('role','toolbar');
+  h.setAttribute('aria-label',`${padLabel(pad)} controls`);
+  h.innerHTML='<span class="tt99-context-handle-bar" aria-hidden="true"></span><span class="tt99-context-handle-text">Keypad</span><button type="button" class="tt99-context-pad-reset" aria-label="Reset keypad position">↺</button><button type="button" class="tt99-context-pad-toggle" aria-label="Collapse keypad">⌄</button>';
   pad.insertBefore(h,pad.firstChild);
   return h;
 }
@@ -121,10 +123,12 @@ function setCollapsed(collapsed){
   if(!activePad)return;
   activePad.classList.toggle('tt99-context-pad-collapsed',!!collapsed);
   const h=ensureHandle(activePad);
-  h.setAttribute('aria-expanded',collapsed?'false':'true');
-  h.setAttribute('aria-label',collapsed?`Open ${padLabel(activePad).toLowerCase()}`:`Collapse ${padLabel(activePad).toLowerCase()}`);
-  const text=h.querySelector('.tt99-context-handle-text');
-  if(text)text.textContent=collapsed?'Open':'Close';
+  const toggle=h.querySelector('.tt99-context-pad-toggle');
+  if(toggle){
+    toggle.setAttribute('aria-expanded',collapsed?'false':'true');
+    toggle.setAttribute('aria-label',collapsed?'Open keypad':'Collapse keypad');
+    toggle.textContent=collapsed?'⌃':'⌄';
+  }
   setPadSpace();
   if(!collapsed)keepEntryVisible(activeEntry);
 }
@@ -159,13 +163,37 @@ function syncLauncher(){
 }
 function hidePad(){
   if(activePad){
-    activePad.classList.remove('tt99-context-pad-active','tt99-context-pad-collapsed');
+    activePad.classList.remove('tt99-context-pad-active','tt99-context-pad-collapsed','tt99-context-pad-dragging');
     activePad.setAttribute('aria-hidden','true');
   }
   activePad=null;
   activeEntry=null;
+  dragState=null;
   clearBoardSpace();
   syncLauncher();
+}
+function applyDragPosition(pad){
+  if(!pad)return;
+  const movable=window.innerWidth>760&&inputProfile()!=='touch';
+  pad.classList.toggle('tt99-context-pad-moved',!!dragPos&&movable);
+  if(dragPos&&movable){
+    pad.style.setProperty('--tt99-pad-x',Math.round(dragPos.x)+'px');
+    pad.style.setProperty('--tt99-pad-y',Math.round(dragPos.y)+'px');
+  }else{
+    pad.style.removeProperty('--tt99-pad-x');
+    pad.style.removeProperty('--tt99-pad-y');
+  }
+}
+function resetDragPosition(){
+  dragPos=null;
+  if(activePad)applyDragPosition(activePad);
+}
+function clampDragPosition(x,y,pad){
+  const r=pad.getBoundingClientRect(),margin=8;
+  return {
+    x:Math.max(margin,Math.min(window.innerWidth-r.width-margin,x)),
+    y:Math.max(margin,Math.min(window.innerHeight-r.height-margin,y))
+  };
 }
 function openPad(pad,entry){
   const b=board();
@@ -180,6 +208,7 @@ function openPad(pad,entry){
   pad.classList.add('tt99-context-pad-active');
   pad.classList.remove('tt99-context-pad-collapsed');
   pad.setAttribute('aria-hidden','false');
+  applyDragPosition(pad);
   b.classList.add('tt99-has-context-pad');
   syncLauncher();
   setPadSpace();
@@ -241,11 +270,17 @@ document.addEventListener('click',e=>{
     return;
   }
 
+  const reset=e.target.closest('.tt99-context-pad-reset');
+  if(reset&&activePad&&activePad.contains(reset)){
+    e.preventDefault();e.stopPropagation();resetDragPosition();return;
+  }
+  const toggle=e.target.closest('.tt99-context-pad-toggle');
+  if(toggle&&activePad&&activePad.contains(toggle)){
+    e.preventDefault();e.stopPropagation();setCollapsed(!activePad.classList.contains('tt99-context-pad-collapsed'));return;
+  }
   const handle=e.target.closest('.tt99-context-pad-handle');
-  if(handle&&activePad&&activePad.contains(handle)){
-    e.preventDefault();
-    setCollapsed(!activePad.classList.contains('tt99-context-pad-collapsed'));
-    return;
+  if(handle&&activePad&&activePad.contains(handle)&&suppressHandleClick){
+    e.preventDefault();suppressHandleClick=false;return;
   }
 
   if(e.target.closest(PAD_SELECTOR))return;
@@ -268,19 +303,56 @@ document.addEventListener('click',e=>{
 
 document.addEventListener('keydown',e=>{
   if(!activePad)return;
+  if(e.key==='Escape'){hidePad();return;}
   const h=e.target.closest?.('.tt99-context-pad-handle');
-  if(h&&(e.key==='Enter'||e.key===' ')){
-    e.preventDefault();
-    setCollapsed(!activePad.classList.contains('tt99-context-pad-collapsed'));
-  }else if(e.key==='Escape'){
-    hidePad();
-  }
+  if(!h||window.innerWidth<=760||inputProfile()==='touch')return;
+  const step=e.shiftKey?20:8;
+  const dir={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
+  if(!dir)return;
+  e.preventDefault();
+  const r=activePad.getBoundingClientRect();
+  const p=clampDragPosition(r.left+dir[0],r.top+dir[1],activePad);
+  dragPos=p;applyDragPosition(activePad);
 });
+
+document.addEventListener('pointerdown',e=>{
+  if(!activePad||window.innerWidth<=760||inputProfile()==='touch')return;
+  const h=e.target.closest?.('.tt99-context-pad-handle');
+  if(!h||!activePad.contains(h)||e.target.closest('button'))return;
+  const r=activePad.getBoundingClientRect();
+  dragState={pointerId:e.pointerId,dx:e.clientX-r.left,dy:e.clientY-r.top,startX:e.clientX,startY:e.clientY,moved:false};
+  activePad.classList.add('tt99-context-pad-dragging');
+  try{h.setPointerCapture?.(e.pointerId);}catch(_){}
+  e.preventDefault();
+},{capture:true});
+
+document.addEventListener('pointermove',e=>{
+  if(!dragState||!activePad||e.pointerId!==dragState.pointerId)return;
+  const moved=Math.hypot(e.clientX-dragState.startX,e.clientY-dragState.startY)>4;
+  dragState.moved=dragState.moved||moved;
+  const p=clampDragPosition(e.clientX-dragState.dx,e.clientY-dragState.dy,activePad);
+  dragPos=p;applyDragPosition(activePad);
+  e.preventDefault();
+},{capture:true});
+
+function finishDrag(e){
+  if(!dragState||e.pointerId!==dragState.pointerId)return;
+  suppressHandleClick=dragState.moved;
+  dragState=null;
+  activePad?.classList.remove('tt99-context-pad-dragging');
+}
+document.addEventListener('pointerup',finishDrag,{capture:true});
+document.addEventListener('pointercancel',finishDrag,{capture:true});
 
 window.addEventListener('resize',()=>{
   const b=board();
   if(b)b.dataset.tt99InputProfile=inputProfile();
   if(activePad){
+    if(dragPos&&window.innerWidth>760&&inputProfile()!=='touch'){
+      const r=activePad.getBoundingClientRect();
+      dragPos=clampDragPosition(r.left,r.top,activePad);
+    }
+    applyDragPosition(activePad);
     setPadSpace();
     keepEntryVisible(activeEntry);
   }
