@@ -80,6 +80,21 @@ function prepare(){
         view.destroy?.();host.remove();
       }catch(e){fail('colourlogic',(e&&e.stack)||String(e));}
     }
+    async function groupedLibraryTest(){
+      try{
+        const open=document.getElementById('tt99-play-change-game'),search=document.getElementById('tt99-play-library-search'),grid=document.getElementById('tt99-play-library-grid');
+        if(!open||!search||!grid)return fail('grouped-library','library controls missing');
+        open.click();await sleep(80);
+        let groups=[...grid.querySelectorAll('.tt99-play-library-group')];
+        if(groups.length<6)fail('grouped-library','expected six grouped sections, found '+groups.length);
+        search.value='Perimeter Regions';search.dispatchEvent(new Event('input',{bubbles:true}));await sleep(100);
+        const card=grid.querySelector('[data-game-id="perimeterregions"]'),parent=card?.closest('.tt99-play-library-group');
+        if(!card)fail('grouped-library','search did not retain Perimeter Regions');
+        else if(!parent?.open)fail('grouped-library','search result group did not open automatically');
+        else pass('grouped-library','accordion groups and cross-group search verified');
+        search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));await sleep(60);
+      }catch(e){fail('grouped-library',(e&&e.stack)||String(e));}
+    }
     async function drawerTest(){
       try{
         const P=window.TT99GamesPlay,a=P?.adapters?.get('numberwheels'),board=document.getElementById('tt99-play-board');if(!a||!board)return fail('mobile-drawer','Number Connections adapter or board missing');
@@ -96,7 +111,7 @@ function prepare(){
       }catch(e){fail('mobile-drawer',(e&&e.stack)||String(e));}
     }
     async function run(){
-      try{await sleep(500);await genericAdapterTests();await brokenCalcTest();await colourFillTest();await drawerTest();}
+      try{await sleep(500);await genericAdapterTests();await brokenCalcTest();await colourFillTest();await groupedLibraryTest();await drawerTest();}
       catch(e){fail('runner',(e&&e.stack)||String(e));}
       finally{finish();}
     }
