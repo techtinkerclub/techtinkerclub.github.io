@@ -61,7 +61,7 @@ jobs:
           node-version: '22'
       - name: Prepare browser harness
         run: node scripts/99club/browser-qa.js prepare
-      - name: Exercise online games at phone width
+      - name: Exercise online games at phone and desktop widths
         shell: bash
         run: |
           set -euo pipefail
@@ -74,10 +74,18 @@ jobs:
             echo 'No Chrome/Chromium executable is available on this runner.' >&2
             exit 1
           fi
+
           "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
             --window-size=390,844 --virtual-time-budget=120000 --dump-dom \
-            http://127.0.0.1:8765/99club-browser-qa.html > /tmp/99club-browser-dom.html
-          node scripts/99club/browser-qa.js check /tmp/99club-browser-dom.html
+            http://127.0.0.1:8765/99club-browser-qa.html > /tmp/99club-browser-phone.html
+          node scripts/99club/browser-qa.js check /tmp/99club-browser-phone.html
+          cp 99club-browser-qa-report.json 99club-browser-qa-phone-report.json
+
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
+            --window-size=1200,900 --virtual-time-budget=120000 --dump-dom \
+            http://127.0.0.1:8765/99club-browser-qa.html > /tmp/99club-browser-desktop.html
+          node scripts/99club/browser-qa.js check /tmp/99club-browser-desktop.html
+          cp 99club-browser-qa-report.json 99club-browser-qa-desktop-report.json
       - name: Compare runtime catalogue with help guides
         run: node scripts/99club/help-coverage.js
       - name: Upload browser QA report
@@ -85,5 +93,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 99club-browser-qa-report
-          path: 99club-browser-qa-report.json
+          path: |
+            99club-browser-qa-report.json
+            99club-browser-qa-phone-report.json
+            99club-browser-qa-desktop-report.json
           if-no-files-found: ignore
