@@ -202,6 +202,9 @@ ok('input-ux','Unified touch/desktop keypad contract checked');
 if(!read('assets/99club/games-play-core-v2.js').includes('tt99-play-hint-popup'))fail('hint-ux','Floating hint popup markup missing');
 if(!read('assets/99club/games-play-core-v2.js').includes('data-hint-drag'))fail('hint-ux','Draggable hint handle missing');
 if(!read('assets/99club/games-play-core-v2.js').includes('tt99-play-hint-popup-close'))fail('hint-ux','Hint close control missing');
+const helpGuideUi=read('assets/99club/games-help-guides.js');
+if(!helpGuideUi.includes('function directGuideId()')||!helpGuideUi.includes('tt99-game-guide-direct'))fail('help-guides','Focused direct guide mode missing');
+if(!helpGuideUi.includes('function visualExample(id)')||!helpGuideUi.includes('tt99-game-guide-example-visual'))fail('help-guides','Graphical worked examples missing from guide template');
 
 
 const packMode=read('assets/99club/games-pack-mode.js'),randomUi=read('assets/99club/games-random-ui.js'),gamesApp=read('assets/99club/games-app.js');
@@ -218,7 +221,7 @@ for(const id of adapterIds)if(!quickIds.includes(id))fail('game-card-links',`Onl
 for(const id of guideIds)if(!quickIds.includes(id))fail('game-card-links',`Guide missing selector quick-link mapping: ${id}`);
 if(!cardLinks.includes("target='_blank'")&&!cardLinks.includes("a.target='_blank'"))fail('game-card-links','Quick links do not open separately from the pack builder');
 if(!cardLinks.includes('/tools/99-club/games/play/?game='))fail('game-card-links','Per-game online-play URL missing');
-if(!cardLinks.includes('/tools/99-club/games/help/#guide-'))fail('game-card-links','Per-game guide URL missing');
+if(!cardLinks.includes('/tools/99-club/games/help/?guide='))fail('game-card-links','Focused per-game guide URL missing');
 if(!cardLinks.includes('preventDefault()')||!cardLinks.includes('stopPropagation()'))fail('game-card-links','Quick-link click interception is missing');
 if(!cardLinks.includes("global.open(url,'_blank'"))fail('game-card-links','Quick links are not explicitly opened in a separate context');
 ok('game-card-links',`Selector quick links cover all ${adapterIds.length} online games / guides`);
