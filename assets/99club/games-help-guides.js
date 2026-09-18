@@ -1,4 +1,4 @@
-/* 99 Club Studio · printable game help guide library v1.2.1
+/* 99 Club Studio · printable game help guide library v1.3.0
  * Static, deterministic help content only. This file does not generate or alter puzzles.
  */
 (function(){
@@ -65,17 +65,89 @@
 
   function esc(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
   function list(items){return `<ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;}
+  function miniRow(items,cls=''){return `<div class="tt99-guide-mini-row ${cls}">${items.map(x=>`<span>${x}</span>`).join('')}</div>`;}
+  function miniGrid(rows,cls=''){return `<div class="tt99-guide-mini-grid ${cls}" style="--cols:${Math.max(...rows.map(r=>r.length))}">${rows.flat().map(x=>`<span>${x}</span>`).join('')}</div>`;}
+  function visualExample(id){
+    const V={
+      wordsearch:miniRow(['P','R','I','M','E'],'is-word'),
+      crossword:miniRow(['R','H','O','M','B','U','S'],'is-word'),
+      pyramid:'<div class="tt99-guide-mini-pyramid"><div><span>15</span></div><div><span>8</span><span>7</span></div><div><span>3</span><span>5</span><span>2</span></div></div>',
+      magic:miniGrid([['8','1','6'],['3','5','7'],['4','9','2']],'is-magic'),
+      arithmagon:'<div class="tt99-guide-mini-equation"><b>3</b><i>+</i><b>4</b><strong>= 7</strong></div>',
+      magicshape:'<div class="tt99-guide-mini-equation"><b>2</b><i>+</i><b>4</b><i>+</i><b>6</b><strong>= 12</strong></div>',
+      numbertrail:'<div class="tt99-guide-mini-flow"><b>4</b><i>+3</i><b>7</b><i>+3</i><b>10</b><i>+3</i><b>13</b></div>',
+      numberwheels:'<div class="tt99-guide-mini-flow"><b>3</b><i>×4</i><b>12</b><span class="break"></span><b>28</b><i>÷4</i><b>7</b></div>',
+      maze:'<div class="tt99-guide-mini-flow"><b>6 × 7</b><i>→</i><strong>42</strong><i>→</i><b>next cell</b></div>',
+      propertymaze:'<div class="tt99-guide-mini-choice"><span class="ok">12 ✓</span><em>multiples of 4</em><span class="no">14 ✕</span></div>',
+      crossnumber:miniRow(['9','6'],'is-word'),
+      numbersearch:miniRow(['8','6','3','1','4'],'is-search'),
+      equationcrossgrid:'<div class="tt99-guide-mini-equation"><b>7</b><i>+</i><span>□</span><i>=</i><b>12</b><strong>□ = 5</strong></div>',
+      target:'<div class="tt99-guide-mini-equation"><b>6</b><i>×</i><b>4</b><strong>= 24</strong></div>',
+      brokencalc:'<div class="tt99-guide-mini-keypad"><span>7</span><span>+</span><span>2</span><span>×</span><span>5</span><strong>= 17</strong></div>',
+      operationgrid:'<div class="tt99-guide-mini-flow"><b>8 □ 3 = 24</b><i>→</i><strong>×</strong><i>→ code</i><b>7</b></div>',
+      kakuro:'<div class="tt99-guide-mini-choice"><span class="ok">1 + 3 = 4 ✓</span><span class="no">2 + 2 = 4 ✕ repeat</span></div>',
+      arithmeticcages:'<div class="tt99-guide-mini-equation"><b>2</b><i>×</i><b>3</b><strong>= 6 cage</strong></div>',
+      sumplete:'<div class="tt99-guide-mini-row is-sumplete"><span>2</span><span>5</span><span class="crossed">3</span><strong>→ 7</strong></div>',
+      symbols:'<div class="tt99-guide-mini-flow"><b>★ + ★ = 10</b><i>→</i><b>★ = 5</b><span class="break"></span><b>★ + ▲ = 8</b><i>→</i><b>▲ = 3</b></div>',
+      functionmachine:'<div class="tt99-guide-mini-flow"><b>4</b><i>×3</i><b>12</b><i>+2</i><strong>14</strong></div>',
+      balance:'<div class="tt99-guide-mini-balance"><div><span>8</span><span>+</span><span>□</span></div><i></i><div><span>13</span></div><strong>□ = 5</strong></div>',
+      alphametics:'<div class="tt99-guide-mini-column"><span>734</span><span>+ 734</span><i></i><strong>1468</strong></div>',
+      sudoku:miniRow(['1','2','□','4'],'is-word')+'<div class="tt99-guide-mini-caption">Missing value: <b>3</b></div>',
+      futoshiki:'<div class="tt99-guide-mini-equation"><b>2</b><i>&lt;</i><span>□</span><i>&lt;</i><b>4</b><strong>□ = 3</strong></div>',
+      nonogram:'<div class="tt99-guide-mini-nonogram"><span></span><span class="fill"></span><span class="fill"></span><span class="fill"></span><span></span><b>clue 3</b></div>',
+      numberpath:miniGrid([['1','2','3'],['6','5','4'],['7','8','9']],'is-path'),
+      numbertowers:'<div class="tt99-guide-mini-towers"><em>clue 2</em><span style="--h:45%">1</span><span style="--h:95%">4</span><span style="--h:62%">2</span><span style="--h:78%">3</span></div>',
+      takuzu:miniGrid([['0','0','1','1'],['1','1','0','0'],['0','1','0','1'],['1','0','1','0']],'is-binary'),
+      killersudoku:'<div class="tt99-guide-mini-cage"><span>2</span><span>3</span><b>5+</b></div>',
+      hashi:'<div class="tt99-guide-mini-hashi"><b>2</b><i></i><i></i><b>2</b></div>',
+      mathsmines:miniGrid([['◆','',''],['','2',''],['','','◆']],'is-mines'),
+      shikaku:'<div class="tt99-guide-mini-shikaku"><span>6</span><b>2 × 3 rectangle</b></div>',
+      cornersum:'<div class="tt99-guide-mini-window">'+miniGrid([['1','2'],['7','8']])+'<b>18</b></div>',
+      linkedsum:'<div class="tt99-guide-mini-window">'+miniGrid([['1A','2A'],['7B','8B']])+'<b>18</b><em>A/B totals also apply</em></div>',
+      colourlogic:'<div class="tt99-guide-mini-colour"><span class="c1">A</span><span class="c2">B</span><span class="c3">C</span><i>same letter → same colour</i></div>',
+      mobilebalance:'<div class="tt99-guide-mini-mobile"><div class="bar"><span>3</span><span>5</span></div><i></i><div class="bar small"><span>8</span></div><strong>3 + 5 = 8</strong></div>',
+      diagonalpath:miniGrid([['1','2',''],['','3','4'],['','6','5']],'is-path'),
+      squaresearch:'<div class="tt99-guide-mini-square">'+miniGrid([['3','5'],['8','4']])+'<b>20</b></div>',
+      insertops:'<div class="tt99-guide-mini-flow"><b>7</b><i>+</i><b>2</b><i>×</i><b>5</b><strong>= 17</strong></div>',
+      perimeterregions:'<div class="tt99-guide-mini-perimeter"><span></span><span></span><b>perimeter 6</b></div>'
+    };
+    return V[id]||'<div class="tt99-guide-mini-fallback">Use the worked steps below on a small example before starting the full puzzle.</div>';
+  }
+  function workedExample(g){return `<section class="tt99-game-guide-worked"><h4>Worked example</h4><div class="tt99-game-guide-example-visual">${visualExample(g.id)}</div><div class="tt99-game-guide-example-steps">${g.example.map((x,i)=>`<div><b>${i+1}</b><p>${esc(x)}</p></div>`).join('')}</div></section>`;}
   function guideSheet(g){return `<article class="tt99-game-guide-sheet" data-guide-sheet="${esc(g.id)}">
     <header class="tt99-game-guide-sheet-head"><div><span>99 Club Studio · How to play</span><h3>${esc(g.title)}</h3><p>${esc(CATEGORIES[g.category])}</p></div><div class="tt99-game-guide-mark">?</div></header>
     <section class="tt99-game-guide-goal"><h4>Goal</h4><p>${esc(g.goal)}</p></section>
-    <div class="tt99-game-guide-two-col">
-      <section><h4>Rules</h4>${list(g.rules)}</section>
-      <section><h4>Worked example</h4><ol>${g.example.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></section>
+    <div class="tt99-game-guide-main">
+      <section class="tt99-game-guide-rules"><h4>Rules</h4>${list(g.rules)}</section>
+      ${workedExample(g)}
     </div>
-    <section><h4>Good solving strategy</h4>${list(g.strategy)}</section>
+    <section class="tt99-game-guide-strategy"><h4>Good solving strategy</h4>${list(g.strategy)}</section>
     <div class="tt99-game-guide-callouts"><p><strong>Tip</strong>${esc(g.tip)}</p><p><strong>Watch out</strong>${esc(g.watch)}</p></div>
     <footer>Tech Tinker Club · 99 Club Studio · Pupil-friendly printable guide</footer>
   </article>`;}
+
+  function directGuideId(){
+    const id=new URLSearchParams(location.search).get('guide');
+    return visibleGuides.some(g=>g.id===id)?id:'';
+  }
+  function renderDirectGuide(id){
+    const g=visibleGuides.find(x=>x.id===id);if(!g)return false;
+    document.body.classList.add('tt99-direct-game-guide');
+    const direct=document.createElement('div');
+    direct.id='tt99-direct-game-guide';
+    direct.className='tt99-game-guide-direct';
+    direct.innerHTML=`<div class="tt99-game-guide-direct-actions"><button type="button" data-direct-close>Close</button><button type="button" data-direct-print>Print this guide</button></div><main class="tt99-game-guide-direct-body">${guideSheet(g)}</main>`;
+    document.body.appendChild(direct);
+    direct.querySelector('[data-direct-close]')?.addEventListener('click',()=>{
+      globalThis.close();
+      setTimeout(()=>{if(!document.hidden)location.href='/tools/99-club/games/';},80);
+    });
+    direct.querySelector('[data-direct-print]')?.addEventListener('click',()=>{
+      document.body.classList.add('tt99-print-direct-game-guide');
+      window.print();
+    });
+    return true;
+  }
 
   function card(g){return `<button type="button" class="tt99-game-guide-card" data-open-guide="${esc(g.id)}"><span>${esc(CATEGORIES[g.category])}</span><strong>${esc(g.title)}</strong><em>Open one-page guide →</em></button>`;}
   function render(){
@@ -116,7 +188,7 @@
     document.body.classList.add('tt99-print-game-guide');document.body.dataset.printGameGuide=id;
     window.print();
   }
-  function cleanupPrint(){document.body.classList.remove('tt99-print-game-guide');delete document.body.dataset.printGameGuide;}
+  function cleanupPrint(){document.body.classList.remove('tt99-print-game-guide','tt99-print-direct-game-guide');delete document.body.dataset.printGameGuide;}
   function syncHelpCopy(){
     const intro=document.querySelector('.tt99-game-guide-intro');
     const p=intro?.querySelector('p');if(p)p.innerHTML=p.innerHTML.replace(/\b\d+ current one-player games\b/,`${visibleGuides.length} current one-player games`);
@@ -126,6 +198,7 @@
   }
 
   render();syncHelpCopy();
+  const directId=directGuideId();if(directId)renderDirectGuide(directId);
   root.addEventListener('click',e=>{
     const opener=e.target.closest('[data-open-guide]');if(opener){openGuide(opener.dataset.openGuide);return;}
     const f=e.target.closest('[data-guide-filter]');if(f){filter=f.dataset.guideFilter;root.querySelectorAll('[data-guide-filter]').forEach(b=>b.classList.toggle('is-active',b===f));applyFilter();return;}
@@ -135,7 +208,7 @@
   root.addEventListener('input',e=>{if(e.target.id==='tt99-game-guide-search')applyFilter();});
   document.getElementById('tt99-game-guide-dialog')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeGuide();});
   window.addEventListener('afterprint',cleanupPrint);
-  const hash=location.hash.match(/^#guide-([a-z0-9-]+)$/);if(hash)setTimeout(()=>openGuide(hash[1]),0);
+  const hash=location.hash.match(/^#guide-([a-z0-9-]+)$/);if(hash&&!directId)setTimeout(()=>openGuide(hash[1]),0);
 
-  window.TT99GameHelpGuides={version:'1.2.1',guides:visibleGuides.slice(),open:openGuide};
+  window.TT99GameHelpGuides={version:'1.3.0',guides:visibleGuides.slice(),open:openGuide};
 })();
