@@ -146,7 +146,19 @@ function generateBalanceLab(settings,seed){
 }
 
 const previousGenerate=A.generate.bind(A);
+const previousWorkedExample=A.workedExample.bind(A);
 A.generate=function(id,settings,seed){return id==='balance'?generateBalanceLab(settings,seed):previousGenerate(id,settings,seed);};
+A.workedExample=function(id,settings,seed){
+  if(id!=='balance')return previousWorkedExample(id,settings,seed);
+  return {
+    engineId:'balance',kind:'balance',title:'Balance the Equation worked example',
+    goal:'Repair each equation to collect its weight, then use every collected weight once to balance the final scale.',
+    rules:['Both sides of each equals sign must have the same value.','Each solved equation unlocks one labelled weight.','In the final challenge, use every collected weight exactly once and split them between the two pans so the totals are equal.'],
+    steps:['Balance A: 7 + □ = 12, so A = 5.','Balance B: 15 − □ = 8, so B = 7. Solve C and D in the same way.','Suppose the collected weights are A=5, B=7, C=4 and D=8.','Place 5 + 7 on one pan and 4 + 8 on the other: both sides total 12, so the final scale balances.'],
+    tip:'Treat = as “has the same value as”. Solve all equation weights before attempting the final split.',
+    commonMistake:'Do not stop after repairing the equations; the pack game also includes the final balance using every collected weight once.'
+  };
+};
 A.generateBalanceLabV192=generateBalanceLab;
 
 const def=A.DEFINITIONS?.balance;

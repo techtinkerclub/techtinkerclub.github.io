@@ -18,6 +18,18 @@ function enrich(p){
  p.instruction=`Make every equation true. Use the operator key to turn each numbered sign into a code digit, then use the completed code to crack the secret word. [[TT99OC158:${encode(payload)}]]`;
  return p;
 }
+const baseWorked=A.workedExample.bind(A);
 A.generate=function(id,settings,seed){const p=baseGenerate(id,settings,seed);return id==='operationgrid'?enrich(p):p;};
+A.workedExample=function(id,settings,seed){
+ if(id!=='operationgrid')return baseWorked(id,settings,seed);
+ return {
+  engineId:id,kind:id,title:'Operation Codebreaker worked example',
+  goal:'Find the missing operation signs, turn them into code digits, then use the signed shifts to decode the secret maths word.',
+  rules:['Make every equation true, following normal order of operations and any brackets.','Use the operator key to convert each numbered sign into its code digit.','For each cipher letter, + means move forwards through the alphabet by that code digit and − means move backwards; wrap between A and Z.'],
+  steps:['Equation: 8 □ 4 = 12. The missing sign is + because 8 + 4 = 12.','Suppose the operator key says + = 3. That numbered sign contributes code digit 3.','If the cipher shows K with +#1, move 3 letters forwards: K → L → M → N.','Repeat for every cipher letter, using the numbered code digit shown below it, to reveal the secret word.'],
+  tip:'Solve all operator boxes first, then copy the code digits carefully before decoding the word.',
+  commonMistake:'The +/− under a cipher letter tells you which direction to move in the alphabet; it is not another arithmetic operation.'
+ };
+};
 A.OPERATIONGRID_PRINT_V158={version:158,enrich,shiftChar:shift,TERMS};A.__operationGridPrintV158=true;
 })(typeof globalThis!=='undefined'?globalThis:this);

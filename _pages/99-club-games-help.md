@@ -7,7 +7,7 @@ sitemap: true
 ---
 
 <link rel="stylesheet" href="/assets/99club/99club.css?v=20">
-<link rel="stylesheet" href="/assets/99club/games-help-guides.css?v=1.1.0">
+<link rel="stylesheet" href="/assets/99club/games-help-guides.css?v=1.1.1">
 
 <div id="main" class="tt99-page-main" role="main">
   <article class="splash">
@@ -148,5 +148,5 @@ sitemap: true
   </article>
 </div>
 
-<script src="/assets/99club/games-help-guides.js?v=1.3.0" defer></script>
+<script src="/assets/99club/games-help-guides.js?v=1.3.1" defer></script>
 <script src="/assets/99club/games-help-operationgrid-v153.js?v=1" defer></script>

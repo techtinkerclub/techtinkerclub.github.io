@@ -37,7 +37,7 @@ function allCompat(excellent=[],reasonable=[]){return Object.fromEntries(TOPICS.
 function selectOptions(values){return values.map(([value,label])=>({value,label}));}
 
 A.DEFINITIONS.colourlogic={
-  id:'colourlogic',title:'Colour Logic',group:'Logic & patterns',kind:'independent',printableMode:'logic',answerSheetSupport:true,workedExampleSupport:false,needsCutting:false,needsDice:false,needsPartner:false,
+  id:'colourlogic',title:'Colour Logic',group:'Logic & patterns',kind:'independent',printableMode:'logic',answerSheetSupport:true,workedExampleSupport:true,needsCutting:false,needsDice:false,needsPartner:false,
   supportedAnswerTypes:['logic','colour'],difficultyOptions:DIFFS,
   defaultSettings:{difficulty:'standard',layout:'auto',ruleStyle:'mixed'},
   settingsSchema:[
@@ -49,7 +49,7 @@ A.DEFINITIONS.colourlogic={
   topicYearMin:{number_place_value:2,calculation:2,geometry:2,algebra:4},compatibility:allCompat(['geometry','algebra'],['number_place_value','calculation'])
 };
 A.DEFINITIONS.mobilebalance={
-  id:'mobilebalance',title:'Mobile Balance',group:'Algebra & relationships',kind:'independent',printableMode:'diagram',answerSheetSupport:true,workedExampleSupport:false,needsCutting:false,needsDice:false,needsPartner:false,
+  id:'mobilebalance',title:'Mobile Balance',group:'Algebra & relationships',kind:'independent',printableMode:'diagram',answerSheetSupport:true,workedExampleSupport:true,needsCutting:false,needsDice:false,needsPartner:false,
   supportedAnswerTypes:['number','unknown'],difficultyOptions:DIFFS,
   defaultSettings:{difficulty:'standard',layout:'auto',givenMode:'auto'},
   settingsSchema:[
@@ -106,6 +106,27 @@ function makeMobile(settings,seed){const c=normMobile(settings?.engineSettings?.
 
 const prevGenerate=A.generate.bind(A);
 A.generate=function(id,settings,seed){if(id==='colourlogic')return generateColour(settings,seed);if(id==='mobilebalance')return makeMobile(settings,seed);return prevGenerate(id,settings,seed);};
+const prevWorkedExample=A.workedExample.bind(A);
+A.workedExample=function(id,settings,seed){
+  if(id==='colourlogic')return {
+    engineId:id,kind:id,title:'Colour Logic worked example',
+    goal:'Arrange the colours so every clue is true at the same time.',
+    rules:['Use each listed colour exactly once in a row puzzle.','Position and neighbour clues must all be satisfied together.'],
+    steps:['Example clues: Green is at one end; Red is immediately left of Blue; Yellow is right of Blue; Red is not at an end.','Green cannot be at the right end: that would force Red into the left end, which is forbidden.','So Green is first. The remaining order must be Red, Blue, Yellow.','The finished row is Green – Red – Blue – Yellow, and every clue is true.'],
+    tip:'Start with the strongest clues: exact positions, ends and immediately-next-to relationships.',
+    commonMistake:'A placement is not finished just because it satisfies one clue; it must satisfy every clue.'
+  };
+  if(id==='mobilebalance')return {
+    engineId:id,kind:id,title:'Mobile Balance worked example',
+    goal:'Use equal weights on both sides of each bar to work out the shape values.',
+    rules:['Treat each horizontal bar as an equal-arm balance: total weight on the left equals total weight on the right.','Repeated copies of a shape have the same value.','On a nested mobile, the whole lower branch becomes one combined weight for the bar above.'],
+    steps:['Two circles balance one triangle. Each circle is worth 6.','The two circles weigh 6 + 6 = 12.','So the triangle must also weigh 12.','The whole lower branch weighs 12 + 12 = 24; use 24 when that branch hangs from a higher bar.'],
+    tip:'Solve the lowest bar first, then carry its whole branch total upwards.',
+    commonMistake:'Do not compare only the nearest shape on a nested branch; everything hanging below the attachment point counts.'
+  };
+  return prevWorkedExample(id,settings,seed);
+};
+
 const prevValidate=A.validate.bind(A);
 A.validate=function(p){if(p?.engineId==='colourlogic'){if(p.solutionCount!==1)return {ok:false,error:'colour logic not unique'};if(p.variant==='row'&&(!p.solution||!p.clues?.length))return {ok:false,error:'row puzzle incomplete'};if(p.variant==='grid'&&(!p.solutionGrid||!p.clues?.length))return {ok:false,error:'grid puzzle incomplete'};return {ok:true};}if(p?.engineId==='mobilebalance'){if(!p.tree||!mobileBalanced(p.tree,p.values||{}))return {ok:false,error:'mobile is not balanced'};if(p.difficulty==='challenge'&&Number(p.barCount)<3)return {ok:false,error:'challenge mobile must have multiple balances'};return {ok:true};}return prevValidate(p);};
 

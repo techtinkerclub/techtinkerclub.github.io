@@ -50,6 +50,10 @@ const engineLoadOrder=[
   'assets/99club/games-new-puzzles-v196.js',
   'assets/99club/games-balance-lab-v192.js',
   'assets/99club/games-operationgrid-v153.js',
+  'assets/99club/games-operationgrid-print-v155.js',
+  'assets/99club/games-operationgrid-print-v158.js',
+  'assets/99club/games-crossgrid-v1321.js',
+  'assets/99club/games-property-maze.js',
   'assets/99club/games-brokencalc-quality-v152.js',
   'assets/99club/games-number-logic.js',
   'assets/99club/games-extra-puzzles-v204.js',
@@ -74,6 +78,20 @@ for(const rel of engineLoadOrder){
 }
 const G=global.TT99Games,A=global.TT99ArithmeticGames,N=global.TT99NumberLogicGames;
 if(!G||!G.ENGINES)fail('engine-load','TT99Games did not initialise');
+
+const packAuditLoadOrder=[
+  'assets/99club/games-instructions-v139.js',
+  'assets/99club/simple-pdf.js',
+  'assets/99club/games-pdf.js',
+  'assets/99club/games-pdf-shikaku-v143.js',
+  'assets/99club/games-pdf-worked-v146.js'
+];
+for(const rel of packAuditLoadOrder){
+  if(!exists(rel)){fail('worked-pdf-load',`Missing ${rel}`);continue;}
+  try{load(rel);}catch(e){fail('worked-pdf-load',rel,e.stack||e.message);}
+}
+const PDF=global.TT99GamesPDF;
+if(!PDF||typeof PDF.buildDocument!=='function')fail('worked-pdf-load','TT99GamesPDF did not initialise');
 
 function bestTopic(def){
   const entries=Object.entries(def?.compatibility||{});
@@ -113,6 +131,39 @@ function checkSpecific(id,p){
   if(id==='squaresearch'){
     const ms=p.matches||[];for(let i=0;i<ms.length;i++)for(let j=i+1;j<ms.length;j++)if(Math.abs(ms[i].r-ms[j].r)<2&&Math.abs(ms[i].c-ms[j].c)<2)fail(id,'target squares overlap',`${ms[i].r}:${ms[i].c} with ${ms[j].r}:${ms[j].c}`);
   }
+}
+
+if(G&&G.ENGINES&&typeof G.generateWorkedExample==='function'){
+  const visible=Object.entries(G.ENGINES).filter(([,def])=>!def?.hiddenFromLibrary).map(([id])=>id).sort();
+  let workedOk=0;
+  for(const id of visible){
+    const def=G.ENGINES[id],settings=settingsFor(id,def,'standard');
+    if(def?.workedExampleSupport===false){fail('worked-pdf',`${id} is visible but declares workedExampleSupport=false`);continue;}
+    let ex=null;
+    try{ex=G.generateWorkedExample(id,settings,`qa:worked:${id}`,[]);}catch(e){fail('worked-pdf',`${id} worked example threw`,e.stack||e.message);continue;}
+    if(!ex){fail('worked-pdf',`${id} has no pack worked example`);continue;}
+    if(ex.engineId!==id)fail('worked-pdf',`${id} worked example engineId mismatch`,String(ex.engineId));
+    if(ex.kind!==id)fail('worked-pdf',`${id} worked example kind mismatch`,String(ex.kind));
+    for(const field of ['goal','tip','commonMistake'])if(!String(ex[field]||'').trim())fail('worked-pdf',`${id} worked example missing ${field}`);
+    for(const field of ['rules','steps'])if(!Array.isArray(ex[field])||!ex[field].length)fail('worked-pdf',`${id} worked example missing ${field}`);
+    if(ex.engineId===id&&ex.kind===id&&ex.goal&&ex.tip&&ex.commonMistake&&Array.isArray(ex.rules)&&ex.rules.length&&Array.isArray(ex.steps)&&ex.steps.length)workedOk++;
+    if(PDF&&typeof PDF.buildDocument==='function'){
+      try{
+        const pdfSettings={...settings,workedExamples:'front'};
+        const pack={seed:`qa:worked-pdf:${id}`,settings:pdfSettings,workedExamples:[ex],sheets:[]};
+        const doc=PDF.buildDocument({pack,settings:pdfSettings,kind:'student',topics:{},seed:pack.seed});
+        if(!doc||!Array.isArray(doc.pages)||doc.pages.length!==1)fail('worked-pdf',`${id} did not render exactly one instructional PDF page`,String(doc?.pages?.length));
+        else{
+          const entry=doc.pages[0],cmds=Array.isArray(entry)?entry:entry.cmds||[],stream=cmds.join('\n');
+          if(cmds.length<12)fail('worked-pdf',`${id} instructional PDF page is suspiciously empty`,String(cmds.length));
+          if(/(?:^|\W)(?:undefined|NaN)(?:\W|$)/.test(stream))fail('worked-pdf',`${id} instructional PDF contains invalid rendered values`);
+          const bytes=doc.outputBytes?.();
+          if(!bytes||bytes.length<500||bytes[0]!==37||bytes[1]!==80||bytes[2]!==68||bytes[3]!==70)fail('worked-pdf',`${id} instructional PDF did not serialize as a valid PDF`);
+        }
+      }catch(e){fail('worked-pdf',`${id} instructional PDF render threw`,e.stack||e.message);}
+    }
+  }
+  if(workedOk===visible.length)ok('worked-pdf',`all ${visible.length} visible games have matching instructional worked examples`);
 }
 
 if(G&&G.ENGINES){

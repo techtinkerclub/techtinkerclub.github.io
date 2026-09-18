@@ -547,9 +547,14 @@ function drawPropertyMaze(page,a,answers,x,y,w,h,index){
       const vals=[1,2,3,6,5,4,7,8,9],cell=22,sx=x+w/2-cell*1.5;for(let r=0;r<3;r++)for(let c=0;c<3;c++){const v=vals[r*3+c];page.rect(sx+c*cell,cy+r*cell,cell,cell,{fill:WHITE,stroke:[120,145,149],width:.65});page.text(sx+c*cell+cell/2,cy+r*cell+15,String(v),7.5,{bold:true,color:(v===1||v===9)?TEAL:INK,align:'center'});}cy+=cell*3+5;cy+=drawWrapped(page,x+12,cy,'The sequence winds through edge-touching cells: 1, 2, 3, 4 ... 9.',w-24,7.2,{color:MUTED,maxLines:2})+6;
     }else if(['arithmagon','magicshape','maze','propertymaze','crossnumber','numbersearch','equationcrossgrid','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance'].includes(ex.kind)){
       box(page,x+12,cy,w-24,26,[243,250,248],[211,231,227],.6);page.text(x+20,cy+11,clean(ex.title||'Worked example').replace(/ worked example$/i,''),7.7,{bold:true,color:[40,93,89]});page.text(x+20,cy+22,'Follow the worked steps below, then try the generated activity.',6.8,{color:MUTED});cy+=36;
-    }else{
-      const intro=ex.mode==='definitions'?`Definition: ${ex.definition}${needsEnumeration(ex.term)?` ${ex.enumeration||enumeration(ex.term)}`:''}`:`${ex.term} - ${ex.definition}`;cy+=drawWrapped(page,x+12,cy,intro,w-24,8.0,{color:DARK,maxLines:2})+8;
+    }else if(ex.kind==='wordsearch'){
+      const intro=ex.mode==='definitions'?`Definition: ${ex.definition||''}${needsEnumeration(ex.term)?` ${ex.enumeration||enumeration(ex.term)}`:''}`:`${ex.term||''} - ${ex.definition||''}`;cy+=drawWrapped(page,x+12,cy,intro,w-24,8.0,{color:DARK,maxLines:2})+8;
       const size=ex.size||5,cell=Math.min(20,(w-50)/size,92/size),sx=x+w/2-size*cell/2;for(let gy=0;gy<size;gy++)for(let gx=0;gx<size;gx++){const hit=gy===ex.row&&gx>=ex.start&&gx<ex.start+String(ex.answer||'').length;page.rect(sx+gx*cell,cy+gy*cell,cell,cell,{fill:hit?HIT:WHITE,stroke:[190,206,208],width:.4});page.text(sx+gx*cell+cell/2,cy+gy*cell+cell*.68,ex.grid?.[gy]?.[gx]||'',Math.max(3.8,cell*.42),{bold:true,color:INK,align:'center'});}cy+=size*cell+6;
+    }else{
+      box(page,x+12,cy,w-24,34,[243,250,248],[211,231,227],.6);
+      page.text(x+20,cy+14,clean(ex.title||'Worked example').replace(/ worked example$/i,''),7.8,{bold:true,color:[40,93,89]});
+      page.text(x+20,cy+27,'Use the rules and worked steps below.',7.0,{color:MUTED});
+      cy+=42;
     }
     if(ex.rules?.length){page.text(x+12,cy,'Rules',8.2,{bold:true,color:[46,87,86]});cy+=12;for(const rule of ex.rules){cy+=drawWrapped(page,x+17,cy,`- ${rule}`,w-30,7.4,{color:DARK,maxLines:2})+3;if(cy>y+h-100)break;}cy+=3;}
     if(ex.steps?.length&&cy<y+h-70){page.text(x+12,cy,'Worked steps',8.2,{bold:true,color:[46,87,86]});cy+=12;for(let i=0;i<ex.steps.length;i++){cy+=drawWrapped(page,x+17,cy,`${i+1}. ${ex.steps[i]}`,w-30,7.4,{color:DARK,maxLines:2})+3;if(cy>y+h-60)break;}cy+=3;}
