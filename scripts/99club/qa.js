@@ -212,6 +212,14 @@ if(!randomUi.includes('<option value="1"')||!randomUi.includes('<option value="2
 if(randomUi.includes('<option value="3"'))fail('pack-ui','Unsupported three-activities-per-sheet option returned');
 if(!gamesApp.includes('type="hidden" id="games-sheets"'))fail('pack-ui','Legacy sheet-count control is still visible in base UI');
 ok('pack-ui','Activity count + one/two-per-sheet pack controls checked');
+const cardLinks=read('assets/99club/games-card-links-v205.js');
+const quickIds=[...cardLinks.matchAll(/'([a-z0-9-]+)'/g)].map(m=>m[1]);
+for(const id of adapterIds)if(!quickIds.includes(id))fail('game-card-links',`Online game missing selector quick-link mapping: ${id}`);
+for(const id of guideIds)if(!quickIds.includes(id))fail('game-card-links',`Guide missing selector quick-link mapping: ${id}`);
+if(!cardLinks.includes("target='_blank'")&&!cardLinks.includes("a.target='_blank'"))fail('game-card-links','Quick links do not open separately from the pack builder');
+if(!cardLinks.includes('/tools/99-club/games/play/?game='))fail('game-card-links','Per-game online-play URL missing');
+if(!cardLinks.includes('/tools/99-club/games/help/#guide-'))fail('game-card-links','Per-game guide URL missing');
+ok('game-card-links',`Selector quick links cover all ${adapterIds.length} online games / guides`);
 
 /* ---------- output ---------- */
 const report={generatedAt:new Date().toISOString(),samplesPerDifficulty:SAMPLES,generated,engineCount:G?.ENGINES?Object.keys(G.ENGINES).length:0,onlineAdapterCount:adapterIds.length,guideCount:guideIds.length,failures,warnings,notes};
