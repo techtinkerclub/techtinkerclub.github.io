@@ -27,7 +27,7 @@ function stable(a,b){return JSON.stringify(a)===JSON.stringify(b);}
 function sourceScripts(page){return [...read(page).matchAll(/<script\s+[^>]*src=["']([^"']+)["'][^>]*>/g)].map(m=>m[1]).filter(x=>x.startsWith('/assets/99club/'));}
 function localFromUrl(url){return url.split('?')[0].replace(/^\//,'');}
 function resetGlobals(){
-  for(const k of ['TT99GamesVocabularyV2','TT99ArithmeticGames','TT99NumberLogicGames','TT99Games','TT99GamesPlay','TT99PlayArithmetic'])delete global[k];
+  for(const k of ['TT99GamesVocabularyV2','TT99ArithmeticGames','TT99NumberLogicGames','TT99Games','TT99GamesPlay','TT99PlayArithmetic','TT99AlphaLibrary'])delete global[k];
   global.window=global;global.globalThis=global;
 }
 function load(rel){const full=path.join(ROOT,rel);delete require.cache[require.resolve(full)];return require(full);}
@@ -59,6 +59,7 @@ const engineLoadOrder=[
   'assets/99club/games-takuzu-v139-logic.js',
   'assets/99club/games-puzzle-pack-v140.js',
   'assets/99club/games-puzzle-pack-v140-hashi.js',
+  'assets/99club/games-alphametics-library-v141.js',
   'assets/99club/games-number-path-v2.js',
   'assets/99club/games-sumplete.js',
   'assets/99club/games-shikaku-v143.js',
@@ -105,6 +106,13 @@ function checkSpecific(id,p){
     function walk(n){if(!n||n.type==='group')return;const l=branchWeight(n.left,vals),r=branchWeight(n.right,vals);if(!Number.isFinite(l)||!Number.isFinite(r)||Math.abs(l-r)>1e-9)fail(id,'generated mobile bar is not mathematically balanced',`${l} vs ${r}`);walk(n.left);walk(n.right);}walk(p.tree);
     if(p.topTotal!=null&&Math.abs(branchWeight(p.tree,vals)-Number(p.topTotal))>1e-9)fail(id,'top total does not match whole-mobile weight');
   }
+  if(id==='diagonalpath'){
+    const total=Number(p.size)*Number(p.size),blanks=total-(p.givens||[]).length,minBlanks=p.difficulty==='easy'?4:p.difficulty==='challenge'?12:8;
+    if(blanks<minBlanks)fail(id,`too many anchors for ${p.difficulty} difficulty`,`${p.givens?.length||0} anchors leave only ${blanks} blanks`);
+  }
+  if(id==='squaresearch'){
+    const ms=p.matches||[];for(let i=0;i<ms.length;i++)for(let j=i+1;j<ms.length;j++)if(Math.abs(ms[i].r-ms[j].r)<2&&Math.abs(ms[i].c-ms[j].c)<2)fail(id,'target squares overlap',`${ms[i].r}:${ms[i].c} with ${ms[j].r}:${ms[j].c}`);
+  }
 }
 
 if(G&&G.ENGINES){
@@ -129,6 +137,19 @@ if(G&&G.ENGINES){
     }
   }
   ok('engines',`${Object.keys(G.ENGINES).length} engines stress-tested; ${generated} deterministic generations performed`);
+}
+
+/* ---------- Alphametics full-library coverage ---------- */
+const alphaLib=global.TT99AlphaLibrary;
+if(!alphaLib||!Array.isArray(alphaLib.templates)||alphaLib.templates.length<60)fail('alphametics','Full curated word library is not loaded',String(alphaLib?.templates?.length||0));
+else{
+  const seen=new Set();
+  for(let i=0;i<18;i++){
+    const a=N.generate('alphametics',{minYear:3,maxYear:6,engineSettings:{alphametics:{difficulty:'standard',hintLevel:'auto',theme:'auto',template:'auto'}}},`qa:alpha-variety:${i}`);
+    if(a&&!a.error)seen.add(a.templateId);
+  }
+  if(seen.size<6)fail('alphametics','Auto mode is not producing enough puzzle variety',`${seen.size} distinct standard puzzles from 18 seeds`);
+  else ok('alphametics',`Full library loaded; ${seen.size} distinct standard puzzles sampled from 18 seeds`);
 }
 
 /* ---------- online adapter / help / UX static contracts ---------- */

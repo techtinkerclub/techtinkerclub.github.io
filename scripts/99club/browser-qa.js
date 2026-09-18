@@ -80,6 +80,24 @@ function prepare(){
         view.destroy?.();host.remove();
       }catch(e){fail('colourlogic',(e&&e.stack)||String(e));}
     }
+    async function perimeterDirectTest(){
+      try{
+        const a=window.TT99GamesPlay?.adapters?.get('perimeterregions');if(!a)return fail('perimeterregions','adapter missing');
+        const host=document.createElement('div');host.style.width='390px';document.body.appendChild(host);const cfg=a.normalizeConfig({difficulty:'standard'}),p=a.createPuzzle(cfg,'browser-qa:perimeter');let changed=0;const view=a.mount(host,p,{onChange:()=>changed++,onStatus:()=>{},isPaused:()=>false});
+        const edge=host.querySelector('[data-edge]');if(!edge){fail('perimeterregions','direct boundary controls are missing');view.destroy?.();host.remove();return;}
+        const r=edge.getBoundingClientRect(),evt={bubbles:true,pointerId:31,clientX:r.left+r.width/2,clientY:r.top+r.height/2};
+        edge.dispatchEvent(new PointerEvent('pointerdown',evt));edge.dispatchEvent(new PointerEvent('pointerup',evt));await sleep(30);
+        if(!view.snapshot().length||changed<1)fail('perimeterregions','tapping a grid line did not draw a boundary');else pass('perimeterregions','direct grid-line boundary interaction verified');
+        view.destroy?.();host.remove();
+      }catch(e){fail('perimeterregions',(e&&e.stack)||String(e));}
+    }
+    async function alphameticsVarietyTest(){
+      try{
+        const a=window.TT99GamesPlay?.adapters?.get('alphametics'),lib=window.TT99AlphaLibrary;if(!a)return fail('alphametics','adapter missing');if(!lib||!Array.isArray(lib.templates)||lib.templates.length<60)return fail('alphametics','full curated word library is not loaded online');
+        const cfg=a.normalizeConfig({difficulty:'standard',hintLevel:'auto',theme:'auto',template:'auto'}),seen=new Set();for(let i=0;i<14;i++){const p=a.createPuzzle(cfg,'browser-qa:alpha:'+i);seen.add(p.templateId);}
+        if(seen.size<5)fail('alphametics','New puzzle seeds are not producing enough word-puzzle variety ('+seen.size+' distinct)');else pass('alphametics','full library loaded and '+seen.size+' standard puzzles sampled');
+      }catch(e){fail('alphametics',(e&&e.stack)||String(e));}
+    }
     async function groupedLibraryTest(){
       try{
         const open=document.getElementById('tt99-play-change-game'),search=document.getElementById('tt99-play-library-search'),grid=document.getElementById('tt99-play-library-grid');
@@ -111,7 +129,7 @@ function prepare(){
       }catch(e){fail('mobile-drawer',(e&&e.stack)||String(e));}
     }
     async function run(){
-      try{await sleep(500);await genericAdapterTests();await brokenCalcTest();await colourFillTest();await groupedLibraryTest();await drawerTest();}
+      try{await sleep(500);await genericAdapterTests();await brokenCalcTest();await colourFillTest();await perimeterDirectTest();await alphameticsVarietyTest();await groupedLibraryTest();await drawerTest();}
       catch(e){fail('runner',(e&&e.stack)||String(e));}
       finally{finish();}
     }
