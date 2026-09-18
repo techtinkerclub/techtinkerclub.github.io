@@ -1,4 +1,4 @@
-/* 99 Club Studio · printable game help guide library v1.3.0
+/* 99 Club Studio · printable game help guide library v1.3.1
  * Static, deterministic help content only. This file does not generate or alter puzzles.
  */
 (function(){
@@ -98,18 +98,18 @@
       numberpath:miniGrid([['1','2','3'],['6','5','4'],['7','8','9']],'is-path'),
       numbertowers:'<div class="tt99-guide-mini-towers"><em>clue 2</em><span style="--h:45%">1</span><span style="--h:95%">4</span><span style="--h:62%">2</span><span style="--h:78%">3</span></div>',
       takuzu:miniGrid([['0','0','1','1'],['1','1','0','0'],['0','1','0','1'],['1','0','1','0']],'is-binary'),
-      killersudoku:'<div class="tt99-guide-mini-cage"><span>2</span><span>3</span><b>5+</b></div>',
+      killersudoku:'<div class="tt99-guide-mini-cage"><span>2</span><span>5</span><b>7+</b></div>',
       hashi:'<div class="tt99-guide-mini-hashi"><b>2</b><i></i><i></i><b>2</b></div>',
       mathsmines:miniGrid([['◆','',''],['','2',''],['','','◆']],'is-mines'),
       shikaku:'<div class="tt99-guide-mini-shikaku"><span>6</span><b>2 × 3 rectangle</b></div>',
-      cornersum:'<div class="tt99-guide-mini-window">'+miniGrid([['1','2'],['7','8']])+'<b>18</b></div>',
+      cornersum:'<div class="tt99-guide-mini-window">'+miniGrid([['3','5'],['4','8']])+'<b>20</b></div>',
       linkedsum:'<div class="tt99-guide-mini-window">'+miniGrid([['1A','2A'],['7B','8B']])+'<b>18</b><em>A/B totals also apply</em></div>',
-      colourlogic:'<div class="tt99-guide-mini-colour"><span class="c1">A</span><span class="c2">B</span><span class="c3">C</span><i>same letter → same colour</i></div>',
-      mobilebalance:'<div class="tt99-guide-mini-mobile"><div class="bar"><span>3</span><span>5</span></div><i></i><div class="bar small"><span>8</span></div><strong>3 + 5 = 8</strong></div>',
-      diagonalpath:miniGrid([['1','2',''],['','3','4'],['','6','5']],'is-path'),
+      colourlogic:'<div class="tt99-guide-mini-colour"><span class="c1">Red</span><span class="c2">Blue</span><span class="c3">Green</span><i>use the position and neighbour clues together</i></div>',
+      mobilebalance:'<div class="tt99-guide-mini-mobile"><i class="hanger"></i><div class="beam"><span class="load">● 6 + ● 6</span><span class="load">▲ 12</span></div><strong>balanced: 12 = 12</strong></div>',
+      diagonalpath:miniGrid([['7','',''],['','8',''],['','','9']],'is-path is-diag-example')+'<div class="tt99-guide-mini-caption">8 is the only cell touching both 7 and 9.</div>',
       squaresearch:'<div class="tt99-guide-mini-square">'+miniGrid([['3','5'],['8','4']])+'<b>20</b></div>',
       insertops:'<div class="tt99-guide-mini-flow"><b>7</b><i>+</i><b>2</b><i>×</i><b>5</b><strong>= 17</strong></div>',
-      perimeterregions:'<div class="tt99-guide-mini-perimeter"><span></span><span></span><b>perimeter 6</b></div>'
+      perimeterregions:'<div class="tt99-guide-mini-perimeter"><div class="region"><span></span><span></span></div><b>perimeter 6</b><em>the shared edge is inside the region</em></div>'
     };
     return V[id]||'<div class="tt99-guide-mini-fallback">Use the worked steps below on a small example before starting the full puzzle.</div>';
   }
@@ -210,5 +210,5 @@
   window.addEventListener('afterprint',cleanupPrint);
   const hash=location.hash.match(/^#guide-([a-z0-9-]+)$/);if(hash&&!directId)setTimeout(()=>openGuide(hash[1]),0);
 
-  window.TT99GameHelpGuides={version:'1.3.0',guides:visibleGuides.slice(),open:openGuide};
+  window.TT99GameHelpGuides={version:'1.3.1',guides:visibleGuides.slice(),open:openGuide};
 })();
