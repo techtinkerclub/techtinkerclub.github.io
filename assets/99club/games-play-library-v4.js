@@ -45,6 +45,7 @@ function boot(){
     try{
       const cards=[...grid.querySelectorAll(':scope > [data-game-id]')];
       if(!cards.length){
+        if(grid.querySelector('.tt99-play-library-group'))return;
         if(!grid.querySelector('.tt99-play-empty,.tt99-play-filter-empty'))grid.innerHTML='<p class="tt99-play-empty">No games match that search.</p>';
         return;
       }
