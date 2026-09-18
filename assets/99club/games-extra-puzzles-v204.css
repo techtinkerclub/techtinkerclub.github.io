@@ -21,6 +21,7 @@
 
 .tt99-extra-search-grid{position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);width:min(100%,38rem);margin:0 auto;aspect-ratio:1;border:2px solid #78999d;background:#78999d;gap:1px}
 .tt99-extra-search-grid>span{display:flex;align-items:center;justify-content:center;min-width:0;background:#fff;color:#274c53;font-weight:700}
+.tt99-extra-search-grid>span.hint-cell{background:#fff7cc;box-shadow:inset 0 0 0 3px #d3aa18}
 .tt99-extra-search-grid>i,.tt99-extra-search-hit{
   position:absolute;left:calc(var(--c) * (100% / var(--n)));top:calc(var(--r) * (100% / var(--n)));
   width:calc(2 * (100% / var(--n)));height:calc(2 * (100% / var(--n)));box-sizing:border-box
