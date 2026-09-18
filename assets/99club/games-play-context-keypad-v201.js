@@ -59,7 +59,10 @@ function inputProfile(){
   return 'desktop';
 }
 function autoOpenForCurrentInput(){
-  return lastPointerType==='touch'||lastPointerType==='pen'||inputProfile()==='touch';
+  if(lastPointerType==='mouse')return false;
+  if(lastPointerType==='touch'||lastPointerType==='pen')return true;
+  if(inputProfile()==='touch')return true;
+  return window.innerWidth<=700;
 }
 function reserveBoardSpace(){
   return inputProfile()!=='desktop'||window.innerWidth<=760;
@@ -113,6 +116,17 @@ function setPadSpace(){
     b.classList.toggle('tt99-context-pad-reserve',reserveBoardSpace());
   });
 }
+function setCollapsed(collapsed){
+  if(!activePad)return;
+  activePad.classList.toggle('tt99-context-pad-collapsed',!!collapsed);
+  const h=ensureHandle(activePad);
+  h.setAttribute('aria-expanded',collapsed?'false':'true');
+  h.setAttribute('aria-label',collapsed?`Open ${padLabel(activePad).toLowerCase()}`:`Collapse ${padLabel(activePad).toLowerCase()}`);
+  const text=h.querySelector('.tt99-context-handle-text');
+  if(text)text.textContent=collapsed?'Open':'Close';
+  setPadSpace();
+  if(!collapsed)keepEntryVisible(activeEntry);
+}
 function keepEntryVisible(entry){
   if(!entry||!activePad||!reserveBoardSpace())return;
   requestAnimationFrame(()=>{
@@ -142,9 +156,9 @@ function syncLauncher(){
   btn.setAttribute('aria-expanded',String(activePad===pad));
   btn.setAttribute('aria-label',`${activePad===pad?'Close':'Open'} on-screen ${padLabel(pad).toLowerCase()}`);
 }
-function closePad(){
+function hidePad(){
   if(activePad){
-    activePad.classList.remove('tt99-context-pad-active');
+    activePad.classList.remove('tt99-context-pad-active','tt99-context-pad-collapsed');
     activePad.setAttribute('aria-hidden','true');
   }
   activePad=null;
@@ -163,6 +177,7 @@ function openPad(pad,entry){
   activeEntry=entry||activeEntry;
   ensureHandle(pad);
   pad.classList.add('tt99-context-pad-active');
+  pad.classList.remove('tt99-context-pad-collapsed');
   pad.setAttribute('aria-hidden','false');
   b.classList.add('tt99-has-context-pad');
   syncLauncher();
@@ -191,7 +206,7 @@ function manageCurrentPad(){
       ensureHandle(pad);
     }
   }else if(activePad){
-    closePad();
+    hidePad();
   }
   syncLauncher();
 }
@@ -221,14 +236,14 @@ document.addEventListener('click',e=>{
     e.preventDefault();
     const pad=currentPad();
     if(!pad)return;
-    if(activePad===pad)closePad();else openPad(pad,activeEntry);
+    if(activePad===pad)hidePad();else openPad(pad,activeEntry);
     return;
   }
 
   const handle=e.target.closest('.tt99-context-pad-handle');
   if(handle&&activePad&&activePad.contains(handle)){
     e.preventDefault();
-    closePad();
+    setCollapsed(!activePad.classList.contains('tt99-context-pad-collapsed'));
     return;
   }
 
@@ -247,7 +262,7 @@ document.addEventListener('click',e=>{
     return;
   }
 
-  if(activePad)closePad();
+  if(activePad)hidePad();
 });
 
 document.addEventListener('keydown',e=>{
@@ -255,9 +270,9 @@ document.addEventListener('keydown',e=>{
   const h=e.target.closest?.('.tt99-context-pad-handle');
   if(h&&(e.key==='Enter'||e.key===' ')){
     e.preventDefault();
-    closePad();
+    setCollapsed(!activePad.classList.contains('tt99-context-pad-collapsed'));
   }else if(e.key==='Escape'){
-    closePad();
+    hidePad();
   }
 });
 
