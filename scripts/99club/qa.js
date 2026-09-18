@@ -115,6 +115,24 @@ function checkSpecific(id,p){
   }
 }
 
+if(G&&G.ENGINES&&typeof G.generateWorkedExample==='function'){
+  const visible=Object.entries(G.ENGINES).filter(([,def])=>!def?.hiddenFromLibrary).map(([id])=>id).sort();
+  let workedOk=0;
+  for(const id of visible){
+    const def=G.ENGINES[id],settings=settingsFor(id,def,'standard');
+    if(def?.workedExampleSupport===false){fail('worked-pdf',`${id} is visible but declares workedExampleSupport=false`);continue;}
+    let ex=null;
+    try{ex=G.generateWorkedExample(id,settings,`qa:worked:${id}`,[]);}catch(e){fail('worked-pdf',`${id} worked example threw`,e.stack||e.message);continue;}
+    if(!ex){fail('worked-pdf',`${id} has no pack worked example`);continue;}
+    if(ex.engineId!==id)fail('worked-pdf',`${id} worked example engineId mismatch`,String(ex.engineId));
+    if(ex.kind!==id)fail('worked-pdf',`${id} worked example kind mismatch`,String(ex.kind));
+    for(const field of ['goal','tip','commonMistake'])if(!String(ex[field]||'').trim())fail('worked-pdf',`${id} worked example missing ${field}`);
+    for(const field of ['rules','steps'])if(!Array.isArray(ex[field])||!ex[field].length)fail('worked-pdf',`${id} worked example missing ${field}`);
+    if(ex.engineId===id&&ex.kind===id&&ex.goal&&ex.tip&&ex.commonMistake&&Array.isArray(ex.rules)&&ex.rules.length&&Array.isArray(ex.steps)&&ex.steps.length)workedOk++;
+  }
+  if(workedOk===visible.length)ok('worked-pdf',`all ${visible.length} visible games have matching instructional worked examples`);
+}
+
 if(G&&G.ENGINES){
   const ids=Object.keys(G.ENGINES).sort();
   for(const id of ids){
