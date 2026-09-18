@@ -20,7 +20,7 @@ This is the reviewed wording baseline for pupil-facing instructions. The aim is 
 | Number Search | Solve each calculation, then find its answer in the number grid. |
 | Arithmetic Equation Crossgrid | Fill the blanks so every horizontal and vertical equation is correct. |
 | Target Number Challenge | Use the given numbers and allowed operations to make each target. |
-| Broken Calculator | Use only the working calculator keys to make each target. |
+| Broken Calculator | Use only the working calculator keys to make each target. Use normal order of operations: × and ÷ before + and −. |
 | Operation Codebreaker | Make every equation true. Use the operator key to turn each numbered sign into a code digit, then use +/− shifts to crack the secret word. |
 | Kakuro / Cross Sums | Fill white cells with 1–9. Each run must add to its clue, with no repeated digit in that run. |
 | Arithmetic Cages | Fill the grid with 1–N. Use each number once in every row and column. Each cage must make its target using the operation shown. |
