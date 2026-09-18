@@ -29,6 +29,7 @@ const orphan=guides.filter(id=>!runtimeSet.has(id));
 const requiredGuideSnippets=[
   ['crossword','RHOMBUS has 7 letters'],
   ['operationgrid','then decode the secret maths word'],
+  ['numberwheels','Factor Pair Web'],
   ['symbols','18 is the 18th letter of the alphabet'],
   ['balance','final scale must use every collected weight once'],
   ['takuzu',"takuzu:miniGrid([['0','0','1','1'],['0','1','0','1'],['1','0','1','0'],['1','1','0','0']]"],
