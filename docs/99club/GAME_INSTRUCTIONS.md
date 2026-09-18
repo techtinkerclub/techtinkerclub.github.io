@@ -13,7 +13,7 @@ This is the reviewed wording baseline for pupil-facing instructions. The aim is 
 | Arithmagons | Use the + or × shown on each connection. Work out the missing numbers. |
 | Magic Number Shapes | Variant-specific wording is retained because Missing, Check and Repair versions have different tasks. |
 | Number Trails & Snakes | Follow the number rule along the trail. Fill the blanks. |
-| Number Connections | Use the rule shown in each diagram to fill the missing numbers. |
+| Number Connections | Variant-specific wording is retained: Rule Wheels use the centre operation, Factor Pair Webs multiply each pair to the centre, and Sum & Product Diamonds multiply to the top and add to the bottom. |
 | Correct-Answer Maze | Solve each question. Move through the maze using the correct answers until you reach the finish. |
 | Number Property Maze | Move from START to FINISH only through numbers that match the rule. |
 | Maths Crossnumber | Solve the clues and write each answer into the numbered grid. |
