@@ -67,7 +67,7 @@ sitemap: true
 <script src="/assets/99club/games-engine.js?v=15"></script>
 <script src="/assets/99club/games-symbol-decoder-v189.js?v=1"></script>
 <script src="/assets/99club/games-focus-topics-v145.js?v=1"></script>
-<script src="/assets/99club/games-pack-mode.js?v=2"></script>
+<script src="/assets/99club/games-pack-mode.js?v=3"></script>
 <script src="/assets/99club/games-performance-v142.js?v=1"></script>
 <script src="/assets/99club/games-performance-v149.js?v=1"></script>
 <script src="/assets/99club/games-preview-pager-v155.js?v=1"></script>
@@ -96,11 +96,11 @@ sitemap: true
 <script src="/assets/99club/games-pdf-new-puzzles-v197.js?v=1"></script>
 <script src="/assets/99club/games-pdf-extra-puzzles-v204.js?v=1"></script>
 <script src="/assets/99club/games-layout-v1321.js?v=2"></script>
-<script src="/assets/99club/games-app.js?v=28" defer></script>
+<script src="/assets/99club/games-app.js?v=29" defer></script>
 <script src="/assets/99club/games-operationgrid-print-v158-ui.js?v=1" defer></script>
 <script src="/assets/99club/games-operationgrid-print-v160-ui.js?v=1" defer></script>
 <script src="/assets/99club/games-operationgrid-print-v155-ui.js?v=1" defer></script>
-<script src="/assets/99club/games-random-ui.js?v=3" defer></script>
+<script src="/assets/99club/games-random-ui.js?v=4" defer></script>
 <script src="/assets/99club/games-ui-v134.js?v=1" defer></script>
 <script src="/assets/99club/games-puzzle-redesign-v136.js?v=2" defer></script>
 <script src="/assets/99club/games-v137.js?v=1" defer></script>
