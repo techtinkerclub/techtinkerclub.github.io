@@ -9,6 +9,19 @@ const runtime=[...new Set((report.games||[]).map(x=>x.id).filter(Boolean))].sort
 const help=fs.readFileSync(path.join(ROOT,'assets/99club/games-help-guides.js'),'utf8');
 const guides=[...help.matchAll(/\{id:'([^']+)'[^\n]*title:'([^']*)'/g)].filter(m=>m[2]&&!m[1].includes('placeholder')).map(m=>m[1]);
 const guideSet=new Set(guides),runtimeSet=new Set(runtime);
+const visualStart=help.indexOf('const V={'),visualEnd=help.indexOf('};\n    return V[id]',visualStart);
+const visualBlock=visualStart>=0&&visualEnd>visualStart?help.slice(visualStart,visualEnd):'';
+const visualIds=[...visualBlock.matchAll(/^\s{6}([a-z0-9]+):/gm)].map(m=>m[1]);
+const missingVisuals=guides.filter(id=>!visualIds.includes(id));
+if(missingVisuals.length){console.error('Visible guides missing worked-example visuals: '+missingVisuals.join(', '));process.exitCode=1;}
+const guideLines=help.split('\n').filter(line=>/^\s*\{id:'[^']+',title:'[^']+'/.test(line)&&!line.includes('hidden:true'));
+for(const line of guideLines){
+  const id=(line.match(/\{id:'([^']+)'/)||[])[1]||'unknown';
+  for(const field of [',goal:',',rules:',',example:',',strategy:',',tip:',',watch:']){
+    if(!line.includes(field)){console.error(`Guide ${id} is missing required field ${field.slice(1,-1)}`);process.exitCode=1;}
+  }
+}
+
 const missing=runtime.filter(id=>!guideSet.has(id));
 const orphan=guides.filter(id=>!runtimeSet.has(id));
 
