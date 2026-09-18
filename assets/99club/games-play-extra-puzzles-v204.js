@@ -95,7 +95,7 @@ function prMount(root,p,ctx){
   function render(){edgeButtons.forEach(b=>{const k=b.dataset.edge;b.classList.toggle('is-on',edges.has(k));b.classList.toggle('wrong',bad.has(k));b.classList.toggle('hint',hintEdge===k);b.disabled=finished;});}
   function snap(){return [...edges].sort();}function empty(){return [];}function restore(s){edges=new Set(Array.isArray(s)?s:[]);bad.clear();hintEdge='';drawing=false;lastPaint='';render();}
   function paint(k){if(!k||k===lastPaint||finished||ctx.isPaused?.())return;lastPaint=k;if(paintMode==='add')edges.add(k);else edges.delete(k);bad.clear();hintEdge='';render();ctx.onChange?.(snap());}
-  function pointerDown(e){const b=e.target.closest('[data-edge]');if(!b||finished||ctx.isPaused?.())return;e.preventDefault();drawing=true;lastPaint='';paintMode=edges.has(b.dataset.edge)?'remove':'add';grid.setPointerCapture?.(e.pointerId);paint(b.dataset.edge);}
+  function pointerDown(e){const b=e.target.closest('[data-edge]');if(!b||finished||ctx.isPaused?.())return;e.preventDefault();drawing=true;lastPaint='';paintMode=edges.has(b.dataset.edge)?'remove':'add';try{grid.setPointerCapture?.(e.pointerId);}catch(_){}paint(b.dataset.edge);}
   function pointerMove(e){if(!drawing||finished||ctx.isPaused?.())return;const el=document.elementFromPoint?.(e.clientX,e.clientY),b=el?.closest?.('[data-edge]');if(b&&root.contains(b))paint(b.dataset.edge);}
   function pointerUp(){drawing=false;lastPaint='';}
   grid.addEventListener('pointerdown',pointerDown);grid.addEventListener('pointermove',pointerMove);grid.addEventListener('pointerup',pointerUp);grid.addEventListener('pointercancel',pointerUp);
