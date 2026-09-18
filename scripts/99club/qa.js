@@ -52,6 +52,7 @@ const engineLoadOrder=[
   'assets/99club/games-operationgrid-v153.js',
   'assets/99club/games-brokencalc-quality-v152.js',
   'assets/99club/games-number-logic.js',
+  'assets/99club/games-extra-puzzles-v204.js',
   'assets/99club/games-number-towers-v137.js',
   'assets/99club/games-number-towers-v137-unique.js',
   'assets/99club/games-takuzu-v139.js',
