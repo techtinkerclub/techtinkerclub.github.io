@@ -29,6 +29,7 @@
   const initialOpen=new Set(GAME_CATEGORIES.filter(cat=>cat.engines.some(id=>initialSettings.selectedEngines.includes(id))).map(cat=>cat.id));
   if(!initialOpen.size)initialOpen.add('vocabulary');
   const state={settings:initialSettings,customVocabulary:loadVocabulary(),seed:newSeed(),previewAnswers:false,activeEngine:'',openCategories:initialOpen,personalisationOpen:false,replaceCounter:0,status:'Choose the maths, include the games you want, then configure each game separately.'};
+  const DIRECT_WORKED_ID=new URLSearchParams(location.search).get('worked')||'';
   state.pack=G.generatePack(state.settings,state.seed,state.customVocabulary);
 
   function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -53,6 +54,41 @@
   function humanDate(value){if(!value)return '';const m=String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return String(value);const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));return d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
   function categorySelected(cat,eligible=compatibleSet()){return cat.engines.filter(id=>eligible.has(id)&&state.settings.selectedEngines.includes(id));}
   function selectedEngineCount(){return selectedCompatible().length;}
+  function directWorkedExample(id){
+    if(!id||!G.ENGINES[id]||G.ENGINES[id].hiddenFromLibrary)return null;
+    let s=G.normalizeSettings(state.settings);
+    s.selectedEngines=[id];s.workedExamples='front';
+    if(s.engineSettings?.[id]?.difficulty==='mixed')s.engineSettings[id]={...s.engineSettings[id],difficulty:'standard'};
+    let ex=null;try{ex=G.generateWorkedExample(id,s,`guide:${id}:current`,state.customVocabulary);}catch(_){}
+    if(ex)return ex;
+    const def=G.ENGINES[id],entries=Object.entries(def?.compatibility||{}),topic=(entries.find(([,v])=>v==='excellent')||entries.find(([,v])=>v==='reasonable')||[])[0];
+    if(topic){
+      const min=Math.max(1,Number(def?.topicYearMin?.[topic]||1)),max=Math.max(min,Number(def?.topicYearMax?.[topic]||6));
+      s=G.normalizeSettings({...s,topics:[topic],minYear:min,maxYear:max,selectedEngines:[id],workedExamples:'front'});
+      if(s.engineSettings?.[id]?.difficulty==='mixed')s.engineSettings[id]={...s.engineSettings[id],difficulty:'standard'};
+      try{ex=G.generateWorkedExample(id,s,`guide:${id}:fallback`,state.customVocabulary);}catch(_){}
+    }
+    return ex;
+  }
+  function closeDirectWorked(){
+    const overlay=document.getElementById('tt99-direct-worked-overlay');
+    if(window.opener){window.close();setTimeout(()=>{if(!document.hidden){overlay?.remove();document.body.classList.remove('tt99-direct-worked-open');}},80);return;}
+    overlay?.remove();document.body.classList.remove('tt99-direct-worked-open');
+    const u=new URL(location.href);u.searchParams.delete('worked');history.replaceState(null,'',u.pathname+u.search+u.hash);
+  }
+  function renderDirectWorkedGuide(){
+    if(!DIRECT_WORKED_ID)return;
+    const ex=directWorkedExample(DIRECT_WORKED_ID);
+    if(!ex)return;
+    document.getElementById('tt99-direct-worked-overlay')?.remove();
+    const overlay=document.createElement('section');
+    overlay.id='tt99-direct-worked-overlay';overlay.className='tt99-direct-worked-overlay';
+    overlay.setAttribute('aria-label',`${G.ENGINES[DIRECT_WORKED_ID]?.title||'Game'} worked example`);
+    overlay.innerHTML=`<div class="tt99-direct-worked-toolbar"><strong>${esc(G.ENGINES[DIRECT_WORKED_ID]?.title||'Worked example')}</strong><span>This is the same worked-example page used in printable packs.</span><button type="button" data-direct-worked-close>Close</button><button type="button" data-direct-worked-print>Print</button></div><div class="tt99-direct-worked-body"><article class="tt99-game-paper tt99-worked-page">${paperHeader('worked',1)}<div class="tt99-worked-grid count-1">${renderWorkedExample(ex)}</div><footer><span>Worked example uses separate practice data</span><span>techtinker.club/tools/99-club/games/</span></footer></article></div>`;
+    document.body.classList.add('tt99-direct-worked-open');document.body.appendChild(overlay);
+    overlay.querySelector('[data-direct-worked-close]')?.addEventListener('click',closeDirectWorked);
+    overlay.querySelector('[data-direct-worked-print]')?.addEventListener('click',()=>{document.body.classList.add('tt99-print-direct-worked');window.print();});
+  }
 
   function render(){
     const eligible=compatibleSet();
@@ -66,6 +102,7 @@
           <main class="tt99-games-preview">${renderPreviewToolbar()}<div class="tt99-games-preview-stack tt99-games-pupil-pages">${renderPupilPreview()}</div><div class="tt99-games-preview-stack tt99-games-answer-pages">${renderPages(true)}</div></main></div>
       </div>`;
     bind();
+    renderDirectWorkedGuide();
   }
 
   function renderMathsCard(){
@@ -425,6 +462,8 @@
     root.querySelectorAll('[data-replace-activity]').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();replaceActivity(btn.dataset.replaceActivity);}));root.querySelectorAll('[data-replace-word]').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();replaceWord(btn.dataset.replaceWord);}));
     root.querySelector('#vocab-add')?.addEventListener('click',addVocabulary);root.querySelectorAll('[data-delete-vocab]').forEach(btn=>btn.addEventListener('click',()=>{const i=Number(btn.dataset.deleteVocab);state.customVocabulary.splice(i,1);refreshPack(false);state.status='Personal vocabulary entry removed from this browser.';render();}));root.querySelector('#vocab-export')?.addEventListener('click',exportVocabulary);root.querySelector('#vocab-import')?.addEventListener('change',importVocabulary);root.querySelector('#vocab-clear')?.addEventListener('click',()=>{if(!state.customVocabulary.length)return;if(confirm('Clear all My vocabulary entries stored in this browser?')){state.customVocabulary=[];refreshPack(false);state.status='My vocabulary cleared. Built-in vocabulary was not changed.';render();}});
   }
+
+  window.addEventListener('afterprint',()=>document.body.classList.remove('tt99-print-direct-worked'));
 
   async function handleLogo(e){const file=e.target.files?.[0];if(!file)return;if(file.size>8*1024*1024){state.status='Logo is too large. Please choose an image under 8 MB.';render();return;}try{const result=await imageFileToJpeg(file,360);Object.assign(state.settings.personalisation,{logoDataUrl:result.dataUrl,logoWidth:result.width,logoHeight:result.height});save();state.status='School logo added.';render();}catch(err){state.status='That logo could not be read. Try a PNG, JPG or WebP.';render();}}
   function imageFileToJpeg(file,maxSize){return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{const scale=Math.min(1,maxSize/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale)),c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);URL.revokeObjectURL(url);resolve({dataUrl:c.toDataURL('image/jpeg',0.9),width:w,height:h});};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('image'));};img.src=url;});}
