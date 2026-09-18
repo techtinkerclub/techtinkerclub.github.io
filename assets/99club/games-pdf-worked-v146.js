@@ -8,7 +8,7 @@ const PDF=global.TT99GamesPDF,P=global.TT99SimplePDF;if(!PDF||!P||PDF.__workedV1
 const previous=PDF.buildDocument,PW=P.PAGE_W,PH=P.PAGE_H,M=34;
 const INK=[38,66,72],MUT=[99,119,123],TEAL=[22,132,122],LINE=[198,215,216],PALE=[247,250,250],HIT=[232,247,243],WHITE=[255,255,255],WATCH=[130,84,60],GEM=[25,139,128];
 const BASE_KINDS=new Set(['wordsearch','crossword','pyramid','magic','sudoku','kakuro','futoshiki','arithmeticcages','nonogram','numberpath','arithmagon','magicshape','maze','propertymaze','crossnumber','numbersearch','equationcrossgrid','numbertrail','target','brokencalc','symbols','domino','operationgrid','numberwheels','functionmachine','balance','shikaku']);
-const MODERN_KINDS=new Set(['sumplete','numbertowers','takuzu','killersudoku','hashi','mathsmines','alphametics','balance','cornersum','linkedsum','colourlogic','mobilebalance','diagonalpath','squaresearch','insertops','perimeterregions','operationgrid','symbols']);
+const MODERN_KINDS=new Set(['sumplete','numbertowers','takuzu','killersudoku','hashi','mathsmines','alphametics','balance','cornersum','linkedsum','colourlogic','mobilebalance','diagonalpath','squaresearch','insertops','perimeterregions','operationgrid','symbols','numberwheels']);
 function n(v){return Number(v).toFixed(2).replace(/\.00$/,'');}
 function rgb(c){return c.map(v=>Math.max(0,Math.min(255,v))/255).map(n).join(' ');}
 function esc(s){return P.asciiish(String(s??'')).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');}
@@ -105,9 +105,20 @@ function miniSymbolDecoder(c,x,y,w){
   text(c,bx+bw/2,y+34,'1=A, 2=B, ... 26=Z',7,{color:MUT,align:'center'});
   return {h:42,caption:'Solve the symbol value first, then convert that number to its alphabet letter before decoding the word.'};
 }
+function miniNumberConnections(c,x,y,w){
+  const bw=Math.min(300,w-36),bx=x+w/2-bw/2;
+  rect(c,bx,y,bw,61,PALE,[184,207,205],.75);
+  text(c,bx+10,y+16,'RULE WHEEL',5.5,{bold:true,color:MUT});
+  text(c,bx+86,y+16,'4 x 6 = 24',7.5,{bold:true,color:TEAL});
+  text(c,bx+10,y+35,'FACTOR WEB',5.5,{bold:true,color:MUT});
+  text(c,bx+86,y+35,'3 x 4 = 12',7.5,{bold:true,color:TEAL});
+  text(c,bx+10,y+54,'DIAMOND',5.5,{bold:true,color:MUT});
+  text(c,bx+86,y+54,'3 x 4 = 12   and   3 + 4 = 7',7.2,{bold:true,color:TEAL});
+  return {h:61,caption:'First identify the diagram style: a Rule Wheel, Factor Pair Web or Sum & Product Diamond. Each style has its own number relationship.'};
+}
 
 function miniGeneric(c,x,y,w,ex){const bw=Math.min(300,w-50),bx=x+w/2-bw/2;rect(c,bx,y,bw,42,PALE,[190,215,211],.7);text(c,bx+bw/2,y+16,titleOf(ex),8,{bold:true,color:TEAL,align:'center'});text(c,bx+bw/2,y+31,'Follow the rules and worked steps below.',6.8,{color:MUT,align:'center'});return {h:42,caption:'This reference example uses separate practice data.'};}
-function mini(c,kind,x,y,w,ex){if(kind==='sumplete')return miniSumplete(c,x,y,w);if(kind==='numbertowers')return miniTowers(c,x,y,w);if(kind==='takuzu')return miniTakuzu(c,x,y,w);if(kind==='killersudoku')return miniKiller(c,x,y,w);if(kind==='hashi')return miniHashi(c,x,y,w);if(kind==='mathsmines')return miniMines(c,x,y,w);if(kind==='alphametics')return miniAlpha(c,x,y,w);if(kind==='balance')return miniBalanceLab(c,x,y,w);if(kind==='cornersum')return miniCornerSum(c,x,y,w);if(kind==='linkedsum')return miniLinkedSum(c,x,y,w);if(kind==='colourlogic')return miniColourLogic(c,x,y,w);if(kind==='mobilebalance')return miniMobileBalance(c,x,y,w);if(kind==='diagonalpath')return miniDiagonalPath(c,x,y,w);if(kind==='squaresearch')return miniSquareSearch(c,x,y,w);if(kind==='insertops')return miniInsertOps(c,x,y,w);if(kind==='perimeterregions')return miniPerimeterRegions(c,x,y,w);if(kind==='operationgrid')return miniOperationCodebreaker(c,x,y,w);if(kind==='symbols')return miniSymbolDecoder(c,x,y,w);return miniGeneric(c,x,y,w,ex);}
+function mini(c,kind,x,y,w,ex){if(kind==='sumplete')return miniSumplete(c,x,y,w);if(kind==='numbertowers')return miniTowers(c,x,y,w);if(kind==='takuzu')return miniTakuzu(c,x,y,w);if(kind==='killersudoku')return miniKiller(c,x,y,w);if(kind==='hashi')return miniHashi(c,x,y,w);if(kind==='mathsmines')return miniMines(c,x,y,w);if(kind==='alphametics')return miniAlpha(c,x,y,w);if(kind==='balance')return miniBalanceLab(c,x,y,w);if(kind==='cornersum')return miniCornerSum(c,x,y,w);if(kind==='linkedsum')return miniLinkedSum(c,x,y,w);if(kind==='colourlogic')return miniColourLogic(c,x,y,w);if(kind==='mobilebalance')return miniMobileBalance(c,x,y,w);if(kind==='diagonalpath')return miniDiagonalPath(c,x,y,w);if(kind==='squaresearch')return miniSquareSearch(c,x,y,w);if(kind==='insertops')return miniInsertOps(c,x,y,w);if(kind==='perimeterregions')return miniPerimeterRegions(c,x,y,w);if(kind==='operationgrid')return miniOperationCodebreaker(c,x,y,w);if(kind==='symbols')return miniSymbolDecoder(c,x,y,w);if(kind==='numberwheels')return miniNumberConnections(c,x,y,w);return miniGeneric(c,x,y,w,ex);}
 function drawWorked(c,ex,x,y,w,h){
   rect(c,x,y,w,h,[251,253,252],[201,220,218],.8);text(c,x+12,y+21,titleOf(ex),13,{bold:true});let cy=y+42;
   if(ex?.goal)cy+=wrapped(c,x+12,cy,`Goal: ${ex.goal}`,w-24,8.0,{bold:true,color:INK,maxLines:2})+5;
