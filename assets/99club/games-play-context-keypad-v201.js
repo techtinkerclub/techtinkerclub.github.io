@@ -68,7 +68,7 @@ function autoOpenForCurrentInput(){
   if(inputProfile()==='touch')return true;
   return window.innerWidth<=700;
 }
-function reserveBoardSpace(){
+function keepClearOfPad(){
   return inputProfile()!=='desktop'||window.innerWidth<=760;
 }
 function padLabel(pad){
@@ -111,13 +111,9 @@ function clearBoardSpace(){
 }
 function setPadSpace(){
   const b=board();
-  if(!b||!activePad||!document.contains(activePad))return;
-  requestAnimationFrame(()=>{
-    if(!activePad||!document.contains(activePad))return;
-    const h=activePad.getBoundingClientRect().height;
-    b.style.setProperty('--tt99-context-pad-space',Math.ceil(h+24)+'px');
-    b.classList.toggle('tt99-context-pad-reserve',reserveBoardSpace());
-  });
+  if(!b)return;
+  b.classList.remove('tt99-context-pad-reserve');
+  b.style.removeProperty('--tt99-context-pad-space');
 }
 function setCollapsed(collapsed){
   if(!activePad)return;
@@ -133,7 +129,7 @@ function setCollapsed(collapsed){
   if(!collapsed)keepEntryVisible(activeEntry);
 }
 function keepEntryVisible(entry){
-  if(!entry||!activePad||!reserveBoardSpace())return;
+  if(!entry||!activePad||!keepClearOfPad())return;
   requestAnimationFrame(()=>{
     if(!activePad||!document.contains(activePad)||!document.contains(entry))return;
     const h=activePad.getBoundingClientRect().height;
