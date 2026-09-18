@@ -148,5 +148,5 @@ sitemap: true
   </article>
 </div>
 
-<script src="/assets/99club/games-help-guides.js?v=1.3.1" defer></script>
+<script src="/assets/99club/games-help-guides.js?v=1.3.2" defer></script>
 <script src="/assets/99club/games-help-operationgrid-v153.js?v=1" defer></script>
