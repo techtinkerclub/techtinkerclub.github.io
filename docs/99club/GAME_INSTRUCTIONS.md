@@ -21,13 +21,13 @@ This is the reviewed wording baseline for pupil-facing instructions. The aim is 
 | Arithmetic Equation Crossgrid | Fill the blanks so every horizontal and vertical equation is correct. |
 | Target Number Challenge | Use the given numbers and allowed operations to make each target. |
 | Broken Calculator | Use only the working calculator keys to make each target. |
-| Operation Codebreaker | Find each missing operation. Use the code key to turn it into a digit, then crack the unlock code. |
+| Operation Codebreaker | Make every equation true. Use the operator key to turn each numbered sign into a code digit, then use +/− shifts to crack the secret word. |
 | Kakuro / Cross Sums | Fill white cells with 1–9. Each run must add to its clue, with no repeated digit in that run. |
 | Arithmetic Cages | Fill the grid with 1–N. Use each number once in every row and column. Each cage must make its target using the operation shown. |
 | Sumplete | Cross out numbers so the numbers left make every row target and every column target. |
-| Symbol Equations | Use the clues to find each symbol's value. Then solve the mystery expression. |
+| Symbol Decoder | Use the clues to find each symbol's value, convert the values to letters, then reveal the secret word. |
 | Function Machines | Follow the machine from Input to Output. If Input is missing, work backwards using inverse operations. |
-| Equation Repair | Repair every equation. Use each number tile once; Standard/Challenge may include decoys. |
+| Balance the Equation | Balance each equation to collect its weight. Then use every collected weight once on the final scale so both pans have the same total. |
 | Futoshiki | Fill the grid with 1–N. Use each number once in every row and column. The pointed end of each inequality sign faces the smaller number. |
 | Nonogram / Number Picture | Shade cells to match the row and column clues. Each clue gives a block of shaded cells; separate blocks by at least one blank cell. |
 | Number Path | Fill the missing numbers from 1 to N². Consecutive numbers must touch horizontally or vertically, not diagonally. |
@@ -37,6 +37,15 @@ This is the reviewed wording baseline for pupil-facing instructions. The aim is 
 | Bridges / Hashi | Join the islands with horizontal or vertical bridges. Match each island number, use at most two bridges between a pair, do not cross bridges, and connect every island. |
 | Maths Mines / Hidden Gems | Find the stated number of hidden gems. Each clue tells how many gems touch that square, including diagonally. Clue squares cannot contain gems. |
 | Word Codes / Alphametics | Replace each letter with a digit so the addition is correct. The same letter keeps the same digit, different letters use different digits, and a word cannot start with 0. |
+| Shikaku / Rectangle Division | Divide the grid into rectangles. Every rectangle must contain exactly one clue, and that clue gives its area in squares. |
+| Corner Sum Grid | Place 1–9 exactly once. Each circle is the total of the four surrounding cells. |
+| Linked Sum Grid | Place 1–9 exactly once. Match every four-cell circle total and every A/B/C group total. |
+| Colour Logic | Fill the row or grid so every colour clue is true at the same time. |
+| Mobile Balance | Every horizontal bar is balanced. Work out each shape value, treating a solved lower branch as one combined weight higher up. |
+| Diagonal Number Path | Fill the grid with consecutive numbers. Consecutive numbers may touch by a side or a corner. |
+| Target Square Search | Find every non-overlapping 2 × 2 square whose four numbers add to the target. |
+| Insert the Operations | Choose operation signs between the printed numbers so the expression reaches the target. Use normal order of operations. |
+| Perimeter Regions | Divide the grid into regions. Each region contains one clue, and that clue is its perimeter in unit grid edges. |
 
 ## Style rules
 
