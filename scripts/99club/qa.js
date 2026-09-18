@@ -204,6 +204,15 @@ if(!read('assets/99club/games-play-core-v2.js').includes('data-hint-drag'))fail(
 if(!read('assets/99club/games-play-core-v2.js').includes('tt99-play-hint-popup-close'))fail('hint-ux','Hint close control missing');
 
 
+const packMode=read('assets/99club/games-pack-mode.js'),randomUi=read('assets/99club/games-random-ui.js'),gamesApp=read('assets/99club/games-app.js');
+if(!packMode.includes('storagePerPageKey'))fail('pack-ui','Pack mode does not persist activities-per-sheet');
+if(!packMode.includes('activitiesPerSheet,sheets:Math.ceil(activityCount/activitiesPerSheet)'))fail('pack-ui','Sheet count is not derived from activity count and per-sheet density');
+if(!randomUi.includes('games-activities-per-sheet'))fail('pack-ui','Activities-per-sheet control missing from active pack UI');
+if(!randomUi.includes('<option value="1"')||!randomUi.includes('<option value="2"'))fail('pack-ui','Pack density must be limited to one or two activities per sheet');
+if(randomUi.includes('<option value="3"'))fail('pack-ui','Unsupported three-activities-per-sheet option returned');
+if(!gamesApp.includes('type="hidden" id="games-sheets"'))fail('pack-ui','Legacy sheet-count control is still visible in base UI');
+ok('pack-ui','Activity count + one/two-per-sheet pack controls checked');
+
 /* ---------- output ---------- */
 const report={generatedAt:new Date().toISOString(),samplesPerDifficulty:SAMPLES,generated,engineCount:G?.ENGINES?Object.keys(G.ENGINES).length:0,onlineAdapterCount:adapterIds.length,guideCount:guideIds.length,failures,warnings,notes};
 const out=path.join(ROOT,'99club-qa-report.json');fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');
