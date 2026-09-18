@@ -137,8 +137,22 @@ function prepare(){
         view.destroy?.();
       }catch(e){fail('mobile-drawer',(e&&e.stack)||String(e));}
     }
+    async function hintPopupTest(){
+      try{
+        const btn=document.getElementById('tt99-play-hint'),popup=document.getElementById('tt99-play-hint-popup'),close=document.getElementById('tt99-play-hint-popup-close');
+        if(!btn||!popup||!close)return fail('hint-popup','hint popup controls missing');
+        btn.click();await sleep(80);
+        if(popup.hidden)fail('hint-popup','Hint did not open floating popup');
+        else{
+          const r=popup.getBoundingClientRect();
+          if(r.width<180||r.height<50)fail('hint-popup','floating hint popup has invalid dimensions');
+          close.click();await sleep(30);
+          if(!popup.hidden)fail('hint-popup','close control did not dismiss popup');else pass('hint-popup','floating hint opens and closes correctly');
+        }
+      }catch(e){fail('hint-popup',(e&&e.stack)||String(e));}
+    }
     async function run(){
-      try{await sleep(500);await genericAdapterTests();await brokenCalcTest();await colourFillTest();await perimeterDirectTest();await alphameticsVarietyTest();await groupedLibraryTest();await drawerTest();}
+      try{await sleep(500);await genericAdapterTests();await brokenCalcTest();await colourFillTest();await perimeterDirectTest();await alphameticsVarietyTest();await groupedLibraryTest();await drawerTest();await hintPopupTest();}
       catch(e){fail('runner',(e&&e.stack)||String(e));}
       finally{finish();}
     }
