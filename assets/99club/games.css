@@ -798,28 +798,3 @@
   .tt99-crossnumber .tt99-crossword-grid.is-tall{height:auto!important;width:min(100%,430px)!important}
   .tt99-kakuro .tt99-kakuro-grid{width:min(100%,430px)!important}
 }
-
-/* v2.06 — direct worked-example guide view */
-.tt99-direct-worked-open{overflow:hidden!important}
-.tt99-direct-worked-overlay{position:fixed;inset:0;z-index:3200;background:#eef2f3;overflow:auto}
-.tt99-direct-worked-toolbar{position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #cfdada;background:rgba(238,242,243,.96);backdrop-filter:blur(7px)}
-.tt99-direct-worked-toolbar strong{color:#214e53;font-size:.82rem}
-.tt99-direct-worked-toolbar span{color:#6f8185;font-size:.62rem;flex:1}
-.tt99-direct-worked-toolbar button{appearance:none;border:1px solid #bccccc;border-radius:9px;background:#fff;color:#31585d;padding:7px 10px;font:800 .66rem/1 system-ui;cursor:pointer}
-.tt99-direct-worked-toolbar button[data-direct-worked-print]{background:#147d75;border-color:#147d75;color:#fff}
-.tt99-direct-worked-body{padding:18px}
-.tt99-direct-worked-body .tt99-game-paper{margin:0 auto}
-@media(max-width:700px){
-  .tt99-direct-worked-toolbar{align-items:flex-start;flex-wrap:wrap}
-  .tt99-direct-worked-toolbar span{flex-basis:100%;order:3}
-  .tt99-direct-worked-body{padding:8px}
-}
-@media print{
-  body.tt99-print-direct-worked *{visibility:hidden!important}
-  body.tt99-print-direct-worked .tt99-direct-worked-overlay,
-  body.tt99-print-direct-worked .tt99-direct-worked-overlay *{visibility:visible!important}
-  body.tt99-print-direct-worked .tt99-direct-worked-overlay{position:absolute!important;inset:0!important;background:#fff!important;overflow:visible!important}
-  body.tt99-print-direct-worked .tt99-direct-worked-toolbar{display:none!important}
-  body.tt99-print-direct-worked .tt99-direct-worked-body{padding:0!important}
-  body.tt99-print-direct-worked .tt99-game-paper{margin:0!important}
-}
