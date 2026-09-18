@@ -10,6 +10,7 @@
 
   const STORAGE_MODE='tt99-games-pack-mode-v1';
   const STORAGE_COUNT='tt99-games-activity-count-v1';
+  const STORAGE_PER_PAGE='tt99-games-activities-per-sheet-v2';
   const STORAGE_DIFFICULTY='tt99-games-random-difficulty-v1';
   const STORAGE_WEIGHTS='tt99-games-random-difficulty-weights-v1';
   const SINGLE_DIFFICULTIES=['easy','standard','challenge'];
@@ -63,10 +64,15 @@
     if(input._forceRandomDifficultyWeights)return normalizeDifficultyWeights(input._forceRandomDifficultyWeights);
     return parseStoredWeights()||normalizeDifficultyWeights(input.randomDifficultyWeights||DEFAULT_WEIGHTS);
   }
+  function resolveActivitiesPerSheet(input,base){
+    const stored=storageGet(STORAGE_PER_PAGE);
+    const raw=stored??input.activitiesPerSheet??base.activitiesPerSheet??2;
+    return Number(raw)===1?1:2;
+  }
   function normalizeSettings(input={}){
     const base=baseNormalize(input);
-    const activityCount=resolveCount(input,base);
-    return {...base,activityCount,packMode:resolveMode(input),randomDifficulty:resolveDifficulty(input),randomDifficultyWeights:resolveDifficultyWeights(input),activitiesPerSheet:2,sheets:Math.ceil(activityCount/2)};
+    const activityCount=resolveCount(input,base),activitiesPerSheet=resolveActivitiesPerSheet(input,base);
+    return {...base,activityCount,packMode:resolveMode(input),randomDifficulty:resolveDifficulty(input),randomDifficultyWeights:resolveDifficultyWeights(input),activitiesPerSheet,sheets:Math.ceil(activityCount/activitiesPerSheet)};
   }
   function manualSettings(settings){
     const s=normalizeSettings(settings);
@@ -143,7 +149,7 @@
   }
   function generatePack(settings,seed='games',customVocabulary=[]){
     const s=normalizeSettings(settings);
-    let requested={...s,activitiesPerSheet:2,sheets:Math.ceil(s.activityCount/2),workedExamples:'none',_forcePackMode:'manual',packMode:'manual'};
+    let requested={...s,activitiesPerSheet:s.activitiesPerSheet,sheets:Math.ceil(s.activityCount/s.activitiesPerSheet),workedExamples:'none',_forcePackMode:'manual',packMode:'manual'};
 
     if(s.packMode==='random'){
       const compatible=baseCompatible(requested);
@@ -179,7 +185,7 @@
     selectedCompatibleEngines,
     generatePack,
     generateRandomPack,
-    PACK_MODE:{version:'1.2.0',storageModeKey:STORAGE_MODE,storageCountKey:STORAGE_COUNT,storageDifficultyKey:STORAGE_DIFFICULTY,storageDifficultyWeightsKey:STORAGE_WEIGHTS,difficulties:RANDOM_DIFFICULTIES.slice(),singleDifficulties:SINGLE_DIFFICULTIES.slice(),defaultDifficultyWeights:{...DEFAULT_WEIGHTS},maxActivities:40}
+    PACK_MODE:{version:'1.2.0',storageModeKey:STORAGE_MODE,storageCountKey:STORAGE_COUNT,storageDifficultyKey:STORAGE_DIFFICULTY,storageDifficultyWeightsKey:STORAGE_WEIGHTS,storagePerPageKey:STORAGE_PER_PAGE,difficulties:RANDOM_DIFFICULTIES.slice(),singleDifficulties:SINGLE_DIFFICULTIES.slice(),defaultDifficultyWeights:{...DEFAULT_WEIGHTS},maxActivities:40}
   });
   G.__packModeV1=true;
 })(typeof globalThis!=='undefined'?globalThis:this);
