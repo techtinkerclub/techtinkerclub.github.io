@@ -33,7 +33,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-balance-lab-v192.css?v=4">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v196.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v197-fix.css?v=1">
-<link rel="stylesheet" href="/assets/99club/games-extra-puzzles-v204.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-extra-puzzles-v204.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-shikaku-v143.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-sum-grids-v147.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-focus-topics-v145.css?v=1">
@@ -52,7 +52,7 @@ sitemap: true
 <script src="/assets/99club/games-crossgrid-v1321.js?v=2"></script>
 <script src="/assets/99club/games-property-maze.js?v=1"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
-<script src="/assets/99club/games-extra-puzzles-v204.js?v=1"></script>
+<script src="/assets/99club/games-extra-puzzles-v204.js?v=2"></script>
 <script src="/assets/99club/games-takuzu-v139.js?v=1"></script>
 <script src="/assets/99club/games-takuzu-v139-logic.js?v=1"></script>
 <script src="/assets/99club/games-puzzle-pack-v140.js?v=1"></script>
