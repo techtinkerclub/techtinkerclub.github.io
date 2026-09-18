@@ -28,6 +28,9 @@ const orphan=guides.filter(id=>!runtimeSet.has(id));
 // Static guide-quality contracts for examples that are easy to regress visually or mathematically.
 const requiredGuideSnippets=[
   ['crossword','RHOMBUS has 7 letters'],
+  ['operationgrid','then decode the secret maths word'],
+  ['symbols','18 is the 18th letter of the alphabet'],
+  ['balance','final scale must use every collected weight once'],
   ['takuzu',"takuzu:miniGrid([['0','0','1','1'],['0','1','0','1'],['1','0','1','0'],['1','1','0','0']]"],
   ['killersudoku','<b>7+</b>'],
   ['cornersum',"miniGrid([['3','5'],['4','8']])+'<b>20</b>"],
