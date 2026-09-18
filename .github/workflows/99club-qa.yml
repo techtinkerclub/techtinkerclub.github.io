@@ -1,100 +1,69 @@
-name: 99 Club QA
+name: 99 Club Legacy Redirect QA
 
 on:
   push:
     branches: [master]
     paths:
-      - 'assets/99club/**'
-      - '_pages/99-club-games*.md'
-      - 'scripts/99club/**'
+      - '_pages/99-club*.md'
+      - '99-club-*.md'
       - '.github/workflows/99club-qa.yml'
   pull_request:
     paths:
-      - 'assets/99club/**'
-      - '_pages/99-club-games*.md'
-      - 'scripts/99club/**'
+      - '_pages/99-club*.md'
+      - '99-club-*.md'
       - '.github/workflows/99club-qa.yml'
-  schedule:
-    - cron: '17 3 * * 1'
   workflow_dispatch:
-    inputs:
-      samples:
-        description: 'Samples per engine difficulty'
-        required: false
-        default: '20'
 
 permissions:
   contents: read
 
 concurrency:
-  group: 99club-qa-${{ github.ref }}
+  group: 99club-legacy-redirects-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  engine-and-contract-qa:
+  redirect-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Run 99 Club QA
-        env:
-          QA_SAMPLES: ${{ github.event_name == 'schedule' && '60' || github.event.inputs.samples || '20' }}
-        run: node scripts/99club/qa.js
-      - name: Upload QA report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: 99club-qa-report
-          path: 99club-qa-report.json
-          if-no-files-found: ignore
-
-  browser-smoke:
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Prepare browser harness
-        run: node scripts/99club/browser-qa.js prepare
-      - name: Exercise online games at phone and desktop widths
-        shell: bash
+      - name: Verify legacy 99 Club redirects
+        shell: python
         run: |
-          set -euo pipefail
-          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/99club-http.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
-          sleep 1
-          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
-          if [ -z "$CHROME" ]; then
-            echo 'No Chrome/Chromium executable is available on this runner.' >&2
-            exit 1
-          fi
+          from pathlib import Path
 
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
-            --window-size=390,844 --virtual-time-budget=120000 --dump-dom \
-            http://127.0.0.1:8765/99club-browser-qa.html > /tmp/99club-browser-phone.html
-          node scripts/99club/browser-qa.js check /tmp/99club-browser-phone.html
-          cp 99club-browser-qa-report.json 99club-browser-qa-phone-report.json
+          expected = {
+              "_pages/99-club.md": "https://99studio.uk/",
+              "_pages/99-club-custom.md": "https://99studio.uk/tools/99-club/custom/",
+              "_pages/99-club-games.md": "https://99studio.uk/tools/99-club/games/",
+              "_pages/99-club-games-play.md": "https://99studio.uk/tools/99-club/games/play/",
+              "_pages/99-club-games-help.md": "https://99studio.uk/tools/99-club/games/help/",
+              "_pages/99-club-help.md": "https://99studio.uk/tools/99-club/help/",
+              "_pages/99-club-challenge.md": "https://99studio.uk/c/",
+              "99-club-custom.md": "https://99studio.uk/tools/99-club/custom/",
+              "99-club-help.md": "https://99studio.uk/tools/99-club/help/",
+          }
 
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
-            --window-size=1200,900 --virtual-time-budget=120000 --dump-dom \
-            http://127.0.0.1:8765/99club-browser-qa.html > /tmp/99club-browser-desktop.html
-          node scripts/99club/browser-qa.js check /tmp/99club-browser-desktop.html
-          cp 99club-browser-qa-report.json 99club-browser-qa-desktop-report.json
-      - name: Compare runtime catalogue with help guides
-        run: node scripts/99club/help-coverage.js
-      - name: Upload browser QA report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: 99club-browser-qa-report
-          path: |
-            99club-browser-qa-report.json
-            99club-browser-qa-phone-report.json
-            99club-browser-qa-desktop-report.json
-          if-no-files-found: ignore
+          failures = []
+          for filename, target in expected.items():
+              path = Path(filename)
+              if not path.exists():
+                  failures.append(f"{filename}: missing")
+                  continue
+              text = path.read_text(encoding="utf-8")
+              checks = {
+                  "target": target in text,
+                  "noindex": 'noindex,follow' in text,
+                  "canonical": f'rel="canonical" href="{target}"' in text,
+                  "javascript redirect": "window.location.replace" in text,
+                  "query preserved": "window.location.search" in text,
+                  "hash preserved": "window.location.hash" in text,
+                  "no legacy app assets": "/assets/99club/" not in text,
+              }
+              for label, ok in checks.items():
+                  if not ok:
+                      failures.append(f"{filename}: {label} check failed")
+
+          if failures:
+              raise SystemExit("\n".join(failures))
+          print(f"Verified {len(expected)} legacy redirects to 99studio.uk.")
