@@ -34,29 +34,44 @@
 }
 
 #tt99-play-board .tt99-context-pad-handle{
-  position:absolute;left:50%;top:4px;transform:translateX(-50%);
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  width:104px;height:26px;min-height:26px!important;padding:0!important;
+  position:absolute;left:8px;right:8px;top:4px;
+  display:flex;align-items:center;justify-content:flex-start;gap:8px;
+  height:26px;min-height:26px!important;padding:0 2px!important;
   border:0!important;border-radius:10px!important;background:transparent!important;
-  color:#597478!important;box-shadow:none!important;z-index:4;cursor:pointer;
+  color:#597478!important;box-shadow:none!important;z-index:4;cursor:grab;
   font:700 .74rem/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  user-select:none;touch-action:none;
 }
+#tt99-play-board .tt99-context-pad-dragging .tt99-context-pad-handle{cursor:grabbing}
 #tt99-play-board .tt99-context-handle-bar{
-  display:block;width:34px;height:4px;border-radius:99px;background:#9bb2b4
+  display:block;width:34px;height:4px;border-radius:99px;background:#9bb2b4;flex:0 0 auto
 }
-#tt99-play-board .tt99-context-handle-text{display:block}
+#tt99-play-board .tt99-context-handle-text{display:block;flex:1;white-space:nowrap}
+#tt99-play-board .tt99-context-pad-reset,
+#tt99-play-board .tt99-context-pad-toggle{
+  display:grid!important;place-items:center!important;
+  width:26px!important;height:24px!important;min-height:24px!important;padding:0!important;
+  border:0!important;border-radius:8px!important;background:transparent!important;
+  color:#597478!important;box-shadow:none!important;font:800 .9rem/1 inherit!important;cursor:pointer!important
+}
+#tt99-play-board .tt99-context-pad-reset:hover,
+#tt99-play-board .tt99-context-pad-toggle:hover,
+#tt99-play-board .tt99-context-pad-reset:focus-visible,
+#tt99-play-board .tt99-context-pad-toggle:focus-visible{background:#e6f1f0!important;outline:1px solid #9ebfbd}
 #tt99-play-board .tt99-context-pad-active button{min-height:44px}
 
 #tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed{
-  width:116px!important;height:34px!important;max-height:34px!important;
+  width:150px!important;height:34px!important;max-height:34px!important;
   padding:0!important;overflow:hidden!important;border-radius:17px!important;
 }
 #tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed > :not(.tt99-context-pad-handle){
   display:none!important;
 }
 #tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed .tt99-context-pad-handle{
-  top:4px;
+  left:8px;right:8px;top:4px;
 }
+#tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed .tt99-context-pad-reset{display:none!important}
+
 #tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed .tt99-context-handle-bar{
   background:#6f9295;
 }
@@ -98,9 +113,15 @@
     width:min(460px,calc(100vw - 40px))!important;
     bottom:20px!important;
   }
+  #tt99-play-board .tt99-context-pad-active.tt99-context-pad-moved{
+    left:var(--tt99-pad-x)!important;top:var(--tt99-pad-y)!important;
+    right:auto!important;bottom:auto!important;transform:none!important;
+  }
 }
 
 @media(max-width:700px){
+  #tt99-play-board .tt99-context-pad-handle{cursor:default;touch-action:auto}
+  #tt99-play-board .tt99-context-pad-reset{display:none!important}
   #tt99-play-board .tt99-context-pad-active{
     width:min(calc(100vw - 20px),470px)!important;max-width:470px!important;
     bottom:max(8px,env(safe-area-inset-bottom))!important;
