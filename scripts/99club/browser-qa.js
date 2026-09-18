@@ -119,12 +119,20 @@ function prepare(){
         board.innerHTML='';board.className='';const c=a.normalizeConfig({difficulty:'challenge',style:'factor',itemCount:'6'}),p=a.createPuzzle(c,'browser-qa:drawer');const view=a.mount(board,p,{onChange:()=>{},onStatus:()=>{},isPaused:()=>false});
         await sleep(60);const entries=[...board.querySelectorAll('[data-conn-entry]')],pad=board.querySelector('.tt99-wave184-keypad,.tt99-wave186-keypad,.tt99-v196-keypad');
         if(entries.length<2||!pad){fail('mobile-drawer','long Factor Web did not expose entries/keypad');view.destroy?.();return;}
+        const compact=window.innerWidth<=700;
         entries[0].click();await sleep(120);
-        if(!pad.classList.contains('tt99-context-pad-active'))fail('mobile-drawer','drawer did not open for a distant answer box');
+        if(compact){
+          if(!pad.classList.contains('tt99-context-pad-active'))fail('keypad-drawer','compact/touch layout did not auto-open the drawer');
+        }else{
+          if(pad.classList.contains('tt99-context-pad-active'))fail('keypad-drawer','desktop layout auto-opened the on-screen keypad');
+          const launcher=board.querySelector('.tt99-context-pad-launcher');
+          if(!launcher)fail('keypad-drawer','desktop keypad launcher missing');
+          else{launcher.click();await sleep(80);if(!pad.classList.contains('tt99-context-pad-active'))fail('keypad-drawer','desktop keypad launcher did not open the drawer');}
+        }
         entries[1].click();await sleep(80);
-        if(!pad.classList.contains('tt99-context-pad-active'))fail('mobile-drawer','drawer closed when moving to another fillable box');
-        const handle=pad.querySelector('.tt99-context-pad-handle');if(!handle)fail('mobile-drawer','drawer handle missing');else{handle.click();await sleep(30);if(!pad.classList.contains('tt99-context-pad-collapsed'))fail('mobile-drawer','handle did not collapse drawer');handle.click();await sleep(30);if(pad.classList.contains('tt99-context-pad-collapsed'))fail('mobile-drawer','handle did not reopen drawer');}
-        const outside=board.querySelector('.tt99-conn-card header')||document.body;outside.click();await sleep(40);if(pad.classList.contains('tt99-context-pad-active'))fail('mobile-drawer','outside tap did not dismiss drawer');else pass('mobile-drawer','open, persist, collapse, reopen and dismiss behaviours verified');
+        if(!pad.classList.contains('tt99-context-pad-active'))fail('keypad-drawer','drawer closed when moving to another fillable box');
+        const handle=pad.querySelector('.tt99-context-pad-handle');if(!handle)fail('keypad-drawer','drawer handle missing');else{handle.click();await sleep(30);if(!pad.classList.contains('tt99-context-pad-collapsed'))fail('keypad-drawer','handle did not collapse drawer');handle.click();await sleep(30);if(pad.classList.contains('tt99-context-pad-collapsed'))fail('keypad-drawer','handle did not reopen drawer');}
+        const outside=board.querySelector('.tt99-conn-card header')||document.body;outside.click();await sleep(40);if(pad.classList.contains('tt99-context-pad-active'))fail('keypad-drawer','outside tap did not dismiss drawer');else pass('keypad-drawer',compact?'compact auto-open, persist, collapse, reopen and dismiss verified':'desktop stays tucked away until requested; launcher, persist, collapse and dismiss verified');
         view.destroy?.();
       }catch(e){fail('mobile-drawer',(e&&e.stack)||String(e));}
     }
