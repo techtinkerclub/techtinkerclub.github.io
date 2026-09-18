@@ -33,7 +33,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-balance-lab-v192.css?v=4">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v196.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v197-fix.css?v=1">
-<link rel="stylesheet" href="/assets/99club/games-extra-puzzles-v204.css?v=3">
+<link rel="stylesheet" href="/assets/99club/games-extra-puzzles-v204.css?v=4">
 <link rel="stylesheet" href="/assets/99club/games-shikaku-v143.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-sum-grids-v147.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-focus-topics-v145.css?v=1">
