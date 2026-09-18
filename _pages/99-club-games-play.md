@@ -47,7 +47,7 @@ sitemap: true
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v196.css?v=1">
 <link rel="stylesheet" href="/assets/99club/games-new-puzzles-v197-fix.css?v=2">
 <link rel="stylesheet" href="/assets/99club/games-play-context-keypad-v201.css?v=2">
-<link rel="stylesheet" href="/assets/99club/games-extra-puzzles-v204.css?v=1">
+<link rel="stylesheet" href="/assets/99club/games-extra-puzzles-v204.css?v=2">
 
 <script src="/assets/99club/games-vocabulary.js?v=1"></script>
 <script src="/assets/99club/games-arithmetic.js?v=6"></script>
@@ -57,13 +57,14 @@ sitemap: true
 <script src="/assets/99club/games-operationgrid-v153.js?v=1"></script>
 <script src="/assets/99club/games-brokencalc-quality-v152.js?v=2"></script>
 <script src="/assets/99club/games-number-logic.js?v=3"></script>
-<script src="/assets/99club/games-extra-puzzles-v204.js?v=1"></script>
+<script src="/assets/99club/games-extra-puzzles-v204.js?v=2"></script>
 <script src="/assets/99club/games-number-towers-v137.js?v=1"></script>
 <script src="/assets/99club/games-number-towers-v137-unique.js?v=1"></script>
 <script src="/assets/99club/games-takuzu-v139.js?v=1"></script>
 <script src="/assets/99club/games-takuzu-v139-logic.js?v=1"></script>
 <script src="/assets/99club/games-puzzle-pack-v140.js?v=1"></script>
 <script src="/assets/99club/games-puzzle-pack-v140-hashi.js?v=1"></script>
+<script src="/assets/99club/games-alphametics-library-v141.js?v=1"></script>
 <script src="/assets/99club/games-number-path-v2.js?v=1"></script>
 <script src="/assets/99club/games-sumplete.js?v=1"></script>
 <script src="/assets/99club/games-shikaku-v143.js?v=1"></script>
@@ -88,7 +89,7 @@ sitemap: true
 <script src="/assets/99club/games-play-killer-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-kakuro-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-arithmeticcages-v1.js?v=1"></script>
-<script src="/assets/99club/games-play-alphametics-v1.js?v=1"></script>
+<script src="/assets/99club/games-play-alphametics-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-sum-grids-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-hashi-v1.js?v=3"></script>
 <script src="/assets/99club/games-play-numberpath-v1.js?v=2"></script>
@@ -115,7 +116,7 @@ sitemap: true
 <script src="/assets/99club/games-balance-lab-v192.js?v=1"></script>
 <script src="/assets/99club/games-play-new-puzzles-v196.js?v=1"></script>
 <script src="/assets/99club/games-play-mobile-balance-fix-v197.js?v=3"></script>
-<script src="/assets/99club/games-play-extra-puzzles-v204.js?v=1"></script>
+<script src="/assets/99club/games-play-extra-puzzles-v204.js?v=2"></script>
 <script src="/assets/99club/games-play-context-keypad-v201.js?v=1"></script>
 <script src="/assets/99club/games-play-library-v4.js?v=7"></script>
 <script src="/assets/99club/games-play-instructions-v154.js?v=2"></script>
