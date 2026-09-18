@@ -15,12 +15,12 @@ function boot(){
     ['vocabulary','Vocabulary & language']
   ];
   const MAP={
-    sumplete:'arithmetic',cornersum:'arithmetic',linkedsum:'arithmetic',killersudoku:'arithmetic',kakuro:'arithmetic',arithmeticcages:'arithmetic',
+    sumplete:'arithmetic',cornersum:'arithmetic',linkedsum:'arithmetic',killersudoku:'logic',kakuro:'arithmetic',arithmeticcages:'arithmetic',
     brokencalc:'arithmetic',target:'arithmetic',operationgrid:'arithmetic',maze:'arithmetic',crossnumber:'arithmetic',arithmagon:'arithmetic',
-    pyramid:'numberwheels'==='never'?'arithmetic':'number',numberwheels:'number',numbersearch:'arithmetic',equationcrossgrid:'arithmetic',
+    pyramid:'number',numberwheels:'number',numbersearch:'arithmetic',equationcrossgrid:'arithmetic',
     squaresearch:'arithmetic',insertops:'arithmetic',
     symbols:'algebra',functionmachine:'algebra',balance:'algebra',mobilebalance:'algebra',
-    magic:'number',magicshape:'number',alphametics:'number',numbertrail:'number',propertymaze:'number',diagonalpath:'number',
+    magic:'number',magicshape:'number',alphametics:'algebra',numbertrail:'number',propertymaze:'number',diagonalpath:'number',
     sudoku:'logic',futoshiki:'logic',takuzu:'logic',numberpath:'logic',nonogram:'logic',mathsmines:'logic',hashi:'logic',colourlogic:'logic',
     shikaku:'geometry',perimeterregions:'geometry',
     wordsearch:'vocabulary',crossword:'vocabulary'
