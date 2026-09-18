@@ -72,7 +72,7 @@ sitemap: true
 <script src="/assets/99club/games-performance-v149.js?v=1"></script>
 <script src="/assets/99club/games-preview-pager-v155.js?v=1"></script>
 <script src="/assets/99club/games-wordsearch-quality-v150.js?v=1"></script>
-<script src="/assets/99club/games-instructions-v139.js?v=2"></script>
+<script src="/assets/99club/games-instructions-v139.js?v=3"></script>
 <script src="/assets/99club/games-puzzle-redesign-v135-logic.js?v=1"></script>
 <script src="/assets/99club/simple-pdf.js?v=19.4"></script>
 <script src="/assets/99club/games-pdf.js?v=28"></script>
@@ -87,7 +87,7 @@ sitemap: true
 <script src="/assets/99club/games-pdf-v1401.js?v=1"></script>
 <script src="/assets/99club/games-pdf-v141.js?v=1"></script>
 <script src="/assets/99club/games-pdf-shikaku-v143.js?v=2"></script>
-<script src="/assets/99club/games-pdf-worked-v146.js?v=2"></script>
+<script src="/assets/99club/games-pdf-worked-v146.js?v=3"></script>
 <script src="/assets/99club/games-pdf-no-year-v145.js?v=1"></script>
 <script src="/assets/99club/games-pdf-sum-grids-v147.js?v=2"></script>
 <script src="/assets/99club/games-pdf-v155.js?v=1"></script>
