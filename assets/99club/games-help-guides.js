@@ -1,4 +1,4 @@
-/* 99 Club Studio · printable game help guide library v1.3.1
+/* 99 Club Studio · printable game help guide library v1.3.2
  * Static, deterministic help content only. This file does not generate or alter puzzles.
  */
 (function(){
@@ -210,5 +210,5 @@
   window.addEventListener('afterprint',cleanupPrint);
   const hash=location.hash.match(/^#guide-([a-z0-9-]+)$/);if(hash&&!directId)setTimeout(()=>openGuide(hash[1]),0);
 
-  window.TT99GameHelpGuides={version:'1.3.1',guides:visibleGuides.slice(),open:openGuide};
+  window.TT99GameHelpGuides={version:'1.3.2',guides:visibleGuides.slice(),open:openGuide};
 })();
