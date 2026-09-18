@@ -10,6 +10,7 @@
 
   const MODE_KEY=G.PACK_MODE.storageModeKey;
   const COUNT_KEY=G.PACK_MODE.storageCountKey;
+  const PER_PAGE_KEY=G.PACK_MODE.storagePerPageKey||'tt99-games-activities-per-sheet-v2';
   const DIFFICULTY_KEY=G.PACK_MODE.storageDifficultyKey;
   const WEIGHTS_KEY=G.PACK_MODE.storageDifficultyWeightsKey;
   const DEFAULT_WEIGHTS=G.PACK_MODE.defaultDifficultyWeights||{easy:25,standard:50,challenge:25};
@@ -18,7 +19,8 @@
   function getStored(key,fallback){try{return localStorage.getItem(key)??fallback;}catch(e){return fallback;}}
   function setStored(key,value){try{localStorage.setItem(key,String(value));}catch(e){}}
   function mode(){return getStored(MODE_KEY,'manual')==='random'?'random':'manual';}
-  function count(){const n=Math.round(Number(getStored(COUNT_KEY,'')));if(Number.isFinite(n)&&n>=1)return Math.min(40,n);const s=Number(root.querySelector('#games-sheets')?.value)||1,a=Number(root.querySelector('#games-activities')?.value)||2;return Math.min(40,Math.max(1,s*a));}
+  function perPage(){return Number(getStored(PER_PAGE_KEY,'2'))===1?1:2;}
+  function count(){const n=Math.round(Number(getStored(COUNT_KEY,'')));if(Number.isFinite(n)&&n>=1)return Math.min(40,n);const s=Number(root.querySelector('#games-sheets')?.value)||1,a=Number(root.querySelector('#games-activities')?.value)||perPage();return Math.min(40,Math.max(1,s*a));}
   function difficulty(){const value=getStored(DIFFICULTY_KEY,'standard');return ['easy','standard','challenge','mixed'].includes(value)?value:'standard';}
   function difficultyLabel(value){return value==='easy'?'Easy':value==='challenge'?'Challenge':value==='mixed'?'Mixed':'Standard';}
   function normalizeWeights(raw={}){
@@ -48,26 +50,26 @@
     if(!buildCard||!gamesCard||buildCard.dataset.randomPackEnhanced==='1')return;
     buildCard.dataset.randomPackEnhanced='1';
 
-    const currentMode=mode(),currentCount=count(),currentDifficulty=difficulty(),currentWeights=weights(),sheetCount=Math.ceil(currentCount/2);
+    const currentMode=mode(),currentCount=count(),currentPerPage=perPage(),currentDifficulty=difficulty(),currentWeights=weights(),sheetCount=Math.ceil(currentCount/currentPerPage);
     gamesCard.classList.toggle('tt99-random-mode',currentMode==='random');
 
     const sheetField=buildSelect.closest('.tt99-field');
     const activityField=root.querySelector('#games-activities')?.closest('.tt99-field');
-    if(sheetField)sheetField.hidden=true;
-    if(activityField)activityField.hidden=true;
+    if(sheetField)sheetField.remove();
+    if(activityField)activityField.remove();
 
     const grid=sheetField?.parentElement||buildCard.querySelector('.tt99-games-grid2');
     if(grid){
       const holder=document.createElement('div');
       holder.className='tt99-pack-builder-v134 wide';
       holder.innerHTML=`
-        <div class="tt99-pack-summary-v134"><span><small>${currentMode==='random'?'Random compatible pack':'Selected-games pack'}</small><strong>${currentCount} activit${currentCount===1?'y':'ies'} · 2 per sheet · ${sheetCount} pupil sheet${sheetCount===1?'':'s'}</strong></span></div>
+        <div class="tt99-pack-summary-v134"><span><small>${currentMode==='random'?'Random compatible pack':'Selected-games pack'}</small><strong>${currentCount} activit${currentCount===1?'y':'ies'} · ${currentPerPage} per sheet · ${sheetCount} pupil sheet${sheetCount===1?'':'s'}</strong></span></div>
         <div class="tt99-pack-type-v134">
           <label class="tt99-field"><span>Pack type</span><select id="games-pack-mode"><option value="random" ${currentMode==='random'?'selected':''}>Random compatible games &amp; puzzles</option><option value="manual" ${currentMode==='manual'?'selected':''}>Use my selected games</option></select><small>${currentMode==='random'?'The app chooses only games that genuinely fit the selected years and topics.':'Uses the games and individual settings you chose in Step 2.'}</small></label>
         </div>
         <div class="tt99-pack-options-v134 ${currentMode==='manual'?'is-manual':''}">
           ${currentMode==='random'?`<label class="tt99-field"><span>Difficulty</span><select id="games-random-difficulty"><option value="easy" ${currentDifficulty==='easy'?'selected':''}>Easy</option><option value="standard" ${currentDifficulty==='standard'?'selected':''}>Standard</option><option value="challenge" ${currentDifficulty==='challenge'?'selected':''}>Challenge</option><option value="mixed" ${currentDifficulty==='mixed'?'selected':''}>Mixed — weighted</option></select><small>${currentDifficulty==='mixed'?'Uses the mix below across the whole pack.':'Applied consistently across the random pack.'}</small></label>`:''}
-          <label class="tt99-field"><span>Number of activities</span><input id="games-activity-count" type="number" min="1" max="40" step="1" value="${currentCount}"><small>Two activities are placed on each pupil sheet. An odd total leaves one activity on the final sheet.</small></label>
+          <label class="tt99-field"><span>Number of activities</span><input id="games-activity-count" type="number" min="1" max="40" step="1" value="${currentCount}"><small>Choose up to 40 activities for the pack.</small></label><label class="tt99-field"><span>Activities per sheet</span><select id="games-activities-per-sheet"><option value="1" ${currentPerPage===1?'selected':''}>1</option><option value="2" ${currentPerPage===2?'selected':''}>2</option></select><small>The sheet count is calculated automatically. Two per sheet is the compact default.</small></label>
         </div>
         ${currentMode==='random'&&currentDifficulty==='mixed'?mixedControls(currentWeights):''}
         ${currentMode==='random'?'<p class="tt99-pack-preserved-v134">Your manual game choices and their settings are preserved while Random compatible is selected.</p>':''}`;
@@ -76,6 +78,7 @@
       holder.querySelector('#games-pack-mode')?.addEventListener('change',e=>{setStored(MODE_KEY,e.target.value==='random'?'random':'manual');root.querySelector('#games-new-version')?.click();});
       holder.querySelector('#games-random-difficulty')?.addEventListener('change',e=>{setStored(DIFFICULTY_KEY,['easy','standard','challenge','mixed'].includes(e.target.value)?e.target.value:'standard');root.querySelector('#games-new-version')?.click();});
       holder.querySelector('#games-activity-count')?.addEventListener('change',e=>{const n=Math.max(1,Math.min(40,Math.round(Number(e.target.value)||1)));setStored(COUNT_KEY,n);root.querySelector('#games-new-version')?.click();});
+      holder.querySelector('#games-activities-per-sheet')?.addEventListener('change',e=>{setStored(PER_PAGE_KEY,Number(e.target.value)===1?1:2);root.querySelector('#games-new-version')?.click();});
       const updateEdge=key=>{
         let easy=Math.max(0,Math.min(100,Number(holder.querySelector('#games-random-easy')?.value??currentWeights.easy)||0));
         let challenge=Math.max(0,Math.min(100,Number(holder.querySelector('#games-random-challenge')?.value??currentWeights.challenge)||0));
