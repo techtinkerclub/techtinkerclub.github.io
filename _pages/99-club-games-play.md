@@ -81,7 +81,7 @@ sitemap: true
 <script src="/assets/99club/games-play-shikaku-v1.js?v=2"></script>
 <script src="/assets/99club/games-play-shikaku-meta-v2.js?v=1"></script>
 <script src="/assets/99club/games-play-sumplete-v1.js?v=1"></script>
-<script src="/assets/99club/games-play-nonogram-v2.js?v=2"></script>
+<script src="/assets/99club/games-play-nonogram-v2.js?v=3"></script>
 <script src="/assets/99club/games-play-mines-v3.js?v=1"></script>
 <script src="/assets/99club/games-play-takuzu-v1.js?v=1"></script>
 <script src="/assets/99club/games-play-sudoku-v1.js?v=1"></script>
