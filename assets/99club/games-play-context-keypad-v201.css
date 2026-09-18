@@ -76,9 +76,6 @@
   background:#6f9295;
 }
 
-#tt99-play-board.tt99-context-pad-reserve{
-  padding-bottom:var(--tt99-context-pad-space,190px)!important;
-}
 
 /* Preserve the native internal layout of each keypad, but make sure inherited
    fixed widths/margins cannot push the drawer off-screen. */
