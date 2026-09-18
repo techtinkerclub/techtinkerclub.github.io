@@ -183,12 +183,15 @@ if(!/multiplication and division before addition and subtraction/i.test(helpSrc)
 if(/brokencalc[^\n]+bracket/i.test(helpSrc))warn('help-guides','Broken Calculator guide still appears to mention brackets');
 
 const drawer=read('assets/99club/games-play-context-keypad-v201.js');
-const requiredDrawerSelectors=['data-conn-entry','data-trail-i','data-cg-key','data-machine','data-sym','data-mobile-answer'];
-for(const s of requiredDrawerSelectors)if(!drawer.includes(s))fail('mobile-ux',`Context keypad lost selector ${s}`);
-if(!drawer.includes('tt99-context-pad-handle'))fail('mobile-ux','Context keypad drawer handle missing');
-if(!drawer.includes('hidePad()'))fail('mobile-ux','Context keypad outside-tap dismissal missing');
-if(!drawer.includes('activePad===pad'))fail('mobile-ux','Context keypad does not preserve drawer while moving between entries');
-ok('mobile-ux','Persistent contextual keypad contract checked');
+const requiredDrawerSelectors=['data-conn-entry','data-trail-i','data-cg-key','data-machine','data-sym','data-mobile-answer','data-bl-answer','.tt99-number-keypad','.tt99-alpha-pad','.tt99-towers-keypad','.tt99-crossnumber-keypad','.tt99-letter-keypad','.tt99-extra-op-pad'];
+for(const s of requiredDrawerSelectors)if(!drawer.includes(s))fail('input-ux',`Unified keypad lost selector ${s}`);
+if(!drawer.includes('tt99-context-pad-handle'))fail('input-ux','Unified keypad drawer handle missing');
+if(!drawer.includes('tt99-context-pad-launcher'))fail('input-ux','Desktop keypad launcher missing');
+if(!drawer.includes('inputProfile()'))fail('input-ux','Input capability profile missing');
+if(!drawer.includes("lastPointerType==='mouse'"))fail('input-ux','Mouse-first desktop guard missing');
+if(!drawer.includes('hidePad()'))fail('input-ux','Context keypad outside-tap dismissal missing');
+if(!drawer.includes('activePad===pad'))fail('input-ux','Context keypad does not preserve drawer while moving between entries');
+ok('input-ux','Unified touch/desktop keypad contract checked');
 
 /* ---------- output ---------- */
 const report={generatedAt:new Date().toISOString(),samplesPerDifficulty:SAMPLES,generated,engineCount:G?.ENGINES?Object.keys(G.ENGINES).length:0,onlineAdapterCount:adapterIds.length,guideCount:guideIds.length,failures,warnings,notes};
