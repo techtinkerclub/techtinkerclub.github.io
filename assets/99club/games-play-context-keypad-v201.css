@@ -47,6 +47,20 @@
 #tt99-play-board .tt99-context-handle-text{display:block}
 #tt99-play-board .tt99-context-pad-active button{min-height:44px}
 
+#tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed{
+  width:116px!important;height:34px!important;max-height:34px!important;
+  padding:0!important;overflow:hidden!important;border-radius:17px!important;
+}
+#tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed > :not(.tt99-context-pad-handle){
+  display:none!important;
+}
+#tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed .tt99-context-pad-handle{
+  top:4px;
+}
+#tt99-play-board .tt99-context-pad-active.tt99-context-pad-collapsed .tt99-context-handle-bar{
+  background:#6f9295;
+}
+
 #tt99-play-board.tt99-context-pad-reserve{
   padding-bottom:var(--tt99-context-pad-space,190px)!important;
 }
