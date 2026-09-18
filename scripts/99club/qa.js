@@ -191,6 +191,13 @@ if(!drawer.includes('inputProfile()'))fail('input-ux','Input capability profile 
 if(!drawer.includes("lastPointerType==='mouse'"))fail('input-ux','Mouse-first desktop guard missing');
 if(!drawer.includes('hidePad()'))fail('input-ux','Context keypad outside-tap dismissal missing');
 if(!drawer.includes('activePad===pad'))fail('input-ux','Context keypad does not preserve drawer while moving between entries');
+if(!drawer.includes('tt99-context-pad-reset'))fail('input-ux','Draggable keypad reset control missing');
+if(!drawer.includes('pointermove'))fail('input-ux','Draggable keypad pointer handling missing');
+if(!drawer.includes('clampDragPosition'))fail('input-ux','Draggable keypad viewport clamping missing');
+const nonogramPlay=read('assets/99club/games-play-nonogram-v2.js');
+if(!nonogramPlay.includes('edge-top')||!nonogramPlay.includes('edge-bottom')||!nonogramPlay.includes('edge-left')||!nonogramPlay.includes('edge-right'))fail('nonogram-ux','Nonogram playable-grid outer frame markers missing');
+const extraPlay=read('assets/99club/games-play-extra-puzzles-v204.js');
+if(!extraPlay.includes('hint-cell'))fail('squaresearch-ux','Square Search no longer uses a cell-level hint');
 ok('input-ux','Unified touch/desktop keypad contract checked');
 
 /* ---------- output ---------- */
