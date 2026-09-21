@@ -1,7 +1,7 @@
 /* Tech Tinker: System Rescue — micro:bit adventure layer
  * Level 1 is a vertical slice: arcade routing + sequence logic + binary memory repair.
  * The Takuzu generator below is adapted from the verified 99 Club Studio v1.39
- * binary-puzzle engine (unique-solution generation), with a deliberately small 4×4 grid.
+ * binary-puzzle engine (unique-solution generation), adapted here as a guided 6×6 memory bank.
  */
 (function(global){
 'use strict';
@@ -348,10 +348,21 @@ function buildSolution(n,seed){const rng=rngFromSeed(seed+':solution'),patterns=
 function rowMatches(row,givens){for(let c=0;c<row.length;c++)if(givens[c]!=null&&givens[c]!==row[c])return false;return true;}
 function countSolutions(display,limit=2){const n=display.length,patterns=linePatterns(n),candidates=display.map(row=>patterns.filter(p=>rowMatches(p,row))),grid=[],used=new Set();let count=0;function rec(r){if(count>=limit)return;if(r===n){if(columnsUnique(grid,n))count++;return;}for(const row of candidates[r]){const rk=row.join('');if(used.has(rk)||!partialColumnOK(grid,row,r,n))continue;grid[r]=row;used.add(rk);rec(r+1);used.delete(rk);if(count>=limit)return;}}rec(0);return count;}
 function makeTakuzu(seed){
-  const n=4,solution=buildSolution(n,seed);if(!solution)return null;
+  const n=6,solution=buildSolution(n,seed);if(!solution)return null;
   const display=solution.map(r=>r.slice()),rng=rngFromSeed(seed+':mask'),order=shuffled(Array.from({length:n*n},(_,i)=>[Math.floor(i/n),i%n]),rng);
-  let shown=n*n;const target=8,rowCount=Array(n).fill(n),colCount=Array(n).fill(n);
-  for(const [r,c] of order){if(shown<=target)break;if(rowCount[r]<=2||colCount[c]<=2)continue;const old=display[r][c];display[r][c]=null;if(countSolutions(display,2)===1){shown--;rowCount[r]--;colCount[c]--;}else display[r][c]=old;}
+  let shown=n*n;
+  const target=20;
+  const minShownPerLine=3;
+  const rowCount=Array(n).fill(n),colCount=Array(n).fill(n);
+  for(const [r,c] of order){
+    if(shown<=target)break;
+    if(rowCount[r]<=minShownPerLine||colCount[c]<=minShownPerLine)continue;
+    const old=display[r][c];
+    display[r][c]=null;
+    if(countSolutions(display,2)===1){
+      shown--;rowCount[r]--;colCount[c]--;
+    }else display[r][c]=old;
+  }
   return {n,solution,display};
 }
 
@@ -361,14 +372,14 @@ function renderMemoryBank(){
   root.appendChild(roomHeader(
     'ROOM 3 · RAM CALIBRATION',
     'Repair the binary memory bank',
-    'Some 0s and 1s were corrupted. Restore the 4×4 bank using the three binary-logic rules.'
+    'Some 0s and 1s were corrupted. Restore the 6×6 bank using the three binary-logic rules.'
   ));
 
   const rules=document.createElement('div');rules.className='memory-rules';
-  rules.innerHTML='<span><strong>1</strong> Two 0s and two 1s in every row and column</span><span><strong>2</strong> Never three identical bits in a row</span><span><strong>3</strong> No completed rows or columns may be identical</span>';
+  rules.innerHTML='<span><strong>1</strong> Three 0s and three 1s in every row and column</span><span><strong>2</strong> Never three identical bits in a row</span><span><strong>3</strong> No completed rows or columns may be identical</span>';
   root.appendChild(rules);
 
-  const puzzle=makeTakuzu(active.seed+':ram')||{n:4,solution:[[0,0,1,1],[0,1,0,1],[1,0,1,0],[1,1,0,0]],display:[[0,null,1,null],[null,1,null,1],[1,null,1,null],[null,1,null,0]]};
+  const puzzle=makeTakuzu(active.seed+':ram')||{n:6,solution:[[0,0,1,0,1,1],[0,1,0,1,0,1],[1,0,0,1,1,0],[0,1,1,0,1,0],[1,0,1,1,0,0],[1,1,0,0,0,1]],display:[[0,0,1,null,null,1],[0,1,null,1,0,null],[1,null,0,null,1,0],[null,1,1,0,null,0],[1,0,null,1,0,null],[1,null,0,null,0,1]]};
   const state=puzzle.display.map(r=>r.slice());
   const board=document.createElement('div');board.className='memory-grid';board.style.setProperty('--memory-n',String(puzzle.n));
   const buttons=[];
