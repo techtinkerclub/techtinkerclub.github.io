@@ -96,6 +96,8 @@ function clearOverlay(){
 }
 function showNotice(text,tone='info',ms=1500){
   const host=overlayHost();if(!host)return;
+  const current=host.querySelector('.adventure-popup.notice');
+  if(current&&current.textContent===text)return;
   const note=document.createElement('div');
   note.className=`adventure-popup notice ${tone}`;
   note.setAttribute('role','status');
@@ -124,16 +126,16 @@ function renderPulseRun(){
   const root=active.root;
   root.appendChild(roomHeader(
     'ROOM 1 · POWER BUS',
-    'Ride the live data bus',
-    'The boot pulse is moving continuously. Steer it through the micro:bit, collect all three boot packets and avoid corrupted signals.'
+    'Route the pulse through a live data bus',
+    'The corruption keeps moving in real time. Tap a direction to move one circuit step, collect all three boot packets, then reach the processor.'
   ));
 
   const info=document.createElement('div');info.className='adventure-info-strip';
-  info.innerHTML='<span><strong>YOU</strong> cyan pulse</span><span><strong>◆</strong> boot packet</span><span><strong>!</strong> corruption</span><span><strong>HOLD</strong> pause one beat</span><span><strong>CPU</strong> destination</span>';
+  info.innerHTML='<span><strong>YOU</strong> cyan pulse</span><span><strong>◆</strong> boot packet</span><span><strong>!</strong> moving corruption</span><span><strong>CPU</strong> destination</span>';
   root.appendChild(info);
 
   const boardWrap=document.createElement('div');boardWrap.className='pulse-board-wrap';
-  const board=document.createElement('div');board.className='pulse-board';board.setAttribute('role','application');board.setAttribute('aria-label','Real-time micro:bit power bus');
+  const board=document.createElement('div');board.className='pulse-board';board.setAttribute('role','application');board.setAttribute('aria-label','Live micro:bit power bus');
   boardWrap.appendChild(board);
 
   const rows=6,cols=9;
@@ -149,11 +151,9 @@ function renderPulseRun(){
   const startPos=[5,0],goal=[2,8];
   const bitLocations=new Map([[key(5,2),'A'],[key(4,6),'B'],[key(2,5),'C']]);
   let player=startPos.slice();
-  let direction=[0,1];
-  let queuedDirection=[0,1];
-  let holdTicks=0;
   let roomFinished=false;
   let live=false;
+  let faultLock=false;
 
   const hazards=[
     {route:[[3,3],[2,3],[3,3],[4,3]],i:0},
@@ -171,18 +171,17 @@ function renderPulseRun(){
 
   const hud=document.createElement('div');hud.className='pulse-live-hud';
   const packetCount=document.createElement('strong');
-  const directionLabel=document.createElement('span');
-  const liveLabel=document.createElement('span');liveLabel.className='pulse-live-indicator';liveLabel.textContent='● LIVE';
-  hud.append(packetCount,directionLabel,liveLabel);
+  const instruction=document.createElement('span');instruction.textContent='TAP ARROWS TO MOVE';
+  const liveLabel=document.createElement('span');liveLabel.className='pulse-live-indicator';liveLabel.textContent='● CORRUPTION LIVE';
+  hud.append(packetCount,instruction,liveLabel);
 
-  const controls=document.createElement('div');controls.className='pulse-controls';controls.setAttribute('aria-label','Movement controls');
-  const moves=[['↑','up',-1,0],['←','left',0,-1],['HOLD','wait',0,0],['→','right',0,1],['↓','down',1,0]];
-  const controlButtons=[];
+  const controls=document.createElement('div');controls.className='pulse-controls pulse-controls-four';controls.setAttribute('aria-label','Movement controls');
+  const moves=[['↑','up',-1,0],['←','left',0,-1],['→','right',0,1],['↓','down',1,0]];
   for(const [label,name,dr,dc] of moves){
     const b=document.createElement('button');b.type='button';b.className=`pulse-control ${name}`;b.textContent=label;
-    b.setAttribute('aria-label',name==='wait'?'Hold position briefly':`Steer ${name}`);
-    b.addEventListener('click',()=>setDirection(dr,dc,b));
-    controls.appendChild(b);controlButtons.push(b);
+    b.setAttribute('aria-label',`Move ${name}`);
+    b.addEventListener('click',()=>movePlayer(dr,dc,b));
+    controls.appendChild(b);
   }
 
   const layout=document.createElement('div');layout.className='pulse-layout';
@@ -190,13 +189,7 @@ function renderPulseRun(){
   root.append(hud,layout);
 
   function hazardKeys(){return new Set(hazards.map(h=>key(...h.route[h.i])));}
-  function canUse(dir,pos=player){
-    if(dir[0]===0&&dir[1]===0)return true;
-    return allowed.has(key(pos[0]+dir[0],pos[1]+dir[1]));
-  }
-  function dirName(d){
-    if(d[0]===-1)return 'UP';if(d[0]===1)return 'DOWN';if(d[1]===-1)return 'LEFT';if(d[1]===1)return 'RIGHT';return 'HOLD';
-  }
+
   function render(){
     const hz=hazardKeys();
     for(const cell of cells){
@@ -213,57 +206,52 @@ function renderPulseRun(){
       else if(same([r,cc],startPos)){const s=document.createElement('span');s.className='pulse-usb';s.textContent='USB';cell.appendChild(s);}
     }
     packetCount.textContent=`BOOT PACKETS ${active.bits.size}/3`;
-    directionLabel.textContent=`STEER: ${dirName(queuedDirection)}`;
-    controlButtons.forEach(b=>b.classList.toggle('active',b.classList.contains(dirName(queuedDirection).toLowerCase())||(dirName(queuedDirection)==='HOLD'&&b.classList.contains('wait'))));
   }
 
   function fault(){
-    if(roomFinished)return;
+    if(roomFinished||faultLock)return;
+    faultLock=true;
     active.arcadeFaults++;
     player=startPos.slice();
-    direction=[0,1];queuedDirection=[0,1];holdTicks=1;
     active.playTone(145,.1,'sawtooth',.03);
     board.classList.remove('fault');void board.offsetWidth;board.classList.add('fault');
-    showNotice('Corrupted signal! Pulse reset to the USB power input.','fault',1300);
+    showNotice('Corrupted signal! Pulse reset to USB.','fault',1200);
     render();
+    later(()=>{faultLock=false;board.classList.remove('fault');},650);
   }
 
   function collectAndCheck(){
     const k=key(...player),bit=bitLocations.get(k);
     if(bit&&!active.bits.has(bit)){
       active.bits.add(bit);active.playTone(700,.06,'sine',.03);
-      showNotice(`Boot packet ${bit} recovered · ${active.bits.size}/3`,'success',1000);
+      showNotice(`Boot packet ${bit} recovered · ${active.bits.size}/3`,'success',950);
     }
-    if(hazards.some(h=>same(h.route[h.i],player))){fault();return false;}
+    if(!faultLock&&hazards.some(h=>same(h.route[h.i],player))){fault();return false;}
     if(same(player,goal)){
       if(active.bits.size===3){
         roomFinished=true;live=false;clearTimers();active.roomsCompleted=Math.max(active.roomsCompleted,1);active.playTone(880,.09,'sine',.04);
         render();
-        showTransition('Power bus restored','All three boot packets reached the processor while the live bus was running.','Enter startup controller →',()=>{active.room=1;renderRoom();});
+        showTransition('Power bus restored','All three boot packets reached the processor while corruption continued moving.','Enter startup controller →',()=>{active.room=1;renderRoom();});
         return false;
       }
-      showNotice(`CPU reached — ${3-active.bits.size} boot packet${3-active.bits.size===1?' is':'s are'} still missing.`,'warn',1300);
+      showNotice(`CPU reached — collect the remaining ${3-active.bits.size} boot packet${3-active.bits.size===1?'':'s'} first.`,'warn',1300);
     }
     return true;
   }
 
-  function setDirection(dr,dc,button){
-    if(roomFinished)return;
-    if(dr===0&&dc===0){holdTicks=1;queuedDirection=[0,0];showNotice('Pulse held for one bus beat.','info',700);}
-    else queuedDirection=[dr,dc];
-    if(button){controlButtons.forEach(b=>b.classList.remove('pressed'));button.classList.add('pressed');later(()=>button.classList.remove('pressed'),120);}
-    render();
-  }
-
-  function playerTick(){
-    if(!live||roomFinished)return;
-    if(holdTicks>0){holdTicks--;if(holdTicks===0&&queuedDirection[0]===0&&queuedDirection[1]===0)queuedDirection=direction;render();return;}
-    if(canUse(queuedDirection)&&!(queuedDirection[0]===0&&queuedDirection[1]===0))direction=queuedDirection;
-    if(!canUse(direction)){
-      showNotice('Junction ahead — choose a connected trace.','warn',650);
+  function movePlayer(dr,dc,button){
+    if(!live||roomFinished||faultLock)return;
+    const next=[player[0]+dr,player[1]+dc];
+    if(!allowed.has(key(...next))){
+      showNotice('No trace in that direction. Choose a connected path.','warn',900);
+      active.playTone(180,.035,'square',.015);
       return;
     }
-    player=[player[0]+direction[0],player[1]+direction[1]];
+    if(button){
+      button.classList.add('pressed');
+      later(()=>button.classList.remove('pressed'),100);
+    }
+    player=next;
     collectAndCheck();
     render();
   }
@@ -271,26 +259,25 @@ function renderPulseRun(){
   function hazardTick(){
     if(!live||roomFinished)return;
     hazards.forEach(h=>{h.i=(h.i+1)%h.route.length;});
-    if(hazards.some(h=>same(h.route[h.i],player)))fault();
+    if(!faultLock&&hazards.some(h=>same(h.route[h.i],player)))fault();
     render();
   }
 
   active.keyHandler=(e)=>{
     if(active?.room!==0||roomFinished)return;
-    const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1],' ':[0,0]};
-    const m=map[e.key];if(!m)return;e.preventDefault();setDirection(m[0],m[1]);
+    const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};
+    const m=map[e.key];if(!m)return;e.preventDefault();movePlayer(m[0],m[1]);
   };
   document.addEventListener('keydown',active.keyHandler);
 
   render();
-  showNotice('Get ready — the data bus is going live.','info',900);
+  showNotice('Get ready — corruption will keep moving.','info',900);
   later(()=>{
     if(!active||active.room!==0)return;
     live=true;liveLabel.classList.add('active');
-    every(playerTick,430);
-    every(hazardTick,560);
-    showNotice('LIVE BUS · steer the pulse before each junction.','success',1100);
-  },900);
+    every(hazardTick,650);
+    showNotice('LIVE BUS · move when the path is clear.','success',1000);
+  },850);
 }
 
 /* ---------------- Room 2: simplified boot order ---------------- */
