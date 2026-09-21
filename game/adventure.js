@@ -1,7 +1,10 @@
 /* Tech Tinker: System Rescue — micro:bit adventure layer
- * Level 1 is a vertical slice: arcade routing + sequence logic + binary memory repair.
- * The Takuzu generator below is adapted from the verified 99 Club Studio v1.39
- * binary-puzzle engine (unique-solution generation), adapted here as a guided 6×6 memory bank.
+ * System 1: arcade routing + startup sequence logic + 6×6 binary memory repair.
+ * System 2: random packet arcade + range diagnostics + number-property data routing.
+ *
+ * The RAM generator is adapted from the verified 99 Club Studio Takuzu engine.
+ * The System 2 Data Router is adapted from the verified 99 Club Studio Property Maze
+ * approach: seeded induced paths, mathematically valid dead ends, and a unique route.
  */
 (function(global){
 'use strict';
@@ -24,12 +27,15 @@ function start(opts){
     onExit:typeof opts.onExit==='function'?opts.onExit:()=>{},
     playTone:typeof opts.playTone==='function'?opts.playTone:()=>{},
     toast:typeof opts.toast==='function'?opts.toast:()=>{},
+    systemId:String(opts.systemId||'1'),
     room:0,
-    seed:`microbit-boot-${Date.now()}`,
+    seed:`microbit-system-${String(opts.systemId||'1')}-${Date.now()}`,
     bits:new Set(),
     arcadeFaults:0,
     sequenceFaults:0,
     memoryFaults:0,
+    logicFaults:0,
+    routerFaults:0,
     roomsCompleted:0,
     keyHandler:null,
     timers:new Set(),
@@ -70,6 +76,13 @@ function renderRoom(){
   clearTimers();
   clearOverlay();
   active.root.replaceChildren();
+  if(active.systemId==='2'){
+    if(active.room===0)renderRandomPacketCatcher();
+    else if(active.room===1)renderBrokenRandomiser();
+    else if(active.room===2)renderPropertyRouter();
+    else renderRandomiserFinalGate();
+    return;
+  }
   if(active.room===0)renderPulseRun();
   else if(active.room===1)renderBootOrder();
   else if(active.room===2)renderMemoryBank();
@@ -420,6 +433,462 @@ function renderMemoryBank(){
 }
 
 
+
+/* ============================================================
+   SYSTEM 2 · RANDOMISER CORE
+   ============================================================ */
+
+function randomInt(rng,min,max){return min+Math.floor(rng()*(max-min+1));}
+
+/* ---------------- Room 1: Random Packet Catcher ---------------- */
+
+function renderRandomPacketCatcher(){
+  setProgress('RANDOMISER CORE · ROOM 1/3 · PACKET FILTER');
+  const root=active.root;
+  root.appendChild(roomHeader(
+    'ROOM 1 · RANDOM PACKET CATCHER',
+    'Catch only valid random outputs',
+    'Packets are falling through the micro:bit. Move the catcher left and right and collect values that fit the current random range. Let invalid values pass.'
+  ));
+
+  const rules=[
+    {label:'DICE MODE',min:1,max:6,copy:'Catch whole numbers from 1 to 6.'},
+    {label:'LED POSITION',min:0,max:4,copy:'Catch whole numbers from 0 to 4.'}
+  ];
+  let wave=0,caughtInWave=0,totalCaught=0,playerLane=1,live=false,finished=false,nextPacketId=1;
+  const rng=rngFromSeed(active.seed+':packet-catcher');
+  const packets=[];
+
+  const hud=document.createElement('div');hud.className='random-catcher-hud';
+  const ruleBox=document.createElement('div');ruleBox.className='random-rule-box';
+  const progress=document.createElement('div');progress.className='random-catch-progress';
+  hud.append(ruleBox,progress);
+
+  const arena=document.createElement('div');arena.className='random-catcher-arena';
+  arena.setAttribute('role','application');
+  arena.setAttribute('aria-label','Three-lane random packet catcher');
+  const lanes=Array.from({length:3},(_,i)=>{
+    const lane=document.createElement('div');lane.className='random-lane';lane.dataset.lane=String(i);arena.appendChild(lane);return lane;
+  });
+  const catcher=document.createElement('div');catcher.className='random-catcher';catcher.innerHTML='<span>CORE</span>';
+
+  const controls=document.createElement('div');controls.className='random-catcher-controls';
+  const left=document.createElement('button');left.type='button';left.textContent='←';left.setAttribute('aria-label','Move catcher left');
+  const right=document.createElement('button');right.type='button';right.textContent='→';right.setAttribute('aria-label','Move catcher right');
+  controls.append(left,right);
+
+  const legend=document.createElement('div');legend.className='adventure-info-strip';
+  legend.innerHTML='<span><strong>VALID</strong> catch it</span><span><strong>INVALID</strong> let it pass</span><span><strong>2 WAVES</strong> 3 good packets each</span>';
+
+  root.append(hud,legend,arena,controls);
+
+  function currentRule(){return rules[wave];}
+  function validValue(v){const r=currentRule();return Number.isInteger(v)&&v>=r.min&&v<=r.max;}
+  function paintRule(){
+    const r=currentRule();
+    ruleBox.innerHTML=`<small>${r.label}</small><strong>random ${r.min} to ${r.max}</strong><span>${r.copy}</span>`;
+    progress.textContent=`WAVE ${wave+1}/2 · ${caughtInWave}/3 valid packets`;
+  }
+  function paintPlayer(){
+    catcher.style.left=`calc(${playerLane*33.333+16.666}% - 32px)`;
+    if(!catcher.isConnected)arena.appendChild(catcher);
+  }
+  function move(delta){
+    if(!live||finished)return;
+    playerLane=Math.max(0,Math.min(2,playerLane+delta));
+    paintPlayer();
+    active.playTone(330+playerLane*70,.025,'sine',.012);
+  }
+  left.addEventListener('click',()=>move(-1));
+  right.addEventListener('click',()=>move(1));
+
+  active.keyHandler=(e)=>{
+    if(active?.systemId!=='2'||active.room!==0||finished)return;
+    if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){e.preventDefault();move(-1);}
+    if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){e.preventDefault();move(1);}
+  };
+  document.addEventListener('keydown',active.keyHandler);
+
+  function spawn(){
+    if(!live||finished)return;
+    const r=currentRule();
+    const shouldValid=rng()<0.66;
+    let value;
+    if(shouldValid)value=randomInt(rng,r.min,r.max);
+    else{
+      const lows=[r.min-2,r.min-1].filter(v=>v>=0);
+      const highs=[r.max+1,r.max+2,r.max+3];
+      const pool=[...lows,...highs];
+      value=pool[Math.floor(rng()*pool.length)] ?? r.max+1;
+    }
+    packets.push({id:nextPacketId++,lane:randomInt(rng,0,2),value,y:-12});
+  }
+
+  function renderPackets(){
+    arena.querySelectorAll('.random-packet').forEach(n=>n.remove());
+    for(const p of packets){
+      const el=document.createElement('div');el.className='random-packet';el.style.left=`calc(${p.lane*33.333+16.666}% - 22px)`;el.style.top=`${p.y}%`;el.textContent=String(p.value);arena.appendChild(el);
+    }
+    paintPlayer();
+  }
+
+  function resolvePacket(p){
+    if(p.lane!==playerLane)return;
+    if(validValue(p.value)){
+      totalCaught++;caughtInWave++;active.playTone(720,.055,'sine',.025);
+      showNotice(`${p.value} accepted by ${currentRule().label}.`,'success',650);
+      if(caughtInWave>=3){
+        if(wave===0){
+          live=false;clearTimers();
+          wave=1;caughtInWave=0;packets.splice(0,packets.length);paintRule();renderPackets();
+          showTransition('Range filter recalibrated','Dice mode is stable. Now catch values that could be used as a 0–4 LED position.','Start wave 2 →',()=>{
+            if(!active||active.systemId!=='2'||active.room!==0)return;
+            live=true;every(spawn,620);every(tick,90);spawn();spawn();
+          });
+        }else{
+          finished=true;live=false;clearTimers();active.roomsCompleted=Math.max(active.roomsCompleted,1);
+          showTransition('Packet filter restored','The Randomiser Core is accepting only values inside the configured ranges.','Inspect random streams →',()=>{active.room=1;renderRoom();});
+        }
+      }
+    }else{
+      active.arcadeFaults++;
+      active.playTone(150,.08,'square',.026);
+      showNotice(`${p.value} is outside random ${currentRule().min} to ${currentRule().max}.`,'fault',850);
+      arena.classList.remove('fault');void arena.offsetWidth;arena.classList.add('fault');
+      later(()=>arena.classList.remove('fault'),350);
+    }
+  }
+
+  function tick(){
+    if(!live||finished)return;
+    for(const p of packets)p.y+=7;
+    for(let i=packets.length-1;i>=0;i--){
+      const p=packets[i];
+      if(p.y>=78&&p.y<86){
+        resolvePacket(p);
+        if(!live||finished)return;
+      }
+      if(p.y>102)packets.splice(i,1);
+    }
+    renderPackets();
+  }
+
+  paintRule();paintPlayer();
+  showNotice('Get ready — catch only values inside the displayed range.','info',1000);
+  later(()=>{
+    if(!active||active.systemId!=='2'||active.room!==0)return;
+    live=true;
+    every(spawn,620);
+    every(tick,90);
+    spawn();spawn();
+  },850);
+}
+
+/* ---------------- Room 2: Broken Randomiser ---------------- */
+
+function makeRandomDiagnosticRounds(seed){
+  const rng=rngFromSeed(seed+':broken-randomiser');
+  const specs=[
+    {name:'DICE',min:1,max:6,code:'random 1 to 6'},
+    {name:'COIN',min:0,max:1,code:'random 0 to 1'},
+    {name:'LED COORDINATE',min:0,max:4,code:'random 0 to 4'}
+  ];
+  return specs.map((spec,roundIndex)=>{
+    function goodStream(){
+      const out=Array.from({length:7},()=>randomInt(rng,spec.min,spec.max));
+      if(new Set(out).size===1&&spec.max>spec.min)out[out.length-1]=out[0]===spec.max?spec.min:spec.max;
+      return out;
+    }
+    const good1=goodStream(),good2=goodStream();
+    const bad=goodStream();
+    const badIndex=1+Math.floor(rng()*(bad.length-2));
+    bad[badIndex]=rng()<.5?spec.min-1:spec.max+1;
+    const streams=shuffled([
+      {bad:false,values:good1},
+      {bad:false,values:good2},
+      {bad:true,values:bad}
+    ],rng);
+    return {...spec,roundIndex,streams};
+  });
+}
+
+function renderBrokenRandomiser(){
+  setProgress('RANDOMISER CORE · ROOM 2/3 · STREAM DIAGNOSTICS');
+  const root=active.root;
+  root.appendChild(roomHeader(
+    'ROOM 2 · BROKEN RANDOMISER',
+    'Find the impossible output stream',
+    'Repeats can happen in genuinely random results. Do not reject a stream just because a number appears twice — find the stream containing a value the configured random block could never produce.'
+  ));
+
+  const rounds=makeRandomDiagnosticRounds(active.seed);
+  let roundIndex=0,locked=false;
+
+  const note=document.createElement('div');note.className='reality-note';
+  note.innerHTML='<strong>Important</strong><span>Random does not mean “never repeats”. A fair random generator can produce the same result several times. Here, the broken stream is the one containing an impossible out-of-range value.</span>';
+
+  const consoleEl=document.createElement('div');consoleEl.className='random-diagnostic-console';
+  const title=document.createElement('div');title.className='random-diagnostic-title';
+  const streams=document.createElement('div');streams.className='random-streams';
+  const counter=document.createElement('div');counter.className='logic-status';
+
+  root.append(note,consoleEl);
+  consoleEl.append(title,streams,counter);
+
+  function renderRound(){
+    locked=false;
+    const r=rounds[roundIndex];
+    title.innerHTML=`<small>DIAGNOSTIC ${roundIndex+1}/3 · ${r.name}</small><strong>${r.code}</strong><span>Which stream is impossible?</span>`;
+    streams.replaceChildren();
+    r.streams.forEach((stream,i)=>{
+      const b=document.createElement('button');b.type='button';b.className='random-stream-card';
+      const label=document.createElement('small');label.textContent=`STREAM ${String.fromCharCode(65+i)}`;
+      const values=document.createElement('div');values.className='random-stream-values';
+      stream.values.forEach(v=>{const s=document.createElement('span');s.textContent=String(v);values.appendChild(s);});
+      b.append(label,values);
+      b.addEventListener('click',()=>choose(i,b));
+      streams.appendChild(b);
+    });
+    counter.textContent='Remember: repeats are allowed. Look only for an impossible value.';
+  }
+
+  function choose(i,button){
+    if(locked)return;
+    const r=rounds[roundIndex],stream=r.streams[i];
+    if(!stream.bad){
+      active.logicFaults++;
+      button.classList.add('wrong');
+      active.playTone(155,.07,'square',.023);
+      showNotice('That stream is still possible. Repeats do not make it non-random.','warn',1200);
+      later(()=>button.classList.remove('wrong'),600);
+      return;
+    }
+    locked=true;
+    button.classList.add('correct');
+    active.playTone(760,.065,'sine',.025);
+    const badValue=stream.values.find(v=>v<r.min||v>r.max);
+    showNotice(`${badValue} cannot come from ${r.code}.`,'success',900);
+    later(()=>{
+      roundIndex++;
+      if(roundIndex>=rounds.length){
+        active.roomsCompleted=Math.max(active.roomsCompleted,2);
+        showTransition('Random stream diagnostics restored','All three configured ranges now reject impossible outputs without mistaking ordinary repeats for faults.','Open data router →',()=>{active.room=2;renderRoom();});
+      }else renderRound();
+    },900);
+  }
+
+  renderRound();
+}
+
+/* ---------------- Room 3: Data / Property Router ---------------- */
+
+function routerNeighbours(p,n){
+  const [r,c]=p,out=[];
+  if(r>0)out.push([r-1,c]);if(r<n-1)out.push([r+1,c]);if(c>0)out.push([r,c-1]);if(c<n-1)out.push([r,c+1]);
+  return out;
+}
+function routerAllCells(n){const out=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++)out.push([r,c]);return out;}
+function routerBorderCells(n){return routerAllCells(n).filter(([r,c])=>r===0||c===0||r===n-1||c===n-1);}
+function routerKey(p){return `${p[0]}:${p[1]}`;}
+function routerIsPrime(v){if(v<2)return false;for(let d=2;d*d<=v;d++)if(v%d===0)return false;return true;}
+function routerMatches(v,rule){
+  if(rule.mode==='even')return v%2===0;
+  if(rule.mode==='odd')return v%2===1;
+  if(rule.mode==='multiple')return v%rule.a===0;
+  if(rule.mode==='prime')return routerIsPrime(v);
+  if(rule.mode==='square')return Number.isInteger(Math.sqrt(v));
+  return false;
+}
+function routerRule(rng){
+  return shuffled([
+    {mode:'even',label:'even numbers',shortLabel:'EVEN'},
+    {mode:'odd',label:'odd numbers',shortLabel:'ODD'},
+    {mode:'multiple',a:3,label:'multiples of 3',shortLabel:'×3'},
+    {mode:'multiple',a:4,label:'multiples of 4',shortLabel:'×4'},
+    {mode:'prime',label:'prime numbers',shortLabel:'PRIME'},
+    {mode:'square',label:'square numbers',shortLabel:'SQUARE'}
+  ],rng)[0];
+}
+function routerMakePath(n,length,rng){
+  const starts=shuffled(routerBorderCells(n),rng);
+  for(let outer=0;outer<Math.min(30,starts.length*2);outer++){
+    const start=starts[outer%starts.length],path=[start],used=new Set([routerKey(start)]);let nodes=0;
+    function dfs(){
+      if(path.length===length)return true;
+      if(nodes++>10000)return false;
+      const cur=path[path.length-1],prev=path.length>1?path[path.length-2]:null;
+      let cands=routerNeighbours(cur,n).filter(p=>!used.has(routerKey(p))&&routerNeighbours(p,n).filter(q=>used.has(routerKey(q))).length===1);
+      cands=shuffled(cands,rng).sort((a,b)=>{
+        const onward=p=>routerNeighbours(p,n).filter(q=>!used.has(routerKey(q))).length;
+        const turn=p=>!prev?0:((cur[0]-prev[0])!==(p[0]-cur[0])||(cur[1]-prev[1])!==(p[1]-cur[1])?1:0);
+        return (turn(b)-turn(a))*3+(onward(b)-onward(a));
+      });
+      for(const p of cands){path.push(p);used.add(routerKey(p));if(dfs())return true;used.delete(routerKey(p));path.pop();}
+      return false;
+    }
+    if(dfs())return path.map(p=>p.slice());
+  }
+  return null;
+}
+function routerAddBranches(path,n,count,rng){
+  const valid=new Set(path.map(routerKey)),protectedKeys=new Set([routerKey(path[0]),routerKey(path[path.length-1])]),added=[];
+  for(let i=0;i<count;i++){
+    let cands=routerAllCells(n).filter(p=>!valid.has(routerKey(p)));
+    cands=cands.filter(p=>{
+      const touching=routerNeighbours(p,n).filter(q=>valid.has(routerKey(q)));
+      return touching.length===1&&!protectedKeys.has(routerKey(touching[0]));
+    });
+    if(!cands.length)break;
+    const p=shuffled(cands,rng)[0];valid.add(routerKey(p));added.push(p);
+  }
+  return {validKeys:[...valid],branchCells:added};
+}
+function routerSolve(grid,rule,start,finish,limit=2){
+  const n=grid.length,target=routerKey(finish),seen=new Set(),path=[],solutions=[];
+  function rec(p){
+    if(solutions.length>=limit)return;
+    const k=routerKey(p);seen.add(k);path.push(p);
+    if(k===target)solutions.push(path.map(q=>q.slice()));
+    else for(const q of routerNeighbours(p,n)){
+      const qk=routerKey(q);if(seen.has(qk)||!routerMatches(grid[q[0]][q[1]],rule))continue;
+      rec(q);if(solutions.length>=limit)break;
+    }
+    path.pop();seen.delete(k);
+  }
+  if(routerMatches(grid[start[0]][start[1]],rule)&&routerMatches(grid[finish[0]][finish[1]],rule))rec(start);
+  return {count:solutions.length,path:solutions[0]||[]};
+}
+function makePropertyRouter(seed){
+  const n=5,rng=rngFromSeed(seed+':property-router'),rule=routerRule(rng);
+  for(let attempt=0;attempt<80;attempt++){
+    const local=rngFromSeed(`${seed}:property-router:${attempt}`);
+    const path=routerMakePath(n,10,local);if(!path)continue;
+    const branched=routerAddBranches(path,n,2,local);
+    const valid=new Set(branched.validKeys),yes=[],no=[];
+    const valueLimit=rule.mode==='square'?225:120;
+    for(let v=1;v<=valueLimit;v++)(routerMatches(v,rule)?yes:no).push(v);
+    if(yes.length<valid.size||no.length<n*n-valid.size)continue;
+    const y=shuffled(yes,local).slice(0,valid.size),nn=shuffled(no,local).slice(0,n*n-valid.size);
+    let yi=0,ni=0;const grid=Array.from({length:n},()=>Array(n).fill(0));
+    for(const p of shuffled(routerAllCells(n),local))grid[p[0]][p[1]]=valid.has(routerKey(p))?y[yi++]:nn[ni++];
+    const start=path[0],finish=path[path.length-1],check=routerSolve(grid,rule,start,finish,2);
+    if(check.count!==1)continue;
+    const routeSet=new Set(check.path.map(routerKey));
+    return {n,grid,rule,start,finish,solutionPath:check.path,validKeys:[...valid],deadEnds:[...valid].filter(k=>!routeSet.has(k))};
+  }
+  return null;
+}
+
+function renderPropertyRouter(){
+  setProgress('RANDOMISER CORE · ROOM 3/3 · DATA ROUTER');
+  const root=active.root;
+  root.appendChild(roomHeader(
+    'ROOM 3 · DATA / PROPERTY ROUTER',
+    'Route data through the correct number property',
+    'The Randomiser Core has lost its routing table. Build a path from START to FINISH using only touching numbers that match the filter.'
+  ));
+
+  const puzzle=makePropertyRouter(active.seed)||makePropertyRouter(active.seed+':fallback');
+  if(!puzzle){showTransition('Router unavailable','A clean route could not be generated. Re-enter the mission to generate another board.','Back to mission control',()=>active.onExit());return;}
+
+  const rule=document.createElement('div');rule.className='property-router-rule';
+  rule.innerHTML=`<small>ROUTING FILTER</small><strong>${puzzle.rule.shortLabel}</strong><span>Use only ${puzzle.rule.label}</span>`;
+
+  const board=document.createElement('div');board.className='property-router-grid';board.style.setProperty('--router-n',String(puzzle.n));
+  const path=[puzzle.start.slice()];
+  let finished=false;
+  const buttons=[];
+
+  for(let r=0;r<puzzle.n;r++)for(let c=0;c<puzzle.n;c++){
+    const p=[r,c],b=document.createElement('button');b.type='button';b.className='property-router-cell';b.dataset.r=String(r);b.dataset.c=String(c);
+    const isStart=same(p,puzzle.start),isFinish=same(p,puzzle.finish);
+    if(isStart)b.classList.add('is-start');if(isFinish)b.classList.add('is-finish');
+    const label=document.createElement('small');label.textContent=isStart?'START':isFinish?'FINISH':'';
+    const value=document.createElement('strong');value.textContent=String(puzzle.grid[r][c]);
+    b.append(label,value);b.addEventListener('click',()=>choose(p,b));board.appendChild(b);buttons.push(b);
+  }
+
+  const hint=document.createElement('div');hint.className='logic-status';hint.textContent='Move one square at a time. Tap your previous square to backtrack.';
+  root.append(rule,board,hint);
+
+  function current(){return path[path.length-1];}
+  function pathSet(){return new Set(path.map(routerKey));}
+  function paint(){
+    const used=pathSet(),cur=current();
+    for(const b of buttons){
+      const p=[+b.dataset.r,+b.dataset.c],k=routerKey(p);
+      b.classList.toggle('is-path',used.has(k));b.classList.toggle('is-current',same(p,cur));b.disabled=finished;
+    }
+  }
+  function adjacent(a,b){return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])===1;}
+  function choose(p,b){
+    if(finished)return;
+    const cur=current();
+    if(path.length>1&&same(p,path[path.length-2])){path.pop();paint();return;}
+    if(!adjacent(cur,p)){showNotice('Choose a square touching your current data packet.','warn',900);return;}
+    if(path.some(q=>same(q,p))){showNotice('The route cannot loop through an earlier square.','warn',900);return;}
+    if(!routerMatches(puzzle.grid[p[0]][p[1]],puzzle.rule)){
+      active.routerFaults++;b.classList.add('wrong');active.playTone(150,.07,'square',.024);
+      showNotice(`${puzzle.grid[p[0]][p[1]]} does not match ${puzzle.rule.label}.`,'fault',900);
+      later(()=>b.classList.remove('wrong'),500);return;
+    }
+    path.push(p);paint();active.playTone(500+path.length*18,.035,'sine',.018);
+    if(same(p,puzzle.finish)){
+      const exact=path.length===puzzle.solutionPath.length&&path.every((q,i)=>same(q,puzzle.solutionPath[i]));
+      if(!exact){
+        showNotice('FINISH reached, but this route is incomplete. Backtrack and try the other matching branch.','warn',1200);
+        return;
+      }
+      finished=true;active.roomsCompleted=Math.max(active.roomsCompleted,3);paint();
+      showTransition('Data router restored','You found the unique route using only values that match the number-property filter.','Continue →',()=>{active.room=3;renderRoom();});
+    }
+  }
+  paint();
+}
+
+/* ---------------- Randomiser Core final gate ---------------- */
+
+function renderRandomiserFinalGate(){
+  setProgress('RANDOMISER CORE · FINAL DIAGNOSTIC READY');
+  const root=active.root;
+  root.appendChild(roomHeader(
+    'RANDOMISER CORE STABLE',
+    'Events and random outputs are responding again',
+    'Packet ranges, random-stream diagnostics and the number-property router are stable. The final boss is the complete 12-question Week 2 diagnostic.'
+  ));
+
+  const board=document.createElement('div');board.className='microbit-face full-face';
+  board.innerHTML=microbitBoardMarkup().replace('BOOT OK','RNG OK');
+
+  const real=document.createElement('div');real.className='reality-note real-note';
+  real.innerHTML='<strong>What is real?</strong><span>The micro:bit can generate pseudo-random values in programs, respond to button and motion events, and use numbers to make decisions. The “Randomiser Core” is our game model for those ideas.</span>';
+
+  const totalFaults=active.arcadeFaults+active.logicFaults+active.routerFaults;
+  const stats=document.createElement('div');stats.className='adventure-run-stats';
+  stats.innerHTML=`<span><strong>${active.arcadeFaults}</strong> packet faults</span><span><strong>${active.logicFaults}</strong> stream faults</span><span><strong>${active.routerFaults}</strong> router faults</span><span><strong>${totalFaults}</strong> total faults</span>`;
+  root.append(board,real,stats);
+
+  later(()=>showTransition(
+    'Final diagnostic ready',
+    'The three repair rooms are complete. Beat all 12 Week 2 questions to bring Randomiser Core online.',
+    'Run 12-question diagnostic →',
+    ()=>{
+      if(active.completed)return;active.completed=true;
+      const totalFaults=active.arcadeFaults+active.logicFaults+active.routerFaults;
+      const statsOut={
+        systemId:'2',
+        arcadeFaults:active.arcadeFaults,
+        logicFaults:active.logicFaults,
+        routerFaults:active.routerFaults,
+        totalFaults,
+        roomsCompleted:active.roomsCompleted,
+        bonusScore:Math.max(0,300-(active.arcadeFaults*18+active.logicFaults*18+active.routerFaults*18))
+      };
+      const done=active.onComplete;stop();done(statsOut);
+    }
+  ),250);
+}
+
 function microbitBoardMarkup(){
   return `
     <div class="official-microbit-final">
@@ -476,7 +945,7 @@ function renderFinalGate(){
 }
 
 global.TTCAdventure={
-  supports(id){return String(id)==='1';},
+  supports(id){return ['1','2'].includes(String(id));},
   start,
   stop
 };
