@@ -1,8 +1,8 @@
-/* Tech Tinker: System Rescue service worker v1.6.0 */
+/* Tech Tinker: System Rescue service worker v1.7.0 */
 'use strict';
 
 const CACHE_PREFIX = 'tt-system-rescue-';
-const CACHE_NAME = CACHE_PREFIX + 'v1.6.0';
+const CACHE_NAME = CACHE_PREFIX + 'v1.7.0';
 const APP_ROOT = '/game/';
 const CORE = [
   '/game/',
@@ -10,6 +10,7 @@ const CORE = [
   '/game/styles.css',
   '/game/game.js',
   '/game/adventure.js',
+  '/game/assets/microbit/microbit-drawing-v2.svg',
   '/game/questions.js',
   '/game/pwa.js',
   '/game/manifest.webmanifest',
