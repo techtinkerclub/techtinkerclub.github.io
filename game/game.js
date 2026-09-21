@@ -24,7 +24,7 @@
   const LEGACY_KEYS = ['ttcBossBattle_arcade_v6_8','ttcBossBattleV3','ttcBossBattleV2'];
   const DEFAULT_SETTINGS = {timer:true,sound:true};
   const byId = id => document.getElementById(id);
-  const screens = {levels:byId('screen-levels'), briefing:byId('screen-briefing'), game:byId('screen-game'), results:byId('screen-results')};
+  const screens = {levels:byId('screen-levels'), briefing:byId('screen-briefing'), adventure:byId('screen-adventure'), game:byId('screen-game'), results:byId('screen-results')};
   const levelGrid = byId('level-grid');
   const params = new URLSearchParams(location.search);
   const DEBUG = params.get('debug') === '1';
@@ -109,7 +109,7 @@
       const topic=document.createElement('div');topic.className='card-topic';topic.textContent=cleanTopic(w.title,id);
       const desc=document.createElement('p');desc.className='card-description';desc.textContent=w.description||'Coding challenge';
       const meta=document.createElement('div');meta.className='card-meta';
-      const qtag=document.createElement('span');qtag.className='tag';qtag.textContent=`${(w.questions||[]).length} challenges`;
+      const qtag=document.createElement('span');qtag.className='tag';qtag.textContent=id==='1'?'3 rooms + diagnostic':`${(w.questions||[]).length} challenges`;
       const stag=document.createElement('span');stag.className=`tag system-status-tag ${locked?'offline':state.clears[id]?'online':'ready'}`;stag.textContent=locked?'OFFLINE':state.clears[id]?'ONLINE':'READY';meta.append(qtag,stag);
       const stars=buildStars(rating,`System ${id}: ${rating} of 3 stars`);stars.classList.add('level-stars');
       const footer=document.createElement('div');footer.className='card-footer';
@@ -123,13 +123,35 @@
   function openBriefing(id){
     const w=DATA.weeks[id],sys=systemFor(id);if(!w)return;pendingBriefId=id;
     byId('brief-system-label').textContent=`SYSTEM ${id}`;byId('briefing-title').textContent=sys.name;byId('brief-topic').textContent=cleanTopic(w.title,id);byId('brief-description').textContent=w.description||'';byId('brief-objective').textContent=sys.objective;
-    const meta=byId('brief-meta');meta.replaceChildren();for(const text of [`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics']){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
+    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=id==='1'?['3 repair rooms','5-question final diagnostic','inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
   }
 
   function startMission(id){
-    const w=DATA.weeks[id];if(!w)return;const questions=(w.questions||[]).map(q=>({...q}));if(!questions.length){toast('This system has no challenges yet.');return;}
-    G={id,w,questions,queue:questions.map(q=>({q,retry:false})),current:null,mastered:new Set(),integrityMax:4,integrity:4,streak:0,bestStreak:0,score:0,mistakes:0,hintsLeft:2,hintsUsed:0,review:new Map(),startedAt:Date.now(),finishedAt:null};
-    inputLocked=false;selectedMatchTerm=null;byId('battle-week').textContent=w.title||`Week ${id}`;byId('mission-title').textContent=systemFor(id).name;byId('system-label').textContent=`SYSTEM ${id} · REPAIR MODE`;renderMatrix(byId('system-visual'),id,'repairing');renderModules();showScreen('game');renderHud();nextQuestion();startTimer();playTone(420,.06,'sine',.035);
+    if(globalThis.TTCAdventure?.supports?.(id))return startAdventureMission(id);
+    return startDiagnostic(id,null);
+  }
+
+  function startAdventureMission(id){
+    const w=DATA.weeks[id];if(!w)return;
+    stopTimer();
+    G={id,w,stage:'adventure',mastered:new Set(),mistakes:0,adventureStats:null};
+    showScreen('adventure');
+    globalThis.TTCAdventure.start({
+      root:byId('adventure-root'),
+      playTone,
+      toast,
+      onExit:()=>exitAdventure(),
+      onComplete:(stats)=>startDiagnostic(id,stats)
+    });
+  }
+
+  function startDiagnostic(id,adventureStats=null){
+    const w=DATA.weeks[id];if(!w)return;
+    const allQuestions=(w.questions||[]).map(q=>({...q}));
+    if(!allQuestions.length){toast('This system has no challenges yet.');return;}
+    const questions=(String(id)==='1'&&adventureStats)?shuffle(allQuestions).slice(0,Math.min(5,allQuestions.length)):allQuestions;
+    G={id,w,stage:'diagnostic',adventureStats,questions,queue:questions.map(q=>({q,retry:false})),current:null,mastered:new Set(),integrityMax:4,integrity:4,streak:0,bestStreak:0,score:Number(adventureStats?.bonusScore)||0,mistakes:0,hintsLeft:2,hintsUsed:0,review:new Map(),startedAt:Date.now(),finishedAt:null};
+    inputLocked=false;selectedMatchTerm=null;byId('battle-week').textContent=adventureStats?'Final diagnostic · 5 checks':(w.title||`Week ${id}`);byId('mission-title').textContent=adventureStats?`${systemFor(id).name} Verification`:systemFor(id).name;byId('system-label').textContent=adventureStats?`SYSTEM ${id} · FINAL DIAGNOSTIC`:`SYSTEM ${id} · REPAIR MODE`;renderMatrix(byId('system-visual'),id,'repairing');renderModules();showScreen('game');renderHud();nextQuestion();startTimer();playTone(420,.06,'sine',.035);
   }
   function renderModules(){ const row=byId('module-row');row.replaceChildren();for(const label of systemFor(G.id).modules){const el=document.createElement('div');el.className='module';el.textContent=label;row.appendChild(el);} }
   function updateModules(){ const pct=G.mastered.size/G.questions.length;Array.from(byId('module-row').children).forEach((el,i)=>el.classList.toggle('online',pct>=(i+1)/4)); }
@@ -138,7 +160,7 @@
   }
   function renderHud(){
     if(!G)return;const integrity=byId('integrity');integrity.replaceChildren();for(let i=0;i<G.integrityMax;i++){const pip=document.createElement('span');pip.className=`integrity-pip${i>=G.integrity?' off':''}`;integrity.appendChild(pip);}integrity.setAttribute('aria-label',`${G.integrity} of ${G.integrityMax} integrity points remaining`);
-    const repaired=G.mastered.size,total=G.questions.length,pct=total?repaired/total*100:0;byId('repair-fill').style.width=`${pct}%`;document.querySelector('.repair-bar')?.setAttribute('aria-valuenow',String(Math.round(pct)));byId('repair-count').textContent=`${repaired} / ${total} repaired`;byId('mastered').textContent=`${repaired} / ${total}`;byId('streak').textContent=`${G.streak}×`;byId('score').textContent=String(G.score);byId('hintLeft').textContent=String(G.hintsLeft);byId('useHint').disabled=G.hintsLeft<=0||inputLocked||!G.current?.q?.hint;byId('timer-wrap').hidden=!state.settings.timer;renderTimer();updateModules();updateRepairMatrix();
+    const repaired=G.mastered.size,total=G.questions.length,pct=total?repaired/total*100:0;byId('repair-fill').style.width=`${pct}%`;document.querySelector('.repair-bar')?.setAttribute('aria-valuenow',String(Math.round(pct)));byId('repair-count').textContent=G.adventureStats?`${repaired} / ${total} verified`:`${repaired} / ${total} repaired`;byId('mastered').textContent=`${repaired} / ${total}`;byId('streak').textContent=`${G.streak}×`;byId('score').textContent=String(G.score);byId('hintLeft').textContent=String(G.hintsLeft);byId('useHint').disabled=G.hintsLeft<=0||inputLocked||!G.current?.q?.hint;byId('timer-wrap').hidden=!state.settings.timer;renderTimer();updateModules();updateRepairMatrix();
   }
   function startTimer(){stopTimer();timerTicker=setInterval(()=>{if(G&&!screens.game.hidden)renderTimer();},500)}function stopTimer(){if(timerTicker)clearInterval(timerTicker);timerTicker=null}function renderTimer(){if(!G)return;const seconds=Math.floor(((G.finishedAt||Date.now())-G.startedAt)/1000);byId('timer').textContent=formatTime(seconds);}
 
@@ -147,7 +169,7 @@
     G.current=item;inputLocked=false;selectedMatchTerm=null;const fb=byId('feedback');fb.hidden=true;fb.className='feedback';fb.replaceChildren();renderQuestion(item.q,item.retry);renderHud();
   }
   function renderQuestion(q,retry){
-    const panel=byId('qpanel');panel.replaceChildren();const head=document.createElement('div');head.className='question-head';const count=document.createElement('div');count.className='question-count';count.textContent=`${G.mastered.size} repaired · ${G.questions.length-G.mastered.size} remaining`;head.appendChild(count);if(retry){const badge=document.createElement('div');badge.className='retry-badge';badge.textContent='Second chance';head.appendChild(badge);}const title=document.createElement('h2');title.textContent=q.question||'Challenge';panel.append(head,title);
+    const panel=byId('qpanel');panel.replaceChildren();const head=document.createElement('div');head.className='question-head';const count=document.createElement('div');count.className='question-count';count.textContent=G.adventureStats?`${G.mastered.size} verified · ${G.questions.length-G.mastered.size} remaining`:`${G.mastered.size} repaired · ${G.questions.length-G.mastered.size} remaining`;head.appendChild(count);if(retry){const badge=document.createElement('div');badge.className='retry-badge';badge.textContent='Second chance';head.appendChild(badge);}const title=document.createElement('h2');title.textContent=q.question||'Challenge';panel.append(head,title);
     if(q.code){const code=document.createElement('pre');code.className='qcode';code.textContent=q.code;panel.appendChild(code);}if(q.type==='multiple-choice')renderMC(panel,q);else if(q.type==='drag-drop')renderMatch(panel,q);else{const p=document.createElement('p');p.textContent=`Unsupported challenge type: ${q.type}`;panel.appendChild(p);}requestAnimationFrame(()=>panel.querySelector('button:not(:disabled)')?.focus({preventScroll:true}));
   }
   function renderMC(panel,q){const options=document.createElement('div');options.className='options';(q.options||[]).forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='option-button';b.dataset.optionIndex=String(i);const key=document.createElement('span');key.className='option-key';key.textContent=String(i+1);const text=document.createElement('span');text.textContent=opt;b.append(key,text);b.setAttribute('aria-label',`${i+1}. ${opt}`);b.addEventListener('click',()=>answerMC(i));options.appendChild(b);});panel.appendChild(options);}
@@ -168,7 +190,7 @@
     else{G.mistakes++;G.streak=0;G.integrity=Math.max(0,G.integrity-1);G.review.set(keyFor(q),{q,meta});if(G.integrity>0)G.queue.push({q,retry:true});visual.classList.add('fault');playTone(150,.11,'sawtooth',.035);}
     renderHud();showFeedback(correct,q,meta,combo);if(!correct&&G.integrity<=0)byId('continue-btn').textContent='See fault log';
   }
-  function showFeedback(correct,q,meta,combo){const fb=byId('feedback');fb.hidden=false;fb.className=`feedback ${correct?'correct':'incorrect'}`;fb.replaceChildren();const row=document.createElement('div');row.className='feedback-row';const copy=document.createElement('div');copy.className='feedback-copy';const strong=document.createElement('strong');strong.textContent=correct?'✓ Circuit repaired.':'⚠ Fault found — this challenge will return.';const exp=document.createElement('div');exp.textContent=q.explanation||meta.answerSummary||'';copy.append(strong,exp);if(q.definition){const d=document.createElement('div');d.className='definition-note';d.textContent=q.definition;copy.appendChild(d);}if(!correct&&meta.answerSummary){const a=document.createElement('div');a.style.marginTop='5px';a.textContent=meta.answerSummary;copy.appendChild(a);}if(combo){const c=document.createElement('span');c.className='combo';c.textContent=combo;copy.appendChild(c);}const next=document.createElement('button');next.type='button';next.id='continue-btn';next.textContent='Continue';next.addEventListener('click',continueAfter);row.append(copy,next);fb.appendChild(row);next.focus({preventScroll:true});}
+  function showFeedback(correct,q,meta,combo){const fb=byId('feedback');fb.hidden=false;fb.className=`feedback ${correct?'correct':'incorrect'}`;fb.replaceChildren();const row=document.createElement('div');row.className='feedback-row';const copy=document.createElement('div');copy.className='feedback-copy';const strong=document.createElement('strong');strong.textContent=correct?(G.adventureStats?'✓ Diagnostic check passed.':'✓ Circuit repaired.'):'⚠ Fault found — this challenge will return.';const exp=document.createElement('div');exp.textContent=q.explanation||meta.answerSummary||'';copy.append(strong,exp);if(q.definition){const d=document.createElement('div');d.className='definition-note';d.textContent=q.definition;copy.appendChild(d);}if(!correct&&meta.answerSummary){const a=document.createElement('div');a.style.marginTop='5px';a.textContent=meta.answerSummary;copy.appendChild(a);}if(combo){const c=document.createElement('span');c.className='combo';c.textContent=combo;copy.appendChild(c);}const next=document.createElement('button');next.type='button';next.id='continue-btn';next.textContent='Continue';next.addEventListener('click',continueAfter);row.append(copy,next);fb.appendChild(row);next.focus({preventScroll:true});}
   function continueAfter(){if(G.integrity<=0){finishMission(true);return;}if(G.mastered.size>=G.questions.length){finishMission(false);return;}nextQuestion();}
 
   function useHint(){if(!G||inputLocked||G.hintsLeft<=0||!G.current?.q?.hint){if(G&&G.hintsLeft<=0)toast('No diagnostics left in this mission.');return;}G.hintsLeft--;G.hintsUsed++;renderHud();const fb=byId('feedback');fb.hidden=false;fb.className='feedback hint';fb.replaceChildren();const copy=document.createElement('div');copy.className='feedback-copy';const h=document.createElement('strong');h.textContent='⌕ Diagnostic hint';const t=document.createElement('div');t.textContent=G.current.q.hint;copy.append(h,t);fb.appendChild(copy);playTone(360,.05,'sine',.025);}
