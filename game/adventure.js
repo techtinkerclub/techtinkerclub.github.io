@@ -32,13 +32,30 @@ function start(opts){
     memoryFaults:0,
     roomsCompleted:0,
     keyHandler:null,
+    timers:new Set(),
     completed:false
   };
   renderRoom();
 }
 
+function clearTimers(){
+  if(!active?.timers)return;
+  for(const id of active.timers){clearInterval(id);clearTimeout(id);}
+  active.timers.clear();
+}
+function later(fn,ms){
+  if(!active)return null;
+  const id=setTimeout(()=>{active?.timers?.delete(id);fn();},ms);
+  active.timers.add(id);return id;
+}
+function every(fn,ms){
+  if(!active)return null;
+  const id=setInterval(fn,ms);active.timers.add(id);return id;
+}
 function stop(){
   if(active?.keyHandler)document.removeEventListener('keydown',active.keyHandler);
+  clearTimers();
+  clearOverlay();
   active=null;
 }
 
@@ -50,6 +67,8 @@ function setProgress(label){
 function renderRoom(){
   if(!active)return;
   if(active.keyHandler){document.removeEventListener('keydown',active.keyHandler);active.keyHandler=null;}
+  clearTimers();
+  clearOverlay();
   active.root.replaceChildren();
   if(active.room===0)renderPulseRun();
   else if(active.room===1)renderBootOrder();
@@ -68,17 +87,34 @@ function roomHeader(kicker,title,copy){
   return head;
 }
 
-function successPanel(title,text,buttonText,next){
-  const panel=document.createElement('div');panel.className='adventure-success';
-  const icon=document.createElement('div');icon.className='adventure-success-icon';icon.textContent='✓';
-  const copy=document.createElement('div');
+function overlayHost(){
+  return document.getElementById('adventure-overlay-host');
+}
+function clearOverlay(){
+  const host=overlayHost();
+  if(host)host.replaceChildren();
+}
+function showNotice(text,tone='info',ms=1500){
+  const host=overlayHost();if(!host)return;
+  const note=document.createElement('div');
+  note.className=`adventure-popup notice ${tone}`;
+  note.setAttribute('role','status');
+  note.textContent=text;
+  host.replaceChildren(note);
+  later(()=>{if(note.isConnected)note.remove();},ms);
+}
+function showTransition(title,text,buttonText,next,tone='success'){
+  const host=overlayHost();if(!host)return;
+  const shade=document.createElement('div');shade.className='adventure-popup-shade';
+  const card=document.createElement('div');card.className=`adventure-popup transition ${tone}`;card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
+  const icon=document.createElement('div');icon.className='adventure-popup-icon';icon.textContent=tone==='success'?'✓':'!';
+  const copy=document.createElement('div');copy.className='adventure-popup-copy';
   const strong=document.createElement('strong');strong.textContent=title;
-  const p=document.createElement('span');p.textContent=text;
-  copy.append(strong,p);
+  const p=document.createElement('span');p.textContent=text;copy.append(strong,p);
   const button=document.createElement('button');button.type='button';button.textContent=buttonText;
-  button.addEventListener('click',next);
-  panel.append(icon,copy,button);
-  return panel;
+  button.addEventListener('click',()=>{clearOverlay();next();});
+  card.append(icon,copy,button);shade.appendChild(card);host.replaceChildren(shade);
+  requestAnimationFrame(()=>button.focus({preventScroll:true}));
 }
 
 /* ---------------- Room 1: Data Pulse Run ---------------- */
