@@ -1,4 +1,4 @@
-/* Tech Tinker: System Rescue — PWA registration and install UX */
+/* Tech Tinker: System Rescue — PWA registration, install and update UX */
 (() => {
   'use strict';
 
@@ -6,6 +6,8 @@
   const installButton = document.getElementById('install-app');
   const installNote = document.getElementById('install-note');
   let deferredPrompt = null;
+  let waitingWorker = null;
+  let refreshing = false;
 
   const isStandalone = () =>
     window.matchMedia('(display-mode: standalone)').matches ||
@@ -39,13 +41,49 @@
     installNote.textContent = 'Add System Rescue to this device for an app-like, offline-ready experience.';
   }
 
-  if (isStandalone()) {
-    showInstalledState();
-  } else if (isIOS()) {
-    showIOSState();
-  } else {
-    showGenericState();
+  function ensureUpdateBanner() {
+    let bar = document.getElementById('pwa-update-banner');
+    if (bar) return bar;
+
+    bar = document.createElement('div');
+    bar.id = 'pwa-update-banner';
+    bar.className = 'pwa-update-banner';
+    bar.hidden = true;
+    bar.innerHTML = `
+      <div class="pwa-update-copy">
+        <strong>New System Rescue version available</strong>
+        <span>Update now to load the latest game rooms and fixes.</span>
+      </div>
+      <div class="pwa-update-actions">
+        <button type="button" class="secondary" data-update-later>Later</button>
+        <button type="button" data-update-now>Update now</button>
+      </div>`;
+    document.body.appendChild(bar);
+
+    bar.querySelector('[data-update-now]')?.addEventListener('click', () => {
+      if (!waitingWorker) return;
+      bar.querySelector('[data-update-now]').disabled = true;
+      bar.querySelector('[data-update-now]').textContent = 'Updating…';
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    });
+
+    bar.querySelector('[data-update-later]')?.addEventListener('click', () => {
+      bar.hidden = true;
+    });
+
+    return bar;
   }
+
+  function showUpdate(worker) {
+    if (!worker) return;
+    waitingWorker = worker;
+    const bar = ensureUpdateBanner();
+    bar.hidden = false;
+  }
+
+  if (isStandalone()) showInstalledState();
+  else if (isIOS()) showIOSState();
+  else showGenericState();
 
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
@@ -70,11 +108,8 @@
       try {
         await prompt.prompt();
         const choice = await prompt.userChoice;
-        if (choice?.outcome === 'accepted') {
-          showInstalledState();
-        } else {
-          showGenericState();
-        }
+        if (choice?.outcome === 'accepted') showInstalledState();
+        else showGenericState();
       } catch (_) {
         showGenericState();
       }
@@ -82,7 +117,7 @@
     }
 
     if (isIOS()) {
-      installNote.textContent = 'In Safari: tap the Share button, choose “Add to Home Screen”, then tap Add.';
+      installNote.textContent = 'In Safari: tap Share, choose “Add to Home Screen”, then tap Add.';
       return;
     }
 
@@ -90,12 +125,41 @@
   });
 
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {
+    window.addEventListener('load', async () => {
+      try {
+        const registration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          showUpdate(registration.waiting);
+        }
+
+        registration.addEventListener('updatefound', () => {
+          const worker = registration.installing;
+          if (!worker) return;
+
+          worker.addEventListener('statechange', () => {
+            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdate(worker);
+            }
+          });
+        });
+
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden) registration.update().catch(() => {});
+        });
+
+        setInterval(() => registration.update().catch(() => {}), 60 * 60 * 1000);
+      } catch (_) {
         if (installNote && !isStandalone()) {
           installNote.textContent = 'The game works normally, but offline installation is not available in this browser.';
         }
-      });
+      }
+    });
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      location.reload();
     });
   }
 })();
