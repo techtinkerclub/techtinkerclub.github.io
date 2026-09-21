@@ -93,7 +93,7 @@ function renderPulseRun(){
   ));
 
   const info=document.createElement('div');info.className='adventure-info-strip';
-  info.innerHTML='<span><strong>YOU</strong> cyan pulse</span><span><strong>◆</strong> boot packet</span><span><strong>!</strong> corruption</span><span><strong>CPU</strong> destination</span>';
+  info.innerHTML='<span><strong>YOU</strong> cyan pulse</span><span><strong>◆</strong> boot packet</span><span><strong>!</strong> corruption</span><span><strong>CLK</strong> wait one cycle</span><span><strong>CPU</strong> destination</span>';
   root.appendChild(info);
 
   const boardWrap=document.createElement('div');boardWrap.className='pulse-board-wrap';
@@ -134,9 +134,9 @@ function renderPulseRun(){
   status.append(packetCount,message);
 
   const controls=document.createElement('div');controls.className='pulse-controls';controls.setAttribute('aria-label','Movement controls');
-  const moves=[['↑','up',-1,0],['←','left',0,-1],['↓','down',1,0],['→','right',0,1]];
+  const moves=[['↑','up',-1,0],['←','left',0,-1],['CLK','wait',0,0],['→','right',0,1],['↓','down',1,0]];
   for(const [label,name,dr,dc] of moves){
-    const b=document.createElement('button');b.type='button';b.className=`pulse-control ${name}`;b.textContent=label;b.setAttribute('aria-label',`Move ${name}`);
+    const b=document.createElement('button');b.type='button';b.className=`pulse-control ${name}`;b.textContent=label;b.setAttribute('aria-label',name==='wait'?'Wait one clock cycle':`Move ${name}`);
     b.addEventListener('click',()=>move(dr,dc));controls.appendChild(b);
   }
 
@@ -202,7 +202,7 @@ function renderPulseRun(){
 
   active.keyHandler=(e)=>{
     if(active?.room!==0||roomFinished)return;
-    const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};
+    const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1],' ':[0,0]};
     const m=map[e.key];if(!m)return;e.preventDefault();move(m[0],m[1]);
   };
   document.addEventListener('keydown',active.keyHandler);
