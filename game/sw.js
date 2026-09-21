@@ -1,8 +1,8 @@
-/* Tech Tinker: System Rescue service worker v1.1.0 */
+/* Tech Tinker: System Rescue service worker v1.2.0 */
 'use strict';
 
 const CACHE_PREFIX = 'tt-system-rescue-';
-const CACHE_NAME = CACHE_PREFIX + 'v1.1.0';
+const CACHE_NAME = CACHE_PREFIX + 'v1.2.0';
 const APP_ROOT = '/game/';
 const CORE = [
   '/game/',
@@ -33,7 +33,6 @@ self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     await Promise.allSettled(CORE.map(url => putIfOk(cache, url)));
-    await self.skipWaiting();
   })());
 });
 
@@ -94,4 +93,11 @@ self.addEventListener('fetch', event => {
   }
 
   event.respondWith(staleWhileRevalidate(request));
+});
+
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
