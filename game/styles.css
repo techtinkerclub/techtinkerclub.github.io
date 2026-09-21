@@ -1403,3 +1403,58 @@ body.adventure-modal-open{
     font-size:11px;
   }
 }
+
+
+/* Official micro:bit v2 artwork */
+.official-microbit{
+  display:block;
+  width:min(560px,100%)!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  margin:0 auto 10px!important;
+}
+.official-microbit-img{
+  display:block;
+  width:100%;
+  height:auto;
+  user-select:none;
+  -webkit-user-drag:none;
+  filter:drop-shadow(0 16px 28px rgba(0,0,0,.36));
+}
+.official-microbit-final{
+  position:relative;
+  width:min(590px,100%);
+  margin:0 auto;
+}
+.boot-ok-pill{
+  position:absolute;
+  left:50%;
+  bottom:16%;
+  transform:translateX(-50%);
+  padding:7px 12px;
+  border:1px solid rgba(92,224,160,.55);
+  border-radius:999px;
+  background:rgba(6,18,28,.92);
+  color:var(--green);
+  font:900 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.12em;
+  box-shadow:0 0 18px rgba(92,224,160,.12);
+}
+.art-credit{
+  margin:13px 0 0;
+  color:var(--muted2);
+  font-size:9px;
+  line-height:1.4;
+}
+.art-credit a{
+  color:var(--cyan);
+}
+@media(max-width:600px){
+  .official-microbit{
+    width:min(520px,100%)!important;
+  }
+  .boot-ok-pill{
+    bottom:14%;
+    font-size:9px;
+  }
+}
