@@ -333,16 +333,17 @@ function renderBootOrder(){
       const expected=steps[nextIndex];
       if(step.id!==expected.id){
         active.sequenceFaults++;b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');
-        status.textContent=`${step.short} does not fit in position ${nextIndex+1}. Trace what must already have happened.`;
+        status.textContent='Choose the next startup operation.';
+        showNotice(`${step.short} does not fit in position ${nextIndex+1}. What must already have happened?`,'fault',1400);
         active.playTone(165,.08,'square',.025);return;
       }
       b.disabled=true;b.classList.add('used');
       slots[nextIndex].classList.add('filled');slots[nextIndex].querySelector('span').textContent=step.short;
       nextIndex++;active.playTone(580+nextIndex*65,.05,'sine',.025);
       if(nextIndex===steps.length){
-        active.roomsCompleted=Math.max(active.roomsCompleted,2);status.textContent='Boot order valid. Startup controller responding.';
-        root.appendChild(successPanel('Startup controller restored','The sequence is valid and control can pass to memory.','Open RAM bank →',()=>{active.room=2;renderRoom();}));
-      }else status.textContent=`Good. Now choose operation ${nextIndex+1}.`;
+        active.roomsCompleted=Math.max(active.roomsCompleted,2);status.textContent='Boot order valid.';
+        showTransition('Startup controller restored','The startup sequence is valid. Control can now pass to the micro:bit memory bank.','Open RAM bank →',()=>{active.room=2;renderRoom();});
+      }else{status.textContent=`Choose operation ${nextIndex+1}.`;showNotice(`${step.short} locked into position ${nextIndex}.`,'success',850);}
     });
     choices.appendChild(b);
   }
@@ -400,18 +401,18 @@ function renderMemoryBank(){
   hint.addEventListener('click',()=>{
     buttons.forEach(b=>b.classList.remove('hint'));
     const candidates=buttons.filter(b=>!b.disabled&&state[+b.dataset.r][+b.dataset.c]==null);
-    if(!candidates.length){status.textContent='Every cell is filled. Run Check memory.';return;}
-    const b=candidates[0];b.classList.add('hint');status.textContent='Look at the highlighted cell’s row and column. Check balance first, then look for pairs such as 00, 11, 0·0 or 1·1.';
+    if(!candidates.length){showNotice('Every cell is filled. Run Check memory.','info',1200);return;}
+    const b=candidates[0];b.classList.add('hint');showNotice('Hint: check the highlighted row and column for balance, pairs or a forced bit.','info',1800);
   });
 
   check.addEventListener('click',()=>{
     let wrong=0,blank=0;
     buttons.forEach(b=>{b.classList.remove('wrong');const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c];if(v==null)blank++;else if(v!==puzzle.solution[r][c]){wrong++;if(!b.disabled)b.classList.add('wrong');}});
     if(!wrong&&!blank){
-      check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);active.roomsCompleted=Math.max(active.roomsCompleted,3);active.playTone(920,.1,'sine',.04);status.textContent='RAM checksum valid. Binary memory bank restored.';
-      root.appendChild(successPanel('RAM bank restored','Power, startup control and memory are stable.','Continue →',()=>{active.room=3;renderRoom();}));
-    }else if(wrong){active.memoryFaults++;active.playTone(155,.08,'square',.025);status.textContent=`${wrong} bit${wrong===1?' is':'s are'} inconsistent with the unique repair. Recheck the highlighted cells.`;}
-    else status.textContent=`${blank} memory cell${blank===1?' is':'s are'} still blank.`;
+      check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);active.roomsCompleted=Math.max(active.roomsCompleted,3);active.playTone(920,.1,'sine',.04);status.textContent='RAM checksum valid.';
+      showTransition('RAM bank restored','Power, startup control and binary memory are stable.','Continue →',()=>{active.room=3;renderRoom();});
+    }else if(wrong){active.memoryFaults++;active.playTone(155,.08,'square',.025);showNotice(`${wrong} bit${wrong===1?' is':'s are'} inconsistent. Recheck the highlighted cells.`,'fault',1500);}
+    else showNotice(`${blank} memory cell${blank===1?' is':'s are'} still blank.`,'warn',1200);
   });
 
   actions.append(hint,check);
@@ -426,32 +427,45 @@ function renderFinalGate(){
   root.appendChild(roomHeader(
     'BOOT PATH RESTORED',
     'The micro:bit can boot again',
-    'The physical repair is complete. One final diagnostic checks that the important computing ideas are understood before the processor reconnects to the rest of the board.'
+    'Power, startup logic and RAM are stable. The final boss is the complete 12-question Week 1 diagnostic.'
   ));
 
-  const board=document.createElement('div');board.className='microbit-cutaway';
-  board.innerHTML='<div class="cutaway-leds"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="cutaway-chip">MICROCONTROLLER<br><strong>BOOT OK</strong></div><div class="cutaway-radio">RADIO</div><div class="cutaway-buttons"><span>A</span><span>B</span></div>';
+  const board=document.createElement('div');board.className='microbit-face full-face';
+  const leds=Array.from({length:25},(_,i)=>`<span class="${[6,8,11,13,17,18,19].includes(i)?'lit':''}"></span>`).join('');
+  board.innerHTML=`
+    <div class="microbit-face-touch"><span class="touch-logo"><i></i><i></i></span><span class="touch-mic-dot">●</span></div>
+    <div class="microbit-face-leds">${leds}</div>
+    <div class="microbit-face-button face-a"><b></b><span>A</span></div>
+    <div class="microbit-face-button face-b"><b></b><span>B</span></div>
+    <div class="microbit-face-chip">MICROCONTROLLER <strong>BOOT OK</strong></div>
+    <div class="microbit-face-pins"><span>0</span><span>1</span><span>2</span><span>3V</span><span>GND</span></div>
+  `;
 
   const real=document.createElement('div');real.className='reality-note real-note';
-  real.innerHTML='<strong>Inside the real micro:bit</strong><span>The board really does contain a microcontroller, memory, input/output connections, sensors and radio hardware. Our glowing data pulse and rooms are a game model — real electrical signals do not look like tiny moving dots.</span>';
+  real.innerHTML='<strong>Inside the real micro:bit</strong><span>The board really does contain a microcontroller, memory, input/output connections, sensors, a 5×5 LED display, buttons and radio hardware. Our glowing data pulse and rooms are a game model — real electrical signals do not look like tiny moving dots.</span>';
 
   const stats=document.createElement('div');stats.className='adventure-run-stats';
   stats.innerHTML=`<span><strong>${active.bits.size}/3</strong> boot packets</span><span><strong>${active.arcadeFaults}</strong> signal faults</span><span><strong>${active.sequenceFaults}</strong> sequence faults</span><span><strong>${active.memoryFaults}</strong> RAM checks failed</span>`;
 
-  const launch=document.createElement('button');launch.type='button';launch.className='launch-button final-diagnostic';launch.textContent='Run final diagnostic →';
-  launch.addEventListener('click',()=>{
-    if(active.completed)return;active.completed=true;
-    const statsOut={
-      bits:active.bits.size,
-      arcadeFaults:active.arcadeFaults,
-      sequenceFaults:active.sequenceFaults,
-      memoryFaults:active.memoryFaults,
-      roomsCompleted:active.roomsCompleted,
-      bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25))
-    };
-    const done=active.onComplete;stop();done(statsOut);
-  });
-  root.append(board,real,stats,launch);
+  root.append(board,real,stats);
+
+  later(()=>showTransition(
+    'Final diagnostic ready',
+    'The repair rooms are complete. Beat the full 12-question diagnostic to bring Boot Sequence online.',
+    'Run 12-question diagnostic →',
+    ()=>{
+      if(active.completed)return;active.completed=true;
+      const statsOut={
+        bits:active.bits.size,
+        arcadeFaults:active.arcadeFaults,
+        sequenceFaults:active.sequenceFaults,
+        memoryFaults:active.memoryFaults,
+        roomsCompleted:active.roomsCompleted,
+        bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25))
+      };
+      const done=active.onComplete;stop();done(statsOut);
+    }
+  ),250);
 }
 
 global.TTCAdventure={
