@@ -27,7 +27,7 @@
         </div>
         <div class="brand-copy">
           <div class="brand">Tech Tinker: System Rescue</div>
-          <div class="brand-subtitle">Restore the lab. Repair the code. Bring every system online.</div>
+          <div class="brand-subtitle">Inside a micro:bit: repair the code, reconnect the board, bring every system online.</div>
         </div>
       </div>
 
@@ -44,8 +44,8 @@
         <div class="hero-panel">
           <div>
             <p class="eyebrow">MISSION CONTROL</p>
-            <h1 id="level-heading">Nine systems are down.</h1>
-            <p class="hero-copy">Repair them using the coding ideas from Tech Tinker Club. Every challenge restores part of the lab; any fault you miss will come back for another try.</p>
+            <h1 id="level-heading">A micro:bit has gone dark.</h1>
+            <p class="hero-copy">Shrink into the board and restore nine internal systems using coding, logic and maths. Route data, repair memory, solve control problems and pass each final diagnostic to bring the micro:bit back online.</p>
           </div>
           <div class="hero-status" aria-hidden="true">
             <span>LAB STATUS</span>
@@ -79,6 +79,23 @@
             <div class="brief-meta" id="brief-meta"></div>
             <button id="brief-start" class="launch-button" type="button">Start repair mission →</button>
           </div>
+        </div>
+      </section>
+
+      <section id="screen-adventure" class="screen" hidden aria-labelledby="adventure-title">
+        <div class="battle-topbar">
+          <button id="adventure-exit" class="text-button" type="button">← Exit mission</button>
+          <div class="adventure-progress" id="adventure-progress">BOOT SEQUENCE · ROOM 1/3</div>
+        </div>
+        <div class="microbit-world">
+          <div class="microbit-board-label">
+            <span>BBC micro:bit</span>
+            <strong>INTERNAL SYSTEM VIEW</strong>
+          </div>
+          <div class="microbit-pins" aria-hidden="true">
+            <span>0</span><span>1</span><span>2</span><span>3V</span><span>GND</span>
+          </div>
+          <div id="adventure-root" class="adventure-root"></div>
         </div>
       </section>
 
@@ -205,6 +222,7 @@
   </dialog>
 
   <script src="questions.js"></script>
+  <script src="adventure.js"></script>
   <script src="game.js"></script>
   <script src="pwa.js"></script>
 </body>
