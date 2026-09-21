@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#08111f" />
   <meta name="description" content="Tech Tinker: System Rescue — restore nine coding systems using your micro:bit knowledge." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="System Rescue" />
+  <meta name="format-detection" content="telephone=no" />
   <title>Tech Tinker: System Rescue</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -171,6 +179,13 @@
         <span><strong>Sound effects</strong><small>Short local beeps for repairs and faults.</small></span>
         <input id="setting-sound" type="checkbox" checked />
       </label>
+      <div class="install-row" id="install-row">
+        <div class="install-copy">
+          <strong>Install System Rescue</strong>
+          <small id="install-note">Add the game to this device for an app-like, offline-ready experience.</small>
+        </div>
+        <button id="install-app" class="secondary install-button" type="button">Install app</button>
+      </div>
       <div class="settings-actions">
         <button id="reset" class="danger secondary" type="button">Reset all progress</button>
         <button value="default">Done</button>
@@ -191,5 +206,6 @@
 
   <script src="questions.js"></script>
   <script src="game.js"></script>
+  <script src="pwa.js"></script>
 </body>
 </html>
