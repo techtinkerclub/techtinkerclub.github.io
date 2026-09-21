@@ -49,3 +49,42 @@ button{border:1px solid transparent;border-radius:11px;padding:10px 14px;color:#
 @media(max-width:600px){.app-shell{width:min(100% - 20px,1120px);padding-top:12px;padding-bottom:calc(118px + env(safe-area-inset-bottom))}.site-header{align-items:flex-start;flex-wrap:wrap;gap:9px;margin-bottom:14px}.brand-block{width:100%}.brand-subtitle{display:none}.header-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 36px 36px;width:100%;gap:6px}.stat-pill{min-width:0;padding:7px 5px;overflow:hidden;text-overflow:ellipsis;text-align:center;font-size:10px}.icon-button{width:36px;height:36px}.hero-panel{grid-template-columns:1fr;padding:17px;margin-bottom:9px}.hero-status{display:none}h1{font-size:27px}.hero-copy{font-size:12px}.mission-key{justify-content:flex-start;margin-bottom:9px}.levels{grid-template-columns:1fr;gap:9px}.card{min-height:0;padding:13px;gap:7px}.card h3{font-size:17px}.card-description{min-height:0}.card-footer button{min-width:84px}.briefing-panel{grid-template-columns:1fr}.brief-visual{min-height:210px;border-right:0;border-bottom:1px solid var(--line2)}.brief-visual .led-matrix{--led:11px;gap:5px;padding:12px}.brief-copy{padding:21px 18px 22px}.brief-copy h2{font-size:28px}.launch-button{width:100%}.system-stage{grid-template-columns:64px minmax(0,1fr);gap:11px;padding:13px}.system-visual{width:64px;height:64px}.system-visual .led-matrix{--led:5px;gap:3px;padding:7px}.system-title-row{align-items:flex-start;flex-direction:column;gap:2px}.repair-count{font-size:9px}.module-row{grid-template-columns:repeat(2,1fr)}.hud{grid-template-columns:repeat(2,1fr)}.integrity-box{grid-column:span 2}.question-panel{min-height:0;padding:17px}.question-panel h2{font-size:20px}.options{grid-template-columns:1fr}.match-layout{grid-template-columns:1fr}.feedback-row{flex-direction:column}.feedback button{width:100%}.results-panel{margin-top:12px;padding:21px 15px}.result-actions,.settings-actions{flex-direction:column}.result-actions button,.settings-actions button{width:100%}.how-grid{grid-template-columns:1fr}.battle-week{max-width:58%;font-size:9px}}
 @media(max-width:380px){.header-actions{grid-template-columns:1fr 1fr 33px 33px}.icon-button{width:33px;height:33px}.stat-pill{font-size:9px}.system-stage{grid-template-columns:1fr}.system-visual{display:none}.battle-week{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+
+/* PWA install controls */
+.install-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line2);
+}
+.install-copy{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+}
+.install-copy strong{font-size:13px}
+.install-copy small{
+  color:var(--muted);
+  line-height:1.4;
+}
+.install-button{
+  flex:0 0 auto;
+  min-width:112px;
+}
+.install-row.is-installed .install-button{
+  color:var(--green);
+  border-color:rgba(92,224,160,.35);
+  background:rgba(92,224,160,.06);
+}
+@media(max-width:600px){
+  .install-row{
+    align-items:stretch;
+    flex-direction:column;
+    gap:10px;
+  }
+  .install-button{width:100%}
+}
