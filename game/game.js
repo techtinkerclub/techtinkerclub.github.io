@@ -68,3 +68,73 @@
         if(old.clears&&typeof old.clears==='object') s.clears={...old.clears};
         if(old.settings&&typeof old.settings==='object') s.settings={...DEFAULT_SETTINGS,...old.settings};
         for(const id of Object.keys(s.clears)) if(s.clears[id]) s.ratings[id]=1;
+        return normalise(s);
+      }catch(_){ }
+    }
+    return freshState();
+  }
+  function save(){ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(_){ } }
+  function totalStars(){ return weekIds().reduce((n,id)=>n+(Number(state.ratings[id])||0),0); }
+  function onlineCount(){ return weekIds().filter(id=>state.clears[id]).length; }
+  function cleanTopic(title,id){ return String(title||`Week ${id}`).replace(new RegExp(`^Week\\s+${id}\\s*:\\s*`,'i'),'').trim(); }
+
+  function showScreen(name){
+    for(const [key,node] of Object.entries(screens)) node.hidden = key!==name;
+    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  }
+
+  function buildMatrix(id,stateName='ready'){
+    const sys=systemFor(id), matrix=document.createElement('div');
+    matrix.className=`led-matrix ${stateName}`; matrix.setAttribute('aria-hidden','true');
+    sys.pattern.join('').split('').forEach(bit=>{const led=document.createElement('span');if(bit==='1')led.classList.add('on');matrix.appendChild(led);});
+    return matrix;
+  }
+  function renderMatrix(target,id,stateName='ready'){ target.replaceChildren(buildMatrix(id,stateName)); }
+  function buildStars(rating,label){
+    const wrap=document.createElement('div');wrap.setAttribute('role','img');wrap.setAttribute('aria-label',label);
+    for(let i=1;i<=3;i++){const s=document.createElement('span');s.textContent='★';if(i>rating)s.className='empty';wrap.appendChild(s);}return wrap;
+  }
+  function renderHeader(){
+    const ids=weekIds(); byId('stars').textContent=`★ ${totalStars()} / ${ids.length*3}`; byId('progress-pill').textContent=`${onlineCount()} / ${ids.length} online`; byId('hero-online-count').textContent=`${onlineCount()}/${ids.length}`;
+  }
+  function renderLevels(){
+    levelGrid.replaceChildren();renderHeader();const ids=weekIds();
+    ids.forEach((id,index)=>{
+      const w=DATA.weeks[id], sys=systemFor(id), locked=!DEBUG&&!state.unlocked.includes(id)&&!w.forceUnlock, rating=Number(state.ratings[id])||0, best=state.best[id]||{};
+      const card=document.createElement('article');card.className=`card${locked?' locked':''}${state.clears[id]?' completed':''}`;
+      const top=document.createElement('div');top.className='card-top';
+      const sid=document.createElement('div');sid.className='system-id';sid.textContent=`System ${id}`;
+      top.append(sid,buildMatrix(id,locked?'locked':state.clears[id]?'complete':'ready'));
+      const title=document.createElement('h3');title.textContent=sys.name;
+      const topic=document.createElement('div');topic.className='card-topic';topic.textContent=cleanTopic(w.title,id);
+      const desc=document.createElement('p');desc.className='card-description';desc.textContent=w.description||'Coding challenge';
+      const meta=document.createElement('div');meta.className='card-meta';
+      const qtag=document.createElement('span');qtag.className='tag';qtag.textContent=`${(w.questions||[]).length} challenges`;
+      const stag=document.createElement('span');stag.className=`tag system-status-tag ${locked?'offline':state.clears[id]?'online':'ready'}`;stag.textContent=locked?'OFFLINE':state.clears[id]?'ONLINE':'READY';meta.append(qtag,stag);
+      const stars=buildStars(rating,`System ${id}: ${rating} of 3 stars`);stars.classList.add('level-stars');
+      const footer=document.createElement('div');footer.className='card-footer';
+      const note=document.createElement('div');note.className='card-note';
+      if(locked) note.textContent=index?`Restore System ${ids[index-1]} to unlock`:'Offline'; else if(best.seconds) note.textContent=`Best ${formatTime(best.seconds)}`; else note.textContent=state.clears[id]?'Online · improve your rating':'Awaiting repair';
+      const button=document.createElement('button');button.type='button';button.disabled=locked;button.textContent=locked?'Offline':state.clears[id]?'Re-run':'Repair';button.addEventListener('click',()=>openBriefing(id));
+      footer.append(note,button);card.append(top,title,topic,desc,meta,stars,footer);levelGrid.appendChild(card);
+    });
+  }
+
+  function openBriefing(id){
+    const w=DATA.weeks[id],sys=systemFor(id);if(!w)return;pendingBriefId=id;
+    byId('brief-system-label').textContent=`SYSTEM ${id}`;byId('briefing-title').textContent=sys.name;byId('brief-topic').textContent=cleanTopic(w.title,id);byId('brief-description').textContent=w.description||'';byId('brief-objective').textContent=sys.objective;
+    const meta=byId('brief-meta');meta.replaceChildren();for(const text of [`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics']){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
+  }
+
+  function startMission(id){
+    const w=DATA.weeks[id];if(!w)return;const questions=(w.questions||[]).map(q=>({...q}));if(!questions.length){toast('This system has no challenges yet.');return;}
+    G={id,w,questions,queue:questions.map(q=>({q,retry:false})),current:null,mastered:new Set(),integrityMax:4,integrity:4,streak:0,bestStreak:0,score:0,mistakes:0,hintsLeft:2,hintsUsed:0,review:new Map(),startedAt:Date.now(),finishedAt:null};
+    inputLocked=false;selectedMatchTerm=null;byId('battle-week').textContent=w.title||`Week ${id}`;byId('mission-title').textContent=systemFor(id).name;byId('system-label').textContent=`SYSTEM ${id} · REPAIR MODE`;renderMatrix(byId('system-visual'),id,'repairing');renderModules();showScreen('game');renderHud();nextQuestion();startTimer();playTone(420,.06,'sine',.035);
+  }
+  function renderModules(){ const row=byId('module-row');row.replaceChildren();for(const label of systemFor(G.id).modules){const el=document.createElement('div');el.className='module';el.textContent=label;row.appendChild(el);} }
+  function updateModules(){ const pct=G.mastered.size/G.questions.length;Array.from(byId('module-row').children).forEach((el,i)=>el.classList.toggle('online',pct>=(i+1)/4)); }
+  function updateRepairMatrix(){
+    const leds=Array.from(byId('system-visual').querySelectorAll('.led-matrix span.on'));const lit=Math.round(leds.length*(G.mastered.size/G.questions.length));leds.forEach((led,i)=>led.classList.toggle('repaired',i<lit));
+  }
+  function renderHud(){
+    if(!G)return;const integrity=byId('integrity');integrity.replaceChildren();for(let i=0;i<G.integrityMax;i++){const pip=document.createElement('span');pip.className=`integrity-pip${i>=G.integrity?' off':''}`;integrity.appendChild(pip);}integrity.setAttribute('aria-label',`${G.integrity} of ${G.integrityMax} integrity points remaining`);
