@@ -721,3 +721,442 @@ button{border:1px solid transparent;border-radius:11px;padding:10px 14px;color:#
   }
   .pwa-update-actions button{width:100%}
 }
+
+
+/* ============================================================
+   Micro:bit board identity + real-time adventure overlays
+   ============================================================ */
+.microbit-world{
+  padding-top:158px;
+}
+.microbit-schematic{
+  position:absolute;
+  left:50%;
+  top:14px;
+  transform:translateX(-50%);
+  width:min(520px,76%);
+  height:126px;
+  pointer-events:none;
+}
+.microbit-schematic::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:1px solid rgba(85,217,255,.12);
+  border-radius:18px 18px 28px 28px;
+  background:linear-gradient(145deg,rgba(5,13,23,.48),rgba(14,31,48,.32));
+}
+.microbit-led-face{
+  position:absolute;
+  left:50%;
+  top:40px;
+  transform:translateX(-50%);
+  display:grid;
+  grid-template-columns:repeat(5,8px);
+  gap:6px;
+}
+.microbit-led-face span{
+  width:8px;
+  height:8px;
+  border-radius:2px;
+  background:#2c4055;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.035);
+}
+.microbit-led-face span:nth-child(7),
+.microbit-led-face span:nth-child(9),
+.microbit-led-face span:nth-child(12),
+.microbit-led-face span:nth-child(14),
+.microbit-led-face span:nth-child(18),
+.microbit-led-face span:nth-child(19),
+.microbit-led-face span:nth-child(20){
+  background:var(--cyan);
+  box-shadow:0 0 8px rgba(85,217,255,.62);
+}
+.microbit-touch-mark,
+.microbit-face-touch{
+  position:absolute;
+  left:50%;
+  top:8px;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.touch-logo{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:44px;
+  height:24px;
+  padding:0 8px;
+  border:4px solid var(--amber);
+  border-radius:999px;
+}
+.touch-logo i{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--amber);
+}
+.touch-mic-dot{
+  color:var(--red);
+  font-size:12px;
+  text-shadow:0 0 8px rgba(255,119,135,.7);
+}
+.microbit-board-button{
+  position:absolute;
+  top:52px;
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border:2px solid #8e7334;
+  border-radius:50%;
+  color:var(--amber);
+  background:#171b20;
+  font-weight:950;
+}
+.microbit-board-button::before{
+  content:"";
+  width:19px;
+  height:19px;
+  border-radius:50%;
+  background:#05080b;
+  box-shadow:inset 0 0 0 3px #2b3035;
+}
+.microbit-board-button span{
+  position:absolute;
+  bottom:-19px;
+  font-size:10px;
+}
+.microbit-board-button.button-a{left:13%}
+.microbit-board-button.button-b{right:13%}
+.microbit-board-label{
+  position:relative;
+  z-index:2;
+}
+.adventure-overlay-host{
+  position:relative;
+  z-index:150;
+}
+.adventure-popup-shade{
+  position:fixed;
+  z-index:170;
+  inset:0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:max(78px,calc(env(safe-area-inset-top) + 54px)) 14px 24px;
+  background:rgba(3,9,17,.62);
+  backdrop-filter:blur(5px);
+}
+.adventure-popup{
+  width:min(560px,calc(100vw - 28px));
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(8,21,36,.98);
+  box-shadow:0 22px 70px rgba(0,0,0,.5);
+}
+.adventure-popup.notice{
+  position:fixed;
+  z-index:175;
+  top:max(70px,calc(env(safe-area-inset-top) + 46px));
+  left:50%;
+  transform:translateX(-50%);
+  padding:11px 14px;
+  color:var(--ink);
+  text-align:center;
+  font-size:12px;
+  font-weight:800;
+  pointer-events:none;
+  animation:adventure-popup-in .18s ease both;
+}
+.adventure-popup.notice.success{
+  border-color:rgba(92,224,160,.45);
+  box-shadow:0 15px 50px rgba(0,0,0,.45),0 0 22px rgba(92,224,160,.11);
+}
+.adventure-popup.notice.warn{
+  border-color:rgba(255,210,103,.5);
+}
+.adventure-popup.notice.fault{
+  border-color:rgba(255,119,135,.55);
+  box-shadow:0 15px 50px rgba(0,0,0,.45),0 0 22px rgba(255,119,135,.11);
+}
+@keyframes adventure-popup-in{
+  from{opacity:0;transform:translate(-50%,-10px)}
+  to{opacity:1;transform:translate(-50%,0)}
+}
+.adventure-popup.transition{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:13px;
+  padding:14px;
+}
+.adventure-popup.transition.success{
+  border-color:rgba(92,224,160,.5);
+}
+.adventure-popup-icon{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  color:#07111f;
+  background:var(--green);
+  font-weight:950;
+}
+.adventure-popup-copy{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+}
+.adventure-popup-copy strong{
+  font-size:14px;
+}
+.adventure-popup-copy span{
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.4;
+}
+.adventure-popup.transition button{
+  white-space:nowrap;
+}
+.pulse-live-hud{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:9px;
+  margin-bottom:9px;
+  padding:8px 10px;
+  border:1px solid var(--line2);
+  border-radius:10px;
+  background:#071421;
+  color:var(--muted2);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.06em;
+}
+.pulse-live-hud strong{
+  color:var(--cyan);
+}
+.pulse-live-indicator{
+  color:var(--muted2);
+}
+.pulse-live-indicator.active{
+  color:var(--green);
+  text-shadow:0 0 8px rgba(92,224,160,.55);
+}
+.pulse-control.active{
+  border-color:var(--cyan);
+  color:var(--cyan);
+  box-shadow:0 0 0 2px rgba(85,217,255,.08) inset;
+}
+.pulse-control.pressed{
+  transform:scale(.94);
+}
+.microbit-face.full-face{
+  position:relative;
+  width:min(610px,100%);
+  aspect-ratio:1.38;
+  margin:3px auto 14px;
+  overflow:hidden;
+  border:1px solid #3a5570;
+  border-radius:28px 28px 42px 42px;
+  background:
+    radial-gradient(circle at 50% 48%,rgba(85,217,255,.055),transparent 35%),
+    linear-gradient(145deg,#111b27,#09131e);
+  box-shadow:inset 0 1px rgba(255,255,255,.045);
+}
+.microbit-face.full-face::before,
+.microbit-face.full-face::after{
+  content:"";
+  position:absolute;
+  top:17px;
+  width:28px;
+  height:28px;
+  border:3px solid #263746;
+  border-radius:50%;
+  box-shadow:inset 0 0 0 4px #08111b;
+}
+.microbit-face.full-face::before{left:18px}
+.microbit-face.full-face::after{right:18px}
+.microbit-face-touch{
+  top:19px;
+}
+.microbit-face-leds{
+  position:absolute;
+  left:50%;
+  top:24%;
+  transform:translateX(-50%);
+  display:grid;
+  grid-template-columns:repeat(5,14px);
+  gap:10px;
+}
+.microbit-face-leds span{
+  width:14px;
+  height:14px;
+  border-radius:3px;
+  background:#3a454d;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.03);
+}
+.microbit-face-leds span.lit{
+  background:var(--green);
+  box-shadow:0 0 10px rgba(92,224,160,.8);
+}
+.microbit-face-button{
+  position:absolute;
+  top:43%;
+  width:58px;
+  text-align:center;
+}
+.microbit-face-button b{
+  display:block;
+  width:46px;
+  height:46px;
+  margin:0 auto;
+  border:2px solid #5d6870;
+  border-radius:6px;
+  background:#32373c;
+  box-shadow:inset 0 0 0 10px #4a5056;
+}
+.microbit-face-button b::after{
+  content:"";
+  display:block;
+  width:23px;
+  height:23px;
+  margin:9px auto 0;
+  border-radius:50%;
+  background:#050607;
+}
+.microbit-face-button span{
+  display:block;
+  margin-top:7px;
+  color:var(--amber);
+  font-weight:950;
+}
+.microbit-face-button.face-a{left:8%}
+.microbit-face-button.face-b{right:8%}
+.microbit-face-chip{
+  position:absolute;
+  left:50%;
+  top:63%;
+  transform:translateX(-50%);
+  padding:9px 12px;
+  border:1px solid #42617e;
+  border-radius:9px;
+  background:#07111b;
+  color:var(--muted);
+  font:800 8px/1.45 ui-monospace,monospace;
+  letter-spacing:.07em;
+  text-align:center;
+}
+.microbit-face-chip strong{
+  display:block;
+  color:var(--green);
+}
+.microbit-face-pins{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  display:flex;
+  gap:14px;
+}
+.microbit-face-pins span{
+  display:grid;
+  place-items:center;
+  width:60px;
+  height:33px;
+  border:2px solid #9b7b29;
+  border-bottom:0;
+  border-radius:22px 22px 0 0;
+  background:#493b16;
+  color:#f3d56a;
+  font-size:9px;
+  font-weight:950;
+}
+@media(max-width:700px){
+  .app-shell{
+    padding-top:max(12px,env(safe-area-inset-top));
+  }
+  .microbit-world{
+    padding-top:132px;
+  }
+  .microbit-schematic{
+    width:88%;
+    height:104px;
+  }
+  .microbit-led-face{
+    top:35px;
+    grid-template-columns:repeat(5,6px);
+    gap:5px;
+  }
+  .microbit-led-face span{width:6px;height:6px}
+  .microbit-touch-mark{top:5px}
+  .touch-logo{
+    width:37px;height:20px;padding:0 6px;border-width:3px;
+  }
+  .touch-logo i{width:6px;height:6px}
+  .microbit-board-button{
+    top:43px;
+    width:41px;height:41px;
+  }
+  .microbit-board-button.button-a{left:10%}
+  .microbit-board-button.button-b{right:10%}
+  .adventure-popup.transition{
+    grid-template-columns:auto minmax(0,1fr);
+  }
+  .adventure-popup.transition button{
+    grid-column:1/-1;
+    width:100%;
+  }
+  .pulse-live-hud{
+    flex-wrap:wrap;
+  }
+  .microbit-face-pins{
+    gap:7px;
+  }
+  .microbit-face-pins span{
+    width:45px;
+    height:27px;
+  }
+}
+@media(max-width:420px){
+  .microbit-world{
+    padding-top:120px;
+  }
+  .microbit-schematic{
+    top:11px;
+    width:94%;
+    height:95px;
+  }
+  .microbit-board-button{
+    width:36px;height:36px;
+  }
+  .microbit-board-button::before{
+    width:15px;height:15px;
+  }
+  .adventure-popup.notice{
+    top:max(62px,calc(env(safe-area-inset-top) + 38px));
+    font-size:11px;
+  }
+  .microbit-face-leds{
+    grid-template-columns:repeat(5,10px);
+    gap:7px;
+  }
+  .microbit-face-leds span{width:10px;height:10px}
+  .microbit-face-button b{
+    width:38px;height:38px;
+    box-shadow:inset 0 0 0 8px #4a5056;
+  }
+  .microbit-face-button b::after{
+    width:18px;height:18px;margin-top:8px;
+  }
+  .microbit-face-pins span{
+    width:39px;
+    font-size:8px;
+  }
+}

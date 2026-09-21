@@ -7,7 +7,7 @@
   <meta name="description" content="Tech Tinker: System Rescue — restore nine coding systems using your micro:bit knowledge." />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="System Rescue" />
   <meta name="format-detection" content="telephone=no" />
   <title>Tech Tinker: System Rescue</title>
@@ -88,10 +88,20 @@
           <div class="adventure-progress" id="adventure-progress">BOOT SEQUENCE · ROOM 1/3</div>
         </div>
         <div class="microbit-world">
+          <div class="microbit-schematic" aria-hidden="true">
+            <div class="microbit-touch-mark">
+              <span class="touch-logo"><i></i><i></i></span>
+              <span class="touch-mic-dot">●</span>
+            </div>
+            <div class="microbit-board-button button-a"><span>A</span></div>
+            <div class="microbit-board-button button-b"><span>B</span></div>
+            <div class="microbit-led-face"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          </div>
           <div class="microbit-board-label">
             <span>BBC micro:bit</span>
             <strong>INTERNAL SYSTEM VIEW</strong>
           </div>
+          <div id="adventure-overlay-host" class="adventure-overlay-host" aria-live="assertive"></div>
           <div class="microbit-pins" aria-hidden="true">
             <span>0</span><span>1</span><span>2</span><span>3V</span><span>GND</span>
           </div>
