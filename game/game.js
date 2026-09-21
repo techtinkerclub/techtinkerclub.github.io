@@ -123,7 +123,7 @@
   function openBriefing(id){
     const w=DATA.weeks[id],sys=systemFor(id);if(!w)return;pendingBriefId=id;
     byId('brief-system-label').textContent=`SYSTEM ${id}`;byId('briefing-title').textContent=sys.name;byId('brief-topic').textContent=cleanTopic(w.title,id);byId('brief-description').textContent=w.description||'';byId('brief-objective').textContent=sys.objective;
-    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=id==='1'?['3 repair rooms','5-question final diagnostic','inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
+    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=id==='1'?['3 repair rooms',`${(w.questions||[]).length}-question final diagnostic`,'inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
   }
 
   function startMission(id){
@@ -149,9 +149,9 @@
     const w=DATA.weeks[id];if(!w)return;
     const allQuestions=(w.questions||[]).map(q=>({...q}));
     if(!allQuestions.length){toast('This system has no challenges yet.');return;}
-    const questions=(String(id)==='1'&&adventureStats)?shuffle(allQuestions).slice(0,Math.min(5,allQuestions.length)):allQuestions;
+    const questions=allQuestions;
     G={id,w,stage:'diagnostic',adventureStats,questions,queue:questions.map(q=>({q,retry:false})),current:null,mastered:new Set(),integrityMax:4,integrity:4,streak:0,bestStreak:0,score:Number(adventureStats?.bonusScore)||0,mistakes:0,hintsLeft:2,hintsUsed:0,review:new Map(),startedAt:Date.now(),finishedAt:null};
-    inputLocked=false;selectedMatchTerm=null;byId('battle-week').textContent=adventureStats?'Final diagnostic · 5 checks':(w.title||`Week ${id}`);byId('mission-title').textContent=adventureStats?`${systemFor(id).name} Verification`:systemFor(id).name;byId('system-label').textContent=adventureStats?`SYSTEM ${id} · FINAL DIAGNOSTIC`:`SYSTEM ${id} · REPAIR MODE`;renderMatrix(byId('system-visual'),id,'repairing');renderModules();showScreen('game');renderHud();nextQuestion();startTimer();playTone(420,.06,'sine',.035);
+    inputLocked=false;selectedMatchTerm=null;byId('battle-week').textContent=adventureStats?`Final diagnostic · ${questions.length} checks`:(w.title||`Week ${id}`);byId('mission-title').textContent=adventureStats?`${systemFor(id).name} Verification`:systemFor(id).name;byId('system-label').textContent=adventureStats?`SYSTEM ${id} · FINAL DIAGNOSTIC`:`SYSTEM ${id} · REPAIR MODE`;renderMatrix(byId('system-visual'),id,'repairing');renderModules();showScreen('game');renderHud();nextQuestion();startTimer();playTone(420,.06,'sine',.035);
   }
   function renderModules(){ const row=byId('module-row');row.replaceChildren();for(const label of systemFor(G.id).modules){const el=document.createElement('div');el.className='module';el.textContent=label;row.appendChild(el);} }
   function updateModules(){ const pct=G.mastered.size/G.questions.length;Array.from(byId('module-row').children).forEach((el,i)=>el.classList.toggle('online',pct>=(i+1)/4)); }
