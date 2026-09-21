@@ -2,94 +2,193 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tech Tinker Boss Battle</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#08111f" />
+  <meta name="description" content="Tech Tinker: System Rescue — restore nine coding systems using your micro:bit knowledge." />
+  <title>Tech Tinker: System Rescue</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">🕹️ Tech Tinker Boss Battle</div>
-      <div class="row">
-        <span class="pill" id="stars">⭐ 0</span>
-        <span class="pill" id="progress-pill">Progress: 0/0</span>
-        <button id="reset" class="ghost smallbtn">Reset</button>
+  <a class="skip-link" href="#main-content">Skip to game</a>
+
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="brand-copy">
+          <div class="brand">Tech Tinker: System Rescue</div>
+          <div class="brand-subtitle">Restore the lab. Repair the code. Bring every system online.</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="stat-pill" id="stars" aria-label="Stars earned">★ 0 / 27</div>
+        <div class="stat-pill" id="progress-pill" aria-label="Systems online">0 / 9 online</div>
+        <button id="help" class="icon-button" type="button" aria-label="How to play" title="How to play">?</button>
+        <button id="settings" class="icon-button" type="button" aria-label="Settings" title="Settings">⚙</button>
       </div>
     </header>
 
-    <!-- LEVELS -->
-    <main id="screen-levels" class="grid levels"></main>
-
-    <!-- INTRO / DIALOGUE -->
-    <section id="screen-intro" style="display:none;">
-      <div class="modal-card intro-card">
-        <div class="intro-grid">
-          <div class="intro-left">
-            <img id="introBossImg" class="intro-portrait" alt="Boss portrait" />
+    <main id="main-content">
+      <section id="screen-levels" aria-labelledby="level-heading">
+        <div class="hero-panel">
+          <div>
+            <p class="eyebrow">MISSION CONTROL</p>
+            <h1 id="level-heading">Nine systems are down.</h1>
+            <p class="hero-copy">Repair them using the coding ideas from Tech Tinker Club. Every challenge restores part of the lab; any fault you miss will come back for another try.</p>
           </div>
-          <div class="intro-right">
-            <h2 id="introTitle" class="intro-title">Week</h2>
-            <div class="row intro-tags">
-              <span class="tag" id="introTag"></span>
+          <div class="hero-status" aria-hidden="true">
+            <span>LAB STATUS</span>
+            <strong id="hero-online-count">0/9</strong>
+            <small>SYSTEMS ONLINE</small>
+          </div>
+        </div>
+
+        <div class="mission-key" aria-label="System status key">
+          <span><i class="dot ready"></i>Ready</span>
+          <span><i class="dot online"></i>Online</span>
+          <span><i class="dot offline"></i>Offline</span>
+        </div>
+
+        <div id="level-grid" class="grid levels"></div>
+      </section>
+
+      <section id="screen-briefing" class="screen" hidden aria-labelledby="briefing-title">
+        <button id="brief-back" class="text-button top-back" type="button">← Mission control</button>
+        <div class="briefing-panel">
+          <div class="brief-visual" id="brief-visual" aria-hidden="true"></div>
+          <div class="brief-copy">
+            <p class="eyebrow" id="brief-system-label">SYSTEM 1</p>
+            <h2 id="briefing-title">Boot Sequence</h2>
+            <div class="brief-topic" id="brief-topic"></div>
+            <p id="brief-description"></p>
+            <div class="brief-objective">
+              <strong>Mission</strong>
+              <span id="brief-objective"></span>
             </div>
-            <p id="introStory" class="story"></p>
+            <div class="brief-meta" id="brief-meta"></div>
+            <button id="brief-start" class="launch-button" type="button">Start repair mission →</button>
           </div>
         </div>
+      </section>
 
-        <div id="introComic" class="intro-bubbles">
-          <!-- bubbles injected by JS -->
+      <section id="screen-game" class="screen" hidden aria-labelledby="mission-title">
+        <div class="battle-topbar">
+          <button id="quit" class="text-button" type="button">← Exit mission</button>
+          <div class="battle-week" id="battle-week"></div>
         </div>
 
-        <div class="intro-actions">
-          <button id="back" class="ghost smallbtn">Back</button>
-          <span class="spacer"></span>
-          <button id="introStart">Start ▶</button>
+        <section class="system-stage" aria-label="System repair status">
+          <div class="system-visual" id="system-visual" aria-hidden="true"></div>
+          <div class="system-status-panel">
+            <div class="system-title-row">
+              <div>
+                <p class="eyebrow" id="system-label">SYSTEM 1 · REPAIR MODE</p>
+                <h2 id="mission-title">Boot Sequence</h2>
+              </div>
+              <div class="repair-count" id="repair-count">0 / 12 repaired</div>
+            </div>
+            <div class="repair-bar" role="progressbar" aria-label="Repair progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div id="repair-fill" class="repair-fill"></div>
+            </div>
+            <div class="module-row" id="module-row"></div>
+          </div>
+        </section>
+
+        <div class="hud" aria-label="Mission status">
+          <div class="hud-item integrity-box">
+            <span class="hud-label">Integrity</span>
+            <div class="integrity" id="integrity" aria-label="System integrity"></div>
+          </div>
+          <div class="hud-item"><span class="hud-label">Repaired</span><strong id="mastered">0 / 0</strong></div>
+          <div class="hud-item"><span class="hud-label">Clean compile</span><strong id="streak">0×</strong></div>
+          <div class="hud-item"><span class="hud-label">Score</span><strong id="score">0</strong></div>
+          <div class="hud-item" id="timer-wrap"><span class="hud-label">Time</span><strong id="timer">0:00</strong></div>
+          <button id="useHint" class="hint-button" type="button">🔎 Diagnostic <span id="hintLeft">2</span></button>
         </div>
-      </div>
-    </section>
 
-    <!-- GAME -->
-    <section id="screen-game" style="display:none;">
-      <div id="stage" class="stage panel starfield">
-        <canvas id="matrixCanvas" class="matrix-canvas"></canvas>
-        <div class="scanlines"></div>
+        <section class="question-panel" id="qpanel" aria-live="polite"></section>
+        <section class="feedback" id="feedback" hidden aria-live="polite"></section>
+      </section>
 
-        <div class="boss-wrap">
-          <img id="bossSprite" src="" alt="Boss" />
-          <div id="bossName" class="boss-name"></div>
+      <section id="screen-results" class="screen" hidden aria-labelledby="results-title">
+        <div class="results-panel">
+          <div class="results-visual" id="results-visual" aria-hidden="true"></div>
+          <p class="eyebrow" id="results-kicker">SYSTEM STATUS</p>
+          <h2 id="results-title">System restored!</h2>
+          <p id="results-summary" class="results-summary"></p>
+          <div class="result-stars" id="result-stars" aria-label="Star rating"></div>
+          <div class="result-stats" id="result-stats"></div>
+          <details id="review-details" class="review-box">
+            <summary>Fault log <span id="review-count"></span></summary>
+            <ul class="review" id="review-list"></ul>
+          </details>
+          <div class="result-actions">
+            <button id="retry" type="button">Re-run mission</button>
+            <button id="next-system" type="button">Next system →</button>
+            <button id="back-levels" class="secondary" type="button">Mission control</button>
+          </div>
         </div>
-
-        <div id="stageOverlay" class="stage-overlay" hidden></div>
-      </div>
-
-      <div class="hud">
-        <div id="hearts" class="hearts"></div>
-        <div class="hp-wrap">
-          <div class="hp-label small">👾 Boss HP <span id="hpCount" class="small"></span></div>
-          <div class="bar"><div id="hp" class="fill"></div></div>
-        </div>
-        <span id="streak" class="pill">Streak: 0</span>
-        <span id="scorePill" class="pill">Score: 0</span>
-        <span id="timer" class="pill">⏱️ 0s</span>
-        <span id="hintLeft" class="pill">⭐ Hints: 3</span>
-        <button id="useHint" class="smallbtn">Use Hint</button>
-        <span class="spacer"></span>
-        <button id="quit" class="smallbtn">Quit</button>
-      </div>
-
-      <div id="qpanel" class="panel"></div>
-    </section>
-
-    <!-- RESULTS (kept for future use) -->
-    <section id="screen-results" style="display:none;"></section>
-
-    <div id="toast" class="toast"></div>
+      </section>
+    </main>
   </div>
 
-  <!-- Your questions data file must load before game.js -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="help-dialog" class="modal">
+    <form method="dialog">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">HOW TO PLAY</p>
+          <h2>Bring every system back online</h2>
+        </div>
+        <button class="icon-button close-dialog" value="cancel" aria-label="Close">×</button>
+      </div>
+      <div class="how-grid">
+        <div><span aria-hidden="true">◆</span><strong>Protect integrity</strong><p>A wrong answer causes a fault and removes one integrity point.</p></div>
+        <div><span aria-hidden="true">↻</span><strong>Faults return</strong><p>Missed challenges come back later. The system only goes online when every challenge is mastered.</p></div>
+        <div><span aria-hidden="true">⚡</span><strong>Clean compile</strong><p>Correct answers in a row build a streak and increase your score.</p></div>
+        <div><span aria-hidden="true">⌕</span><strong>Run diagnostics</strong><p>You have two hints per mission. Hints help you think without costing stars.</p></div>
+      </div>
+      <p class="keyboard-tip"><strong>Keyboard:</strong> 1–4 chooses an answer, H runs a diagnostic, Enter continues after feedback.</p>
+      <button class="wide" value="default">Got it</button>
+    </form>
+  </dialog>
+
+  <dialog id="settings-dialog" class="modal compact-modal">
+    <form method="dialog">
+      <div class="modal-head">
+        <div><p class="eyebrow">SETTINGS</p><h2>Game options</h2></div>
+        <button class="icon-button close-dialog" value="cancel" aria-label="Close">×</button>
+      </div>
+      <label class="setting-row">
+        <span><strong>Show timer</strong><small>Display elapsed mission time. There is no time limit.</small></span>
+        <input id="setting-timer" type="checkbox" checked />
+      </label>
+      <label class="setting-row">
+        <span><strong>Sound effects</strong><small>Short local beeps for repairs and faults.</small></span>
+        <input id="setting-sound" type="checkbox" checked />
+      </label>
+      <div class="settings-actions">
+        <button id="reset" class="danger secondary" type="button">Reset all progress</button>
+        <button value="default">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="reset-dialog" class="modal compact-modal">
+    <form method="dialog">
+      <div class="modal-head"><div><p class="eyebrow">RESET PROGRESS</p><h2>Take every system offline?</h2></div></div>
+      <p>This clears unlocked systems, ratings and best results on this device. It cannot be undone.</p>
+      <div class="settings-actions">
+        <button value="cancel" class="secondary">Keep progress</button>
+        <button id="confirm-reset" value="default" class="danger">Reset everything</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="questions.js"></script>
   <script src="game.js"></script>
 </body>
