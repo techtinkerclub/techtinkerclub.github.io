@@ -1201,3 +1201,33 @@ button{border:1px solid transparent;border-radius:11px;padding:10px 14px;color:#
     grid-template-rows:repeat(2,48px);
   }
 }
+
+
+/* Power Bus geometry lock + 6×6 RAM sizing */
+.pulse-board{
+  grid-template-rows:repeat(6,minmax(0,1fr));
+}
+.pulse-cell{
+  overflow:hidden;
+  line-height:1;
+}
+.memory-grid{
+  width:min(390px,92vw);
+  gap:4px;
+  padding:8px;
+}
+.memory-cell{
+  font-size:clamp(17px,5vw,27px);
+  border-radius:8px;
+}
+@media(max-width:420px){
+  .memory-grid{
+    width:min(350px,94vw);
+    gap:3px;
+    padding:7px;
+  }
+  .memory-cell{
+    font-size:clamp(16px,5vw,23px);
+    border-radius:7px;
+  }
+}
