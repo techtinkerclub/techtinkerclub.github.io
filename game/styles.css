@@ -1160,3 +1160,44 @@ button{border:1px solid transparent;border-radius:11px;padding:10px 14px;color:#
     font-size:8px;
   }
 }
+
+
+/* Power Bus control hotfix: player input is discrete, hazards stay real-time */
+.pulse-controls-four{
+  grid-template-columns:repeat(3,42px);
+  grid-template-rows:repeat(2,42px);
+}
+.pulse-controls-four .up{grid-column:2;grid-row:1}
+.pulse-controls-four .left{grid-column:1;grid-row:2}
+.pulse-controls-four .down{grid-column:2;grid-row:2}
+.pulse-controls-four .right{grid-column:3;grid-row:2}
+.pulse-controls-four .wait{display:none!important}
+.pulse-control.active{
+  border-color:#365470;
+  color:var(--ink);
+  box-shadow:none;
+}
+.pulse-control.pressed{
+  transform:scale(.94);
+  border-color:var(--cyan);
+  color:var(--cyan);
+}
+.pulse-board.fault{
+  animation:pulse-fault-flash .42s ease!important;
+}
+@keyframes pulse-fault-flash{
+  0%,100%{
+    box-shadow:none;
+    filter:none;
+  }
+  45%{
+    box-shadow:0 0 0 2px rgba(255,119,135,.55),0 0 24px rgba(255,119,135,.18);
+    filter:brightness(1.08);
+  }
+}
+@media(max-width:700px){
+  .pulse-controls-four{
+    grid-template-columns:repeat(3,48px);
+    grid-template-rows:repeat(2,48px);
+  }
+}
