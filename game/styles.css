@@ -1231,3 +1231,175 @@ button{border:1px solid transparent;border-radius:11px;padding:10px 14px;color:#
     border-radius:7px;
   }
 }
+
+
+/* ============================================================
+   Micro:bit visual rebuild + centred adventure dialogs
+   ============================================================ */
+body.adventure-modal-open{
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+.microbit-world{
+  padding-top:18px!important;
+}
+.microbit-world::before,
+.microbit-world::after{
+  display:none!important;
+}
+.microbit-pins{
+  display:none!important;
+}
+.microbit-schematic.microbit-hero-board{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  transform:none!important;
+  width:min(690px,100%)!important;
+  height:auto!important;
+  aspect-ratio:768/500;
+  margin:0 auto 12px;
+  pointer-events:none;
+}
+.microbit-svg{
+  display:block;
+  width:100%;
+  height:auto;
+  overflow:visible;
+  filter:drop-shadow(0 16px 28px rgba(0,0,0,.34));
+}
+.microbit-svg .mb-board-body{
+  stroke:#34485c;
+  stroke-width:3;
+}
+.microbit-svg .mb-gold-accent{
+  opacity:.98;
+}
+.microbit-svg .mb-gold-accent.faint{
+  opacity:.8;
+}
+.microbit-svg .mb-led{
+  fill:#3b454f;
+  stroke:#818991;
+  stroke-width:1.5;
+}
+.microbit-svg .mb-led-grid .mb-led:nth-child(7),
+.microbit-svg .mb-led-grid .mb-led:nth-child(9),
+.microbit-svg .mb-led-grid .mb-led:nth-child(12),
+.microbit-svg .mb-led-grid .mb-led:nth-child(14),
+.microbit-svg .mb-led-grid .mb-led:nth-child(18),
+.microbit-svg .mb-led-grid .mb-led:nth-child(19),
+.microbit-svg .mb-led-grid .mb-led:nth-child(20){
+  fill:var(--cyan);
+  stroke:#baf3ff;
+  filter:drop-shadow(0 0 6px rgba(85,217,255,.92));
+}
+.microbit-svg-complete .mb-led.lit{
+  fill:var(--green)!important;
+  stroke:#c8ffe5!important;
+  filter:drop-shadow(0 0 7px rgba(92,224,160,.95))!important;
+}
+.microbit-svg .mb-button text,
+.microbit-svg .mb-edge-pads text{
+  fill:#12151a;
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+  font-weight:950;
+  font-size:24px;
+}
+.microbit-svg .mb-edge-pads text{
+  font-size:20px;
+  text-anchor:middle;
+}
+.microbit-svg .mb-traces path{
+  fill:none;
+  stroke:#51718c;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+.microbit-svg .mb-small-components rect{
+  fill:#89949c;
+}
+.microbit-svg .mb-boot-badge rect{
+  fill:#07131e;
+  stroke:rgba(92,224,160,.65);
+  stroke-width:2;
+}
+.microbit-svg .mb-boot-badge text{
+  fill:var(--green);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+.microbit-board-label{
+  margin:2px auto 18px!important;
+}
+.microbit-face.full-face{
+  width:min(650px,100%)!important;
+  aspect-ratio:auto!important;
+  margin:3px auto 14px!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+.microbit-face.full-face::before,
+.microbit-face.full-face::after{
+  display:none!important;
+}
+.adventure-popup-shade{
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:100dvh;
+  padding:max(18px,env(safe-area-inset-top)) 14px max(18px,env(safe-area-inset-bottom))!important;
+}
+.adventure-popup.transition{
+  max-height:calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow:auto;
+}
+.adventure-popup.notice{
+  top:38dvh!important;
+  transform:translate(-50%,-50%)!important;
+  animation:adventure-notice-centre .18s ease both!important;
+}
+@keyframes adventure-notice-centre{
+  from{opacity:0;transform:translate(-50%,calc(-50% - 10px))}
+  to{opacity:1;transform:translate(-50%,-50%)}
+}
+@media(max-width:700px){
+  .microbit-world{
+    padding-top:12px!important;
+  }
+  .microbit-schematic.microbit-hero-board{
+    width:100%!important;
+    margin-bottom:8px;
+  }
+  .microbit-board-label{
+    margin-top:0!important;
+    margin-bottom:14px!important;
+  }
+  .adventure-popup.notice{
+    top:34dvh!important;
+    width:min(520px,calc(100vw - 34px));
+  }
+  .adventure-popup.transition{
+    width:min(520px,calc(100vw - 28px));
+  }
+}
+@media(max-width:420px){
+  .microbit-schematic.microbit-hero-board{
+    width:calc(100% + 4px)!important;
+    margin-left:-2px;
+  }
+  .microbit-svg .mb-button text{
+    font-size:22px;
+  }
+  .microbit-svg .mb-edge-pads text{
+    font-size:18px;
+  }
+  .adventure-popup.notice{
+    top:32dvh!important;
+    font-size:11px;
+  }
+}
