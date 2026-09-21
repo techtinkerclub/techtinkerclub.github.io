@@ -196,17 +196,92 @@
   function useHint(){if(!G||inputLocked||G.hintsLeft<=0||!G.current?.q?.hint){if(G&&G.hintsLeft<=0)toast('No diagnostics left in this mission.');return;}G.hintsLeft--;G.hintsUsed++;renderHud();const fb=byId('feedback');fb.hidden=false;fb.className='feedback hint';fb.replaceChildren();const copy=document.createElement('div');copy.className='feedback-copy';const h=document.createElement('strong');h.textContent='⌕ Diagnostic hint';const t=document.createElement('div');t.textContent=G.current.q.hint;copy.append(h,t);fb.appendChild(copy);playTone(360,.05,'sine',.025);}
 
   function finishMission(failed){
-    G.finishedAt=Date.now();stopTimer();const seconds=Math.floor((G.finishedAt-G.startedAt)/1000),attempts=G.mastered.size+G.mistakes,accuracy=attempts?Math.round(G.mastered.size/attempts*100):0;let rating=0;
-    if(failed){byId('results-kicker').textContent='REPAIR PAUSED';byId('results-title').textContent='System still unstable';byId('results-summary').textContent=`You repaired ${G.mastered.size} of ${G.questions.length} circuits. Review the fault log and re-run the mission.`;}
-    else{rating=G.mistakes===0?3:G.mistakes<=2?2:1;byId('results-kicker').textContent='SYSTEM ONLINE';byId('results-title').textContent=rating===3?'Flawless repair!':'System restored!';byId('results-summary').textContent=rating===3?'Every circuit restored without a fault. Excellent work.':'Every challenge is mastered and the system is back online.';state.clears[G.id]=true;state.ratings[G.id]=Math.max(Number(state.ratings[G.id])||0,rating);const old=state.best[G.id]||{};if(!old.seconds||rating>(old.rating||0)||(rating===(old.rating||0)&&seconds<old.seconds))state.best[G.id]={rating,seconds,mistakes:G.mistakes,hintsUsed:G.hintsUsed,bestStreak:G.bestStreak,score:G.score};const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];if(next&&!state.unlocked.includes(next))state.unlocked.push(next);save();playTone(780,.09,'sine',.04);setTimeout(()=>playTone(980,.11,'sine',.035),90);}
-    renderMatrix(byId('results-visual'),G.id,failed?'ready':'complete');const stars=byId('result-stars');stars.replaceChildren();const node=buildStars(failed?0:rating,`${failed?0:rating} of 3 stars`);while(node.firstChild)stars.appendChild(node.firstChild);const stats=byId('result-stats');stats.replaceChildren();addStat(stats,'Repaired',`${G.mastered.size}/${G.questions.length}`);addStat(stats,'Accuracy',`${accuracy}%`);addStat(stats,'Best streak',`${G.bestStreak}×`);addStat(stats,'Score',String(G.score));
-    const list=byId('review-list');list.replaceChildren();byId('review-count').textContent=G.review.size?`(${G.review.size})`:'';byId('review-details').hidden=!G.review.size;for(const {q} of G.review.values()){const li=document.createElement('li');const qq=document.createElement('div');qq.className='review-question';qq.textContent=q.question;const e=document.createElement('div');e.textContent=q.explanation||'';li.append(qq,e);list.appendChild(li);}const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];byId('next-system').hidden=failed||!next;showScreen('results');renderHeader();byId('retry').focus({preventScroll:true});
+    G.finishedAt=Date.now();
+    stopTimer();
+    const seconds=Math.floor((G.finishedAt-G.startedAt)/1000);
+    const attempts=G.mastered.size+G.mistakes;
+    const accuracy=attempts?Math.round(G.mastered.size/attempts*100):0;
+    const isBootAdventure=String(G.id)==='1'&&!!G.adventureStats;
+    let rating=0;
+
+    if(failed){
+      byId('results-kicker').textContent=isBootAdventure?'FINAL DIAGNOSTIC FAILED':'REPAIR PAUSED';
+      byId('results-title').textContent=isBootAdventure?'Boot verification incomplete':'System still unstable';
+      byId('results-summary').textContent=isBootAdventure
+        ?`The micro:bit repair rooms are complete, but only ${G.mastered.size} of ${G.questions.length} diagnostic checks were verified. Review the fault log and re-run the mission.`
+        :`You repaired ${G.mastered.size} of ${G.questions.length} circuits. Review the fault log and re-run the mission.`;
+    }else{
+      if(isBootAdventure){
+        const a=G.adventureStats;
+        const adventureClean=(a.arcadeFaults+a.sequenceFaults+a.memoryFaults)===0;
+        const diagnosticClean=G.mistakes===0;
+        rating=1+(adventureClean?1:0)+(diagnosticClean?1:0);
+        byId('results-kicker').textContent='MICRO:BIT BOOT COMPLETE';
+        byId('results-title').textContent=rating===3?'Flawless boot!':'Boot Sequence online!';
+        byId('results-summary').textContent=rating===3
+          ?'Power routing, startup logic, RAM repair and the final diagnostic all completed without a fault.'
+          :'The micro:bit can boot again. Replay the mission if you want to earn the clean-repair and flawless-diagnostic stars.';
+      }else{
+        rating=G.mistakes===0?3:G.mistakes<=2?2:1;
+        byId('results-kicker').textContent='SYSTEM ONLINE';
+        byId('results-title').textContent=rating===3?'Flawless repair!':'System restored!';
+        byId('results-summary').textContent=rating===3?'Every circuit restored without a fault. Excellent work.':'Every challenge is mastered and the system is back online.';
+      }
+
+      state.clears[G.id]=true;
+      state.ratings[G.id]=Math.max(Number(state.ratings[G.id])||0,rating);
+      const old=state.best[G.id]||{};
+      if(!old.seconds||rating>(old.rating||0)||(rating===(old.rating||0)&&seconds<old.seconds)){
+        state.best[G.id]={rating,seconds,mistakes:G.mistakes,hintsUsed:G.hintsUsed,bestStreak:G.bestStreak,score:G.score,adventureStats:G.adventureStats||null};
+      }
+      const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];
+      if(next&&!state.unlocked.includes(next))state.unlocked.push(next);
+      save();
+      playTone(780,.09,'sine',.04);
+      setTimeout(()=>playTone(980,.11,'sine',.035),90);
+    }
+
+    renderMatrix(byId('results-visual'),G.id,failed?'ready':'complete');
+    const stars=byId('result-stars');stars.replaceChildren();
+    const node=buildStars(failed?0:rating,`${failed?0:rating} of 3 stars`);
+    while(node.firstChild)stars.appendChild(node.firstChild);
+
+    const stats=byId('result-stats');stats.replaceChildren();
+    if(isBootAdventure){
+      const a=G.adventureStats;
+      addStat(stats,'Rooms','3/3');
+      addStat(stats,'Adventure faults',String(a.arcadeFaults+a.sequenceFaults+a.memoryFaults));
+      addStat(stats,'Diagnostic',`${accuracy}%`);
+      addStat(stats,'Score',String(G.score));
+    }else{
+      addStat(stats,'Repaired',`${G.mastered.size}/${G.questions.length}`);
+      addStat(stats,'Accuracy',`${accuracy}%`);
+      addStat(stats,'Best streak',`${G.bestStreak}×`);
+      addStat(stats,'Score',String(G.score));
+    }
+
+    const list=byId('review-list');list.replaceChildren();
+    byId('review-count').textContent=G.review.size?`(${G.review.size})`:'';
+    byId('review-details').hidden=!G.review.size;
+    for(const {q} of G.review.values()){
+      const li=document.createElement('li');
+      const qq=document.createElement('div');qq.className='review-question';qq.textContent=q.question;
+      const e=document.createElement('div');e.textContent=q.explanation||'';
+      li.append(qq,e);list.appendChild(li);
+    }
+    const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];
+    byId('next-system').hidden=failed||!next;
+    showScreen('results');
+    renderHeader();
+    byId('retry').focus({preventScroll:true});
   }
+
   function addStat(parent,label,value){const d=document.createElement('div');d.className='result-stat';const s=document.createElement('span');s.textContent=label;const b=document.createElement('strong');b.textContent=value;d.append(s,b);parent.appendChild(d);}
 
   function openDialog(id){const d=byId(id);if(d?.showModal)d.showModal();}
-  function resetProgress(){try{localStorage.removeItem(STORAGE_KEY);for(const k of LEGACY_KEYS)localStorage.removeItem(k);}catch(_){ }Object.assign(state,freshState());save();byId('reset-dialog')?.close();byId('settings-dialog')?.close();G=null;renderLevels();showScreen('levels');toast('Progress reset. System 1 is ready.');}
+  function resetProgress(){try{localStorage.removeItem(STORAGE_KEY);for(const k of LEGACY_KEYS)localStorage.removeItem(k);}catch(_){ }globalThis.TTCAdventure?.stop?.();Object.assign(state,freshState());save();byId('reset-dialog')?.close();byId('settings-dialog')?.close();G=null;renderLevels();showScreen('levels');toast('Progress reset. System 1 is ready.');}
   function exitMission(){if(!G){showScreen('levels');return;}const dirty=G.mastered.size||G.mistakes;if(!dirty||confirm('Exit this mission? This run will be discarded, but completed systems and best results stay saved.')){stopTimer();G=null;renderLevels();showScreen('levels');}}
+  function exitAdventure(){if(!G){renderLevels();showScreen('levels');return;}if(confirm('Exit the micro:bit repair mission? This run will be discarded, but completed systems stay saved.')){globalThis.TTCAdventure?.stop?.();G=null;renderLevels();showScreen('levels');}}
   function toast(msg){const t=byId('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1600);}
   function keyFor(q){return q.id||`${q.question||''}|${q.code||''}`;}
   function formatTime(sec){const v=Math.max(0,Math.floor(Number(sec)||0));return `${Math.floor(v/60)}:${String(v%60).padStart(2,'0')}`;}
@@ -216,9 +291,10 @@
 
   byId('brief-back').addEventListener('click',()=>{renderLevels();showScreen('levels');});
   byId('brief-start').addEventListener('click',()=>pendingBriefId&&startMission(pendingBriefId));
+  byId('adventure-exit').addEventListener('click',exitAdventure);
   byId('quit').addEventListener('click',exitMission);byId('useHint').addEventListener('click',useHint);
   byId('retry').addEventListener('click',()=>G&&startMission(G.id));
-  byId('back-levels').addEventListener('click',()=>{G=null;renderLevels();showScreen('levels');});
+  byId('back-levels').addEventListener('click',()=>{globalThis.TTCAdventure?.stop?.();G=null;renderLevels();showScreen('levels');});
   byId('next-system').addEventListener('click',()=>{if(!G)return;const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];if(next)openBriefing(next);});
   byId('help').addEventListener('click',()=>openDialog('help-dialog'));
   byId('settings').addEventListener('click',()=>{byId('setting-timer').checked=state.settings.timer;byId('setting-sound').checked=state.settings.sound;openDialog('settings-dialog');});
