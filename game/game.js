@@ -109,7 +109,7 @@
       const topic=document.createElement('div');topic.className='card-topic';topic.textContent=cleanTopic(w.title,id);
       const desc=document.createElement('p');desc.className='card-description';desc.textContent=w.description||'Coding challenge';
       const meta=document.createElement('div');meta.className='card-meta';
-      const qtag=document.createElement('span');qtag.className='tag';qtag.textContent=id==='1'?'3 rooms + diagnostic':`${(w.questions||[]).length} challenges`;
+      const qtag=document.createElement('span');qtag.className='tag';qtag.textContent=['1','2'].includes(String(id))?'3 rooms + diagnostic':`${(w.questions||[]).length} challenges`;
       const stag=document.createElement('span');stag.className=`tag system-status-tag ${locked?'offline':state.clears[id]?'online':'ready'}`;stag.textContent=locked?'OFFLINE':state.clears[id]?'ONLINE':'READY';meta.append(qtag,stag);
       const stars=buildStars(rating,`System ${id}: ${rating} of 3 stars`);stars.classList.add('level-stars');
       const footer=document.createElement('div');footer.className='card-footer';
@@ -123,7 +123,7 @@
   function openBriefing(id){
     const w=DATA.weeks[id],sys=systemFor(id);if(!w)return;pendingBriefId=id;
     byId('brief-system-label').textContent=`SYSTEM ${id}`;byId('briefing-title').textContent=sys.name;byId('brief-topic').textContent=cleanTopic(w.title,id);byId('brief-description').textContent=w.description||'';byId('brief-objective').textContent=sys.objective;
-    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=id==='1'?['3 repair rooms',`${(w.questions||[]).length}-question final diagnostic`,'inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
+    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=['1','2'].includes(String(id))?['3 repair rooms',`${(w.questions||[]).length}-question final diagnostic`,'inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
   }
 
   function startMission(id){
@@ -137,6 +137,7 @@
     G={id,w,stage:'adventure',mastered:new Set(),mistakes:0,adventureStats:null};
     showScreen('adventure');
     globalThis.TTCAdventure.start({
+      systemId:id,
       root:byId('adventure-root'),
       playTone,
       toast,
@@ -201,26 +202,40 @@
     const seconds=Math.floor((G.finishedAt-G.startedAt)/1000);
     const attempts=G.mastered.size+G.mistakes;
     const accuracy=attempts?Math.round(G.mastered.size/attempts*100):0;
-    const isBootAdventure=String(G.id)==='1'&&!!G.adventureStats;
+    const isAdventure=!!G.adventureStats;
+    const adventureId=String(G.id);
+    const a=G.adventureStats||{};
+    const adventureFaults=Number(a.totalFaults ?? (
+      adventureId==='1'
+        ? (Number(a.arcadeFaults||0)+Number(a.sequenceFaults||0)+Number(a.memoryFaults||0))
+        : (Number(a.arcadeFaults||0)+Number(a.logicFaults||0)+Number(a.routerFaults||0))
+    ))||0;
     let rating=0;
 
     if(failed){
-      byId('results-kicker').textContent=isBootAdventure?'FINAL DIAGNOSTIC FAILED':'REPAIR PAUSED';
-      byId('results-title').textContent=isBootAdventure?'Boot verification incomplete':'System still unstable';
-      byId('results-summary').textContent=isBootAdventure
-        ?`The micro:bit repair rooms are complete, but only ${G.mastered.size} of ${G.questions.length} diagnostic checks were verified. Review the fault log and re-run the mission.`
+      byId('results-kicker').textContent=isAdventure?'FINAL DIAGNOSTIC FAILED':'REPAIR PAUSED';
+      byId('results-title').textContent=isAdventure
+        ?(adventureId==='1'?'Boot verification incomplete':'Randomiser verification incomplete')
+        :'System still unstable';
+      byId('results-summary').textContent=isAdventure
+        ?`The three repair rooms are complete, but only ${G.mastered.size} of ${G.questions.length} diagnostic checks were verified. Review the fault log and re-run the mission.`
         :`You repaired ${G.mastered.size} of ${G.questions.length} circuits. Review the fault log and re-run the mission.`;
     }else{
-      if(isBootAdventure){
-        const a=G.adventureStats;
-        const adventureClean=(a.arcadeFaults+a.sequenceFaults+a.memoryFaults)===0;
+      if(isAdventure){
+        const adventureClean=adventureFaults===0;
         const diagnosticClean=G.mistakes===0;
         rating=1+(adventureClean?1:0)+(diagnosticClean?1:0);
-        byId('results-kicker').textContent='MICRO:BIT BOOT COMPLETE';
-        byId('results-title').textContent=rating===3?'Flawless boot!':'Boot Sequence online!';
+        byId('results-kicker').textContent=adventureId==='1'?'MICRO:BIT BOOT COMPLETE':'RANDOMISER CORE ONLINE';
+        byId('results-title').textContent=rating===3
+          ?(adventureId==='1'?'Flawless boot!':'Perfect randomisation!')
+          :(adventureId==='1'?'Boot Sequence online!':'Randomiser Core online!');
         byId('results-summary').textContent=rating===3
-          ?'Power routing, startup logic, RAM repair and the final diagnostic all completed without a fault.'
-          :'The micro:bit can boot again. Replay the mission if you want to earn the clean-repair and flawless-diagnostic stars.';
+          ?(adventureId==='1'
+            ?'Power routing, startup logic, RAM repair and the final diagnostic all completed without a fault.'
+            :'Packet filtering, random-stream diagnosis, data routing and the final diagnostic all completed without a fault.')
+          :(adventureId==='1'
+            ?'The micro:bit can boot again. Replay the mission if you want to earn the clean-repair and flawless-diagnostic stars.'
+            :'Random behaviour is stable again. Replay the mission if you want the clean-adventure and flawless-diagnostic stars.');
       }else{
         rating=G.mistakes===0?3:G.mistakes<=2?2:1;
         byId('results-kicker').textContent='SYSTEM ONLINE';
@@ -247,10 +262,9 @@
     while(node.firstChild)stars.appendChild(node.firstChild);
 
     const stats=byId('result-stats');stats.replaceChildren();
-    if(isBootAdventure){
-      const a=G.adventureStats;
+    if(isAdventure){
       addStat(stats,'Rooms','3/3');
-      addStat(stats,'Adventure faults',String(a.arcadeFaults+a.sequenceFaults+a.memoryFaults));
+      addStat(stats,'Adventure faults',String(adventureFaults));
       addStat(stats,'Diagnostic',`${accuracy}%`);
       addStat(stats,'Score',String(G.score));
     }else{
