@@ -1,632 +1,210 @@
-/* ===========================================================
-   Tech Tinker Boss Battle — game.js (Arcade Build v6.8 + debug + sound toggle)
-   • Real falling matrix (canvas) + retro CRT look
-   • Animations (bounce/lunge/flash/roll-out) amped a touch
-   • DnD: rearrange freely; drop back to tiles to unassign
-   • “Next” shows under explanation; never shown on last Q
-   • Debug: ?debug=1 unlocks all weeks; ?debug=1&week=7 auto-opens Week 7
-   • Sound: beeps from Q1; “Sound: ON/OFF” toggle in HUD
-   =========================================================== */
-
+/* Tech Tinker: System Rescue — live game engine */
 (() => {
-  const byId = (id) => document.getElementById(id);
+  'use strict';
 
-  /* Screens */
-  const screenLevels  = byId('screen-levels');
-  const screenIntro   = byId('screen-intro');
-  const screenGame    = byId('screen-game');
-  const screenResults = byId('screen-results');
-
-  // --- DEBUG MODE DETECTION (via URL params) ---
-  const params = new URLSearchParams(window.location.search);
-  const DEBUG = params.get("debug") === "1";
-  const DEBUG_WEEK = params.get("week");
-
-  /* Boot after data */
-  waitForData(initGame);
-  function waitForData(cb, tries=0){
-    if (window.TTC_DATA && window.TTC_DATA.weeks) return cb();
-    if (tries>100){
-      if (screenLevels){
-        screenLevels.innerHTML = `<div class="card"><h3>Game data not loaded</h3>
-          <div class="small">Make sure <code>questions.js</code> loads before <code>game.js</code>.</div></div>`;
-      }
-      return;
-    }
-    setTimeout(()=>waitForData(cb,tries+1),50);
+  const DATA = window.TTC_DATA;
+  if (!DATA || !DATA.weeks) {
+    document.body.innerHTML = '<main style="padding:2rem;font-family:system-ui;color:white;background:#07101d;min-height:100vh"><h1>Game data could not be loaded</h1><p>Please check questions.js.</p></main>';
+    return;
   }
 
-  /* Default micro-stories if not supplied */
-  const STORY_BOOK = {
-    "1": { story:`The Bootloader Blob camps on the USB bus and eats half-flashed .hex files.`,
-      dialog:[`Blob: "Your code has… *gelatinous dependencies*."`,`You: "Cool. I’m about to *jellify* your HP bar."`] },
-    "2": { story:`Randomizer Dice claims it landed on "sideways seven." Statistically rude.`,
-      dialog:[`Dice: "I only lose one out of six times… per universe."`,`You: "Great. I brought six universes and a reset button."`] },
-    "3": { story:`Condition Cat debugs by knocking variables off the table. if(cup==on_table) push(cup).`,
-      dialog:[`Cat: "ELSE? I hardly know her."`,`You: "Meow if you’re ready to evaluate claws > face."`] },
-    "4": { story:`Threshold Troll lives under if-statements and shouts "TOO LOW!" at innocent sensors.`,
-      dialog:[`Troll: "None shall pass below 100!"`,`You: "I’ve got 99 problems and this troll is one."`] },
-    "5": { story:`Loop Goblin winds gears and steals semicolons. Iterates until morale improves.`,
-      dialog:[`Goblin: "FOR-EVER! FOR-EVER!"`,`You: "break;  // mentally and literally"`] },
-    "6": { story:`Sprite Specter haunts the 5×5 grid—diagonal when you wanted horizontal.`,
-      dialog:[`Specter: "Booolean logic scares me."`,`You: "Good. I brought XOR-cise equipment."`] },
-  };
+  const SYSTEMS = [
+    {name:'Boot Sequence', objective:'Restart the microcontroller core and restore input/output control.', modules:['POWER','INPUT','OUTPUT','BOOT'], pattern:['00100','01110','10101','00100','01110']},
+    {name:'Randomiser Core', objective:'Reconnect events and randomness so the core can generate safe outputs.', modules:['EVENT','RNG','DATA','OUTPUT'], pattern:['10001','00000','00100','00000','10001']},
+    {name:'Logic Router', objective:'Repair the decision paths and route every condition to the right branch.', modules:['TEST','TRUE','FALSE','ROUTE'], pattern:['00100','00100','11111','01010','10001']},
+    {name:'Sensor Array', objective:'Recalibrate stored values, thresholds and live sensor readings.', modules:['LIGHT','TEMP','VALUE','LIMIT'], pattern:['00100','01110','11111','00100','00100']},
+    {name:'Loop Engine', objective:'Restart repeated processes, timing cycles and game logic.', modules:['REPEAT','TIME','SPRITE','CYCLE'], pattern:['01110','10001','10001','10001','01110']},
+    {name:'Grid Controller', objective:'Restore coordinates, timing and movement across the 5×5 control grid.', modules:['X/Y','MOVE','TIME','DEBUG'], pattern:['10101','01110','11111','01110','10101']},
+    {name:'Function Bay', objective:'Reconnect reusable code modules, variables and sensor-driven helpers.', modules:['CALL','PARAM','RETURN','SENSOR'], pattern:['11100','00100','01110','00100','00111']},
+    {name:'Signal Lab', objective:'Repair waves, radio logic and the lab’s mixed diagnostic routines.', modules:['WAVE','RADIO','LOGIC','TEST'], pattern:['10001','01010','00100','01010','10001']},
+    {name:'Firefly Network', objective:'Resynchronise the swarm using radio groups, local rules and message logic.', modules:['GROUP','SYNC','LOCAL','LINK'], pattern:['10101','00000','01110','00000','10101']}
+  ];
 
-  function initGame(){
-    /* Stage + HUD */
-    const stageEl      = byId('stage');
-    const bossImg      = byId('bossSprite');
-    const bossName     = byId('bossName');
-    const stageOverlay = byId('stageOverlay');
-    const matrixCanvas = byId('matrixCanvas');
+  const STORAGE_KEY = 'ttcSystemRescueV1';
+  const LEGACY_KEYS = ['ttcBossBattle_arcade_v6_8','ttcBossBattleV3','ttcBossBattleV2'];
+  const DEFAULT_SETTINGS = {timer:true,sound:true};
+  const byId = id => document.getElementById(id);
+  const screens = {levels:byId('screen-levels'), briefing:byId('screen-briefing'), game:byId('screen-game'), results:byId('screen-results')};
+  const levelGrid = byId('level-grid');
+  const params = new URLSearchParams(location.search);
+  const DEBUG = params.get('debug') === '1';
+  const DEBUG_WEEK = params.get('week');
 
-    const heartsEl     = byId('hearts');
-    const hpFill       = byId('hp');
-    const hpCount      = byId('hpCount');
-    const streakPill   = byId('streak');
-    const scorePill    = byId('scorePill');
-    const timerPill    = byId('timer');
-    const hintLeftPill = byId('hintLeft');
-    const starsPill    = byId('stars');
-    const progressPill = byId('progress-pill');
+  let G = null;
+  let timerTicker = null;
+  let toastTimer = null;
+  let selectedMatchTerm = null;
+  let inputLocked = false;
+  let pendingBriefId = null;
+  let audioCtx = null;
 
-    /* Q panel */
-    const qpanel = byId('qpanel');
+  const state = loadState();
+  if (DEBUG) state.unlocked = weekIds();
 
-    /* Intro refs */
-    const introImg   = byId('introBossImg');
-    const introTitle = byId('introTitle');
-    const introTag   = byId('introTag');
-    const introStory = byId('introStory');
-    const introStart = byId('introStart');
-    const introComic = byId('introComic');
-
-    /* Top controls */
-    byId('reset').onclick   = reset;
-    byId('quit').onclick    = onQuit;
-    byId('useHint').onclick = onUseHint;
-    byId('back').onclick    = () => showLevels();
-    byId('retry')?.addEventListener('click', () => startLevel(G.id)); // optional
-
-    const DATA  = window.TTC_DATA;
-    const SKEY  = 'ttcBossBattle_arcade_v6_8';
-    const state = loadState();
-
-    // In debug mode, unlock all weeks so you can jump freely
-    if (DEBUG) {
-      state.unlocked = Object.keys(DATA.weeks);
+  function weekIds(){ return Object.keys(DATA.weeks).sort((a,b)=>Number(a)-Number(b)); }
+  function systemFor(id){ return SYSTEMS[(Number(id)-1) % SYSTEMS.length]; }
+  function freshState(){ return {version:1,unlocked:['1'],clears:{},ratings:{},best:{},settings:{...DEFAULT_SETTINGS}}; }
+  function normalise(candidate){
+    const s=freshState(), ids=weekIds();
+    if(!candidate || typeof candidate!=='object') return s;
+    s.unlocked=Array.from(new Set(['1',...(Array.isArray(candidate.unlocked)?candidate.unlocked.map(String):[])] )).filter(id=>ids.includes(id));
+    s.clears=candidate.clears&&typeof candidate.clears==='object'?{...candidate.clears}:{};
+    s.ratings=candidate.ratings&&typeof candidate.ratings==='object'?{...candidate.ratings}:{};
+    s.best=candidate.best&&typeof candidate.best==='object'?{...candidate.best}:{};
+    s.settings={...DEFAULT_SETTINGS,...(candidate.settings||{})};
+    for(const id of ids){
+      if(!s.clears[id]) delete s.clears[id];
+      const r=Number(s.ratings[id]); s.ratings[id]=Number.isFinite(r)?Math.max(0,Math.min(3,Math.round(r))):0;
     }
-
-    // Ensure sound toggle appears once HUD exists
-    setupSoundToggle();
-
-    function loadState(){
-      let s={unlocked:['1'],stars:0,clears:{},settings:{timer:true,sound:true}};
-      try{ const raw=localStorage.getItem(SKEY); if(raw) Object.assign(s, JSON.parse(raw)); }catch(e){}
-      // Backwards-compat for older saves
-      if(!s.settings) s.settings={timer:true,sound:true};
-      if(typeof s.settings.sound==='undefined') s.settings.sound=true;
-      return s;
+    return s;
+  }
+  function loadState(){
+    try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw) return normalise(JSON.parse(raw)); }catch(_){ }
+    for(const key of LEGACY_KEYS){
+      try{
+        const raw=localStorage.getItem(key); if(!raw) continue;
+        const old=JSON.parse(raw), s=freshState();
+        if(Array.isArray(old.unlocked)) s.unlocked=old.unlocked.map(String);
+        if(old.clears&&typeof old.clears==='object') s.clears={...old.clears};
+        if(old.settings&&typeof old.settings==='object') s.settings={...DEFAULT_SETTINGS,...old.settings};
+        for(const id of Object.keys(s.clears)) if(s.clears[id]) s.ratings[id]=1;
+        return normalise(s);
+      }catch(_){ }
     }
+    return freshState();
+  }
+  function save(){ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(_){ } }
+  function totalStars(){ return weekIds().reduce((n,id)=>n+(Number(state.ratings[id])||0),0); }
+  function onlineCount(){ return weekIds().filter(id=>state.clears[id]).length; }
+  function cleanTopic(title,id){ return String(title||`Week ${id}`).replace(new RegExp(`^Week\\s+${id}\\s*:\\s*`,'i'),'').trim(); }
 
-    function save(){ localStorage.setItem(SKEY, JSON.stringify(state)); }
-    function reset(){ localStorage.removeItem(SKEY); location.reload(); }
+  function showScreen(name){
+    for(const [key,node] of Object.entries(screens)) node.hidden = key!==name;
+    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  }
 
-    function setupSoundToggle(){
-      const hud = document.querySelector('.hud');
-      const quitEl = byId('quit');
-      if(!hud || !quitEl) return;
-      if(window._ttcSoundBtn) return;
-
-      const btn = document.createElement('button');
-      btn.id = 'soundToggle';
-      btn.className = 'smallbtn';
-      hud.insertBefore(btn, quitEl);
-
-      function relabel(){
-        btn.textContent = (state.settings.sound===false) ? 'Sound: OFF' : 'Sound: ON';
-      }
-      relabel();
-
-      btn.addEventListener('click', ()=>{
-        state.settings.sound = !state.settings.sound;
-        save();
-        relabel();
-      });
-
-      window._ttcSoundBtn = btn;
-    }
-
-    /* Toast */
-    function toast(msg){ const t=byId('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1200); }
-
-    /* Callouts */
-    function clearCallout(){ byId('callout')?.remove(); }
-    function renderCallout(kind, html){
-      let div = byId('callout');
-      if(!div){
-        div = document.createElement('div'); div.id='callout';
-        const title = qpanel.querySelector('h2');
-        (title?.parentNode||qpanel).insertBefore(div, title?.nextSibling||qpanel.firstChild);
-      }
-      div.className = `callout callout--${kind} callout-appear`;
-      div.innerHTML = html;
-    }
-
-    /* Minimal SFX */
-    const ACtx = window.AudioContext || window.webkitAudioContext;
-    const ctx  = ACtx ? new ACtx() : null;
-    function beep(freq=440, dur=.08, type='square', vol=.05){
-      if(!ctx || state.settings.sound===false) return;
-      if(ctx.state==='suspended'){
-        ctx.resume().catch(()=>{});
-      }
-      const o=ctx.createOscillator(), g=ctx.createGain();
-      o.type=type; o.frequency.value=freq; g.gain.value=vol;
-      o.connect(g); g.connect(ctx.destination);
-      o.start(); setTimeout(()=>o.stop(), dur*1000);
-    }
-
-    /* Matrix rain — crisp, reliable, no flicker */
-    let matrix = null;
-    function startMatrix(){
-      const c = matrixCanvas; if (!c) return;
-      const g = c.getContext('2d', { alpha: true });
-
-      // Tunables (feel free to tweak)
-      const FONT_PX    = 24;   // glyph size
-      const COL_W      = 10;   // stream column width
-      const FALL_MIN   = 1;  // base fall speed (px/frame)
-      const FALL_VAR   = 6;  // per-stream random speed
-      const TRAIL_FADE = 0.12; // lower => longer trails
-
-      let w = 0, h = 0, cols = 0, drops = [];
-      let raf = null;
-
-      function size(){
-        // account for CSS size + device pixel ratio
-        const r   = stageEl.getBoundingClientRect();
-        const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
-
-        // Set the backing store size (actual canvas pixels)
-        c.width  = Math.max(1, Math.floor(r.width  * dpr));
-        c.height = Math.max(1, Math.floor(r.height * dpr));
-
-        // Scale the drawing context so 1 unit == 1 CSS pixel
-        g.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        w = Math.max(1, Math.floor(r.width));
-        h = Math.max(1, Math.floor(r.height));
-
-        cols  = Math.max(1, Math.floor(w / COL_W));
-        drops = new Array(cols).fill(0).map(() => -Math.random() * h);
-
-        g.font = `${FONT_PX}px VT323, monospace`;
-        g.textBaseline = 'top';
-      }
-
-      // Initial size after layout is visible
-      size();
-      // One more pass on the next frame to catch late layout
-      requestAnimationFrame(size);
-
-      const onResize = () => size();
-      window.addEventListener('resize', onResize, { passive:true });
-      window.addEventListener('orientationchange', onResize, { passive:true });
-
-      function tick(){
-        // trailing fade
-        g.fillStyle = `rgba(8,12,26,${TRAIL_FADE})`;
-        g.fillRect(0, 0, w, h);
-
-        for (let i = 0; i < cols; i++){
-          const x   = i * COL_W;
-          const y   = drops[i];
-          const ch  = String((Math.random() * 10) | 0);
-
-          // simple, reliable fill (no blend tricks needed)
-          g.fillStyle = 'rgba(150,255,180,0.90)'; // body
-          g.fillText(ch, x, y);
-
-          // occasional head pulse
-          if (Math.random() < 0.18){
-            g.fillStyle = 'rgba(190,255,205,0.95)';
-            g.fillText(ch, x, y);
-          }
-
-          drops[i] = (y > h) ? (-Math.random()*200) : (y + FALL_MIN + Math.random()*FALL_VAR);
-        }
-
-        raf = requestAnimationFrame(tick);
-      }
-
-      tick();
-
-      matrix = {
-        stop: () => { if (raf) cancelAnimationFrame(raf); },
-      };
-    }
-
-    /* Levels */
-    function renderLevels(){
-      screenLevels.innerHTML='';
-      const ids=Object.keys(DATA.weeks).sort((a,b)=>(+a)-(+b));
-      const cleared=Object.keys(state.clears).length;
-      starsPill.textContent=`⭐ ${state.stars}`;
-      progressPill.textContent=`Progress: ${cleared}/${ids.length}`;
-
-      ids.forEach(id=>{
-        const w=DATA.weeks[id];
-        const locked=!state.unlocked.includes(id)&&!w.forceUnlock;
-        const total=(w.questions||[]).length;
-
-        const card=document.createElement('div'); card.className='card';
-        card.innerHTML=`<h3>${w.title||`Week ${id}`}</h3>
-          <div class="small">${w.description||''}</div>
-          <div class="row">
-            <span class="tag">${total} Qs</span>
-            ${state.clears[id]?`<span class="tag">Cleared ✓</span>`:''}
-            ${locked?`<span class="lock">🔒 Locked</span>`:`<span class="spacer"></span>`}
-          </div>
-          <div class="row">
-            <button ${locked?'disabled class="ghost"':''} data-id="${id}">${state.clears[id]?'Replay':'Start'}</button>
-          </div>`;
-        screenLevels.appendChild(card);
-      });
-    }
-
-    // Always-working delegated start
-    document.addEventListener('click', (e)=>{
-      const b=e.target.closest('#screen-levels button[data-id]');
-      if(!b) return;
-      if (b.disabled) {
-        b.classList.add('shake-deny');
-        setTimeout(()=>b.classList.remove('shake-deny'),400);
-        return;
-      }
-      openIntro(b.dataset.id);
+  function buildMatrix(id,stateName='ready'){
+    const sys=systemFor(id), matrix=document.createElement('div');
+    matrix.className=`led-matrix ${stateName}`; matrix.setAttribute('aria-hidden','true');
+    sys.pattern.join('').split('').forEach(bit=>{const led=document.createElement('span');if(bit==='1')led.classList.add('on');matrix.appendChild(led);});
+    return matrix;
+  }
+  function renderMatrix(target,id,stateName='ready'){ target.replaceChildren(buildMatrix(id,stateName)); }
+  function buildStars(rating,label){
+    const wrap=document.createElement('div');wrap.setAttribute('role','img');wrap.setAttribute('aria-label',label);
+    for(let i=1;i<=3;i++){const s=document.createElement('span');s.textContent='★';if(i>rating)s.className='empty';wrap.appendChild(s);}return wrap;
+  }
+  function renderHeader(){
+    const ids=weekIds(); byId('stars').textContent=`★ ${totalStars()} / ${ids.length*3}`; byId('progress-pill').textContent=`${onlineCount()} / ${ids.length} online`; byId('hero-online-count').textContent=`${onlineCount()}/${ids.length}`;
+  }
+  function renderLevels(){
+    levelGrid.replaceChildren();renderHeader();const ids=weekIds();
+    ids.forEach((id,index)=>{
+      const w=DATA.weeks[id], sys=systemFor(id), locked=!DEBUG&&!state.unlocked.includes(id)&&!w.forceUnlock, rating=Number(state.ratings[id])||0, best=state.best[id]||{};
+      const card=document.createElement('article');card.className=`card${locked?' locked':''}${state.clears[id]?' completed':''}`;
+      const top=document.createElement('div');top.className='card-top';
+      const sid=document.createElement('div');sid.className='system-id';sid.textContent=`System ${id}`;
+      top.append(sid,buildMatrix(id,locked?'locked':state.clears[id]?'complete':'ready'));
+      const title=document.createElement('h3');title.textContent=sys.name;
+      const topic=document.createElement('div');topic.className='card-topic';topic.textContent=cleanTopic(w.title,id);
+      const desc=document.createElement('p');desc.className='card-description';desc.textContent=w.description||'Coding challenge';
+      const meta=document.createElement('div');meta.className='card-meta';
+      const qtag=document.createElement('span');qtag.className='tag';qtag.textContent=`${(w.questions||[]).length} challenges`;
+      const stag=document.createElement('span');stag.className=`tag system-status-tag ${locked?'offline':state.clears[id]?'online':'ready'}`;stag.textContent=locked?'OFFLINE':state.clears[id]?'ONLINE':'READY';meta.append(qtag,stag);
+      const stars=buildStars(rating,`System ${id}: ${rating} of 3 stars`);stars.classList.add('level-stars');
+      const footer=document.createElement('div');footer.className='card-footer';
+      const note=document.createElement('div');note.className='card-note';
+      if(locked) note.textContent=index?`Restore System ${ids[index-1]} to unlock`:'Offline'; else if(best.seconds) note.textContent=`Best ${formatTime(best.seconds)}`; else note.textContent=state.clears[id]?'Online · improve your rating':'Awaiting repair';
+      const button=document.createElement('button');button.type='button';button.disabled=locked;button.textContent=locked?'Offline':state.clears[id]?'Re-run':'Repair';button.addEventListener('click',()=>openBriefing(id));
+      footer.append(note,button);card.append(top,title,topic,desc,meta,stars,footer);levelGrid.appendChild(card);
     });
-
-    function openIntro(id){
-      const w=DATA.weeks[id], sb=STORY_BOOK[id]||{};
-      const story  = w.story  || sb.story  || 'Time to face this week’s boss!';
-      const dialog = w.dialog || sb.dialog || [`Boss: "…"`,`You: "…"`];
-
-      introImg.src = w.bossImage || `assets/w${id}b.png`;
-      introTitle.textContent = w.title || `Week ${id}`;
-      introTag.textContent   = w.description || '';
-      introStory.textContent = story;
-
-      // Dialogue bubbles
-      introComic.innerHTML = `
-        <div class="bubble boss">${dialog[0]||''}</div>
-        <div class="bubble me">${dialog[1]||''}</div>`;
-
-      introStart.onclick=()=>startLevel(id);
-
-      screenResults.style.display='none';
-      screenGame.style.display='none';
-      screenLevels.style.display='none';
-      screenIntro.style.display='';
-    }
-
-    /* Runtime */
-    let G=null;
-
-    function startLevel(id){
-      const w=DATA.weeks[id];
-      const questions=(w.questions||[]).slice();
-      if(!questions.length){ alert('No questions in this week.'); showLevels(); return; }
-
-      G={ id, w, questions,
-          heartsMax:3, hearts:3,
-          hpMax:questions.length, hp:questions.length,
-          score:0, SCORE_PER_CORRECT:100,
-          hints:3, hintUsedThisQuestion:false, correctForHintCounter:0,
-          idx:0, streak:0, incorrect:[], runStart:Date.now(), waitingNext:false };
-
-      setBossAppearance(w,id); renderHUD();
-      stageOverlay.hidden=true; stageOverlay.innerHTML='';
-      matrix?.stop?.(); startMatrix();
-
-      screenIntro.style.display='none'; screenResults.style.display='none'; screenGame.style.display='';
-      nextQuestion();
-    }
-
-    function setBossAppearance(week,id){
-      bossName.textContent=week.bossName||'BOSS';
-      bossImg.src=week.bossImage||`assets/w${id}b.png`;
-      bossImg.style.opacity='1';
-      document.documentElement.style.setProperty('--accent', week.bossTint || '#7bd3ff');
-    }
-
-    /* FX */
-    function bossShowState(stateStr){
-      if(stateStr==='hit'){
-        const dx=(Math.random()*84-42)|0, dy=(Math.random()*48-24)|0, dr=(Math.random()*44-22).toFixed(1)+'deg';
-        bossImg.style.setProperty('--hitX', dx+'px');
-        bossImg.style.setProperty('--hitY', dy+'px');
-        bossImg.style.setProperty('--hitR', dr);
-        bossImg.classList.remove('boss-bounce'); void bossImg.offsetWidth;
-        bossImg.classList.add('boss-bounce');
-        stageEl.classList.add('boss--hit');
-        setTimeout(()=>stageEl.classList.remove('boss--hit'), 280);
-      } else if(stateStr==='dead'){
-        stageEl.classList.add('boss--dead');
-      } else {
-        stageEl.classList.remove('boss--hit','boss--dead');
-      }
-    }
-    function playerHitFX(){
-      stageEl.classList.add('player-hit','shake');
-      bossImg.classList.remove('boss-lunge'); void bossImg.offsetWidth;
-      bossImg.classList.add('boss-lunge');
-      setTimeout(()=>{ stageEl.classList.remove('player-hit','shake'); bossImg.classList.remove('boss-lunge'); }, 380);
-    }
-
-    /* HUD */
-    function renderHUD(){
-      const HEART_ON='<svg viewBox="0 0 16 14"><path class="heart-fill" d="M8 13s-3.2-2.3-5.1-4.2C1.5 7.4 1 6.3 1 5.1 1 3.4 2.4 2 4.1 2c1.1 0 2.1.6 2.7 1.5C7.4 2.6 8.4 2 9.5 2 11.2 2 12.6 3.4 12.6 5.1c0 1.2-.5 2.3-1.9 3.7C11.2 9.2 8 13 8 13z"/></svg>';
-      const HEART_OFF='<svg viewBox="0 0 16 14"><path class="heart-off" d="M8 13s-3.2-2.3-5.1-4.2C1.5 7.4 1 6.3 1 5.1 1 3.4 2.4 2 4.1 2c1.1 0 2.1.6 2.7 1.5C7.4 2.6 8.4 2 9.5 2 11.2 2 12.6 3.4 12.6 5.1c0 1.2-.5 2.3-1.9 3.7C11.2 9.2 8 13 8 13z"/></svg>';
-      heartsEl.innerHTML=''; for(let i=0;i<G.heartsMax;i++) heartsEl.insertAdjacentHTML('beforeend', i<G.hearts?HEART_ON:HEART_OFF);
-
-      const pct=(G.hp/G.hpMax)*100; hpFill.style.width=`${Math.max(0,Math.min(100,pct))}%`;
-      hpCount.textContent=`(${G.hp}/${G.hpMax})`;
-
-      streakPill.textContent=`Streak: ${G.streak}`;
-      scorePill.textContent=`Score: ${G.score}`;
-      timerPill.textContent = state.settings.timer ? `⏱️ ${Math.floor((Date.now()-G.runStart)/1000)}s` : '⏱️ off';
-      hintLeftPill.textContent=`⭐ Hints: ${G.hints}`;
-
-      const useHint=byId('useHint');
-      if (G.hints<=0 || G.hintUsedThisQuestion || !G.current?.hint){ useHint.disabled=true; useHint.classList.add('hintlock'); }
-      else { useHint.disabled=false; useHint.classList.remove('hintlock'); }
-    }
-    setInterval(()=>{ if(screenGame.style.display!=='none' && state.settings.timer) renderHUD(); }, 600);
-
-    /* Inline Next button (under callout) */
-    function ensureNextRow(){
-      let row = qpanel.querySelector('.q-nextrow');
-      if (!row){
-        row = document.createElement('div');
-        row.className = 'q-nextrow row';
-        row.innerHTML = `<div class="spacer"></div><button id="nextBtn">Next ▶</button>`;
-      }
-      return row;
-    }
-    function showNextBtn(){
-      const callout = byId('callout');
-      const row = ensureNextRow();
-      if (callout) callout.insertAdjacentElement('afterend', row);
-      else qpanel.appendChild(row);
-      row.style.display='flex';
-      row.querySelector('#nextBtn').onclick = onNext;
-    }
-    function hideNextBtn(){ qpanel.querySelector('.q-nextrow')?.style.setProperty('display','none'); }
-
-    /* Flow */
-    function nextQuestion(){
-      const q=(G.current=G.questions[G.idx]);
-      G.hintUsedThisQuestion=false; clearCallout(); G.waitingNext=false;
-      hideNextBtn();
-
-      if(!q){ finishOrFlee(); return; }
-
-      let html = `<div class="row"><div class="tag">Q ${G.idx+1}/${G.questions.length}</div></div>
-                  <h2>${q.question}</h2>`;
-      if(q.code) html+=`<div class="qcode">${q.code}</div>`;
-
-      if(q.type==='multiple-choice'){
-        html+=`<div class="options" id="opts"></div>`; qpanel.innerHTML=html;
-        const opts=byId('opts');
-        q.options.forEach((opt,i)=>{ const b=document.createElement('button'); b.textContent=opt; b.onclick=()=>answerMC(i); opts.appendChild(b); });
-      } else if(q.type==='drag-drop'){
-        const terms=q.terms.slice(), defs=q.definitions.slice(); shuffle(terms); shuffle(defs);
-        html+=`<div class="drag-wrap">
-                 <div><strong>Terms</strong><div class="tiles" id="tiles"></div></div>
-                 <div><strong>Definitions</strong><div class="buckets" id="buckets"></div></div>
-               </div>
-               <div class="row" style="margin-top:10px; justify-content:flex-end"><button id="submitDD">Submit</button></div>`;
-        qpanel.innerHTML=html;
-
-        const tilesEl=byId('tiles'), bucketsEl=byId('buckets'), submitBtn=byId('submitDD');
-        const assignment=new Map(); // Map<bucketEl, termOrEmpty>
-
-        // tiles
-        function makeTile(term){
-          const t=document.createElement('div');
-          t.className='tile'; t.textContent=term; t.draggable=true; t.dataset.term=term;
-          t.ondragstart = e => e.dataTransfer.setData('text/plain', term);
-          return t;
-        }
-        terms.forEach(term => tilesEl.appendChild(makeTile(term)));
-
-        // accept to buckets
-        defs.forEach(def=>{
-          const b=document.createElement('div'); b.className='bucket'; b.dataset.def=def;
-          b.innerHTML=`<div>${def}</div><div class="chosen small"></div>`;
-          b.ondragover=e=>e.preventDefault();
-          b.ondrop=e=>{
-            e.preventDefault();
-            if(submitBtn.style.display==='none') return;
-            const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
-
-            // remove from any other bucket
-            bucketsEl.querySelectorAll('.bucket').forEach(other=>{
-              if(other.dataset.term===dropped){
-                assignment.set(other,''); other.dataset.term=''; other.querySelector('.chosen').textContent='';
-                other.classList.remove('correct','wrong');
-              }
-            });
-
-            assignment.set(b,dropped); b.dataset.term=dropped; b.querySelector('.chosen').textContent=dropped;
-            b.classList.remove('correct','wrong');
-          };
-          bucketsEl.appendChild(b); assignment.set(b,'');
-        });
-
-        // unassign by dropping back to tiles
-        tilesEl.ondragover = e=>e.preventDefault();
-        tilesEl.ondrop = e => {
-          e.preventDefault();
-          if(submitBtn.style.display==='none') return;
-          const dropped=e.dataTransfer.getData('text/plain'); if(!dropped) return;
-          bucketsEl.querySelectorAll('.bucket').forEach(b=>{
-            if(b.dataset.term===dropped){
-              assignment.set(b,''); b.dataset.term=''; b.querySelector('.chosen').textContent='';
-              b.classList.remove('correct','wrong');
-            }
-          });
-        };
-
-        function lockDD(){
-          tilesEl.querySelectorAll('.tile').forEach(t=>t.draggable=false);
-          bucketsEl.querySelectorAll('.bucket').forEach(b=>{
-            b.classList.add('locked'); b.ondragover=null; b.ondrop=null;
-          });
-          tilesEl.ondragover = tilesEl.ondrop = null;
-          submitBtn.style.display='none';
-        }
-
-        submitBtn.onclick=()=>{
-          const expectedByDef={}; q.correctMatches.forEach((defIdx,termIdx)=>{ expectedByDef[q.definitions[defIdx]]=q.terms[termIdx]; });
-          let all=true;
-          bucketsEl.querySelectorAll('.bucket').forEach(b=>{
-            const d=b.dataset.term||'', e=expectedByDef[b.dataset.def]||'';
-            b.classList.remove('correct','wrong');
-            if(d && d===e) b.classList.add('correct'); else { b.classList.add('wrong'); all=false; }
-          });
-          lockDD(); settleAnswer(all, q.explanation||'');
-        };
-      } else {
-        qpanel.innerHTML=html+`<div class="note">Unsupported question type: ${q.type}</div>`;
-      }
-
-      renderHUD();
-    }
-
-    function answerMC(i){
-      const q=G.current, opts=byId('opts').children;
-      for(let k=0;k<opts.length;k++) opts[k].disabled=true;
-      const correct=(i===q.correct);
-      const addBadge=(btn,good)=>{ const b=document.createElement('span'); b.className=`answer-badge ${good?'good':'bad'}`; b.textContent=good?'✓':'✗'; btn.appendChild(b); };
-      if(correct){ opts[i].classList.add('good'); addBadge(opts[i],true); }
-      else { opts[i].classList.add('bad'); if(typeof q.correct==='number' && opts[q.correct]){ opts[q.correct].classList.add('good'); addBadge(opts[q.correct],true); } }
-      settleAnswer(correct, q.explanation||'');
-    }
-
-    function settleAnswer(correct, explanation){
-      if(correct){
-        G.streak++; G.score+=G.SCORE_PER_CORRECT; G.hp=Math.max(0,G.hp-1);
-        renderCallout('good', `<span class="title">✅ Correct!</span> ${explanation||''}`);
-        bossShowState('hit'); beep(660,.07,'square'); setTimeout(()=>beep(880,.06,'square'),70);
-        if(++G.correctForHintCounter>=3){ G.hints++; G.correctForHintCounter-=3; toast('Bonus hint! ⭐'); }
-      }else{
-        G.incorrect.push({ q:G.current }); G.streak=0; G.hearts=Math.max(0,G.hearts-1);
-        renderCallout('bad', `<span class="title">❌ Not quite.</span> ${explanation||''}`);
-        playerHitFX(); beep(220,.12,'sawtooth');
-      }
-      renderHUD();
-
-      if(G.hearts<=0){ showOverlay(true); return; }
-      if(G.hp<=0){
-        bossImg.classList.add('boss-roll-out');
-        bossImg.addEventListener('animationend',()=>showOverlay(false),{once:true});
-        return;
-      }
-
-      // last question => end immediately (no Next)
-      if (G.idx >= G.questions.length - 1){ finishOrFlee(); return; }
-
-      G.waitingNext=true; showNextBtn();
-    }
-
-    function onNext(){ if(!G || !G.waitingNext) return; G.idx++; nextQuestion(); }
-
-    function finishOrFlee(){
-      bossImg.classList.add('boss-roll-out');
-      bossImg.addEventListener('animationend',()=>showOverlay(false, G.hp>0),{once:true});
-    }
-
-    function onUseHint(){
-      if(!G) return; const q=G.current;
-      if(G.hintUsedThisQuestion){ toast('Hint already used on this question.'); return; }
-      if(G.hints<=0){ toast('No hints left. Earn more by answering 3 correctly.'); return; }
-      if(!q || !q.hint){ toast('No hint for this one.'); return; }
-      G.hints--; G.hintUsedThisQuestion=true;
-      renderCallout('hint', `<span class="title">💡 Hint:</span> ${q.hint}`); renderHUD();
-    }
-
-    function showOverlay(gameOver, fled=false){
-      const elapsedSec=Math.floor((Date.now()-G.runStart)/1000);
-      const baseline=G.questions.length*12;
-      const timeBonus=Math.max(0,(baseline-elapsedSec)*5);
-      const finalScore = G.score + (gameOver?0:timeBonus);
-
-      let summary='';
-      if(gameOver){
-        summary = `<h3>Game Over</h3><div class="meta">You reached question ${G.idx+1} of ${G.questions.length}. Time: ${elapsedSec}s</div>`;
-      }else{
-        const perfect=(G.incorrect.length===0 && G.hearts>0);
-        const earnedStars = fled ? 0 : (perfect?2:1);
-        state.stars += earnedStars; state.clears[G.id]=true;
-        const ids=Object.keys(window.TTC_DATA.weeks).sort((a,b)=>(+a)-(+b));
-        const nextIdx=ids.indexOf(G.id)+1;
-        if(ids[nextIdx] && !state.unlocked.includes(ids[nextIdx])) state.unlocked.push(ids[nextIdx]);
-        save();
-
-        summary = `
-          <h3>${fled ? 'Boss Fled!' : 'Level Complete! 🎉'}</h3>
-          <div class="meta">
-            ${fled ? 'The boss escaped while you regrouped.' : `Boss defeated with <strong>${G.hearts}</strong> heart(s) left.`}<br>
-            Score: <strong>${G.score}</strong> ${gameOver?'':`+ Time Bonus: <strong>${timeBonus}</strong> = <strong>${finalScore}</strong>`}<br>
-            ${fled ? '⭐ <strong>0</strong> (try again for stars)' : `⭐ <strong>${earnedStars}</strong> ${perfect ? '(perfect clear!)' : ''}`} • Time: ${elapsedSec}s
-          </div>`;
-      }
-
-      let review='';
-      if(G.incorrect.length){
-        let list='<ul class="review">';
-        G.incorrect.forEach(({q})=>{ list+=`<li><strong>Q:</strong> ${q.question}<br><span class="small">${q.explanation||''}</span></li>`; });
-        list+='</ul>';
-        review = `<details><summary>Review explanations</summary>${list}</details>`;
-      }else{
-        review = `<details><summary>Review explanations</summary><div class="small">Flawless! Nothing to review.</div></details>`;
-      }
-
-      stageOverlay.innerHTML = `
-        <div class="overlay-card">
-          ${summary}
-          ${review}
-          <div class="row" style="margin-top:10px; justify-content:space-between">
-            <button id="overlayNext">Back to Levels</button>
-            <button id="overlayRetry">Replay</button>
-          </div>
-        </div>`;
-      stageOverlay.hidden=false;
-
-      byId('overlayNext').onclick=showLevels;
-      byId('overlayRetry').onclick=()=>startLevel(G.id);
-    }
-
-    function onQuit(){ if(confirm('Quit this level? Progress for this run will be lost.')) showLevels(); }
-    function showLevels(){
-      screenIntro.style.display='none'; screenResults.style.display='none'; screenGame.style.display='none';
-      screenLevels.style.display=''; stageOverlay.hidden=true; stageOverlay.innerHTML='';
-      bossImg.classList.remove('boss-roll-out','boss-bounce','boss-lunge');
-      matrix?.stop?.();
-      renderLevels();
-    }
-
-    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
-
-    /* Boot */
-    renderLevels();
-
-    // In debug mode, ?week=7 will auto-open that week’s intro
-    if (DEBUG && DEBUG_WEEK && DATA.weeks[DEBUG_WEEK]){
-      openIntro(DEBUG_WEEK);
-    }
   }
 
+  function openBriefing(id){
+    const w=DATA.weeks[id],sys=systemFor(id);if(!w)return;pendingBriefId=id;
+    byId('brief-system-label').textContent=`SYSTEM ${id}`;byId('briefing-title').textContent=sys.name;byId('brief-topic').textContent=cleanTopic(w.title,id);byId('brief-description').textContent=w.description||'';byId('brief-objective').textContent=sys.objective;
+    const meta=byId('brief-meta');meta.replaceChildren();for(const text of [`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics']){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
+  }
+
+  function startMission(id){
+    const w=DATA.weeks[id];if(!w)return;const questions=(w.questions||[]).map(q=>({...q}));if(!questions.length){toast('This system has no challenges yet.');return;}
+    G={id,w,questions,queue:questions.map(q=>({q,retry:false})),current:null,mastered:new Set(),integrityMax:4,integrity:4,streak:0,bestStreak:0,score:0,mistakes:0,hintsLeft:2,hintsUsed:0,review:new Map(),startedAt:Date.now(),finishedAt:null};
+    inputLocked=false;selectedMatchTerm=null;byId('battle-week').textContent=w.title||`Week ${id}`;byId('mission-title').textContent=systemFor(id).name;byId('system-label').textContent=`SYSTEM ${id} · REPAIR MODE`;renderMatrix(byId('system-visual'),id,'repairing');renderModules();showScreen('game');renderHud();nextQuestion();startTimer();playTone(420,.06,'sine',.035);
+  }
+  function renderModules(){ const row=byId('module-row');row.replaceChildren();for(const label of systemFor(G.id).modules){const el=document.createElement('div');el.className='module';el.textContent=label;row.appendChild(el);} }
+  function updateModules(){ const pct=G.mastered.size/G.questions.length;Array.from(byId('module-row').children).forEach((el,i)=>el.classList.toggle('online',pct>=(i+1)/4)); }
+  function updateRepairMatrix(){
+    const leds=Array.from(byId('system-visual').querySelectorAll('.led-matrix span.on'));const lit=Math.round(leds.length*(G.mastered.size/G.questions.length));leds.forEach((led,i)=>led.classList.toggle('repaired',i<lit));
+  }
+  function renderHud(){
+    if(!G)return;const integrity=byId('integrity');integrity.replaceChildren();for(let i=0;i<G.integrityMax;i++){const pip=document.createElement('span');pip.className=`integrity-pip${i>=G.integrity?' off':''}`;integrity.appendChild(pip);}integrity.setAttribute('aria-label',`${G.integrity} of ${G.integrityMax} integrity points remaining`);
+    const repaired=G.mastered.size,total=G.questions.length,pct=total?repaired/total*100:0;byId('repair-fill').style.width=`${pct}%`;document.querySelector('.repair-bar')?.setAttribute('aria-valuenow',String(Math.round(pct)));byId('repair-count').textContent=`${repaired} / ${total} repaired`;byId('mastered').textContent=`${repaired} / ${total}`;byId('streak').textContent=`${G.streak}×`;byId('score').textContent=String(G.score);byId('hintLeft').textContent=String(G.hintsLeft);byId('useHint').disabled=G.hintsLeft<=0||inputLocked||!G.current?.q?.hint;byId('timer-wrap').hidden=!state.settings.timer;renderTimer();updateModules();updateRepairMatrix();
+  }
+  function startTimer(){stopTimer();timerTicker=setInterval(()=>{if(G&&!screens.game.hidden)renderTimer();},500)}function stopTimer(){if(timerTicker)clearInterval(timerTicker);timerTicker=null}function renderTimer(){if(!G)return;const seconds=Math.floor(((G.finishedAt||Date.now())-G.startedAt)/1000);byId('timer').textContent=formatTime(seconds);}
+
+  function nextQuestion(){
+    if(!G)return;if(G.mastered.size>=G.questions.length){finishMission(false);return;}let item=G.queue.shift();if(!item){G.queue=G.questions.filter(q=>!G.mastered.has(keyFor(q))).map(q=>({q,retry:true}));item=G.queue.shift();if(!item){finishMission(false);return;}}
+    G.current=item;inputLocked=false;selectedMatchTerm=null;const fb=byId('feedback');fb.hidden=true;fb.className='feedback';fb.replaceChildren();renderQuestion(item.q,item.retry);renderHud();
+  }
+  function renderQuestion(q,retry){
+    const panel=byId('qpanel');panel.replaceChildren();const head=document.createElement('div');head.className='question-head';const count=document.createElement('div');count.className='question-count';count.textContent=`${G.mastered.size} repaired · ${G.questions.length-G.mastered.size} remaining`;head.appendChild(count);if(retry){const badge=document.createElement('div');badge.className='retry-badge';badge.textContent='Second chance';head.appendChild(badge);}const title=document.createElement('h2');title.textContent=q.question||'Challenge';panel.append(head,title);
+    if(q.code){const code=document.createElement('pre');code.className='qcode';code.textContent=q.code;panel.appendChild(code);}if(q.type==='multiple-choice')renderMC(panel,q);else if(q.type==='drag-drop')renderMatch(panel,q);else{const p=document.createElement('p');p.textContent=`Unsupported challenge type: ${q.type}`;panel.appendChild(p);}requestAnimationFrame(()=>panel.querySelector('button:not(:disabled)')?.focus({preventScroll:true}));
+  }
+  function renderMC(panel,q){const options=document.createElement('div');options.className='options';(q.options||[]).forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='option-button';b.dataset.optionIndex=String(i);const key=document.createElement('span');key.className='option-key';key.textContent=String(i+1);const text=document.createElement('span');text.textContent=opt;b.append(key,text);b.setAttribute('aria-label',`${i+1}. ${opt}`);b.addEventListener('click',()=>answerMC(i));options.appendChild(b);});panel.appendChild(options);}
+  function answerMC(i){if(inputLocked)return;const q=G.current.q,buttons=Array.from(document.querySelectorAll('.option-button'));buttons.forEach(b=>b.disabled=true);const correct=i===q.correct;if(buttons[q.correct])buttons[q.correct].classList.add('good');if(!correct&&buttons[i])buttons[i].classList.add('bad');settle(correct,{chosenIndex:i,answerSummary:correct?`Correct: ${q.options[q.correct]}`:`Your answer: ${q.options[i]||'—'} · Correct: ${q.options[q.correct]||'—'}`});}
+
+  function renderMatch(panel,q){
+    const intro=document.createElement('p');intro.className='match-intro';intro.textContent='Choose a term, then choose its matching definition. Tap a matched definition to change it.';const layout=document.createElement('div');layout.className='match-layout';const terms=document.createElement('div'),defs=document.createElement('div');terms.className=defs.className='match-column';terms.innerHTML='<div class="match-column-title">Terms</div>';defs.innerHTML='<div class="match-column-title">Definitions</div>';const termOrder=shuffle([...q.terms.keys()]),defOrder=shuffle([...q.definitions.keys()]);G.matchState={assignments:new Map(),termOrder,defOrder};
+    for(const ti of termOrder){const b=document.createElement('button');b.type='button';b.className='match-term';b.dataset.termIndex=String(ti);b.textContent=q.terms[ti];b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>selectTerm(ti));terms.appendChild(b);}for(const di of defOrder){const b=document.createElement('button');b.type='button';b.className='match-definition';b.dataset.defIndex=String(di);b.addEventListener('click',()=>chooseDef(di));defs.appendChild(b);}layout.append(terms,defs);const actions=document.createElement('div');actions.className='match-actions';const submit=document.createElement('button');submit.type='button';submit.id='submit-match';submit.textContent='Check repair';submit.disabled=true;submit.addEventListener('click',submitMatch);actions.appendChild(submit);panel.append(intro,layout,actions);refreshMatch();
+  }
+  function selectTerm(ti){if(inputLocked)return;selectedMatchTerm=selectedMatchTerm===ti?null:ti;refreshMatch();}
+  function chooseDef(di){if(inputLocked)return;const a=G.matchState.assignments;if(selectedMatchTerm==null){if(a.has(di)){selectedMatchTerm=a.get(di);a.delete(di);refreshMatch();}else toast('Choose a term first.');return;}for(const [d,t] of a.entries())if(t===selectedMatchTerm)a.delete(d);a.set(di,selectedMatchTerm);selectedMatchTerm=null;refreshMatch();}
+  function refreshMatch(){if(!G?.matchState)return;const q=G.current.q,a=G.matchState.assignments,paired=new Set(a.values());document.querySelectorAll('.match-term').forEach(b=>{const ti=Number(b.dataset.termIndex);b.classList.toggle('selected',ti===selectedMatchTerm);b.classList.toggle('paired',paired.has(ti));b.setAttribute('aria-pressed',ti===selectedMatchTerm?'true':'false');});document.querySelectorAll('.match-definition').forEach(b=>{const di=Number(b.dataset.defIndex),ti=a.get(di);b.replaceChildren();const t=document.createElement('span');t.textContent=q.definitions[di];b.appendChild(t);if(ti!=null){const p=document.createElement('span');p.className='paired-with';p.textContent=`← ${q.terms[ti]}`;b.appendChild(p);}});byId('submit-match').disabled=a.size!==q.terms.length;}
+  function submitMatch(){if(inputLocked)return;const q=G.current.q,a=G.matchState.assignments;let ok=0;document.querySelectorAll('.match-definition').forEach(b=>{b.disabled=true;const di=Number(b.dataset.defIndex),ti=a.get(di),good=q.correctMatches?.[ti]===di;b.classList.add(good?'correct':'wrong');if(good)ok++;else{const correction=document.createElement('span');correction.className='correct-match';correction.textContent=`Correct: ${q.terms[q.correctMatches.indexOf(di)]||'review this pair'}`;b.appendChild(correction);}});document.querySelectorAll('.match-term').forEach(b=>b.disabled=true);byId('submit-match').disabled=true;settle(ok===q.terms.length,{answerSummary:ok===q.terms.length?'All circuits matched correctly.':`${ok} of ${q.terms.length} pairs were correct.`});}
+
+  function settle(correct,meta={}){
+    if(inputLocked)return;inputLocked=true;const q=G.current.q,visual=byId('system-visual');visual.classList.remove('hit','fault');void visual.offsetWidth;let combo='';
+    if(correct){G.mastered.add(keyFor(q));G.streak++;G.bestStreak=Math.max(G.bestStreak,G.streak);const bonus=Math.min(100,G.streak*10);G.score+=100+bonus;if(G.streak>0&&G.streak%3===0)combo=`⚡ Clean compile ×${G.streak}! +${bonus} bonus`;visual.classList.add('hit');playTone(640,.07,'sine',.04);}
+    else{G.mistakes++;G.streak=0;G.integrity=Math.max(0,G.integrity-1);G.review.set(keyFor(q),{q,meta});if(G.integrity>0)G.queue.push({q,retry:true});visual.classList.add('fault');playTone(150,.11,'sawtooth',.035);}
+    renderHud();showFeedback(correct,q,meta,combo);if(!correct&&G.integrity<=0)byId('continue-btn').textContent='See fault log';
+  }
+  function showFeedback(correct,q,meta,combo){const fb=byId('feedback');fb.hidden=false;fb.className=`feedback ${correct?'correct':'incorrect'}`;fb.replaceChildren();const row=document.createElement('div');row.className='feedback-row';const copy=document.createElement('div');copy.className='feedback-copy';const strong=document.createElement('strong');strong.textContent=correct?'✓ Circuit repaired.':'⚠ Fault found — this challenge will return.';const exp=document.createElement('div');exp.textContent=q.explanation||meta.answerSummary||'';copy.append(strong,exp);if(q.definition){const d=document.createElement('div');d.className='definition-note';d.textContent=q.definition;copy.appendChild(d);}if(!correct&&meta.answerSummary){const a=document.createElement('div');a.style.marginTop='5px';a.textContent=meta.answerSummary;copy.appendChild(a);}if(combo){const c=document.createElement('span');c.className='combo';c.textContent=combo;copy.appendChild(c);}const next=document.createElement('button');next.type='button';next.id='continue-btn';next.textContent='Continue';next.addEventListener('click',continueAfter);row.append(copy,next);fb.appendChild(row);next.focus({preventScroll:true});}
+  function continueAfter(){if(G.integrity<=0){finishMission(true);return;}if(G.mastered.size>=G.questions.length){finishMission(false);return;}nextQuestion();}
+
+  function useHint(){if(!G||inputLocked||G.hintsLeft<=0||!G.current?.q?.hint){if(G&&G.hintsLeft<=0)toast('No diagnostics left in this mission.');return;}G.hintsLeft--;G.hintsUsed++;renderHud();const fb=byId('feedback');fb.hidden=false;fb.className='feedback hint';fb.replaceChildren();const copy=document.createElement('div');copy.className='feedback-copy';const h=document.createElement('strong');h.textContent='⌕ Diagnostic hint';const t=document.createElement('div');t.textContent=G.current.q.hint;copy.append(h,t);fb.appendChild(copy);playTone(360,.05,'sine',.025);}
+
+  function finishMission(failed){
+    G.finishedAt=Date.now();stopTimer();const seconds=Math.floor((G.finishedAt-G.startedAt)/1000),attempts=G.mastered.size+G.mistakes,accuracy=attempts?Math.round(G.mastered.size/attempts*100):0;let rating=0;
+    if(failed){byId('results-kicker').textContent='REPAIR PAUSED';byId('results-title').textContent='System still unstable';byId('results-summary').textContent=`You repaired ${G.mastered.size} of ${G.questions.length} circuits. Review the fault log and re-run the mission.`;}
+    else{rating=G.mistakes===0?3:G.mistakes<=2?2:1;byId('results-kicker').textContent='SYSTEM ONLINE';byId('results-title').textContent=rating===3?'Flawless repair!':'System restored!';byId('results-summary').textContent=rating===3?'Every circuit restored without a fault. Excellent work.':'Every challenge is mastered and the system is back online.';state.clears[G.id]=true;state.ratings[G.id]=Math.max(Number(state.ratings[G.id])||0,rating);const old=state.best[G.id]||{};if(!old.seconds||rating>(old.rating||0)||(rating===(old.rating||0)&&seconds<old.seconds))state.best[G.id]={rating,seconds,mistakes:G.mistakes,hintsUsed:G.hintsUsed,bestStreak:G.bestStreak,score:G.score};const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];if(next&&!state.unlocked.includes(next))state.unlocked.push(next);save();playTone(780,.09,'sine',.04);setTimeout(()=>playTone(980,.11,'sine',.035),90);}
+    renderMatrix(byId('results-visual'),G.id,failed?'ready':'complete');const stars=byId('result-stars');stars.replaceChildren();const node=buildStars(failed?0:rating,`${failed?0:rating} of 3 stars`);while(node.firstChild)stars.appendChild(node.firstChild);const stats=byId('result-stats');stats.replaceChildren();addStat(stats,'Repaired',`${G.mastered.size}/${G.questions.length}`);addStat(stats,'Accuracy',`${accuracy}%`);addStat(stats,'Best streak',`${G.bestStreak}×`);addStat(stats,'Score',String(G.score));
+    const list=byId('review-list');list.replaceChildren();byId('review-count').textContent=G.review.size?`(${G.review.size})`:'';byId('review-details').hidden=!G.review.size;for(const {q} of G.review.values()){const li=document.createElement('li');const qq=document.createElement('div');qq.className='review-question';qq.textContent=q.question;const e=document.createElement('div');e.textContent=q.explanation||'';li.append(qq,e);list.appendChild(li);}const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];byId('next-system').hidden=failed||!next;showScreen('results');renderHeader();byId('retry').focus({preventScroll:true});
+  }
+  function addStat(parent,label,value){const d=document.createElement('div');d.className='result-stat';const s=document.createElement('span');s.textContent=label;const b=document.createElement('strong');b.textContent=value;d.append(s,b);parent.appendChild(d);}
+
+  function openDialog(id){const d=byId(id);if(d?.showModal)d.showModal();}
+  function resetProgress(){try{localStorage.removeItem(STORAGE_KEY);for(const k of LEGACY_KEYS)localStorage.removeItem(k);}catch(_){ }Object.assign(state,freshState());save();byId('reset-dialog')?.close();byId('settings-dialog')?.close();G=null;renderLevels();showScreen('levels');toast('Progress reset. System 1 is ready.');}
+  function exitMission(){if(!G){showScreen('levels');return;}const dirty=G.mastered.size||G.mistakes;if(!dirty||confirm('Exit this mission? This run will be discarded, but completed systems and best results stay saved.')){stopTimer();G=null;renderLevels();showScreen('levels');}}
+  function toast(msg){const t=byId('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1600);}
+  function keyFor(q){return q.id||`${q.question||''}|${q.code||''}`;}
+  function formatTime(sec){const v=Math.max(0,Math.floor(Number(sec)||0));return `${Math.floor(v/60)}:${String(v%60).padStart(2,'0')}`;}
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function playTone(freq=440,dur=.06,type='sine',vol=.03){if(state.settings.sound===false)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!audioCtx)audioCtx=new AC();if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);}catch(_){}}
+  function handleKeys(e){if(!G||screens.game.hidden||document.querySelector('dialog[open]'))return;const tag=document.activeElement?.tagName?.toLowerCase();if(tag==='input'||tag==='textarea')return;if(e.key.toLowerCase()==='h'&&!inputLocked){e.preventDefault();useHint();return;}if(e.key==='Enter'&&inputLocked&&byId('continue-btn')){e.preventDefault();continueAfter();return;}if(!inputLocked&&/^[1-9]$/.test(e.key)){const b=document.querySelector(`.option-button[data-option-index="${Number(e.key)-1}"]`);if(b&&!b.disabled){e.preventDefault();b.click();}}}
+
+  byId('brief-back').addEventListener('click',()=>{renderLevels();showScreen('levels');});
+  byId('brief-start').addEventListener('click',()=>pendingBriefId&&startMission(pendingBriefId));
+  byId('quit').addEventListener('click',exitMission);byId('useHint').addEventListener('click',useHint);
+  byId('retry').addEventListener('click',()=>G&&startMission(G.id));
+  byId('back-levels').addEventListener('click',()=>{G=null;renderLevels();showScreen('levels');});
+  byId('next-system').addEventListener('click',()=>{if(!G)return;const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];if(next)openBriefing(next);});
+  byId('help').addEventListener('click',()=>openDialog('help-dialog'));
+  byId('settings').addEventListener('click',()=>{byId('setting-timer').checked=state.settings.timer;byId('setting-sound').checked=state.settings.sound;openDialog('settings-dialog');});
+  byId('setting-timer').addEventListener('change',e=>{state.settings.timer=!!e.target.checked;save();if(G)renderHud();});
+  byId('setting-sound').addEventListener('change',e=>{state.settings.sound=!!e.target.checked;save();});
+  byId('reset').addEventListener('click',()=>openDialog('reset-dialog'));
+  byId('confirm-reset').addEventListener('click',e=>{e.preventDefault();resetProgress();});document.addEventListener('keydown',handleKeys);
+
+  renderLevels();showScreen('levels');
+  if(DEBUG_WEEK&&DATA.weeks[DEBUG_WEEK])openBriefing(DEBUG_WEEK);
 })();
