@@ -417,6 +417,46 @@ function renderMemoryBank(){
   root.append(board,actions,status);
 }
 
+
+function microbitBoardMarkup(){
+  const ledPattern=new Set([6,8,11,13,17,18,19]);
+  let leds='';
+  for(let i=0;i<25;i++)leds+=`<rect class="mb-led${ledPattern.has(i)?' lit':''}" x="${300+(i%5)*38}" y="${178+Math.floor(i/5)*38}" width="14" height="24" rx="3"/>`;
+  return `
+    <svg class="microbit-svg microbit-svg-complete" viewBox="0 0 768 500" role="img" aria-label="Stylised BBC micro:bit front view">
+      <defs>
+        <linearGradient id="mbBoardFinal" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#171b21"/>
+          <stop offset="100%" stop-color="#0a1017"/>
+        </linearGradient>
+        <linearGradient id="mbGoldFinal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffd95a"/>
+          <stop offset="100%" stop-color="#b98512"/>
+        </linearGradient>
+        <filter id="mbGlowFinal" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect class="mb-board-body" x="12" y="18" width="744" height="455" rx="48" fill="url(#mbBoardFinal)"/>
+      <path class="mb-gold-accent" d="M34 43h156l-72 72V67L34 151z" fill="url(#mbGoldFinal)"/>
+      <path class="mb-gold-accent faint" d="M190 43h86l-50 50V43z" fill="url(#mbGoldFinal)"/>
+      <g class="mb-usb"><rect x="321" y="6" width="126" height="32" rx="8" fill="#5b6269"/><rect x="335" y="0" width="98" height="16" rx="5" fill="#a4a9ad"/><rect x="348" y="7" width="72" height="12" rx="3" fill="#2d3338"/></g>
+      <g class="mb-touch"><rect x="326" y="60" width="116" height="62" rx="31" fill="none" stroke="#f1c52d" stroke-width="12"/><circle cx="354" cy="91" r="10" fill="#f1c52d"/><circle cx="414" cy="91" r="10" fill="#f1c52d"/></g>
+      <circle class="mb-mic-dot" cx="492" cy="111" r="8" fill="#ff6677" filter="url(#mbGlowFinal)"/>
+      <circle cx="470" cy="111" r="6" fill="none" stroke="#d4b329" stroke-width="2"/>
+      <g class="mb-button mb-button-a"><rect x="72" y="196" width="92" height="92" rx="8" fill="#8b9298"/><circle cx="118" cy="242" r="28" fill="#050607"/><path d="M66 303l54-54v54z" fill="#f1c52d"/><text x="98" y="324">A</text></g>
+      <g class="mb-button mb-button-b"><rect x="604" y="196" width="92" height="92" rx="8" fill="#8b9298"/><circle cx="650" cy="242" r="28" fill="#050607"/><path d="M648 178h54l-54 54z" fill="#f1c52d"/><text x="662" y="198">B</text></g>
+      <g class="mb-led-grid">${leds}</g>
+      <g class="mb-boot-badge"><rect x="318" y="354" width="132" height="40" rx="10"/><text x="384" y="379" text-anchor="middle">BOOT OK</text></g>
+      <g class="mb-edge-pads">
+        <path d="M32 394h74v79H32z" fill="url(#mbGoldFinal)"/><path d="M151 384h86v89h-86z" fill="url(#mbGoldFinal)"/><path d="M341 377h86v96h-86z" fill="url(#mbGoldFinal)"/><path d="M531 384h86v89h-86z" fill="url(#mbGoldFinal)"/><path d="M662 394h74v79h-74z" fill="url(#mbGoldFinal)"/>
+        <circle cx="70" cy="422" r="24" fill="#141820"/><circle cx="194" cy="414" r="24" fill="#141820"/><circle cx="384" cy="407" r="24" fill="#141820"/><circle cx="574" cy="414" r="24" fill="#141820"/><circle cx="699" cy="422" r="24" fill="#141820"/>
+        <text x="62" y="463">0</text><text x="186" y="455">1</text><text x="376" y="448">2</text><text x="560" y="455">3V</text><text x="680" y="463">GND</text>
+      </g>
+    </svg>`;
+}
+
 /* ---------------- Handoff to final diagnostic ---------------- */
 
 function renderFinalGate(){
@@ -429,15 +469,7 @@ function renderFinalGate(){
   ));
 
   const board=document.createElement('div');board.className='microbit-face full-face';
-  const leds=Array.from({length:25},(_,i)=>`<span class="${[6,8,11,13,17,18,19].includes(i)?'lit':''}"></span>`).join('');
-  board.innerHTML=`
-    <div class="microbit-face-touch"><span class="touch-logo"><i></i><i></i></span><span class="touch-mic-dot">●</span></div>
-    <div class="microbit-face-leds">${leds}</div>
-    <div class="microbit-face-button face-a"><b></b><span>A</span></div>
-    <div class="microbit-face-button face-b"><b></b><span>B</span></div>
-    <div class="microbit-face-chip">MICROCONTROLLER <strong>BOOT OK</strong></div>
-    <div class="microbit-face-pins"><span>0</span><span>1</span><span>2</span><span>3V</span><span>GND</span></div>
-  `;
+  board.innerHTML=microbitBoardMarkup();
 
   const real=document.createElement('div');real.className='reality-note real-note';
   real.innerHTML='<strong>Inside the real micro:bit</strong><span>The board really does contain a microcontroller, memory, input/output connections, sensors, a 5×5 LED display, buttons and radio hardware. Our glowing data pulse and rooms are a game model — real electrical signals do not look like tiny moving dots.</span>';
