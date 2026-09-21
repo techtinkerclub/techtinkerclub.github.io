@@ -93,6 +93,7 @@ function overlayHost(){
 function clearOverlay(){
   const host=overlayHost();
   if(host)host.replaceChildren();
+  document.body.classList.remove('adventure-modal-open');
 }
 function showNotice(text,tone='info',ms=1500){
   const host=overlayHost();if(!host)return;
@@ -107,6 +108,7 @@ function showNotice(text,tone='info',ms=1500){
 }
 function showTransition(title,text,buttonText,next,tone='success'){
   const host=overlayHost();if(!host)return;
+  document.body.classList.add('adventure-modal-open');
   const shade=document.createElement('div');shade.className='adventure-popup-shade';
   const card=document.createElement('div');card.className=`adventure-popup transition ${tone}`;card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
   const icon=document.createElement('div');icon.className='adventure-popup-icon';icon.textContent=tone==='success'?'✓':'!';
