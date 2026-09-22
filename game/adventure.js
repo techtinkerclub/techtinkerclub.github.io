@@ -1728,9 +1728,9 @@ function renderLogicRouterFinalGate(){
 
 function sensorSweepConfig(stage){
   return [
-    {n:5,target:5,nodes:2,lifetime:9000,label:'LIGHT SWEEP',copy:'Two live nodes appear. Reach and scan the DARK node where light < 50.'},
-    {n:6,target:6,nodes:3,lifetime:10500,label:'TEMPERATURE SWEEP',copy:'Three live nodes appear and the HOT threshold changes every wave. Reach the node where temp > threshold.'},
-    {n:7,target:6,nodes:3,lifetime:12000,label:'DUAL SENSOR SWEEP',copy:'The largest field uses two readings per node. Reach the one where temp and light are BOTH below their limits.'}
+    {n:5,target:5,nodes:2,lifetime:11000,label:'LIGHT SWEEP',copy:'Two live nodes appear. Reach and scan the DARK node where light < 50.'},
+    {n:6,target:6,nodes:3,lifetime:13000,label:'TEMPERATURE SWEEP',copy:'Three live nodes appear and the HOT threshold changes every wave. Reach the node where temp > threshold.'},
+    {n:7,target:6,nodes:3,lifetime:16000,label:'DUAL SENSOR SWEEP',copy:'The largest field uses two readings per node. Reach the one where temp and light are BOTH below their limits.'}
   ][stage]||null;
 }
 function sensorSweepWave(stage,seed,waveNo){
@@ -1848,7 +1848,6 @@ function renderSensorScanner(){
         const p=document.createElement('span');p.className='sensor-sweep-player';p.textContent='◎';cell.appendChild(p);
       }
     }
-    const ledCells=[[...led()?.mapPoint(player[0],player[1],cfg.n,cfg.n)||[]]];
     const mappedNodes=liveNodes.map(n=>led()?.mapPoint(n.pos[0],n.pos[1],cfg.n,cfg.n)).filter(Boolean);
     const mappedPlayer=led()?.mapPoint(player[0],player[1],cfg.n,cfg.n);
     led()?.setCells([...(mappedPlayer?[mappedPlayer]:[]),...mappedNodes]);
