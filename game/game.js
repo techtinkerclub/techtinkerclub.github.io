@@ -127,6 +127,70 @@
     const meta=byId('brief-meta');meta.replaceChildren();const metaItems=['1','2'].includes(String(id))?['3 repair rooms',`${(w.questions||[]).length}-question final diagnostic`,'inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
   }
 
+  function difficultyRank(q){
+    const d=String(q?.difficulty||'medium').toLowerCase().replace(/\s+/g,'-');
+    if(d==='easy')return 1;
+    if(d==='medium')return 2;
+    if(d==='medium-hard'||d==='mediumhard')return 3;
+    if(d==='hard')return 4;
+    return 2;
+  }
+  function buildDiagnosticStages(questions){
+    const ordered=questions.map((q,i)=>({q,i,rank:difficultyRank(q)}))
+      .sort((a,b)=>a.rank-b.rank||a.i-b.i)
+      .map(x=>x.q);
+    const n=ordered.length,base=Math.floor(n/3),extra=n%3;
+    const sizes=[base+(extra>0?1:0),base+(extra>1?1:0),base];
+    const stages=[];let cursor=0;
+    for(const size of sizes){stages.push(ordered.slice(cursor,cursor+size));cursor+=size;}
+    return stages;
+  }
+  function currentDiagnosticStageQuestions(){
+    return G?.diagnosticStages?.[G.diagnosticStage]||G?.questions||[];
+  }
+  function diagnosticStageMastered(){
+    const stageQs=currentDiagnosticStageQuestions();
+    return stageQs.filter(q=>G.mastered.has(keyFor(q))).length;
+  }
+  function diagnosticStageComplete(){
+    const stageQs=currentDiagnosticStageQuestions();
+    return stageQs.length>0&&stageQs.every(q=>G.mastered.has(keyFor(q)));
+  }
+  function updateDiagnosticStageLabel(){
+    if(!G)return;
+    const stageQs=currentDiagnosticStageQuestions();
+    byId('battle-week').textContent='Final diagnostic · Stage '+(G.diagnosticStage+1)+'/3 · '+stageQs.length+' checks';
+  }
+  function enterDiagnosticStage(index){
+    G.diagnosticStage=Math.max(0,Math.min(2,index));
+    const stageQs=currentDiagnosticStageQuestions();
+    G.queue=stageQs.filter(q=>!G.mastered.has(keyFor(q))).map(q=>({q,retry:false}));
+    G.integrity=G.integrityMax;
+    updateDiagnosticStageLabel();
+    renderHud();
+  }
+  function renderDiagnosticStageGate(){
+    const completed=G.diagnosticStage+1;
+    const nextStage=completed+1;
+    inputLocked=true;
+    const fb=byId('feedback');fb.hidden=true;fb.replaceChildren();
+    const panel=byId('qpanel');panel.replaceChildren();
+    const gate=document.createElement('div');gate.className='diagnostic-stage-gate';
+    const eyebrow=document.createElement('p');eyebrow.className='eyebrow';eyebrow.textContent='DIAGNOSTIC STAGE '+completed+'/3 COMPLETE';
+    const title=document.createElement('h2');title.textContent=nextStage===3?'Final diagnostic stage unlocked':'Diagnostic stage '+nextStage+' unlocked';
+    const copy=document.createElement('p');
+    copy.textContent=nextStage===2
+      ?'Four checks verified. Integrity is restored before Stage 2, where the questions become more demanding.'
+      :'Eight checks verified. Integrity is restored for the final four, highest-difficulty checks.';
+    const strip=document.createElement('div');strip.className='diagnostic-stage-strip';
+    for(let i=1;i<=3;i++){const s=document.createElement('span');s.className=i<=completed?'complete':i===nextStage?'next':'';s.textContent='STAGE '+i;strip.appendChild(s);}
+    const button=document.createElement('button');button.type='button';button.textContent='Start stage '+nextStage+'/3 →';
+    button.addEventListener('click',()=>{enterDiagnosticStage(nextStage-1);inputLocked=false;nextQuestion();});
+    gate.append(eyebrow,title,copy,strip,button);panel.appendChild(gate);
+    updateDiagnosticStageLabel();
+    requestAnimationFrame(()=>button.focus({preventScroll:true}));
+  }
+
   function startMission(id){
     if(globalThis.TTCAdventure?.supports?.(id))return startAdventureMission(id);
     return startDiagnostic(id,null);
@@ -152,8 +216,18 @@
     const allQuestions=(w.questions||[]).map(q=>({...q}));
     if(!allQuestions.length){toast('This system has no challenges yet.');return;}
     const questions=allQuestions;
-    G={id,w,stage:'diagnostic',adventureStats,questions,queue:questions.map(q=>({q,retry:false})),current:null,mastered:new Set(),integrityMax:4,integrity:4,streak:0,bestStreak:0,score:Number(adventureStats?.bonusScore)||0,mistakes:0,hintsLeft:2,hintsUsed:0,review:new Map(),startedAt:Date.now(),finishedAt:null};
-    inputLocked=false;selectedMatchTerm=null;byId('battle-week').textContent=adventureStats?`Final diagnostic · ${questions.length} checks`:(w.title||`Week ${id}`);byId('mission-title').textContent=adventureStats?`${systemFor(id).name} Verification`:systemFor(id).name;byId('system-label').textContent=adventureStats?`SYSTEM ${id} · FINAL DIAGNOSTIC`:`SYSTEM ${id} · REPAIR MODE`;renderMatrix(byId('system-visual'),id,'repairing');renderModules();showScreen('game');renderHud();nextQuestion();startTimer();playTone(420,.06,'sine',.035);
+    const diagnosticStages=buildDiagnosticStages(questions);
+    G={
+      id,w,stage:'diagnostic',adventureStats,questions,diagnosticStages,diagnosticStage:0,
+      queue:diagnosticStages[0].map(q=>({q,retry:false})),current:null,mastered:new Set(),
+      integrityMax:4,integrity:4,streak:0,bestStreak:0,score:Number(adventureStats?.bonusScore)||0,
+      mistakes:0,hintsLeft:2,hintsUsed:0,review:new Map(),startedAt:Date.now(),finishedAt:null
+    };
+    inputLocked=false;selectedMatchTerm=null;
+    updateDiagnosticStageLabel();
+    byId('mission-title').textContent=adventureStats?systemFor(id).name+' Verification':systemFor(id).name;
+    byId('system-label').textContent=adventureStats?'SYSTEM '+id+' · FINAL DIAGNOSTIC':'SYSTEM '+id+' · REPAIR MODE';
+    renderMatrix(byId('system-visual'),id,'repairing');renderModules();showScreen('game');renderHud();nextQuestion();startTimer();playTone(420,.06,'sine',.035);
   }
   function renderModules(){ const row=byId('module-row');row.replaceChildren();for(const label of systemFor(G.id).modules){const el=document.createElement('div');el.className='module';el.textContent=label;row.appendChild(el);} }
   function updateModules(){ const pct=G.mastered.size/G.questions.length;Array.from(byId('module-row').children).forEach((el,i)=>el.classList.toggle('online',pct>=(i+1)/4)); }
@@ -167,11 +241,28 @@
   function startTimer(){stopTimer();timerTicker=setInterval(()=>{if(G&&!screens.game.hidden)renderTimer();},500)}function stopTimer(){if(timerTicker)clearInterval(timerTicker);timerTicker=null}function renderTimer(){if(!G)return;const seconds=Math.floor(((G.finishedAt||Date.now())-G.startedAt)/1000);byId('timer').textContent=formatTime(seconds);}
 
   function nextQuestion(){
-    if(!G)return;if(G.mastered.size>=G.questions.length){finishMission(false);return;}let item=G.queue.shift();if(!item){G.queue=G.questions.filter(q=>!G.mastered.has(keyFor(q))).map(q=>({q,retry:true}));item=G.queue.shift();if(!item){finishMission(false);return;}}
-    G.current=item;inputLocked=false;selectedMatchTerm=null;const fb=byId('feedback');fb.hidden=true;fb.className='feedback';fb.replaceChildren();renderQuestion(item.q,item.retry);renderHud();
+    if(!G)return;
+    if(G.mastered.size>=G.questions.length){finishMission(false);return;}
+    if(diagnosticStageComplete()){
+      if(G.diagnosticStage<2){renderDiagnosticStageGate();return;}
+      finishMission(false);return;
+    }
+    let item=G.queue.shift();
+    if(!item){
+      const stageQs=currentDiagnosticStageQuestions();
+      G.queue=stageQs.filter(q=>!G.mastered.has(keyFor(q))).map(q=>({q,retry:true}));
+      item=G.queue.shift();
+      if(!item){
+        if(G.diagnosticStage<2){renderDiagnosticStageGate();return;}
+        finishMission(false);return;
+      }
+    }
+    G.current=item;inputLocked=false;selectedMatchTerm=null;
+    const fb=byId('feedback');fb.hidden=true;fb.className='feedback';fb.replaceChildren();
+    renderQuestion(item.q,item.retry);renderHud();
   }
   function renderQuestion(q,retry){
-    const panel=byId('qpanel');panel.replaceChildren();const head=document.createElement('div');head.className='question-head';const count=document.createElement('div');count.className='question-count';count.textContent=G.adventureStats?`${G.mastered.size} verified · ${G.questions.length-G.mastered.size} remaining`:`${G.mastered.size} repaired · ${G.questions.length-G.mastered.size} remaining`;head.appendChild(count);if(retry){const badge=document.createElement('div');badge.className='retry-badge';badge.textContent='Second chance';head.appendChild(badge);}const title=document.createElement('h2');title.textContent=q.question||'Challenge';panel.append(head,title);
+    const panel=byId('qpanel');panel.replaceChildren();const head=document.createElement('div');head.className='question-head';const count=document.createElement('div');count.className='question-count';const stageQs=currentDiagnosticStageQuestions(),stageDone=diagnosticStageMastered();count.textContent='STAGE '+(G.diagnosticStage+1)+'/3 · '+stageDone+'/'+stageQs.length+' verified · '+G.mastered.size+'/'+G.questions.length+' overall';head.appendChild(count);if(retry){const badge=document.createElement('div');badge.className='retry-badge';badge.textContent='Second chance';head.appendChild(badge);}const title=document.createElement('h2');title.textContent=q.question||'Challenge';panel.append(head,title);
     if(q.code){const code=document.createElement('pre');code.className='qcode';code.textContent=q.code;panel.appendChild(code);}if(q.type==='multiple-choice')renderMC(panel,q);else if(q.type==='drag-drop')renderMatch(panel,q);else{const p=document.createElement('p');p.textContent=`Unsupported challenge type: ${q.type}`;panel.appendChild(p);}requestAnimationFrame(()=>panel.querySelector('button:not(:disabled)')?.focus({preventScroll:true}));
   }
   function renderMC(panel,q){const options=document.createElement('div');options.className='options';(q.options||[]).forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='option-button';b.dataset.optionIndex=String(i);const key=document.createElement('span');key.className='option-key';key.textContent=String(i+1);const text=document.createElement('span');text.textContent=opt;b.append(key,text);b.setAttribute('aria-label',`${i+1}. ${opt}`);b.addEventListener('click',()=>answerMC(i));options.appendChild(b);});panel.appendChild(options);}
