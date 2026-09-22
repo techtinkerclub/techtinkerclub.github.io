@@ -72,8 +72,12 @@ function render(){
   document.querySelectorAll('object.official-microbit-object').forEach(obj=>applyToObject(obj,current));
 }
 function setCells(cells){
-  if(flashTimer){clearTimeout(flashTimer);flashTimer=null;restoreAfterFlash=null;}
-  current=normalizeCells(cells);
+  const next=normalizeCells(cells);
+  if(flashTimer){
+    restoreAfterFlash=next;
+    return;
+  }
+  current=next;
   render();
 }
 function setPattern(name){
