@@ -543,7 +543,7 @@ function renderRandomPacketCatcher(){
           wave=1;caughtInWave=0;packets.splice(0,packets.length);paintRule();renderPackets();
           showTransition('Range filter recalibrated','Dice mode is stable. Now catch values that could be used as a 0–4 LED position.','Start wave 2 →',()=>{
             if(!active||active.systemId!=='2'||active.room!==0)return;
-            live=true;every(spawn,620);every(tick,90);spawn();spawn();
+            live=true;every(spawn,900);every(tick,100);spawn();
           });
         }else{
           finished=true;live=false;clearTimers();active.roomsCompleted=Math.max(active.roomsCompleted,1);
@@ -561,7 +561,7 @@ function renderRandomPacketCatcher(){
 
   function tick(){
     if(!live||finished)return;
-    for(const p of packets)p.y+=7;
+    for(const p of packets)p.y+=4;
     for(let i=packets.length-1;i>=0;i--){
       const p=packets[i];
       if(p.y>=78&&p.y<86){
@@ -578,13 +578,13 @@ function renderRandomPacketCatcher(){
   later(()=>{
     if(!active||active.systemId!=='2'||active.room!==0)return;
     live=true;
-    every(spawn,620);
-    every(tick,90);
-    spawn();spawn();
+    every(spawn,900);
+    every(tick,100);
+    spawn();
   },850);
 }
 
-/* ---------------- Room 2: Broken Randomiser ---------------- */
+/* ---------------- Room 2: Randomiser Range Diagnostics ---------------- */
 
 function makeRandomDiagnosticRounds(seed){
   const rng=rngFromSeed(seed+':broken-randomiser');
@@ -613,19 +613,19 @@ function makeRandomDiagnosticRounds(seed){
 }
 
 function renderBrokenRandomiser(){
-  setProgress('RANDOMISER CORE · ROOM 2/3 · STREAM DIAGNOSTICS');
+  setProgress('RANDOMISER CORE · ROOM 2/3 · RANGE DIAGNOSTICS');
   const root=active.root;
   root.appendChild(roomHeader(
-    'ROOM 2 · BROKEN RANDOMISER',
-    'Find the impossible output stream',
-    'Repeats can happen in genuinely random results. Do not reject a stream just because a number appears twice — find the stream containing a value the configured random block could never produce.'
+    'ROOM 2 · RANGE DIAGNOSTICS',
+    'Check whether every output is possible',
+    'A short sequence cannot tell us whether numbers are truly random. Here we are checking something we can know for certain: every value must stay inside the configured random range.'
   ));
 
   const rounds=makeRandomDiagnosticRounds(active.seed);
   let roundIndex=0,locked=false;
 
   const note=document.createElement('div');note.className='reality-note';
-  note.innerHTML='<strong>Important</strong><span>Random does not mean “never repeats”. A fair random generator can produce the same result several times. Here, the broken stream is the one containing an impossible out-of-range value.</span>';
+  note.innerHTML='<strong>Important</strong><span>You cannot prove randomness by looking at a few numbers. Repeats are allowed. This diagnostic only checks range correctness: a value outside the configured range is definitely a fault.</span>';
 
   const consoleEl=document.createElement('div');consoleEl.className='random-diagnostic-console';
   const title=document.createElement('div');title.className='random-diagnostic-title';
@@ -672,7 +672,7 @@ function renderBrokenRandomiser(){
       roundIndex++;
       if(roundIndex>=rounds.length){
         active.roomsCompleted=Math.max(active.roomsCompleted,2);
-        showTransition('Random stream diagnostics restored','All three configured ranges now reject impossible outputs without mistaking ordinary repeats for faults.','Open data router →',()=>{active.room=2;renderRoom();});
+        showTransition('Range diagnostics complete','All three random blocks now produce only values inside their configured ranges. Repeated values were correctly treated as possible.','Open data router →',()=>{active.room=2;renderRoom();});
       }else renderRound();
     },900);
   }
@@ -854,7 +854,7 @@ function renderRandomiserFinalGate(){
   root.appendChild(roomHeader(
     'RANDOMISER CORE STABLE',
     'Events and random outputs are responding again',
-    'Packet ranges, random-stream diagnostics and the number-property router are stable. The final boss is the complete 12-question Week 2 diagnostic.'
+    'Packet ranges, output-range diagnostics and the number-property router are stable. The final boss is the complete 12-question Week 2 diagnostic.'
   ));
 
   const board=document.createElement('div');board.className='microbit-face full-face';
