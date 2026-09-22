@@ -447,13 +447,13 @@ function renderRandomPacketCatcher(){
   const root=active.root;
   root.appendChild(roomHeader(
     'ROOM 1 · RANDOM PACKET CATCHER',
-    'Catch only valid random outputs',
-    'Packets are falling through the micro:bit. Move the catcher left and right and collect values that fit the current random range. Let invalid values pass.'
+    'Catch 3 numbers in the range',
+    'Look at the range shown below. Move left and right to catch 3 numbers inside that range. Let numbers outside the range fall past.'
   ));
 
   const rules=[
-    {label:'DICE MODE',min:1,max:6,copy:'Catch whole numbers from 1 to 6.'},
-    {label:'LED POSITION',min:0,max:4,copy:'Catch whole numbers from 0 to 4.'}
+    {label:'DICE MODE',min:1,max:6,copy:'Catch 3 numbers from 1 to 6.'},
+    {label:'LED POSITION',min:0,max:4,copy:'Catch 3 numbers from 0 to 4.'}
   ];
   let wave=0,caughtInWave=0,totalCaught=0,playerLane=1,live=false,finished=false,nextPacketId=1;
   const rng=rngFromSeed(active.seed+':packet-catcher');
@@ -478,7 +478,7 @@ function renderRandomPacketCatcher(){
   controls.append(left,right);
 
   const legend=document.createElement('div');legend.className='adventure-info-strip';
-  legend.innerHTML='<span><strong>VALID</strong> catch it</span><span><strong>INVALID</strong> let it pass</span><span><strong>2 WAVES</strong> 3 good packets each</span>';
+  legend.innerHTML='<span><strong>IN RANGE</strong> catch it</span><span><strong>OUT OF RANGE</strong> let it pass</span><span><strong>TARGET</strong> catch 3</span>';
 
   root.append(hud,legend,arena,controls);
 
@@ -487,7 +487,7 @@ function renderRandomPacketCatcher(){
   function paintRule(){
     const r=currentRule();
     ruleBox.innerHTML=`<small>${r.label}</small><strong>random ${r.min} to ${r.max}</strong><span>${r.copy}</span>`;
-    progress.textContent=`WAVE ${wave+1}/2 · ${caughtInWave}/3 valid packets`;
+    progress.textContent=`CAUGHT ${caughtInWave}/3 · RANGE ${r.min}–${r.max}`;
   }
   function paintPlayer(){
     catcher.style.left=`calc(${playerLane*33.333+16.666}% - 32px)`;
@@ -536,18 +536,18 @@ function renderRandomPacketCatcher(){
     if(p.lane!==playerLane)return;
     if(validValue(p.value)){
       totalCaught++;caughtInWave++;active.playTone(720,.055,'sine',.025);
-      showNotice(`${p.value} accepted by ${currentRule().label}.`,'success',650);
+      showNotice(`${p.value} is in range · ${caughtInWave}/3 caught.`,'success',650);
       if(caughtInWave>=3){
         if(wave===0){
           live=false;clearTimers();
           wave=1;caughtInWave=0;packets.splice(0,packets.length);paintRule();renderPackets();
-          showTransition('Range filter recalibrated','Dice mode is stable. Now catch values that could be used as a 0–4 LED position.','Start wave 2 →',()=>{
+          showTransition('First range complete','You caught 3 numbers from 1 to 6. Now catch 3 numbers from 0 to 4.','Start range 0–4 →',()=>{
             if(!active||active.systemId!=='2'||active.room!==0)return;
             live=true;every(spawn,900);every(tick,100);spawn();
           });
         }else{
           finished=true;live=false;clearTimers();active.roomsCompleted=Math.max(active.roomsCompleted,1);
-          showTransition('Packet filter restored','The Randomiser Core is accepting only values inside the configured ranges.','Inspect random streams →',()=>{active.room=1;renderRoom();});
+          showTransition('Packet filter restored','You caught 3 numbers in each target range and ignored out-of-range values.','Check output sequences →',()=>{active.room=1;renderRoom();});
         }
       }
     }else{
@@ -574,7 +574,7 @@ function renderRandomPacketCatcher(){
   }
 
   paintRule();paintPlayer();
-  showNotice('Get ready — catch only values inside the displayed range.','info',1000);
+  showNotice('Catch 3 numbers from 1 to 6.','info',1100);
   later(()=>{
     if(!active||active.systemId!=='2'||active.room!==0)return;
     live=true;
@@ -617,8 +617,8 @@ function renderBrokenRandomiser(){
   const root=active.root;
   root.appendChild(roomHeader(
     'ROOM 2 · RANGE DIAGNOSTICS',
-    'Check whether every output is possible',
-    'A short sequence cannot tell us whether numbers are truly random. Here we are checking something we can know for certain: every value must stay inside the configured random range.'
+    'Select the sequence that does not match',
+    'For each random block, select the one sequence that does not match its range. Every number in a matching sequence must be between the two limits, inclusive.'
   ));
 
   const rounds=makeRandomDiagnosticRounds(active.seed);
@@ -638,18 +638,18 @@ function renderBrokenRandomiser(){
   function renderRound(){
     locked=false;
     const r=rounds[roundIndex];
-    title.innerHTML=`<small>DIAGNOSTIC ${roundIndex+1}/3 · ${r.name}</small><strong>${r.code}</strong><span>Which stream is impossible?</span>`;
+    title.innerHTML=`<small>CHECK ${roundIndex+1}/3 · ${r.name}</small><strong>${r.code}</strong><span>Select the sequence that does not match this rule.</span>`;
     streams.replaceChildren();
     r.streams.forEach((stream,i)=>{
       const b=document.createElement('button');b.type='button';b.className='random-stream-card';
-      const label=document.createElement('small');label.textContent=`STREAM ${String.fromCharCode(65+i)}`;
+      const label=document.createElement('small');label.textContent=`SEQUENCE ${String.fromCharCode(65+i)}`;
       const values=document.createElement('div');values.className='random-stream-values';
       stream.values.forEach(v=>{const s=document.createElement('span');s.textContent=String(v);values.appendChild(s);});
       b.append(label,values);
       b.addEventListener('click',()=>choose(i,b));
       streams.appendChild(b);
     });
-    counter.textContent='Remember: repeats are allowed. Look only for an impossible value.';
+    counter.textContent=`Select the sequence containing a number outside ${r.min}–${r.max}. Repeated numbers are allowed.`;
   }
 
   function choose(i,button){
@@ -659,7 +659,7 @@ function renderBrokenRandomiser(){
       active.logicFaults++;
       button.classList.add('wrong');
       active.playTone(155,.07,'square',.023);
-      showNotice('That stream is still possible. Repeats do not make it non-random.','warn',1200);
+      showNotice(`That sequence matches ${r.code}. Every value is in range.`,'warn',1200);
       later(()=>button.classList.remove('wrong'),600);
       return;
     }
@@ -672,7 +672,7 @@ function renderBrokenRandomiser(){
       roundIndex++;
       if(roundIndex>=rounds.length){
         active.roomsCompleted=Math.max(active.roomsCompleted,2);
-        showTransition('Range diagnostics complete','All three random blocks now produce only values inside their configured ranges. Repeated values were correctly treated as possible.','Open data router →',()=>{active.room=2;renderRoom();});
+        showTransition('Sequence checks complete','You found the sequence that did not match each random-number range. Repeated values were correctly left alone when they were still in range.','Open data router →',()=>{active.room=2;renderRoom();});
       }else renderRound();
     },900);
   }
