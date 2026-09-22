@@ -498,7 +498,7 @@ function renderPulseRun(){
   }
 
   const joystick=document.createElement('div');joystick.className='expedition-joystick';
-  joystick.setAttribute('role','application');joystick.setAttribute('aria-label','Precision movement joystick. Nudge for one step; hold to keep moving.');
+  joystick.setAttribute('role','application');joystick.setAttribute('aria-label','Movement joystick. Put your thumb down, drag in a direction, and hold to keep moving.');
   const joystickBase=document.createElement('div');joystickBase.className='expedition-joystick-base';
   const joystickKnob=document.createElement('div');joystickKnob.className='expedition-joystick-knob';
   const joystickLabel=document.createElement('span');joystickLabel.className='expedition-joystick-label';joystickLabel.textContent='MOVE';
@@ -511,55 +511,57 @@ function renderPulseRun(){
   rotateNotice.innerHTML='<div class="expedition-rotate-phone" aria-hidden="true">▯↻</div><strong>Rotate your phone</strong><span>System Rescue is designed for landscape play on mobile.</span>';
   shell.append(hud,displayActions,board,mission,controls,rotateNotice);root.appendChild(shell);
 
-  let joystickPointer=null,joystickRepeat=null,joystickRepeatDelay=null,joystickDir=null;
+  let joystickPointer=null,joystickOrigin=null,joystickRepeat=null,joystickRepeatDelay=null,joystickDir=null;
   function clearJoystickRepeat(){
     if(joystickRepeatDelay){clearTimeout(joystickRepeatDelay);joystickRepeatDelay=null;}
     if(joystickRepeat){clearInterval(joystickRepeat);joystickRepeat=null;}
   }
   function stopJoystick(){
     clearJoystickRepeat();
-    joystickPointer=null;joystickDir=null;
+    joystickPointer=null;joystickOrigin=null;joystickDir=null;
     joystickKnob.style.transform='translate3d(0,0,0)';
     joystick.classList.remove('active');
   }
   function startJoystickRepeat(next){
     clearJoystickRepeat();
-    // Precision first: a short nudge is exactly one grid step.
-    // Continuous travel only starts after a deliberate hold, and repeats slowly.
+    // One deliberate push gives one step. Holding then becomes smooth travel.
     joystickRepeatDelay=setTimeout(()=>{
       joystickRepeatDelay=null;
       if(!joystickDir)return;
       joystickRepeat=setInterval(()=>{
         if(joystickDir)movePlayer(next[0],next[1],null);
-      },235);
-    },380);
+      },175);
+    },225);
   }
-  function driveJoystick(e){
+  function joystickVector(e){
+    if(!joystickOrigin)return {dx:0,dy:0,limit:1};
     const rect=joystickBase.getBoundingClientRect();
-    const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
-    let dx=e.clientX-cx,dy=e.clientY-cy;
     const limit=Math.min(rect.width,rect.height)*.31;
+    let dx=e.clientX-joystickOrigin.x,dy=e.clientY-joystickOrigin.y;
     const mag=Math.hypot(dx,dy)||1;
     if(mag>limit){dx=dx/mag*limit;dy=dy/mag*limit;}
+    return {dx,dy,limit};
+  }
+  function driveJoystick(e){
+    const {dx,dy,limit}=joystickVector(e);
     joystickKnob.style.transform='translate3d('+dx+'px,'+dy+'px,0)';
 
-    // A larger dead zone makes tiny thumb movements harmless.
-    const dead=limit*.46;
-    let next=null;
-    if(Math.max(Math.abs(dx),Math.abs(dy))>=dead){
-      const diagonalBand=Math.abs(Math.abs(dx)-Math.abs(dy))<limit*.14;
-      if(diagonalBand&&joystickDir){
-        const parts=joystickDir.split(':').map(Number);
-        next=[parts[0],parts[1]];
-      }else{
-        next=Math.abs(dx)>Math.abs(dy)?(dx<0?[0,-1]:[0,1]):(dy<0?[-1,0]:[1,0]);
-      }
-    }
-    if(!next){
+    // Relative control: where the thumb first lands is neutral. This prevents
+    // an off-centre touch from immediately sending BIT in the wrong direction.
+    const dead=limit*.28;
+    if(Math.hypot(dx,dy)<dead){
       joystickDir=null;
       clearJoystickRepeat();
       return;
     }
+
+    const angle=Math.atan2(dy,dx);
+    let next;
+    if(angle>=-Math.PI/4&&angle<Math.PI/4)next=[0,1];
+    else if(angle>=Math.PI/4&&angle<3*Math.PI/4)next=[1,0];
+    else if(angle>=-3*Math.PI/4&&angle<-Math.PI/4)next=[-1,0];
+    else next=[0,-1];
+
     const code=next[0]+':'+next[1];
     if(code!==joystickDir){
       joystickDir=code;
@@ -568,12 +570,16 @@ function renderPulseRun(){
     }
   }
   joystickBase.addEventListener('pointerdown',e=>{
-    e.preventDefault();joystickPointer=e.pointerId;joystick.classList.add('active');
+    e.preventDefault();
+    joystickPointer=e.pointerId;
+    joystickOrigin={x:e.clientX,y:e.clientY};
+    joystick.classList.add('active');
     try{joystickBase.setPointerCapture(e.pointerId);}catch(_){}
-    driveJoystick(e);
   });
   joystickBase.addEventListener('pointermove',e=>{
-    if(joystickPointer!==e.pointerId)return;e.preventDefault();driveJoystick(e);
+    if(joystickPointer!==e.pointerId)return;
+    e.preventDefault();
+    driveJoystick(e);
   });
   joystickBase.addEventListener('pointerup',e=>{if(joystickPointer===e.pointerId)stopJoystick();});
   joystickBase.addEventListener('pointercancel',stopJoystick);
