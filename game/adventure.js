@@ -1293,19 +1293,46 @@ function decisionChallenges(stage,seed){
       explain:x<5?x+' < 5 is TRUE, so LOW runs.':x===5?x+' is not < 5, but it equals 5, so EQUAL runs.':x+' is neither < 5 nor = 5, so ELSE outputs HIGH.'
     }));
   }
-  const moves=['ROCK','PAPER','SCISSORS'];
-  const pairs=[];
-  for(const player of moves)for(const computer of moves)pairs.push([player,computer]);
-  return shuffled(pairs,rng).slice(0,6).map(([player,computer])=>{
-    let answer='COMPUTER WINS';
-    if(player===computer)answer='TIE';
-    else if((player==='ROCK'&&computer==='SCISSORS')||(player==='PAPER'&&computer==='ROCK')||(player==='SCISSORS'&&computer==='PAPER'))answer='PLAYER WINS';
+  const modes=shuffled(['FULL POWER','SAFE MODE','STANDBY','FULL POWER','SAFE MODE','STANDBY'],rng);
+  return modes.map((mode,index)=>{
+    const highTemp=randomInt(rng,19,23);
+    const highLight=randomInt(rng,48,62);
+    const lowTemp=highTemp-randomInt(rng,3,5);
+    const lowLight=highLight-randomInt(rng,10,16);
+    let temp,light;
+    if(mode==='FULL POWER'){
+      temp=randomInt(rng,highTemp,highTemp+5);
+      light=randomInt(rng,highLight,highLight+15);
+    }else if(mode==='SAFE MODE'){
+      if(index%2===0){
+        temp=randomInt(rng,Math.max(8,lowTemp-5),lowTemp-1);
+        light=randomInt(rng,lowLight,highLight+10);
+      }else{
+        temp=randomInt(rng,lowTemp,highTemp+5);
+        light=randomInt(rng,Math.max(5,lowLight-12),lowLight-1);
+      }
+    }else{
+      if(index%2===0){
+        temp=randomInt(rng,lowTemp,highTemp-1);
+        light=randomInt(rng,highLight,highLight+10);
+      }else{
+        temp=randomInt(rng,highTemp,highTemp+5);
+        light=randomInt(rng,lowLight,highLight-1);
+      }
+    }
+    const first=temp>=highTemp&&light>=highLight;
+    const second=temp<lowTemp||light<lowLight;
+    const answer=first?'FULL POWER':second?'SAFE MODE':'STANDBY';
     return {
-      value:'PLAYER: '+player+' · COMPUTER: '+computer,
-      code:'IF player = computer\n  output TIE\nELSE IF\n  (player = ROCK AND computer = SCISSORS)\n  OR (player = PAPER AND computer = ROCK)\n  OR (player = SCISSORS AND computer = PAPER)\n  output PLAYER WINS\nELSE\n  output COMPUTER WINS',
-      options:['TIE','PLAYER WINS','COMPUTER WINS'],
+      value:'temp = '+temp+' · light = '+light,
+      code:'IF temp >= '+highTemp+' AND light >= '+highLight+'\n  output FULL POWER\nELSE IF temp < '+lowTemp+' OR light < '+lowLight+'\n  output SAFE MODE\nELSE\n  output STANDBY',
+      options:['FULL POWER','SAFE MODE','STANDBY'],
       answer,
-      explain:player===computer?'Both moves match, so the first branch outputs TIE.':answer==='PLAYER WINS'?player+' beats '+computer+', so PLAYER WINS.':computer+' beats '+player+', so the final ELSE gives COMPUTER WINS.'
+      explain:first
+        ?'Both first-branch tests are true, so FULL POWER runs and the later branches are skipped.'
+        :second
+          ?'The first AND condition is false. At least one SAFE MODE test is true, so the ELSE IF branch runs.'
+          :'The first AND condition is false, and neither SAFE MODE test is true, so the final ELSE outputs STANDBY.'
     };
   });
 }
@@ -1318,13 +1345,13 @@ function renderDecisionEngine(){
   const copies=[
     'Run test values through a simple IF / ELSE and choose the output that executes.',
     'The router now has IF / ELSE IF / ELSE. Only the first matching branch runs.',
-    'Final stage: the player-win branch uses AND inside each winning pair and OR between the three possible winning pairs. Read the whole Boolean condition carefully.'
+    'Final stage: trace a changing sensor program that combines AND, OR, ELSE IF and ELSE. The only reliable way to answer is to run the code in order.'
   ];
   root.appendChild(roomHeader('ROOM 2 · DECISION ENGINE','Run the correct branch',copies[stageIndex]));
 
   if(stageIndex===2){
     const rules=document.createElement('div');rules.className='decision-rules';
-    rules.innerHTML='<span><strong>ROCK</strong> beats Scissors</span><span><strong>PAPER</strong> beats Rock</span><span><strong>SCISSORS</strong> beats Paper</span><span><strong>AND</strong> both comparisons must be true</span><span><strong>OR</strong> any one winning pair can be true</span>';
+    rules.innerHTML='<span><strong>AND</strong> both comparisons must be true</span><span><strong>OR</strong> either comparison can make the branch true</span><span><strong>ELSE IF</strong> tested only if the first IF was false</span><span><strong>ELSE</strong> runs if every earlier branch was false</span>';
     root.appendChild(rules);
   }
 
@@ -1345,7 +1372,7 @@ function renderDecisionEngine(){
       const b=document.createElement('button');b.type='button';b.className='decision-option';b.textContent=label;
       b.addEventListener('click',()=>choose(label,b));options.appendChild(b);
     });
-    status.textContent=stageIndex===0?'Which branch runs?':stageIndex===1?'Read the tests from top to bottom.':'Evaluate the AND/OR condition, then choose the outcome.';
+    status.textContent=stageIndex===0?'Which branch runs?':stageIndex===1?'Read the tests from top to bottom.':'Trace the program from the first IF. Which output actually runs?';
     locked=false;led()?.setPattern('question');
   }
   function choose(label,button){
@@ -1367,9 +1394,9 @@ function renderDecisionEngine(){
       if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,2);
       finishRoomStage(
         'Decision Engine stage '+stageNo+'/3 complete',
-        stageIndex===0?'Next: three-way IF / ELSE IF / ELSE decisions.':'Next: repair the Rock–Paper–Scissors decision system.',
+        stageIndex===0?'Next: three-way IF / ELSE IF / ELSE decisions.':'Next: combine AND and OR inside a changing multi-branch program.',
         'Decision Engine restored',
-        'Simple branches, else-if chains and compound AND/OR Rock–Paper–Scissors decisions are all routing correctly.',
+        'Simple branches, else-if chains and compound AND/OR sensor decisions are all routing correctly.',
         'Open Comparator Matrix →',
         ()=>{active.room=2;renderRoom();}
       );
