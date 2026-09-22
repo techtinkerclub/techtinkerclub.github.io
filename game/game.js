@@ -110,7 +110,7 @@
       const topic=document.createElement('div');topic.className='card-topic';topic.textContent=cleanTopic(w.title,id);
       const desc=document.createElement('p');desc.className='card-description';desc.textContent=w.description||'Coding challenge';
       const meta=document.createElement('div');meta.className='card-meta';
-      const qtag=document.createElement('span');qtag.className='tag';qtag.textContent=['1','2','3'].includes(String(id))?'3 rooms × 3 stages + diagnostic':`${(w.questions||[]).length} challenges`;
+      const qtag=document.createElement('span');qtag.className='tag';qtag.textContent=['1','2','3','4'].includes(String(id))?'3 rooms × 3 stages + diagnostic':`${(w.questions||[]).length} challenges`;
       const stag=document.createElement('span');stag.className=`tag system-status-tag ${locked?'offline':state.clears[id]?'online':'ready'}`;stag.textContent=locked?'OFFLINE':state.clears[id]?'ONLINE':'READY';meta.append(qtag,stag);
       const stars=buildStars(rating,`System ${id}: ${rating} of 3 stars`);stars.classList.add('level-stars');
       const footer=document.createElement('div');footer.className='card-footer';
@@ -124,7 +124,7 @@
   function openBriefing(id){
     const w=DATA.weeks[id],sys=systemFor(id);if(!w)return;pendingBriefId=id;
     byId('brief-system-label').textContent=`SYSTEM ${id}`;byId('briefing-title').textContent=sys.name;byId('brief-topic').textContent=cleanTopic(w.title,id);byId('brief-description').textContent=w.description||'';byId('brief-objective').textContent=sys.objective;
-    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=['1','2','3'].includes(String(id))?['3 rooms · 3 stages each',`${(w.questions||[]).length} questions · 3 diagnostic stages`,'inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
+    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=['1','2','3','4'].includes(String(id))?['3 rooms · 3 stages each',`${(w.questions||[]).length} questions · 3 diagnostic stages`,'inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
   }
 
   function difficultyRank(q){
@@ -347,7 +347,8 @@
       const failureTitles={
         '1':'Boot verification incomplete',
         '2':'Randomiser verification incomplete',
-        '3':'Logic Router verification incomplete'
+        '3':'Logic Router verification incomplete',
+        '4':'Sensor Array verification incomplete'
       };
       byId('results-title').textContent=isAdventure?(failureTitles[adventureId]||'System verification incomplete'):'System still unstable';
       byId('results-summary').textContent=isAdventure
@@ -379,8 +380,14 @@
             title:'Logic Router online!',
             perfectSummary:'Branch routing, decision logic, Futoshiki repair and the final diagnostic all completed without a fault.',
             summary:'Conditional routing is stable again. Replay the mission if you want the clean-adventure and flawless-diagnostic stars.'
-          }
-        };
+          },
+          '4':{
+            kicker:'SENSOR ARRAY ONLINE',
+            perfect:'Perfect calibration!',
+            title:'Sensor Array online!',
+            perfectSummary:'Threshold scanning, variable processing, sensor-map deduction and the final diagnostic all completed without a fault.',
+            summary:'Stored values and sensor thresholds are stable again. Replay the mission if you want the clean-adventure and flawless-diagnostic stars.'
+          },        };
         const rc=resultCopy[adventureId]||{kicker:'SYSTEM ONLINE',perfect:'Flawless repair!',title:'System online!',perfectSummary:'Every adventure stage and diagnostic completed without a fault.',summary:'The system is online again.'};
         byId('results-kicker').textContent=rc.kicker;
         byId('results-title').textContent=rating===3?rc.perfect:rc.title;

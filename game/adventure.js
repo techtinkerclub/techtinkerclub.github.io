@@ -41,6 +41,9 @@ function start(opts){
     branchFaults:0,
     decisionFaults:0,
     futoshikiFaults:0,
+    sensorFaults:0,
+    variableFaults:0,
+    faultMapFaults:0,
     roomIntegrityMax:4,
     roomIntegrity:4,
     roomRestarts:0,
@@ -101,6 +104,13 @@ function renderRoom(){
     else if(active.room===1)renderDecisionEngine();
     else if(active.room===2)renderLogicFutoshiki();
     else renderLogicRouterFinalGate();
+    return;
+  }
+  if(active.systemId==='4'){
+    if(active.room===0)renderSensorScanner();
+    else if(active.room===1)renderVariableProcessor();
+    else if(active.room===2)renderSensorFaultMap();
+    else renderSensorArrayFinalGate();
     return;
   }
   if(active.room===0)renderPulseRun();
@@ -1709,6 +1719,655 @@ function renderLogicRouterFinalGate(){
   ),250);
 }
 
+
+/* ============================================================
+   SYSTEM 4 · SENSOR ARRAY
+   ============================================================ */
+
+/* ---------------- Room 1: Sensor Scanner ---------------- */
+
+function sensorScannerConfig(stage){
+  return [
+    {rounds:6,duration:6000,label:'LIGHT THRESHOLD',copy:'Trigger DARK ALERT only when the light reading is below the threshold.'},
+    {rounds:6,duration:6500,label:'TEMPERATURE THRESHOLD',copy:'The temperature limit changes each scan. Trigger HOT ALERT only when the reading is above the current threshold.'},
+    {rounds:6,duration:7500,label:'DUAL SENSOR AND',copy:'Trigger COLD & DARK only when BOTH temperature and light are below their thresholds.'}
+  ][stage]||null;
+}
+function sensorScanTrials(stage,seed){
+  const rng=rngFromSeed(seed+':sensor-scan:'+stage);
+  const wanted=shuffled([true,false,true,false,true,false],rng);
+  return wanted.map((alert,index)=>{
+    if(stage===0){
+      const threshold=50;
+      const light=alert?randomInt(rng,18,46):randomInt(rng,50,82);
+      return {
+        kind:'LIGHT',reading1:light,limit1:threshold,alert,
+        condition:'light < '+threshold,
+        value:'light = '+light,
+        alertLabel:'DARK ALERT',
+        explain:light+' < '+threshold+' is '+(alert?'TRUE.':'FALSE.')
+      };
+    }
+    if(stage===1){
+      const threshold=randomInt(rng,25,32);
+      const temp=alert?randomInt(rng,threshold+1,threshold+7):randomInt(rng,threshold-7,threshold);
+      return {
+        kind:'TEMP',reading1:temp,limit1:threshold,alert,
+        condition:'temp > '+threshold,
+        value:'temp = '+temp,
+        alertLabel:'HOT ALERT',
+        explain:temp+' > '+threshold+' is '+(alert?'TRUE.':'FALSE.')
+      };
+    }
+    const tLimit=randomInt(rng,16,20),lLimit=randomInt(rng,42,58);
+    let temp,light;
+    if(alert){
+      temp=randomInt(rng,10,tLimit-1);
+      light=randomInt(rng,18,lLimit-1);
+    }else if(index%2===0){
+      temp=randomInt(rng,tLimit,tLimit+7);
+      light=randomInt(rng,18,lLimit-1);
+    }else{
+      temp=randomInt(rng,10,tLimit-1);
+      light=randomInt(rng,lLimit,lLimit+20);
+    }
+    return {
+      kind:'DUAL',reading1:temp,limit1:tLimit,reading2:light,limit2:lLimit,alert,
+      condition:'temp < '+tLimit+' AND light < '+lLimit,
+      value:'temp = '+temp+' · light = '+light,
+      alertLabel:'COLD & DARK',
+      explain:'temp '+temp+' < '+tLimit+' is '+(temp<tLimit?'TRUE':'FALSE')+' and light '+light+' < '+lLimit+' is '+(light<lLimit?'TRUE.':'FALSE.')
+    };
+  });
+}
+function sensorLedBars(trial){
+  const cells=[];
+  if(!trial)return cells;
+  if(trial.kind==='LIGHT'){
+    const h=Math.max(1,Math.min(5,Math.ceil(trial.reading1/100*5)));
+    for(let r=5-h;r<5;r++)for(let col=1;col<=3;col++)cells.push([r,col]);
+  }else if(trial.kind==='TEMP'){
+    const h=Math.max(1,Math.min(5,Math.ceil((trial.reading1-10)/30*5)));
+    for(let r=5-h;r<5;r++)for(let col=1;col<=3;col++)cells.push([r,col]);
+  }else{
+    const th=Math.max(1,Math.min(5,Math.ceil((trial.reading1-8)/28*5)));
+    const lh=Math.max(1,Math.min(5,Math.ceil(trial.reading2/100*5)));
+    for(let r=5-th;r<5;r++){cells.push([r,0]);cells.push([r,1]);}
+    for(let r=5-lh;r<5;r++){cells.push([r,3]);cells.push([r,4]);}
+  }
+  return cells;
+}
+function renderSensorScanner(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1,cfg=sensorScannerConfig(stageIndex);
+  setProgress('SENSOR ARRAY · ROOM 1/3 · SENSOR SCANNER · STAGE '+stageNo+'/3');
+  const root=active.root;
+  root.appendChild(roomHeader('ROOM 1 · SENSOR SCANNER','Watch the readings and respond to the threshold',cfg.copy));
+
+  const info=document.createElement('div');info.className='adventure-info-strip';
+  info.innerHTML='<span><strong>ALERT</strong> condition is true</span><span><strong>OK</strong> condition is false</span><span><strong>'+cfg.rounds+'</strong> scans this stage</span>';
+  root.appendChild(info);
+
+  const panel=document.createElement('div');panel.className='sensor-scanner';
+  const top=document.createElement('div');top.className='sensor-scan-top';
+  const mode=document.createElement('small');mode.textContent=cfg.label;
+  const count=document.createElement('strong');
+  top.append(mode,count);
+  const condition=document.createElement('div');condition.className='sensor-condition';
+  const values=document.createElement('div');values.className='sensor-values';
+  const gauges=document.createElement('div');gauges.className='sensor-gauges';
+  const timer=document.createElement('div');timer.className='sensor-scan-timer';
+  const timerFill=document.createElement('i');timer.appendChild(timerFill);
+  const status=document.createElement('div');status.className='logic-status';
+  const controls=document.createElement('div');controls.className='sensor-scan-controls';
+  const okButton=document.createElement('button');okButton.type='button';okButton.className='sensor-ok';okButton.textContent='OK';
+  const alertButton=document.createElement('button');alertButton.type='button';alertButton.className='sensor-alert';alertButton.textContent='ALERT';
+  controls.append(okButton,alertButton);
+  panel.append(top,condition,values,gauges,timer,status,controls);root.appendChild(panel);
+
+  const trials=sensorScanTrials(stageIndex,active.seed);
+  let index=0,trial=null,elapsed=0,tickId=null,locked=true,finished=false;
+
+  function stopTick(){if(tickId){clearInterval(tickId);active?.timers?.delete(tickId);tickId=null;}}
+  function paintGauges(){
+    gauges.replaceChildren();
+    const specs=trial.kind==='DUAL'
+      ?[{name:'TEMP',value:trial.reading1,limit:trial.limit1,max:40,unit:'°C'},{name:'LIGHT',value:trial.reading2,limit:trial.limit2,max:100,unit:''}]
+      :trial.kind==='TEMP'
+        ?[{name:'TEMP',value:trial.reading1,limit:trial.limit1,max:40,unit:'°C'}]
+        :[{name:'LIGHT',value:trial.reading1,limit:trial.limit1,max:100,unit:''}];
+    for(const spec of specs){
+      const card=document.createElement('div');card.className='sensor-gauge-card';
+      const head=document.createElement('div');head.innerHTML='<strong>'+spec.name+'</strong><span>'+spec.value+spec.unit+'</span>';
+      const rail=document.createElement('div');rail.className='sensor-gauge-rail';
+      const fill=document.createElement('i');fill.style.width=Math.max(0,Math.min(100,spec.value/spec.max*100))+'%';
+      const limit=document.createElement('b');limit.style.left=Math.max(0,Math.min(100,spec.limit/spec.max*100))+'%';limit.title='Threshold '+spec.limit;
+      rail.append(fill,limit);
+      const foot=document.createElement('small');foot.textContent='threshold '+spec.limit+spec.unit;
+      card.append(head,rail,foot);gauges.appendChild(card);
+    }
+  }
+  function showTrial(){
+    if(finished)return;
+    trial=trials[index];elapsed=0;locked=false;
+    count.textContent='SCAN '+(index+1)+'/'+cfg.rounds;
+    condition.textContent='IF '+trial.condition;
+    values.textContent=trial.value;
+    status.textContent='Is the condition TRUE? Trigger '+trial.alertLabel+' or choose OK.';
+    paintGauges();timerFill.style.width='100%';led()?.setCells(sensorLedBars(trial));
+    stopTick();
+    tickId=every(()=>{
+      elapsed+=50;
+      timerFill.style.width=Math.max(0,100-elapsed/cfg.duration*100)+'%';
+      if(elapsed>=cfg.duration){stopTick();resolve(null);}
+    },50);
+  }
+  function next(){
+    index++;
+    if(index>=trials.length){
+      finished=true;stopTick();led()?.setPattern('check');
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
+      finishRoomStage(
+        'Sensor Scanner stage '+stageNo+'/3 complete',
+        stageIndex===0?'Next: changing temperature thresholds.':'Next: two live sensors joined by AND.',
+        'Sensor Scanner calibrated',
+        'Light, temperature and combined threshold scans are all responding correctly.',
+        'Open Variable Processor →',
+        ()=>{active.room=1;renderRoom();}
+      );
+      return;
+    }
+    later(showTrial,700);
+  }
+  function resolve(answer){
+    if(locked||finished)return;
+    locked=true;stopTick();
+    const correct=answer===trial.alert;
+    if(correct){
+      active.playTone(740,.055,'sine',.025);led()?.setPattern('check');
+      showNotice((trial.alert?trial.alertLabel:'OK')+' · '+trial.explain,'success',800);
+      next();return;
+    }
+    active.sensorFaults++;
+    const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.026);led()?.flash('x',340);
+    if(depleted)return;
+    const msg=answer==null?'Scan timed out. '+trial.explain:'Not quite. '+trial.explain;
+    showNotice(msg,'fault',1300);
+    later(showTrial,850);
+  }
+  okButton.addEventListener('click',()=>resolve(false));
+  alertButton.addEventListener('click',()=>resolve(true));
+  active.keyHandler=(e)=>{
+    if(active?.systemId!=='4'||active.room!==0||locked||finished)return;
+    if(e.key==='ArrowLeft'||e.key==='o'||e.key==='O'){e.preventDefault();resolve(false);}
+    if(e.key==='ArrowRight'||e.key==='a'||e.key==='A'){e.preventDefault();resolve(true);}
+  };
+  document.addEventListener('keydown',active.keyHandler);
+
+  const start=document.createElement('button');start.type='button';start.className='sensor-start';start.textContent='Start stage '+stageNo+' →';
+  start.addEventListener('click',()=>{start.remove();focusPlayArea(panel,showTrial);});
+  panel.insertBefore(start,controls);
+  led()?.setPattern('question');
+}
+
+
+/* ---------------- Room 2: Variable Processor ---------------- */
+
+function variableOptions(correct,rng,spread=5){
+  const set=new Set([correct]);
+  let guard=0;
+  while(set.size<4&&guard++<50){
+    const delta=randomInt(rng,-spread,spread);
+    const v=correct+delta;
+    if(v>=0)set.add(v);
+  }
+  while(set.size<4)set.add(correct+set.size+1);
+  return shuffled([...set],rng);
+}
+function variableChallenges(stage,seed){
+  const rng=rngFromSeed(seed+':variable:'+stage);
+  if(stage===0){
+    const types=shuffled(['set','change','set','change','set','change'],rng);
+    return types.map((type,i)=>{
+      const start=randomInt(rng,4,20);
+      if(type==='set'){
+        const target=randomInt(rng,2,25);
+        return {
+          title:'REGISTER value = '+start,
+          code:'SET value TO '+target,
+          options:variableOptions(target,rng,6).map(String),
+          answer:String(target),
+          explain:'SET replaces the old value. The register becomes '+target+'.'
+        };
+      }
+      const delta=randomInt(rng,2,8)*(rng()<.25?-1:1);
+      const result=Math.max(0,start+delta);
+      const actualDelta=result-start;
+      return {
+        title:'REGISTER value = '+start,
+        code:'CHANGE value BY '+(actualDelta>=0?'+':'')+actualDelta,
+        options:variableOptions(result,rng,7).map(String),
+        answer:String(result),
+        explain:'CHANGE modifies the stored value: '+start+(actualDelta>=0?' + ':' - ')+Math.abs(actualDelta)+' = '+result+'.'
+      };
+    });
+  }
+  if(stage===1){
+    return Array.from({length:5},(_,i)=>{
+      const start=randomInt(rng,5,18);
+      const d1=randomInt(rng,2,7);
+      const d2=randomInt(rng,1,5);
+      const mult=i%2===0?2:3;
+      const subtract=i%2===0?d2:-d2;
+      const mid=start+d1;
+      const mid2=mid+subtract;
+      const result=mid2*mult;
+      const op2=subtract>=0?'CHANGE value BY +'+subtract:'CHANGE value BY '+subtract;
+      return {
+        title:'TRACE THE REGISTER',
+        code:'SET value TO '+start+'\nCHANGE value BY +'+d1+'\n'+op2+'\nSET value TO value × '+mult,
+        options:variableOptions(result,rng,Math.max(6,d1+d2)).map(String),
+        answer:String(result),
+        explain:start+' → '+mid+' → '+mid2+' → '+result+'. Apply every instruction in order.'
+      };
+    });
+  }
+  return Array.from({length:6},(_,i)=>{
+    const tempMode=i%2===0;
+    const sensor=tempMode?'temp':'light';
+    const reading=tempMode?randomInt(rng,20,36):randomInt(rng,30,80);
+    const readingAdjust=randomInt(rng,-3,3);
+    const limitStart=tempMode?randomInt(rng,26,31):randomInt(rng,45,60);
+    const limitAdjust=randomInt(rng,-4,4);
+    const storedReading=Math.max(0,reading+readingAdjust);
+    const storedLimit=Math.max(0,limitStart+limitAdjust);
+    const alert=tempMode?storedReading>storedLimit:storedReading<storedLimit;
+    const alertLabel=tempMode?'HOT':'DARK';
+    return {
+      title:(tempMode?'TEMPERATURE':'LIGHT')+' CALIBRATION',
+      code:'SET '+sensor+' TO ['+(tempMode?'temperature':'light level')+']   # '+reading+
+        '\nCHANGE '+sensor+' BY '+(readingAdjust>=0?'+':'')+readingAdjust+
+        '\nSET threshold TO '+limitStart+
+        '\nCHANGE threshold BY '+(limitAdjust>=0?'+':'')+limitAdjust+
+        '\nIF '+sensor+(tempMode?' > ':' < ')+'threshold\n  OUTPUT '+alertLabel+'\nELSE\n  OUTPUT OK',
+      options:[alertLabel,'OK'],
+      answer:alert?alertLabel:'OK',
+      explain:sensor+' becomes '+storedReading+' and threshold becomes '+storedLimit+'. '+storedReading+(tempMode?' > ':' < ')+storedLimit+' is '+(alert?'TRUE, so '+alertLabel+' runs.':'FALSE, so ELSE outputs OK.')
+    };
+  });
+}
+function renderVariableProcessor(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const challenges=variableChallenges(stageIndex,active.seed);
+  setProgress('SENSOR ARRAY · ROOM 2/3 · VARIABLE PROCESSOR · STAGE '+stageNo+'/3');
+  const root=active.root;
+  const copies=[
+    'Decide what the register stores after SET or CHANGE. SET replaces; CHANGE modifies.',
+    'Trace several updates in order. The value after one instruction becomes the input to the next.',
+    'Apply sensor calibration changes and threshold changes before deciding which output runs.'
+  ];
+  root.appendChild(roomHeader('ROOM 2 · VARIABLE PROCESSOR','Track the value stored in memory',copies[stageIndex]));
+
+  const note=document.createElement('div');note.className='reality-note';
+  note.innerHTML='<strong>Variable = labelled storage</strong><span>A variable stores a value while the program runs. SET replaces that value; CHANGE adds or subtracts from the value already stored.</span>';
+  root.appendChild(note);
+
+  const panel=document.createElement('div');panel.className='variable-processor';
+  const progress=document.createElement('div');progress.className='variable-progress';
+  const title=document.createElement('div');title.className='variable-title';
+  const register=document.createElement('div');register.className='variable-register';register.innerHTML='<small>MEMORY REGISTER</small><strong>?</strong>';
+  const code=document.createElement('pre');code.className='variable-code';
+  const options=document.createElement('div');options.className='variable-options';
+  const status=document.createElement('div');status.className='logic-status';
+  panel.append(progress,title,register,code,options,status);root.appendChild(panel);
+
+  let index=0,locked=false;
+  function paint(){
+    const q=challenges[index];
+    progress.textContent='STAGE '+stageNo+'/3 · PROGRAM '+(index+1)+'/'+challenges.length;
+    title.textContent=q.title;code.textContent=q.code;
+    register.querySelector('strong').textContent='?';
+    options.replaceChildren();
+    q.options.forEach(label=>{
+      const b=document.createElement('button');b.type='button';b.className='variable-option';b.textContent=label;
+      b.addEventListener('click',()=>choose(label,b));options.appendChild(b);
+    });
+    status.textContent=stageIndex===0?'What value is stored afterwards?':stageIndex===1?'Trace every update. What value remains?':'Use the calibrated stored values. Which output runs?';
+    locked=false;led()?.setPattern('question');
+  }
+  function choose(label,button){
+    if(locked)return;
+    const q=challenges[index];
+    if(label!==q.answer){
+      active.variableFaults++;button.classList.add('wrong');
+      const depleted=applyAdventurePenalty();active.playTone(150,.07,'square',.024);led()?.flash('x',340);
+      if(depleted)return;
+      showNotice(q.explain,'fault',1500);
+      later(()=>button.classList.remove('wrong'),550);return;
+    }
+    locked=true;button.classList.add('correct');register.querySelector('strong').textContent=q.answer;
+    active.playTone(760,.06,'sine',.025);led()?.setPattern('check');status.textContent=q.explain;
+    later(()=>{
+      index++;
+      if(index<challenges.length){paint();return;}
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,2);
+      finishRoomStage(
+        'Variable Processor stage '+stageNo+'/3 complete',
+        stageIndex===0?'Next: trace longer update sequences.':'Next: sensor readings, calibration changes and stored thresholds.',
+        'Variable Processor restored',
+        'SET, CHANGE, sequential updates and calibrated threshold variables are all tracking correctly.',
+        'Open Sensor Fault Map →',
+        ()=>{active.room=2;renderRoom();}
+      );
+    },800);
+  }
+  paint();
+}
+
+
+/* ---------------- Room 3: Sensor Fault Map / neighbour-count logic ---------------- */
+
+function sensorFaultStageConfig(stage){
+  return [
+    {n:5,sensors:4,minClues:8,maxClues:13,label:'5×5 · 4 TRIPPED',copy:'Use the neighbour counts to locate four sensors that are over threshold.'},
+    {n:6,sensors:6,minClues:10,maxClues:17,label:'6×6 · 6 TRIPPED',copy:'The map is larger now. Combine overlapping clue neighbourhoods to locate six faults.'},
+    {n:7,sensors:8,minClues:12,maxClues:21,label:'7×7 · 8 TRIPPED',copy:'Final stage: eight hidden faults on the largest map, with longer chains of deductions.'}
+  ][stage]||null;
+}
+function sensorFaultKey(r,c){return r+':'+c;}
+function sensorFaultNeighbours(n,r,c,clueSet=null){
+  const out=[];
+  for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){
+    if(!dr&&!dc)continue;
+    const rr=r+dr,cc=c+dc,k=sensorFaultKey(rr,cc);
+    if(rr<0||cc<0||rr>=n||cc>=n)continue;
+    if(clueSet&&clueSet.has(k))continue;
+    out.push([rr,cc]);
+  }
+  return out;
+}
+function sensorFaultClues(n,sensorSet,clueSet){
+  const clues={};
+  for(const k of clueSet){
+    const parts=k.split(':').map(Number),r=parts[0],c=parts[1];
+    clues[k]=sensorFaultNeighbours(n,r,c).filter(p=>sensorSet.has(sensorFaultKey(p[0],p[1]))).length;
+  }
+  return clues;
+}
+function sensorFaultCountSolutions(n,sensorCount,clues,limit=2){
+  const clueSet=new Set(Object.keys(clues));
+  const vars=[];
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    const k=sensorFaultKey(r,c);
+    if(!clueSet.has(k))vars.push([r,c]);
+  }
+  if(sensorCount>vars.length)return 0;
+  const indexByKey=new Map(vars.map((p,i)=>[sensorFaultKey(p[0],p[1]),i]));
+  const constraints=Object.entries(clues).map(([k,target])=>{
+    const parts=k.split(':').map(Number);
+    const ids=sensorFaultNeighbours(n,parts[0],parts[1],clueSet)
+      .map(p=>indexByKey.get(sensorFaultKey(p[0],p[1]))).filter(i=>i!=null);
+    return {target:Number(target),ids};
+  });
+  const varConstraints=Array.from({length:vars.length},()=>[]);
+  constraints.forEach((con,ci)=>con.ids.forEach(i=>varConstraints[i].push(ci)));
+  const order=Array.from({length:vars.length},(_,i)=>i).sort((a,b)=>varConstraints[b].length-varConstraints[a].length);
+  const ones=new Int16Array(constraints.length);
+  const unknown=new Int16Array(constraints.map(x=>x.ids.length));
+  let count=0,selected=0,assigned=0;
+
+  function assign(id,value,delta){
+    for(const ci of varConstraints[id]){
+      unknown[ci]-=delta;
+      if(value)ones[ci]+=delta;
+    }
+    selected+=value*delta;assigned+=delta;
+  }
+  function valid(){
+    for(let ci=0;ci<constraints.length;ci++){
+      const t=constraints[ci].target;
+      if(ones[ci]>t||ones[ci]+unknown[ci]<t)return false;
+    }
+    const remain=vars.length-assigned;
+    if(selected>sensorCount||selected+remain<sensorCount)return false;
+    return true;
+  }
+  function rec(pos){
+    if(count>=limit)return;
+    if(pos>=order.length){
+      if(selected!==sensorCount)return;
+      for(let ci=0;ci<constraints.length;ci++)if(ones[ci]!==constraints[ci].target)return;
+      count++;return;
+    }
+    const id=order[pos];
+    assign(id,1,1);if(valid())rec(pos+1);assign(id,1,-1);
+    if(count>=limit)return;
+    assign(id,0,1);if(valid())rec(pos+1);assign(id,0,-1);
+  }
+  rec(0);return count;
+}
+function makeSensorFaultMap(stage,seed){
+  const cfg=sensorFaultStageConfig(stage),n=cfg.n;
+  let best=null;
+  for(let attempt=0;attempt<36;attempt++){
+    const rng=rngFromSeed(seed+':fault-map:'+attempt);
+    const all=shuffled(Array.from({length:n*n},(_,i)=>[Math.floor(i/n),i%n]),rng);
+    const sensorSet=new Set(all.slice(0,cfg.sensors).map(p=>sensorFaultKey(p[0],p[1])));
+    const safe=all.filter(p=>!sensorSet.has(sensorFaultKey(p[0],p[1])));
+    const initial=Math.min(safe.length,Math.max(cfg.minClues,Math.round(n*n*.34)));
+    const clueSet=new Set(shuffled(safe,rng).slice(0,initial).map(p=>sensorFaultKey(p[0],p[1])));
+    let remaining=shuffled(safe.filter(p=>!clueSet.has(sensorFaultKey(p[0],p[1]))),rng);
+    let clues=sensorFaultClues(n,sensorSet,clueSet);
+    let count=sensorFaultCountSolutions(n,cfg.sensors,clues,2);
+    while(count!==1&&remaining.length){
+      const p=remaining.pop();clueSet.add(sensorFaultKey(p[0],p[1]));
+      clues=sensorFaultClues(n,sensorSet,clueSet);
+      count=sensorFaultCountSolutions(n,cfg.sensors,clues,2);
+    }
+    if(count!==1)continue;
+
+    for(const k of shuffled([...clueSet],rng)){
+      if(clueSet.size<=cfg.minClues)break;
+      clueSet.delete(k);
+      const trial=sensorFaultClues(n,sensorSet,clueSet);
+      if(sensorFaultCountSolutions(n,cfg.sensors,trial,2)===1)clues=trial;
+      else clueSet.add(k);
+    }
+    clues=sensorFaultClues(n,sensorSet,clueSet);
+    const candidate={n,cfg,sensorSet:[...sensorSet],clues};
+    if(!best||Object.keys(candidate.clues).length<Object.keys(best.clues).length)best=candidate;
+    if(Object.keys(candidate.clues).length<=cfg.maxClues)return candidate;
+  }
+  return best;
+}
+function renderSensorFaultMap(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1,cfg=sensorFaultStageConfig(stageIndex);
+  setProgress('SENSOR ARRAY · ROOM 3/3 · SENSOR FAULT MAP · STAGE '+stageNo+'/3');
+  const root=active.root;
+  root.appendChild(roomHeader('ROOM 3 · SENSOR FAULT MAP','Deduce which sensors are over threshold',cfg.copy));
+
+  const rules=document.createElement('div');rules.className='sensor-map-rules';
+  rules.innerHTML='<span><strong>NUMBER</strong> = tripped sensors in the surrounding 8 squares</span><span><strong>!</strong> mark TRIPPED</span><span><strong>×</strong> mark SAFE</span>';
+  root.appendChild(rules);
+
+  const puzzle=makeSensorFaultMap(stageIndex,active.seed+':sensor-map:'+stageNo);
+  if(!puzzle){
+    showTransition('Fault-map generator error','A unique sensor map could not be generated.','Retry stage →',()=>renderRoom(),'fault');
+    return;
+  }
+  const n=puzzle.n,solution=new Set(puzzle.sensorSet),clues=puzzle.clues,clueSet=new Set(Object.keys(clues));
+  const state=Array.from({length:n},()=>Array(n).fill(0));
+  let finished=false,hintClue=null;
+  const cellButtons=new Map(),clueNodes=new Map();
+
+  const meta=document.createElement('div');meta.className='sensor-map-meta';
+  meta.innerHTML='<strong>'+cfg.label+'</strong><span>'+Object.keys(clues).length+' diagnostic clues · find all '+cfg.sensors+' tripped sensors</span>';
+
+  const board=document.createElement('div');board.className='sensor-map-grid';board.dataset.sensorMapSize=String(n);board.style.setProperty('--sensor-map-n',String(n));
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    const k=sensorFaultKey(r,c);
+    if(clueSet.has(k)){
+      const d=document.createElement('div');d.className='sensor-map-cell clue';d.dataset.key=k;
+      const small=document.createElement('small');small.textContent='CLUE';
+      const strong=document.createElement('strong');strong.textContent=String(clues[k]);
+      d.append(small,strong);board.appendChild(d);clueNodes.set(k,d);
+    }else{
+      const b=document.createElement('button');b.type='button';b.className='sensor-map-cell';b.dataset.r=String(r);b.dataset.c=String(c);
+      b.addEventListener('click',()=>cycle(r,c));board.appendChild(b);cellButtons.set(k,b);
+    }
+  }
+
+  const actions=document.createElement('div');actions.className='sensor-map-actions';
+  const hint=document.createElement('button');hint.type='button';hint.className='secondary';hint.textContent='Highlight a useful clue';
+  const check=document.createElement('button');check.type='button';check.textContent='Check sensor map';
+  actions.append(hint,check);
+  const status=document.createElement('div');status.className='logic-status';
+  root.append(meta,board,actions,status);
+
+  function candidateNeighbours(k){
+    const parts=k.split(':').map(Number);
+    return sensorFaultNeighbours(n,parts[0],parts[1],clueSet);
+  }
+  function clueState(k){
+    const ns=candidateNeighbours(k),target=Number(clues[k]);
+    let tripped=0,unknown=0;
+    for(const p of ns){
+      const v=state[p[0]][p[1]];
+      if(v===1)tripped++;else if(v===0)unknown++;
+    }
+    return {
+      target,tripped,unknown,
+      satisfied:tripped===target,
+      over:tripped>target,
+      impossible:tripped+unknown<target,
+      forcedTripped:unknown>0&&target-tripped===unknown,
+      forcedSafe:unknown>0&&tripped===target
+    };
+  }
+  function markedTripped(){
+    const set=new Set();
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(state[r][c]===1)set.add(sensorFaultKey(r,c));
+    return set;
+  }
+  function wrongMarks(){
+    const bad=[];
+    for(const [k,b] of cellButtons){
+      const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c],isTrip=solution.has(k);
+      if((v===1&&!isTrip)||(v===2&&isTrip))bad.push(k);
+    }
+    return bad;
+  }
+  function paint(){
+    const marked=markedTripped(),bad=new Set();
+    for(const [k,b] of cellButtons){
+      const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c];
+      b.classList.toggle('tripped',v===1);b.classList.toggle('safe',v===2);
+      b.classList.toggle('hint',hintClue?candidateNeighbours(hintClue).some(p=>sensorFaultKey(p[0],p[1])===k):false);
+      b.classList.toggle('wrong',bad.has(k));
+      b.textContent=v===1?'!':v===2?'×':'';
+      b.setAttribute('aria-label','Row '+(r+1)+', column '+(c+1)+(v===1?', tripped':v===2?', safe':', unknown'));
+    }
+    for(const [k,d] of clueNodes){
+      const s=clueState(k);
+      d.classList.toggle('satisfied',s.satisfied&&!s.over&&!s.impossible);
+      d.classList.toggle('over',s.over);d.classList.toggle('impossible',s.impossible);d.classList.toggle('hint',k===hintClue);
+    }
+    status.textContent='Stage '+stageNo+'/3 · '+marked.size+'/'+cfg.sensors+' tripped sensors marked · tap: ! → × → clear.';
+    const ledCells=[...marked].map(k=>{const p=k.split(':').map(Number);return led()?.mapPoint(p[0],p[1],n,n);}).filter(Boolean);
+    led()?.setCells(ledCells);
+  }
+  function cycle(r,c){
+    if(finished)return;
+    state[r][c]=(state[r][c]+1)%3;hintClue=null;
+    cellButtons.forEach(b=>b.classList.remove('wrong'));paint();
+  }
+  hint.addEventListener('click',()=>{
+    let pick=null;
+    for(const k of Object.keys(clues)){
+      const s=clueState(k);
+      if(s.forcedTripped||s.forcedSafe){pick={k,s};break;}
+    }
+    if(!pick){
+      const unresolved=Object.keys(clues).map(k=>({k,s:clueState(k)})).filter(x=>x.s.unknown>0).sort((a,b)=>a.s.unknown-b.s.unknown);
+      pick=unresolved[0]||null;
+    }
+    hintClue=pick?.k||null;paint();
+    if(!pick){showNotice('Every clue neighbourhood is decided — try Check sensor map.','info',1200);return;}
+    const p=pick.k.split(':').map(Number);
+    if(pick.s.forcedTripped)showNotice('Clue '+pick.s.target+' at row '+(p[0]+1)+', column '+(p[1]+1)+': every remaining unknown neighbour must be TRIPPED.','info',1700);
+    else if(pick.s.forcedSafe)showNotice('Clue '+pick.s.target+' already has all its tripped neighbours. The remaining unknown neighbours are SAFE.','info',1700);
+    else showNotice('Focus on clue '+pick.s.target+'. It has only '+pick.s.unknown+' unknown neighbours left.','info',1500);
+  });
+  check.addEventListener('click',()=>{
+    const marked=markedTripped(),wrong=wrongMarks();
+    cellButtons.forEach(b=>b.classList.remove('wrong'));
+    if(marked.size===solution.size&&[...solution].every(k=>marked.has(k))&&!wrong.length){
+      finished=true;check.disabled=true;hint.disabled=true;cellButtons.forEach(b=>b.disabled=true);
+      active.playTone(920,.1,'sine',.04);led()?.setPattern('check');status.textContent='Stage '+stageNo+' sensor map verified.';
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,3);
+      finishRoomStage(
+        'Sensor Fault Map stage '+stageNo+'/3 solved',
+        stageIndex===0?'Next: a 6×6 map with six hidden faults.':'Next: the 7×7 map with eight hidden faults.',
+        'Sensor Fault Map restored',
+        'All three neighbour-count logic maps have been solved.',
+        'Continue →',
+        ()=>{active.room=3;renderRoom();}
+      );
+      return;
+    }
+    if(wrong.length){
+      active.faultMapFaults++;
+      for(const k of wrong)cellButtons.get(k)?.classList.add('wrong');
+      const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.025);led()?.flash('x',380);
+      if(depleted)return;
+      showNotice(wrong.length+' mark'+(wrong.length===1?' is':'s are')+' inconsistent with the sensor clues.','fault',1350);return;
+    }
+    if(marked.size>cfg.sensors){showNotice('Too many sensors are marked TRIPPED. This map contains '+cfg.sensors+'.','warn',1200);return;}
+    showNotice('No incorrect marks so far. '+Math.max(0,cfg.sensors-marked.size)+' tripped sensor'+(cfg.sensors-marked.size===1?' remains':'s remain')+' to find.','info',1200);
+  });
+  paint();
+}
+
+/* ---------------- Sensor Array final gate ---------------- */
+
+function renderSensorArrayFinalGate(){
+  setProgress('SENSOR ARRAY · FINAL DIAGNOSTIC READY');
+  const root=active.root;
+  root.appendChild(roomHeader(
+    'SENSOR ARRAY STABLE',
+    'Stored values and sensor thresholds are calibrated',
+    'All nine Sensor Array adventure stages are stable. The final boss is 12 questions split into three increasingly difficult sets of four.'
+  ));
+  const board=document.createElement('div');board.className='microbit-face full-face';
+  board.innerHTML=microbitBoardMarkup().replace('BOOT OK','SENSOR OK');
+  const real=document.createElement('div');real.className='reality-note real-note';
+  real.innerHTML='<strong>Inside the real micro:bit</strong><span>Programs can store changing values in variables and compare live light or temperature readings against thresholds. The hidden fault map is a logic-training model, not a literal sensor layout inside the board.</span>';
+  const totalFaults=active.sensorFaults+active.variableFaults+active.faultMapFaults;
+  const stats=document.createElement('div');stats.className='adventure-run-stats';
+  stats.innerHTML='<span><strong>'+active.sensorFaults+'</strong> scan faults</span><span><strong>'+active.variableFaults+'</strong> variable faults</span><span><strong>'+active.faultMapFaults+'</strong> map-check faults</span><span><strong>'+totalFaults+'</strong> total faults</span>';
+  root.append(board,real,stats);led()?.setPattern('check');
+
+  later(()=>showTransition(
+    'Final diagnostic ready',
+    'Nine adventure stages are complete. Clear three diagnostic stages of four questions to bring Sensor Array online.',
+    'Run 12-question diagnostic →',
+    ()=>{
+      if(active.completed)return;active.completed=true;
+      const totalFaults=active.sensorFaults+active.variableFaults+active.faultMapFaults;
+      const statsOut={
+        systemId:'4',
+        sensorFaults:active.sensorFaults,
+        variableFaults:active.variableFaults,
+        faultMapFaults:active.faultMapFaults,
+        totalFaults,
+        roomsCompleted:active.roomsCompleted,
+        roomRestarts:active.roomRestarts,
+        bonusScore:Math.max(0,300-(active.sensorFaults*18+active.variableFaults*16+active.faultMapFaults*22)-active.roomRestarts*25)
+      };
+      const done=active.onComplete;stop();done(statsOut);
+    }
+  ),250);
+}
+
 function microbitBoardMarkup(){
   return `
     <div class="official-microbit-final">
@@ -1768,7 +2427,7 @@ function renderFinalGate(){
 }
 
 global.TTCAdventure={
-  supports(id){return ['1','2','3'].includes(String(id));},
+  supports(id){return ['1','2','3','4'].includes(String(id));},
   start,
   stop,
   leds:global.TTCMicrobitLED||null

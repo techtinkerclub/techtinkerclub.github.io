@@ -2550,3 +2550,278 @@ body.adventure-modal-open{
   .logic-futo-grid[data-futo-size="6"] .futo-cell{border-radius:4px;font-size:13px}
   .logic-futo-grid[data-futo-size="6"] .futo-sign{font-size:11px}
 }
+
+
+/* ============================================================
+   System 4 · Sensor Array
+   ============================================================ */
+.sensor-scanner,
+.variable-processor{
+  width:min(780px,100%);
+  margin:0 auto;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:17px;
+  background:linear-gradient(145deg,#0d1c2f,#071321);
+}
+.sensor-scan-top,
+.sensor-map-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.sensor-scan-top small,
+.variable-progress{
+  color:var(--cyan);
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.1em;
+}
+.sensor-scan-top strong{color:var(--ink);font-size:13px}
+.sensor-condition{
+  margin:10px 0 5px;
+  padding:10px 12px;
+  border:1px solid rgba(85,217,255,.32);
+  border-radius:10px;
+  background:#071625;
+  color:var(--cyan);
+  font:900 17px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-align:center;
+}
+.sensor-values{
+  margin-bottom:11px;
+  color:var(--ink);
+  font:900 15px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-align:center;
+}
+.sensor-gauges{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px;
+}
+.sensor-gauge-card{
+  padding:10px;
+  border:1px solid var(--line2);
+  border-radius:11px;
+  background:#0a192a;
+}
+.sensor-gauge-card>div:first-child{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.sensor-gauge-card strong{color:var(--muted);font-size:11px}
+.sensor-gauge-card span{color:var(--ink);font-weight:900}
+.sensor-gauge-rail{
+  position:relative;
+  height:18px;
+  margin:8px 0 5px;
+  overflow:hidden;
+  border:1px solid #334f6a;
+  border-radius:999px;
+  background:#06111e;
+}
+.sensor-gauge-rail i{
+  position:absolute;inset:0 auto 0 0;
+  border-radius:999px;
+  background:linear-gradient(90deg,rgba(85,217,255,.28),rgba(85,217,255,.72));
+}
+.sensor-gauge-rail b{
+  position:absolute;top:-3px;bottom:-3px;width:3px;
+  margin-left:-1px;
+  background:#ffcf6f;
+  box-shadow:0 0 8px rgba(255,207,111,.35);
+}
+.sensor-gauge-card small{color:var(--muted2);font-size:10px}
+.sensor-scan-timer{
+  height:6px;
+  margin:12px 0 9px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#06111e;
+}
+.sensor-scan-timer i{
+  display:block;height:100%;width:100%;
+  border-radius:999px;
+  background:var(--cyan);
+  transition:width .055s linear;
+}
+.sensor-scan-controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:10px;
+}
+.sensor-ok{border-color:rgba(92,224,160,.4)}
+.sensor-alert{border-color:rgba(255,119,135,.48)}
+.sensor-start{
+  display:block;
+  min-width:190px;
+  margin:12px auto 0;
+}
+
+.variable-title{
+  margin:7px 0 8px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.06em;
+}
+.variable-register{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:10px;
+  padding:11px 13px;
+  border:1px solid rgba(85,217,255,.28);
+  border-radius:11px;
+  background:rgba(85,217,255,.045);
+}
+.variable-register small{color:var(--cyan);font-weight:900;letter-spacing:.08em}
+.variable-register strong{color:var(--ink);font-size:24px}
+.variable-code{
+  margin:0;
+  padding:13px 14px;
+  border:1px solid #304b68;
+  border-radius:11px;
+  background:#06111f;
+  color:#dfeaf6;
+  font:700 13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+.variable-options{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-top:11px;
+}
+.variable-options:has(.variable-option:nth-child(2):last-child){
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.variable-option.correct{
+  border-color:rgba(92,224,160,.65);
+  background:rgba(92,224,160,.07);
+}
+.variable-option.wrong{
+  border-color:rgba(255,119,135,.7);
+  background:rgba(255,119,135,.07);
+}
+
+.sensor-map-rules{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  gap:7px;
+  margin-bottom:10px;
+}
+.sensor-map-rules span{
+  padding:9px 10px;
+  border:1px solid var(--line2);
+  border-radius:10px;
+  background:#091829;
+  color:var(--muted);
+  font-size:11px;
+  text-align:center;
+}
+.sensor-map-rules strong{color:var(--cyan)}
+.sensor-map-meta{
+  width:min(780px,100%);
+  margin:0 auto 9px;
+  padding:9px 11px;
+  border:1px solid rgba(85,217,255,.28);
+  border-radius:10px;
+  background:rgba(85,217,255,.04);
+}
+.sensor-map-meta strong{color:var(--cyan);font-size:12px}
+.sensor-map-meta span{color:var(--muted);font-size:11px;text-align:right}
+.sensor-map-grid{
+  display:grid;
+  grid-template-columns:repeat(var(--sensor-map-n,5),minmax(0,1fr));
+  width:min(780px,100%);
+  aspect-ratio:1;
+  margin:0 auto;
+  gap:5px;
+  padding:9px;
+  border:1px solid #35516e;
+  border-radius:15px;
+  background:#071321;
+}
+.sensor-map-cell{
+  min-width:0;min-height:0;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:1px solid #34506c;
+  border-radius:8px;
+  background:#0e2034;
+  color:var(--ink);
+  font:950 clamp(14px,3vw,24px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.sensor-map-cell.clue{
+  grid-template-rows:auto auto;
+  align-content:center;
+  background:rgba(85,217,255,.06);
+  border-color:rgba(85,217,255,.42);
+}
+.sensor-map-cell.clue small{
+  color:var(--muted2);
+  font-size:7px;
+  letter-spacing:.06em;
+}
+.sensor-map-cell.clue strong{color:var(--cyan);font-size:1.1em}
+.sensor-map-cell.tripped{
+  border-color:rgba(255,119,135,.65);
+  background:rgba(255,119,135,.08);
+  color:#ff7787;
+}
+.sensor-map-cell.safe{
+  border-color:rgba(92,224,160,.38);
+  color:var(--green);
+}
+.sensor-map-cell.wrong{
+  box-shadow:0 0 0 2px rgba(255,119,135,.45) inset;
+}
+.sensor-map-cell.hint,
+.sensor-map-cell.clue.hint{
+  box-shadow:0 0 0 2px rgba(255,207,111,.35) inset,0 0 12px rgba(255,207,111,.12);
+}
+.sensor-map-cell.clue.satisfied{
+  border-color:rgba(92,224,160,.45);
+}
+.sensor-map-cell.clue.over,
+.sensor-map-cell.clue.impossible{
+  border-color:rgba(255,119,135,.7);
+  background:rgba(255,119,135,.07);
+}
+.sensor-map-actions{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-top:10px;
+}
+
+@media(min-width:1180px){
+  body.adventure-wide .sensor-scanner,
+  body.adventure-wide .variable-processor,
+  body.adventure-wide .sensor-map-meta,
+  body.adventure-wide .sensor-map-grid{
+    width:min(820px,100%);
+  }
+}
+@media(max-width:700px){
+  .sensor-scanner,.variable-processor{padding:11px}
+  .sensor-condition{font-size:14px}
+  .sensor-map-rules{grid-template-columns:1fr}
+  .sensor-map-meta{align-items:flex-start;flex-direction:column}
+  .sensor-map-meta span{text-align:left}
+  .sensor-map-grid{gap:3px;padding:5px}
+  .sensor-map-cell{border-radius:6px}
+  .variable-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:430px){
+  .sensor-map-grid[data-sensor-map-size="7"]{gap:2px;padding:4px}
+  .sensor-map-grid[data-sensor-map-size="7"] .sensor-map-cell{border-radius:4px;font-size:13px}
+  .sensor-map-grid[data-sensor-map-size="7"] .sensor-map-cell.clue small{display:none}
+  .sensor-map-grid[data-sensor-map-size="7"] .sensor-map-cell.clue strong{font-size:13px}
+}
