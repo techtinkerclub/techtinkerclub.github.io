@@ -272,8 +272,39 @@
     const panel=byId('qpanel');panel.replaceChildren();const head=document.createElement('div');head.className='question-head';const count=document.createElement('div');count.className='question-count';const stageQs=currentDiagnosticStageQuestions(),stageDone=diagnosticStageMastered();count.textContent='STAGE '+(G.diagnosticStage+1)+'/3 · '+stageDone+'/'+stageQs.length+' verified · '+G.mastered.size+'/'+G.questions.length+' overall';head.appendChild(count);if(retry){const badge=document.createElement('div');badge.className='retry-badge';badge.textContent='Second chance';head.appendChild(badge);}const title=document.createElement('h2');title.textContent=q.question||'Challenge';panel.append(head,title);
     if(q.code){const code=document.createElement('pre');code.className='qcode';code.textContent=q.code;panel.appendChild(code);}if(q.type==='multiple-choice')renderMC(panel,q);else if(q.type==='drag-drop')renderMatch(panel,q);else{const p=document.createElement('p');p.textContent=`Unsupported challenge type: ${q.type}`;panel.appendChild(p);}requestAnimationFrame(()=>panel.querySelector('button:not(:disabled)')?.focus({preventScroll:true}));
   }
-  function renderMC(panel,q){const options=document.createElement('div');options.className='options';(q.options||[]).forEach((opt,i)=>{const b=document.createElement('button');b.type='button';b.className='option-button';b.dataset.optionIndex=String(i);const key=document.createElement('span');key.className='option-key';key.textContent=String(i+1);const text=document.createElement('span');text.textContent=opt;b.append(key,text);b.setAttribute('aria-label',`${i+1}. ${opt}`);b.addEventListener('click',()=>answerMC(i));options.appendChild(b);});panel.appendChild(options);}
-  function answerMC(i){if(inputLocked)return;const q=G.current.q,buttons=Array.from(document.querySelectorAll('.option-button'));buttons.forEach(b=>b.disabled=true);const correct=i===q.correct;if(buttons[q.correct])buttons[q.correct].classList.add('good');if(!correct&&buttons[i])buttons[i].classList.add('bad');settle(correct,{chosenIndex:i,answerSummary:correct?`Correct: ${q.options[q.correct]}`:`Your answer: ${q.options[i]||'—'} · Correct: ${q.options[q.correct]||'—'}`});}
+  function renderMC(panel,q){
+    const options=document.createElement('div');options.className='options';
+    const source=q.options||[];
+    let order=shuffle(source.map((_,i)=>i));
+    G.mcOrders=G.mcOrders||new Map();
+    const qKey=keyFor(q),previous=G.mcOrders.get(qKey);
+    if(order.length>1&&previous===order.join(',')){[order[0],order[1]]=[order[1],order[0]];}
+    G.mcOrders.set(qKey,order.join(','));
+    order.forEach((optionIndex,displayIndex)=>{
+      const opt=source[optionIndex];
+      const b=document.createElement('button');b.type='button';b.className='option-button';
+      b.dataset.optionIndex=String(optionIndex);
+      b.dataset.displayIndex=String(displayIndex);
+      const key=document.createElement('span');key.className='option-key';key.textContent=String(displayIndex+1);
+      const text=document.createElement('span');text.textContent=opt;
+      b.append(key,text);
+      b.setAttribute('aria-label',`${displayIndex+1}. ${opt}`);
+      b.addEventListener('click',()=>answerMC(optionIndex));
+      options.appendChild(b);
+    });
+    panel.appendChild(options);
+  }
+  function answerMC(i){
+    if(inputLocked)return;
+    const q=G.current.q,buttons=Array.from(document.querySelectorAll('.option-button'));
+    buttons.forEach(b=>b.disabled=true);
+    const correct=i===q.correct;
+    const correctButton=buttons.find(b=>Number(b.dataset.optionIndex)===q.correct);
+    const chosenButton=buttons.find(b=>Number(b.dataset.optionIndex)===i);
+    if(correctButton)correctButton.classList.add('good');
+    if(!correct&&chosenButton)chosenButton.classList.add('bad');
+    settle(correct,{chosenIndex:i,answerSummary:correct?`Correct: ${q.options[q.correct]}`:`Your answer: ${q.options[i]||'—'} · Correct: ${q.options[q.correct]||'—'}`});
+  }
 
   function renderMatch(panel,q){
     const intro=document.createElement('p');intro.className='match-intro';intro.textContent='Choose a term, then choose its matching definition. Tap a matched definition to change it.';const layout=document.createElement('div');layout.className='match-layout';const terms=document.createElement('div'),defs=document.createElement('div');terms.className=defs.className='match-column';terms.innerHTML='<div class="match-column-title">Terms</div>';defs.innerHTML='<div class="match-column-title">Definitions</div>';const termOrder=shuffle([...q.terms.keys()]),defOrder=shuffle([...q.definitions.keys()]);G.matchState={assignments:new Map(),termOrder,defOrder};
@@ -400,7 +431,7 @@
   function formatTime(sec){const v=Math.max(0,Math.floor(Number(sec)||0));return `${Math.floor(v/60)}:${String(v%60).padStart(2,'0')}`;}
   function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
   function playTone(freq=440,dur=.06,type='sine',vol=.03){if(state.settings.sound===false)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!audioCtx)audioCtx=new AC();if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);}catch(_){}}
-  function handleKeys(e){if(!G||screens.game.hidden||document.querySelector('dialog[open]'))return;const tag=document.activeElement?.tagName?.toLowerCase();if(tag==='input'||tag==='textarea')return;if(e.key.toLowerCase()==='h'&&!inputLocked){e.preventDefault();useHint();return;}if(e.key==='Enter'&&inputLocked&&byId('continue-btn')){e.preventDefault();continueAfter();return;}if(!inputLocked&&/^[1-9]$/.test(e.key)){const b=document.querySelector(`.option-button[data-option-index="${Number(e.key)-1}"]`);if(b&&!b.disabled){e.preventDefault();b.click();}}}
+  function handleKeys(e){if(!G||screens.game.hidden||document.querySelector('dialog[open]'))return;const tag=document.activeElement?.tagName?.toLowerCase();if(tag==='input'||tag==='textarea')return;if(e.key.toLowerCase()==='h'&&!inputLocked){e.preventDefault();useHint();return;}if(e.key==='Enter'&&inputLocked&&byId('continue-btn')){e.preventDefault();continueAfter();return;}if(!inputLocked&&/^[1-9]$/.test(e.key)){const b=document.querySelector(`.option-button[data-display-index="${Number(e.key)-1}"]`);if(b&&!b.disabled){e.preventDefault();b.click();}}}
 
   byId('brief-back').addEventListener('click',()=>{renderLevels();showScreen('levels');});
   byId('brief-start').addEventListener('click',()=>pendingBriefId&&startMission(pendingBriefId));
