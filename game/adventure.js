@@ -1719,6 +1719,196 @@ function renderLogicRouterFinalGate(){
   ),250);
 }
 
+
+/* ============================================================
+   SYSTEM 4 · SENSOR ARRAY
+   ============================================================ */
+
+/* ---------------- Room 1: Sensor Scanner ---------------- */
+
+function sensorScannerConfig(stage){
+  return [
+    {rounds:6,duration:6000,label:'LIGHT THRESHOLD',copy:'Trigger DARK ALERT only when the light reading is below the threshold.'},
+    {rounds:6,duration:6500,label:'TEMPERATURE THRESHOLD',copy:'The temperature limit changes each scan. Trigger HOT ALERT only when the reading is above the current threshold.'},
+    {rounds:6,duration:7500,label:'DUAL SENSOR AND',copy:'Trigger COLD & DARK only when BOTH temperature and light are below their thresholds.'}
+  ][stage]||null;
+}
+function sensorScanTrials(stage,seed){
+  const rng=rngFromSeed(seed+':sensor-scan:'+stage);
+  const wanted=shuffled([true,false,true,false,true,false],rng);
+  return wanted.map((alert,index)=>{
+    if(stage===0){
+      const threshold=50;
+      const light=alert?randomInt(rng,18,46):randomInt(rng,50,82);
+      return {
+        kind:'LIGHT',reading1:light,limit1:threshold,alert,
+        condition:'light < '+threshold,
+        value:'light = '+light,
+        alertLabel:'DARK ALERT',
+        explain:light+' < '+threshold+' is '+(alert?'TRUE.':'FALSE.')
+      };
+    }
+    if(stage===1){
+      const threshold=randomInt(rng,25,32);
+      const temp=alert?randomInt(rng,threshold+1,threshold+7):randomInt(rng,threshold-7,threshold);
+      return {
+        kind:'TEMP',reading1:temp,limit1:threshold,alert,
+        condition:'temp > '+threshold,
+        value:'temp = '+temp,
+        alertLabel:'HOT ALERT',
+        explain:temp+' > '+threshold+' is '+(alert?'TRUE.':'FALSE.')
+      };
+    }
+    const tLimit=randomInt(rng,16,20),lLimit=randomInt(rng,42,58);
+    let temp,light;
+    if(alert){
+      temp=randomInt(rng,10,tLimit-1);
+      light=randomInt(rng,18,lLimit-1);
+    }else if(index%2===0){
+      temp=randomInt(rng,tLimit,tLimit+7);
+      light=randomInt(rng,18,lLimit-1);
+    }else{
+      temp=randomInt(rng,10,tLimit-1);
+      light=randomInt(rng,lLimit,lLimit+20);
+    }
+    return {
+      kind:'DUAL',reading1:temp,limit1:tLimit,reading2:light,limit2:lLimit,alert,
+      condition:'temp < '+tLimit+' AND light < '+lLimit,
+      value:'temp = '+temp+' · light = '+light,
+      alertLabel:'COLD & DARK',
+      explain:'temp '+temp+' < '+tLimit+' is '+(temp<tLimit?'TRUE':'FALSE')+' and light '+light+' < '+lLimit+' is '+(light<lLimit?'TRUE.':'FALSE.')
+    };
+  });
+}
+function sensorLedBars(trial){
+  const cells=[];
+  if(!trial)return cells;
+  if(trial.kind==='LIGHT'){
+    const h=Math.max(1,Math.min(5,Math.ceil(trial.reading1/100*5)));
+    for(let r=5-h;r<5;r++)for(let col=1;col<=3;col++)cells.push([r,col]);
+  }else if(trial.kind==='TEMP'){
+    const h=Math.max(1,Math.min(5,Math.ceil((trial.reading1-10)/30*5)));
+    for(let r=5-h;r<5;r++)for(let col=1;col<=3;col++)cells.push([r,col]);
+  }else{
+    const th=Math.max(1,Math.min(5,Math.ceil((trial.reading1-8)/28*5)));
+    const lh=Math.max(1,Math.min(5,Math.ceil(trial.reading2/100*5)));
+    for(let r=5-th;r<5;r++){cells.push([r,0]);cells.push([r,1]);}
+    for(let r=5-lh;r<5;r++){cells.push([r,3]);cells.push([r,4]);}
+  }
+  return cells;
+}
+function renderSensorScanner(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1,cfg=sensorScannerConfig(stageIndex);
+  setProgress('SENSOR ARRAY · ROOM 1/3 · SENSOR SCANNER · STAGE '+stageNo+'/3');
+  const root=active.root;
+  root.appendChild(roomHeader('ROOM 1 · SENSOR SCANNER','Watch the readings and respond to the threshold',cfg.copy));
+
+  const info=document.createElement('div');info.className='adventure-info-strip';
+  info.innerHTML='<span><strong>ALERT</strong> condition is true</span><span><strong>OK</strong> condition is false</span><span><strong>'+cfg.rounds+'</strong> scans this stage</span>';
+  root.appendChild(info);
+
+  const panel=document.createElement('div');panel.className='sensor-scanner';
+  const top=document.createElement('div');top.className='sensor-scan-top';
+  const mode=document.createElement('small');mode.textContent=cfg.label;
+  const count=document.createElement('strong');
+  top.append(mode,count);
+  const condition=document.createElement('div');condition.className='sensor-condition';
+  const values=document.createElement('div');values.className='sensor-values';
+  const gauges=document.createElement('div');gauges.className='sensor-gauges';
+  const timer=document.createElement('div');timer.className='sensor-scan-timer';
+  const timerFill=document.createElement('i');timer.appendChild(timerFill);
+  const status=document.createElement('div');status.className='logic-status';
+  const controls=document.createElement('div');controls.className='sensor-scan-controls';
+  const okButton=document.createElement('button');okButton.type='button';okButton.className='sensor-ok';okButton.textContent='OK';
+  const alertButton=document.createElement('button');alertButton.type='button';alertButton.className='sensor-alert';alertButton.textContent='ALERT';
+  controls.append(okButton,alertButton);
+  panel.append(top,condition,values,gauges,timer,status,controls);root.appendChild(panel);
+
+  const trials=sensorScanTrials(stageIndex,active.seed);
+  let index=0,trial=null,elapsed=0,tickId=null,locked=true,finished=false;
+
+  function stopTick(){if(tickId){clearInterval(tickId);active?.timers?.delete(tickId);tickId=null;}}
+  function paintGauges(){
+    gauges.replaceChildren();
+    const specs=trial.kind==='DUAL'
+      ?[{name:'TEMP',value:trial.reading1,limit:trial.limit1,max:40,unit:'°C'},{name:'LIGHT',value:trial.reading2,limit:trial.limit2,max:100,unit:''}]
+      :trial.kind==='TEMP'
+        ?[{name:'TEMP',value:trial.reading1,limit:trial.limit1,max:40,unit:'°C'}]
+        :[{name:'LIGHT',value:trial.reading1,limit:trial.limit1,max:100,unit:''}];
+    for(const spec of specs){
+      const card=document.createElement('div');card.className='sensor-gauge-card';
+      const head=document.createElement('div');head.innerHTML='<strong>'+spec.name+'</strong><span>'+spec.value+spec.unit+'</span>';
+      const rail=document.createElement('div');rail.className='sensor-gauge-rail';
+      const fill=document.createElement('i');fill.style.width=Math.max(0,Math.min(100,spec.value/spec.max*100))+'%';
+      const limit=document.createElement('b');limit.style.left=Math.max(0,Math.min(100,spec.limit/spec.max*100))+'%';limit.title='Threshold '+spec.limit;
+      rail.append(fill,limit);
+      const foot=document.createElement('small');foot.textContent='threshold '+spec.limit+spec.unit;
+      card.append(head,rail,foot);gauges.appendChild(card);
+    }
+  }
+  function showTrial(){
+    if(finished)return;
+    trial=trials[index];elapsed=0;locked=false;
+    count.textContent='SCAN '+(index+1)+'/'+cfg.rounds;
+    condition.textContent='IF '+trial.condition;
+    values.textContent=trial.value;
+    status.textContent='Is the condition TRUE? Trigger '+trial.alertLabel+' or choose OK.';
+    paintGauges();timerFill.style.width='100%';led()?.setCells(sensorLedBars(trial));
+    stopTick();
+    tickId=every(()=>{
+      elapsed+=50;
+      timerFill.style.width=Math.max(0,100-elapsed/cfg.duration*100)+'%';
+      if(elapsed>=cfg.duration){stopTick();resolve(null);}
+    },50);
+  }
+  function next(){
+    index++;
+    if(index>=trials.length){
+      finished=true;stopTick();led()?.setPattern('check');
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
+      finishRoomStage(
+        'Sensor Scanner stage '+stageNo+'/3 complete',
+        stageIndex===0?'Next: changing temperature thresholds.':'Next: two live sensors joined by AND.',
+        'Sensor Scanner calibrated',
+        'Light, temperature and combined threshold scans are all responding correctly.',
+        'Open Variable Processor →',
+        ()=>{active.room=1;renderRoom();}
+      );
+      return;
+    }
+    later(showTrial,700);
+  }
+  function resolve(answer){
+    if(locked||finished)return;
+    locked=true;stopTick();
+    const correct=answer===trial.alert;
+    if(correct){
+      active.playTone(740,.055,'sine',.025);led()?.setPattern('check');
+      showNotice((trial.alert?trial.alertLabel:'OK')+' · '+trial.explain,'success',800);
+      next();return;
+    }
+    active.sensorFaults++;
+    const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.026);led()?.flash('x',340);
+    if(depleted)return;
+    const msg=answer==null?'Scan timed out. '+trial.explain:'Not quite. '+trial.explain;
+    showNotice(msg,'fault',1300);
+    later(showTrial,850);
+  }
+  okButton.addEventListener('click',()=>resolve(false));
+  alertButton.addEventListener('click',()=>resolve(true));
+  active.keyHandler=(e)=>{
+    if(active?.systemId!=='4'||active.room!==0||locked||finished)return;
+    if(e.key==='ArrowLeft'||e.key==='o'||e.key==='O'){e.preventDefault();resolve(false);}
+    if(e.key==='ArrowRight'||e.key==='a'||e.key==='A'){e.preventDefault();resolve(true);}
+  };
+  document.addEventListener('keydown',active.keyHandler);
+
+  const start=document.createElement('button');start.type='button';start.className='sensor-start';start.textContent='Start stage '+stageNo+' →';
+  start.addEventListener('click',()=>{start.remove();focusPlayArea(panel,showTrial);});
+  panel.insertBefore(start,controls);
+  led()?.setPattern('question');
+}
+
 function microbitBoardMarkup(){
   return `
     <div class="official-microbit-final">
