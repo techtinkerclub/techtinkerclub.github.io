@@ -3368,6 +3368,9 @@ body.adventure-modal-open{
   text-align:center;
   pointer-events:none;
 }
+.expedition-rotate-notice{
+  display:none;
+}
 
 @media(max-width:700px),(pointer:coarse){
   .expedition-display-actions{
@@ -3480,13 +3483,31 @@ body.adventure-modal-open{
 
 @media(max-width:950px) and (orientation:landscape){
   .expedition-shell.expedition-immersive{
-    grid-template-columns:minmax(0,1fr) 168px;
-    grid-template-rows:auto minmax(0,1fr) auto;
-    column-gap:8px;
+    grid-template-columns:minmax(0,1fr) 150px;
+    grid-template-rows:30px minmax(0,1fr) 27px;
+    column-gap:7px;
+    row-gap:4px;
   }
   .expedition-shell.expedition-immersive .expedition-hud{
     grid-column:1 / 3;
     grid-row:1;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    padding-right:56px;
+    gap:4px;
+  }
+  .expedition-shell.expedition-immersive .expedition-hud>*{
+    padding:4px 5px;
+    font-size:7px;
+    border-radius:5px;
+  }
+  .expedition-shell.expedition-immersive .expedition-display-actions{
+    top:max(5px,env(safe-area-inset-top));
+    right:max(6px,env(safe-area-inset-right));
+  }
+  .expedition-shell.expedition-immersive .expedition-immersive-toggle{
+    min-height:24px;
+    padding:4px 7px;
+    font-size:8px;
   }
   .expedition-shell.expedition-immersive .expedition-grid{
     grid-column:1;
@@ -3495,10 +3516,18 @@ body.adventure-modal-open{
     height:100%;
     max-width:100%;
     max-height:100%;
+    place-self:center;
+    border-radius:7px;
   }
   .expedition-shell.expedition-immersive .expedition-mission{
     grid-column:1;
     grid-row:3;
+    min-height:0;
+    padding:4px 7px;
+    font-size:8px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
   .expedition-shell.expedition-immersive .expedition-controls{
     grid-column:2;
@@ -3507,15 +3536,62 @@ body.adventure-modal-open{
     grid-template-columns:1fr;
     grid-template-rows:minmax(0,1fr) auto;
     align-content:center;
-    gap:7px;
+    gap:5px;
     width:100%;
   }
   .expedition-shell.expedition-immersive .expedition-joystick-base{
-    width:118px;
-    height:118px;
+    width:108px;
+    height:108px;
+  }
+  .expedition-shell.expedition-immersive .expedition-joystick-knob{
+    width:46px;height:46px;
+    margin:-23px 0 0 -23px;
   }
   .expedition-shell.expedition-immersive .expedition-controls .expedition-pulse{
-    width:82px;
-    min-height:82px;
+    width:74px;
+    min-height:74px;
+    font-size:10px;
+  }
+}
+
+@media(max-width:950px) and (orientation:portrait){
+  .expedition-shell.expedition-immersive .expedition-hud,
+  .expedition-shell.expedition-immersive .expedition-grid,
+  .expedition-shell.expedition-immersive .expedition-mission,
+  .expedition-shell.expedition-immersive .expedition-controls{
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .expedition-shell.expedition-immersive .expedition-rotate-notice{
+    position:absolute;
+    inset:0;
+    z-index:12;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:32px;
+    text-align:center;
+    color:#9bb5c2;
+    background:
+      radial-gradient(circle at 50% 44%,rgba(22,210,226,.10),transparent 34%),
+      #01060a;
+    font:750 13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  .expedition-shell.expedition-immersive .expedition-rotate-notice strong{
+    color:#65efff;
+    font-size:19px;
+    letter-spacing:.045em;
+  }
+  .expedition-shell.expedition-immersive .expedition-rotate-phone{
+    color:#65efff;
+    font-size:52px;
+    line-height:1;
+    text-shadow:0 0 22px rgba(101,239,255,.24);
+    transform:rotate(-10deg);
+  }
+  .expedition-shell.expedition-immersive .expedition-display-actions{
+    z-index:20;
   }
 }

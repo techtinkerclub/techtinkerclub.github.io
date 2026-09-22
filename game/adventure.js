@@ -493,7 +493,9 @@ function renderPulseRun(){
 
   const pulseButton=controls.querySelector('.expedition-pulse');
   const mission=document.createElement('div');mission.className='expedition-mission';
-  shell.append(hud,displayActions,board,mission,controls);root.appendChild(shell);
+  const rotateNotice=document.createElement('div');rotateNotice.className='expedition-rotate-notice';
+  rotateNotice.innerHTML='<div class="expedition-rotate-phone" aria-hidden="true">▯↻</div><strong>Rotate your phone</strong><span>System Rescue is designed for landscape play on mobile.</span>';
+  shell.append(hud,displayActions,board,mission,controls,rotateNotice);root.appendChild(shell);
 
   let joystickPointer=null,joystickRepeat=null,joystickDir=null;
   function stopJoystick(){
@@ -539,20 +541,45 @@ function renderPulseRun(){
   joystickBase.addEventListener('pointercancel',stopJoystick);
   joystickBase.addEventListener('lostpointercapture',stopJoystick);
 
-  async function toggleImmersive(){
-    const entering=!shell.classList.contains('expedition-immersive');
+  function mobileExpeditionMode(){
+    return window.matchMedia('(max-width:950px) and (pointer:coarse)').matches;
+  }
+  async function setImmersive(entering,{native=true,landscape=true}={}){
     shell.classList.toggle('expedition-immersive',entering);
-    immersiveButton.textContent=entering?'EXIT FULL SCREEN':'FULL SCREEN';
+    immersiveButton.textContent=entering?'EXIT':'FULL SCREEN';
     immersiveButton.setAttribute('aria-pressed',entering?'true':'false');
+
     if(entering){
-      try{
-        if(shell.requestFullscreen&&!document.fullscreenElement)await shell.requestFullscreen({navigationUI:'hide'});
-      }catch(_){}
+      if(native){
+        try{
+          if(shell.requestFullscreen&&!document.fullscreenElement){
+            await shell.requestFullscreen({navigationUI:'hide'});
+            shell.classList.add('expedition-native-fullscreen');
+          }
+        }catch(_){}
+      }
+      if(landscape){
+        try{
+          if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape');
+        }catch(_){}
+      }
     }else{
+      shell.classList.remove('expedition-native-fullscreen');
+      try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(_){}
       try{if(document.fullscreenElement===shell&&document.exitFullscreen)await document.exitFullscreen();}catch(_){}
     }
   }
+  async function toggleImmersive(){
+    await setImmersive(!shell.classList.contains('expedition-immersive'));
+  }
   immersiveButton.addEventListener('click',toggleImmersive);
+  document.addEventListener('fullscreenchange',()=>{
+    if(!document.fullscreenElement&&shell.classList.contains('expedition-native-fullscreen')){
+      shell.classList.remove('expedition-native-fullscreen','expedition-immersive');
+      immersiveButton.textContent='FULL SCREEN';
+      immersiveButton.setAttribute('aria-pressed','false');
+    }
+  });
 
   function pickupAt(k){return pickups.find(x=>key(...x.pos)===k&&!collected.has(x.name));}
   function relayAt(k){return relays.find(x=>key(...x.pos)===k);}
@@ -775,6 +802,12 @@ function renderPulseRun(){
   paint();
   const startButton=document.createElement('button');startButton.type='button';startButton.className='expedition-start';startButton.textContent='Enter '+cfg.area+' →';
   startButton.addEventListener('click',()=>{
+    if(mobileExpeditionMode()){
+      // This runs directly from the player's tap so browsers that require a
+      // user gesture may grant fullscreen. iOS Safari will normally fall back
+      // to the fixed immersive layout and the rotate-phone prompt.
+      setImmersive(true,{native:true,landscape:true});
+    }
     startButton.remove();
     focusPlayArea(board,()=>{
       live=true;
