@@ -30,6 +30,7 @@ function start(opts){
     toast:typeof opts.toast==='function'?opts.toast:()=>{},
     systemId:String(opts.systemId||'1'),
     room:0,
+    roomStage:0,
     seed:`microbit-system-${String(opts.systemId||'1')}-${Date.now()}`,
     bits:new Set(),
     arcadeFaults:0,
@@ -135,9 +136,10 @@ function roomHeader(kicker,title,copy){
   const head=document.createElement('div');head.className='adventure-room-head';
   const left=document.createElement('div');
   const eyebrow=document.createElement('p');eyebrow.className='eyebrow';eyebrow.textContent=kicker;
+  const stage=document.createElement('span');stage.className='room-stage-badge';stage.textContent=`STAGE ${Math.min(3,(active?.roomStage||0)+1)}/3`;
   const h=document.createElement('h2');h.id='adventure-title';h.textContent=title;
   const p=document.createElement('p');p.textContent=copy;
-  left.append(eyebrow,h,p);
+  left.append(eyebrow,stage,h,p);
   head.appendChild(left);
   if(active&&active.room<3){
     const meter=document.createElement('div');meter.className='adventure-integrity';meter.dataset.adventureIntegrity='1';
@@ -184,6 +186,24 @@ function showTransition(title,text,buttonText,next,tone='success'){
   button.addEventListener('click',()=>{clearOverlay();next();});
   card.append(icon,copy,button);shade.appendChild(card);host.replaceChildren(shade);
   requestAnimationFrame(()=>button.focus({preventScroll:true}));
+}
+
+function finishRoomStage(stageTitle,stageText,finalTitle,finalText,nextButton,onRoomComplete){
+  if(!active)return;
+  if(active.roomStage<2){
+    const completed=active.roomStage+1;
+    showTransition(
+      stageTitle||`Stage ${completed}/3 complete`,
+      stageText||`Stage ${completed} is stable. The next stage will be harder.`,
+      `Start stage ${completed+1}/3 →`,
+      ()=>{active.roomStage++;renderRoom();}
+    );
+    return;
+  }
+  showTransition(finalTitle,finalText,nextButton,()=>{
+    active.roomStage=0;
+    onRoomComplete();
+  });
 }
 
 /* ---------------- Room 1: Data Pulse Run ---------------- */
