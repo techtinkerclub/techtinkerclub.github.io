@@ -17,6 +17,7 @@ const same=(a,b)=>a&&b&&a[0]===b[0]&&a[1]===b[1];
 function hashString(s){let h=2166136261>>>0;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
 function rngFromSeed(seed){let a=hashString(seed)||0x6d2b79f5;return function(){a|=0;a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 function shuffled(arr,rng=Math.random){const out=arr.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
+function led(){return global.TTCMicrobitLED||null;}
 
 function start(opts){
   stop();
@@ -41,6 +42,7 @@ function start(opts){
     timers:new Set(),
     completed:false
   };
+  led()?.clear();
   renderRoom();
 }
 
@@ -62,6 +64,7 @@ function stop(){
   if(active?.keyHandler)document.removeEventListener('keydown',active.keyHandler);
   clearTimers();
   clearOverlay();
+  led()?.clear();
   active=null;
 }
 
@@ -221,6 +224,7 @@ function renderPulseRun(){
       else if(same([r,cc],startPos)){const s=document.createElement('span');s.className='pulse-usb';s.textContent='USB';cell.appendChild(s);}
     }
     packetCount.textContent=`BOOT PACKETS ${active.bits.size}/3`;
+    led()?.setCells([led().mapPoint(player[0],player[1],rows,cols)]);
   }
 
   function fault(){
@@ -245,7 +249,7 @@ function renderPulseRun(){
     if(same(player,goal)){
       if(active.bits.size===3){
         roomFinished=true;live=false;clearTimers();active.roomsCompleted=Math.max(active.roomsCompleted,1);active.playTone(880,.09,'sine',.04);
-        render();
+        render();led()?.setPattern('check');
         showTransition('Power bus restored','All three boot packets reached the processor while corruption continued moving.','Enter startup controller →',()=>{active.room=1;renderRoom();});
         return false;
       }
@@ -326,6 +330,7 @@ function renderBootOrder(){
   const slots=steps.map((s,i)=>{const slot=document.createElement('div');slot.className='boot-slot';slot.innerHTML=`<small>${i+1}</small><span>?</span>`;chain.appendChild(slot);return slot;});
   const choices=document.createElement('div');choices.className='boot-choices';
   const status=document.createElement('div');status.className='logic-status';status.textContent='Which operation must happen first?';
+  led()?.progress(0,steps.length);
 
   for(const step of cards){
     const b=document.createElement('button');b.type='button';b.className='boot-choice';b.dataset.step=step.id;
@@ -337,13 +342,13 @@ function renderBootOrder(){
         active.sequenceFaults++;b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');
         status.textContent='Choose the next startup operation.';
         showNotice(`${step.short} does not fit in position ${nextIndex+1}. What must already have happened?`,'fault',1400);
-        active.playTone(165,.08,'square',.025);return;
+        active.playTone(165,.08,'square',.025);led()?.flash('x',340);return;
       }
       b.disabled=true;b.classList.add('used');
       slots[nextIndex].classList.add('filled');slots[nextIndex].querySelector('span').textContent=step.short;
-      nextIndex++;active.playTone(580+nextIndex*65,.05,'sine',.025);
+      nextIndex++;active.playTone(580+nextIndex*65,.05,'sine',.025);led()?.progress(nextIndex,steps.length);
       if(nextIndex===steps.length){
-        active.roomsCompleted=Math.max(active.roomsCompleted,2);status.textContent='Boot order valid.';
+        active.roomsCompleted=Math.max(active.roomsCompleted,2);status.textContent='Boot order valid.';led()?.setPattern('check');
         showTransition('Startup controller restored','The startup sequence is valid. Control can now pass to the micro:bit memory bank.','Open RAM bank →',()=>{active.room=2;renderRoom();});
       }else{status.textContent=`Choose operation ${nextIndex+1}.`;showNotice(`${step.short} locked into position ${nextIndex}.`,'success',850);}
     });
@@ -398,13 +403,21 @@ function renderMemoryBank(){
   const state=puzzle.display.map(r=>r.slice());
   const board=document.createElement('div');board.className='memory-grid';board.style.setProperty('--memory-n',String(puzzle.n));
   const buttons=[];
+  const editableTotal=puzzle.display.flat().filter(v=>v==null).length;
 
   for(let r=0;r<puzzle.n;r++)for(let c=0;c<puzzle.n;c++){
     const given=puzzle.display[r][c]!=null,b=document.createElement('button');b.type='button';b.className=`memory-cell${given?' given':''}`;b.dataset.r=String(r);b.dataset.c=String(c);b.disabled=given;
     function paint(){const v=state[r][c];b.textContent=v==null?'·':String(v);b.classList.toggle('zero',v===0);b.classList.toggle('one',v===1);}
-    if(!given)b.addEventListener('click',()=>{state[r][c]=state[r][c]==null?0:state[r][c]===0?1:null;b.classList.remove('wrong','hint');paint();});
+    if(!given)b.addEventListener('click',()=>{state[r][c]=state[r][c]==null?0:state[r][c]===0?1:null;b.classList.remove('wrong','hint');paint();updateMemoryLEDs();});
     paint();board.appendChild(b);buttons.push(b);
   }
+
+  function updateMemoryLEDs(){
+    let filled=0;
+    for(let r=0;r<puzzle.n;r++)for(let c=0;c<puzzle.n;c++)if(puzzle.display[r][c]==null&&state[r][c]!=null)filled++;
+    led()?.progress(filled,editableTotal);
+  }
+  updateMemoryLEDs();
 
   const actions=document.createElement('div');actions.className='memory-actions';
   const hint=document.createElement('button');hint.type='button';hint.className='secondary';hint.textContent='Highlight a useful cell';
@@ -422,9 +435,9 @@ function renderMemoryBank(){
     let wrong=0,blank=0;
     buttons.forEach(b=>{b.classList.remove('wrong');const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c];if(v==null)blank++;else if(v!==puzzle.solution[r][c]){wrong++;if(!b.disabled)b.classList.add('wrong');}});
     if(!wrong&&!blank){
-      check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);active.roomsCompleted=Math.max(active.roomsCompleted,3);active.playTone(920,.1,'sine',.04);status.textContent='RAM checksum valid.';
+      check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);active.roomsCompleted=Math.max(active.roomsCompleted,3);active.playTone(920,.1,'sine',.04);status.textContent='RAM checksum valid.';led()?.setPattern('check');
       showTransition('RAM bank restored','Power, startup control and binary memory are stable.','Continue →',()=>{active.room=3;renderRoom();});
-    }else if(wrong){active.memoryFaults++;active.playTone(155,.08,'square',.025);showNotice(`${wrong} bit${wrong===1?' is':'s are'} inconsistent. Recheck the highlighted cells.`,'fault',1500);}
+    }else if(wrong){active.memoryFaults++;active.playTone(155,.08,'square',.025);led()?.flash('x',380);showNotice(`${wrong} bit${wrong===1?' is':'s are'} inconsistent. Recheck the highlighted cells.`,'fault',1500);}
     else showNotice(`${blank} memory cell${blank===1?' is':'s are'} still blank.`,'warn',1200);
   });
 
@@ -530,6 +543,12 @@ function renderRandomPacketCatcher(){
       const el=document.createElement('div');el.className='random-packet';el.style.left=`calc(${p.lane*33.333+16.666}% - 22px)`;el.style.top=`${p.y}%`;el.textContent=String(p.value);arena.appendChild(el);
     }
     paintPlayer();
+    const ledCells=[[4,[0,2,4][playerLane]]];
+    for(const p of packets){
+      const row=Math.max(0,Math.min(3,Math.round((p.y+12)/90*3)));
+      ledCells.push([row,[0,2,4][p.lane]]);
+    }
+    led()?.setCells(ledCells);
   }
 
   function resolvePacket(p){
@@ -547,12 +566,13 @@ function renderRandomPacketCatcher(){
           });
         }else{
           finished=true;live=false;clearTimers();active.roomsCompleted=Math.max(active.roomsCompleted,1);
+          led()?.setPattern('check');
           showTransition('Packet filter restored','You caught 3 numbers in each target range and ignored out-of-range values.','Check output sequences →',()=>{active.room=1;renderRoom();});
         }
       }
     }else{
       active.arcadeFaults++;
-      active.playTone(150,.08,'square',.026);
+      active.playTone(150,.08,'square',.026);led()?.flash('x',260);
       showNotice(`${p.value} is outside random ${currentRule().min} to ${currentRule().max}.`,'fault',850);
       arena.classList.remove('fault');void arena.offsetWidth;arena.classList.add('fault');
       later(()=>arena.classList.remove('fault'),350);
@@ -650,6 +670,7 @@ function renderBrokenRandomiser(){
       streams.appendChild(b);
     });
     counter.textContent=`Select the sequence containing a number outside ${r.min}–${r.max}. Repeated numbers are allowed.`;
+    led()?.setPattern('question');
   }
 
   function choose(i,button){
@@ -658,14 +679,14 @@ function renderBrokenRandomiser(){
     if(!stream.bad){
       active.logicFaults++;
       button.classList.add('wrong');
-      active.playTone(155,.07,'square',.023);
+      active.playTone(155,.07,'square',.023);led()?.flash('x',360);
       showNotice(`That sequence matches ${r.code}. Every value is in range.`,'warn',1200);
       later(()=>button.classList.remove('wrong'),600);
       return;
     }
     locked=true;
     button.classList.add('correct');
-    active.playTone(760,.065,'sine',.025);
+    active.playTone(760,.065,'sine',.025);led()?.setPattern('check');
     const badValue=stream.values.find(v=>v<r.min||v>r.max);
     showNotice(`${badValue} cannot come from ${r.code}.`,'success',900);
     later(()=>{
@@ -819,6 +840,7 @@ function renderPropertyRouter(){
       const p=[+b.dataset.r,+b.dataset.c],k=routerKey(p);
       b.classList.toggle('is-path',used.has(k));b.classList.toggle('is-current',same(p,cur));b.disabled=finished;
     }
+    led()?.setCells(path);
   }
   function adjacent(a,b){return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])===1;}
   function choose(p,b){
@@ -828,7 +850,7 @@ function renderPropertyRouter(){
     if(!adjacent(cur,p)){showNotice('Choose a square touching your current data packet.','warn',900);return;}
     if(path.some(q=>same(q,p))){showNotice('The route cannot loop through an earlier square.','warn',900);return;}
     if(!routerMatches(puzzle.grid[p[0]][p[1]],puzzle.rule)){
-      active.routerFaults++;b.classList.add('wrong');active.playTone(150,.07,'square',.024);
+      active.routerFaults++;b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',330);
       showNotice(`${puzzle.grid[p[0]][p[1]]} does not match ${puzzle.rule.label}.`,'fault',900);
       later(()=>b.classList.remove('wrong'),500);return;
     }
@@ -839,7 +861,7 @@ function renderPropertyRouter(){
         showNotice('FINISH reached, but this route is incomplete. Backtrack and try the other matching branch.','warn',1200);
         return;
       }
-      finished=true;active.roomsCompleted=Math.max(active.roomsCompleted,3);paint();
+      finished=true;active.roomsCompleted=Math.max(active.roomsCompleted,3);paint();led()?.setPattern('check');
       showTransition('Data router restored','You found the unique route using only values that match the number-property filter.','Continue →',()=>{active.room=3;renderRoom();});
     }
   }
@@ -866,7 +888,7 @@ function renderRandomiserFinalGate(){
   const totalFaults=active.arcadeFaults+active.logicFaults+active.routerFaults;
   const stats=document.createElement('div');stats.className='adventure-run-stats';
   stats.innerHTML=`<span><strong>${active.arcadeFaults}</strong> packet faults</span><span><strong>${active.logicFaults}</strong> stream faults</span><span><strong>${active.routerFaults}</strong> router faults</span><span><strong>${totalFaults}</strong> total faults</span>`;
-  root.append(board,real,stats);
+  root.append(board,real,stats);led()?.setPattern('dice5');led()?.setPattern('check');
 
   later(()=>showTransition(
     'Final diagnostic ready',
@@ -892,12 +914,14 @@ function renderRandomiserFinalGate(){
 function microbitBoardMarkup(){
   return `
     <div class="official-microbit-final">
-      <img
-        class="official-microbit-img"
-        src="assets/microbit/microbit-drawing-v2.svg"
-        alt="BBC micro:bit v2 front view"
-        draggable="false"
-      />
+      <object
+        class="official-microbit-object"
+        data="assets/microbit/microbit-drawing-v2.svg"
+        type="image/svg+xml"
+        aria-label="BBC micro:bit v2 front view with live LED display"
+      >
+        <img class="official-microbit-img" src="assets/microbit/microbit-drawing-v2.svg" alt="BBC micro:bit v2 front view" />
+      </object>
       <div class="boot-ok-pill">BOOT OK</div>
     </div>
   `;
@@ -947,7 +971,8 @@ function renderFinalGate(){
 global.TTCAdventure={
   supports(id){return ['1','2'].includes(String(id));},
   start,
-  stop
+  stop,
+  leds:global.TTCMicrobitLED||null
 };
 
 })(typeof globalThis!=='undefined'?globalThis:this);
