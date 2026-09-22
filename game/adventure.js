@@ -271,16 +271,16 @@ function expeditionDistances(grid,start){
 }
 function carveExpeditionChambers(grid,rng,count){
   const rows=grid.length,cols=grid[0].length,chambers=[],chamberSet=new Set();
-  const sizes=[[5,5],[5,7],[7,7],[5,9]];
+  const sizes=[[5,5],[5,7],[7,7],[5,9],[3,7],[3,5]];
   for(let i=0;i<count;i++){
     let placed=false;
-    for(let attempt=0;attempt<50&&!placed;attempt++){
+    for(let attempt=0;attempt<120&&!placed;attempt++){
       const size=sizes[(i+attempt)%sizes.length],h=Math.min(size[0],rows-4),w=Math.min(size[1],cols-4);
       let r=1+2*Math.floor(rng()*Math.max(1,Math.floor((rows-h-2)/2)+1));
       let c=1+2*Math.floor(rng()*Math.max(1,Math.floor((cols-w-2)/2)+1));
       r=Math.max(1,Math.min(rows-h-1,r));c=Math.max(1,Math.min(cols-w-1,c));
       const rect={r,c,h,w};
-      const overlaps=chambers.some(x=>!(r+h+2<x.r||x.r+x.h+2<r||c+w+2<x.c||x.c+x.w+2<c));
+      const overlaps=chambers.some(x=>!(r+h+1<x.r||x.r+x.h+1<r||c+w+1<x.c||x.c+x.w+1<c));
       if(overlaps)continue;
       for(let rr=r;rr<r+h;rr++)for(let cc=c;cc<c+w;cc++){
         grid[rr][cc]=0;chamberSet.add(key(rr,cc));
@@ -325,8 +325,12 @@ function makeExpeditionMaze(rows,cols,seed,stage,chamberCount=2){
   return {grid,start,exit,dist,floors,deadEnds,rng,chambers:carved.chambers,chamberSet:carved.chamberSet};
 }
 function chooseExpeditionPickups(maze,count,names){
-  const candidates=(maze.deadEnds.length>=count?maze.deadEnds:maze.floors)
-    .filter(p=>maze.dist[p[0]][p[1]]>=8&&!same(p,maze.exit));
+  const deep=(maze.deadEnds.length>=count?maze.deadEnds:maze.floors)
+    .filter(p=>maze.dist[p[0]][p[1]]>=8&&!same(p,maze.exit)&&!same(p,maze.start));
+  const fallback=maze.floors
+    .filter(p=>!same(p,maze.exit)&&!same(p,maze.start))
+    .sort((a,b)=>maze.dist[b[0]][b[1]]-maze.dist[a[0]][a[1]]);
+  const candidates=[...deep,...fallback.filter(p=>!deep.some(q=>same(q,p)))];
   const chosen=[];
   for(const p of candidates){
     if(chosen.length>=count)break;
