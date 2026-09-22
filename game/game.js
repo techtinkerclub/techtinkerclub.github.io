@@ -247,11 +247,18 @@
       if(G.diagnosticStage<2){renderDiagnosticStageGate();return;}
       finishMission(false);return;
     }
-    let item=G.queue.shift();
+    let item=null;
+    while(G.queue.length&&!item){
+      const candidate=G.queue.shift();
+      if(candidate&&!G.mastered.has(keyFor(candidate.q)))item=candidate;
+    }
     if(!item){
       const stageQs=currentDiagnosticStageQuestions();
       G.queue=stageQs.filter(q=>!G.mastered.has(keyFor(q))).map(q=>({q,retry:true}));
-      item=G.queue.shift();
+      while(G.queue.length&&!item){
+        const candidate=G.queue.shift();
+        if(candidate&&!G.mastered.has(keyFor(candidate.q)))item=candidate;
+      }
       if(!item){
         if(G.diagnosticStage<2){renderDiagnosticStageGate();return;}
         finishMission(false);return;
@@ -310,7 +317,7 @@
         ?(adventureId==='1'?'Boot verification incomplete':'Randomiser verification incomplete')
         :'System still unstable';
       byId('results-summary').textContent=isAdventure
-        ?`The three repair rooms are complete, but only ${G.mastered.size} of ${G.questions.length} diagnostic checks were verified. Review the fault log and re-run the mission.`
+        ?`The nine adventure stages are complete, but only ${G.mastered.size} of ${G.questions.length} diagnostic checks were verified. Review the fault log and re-run the mission.`
         :`You repaired ${G.mastered.size} of ${G.questions.length} circuits. Review the fault log and re-run the mission.`;
     }else{
       if(isAdventure){
