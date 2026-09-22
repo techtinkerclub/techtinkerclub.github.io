@@ -469,6 +469,11 @@ function renderPulseRun(){
     board.appendChild(cell);cells.push(cell);
   }
 
+  const displayActions=document.createElement('div');displayActions.className='expedition-display-actions';
+  const immersiveButton=document.createElement('button');immersiveButton.type='button';immersiveButton.className='expedition-immersive-toggle';
+  immersiveButton.textContent='FULL SCREEN';immersiveButton.setAttribute('aria-pressed','false');
+  displayActions.appendChild(immersiveButton);
+
   const controls=document.createElement('div');controls.className='expedition-controls';
   const defs=[['↑','up',-1,0],['←','left',0,-1],['PULSE','pulse',0,0],['→','right',0,1],['↓','down',1,0]];
   for(const d of defs){
@@ -477,9 +482,77 @@ function renderPulseRun(){
     else b.addEventListener('click',()=>movePlayer(d[2],d[3],b));
     controls.appendChild(b);
   }
+
+  const joystick=document.createElement('div');joystick.className='expedition-joystick';
+  joystick.setAttribute('role','application');joystick.setAttribute('aria-label','Movement joystick');
+  const joystickBase=document.createElement('div');joystickBase.className='expedition-joystick-base';
+  const joystickKnob=document.createElement('div');joystickKnob.className='expedition-joystick-knob';
+  const joystickLabel=document.createElement('span');joystickLabel.className='expedition-joystick-label';joystickLabel.textContent='MOVE';
+  joystickBase.append(joystickKnob,joystickLabel);joystick.appendChild(joystickBase);
+  controls.appendChild(joystick);
+
   const pulseButton=controls.querySelector('.expedition-pulse');
   const mission=document.createElement('div');mission.className='expedition-mission';
-  shell.append(hud,board,mission,controls);root.appendChild(shell);
+  shell.append(hud,displayActions,board,mission,controls);root.appendChild(shell);
+
+  let joystickPointer=null,joystickRepeat=null,joystickDir=null;
+  function stopJoystick(){
+    if(joystickRepeat){clearInterval(joystickRepeat);joystickRepeat=null;}
+    joystickPointer=null;joystickDir=null;
+    joystickKnob.style.transform='translate3d(0,0,0)';
+    joystick.classList.remove('active');
+  }
+  function driveJoystick(e){
+    const rect=joystickBase.getBoundingClientRect();
+    const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+    let dx=e.clientX-cx,dy=e.clientY-cy;
+    const limit=Math.min(rect.width,rect.height)*.31;
+    const mag=Math.hypot(dx,dy)||1;
+    if(mag>limit){dx=dx/mag*limit;dy=dy/mag*limit;}
+    joystickKnob.style.transform='translate3d('+dx+'px,'+dy+'px,0)';
+    const dead=limit*.32;
+    let next=null;
+    if(Math.max(Math.abs(dx),Math.abs(dy))>=dead){
+      next=Math.abs(dx)>Math.abs(dy)?(dx<0?[0,-1]:[0,1]):(dy<0?[-1,0]:[1,0]);
+    }
+    if(!next){
+      joystickDir=null;
+      if(joystickRepeat){clearInterval(joystickRepeat);joystickRepeat=null;}
+      return;
+    }
+    const code=next[0]+':'+next[1];
+    if(code!==joystickDir){
+      joystickDir=code;movePlayer(next[0],next[1],null);
+      if(joystickRepeat)clearInterval(joystickRepeat);
+      joystickRepeat=setInterval(()=>movePlayer(next[0],next[1],null),135);
+    }
+  }
+  joystickBase.addEventListener('pointerdown',e=>{
+    e.preventDefault();joystickPointer=e.pointerId;joystick.classList.add('active');
+    try{joystickBase.setPointerCapture(e.pointerId);}catch(_){}
+    driveJoystick(e);
+  });
+  joystickBase.addEventListener('pointermove',e=>{
+    if(joystickPointer!==e.pointerId)return;e.preventDefault();driveJoystick(e);
+  });
+  joystickBase.addEventListener('pointerup',e=>{if(joystickPointer===e.pointerId)stopJoystick();});
+  joystickBase.addEventListener('pointercancel',stopJoystick);
+  joystickBase.addEventListener('lostpointercapture',stopJoystick);
+
+  async function toggleImmersive(){
+    const entering=!shell.classList.contains('expedition-immersive');
+    shell.classList.toggle('expedition-immersive',entering);
+    immersiveButton.textContent=entering?'EXIT FULL SCREEN':'FULL SCREEN';
+    immersiveButton.setAttribute('aria-pressed',entering?'true':'false');
+    if(entering){
+      try{
+        if(shell.requestFullscreen&&!document.fullscreenElement)await shell.requestFullscreen({navigationUI:'hide'});
+      }catch(_){}
+    }else{
+      try{if(document.fullscreenElement===shell&&document.exitFullscreen)await document.exitFullscreen();}catch(_){}
+    }
+  }
+  immersiveButton.addEventListener('click',toggleImmersive);
 
   function pickupAt(k){return pickups.find(x=>key(...x.pos)===k&&!collected.has(x.name));}
   function relayAt(k){return relays.find(x=>key(...x.pos)===k);}
