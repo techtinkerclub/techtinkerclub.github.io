@@ -1922,3 +1922,116 @@ body.adventure-modal-open{
   .property-router-cell small{font-size:9px}
   .boot-ok-pill{font-size:12px}
 }
+
+
+/* ============================================================
+   Adventure integrity + deliberate game start
+   ============================================================ */
+.adventure-room-head{
+  align-items:center;
+}
+.adventure-room-head>div:first-child{
+  min-width:0;
+  flex:1 1 auto;
+}
+.adventure-integrity{
+  flex:0 0 auto;
+  min-width:142px;
+  padding:9px 11px;
+  border:1px solid var(--line2);
+  border-radius:11px;
+  background:#091728;
+}
+.adventure-integrity small{
+  display:block;
+  margin-bottom:6px;
+  color:var(--muted2);
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.09em;
+}
+.adventure-integrity-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:9px;
+}
+.adventure-integrity-pips{
+  display:flex;
+  gap:5px;
+}
+.adventure-integrity-pip{
+  width:12px;
+  height:12px;
+  transform:rotate(45deg);
+  border-radius:2px;
+  background:var(--green);
+  box-shadow:0 0 7px rgba(92,224,160,.4);
+}
+.adventure-integrity-pip.off{
+  background:#34465e;
+  box-shadow:none;
+}
+.adventure-integrity-value{
+  color:var(--ink);
+  font:900 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.adventure-integrity.critical{
+  border-color:rgba(255,119,135,.45);
+}
+.adventure-integrity.critical .adventure-integrity-value{
+  color:var(--red);
+}
+.adventure-popup.transition.fault{
+  border-color:rgba(255,119,135,.55);
+}
+.adventure-popup.transition.fault .adventure-popup-icon{
+  background:var(--red);
+}
+.random-catcher-start{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  width:min(540px,100%);
+  margin:0 auto 10px;
+  padding:11px 12px;
+  border:1px solid rgba(85,217,255,.28);
+  border-radius:12px;
+  background:rgba(85,217,255,.055);
+}
+.random-catcher-start span{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+}
+.random-catcher-start-button{
+  flex:0 0 auto;
+  min-width:155px;
+}
+.random-catcher-arena:focus{
+  outline:3px solid rgba(85,217,255,.5);
+  outline-offset:4px;
+}
+@media(min-width:861px){
+  .adventure-integrity small{font-size:11px}
+  .adventure-integrity-value{font-size:14px}
+  .random-catcher-start span{font-size:14px}
+}
+@media(max-width:700px){
+  .adventure-room-head{
+    align-items:stretch;
+    flex-direction:column;
+  }
+  .adventure-integrity{
+    width:100%;
+    min-width:0;
+  }
+  .random-catcher-start{
+    align-items:stretch;
+    flex-direction:column;
+  }
+  .random-catcher-start-button{
+    width:100%;
+  }
+}
