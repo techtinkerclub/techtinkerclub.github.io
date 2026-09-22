@@ -971,7 +971,10 @@ function makePropertyRouter(seed,options={}){
     const valueLimit=rule.mode==='square'?Math.max(225,Math.pow(valid.size+4,2)):Math.max(120,n*n*4);
     for(let v=1;v<=valueLimit;v++)(routerMatches(v,rule)?yes:no).push(v);
     if(yes.length<valid.size||no.length<n*n-valid.size)continue;
-    const y=shuffled(yes,local).slice(0,valid.size),nn=shuffled(no,local).slice(0,n*n-valid.size);
+    const preferred=rule.mode==='prime'?[2,3,5,7,11,13]:rule.mode==='square'?[1,4,9,16,25,36]:[];
+    const familiar=preferred.filter(v=>yes.includes(v));
+    const remainder=shuffled(yes.filter(v=>!familiar.includes(v)),local);
+    const y=[...familiar,...remainder].slice(0,valid.size),nn=shuffled(no,local).slice(0,n*n-valid.size);
     let yi=0,ni=0;const grid=Array.from({length:n},()=>Array(n).fill(0));
     for(const p of shuffled(routerAllCells(n),local))grid[p[0]][p[1]]=valid.has(routerKey(p))?y[yi++]:nn[ni++];
     const start=path[0],finish=path[path.length-1],check=routerSolve(grid,rule,start,finish,2);
