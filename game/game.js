@@ -232,7 +232,7 @@
         byId('results-summary').textContent=rating===3
           ?(adventureId==='1'
             ?'Power routing, startup logic, RAM repair and the final diagnostic all completed without a fault.'
-            :'Packet filtering, random-stream diagnosis, data routing and the final diagnostic all completed without a fault.')
+            :'Packet filtering, range diagnostics, data routing and the final diagnostic all completed without a fault.')
           :(adventureId==='1'
             ?'The micro:bit can boot again. Replay the mission if you want to earn the clean-repair and flawless-diagnostic stars.'
             :'Random behaviour is stable again. Replay the mission if you want the clean-adventure and flawless-diagnostic stars.');
