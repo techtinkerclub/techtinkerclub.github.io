@@ -1801,3 +1801,31 @@ body.adventure-modal-open{
     font-size:16px;
   }
 }
+
+
+/* Live official micro:bit LED matrix */
+.official-microbit{
+  aspect-ratio:208.91206 / 168.10938 !important;
+}
+.official-microbit-object{
+  display:block;
+  width:100%;
+  height:100%;
+  border:0;
+  pointer-events:none;
+  user-select:none;
+  opacity:0;
+  transition:opacity .16s ease;
+  filter:drop-shadow(0 16px 28px rgba(0,0,0,.36));
+}
+.official-microbit-object.led-ready{
+  opacity:1;
+}
+.official-microbit-final .official-microbit-object{
+  width:100%;
+  height:auto;
+  aspect-ratio:208.91206 / 168.10938;
+}
+@media(prefers-reduced-motion:reduce){
+  .official-microbit-object{transition:none}
+}
