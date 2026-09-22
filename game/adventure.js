@@ -74,6 +74,8 @@ function stop(){
 function setProgress(label){
   const el=document.getElementById('adventure-progress');
   if(el)el.textContent=label;
+  const side=document.getElementById('adventure-side-progress');
+  if(side)side.textContent=label;
 }
 
 function renderRoom(){
@@ -567,7 +569,7 @@ function renderRandomPacketCatcher(){
     live=true;
     startRow.hidden=true;
     every(spawn,900);
-    every(tick,100);
+    every(tick,50);
     spawn();
   }
   startButton.addEventListener('click',()=>{
@@ -602,13 +604,27 @@ function renderRandomPacketCatcher(){
       const pool=[...lows,...highs];
       value=pool[Math.floor(rng()*pool.length)] ?? r.max+1;
     }
-    packets.push({id:nextPacketId++,lane:randomInt(rng,0,2),value,y:-12});
+    const packet={id:nextPacketId++,lane:randomInt(rng,0,2),value,y:-12,resolved:false,el:document.createElement('div')};
+    packet.el.className='random-packet';
+    packet.el.style.left=`calc(${packet.lane*33.333+16.666}% - 22px)`;
+    packet.el.style.top=`${packet.y}%`;
+    packet.el.textContent=String(packet.value);
+    arena.appendChild(packet.el);
+    packets.push(packet);
+  }
+
+  function clearPacketNodes(){
+    for(const p of packets)p.el?.remove();
+    packets.splice(0,packets.length);
   }
 
   function renderPackets(){
-    arena.querySelectorAll('.random-packet').forEach(n=>n.remove());
     for(const p of packets){
-      const el=document.createElement('div');el.className='random-packet';el.style.left=`calc(${p.lane*33.333+16.666}% - 22px)`;el.style.top=`${p.y}%`;el.textContent=String(p.value);arena.appendChild(el);
+      if(!p.el?.isConnected&&p.el)arena.appendChild(p.el);
+      if(p.el){
+        p.el.style.left=`calc(${p.lane*33.333+16.666}% - 22px)`;
+        p.el.style.top=`${p.y}%`;
+      }
     }
     paintPlayer();
     const ledCells=[[4,[0,2,4][playerLane]]];
@@ -628,7 +644,7 @@ function renderRandomPacketCatcher(){
       if(caughtInWave>=5){
         if(wave===0){
           live=false;clearTimers();
-          wave=1;caughtInWave=0;packets.splice(0,packets.length);paintRule();renderPackets();led()?.setPattern('check');
+          wave=1;caughtInWave=0;clearPacketNodes();paintRule();renderPackets();led()?.setPattern('check');
           showTransition('First range complete','You caught 5 numbers from 1 to 6. Now catch 5 numbers from 0 to 4.','Start range 0–4 →',()=>{
             if(!active||active.systemId!=='2'||active.room!==0)return;
             focusPlayArea(arena,startLive);
@@ -652,15 +668,15 @@ function renderRandomPacketCatcher(){
 
   function tick(){
     if(!live||finished)return;
-    for(const p of packets)p.y+=4;
+    for(const p of packets)p.y+=2;
     for(let i=packets.length-1;i>=0;i--){
       const p=packets[i];
       if(p.y>=78&&p.y<86){
         resolvePacket(p);
         if(!live||finished)return;
-        if(p.resolved){packets.splice(i,1);continue;}
+        if(p.resolved){p.el?.remove();packets.splice(i,1);continue;}
       }
-      if(p.y>102)packets.splice(i,1);
+      if(p.y>102){p.el?.remove();packets.splice(i,1);}
     }
     renderPackets();
   }
