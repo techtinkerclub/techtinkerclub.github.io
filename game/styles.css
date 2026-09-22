@@ -1554,7 +1554,9 @@ body.adventure-modal-open{
   color:var(--ink);
   box-shadow:0 0 13px rgba(85,217,255,.12);
   font:900 17px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
-  transition:top .08s linear;
+  transition:top .055s linear;
+  will-change:top;
+  font-variant-numeric:tabular-nums;
 }
 .random-catcher{
   position:absolute;
@@ -2034,4 +2036,115 @@ body.adventure-modal-open{
   .random-catcher-start-button{
     width:100%;
   }
+}
+
+
+/* ============================================================
+   Wide desktop adventure workspace
+   Left: live micro:bit + status. Right: active game/puzzle.
+   ============================================================ */
+.adventure-side-card{display:none}
+
+@media(min-width:1180px){
+  body.adventure-wide .app-shell{
+    width:min(1520px,calc(100% - 40px));
+  }
+  body.adventure-wide #screen-adventure .battle-topbar{
+    margin-bottom:14px;
+  }
+  body.adventure-wide #screen-adventure .microbit-world{
+    display:grid;
+    grid-template-columns:minmax(350px,460px) minmax(0,1fr);
+    gap:28px;
+    align-items:start;
+    padding:24px!important;
+    overflow:visible;
+  }
+  body.adventure-wide .adventure-side{
+    grid-column:1;
+    grid-row:1;
+    display:block;
+    position:sticky;
+    top:18px;
+    min-width:0;
+    align-self:start;
+  }
+  body.adventure-wide .microbit-schematic.microbit-hero-board{
+    width:100%!important;
+    margin:0 auto 10px!important;
+  }
+  body.adventure-wide .microbit-board-label{
+    margin:0 auto 14px!important;
+  }
+  body.adventure-wide .adventure-side-card{
+    display:block;
+    padding:15px 16px;
+    border:1px solid var(--line2);
+    border-radius:14px;
+    background:linear-gradient(145deg,rgba(12,27,45,.94),rgba(7,18,31,.94));
+    box-shadow:0 12px 32px rgba(0,0,0,.16);
+  }
+  body.adventure-wide .adventure-side-card>small{
+    display:block;
+    margin-bottom:5px;
+    color:var(--cyan);
+    font-size:11px;
+    font-weight:950;
+    letter-spacing:.12em;
+  }
+  body.adventure-wide .adventure-side-card>strong{
+    display:block;
+    color:var(--ink);
+    font-size:15px;
+    line-height:1.35;
+  }
+  body.adventure-wide .adventure-side-card>p{
+    margin:7px 0 12px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.45;
+  }
+  body.adventure-wide .side-integrity{
+    margin:0;
+    width:100%;
+  }
+  body.adventure-wide .adventure-root{
+    grid-column:2;
+    grid-row:1;
+    width:100%;
+    max-width:none;
+    margin:0;
+    min-width:0;
+  }
+  body.adventure-wide .adventure-root>.adventure-room-head{
+    margin-top:0;
+  }
+  body.adventure-wide .adventure-root>.adventure-room-head>.adventure-integrity{
+    display:none;
+  }
+  body.adventure-wide .adventure-overlay-host{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  body.adventure-wide .adventure-popup-shade,
+  body.adventure-wide .adventure-popup{
+    pointer-events:auto;
+  }
+  body.adventure-wide .random-catcher-arena{
+    width:min(680px,100%);
+  }
+  body.adventure-wide .random-packet{
+    width:48px;
+    height:48px;
+    font-size:20px;
+  }
+  body.adventure-wide .property-router-grid,
+  body.adventure-wide .property-router-rule{
+    width:min(600px,100%);
+  }
+}
+
+@media(max-width:1179px){
+  .adventure-side{display:contents}
 }

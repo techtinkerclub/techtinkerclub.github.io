@@ -88,20 +88,36 @@
           <div class="adventure-progress" id="adventure-progress">BOOT SEQUENCE · ROOM 1/3</div>
         </div>
         <div class="microbit-world">
-          <figure class="microbit-schematic microbit-hero-board official-microbit" aria-label="BBC micro:bit v2 front view with live 5 by 5 LED display">
-            <object
-              class="official-microbit-object"
-              data="assets/microbit/microbit-drawing-v2.svg"
-              type="image/svg+xml"
-              aria-label="BBC micro:bit v2 front view"
-            >
-              <img class="official-microbit-img" src="assets/microbit/microbit-drawing-v2.svg" alt="BBC micro:bit v2 front view" />
-            </object>
-          </figure>
-          <div class="microbit-board-label">
-            <span>BBC micro:bit</span>
-            <strong>INTERNAL SYSTEM VIEW</strong>
-          </div>
+          <aside class="adventure-side" aria-label="Live micro:bit status">
+            <figure class="microbit-schematic microbit-hero-board official-microbit" aria-label="BBC micro:bit v2 front view with live 5 by 5 LED display">
+              <object
+                class="official-microbit-object"
+                data="assets/microbit/microbit-drawing-v2.svg"
+                type="image/svg+xml"
+                aria-label="BBC micro:bit v2 front view"
+              >
+                <img class="official-microbit-img" src="assets/microbit/microbit-drawing-v2.svg" alt="BBC micro:bit v2 front view" />
+              </object>
+            </figure>
+            <div class="microbit-board-label">
+              <span>BBC micro:bit</span>
+              <strong>LIVE SYSTEM VIEW</strong>
+            </div>
+            <div class="adventure-side-card">
+              <small>ACTIVE SUBSYSTEM</small>
+              <strong id="adventure-side-progress">BOOT SEQUENCE · ROOM 1/3</strong>
+              <p>The real 5×5 display reacts to the repair you are working on.</p>
+              <div class="adventure-integrity side-integrity" data-adventure-integrity="1">
+                <small>ADVENTURE INTEGRITY</small>
+                <div class="adventure-integrity-row">
+                  <div class="adventure-integrity-pips" aria-hidden="true">
+                    <i class="adventure-integrity-pip"></i><i class="adventure-integrity-pip"></i><i class="adventure-integrity-pip"></i><i class="adventure-integrity-pip"></i>
+                  </div>
+                  <strong class="adventure-integrity-value">4/4</strong>
+                </div>
+              </div>
+            </div>
+          </aside>
           <div id="adventure-overlay-host" class="adventure-overlay-host" aria-live="assertive"></div>
           <div class="microbit-pins" aria-hidden="true">
             <span>0</span><span>1</span><span>2</span><span>3V</span><span>GND</span>
