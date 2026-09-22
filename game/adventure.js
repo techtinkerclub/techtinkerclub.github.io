@@ -70,10 +70,23 @@ function every(fn,ms){
   if(!active)return null;
   const id=setInterval(fn,ms);active.timers.add(id);return id;
 }
+function clearExpeditionViewport(){
+  document.body.classList.remove('expedition-immersive-open');
+  document.getElementById('screen-adventure')?.classList.remove('expedition-fullscreen-host');
+  try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(_){}
+  const fs=document.fullscreenElement;
+  if(fs&&document.exitFullscreen&&(fs.id==='screen-adventure'||fs.classList?.contains('expedition-shell'))){
+    try{
+      const p=document.exitFullscreen();
+      if(p&&typeof p.catch==='function')p.catch(()=>{});
+    }catch(_){}
+  }
+}
 function stop(){
   if(active?.keyHandler)document.removeEventListener('keydown',active.keyHandler);
   clearTimers();
   clearOverlay();
+  clearExpeditionViewport();
   led()?.clear();
   active=null;
 }
@@ -90,6 +103,7 @@ function renderRoom(){
   if(active.keyHandler){document.removeEventListener('keydown',active.keyHandler);active.keyHandler=null;}
   clearTimers();
   clearOverlay();
+  clearExpeditionViewport();
   active.roomIntegrity=active.roomIntegrityMax;
   active.root.replaceChildren();
   if(active.systemId==='2'){
@@ -544,16 +558,19 @@ function renderPulseRun(){
   function mobileExpeditionMode(){
     return window.matchMedia('(max-width:950px) and (pointer:coarse)').matches;
   }
+  const viewportHost=document.getElementById('screen-adventure');
   async function setImmersive(entering,{native=true,landscape=true}={}){
     shell.classList.toggle('expedition-immersive',entering);
+    document.body.classList.toggle('expedition-immersive-open',entering);
+    viewportHost?.classList.toggle('expedition-fullscreen-host',entering);
     immersiveButton.textContent=entering?'EXIT':'FULL SCREEN';
     immersiveButton.setAttribute('aria-pressed',entering?'true':'false');
 
     if(entering){
       if(native){
         try{
-          if(shell.requestFullscreen&&!document.fullscreenElement){
-            await shell.requestFullscreen({navigationUI:'hide'});
+          if(viewportHost?.requestFullscreen&&!document.fullscreenElement){
+            await viewportHost.requestFullscreen({navigationUI:'hide'});
             shell.classList.add('expedition-native-fullscreen');
           }
         }catch(_){}
@@ -565,8 +582,14 @@ function renderPulseRun(){
       }
     }else{
       shell.classList.remove('expedition-native-fullscreen');
+      document.body.classList.remove('expedition-immersive-open');
+      viewportHost?.classList.remove('expedition-fullscreen-host');
       try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(_){}
-      try{if(document.fullscreenElement===shell&&document.exitFullscreen)await document.exitFullscreen();}catch(_){}
+      try{
+        if((document.fullscreenElement===viewportHost||document.fullscreenElement===shell)&&document.exitFullscreen){
+          await document.exitFullscreen();
+        }
+      }catch(_){}
     }
   }
   async function toggleImmersive(){
@@ -575,9 +598,9 @@ function renderPulseRun(){
   immersiveButton.addEventListener('click',toggleImmersive);
   document.addEventListener('fullscreenchange',()=>{
     if(!document.fullscreenElement&&shell.classList.contains('expedition-native-fullscreen')){
-      shell.classList.remove('expedition-native-fullscreen','expedition-immersive');
-      immersiveButton.textContent='FULL SCREEN';
-      immersiveButton.setAttribute('aria-pressed','false');
+      // Keep the CSS viewport mode active if native fullscreen disappears.
+      // This is the reliable fallback on mobile Safari.
+      shell.classList.remove('expedition-native-fullscreen');
     }
   });
 
