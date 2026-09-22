@@ -1829,3 +1829,96 @@ body.adventure-modal-open{
 @media(prefers-reduced-motion:reduce){
   .official-microbit-object{transition:none}
 }
+
+
+/* ============================================================
+   Desktop readability pass
+   Keep level tiles compact; enlarge the rest of the interface.
+   ============================================================ */
+@media(min-width:861px){
+  body{font-size:16px;line-height:1.5}
+  button{font-size:15px}
+  .brand{font-size:20px}
+  .brand-subtitle{font-size:14px}
+  .stat-pill{font-size:14px}
+  .eyebrow{font-size:12px}
+  .hero-copy{font-size:16px}
+  .hero-status span,.hero-status small{font-size:11px}
+  .mission-key{font-size:13px}
+
+  .brief-topic{font-size:16px}
+  .brief-copy>p{font-size:16px}
+  .brief-objective strong{font-size:12px}
+  .brief-objective span{font-size:15px}
+  .battle-week{font-size:13px}
+  .repair-count{font-size:13px}
+  .module{font-size:12px;padding:7px 9px}
+  .hud-label{font-size:11px}
+  .hud-item strong{font-size:15px}
+  .hint-button{font-size:13px}
+
+  .question-count{font-size:13px}
+  .retry-badge{font-size:11px}
+  .qcode{font-size:15px;line-height:1.6}
+  .option-button{font-size:15px}
+  .option-key{font-size:12px}
+  .match-intro{font-size:14px}
+  .match-column-title{font-size:11px}
+  .match-term,.match-definition{font-size:14px}
+  .paired-with,.correct-match{font-size:12px}
+  .feedback-copy{font-size:14px}
+  .feedback-copy strong{font-size:16px}
+
+  .results-summary{font-size:15px}
+  .result-stat span{font-size:11px}
+  .result-stat strong{font-size:17px}
+  .review{font-size:13px;line-height:1.55}
+  .toast{font-size:14px}
+
+  .how-grid strong{font-size:14px}
+  .how-grid p{font-size:13px;line-height:1.5}
+  .keyboard-tip{font-size:13px}
+  .setting-row strong{font-size:15px}
+  .setting-row small{font-size:13px}
+  .install-copy strong{font-size:15px}
+  .install-copy small{font-size:13px}
+  .art-credit{font-size:11px}
+
+  .adventure-progress{font-size:12px}
+  .microbit-board-label{font-size:11px}
+  .microbit-pins span{font-size:10px}
+  .adventure-room-head p:not(.eyebrow){font-size:15px;line-height:1.55}
+  .adventure-info-strip span{font-size:12px;padding:6px 10px}
+  .pulse-cpu,.pulse-usb{font-size:10px}
+  .pulse-status,.logic-status{font-size:14px}
+  .adventure-success strong{font-size:15px}
+  .adventure-success span{font-size:13px}
+  .reality-note strong{font-size:12px}
+  .reality-note span{font-size:13px}
+  .boot-slot small{font-size:10px}
+  .boot-slot span{font-size:14px}
+  .boot-choice strong{font-size:14px}
+  .boot-choice span{font-size:13px}
+  .memory-rules span{font-size:12px}
+
+  .adventure-popup.notice{font-size:14px}
+  .adventure-popup-copy strong{font-size:16px}
+  .adventure-popup-copy span{font-size:14px}
+  .pulse-live-hud{font-size:12px}
+  .pwa-update-copy strong{font-size:14px}
+  .pwa-update-copy span{font-size:12px}
+
+  .random-rule-box small{font-size:11px}
+  .random-rule-box span{font-size:13px}
+  .random-catch-progress{font-size:12px}
+  .random-catcher-arena::before{font-size:10px}
+  .random-catcher span{font-size:10px}
+  .random-diagnostic-title small{font-size:11px}
+  .random-diagnostic-title span{font-size:14px}
+  .random-stream-card small{font-size:10px}
+  .random-stream-values span{font-size:14px;min-width:32px;height:32px}
+  .property-router-rule small{font-size:10px}
+  .property-router-rule span{font-size:14px}
+  .property-router-cell small{font-size:9px}
+  .boot-ok-pill{font-size:12px}
+}
