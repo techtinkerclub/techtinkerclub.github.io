@@ -385,7 +385,7 @@
             kicker:'SENSOR ARRAY ONLINE',
             perfect:'Perfect calibration!',
             title:'Sensor Array online!',
-            perfectSummary:'Threshold scanning, variable processing, sensor-map deduction and the final diagnostic all completed without a fault.',
+            perfectSummary:'Sensor sweeping, variable processing, sensor-map deduction and the final diagnostic all completed without a fault.',
             summary:'Stored values and sensor thresholds are stable again. Replay the mission if you want the clean-adventure and flawless-diagnostic stars.'
           },        };
         const rc=resultCopy[adventureId]||{kicker:'SYSTEM ONLINE',perfect:'Flawless repair!',title:'System online!',perfectSummary:'Every adventure stage and diagnostic completed without a fault.',summary:'The system is online again.'};
