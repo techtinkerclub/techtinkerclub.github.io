@@ -515,7 +515,11 @@ function renderPulseRun(){
     if(Math.max(Math.abs(dx),Math.abs(dy))>=dead){
       next=Math.abs(dx)>Math.abs(dy)?(dx<0?[0,-1]:[0,1]):(dy<0?[-1,0]:[1,0]);
     }
-    if(!next)return;
+    if(!next){
+      joystickDir=null;
+      if(joystickRepeat){clearInterval(joystickRepeat);joystickRepeat=null;}
+      return;
+    }
     const code=next[0]+':'+next[1];
     if(code!==joystickDir){
       joystickDir=code;movePlayer(next[0],next[1],null);
