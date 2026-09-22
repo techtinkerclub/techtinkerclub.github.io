@@ -136,10 +136,11 @@ function roomHeader(kicker,title,copy){
   const head=document.createElement('div');head.className='adventure-room-head';
   const left=document.createElement('div');
   const eyebrow=document.createElement('p');eyebrow.className='eyebrow';eyebrow.textContent=kicker;
-  const stage=document.createElement('span');stage.className='room-stage-badge';stage.textContent=`STAGE ${Math.min(3,(active?.roomStage||0)+1)}/3`;
   const h=document.createElement('h2');h.id='adventure-title';h.textContent=title;
   const p=document.createElement('p');p.textContent=copy;
-  left.append(eyebrow,stage,h,p);
+  left.appendChild(eyebrow);
+  if(active&&active.room<3){const stage=document.createElement('span');stage.className='room-stage-badge';stage.textContent=`STAGE ${Math.min(3,(active.roomStage||0)+1)}/3`;left.appendChild(stage);}
+  left.append(h,p);
   head.appendChild(left);
   if(active&&active.room<3){
     const meter=document.createElement('div');meter.className='adventure-integrity';meter.dataset.adventureIntegrity='1';
@@ -1071,7 +1072,7 @@ function renderRandomiserFinalGate(){
   root.appendChild(roomHeader(
     'RANDOMISER CORE STABLE',
     'Events and random outputs are responding again',
-    'Packet ranges, output-range diagnostics and the number-property router are stable. The final boss is the complete 12-question Week 2 diagnostic.'
+    'All nine Randomiser Core adventure stages are stable. The final boss is 12 questions split into three increasingly difficult sets of four.'
   ));
 
   const board=document.createElement('div');board.className='microbit-face full-face';
@@ -1083,11 +1084,11 @@ function renderRandomiserFinalGate(){
   const totalFaults=active.arcadeFaults+active.logicFaults+active.routerFaults;
   const stats=document.createElement('div');stats.className='adventure-run-stats';
   stats.innerHTML=`<span><strong>${active.arcadeFaults}</strong> packet faults</span><span><strong>${active.logicFaults}</strong> stream faults</span><span><strong>${active.routerFaults}</strong> router faults</span><span><strong>${totalFaults}</strong> total faults</span>`;
-  root.append(board,real,stats);led()?.setPattern('dice5');led()?.setPattern('check');
+  root.append(board,real,stats);led()?.setPattern('dice5');
 
   later(()=>showTransition(
     'Final diagnostic ready',
-    'The three repair rooms are complete. Beat all 12 Week 2 questions to bring Randomiser Core online.',
+    'Nine adventure stages are complete. Clear three diagnostic stages of four questions to bring Randomiser Core online.',
     'Run 12-question diagnostic →',
     ()=>{
       if(active.completed)return;active.completed=true;
@@ -1131,7 +1132,7 @@ function renderFinalGate(){
   root.appendChild(roomHeader(
     'BOOT PATH RESTORED',
     'The micro:bit can boot again',
-    'Power, startup logic and RAM are stable. The final boss is the complete 12-question Week 1 diagnostic.'
+    'All nine Boot Sequence adventure stages are stable. The final boss is 12 questions split into three increasingly difficult sets of four.'
   ));
 
   const board=document.createElement('div');board.className='microbit-face full-face';
@@ -1141,13 +1142,13 @@ function renderFinalGate(){
   real.innerHTML='<strong>Inside the real micro:bit</strong><span>The board really does contain a microcontroller, memory, input/output connections, sensors, a 5×5 LED display, buttons and radio hardware. Our glowing data pulse and rooms are a game model — real electrical signals do not look like tiny moving dots.</span>';
 
   const stats=document.createElement('div');stats.className='adventure-run-stats';
-  stats.innerHTML=`<span><strong>${active.bits.size}/3</strong> boot packets</span><span><strong>${active.arcadeFaults}</strong> signal faults</span><span><strong>${active.sequenceFaults}</strong> sequence faults</span><span><strong>${active.memoryFaults}</strong> RAM checks failed</span>`;
+  stats.innerHTML=`<span><strong>${active.bits.size}/12</strong> boot packets</span><span><strong>${active.arcadeFaults}</strong> signal faults</span><span><strong>${active.sequenceFaults}</strong> sequence faults</span><span><strong>${active.memoryFaults}</strong> RAM checks failed</span>`;
 
   root.append(board,real,stats);
 
   later(()=>showTransition(
     'Final diagnostic ready',
-    'The repair rooms are complete. Beat the full 12-question diagnostic to bring Boot Sequence online.',
+    'Nine adventure stages are complete. Clear three diagnostic stages of four questions to bring Boot Sequence online.',
     'Run 12-question diagnostic →',
     ()=>{
       if(active.completed)return;active.completed=true;
