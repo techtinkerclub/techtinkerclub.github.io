@@ -2117,9 +2117,9 @@ function renderVariableProcessor(){
 
 function sensorFaultStageConfig(stage){
   return [
-    {n:5,sensors:4,minClues:8,maxClues:13,label:'5×5 · 4 TRIPPED',copy:'Use the neighbour counts to locate four sensors that are over threshold.'},
-    {n:6,sensors:6,minClues:10,maxClues:17,label:'6×6 · 6 TRIPPED',copy:'The map is larger now. Combine overlapping clue neighbourhoods to locate six faults.'},
-    {n:7,sensors:8,minClues:12,maxClues:21,label:'7×7 · 8 TRIPPED',copy:'Final stage: eight hidden faults on the largest map, with longer chains of deductions.'}
+    {n:5,sensors:4,minClues:8,maxClues:15,subset:false,label:'5×5 · 4 TRIPPED',copy:'Every step can be deduced directly from a clue or the total number of tripped sensors — no guessing.'},
+    {n:6,sensors:6,minClues:10,maxClues:21,subset:true,label:'6×6 · 6 TRIPPED',copy:'Combine direct clue deductions and overlapping clue neighbourhoods. Every move is logically forced.'},
+    {n:7,sensors:8,minClues:12,maxClues:26,subset:true,label:'7×7 · 8 TRIPPED',copy:'Final stage: longer deduction chains and overlapping clues, but still no guessing is required.'}
   ][stage]||null;
 }
 function sensorFaultKey(r,c){return r+':'+c;}
@@ -2194,40 +2194,155 @@ function sensorFaultCountSolutions(n,sensorCount,clues,limit=2){
   }
   rec(0);return count;
 }
+
+function sensorFaultConstraintState(n,clues,state){
+  const clueSet=new Set(Object.keys(clues));
+  return Object.entries(clues).map(([k,target])=>{
+    const parts=k.split(':').map(Number);
+    const cells=sensorFaultNeighbours(n,parts[0],parts[1],clueSet).map(p=>sensorFaultKey(p[0],p[1]));
+    let tripped=0;
+    const unknown=[];
+    for(const cell of cells){
+      const v=state.get(cell)||0;
+      if(v===1)tripped++;
+      else if(v===0)unknown.push(cell);
+    }
+    return {k,target:Number(target),tripped,need:Number(target)-tripped,unknown};
+  });
+}
+function sensorFaultSetSubset(a,b){
+  if(a.size>=b.size)return false;
+  for(const x of a)if(!b.has(x))return false;
+  return true;
+}
+function sensorFaultNextDeduction(n,sensorCount,clues,inputState=null,options={}){
+  const clueSet=new Set(Object.keys(clues));
+  const state=new Map();
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    const k=sensorFaultKey(r,c);
+    if(clueSet.has(k))continue;
+    let v=0;
+    if(inputState instanceof Map)v=Number(inputState.get(k)||0);
+    else if(Array.isArray(inputState))v=Number(inputState[r]?.[c]||0);
+    state.set(k,v===1?1:v===2?2:0);
+  }
+
+  const constraints=sensorFaultConstraintState(n,clues,state);
+  for(const con of constraints){
+    if(con.need<0||con.need>con.unknown.length)return {contradiction:true,reason:'clue',clues:[con.k],cells:[]};
+    if(!con.unknown.length)continue;
+    if(con.need===0){
+      return {value:2,technique:'direct-safe',clues:[con.k],cells:con.unknown.slice(),target:con.target,state};
+    }
+    if(con.need===con.unknown.length){
+      return {value:1,technique:'direct-tripped',clues:[con.k],cells:con.unknown.slice(),target:con.target,state};
+    }
+  }
+
+  const allUnknown=[...state.entries()].filter(([,v])=>v===0).map(([k])=>k);
+  const marked=[...state.values()].filter(v=>v===1).length;
+  if(allUnknown.length){
+    if(marked===sensorCount)return {value:2,technique:'global-safe',clues:[],cells:allUnknown,target:sensorCount,state};
+    if(marked+allUnknown.length===sensorCount)return {value:1,technique:'global-tripped',clues:[],cells:allUnknown,target:sensorCount,state};
+  }
+
+  if(options.subset){
+    for(let i=0;i<constraints.length;i++)for(let j=0;j<constraints.length;j++){
+      if(i===j)continue;
+      const a=constraints[i],b=constraints[j];
+      if(!a.unknown.length||!b.unknown.length)continue;
+      const A=new Set(a.unknown),B=new Set(b.unknown);
+      if(!sensorFaultSetSubset(A,B))continue;
+      const diff=[...B].filter(x=>!A.has(x));
+      if(!diff.length)continue;
+      const need=b.need-a.need;
+      if(need<0||need>diff.length)return {contradiction:true,reason:'subset',clues:[a.k,b.k],cells:diff};
+      if(need===0)return {value:2,technique:'subset-safe',clues:[a.k,b.k],cells:diff,target:0,state};
+      if(need===diff.length)return {value:1,technique:'subset-tripped',clues:[a.k,b.k],cells:diff,target:need,state};
+    }
+  }
+  return null;
+}
+function sensorFaultLogicalSolve(n,sensorCount,clues,options={}){
+  const clueSet=new Set(Object.keys(clues));
+  const state=new Map();
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    const k=sensorFaultKey(r,c);
+    if(!clueSet.has(k))state.set(k,0);
+  }
+  const steps=[];
+  const maxSteps=n*n*4;
+  for(let guard=0;guard<maxSteps;guard++){
+    if([...state.values()].every(v=>v!==0)){
+      const tripped=[...state.values()].filter(v=>v===1).length;
+      const constraints=sensorFaultConstraintState(n,clues,state);
+      const valid=tripped===sensorCount&&constraints.every(x=>x.need===0&&x.unknown.length===0);
+      return {solved:valid,contradiction:!valid,state,steps};
+    }
+    const step=sensorFaultNextDeduction(n,sensorCount,clues,state,options);
+    if(!step)return {solved:false,contradiction:false,state,steps,stuck:true};
+    if(step.contradiction)return {solved:false,contradiction:true,state,steps};
+    let changed=0;
+    for(const k of step.cells){
+      if((state.get(k)||0)===0){state.set(k,step.value);changed++;}
+      else if(state.get(k)!==step.value)return {solved:false,contradiction:true,state,steps};
+    }
+    if(!changed)return {solved:false,contradiction:false,state,steps,stuck:true};
+    steps.push({...step,state:undefined});
+  }
+  return {solved:false,contradiction:false,state,steps,stuck:true};
+}
+
 function makeSensorFaultMap(stage,seed){
   const cfg=sensorFaultStageConfig(stage),n=cfg.n;
   let best=null;
-  for(let attempt=0;attempt<36;attempt++){
+  for(let attempt=0;attempt<80;attempt++){
     const rng=rngFromSeed(seed+':fault-map:'+attempt);
     const all=shuffled(Array.from({length:n*n},(_,i)=>[Math.floor(i/n),i%n]),rng);
     const sensorSet=new Set(all.slice(0,cfg.sensors).map(p=>sensorFaultKey(p[0],p[1])));
     const safe=all.filter(p=>!sensorSet.has(sensorFaultKey(p[0],p[1])));
-    const initial=Math.min(safe.length,Math.max(cfg.minClues,Math.round(n*n*.34)));
+    const initial=Math.min(safe.length,Math.max(cfg.minClues,Math.round(n*n*.38)));
     const clueSet=new Set(shuffled(safe,rng).slice(0,initial).map(p=>sensorFaultKey(p[0],p[1])));
     let remaining=shuffled(safe.filter(p=>!clueSet.has(sensorFaultKey(p[0],p[1]))),rng);
     let clues=sensorFaultClues(n,sensorSet,clueSet);
-    let count=sensorFaultCountSolutions(n,cfg.sensors,clues,2);
-    while(count!==1&&remaining.length){
-      const p=remaining.pop();clueSet.add(sensorFaultKey(p[0],p[1]));
+    let unique=sensorFaultCountSolutions(n,cfg.sensors,clues,2)===1;
+    let logic=sensorFaultLogicalSolve(n,cfg.sensors,clues,{subset:cfg.subset});
+
+    while((!unique||!logic.solved)&&remaining.length){
+      const p=remaining.pop();
+      clueSet.add(sensorFaultKey(p[0],p[1]));
       clues=sensorFaultClues(n,sensorSet,clueSet);
-      count=sensorFaultCountSolutions(n,cfg.sensors,clues,2);
+      unique=sensorFaultCountSolutions(n,cfg.sensors,clues,2)===1;
+      logic=sensorFaultLogicalSolve(n,cfg.sensors,clues,{subset:cfg.subset});
     }
-    if(count!==1)continue;
+    if(!unique||!logic.solved)continue;
 
     for(const k of shuffled([...clueSet],rng)){
       if(clueSet.size<=cfg.minClues)break;
       clueSet.delete(k);
       const trial=sensorFaultClues(n,sensorSet,clueSet);
-      if(sensorFaultCountSolutions(n,cfg.sensors,trial,2)===1)clues=trial;
-      else clueSet.add(k);
+      const trialUnique=sensorFaultCountSolutions(n,cfg.sensors,trial,2)===1;
+      const trialLogic=trialUnique?sensorFaultLogicalSolve(n,cfg.sensors,trial,{subset:cfg.subset}):null;
+      if(trialUnique&&trialLogic?.solved){
+        clues=trial;
+        logic=trialLogic;
+      }else clueSet.add(k);
     }
+
     clues=sensorFaultClues(n,sensorSet,clueSet);
-    const candidate={n,cfg,sensorSet:[...sensorSet],clues};
+    logic=sensorFaultLogicalSolve(n,cfg.sensors,clues,{subset:cfg.subset});
+    if(!logic.solved)continue;
+    const candidate={
+      n,cfg,sensorSet:[...sensorSet],clues,
+      logicSteps:logic.steps.length,
+      logicTechniques:[...new Set(logic.steps.map(s=>s.technique))]
+    };
     if(!best||Object.keys(candidate.clues).length<Object.keys(best.clues).length)best=candidate;
     if(Object.keys(candidate.clues).length<=cfg.maxClues)return candidate;
   }
   return best;
 }
+
 function renderSensorFaultMap(){
   const stageIndex=active.roomStage||0,stageNo=stageIndex+1,cfg=sensorFaultStageConfig(stageIndex);
   setProgress('SENSOR ARRAY · ROOM 3/3 · SENSOR FAULT MAP · STAGE '+stageNo+'/3');
