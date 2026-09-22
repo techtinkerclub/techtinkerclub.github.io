@@ -518,54 +518,72 @@ function columnsUnique(grid,n){const seen=new Set();for(let c=0;c<n;c++){const k
 function buildSolution(n,seed){const rng=rngFromSeed(seed+':solution'),patterns=linePatterns(n),ordered=shuffled(patterns,rng),grid=[],used=new Set();function rec(r){if(r===n)return columnsUnique(grid,n);const offset=Math.floor(rng()*ordered.length);for(let k=0;k<ordered.length;k++){const row=ordered[(k+offset)%ordered.length],rk=row.join('');if(used.has(rk)||!partialColumnOK(grid,row,r,n))continue;grid[r]=row;used.add(rk);if(rec(r+1))return true;used.delete(rk);grid.pop();}return false;}if(!rec(0))return null;return grid.map(r=>r.slice());}
 function rowMatches(row,givens){for(let c=0;c<row.length;c++)if(givens[c]!=null&&givens[c]!==row[c])return false;return true;}
 function countSolutions(display,limit=2){const n=display.length,patterns=linePatterns(n),candidates=display.map(row=>patterns.filter(p=>rowMatches(p,row))),grid=[],used=new Set();let count=0;function rec(r){if(count>=limit)return;if(r===n){if(columnsUnique(grid,n))count++;return;}for(const row of candidates[r]){const rk=row.join('');if(used.has(rk)||!partialColumnOK(grid,row,r,n))continue;grid[r]=row;used.add(rk);rec(r+1);used.delete(rk);if(count>=limit)return;}}rec(0);return count;}
-function makeTakuzu(seed){
+function makeTakuzu(seed,options={}){
   const n=6,solution=buildSolution(n,seed);if(!solution)return null;
   const display=solution.map(r=>r.slice()),rng=rngFromSeed(seed+':mask'),order=shuffled(Array.from({length:n*n},(_,i)=>[Math.floor(i/n),i%n]),rng);
   let shown=n*n;
-  const target=20;
+  const target=Math.max(18,Math.min(30,Number(options.target)||20));
   const minShownPerLine=3;
   const rowCount=Array(n).fill(n),colCount=Array(n).fill(n);
-  for(const [r,c] of order){
+  for(const pos of order){
+    const r=pos[0],c=pos[1];
     if(shown<=target)break;
     if(rowCount[r]<=minShownPerLine||colCount[c]<=minShownPerLine)continue;
     const old=display[r][c];
     display[r][c]=null;
-    if(countSolutions(display,2)===1){
-      shown--;rowCount[r]--;colCount[c]--;
-    }else display[r][c]=old;
+    if(countSolutions(display,2)===1){shown--;rowCount[r]--;colCount[c]--;}
+    else display[r][c]=old;
   }
-  return {n,solution,display};
+  return {n,solution,display,shown};
 }
 
 function renderMemoryBank(){
-  setProgress('BOOT SEQUENCE · ROOM 3/3 · RAM BANK');
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const targets=[26,23,20];
+  const target=targets[stageIndex];
+  setProgress('BOOT SEQUENCE · ROOM 3/3 · RAM BANK · STAGE '+stageNo+'/3');
   const root=active.root;
   root.appendChild(roomHeader(
     'ROOM 3 · RAM CALIBRATION',
     'Repair the binary memory bank',
-    'Some 0s and 1s were corrupted. Restore the 6×6 bank using the three binary-logic rules.'
+    stageIndex===0
+      ?'Stage 1 has more clues. Restore the missing bits using the binary-logic rules.'
+      :stageIndex===1
+        ?'Stage 2 removes more clues, so more cells must be deduced.'
+        :'Final stage: the 6×6 bank has only 20 fixed clues. Use all three rules carefully.'
   ));
 
   const rules=document.createElement('div');rules.className='memory-rules';
   rules.innerHTML='<span><strong>1</strong> Three 0s and three 1s in every row and column</span><span><strong>2</strong> Never three identical bits in a row</span><span><strong>3</strong> No completed rows or columns may be identical</span>';
   root.appendChild(rules);
 
-  const puzzle=makeTakuzu(active.seed+':ram')||{n:6,solution:[[0,0,1,0,1,1],[0,1,0,1,0,1],[1,0,0,1,1,0],[0,1,1,0,1,0],[1,0,1,1,0,0],[1,1,0,0,0,1]],display:[[0,0,1,null,null,1],[0,1,null,1,0,null],[1,null,0,null,1,0],[null,1,1,0,null,0],[1,0,null,1,0,null],[1,null,0,null,0,1]]};
+  const puzzle=makeTakuzu(active.seed+':ram:'+stageNo,{target})||makeTakuzu(active.seed+':ram:fallback:'+stageNo,{target});
+  if(!puzzle){
+    showTransition('RAM generator fault','A unique memory bank could not be generated.','Retry stage →',()=>renderRoom(),'fault');
+    return;
+  }
   const state=puzzle.display.map(r=>r.slice());
   const board=document.createElement('div');board.className='memory-grid';board.style.setProperty('--memory-n',String(puzzle.n));
   const buttons=[];
   const editableTotal=puzzle.display.flat().filter(v=>v==null).length;
 
-  for(let r=0;r<puzzle.n;r++)for(let c=0;c<puzzle.n;c++){
-    const given=puzzle.display[r][c]!=null,b=document.createElement('button');b.type='button';b.className=`memory-cell${given?' given':''}`;b.dataset.r=String(r);b.dataset.c=String(c);b.disabled=given;
-    function paint(){const v=state[r][c];b.textContent=v==null?'·':String(v);b.classList.toggle('zero',v===0);b.classList.toggle('one',v===1);}
-    if(!given)b.addEventListener('click',()=>{state[r][c]=state[r][c]==null?0:state[r][c]===0?1:null;b.classList.remove('wrong','hint');paint();updateMemoryLEDs();});
+  for(let r=0;r<puzzle.n;r++)for(let cc=0;cc<puzzle.n;cc++){
+    const given=puzzle.display[r][cc]!=null;
+    const b=document.createElement('button');b.type='button';b.className='memory-cell'+(given?' given':'');b.dataset.r=String(r);b.dataset.c=String(cc);b.disabled=given;
+    function paint(){
+      const v=state[r][cc];b.textContent=v==null?'·':String(v);
+      b.classList.toggle('zero',v===0);b.classList.toggle('one',v===1);
+    }
+    if(!given)b.addEventListener('click',()=>{
+      state[r][cc]=state[r][cc]==null?0:state[r][cc]===0?1:null;
+      b.classList.remove('wrong','hint');paint();updateMemoryLEDs();
+    });
     paint();board.appendChild(b);buttons.push(b);
   }
 
   function updateMemoryLEDs(){
     let filled=0;
-    for(let r=0;r<puzzle.n;r++)for(let c=0;c<puzzle.n;c++)if(puzzle.display[r][c]==null&&state[r][c]!=null)filled++;
+    for(let r=0;r<puzzle.n;r++)for(let cc=0;cc<puzzle.n;cc++)if(puzzle.display[r][cc]==null&&state[r][cc]!=null)filled++;
     led()?.progress(filled,editableTotal);
   }
   updateMemoryLEDs();
@@ -573,30 +591,47 @@ function renderMemoryBank(){
   const actions=document.createElement('div');actions.className='memory-actions';
   const hint=document.createElement('button');hint.type='button';hint.className='secondary';hint.textContent='Highlight a useful cell';
   const check=document.createElement('button');check.type='button';check.textContent='Check memory';
-  const status=document.createElement('div');status.className='logic-status';status.textContent='Tap a blank cell to cycle · → 0 → 1 → ·';
+  const status=document.createElement('div');status.className='logic-status';
+  status.textContent='Stage '+stageNo+'/3 · '+editableTotal+' cells to restore · tap a blank cell to cycle · → 0 → 1 → ·';
 
   hint.addEventListener('click',()=>{
     buttons.forEach(b=>b.classList.remove('hint'));
     const candidates=buttons.filter(b=>!b.disabled&&state[+b.dataset.r][+b.dataset.c]==null);
     if(!candidates.length){showNotice('Every cell is filled. Run Check memory.','info',1200);return;}
-    const b=candidates[0];b.classList.add('hint');showNotice('Hint: check the highlighted row and column for balance, pairs or a forced bit.','info',1800);
+    const b=candidates[0];b.classList.add('hint');
+    showNotice('Hint: inspect the highlighted row and column for balance, pairs or a forced bit.','info',1800);
   });
 
   check.addEventListener('click',()=>{
     let wrong=0,blank=0;
-    buttons.forEach(b=>{b.classList.remove('wrong');const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c];if(v==null)blank++;else if(v!==puzzle.solution[r][c]){wrong++;if(!b.disabled)b.classList.add('wrong');}});
+    buttons.forEach(b=>{
+      b.classList.remove('wrong');
+      const r=+b.dataset.r,cc=+b.dataset.c,v=state[r][cc];
+      if(v==null)blank++;
+      else if(v!==puzzle.solution[r][cc]){wrong++;if(!b.disabled)b.classList.add('wrong');}
+    });
     if(!wrong&&!blank){
-      check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);active.roomsCompleted=Math.max(active.roomsCompleted,3);active.playTone(920,.1,'sine',.04);status.textContent='RAM checksum valid.';led()?.setPattern('check');
-      showTransition('RAM bank restored','Power, startup control and binary memory are stable.','Continue →',()=>{active.room=3;renderRoom();});
-    }else if(wrong){active.memoryFaults++;const depleted=applyAdventurePenalty();active.playTone(155,.08,'square',.025);led()?.flash('x',380);if(depleted)return;showNotice(`${wrong} bit${wrong===1?' is':'s are'} inconsistent. Recheck the highlighted cells.`,'fault',1500);}
-    else showNotice(`${blank} memory cell${blank===1?' is':'s are'} still blank.`,'warn',1200);
+      check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);
+      active.playTone(920,.1,'sine',.04);status.textContent='Stage '+stageNo+' RAM checksum valid.';led()?.setPattern('check');
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,3);
+      finishRoomStage(
+        'RAM stage '+stageNo+'/3 restored',
+        stageIndex===0?'Next: fewer clues and more missing memory cells.':'Next: the final 20-clue memory bank.',
+        'RAM bank fully restored',
+        'All three 6×6 memory banks passed their checksum.',
+        'Continue →',
+        ()=>{active.room=3;renderRoom();}
+      );
+    }else if(wrong){
+      active.memoryFaults++;const depleted=applyAdventurePenalty();
+      active.playTone(155,.08,'square',.025);led()?.flash('x',380);
+      if(depleted)return;
+      showNotice(wrong+' bit'+(wrong===1?' is':'s are')+' inconsistent. Recheck the highlighted cells.','fault',1500);
+    }else showNotice(blank+' memory cell'+(blank===1?' is':'s are')+' still blank.','warn',1200);
   });
 
-  actions.append(hint,check);
-  root.append(board,actions,status);
+  actions.append(hint,check);root.append(board,actions,status);
 }
-
-
 
 /* ============================================================
    SYSTEM 2 · RANDOMISER CORE
