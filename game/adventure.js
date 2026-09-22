@@ -620,7 +620,8 @@ function renderRandomPacketCatcher(){
   }
 
   function resolvePacket(p){
-    if(p.lane!==playerLane)return;
+    if(p.lane!==playerLane||p.resolved)return;
+    p.resolved=true;
     if(validValue(p.value)){
       totalCaught++;caughtInWave++;active.playTone(720,.055,'sine',.025);
       showNotice(`${p.value} is in range · ${caughtInWave}/5 caught.`,'success',650);
@@ -657,6 +658,7 @@ function renderRandomPacketCatcher(){
       if(p.y>=78&&p.y<86){
         resolvePacket(p);
         if(!live||finished)return;
+        if(p.resolved){packets.splice(i,1);continue;}
       }
       if(p.y>102)packets.splice(i,1);
     }
