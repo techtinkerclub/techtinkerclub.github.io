@@ -235,7 +235,7 @@ function renderPulseRun(){
     active.playTone(145,.1,'sawtooth',.03);
     board.classList.remove('fault');void board.offsetWidth;board.classList.add('fault');
     showNotice('Corrupted signal! Pulse reset to USB.','fault',1200);
-    render();
+    render();led()?.flash('x',330);
     later(()=>{faultLock=false;board.classList.remove('fault');},650);
   }
 
@@ -559,7 +559,7 @@ function renderRandomPacketCatcher(){
       if(caughtInWave>=3){
         if(wave===0){
           live=false;clearTimers();
-          wave=1;caughtInWave=0;packets.splice(0,packets.length);paintRule();renderPackets();
+          wave=1;caughtInWave=0;packets.splice(0,packets.length);paintRule();renderPackets();led()?.setPattern('check');
           showTransition('First range complete','You caught 3 numbers from 1 to 6. Now catch 3 numbers from 0 to 4.','Start range 0–4 →',()=>{
             if(!active||active.systemId!=='2'||active.room!==0)return;
             live=true;every(spawn,900);every(tick,100);spawn();
