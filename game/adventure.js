@@ -483,8 +483,9 @@ function renderPulseRun(){
     if(now<pulseReadyAt)return;
     pulseReadyAt=now+4200;
     let hit=0;
+    const pulseDist=expeditionDistances(maze.grid,player);
     for(const h of hazards){
-      const d=Math.abs(h.pos[0]-player[0])+Math.abs(h.pos[1]-player[1]);
+      const d=pulseDist[h.pos[0]][h.pos[1]];
       if(d<=2){h.stunUntil=now+2700;hit++;}
     }
     active.playTone(hit?620:300,.07,'sine',.025);
@@ -501,7 +502,7 @@ function renderPulseRun(){
         .sort((a,b)=>dist[a[0]][a[1]]-dist[b[0]][b[1]]);
       if(!opts.length)continue;
       // Mostly chase BIT, occasionally choose the second-best path to keep movement less robotic.
-      const choice=opts.length>1&&Math.random()<.16?opts[1]:opts[0];
+      const choice=opts.length>1&&maze.rng()<.16?opts[1]:opts[0];
       h.pos=choice.slice();
     }
     if(hazards.some(h=>now>=h.stunUntil&&same(h.pos,player))){collide();return;}
@@ -2682,10 +2683,10 @@ function renderFinalGate(){
   board.innerHTML=microbitBoardMarkup();
 
   const real=document.createElement('div');real.className='reality-note real-note';
-  real.innerHTML='<strong>Inside the real micro:bit</strong><span>The board really does contain a microcontroller, memory, input/output connections, sensors, a 5×5 LED display, buttons and radio hardware. Our glowing data pulse and rooms are a game model — real electrical signals do not look like tiny moving dots.</span>';
+  real.innerHTML='<strong>Inside the real micro:bit</strong><span>The board really does contain a microcontroller, memory, input/output connections, sensors, a 5×5 LED display, buttons and radio hardware. BIT, the corridors and roaming corruption are our game-world model of travelling through those systems.</span>';
 
   const stats=document.createElement('div');stats.className='adventure-run-stats';
-  stats.innerHTML=`<span><strong>${active.bits.size}/12</strong> boot packets</span><span><strong>${active.arcadeFaults}</strong> signal faults</span><span><strong>${active.sequenceFaults}</strong> sequence faults</span><span><strong>${active.memoryFaults}</strong> RAM checks failed</span>`;
+  stats.innerHTML=`<span><strong>${active.bits.size}/12</strong> expedition items</span><span><strong>${active.arcadeFaults}</strong> corruption hits</span><span><strong>${active.sequenceFaults}</strong> sequence faults</span><span><strong>${active.memoryFaults}</strong> RAM checks failed</span>`;
 
   root.append(board,real,stats);
 
