@@ -38,6 +38,9 @@ function start(opts){
     memoryFaults:0,
     logicFaults:0,
     routerFaults:0,
+    branchFaults:0,
+    decisionFaults:0,
+    futoshikiFaults:0,
     roomIntegrityMax:4,
     roomIntegrity:4,
     roomRestarts:0,
@@ -91,6 +94,13 @@ function renderRoom(){
     else if(active.room===1)renderBrokenRandomiser();
     else if(active.room===2)renderPropertyRouter();
     else renderRandomiserFinalGate();
+    return;
+  }
+  if(active.systemId==='3'){
+    if(active.room===0)renderBranchRunner();
+    else if(active.room===1)renderDecisionEngine();
+    else if(active.room===2)renderLogicFutoshiki();
+    else renderLogicRouterFinalGate();
     return;
   }
   if(active.room===0)renderPulseRun();
@@ -1120,6 +1130,558 @@ function renderRandomiserFinalGate(){
   ),250);
 }
 
+
+/* ============================================================
+   SYSTEM 3 · LOGIC ROUTER
+   ============================================================ */
+
+/* ---------------- Room 1: Branch Runner ---------------- */
+
+function branchRunnerConfig(stage){
+  return [
+    {rounds:5,duration:4500,label:'IF / ELSE',copy:'Decide whether each simple condition is TRUE or FALSE before the packet reaches the branch.'},
+    {rounds:6,duration:4000,label:'COMPARISONS',copy:'The router now mixes >, <, = and ≠. Read the operator carefully.'},
+    {rounds:6,duration:4600,label:'COMPOUND AND',copy:'Each packet carries two readings. BOTH comparisons must pass for an AND condition to be TRUE.'}
+  ][stage]||null;
+}
+function branchTrial(stage,rng,index){
+  if(stage===0){
+    const limit=randomInt(rng,3,7),x=randomInt(rng,0,9);
+    return {code:'IF x > '+limit,value:'x = '+x,result:x>limit,detail:x+' > '+limit};
+  }
+  if(stage===1){
+    const ops=['>','<','=','≠'],op=ops[index%ops.length],limit=randomInt(rng,2,8);
+    let x;
+    if(op==='='||op==='≠'){
+      x=rng()<.5?limit:Math.max(0,Math.min(9,limit+(rng()<.5?-1:1)*randomInt(rng,1,2)));
+    }else x=randomInt(rng,0,9);
+    const result=op==='>'?x>limit:op==='<'?x<limit:op==='='?x===limit:x!==limit;
+    return {code:'IF x '+op+' '+limit,value:'x = '+x,result,detail:x+' '+op+' '+limit};
+  }
+  const temp=randomInt(rng,14,28),light=randomInt(rng,25,75);
+  const tLimit=randomInt(rng,17,23),lLimit=randomInt(rng,40,60);
+  return {
+    code:'IF temp >= '+tLimit+' AND light >= '+lLimit,
+    value:'temp = '+temp+' · light = '+light,
+    result:temp>=tLimit&&light>=lLimit,
+    detail:temp+' >= '+tLimit+' AND '+light+' >= '+lLimit
+  };
+}
+
+function renderBranchRunner(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1,cfg=branchRunnerConfig(stageIndex);
+  setProgress('LOGIC ROUTER · ROOM 1/3 · BRANCH RUNNER · STAGE '+stageNo+'/3');
+  const root=active.root;
+  root.appendChild(roomHeader('ROOM 1 · BRANCH RUNNER','Route TRUE and FALSE packets',cfg.copy));
+
+  const info=document.createElement('div');info.className='adventure-info-strip';
+  info.innerHTML='<span><strong>TRUE</strong> condition passes</span><span><strong>FALSE</strong> condition fails</span><span><strong>STAGE '+stageNo+'</strong> '+cfg.rounds+' packets</span>';
+  root.appendChild(info);
+
+  const panel=document.createElement('div');panel.className='branch-runner';
+  const code=document.createElement('div');code.className='branch-code';
+  const value=document.createElement('div');value.className='branch-value';
+  const track=document.createElement('div');track.className='branch-track';track.tabIndex=-1;
+  const packet=document.createElement('div');packet.className='branch-packet';packet.textContent='DATA';
+  const fork=document.createElement('div');fork.className='branch-fork';
+  const falseGate=document.createElement('div');falseGate.className='branch-gate false';falseGate.innerHTML='<strong>FALSE</strong><span>←</span>';
+  const trueGate=document.createElement('div');trueGate.className='branch-gate true';trueGate.innerHTML='<strong>TRUE</strong><span>→</span>';
+  fork.append(falseGate,trueGate);track.append(packet,fork);
+  const status=document.createElement('div');status.className='logic-status';
+  const controls=document.createElement('div');controls.className='branch-controls';
+  const falseButton=document.createElement('button');falseButton.type='button';falseButton.className='branch-choice false';falseButton.textContent='FALSE';
+  const trueButton=document.createElement('button');trueButton.type='button';trueButton.className='branch-choice true';trueButton.textContent='TRUE';
+  controls.append(falseButton,trueButton);
+  panel.append(code,value,track,status,controls);root.appendChild(panel);
+
+  const rng=rngFromSeed(active.seed+':branch-runner:'+stageNo);
+  const trials=Array.from({length:cfg.rounds},(_,i)=>branchTrial(stageIndex,rng,i));
+  let round=0,trial=null,progress=0,timer=null,locked=false,finished=false;
+
+  function stopTick(){if(timer){clearInterval(timer);active?.timers?.delete(timer);timer=null;}}
+  function showTrial(){
+    if(finished)return;
+    trial=trials[round];progress=0;locked=false;
+    code.textContent=trial.code;value.textContent=trial.value;
+    status.textContent='PACKET '+(round+1)+'/'+cfg.rounds+' · Is the condition TRUE or FALSE?';
+    packet.style.top='5%';packet.classList.remove('true','false','fault');
+    led()?.setCells([[0,2],[4,0],[4,4]]);
+    stopTick();
+    timer=every(()=>{
+      progress+=50/cfg.duration;
+      const top=5+Math.min(1,progress)*66;
+      packet.style.top=top+'%';
+      const row=Math.max(0,Math.min(3,Math.floor(Math.min(1,progress)*4)));
+      led()?.setCells([[row,2],[4,0],[4,4]]);
+      if(progress>=1){stopTick();resolve(null);}
+    },50);
+  }
+  function next(){
+    round++;
+    if(round>=trials.length){
+      finished=true;stopTick();led()?.setPattern('check');
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
+      finishRoomStage(
+        'Branch Runner stage '+stageNo+'/3 complete',
+        stageIndex===0?'Next: mixed comparison operators.':'Next: compound AND conditions with two readings.',
+        'Branch Runner restored',
+        'All three TRUE/FALSE routing stages are stable.',
+        'Open Decision Engine →',
+        ()=>{active.room=1;renderRoom();}
+      );
+      return;
+    }
+    later(showTrial,650);
+  }
+  function resolve(answer){
+    if(locked||finished)return;
+    locked=true;stopTick();
+    const correct=answer===trial.result;
+    if(correct){
+      packet.classList.add(trial.result?'true':'false');
+      packet.style.top='76%';
+      active.playTone(720,.055,'sine',.025);led()?.setPattern('check');
+      showNotice((trial.result?'TRUE':'FALSE')+' · '+trial.detail,'success',650);
+      next();
+      return;
+    }
+    active.branchFaults++;
+    const depleted=applyAdventurePenalty();
+    packet.classList.add('fault');active.playTone(150,.08,'square',.026);led()?.flash('x',330);
+    if(depleted)return;
+    const msg=answer==null?'Packet timed out. The condition was '+(trial.result?'TRUE.':'FALSE.'):'Not quite — '+trial.detail+' is '+(trial.result?'TRUE.':'FALSE.');
+    showNotice(msg,'fault',1200);
+    later(showTrial,800);
+  }
+  falseButton.addEventListener('click',()=>resolve(false));
+  trueButton.addEventListener('click',()=>resolve(true));
+  active.keyHandler=(e)=>{
+    if(active?.systemId!=='3'||active.room!==0||locked||finished)return;
+    if(e.key==='ArrowLeft'||e.key==='f'||e.key==='F'){e.preventDefault();resolve(false);}
+    if(e.key==='ArrowRight'||e.key==='t'||e.key==='T'){e.preventDefault();resolve(true);}
+  };
+  document.addEventListener('keydown',active.keyHandler);
+
+  const start=document.createElement('button');start.type='button';start.className='branch-start';start.textContent='Start stage '+stageNo+' →';
+  start.addEventListener('click',()=>{start.remove();focusPlayArea(track,showTrial);});
+  panel.insertBefore(start,controls);
+  led()?.setPattern('question');
+}
+
+
+/* ---------------- Room 2: Decision Engine ---------------- */
+
+function decisionChallenges(stage,seed){
+  const rng=rngFromSeed(seed+':decision:'+stage);
+  if(stage===0){
+    const values=shuffled([2,4,6,7,9],rng).slice(0,4);
+    return values.map(x=>({
+      value:'x = '+x,
+      code:'IF x > 5\n  output BIG\nELSE\n  output SMALL',
+      options:['BIG','SMALL'],
+      answer:x>5?'BIG':'SMALL',
+      explain:x+' > 5 is '+(x>5?'TRUE, so BIG runs.':'FALSE, so ELSE runs.')
+    }));
+  }
+  if(stage===1){
+    const values=shuffled([2,4,5,6,8,9],rng).slice(0,5);
+    return values.map(x=>({
+      value:'number = '+x,
+      code:'IF number < 5\n  output LOW\nELSE IF number = 5\n  output EQUAL\nELSE\n  output HIGH',
+      options:['LOW','EQUAL','HIGH'],
+      answer:x<5?'LOW':x===5?'EQUAL':'HIGH',
+      explain:x<5?x+' < 5 is TRUE, so LOW runs.':x===5?x+' is not < 5, but it equals 5, so EQUAL runs.':x+' is neither < 5 nor = 5, so ELSE outputs HIGH.'
+    }));
+  }
+  const moves=['ROCK','PAPER','SCISSORS'];
+  const pairs=[];
+  for(const player of moves)for(const computer of moves)pairs.push([player,computer]);
+  return shuffled(pairs,rng).slice(0,6).map(([player,computer])=>{
+    let answer='COMPUTER WINS';
+    if(player===computer)answer='TIE';
+    else if((player==='ROCK'&&computer==='SCISSORS')||(player==='PAPER'&&computer==='ROCK')||(player==='SCISSORS'&&computer==='PAPER'))answer='PLAYER WINS';
+    return {
+      value:'PLAYER: '+player+' · COMPUTER: '+computer,
+      code:'IF player = computer\n  output TIE\nELSE IF player beats computer\n  output PLAYER WINS\nELSE\n  output COMPUTER WINS',
+      options:['TIE','PLAYER WINS','COMPUTER WINS'],
+      answer,
+      explain:player===computer?'Both moves match, so the first branch outputs TIE.':answer==='PLAYER WINS'?player+' beats '+computer+', so PLAYER WINS.':computer+' beats '+player+', so the final ELSE gives COMPUTER WINS.'
+    };
+  });
+}
+
+function renderDecisionEngine(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const challenges=decisionChallenges(stageIndex,active.seed);
+  setProgress('LOGIC ROUTER · ROOM 2/3 · DECISION ENGINE · STAGE '+stageNo+'/3');
+  const root=active.root;
+  const copies=[
+    'Run test values through a simple IF / ELSE and choose the output that executes.',
+    'The router now has IF / ELSE IF / ELSE. Only the first matching branch runs.',
+    'Apply the same branching idea to Rock–Paper–Scissors: tie first, then player win, otherwise computer win.'
+  ];
+  root.appendChild(roomHeader('ROOM 2 · DECISION ENGINE','Run the correct branch',copies[stageIndex]));
+
+  if(stageIndex===2){
+    const rules=document.createElement('div');rules.className='decision-rules';
+    rules.innerHTML='<span><strong>ROCK</strong> beats Scissors</span><span><strong>PAPER</strong> beats Rock</span><span><strong>SCISSORS</strong> beats Paper</span>';
+    root.appendChild(rules);
+  }
+
+  const panel=document.createElement('div');panel.className='decision-engine';
+  const progress=document.createElement('div');progress.className='decision-progress';
+  const value=document.createElement('div');value.className='decision-value';
+  const code=document.createElement('pre');code.className='decision-code';
+  const options=document.createElement('div');options.className='decision-options';
+  const status=document.createElement('div');status.className='logic-status';
+  panel.append(progress,value,code,options,status);root.appendChild(panel);
+
+  let index=0,locked=false;
+  function paint(){
+    const q=challenges[index];
+    progress.textContent='STAGE '+stageNo+'/3 · TEST '+(index+1)+'/'+challenges.length;
+    value.textContent=q.value;code.textContent=q.code;options.replaceChildren();
+    q.options.forEach(label=>{
+      const b=document.createElement('button');b.type='button';b.className='decision-option';b.textContent=label;
+      b.addEventListener('click',()=>choose(label,b));options.appendChild(b);
+    });
+    status.textContent=stageIndex===0?'Which branch runs?':stageIndex===1?'Read the tests from top to bottom.':'Which outcome does the decision tree produce?';
+    locked=false;led()?.setPattern('question');
+  }
+  function choose(label,button){
+    if(locked)return;
+    const q=challenges[index];
+    if(label!==q.answer){
+      active.decisionFaults++;button.classList.add('wrong');
+      const depleted=applyAdventurePenalty();active.playTone(150,.07,'square',.024);led()?.flash('x',340);
+      if(depleted)return;
+      showNotice(q.explain,'fault',1450);
+      later(()=>button.classList.remove('wrong'),550);
+      return;
+    }
+    locked=true;button.classList.add('correct');active.playTone(760,.06,'sine',.025);led()?.setPattern('check');
+    status.textContent=q.explain;showNotice(q.answer+' · correct branch','success',750);
+    later(()=>{
+      index++;
+      if(index<challenges.length){paint();return;}
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,2);
+      finishRoomStage(
+        'Decision Engine stage '+stageNo+'/3 complete',
+        stageIndex===0?'Next: three-way IF / ELSE IF / ELSE decisions.':'Next: repair the Rock–Paper–Scissors decision system.',
+        'Decision Engine restored',
+        'Simple branches, else-if chains and Rock–Paper–Scissors decisions are all routing correctly.',
+        'Open Comparator Matrix →',
+        ()=>{active.room=2;renderRoom();}
+      );
+    },750);
+  }
+  paint();
+}
+
+
+/* ---------------- Room 3: Comparator Matrix / Futoshiki ----------------
+ * Generator adapted from the verified 99 Club Studio Futoshiki engine.
+ */
+
+function logicFutoCells(n){
+  return Array.from({length:n*n},(_,i)=>[Math.floor(i/n),i%n]);
+}
+function logicFutoLatinSolution(n,rng){
+  const symbols=shuffled(Array.from({length:n},(_,i)=>i+1),rng);
+  const rows=shuffled(Array.from({length:n},(_,i)=>i),rng);
+  const cols=shuffled(Array.from({length:n},(_,i)=>i),rng);
+  const shift=randomInt(rng,0,n-1);
+  return rows.map(r=>cols.map(cc=>symbols[(r+cc+shift)%n]));
+}
+function logicFutoCount(n,givens,hSigns,vSigns,limit=2){
+  const grid=Array.from({length:n},()=>Array(n).fill(0));
+  for(const g of givens)grid[g.r][g.c]=g.v;
+  let count=0;
+  function valid(r,c,v){
+    for(let i=0;i<n;i++){
+      if(i!==c&&grid[r][i]===v)return false;
+      if(i!==r&&grid[i][c]===v)return false;
+    }
+    const checks=[[r,c-1,'h',c-1],[r,c+1,'h',c],[r-1,c,'v',r-1],[r+1,c,'v',r]];
+    for(const item of checks){
+      const rr=item[0],cc=item[1],type=item[2],idx=item[3];
+      if(rr<0||cc<0||rr>=n||cc>=n||!grid[rr][cc])continue;
+      const sign=type==='h'?hSigns[r]?.[idx]:vSigns[idx]?.[c];
+      if(!sign)continue;
+      const other=grid[rr][cc];
+      if(type==='h'){
+        const left=cc<c?other:v,right=cc<c?v:other;
+        if(sign==='<'&&!(left<right))return false;
+        if(sign==='>'&&!(left>right))return false;
+      }else{
+        const top=rr<r?other:v,bottom=rr<r?v:other;
+        if(sign==='^'&&!(top<bottom))return false;
+        if(sign==='v'&&!(top>bottom))return false;
+      }
+    }
+    return true;
+  }
+  function nextCell(){
+    let best=null,bestCand=null;
+    for(let r=0;r<n;r++)for(let cc=0;cc<n;cc++)if(!grid[r][cc]){
+      const cand=[];
+      for(let v=1;v<=n;v++)if(valid(r,cc,v))cand.push(v);
+      if(!cand.length)return [r,cc,[]];
+      if(!bestCand||cand.length<bestCand.length){best=[r,cc];bestCand=cand;if(cand.length===1)return [r,cc,cand];}
+    }
+    return best?[best[0],best[1],bestCand]:null;
+  }
+  function rec(){
+    if(count>=limit)return;
+    const nxt=nextCell();
+    if(!nxt){count++;return;}
+    const r=nxt[0],cc=nxt[1],cand=nxt[2];
+    if(!cand.length)return;
+    for(const v of cand){
+      grid[r][cc]=v;rec();grid[r][cc]=0;
+      if(count>=limit)return;
+    }
+  }
+  rec();return count;
+}
+function logicFutoStageConfig(stage){
+  return [
+    {n:4,signRatio:.40,givenRatio:.38,maxGivens:10,maxAttempts:2,label:'GUIDED 4×4',copy:'More starting numbers and inequality signs introduce the rules.'},
+    {n:5,signRatio:.27,givenRatio:.23,maxGivens:14,maxAttempts:2,label:'STANDARD 5×5',copy:'A larger grid with fewer starting numbers requires more comparison reasoning.'},
+    {n:6,signRatio:.30,givenRatio:.10,maxGivens:20,maxAttempts:3,label:'CHALLENGE 6×6',copy:'The final matrix is larger again, with fewer fixed numbers and more inequality relationships to combine.'}
+  ][stage]||null;
+}
+function makeLogicFutoshiki(stage,seed){
+  const cfg=logicFutoStageConfig(stage),n=cfg.n;
+  let best=null;
+  for(let attempt=0;attempt<cfg.maxAttempts;attempt++){
+    const rng=rngFromSeed(seed+':futo:'+attempt);
+    const solution=logicFutoLatinSolution(n,rng);
+    const allH=[],allV=[];
+    for(let r=0;r<n;r++)for(let cc=0;cc<n-1;cc++)allH.push({r,cc,s:solution[r][cc]<solution[r][cc+1]?'<':'>'});
+    for(let r=0;r<n-1;r++)for(let cc=0;cc<n;cc++)allV.push({r,cc,s:solution[r][cc]<solution[r+1][cc]?'^':'v'});
+    const hPick=shuffled(allH,rng).slice(0,Math.max(2,Math.round(allH.length*cfg.signRatio)));
+    const vPick=shuffled(allV,rng).slice(0,Math.max(2,Math.round(allV.length*cfg.signRatio)));
+    const hSigns=Array.from({length:n},()=>Array(n-1).fill(''));
+    const vSigns=Array.from({length:n-1},()=>Array(n).fill(''));
+    hPick.forEach(x=>hSigns[x.r][x.cc]=x.s);
+    vPick.forEach(x=>vSigns[x.r][x.cc]=x.s);
+
+    const order=shuffled(logicFutoCells(n),rng);
+    const givens=order.slice(0,Math.max(2,Math.round(n*n*cfg.givenRatio))).map(([r,cc])=>({r,c:cc,v:solution[r][cc]}));
+    const givenSet=new Set(givens.map(g=>g.r+':'+g.c));
+    for(const pos of order){
+      if(logicFutoCount(n,givens,hSigns,vSigns,2)===1)break;
+      const r=pos[0],cc=pos[1],k=r+':'+cc;
+      if(givenSet.has(k))continue;
+      givens.push({r,c:cc,v:solution[r][cc]});givenSet.add(k);
+    }
+    if(logicFutoCount(n,givens,hSigns,vSigns,2)!==1)continue;
+    const display=Array.from({length:n},()=>Array(n).fill(0));
+    givens.forEach(g=>display[g.r][g.c]=g.v);
+    const candidate={n,cfg,solution,display,hSigns,vSigns,givens};
+    if(!best||candidate.givens.length<best.givens.length)best=candidate;
+    if(candidate.givens.length<=cfg.maxGivens)return candidate;
+  }
+  return best;
+}
+
+function logicFutoSatisfies(sign,a,b){
+  if(a==null||b==null||!sign)return true;
+  if(sign==='<')return a<b;
+  if(sign==='>')return a>b;
+  if(sign==='^')return a<b;
+  return a>b;
+}
+function logicFutoCandidates(p,state,r,c){
+  if(state[r][c])return [];
+  const n=p.n,used=new Set(state[r].filter(Boolean));
+  for(let rr=0;rr<n;rr++)if(state[rr][c])used.add(state[rr][c]);
+  return Array.from({length:n},(_,i)=>i+1).filter(v=>{
+    if(used.has(v))return false;
+    if(c>0&&!logicFutoSatisfies(p.hSigns[r][c-1],state[r][c-1]||null,v))return false;
+    if(c<n-1&&!logicFutoSatisfies(p.hSigns[r][c],v,state[r][c+1]||null))return false;
+    if(r>0&&!logicFutoSatisfies(p.vSigns[r-1][c],state[r-1][c]||null,v))return false;
+    if(r<n-1&&!logicFutoSatisfies(p.vSigns[r][c],v,state[r+1][c]||null))return false;
+    return true;
+  });
+}
+
+function renderLogicFutoshiki(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const cfg=logicFutoStageConfig(stageIndex);
+  setProgress('LOGIC ROUTER · ROOM 3/3 · COMPARATOR MATRIX · STAGE '+stageNo+'/3');
+  const root=active.root;
+  root.appendChild(roomHeader('ROOM 3 · COMPARATOR MATRIX','Repair the Futoshiki logic grid',cfg.copy));
+
+  const rules=document.createElement('div');rules.className='futo-rules';
+  rules.innerHTML='<span><strong>1…N</strong> once in every row</span><span><strong>1…N</strong> once in every column</span><span><strong>&lt; &gt;</strong> pointed side faces the smaller number</span>';
+  root.appendChild(rules);
+
+  const puzzle=makeLogicFutoshiki(stageIndex,active.seed+':logic-futo:'+stageNo);
+  if(!puzzle){
+    showTransition('Comparator generator fault','A unique Futoshiki board could not be generated.','Retry stage →',()=>renderRoom(),'fault');
+    return;
+  }
+  const n=puzzle.n,state=puzzle.display.map(row=>row.slice());
+  const givenMask=puzzle.display.map(row=>row.map(v=>v>0));
+  let selected=null,finished=false;
+  const cellButtons=new Map();
+
+  const meta=document.createElement('div');meta.className='futo-meta';
+  meta.innerHTML='<strong>'+cfg.label+'</strong><span>'+puzzle.givens.length+' starting numbers · '+(puzzle.hSigns.flat().filter(Boolean).length+puzzle.vSigns.flat().filter(Boolean).length)+' inequality signs</span>';
+
+  const board=document.createElement('div');board.className='logic-futo-grid';
+  board.dataset.futoSize=String(n);
+  board.style.gridTemplateColumns='repeat('+(n*2-1)+',minmax(0,1fr))';
+  board.style.gridTemplateRows='repeat('+(n*2-1)+',minmax(0,1fr))';
+
+  function place(node,row,col){node.style.gridRow=String(row);node.style.gridColumn=String(col);board.appendChild(node);}
+  for(let r=0;r<n;r++)for(let cc=0;cc<n;cc++){
+    const b=document.createElement('button');b.type='button';b.className='futo-cell';b.dataset.r=String(r);b.dataset.c=String(cc);
+    if(givenMask[r][cc]){b.classList.add('given');b.disabled=true;}
+    else b.addEventListener('click',()=>selectCell(r,cc));
+    cellButtons.set(r+':'+cc,b);place(b,r*2+1,cc*2+1);
+    if(cc<n-1){
+      const sign=puzzle.hSigns[r][cc];
+      const s=document.createElement('div');s.className='futo-sign horizontal';s.textContent=sign||'';place(s,r*2+1,cc*2+2);
+    }
+    if(r<n-1){
+      const sign=puzzle.vSigns[r][cc];
+      const s=document.createElement('div');s.className='futo-sign vertical';s.textContent=sign==='^'?'∧':sign==='v'?'∨':'';place(s,r*2+2,cc*2+1);
+    }
+  }
+
+  const keypad=document.createElement('div');keypad.className='futo-keypad';
+  for(let v=1;v<=n;v++){
+    const b=document.createElement('button');b.type='button';b.textContent=String(v);b.addEventListener('click',()=>enterValue(v));keypad.appendChild(b);
+  }
+  const clear=document.createElement('button');clear.type='button';clear.className='secondary';clear.textContent='Clear';clear.addEventListener('click',()=>enterValue(0));keypad.appendChild(clear);
+
+  const actions=document.createElement('div');actions.className='futo-actions';
+  const hint=document.createElement('button');hint.type='button';hint.className='secondary';hint.textContent='Highlight a useful cell';
+  const check=document.createElement('button');check.type='button';check.textContent='Check matrix';
+  actions.append(hint,check);
+  const status=document.createElement('div');status.className='logic-status';
+
+  root.append(meta,board,keypad,actions,status);
+
+  function filledEditable(){
+    let count=0,total=0;
+    for(let r=0;r<n;r++)for(let cc=0;cc<n;cc++)if(!givenMask[r][cc]){total++;if(state[r][cc])count++;}
+    return {count,total};
+  }
+  function paint(){
+    for(let r=0;r<n;r++)for(let cc=0;cc<n;cc++){
+      const b=cellButtons.get(r+':'+cc),v=state[r][cc];
+      b.textContent=v?String(v):'';
+      b.classList.toggle('selected',!!selected&&selected[0]===r&&selected[1]===cc);
+    }
+    const f=filledEditable();status.textContent='Stage '+stageNo+'/3 · '+f.count+'/'+f.total+' blanks filled · select a cell, then choose 1–'+n+'.';
+    led()?.progress(f.count,f.total);
+  }
+  function selectCell(r,cc){
+    if(finished||givenMask[r][cc])return;
+    selected=[r,cc];
+    cellButtons.forEach(b=>b.classList.remove('hint'));
+    paint();
+  }
+  function enterValue(v){
+    if(finished||!selected)return;
+    const r=selected[0],cc=selected[1];
+    state[r][cc]=v;
+    const b=cellButtons.get(r+':'+cc);b.classList.remove('wrong','hint');
+    paint();
+  }
+  hint.addEventListener('click',()=>{
+    cellButtons.forEach(b=>b.classList.remove('hint'));
+    const opts=[];
+    for(let r=0;r<n;r++)for(let cc=0;cc<n;cc++)if(!givenMask[r][cc]&&!state[r][cc]){
+      const cand=logicFutoCandidates(puzzle,state,r,cc);
+      if(cand.length)opts.push({r,cc,count:cand.length});
+    }
+    opts.sort((a,b)=>a.count-b.count);
+    const q=opts[0];
+    if(!q){showNotice('Every cell is filled. Run Check matrix.','info',1100);return;}
+    selected=[q.r,q.cc];cellButtons.get(q.r+':'+q.cc).classList.add('hint');paint();
+    showNotice('Highlighted cell: row, column and inequalities leave '+q.count+' possible value'+(q.count===1?'':'s')+'.','info',1500);
+  });
+  check.addEventListener('click',()=>{
+    let wrong=0,blank=0;
+    cellButtons.forEach((b,k)=>{
+      b.classList.remove('wrong');
+      const parts=k.split(':').map(Number),r=parts[0],cc=parts[1],v=state[r][cc];
+      if(!v)blank++;
+      else if(v!==puzzle.solution[r][cc]){wrong++;if(!givenMask[r][cc])b.classList.add('wrong');}
+    });
+    if(!wrong&&!blank){
+      finished=true;check.disabled=true;hint.disabled=true;keypad.querySelectorAll('button').forEach(b=>b.disabled=true);cellButtons.forEach(b=>b.disabled=true);
+      active.playTone(920,.1,'sine',.04);led()?.setPattern('check');status.textContent='Stage '+stageNo+' comparator matrix valid.';
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,3);
+      finishRoomStage(
+        'Comparator Matrix stage '+stageNo+'/3 solved',
+        stageIndex===0?'Next: a 5×5 matrix with fewer clues.':'Next: the 6×6 challenge matrix with sparse clues.',
+        'Comparator Matrix restored',
+        'All three Futoshiki grids have a valid unique solution.',
+        'Continue →',
+        ()=>{active.room=3;renderRoom();}
+      );
+      return;
+    }
+    if(wrong){
+      active.futoshikiFaults++;const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.025);led()?.flash('x',380);
+      if(depleted)return;
+      showNotice(wrong+' entered number'+(wrong===1?' is':'s are')+' inconsistent with the solution.','fault',1350);
+    }else showNotice(blank+' cell'+(blank===1?' is':'s are')+' still blank.','warn',1100);
+  });
+
+  paint();
+}
+
+/* ---------------- Logic Router final gate ---------------- */
+
+function renderLogicRouterFinalGate(){
+  setProgress('LOGIC ROUTER · FINAL DIAGNOSTIC READY');
+  const root=active.root;
+  root.appendChild(roomHeader(
+    'LOGIC ROUTER STABLE',
+    'Conditional decisions are routing correctly',
+    'All nine Logic Router adventure stages are stable. The final boss is 12 questions split into three increasingly difficult sets of four.'
+  ));
+
+  const board=document.createElement('div');board.className='microbit-face full-face';
+  board.innerHTML=microbitBoardMarkup().replace('BOOT OK','LOGIC OK');
+
+  const real=document.createElement('div');real.className='reality-note real-note';
+  real.innerHTML='<strong>What is real?</strong><span>Programs really do use comparisons and conditional branches to choose what runs next. Futoshiki is our logic-training model for comparison relationships; it is not an internal micro:bit subsystem.</span>';
+
+  const totalFaults=active.branchFaults+active.decisionFaults+active.futoshikiFaults;
+  const stats=document.createElement('div');stats.className='adventure-run-stats';
+  stats.innerHTML='<span><strong>'+active.branchFaults+'</strong> branch faults</span><span><strong>'+active.decisionFaults+'</strong> decision faults</span><span><strong>'+active.futoshikiFaults+'</strong> matrix checks failed</span><span><strong>'+totalFaults+'</strong> total faults</span>';
+  root.append(board,real,stats);led()?.setPattern('check');
+
+  later(()=>showTransition(
+    'Final diagnostic ready',
+    'Nine adventure stages are complete. Clear three diagnostic stages of four questions to bring Logic Router online.',
+    'Run 12-question diagnostic →',
+    ()=>{
+      if(active.completed)return;active.completed=true;
+      const totalFaults=active.branchFaults+active.decisionFaults+active.futoshikiFaults;
+      const statsOut={
+        systemId:'3',
+        branchFaults:active.branchFaults,
+        decisionFaults:active.decisionFaults,
+        futoshikiFaults:active.futoshikiFaults,
+        totalFaults,
+        roomsCompleted:active.roomsCompleted,
+        roomRestarts:active.roomRestarts,
+        bonusScore:Math.max(0,300-(active.branchFaults*18+active.decisionFaults*16+active.futoshikiFaults*22)-active.roomRestarts*25)
+      };
+      const done=active.onComplete;stop();done(statsOut);
+    }
+  ),250);
+}
+
 function microbitBoardMarkup(){
   return `
     <div class="official-microbit-final">
@@ -1179,7 +1741,7 @@ function renderFinalGate(){
 }
 
 global.TTCAdventure={
-  supports(id){return ['1','2'].includes(String(id));},
+  supports(id){return ['1','2','3'].includes(String(id));},
   start,
   stop,
   leds:global.TTCMicrobitLED||null
