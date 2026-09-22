@@ -904,9 +904,9 @@ function routerRule(rng,ruleIds=null){
 }
 function routerStageConfig(stage){
   return [
-    {pathLength:7,branches:1,ruleIds:['even','odd'],copy:'Start with an even/odd filter, a shorter route and one tempting dead end.'},
-    {pathLength:9,branches:2,ruleIds:['m3','m4'],copy:'Stage 2 uses multiples and a longer route with two valid-looking dead ends.'},
-    {pathLength:11,branches:3,ruleIds:['prime','square'],copy:'Final stage: route through primes or square numbers with the longest path and up to three dead ends.'}
+    {n:5,pathLength:7,branches:1,ruleIds:['even','odd']},
+    {n:6,pathLength:11,branches:3,ruleIds:['m3','m4']},
+    {n:7,pathLength:15,branches:4,ruleIds:['prime','square']}
   ][stage]||null;
 }
 function routerMakePath(n,length,rng){
@@ -959,16 +959,16 @@ function routerSolve(grid,rule,start,finish,limit=2){
   return {count:solutions.length,path:solutions[0]||[]};
 }
 function makePropertyRouter(seed,options={}){
-  const n=5;
-  const pathLength=Math.max(6,Math.min(13,Number(options.pathLength)||10));
-  const branches=Math.max(0,Math.min(4,Number(options.branches)||2));
+  const n=Math.max(5,Math.min(7,Number(options.n)||5));
+  const pathLength=Math.max(6,Math.min(n*n-2,Number(options.pathLength)||10));
+  const branches=Math.max(0,Math.min(6,Number(options.branches)||2));
   const rng=rngFromSeed(seed+':property-router'),rule=routerRule(rng,options.ruleIds);
   for(let attempt=0;attempt<120;attempt++){
     const local=rngFromSeed(seed+':property-router:'+attempt);
     const path=routerMakePath(n,pathLength,local);if(!path)continue;
     const branched=routerAddBranches(path,n,branches,local);
     const valid=new Set(branched.validKeys),yes=[],no=[];
-    const valueLimit=rule.mode==='square'?225:120;
+    const valueLimit=rule.mode==='square'?Math.max(225,Math.pow(valid.size+4,2)):Math.max(120,n*n*4);
     for(let v=1;v<=valueLimit;v++)(routerMatches(v,rule)?yes:no).push(v);
     if(yes.length<valid.size||no.length<n*n-valid.size)continue;
     const y=shuffled(yes,local).slice(0,valid.size),nn=shuffled(no,local).slice(0,n*n-valid.size);
@@ -987,11 +987,6 @@ function renderPropertyRouter(){
   const cfg=routerStageConfig(stageIndex);
   setProgress('RANDOMISER CORE · ROOM 3/3 · DATA ROUTER · STAGE '+stageNo+'/3');
   const root=active.root;
-  root.appendChild(roomHeader(
-    'ROOM 3 · DATA / PROPERTY ROUTER',
-    'Route data through the correct number property',
-    cfg.copy
-  ));
 
   const seed=active.seed+':router-stage-'+stageNo;
   const puzzle=makePropertyRouter(seed,cfg)||makePropertyRouter(seed+':fallback',cfg);
@@ -1000,10 +995,18 @@ function renderPropertyRouter(){
     return;
   }
 
+  const ruleName=puzzle.rule.label.toUpperCase();
+  const stageCopy='This '+puzzle.n+'×'+puzzle.n+' board uses '+ruleName+' only. Follow touching '+puzzle.rule.label+' from START to FINISH. Other number properties do not count on this board.';
+  root.appendChild(roomHeader(
+    'ROOM 3 · DATA / PROPERTY ROUTER',
+    'Route data using '+puzzle.rule.label,
+    stageCopy
+  ));
+
   const rule=document.createElement('div');rule.className='property-router-rule';
   rule.innerHTML='<small>STAGE '+stageNo+'/3 · ROUTING FILTER</small><strong>'+puzzle.rule.shortLabel+'</strong><span>Use only '+puzzle.rule.label+'</span>';
 
-  const board=document.createElement('div');board.className='property-router-grid';board.style.setProperty('--router-n',String(puzzle.n));
+  const board=document.createElement('div');board.className='property-router-grid';board.style.setProperty('--router-n',String(puzzle.n));board.dataset.routerSize=String(puzzle.n);
   const path=[puzzle.start.slice()];
   let finished=false;
   const buttons=[];
@@ -1018,7 +1021,7 @@ function renderPropertyRouter(){
   }
 
   const hint=document.createElement('div');hint.className='logic-status';
-  hint.textContent='Stage '+stageNo+'/3 · unique route length '+puzzle.solutionPath.length+' · move one square at a time · tap your previous square to backtrack.';
+  hint.textContent='Stage '+stageNo+'/3 · '+puzzle.n+'×'+puzzle.n+' grid · route length '+puzzle.solutionPath.length+' · use '+puzzle.rule.label+' only · tap your previous square to backtrack.';
   root.append(rule,board,hint);
 
   function current(){return path[path.length-1];}
@@ -1029,7 +1032,8 @@ function renderPropertyRouter(){
       const p=[+b.dataset.r,+b.dataset.c],k=routerKey(p);
       b.classList.toggle('is-path',used.has(k));b.classList.toggle('is-current',same(p,cur));b.disabled=finished;
     }
-    led()?.setCells(path);
+    const ledPath=path.map(p=>led()?.mapPoint(p[0],p[1],puzzle.n,puzzle.n)).filter(Boolean);
+    led()?.setCells(ledPath);
   }
   function adjacent(a,b){return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])===1;}
   function choose(p,b){
@@ -1042,7 +1046,11 @@ function renderPropertyRouter(){
       active.routerFaults++;const depleted=applyAdventurePenalty();
       b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',330);
       if(depleted)return;
-      showNotice(puzzle.grid[p[0]][p[1]]+' does not match '+puzzle.rule.label+'.','fault',900);
+      const value=puzzle.grid[p[0]][p[1]];
+      let reason=value+' does not match '+puzzle.rule.label+'.';
+      if(puzzle.rule.mode==='square'&&routerIsPrime(value))reason=value+' is prime, but this board uses SQUARE numbers only.';
+      else if(puzzle.rule.mode==='prime'&&Number.isInteger(Math.sqrt(value)))reason=value+' is a square number, but this board uses PRIME numbers only.';
+      showNotice(reason,'fault',1150);
       later(()=>b.classList.remove('wrong'),500);return;
     }
     path.push(p);paint();active.playTone(500+path.length*18,.035,'sine',.018);
@@ -1053,7 +1061,7 @@ function renderPropertyRouter(){
       if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,3);
       finishRoomStage(
         'Router stage '+stageNo+'/3 complete',
-        stageIndex===0?'Next: multiples, a longer route and more dead ends.':'Next: primes or square numbers on the longest route.',
+        stageIndex===0?'Next: a 6×6 grid, multiples and more dead ends.':'Next: a 7×7 grid using one advanced property — PRIME or SQUARE.',
         'Data router fully restored',
         'All three number-property routes are stable.',
         'Continue →',
