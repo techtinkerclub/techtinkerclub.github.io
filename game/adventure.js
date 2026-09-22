@@ -1139,9 +1139,9 @@ function renderRandomiserFinalGate(){
 
 function branchRunnerConfig(stage){
   return [
-    {rounds:5,duration:4500,label:'IF / ELSE',copy:'Decide whether each simple condition is TRUE or FALSE before the packet reaches the branch.'},
-    {rounds:6,duration:4000,label:'COMPARISONS',copy:'The router now mixes >, <, = and ≠. Read the operator carefully.'},
-    {rounds:6,duration:4600,label:'COMPOUND AND',copy:'Each packet carries two readings. BOTH comparisons must pass for an AND condition to be TRUE.'}
+    {rounds:5,duration:5500,label:'IF / ELSE',copy:'Decide whether each simple condition is TRUE or FALSE before the packet reaches the branch.'},
+    {rounds:6,duration:6000,label:'COMPARISONS',copy:'The router now mixes >, <, = and ≠. Read the operator carefully.'},
+    {rounds:6,duration:7000,label:'COMPOUND AND',copy:'Each packet carries two readings. BOTH comparisons must pass for an AND condition to be TRUE.'}
   ][stage]||null;
 }
 function branchTrial(stage,rng,index){
