@@ -967,6 +967,7 @@ function makePropertyRouter(seed,options={}){
     const local=rngFromSeed(seed+':property-router:'+attempt);
     const path=routerMakePath(n,pathLength,local);if(!path)continue;
     const branched=routerAddBranches(path,n,branches,local);
+    if(branched.branchCells.length<branches)continue;
     const valid=new Set(branched.validKeys),yes=[],no=[];
     const valueLimit=rule.mode==='square'?Math.max(225,Math.pow(valid.size+4,2)):Math.max(120,n*n*4);
     for(let v=1;v<=valueLimit;v++)(routerMatches(v,rule)?yes:no).push(v);
