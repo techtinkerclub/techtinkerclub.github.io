@@ -233,22 +233,19 @@ function finishRoomStage(stageTitle,stageText,finalTitle,finalText,nextButton,on
 function expeditionConfig(stage){
   return [
     {
-      rows:9,cols:13,pickups:3,hazards:1,hazardMs:900,ordered:false,
-      area:'POWER INTAKE',module:'POWER COUPLER',
-      pickupNames:['P1','P2','P3'],
-      copy:'BIT has entered through USB. Explore the power intake, recover three couplers and reach the maintenance gate.'
+      rows:15,cols:23,pickups:3,relays:2,hazards:1,arcs:2,hazardMs:920,ordered:false,chambers:2,
+      area:'POWER INTAKE',module:'POWER COUPLER',pickupNames:['P1','P2','P3'],
+      copy:'Explore the power intake, recover three couplers, then energise relays R1 → R2 to unlock the maintenance gate.'
     },
     {
-      rows:11,cols:15,pickups:4,hazards:2,hazardMs:820,ordered:false,
-      area:'DATA BUS',module:'BUS INTERFACE',
-      pickupNames:['A','B','C','D'],
-      copy:'The board is awake enough to go deeper. Search the data bus for four scattered boot fragments while corruption hunts the traces.'
+      rows:17,cols:27,pickups:4,relays:2,hazards:2,arcs:3,hazardMs:840,ordered:false,chambers:3,
+      area:'DATA BUS',module:'BUS INTERFACE',pickupNames:['A','B','C','D'],
+      copy:'Search the wider data bus, recover four boot fragments and energise R1 → R2 while corruption patrols the board.'
     },
     {
-      rows:11,cols:17,pickups:5,hazards:3,hazardMs:760,ordered:true,
-      area:'CPU CORE',module:'CORE LINK',
-      pickupNames:['A','B','C','D','E'],
-      copy:'Final expedition area. Recover the five core keys in order A → B → C → D → E, then reach the CPU repair port.'
+      rows:19,cols:31,pickups:5,relays:3,hazards:3,arcs:4,hazardMs:780,ordered:true,chambers:4,
+      area:'CPU CORE',module:'CORE LINK',pickupNames:['A','B','C','D','E'],
+      copy:'Recover core keys A → B → C → D → E, energise relays R1 → R2 → R3, then reach the CPU repair port.'
     }
   ][stage]||null;
 }
@@ -272,7 +269,45 @@ function expeditionDistances(grid,start){
   }
   return dist;
 }
-function makeExpeditionMaze(rows,cols,seed,stage){
+function carveExpeditionChambers(grid,rng,count){
+  const rows=grid.length,cols=grid[0].length,chambers=[],chamberSet=new Set();
+  const sizes=[[5,5],[5,7],[7,7],[5,9],[3,7],[3,5]];
+  for(let i=0;i<count;i++){
+    let placed=false;
+    for(let attempt=0;attempt<120&&!placed;attempt++){
+      const size=sizes[(i+attempt)%sizes.length],h=Math.min(size[0],rows-4),w=Math.min(size[1],cols-4);
+      let r=1+2*Math.floor(rng()*Math.max(1,Math.floor((rows-h-2)/2)+1));
+      let c=1+2*Math.floor(rng()*Math.max(1,Math.floor((cols-w-2)/2)+1));
+      r=Math.max(1,Math.min(rows-h-1,r));c=Math.max(1,Math.min(cols-w-1,c));
+      const rect={r,c,h,w};
+      const overlaps=chambers.some(x=>!(r+h+1<x.r||x.r+x.h+1<r||c+w+1<x.c||x.c+x.w+1<c));
+      if(overlaps)continue;
+      for(let rr=r;rr<r+h;rr++)for(let cc=c;cc<c+w;cc++){
+        grid[rr][cc]=0;chamberSet.add(key(rr,cc));
+      }
+      chambers.push(rect);placed=true;
+    }
+  }
+
+  // Rare crowded layouts get a smaller fallback chamber with no buffer,
+  // so the intended number of distinct open spaces is guaranteed.
+  let guard=0;
+  while(chambers.length<count&&guard++<400){
+    const h=3,w=5;
+    let r=1+Math.floor(rng()*Math.max(1,rows-h-1));
+    let c=1+Math.floor(rng()*Math.max(1,cols-w-1));
+    r=Math.max(1,Math.min(rows-h-1,r));c=Math.max(1,Math.min(cols-w-1,c));
+    const overlaps=chambers.some(x=>!(r+h<=x.r||x.r+x.h<=r||c+w<=x.c||x.c+x.w<=c));
+    if(overlaps)continue;
+    const rect={r,c,h,w};
+    for(let rr=r;rr<r+h;rr++)for(let cc=c;cc<c+w;cc++){
+      grid[rr][cc]=0;chamberSet.add(key(rr,cc));
+    }
+    chambers.push(rect);
+  }
+  return {chambers,chamberSet};
+}
+function makeExpeditionMaze(rows,cols,seed,stage,chamberCount=2){
   const rng=rngFromSeed(seed+':maze:'+stage);
   const grid=Array.from({length:rows},()=>Array(cols).fill(1));
   const start=[1,1],stack=[start.slice()];grid[1][1]=0;
@@ -289,28 +324,34 @@ function makeExpeditionMaze(rows,cols,seed,stage){
     grid[cur[0]+pick[2]][cur[1]+pick[3]]=0;
     grid[pick[0]][pick[1]]=0;stack.push([pick[0],pick[1]]);
   }
-  // Add a few loops so the corruption can be escaped rather than every corridor being a trap.
-  const loopChance=[.06,.08,.10][stage]||.06;
+
+  const carved=carveExpeditionChambers(grid,rng,chamberCount);
+
+  const loopChance=[.045,.06,.075][stage]||.05;
   for(let r=1;r<rows-1;r++)for(let c=1;c<cols-1;c++)if(grid[r][c]===1&&rng()<loopChance){
     const horizontal=grid[r][c-1]===0&&grid[r][c+1]===0;
     const vertical=grid[r-1][c]===0&&grid[r+1][c]===0;
     if(horizontal!==vertical)grid[r][c]=0;
   }
-  const dist=expeditionDistances(grid,start);
-  const floors=[];
+
+  const dist=expeditionDistances(grid,start),floors=[];
   for(let r=1;r<rows-1;r++)for(let c=1;c<cols-1;c++)if(grid[r][c]===0)floors.push([r,c]);
   floors.sort((a,b)=>dist[b[0]][b[1]]-dist[a[0]][a[1]]);
   const exit=floors[0].slice();
   const deadEnds=floors.filter(p=>expeditionNeighbours(grid,p[0],p[1]).length===1&&!same(p,start)&&!same(p,exit));
-  return {grid,start,exit,dist,floors,deadEnds,rng};
+  return {grid,start,exit,dist,floors,deadEnds,rng,chambers:carved.chambers,chamberSet:carved.chamberSet};
 }
 function chooseExpeditionPickups(maze,count,names){
-  const candidates=(maze.deadEnds.length>=count?maze.deadEnds:maze.floors)
-    .filter(p=>maze.dist[p[0]][p[1]]>=4&&!same(p,maze.exit));
+  const deep=(maze.deadEnds.length>=count?maze.deadEnds:maze.floors)
+    .filter(p=>maze.dist[p[0]][p[1]]>=8&&!same(p,maze.exit)&&!same(p,maze.start));
+  const fallback=maze.floors
+    .filter(p=>!same(p,maze.exit)&&!same(p,maze.start))
+    .sort((a,b)=>maze.dist[b[0]][b[1]]-maze.dist[a[0]][a[1]]);
+  const candidates=[...deep,...fallback.filter(p=>!deep.some(q=>same(q,p)))];
   const chosen=[];
   for(const p of candidates){
     if(chosen.length>=count)break;
-    if(chosen.every(q=>Math.abs(q[0]-p[0])+Math.abs(q[1]-p[1])>=4))chosen.push(p.slice());
+    if(chosen.every(q=>Math.abs(q[0]-p[0])+Math.abs(q[1]-p[1])>=6))chosen.push(p.slice());
   }
   for(const p of candidates){
     if(chosen.length>=count)break;
@@ -318,20 +359,71 @@ function chooseExpeditionPickups(maze,count,names){
   }
   return chosen.slice(0,count).map((pos,i)=>({pos,name:names[i]}));
 }
-function chooseExpeditionHazards(maze,count,pickups){
-  const banned=new Set([key(...maze.start),key(...maze.exit),...pickups.map(x=>key(...x.pos))]);
-  return maze.floors
-    .filter(p=>maze.dist[p[0]][p[1]]>=6&&!banned.has(key(...p)))
-    .sort((a,b)=>maze.dist[b[0]][b[1]]-maze.dist[a[0]][a[1]])
-    .slice(0,count)
-    .map((pos,i)=>({pos:pos.slice(),spawn:pos.slice(),stunUntil:0,id:i}));
+function chooseExpeditionRelays(maze,count,bannedKeys){
+  const candidates=maze.floors
+    .filter(p=>maze.dist[p[0]][p[1]]>=10&&!bannedKeys.has(key(...p))&&!same(p,maze.exit))
+    .sort((a,b)=>maze.dist[b[0]][b[1]]-maze.dist[a[0]][a[1]]);
+  const relays=[];
+  for(const p of candidates){
+    if(relays.length>=count)break;
+    if(relays.every(q=>Math.abs(q.pos[0]-p[0])+Math.abs(q.pos[1]-p[1])>=8)){
+      relays.push({pos:p.slice(),name:'R'+(relays.length+1),active:false});
+      bannedKeys.add(key(...p));
+    }
+  }
+  for(const p of candidates){
+    if(relays.length>=count)break;
+    if(!bannedKeys.has(key(...p))){
+      relays.push({pos:p.slice(),name:'R'+(relays.length+1),active:false});
+      bannedKeys.add(key(...p));
+    }
+  }
+  return relays;
+}
+function chooseExpeditionHazards(maze,count,bannedKeys){
+  const types=['chaser','patrol','sentry'];
+  const chosen=[];
+  for(const p of maze.floors.filter(p=>maze.dist[p[0]][p[1]]>=12).sort((a,b)=>maze.dist[b[0]][b[1]]-maze.dist[a[0]][a[1]])){
+    if(chosen.length>=count)break;
+    const k=key(...p);
+    if(bannedKeys.has(k))continue;
+    const type=types[chosen.length%types.length];
+    chosen.push({pos:p.slice(),spawn:p.slice(),stunUntil:0,id:chosen.length,type,dir:[0,1]});
+    bannedKeys.add(k);
+  }
+  return chosen;
+}
+function chooseExpeditionArcs(maze,count,bannedKeys){
+  const candidates=shuffled(maze.floors.filter(p=>{
+    const k=key(...p);
+    return maze.dist[p[0]][p[1]]>=7&&!bannedKeys.has(k)&&!maze.chamberSet.has(k);
+  }),maze.rng);
+  const arcs=[];
+  for(const p of candidates){
+    if(arcs.length>=count)break;
+    const k=key(...p);
+    if(bannedKeys.has(k))continue;
+    arcs.push({pos:p.slice(),phase:Math.floor(maze.rng()*3),period:1400+Math.floor(maze.rng()*500)});
+    bannedKeys.add(k);
+  }
+  return arcs;
 }
 function expeditionVisibleCells(grid,player,visited){
-  for(let dr=-2;dr<=2;dr++)for(let dc=-2;dc<=2;dc++){
-    if(Math.abs(dr)+Math.abs(dc)>3)continue;
+  for(let dr=-4;dr<=4;dr++)for(let dc=-4;dc<=4;dc++){
+    if(Math.abs(dr)+Math.abs(dc)>6)continue;
     const r=player[0]+dr,c=player[1]+dc;
     if(r>=0&&c>=0&&r<grid.length&&c<grid[0].length)visited.add(key(r,c));
   }
+}
+function expeditionLineClear(grid,a,b){
+  if(a[0]!==b[0]&&a[1]!==b[1])return false;
+  const dr=Math.sign(b[0]-a[0]),dc=Math.sign(b[1]-a[1]);
+  let r=a[0]+dr,c=a[1]+dc;
+  while(r!==b[0]||c!==b[1]){
+    if(grid[r][c]===1)return false;
+    r+=dr;c+=dc;
+  }
+  return true;
 }
 function renderPulseRun(){
   const stageIndex=active.roomStage||0,areaNo=stageIndex+1,cfg=expeditionConfig(stageIndex);
@@ -345,17 +437,20 @@ function renderPulseRun(){
   ));
 
   const info=document.createElement('div');info.className='adventure-info-strip';
-  info.innerHTML='<span><strong>BIT</strong> repair probe</span><span><strong>◆</strong> recover objective</span><span><strong>!</strong> corruption</span><span><strong>PULSE</strong> stun nearby corruption</span>';
+  info.innerHTML='<span><strong>BIT</strong> repair probe</span><span><strong>◆</strong> recover modules</span><span><strong>R</strong> energise relays in order</span><span><strong>!</strong> corruption</span><span><strong>≈</strong> live arc</span><span><strong>PULSE</strong> stun / activate</span>';
   root.appendChild(info);
 
-  const maze=makeExpeditionMaze(cfg.rows,cfg.cols,active.seed,stageIndex);
+  const maze=makeExpeditionMaze(cfg.rows,cfg.cols,active.seed,stageIndex,cfg.chambers);
   const pickups=chooseExpeditionPickups(maze,cfg.pickups,cfg.pickupNames);
-  const hazards=chooseExpeditionHazards(maze,cfg.hazards,pickups);
+  const banned=new Set([key(...maze.start),key(...maze.exit),...pickups.map(x=>key(...x.pos))]);
+  const relays=chooseExpeditionRelays(maze,cfg.relays,banned);
+  const hazards=chooseExpeditionHazards(maze,cfg.hazards,banned);
+  const arcs=chooseExpeditionArcs(maze,cfg.arcs,banned);
   const collected=new Set(),visited=new Set();
-  let player=maze.start.slice(),live=false,finished=false,faultLock=false,pulseReadyAt=0;
+  let player=maze.start.slice(),live=false,finished=false,faultLock=false,pulseReadyAt=0,relayIndex=0;
   expeditionVisibleCells(maze.grid,player,visited);
 
-  const shell=document.createElement('div');shell.className='expedition-shell';
+  const shell=document.createElement('div');shell.className='expedition-shell expedition-neon';
   const hud=document.createElement('div');hud.className='expedition-hud';
   const objective=document.createElement('strong');
   const areaStatus=document.createElement('span');
@@ -387,57 +482,100 @@ function renderPulseRun(){
   shell.append(hud,board,mission,controls);root.appendChild(shell);
 
   function pickupAt(k){return pickups.find(x=>key(...x.pos)===k&&!collected.has(x.name));}
+  function relayAt(k){return relays.find(x=>key(...x.pos)===k);}
   function hazardAt(k){return hazards.find(h=>key(...h.pos)===k&&Date.now()>=h.stunUntil);}
+  function arcAt(k){return arcs.find(a=>key(...a.pos)===k);}
+  function arcActive(arc,now=Date.now()){return Math.floor(now/arc.period+arc.phase)%2===0;}
   function pickupNext(){return cfg.ordered?cfg.pickupNames[collected.size]:null;}
+  function relayNext(){return relays[relayIndex]||null;}
+  function objectivesReady(){return collected.size===cfg.pickups;}
+  function exitReady(){return objectivesReady()&&relayIndex===relays.length;}
+
   function paint(){
     expeditionVisibleCells(maze.grid,player,visited);
     const now=Date.now();
     for(const cell of cells){
       const parts=cell.dataset.key.split(':').map(Number),r=parts[0],c=parts[1],k=cell.dataset.key;
-      const known=visited.has(k);
-      const wall=maze.grid[r][c]===1;
-      const pickup=pickupAt(k),hazard=hazards.find(h=>key(...h.pos)===k);
+      const known=visited.has(k),wall=maze.grid[r][c]===1;
+      const pickup=pickupAt(k),relay=relayAt(k),hazard=hazards.find(h=>key(...h.pos)===k),arc=arcAt(k);
       cell.className='expedition-cell';
-      if(wall)cell.classList.add('wall');else cell.classList.add('trace');
+      if(wall)cell.classList.add('wall');
+      else {
+        cell.classList.add('trace');
+        if(maze.chamberSet.has(k))cell.classList.add('chamber');
+      }
       if(!known)cell.classList.add('fog');
       if(same([r,c],maze.start))cell.classList.add('entry');
       if(same([r,c],maze.exit))cell.classList.add('exit');
       if(same([r,c],player))cell.classList.add('player');
       if(pickup&&known)cell.classList.add('pickup');
-      if(hazard&&known)cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard');
+      if(relay&&known)cell.classList.add(relay.active?'relay-active':'relay');
+      if(arc&&known)cell.classList.add(arcActive(arc,now)?'arc-active':'arc-idle');
+      if(hazard&&known)cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard','enemy-'+hazard.type);
       cell.replaceChildren();
       if(!known)continue;
-      if(same([r,c],player)){const s=document.createElement('span');s.className='expedition-player';s.textContent='BIT';cell.appendChild(s);}
-      else if(hazard){const s=document.createElement('span');s.className='expedition-hazard';s.textContent=now<hazard.stunUntil?'×':'!';cell.appendChild(s);}
-      else if(pickup){const s=document.createElement('span');s.className='expedition-pickup';s.textContent=pickup.name;cell.appendChild(s);}
-      else if(same([r,c],maze.exit)){const s=document.createElement('span');s.className='expedition-exit';s.textContent=collected.size===cfg.pickups?'OPEN':'LOCK';cell.appendChild(s);}
-      else if(same([r,c],maze.start)){const s=document.createElement('span');s.className='expedition-entry';s.textContent='USB';cell.appendChild(s);}
+
+      if(same([r,c],player)){
+        const s=document.createElement('span');s.className='expedition-player';s.textContent='●';cell.appendChild(s);
+      }else if(hazard){
+        const s=document.createElement('span');s.className='expedition-hazard';
+        s.textContent=now<hazard.stunUntil?'×':hazard.type==='chaser'?'◆':hazard.type==='patrol'?'▲':'⊕';
+        cell.appendChild(s);
+      }else if(pickup){
+        const s=document.createElement('span');s.className='expedition-pickup';s.textContent=pickup.name;cell.appendChild(s);
+      }else if(relay){
+        const s=document.createElement('span');s.className='expedition-relay';s.textContent=relay.active?'✓':relay.name;cell.appendChild(s);
+      }else if(arc){
+        const s=document.createElement('span');s.className='expedition-arc';s.textContent=arcActive(arc,now)?'≈':'·';cell.appendChild(s);
+      }else if(same([r,c],maze.exit)){
+        const s=document.createElement('span');s.className='expedition-exit';s.textContent=exitReady()?'OPEN':'LOCK';cell.appendChild(s);
+      }else if(same([r,c],maze.start)){
+        const s=document.createElement('span');s.className='expedition-entry';s.textContent='USB';cell.appendChild(s);
+      }
     }
-    const next=pickupNext();
-    objective.textContent=cfg.ordered?'CORE KEYS '+collected.size+'/'+cfg.pickups+(next?' · NEXT '+next:''):'RECOVERED '+collected.size+'/'+cfg.pickups;
+
+    const next=pickupNext(),nextRelay=relayNext();
+    objective.textContent=cfg.ordered
+      ?'CORE KEYS '+collected.size+'/'+cfg.pickups+(next?' · NEXT '+next:'')
+      :'MODULES '+collected.size+'/'+cfg.pickups;
     areaStatus.textContent=cfg.area+' · '+cfg.rows+'×'+cfg.cols;
-    moduleStatus.textContent='REPAIR MODULES '+active.expeditionModules.size+'/3';
-    mission.textContent=collected.size<cfg.pickups
-      ?(cfg.ordered?'Find '+next+' next. Wrong-order keys remain locked.':'Explore the traces and recover every marked objective.')
-      :'Objectives complete. Reach the OPEN maintenance gate.';
+    moduleStatus.textContent='RELAYS '+relayIndex+'/'+relays.length;
+
+    if(!objectivesReady()){
+      mission.textContent=cfg.ordered
+        ?'Explore the board and recover '+next+' next. Wrong-order keys remain locked.'
+        :'Explore the board and recover every glowing module.';
+    }else if(nextRelay){
+      mission.textContent='Modules recovered. Find '+nextRelay.name+' and press PULSE while standing on it.';
+    }else{
+      mission.textContent='Relay chain stable. Reach the OPEN maintenance gate.';
+    }
+
     const remain=Math.max(0,pulseReadyAt-now);
     pulseButton.disabled=remain>0;
     pulseButton.textContent=remain>0?'PULSE '+Math.ceil(remain/1000)+'s':'PULSE';
-    const ledCells=[led()?.mapPoint(player[0],player[1],cfg.rows,cfg.cols),...hazards.filter(h=>now>=h.stunUntil).map(h=>led()?.mapPoint(h.pos[0],h.pos[1],cfg.rows,cfg.cols))].filter(Boolean);
+
+    const ledCells=[
+      led()?.mapPoint(player[0],player[1],cfg.rows,cfg.cols),
+      ...hazards.filter(h=>now>=h.stunUntil).map(h=>led()?.mapPoint(h.pos[0],h.pos[1],cfg.rows,cfg.cols)),
+      ...relays.filter(r=>r.active).map(r=>led()?.mapPoint(r.pos[0],r.pos[1],cfg.rows,cfg.cols))
+    ].filter(Boolean);
     led()?.setCells(ledCells);
   }
-  function resetAfterHit(){
+
+  function resetAfterHit(reason='Corruption hit BIT.'){
     player=maze.start.slice();
-    hazards.forEach(h=>{h.pos=h.spawn.slice();h.stunUntil=Date.now()+900;});
+    hazards.forEach(h=>{h.pos=h.spawn.slice();h.stunUntil=Date.now()+1100;});
     expeditionVisibleCells(maze.grid,player,visited);paint();
+    showNotice(reason+' Returning to the area entry — recovered modules and relays are safe.','fault',1500);
   }
-  function collide(){
+  function collide(reason){
     if(faultLock||finished)return;
     faultLock=true;active.arcadeFaults++;
     const depleted=applyAdventurePenalty();active.playTone(140,.1,'sawtooth',.03);led()?.flash('x',360);
     if(depleted)return;
-    showNotice('Corruption hit BIT. Returning to the area entry — recovered objectives are safe.','fault',1400);
-    resetAfterHit();later(()=>{faultLock=false;},850);
+    resetAfterHit(reason||'Corruption hit BIT.');
+    later(()=>{faultLock=false;},900);
   }
   function collectHere(){
     const k=key(...player),p=pickupAt(k);
@@ -449,10 +587,28 @@ function renderPulseRun(){
     collected.add(p.name);active.bits.add('EXP'+areaNo+'-'+p.name);active.playTone(720,.06,'sine',.03);
     showNotice('Recovered '+p.name+' · '+collected.size+'/'+cfg.pickups,'success',800);
   }
+  function activateRelay(){
+    const relay=relayAt(key(...player));
+    if(!relay)return false;
+    if(!objectivesReady()){
+      showNotice('Relay chain is locked until every module is recovered.','warn',900);return true;
+    }
+    const expected=relayNext();
+    if(!expected){
+      showNotice('Relay chain already stable. Head for the exit.','info',850);return true;
+    }
+    if(relay!==expected){
+      showNotice(relay.name+' is not next. Energise '+expected.name+' first.','warn',1000);return true;
+    }
+    relay.active=true;relayIndex++;active.playTone(880,.09,'sine',.035);led()?.flash('check',220);
+    showNotice(relay.name+' energised · '+relayIndex+'/'+relays.length,'success',900);
+    return true;
+  }
   function checkExit(){
     if(!same(player,maze.exit))return;
-    if(collected.size<cfg.pickups){
-      showNotice('Maintenance gate locked. '+(cfg.pickups-collected.size)+' objective'+(cfg.pickups-collected.size===1?' remains.':'s remain.'),'warn',1050);
+    if(!exitReady()){
+      if(!objectivesReady())showNotice('Maintenance gate locked. Recover every module first.','warn',1050);
+      else showNotice('Maintenance gate locked. Complete the relay chain first.','warn',1050);
       return;
     }
     finished=true;live=false;clearTimers();active.expeditionModules.add(stageIndex);led()?.setPattern('check');paint();
@@ -461,7 +617,7 @@ function renderPulseRun(){
       cfg.area+' cleared',
       stageIndex===0?'Power is flowing. BIT can now enter the Data Bus.':'The bus interface is restored. BIT can descend into the CPU Core.',
       'Micro:bit expedition complete',
-      'BIT crossed all three internal areas and recovered the POWER COUPLER, BUS INTERFACE and CORE LINK.',
+      'BIT crossed all three internal areas, recovered the repair modules and stabilised every relay chain.',
       'Enter Startup Controller →',
       ()=>{active.room=1;renderRoom();}
     );
@@ -474,11 +630,14 @@ function renderPulseRun(){
     }
     if(button){button.classList.add('pressed');later(()=>button.classList.remove('pressed'),90);}
     player=next;collectHere();
-    if(hazardAt(key(...player))){collide();return;}
+    const arc=arcAt(key(...player));
+    if(arc&&arcActive(arc)){collide('A live power arc hit BIT.');return;}
+    if(hazardAt(key(...player))){collide('Corruption intercepted BIT.');return;}
     checkExit();paint();
   }
   function usePulse(button){
     if(!live||finished||faultLock)return;
+    if(activateRelay()){paint();return;}
     const now=Date.now();
     if(now<pulseReadyAt)return;
     pulseReadyAt=now+4200;
@@ -486,28 +645,52 @@ function renderPulseRun(){
     const pulseDist=expeditionDistances(maze.grid,player);
     for(const h of hazards){
       const d=pulseDist[h.pos[0]][h.pos[1]];
-      if(d<=2){h.stunUntil=now+2700;hit++;}
+      if(d<=3){h.stunUntil=now+2900;hit++;}
     }
     active.playTone(hit?620:300,.07,'sine',.025);
     showNotice(hit?'Repair pulse stunned '+hit+' corruption signal'+(hit===1?'':'s')+'.':'No corruption within pulse range.','info',800);
     button.classList.add('pressed');later(()=>button.classList.remove('pressed'),100);paint();
   }
+  function patrolStep(h){
+    const neighbours=expeditionNeighbours(maze.grid,h.pos[0],h.pos[1]).filter(p=>!same(p,maze.exit));
+    if(!neighbours.length)return;
+    const forward=[h.pos[0]+h.dir[0],h.pos[1]+h.dir[1]];
+    const forwardOpen=neighbours.find(p=>same(p,forward));
+    if(forwardOpen&&maze.rng()>.18){h.pos=forwardOpen.slice();return;}
+    const pick=neighbours[Math.floor(maze.rng()*neighbours.length)];
+    h.dir=[pick[0]-h.pos[0],pick[1]-h.pos[1]];h.pos=pick.slice();
+  }
+  function sentryThreat(h){
+    const dr=Math.abs(h.pos[0]-player[0]),dc=Math.abs(h.pos[1]-player[1]);
+    if(dr&&dc)return false;
+    if(dr+dc>7)return false;
+    return expeditionLineClear(maze.grid,h.pos,player);
+  }
   function hazardTick(){
     if(!live||finished||faultLock)return;
     const now=Date.now(),dist=expeditionDistances(maze.grid,player);
+    const standingArc=arcAt(key(...player));
+    if(standingArc&&arcActive(standingArc,now)){collide('A power arc surged under BIT.');return;}
+    let sentryHit=false;
     for(const h of hazards){
       if(now<h.stunUntil)continue;
+      if(h.type==='sentry'){
+        if(sentryThreat(h))sentryHit=true;
+        continue;
+      }
+      if(h.type==='patrol'){patrolStep(h);continue;}
       const opts=expeditionNeighbours(maze.grid,h.pos[0],h.pos[1])
         .filter(p=>!same(p,maze.exit))
         .sort((a,b)=>dist[a[0]][a[1]]-dist[b[0]][b[1]]);
       if(!opts.length)continue;
-      // Mostly chase BIT, occasionally choose the second-best path to keep movement less robotic.
-      const choice=opts.length>1&&maze.rng()<.16?opts[1]:opts[0];
+      const choice=opts.length>1&&maze.rng()<.14?opts[1]:opts[0];
       h.pos=choice.slice();
     }
-    if(hazards.some(h=>now>=h.stunUntil&&same(h.pos,player))){collide();return;}
+    if(sentryHit){collide('A sentry beam locked onto BIT.');return;}
+    if(hazards.some(h=>now>=h.stunUntil&&h.type!=='sentry'&&same(h.pos,player))){collide('Corruption intercepted BIT.');return;}
     paint();
   }
+
   active.keyHandler=(e)=>{
     if(active?.systemId!=='1'||active.room!==0||finished)return;
     const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};
@@ -522,10 +705,10 @@ function renderPulseRun(){
     startButton.remove();
     focusPlayArea(board,()=>{
       live=true;
-      hazards.forEach(h=>h.stunUntil=Date.now()+1000);
+      hazards.forEach(h=>h.stunUntil=Date.now()+1200);
       every(hazardTick,cfg.hazardMs);
-      every(paint,250);
-      showNotice('BIT online. Explore, recover the objectives and stay clear of corruption.','success',1300);
+      every(paint,220);
+      showNotice('BIT online. Explore, recover modules, stabilise relays and avoid live circuitry.','success',1450);
     });
   });
   shell.insertBefore(startButton,board);

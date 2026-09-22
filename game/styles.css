@@ -3031,55 +3031,59 @@ body.adventure-modal-open{
 
 
 /* ============================================================
-   Level 1 prototype · micro:bit expedition
+   Level 1 · neon micro:bit expedition
    ============================================================ */
 .expedition-shell{
-  width:min(940px,100%);
+  width:min(1020px,100%);
   margin:0 auto;
-  padding:14px;
-  border:1px solid var(--line);
-  border-radius:18px;
+  padding:12px;
+  border:1px solid rgba(55,232,255,.22);
+  border-radius:16px;
   background:
-    radial-gradient(circle at 20% 20%,rgba(85,217,255,.05),transparent 30%),
-    linear-gradient(145deg,#0b1a2c,#06111e);
-  box-shadow:0 18px 45px rgba(0,0,0,.18);
+    linear-gradient(rgba(39,232,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(39,232,255,.018) 1px,transparent 1px),
+    radial-gradient(circle at 22% 18%,rgba(22,210,226,.07),transparent 30%),
+    #02070c;
+  background-size:22px 22px,22px 22px,auto,auto;
+  box-shadow:
+    0 22px 54px rgba(0,0,0,.32),
+    inset 0 0 48px rgba(0,191,214,.035);
 }
 .expedition-hud{
   display:grid;
   grid-template-columns:1.25fr 1fr 1fr;
-  gap:8px;
-  margin-bottom:9px;
+  gap:6px;
+  margin-bottom:8px;
 }
 .expedition-hud>*{
   min-width:0;
-  padding:8px 10px;
-  border:1px solid var(--line2);
-  border-radius:9px;
-  background:#081727;
-  color:var(--muted);
-  font-size:10px;
-  font-weight:850;
+  padding:7px 9px;
+  border:1px solid rgba(50,205,224,.18);
+  border-radius:6px;
+  background:rgba(4,15,23,.94);
+  color:#7894a4;
+  font:850 10px/1.25 ui-monospace,SFMono-Regular,Menlo,monospace;
   text-align:center;
-  letter-spacing:.04em;
+  letter-spacing:.055em;
 }
-.expedition-hud strong{
-  color:var(--cyan);
-}
+.expedition-hud strong{color:#54efff;text-shadow:0 0 10px rgba(84,239,255,.22)}
 .expedition-grid{
   display:grid;
-  grid-template-columns:repeat(var(--exp-cols,13),minmax(0,1fr));
-  grid-template-rows:repeat(var(--exp-rows,9),minmax(0,1fr));
+  grid-template-columns:repeat(var(--exp-cols,23),minmax(0,1fr));
+  grid-template-rows:repeat(var(--exp-rows,15),minmax(0,1fr));
   width:100%;
   overflow:hidden;
-  gap:2px;
-  padding:6px;
-  border:1px solid #304b67;
-  border-radius:14px;
-  background:#030b14;
-  box-shadow:0 0 24px rgba(85,217,255,.05) inset;
+  gap:1px;
+  padding:4px;
+  border:1px solid rgba(49,216,236,.24);
+  border-radius:10px;
+  background:#000307;
+  box-shadow:
+    inset 0 0 0 1px rgba(48,211,230,.025),
+    inset 0 0 34px rgba(0,0,0,.8);
 }
 .expedition-grid:focus{
-  outline:3px solid rgba(85,217,255,.36);
+  outline:2px solid rgba(71,232,250,.5);
   outline-offset:3px;
 }
 .expedition-cell{
@@ -3089,101 +3093,142 @@ body.adventure-modal-open{
   overflow:hidden;
   display:grid;
   place-items:center;
-  border-radius:3px;
-  transition:background .16s ease,border-color .16s ease,opacity .16s ease;
+  border-radius:1px;
+  transition:background .12s ease,box-shadow .12s ease,opacity .12s ease;
 }
 .expedition-cell.wall{
-  border:1px solid rgba(35,59,80,.58);
-  background:
-    linear-gradient(135deg,rgba(21,39,56,.98),rgba(10,24,37,.98));
+  background:#010307;
+  box-shadow:inset 0 0 0 1px rgba(13,27,36,.34);
 }
 .expedition-cell.trace{
-  border:1px solid rgba(52,109,126,.38);
-  background:
-    linear-gradient(90deg,transparent 45%,rgba(85,217,255,.12) 47%,rgba(85,217,255,.12) 53%,transparent 55%),
-    linear-gradient(#071624,#0a1d2d);
+  background:#07303a;
+  box-shadow:
+    inset 0 0 0 1px rgba(76,229,243,.08),
+    inset 0 0 9px rgba(19,157,172,.07);
 }
 .expedition-cell.trace::before{
   content:"";
   position:absolute;
-  inset:42%;
-  border-radius:50%;
-  background:rgba(85,217,255,.20);
-  box-shadow:0 0 7px rgba(85,217,255,.14);
+  inset:46% 8%;
+  background:rgba(83,236,249,.34);
+  box-shadow:0 0 5px rgba(83,236,249,.18);
 }
+.expedition-cell.trace::after{
+  content:"";
+  position:absolute;
+  inset:8% 46%;
+  background:rgba(83,236,249,.22);
+}
+.expedition-cell.chamber{
+  background:
+    linear-gradient(135deg,rgba(20,61,74,.98),rgba(10,39,50,.98));
+  box-shadow:inset 0 0 0 1px rgba(78,224,239,.12);
+}
+.expedition-cell.chamber::before,
+.expedition-cell.chamber::after{opacity:.18}
 .expedition-cell.fog{
-  opacity:.18;
-  filter:saturate(.35);
+  opacity:.09;
+  filter:saturate(.1) brightness(.45);
 }
 .expedition-cell.fog>*{display:none}
-.expedition-cell.entry{
-  border-color:rgba(92,224,160,.42);
-}
-.expedition-cell.exit{
-  border-color:rgba(255,207,111,.45);
-}
+.expedition-cell.entry{box-shadow:inset 0 0 0 1px rgba(91,255,184,.42)}
+.expedition-cell.exit{box-shadow:inset 0 0 0 1px rgba(255,205,95,.52)}
 .expedition-cell.pickup{
-  border-color:rgba(85,217,255,.7);
-  background:rgba(85,217,255,.08);
-  box-shadow:0 0 14px rgba(85,217,255,.12) inset;
+  background:#073744;
+  box-shadow:
+    inset 0 0 0 1px rgba(84,239,255,.62),
+    0 0 12px rgba(84,239,255,.14);
+}
+.expedition-cell.relay{
+  background:#322607;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,205,95,.66),
+    0 0 12px rgba(255,205,95,.12);
+}
+.expedition-cell.relay-active{
+  background:#123820;
+  box-shadow:
+    inset 0 0 0 1px rgba(91,255,184,.65),
+    0 0 13px rgba(91,255,184,.13);
+}
+.expedition-cell.arc-active{
+  background:#43091b;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,74,128,.72),
+    0 0 16px rgba(255,74,128,.18);
+}
+.expedition-cell.arc-idle{
+  background:#160815;
+  box-shadow:inset 0 0 0 1px rgba(152,66,125,.20);
 }
 .expedition-cell.hazard{
-  border-color:rgba(255,92,116,.66);
-  background:rgba(255,92,116,.08);
-  box-shadow:0 0 16px rgba(255,92,116,.14) inset;
+  background:#280614;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,79,122,.56),
+    0 0 15px rgba(255,79,122,.16);
+}
+.expedition-cell.enemy-patrol{
+  background:#2c1b04;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,190,74,.54),
+    0 0 14px rgba(255,190,74,.11);
+}
+.expedition-cell.enemy-sentry{
+  background:#1b0d32;
+  box-shadow:
+    inset 0 0 0 1px rgba(181,119,255,.55),
+    0 0 15px rgba(181,119,255,.12);
 }
 .expedition-cell.hazard-stunned{
-  border-color:rgba(165,139,255,.58);
-  background:rgba(165,139,255,.07);
+  background:#120e29;
+  box-shadow:inset 0 0 0 1px rgba(151,130,255,.5);
 }
 .expedition-cell.player{
-  border-color:rgba(92,224,160,.8);
-  background:rgba(92,224,160,.09);
-  box-shadow:0 0 0 2px rgba(92,224,160,.14) inset,0 0 18px rgba(92,224,160,.14);
+  background:#0b3a2b;
+  box-shadow:
+    inset 0 0 0 1px rgba(91,255,184,.88),
+    0 0 16px rgba(91,255,184,.24);
 }
 .expedition-player,
 .expedition-hazard,
 .expedition-pickup,
+.expedition-relay,
+.expedition-arc,
 .expedition-exit,
 .expedition-entry{
   position:relative;
-  z-index:2;
-  font:950 clamp(7px,1vw,12px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  z-index:3;
+  font:950 clamp(6px,.72vw,10px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
   text-align:center;
 }
 .expedition-player{
-  color:var(--green);
-  text-shadow:0 0 10px rgba(92,224,160,.5);
+  color:#7dffc2;
+  font-size:clamp(9px,1vw,14px);
+  text-shadow:0 0 9px rgba(91,255,184,.55);
 }
 .expedition-hazard{
-  color:#ff7185;
-  font-size:clamp(11px,1.5vw,18px);
-  text-shadow:0 0 10px rgba(255,92,116,.46);
+  color:#ff557e;
+  font-size:clamp(8px,1vw,14px);
+  text-shadow:0 0 9px rgba(255,79,122,.5);
 }
-.expedition-cell.hazard-stunned .expedition-hazard{
-  color:#b9a9ff;
-}
-.expedition-pickup{
-  color:var(--cyan);
-  text-shadow:0 0 10px rgba(85,217,255,.55);
-}
-.expedition-exit{
-  color:#ffcf6f;
-  font-size:clamp(6px,.85vw,10px);
-}
-.expedition-entry{
-  color:var(--green);
-  font-size:clamp(6px,.85vw,10px);
-}
+.expedition-cell.enemy-patrol .expedition-hazard{color:#ffc15f;text-shadow:0 0 9px rgba(255,193,95,.45)}
+.expedition-cell.enemy-sentry .expedition-hazard{color:#c295ff;text-shadow:0 0 9px rgba(194,149,255,.45)}
+.expedition-cell.hazard-stunned .expedition-hazard{color:#9f91ff}
+.expedition-pickup{color:#5df2ff;text-shadow:0 0 8px rgba(93,242,255,.5)}
+.expedition-relay{color:#ffd667;text-shadow:0 0 8px rgba(255,214,103,.42)}
+.expedition-cell.relay-active .expedition-relay{color:#7dffc2}
+.expedition-arc{color:#ff5a89;font-size:clamp(8px,1vw,13px);text-shadow:0 0 8px rgba(255,90,137,.48)}
+.expedition-cell.arc-idle .expedition-arc{color:#72415f;text-shadow:none}
+.expedition-exit{color:#ffd667;font-size:clamp(5px,.6vw,8px)}
+.expedition-entry{color:#7dffc2;font-size:clamp(5px,.6vw,8px)}
 .expedition-mission{
-  margin:9px 0 0;
-  padding:9px 11px;
-  border:1px solid rgba(85,217,255,.16);
-  border-radius:9px;
-  color:var(--muted);
-  background:#081624;
-  font-size:12px;
-  line-height:1.4;
+  margin:8px 0 0;
+  padding:8px 10px;
+  border:1px solid rgba(62,215,233,.14);
+  border-radius:6px;
+  color:#89a4b2;
+  background:rgba(3,13,20,.96);
+  font:700 11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
   text-align:center;
 }
 .expedition-controls{
@@ -3193,59 +3238,43 @@ body.adventure-modal-open{
     ". up ."
     "left pulse right"
     ". down .";
-  gap:7px;
-  width:min(460px,100%);
-  margin:10px auto 0;
+  gap:6px;
+  width:min(430px,100%);
+  margin:9px auto 0;
 }
 .expedition-controls button{
-  min-height:42px;
+  min-height:40px;
+  border-radius:7px;
+  background:#06131d;
+  border-color:rgba(56,198,216,.24);
 }
 .expedition-up{grid-area:up}
 .expedition-left{grid-area:left}
 .expedition-pulse{
   grid-area:pulse;
-  border-color:rgba(165,139,255,.48);
-  color:#c6baff;
+  border-color:rgba(179,119,255,.5)!important;
+  color:#c99dff;
 }
 .expedition-right{grid-area:right}
 .expedition-down{grid-area:down}
 .expedition-start{
   display:block;
-  min-width:210px;
-  margin:10px auto;
+  min-width:220px;
+  margin:9px auto;
+  border-color:rgba(83,233,248,.34);
 }
 @media(min-width:1180px){
-  body.adventure-wide .expedition-shell{
-    width:min(980px,100%);
-  }
+  body.adventure-wide .expedition-shell{width:min(1080px,100%)}
 }
 @media(max-width:700px){
-  .expedition-shell{padding:9px}
-  .expedition-hud{
-    grid-template-columns:1fr;
-    gap:5px;
-  }
-  .expedition-hud>*{
-    padding:6px 8px;
-    font-size:9px;
-  }
-  .expedition-grid{
-    gap:1px;
-    padding:4px;
-    border-radius:10px;
-  }
-  .expedition-cell{
-    border-radius:2px;
-  }
-  .expedition-player,
-  .expedition-pickup{
-    font-size:7px;
-  }
-  .expedition-hazard{
-    font-size:12px;
-  }
-  .expedition-mission{
-    padding:7px 8px;
-    font-size:10px;
-  }
+  .expedition-shell{padding:7px}
+  .expedition-hud{grid-template-columns:1fr;gap:4px}
+  .expedition-hud>*{padding:5px 7px;font-size:8px}
+  .expedition-grid{gap:0;padding:3px;border-radius:8px}
+  .expedition-cell{border-radius:0}
+  .expedition-player{font-size:8px}
+  .expedition-hazard{font-size:8px}
+  .expedition-pickup,.expedition-relay{font-size:6px}
+  .expedition-exit,.expedition-entry{font-size:5px}
+  .expedition-mission{padding:6px 7px;font-size:9px}
 }
