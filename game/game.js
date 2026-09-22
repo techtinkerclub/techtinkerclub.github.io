@@ -364,8 +364,8 @@
             kicker:'MICRO:BIT BOOT COMPLETE',
             perfect:'Flawless boot!',
             title:'Boot Sequence online!',
-            perfectSummary:'Power routing, startup logic, RAM repair and the final diagnostic all completed without a fault.',
-            summary:'The micro:bit can boot again. Replay the mission if you want to earn the clean-repair and flawless-diagnostic stars.'
+            perfectSummary:'The micro:bit expedition, startup logic, RAM repair and the final diagnostic all completed without a fault.',
+            summary:'The micro:bit can boot again. Replay the expedition if you want the clean-adventure and flawless-diagnostic stars.'
           },
           '2':{
             kicker:'RANDOMISER CORE ONLINE',
