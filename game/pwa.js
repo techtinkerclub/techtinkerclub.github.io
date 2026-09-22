@@ -8,6 +8,7 @@
   let deferredPrompt = null;
   let waitingWorker = null;
   let refreshing = false;
+  let reloadRequestedByUser = false;
 
   const isStandalone = () =>
     window.matchMedia('(display-mode: standalone)').matches ||
@@ -64,6 +65,7 @@
       if (!waitingWorker) return;
       bar.querySelector('[data-update-now]').disabled = true;
       bar.querySelector('[data-update-now]').textContent = 'Updating…';
+      reloadRequestedByUser = true;
       waitingWorker.postMessage({ type: 'SKIP_WAITING' });
     });
 
@@ -157,7 +159,9 @@
     });
 
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
+      // A newly activated worker must never throw a player out of an active
+      // mission. Reload only when they explicitly chose “Update now”.
+      if (!reloadRequestedByUser || refreshing) return;
       refreshing = true;
       location.reload();
     });
