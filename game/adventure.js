@@ -641,21 +641,27 @@ function randomInt(rng,min,max){return min+Math.floor(rng()*(max-min+1));}
 
 /* ---------------- Room 1: Random Packet Catcher ---------------- */
 
+function randomPacketStage(stage){
+  return [
+    {label:'DICE MODE',min:1,max:6,target:5,validChance:.72,copy:'Catch 5 numbers from 1 to 6.'},
+    {label:'LED POSITION',min:0,max:4,target:5,validChance:.64,copy:'Catch 5 numbers from 0 to 4.'},
+    {label:'NARROW RANGE',min:2,max:5,target:5,validChance:.54,copy:'Catch 5 numbers from 2 to 5. Out-of-range values are deliberately close.'}
+  ][stage]||null;
+}
+
 function renderRandomPacketCatcher(){
-  setProgress('RANDOMISER CORE · ROOM 1/3 · PACKET FILTER');
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const cfg=randomPacketStage(stageIndex);
+  setProgress('RANDOMISER CORE · ROOM 1/3 · PACKET FILTER · STAGE '+stageNo+'/3');
   const root=active.root;
   root.appendChild(roomHeader(
     'ROOM 1 · RANDOM PACKET CATCHER',
-    'Catch 5 numbers in the range',
-    'Look at the range shown below. Move left and right to catch 5 numbers inside that range. Let numbers outside the range fall past.'
+    'Catch '+cfg.target+' numbers in the range',
+    cfg.copy+' Move left and right to catch in-range numbers and let the others fall past.'
   ));
 
-  const rules=[
-    {label:'DICE MODE',min:1,max:6,copy:'Catch 5 numbers from 1 to 6.'},
-    {label:'LED POSITION',min:0,max:4,copy:'Catch 5 numbers from 0 to 4.'}
-  ];
-  let wave=0,caughtInWave=0,totalCaught=0,playerLane=1,live=false,finished=false,nextPacketId=1;
-  const rng=rngFromSeed(active.seed+':packet-catcher');
+  let caught=0,playerLane=1,live=false,finished=false,nextPacketId=1;
+  const rng=rngFromSeed(active.seed+':packet-catcher:'+stageNo);
   const packets=[];
 
   const hud=document.createElement('div');hud.className='random-catcher-hud';
@@ -664,59 +670,46 @@ function renderRandomPacketCatcher(){
   hud.append(ruleBox,progress);
 
   const arena=document.createElement('div');arena.className='random-catcher-arena';
-  arena.setAttribute('role','application');
-  arena.setAttribute('aria-label','Three-lane random packet catcher');
-  const lanes=Array.from({length:3},(_,i)=>{
-    const lane=document.createElement('div');lane.className='random-lane';lane.dataset.lane=String(i);arena.appendChild(lane);return lane;
-  });
+  arena.setAttribute('role','application');arena.setAttribute('aria-label','Three-lane random packet catcher stage '+stageNo);
+  for(let i=0;i<3;i++){const lane=document.createElement('div');lane.className='random-lane';lane.dataset.lane=String(i);arena.appendChild(lane);}
   const catcher=document.createElement('div');catcher.className='random-catcher';catcher.innerHTML='<span>CORE</span>';
 
   const controls=document.createElement('div');controls.className='random-catcher-controls';
   const left=document.createElement('button');left.type='button';left.textContent='←';left.setAttribute('aria-label','Move catcher left');
   const right=document.createElement('button');right.type='button';right.textContent='→';right.setAttribute('aria-label','Move catcher right');
   controls.append(left,right);
+
   const startRow=document.createElement('div');startRow.className='random-catcher-start';
-  const startButton=document.createElement('button');startButton.type='button';startButton.className='random-catcher-start-button';startButton.textContent='Start packet run →';
-  const startHint=document.createElement('span');startHint.textContent='Nothing moves until you start. The game will focus on the catcher first.';
+  const startButton=document.createElement('button');startButton.type='button';startButton.className='random-catcher-start-button';startButton.textContent='Start stage '+stageNo+' →';
+  const startHint=document.createElement('span');
+  startHint.textContent=stageIndex===0?'Nothing moves until you start.':stageIndex===1?'Same speed, but more out-of-range packets.':'Same speed again. The final range is narrower and the distractors sit closer to its limits.';
   startRow.append(startHint,startButton);
 
   const legend=document.createElement('div');legend.className='adventure-info-strip';
-  legend.innerHTML='<span><strong>IN RANGE</strong> catch it</span><span><strong>OUT OF RANGE</strong> let it pass</span><span><strong>TARGET</strong> catch 5</span>';
+  legend.innerHTML='<span><strong>IN RANGE</strong> catch it</span><span><strong>OUT OF RANGE</strong> let it pass</span><span><strong>TARGET</strong> catch '+cfg.target+'</span>';
 
   root.append(hud,legend,startRow,arena,controls);
 
-  function currentRule(){return rules[wave];}
-  function validValue(v){const r=currentRule();return Number.isInteger(v)&&v>=r.min&&v<=r.max;}
+  function validValue(v){return Number.isInteger(v)&&v>=cfg.min&&v<=cfg.max;}
   function paintRule(){
-    const r=currentRule();
-    ruleBox.innerHTML=`<small>${r.label}</small><strong>random ${r.min} to ${r.max}</strong><span>${r.copy}</span>`;
-    progress.textContent=`CAUGHT ${caughtInWave}/5 · RANGE ${r.min}–${r.max}`;
+    ruleBox.innerHTML='<small>'+cfg.label+'</small><strong>random '+cfg.min+' to '+cfg.max+'</strong><span>'+cfg.copy+'</span>';
+    progress.textContent='CAUGHT '+caught+'/'+cfg.target+' · RANGE '+cfg.min+'–'+cfg.max;
   }
   function paintPlayer(){
-    catcher.style.left=`calc(${playerLane*33.333+16.666}% - 32px)`;
+    catcher.style.left='calc('+(playerLane*33.333+16.666)+'% - 32px)';
     if(!catcher.isConnected)arena.appendChild(catcher);
   }
   function startLive(){
     if(live||finished)return;
-    live=true;
-    startRow.hidden=true;
-    every(spawn,900);
-    every(tick,50);
-    spawn();
+    live=true;startRow.hidden=true;
+    every(spawn,900);every(tick,50);spawn();
   }
-  startButton.addEventListener('click',()=>{
-    startButton.disabled=true;
-    focusPlayArea(arena,startLive);
-  });
+  startButton.addEventListener('click',()=>{startButton.disabled=true;focusPlayArea(arena,startLive);});
   function move(delta){
     if(!live||finished)return;
-    playerLane=Math.max(0,Math.min(2,playerLane+delta));
-    paintPlayer();
-    active.playTone(330+playerLane*70,.025,'sine',.012);
+    playerLane=Math.max(0,Math.min(2,playerLane+delta));paintPlayer();active.playTone(330+playerLane*70,.025,'sine',.012);
   }
-  left.addEventListener('click',()=>move(-1));
-  right.addEventListener('click',()=>move(1));
-
+  left.addEventListener('click',()=>move(-1));right.addEventListener('click',()=>move(1));
   active.keyHandler=(e)=>{
     if(active?.systemId!=='2'||active.room!==0||finished)return;
     if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){e.preventDefault();move(-1);}
@@ -726,86 +719,62 @@ function renderRandomPacketCatcher(){
 
   function spawn(){
     if(!live||finished)return;
-    const r=currentRule();
-    const shouldValid=rng()<0.66;
+    const shouldValid=rng()<cfg.validChance;
     let value;
-    if(shouldValid)value=randomInt(rng,r.min,r.max);
+    if(shouldValid)value=randomInt(rng,cfg.min,cfg.max);
     else{
-      const lows=[r.min-2,r.min-1].filter(v=>v>=0);
-      const highs=[r.max+1,r.max+2,r.max+3];
-      const pool=[...lows,...highs];
-      value=pool[Math.floor(rng()*pool.length)] ?? r.max+1;
+      const pool=[cfg.min-2,cfg.min-1,cfg.max+1,cfg.max+2].filter(v=>v>=0);
+      value=pool[Math.floor(rng()*pool.length)] ?? cfg.max+1;
     }
     const packet={id:nextPacketId++,lane:randomInt(rng,0,2),value,y:-12,resolved:false,el:document.createElement('div')};
-    packet.el.className='random-packet';
-    packet.el.style.left=`calc(${packet.lane*33.333+16.666}% - 22px)`;
-    packet.el.style.top=`${packet.y}%`;
-    packet.el.textContent=String(packet.value);
-    arena.appendChild(packet.el);
-    packets.push(packet);
+    packet.el.className='random-packet';packet.el.style.left='calc('+(packet.lane*33.333+16.666)+'% - 22px)';
+    packet.el.style.top=packet.y+'%';packet.el.textContent=String(packet.value);arena.appendChild(packet.el);packets.push(packet);
   }
-
-  function clearPacketNodes(){
-    for(const p of packets)p.el?.remove();
-    packets.splice(0,packets.length);
-  }
-
+  function clearPacketNodes(){for(const p of packets)p.el?.remove();packets.splice(0,packets.length);}
   function renderPackets(){
     for(const p of packets){
       if(!p.el?.isConnected&&p.el)arena.appendChild(p.el);
-      if(p.el){
-        p.el.style.left=`calc(${p.lane*33.333+16.666}% - 22px)`;
-        p.el.style.top=`${p.y}%`;
-      }
+      if(p.el){p.el.style.left='calc('+(p.lane*33.333+16.666)+'% - 22px)';p.el.style.top=p.y+'%';}
     }
     paintPlayer();
     const ledCells=[[4,[0,2,4][playerLane]]];
-    for(const p of packets){
-      const row=Math.max(0,Math.min(3,Math.round((p.y+12)/90*3)));
-      ledCells.push([row,[0,2,4][p.lane]]);
-    }
+    for(const p of packets){const row=Math.max(0,Math.min(3,Math.round((p.y+12)/90*3)));ledCells.push([row,[0,2,4][p.lane]]);}
     led()?.setCells(ledCells);
   }
-
   function resolvePacket(p){
     if(p.lane!==playerLane||p.resolved)return;
     p.resolved=true;
     if(validValue(p.value)){
-      totalCaught++;caughtInWave++;active.playTone(720,.055,'sine',.025);
-      showNotice(`${p.value} is in range · ${caughtInWave}/5 caught.`,'success',650);
-      if(caughtInWave>=5){
-        if(wave===0){
-          live=false;clearTimers();
-          wave=1;caughtInWave=0;clearPacketNodes();paintRule();renderPackets();led()?.setPattern('check');
-          showTransition('First range complete','You caught 5 numbers from 1 to 6. Now catch 5 numbers from 0 to 4.','Start range 0–4 →',()=>{
-            if(!active||active.systemId!=='2'||active.room!==0)return;
-            focusPlayArea(arena,startLive);
-          });
-        }else{
-          finished=true;live=false;clearTimers();active.roomsCompleted=Math.max(active.roomsCompleted,1);
-          led()?.setPattern('check');
-          showTransition('Packet filter restored','You caught 5 numbers in each target range and ignored out-of-range values.','Check output sequences →',()=>{active.room=1;renderRoom();});
-        }
+      caught++;active.playTone(720,.055,'sine',.025);paintRule();
+      showNotice(p.value+' is in range · '+caught+'/'+cfg.target+' caught.','success',650);
+      if(caught>=cfg.target){
+        finished=true;live=false;clearTimers();clearPacketNodes();led()?.setPattern('check');
+        if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
+        finishRoomStage(
+          'Packet stage '+stageNo+'/3 complete',
+          stageIndex===0?'Next: the 0–4 LED-position range with more distractors.':'Next: a narrower 2–5 range with close distractors.',
+          'Packet filter fully restored',
+          'All three range-catching stages are stable.',
+          'Check output sequences →',
+          ()=>{active.room=1;renderRoom();}
+        );
       }
     }else{
-      active.arcadeFaults++;
-      const depleted=applyAdventurePenalty();
+      active.arcadeFaults++;const depleted=applyAdventurePenalty();
       active.playTone(150,.08,'square',.026);led()?.flash('x',260);
       arena.classList.remove('fault');void arena.offsetWidth;arena.classList.add('fault');
       if(depleted){live=false;return;}
-      showNotice(`${p.value} is outside random ${currentRule().min} to ${currentRule().max}.`,'fault',850);
+      showNotice(p.value+' is outside random '+cfg.min+' to '+cfg.max+'.','fault',850);
       later(()=>arena.classList.remove('fault'),350);
     }
   }
-
   function tick(){
     if(!live||finished)return;
     for(const p of packets)p.y+=2;
     for(let i=packets.length-1;i>=0;i--){
       const p=packets[i];
       if(p.y>=78&&p.y<86){
-        resolvePacket(p);
-        if(!live||finished)return;
+        resolvePacket(p);if(!live||finished)return;
         if(p.resolved){p.el?.remove();packets.splice(i,1);continue;}
       }
       if(p.y>102){p.el?.remove();packets.splice(i,1);}
@@ -813,9 +782,8 @@ function renderRandomPacketCatcher(){
     renderPackets();
   }
 
-  paintRule();paintPlayer();renderPackets();
-  led()?.setPattern('question');
-  showNotice('Press Start when you are ready. Nothing will fall before then.','info',1300);
+  paintRule();paintPlayer();renderPackets();led()?.setPattern('question');
+  showNotice('Stage '+stageNo+'/3 · press Start when you are ready.','info',1300);
 }
 
 /* ---------------- Room 2: Randomiser Range Diagnostics ---------------- */
