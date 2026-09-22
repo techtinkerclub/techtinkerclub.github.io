@@ -80,6 +80,7 @@
 
   function showScreen(name){
     for(const [key,node] of Object.entries(screens)) node.hidden = key!==name;
+    document.body.classList.toggle('adventure-wide',name==='adventure');
     window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
 
