@@ -1726,189 +1726,221 @@ function renderLogicRouterFinalGate(){
 
 /* ---------------- Room 1: Sensor Scanner ---------------- */
 
-function sensorScannerConfig(stage){
+function sensorSweepConfig(stage){
   return [
-    {rounds:6,duration:6000,label:'LIGHT THRESHOLD',copy:'Trigger DARK ALERT only when the light reading is below the threshold.'},
-    {rounds:6,duration:6500,label:'TEMPERATURE THRESHOLD',copy:'The temperature limit changes each scan. Trigger HOT ALERT only when the reading is above the current threshold.'},
-    {rounds:6,duration:7500,label:'DUAL SENSOR AND',copy:'Trigger COLD & DARK only when BOTH temperature and light are below their thresholds.'}
+    {n:5,target:5,nodes:2,lifetime:9000,label:'LIGHT SWEEP',copy:'Two live nodes appear. Reach and scan the DARK node where light < 50.'},
+    {n:6,target:6,nodes:3,lifetime:10500,label:'TEMPERATURE SWEEP',copy:'Three live nodes appear and the HOT threshold changes every wave. Reach the node where temp > threshold.'},
+    {n:7,target:6,nodes:3,lifetime:12000,label:'DUAL SENSOR SWEEP',copy:'The largest field uses two readings per node. Reach the one where temp and light are BOTH below their limits.'}
   ][stage]||null;
 }
-function sensorScanTrials(stage,seed){
-  const rng=rngFromSeed(seed+':sensor-scan:'+stage);
-  const wanted=shuffled([true,false,true,false,true,false],rng);
-  return wanted.map((alert,index)=>{
-    if(stage===0){
-      const threshold=50;
-      const light=alert?randomInt(rng,18,46):randomInt(rng,50,82);
-      return {
-        kind:'LIGHT',reading1:light,limit1:threshold,alert,
-        condition:'light < '+threshold,
-        value:'light = '+light,
-        alertLabel:'DARK ALERT',
-        explain:light+' < '+threshold+' is '+(alert?'TRUE.':'FALSE.')
-      };
-    }
-    if(stage===1){
-      const threshold=randomInt(rng,25,32);
-      const temp=alert?randomInt(rng,threshold+1,threshold+7):randomInt(rng,threshold-7,threshold);
-      return {
-        kind:'TEMP',reading1:temp,limit1:threshold,alert,
-        condition:'temp > '+threshold,
-        value:'temp = '+temp,
-        alertLabel:'HOT ALERT',
-        explain:temp+' > '+threshold+' is '+(alert?'TRUE.':'FALSE.')
-      };
-    }
-    const tLimit=randomInt(rng,16,20),lLimit=randomInt(rng,42,58);
-    let temp,light;
-    if(alert){
-      temp=randomInt(rng,10,tLimit-1);
-      light=randomInt(rng,18,lLimit-1);
-    }else if(index%2===0){
-      temp=randomInt(rng,tLimit,tLimit+7);
-      light=randomInt(rng,18,lLimit-1);
-    }else{
-      temp=randomInt(rng,10,tLimit-1);
-      light=randomInt(rng,lLimit,lLimit+20);
-    }
+function sensorSweepWave(stage,seed,waveNo){
+  const rng=rngFromSeed(seed+':sensor-sweep:'+stage+':'+waveNo);
+  if(stage===0){
+    const threshold=50;
+    const alert={light:randomInt(rng,18,46),alert:true};
+    const safe={light:randomInt(rng,50,82),alert:false};
     return {
-      kind:'DUAL',reading1:temp,limit1:tLimit,reading2:light,limit2:lLimit,alert,
-      condition:'temp < '+tLimit+' AND light < '+lLimit,
-      value:'temp = '+temp+' · light = '+light,
-      alertLabel:'COLD & DARK',
-      explain:'temp '+temp+' < '+tLimit+' is '+(temp<tLimit?'TRUE':'FALSE')+' and light '+light+' < '+lLimit+' is '+(light<lLimit?'TRUE.':'FALSE.')
+      condition:'light < '+threshold,
+      thresholdText:'DARK if light < '+threshold,
+      nodes:shuffled([alert,safe],rng),
+      explain:n=>'light '+n.light+(n.light<threshold?' < ':' ≥ ')+threshold
     };
-  });
-}
-function sensorLedBars(trial){
-  const cells=[];
-  if(!trial)return cells;
-  if(trial.kind==='LIGHT'){
-    const h=Math.max(1,Math.min(5,Math.ceil(trial.reading1/100*5)));
-    for(let r=5-h;r<5;r++)for(let col=1;col<=3;col++)cells.push([r,col]);
-  }else if(trial.kind==='TEMP'){
-    const h=Math.max(1,Math.min(5,Math.ceil((trial.reading1-10)/30*5)));
-    for(let r=5-h;r<5;r++)for(let col=1;col<=3;col++)cells.push([r,col]);
-  }else{
-    const th=Math.max(1,Math.min(5,Math.ceil((trial.reading1-8)/28*5)));
-    const lh=Math.max(1,Math.min(5,Math.ceil(trial.reading2/100*5)));
-    for(let r=5-th;r<5;r++){cells.push([r,0]);cells.push([r,1]);}
-    for(let r=5-lh;r<5;r++){cells.push([r,3]);cells.push([r,4]);}
   }
-  return cells;
+  if(stage===1){
+    const threshold=randomInt(rng,25,32);
+    const nodes=[
+      {temp:randomInt(rng,threshold+1,threshold+7),alert:true},
+      {temp:randomInt(rng,threshold-7,threshold),alert:false},
+      {temp:randomInt(rng,threshold-7,threshold),alert:false}
+    ];
+    return {
+      condition:'temp > '+threshold,
+      thresholdText:'HOT if temp > '+threshold,
+      nodes:shuffled(nodes,rng),
+      explain:n=>'temp '+n.temp+(n.temp>threshold?' > ':' ≤ ')+threshold
+    };
+  }
+  const tempLimit=randomInt(rng,16,20),lightLimit=randomInt(rng,42,58);
+  const alert={temp:randomInt(rng,10,tempLimit-1),light:randomInt(rng,18,lightLimit-1),alert:true};
+  const safeA={temp:randomInt(rng,tempLimit,tempLimit+7),light:randomInt(rng,18,lightLimit-1),alert:false};
+  const safeB={temp:randomInt(rng,10,tempLimit-1),light:randomInt(rng,lightLimit,lightLimit+20),alert:false};
+  return {
+    condition:'temp < '+tempLimit+' AND light < '+lightLimit,
+    thresholdText:'COLD & DARK only if BOTH tests are true',
+    nodes:shuffled([alert,safeA,safeB],rng),
+    explain:n=>'temp '+n.temp+(n.temp<tempLimit?' < ':' ≥ ')+tempLimit+' AND light '+n.light+(n.light<lightLimit?' < ':' ≥ ')+lightLimit
+  };
+}
+function sensorSweepPositions(n,count,rng,player){
+  const cells=[];
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    if(player&&player[0]===r&&player[1]===c)continue;
+    cells.push([r,c]);
+  }
+  return shuffled(cells,rng).slice(0,count);
 }
 function renderSensorScanner(){
-  const stageIndex=active.roomStage||0,stageNo=stageIndex+1,cfg=sensorScannerConfig(stageIndex);
-  setProgress('SENSOR ARRAY · ROOM 1/3 · SENSOR SCANNER · STAGE '+stageNo+'/3');
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1,cfg=sensorSweepConfig(stageIndex);
+  setProgress('SENSOR ARRAY · ROOM 1/3 · SENSOR SWEEP · STAGE '+stageNo+'/3');
   const root=active.root;
-  root.appendChild(roomHeader('ROOM 1 · SENSOR SCANNER','Watch the readings and respond to the threshold',cfg.copy));
+  root.appendChild(roomHeader('ROOM 1 · SENSOR SWEEP','Hunt the sensor that crosses the threshold',cfg.copy));
 
   const info=document.createElement('div');info.className='adventure-info-strip';
-  info.innerHTML='<span><strong>ALERT</strong> condition is true</span><span><strong>OK</strong> condition is false</span><span><strong>'+cfg.rounds+'</strong> scans this stage</span>';
+  info.innerHTML='<span><strong>MOVE</strong> arrows / WASD</span><span><strong>SCAN</strong> Space / button</span><span><strong>MISS</strong> costs integrity</span><span><strong>TARGET</strong> '+cfg.target+' correct scans</span>';
   root.appendChild(info);
 
-  const panel=document.createElement('div');panel.className='sensor-scanner';
-  const top=document.createElement('div');top.className='sensor-scan-top';
+  const panel=document.createElement('div');panel.className='sensor-sweep';
+  const top=document.createElement('div');top.className='sensor-sweep-top';
   const mode=document.createElement('small');mode.textContent=cfg.label;
-  const count=document.createElement('strong');
-  top.append(mode,count);
+  const progress=document.createElement('strong');
+  top.append(mode,progress);
   const condition=document.createElement('div');condition.className='sensor-condition';
-  const values=document.createElement('div');values.className='sensor-values';
-  const gauges=document.createElement('div');gauges.className='sensor-gauges';
-  const timer=document.createElement('div');timer.className='sensor-scan-timer';
+  const hint=document.createElement('div');hint.className='sensor-sweep-hint';
+  const timer=document.createElement('div');timer.className='sensor-sweep-timer';
   const timerFill=document.createElement('i');timer.appendChild(timerFill);
+  const field=document.createElement('div');field.className='sensor-sweep-grid';field.dataset.sweepSize=String(cfg.n);
+  field.style.setProperty('--sweep-n',String(cfg.n));
+  field.setAttribute('role','application');
+  field.setAttribute('aria-label','Sensor Sweep field');
   const status=document.createElement('div');status.className='logic-status';
-  const controls=document.createElement('div');controls.className='sensor-scan-controls';
-  const okButton=document.createElement('button');okButton.type='button';okButton.className='sensor-ok';okButton.textContent='OK';
-  const alertButton=document.createElement('button');alertButton.type='button';alertButton.className='sensor-alert';alertButton.textContent='ALERT';
-  controls.append(okButton,alertButton);
-  panel.append(top,condition,values,gauges,timer,status,controls);root.appendChild(panel);
 
-  const trials=sensorScanTrials(stageIndex,active.seed);
-  let index=0,trial=null,elapsed=0,tickId=null,locked=true,finished=false;
+  const controls=document.createElement('div');controls.className='sensor-sweep-controls';
+  const up=document.createElement('button');up.type='button';up.textContent='↑';up.className='sweep-up';up.setAttribute('aria-label','Move up');
+  const left=document.createElement('button');left.type='button';left.textContent='←';left.className='sweep-left';left.setAttribute('aria-label','Move left');
+  const scan=document.createElement('button');scan.type='button';scan.textContent='SCAN';scan.className='sweep-scan';
+  const right=document.createElement('button');right.type='button';right.textContent='→';right.className='sweep-right';right.setAttribute('aria-label','Move right');
+  const down=document.createElement('button');down.type='button';down.textContent='↓';down.className='sweep-down';down.setAttribute('aria-label','Move down');
+  controls.append(up,left,scan,right,down);
 
-  function stopTick(){if(tickId){clearInterval(tickId);active?.timers?.delete(tickId);tickId=null;}}
-  function paintGauges(){
-    gauges.replaceChildren();
-    const specs=trial.kind==='DUAL'
-      ?[{name:'TEMP',value:trial.reading1,limit:trial.limit1,max:40,unit:'°C'},{name:'LIGHT',value:trial.reading2,limit:trial.limit2,max:100,unit:''}]
-      :trial.kind==='TEMP'
-        ?[{name:'TEMP',value:trial.reading1,limit:trial.limit1,max:40,unit:'°C'}]
-        :[{name:'LIGHT',value:trial.reading1,limit:trial.limit1,max:100,unit:''}];
-    for(const spec of specs){
-      const card=document.createElement('div');card.className='sensor-gauge-card';
-      const head=document.createElement('div');head.innerHTML='<strong>'+spec.name+'</strong><span>'+spec.value+spec.unit+'</span>';
-      const rail=document.createElement('div');rail.className='sensor-gauge-rail';
-      const fill=document.createElement('i');fill.style.width=Math.max(0,Math.min(100,spec.value/spec.max*100))+'%';
-      const limit=document.createElement('b');limit.style.left=Math.max(0,Math.min(100,spec.limit/spec.max*100))+'%';limit.title='Threshold '+spec.limit;
-      rail.append(fill,limit);
-      const foot=document.createElement('small');foot.textContent='threshold '+spec.limit+spec.unit;
-      card.append(head,rail,foot);gauges.appendChild(card);
-    }
+  panel.append(top,condition,hint,timer,field,status,controls);
+  root.appendChild(panel);
+
+  const cells=[];
+  for(let r=0;r<cfg.n;r++)for(let c=0;c<cfg.n;c++){
+    const cell=document.createElement('div');cell.className='sensor-sweep-cell';cell.dataset.r=String(r);cell.dataset.c=String(c);
+    field.appendChild(cell);cells.push(cell);
   }
-  function showTrial(){
+
+  let player=[Math.floor(cfg.n/2),Math.floor(cfg.n/2)];
+  let waveNo=0,score=0,wave=null,liveNodes=[],elapsed=0,tickId=null,locked=true,finished=false;
+  const seed=active.seed+':sweep-stage-'+stageNo;
+
+  function stopTick(){
+    if(tickId){clearInterval(tickId);active?.timers?.delete(tickId);tickId=null;}
+  }
+  function nodeText(node){
+    if(stageIndex===0)return '<small>LIGHT</small><strong>'+node.light+'</strong>';
+    if(stageIndex===1)return '<small>TEMP</small><strong>'+node.temp+'°</strong>';
+    return '<small>T '+node.temp+'°</small><strong>L '+node.light+'</strong>';
+  }
+  function renderField(){
+    const nodeByKey=new Map(liveNodes.map(n=>[sensorFaultKey(n.pos[0],n.pos[1]),n]));
+    for(const cell of cells){
+      const r=+cell.dataset.r,c=+cell.dataset.c,k=sensorFaultKey(r,c);
+      cell.replaceChildren();
+      cell.classList.toggle('player',player[0]===r&&player[1]===c);
+      cell.classList.toggle('live-node',nodeByKey.has(k));
+      if(nodeByKey.has(k)){
+        const node=nodeByKey.get(k),wrap=document.createElement('div');wrap.className='sensor-node-reading';
+        wrap.innerHTML=nodeText(node);cell.appendChild(wrap);
+      }
+      if(player[0]===r&&player[1]===c){
+        const p=document.createElement('span');p.className='sensor-sweep-player';p.textContent='◎';cell.appendChild(p);
+      }
+    }
+    const ledCells=[[...led()?.mapPoint(player[0],player[1],cfg.n,cfg.n)||[]]];
+    const mappedNodes=liveNodes.map(n=>led()?.mapPoint(n.pos[0],n.pos[1],cfg.n,cfg.n)).filter(Boolean);
+    const mappedPlayer=led()?.mapPoint(player[0],player[1],cfg.n,cfg.n);
+    led()?.setCells([...(mappedPlayer?[mappedPlayer]:[]),...mappedNodes]);
+  }
+  function setWave(){
     if(finished)return;
-    trial=trials[index];elapsed=0;locked=false;
-    count.textContent='SCAN '+(index+1)+'/'+cfg.rounds;
-    condition.textContent='IF '+trial.condition;
-    values.textContent=trial.value;
-    status.textContent='Is the condition TRUE? Trigger '+trial.alertLabel+' or choose OK.';
-    paintGauges();timerFill.style.width='100%';led()?.setCells(sensorLedBars(trial));
+    locked=false;elapsed=0;
+    wave=sensorSweepWave(stageIndex,seed,waveNo);
+    const rng=rngFromSeed(seed+':positions:'+waveNo);
+    const positions=sensorSweepPositions(cfg.n,wave.nodes.length,rng,player);
+    liveNodes=wave.nodes.map((node,i)=>({...node,pos:positions[i]}));
+    condition.textContent='SCAN IF '+wave.condition;
+    hint.textContent=wave.thresholdText;
+    progress.textContent='CALIBRATED '+score+'/'+cfg.target;
+    status.textContent='Move to the matching live node and press SCAN before it expires.';
+    timerFill.style.width='100%';renderField();
     stopTick();
     tickId=every(()=>{
       elapsed+=50;
-      timerFill.style.width=Math.max(0,100-elapsed/cfg.duration*100)+'%';
-      if(elapsed>=cfg.duration){stopTick();resolve(null);}
+      timerFill.style.width=Math.max(0,100-elapsed/cfg.lifetime*100)+'%';
+      if(elapsed>=cfg.lifetime){stopTick();missWave();}
     },50);
   }
-  function next(){
-    index++;
-    if(index>=trials.length){
-      finished=true;stopTick();led()?.setPattern('check');
+  function move(dr,dc){
+    if(locked||finished)return;
+    const nr=Math.max(0,Math.min(cfg.n-1,player[0]+dr));
+    const nc=Math.max(0,Math.min(cfg.n-1,player[1]+dc));
+    if(nr===player[0]&&nc===player[1])return;
+    player=[nr,nc];active.playTone(320,.025,'sine',.012);renderField();
+  }
+  function nodeAtPlayer(){
+    return liveNodes.find(n=>n.pos[0]===player[0]&&n.pos[1]===player[1])||null;
+  }
+  function missWave(){
+    if(locked||finished)return;
+    locked=true;active.sensorFaults++;
+    const target=liveNodes.find(n=>n.alert);
+    const depleted=applyAdventurePenalty();active.playTone(145,.09,'square',.028);led()?.flash('x',360);
+    if(depleted)return;
+    showNotice('Alert node expired. '+wave.explain(target)+' was TRUE.','fault',1350);
+    waveNo++;later(setWave,950);
+  }
+  function scanHere(){
+    if(locked||finished)return;
+    const node=nodeAtPlayer();
+    if(!node){
+      showNotice('No live sensor at the scanner position.','warn',700);
+      active.playTone(180,.035,'square',.015);return;
+    }
+    if(!node.alert){
+      active.sensorFaults++;
+      const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.026);led()?.flash('x',330);
+      if(depleted)return;
+      showNotice('Wrong sensor. '+wave.explain(node)+' is FALSE.','fault',1200);
+      return;
+    }
+    locked=true;stopTick();score++;active.playTone(780,.07,'sine',.03);led()?.setPattern('check');
+    showNotice('Sensor captured! '+wave.explain(node)+' is TRUE.','success',800);
+    if(score>=cfg.target){
+      finished=true;
       if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
       finishRoomStage(
-        'Sensor Scanner stage '+stageNo+'/3 complete',
-        stageIndex===0?'Next: changing temperature thresholds.':'Next: two live sensors joined by AND.',
-        'Sensor Scanner calibrated',
-        'Light, temperature and combined threshold scans are all responding correctly.',
+        'Sensor Sweep stage '+stageNo+'/3 complete',
+        stageIndex===0?'Next: a larger field with changing temperature thresholds.':'Next: the 7×7 dual-sensor field using AND.',
+        'Sensor Sweep calibrated',
+        'All three moving sensor fields are responding to the correct threshold conditions.',
         'Open Variable Processor →',
         ()=>{active.room=1;renderRoom();}
       );
       return;
     }
-    later(showTrial,700);
+    waveNo++;later(setWave,700);
   }
-  function resolve(answer){
-    if(locked||finished)return;
-    locked=true;stopTick();
-    const correct=answer===trial.alert;
-    if(correct){
-      active.playTone(740,.055,'sine',.025);led()?.setPattern('check');
-      showNotice((trial.alert?trial.alertLabel:'OK')+' · '+trial.explain,'success',800);
-      next();return;
-    }
-    active.sensorFaults++;
-    const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.026);led()?.flash('x',340);
-    if(depleted)return;
-    const msg=answer==null?'Scan timed out. '+trial.explain:'Not quite. '+trial.explain;
-    showNotice(msg,'fault',1300);
-    later(showTrial,850);
-  }
-  okButton.addEventListener('click',()=>resolve(false));
-  alertButton.addEventListener('click',()=>resolve(true));
+
+  up.addEventListener('click',()=>move(-1,0));
+  down.addEventListener('click',()=>move(1,0));
+  left.addEventListener('click',()=>move(0,-1));
+  right.addEventListener('click',()=>move(0,1));
+  scan.addEventListener('click',scanHere);
   active.keyHandler=(e)=>{
-    if(active?.systemId!=='4'||active.room!==0||locked||finished)return;
-    if(e.key==='ArrowLeft'||e.key==='o'||e.key==='O'){e.preventDefault();resolve(false);}
-    if(e.key==='ArrowRight'||e.key==='a'||e.key==='A'){e.preventDefault();resolve(true);}
+    if(active?.systemId!=='4'||active.room!==0||finished)return;
+    const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};
+    if(map[e.key]){e.preventDefault();move(map[e.key][0],map[e.key][1]);return;}
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();scanHere();}
   };
   document.addEventListener('keydown',active.keyHandler);
 
-  const start=document.createElement('button');start.type='button';start.className='sensor-start';start.textContent='Start stage '+stageNo+' →';
-  start.addEventListener('click',()=>{start.remove();focusPlayArea(panel,showTrial);});
-  panel.insertBefore(start,controls);
+  const start=document.createElement('button');start.type='button';start.className='sensor-start';start.textContent='Start Sensor Sweep →';
+  start.addEventListener('click',()=>{start.remove();focusPlayArea(field,setWave);});
+  panel.insertBefore(start,field);
   led()?.setPattern('question');
 }
-
 
 /* ---------------- Room 2: Variable Processor ---------------- */
 
