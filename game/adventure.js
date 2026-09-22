@@ -631,7 +631,7 @@ function renderPulseRun(){
     button.classList.add('pressed');later(()=>button.classList.remove('pressed'),100);paint();
   }
   function patrolStep(h){
-    const neighbours=expeditionNeighbours(maze.grid,h.pos[0],h.pos[1]);
+    const neighbours=expeditionNeighbours(maze.grid,h.pos[0],h.pos[1]).filter(p=>!same(p,maze.exit));
     if(!neighbours.length)return;
     const forward=[h.pos[0]+h.dir[0],h.pos[1]+h.dir[1]];
     const forwardOpen=neighbours.find(p=>same(p,forward));
@@ -648,6 +648,8 @@ function renderPulseRun(){
   function hazardTick(){
     if(!live||finished||faultLock)return;
     const now=Date.now(),dist=expeditionDistances(maze.grid,player);
+    const standingArc=arcAt(key(...player));
+    if(standingArc&&arcActive(standingArc,now)){collide('A power arc surged under BIT.');return;}
     let sentryHit=false;
     for(const h of hazards){
       if(now<h.stunUntil)continue;
