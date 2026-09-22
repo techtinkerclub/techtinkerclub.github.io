@@ -889,15 +889,24 @@ function routerMatches(v,rule){
   if(rule.mode==='square')return Number.isInteger(Math.sqrt(v));
   return false;
 }
-function routerRule(rng){
-  return shuffled([
-    {mode:'even',label:'even numbers',shortLabel:'EVEN'},
-    {mode:'odd',label:'odd numbers',shortLabel:'ODD'},
-    {mode:'multiple',a:3,label:'multiples of 3',shortLabel:'×3'},
-    {mode:'multiple',a:4,label:'multiples of 4',shortLabel:'×4'},
-    {mode:'prime',label:'prime numbers',shortLabel:'PRIME'},
-    {mode:'square',label:'square numbers',shortLabel:'SQUARE'}
-  ],rng)[0];
+function routerRule(rng,ruleIds=null){
+  const all=[
+    {id:'even',mode:'even',label:'even numbers',shortLabel:'EVEN'},
+    {id:'odd',mode:'odd',label:'odd numbers',shortLabel:'ODD'},
+    {id:'m3',mode:'multiple',a:3,label:'multiples of 3',shortLabel:'×3'},
+    {id:'m4',mode:'multiple',a:4,label:'multiples of 4',shortLabel:'×4'},
+    {id:'prime',mode:'prime',label:'prime numbers',shortLabel:'PRIME'},
+    {id:'square',mode:'square',label:'square numbers',shortLabel:'SQUARE'}
+  ];
+  const pool=Array.isArray(ruleIds)&&ruleIds.length?all.filter(r=>ruleIds.includes(r.id)):all;
+  return shuffled(pool.length?pool:all,rng)[0];
+}
+function routerStageConfig(stage){
+  return [
+    {pathLength:7,branches:1,ruleIds:['even','odd'],copy:'Start with an even/odd filter, a shorter route and one tempting dead end.'},
+    {pathLength:9,branches:2,ruleIds:['m3','m4'],copy:'Stage 2 uses multiples and a longer route with two valid-looking dead ends.'},
+    {pathLength:11,branches:3,ruleIds:['prime','square'],copy:'Final stage: route through primes or square numbers with the longest path and up to three dead ends.'}
+  ][stage]||null;
 }
 function routerMakePath(n,length,rng){
   const starts=shuffled(routerBorderCells(n),rng);
@@ -948,12 +957,15 @@ function routerSolve(grid,rule,start,finish,limit=2){
   if(routerMatches(grid[start[0]][start[1]],rule)&&routerMatches(grid[finish[0]][finish[1]],rule))rec(start);
   return {count:solutions.length,path:solutions[0]||[]};
 }
-function makePropertyRouter(seed){
-  const n=5,rng=rngFromSeed(seed+':property-router'),rule=routerRule(rng);
-  for(let attempt=0;attempt<80;attempt++){
-    const local=rngFromSeed(`${seed}:property-router:${attempt}`);
-    const path=routerMakePath(n,10,local);if(!path)continue;
-    const branched=routerAddBranches(path,n,2,local);
+function makePropertyRouter(seed,options={}){
+  const n=5;
+  const pathLength=Math.max(6,Math.min(13,Number(options.pathLength)||10));
+  const branches=Math.max(0,Math.min(4,Number(options.branches)||2));
+  const rng=rngFromSeed(seed+':property-router'),rule=routerRule(rng,options.ruleIds);
+  for(let attempt=0;attempt<120;attempt++){
+    const local=rngFromSeed(seed+':property-router:'+attempt);
+    const path=routerMakePath(n,pathLength,local);if(!path)continue;
+    const branched=routerAddBranches(path,n,branches,local);
     const valid=new Set(branched.validKeys),yes=[],no=[];
     const valueLimit=rule.mode==='square'?225:120;
     for(let v=1;v<=valueLimit;v++)(routerMatches(v,rule)?yes:no).push(v);
@@ -970,35 +982,42 @@ function makePropertyRouter(seed){
 }
 
 function renderPropertyRouter(){
-  setProgress('RANDOMISER CORE · ROOM 3/3 · DATA ROUTER');
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const cfg=routerStageConfig(stageIndex);
+  setProgress('RANDOMISER CORE · ROOM 3/3 · DATA ROUTER · STAGE '+stageNo+'/3');
   const root=active.root;
   root.appendChild(roomHeader(
     'ROOM 3 · DATA / PROPERTY ROUTER',
     'Route data through the correct number property',
-    'The Randomiser Core has lost its routing table. Build a path from START to FINISH using only touching numbers that match the filter.'
+    cfg.copy
   ));
 
-  const puzzle=makePropertyRouter(active.seed)||makePropertyRouter(active.seed+':fallback');
-  if(!puzzle){showTransition('Router unavailable','A clean route could not be generated. Re-enter the mission to generate another board.','Back to mission control',()=>active.onExit());return;}
+  const seed=active.seed+':router-stage-'+stageNo;
+  const puzzle=makePropertyRouter(seed,cfg)||makePropertyRouter(seed+':fallback',cfg);
+  if(!puzzle){
+    showTransition('Router unavailable','A unique stage '+stageNo+' route could not be generated.','Retry stage →',()=>renderRoom(),'fault');
+    return;
+  }
 
   const rule=document.createElement('div');rule.className='property-router-rule';
-  rule.innerHTML=`<small>ROUTING FILTER</small><strong>${puzzle.rule.shortLabel}</strong><span>Use only ${puzzle.rule.label}</span>`;
+  rule.innerHTML='<small>STAGE '+stageNo+'/3 · ROUTING FILTER</small><strong>'+puzzle.rule.shortLabel+'</strong><span>Use only '+puzzle.rule.label+'</span>';
 
   const board=document.createElement('div');board.className='property-router-grid';board.style.setProperty('--router-n',String(puzzle.n));
   const path=[puzzle.start.slice()];
   let finished=false;
   const buttons=[];
 
-  for(let r=0;r<puzzle.n;r++)for(let c=0;c<puzzle.n;c++){
-    const p=[r,c],b=document.createElement('button');b.type='button';b.className='property-router-cell';b.dataset.r=String(r);b.dataset.c=String(c);
+  for(let r=0;r<puzzle.n;r++)for(let cc=0;cc<puzzle.n;cc++){
+    const p=[r,cc],b=document.createElement('button');b.type='button';b.className='property-router-cell';b.dataset.r=String(r);b.dataset.c=String(cc);
     const isStart=same(p,puzzle.start),isFinish=same(p,puzzle.finish);
     if(isStart)b.classList.add('is-start');if(isFinish)b.classList.add('is-finish');
     const label=document.createElement('small');label.textContent=isStart?'START':isFinish?'FINISH':'';
-    const value=document.createElement('strong');value.textContent=String(puzzle.grid[r][c]);
+    const value=document.createElement('strong');value.textContent=String(puzzle.grid[r][cc]);
     b.append(label,value);b.addEventListener('click',()=>choose(p,b));board.appendChild(b);buttons.push(b);
   }
 
-  const hint=document.createElement('div');hint.className='logic-status';hint.textContent='Move one square at a time. Tap your previous square to backtrack.';
+  const hint=document.createElement('div');hint.className='logic-status';
+  hint.textContent='Stage '+stageNo+'/3 · unique route length '+puzzle.solutionPath.length+' · move one square at a time · tap your previous square to backtrack.';
   root.append(rule,board,hint);
 
   function current(){return path[path.length-1];}
@@ -1019,20 +1038,26 @@ function renderPropertyRouter(){
     if(!adjacent(cur,p)){showNotice('Choose a square touching your current data packet.','warn',900);return;}
     if(path.some(q=>same(q,p))){showNotice('The route cannot loop through an earlier square.','warn',900);return;}
     if(!routerMatches(puzzle.grid[p[0]][p[1]],puzzle.rule)){
-      active.routerFaults++;const depleted=applyAdventurePenalty();b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',330);
+      active.routerFaults++;const depleted=applyAdventurePenalty();
+      b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',330);
       if(depleted)return;
-      showNotice(`${puzzle.grid[p[0]][p[1]]} does not match ${puzzle.rule.label}.`,'fault',900);
+      showNotice(puzzle.grid[p[0]][p[1]]+' does not match '+puzzle.rule.label+'.','fault',900);
       later(()=>b.classList.remove('wrong'),500);return;
     }
     path.push(p);paint();active.playTone(500+path.length*18,.035,'sine',.018);
     if(same(p,puzzle.finish)){
       const exact=path.length===puzzle.solutionPath.length&&path.every((q,i)=>same(q,puzzle.solutionPath[i]));
-      if(!exact){
-        showNotice('FINISH reached, but this route is incomplete. Backtrack and try the other matching branch.','warn',1200);
-        return;
-      }
-      finished=true;active.roomsCompleted=Math.max(active.roomsCompleted,3);paint();led()?.setPattern('check');
-      showTransition('Data router restored','You found the unique route using only values that match the number-property filter.','Continue →',()=>{active.room=3;renderRoom();});
+      if(!exact){showNotice('FINISH reached, but this route is incomplete. Backtrack and try the other matching branch.','warn',1200);return;}
+      finished=true;paint();led()?.setPattern('check');
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,3);
+      finishRoomStage(
+        'Router stage '+stageNo+'/3 complete',
+        stageIndex===0?'Next: multiples, a longer route and more dead ends.':'Next: primes or square numbers on the longest route.',
+        'Data router fully restored',
+        'All three number-property routes are stable.',
+        'Continue →',
+        ()=>{active.room=3;renderRoom();}
+      );
     }
   }
   paint();
