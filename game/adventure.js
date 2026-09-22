@@ -2063,6 +2063,311 @@ function renderVariableProcessor(){
   paint();
 }
 
+
+/* ---------------- Room 3: Sensor Fault Map / neighbour-count logic ---------------- */
+
+function sensorFaultStageConfig(stage){
+  return [
+    {n:5,sensors:4,minClues:8,maxClues:13,label:'5×5 · 4 TRIPPED',copy:'Use the neighbour counts to locate four sensors that are over threshold.'},
+    {n:6,sensors:6,minClues:10,maxClues:17,label:'6×6 · 6 TRIPPED',copy:'The map is larger now. Combine overlapping clue neighbourhoods to locate six faults.'},
+    {n:7,sensors:8,minClues:12,maxClues:21,label:'7×7 · 8 TRIPPED',copy:'Final stage: eight hidden faults on the largest map, with longer chains of deductions.'}
+  ][stage]||null;
+}
+function sensorFaultKey(r,c){return r+':'+c;}
+function sensorFaultNeighbours(n,r,c,clueSet=null){
+  const out=[];
+  for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){
+    if(!dr&&!dc)continue;
+    const rr=r+dr,cc=c+dc,k=sensorFaultKey(rr,cc);
+    if(rr<0||cc<0||rr>=n||cc>=n)continue;
+    if(clueSet&&clueSet.has(k))continue;
+    out.push([rr,cc]);
+  }
+  return out;
+}
+function sensorFaultClues(n,sensorSet,clueSet){
+  const clues={};
+  for(const k of clueSet){
+    const parts=k.split(':').map(Number),r=parts[0],c=parts[1];
+    clues[k]=sensorFaultNeighbours(n,r,c).filter(p=>sensorSet.has(sensorFaultKey(p[0],p[1]))).length;
+  }
+  return clues;
+}
+function sensorFaultCountSolutions(n,sensorCount,clues,limit=2){
+  const clueSet=new Set(Object.keys(clues));
+  const vars=[];
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    const k=sensorFaultKey(r,c);
+    if(!clueSet.has(k))vars.push([r,c]);
+  }
+  if(sensorCount>vars.length)return 0;
+  const indexByKey=new Map(vars.map((p,i)=>[sensorFaultKey(p[0],p[1]),i]));
+  const constraints=Object.entries(clues).map(([k,target])=>{
+    const parts=k.split(':').map(Number);
+    const ids=sensorFaultNeighbours(n,parts[0],parts[1],clueSet)
+      .map(p=>indexByKey.get(sensorFaultKey(p[0],p[1]))).filter(i=>i!=null);
+    return {target:Number(target),ids};
+  });
+  const varConstraints=Array.from({length:vars.length},()=>[]);
+  constraints.forEach((con,ci)=>con.ids.forEach(i=>varConstraints[i].push(ci)));
+  const order=Array.from({length:vars.length},(_,i)=>i).sort((a,b)=>varConstraints[b].length-varConstraints[a].length);
+  const ones=new Int16Array(constraints.length);
+  const unknown=new Int16Array(constraints.map(x=>x.ids.length));
+  let count=0,selected=0,assigned=0;
+
+  function assign(id,value,delta){
+    for(const ci of varConstraints[id]){
+      unknown[ci]-=delta;
+      if(value)ones[ci]+=delta;
+    }
+    selected+=value*delta;assigned+=delta;
+  }
+  function valid(){
+    for(let ci=0;ci<constraints.length;ci++){
+      const t=constraints[ci].target;
+      if(ones[ci]>t||ones[ci]+unknown[ci]<t)return false;
+    }
+    const remain=vars.length-assigned;
+    if(selected>sensorCount||selected+remain<sensorCount)return false;
+    return true;
+  }
+  function rec(pos){
+    if(count>=limit)return;
+    if(pos>=order.length){
+      if(selected!==sensorCount)return;
+      for(let ci=0;ci<constraints.length;ci++)if(ones[ci]!==constraints[ci].target)return;
+      count++;return;
+    }
+    const id=order[pos];
+    assign(id,1,1);if(valid())rec(pos+1);assign(id,1,-1);
+    if(count>=limit)return;
+    assign(id,0,1);if(valid())rec(pos+1);assign(id,0,-1);
+  }
+  rec(0);return count;
+}
+function makeSensorFaultMap(stage,seed){
+  const cfg=sensorFaultStageConfig(stage),n=cfg.n;
+  let best=null;
+  for(let attempt=0;attempt<36;attempt++){
+    const rng=rngFromSeed(seed+':fault-map:'+attempt);
+    const all=shuffled(Array.from({length:n*n},(_,i)=>[Math.floor(i/n),i%n]),rng);
+    const sensorSet=new Set(all.slice(0,cfg.sensors).map(p=>sensorFaultKey(p[0],p[1])));
+    const safe=all.filter(p=>!sensorSet.has(sensorFaultKey(p[0],p[1])));
+    const initial=Math.min(safe.length,Math.max(cfg.minClues,Math.round(n*n*.34)));
+    const clueSet=new Set(shuffled(safe,rng).slice(0,initial).map(p=>sensorFaultKey(p[0],p[1])));
+    let remaining=shuffled(safe.filter(p=>!clueSet.has(sensorFaultKey(p[0],p[1]))),rng);
+    let clues=sensorFaultClues(n,sensorSet,clueSet);
+    let count=sensorFaultCountSolutions(n,cfg.sensors,clues,2);
+    while(count!==1&&remaining.length){
+      const p=remaining.pop();clueSet.add(sensorFaultKey(p[0],p[1]));
+      clues=sensorFaultClues(n,sensorSet,clueSet);
+      count=sensorFaultCountSolutions(n,cfg.sensors,clues,2);
+    }
+    if(count!==1)continue;
+
+    for(const k of shuffled([...clueSet],rng)){
+      if(clueSet.size<=cfg.minClues)break;
+      clueSet.delete(k);
+      const trial=sensorFaultClues(n,sensorSet,clueSet);
+      if(sensorFaultCountSolutions(n,cfg.sensors,trial,2)===1)clues=trial;
+      else clueSet.add(k);
+    }
+    clues=sensorFaultClues(n,sensorSet,clueSet);
+    const candidate={n,cfg,sensorSet:[...sensorSet],clues};
+    if(!best||Object.keys(candidate.clues).length<Object.keys(best.clues).length)best=candidate;
+    if(Object.keys(candidate.clues).length<=cfg.maxClues)return candidate;
+  }
+  return best;
+}
+function renderSensorFaultMap(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1,cfg=sensorFaultStageConfig(stageIndex);
+  setProgress('SENSOR ARRAY · ROOM 3/3 · SENSOR FAULT MAP · STAGE '+stageNo+'/3');
+  const root=active.root;
+  root.appendChild(roomHeader('ROOM 3 · SENSOR FAULT MAP','Deduce which sensors are over threshold',cfg.copy));
+
+  const rules=document.createElement('div');rules.className='sensor-map-rules';
+  rules.innerHTML='<span><strong>NUMBER</strong> = tripped sensors in the surrounding 8 squares</span><span><strong>!</strong> mark TRIPPED</span><span><strong>×</strong> mark SAFE</span>';
+  root.appendChild(rules);
+
+  const puzzle=makeSensorFaultMap(stageIndex,active.seed+':sensor-map:'+stageNo);
+  if(!puzzle){
+    showTransition('Fault-map generator error','A unique sensor map could not be generated.','Retry stage →',()=>renderRoom(),'fault');
+    return;
+  }
+  const n=puzzle.n,solution=new Set(puzzle.sensorSet),clues=puzzle.clues,clueSet=new Set(Object.keys(clues));
+  const state=Array.from({length:n},()=>Array(n).fill(0));
+  let finished=false,hintClue=null;
+  const cellButtons=new Map(),clueNodes=new Map();
+
+  const meta=document.createElement('div');meta.className='sensor-map-meta';
+  meta.innerHTML='<strong>'+cfg.label+'</strong><span>'+Object.keys(clues).length+' diagnostic clues · find all '+cfg.sensors+' tripped sensors</span>';
+
+  const board=document.createElement('div');board.className='sensor-map-grid';board.dataset.sensorMapSize=String(n);board.style.setProperty('--sensor-map-n',String(n));
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    const k=sensorFaultKey(r,c);
+    if(clueSet.has(k)){
+      const d=document.createElement('div');d.className='sensor-map-cell clue';d.dataset.key=k;
+      const small=document.createElement('small');small.textContent='CLUE';
+      const strong=document.createElement('strong');strong.textContent=String(clues[k]);
+      d.append(small,strong);board.appendChild(d);clueNodes.set(k,d);
+    }else{
+      const b=document.createElement('button');b.type='button';b.className='sensor-map-cell';b.dataset.r=String(r);b.dataset.c=String(c);
+      b.addEventListener('click',()=>cycle(r,c));board.appendChild(b);cellButtons.set(k,b);
+    }
+  }
+
+  const actions=document.createElement('div');actions.className='sensor-map-actions';
+  const hint=document.createElement('button');hint.type='button';hint.className='secondary';hint.textContent='Highlight a useful clue';
+  const check=document.createElement('button');check.type='button';check.textContent='Check sensor map';
+  actions.append(hint,check);
+  const status=document.createElement('div');status.className='logic-status';
+  root.append(meta,board,actions,status);
+
+  function candidateNeighbours(k){
+    const parts=k.split(':').map(Number);
+    return sensorFaultNeighbours(n,parts[0],parts[1],clueSet);
+  }
+  function clueState(k){
+    const ns=candidateNeighbours(k),target=Number(clues[k]);
+    let tripped=0,unknown=0;
+    for(const p of ns){
+      const v=state[p[0]][p[1]];
+      if(v===1)tripped++;else if(v===0)unknown++;
+    }
+    return {
+      target,tripped,unknown,
+      satisfied:tripped===target,
+      over:tripped>target,
+      impossible:tripped+unknown<target,
+      forcedTripped:unknown>0&&target-tripped===unknown,
+      forcedSafe:unknown>0&&tripped===target
+    };
+  }
+  function markedTripped(){
+    const set=new Set();
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(state[r][c]===1)set.add(sensorFaultKey(r,c));
+    return set;
+  }
+  function wrongMarks(){
+    const bad=[];
+    for(const [k,b] of cellButtons){
+      const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c],isTrip=solution.has(k);
+      if((v===1&&!isTrip)||(v===2&&isTrip))bad.push(k);
+    }
+    return bad;
+  }
+  function paint(){
+    const marked=markedTripped(),bad=new Set();
+    for(const [k,b] of cellButtons){
+      const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c];
+      b.classList.toggle('tripped',v===1);b.classList.toggle('safe',v===2);
+      b.classList.toggle('hint',hintClue?candidateNeighbours(hintClue).some(p=>sensorFaultKey(p[0],p[1])===k):false);
+      b.classList.toggle('wrong',bad.has(k));
+      b.textContent=v===1?'!':v===2?'×':'';
+      b.setAttribute('aria-label','Row '+(r+1)+', column '+(c+1)+(v===1?', tripped':v===2?', safe':', unknown'));
+    }
+    for(const [k,d] of clueNodes){
+      const s=clueState(k);
+      d.classList.toggle('satisfied',s.satisfied&&!s.over&&!s.impossible);
+      d.classList.toggle('over',s.over);d.classList.toggle('impossible',s.impossible);d.classList.toggle('hint',k===hintClue);
+    }
+    status.textContent='Stage '+stageNo+'/3 · '+marked.size+'/'+cfg.sensors+' tripped sensors marked · tap: ! → × → clear.';
+    const ledCells=[...marked].map(k=>{const p=k.split(':').map(Number);return led()?.mapPoint(p[0],p[1],n,n);}).filter(Boolean);
+    led()?.setCells(ledCells);
+  }
+  function cycle(r,c){
+    if(finished)return;
+    state[r][c]=(state[r][c]+1)%3;hintClue=null;
+    cellButtons.forEach(b=>b.classList.remove('wrong'));paint();
+  }
+  hint.addEventListener('click',()=>{
+    let pick=null;
+    for(const k of Object.keys(clues)){
+      const s=clueState(k);
+      if(s.forcedTripped||s.forcedSafe){pick={k,s};break;}
+    }
+    if(!pick){
+      const unresolved=Object.keys(clues).map(k=>({k,s:clueState(k)})).filter(x=>x.s.unknown>0).sort((a,b)=>a.s.unknown-b.s.unknown);
+      pick=unresolved[0]||null;
+    }
+    hintClue=pick?.k||null;paint();
+    if(!pick){showNotice('Every clue neighbourhood is decided — try Check sensor map.','info',1200);return;}
+    const p=pick.k.split(':').map(Number);
+    if(pick.s.forcedTripped)showNotice('Clue '+pick.s.target+' at row '+(p[0]+1)+', column '+(p[1]+1)+': every remaining unknown neighbour must be TRIPPED.','info',1700);
+    else if(pick.s.forcedSafe)showNotice('Clue '+pick.s.target+' already has all its tripped neighbours. The remaining unknown neighbours are SAFE.','info',1700);
+    else showNotice('Focus on clue '+pick.s.target+'. It has only '+pick.s.unknown+' unknown neighbours left.','info',1500);
+  });
+  check.addEventListener('click',()=>{
+    const marked=markedTripped(),wrong=wrongMarks();
+    cellButtons.forEach(b=>b.classList.remove('wrong'));
+    if(marked.size===solution.size&&[...solution].every(k=>marked.has(k))&&!wrong.length){
+      finished=true;check.disabled=true;hint.disabled=true;cellButtons.forEach(b=>b.disabled=true);
+      active.playTone(920,.1,'sine',.04);led()?.setPattern('check');status.textContent='Stage '+stageNo+' sensor map verified.';
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,3);
+      finishRoomStage(
+        'Sensor Fault Map stage '+stageNo+'/3 solved',
+        stageIndex===0?'Next: a 6×6 map with six hidden faults.':'Next: the 7×7 map with eight hidden faults.',
+        'Sensor Fault Map restored',
+        'All three neighbour-count logic maps have been solved.',
+        'Continue →',
+        ()=>{active.room=3;renderRoom();}
+      );
+      return;
+    }
+    if(wrong.length){
+      active.faultMapFaults++;
+      for(const k of wrong)cellButtons.get(k)?.classList.add('wrong');
+      const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.025);led()?.flash('x',380);
+      if(depleted)return;
+      showNotice(wrong.length+' mark'+(wrong.length===1?' is':'s are')+' inconsistent with the sensor clues.','fault',1350);return;
+    }
+    if(marked.size>cfg.sensors){showNotice('Too many sensors are marked TRIPPED. This map contains '+cfg.sensors+'.','warn',1200);return;}
+    showNotice('No incorrect marks so far. '+Math.max(0,cfg.sensors-marked.size)+' tripped sensor'+(cfg.sensors-marked.size===1?' remains':'s remain')+' to find.','info',1200);
+  });
+  paint();
+}
+
+/* ---------------- Sensor Array final gate ---------------- */
+
+function renderSensorArrayFinalGate(){
+  setProgress('SENSOR ARRAY · FINAL DIAGNOSTIC READY');
+  const root=active.root;
+  root.appendChild(roomHeader(
+    'SENSOR ARRAY STABLE',
+    'Stored values and sensor thresholds are calibrated',
+    'All nine Sensor Array adventure stages are stable. The final boss is 12 questions split into three increasingly difficult sets of four.'
+  ));
+  const board=document.createElement('div');board.className='microbit-face full-face';
+  board.innerHTML=microbitBoardMarkup().replace('BOOT OK','SENSOR OK');
+  const real=document.createElement('div');real.className='reality-note real-note';
+  real.innerHTML='<strong>Inside the real micro:bit</strong><span>Programs can store changing values in variables and compare live light or temperature readings against thresholds. The hidden fault map is a logic-training model, not a literal sensor layout inside the board.</span>';
+  const totalFaults=active.sensorFaults+active.variableFaults+active.faultMapFaults;
+  const stats=document.createElement('div');stats.className='adventure-run-stats';
+  stats.innerHTML='<span><strong>'+active.sensorFaults+'</strong> scan faults</span><span><strong>'+active.variableFaults+'</strong> variable faults</span><span><strong>'+active.faultMapFaults+'</strong> map-check faults</span><span><strong>'+totalFaults+'</strong> total faults</span>';
+  root.append(board,real,stats);led()?.setPattern('check');
+
+  later(()=>showTransition(
+    'Final diagnostic ready',
+    'Nine adventure stages are complete. Clear three diagnostic stages of four questions to bring Sensor Array online.',
+    'Run 12-question diagnostic →',
+    ()=>{
+      if(active.completed)return;active.completed=true;
+      const totalFaults=active.sensorFaults+active.variableFaults+active.faultMapFaults;
+      const statsOut={
+        systemId:'4',
+        sensorFaults:active.sensorFaults,
+        variableFaults:active.variableFaults,
+        faultMapFaults:active.faultMapFaults,
+        totalFaults,
+        roomsCompleted:active.roomsCompleted,
+        roomRestarts:active.roomRestarts,
+        bonusScore:Math.max(0,300-(active.sensorFaults*18+active.variableFaults*16+active.faultMapFaults*22)-active.roomRestarts*25)
+      };
+      const done=active.onComplete;stop();done(statsOut);
+    }
+  ),250);
+}
+
 function microbitBoardMarkup(){
   return `
     <div class="official-microbit-final">
