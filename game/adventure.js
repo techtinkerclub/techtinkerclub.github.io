@@ -37,6 +37,9 @@ function start(opts){
     memoryFaults:0,
     logicFaults:0,
     routerFaults:0,
+    roomIntegrityMax:4,
+    roomIntegrity:4,
+    roomRestarts:0,
     roomsCompleted:0,
     keyHandler:null,
     timers:new Set(),
@@ -78,6 +81,7 @@ function renderRoom(){
   if(active.keyHandler){document.removeEventListener('keydown',active.keyHandler);active.keyHandler=null;}
   clearTimers();
   clearOverlay();
+  active.roomIntegrity=active.roomIntegrityMax;
   active.root.replaceChildren();
   if(active.systemId==='2'){
     if(active.room===0)renderRandomPacketCatcher();
@@ -92,6 +96,39 @@ function renderRoom(){
   else renderFinalGate();
 }
 
+function paintAdventureIntegrity(){
+  if(!active)return;
+  document.querySelectorAll('[data-adventure-integrity]').forEach(el=>{
+    const value=el.querySelector('.adventure-integrity-value');
+    if(value)value.textContent=`${active.roomIntegrity}/${active.roomIntegrityMax}`;
+    el.querySelectorAll('.adventure-integrity-pip').forEach((pip,i)=>pip.classList.toggle('off',i>=active.roomIntegrity));
+    el.classList.toggle('critical',active.roomIntegrity===1);
+  });
+}
+function applyAdventurePenalty(){
+  if(!active)return false;
+  active.roomIntegrity=Math.max(0,active.roomIntegrity-1);
+  paintAdventureIntegrity();
+  if(active.roomIntegrity>0)return false;
+  active.roomRestarts++;
+  clearTimers();
+  led()?.flash('x',520);
+  showTransition(
+    'Integrity depleted',
+    'Too many faults reached this subsystem. This room will restart, but your earlier completed rooms are safe.',
+    'Restart room →',
+    ()=>renderRoom(),
+    'fault'
+  );
+  return true;
+}
+function focusPlayArea(el,after){
+  if(!el){after?.();return;}
+  el.setAttribute('tabindex','-1');
+  try{el.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){el.scrollIntoView();}
+  later(()=>{try{el.focus({preventScroll:true});}catch(_){}after?.();},420);
+}
+
 function roomHeader(kicker,title,copy){
   const head=document.createElement('div');head.className='adventure-room-head';
   const left=document.createElement('div');
@@ -100,6 +137,16 @@ function roomHeader(kicker,title,copy){
   const p=document.createElement('p');p.textContent=copy;
   left.append(eyebrow,h,p);
   head.appendChild(left);
+  if(active&&active.room<3){
+    const meter=document.createElement('div');meter.className='adventure-integrity';meter.dataset.adventureIntegrity='1';
+    const label=document.createElement('small');label.textContent='ADVENTURE INTEGRITY';
+    const row=document.createElement('div');row.className='adventure-integrity-row';
+    const pips=document.createElement('div');pips.className='adventure-integrity-pips';
+    for(let i=0;i<active.roomIntegrityMax;i++){const pip=document.createElement('i');pip.className='adventure-integrity-pip';pips.appendChild(pip);}
+    const value=document.createElement('strong');value.className='adventure-integrity-value';value.textContent=`${active.roomIntegrity}/${active.roomIntegrityMax}`;
+    row.append(pips,value);meter.append(label,row);head.appendChild(meter);
+    requestAnimationFrame(paintAdventureIntegrity);
+  }
   return head;
 }
 
@@ -231,11 +278,13 @@ function renderPulseRun(){
     if(roomFinished||faultLock)return;
     faultLock=true;
     active.arcadeFaults++;
+    const depleted=applyAdventurePenalty();
     player=startPos.slice();
     active.playTone(145,.1,'sawtooth',.03);
     board.classList.remove('fault');void board.offsetWidth;board.classList.add('fault');
     showNotice('Corrupted signal! Pulse reset to USB.','fault',1200);
     render();led()?.flash('x',330);
+    if(depleted)return;
     later(()=>{faultLock=false;board.classList.remove('fault');},650);
   }
 
@@ -340,9 +389,10 @@ function renderBootOrder(){
       const expected=steps[nextIndex];
       if(step.id!==expected.id){
         active.sequenceFaults++;b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');
+        const depleted=applyAdventurePenalty();
         status.textContent='Choose the next startup operation.';
         showNotice(`${step.short} does not fit in position ${nextIndex+1}. What must already have happened?`,'fault',1400);
-        active.playTone(165,.08,'square',.025);led()?.flash('x',340);return;
+        active.playTone(165,.08,'square',.025);led()?.flash('x',340);if(depleted)return;return;
       }
       b.disabled=true;b.classList.add('used');
       slots[nextIndex].classList.add('filled');slots[nextIndex].querySelector('span').textContent=step.short;
@@ -437,7 +487,7 @@ function renderMemoryBank(){
     if(!wrong&&!blank){
       check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);active.roomsCompleted=Math.max(active.roomsCompleted,3);active.playTone(920,.1,'sine',.04);status.textContent='RAM checksum valid.';led()?.setPattern('check');
       showTransition('RAM bank restored','Power, startup control and binary memory are stable.','Continue →',()=>{active.room=3;renderRoom();});
-    }else if(wrong){active.memoryFaults++;active.playTone(155,.08,'square',.025);led()?.flash('x',380);showNotice(`${wrong} bit${wrong===1?' is':'s are'} inconsistent. Recheck the highlighted cells.`,'fault',1500);}
+    }else if(wrong){active.memoryFaults++;const depleted=applyAdventurePenalty();active.playTone(155,.08,'square',.025);led()?.flash('x',380);showNotice(`${wrong} bit${wrong===1?' is':'s are'} inconsistent. Recheck the highlighted cells.`,'fault',1500);if(depleted)return;}
     else showNotice(`${blank} memory cell${blank===1?' is':'s are'} still blank.`,'warn',1200);
   });
 
@@ -678,10 +728,11 @@ function renderBrokenRandomiser(){
     const r=rounds[roundIndex],stream=r.streams[i];
     if(!stream.bad){
       active.logicFaults++;
+      const depleted=applyAdventurePenalty();
       button.classList.add('wrong');
       active.playTone(155,.07,'square',.023);led()?.flash('x',360);
       showNotice(`That sequence matches ${r.code}. Every value is in range.`,'warn',1200);
-      later(()=>button.classList.remove('wrong'),600);
+      if(!depleted)later(()=>button.classList.remove('wrong'),600);
       return;
     }
     locked=true;
@@ -850,9 +901,9 @@ function renderPropertyRouter(){
     if(!adjacent(cur,p)){showNotice('Choose a square touching your current data packet.','warn',900);return;}
     if(path.some(q=>same(q,p))){showNotice('The route cannot loop through an earlier square.','warn',900);return;}
     if(!routerMatches(puzzle.grid[p[0]][p[1]],puzzle.rule)){
-      active.routerFaults++;b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',330);
+      active.routerFaults++;const depleted=applyAdventurePenalty();b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',330);
       showNotice(`${puzzle.grid[p[0]][p[1]]} does not match ${puzzle.rule.label}.`,'fault',900);
-      later(()=>b.classList.remove('wrong'),500);return;
+      if(!depleted)later(()=>b.classList.remove('wrong'),500);return;
     }
     path.push(p);paint();active.playTone(500+path.length*18,.035,'sine',.018);
     if(same(p,puzzle.finish)){
@@ -904,7 +955,8 @@ function renderRandomiserFinalGate(){
         routerFaults:active.routerFaults,
         totalFaults,
         roomsCompleted:active.roomsCompleted,
-        bonusScore:Math.max(0,300-(active.arcadeFaults*18+active.logicFaults*18+active.routerFaults*18))
+        roomRestarts:active.roomRestarts,
+        bonusScore:Math.max(0,300-(active.arcadeFaults*18+active.logicFaults*18+active.routerFaults*18)-active.roomRestarts*25)
       };
       const done=active.onComplete;stop();done(statsOut);
     }
@@ -961,7 +1013,8 @@ function renderFinalGate(){
         sequenceFaults:active.sequenceFaults,
         memoryFaults:active.memoryFaults,
         roomsCompleted:active.roomsCompleted,
-        bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25))
+        roomRestarts:active.roomRestarts,
+        bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25)-active.roomRestarts*25)
       };
       const done=active.onComplete;stop();done(statsOut);
     }
