@@ -3457,6 +3457,16 @@ body.expedition-immersive-open{
   height:100%!important;
   margin:0!important;
 }
+#screen-adventure.expedition-fullscreen-host .adventure-overlay-host{
+  position:absolute!important;
+  inset:0!important;
+  z-index:2147483646!important;
+  pointer-events:none;
+}
+#screen-adventure.expedition-fullscreen-host .adventure-popup-shade,
+#screen-adventure.expedition-fullscreen-host .adventure-popup{
+  pointer-events:auto;
+}
 .expedition-shell.expedition-immersive{
   position:absolute;
   inset:0;
