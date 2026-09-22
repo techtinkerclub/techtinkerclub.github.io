@@ -288,6 +288,23 @@ function carveExpeditionChambers(grid,rng,count){
       chambers.push(rect);placed=true;
     }
   }
+
+  // Rare crowded layouts get a smaller fallback chamber with no buffer,
+  // so the intended number of distinct open spaces is guaranteed.
+  let guard=0;
+  while(chambers.length<count&&guard++<400){
+    const h=3,w=5;
+    let r=1+Math.floor(rng()*Math.max(1,rows-h-1));
+    let c=1+Math.floor(rng()*Math.max(1,cols-w-1));
+    r=Math.max(1,Math.min(rows-h-1,r));c=Math.max(1,Math.min(cols-w-1,c));
+    const overlaps=chambers.some(x=>!(r+h<=x.r||x.r+x.h<=r||c+w<=x.c||x.c+x.w<=c));
+    if(overlaps)continue;
+    const rect={r,c,h,w};
+    for(let rr=r;rr<r+h;rr++)for(let cc=c;cc<c+w;cc++){
+      grid[rr][cc]=0;chamberSet.add(key(rr,cc));
+    }
+    chambers.push(rect);
+  }
   return {chambers,chamberSet};
 }
 function makeExpeditionMaze(rows,cols,seed,stage,chamberCount=2){
