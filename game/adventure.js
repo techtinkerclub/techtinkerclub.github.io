@@ -37,6 +37,9 @@ function start(opts){
     memoryFaults:0,
     logicFaults:0,
     routerFaults:0,
+    roomIntegrityMax:4,
+    roomIntegrity:4,
+    roomRestarts:0,
     roomsCompleted:0,
     keyHandler:null,
     timers:new Set(),
@@ -78,6 +81,7 @@ function renderRoom(){
   if(active.keyHandler){document.removeEventListener('keydown',active.keyHandler);active.keyHandler=null;}
   clearTimers();
   clearOverlay();
+  active.roomIntegrity=active.roomIntegrityMax;
   active.root.replaceChildren();
   if(active.systemId==='2'){
     if(active.room===0)renderRandomPacketCatcher();
@@ -92,6 +96,39 @@ function renderRoom(){
   else renderFinalGate();
 }
 
+function paintAdventureIntegrity(){
+  if(!active)return;
+  document.querySelectorAll('[data-adventure-integrity]').forEach(el=>{
+    const value=el.querySelector('.adventure-integrity-value');
+    if(value)value.textContent=`${active.roomIntegrity}/${active.roomIntegrityMax}`;
+    el.querySelectorAll('.adventure-integrity-pip').forEach((pip,i)=>pip.classList.toggle('off',i>=active.roomIntegrity));
+    el.classList.toggle('critical',active.roomIntegrity===1);
+  });
+}
+function applyAdventurePenalty(){
+  if(!active)return false;
+  active.roomIntegrity=Math.max(0,active.roomIntegrity-1);
+  paintAdventureIntegrity();
+  if(active.roomIntegrity>0)return false;
+  active.roomRestarts++;
+  clearTimers();
+  led()?.flash('x',520);
+  showTransition(
+    'Integrity depleted',
+    'Too many faults reached this subsystem. This room will restart, but your earlier completed rooms are safe.',
+    'Restart room →',
+    ()=>renderRoom(),
+    'fault'
+  );
+  return true;
+}
+function focusPlayArea(el,after){
+  if(!el){after?.();return;}
+  el.setAttribute('tabindex','-1');
+  try{el.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){el.scrollIntoView();}
+  later(()=>{try{el.focus({preventScroll:true});}catch(_){}after?.();},420);
+}
+
 function roomHeader(kicker,title,copy){
   const head=document.createElement('div');head.className='adventure-room-head';
   const left=document.createElement('div');
@@ -100,6 +137,16 @@ function roomHeader(kicker,title,copy){
   const p=document.createElement('p');p.textContent=copy;
   left.append(eyebrow,h,p);
   head.appendChild(left);
+  if(active&&active.room<3){
+    const meter=document.createElement('div');meter.className='adventure-integrity';meter.dataset.adventureIntegrity='1';
+    const label=document.createElement('small');label.textContent='ADVENTURE INTEGRITY';
+    const row=document.createElement('div');row.className='adventure-integrity-row';
+    const pips=document.createElement('div');pips.className='adventure-integrity-pips';
+    for(let i=0;i<active.roomIntegrityMax;i++){const pip=document.createElement('i');pip.className='adventure-integrity-pip';pips.appendChild(pip);}
+    const value=document.createElement('strong');value.className='adventure-integrity-value';value.textContent=`${active.roomIntegrity}/${active.roomIntegrityMax}`;
+    row.append(pips,value);meter.append(label,row);head.appendChild(meter);
+    requestAnimationFrame(paintAdventureIntegrity);
+  }
   return head;
 }
 
@@ -231,11 +278,13 @@ function renderPulseRun(){
     if(roomFinished||faultLock)return;
     faultLock=true;
     active.arcadeFaults++;
+    const depleted=applyAdventurePenalty();
     player=startPos.slice();
     active.playTone(145,.1,'sawtooth',.03);
     board.classList.remove('fault');void board.offsetWidth;board.classList.add('fault');
-    showNotice('Corrupted signal! Pulse reset to USB.','fault',1200);
     render();led()?.flash('x',330);
+    if(depleted)return;
+    showNotice('Corrupted signal! Pulse reset to USB.','fault',1200);
     later(()=>{faultLock=false;board.classList.remove('fault');},650);
   }
 
@@ -340,9 +389,12 @@ function renderBootOrder(){
       const expected=steps[nextIndex];
       if(step.id!==expected.id){
         active.sequenceFaults++;b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');
+        const depleted=applyAdventurePenalty();
         status.textContent='Choose the next startup operation.';
+        active.playTone(165,.08,'square',.025);led()?.flash('x',340);
+        if(depleted)return;
         showNotice(`${step.short} does not fit in position ${nextIndex+1}. What must already have happened?`,'fault',1400);
-        active.playTone(165,.08,'square',.025);led()?.flash('x',340);return;
+        return;
       }
       b.disabled=true;b.classList.add('used');
       slots[nextIndex].classList.add('filled');slots[nextIndex].querySelector('span').textContent=step.short;
@@ -437,7 +489,7 @@ function renderMemoryBank(){
     if(!wrong&&!blank){
       check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);active.roomsCompleted=Math.max(active.roomsCompleted,3);active.playTone(920,.1,'sine',.04);status.textContent='RAM checksum valid.';led()?.setPattern('check');
       showTransition('RAM bank restored','Power, startup control and binary memory are stable.','Continue →',()=>{active.room=3;renderRoom();});
-    }else if(wrong){active.memoryFaults++;active.playTone(155,.08,'square',.025);led()?.flash('x',380);showNotice(`${wrong} bit${wrong===1?' is':'s are'} inconsistent. Recheck the highlighted cells.`,'fault',1500);}
+    }else if(wrong){active.memoryFaults++;const depleted=applyAdventurePenalty();active.playTone(155,.08,'square',.025);led()?.flash('x',380);if(depleted)return;showNotice(`${wrong} bit${wrong===1?' is':'s are'} inconsistent. Recheck the highlighted cells.`,'fault',1500);}
     else showNotice(`${blank} memory cell${blank===1?' is':'s are'} still blank.`,'warn',1200);
   });
 
@@ -460,13 +512,13 @@ function renderRandomPacketCatcher(){
   const root=active.root;
   root.appendChild(roomHeader(
     'ROOM 1 · RANDOM PACKET CATCHER',
-    'Catch 3 numbers in the range',
-    'Look at the range shown below. Move left and right to catch 3 numbers inside that range. Let numbers outside the range fall past.'
+    'Catch 5 numbers in the range',
+    'Look at the range shown below. Move left and right to catch 5 numbers inside that range. Let numbers outside the range fall past.'
   ));
 
   const rules=[
-    {label:'DICE MODE',min:1,max:6,copy:'Catch 3 numbers from 1 to 6.'},
-    {label:'LED POSITION',min:0,max:4,copy:'Catch 3 numbers from 0 to 4.'}
+    {label:'DICE MODE',min:1,max:6,copy:'Catch 5 numbers from 1 to 6.'},
+    {label:'LED POSITION',min:0,max:4,copy:'Catch 5 numbers from 0 to 4.'}
   ];
   let wave=0,caughtInWave=0,totalCaught=0,playerLane=1,live=false,finished=false,nextPacketId=1;
   const rng=rngFromSeed(active.seed+':packet-catcher');
@@ -489,23 +541,39 @@ function renderRandomPacketCatcher(){
   const left=document.createElement('button');left.type='button';left.textContent='←';left.setAttribute('aria-label','Move catcher left');
   const right=document.createElement('button');right.type='button';right.textContent='→';right.setAttribute('aria-label','Move catcher right');
   controls.append(left,right);
+  const startRow=document.createElement('div');startRow.className='random-catcher-start';
+  const startButton=document.createElement('button');startButton.type='button';startButton.className='random-catcher-start-button';startButton.textContent='Start packet run →';
+  const startHint=document.createElement('span');startHint.textContent='Nothing moves until you start. The game will focus on the catcher first.';
+  startRow.append(startHint,startButton);
 
   const legend=document.createElement('div');legend.className='adventure-info-strip';
-  legend.innerHTML='<span><strong>IN RANGE</strong> catch it</span><span><strong>OUT OF RANGE</strong> let it pass</span><span><strong>TARGET</strong> catch 3</span>';
+  legend.innerHTML='<span><strong>IN RANGE</strong> catch it</span><span><strong>OUT OF RANGE</strong> let it pass</span><span><strong>TARGET</strong> catch 5</span>';
 
-  root.append(hud,legend,arena,controls);
+  root.append(hud,legend,startRow,arena,controls);
 
   function currentRule(){return rules[wave];}
   function validValue(v){const r=currentRule();return Number.isInteger(v)&&v>=r.min&&v<=r.max;}
   function paintRule(){
     const r=currentRule();
     ruleBox.innerHTML=`<small>${r.label}</small><strong>random ${r.min} to ${r.max}</strong><span>${r.copy}</span>`;
-    progress.textContent=`CAUGHT ${caughtInWave}/3 · RANGE ${r.min}–${r.max}`;
+    progress.textContent=`CAUGHT ${caughtInWave}/5 · RANGE ${r.min}–${r.max}`;
   }
   function paintPlayer(){
     catcher.style.left=`calc(${playerLane*33.333+16.666}% - 32px)`;
     if(!catcher.isConnected)arena.appendChild(catcher);
   }
+  function startLive(){
+    if(live||finished)return;
+    live=true;
+    startRow.hidden=true;
+    every(spawn,900);
+    every(tick,100);
+    spawn();
+  }
+  startButton.addEventListener('click',()=>{
+    startButton.disabled=true;
+    focusPlayArea(arena,startLive);
+  });
   function move(delta){
     if(!live||finished)return;
     playerLane=Math.max(0,Math.min(2,playerLane+delta));
@@ -552,29 +620,32 @@ function renderRandomPacketCatcher(){
   }
 
   function resolvePacket(p){
-    if(p.lane!==playerLane)return;
+    if(p.lane!==playerLane||p.resolved)return;
+    p.resolved=true;
     if(validValue(p.value)){
       totalCaught++;caughtInWave++;active.playTone(720,.055,'sine',.025);
-      showNotice(`${p.value} is in range · ${caughtInWave}/3 caught.`,'success',650);
-      if(caughtInWave>=3){
+      showNotice(`${p.value} is in range · ${caughtInWave}/5 caught.`,'success',650);
+      if(caughtInWave>=5){
         if(wave===0){
           live=false;clearTimers();
           wave=1;caughtInWave=0;packets.splice(0,packets.length);paintRule();renderPackets();led()?.setPattern('check');
-          showTransition('First range complete','You caught 3 numbers from 1 to 6. Now catch 3 numbers from 0 to 4.','Start range 0–4 →',()=>{
+          showTransition('First range complete','You caught 5 numbers from 1 to 6. Now catch 5 numbers from 0 to 4.','Start range 0–4 →',()=>{
             if(!active||active.systemId!=='2'||active.room!==0)return;
-            live=true;every(spawn,900);every(tick,100);spawn();
+            focusPlayArea(arena,startLive);
           });
         }else{
           finished=true;live=false;clearTimers();active.roomsCompleted=Math.max(active.roomsCompleted,1);
           led()?.setPattern('check');
-          showTransition('Packet filter restored','You caught 3 numbers in each target range and ignored out-of-range values.','Check output sequences →',()=>{active.room=1;renderRoom();});
+          showTransition('Packet filter restored','You caught 5 numbers in each target range and ignored out-of-range values.','Check output sequences →',()=>{active.room=1;renderRoom();});
         }
       }
     }else{
       active.arcadeFaults++;
+      const depleted=applyAdventurePenalty();
       active.playTone(150,.08,'square',.026);led()?.flash('x',260);
-      showNotice(`${p.value} is outside random ${currentRule().min} to ${currentRule().max}.`,'fault',850);
       arena.classList.remove('fault');void arena.offsetWidth;arena.classList.add('fault');
+      if(depleted){live=false;return;}
+      showNotice(`${p.value} is outside random ${currentRule().min} to ${currentRule().max}.`,'fault',850);
       later(()=>arena.classList.remove('fault'),350);
     }
   }
@@ -587,21 +658,16 @@ function renderRandomPacketCatcher(){
       if(p.y>=78&&p.y<86){
         resolvePacket(p);
         if(!live||finished)return;
+        if(p.resolved){packets.splice(i,1);continue;}
       }
       if(p.y>102)packets.splice(i,1);
     }
     renderPackets();
   }
 
-  paintRule();paintPlayer();
-  showNotice('Catch 3 numbers from 1 to 6.','info',1100);
-  later(()=>{
-    if(!active||active.systemId!=='2'||active.room!==0)return;
-    live=true;
-    every(spawn,900);
-    every(tick,100);
-    spawn();
-  },850);
+  paintRule();paintPlayer();renderPackets();
+  led()?.setPattern('question');
+  showNotice('Press Start when you are ready. Nothing will fall before then.','info',1300);
 }
 
 /* ---------------- Room 2: Randomiser Range Diagnostics ---------------- */
@@ -678,8 +744,10 @@ function renderBrokenRandomiser(){
     const r=rounds[roundIndex],stream=r.streams[i];
     if(!stream.bad){
       active.logicFaults++;
+      const depleted=applyAdventurePenalty();
       button.classList.add('wrong');
       active.playTone(155,.07,'square',.023);led()?.flash('x',360);
+      if(depleted)return;
       showNotice(`That sequence matches ${r.code}. Every value is in range.`,'warn',1200);
       later(()=>button.classList.remove('wrong'),600);
       return;
@@ -850,7 +918,8 @@ function renderPropertyRouter(){
     if(!adjacent(cur,p)){showNotice('Choose a square touching your current data packet.','warn',900);return;}
     if(path.some(q=>same(q,p))){showNotice('The route cannot loop through an earlier square.','warn',900);return;}
     if(!routerMatches(puzzle.grid[p[0]][p[1]],puzzle.rule)){
-      active.routerFaults++;b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',330);
+      active.routerFaults++;const depleted=applyAdventurePenalty();b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',330);
+      if(depleted)return;
       showNotice(`${puzzle.grid[p[0]][p[1]]} does not match ${puzzle.rule.label}.`,'fault',900);
       later(()=>b.classList.remove('wrong'),500);return;
     }
@@ -904,7 +973,8 @@ function renderRandomiserFinalGate(){
         routerFaults:active.routerFaults,
         totalFaults,
         roomsCompleted:active.roomsCompleted,
-        bonusScore:Math.max(0,300-(active.arcadeFaults*18+active.logicFaults*18+active.routerFaults*18))
+        roomRestarts:active.roomRestarts,
+        bonusScore:Math.max(0,300-(active.arcadeFaults*18+active.logicFaults*18+active.routerFaults*18)-active.roomRestarts*25)
       };
       const done=active.onComplete;stop();done(statsOut);
     }
@@ -961,7 +1031,8 @@ function renderFinalGate(){
         sequenceFaults:active.sequenceFaults,
         memoryFaults:active.memoryFaults,
         roomsCompleted:active.roomsCompleted,
-        bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25))
+        roomRestarts:active.roomRestarts,
+        bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25)-active.roomRestarts*25)
       };
       const done=active.onComplete;stop();done(statsOut);
     }
