@@ -41,6 +41,9 @@ function start(opts){
     branchFaults:0,
     decisionFaults:0,
     futoshikiFaults:0,
+    sensorFaults:0,
+    variableFaults:0,
+    faultMapFaults:0,
     roomIntegrityMax:4,
     roomIntegrity:4,
     roomRestarts:0,
@@ -101,6 +104,13 @@ function renderRoom(){
     else if(active.room===1)renderDecisionEngine();
     else if(active.room===2)renderLogicFutoshiki();
     else renderLogicRouterFinalGate();
+    return;
+  }
+  if(active.systemId==='4'){
+    if(active.room===0)renderSensorScanner();
+    else if(active.room===1)renderVariableProcessor();
+    else if(active.room===2)renderSensorFaultMap();
+    else renderSensorArrayFinalGate();
     return;
   }
   if(active.room===0)renderPulseRun();
@@ -1768,7 +1778,7 @@ function renderFinalGate(){
 }
 
 global.TTCAdventure={
-  supports(id){return ['1','2','3'].includes(String(id));},
+  supports(id){return ['1','2','3','4'].includes(String(id));},
   start,
   stop,
   leds:global.TTCMicrobitLED||null
