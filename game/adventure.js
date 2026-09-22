@@ -413,38 +413,65 @@ function renderPulseRun(){
 
 
 
-function renderBootOrder(){
-  setProgress('BOOT SEQUENCE · ROOM 2/3 · STARTUP CONTROLLER');
-  const root=active.root;
-  root.appendChild(roomHeader(
-    'ROOM 2 · STARTUP CONTROLLER',
-    'Rebuild the boot order',
-    'The startup controller has lost its sequence. Tap the four operations in the order that makes sense for our simplified micro:bit startup model.'
-  ));
 
-  const note=document.createElement('div');note.className='reality-note';
-  note.innerHTML='<strong>Game model</strong><span>Real micro:bit startup involves low-level boot code and hardware initialisation. We are using a simplified sequence to practise algorithmic order.</span>';
-  root.appendChild(note);
-
-  const steps=[
+function bootOrderSteps(stage){
+  if(stage===0)return [
+    {id:'power',label:'Power reaches the micro:bit',short:'POWER'},
+    {id:'prepare',label:'Startup code prepares the board',short:'PREPARE'},
+    {id:'run',label:'Main program starts running',short:'RUN'}
+  ];
+  if(stage===1)return [
     {id:'power',label:'Power reaches the micro:bit',short:'POWER'},
     {id:'check',label:'Startup code checks the hardware',short:'CHECK'},
     {id:'load',label:'Your program is prepared to run',short:'LOAD'},
     {id:'run',label:'Main program starts running',short:'RUN'}
   ];
-  const rng=rngFromSeed(active.seed+':sequence');
+  return [
+    {id:'power',label:'Power reaches the micro:bit',short:'POWER'},
+    {id:'check',label:'Startup code checks the hardware',short:'CHECK'},
+    {id:'io',label:'Inputs, display and other hardware are initialised',short:'INITIALISE'},
+    {id:'load',label:'Your program is prepared to run',short:'LOAD'},
+    {id:'run',label:'Main program starts running',short:'RUN'}
+  ];
+}
+
+function renderBootOrder(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const steps=bootOrderSteps(stageIndex);
+  setProgress('BOOT SEQUENCE · ROOM 2/3 · STARTUP CONTROLLER · STAGE '+stageNo+'/3');
+  const root=active.root;
+  root.appendChild(roomHeader(
+    'ROOM 2 · STARTUP CONTROLLER',
+    'Rebuild the boot order',
+    stageIndex===0
+      ?'Start with a short three-step startup sequence.'
+      :stageIndex===1
+        ?'The controller now needs four startup operations in the correct order.'
+        :'Final stage: place five startup operations in the correct order.'
+  ));
+
+  const note=document.createElement('div');note.className='reality-note';
+  note.innerHTML='<strong>Game model</strong><span>Real micro:bit startup involves low-level boot code and hardware initialisation. These stages use a simplified sequence to practise algorithmic order.</span>';
+  root.appendChild(note);
+
+  const rng=rngFromSeed(active.seed+':sequence:'+stageNo);
   const cards=shuffled(steps,rng);
   let nextIndex=0;
 
   const chain=document.createElement('div');chain.className='boot-chain';
-  const slots=steps.map((s,i)=>{const slot=document.createElement('div');slot.className='boot-slot';slot.innerHTML=`<small>${i+1}</small><span>?</span>`;chain.appendChild(slot);return slot;});
+  chain.style.setProperty('--boot-count',String(steps.length));
+  const slots=steps.map((s,i)=>{
+    const slot=document.createElement('div');slot.className='boot-slot';
+    slot.innerHTML='<small>'+(i+1)+'</small><span>?</span>';
+    chain.appendChild(slot);return slot;
+  });
   const choices=document.createElement('div');choices.className='boot-choices';
-  const status=document.createElement('div');status.className='logic-status';status.textContent='Which operation must happen first?';
+  const status=document.createElement('div');status.className='logic-status';status.textContent='Choose operation 1 of '+steps.length+'.';
   led()?.progress(0,steps.length);
 
   for(const step of cards){
     const b=document.createElement('button');b.type='button';b.className='boot-choice';b.dataset.step=step.id;
-    b.innerHTML=`<strong>${step.short}</strong><span>${step.label}</span>`;
+    b.innerHTML='<strong>'+step.short+'</strong><span>'+step.label+'</span>';
     b.addEventListener('click',()=>{
       if(nextIndex>=steps.length)return;
       const expected=steps[nextIndex];
@@ -454,16 +481,27 @@ function renderBootOrder(){
         status.textContent='Choose the next startup operation.';
         active.playTone(165,.08,'square',.025);led()?.flash('x',340);
         if(depleted)return;
-        showNotice(`${step.short} does not fit in position ${nextIndex+1}. What must already have happened?`,'fault',1400);
+        showNotice(step.short+' does not fit in position '+(nextIndex+1)+'. What must already have happened?','fault',1400);
         return;
       }
       b.disabled=true;b.classList.add('used');
       slots[nextIndex].classList.add('filled');slots[nextIndex].querySelector('span').textContent=step.short;
       nextIndex++;active.playTone(580+nextIndex*65,.05,'sine',.025);led()?.progress(nextIndex,steps.length);
       if(nextIndex===steps.length){
-        active.roomsCompleted=Math.max(active.roomsCompleted,2);status.textContent='Boot order valid.';led()?.setPattern('check');
-        showTransition('Startup controller restored','The startup sequence is valid. Control can now pass to the micro:bit memory bank.','Open RAM bank →',()=>{active.room=2;renderRoom();});
-      }else{status.textContent=`Choose operation ${nextIndex+1}.`;showNotice(`${step.short} locked into position ${nextIndex}.`,'success',850);}
+        status.textContent='Stage '+stageNo+' startup order valid.';led()?.setPattern('check');
+        if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,2);
+        finishRoomStage(
+          'Startup stage '+stageNo+'/3 valid',
+          stageIndex===0?'Next: add hardware checking to the startup sequence.':'Next: add another initialisation step and solve the five-step sequence.',
+          'Startup controller fully restored',
+          'All three startup-order stages are valid.',
+          'Open RAM bank →',
+          ()=>{active.room=2;renderRoom();}
+        );
+      }else{
+        status.textContent='Choose operation '+(nextIndex+1)+' of '+steps.length+'.';
+        showNotice(step.short+' locked into position '+nextIndex+'.','success',800);
+      }
     });
     choices.appendChild(b);
   }
