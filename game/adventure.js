@@ -1909,6 +1909,160 @@ function renderSensorScanner(){
   led()?.setPattern('question');
 }
 
+
+/* ---------------- Room 2: Variable Processor ---------------- */
+
+function variableOptions(correct,rng,spread=5){
+  const set=new Set([correct]);
+  let guard=0;
+  while(set.size<4&&guard++<50){
+    const delta=randomInt(rng,-spread,spread);
+    const v=correct+delta;
+    if(v>=0)set.add(v);
+  }
+  while(set.size<4)set.add(correct+set.size+1);
+  return shuffled([...set],rng);
+}
+function variableChallenges(stage,seed){
+  const rng=rngFromSeed(seed+':variable:'+stage);
+  if(stage===0){
+    const types=shuffled(['set','change','set','change','set','change'],rng);
+    return types.map((type,i)=>{
+      const start=randomInt(rng,4,20);
+      if(type==='set'){
+        const target=randomInt(rng,2,25);
+        return {
+          title:'REGISTER value = '+start,
+          code:'SET value TO '+target,
+          options:variableOptions(target,rng,6).map(String),
+          answer:String(target),
+          explain:'SET replaces the old value. The register becomes '+target+'.'
+        };
+      }
+      const delta=randomInt(rng,2,8)*(rng()<.25?-1:1);
+      const result=Math.max(0,start+delta);
+      const actualDelta=result-start;
+      return {
+        title:'REGISTER value = '+start,
+        code:'CHANGE value BY '+(actualDelta>=0?'+':'')+actualDelta,
+        options:variableOptions(result,rng,7).map(String),
+        answer:String(result),
+        explain:'CHANGE modifies the stored value: '+start+(actualDelta>=0?' + ':' - ')+Math.abs(actualDelta)+' = '+result+'.'
+      };
+    });
+  }
+  if(stage===1){
+    return Array.from({length:5},(_,i)=>{
+      const start=randomInt(rng,5,18);
+      const d1=randomInt(rng,2,7);
+      const d2=randomInt(rng,1,5);
+      const mult=i%2===0?2:3;
+      const subtract=i%2===0?d2:-d2;
+      const mid=start+d1;
+      const mid2=mid+subtract;
+      const result=mid2*mult;
+      const op2=subtract>=0?'CHANGE value BY +'+subtract:'CHANGE value BY '+subtract;
+      return {
+        title:'TRACE THE REGISTER',
+        code:'SET value TO '+start+'\nCHANGE value BY +'+d1+'\n'+op2+'\nSET value TO value × '+mult,
+        options:variableOptions(result,rng,Math.max(6,d1+d2)).map(String),
+        answer:String(result),
+        explain:start+' → '+mid+' → '+mid2+' → '+result+'. Apply every instruction in order.'
+      };
+    });
+  }
+  return Array.from({length:6},(_,i)=>{
+    const tempMode=i%2===0;
+    const sensor=tempMode?'temp':'light';
+    const reading=tempMode?randomInt(rng,20,36):randomInt(rng,30,80);
+    const readingAdjust=randomInt(rng,-3,3);
+    const limitStart=tempMode?randomInt(rng,26,31):randomInt(rng,45,60);
+    const limitAdjust=randomInt(rng,-4,4);
+    const storedReading=Math.max(0,reading+readingAdjust);
+    const storedLimit=Math.max(0,limitStart+limitAdjust);
+    const alert=tempMode?storedReading>storedLimit:storedReading<storedLimit;
+    const alertLabel=tempMode?'HOT':'DARK';
+    return {
+      title:(tempMode?'TEMPERATURE':'LIGHT')+' CALIBRATION',
+      code:'SET '+sensor+' TO ['+(tempMode?'temperature':'light level')+']   # '+reading+
+        '\nCHANGE '+sensor+' BY '+(readingAdjust>=0?'+':'')+readingAdjust+
+        '\nSET threshold TO '+limitStart+
+        '\nCHANGE threshold BY '+(limitAdjust>=0?'+':'')+limitAdjust+
+        '\nIF '+sensor+(tempMode?' > ':' < ')+'threshold\n  OUTPUT '+alertLabel+'\nELSE\n  OUTPUT OK',
+      options:[alertLabel,'OK'],
+      answer:alert?alertLabel:'OK',
+      explain:sensor+' becomes '+storedReading+' and threshold becomes '+storedLimit+'. '+storedReading+(tempMode?' > ':' < ')+storedLimit+' is '+(alert?'TRUE, so '+alertLabel+' runs.':'FALSE, so ELSE outputs OK.')
+    };
+  });
+}
+function renderVariableProcessor(){
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const challenges=variableChallenges(stageIndex,active.seed);
+  setProgress('SENSOR ARRAY · ROOM 2/3 · VARIABLE PROCESSOR · STAGE '+stageNo+'/3');
+  const root=active.root;
+  const copies=[
+    'Decide what the register stores after SET or CHANGE. SET replaces; CHANGE modifies.',
+    'Trace several updates in order. The value after one instruction becomes the input to the next.',
+    'Apply sensor calibration changes and threshold changes before deciding which output runs.'
+  ];
+  root.appendChild(roomHeader('ROOM 2 · VARIABLE PROCESSOR','Track the value stored in memory',copies[stageIndex]));
+
+  const note=document.createElement('div');note.className='reality-note';
+  note.innerHTML='<strong>Variable = labelled storage</strong><span>A variable stores a value while the program runs. SET replaces that value; CHANGE adds or subtracts from the value already stored.</span>';
+  root.appendChild(note);
+
+  const panel=document.createElement('div');panel.className='variable-processor';
+  const progress=document.createElement('div');progress.className='variable-progress';
+  const title=document.createElement('div');title.className='variable-title';
+  const register=document.createElement('div');register.className='variable-register';register.innerHTML='<small>MEMORY REGISTER</small><strong>?</strong>';
+  const code=document.createElement('pre');code.className='variable-code';
+  const options=document.createElement('div');options.className='variable-options';
+  const status=document.createElement('div');status.className='logic-status';
+  panel.append(progress,title,register,code,options,status);root.appendChild(panel);
+
+  let index=0,locked=false;
+  function paint(){
+    const q=challenges[index];
+    progress.textContent='STAGE '+stageNo+'/3 · PROGRAM '+(index+1)+'/'+challenges.length;
+    title.textContent=q.title;code.textContent=q.code;
+    register.querySelector('strong').textContent='?';
+    options.replaceChildren();
+    q.options.forEach(label=>{
+      const b=document.createElement('button');b.type='button';b.className='variable-option';b.textContent=label;
+      b.addEventListener('click',()=>choose(label,b));options.appendChild(b);
+    });
+    status.textContent=stageIndex===0?'What value is stored afterwards?':stageIndex===1?'Trace every update. What value remains?':'Use the calibrated stored values. Which output runs?';
+    locked=false;led()?.setPattern('question');
+  }
+  function choose(label,button){
+    if(locked)return;
+    const q=challenges[index];
+    if(label!==q.answer){
+      active.variableFaults++;button.classList.add('wrong');
+      const depleted=applyAdventurePenalty();active.playTone(150,.07,'square',.024);led()?.flash('x',340);
+      if(depleted)return;
+      showNotice(q.explain,'fault',1500);
+      later(()=>button.classList.remove('wrong'),550);return;
+    }
+    locked=true;button.classList.add('correct');register.querySelector('strong').textContent=q.answer;
+    active.playTone(760,.06,'sine',.025);led()?.setPattern('check');status.textContent=q.explain;
+    later(()=>{
+      index++;
+      if(index<challenges.length){paint();return;}
+      if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,2);
+      finishRoomStage(
+        'Variable Processor stage '+stageNo+'/3 complete',
+        stageIndex===0?'Next: trace longer update sequences.':'Next: sensor readings, calibration changes and stored thresholds.',
+        'Variable Processor restored',
+        'SET, CHANGE, sequential updates and calibrated threshold variables are all tracking correctly.',
+        'Open Sensor Fault Map →',
+        ()=>{active.room=2;renderRoom();}
+      );
+    },800);
+  }
+  paint();
+}
+
 function microbitBoardMarkup(){
   return `
     <div class="official-microbit-final">
