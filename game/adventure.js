@@ -1963,7 +1963,10 @@ function variableChallenges(stage,seed){
       if(type==='set'){
         const target=randomInt(rng,2,25);
         return {
-          title:'REGISTER value = '+start,
+          title:'SET THE REGISTER',
+          registerLabel:'CURRENT VALUE',
+          registerBefore:'value = '+start,
+          registerAfter:'value = '+target,
           code:'SET value TO '+target,
           options:variableOptions(target,rng,6).map(String),
           answer:String(target),
@@ -1974,7 +1977,10 @@ function variableChallenges(stage,seed){
       const result=Math.max(0,start+delta);
       const actualDelta=result-start;
       return {
-        title:'REGISTER value = '+start,
+        title:'CHANGE THE REGISTER',
+        registerLabel:'CURRENT VALUE',
+        registerBefore:'value = '+start,
+        registerAfter:'value = '+result,
         code:'CHANGE value BY '+(actualDelta>=0?'+':'')+actualDelta,
         options:variableOptions(result,rng,7).map(String),
         answer:String(result),
@@ -1995,7 +2001,10 @@ function variableChallenges(stage,seed){
       const op2=subtract>=0?'CHANGE value BY +'+subtract:'CHANGE value BY '+subtract;
       return {
         title:'TRACE THE REGISTER',
-        code:'SET value TO '+start+'\nCHANGE value BY +'+d1+'\n'+op2+'\nSET value TO value × '+mult,
+        registerLabel:'STARTING VALUE',
+        registerBefore:'value = '+start,
+        registerAfter:'value = '+result,
+        code:'CHANGE value BY +'+d1+'\n'+op2+'\nSET value TO value × '+mult,
         options:variableOptions(result,rng,Math.max(6,d1+d2)).map(String),
         answer:String(result),
         explain:start+' → '+mid+' → '+mid2+' → '+result+'. Apply every instruction in order.'
@@ -2015,9 +2024,10 @@ function variableChallenges(stage,seed){
     const alertLabel=tempMode?'HOT':'DARK';
     return {
       title:(tempMode?'TEMPERATURE':'LIGHT')+' CALIBRATION',
-      code:'SET '+sensor+' TO ['+(tempMode?'temperature':'light level')+']   # '+reading+
-        '\nCHANGE '+sensor+' BY '+(readingAdjust>=0?'+':'')+readingAdjust+
-        '\nSET threshold TO '+limitStart+
+      registerLabel:'STARTING MEMORY',
+      registerBefore:sensor+' = '+reading+' · threshold = '+limitStart,
+      registerAfter:sensor+' = '+storedReading+' · threshold = '+storedLimit,
+      code:'CHANGE '+sensor+' BY '+(readingAdjust>=0?'+':'')+readingAdjust+
         '\nCHANGE threshold BY '+(limitAdjust>=0?'+':'')+limitAdjust+
         '\nIF '+sensor+(tempMode?' > ':' < ')+'threshold\n  OUTPUT '+alertLabel+'\nELSE\n  OUTPUT OK',
       options:[alertLabel,'OK'],
@@ -2045,7 +2055,10 @@ function renderVariableProcessor(){
   const panel=document.createElement('div');panel.className='variable-processor';
   const progress=document.createElement('div');progress.className='variable-progress';
   const title=document.createElement('div');title.className='variable-title';
-  const register=document.createElement('div');register.className='variable-register';register.innerHTML='<small>MEMORY REGISTER</small><strong>?</strong>';
+  const register=document.createElement('div');register.className='variable-register';
+  const registerLabel=document.createElement('small');
+  const registerValue=document.createElement('strong');
+  register.append(registerLabel,registerValue);
   const code=document.createElement('pre');code.className='variable-code';
   const options=document.createElement('div');options.className='variable-options';
   const status=document.createElement('div');status.className='logic-status';
@@ -2056,7 +2069,9 @@ function renderVariableProcessor(){
     const q=challenges[index];
     progress.textContent='STAGE '+stageNo+'/3 · PROGRAM '+(index+1)+'/'+challenges.length;
     title.textContent=q.title;code.textContent=q.code;
-    register.querySelector('strong').textContent='?';
+    registerLabel.textContent=q.registerLabel||'MEMORY REGISTER';
+    registerValue.textContent=q.registerBefore||'?';
+    register.classList.remove('resolved');
     options.replaceChildren();
     q.options.forEach(label=>{
       const b=document.createElement('button');b.type='button';b.className='variable-option';b.textContent=label;
@@ -2075,7 +2090,10 @@ function renderVariableProcessor(){
       showNotice(q.explain,'fault',1500);
       later(()=>button.classList.remove('wrong'),550);return;
     }
-    locked=true;button.classList.add('correct');register.querySelector('strong').textContent=q.answer;
+    locked=true;button.classList.add('correct');
+    registerLabel.textContent=stageIndex===2?'UPDATED MEMORY':'RESULT';
+    registerValue.textContent=q.registerAfter||q.answer;
+    register.classList.add('resolved');
     active.playTone(760,.06,'sine',.025);led()?.setPattern('check');status.textContent=q.explain;
     later(()=>{
       index++;
