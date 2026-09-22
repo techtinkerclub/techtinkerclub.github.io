@@ -2360,11 +2360,11 @@ function renderSensorFaultMap(){
   }
   const n=puzzle.n,solution=new Set(puzzle.sensorSet),clues=puzzle.clues,clueSet=new Set(Object.keys(clues));
   const state=Array.from({length:n},()=>Array(n).fill(0));
-  let finished=false,hintClue=null;
+  let finished=false,hintClues=new Set(),hintCells=new Set();
   const cellButtons=new Map(),clueNodes=new Map();
 
   const meta=document.createElement('div');meta.className='sensor-map-meta';
-  meta.innerHTML='<strong>'+cfg.label+'</strong><span>'+Object.keys(clues).length+' diagnostic clues · find all '+cfg.sensors+' tripped sensors</span>';
+  meta.innerHTML='<strong>'+cfg.label+'</strong><span>'+Object.keys(clues).length+' clues · '+(puzzle.logicSteps||0)+' forced deduction steps · NO GUESSING</span>';
 
   const board=document.createElement('div');board.className='sensor-map-grid';board.dataset.sensorMapSize=String(n);board.style.setProperty('--sensor-map-n',String(n));
   for(let r=0;r<n;r++)for(let c=0;c<n;c++){
@@ -2425,7 +2425,7 @@ function renderSensorFaultMap(){
     for(const [k,b] of cellButtons){
       const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c];
       b.classList.toggle('tripped',v===1);b.classList.toggle('safe',v===2);
-      b.classList.toggle('hint',hintClue?candidateNeighbours(hintClue).some(p=>sensorFaultKey(p[0],p[1])===k):false);
+      b.classList.toggle('hint',hintCells.has(k));
       b.classList.toggle('wrong',bad.has(k));
       b.textContent=v===1?'!':v===2?'×':'';
       b.setAttribute('aria-label','Row '+(r+1)+', column '+(c+1)+(v===1?', tripped':v===2?', safe':', unknown'));
@@ -2433,7 +2433,7 @@ function renderSensorFaultMap(){
     for(const [k,d] of clueNodes){
       const s=clueState(k);
       d.classList.toggle('satisfied',s.satisfied&&!s.over&&!s.impossible);
-      d.classList.toggle('over',s.over);d.classList.toggle('impossible',s.impossible);d.classList.toggle('hint',k===hintClue);
+      d.classList.toggle('over',s.over);d.classList.toggle('impossible',s.impossible);d.classList.toggle('hint',hintClues.has(k));
     }
     status.textContent='Stage '+stageNo+'/3 · '+marked.size+'/'+cfg.sensors+' tripped sensors marked · tap: ! → × → clear.';
     const ledCells=[...marked].map(k=>{const p=k.split(':').map(Number);return led()?.mapPoint(p[0],p[1],n,n);}).filter(Boolean);
@@ -2441,25 +2441,44 @@ function renderSensorFaultMap(){
   }
   function cycle(r,c){
     if(finished)return;
-    state[r][c]=(state[r][c]+1)%3;hintClue=null;
+    state[r][c]=(state[r][c]+1)%3;hintClues.clear();hintCells.clear();
     cellButtons.forEach(b=>b.classList.remove('wrong'));paint();
   }
   hint.addEventListener('click',()=>{
-    let pick=null;
-    for(const k of Object.keys(clues)){
-      const s=clueState(k);
-      if(s.forcedTripped||s.forcedSafe){pick={k,s};break;}
+    hintClues.clear();hintCells.clear();
+    const step=sensorFaultNextDeduction(n,cfg.sensors,clues,state,{subset:cfg.subset});
+    if(!step){
+      if(wrongMarks().length)showNotice('Your current marks no longer leave a forced deduction. Use Check sensor map to review them first.','warn',1700);
+      else showNotice('No unresolved forced move remains. Run Check sensor map.','info',1300);
+      paint();return;
     }
-    if(!pick){
-      const unresolved=Object.keys(clues).map(k=>({k,s:clueState(k)})).filter(x=>x.s.unknown>0).sort((a,b)=>a.s.unknown-b.s.unknown);
-      pick=unresolved[0]||null;
+    if(step.contradiction){
+      showNotice('The current marks contradict a clue. Use Check sensor map to find the problem.','fault',1600);
+      paint();return;
     }
-    hintClue=pick?.k||null;paint();
-    if(!pick){showNotice('Every clue neighbourhood is decided — try Check sensor map.','info',1200);return;}
-    const p=pick.k.split(':').map(Number);
-    if(pick.s.forcedTripped)showNotice('Clue '+pick.s.target+' at row '+(p[0]+1)+', column '+(p[1]+1)+': every remaining unknown neighbour must be TRIPPED.','info',1700);
-    else if(pick.s.forcedSafe)showNotice('Clue '+pick.s.target+' already has all its tripped neighbours. The remaining unknown neighbours are SAFE.','info',1700);
-    else showNotice('Focus on clue '+pick.s.target+'. It has only '+pick.s.unknown+' unknown neighbours left.','info',1500);
+    step.clues.forEach(k=>hintClues.add(k));
+    step.cells.forEach(k=>hintCells.add(k));
+    paint();
+
+    function clueLabel(k){
+      const p=k.split(':').map(Number);
+      return 'clue '+clues[k]+' at row '+(p[0]+1)+', column '+(p[1]+1);
+    }
+    let message='';
+    if(step.technique==='direct-safe'){
+      message=clueLabel(step.clues[0])+' already has all the tripped neighbours it needs. Every highlighted unknown cell is SAFE.';
+    }else if(step.technique==='direct-tripped'){
+      message=clueLabel(step.clues[0])+' still needs exactly '+step.cells.length+' tripped sensor'+(step.cells.length===1?'':'s')+', and exactly that many unknown neighbours remain. Highlighted cells are TRIPPED.';
+    }else if(step.technique==='global-safe'){
+      message='All '+cfg.sensors+' tripped sensors are already accounted for. Every highlighted unknown cell is SAFE.';
+    }else if(step.technique==='global-tripped'){
+      message='Exactly '+step.cells.length+' tripped sensor'+(step.cells.length===1?' remains':'s remain')+' to place, and exactly '+step.cells.length+' cells are unknown. Highlighted cells are TRIPPED.';
+    }else if(step.technique==='subset-safe'){
+      message='Compare '+clueLabel(step.clues[0])+' with '+clueLabel(step.clues[1])+'. Their shared unknown cells account for the required faults, so the highlighted extra cells are SAFE.';
+    }else if(step.technique==='subset-tripped'){
+      message='Compare '+clueLabel(step.clues[0])+' with '+clueLabel(step.clues[1])+'. After cancelling the shared unknown cells, every highlighted extra cell must be TRIPPED.';
+    }
+    showNotice(message||'The highlighted cells are forced by the clues.','info',2400);
   });
   check.addEventListener('click',()=>{
     const marked=markedTripped(),wrong=wrongMarks();
