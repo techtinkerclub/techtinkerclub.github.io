@@ -498,7 +498,7 @@ function renderPulseRun(){
   }
 
   const joystick=document.createElement('div');joystick.className='expedition-joystick';
-  joystick.setAttribute('role','application');joystick.setAttribute('aria-label','Movement joystick');
+  joystick.setAttribute('role','application');joystick.setAttribute('aria-label','Precision movement joystick. Nudge for one step; hold to keep moving.');
   const joystickBase=document.createElement('div');joystickBase.className='expedition-joystick-base';
   const joystickKnob=document.createElement('div');joystickKnob.className='expedition-joystick-knob';
   const joystickLabel=document.createElement('span');joystickLabel.className='expedition-joystick-label';joystickLabel.textContent='MOVE';
@@ -511,12 +511,28 @@ function renderPulseRun(){
   rotateNotice.innerHTML='<div class="expedition-rotate-phone" aria-hidden="true">▯↻</div><strong>Rotate your phone</strong><span>System Rescue is designed for landscape play on mobile.</span>';
   shell.append(hud,displayActions,board,mission,controls,rotateNotice);root.appendChild(shell);
 
-  let joystickPointer=null,joystickRepeat=null,joystickDir=null;
-  function stopJoystick(){
+  let joystickPointer=null,joystickRepeat=null,joystickRepeatDelay=null,joystickDir=null;
+  function clearJoystickRepeat(){
+    if(joystickRepeatDelay){clearTimeout(joystickRepeatDelay);joystickRepeatDelay=null;}
     if(joystickRepeat){clearInterval(joystickRepeat);joystickRepeat=null;}
+  }
+  function stopJoystick(){
+    clearJoystickRepeat();
     joystickPointer=null;joystickDir=null;
     joystickKnob.style.transform='translate3d(0,0,0)';
     joystick.classList.remove('active');
+  }
+  function startJoystickRepeat(next){
+    clearJoystickRepeat();
+    // Precision first: a short nudge is exactly one grid step.
+    // Continuous travel only starts after a deliberate hold, and repeats slowly.
+    joystickRepeatDelay=setTimeout(()=>{
+      joystickRepeatDelay=null;
+      if(!joystickDir)return;
+      joystickRepeat=setInterval(()=>{
+        if(joystickDir)movePlayer(next[0],next[1],null);
+      },235);
+    },380);
   }
   function driveJoystick(e){
     const rect=joystickBase.getBoundingClientRect();
@@ -526,21 +542,29 @@ function renderPulseRun(){
     const mag=Math.hypot(dx,dy)||1;
     if(mag>limit){dx=dx/mag*limit;dy=dy/mag*limit;}
     joystickKnob.style.transform='translate3d('+dx+'px,'+dy+'px,0)';
-    const dead=limit*.32;
+
+    // A larger dead zone makes tiny thumb movements harmless.
+    const dead=limit*.46;
     let next=null;
     if(Math.max(Math.abs(dx),Math.abs(dy))>=dead){
-      next=Math.abs(dx)>Math.abs(dy)?(dx<0?[0,-1]:[0,1]):(dy<0?[-1,0]:[1,0]);
+      const diagonalBand=Math.abs(Math.abs(dx)-Math.abs(dy))<limit*.14;
+      if(diagonalBand&&joystickDir){
+        const parts=joystickDir.split(':').map(Number);
+        next=[parts[0],parts[1]];
+      }else{
+        next=Math.abs(dx)>Math.abs(dy)?(dx<0?[0,-1]:[0,1]):(dy<0?[-1,0]:[1,0]);
+      }
     }
     if(!next){
       joystickDir=null;
-      if(joystickRepeat){clearInterval(joystickRepeat);joystickRepeat=null;}
+      clearJoystickRepeat();
       return;
     }
     const code=next[0]+':'+next[1];
     if(code!==joystickDir){
-      joystickDir=code;movePlayer(next[0],next[1],null);
-      if(joystickRepeat)clearInterval(joystickRepeat);
-      joystickRepeat=setInterval(()=>movePlayer(next[0],next[1],null),135);
+      joystickDir=code;
+      movePlayer(next[0],next[1],null);
+      startJoystickRepeat(next);
     }
   }
   joystickBase.addEventListener('pointerdown',e=>{
