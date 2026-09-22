@@ -789,100 +789,85 @@ function renderRandomPacketCatcher(){
 /* ---------------- Room 2: Randomiser Range Diagnostics ---------------- */
 
 function makeRandomDiagnosticRounds(seed){
-  const rng=rngFromSeed(seed+':broken-randomiser');
+  const rng=rngFromSeed(seed+':range-diagnostics');
   const specs=[
-    {name:'DICE',min:1,max:6,code:'random 1 to 6'},
-    {name:'COIN',min:0,max:1,code:'random 0 to 1'},
-    {name:'LED COORDINATE',min:0,max:4,code:'random 0 to 4'}
+    {name:'COIN',min:0,max:1,code:'random 0 to 1',length:5},
+    {name:'DICE',min:1,max:6,code:'random 1 to 6',length:7},
+    {name:'LED COORDINATE',min:0,max:4,code:'random 0 to 4',length:9}
   ];
   return specs.map((spec,roundIndex)=>{
     function goodStream(){
-      const out=Array.from({length:7},()=>randomInt(rng,spec.min,spec.max));
+      const out=Array.from({length:spec.length},()=>randomInt(rng,spec.min,spec.max));
       if(new Set(out).size===1&&spec.max>spec.min)out[out.length-1]=out[0]===spec.max?spec.min:spec.max;
       return out;
     }
-    const good1=goodStream(),good2=goodStream();
-    const bad=goodStream();
-    const badIndex=1+Math.floor(rng()*(bad.length-2));
+    const good1=goodStream(),good2=goodStream(),bad=goodStream();
+    const badIndex=1+Math.floor(rng()*Math.max(1,bad.length-2));
     bad[badIndex]=rng()<.5?spec.min-1:spec.max+1;
-    const streams=shuffled([
-      {bad:false,values:good1},
-      {bad:false,values:good2},
-      {bad:true,values:bad}
-    ],rng);
+    const streams=shuffled([{bad:false,values:good1},{bad:false,values:good2},{bad:true,values:bad}],rng);
     return {...spec,roundIndex,streams};
   });
 }
 
 function renderBrokenRandomiser(){
-  setProgress('RANDOMISER CORE · ROOM 2/3 · RANGE DIAGNOSTICS');
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const round=makeRandomDiagnosticRounds(active.seed)[stageIndex];
+  setProgress('RANDOMISER CORE · ROOM 2/3 · RANGE DIAGNOSTICS · STAGE '+stageNo+'/3');
   const root=active.root;
   root.appendChild(roomHeader(
     'ROOM 2 · RANGE DIAGNOSTICS',
     'Select the sequence that does not match',
-    'For each random block, select the one sequence that does not match its range. Every number in a matching sequence must be between the two limits, inclusive.'
+    'Stage '+stageNo+' shows '+round.length+' outputs. Select the one sequence containing a value that cannot come from '+round.code+'.'
   ));
 
-  const rounds=makeRandomDiagnosticRounds(active.seed);
-  let roundIndex=0,locked=false;
-
   const note=document.createElement('div');note.className='reality-note';
-  note.innerHTML='<strong>Important</strong><span>You cannot prove randomness by looking at a few numbers. Repeats are allowed. This diagnostic only checks range correctness: a value outside the configured range is definitely a fault.</span>';
+  note.innerHTML='<strong>Important</strong><span>You cannot prove randomness from a short sequence. Repeats are allowed. We are checking one thing we can know for certain: every output must stay inside the configured range.</span>';
 
   const consoleEl=document.createElement('div');consoleEl.className='random-diagnostic-console';
   const title=document.createElement('div');title.className='random-diagnostic-title';
   const streams=document.createElement('div');streams.className='random-streams';
   const counter=document.createElement('div');counter.className='logic-status';
+  root.append(note,consoleEl);consoleEl.append(title,streams,counter);
 
-  root.append(note,consoleEl);
-  consoleEl.append(title,streams,counter);
+  title.innerHTML='<small>STAGE '+stageNo+'/3 · '+round.name+'</small><strong>'+round.code+'</strong><span>Select the sequence that does not match this rule.</span>';
+  round.streams.forEach((stream,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='random-stream-card';
+    const label=document.createElement('small');label.textContent='SEQUENCE '+String.fromCharCode(65+i);
+    const values=document.createElement('div');values.className='random-stream-values';
+    stream.values.forEach(v=>{const s=document.createElement('span');s.textContent=String(v);values.appendChild(s);});
+    b.append(label,values);
+    b.addEventListener('click',()=>choose(i,b));
+    streams.appendChild(b);
+  });
+  counter.textContent='Find the sequence containing a number outside '+round.min+'–'+round.max+'. Repeated numbers are allowed.';
+  led()?.setPattern('question');
 
-  function renderRound(){
-    locked=false;
-    const r=rounds[roundIndex];
-    title.innerHTML=`<small>CHECK ${roundIndex+1}/3 · ${r.name}</small><strong>${r.code}</strong><span>Select the sequence that does not match this rule.</span>`;
-    streams.replaceChildren();
-    r.streams.forEach((stream,i)=>{
-      const b=document.createElement('button');b.type='button';b.className='random-stream-card';
-      const label=document.createElement('small');label.textContent=`SEQUENCE ${String.fromCharCode(65+i)}`;
-      const values=document.createElement('div');values.className='random-stream-values';
-      stream.values.forEach(v=>{const s=document.createElement('span');s.textContent=String(v);values.appendChild(s);});
-      b.append(label,values);
-      b.addEventListener('click',()=>choose(i,b));
-      streams.appendChild(b);
-    });
-    counter.textContent=`Select the sequence containing a number outside ${r.min}–${r.max}. Repeated numbers are allowed.`;
-    led()?.setPattern('question');
-  }
-
+  let locked=false;
   function choose(i,button){
     if(locked)return;
-    const r=rounds[roundIndex],stream=r.streams[i];
+    const stream=round.streams[i];
     if(!stream.bad){
-      active.logicFaults++;
+      active.logicFaults++;button.classList.add('wrong');
       const depleted=applyAdventurePenalty();
-      button.classList.add('wrong');
       active.playTone(155,.07,'square',.023);led()?.flash('x',360);
       if(depleted)return;
-      showNotice(`That sequence matches ${r.code}. Every value is in range.`,'warn',1200);
+      showNotice('That sequence matches '+round.code+'. Every value is in range.','warn',1200);
       later(()=>button.classList.remove('wrong'),600);
       return;
     }
-    locked=true;
-    button.classList.add('correct');
-    active.playTone(760,.065,'sine',.025);led()?.setPattern('check');
-    const badValue=stream.values.find(v=>v<r.min||v>r.max);
-    showNotice(`${badValue} cannot come from ${r.code}.`,'success',900);
-    later(()=>{
-      roundIndex++;
-      if(roundIndex>=rounds.length){
-        active.roomsCompleted=Math.max(active.roomsCompleted,2);
-        showTransition('Sequence checks complete','You found the sequence that did not match each random-number range. Repeated values were correctly left alone when they were still in range.','Open data router →',()=>{active.room=2;renderRoom();});
-      }else renderRound();
-    },900);
+    locked=true;button.classList.add('correct');active.playTone(760,.065,'sine',.025);led()?.setPattern('check');
+    const badValue=stream.values.find(v=>v<round.min||v>round.max);
+    showNotice(badValue+' cannot come from '+round.code+'.','success',850);
+    if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,2);
+    later(()=>finishRoomStage(
+      'Range stage '+stageNo+'/3 complete',
+      stageIndex===0?'Next: a longer six-sided-die sequence.':'Next: nine LED-coordinate outputs to scan.',
+      'Range diagnostics fully restored',
+      'You found the out-of-range sequence in all three stages without treating ordinary repeats as faults.',
+      'Open data router →',
+      ()=>{active.room=2;renderRoom();}
+    ),650);
   }
-
-  renderRound();
 }
 
 /* ---------------- Room 3: Data / Property Router ---------------- */
