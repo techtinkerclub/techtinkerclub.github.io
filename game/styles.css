@@ -3412,14 +3412,59 @@ body.adventure-modal-open{
   }
 }
 
+body.expedition-immersive-open{
+  overflow:hidden!important;
+  overscroll-behavior:none;
+  touch-action:none;
+}
+#screen-adventure.expedition-fullscreen-host{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147482999!important;
+  display:block!important;
+  width:100vw!important;
+  max-width:none!important;
+  height:100vh!important;
+  height:100dvh!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:#01060a!important;
+  animation:none!important;
+  transform:none!important;
+}
+#screen-adventure.expedition-fullscreen-host .battle-topbar,
+#screen-adventure.expedition-fullscreen-host .microbit-world>.adventure-side,
+#screen-adventure.expedition-fullscreen-host .microbit-world>.microbit-pins{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#screen-adventure.expedition-fullscreen-host .microbit-world{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  display:block!important;
+}
+#screen-adventure.expedition-fullscreen-host .adventure-root{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  margin:0!important;
+}
 .expedition-shell.expedition-immersive{
-  position:fixed;
+  position:absolute;
   inset:0;
   z-index:2147483000;
-  width:100vw;
+  width:100%;
   max-width:none;
-  height:100vh;
-  height:100dvh;
+  height:100%;
+  min-height:100%;
   margin:0;
   padding:
     max(6px,env(safe-area-inset-top))
