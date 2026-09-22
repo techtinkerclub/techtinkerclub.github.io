@@ -1302,7 +1302,7 @@ function decisionChallenges(stage,seed){
     else if((player==='ROCK'&&computer==='SCISSORS')||(player==='PAPER'&&computer==='ROCK')||(player==='SCISSORS'&&computer==='PAPER'))answer='PLAYER WINS';
     return {
       value:'PLAYER: '+player+' · COMPUTER: '+computer,
-      code:'IF player = computer\n  output TIE\nELSE IF player beats computer\n  output PLAYER WINS\nELSE\n  output COMPUTER WINS',
+      code:'IF player = computer\n  output TIE\nELSE IF\n  (player = ROCK AND computer = SCISSORS)\n  OR (player = PAPER AND computer = ROCK)\n  OR (player = SCISSORS AND computer = PAPER)\n  output PLAYER WINS\nELSE\n  output COMPUTER WINS',
       options:['TIE','PLAYER WINS','COMPUTER WINS'],
       answer,
       explain:player===computer?'Both moves match, so the first branch outputs TIE.':answer==='PLAYER WINS'?player+' beats '+computer+', so PLAYER WINS.':computer+' beats '+player+', so the final ELSE gives COMPUTER WINS.'
@@ -1318,13 +1318,13 @@ function renderDecisionEngine(){
   const copies=[
     'Run test values through a simple IF / ELSE and choose the output that executes.',
     'The router now has IF / ELSE IF / ELSE. Only the first matching branch runs.',
-    'Apply the same branching idea to Rock–Paper–Scissors: tie first, then player win, otherwise computer win.'
+    'Final stage: the player-win branch uses AND inside each winning pair and OR between the three possible winning pairs. Read the whole Boolean condition carefully.'
   ];
   root.appendChild(roomHeader('ROOM 2 · DECISION ENGINE','Run the correct branch',copies[stageIndex]));
 
   if(stageIndex===2){
     const rules=document.createElement('div');rules.className='decision-rules';
-    rules.innerHTML='<span><strong>ROCK</strong> beats Scissors</span><span><strong>PAPER</strong> beats Rock</span><span><strong>SCISSORS</strong> beats Paper</span>';
+    rules.innerHTML='<span><strong>ROCK</strong> beats Scissors</span><span><strong>PAPER</strong> beats Rock</span><span><strong>SCISSORS</strong> beats Paper</span><span><strong>AND</strong> both comparisons must be true</span><span><strong>OR</strong> any one winning pair can be true</span>';
     root.appendChild(rules);
   }
 
@@ -1345,7 +1345,7 @@ function renderDecisionEngine(){
       const b=document.createElement('button');b.type='button';b.className='decision-option';b.textContent=label;
       b.addEventListener('click',()=>choose(label,b));options.appendChild(b);
     });
-    status.textContent=stageIndex===0?'Which branch runs?':stageIndex===1?'Read the tests from top to bottom.':'Which outcome does the decision tree produce?';
+    status.textContent=stageIndex===0?'Which branch runs?':stageIndex===1?'Read the tests from top to bottom.':'Evaluate the AND/OR condition, then choose the outcome.';
     locked=false;led()?.setPattern('question');
   }
   function choose(label,button){
@@ -1369,7 +1369,7 @@ function renderDecisionEngine(){
         'Decision Engine stage '+stageNo+'/3 complete',
         stageIndex===0?'Next: three-way IF / ELSE IF / ELSE decisions.':'Next: repair the Rock–Paper–Scissors decision system.',
         'Decision Engine restored',
-        'Simple branches, else-if chains and Rock–Paper–Scissors decisions are all routing correctly.',
+        'Simple branches, else-if chains and compound AND/OR Rock–Paper–Scissors decisions are all routing correctly.',
         'Open Comparator Matrix →',
         ()=>{active.room=2;renderRoom();}
       );
