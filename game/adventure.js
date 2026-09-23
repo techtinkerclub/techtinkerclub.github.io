@@ -541,7 +541,7 @@ function renderExpeditionRoute(stageIndex,phase,onContinue){
   for(let i=0;i<stops.length;i++){
     if(i){
       const link=document.createElement('div');
-      link.className='expedition-map-link'+(i-1<=completedThrough-1?' complete':'');
+      link.className='expedition-map-link'+(i<=current?' complete':'');
       const pulse=document.createElement('i');link.appendChild(pulse);
       map.appendChild(link);
     }
