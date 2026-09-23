@@ -3650,3 +3650,404 @@ body.expedition-immersive-open{
     z-index:20;
   }
 }
+
+
+/* ============================================================
+   Expedition orientation · field guide + RPG-style route map
+   ============================================================ */
+.expedition-info-strip{
+  align-items:center;
+}
+.expedition-info-strip kbd,
+.expedition-guide-controls kbd,
+.expedition-map-controls kbd{
+  display:inline-block;
+  min-width:22px;
+  padding:3px 5px;
+  border:1px solid rgba(126,166,190,.38);
+  border-bottom-color:rgba(126,166,190,.58);
+  border-radius:5px;
+  background:#06111b;
+  color:#d8edf5;
+  font:850 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-align:center;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.04);
+}
+.expedition-info-guide{
+  min-height:28px;
+  margin-left:auto;
+  padding:5px 9px;
+  border-color:rgba(84,239,255,.28);
+  color:#83e9f5;
+  font:850 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.06em;
+}
+.expedition-guide-toggle{
+  min-height:32px;
+  padding:6px 9px;
+  border:1px solid rgba(84,239,255,.26);
+  border-radius:7px;
+  background:#06131d;
+  color:#86eef8;
+  font:850 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.055em;
+}
+.expedition-display-actions{
+  gap:5px;
+}
+
+.expedition-guide-shade,
+.expedition-map-shade{
+  align-items:center;
+  padding:12px;
+}
+.expedition-guide-popup{
+  width:min(790px,calc(100vw - 24px));
+  padding:14px;
+}
+.expedition-guide-head,
+.expedition-map-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+.expedition-guide-head>div,
+.expedition-map-head>div{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+}
+.expedition-guide-head small,
+.expedition-map-head small{
+  color:#5de8f6;
+  font:900 9px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.13em;
+}
+.expedition-guide-head strong,
+.expedition-map-head strong{
+  color:#e5f4fa;
+  font-size:18px;
+  line-height:1.15;
+}
+.expedition-guide-head span,
+.expedition-map-head span{
+  color:#91a9b6;
+  font-size:11px;
+  line-height:1.4;
+}
+.expedition-guide-close{
+  min-height:30px;
+  padding:6px 9px;
+  font-size:9px;
+}
+.expedition-guide-controls,
+.expedition-map-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px 12px;
+  margin:11px 0 10px;
+  padding:8px 10px;
+  border:1px solid rgba(76,203,221,.16);
+  border-radius:8px;
+  background:#06131d;
+  color:#8fa8b5;
+  font:750 9px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.expedition-guide-controls strong{
+  color:#9f91ff;
+}
+.expedition-guide-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+.expedition-guide-item{
+  display:grid;
+  grid-template-columns:40px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  padding:7px;
+  border:1px solid rgba(62,91,113,.48);
+  border-radius:9px;
+  background:#07131f;
+}
+.expedition-guide-icon.expedition-cell{
+  width:38px;
+  height:38px;
+  min-width:38px;
+  min-height:38px;
+  border-radius:5px;
+}
+.expedition-guide-icon .expedition-player,
+.expedition-guide-icon .expedition-hazard{
+  font-size:13px;
+}
+.expedition-guide-icon .expedition-pickup,
+.expedition-guide-icon .expedition-relay,
+.expedition-guide-icon .expedition-arc{
+  font-size:9px;
+}
+.expedition-guide-icon .expedition-exit{
+  font-size:6px;
+}
+.expedition-guide-copy{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+.expedition-guide-copy strong{
+  color:#dcebf1;
+  font-size:10px;
+  line-height:1.2;
+}
+.expedition-guide-copy span{
+  color:#8099a7;
+  font-size:8px;
+  line-height:1.35;
+}
+
+/* The route board is deliberately schematic: an old-RPG style travel map
+   showing progression through the micro:bit rather than physical PCB scale. */
+.expedition-map-popup{
+  width:min(760px,calc(100vw - 24px));
+  padding:14px;
+}
+.expedition-route-board{
+  position:relative;
+  height:168px;
+  margin-top:12px;
+  overflow:hidden;
+  border:1px solid rgba(67,211,228,.26);
+  border-radius:22px 22px 34px 34px;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(67,211,228,.08),transparent 28%),
+    linear-gradient(rgba(70,208,224,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(70,208,224,.025) 1px,transparent 1px),
+    #02080d;
+  background-size:auto,18px 18px,18px 18px,auto;
+  box-shadow:inset 0 0 40px rgba(0,0,0,.58);
+}
+.expedition-route-board::before,
+.expedition-route-board::after{
+  content:"";
+  position:absolute;
+  top:22px;
+  width:21px;
+  height:21px;
+  border:1px solid rgba(109,127,137,.36);
+  border-radius:50%;
+  background:#050a0e;
+  box-shadow:inset 0 0 0 5px #11181d;
+}
+.expedition-route-board::before{left:8%}
+.expedition-route-board::after{right:8%}
+.expedition-route-segment{
+  position:absolute;
+  z-index:1;
+  height:3px;
+  border-radius:999px;
+  background:#18303b;
+  transform-origin:left center;
+  box-shadow:0 0 0 1px rgba(77,182,198,.08);
+}
+.expedition-route-segment.complete{
+  background:#42d9b4;
+  box-shadow:0 0 10px rgba(66,217,180,.24);
+}
+.expedition-route-segment.segment-1{
+  left:18%;
+  top:60%;
+  width:34%;
+  transform:rotate(-20deg);
+}
+.expedition-route-segment.segment-2{
+  left:50%;
+  top:47%;
+  width:31%;
+  transform:rotate(-24deg);
+}
+.expedition-route-node{
+  position:absolute;
+  z-index:3;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  width:118px;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+.expedition-route-node.node-0{left:17%;top:65%}
+.expedition-route-node.node-1{left:49%;top:46%}
+.expedition-route-node.node-2{left:79%;top:25%}
+.expedition-route-node b{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border:2px solid #314a59;
+  border-radius:50%;
+  background:#07131c;
+  color:#728997;
+  font:950 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.expedition-route-node span{
+  padding:3px 6px;
+  border-radius:5px;
+  background:rgba(2,8,13,.86);
+  color:#738b98;
+  font:850 8px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.045em;
+}
+.expedition-route-node.complete b{
+  border-color:#42d9b4;
+  color:#91ffdc;
+  background:#09221d;
+  box-shadow:0 0 13px rgba(66,217,180,.19);
+}
+.expedition-route-node.complete span{color:#87cdbd}
+.expedition-route-node.current b{
+  border-color:#62eaf8;
+  color:#b6f8ff;
+  background:#08212a;
+  box-shadow:0 0 16px rgba(98,234,248,.24);
+}
+.expedition-route-node.current b::after{
+  content:"BIT";
+  position:absolute;
+  top:-18px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#62eaf8;
+  font:900 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.1em;
+}
+.expedition-route-node.current span{color:#a9eaf1}
+.expedition-route-node.locked{opacity:.43}
+.expedition-route-pads{
+  position:absolute;
+  left:50%;
+  bottom:-1px;
+  display:flex;
+  gap:13px;
+  transform:translateX(-50%);
+}
+.expedition-route-pads i{
+  width:34px;
+  height:12px;
+  border:1px solid #76632f;
+  border-bottom:0;
+  border-radius:8px 8px 0 0;
+  background:#332b18;
+}
+.expedition-map-controls{
+  margin-bottom:9px;
+}
+.expedition-map-action{
+  display:block;
+  min-width:210px;
+  margin:0 auto;
+}
+
+@media(max-width:700px){
+  .expedition-info-strip{
+    gap:5px;
+  }
+  .expedition-info-guide{
+    width:100%;
+    margin-left:0;
+  }
+  .expedition-guide-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .expedition-guide-item{
+    grid-template-columns:34px minmax(0,1fr);
+    gap:6px;
+    padding:6px;
+  }
+  .expedition-guide-icon.expedition-cell{
+    width:32px;
+    height:32px;
+    min-width:32px;
+    min-height:32px;
+  }
+  .expedition-guide-copy span{
+    font-size:7.5px;
+  }
+  .expedition-route-board{
+    height:145px;
+  }
+  .expedition-route-node{
+    width:92px;
+  }
+  .expedition-route-node span{
+    font-size:7px;
+  }
+}
+@media(max-width:950px) and (orientation:landscape){
+  .expedition-shell.expedition-immersive .expedition-hud{
+    padding-right:96px;
+  }
+  .expedition-shell.expedition-immersive .expedition-display-actions{
+    gap:4px;
+  }
+  .expedition-shell.expedition-immersive .expedition-guide-toggle,
+  .expedition-shell.expedition-immersive .expedition-immersive-toggle{
+    min-height:24px;
+    padding:4px 6px;
+    font-size:7.5px;
+  }
+  .expedition-guide-popup{
+    width:min(790px,calc(100vw - 16px));
+    padding:10px;
+  }
+  .expedition-guide-head strong,
+  .expedition-map-head strong{
+    font-size:15px;
+  }
+  .expedition-guide-head span,
+  .expedition-map-head span{
+    font-size:9px;
+  }
+  .expedition-guide-controls,
+  .expedition-map-controls{
+    margin:7px 0;
+    padding:6px 8px;
+    font-size:8px;
+  }
+  .expedition-guide-grid{
+    gap:5px;
+  }
+  .expedition-guide-item{
+    padding:5px;
+  }
+  .expedition-guide-copy strong{font-size:9px}
+  .expedition-guide-copy span{font-size:7px}
+  .expedition-map-popup{
+    width:min(720px,calc(100vw - 16px));
+    padding:10px;
+  }
+  .expedition-route-board{
+    height:132px;
+    margin-top:8px;
+  }
+  .expedition-route-node b{
+    width:29px;
+    height:29px;
+    font-size:9px;
+  }
+  .expedition-route-pads i{
+    width:28px;
+    height:9px;
+  }
+  .expedition-map-action{
+    min-height:32px;
+    padding:7px 11px;
+    font-size:10px;
+  }
+}
