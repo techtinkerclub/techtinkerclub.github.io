@@ -588,7 +588,7 @@ function renderExpeditionRoute(stageIndex,phase,onContinue){
 
   const final=document.createElement('div');
   final.className='level-one-final-node '+(current===stages.length?'current':completedThrough>=stages.length-1?'ready':'locked');
-  final.innerHTML='<b>'+(completedThrough>=8?'✓':'BOOT')+'</b><span><strong>FINAL DIAGNOSTIC</strong><small>12-question boot check</small></span>';
+  final.innerHTML='<b>'+(current===stages.length?'BOOT':completedThrough>=8?'✓':'BOOT')+'</b><span><strong>FINAL DIAGNOSTIC</strong><small>12-question boot check</small></span>';
   map.appendChild(final);
 
   const key=document.createElement('div');key.className='expedition-route-key';
@@ -1101,7 +1101,7 @@ function bootStageConfig(stage){
     },
     {
       label:'BOOT SEQUENCER II',scene:'CHECK GATE',accent:'amber',
-      copy:'A hardware-check node is now inserted into the route. Use the dependency labels to decide what must happen next.',
+      copy:'A hardware-check node is now inserted into the route. Decide which operation can happen next from what has already completed.',
       mechanic:'DEPENDENCIES'
     },
     {
