@@ -104,6 +104,7 @@ function renderRoom(){
   clearTimers();
   clearOverlay();
   clearExpeditionViewport();
+  document.getElementById('screen-adventure')?.classList.remove('expedition-map-mode');
   active.roomIntegrity=active.roomIntegrityMax;
   active.root.replaceChildren();
   if(active.systemId==='2'){
@@ -513,50 +514,67 @@ function expeditionRouteCopy(stageIndex,phase){
     button:'Enter Startup Controller →'
   };
 }
-function showExpeditionRoute(stageIndex,phase,onContinue){
-  const host=overlayHost();if(!host){onContinue?.();return;}
+function renderExpeditionRoute(stageIndex,phase,onContinue){
+  const root=active?.root;if(!root){onContinue?.();return;}
+  const screen=document.getElementById('screen-adventure');
   const completedThrough=phase==='complete'?stageIndex:stageIndex-1;
-  const current=phase==='complete'?Math.min(stageIndex+1,2):stageIndex;
+  const current=phase==='complete'?Math.min(stageIndex+1,3):stageIndex;
   const meta=expeditionRouteCopy(stageIndex,phase);
-  document.body.classList.add('adventure-modal-open');
+  screen?.classList.add('expedition-map-mode');
+  setProgress('BOOT SEQUENCE · MICRO:BIT EXPEDITION MAP');
+  root.replaceChildren();
 
-  const shade=document.createElement('div');shade.className='adventure-popup-shade expedition-map-shade';
-  const card=document.createElement('div');card.className='adventure-popup expedition-map-popup';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Microbit expedition map');
-
-  const head=document.createElement('div');head.className='expedition-map-head';
-  const titleWrap=document.createElement('div');
+  const panel=document.createElement('section');panel.className='expedition-route-screen';
+  const intro=document.createElement('div');intro.className='expedition-route-intro';
   const kicker=document.createElement('small');kicker.textContent=meta.kicker;
-  const title=document.createElement('strong');title.textContent=meta.title;
-  const body=document.createElement('span');body.textContent=meta.copy;
-  titleWrap.append(kicker,title,body);head.appendChild(titleWrap);
+  const title=document.createElement('h2');title.textContent=meta.title;
+  const copy=document.createElement('p');copy.textContent=meta.copy;
+  intro.append(kicker,title,copy);
 
-  const board=document.createElement('div');board.className='expedition-route-board';
-  const seg1=document.createElement('i');seg1.className='expedition-route-segment segment-1'+(completedThrough>=0?' complete':'');
-  const seg2=document.createElement('i');seg2.className='expedition-route-segment segment-2'+(completedThrough>=1?' complete':'');
-  board.append(seg1,seg2);
-  const names=['POWER INTAKE','DATA BUS','CPU CORE'];
-  for(let i=0;i<3;i++){
-    const node=document.createElement('div');
-    node.className='expedition-route-node node-'+i+(i<=completedThrough?' complete':i===current?' current':' locked');
-    const dot=document.createElement('b');dot.textContent=String(i+1);
-    const label=document.createElement('span');label.textContent=names[i];
-    node.append(dot,label);board.appendChild(node);
+  const map=document.createElement('div');map.className='expedition-world-map';
+  const stops=[
+    ['POWER INTAKE','Coupler bay'],
+    ['DATA BUS','Routing lanes'],
+    ['CPU CORE','Processing chamber'],
+    ['STARTUP CONTROLLER','Boot control']
+  ];
+  for(let i=0;i<stops.length;i++){
+    if(i){
+      const link=document.createElement('div');
+      link.className='expedition-map-link'+(i-1<=completedThrough-1?' complete':'');
+      const pulse=document.createElement('i');link.appendChild(pulse);
+      map.appendChild(link);
+    }
+    const stop=document.createElement('div');
+    stop.className='expedition-map-stop'+(i<=completedThrough?' complete':i===current?' current':' locked');
+    const marker=document.createElement('div');marker.className='expedition-map-marker';
+    marker.textContent=i<=completedThrough?'✓':i===current?'BIT':String(i+1);
+    const label=document.createElement('div');label.className='expedition-map-label';
+    const name=document.createElement('strong');name.textContent=stops[i][0];
+    const sub=document.createElement('span');sub.textContent=stops[i][1];
+    label.append(name,sub);stop.append(marker,label);map.appendChild(stop);
   }
-  const pads=document.createElement('div');pads.className='expedition-route-pads';
-  for(let i=0;i<5;i++)pads.appendChild(document.createElement('i'));
-  board.appendChild(pads);
 
-  const controls=document.createElement('div');controls.className='expedition-map-controls';
-  controls.innerHTML='<span><kbd>ARROWS</kbd> / <kbd>WASD</kbd> move</span><span><kbd>SPACE</kbd> PULSE</span><span>Modules → relays → OPEN gate</span>';
+  const key=document.createElement('div');key.className='expedition-route-key';
+  key.innerHTML='<span><i class="done"></i> cleared</span><span><i class="here"></i> BIT location</span><span><i class="locked"></i> locked route</span>';
 
-  const action=document.createElement('button');action.type='button';action.className='expedition-map-action';action.textContent=meta.button;
-  action.addEventListener('click',()=>{clearOverlay();onContinue?.();});
-  card.append(head,board,controls,action);shade.appendChild(card);host.replaceChildren(shade);
+  const action=document.createElement('button');action.type='button';action.className='expedition-route-action';action.textContent=meta.button;
+  action.addEventListener('click',()=>{
+    screen?.classList.remove('expedition-map-mode');
+    onContinue?.();
+  });
+
+  panel.append(intro,map,key,action);root.appendChild(panel);
   requestAnimationFrame(()=>action.focus({preventScroll:true}));
 }
 function renderPulseRun(){
   const stageIndex=active.roomStage||0,areaNo=stageIndex+1,cfg=expeditionConfig(stageIndex);
   active.expeditionModules=active.expeditionModules||new Set();
+  if(stageIndex===0&&!active.expeditionMapSeen){
+    active.expeditionMapSeen=true;
+    renderExpeditionRoute(0,'start',()=>renderRoom());
+    return;
+  }
   setProgress('BOOT SEQUENCE · MICRO:BIT EXPEDITION · AREA '+areaNo+'/3 · '+cfg.area);
   const root=active.root;
   root.appendChild(roomHeader(
@@ -891,7 +909,7 @@ function renderPulseRun(){
     }
     finished=true;live=false;clearTimers();active.expeditionModules.add(stageIndex);led()?.setPattern('check');paint();
     if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
-    showExpeditionRoute(stageIndex,'complete',()=>{
+    renderExpeditionRoute(stageIndex,'complete',()=>{
       if(stageIndex<2){
         active.roomStage++;
         renderRoom();
@@ -999,10 +1017,6 @@ function renderPulseRun(){
   }
   startButton.addEventListener('click',beginArea);
   shell.insertBefore(startButton,board);
-  if(stageIndex===0&&!active.expeditionMapSeen){
-    active.expeditionMapSeen=true;
-    showExpeditionRoute(0,'start',beginArea);
-  }
 }
 
 /* ---------------- Room 2: simplified boot order ---------------- */
