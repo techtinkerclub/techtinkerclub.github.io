@@ -3179,6 +3179,22 @@ body.adventure-modal-open{
     inset 0 0 0 1px rgba(181,119,255,.55),
     0 0 15px rgba(181,119,255,.12);
 }
+.expedition-cell.sentry-beam:not(.wall){
+  background:#26102f;
+  box-shadow:
+    inset 0 0 0 1px rgba(217,111,255,.26),
+    inset 0 0 12px rgba(197,91,255,.12);
+}
+.expedition-cell.enemy-sentry.sentry-aiming{
+  box-shadow:
+    inset 0 0 0 1px rgba(224,133,255,.92),
+    0 0 20px rgba(207,100,255,.38);
+  animation:expedition-sentry-lock .42s ease-in-out infinite alternate;
+}
+@keyframes expedition-sentry-lock{
+  from{filter:brightness(1)}
+  to{filter:brightness(1.45)}
+}
 .expedition-cell.hazard-stunned{
   background:#120e29;
   box-shadow:inset 0 0 0 1px rgba(151,130,255,.5);
@@ -4333,5 +4349,76 @@ body.expedition-immersive-open{
     width:100%;
     min-width:0;
     min-height:46px;
+  }
+}
+
+
+/* Keep the route-map action visible on phone landscape screens. */
+@media(max-width:950px) and (orientation:landscape){
+  #screen-adventure.expedition-map-mode .battle-topbar{
+    margin-bottom:4px;
+  }
+  #screen-adventure.expedition-map-mode .adventure-progress{
+    font-size:8px;
+  }
+  #screen-adventure.expedition-map-mode .adventure-root{
+    width:min(920px,100%)!important;
+  }
+  .expedition-route-screen{
+    padding:8px 12px 9px;
+    border-radius:12px;
+  }
+  .expedition-route-intro{
+    margin-bottom:7px;
+  }
+  .expedition-route-intro small{
+    margin-bottom:3px;
+    font-size:8px;
+  }
+  .expedition-route-intro h2{
+    font-size:clamp(20px,4.8vh,28px);
+  }
+  .expedition-route-intro p{
+    margin-top:4px;
+    font-size:10px;
+    line-height:1.25;
+  }
+  .expedition-world-map{
+    min-height:150px;
+    padding:9px 12px;
+    border-radius:11px;
+  }
+  .expedition-map-marker{
+    width:46px;
+    height:46px;
+    font-size:10px;
+  }
+  .expedition-map-stop.current .expedition-map-marker{
+    width:52px;
+    height:52px;
+  }
+  .expedition-map-stop.current .expedition-map-marker::after{
+    top:-17px;
+    font-size:6px;
+  }
+  .expedition-map-stop{
+    gap:6px;
+  }
+  .expedition-map-label strong{
+    font-size:8px;
+  }
+  .expedition-map-label span{
+    font-size:7px;
+  }
+  .expedition-route-key{
+    gap:5px 12px;
+    margin:6px 0 7px;
+    font-size:8px;
+  }
+  .expedition-route-action{
+    min-width:210px;
+    min-height:34px;
+    padding:7px 12px;
+    font-size:10px;
   }
 }
