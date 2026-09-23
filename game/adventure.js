@@ -501,76 +501,98 @@ function showExpeditionGuide(onClose){
   card.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();finish();}});
   requestAnimationFrame(()=>close.focus({preventScroll:true}));
 }
+function levelOneJourneyStages(){
+  return [
+    {region:'INTERNAL TRACES',short:'PWR',name:'POWER INTAKE',sub:'Coupler bay'},
+    {region:'INTERNAL TRACES',short:'BUS',name:'DATA BUS',sub:'Routing lanes'},
+    {region:'INTERNAL TRACES',short:'CPU',name:'CPU CORE',sub:'Processing chamber'},
+    {region:'STARTUP CONTROLLER',short:'B1',name:'BOOT SEQUENCER I',sub:'Three-step startup'},
+    {region:'STARTUP CONTROLLER',short:'B2',name:'BOOT SEQUENCER II',sub:'Hardware check'},
+    {region:'STARTUP CONTROLLER',short:'B3',name:'BOOT SEQUENCER III',sub:'Full initialise chain'},
+    {region:'MEMORY BANK',short:'M1',name:'ADDRESS GRID',sub:'Guided RAM repair'},
+    {region:'MEMORY BANK',short:'M2',name:'FRAGMENTED RAM',sub:'Reduced clues'},
+    {region:'MEMORY BANK',short:'M3',name:'CORE RESTORE',sub:'Final memory bank'}
+  ];
+}
 function expeditionRouteCopy(stageIndex,phase){
-  const cfg=expeditionConfig(stageIndex);
   if(phase==='start')return {
-    kicker:'EXPEDITION MAP · ENTRY ROUTE',
+    kicker:'LEVEL 1 · NINE-STAGE EXPEDITION',
     title:'BIT enters the micro:bit',
-    copy:'Start at the Power Intake. Recover the glowing modules, stabilise the relays, then find the OPEN maintenance gate.',
+    copy:'Nine repair stages lie ahead: three internal-trace areas, three Startup Controller stages and three Memory Bank stages.',
     button:'Enter Power Intake →'
   };
-  if(stageIndex===0)return {
-    kicker:'AREA 1/3 COMPLETE',
-    title:'Power Intake stable',
-    copy:'Power is flowing again. BIT can follow the internal traces deeper into the Data Bus.',
-    button:'Travel to Data Bus →'
-  };
-  if(stageIndex===1)return {
-    kicker:'AREA 2/3 COMPLETE',
-    title:'Data Bus stable',
-    copy:'The bus interface is restored. Next is the CPU Core: recover A → B → C → D → E in order, then energise R1 → R2 → R3.',
-    button:'Descend to CPU Core →'
-  };
+  const next=stageIndex+1;
+  const messages=[
+    ['Power Intake stable','Power is flowing again. BIT can follow the internal traces deeper into the Data Bus.','Travel to Data Bus →'],
+    ['Data Bus stable','The bus interface is restored. Next is the CPU Core, where ordered keys and sentry defence are introduced.','Descend to CPU Core →'],
+    ['CPU Core stable','The internal traces are stable. BIT can now enter the Startup Controller and rebuild the boot sequence.','Enter Startup Controller →'],
+    ['Boot Sequencer I stable','The three-step startup path works. The controller now adds a hardware-check stage.','Continue to Boot Sequencer II →'],
+    ['Boot Sequencer II stable','The hardware-check path is stable. One final, longer startup chain remains.','Continue to Boot Sequencer III →'],
+    ['Startup Controller stable','All three startup stages are restored. BIT can now cross into the Memory Bank.','Open Memory Bank →'],
+    ['Address Grid stable','The first RAM bank is repaired. The next bank has fewer fixed bits and a more fragmented layout.','Continue to Fragmented RAM →'],
+    ['Fragmented RAM stable','The second bank passes its checksum. One final core-memory repair remains.','Continue to Core Restore →'],
+    ['Level 1 repair complete','All nine repair stages are stable. The micro:bit is ready for the final diagnostic boot check.','Proceed to Final Diagnostic →']
+  ];
+  const m=messages[Math.max(0,Math.min(messages.length-1,stageIndex))];
   return {
-    kicker:'EXPEDITION COMPLETE',
-    title:'CPU Core stable',
-    copy:'All three internal areas are online. BIT can now leave the expedition route and repair the Startup Controller.',
-    button:'Enter Startup Controller →'
+    kicker:stageIndex===8?'NINE STAGES COMPLETE':'STAGE '+(stageIndex+1)+'/9 COMPLETE',
+    title:m[0],
+    copy:m[1],
+    button:m[2],
+    next
   };
 }
 function renderExpeditionRoute(stageIndex,phase,onContinue){
   const root=active?.root;if(!root){onContinue?.();return;}
   const screen=document.getElementById('screen-adventure');
+  const stages=levelOneJourneyStages();
   const completedThrough=phase==='complete'?stageIndex:stageIndex-1;
-  const current=phase==='complete'?Math.min(stageIndex+1,3):stageIndex;
+  const current=phase==='complete'?Math.min(stageIndex+1,stages.length):stageIndex;
   const meta=expeditionRouteCopy(stageIndex,phase);
   screen?.classList.add('expedition-map-mode');
-  setProgress('BOOT SEQUENCE · MICRO:BIT EXPEDITION MAP');
+  setProgress('BOOT SEQUENCE · LEVEL 1 JOURNEY MAP · '+Math.max(0,completedThrough+1)+'/9 STAGES');
   root.replaceChildren();
 
-  const panel=document.createElement('section');panel.className='expedition-route-screen';
+  const panel=document.createElement('section');panel.className='expedition-route-screen level-one-route-screen';
   const intro=document.createElement('div');intro.className='expedition-route-intro';
   const kicker=document.createElement('small');kicker.textContent=meta.kicker;
   const title=document.createElement('h2');title.textContent=meta.title;
   const copy=document.createElement('p');copy.textContent=meta.copy;
   intro.append(kicker,title,copy);
 
-  const map=document.createElement('div');map.className='expedition-world-map';
-  const stops=[
-    ['POWER INTAKE','Coupler bay'],
-    ['DATA BUS','Routing lanes'],
-    ['CPU CORE','Processing chamber'],
-    ['STARTUP CONTROLLER','Boot control']
-  ];
-  for(let i=0;i<stops.length;i++){
-    if(i){
-      const link=document.createElement('div');
-      link.className='expedition-map-link'+(i<=current?' complete':'');
-      const pulse=document.createElement('i');link.appendChild(pulse);
-      map.appendChild(link);
-    }
-    const stop=document.createElement('div');
-    stop.className='expedition-map-stop'+(i<=completedThrough?' complete':i===current?' current':' locked');
-    const marker=document.createElement('div');marker.className='expedition-map-marker';
-    marker.textContent=i<=completedThrough?'✓':i===current?'BIT':String(i+1);
-    const label=document.createElement('div');label.className='expedition-map-label';
-    const name=document.createElement('strong');name.textContent=stops[i][0];
-    const sub=document.createElement('span');sub.textContent=stops[i][1];
-    label.append(name,sub);stop.append(marker,label);map.appendChild(stop);
-  }
+  const map=document.createElement('div');map.className='level-one-journey-map';
+  const regionNames=['INTERNAL TRACES','STARTUP CONTROLLER','MEMORY BANK'];
+  regionNames.forEach((regionName,regionIndex)=>{
+    const region=document.createElement('section');region.className='level-one-route-region region-'+(regionIndex+1);
+    const head=document.createElement('div');head.className='level-one-route-region-head';
+    const regionNo=document.createElement('small');regionNo.textContent='ZONE '+(regionIndex+1);
+    const regionTitle=document.createElement('strong');regionTitle.textContent=regionName;
+    head.append(regionNo,regionTitle);
+    const rail=document.createElement('div');rail.className='level-one-route-rail';
+    stages.slice(regionIndex*3,regionIndex*3+3).forEach((stage,localIndex)=>{
+      const i=regionIndex*3+localIndex;
+      const stop=document.createElement('div');
+      stop.className='level-one-mini-stop '+(i<=completedThrough?'complete':i===current?'current':'locked');
+      const marker=document.createElement('b');marker.textContent=i<=completedThrough?'✓':i===current?'BIT':stage.short;
+      const label=document.createElement('span');
+      const name=document.createElement('strong');name.textContent=(i+1)+'. '+stage.name;
+      const sub=document.createElement('small');sub.textContent=stage.sub;
+      label.append(name,sub);stop.append(marker,label);rail.appendChild(stop);
+      if(localIndex<2){
+        const link=document.createElement('i');link.className='level-one-mini-link '+(i<completedThrough?'complete':'');
+        rail.appendChild(link);
+      }
+    });
+    region.append(head,rail);map.appendChild(region);
+  });
+
+  const final=document.createElement('div');
+  final.className='level-one-final-node '+(current===stages.length?'current':completedThrough>=stages.length-1?'ready':'locked');
+  final.innerHTML='<b>'+(completedThrough>=8?'✓':'BOOT')+'</b><span><strong>FINAL DIAGNOSTIC</strong><small>12-question boot check</small></span>';
+  map.appendChild(final);
 
   const key=document.createElement('div');key.className='expedition-route-key';
-  key.innerHTML='<span><i class="done"></i> cleared</span><span><i class="here"></i> BIT location</span><span><i class="locked"></i> locked route</span>';
+  key.innerHTML='<span><i class="done"></i> cleared</span><span><i class="here"></i> BIT location</span><span><i class="locked"></i> locked route</span><span><strong>'+(Math.max(0,completedThrough+1))+'/9</strong> stages repaired</span>';
 
   const action=document.createElement('button');action.type='button';action.className='expedition-route-action';action.textContent=meta.button;
   action.addEventListener('click',()=>{
@@ -589,10 +611,10 @@ function renderPulseRun(){
     renderExpeditionRoute(0,'start',()=>renderRoom());
     return;
   }
-  setProgress('BOOT SEQUENCE · MICRO:BIT EXPEDITION · AREA '+areaNo+'/3 · '+cfg.area);
+  setProgress('BOOT SEQUENCE · LEVEL 1 · STAGE '+areaNo+'/9 · '+cfg.area);
   const root=active.root;
   root.appendChild(roomHeader(
-    'ROOM 1 · MICRO:BIT EXPEDITION',
+    'LEVEL 1 · STAGE '+areaNo+'/9 · MICRO:BIT EXPEDITION',
     'Explore the '+cfg.area.toLowerCase(),
     cfg.copy
   ));
@@ -1070,6 +1092,25 @@ function renderPulseRun(){
 
 
 
+function bootStageConfig(stage){
+  return [
+    {
+      label:'BOOT SEQUENCER I',scene:'POWER PATH',accent:'cyan',
+      copy:'Three core operations. Follow the illuminated startup trace from power to program run.',
+      mechanic:'ORDER'
+    },
+    {
+      label:'BOOT SEQUENCER II',scene:'CHECK GATE',accent:'amber',
+      copy:'A hardware-check node is now inserted into the route. Use the dependency labels to decide what must happen next.',
+      mechanic:'DEPENDENCIES'
+    },
+    {
+      label:'BOOT SEQUENCER III',scene:'CONTROL MATRIX',accent:'violet',
+      copy:'Five operations cross the full controller. The longer chain combines power, checking, hardware initialisation and program start.',
+      mechanic:'FULL CHAIN'
+    }
+  ][stage]||null;
+}
 function bootOrderSteps(stage){
   if(stage===0)return [
     {id:'power',label:'Power reaches the micro:bit',short:'POWER'},
@@ -1093,17 +1134,13 @@ function bootOrderSteps(stage){
 
 function renderBootOrder(){
   const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
-  const steps=bootOrderSteps(stageIndex);
-  setProgress('BOOT SEQUENCE · ROOM 2/3 · STARTUP CONTROLLER · STAGE '+stageNo+'/3');
+  const steps=bootOrderSteps(stageIndex),stageCfg=bootStageConfig(stageIndex);
+  setProgress('BOOT SEQUENCE · LEVEL 1 · STAGE '+(stageIndex+4)+'/9 · '+stageCfg.label);
   const root=active.root;
   root.appendChild(roomHeader(
-    'ROOM 2 · STARTUP CONTROLLER',
-    'Rebuild the boot order',
-    stageIndex===0
-      ?'Start with a short three-step startup sequence.'
-      :stageIndex===1
-        ?'The controller now needs four startup operations in the correct order.'
-        :'Final stage: place five startup operations in the correct order.'
+    'LEVEL 1 · STAGE '+(stageIndex+4)+'/9 · STARTUP CONTROLLER',
+    stageCfg.label,
+    stageCfg.copy
   ));
 
   const note=document.createElement('div');note.className='reality-note';
@@ -1114,7 +1151,21 @@ function renderBootOrder(){
   const cards=shuffled(steps,rng);
   let nextIndex=0;
 
-  const chain=document.createElement('div');chain.className='boot-chain';
+  const consoleEl=document.createElement('section');consoleEl.className='startup-console startup-stage-'+stageNo+' startup-'+stageCfg.accent;
+  const scene=document.createElement('div');scene.className='startup-scene';
+  const sceneMeta=document.createElement('div');sceneMeta.className='startup-scene-meta';
+  sceneMeta.innerHTML='<small>STAGE '+(stageIndex+4)+'/9 · '+stageCfg.mechanic+'</small><strong>'+stageCfg.scene+'</strong><span>BIT is rebuilding the controller one dependency at a time.</span>';
+  const sceneTrack=document.createElement('div');sceneTrack.className='startup-scene-track';
+  const sceneNodes=steps.map((s,i)=>{
+    const n=document.createElement('div');n.className='startup-scene-node'+(i===0?' current':'');
+    n.innerHTML='<b>'+(i+1)+'</b><span>'+s.short+'</span>';
+    sceneTrack.appendChild(n);
+    if(i<steps.length-1){const wire=document.createElement('i');wire.className='startup-scene-wire';sceneTrack.appendChild(wire);}
+    return n;
+  });
+  scene.append(sceneMeta,sceneTrack);
+
+  const chain=document.createElement('div');chain.className='boot-chain boot-chain-stage-'+stageNo;
   chain.style.setProperty('--boot-count',String(steps.length));
   const slots=steps.map((s,i)=>{
     const slot=document.createElement('div');slot.className='boot-slot';
@@ -1142,18 +1193,22 @@ function renderBootOrder(){
       }
       b.disabled=true;b.classList.add('used');
       slots[nextIndex].classList.add('filled');slots[nextIndex].querySelector('span').textContent=step.short;
-      nextIndex++;active.playTone(580+nextIndex*65,.05,'sine',.025);led()?.progress(nextIndex,steps.length);
+      nextIndex++;
+      sceneNodes.forEach((n,i)=>{n.classList.toggle('complete',i<nextIndex);n.classList.toggle('current',i===nextIndex);});
+      active.playTone(580+nextIndex*65,.05,'sine',.025);led()?.progress(nextIndex,steps.length);
       if(nextIndex===steps.length){
         status.textContent='Stage '+stageNo+' startup order valid.';led()?.setPattern('check');
         if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,2);
-        finishRoomStage(
-          'Startup stage '+stageNo+'/3 valid',
-          stageIndex===0?'Next: add hardware checking to the startup sequence.':'Next: add another initialisation step and solve the five-step sequence.',
-          'Startup controller fully restored',
-          'All three startup-order stages are valid.',
-          'Open RAM bank →',
-          ()=>{active.room=2;renderRoom();}
-        );
+        later(()=>renderExpeditionRoute(stageIndex+3,'complete',()=>{
+          if(stageIndex<2){
+            active.roomStage++;
+            renderRoom();
+          }else{
+            active.roomStage=0;
+            active.room=2;
+            renderRoom();
+          }
+        }),420);
       }else{
         status.textContent='Choose operation '+(nextIndex+1)+' of '+steps.length+'.';
         showNotice(step.short+' locked into position '+nextIndex+'.','success',800);
@@ -1161,7 +1216,8 @@ function renderBootOrder(){
     });
     choices.appendChild(b);
   }
-  root.append(chain,choices,status);
+  consoleEl.append(scene,chain,choices,status);
+  root.appendChild(consoleEl);
 }
 
 /* ---------------- Room 3: RAM Calibration / Takuzu ---------------- */
@@ -1193,25 +1249,37 @@ function makeTakuzu(seed,options={}){
   return {n,solution,display,shown};
 }
 
+function memoryStageConfig(stage){
+  return [
+    {label:'ADDRESS GRID',scene:'BANK A · GUIDED RESTORE',accent:'cyan',copy:'The first bank exposes more fixed bits and a clean address grid.'},
+    {label:'FRAGMENTED RAM',scene:'BANK B · FRAGMENT BRIDGE',accent:'amber',copy:'The second bank is split visually across two memory regions and exposes fewer fixed bits.'},
+    {label:'CORE RESTORE',scene:'CORE BANK · FINAL CHECKSUM',accent:'violet',copy:'The core bank has the fewest clues. Restore it to complete Stage 9 of 9.'}
+  ][stage]||null;
+}
 function renderMemoryBank(){
-  const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
+  const stageIndex=active.roomStage||0,stageNo=stageIndex+1,stageCfg=memoryStageConfig(stageIndex);
   const targets=[26,23,20];
   const target=targets[stageIndex];
-  setProgress('BOOT SEQUENCE · ROOM 3/3 · RAM BANK · STAGE '+stageNo+'/3');
+  setProgress('BOOT SEQUENCE · LEVEL 1 · STAGE '+(stageIndex+7)+'/9 · '+stageCfg.label);
   const root=active.root;
   root.appendChild(roomHeader(
-    'ROOM 3 · RAM CALIBRATION',
-    'Repair the binary memory bank',
-    stageIndex===0
-      ?'Stage 1 has more clues. Restore the missing bits using the binary-logic rules.'
-      :stageIndex===1
-        ?'Stage 2 removes more clues, so more cells must be deduced.'
-        :'Final stage: the 6×6 bank has only 20 fixed clues. Use all three rules carefully.'
+    'LEVEL 1 · STAGE '+(stageIndex+7)+'/9 · MEMORY BANK',
+    stageCfg.label,
+    stageCfg.copy
   ));
 
   const rules=document.createElement('div');rules.className='memory-rules';
   rules.innerHTML='<span><strong>1</strong> Three 0s and three 1s in every row and column</span><span><strong>2</strong> Never three identical bits in a row</span><span><strong>3</strong> No completed rows or columns may be identical</span>';
   root.appendChild(rules);
+
+  const memoryConsole=document.createElement('section');memoryConsole.className='memory-console memory-stage-'+stageNo+' memory-'+stageCfg.accent;
+  const memoryScene=document.createElement('div');memoryScene.className='memory-scene';
+  const memorySceneCopy=document.createElement('div');memorySceneCopy.className='memory-scene-copy';
+  memorySceneCopy.innerHTML='<small>STAGE '+(stageIndex+7)+'/9 · '+stageCfg.label+'</small><strong>'+stageCfg.scene+'</strong><span>Repair every missing bit, then run the checksum.</span>';
+  const bankLights=document.createElement('div');bankLights.className='memory-bank-lights';
+  for(let i=0;i<6;i++){const light=document.createElement('i');light.className=i<stageNo?'online':'';bankLights.appendChild(light);}
+  memoryScene.append(memorySceneCopy,bankLights);
+  memoryConsole.appendChild(memoryScene);
 
   const puzzle=makeTakuzu(active.seed+':ram:'+stageNo,{target})||makeTakuzu(active.seed+':ram:fallback:'+stageNo,{target});
   if(!puzzle){
@@ -1270,14 +1338,17 @@ function renderMemoryBank(){
       check.disabled=true;hint.disabled=true;buttons.forEach(b=>b.disabled=true);
       active.playTone(920,.1,'sine',.04);status.textContent='Stage '+stageNo+' RAM checksum valid.';led()?.setPattern('check');
       if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,3);
-      finishRoomStage(
-        'RAM stage '+stageNo+'/3 restored',
-        stageIndex===0?'Next: fewer clues and more missing memory cells.':'Next: the final 20-clue memory bank.',
-        'RAM bank fully restored',
-        'All three 6×6 memory banks passed their checksum.',
-        'Continue →',
-        ()=>{active.room=3;renderRoom();}
-      );
+      bankLights.querySelectorAll('i').forEach(i=>i.classList.add('online'));
+      later(()=>renderExpeditionRoute(stageIndex+6,'complete',()=>{
+        if(stageIndex<2){
+          active.roomStage++;
+          renderRoom();
+        }else{
+          active.roomStage=0;
+          active.room=3;
+          renderRoom();
+        }
+      }),420);
     }else if(wrong){
       active.memoryFaults++;const depleted=applyAdventurePenalty();
       active.playTone(155,.08,'square',.025);led()?.flash('x',380);
@@ -1286,7 +1357,7 @@ function renderMemoryBank(){
     }else showNotice(blank+' memory cell'+(blank===1?' is':'s are')+' still blank.','warn',1200);
   });
 
-  actions.append(hint,check);root.append(board,actions,status);
+  actions.append(hint,check);memoryConsole.append(board,actions,status);root.appendChild(memoryConsole);
 }
 
 /* ============================================================
