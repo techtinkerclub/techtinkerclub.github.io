@@ -397,14 +397,28 @@ function chooseExpeditionRelays(maze,count,bannedKeys){
 }
 function chooseExpeditionHazards(maze,count,bannedKeys){
   const types=['chaser','patrol','sentry'];
+  const pool=maze.floors
+    .filter(p=>maze.dist[p[0]][p[1]]>=12)
+    .sort((a,b)=>maze.dist[b[0]][b[1]]-maze.dist[a[0]][a[1]]);
   const chosen=[];
-  for(const p of maze.floors.filter(p=>maze.dist[p[0]][p[1]]>=12).sort((a,b)=>maze.dist[b[0]][b[1]]-maze.dist[a[0]][a[1]])){
-    if(chosen.length>=count)break;
-    const k=key(...p);
-    if(bannedKeys.has(k))continue;
-    const type=types[chosen.length%types.length];
-    chosen.push({pos:p.slice(),spawn:p.slice(),stunUntil:0,id:chosen.length,type,dir:[0,1]});
-    bannedKeys.add(k);
+  for(let i=0;i<count;i++){
+    let type=types[i%types.length];
+    let candidates=pool.filter(p=>!bannedKeys.has(key(...p)));
+    if(type==='sentry'){
+      // A sentry must have room to play around it: chamber or junction only.
+      // If the generated maze has no fair position, use a patrol instead of
+      // dropping an unavoidable sentry into a one-cell corridor.
+      const tactical=candidates.filter(p=>
+        maze.chamberSet.has(key(...p))||
+        expeditionNeighbours(maze.grid,p[0],p[1]).length>=3
+      );
+      if(tactical.length)candidates=tactical;
+      else type='patrol';
+    }
+    const pos=candidates[0];
+    if(!pos)break;
+    chosen.push({pos:pos.slice(),spawn:pos.slice(),stunUntil:0,lockSince:0,id:chosen.length,type,dir:[0,1]});
+    bannedKeys.add(key(...pos));
   }
   return chosen;
 }
@@ -449,7 +463,7 @@ function expeditionGuideEntries(){
     {cell:'trace exit',inner:'expedition-exit',symbol:'LOCK',title:'Maintenance gate',copy:'It changes to OPEN only after the modules and relay chain are complete.'},
     {cell:'trace hazard enemy-chaser',inner:'expedition-hazard',symbol:'◆',title:'Chaser',copy:'Actively moves towards BIT. A nearby PULSE stuns it temporarily.'},
     {cell:'trace hazard enemy-patrol',inner:'expedition-hazard',symbol:'▲',title:'Patrol',copy:'Roams the corridors. Watch its movement and PULSE when it gets too close.'},
-    {cell:'trace hazard enemy-sentry',inner:'expedition-hazard',symbol:'⊕',title:'Sentry',copy:'Attacks along a clear row or column. Break line of sight or stun it with PULSE.'},
+    {cell:'trace hazard enemy-sentry',inner:'expedition-hazard',symbol:'⊕',title:'Sentry',copy:'Locks onto BIT along a clear row or column, then fires after a warning. Break line of sight or PULSE to jam it.'},
     {cell:'trace arc-active',inner:'expedition-arc',symbol:'≈',title:'Live power arc',copy:'Cycles between live and quiet. Cross when it dims; touching it live causes a fault.'}
   ];
 }
@@ -790,6 +804,17 @@ function renderPulseRun(){
   function paint(){
     expeditionVisibleCells(maze.grid,player,visited);
     const now=Date.now();
+    const sentryBeamKeys=new Set();
+    for(const h of hazards){
+      if(h.type!=='sentry'||now<h.stunUntil||!h.lockSince||!sentryThreat(h))continue;
+      const dr=Math.sign(player[0]-h.pos[0]),dc=Math.sign(player[1]-h.pos[1]);
+      let r=h.pos[0],c=h.pos[1];
+      while(true){
+        sentryBeamKeys.add(key(r,c));
+        if(r===player[0]&&c===player[1])break;
+        r+=dr;c+=dc;
+      }
+    }
     for(const cell of cells){
       const parts=cell.dataset.key.split(':').map(Number),r=parts[0],c=parts[1],k=cell.dataset.key;
       const known=visited.has(k),wall=maze.grid[r][c]===1;
@@ -801,13 +826,17 @@ function renderPulseRun(){
         if(maze.chamberSet.has(k))cell.classList.add('chamber');
       }
       if(!known)cell.classList.add('fog');
+      if(known&&sentryBeamKeys.has(k))cell.classList.add('sentry-beam');
       if(same([r,c],maze.start))cell.classList.add('entry');
       if(same([r,c],maze.exit))cell.classList.add('exit');
       if(same([r,c],player))cell.classList.add('player');
       if(pickup&&known)cell.classList.add('pickup');
       if(relay&&known)cell.classList.add(relay.active?'relay-active':'relay');
       if(arc&&known)cell.classList.add(arcActive(arc,now)?'arc-active':'arc-idle');
-      if(hazard&&known)cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard','enemy-'+hazard.type);
+      if(hazard&&known){
+        cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard','enemy-'+hazard.type);
+        if(hazard.type==='sentry'&&now>=hazard.stunUntil&&hazard.lockSince)cell.classList.add('sentry-aiming');
+      }
       cell.replaceChildren();
       if(!known)continue;
 
@@ -861,7 +890,7 @@ function renderPulseRun(){
 
   function resetAfterHit(reason='Corruption hit BIT.'){
     player=maze.start.slice();
-    hazards.forEach(h=>{h.pos=h.spawn.slice();h.stunUntil=Date.now()+1100;});
+    hazards.forEach(h=>{h.pos=h.spawn.slice();h.stunUntil=Date.now()+1100;h.lockSince=0;});
     expeditionVisibleCells(maze.grid,player,visited);paint();
     showNotice(reason+' Returning to the area entry — recovered modules and relays are safe.','fault',1500);
   }
@@ -943,7 +972,14 @@ function renderPulseRun(){
     const pulseDist=expeditionDistances(maze.grid,player);
     for(const h of hazards){
       const d=pulseDist[h.pos[0]][h.pos[1]];
-      if(d<=3){h.stunUntil=now+2900;hit++;}
+      // A sentry can lock on from farther away than moving corruption, so a
+      // PULSE may jam a threatening sentry anywhere inside its firing range.
+      const range=h.type==='sentry'?7:3;
+      if(d<=range){
+        h.stunUntil=now+(h.type==='sentry'?5200:2900);
+        h.lockSince=0;
+        hit++;
+      }
     }
     active.playTone(hit?620:300,.07,'sine',.025);
     showNotice(hit?'Repair pulse stunned '+hit+' corruption signal'+(hit===1?'':'s')+'.':'No corruption within pulse range.','info',800);
@@ -971,9 +1007,19 @@ function renderPulseRun(){
     if(standingArc&&arcActive(standingArc,now)){collide('A power arc surged under BIT.');return;}
     let sentryHit=false;
     for(const h of hazards){
-      if(now<h.stunUntil)continue;
+      if(now<h.stunUntil){h.lockSince=0;continue;}
       if(h.type==='sentry'){
-        if(sentryThreat(h))sentryHit=true;
+        if(sentryThreat(h)){
+          if(!h.lockSince){
+            h.lockSince=now;
+            active.playTone(360,.05,'square',.02);
+            showNotice('SENTRY LOCK — break line of sight or PULSE!','warn',900);
+          }else if(now-h.lockSince>=1450){
+            sentryHit=true;
+          }
+        }else{
+          h.lockSince=0;
+        }
         continue;
       }
       if(h.type==='patrol'){patrolStep(h);continue;}
