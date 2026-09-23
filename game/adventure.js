@@ -439,6 +439,121 @@ function expeditionLineClear(grid,a,b){
   }
   return true;
 }
+
+function expeditionGuideEntries(){
+  return [
+    {cell:'trace player',inner:'expedition-player',symbol:'●',title:'BIT',copy:'Your repair probe. Move through open circuit paths.'},
+    {cell:'trace pickup',inner:'expedition-pickup',symbol:'A',title:'Module / core key',copy:'Walk onto it to recover it. In the CPU Core, collect A → B → C → D → E in order.'},
+    {cell:'trace relay',inner:'expedition-relay',symbol:'R1',title:'Relay',copy:'After every module is recovered, stand on R1, R2… in order and use PULSE.'},
+    {cell:'trace exit',inner:'expedition-exit',symbol:'LOCK',title:'Maintenance gate',copy:'It changes to OPEN only after the modules and relay chain are complete.'},
+    {cell:'trace hazard enemy-chaser',inner:'expedition-hazard',symbol:'◆',title:'Chaser',copy:'Actively moves towards BIT. A nearby PULSE stuns it temporarily.'},
+    {cell:'trace hazard enemy-patrol',inner:'expedition-hazard',symbol:'▲',title:'Patrol',copy:'Roams the corridors. Watch its movement and PULSE when it gets too close.'},
+    {cell:'trace hazard enemy-sentry',inner:'expedition-hazard',symbol:'⊕',title:'Sentry',copy:'Attacks along a clear row or column. Break line of sight or stun it with PULSE.'},
+    {cell:'trace arc-active',inner:'expedition-arc',symbol:'≈',title:'Live power arc',copy:'Cycles between live and quiet. Cross when it dims; touching it live causes a fault.'}
+  ];
+}
+function buildExpeditionGuideGrid(){
+  const grid=document.createElement('div');grid.className='expedition-guide-grid';
+  for(const item of expeditionGuideEntries()){
+    const row=document.createElement('div');row.className='expedition-guide-item';
+    const cell=document.createElement('div');cell.className='expedition-guide-icon expedition-cell '+item.cell;
+    const symbol=document.createElement('span');symbol.className=item.inner;symbol.textContent=item.symbol;cell.appendChild(symbol);
+    const copy=document.createElement('div');copy.className='expedition-guide-copy';
+    const title=document.createElement('strong');title.textContent=item.title;
+    const text=document.createElement('span');text.textContent=item.copy;
+    copy.append(title,text);row.append(cell,copy);grid.appendChild(row);
+  }
+  return grid;
+}
+function showExpeditionGuide(onClose){
+  const host=overlayHost();if(!host)return;
+  document.body.classList.add('adventure-modal-open');
+  const shade=document.createElement('div');shade.className='adventure-popup-shade expedition-guide-shade';
+  const card=document.createElement('div');card.className='adventure-popup expedition-guide-popup';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Expedition field guide');
+  const head=document.createElement('div');head.className='expedition-guide-head';
+  const copy=document.createElement('div');
+  const eyebrow=document.createElement('small');eyebrow.textContent='MICRO:BIT EXPEDITION';
+  const title=document.createElement('strong');title.textContent='Field guide';
+  const sub=document.createElement('span');sub.textContent='These are the exact symbols and colours used on the board.';
+  copy.append(eyebrow,title,sub);
+  const close=document.createElement('button');close.type='button';close.className='secondary expedition-guide-close';close.textContent='CLOSE';
+  head.append(copy,close);
+  const controls=document.createElement('div');controls.className='expedition-guide-controls';
+  controls.innerHTML='<span><kbd>↑ ↓ ← →</kbd> or <kbd>W A S D</kbd> move</span><span><kbd>SPACE</kbd> PULSE / activate</span><span><strong>×</strong> means an enemy is stunned</span>';
+  card.append(head,controls,buildExpeditionGuideGrid());shade.appendChild(card);host.replaceChildren(shade);
+  const finish=()=>{clearOverlay();if(typeof onClose==='function')onClose();};
+  close.addEventListener('click',finish);
+  card.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();finish();}});
+  requestAnimationFrame(()=>close.focus({preventScroll:true}));
+}
+function expeditionRouteCopy(stageIndex,phase){
+  const cfg=expeditionConfig(stageIndex);
+  if(phase==='start')return {
+    kicker:'EXPEDITION MAP · ENTRY ROUTE',
+    title:'BIT enters the micro:bit',
+    copy:'Start at the Power Intake. Recover the glowing modules, stabilise the relays, then find the OPEN maintenance gate.',
+    button:'Enter Power Intake →'
+  };
+  if(stageIndex===0)return {
+    kicker:'AREA 1/3 COMPLETE',
+    title:'Power Intake stable',
+    copy:'Power is flowing again. BIT can follow the internal traces deeper into the Data Bus.',
+    button:'Travel to Data Bus →'
+  };
+  if(stageIndex===1)return {
+    kicker:'AREA 2/3 COMPLETE',
+    title:'Data Bus stable',
+    copy:'The bus interface is restored. Next is the CPU Core: recover A → B → C → D → E in order, then energise R1 → R2 → R3.',
+    button:'Descend to CPU Core →'
+  };
+  return {
+    kicker:'EXPEDITION COMPLETE',
+    title:'CPU Core stable',
+    copy:'All three internal areas are online. BIT can now leave the expedition route and repair the Startup Controller.',
+    button:'Enter Startup Controller →'
+  };
+}
+function showExpeditionRoute(stageIndex,phase,onContinue){
+  const host=overlayHost();if(!host){onContinue?.();return;}
+  const completedThrough=phase==='complete'?stageIndex:stageIndex-1;
+  const current=phase==='complete'?Math.min(stageIndex+1,2):stageIndex;
+  const meta=expeditionRouteCopy(stageIndex,phase);
+  document.body.classList.add('adventure-modal-open');
+
+  const shade=document.createElement('div');shade.className='adventure-popup-shade expedition-map-shade';
+  const card=document.createElement('div');card.className='adventure-popup expedition-map-popup';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Microbit expedition map');
+
+  const head=document.createElement('div');head.className='expedition-map-head';
+  const titleWrap=document.createElement('div');
+  const kicker=document.createElement('small');kicker.textContent=meta.kicker;
+  const title=document.createElement('strong');title.textContent=meta.title;
+  const body=document.createElement('span');body.textContent=meta.copy;
+  titleWrap.append(kicker,title,body);head.appendChild(titleWrap);
+
+  const board=document.createElement('div');board.className='expedition-route-board';
+  const seg1=document.createElement('i');seg1.className='expedition-route-segment segment-1'+(completedThrough>=0?' complete':'');
+  const seg2=document.createElement('i');seg2.className='expedition-route-segment segment-2'+(completedThrough>=1?' complete':'');
+  board.append(seg1,seg2);
+  const names=['POWER INTAKE','DATA BUS','CPU CORE'];
+  for(let i=0;i<3;i++){
+    const node=document.createElement('div');
+    node.className='expedition-route-node node-'+i+(i<=completedThrough?' complete':i===current?' current':' locked');
+    const dot=document.createElement('b');dot.textContent=String(i+1);
+    const label=document.createElement('span');label.textContent=names[i];
+    node.append(dot,label);board.appendChild(node);
+  }
+  const pads=document.createElement('div');pads.className='expedition-route-pads';
+  for(let i=0;i<5;i++)pads.appendChild(document.createElement('i'));
+  board.appendChild(pads);
+
+  const controls=document.createElement('div');controls.className='expedition-map-controls';
+  controls.innerHTML='<span><kbd>ARROWS</kbd> / <kbd>WASD</kbd> move</span><span><kbd>SPACE</kbd> PULSE</span><span>Modules → relays → OPEN gate</span>';
+
+  const action=document.createElement('button');action.type='button';action.className='expedition-map-action';action.textContent=meta.button;
+  action.addEventListener('click',()=>{clearOverlay();onContinue?.();});
+  card.append(head,board,controls,action);shade.appendChild(card);host.replaceChildren(shade);
+  requestAnimationFrame(()=>action.focus({preventScroll:true}));
+}
 function renderPulseRun(){
   const stageIndex=active.roomStage||0,areaNo=stageIndex+1,cfg=expeditionConfig(stageIndex);
   active.expeditionModules=active.expeditionModules||new Set();
@@ -450,9 +565,11 @@ function renderPulseRun(){
     cfg.copy
   ));
 
-  const info=document.createElement('div');info.className='adventure-info-strip';
-  info.innerHTML='<span><strong>BIT</strong> repair probe</span><span><strong>◆</strong> recover modules</span><span><strong>R</strong> energise relays in order</span><span><strong>!</strong> corruption</span><span><strong>≈</strong> live arc</span><span><strong>PULSE</strong> stun / activate</span>';
-  root.appendChild(info);
+  const info=document.createElement('div');info.className='adventure-info-strip expedition-info-strip';
+  info.innerHTML='<span><strong>DESKTOP</strong> arrows / WASD move · <kbd>SPACE</kbd> PULSE</span><span><strong>MISSION</strong> modules → relays → OPEN gate</span>'+
+    (cfg.ordered?'<span><strong>CPU CORE</strong> collect A → B → C → D → E in order</span>':'');
+  const infoGuide=document.createElement('button');infoGuide.type='button';infoGuide.className='secondary expedition-info-guide';infoGuide.textContent='FIELD GUIDE';
+  info.appendChild(infoGuide);root.appendChild(info);
 
   const maze=makeExpeditionMaze(cfg.rows,cfg.cols,active.seed,stageIndex,cfg.chambers);
   const pickups=chooseExpeditionPickups(maze,cfg.pickups,cfg.pickupNames);
@@ -484,9 +601,10 @@ function renderPulseRun(){
   }
 
   const displayActions=document.createElement('div');displayActions.className='expedition-display-actions';
+  const guideButton=document.createElement('button');guideButton.type='button';guideButton.className='expedition-guide-toggle';guideButton.textContent='GUIDE';
   const immersiveButton=document.createElement('button');immersiveButton.type='button';immersiveButton.className='expedition-immersive-toggle';
   immersiveButton.textContent='FULL SCREEN';immersiveButton.setAttribute('aria-pressed','false');
-  displayActions.appendChild(immersiveButton);
+  displayActions.append(guideButton,immersiveButton);
 
   const controls=document.createElement('div');controls.className='expedition-controls';
   const defs=[['↑','up',-1,0],['←','left',0,-1],['PULSE','pulse',0,0],['→','right',0,1],['↓','down',1,0]];
@@ -633,6 +751,13 @@ function renderPulseRun(){
       shell.classList.remove('expedition-native-fullscreen');
     }
   });
+  function openFieldGuide(){
+    const resume=live&&!finished;
+    live=false;stopJoystick();
+    showExpeditionGuide(()=>{if(resume&&!finished)live=true;});
+  }
+  guideButton.addEventListener('click',openFieldGuide);
+  infoGuide.addEventListener('click',openFieldGuide);
 
   function pickupAt(k){return pickups.find(x=>key(...x.pos)===k&&!collected.has(x.name));}
   function relayAt(k){return relays.find(x=>key(...x.pos)===k);}
@@ -766,14 +891,16 @@ function renderPulseRun(){
     }
     finished=true;live=false;clearTimers();active.expeditionModules.add(stageIndex);led()?.setPattern('check');paint();
     if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
-    finishRoomStage(
-      cfg.area+' cleared',
-      stageIndex===0?'Power is flowing. BIT can now enter the Data Bus.':'The bus interface is restored. BIT can descend into the CPU Core.',
-      'Micro:bit expedition complete',
-      'BIT crossed all three internal areas, recovered the repair modules and stabilised every relay chain.',
-      'Enter Startup Controller →',
-      ()=>{active.room=1;renderRoom();}
-    );
+    showExpeditionRoute(stageIndex,'complete',()=>{
+      if(stageIndex<2){
+        active.roomStage++;
+        renderRoom();
+      }else{
+        active.roomStage=0;
+        active.room=1;
+        renderRoom();
+      }
+    });
   }
   function movePlayer(dr,dc,button){
     if(!live||finished||faultLock)return;
@@ -854,11 +981,11 @@ function renderPulseRun(){
 
   paint();
   const startButton=document.createElement('button');startButton.type='button';startButton.className='expedition-start';startButton.textContent='Enter '+cfg.area+' →';
-  startButton.addEventListener('click',()=>{
+  function beginArea(){
+    if(live||finished)return;
     if(mobileExpeditionMode()){
-      // This runs directly from the player's tap so browsers that require a
-      // user gesture may grant fullscreen. iOS Safari will normally fall back
-      // to the fixed immersive layout and the rotate-phone prompt.
+      // This runs from the player's tap so browsers that support native
+      // fullscreen may grant it. iOS Safari keeps the CSS viewport fallback.
       setImmersive(true,{native:true,landscape:true});
     }
     startButton.remove();
@@ -867,10 +994,15 @@ function renderPulseRun(){
       hazards.forEach(h=>h.stunUntil=Date.now()+1200);
       every(hazardTick,cfg.hazardMs);
       every(paint,220);
-      showNotice('BIT online. Explore, recover modules, stabilise relays and avoid live circuitry.','success',1450);
+      showNotice('BIT online. Modules first, then relays, then the OPEN gate. SPACE uses PULSE on desktop.','success',1650);
     });
-  });
+  }
+  startButton.addEventListener('click',beginArea);
   shell.insertBefore(startButton,board);
+  if(stageIndex===0&&!active.expeditionMapSeen){
+    active.expeditionMapSeen=true;
+    showExpeditionRoute(0,'start',beginArea);
+  }
 }
 
 /* ---------------- Room 2: simplified boot order ---------------- */
