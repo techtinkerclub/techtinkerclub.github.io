@@ -4422,3 +4422,382 @@ body.expedition-immersive-open{
     font-size:10px;
   }
 }
+
+
+/* ============================================================
+   Level 1 · nine-stage journey map
+   ============================================================ */
+.level-one-journey-map{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr)) 150px;
+  gap:10px;
+  align-items:stretch;
+  padding:12px;
+  border:1px solid rgba(83,217,234,.2);
+  border-radius:16px;
+  background:#02090e;
+  box-shadow:inset 0 0 50px rgba(0,0,0,.55);
+}
+.level-one-route-region{
+  min-width:0;
+  padding:10px;
+  border:1px solid rgba(78,190,207,.16);
+  border-radius:12px;
+  background:rgba(6,20,29,.84);
+}
+.level-one-route-region.region-2{
+  background:linear-gradient(180deg,rgba(70,43,12,.28),rgba(6,20,29,.86));
+}
+.level-one-route-region.region-3{
+  background:linear-gradient(180deg,rgba(54,24,77,.28),rgba(6,20,29,.86));
+}
+.level-one-route-region-head{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  margin-bottom:9px;
+  padding-bottom:7px;
+  border-bottom:1px solid rgba(105,190,203,.13);
+}
+.level-one-route-region-head small{
+  color:#587985;
+  font:850 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.12em;
+}
+.level-one-route-region-head strong{
+  color:#9fdce5;
+  font:900 9px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.055em;
+}
+.level-one-route-rail{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 10px minmax(0,1fr) 10px minmax(0,1fr);
+  align-items:center;
+}
+.level-one-mini-stop{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  text-align:center;
+  opacity:.42;
+}
+.level-one-mini-stop b,
+.level-one-final-node b{
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border:2px solid #304754;
+  border-radius:50%;
+  background:#07131a;
+  color:#6d8490;
+  font:950 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.level-one-mini-stop>span{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+.level-one-mini-stop>span strong{
+  color:#78939f;
+  font:850 7px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.level-one-mini-stop>span small{
+  color:#4d6672;
+  font-size:6.5px;
+  line-height:1.15;
+}
+.level-one-mini-stop.complete,
+.level-one-mini-stop.current{opacity:1}
+.level-one-mini-stop.complete b{
+  border-color:#48dbb7;
+  background:#08211b;
+  color:#9fffe4;
+}
+.level-one-mini-stop.complete>span strong{color:#83cabb}
+.level-one-mini-stop.current b{
+  border-color:#63efff;
+  background:#08212a;
+  color:#c5faff;
+  box-shadow:0 0 16px rgba(99,239,255,.22);
+}
+.level-one-mini-stop.current>span strong{color:#b9f5fb}
+.level-one-mini-link{
+  height:3px;
+  border-radius:999px;
+  background:#142c35;
+}
+.level-one-mini-link.complete{background:#2d7d6c}
+.level-one-final-node{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px;
+  border:1px solid rgba(112,163,176,.16);
+  border-radius:12px;
+  text-align:center;
+  opacity:.42;
+}
+.level-one-final-node.current,
+.level-one-final-node.ready{opacity:1}
+.level-one-final-node.current b{
+  border-color:#ffd667;
+  color:#ffe8a5;
+  box-shadow:0 0 18px rgba(255,214,103,.16);
+}
+.level-one-final-node span{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.level-one-final-node strong{
+  color:#a7c0ca;
+  font:900 8px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.level-one-final-node small{
+  color:#607985;
+  font-size:7px;
+}
+
+@media(max-width:950px){
+  .level-one-journey-map{
+    grid-template-columns:1fr;
+    gap:7px;
+    padding:8px;
+  }
+  .level-one-route-region{
+    padding:8px;
+  }
+  .level-one-route-region-head{
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:6px;
+    padding-bottom:5px;
+  }
+  .level-one-mini-stop{
+    flex-direction:row;
+    text-align:left;
+    justify-content:center;
+  }
+  .level-one-mini-stop b{
+    width:30px;
+    height:30px;
+    flex:0 0 30px;
+  }
+  .level-one-final-node{
+    flex-direction:row;
+    min-height:44px;
+  }
+}
+@media(max-width:950px) and (orientation:landscape){
+  .level-one-route-screen .expedition-route-intro{margin-bottom:5px}
+  .level-one-journey-map{
+    grid-template-columns:repeat(3,minmax(0,1fr)) 120px;
+    gap:6px;
+    padding:6px;
+  }
+  .level-one-route-region{padding:6px}
+  .level-one-route-region-head{margin-bottom:4px;padding-bottom:4px}
+  .level-one-route-region-head strong{font-size:7px}
+  .level-one-route-region-head small{font-size:6px}
+  .level-one-mini-stop{flex-direction:column;gap:2px;text-align:center}
+  .level-one-mini-stop b{width:28px;height:28px;flex-basis:auto;font-size:6px}
+  .level-one-mini-stop>span strong{font-size:5.7px}
+  .level-one-mini-stop>span small{display:none}
+  .level-one-final-node{min-height:0;padding:6px;gap:4px}
+  .level-one-final-node b{width:30px;height:30px;font-size:6px}
+  .level-one-final-node strong{font-size:6px}
+  .level-one-final-node small{display:none}
+}
+
+/* ============================================================
+   Startup Controller · stages 4–6
+   ============================================================ */
+.startup-console{
+  padding:12px;
+  border:1px solid rgba(77,204,221,.2);
+  border-radius:15px;
+  background:
+    linear-gradient(rgba(65,205,222,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(65,205,222,.018) 1px,transparent 1px),
+    #06111b;
+  background-size:18px 18px,18px 18px,auto;
+}
+.startup-amber{border-color:rgba(255,202,91,.26)}
+.startup-violet{border-color:rgba(190,126,255,.28)}
+.startup-scene{
+  margin-bottom:11px;
+  padding:10px;
+  border:1px solid rgba(80,192,208,.16);
+  border-radius:11px;
+  background:#02090f;
+}
+.startup-scene-meta{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.startup-scene-meta small{
+  color:#5eeafa;
+  font:900 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.1em;
+}
+.startup-scene-meta strong{
+  color:#e6f8fb;
+  font:900 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.startup-scene-meta span{
+  color:#6e8b97;
+  font-size:8px;
+}
+.startup-stage-2 .startup-scene-meta small{color:#ffd667}
+.startup-stage-3 .startup-scene-meta small{color:#c99dff}
+.startup-scene-track{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:54px;
+}
+.startup-scene-node{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  min-width:54px;
+  opacity:.32;
+}
+.startup-scene-node b{
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  border:2px solid #35505b;
+  border-radius:7px;
+  color:#66808b;
+  background:#07131a;
+  font:900 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.startup-scene-node span{
+  color:#637b86;
+  font:850 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.startup-scene-node.current,
+.startup-scene-node.complete{opacity:1}
+.startup-scene-node.current b{
+  border-color:#60ebf9;
+  color:#c2faff;
+  box-shadow:0 0 13px rgba(96,235,249,.16);
+}
+.startup-scene-node.complete b{
+  border-color:#48dbb7;
+  color:#9fffe4;
+  background:#08211b;
+}
+.startup-stage-2 .startup-scene-node.current b{border-color:#ffd667;color:#ffe9a8}
+.startup-stage-3 .startup-scene-node.current b{border-color:#c99dff;color:#ead8ff}
+.startup-scene-wire{
+  width:clamp(18px,5vw,60px);
+  height:3px;
+  border-radius:999px;
+  background:#15303a;
+}
+.boot-chain-stage-1{grid-template-columns:repeat(3,1fr)}
+.boot-chain-stage-2{grid-template-columns:repeat(4,1fr)}
+.boot-chain-stage-3{grid-template-columns:repeat(5,1fr)}
+
+@media(max-width:700px){
+  .startup-console{padding:8px}
+  .startup-scene{padding:8px}
+  .startup-scene-track{overflow-x:auto;justify-content:flex-start}
+  .startup-scene-node{min-width:46px}
+  .startup-scene-wire{min-width:18px}
+  .boot-chain-stage-3{grid-template-columns:repeat(5,minmax(48px,1fr));overflow-x:auto}
+}
+
+/* ============================================================
+   Memory Bank · stages 7–9
+   ============================================================ */
+.memory-console{
+  position:relative;
+  padding:12px;
+  border:1px solid rgba(83,217,234,.2);
+  border-radius:16px;
+  background:#050d17;
+  overflow:hidden;
+}
+.memory-stage-2{
+  background:
+    linear-gradient(90deg,rgba(6,20,30,.98) 0 48%,rgba(255,201,88,.08) 48% 52%,rgba(6,20,30,.98) 52% 100%);
+  border-color:rgba(255,205,95,.24);
+}
+.memory-stage-3{
+  background:
+    radial-gradient(circle at 50% 45%,rgba(186,118,255,.10),transparent 35%),
+    #080b18;
+  border-color:rgba(194,149,255,.28);
+}
+.memory-scene{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+  padding:9px 10px;
+  border:1px solid rgba(76,195,211,.15);
+  border-radius:10px;
+  background:rgba(2,8,14,.88);
+}
+.memory-scene-copy{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.memory-scene-copy small{
+  color:#5eeafa;
+  font:900 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.09em;
+}
+.memory-stage-2 .memory-scene-copy small{color:#ffd667}
+.memory-stage-3 .memory-scene-copy small{color:#c99dff}
+.memory-scene-copy strong{
+  color:#e9f7fb;
+  font:900 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.memory-scene-copy span{color:#6f8895;font-size:8px}
+.memory-bank-lights{
+  display:grid;
+  grid-template-columns:repeat(3,8px);
+  gap:5px;
+  flex:0 0 auto;
+}
+.memory-bank-lights i{
+  width:8px;
+  height:8px;
+  border-radius:2px;
+  background:#23343d;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.memory-bank-lights i.online{
+  background:#48dbb7;
+  box-shadow:0 0 7px rgba(72,219,183,.42);
+}
+.memory-console .memory-grid{
+  position:relative;
+  z-index:2;
+  background:rgba(7,17,31,.96);
+}
+.memory-stage-2 .memory-grid{
+  border-color:rgba(255,205,95,.34);
+}
+.memory-stage-3 .memory-grid{
+  border-color:rgba(194,149,255,.38);
+  box-shadow:0 0 24px rgba(177,115,255,.08);
+}
