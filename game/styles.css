@@ -5445,3 +5445,85 @@ button{font-size:16px}
   .knowledge-archive-copy h3{font-size:20px}
   .knowledge-archive-copy p{font-size:12px;margin-bottom:10px}
 }
+
+
+/* ============================================================
+   Level 3 · Logic Router continuous expedition
+   ============================================================ */
+.level-three-journey-map{
+  background:
+    radial-gradient(circle at 14% 20%,rgba(85,217,255,.07),transparent 18%),
+    radial-gradient(circle at 50% 18%,rgba(92,224,160,.06),transparent 20%),
+    radial-gradient(circle at 84% 24%,rgba(201,157,255,.08),transparent 20%),
+    #02090e;
+}
+.level-three-route-region.region-1{background:linear-gradient(180deg,rgba(22,75,90,.32),rgba(6,20,29,.90))}
+.level-three-route-region.region-2{background:linear-gradient(180deg,rgba(25,78,60,.28),rgba(6,20,29,.90))}
+.level-three-route-region.region-3{background:linear-gradient(180deg,rgba(67,34,91,.34),rgba(6,20,29,.90))}
+.logic-router-route-screen .expedition-route-intro small{color:#a880ff}
+.logic-router-route-screen .level-one-mini-stop.current b{
+  border-color:#a880ff;color:#eadcff;background:#1b1230;box-shadow:0 0 18px rgba(168,128,255,.22);
+}
+
+.logic-router-expedition{
+  --maze-wall:#2b4555;
+  --maze-wall-hi:#416274;
+  --maze-floor:#02090d;
+  --maze-line:#69eaff;
+}
+.logic-cyan{--maze-wall:#26515d;--maze-wall-hi:#397280;--maze-floor:#020a0e;--maze-line:#55d9ff}
+.logic-blue{--maze-wall:#294a68;--maze-wall-hi:#3b6688;--maze-floor:#030912;--maze-line:#72c9ff}
+.logic-indigo{--maze-wall:#393e71;--maze-wall-hi:#505895;--maze-floor:#080818;--maze-line:#9ba8ff}
+.logic-green{--maze-wall:#285744;--maze-wall-hi:#39755c;--maze-floor:#030d08;--maze-line:#69efb2}
+.logic-amber{--maze-wall:#5c431e;--maze-wall-hi:#7c5d2a;--maze-floor:#100b04;--maze-line:#ffd267}
+.logic-violet{--maze-wall:#4c3166;--maze-wall-hi:#674487;--maze-floor:#0c0712;--maze-line:#c99dff}
+.logic-or{--maze-wall:#334f66;--maze-wall-hi:#496d88;--maze-floor:#040a10;--maze-line:#80d8ff}
+.logic-nested{--maze-wall:#50355e;--maze-wall-hi:#6b477e;--maze-floor:#0d0710;--maze-line:#df9fff}
+.logic-core{--maze-wall:#5a294f;--maze-wall-hi:#783a69;--maze-floor:#11050d;--maze-line:#ff77cf}
+.logic-router-expedition .expedition-hud strong,
+.logic-router-expedition .expedition-mission{color:var(--maze-line)}
+
+.logic-router-expedition-grid .logic-condition-token{
+  background:#112f38!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--maze-line) 65%,transparent),0 0 13px color-mix(in srgb,var(--maze-line) 18%,transparent)!important;
+}
+.logic-router-expedition-grid .logic-decision-gate,
+.logic-router-expedition-grid .logic-decision-gate-solved{
+  background:#211336!important;
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--maze-line) 78%,transparent),0 0 18px color-mix(in srgb,var(--maze-line) 24%,transparent)!important;
+}
+.logic-router-expedition-grid .logic-decision-gate-solved{
+  background:#0d3225!important;
+  box-shadow:inset 0 0 0 2px rgba(92,224,160,.72),0 0 18px rgba(92,224,160,.17)!important;
+}
+.logic-gate-label{
+  position:relative;z-index:3;color:var(--maze-line);
+  font:950 clamp(10px,1.15vw,15px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-shadow:0 0 9px color-mix(in srgb,var(--maze-line) 50%,transparent);
+}
+.logic-decision-gate-solved .logic-gate-label{color:#9fffd4}
+.logic-gate-terminal{width:min(690px,calc(100vw - 24px))}
+.logic-gate-prompt{
+  margin:0;padding:11px 12px;border:1px solid rgba(168,128,255,.22);border-radius:9px;
+  background:#07101a;color:#eef8ff;white-space:pre-wrap;overflow:auto;
+  font:750 13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+#screen-adventure.expedition-fullscreen-host .logic-gate-shade{
+  position:absolute!important;inset:0!important;z-index:2147483647!important;
+}
+
+.logic-system-3{
+  --maze-wall:#463253;
+  --maze-wall-hi:#62466f;
+  --maze-floor:#05070d;
+  --maze-line:#d1a5ff;
+}
+.logic-key-futo-grid{width:min(560px,100%);margin:0 auto}
+.logic-puzzle-popup .logic-futo-rules{margin-bottom:0}
+
+@media(max-width:950px) and (orientation:landscape){
+  .logic-gate-prompt{font-size:11px;line-height:1.4;padding:8px 9px}
+  .logic-gate-terminal .randomiser-task-options button{font-size:11px}
+  .logic-key-futo-grid{width:min(430px,58vw)}
+  .logic-router-route-screen .level-one-mini-stop>span strong{font-size:7px}
+}

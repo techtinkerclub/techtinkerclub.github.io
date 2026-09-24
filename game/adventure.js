@@ -105,7 +105,7 @@ function renderRoom(){
   clearTimers();
   clearOverlay();
   clearExpeditionViewport();
-  document.getElementById('screen-adventure')?.classList.remove('expedition-map-mode','randomiser-map-mode');
+  document.getElementById('screen-adventure')?.classList.remove('expedition-map-mode','randomiser-map-mode','logic-router-map-mode');
   active.roomIntegrity=active.roomIntegrityMax;
   active.root.replaceChildren();
   if(active.systemId==='2'){
@@ -114,10 +114,8 @@ function renderRoom(){
     return;
   }
   if(active.systemId==='3'){
-    if(active.room===0)renderBranchRunner();
-    else if(active.room===1)renderDecisionEngine();
-    else if(active.room===2)renderLogicFutoshiki();
-    else renderLogicRouterFinalGate();
+    if(active.room<3)renderLogicRouterExpeditionStage();
+    else renderSystemLogicChamber();
     return;
   }
   if(active.systemId==='4'){
@@ -2357,17 +2355,26 @@ function renderRandomiserFinalGate(){
    UNIVERSAL ENDGAME · LOGIC CHAMBER → CENTRAL KNOWLEDGE ARCHIVE
    ============================================================ */
 function logicKeyName(systemId,index){
-  if(String(systemId)==='1')return ['MEMORY BALANCE','PATTERN LOCK','CORE MEMORY'][index]||('KEY '+(index+1));
-  return ['PARITY ROUTER','MULTIPLE ROUTER','PRIME / SQUARE'][index]||('KEY '+(index+1));
+  const id=String(systemId);
+  if(id==='1')return ['MEMORY BALANCE','PATTERN LOCK','CORE MEMORY'][index]||('KEY '+(index+1));
+  if(id==='2')return ['PARITY ROUTER','MULTIPLE ROUTER','PRIME / SQUARE'][index]||('KEY '+(index+1));
+  if(id==='3')return ['COMPARATOR GRID I','COMPARATOR GRID II','COMPARATOR GRID III'][index]||('KEY '+(index+1));
+  return 'KEY '+(index+1);
 }
 function logicKeyId(systemId,index){return String(systemId)+':'+index;}
 function logicKeysSolved(systemId){let n=0;for(let i=0;i<3;i++)if(active.logicKeys.has(logicKeyId(systemId,i)))n++;return n;}
 
 function renderSystemLogicChamber(){
-  const systemId=String(active.systemId),systemName=systemId==='1'?'BOOT SEQUENCE':'RANDOMISER CORE';
+  const systemId=String(active.systemId);
+  const systemName=systemId==='1'?'BOOT SEQUENCE':systemId==='2'?'RANDOMISER CORE':'LOGIC ROUTER';
+  const chamberCopy=systemId==='1'
+    ?'Activate each memory lock and solve all three binary logic puzzles. The Archive door opens only when all keys are lit.'
+    :systemId==='2'
+      ?'Activate each routing lock and solve the parity, multiples and prime/square property mazes. The Archive door opens only when all keys are lit.'
+      :'Activate each comparator lock and solve the guided 4×4, standard 5×5 and challenge 6×6 Futoshiki grids. The Archive door opens only when all keys are lit.';
   setProgress(systemName+' · LOGIC CHAMBER · '+logicKeysSolved(systemId)+'/3 KEYS');
   const root=active.root;
-  root.appendChild(roomHeader(systemName+' · LOGIC CHAMBER','Three logic keys guard the Central Knowledge Archive',systemId==='1'?'Activate each memory lock and solve all three binary logic puzzles. The Archive door opens only when all keys are lit.':'Activate each routing lock and solve the parity, multiples and prime/square property mazes. The Archive door opens only when all keys are lit.'));
+  root.appendChild(roomHeader(systemName+' · LOGIC CHAMBER','Three logic keys guard the Central Knowledge Archive',chamberCopy));
   const info=document.createElement('div');info.className='adventure-info-strip expedition-info-strip';info.innerHTML='<span><strong>MISSION</strong> unlock K1 · K2 · K3 → OPEN Archive door</span><span><strong>MOVE</strong> arrows / WASD · joystick on mobile</span><span><strong>PULSE</strong> activate a key console</span>';root.appendChild(info);
 
   const rows=11,cols=21,start=[9,10],door=[1,10],nodes=[[4,4],[4,10],[4,16]],grid=Array.from({length:rows},()=>Array(cols).fill(0));
@@ -2393,7 +2400,7 @@ function renderSystemLogicChamber(){
   function allSolved(){return logicKeysSolved(systemId)===3;}
   function paint(){const solved=logicKeysSolved(systemId);objective.textContent='LOGIC KEYS '+solved+'/3';area.textContent='CENTRAL ACCESS CHAMBER';doorStatus.textContent=allSolved()?'ARCHIVE DOOR OPEN':'ARCHIVE DOOR LOCKED';mission.textContent=allSolved()?'All three keys are online. Walk through the OPEN Archive door.':'Stand on K1, K2 or K3 and PULSE to enter that logic lock.';for(const cell of cells){const [r,c]=cell.dataset.key.split(':').map(Number),p=[r,c],wall=grid[r][c]===1,ni=nodeIndexAt(p),isDoor=same(p,door);cell.className='expedition-cell '+(wall?'wall':'trace');if(ni>=0)cell.classList.add(active.logicKeys.has(logicKeyId(systemId,ni))?'logic-key-solved':'logic-key-node');if(isDoor)cell.classList.add(allSolved()?'logic-door-open':'logic-door-locked');if(same(p,player))cell.classList.add('player');cell.replaceChildren();if(same(p,player)){const s=document.createElement('span');s.className='expedition-player';s.textContent='●';cell.appendChild(s);}else if(ni>=0){const s=document.createElement('span');s.className='logic-key-label';s.textContent=active.logicKeys.has(logicKeyId(systemId,ni))?'✓':'K'+(ni+1);cell.appendChild(s);}else if(isDoor){const s=document.createElement('span');s.className='expedition-exit';s.textContent=allSolved()?'OPEN':'LOCK';cell.appendChild(s);}}led()?.progress(solved,3);}
   function move(dr,dc,b){if(!live||finished||puzzleOpen)return;const next=[player[0]+dr,player[1]+dc];if(next[0]<0||next[1]<0||next[0]>=rows||next[1]>=cols||grid[next[0]][next[1]]===1){active.playTone(170,.025,'square',.012);return;}if(b){b.classList.add('pressed');later(()=>b.classList.remove('pressed'),90);}player=next;if(same(player,door)&&allSolved()){finished=true;live=false;clearTimers();led()?.setPattern('check');renderKnowledgeArchive();return;}if(same(player,door)&&!allSolved())showNotice('Archive door locked · '+logicKeysSolved(systemId)+'/3 logic keys online.','warn',950);paint();}
-  function usePulse(){if(!live||finished||puzzleOpen)return;const ni=nodeIndexAt(player);if(ni<0){showNotice('Stand on a logic key console before using PULSE.','info',800);return;}if(active.logicKeys.has(logicKeyId(systemId,ni))){showNotice('K'+(ni+1)+' is already online.','success',700);return;}puzzleOpen=true;live=false;stopJ();const done=()=>{active.logicKeys.add(logicKeyId(systemId,ni));puzzleOpen=false;live=true;active.playTone(900,.08,'sine',.03);led()?.setPattern('check');paint();showNotice('K'+(ni+1)+' unlocked · '+logicKeysSolved(systemId)+'/3 keys online.','success',1100);};const leave=()=>{puzzleOpen=false;live=true;paint();};if(systemId==='1')openMemoryLogicKey(ni,done,leave);else openRouterLogicKey(ni,done,leave);}
+  function usePulse(){if(!live||finished||puzzleOpen)return;const ni=nodeIndexAt(player);if(ni<0){showNotice('Stand on a logic key console before using PULSE.','info',800);return;}if(active.logicKeys.has(logicKeyId(systemId,ni))){showNotice('K'+(ni+1)+' is already online.','success',700);return;}puzzleOpen=true;live=false;stopJ();const done=()=>{active.logicKeys.add(logicKeyId(systemId,ni));puzzleOpen=false;live=true;active.playTone(900,.08,'sine',.03);led()?.setPattern('check');paint();showNotice('K'+(ni+1)+' unlocked · '+logicKeysSolved(systemId)+'/3 keys online.','success',1100);};const leave=()=>{puzzleOpen=false;live=true;paint();};if(systemId==='1')openMemoryLogicKey(ni,done,leave);else if(systemId==='2')openRouterLogicKey(ni,done,leave);else openFutoshikiLogicKey(ni,done,leave);}
   active.keyHandler=(e)=>{if(!active||active.room!==3||finished||puzzleOpen)return;const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};if(map[e.key]){e.preventDefault();move(map[e.key][0],map[e.key][1]);return;}if(e.key===' '||e.key==='Enter'){e.preventDefault();usePulse();}};
   document.addEventListener('keydown',active.keyHandler);paint();const startBtn=document.createElement('button');startBtn.type='button';startBtn.className='expedition-start';startBtn.textContent='Enter Logic Chamber →';startBtn.addEventListener('click',()=>{startBtn.remove();focusPlayArea(board,()=>{live=true;showNotice('Three logic keys. Solve all three to open the Central Knowledge Archive.','success',1500);});});shell.insertBefore(startBtn,board);
 }
@@ -2417,15 +2424,222 @@ function openRouterLogicKey(index,onSolved,onLeave){
   paint();ui.body.append(rule,board);
 }
 function renderKnowledgeArchive(){
-  if(active.keyHandler){document.removeEventListener('keydown',active.keyHandler);active.keyHandler=null;}clearTimers();clearOverlay();clearExpeditionViewport();const systemId=String(active.systemId),systemName=systemId==='1'?'BOOT SEQUENCE':'RANDOMISER CORE';setProgress(systemName+' · CENTRAL KNOWLEDGE ARCHIVE');const root=active.root;root.replaceChildren();root.appendChild(roomHeader('CENTRAL KNOWLEDGE ARCHIVE','Archive door unlocked','Three logic keys are online. BIT has reached the final knowledge records for this subsystem. One 12-question diagnostic remains.'));const archive=document.createElement('section');archive.className='knowledge-archive';archive.innerHTML='<div class="knowledge-archive-door"><span>K1</span><span>K2</span><span>K3</span><strong>ACCESS GRANTED</strong></div><div class="knowledge-archive-copy"><small>'+systemName+'</small><h3>Final knowledge verification</h3><p>The expedition and Logic Chamber are complete. Verify the subsystem knowledge to bring it fully online.</p></div>';const button=document.createElement('button');button.type='button';button.className='knowledge-archive-action';button.textContent='Run 12-question diagnostic →';button.addEventListener('click',handoffKnowledgeDiagnostic);archive.appendChild(button);root.appendChild(archive);led()?.setPattern('check');requestAnimationFrame(()=>button.focus({preventScroll:true}));
+  if(active.keyHandler){document.removeEventListener('keydown',active.keyHandler);active.keyHandler=null;}clearTimers();clearOverlay();clearExpeditionViewport();const systemId=String(active.systemId),systemName=systemId==='1'?'BOOT SEQUENCE':systemId==='2'?'RANDOMISER CORE':'LOGIC ROUTER';setProgress(systemName+' · CENTRAL KNOWLEDGE ARCHIVE');const root=active.root;root.replaceChildren();root.appendChild(roomHeader('CENTRAL KNOWLEDGE ARCHIVE','Archive door unlocked','Three logic keys are online. BIT has reached the final knowledge records for this subsystem. One 12-question diagnostic remains.'));const archive=document.createElement('section');archive.className='knowledge-archive';archive.innerHTML='<div class="knowledge-archive-door"><span>K1</span><span>K2</span><span>K3</span><strong>ACCESS GRANTED</strong></div><div class="knowledge-archive-copy"><small>'+systemName+'</small><h3>Final knowledge verification</h3><p>The expedition and Logic Chamber are complete. Verify the subsystem knowledge to bring it fully online.</p></div>';const button=document.createElement('button');button.type='button';button.className='knowledge-archive-action';button.textContent='Run 12-question diagnostic →';button.addEventListener('click',handoffKnowledgeDiagnostic);archive.appendChild(button);root.appendChild(archive);led()?.setPattern('check');requestAnimationFrame(()=>button.focus({preventScroll:true}));
 }
 function handoffKnowledgeDiagnostic(){
-  if(active.completed)return;active.completed=true;const systemId=String(active.systemId);let statsOut;if(systemId==='1'){statsOut={systemId:'1',bits:active.bits.size,arcadeFaults:active.arcadeFaults,sequenceFaults:active.sequenceFaults,memoryFaults:active.memoryFaults,totalFaults:active.arcadeFaults+active.sequenceFaults+active.memoryFaults,roomsCompleted:active.roomsCompleted,roomRestarts:active.roomRestarts,logicKeys:3,bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25)-active.roomRestarts*25)};}else{statsOut={systemId:'2',arcadeFaults:active.arcadeFaults,logicFaults:active.logicFaults,routerFaults:active.routerFaults,totalFaults:active.arcadeFaults+active.logicFaults+active.routerFaults,roomsCompleted:active.roomsCompleted,roomRestarts:active.roomRestarts,logicKeys:3,bonusScore:Math.max(0,300-(active.arcadeFaults*18+active.logicFaults*18+active.routerFaults*18)-active.roomRestarts*25)};}const done=active.onComplete;stop();done(statsOut);
+  if(active.completed)return;active.completed=true;const systemId=String(active.systemId);let statsOut;
+  if(systemId==='1'){
+    statsOut={systemId:'1',bits:active.bits.size,arcadeFaults:active.arcadeFaults,sequenceFaults:active.sequenceFaults,memoryFaults:active.memoryFaults,totalFaults:active.arcadeFaults+active.sequenceFaults+active.memoryFaults,roomsCompleted:active.roomsCompleted,roomRestarts:active.roomRestarts,logicKeys:3,bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25)-active.roomRestarts*25)};
+  }else if(systemId==='2'){
+    statsOut={systemId:'2',arcadeFaults:active.arcadeFaults,logicFaults:active.logicFaults,routerFaults:active.routerFaults,totalFaults:active.arcadeFaults+active.logicFaults+active.routerFaults,roomsCompleted:active.roomsCompleted,roomRestarts:active.roomRestarts,logicKeys:3,bonusScore:Math.max(0,300-(active.arcadeFaults*18+active.logicFaults*18+active.routerFaults*18)-active.roomRestarts*25)};
+  }else{
+    statsOut={systemId:'3',branchFaults:active.branchFaults,decisionFaults:active.decisionFaults,futoshikiFaults:active.futoshikiFaults,totalFaults:active.branchFaults+active.decisionFaults+active.futoshikiFaults,roomsCompleted:active.roomsCompleted,roomRestarts:active.roomRestarts,logicKeys:3,bonusScore:Math.max(0,300-(active.branchFaults*18+active.decisionFaults*16+active.futoshikiFaults*22)-active.roomRestarts*25)};
+  }
+  const done=active.onComplete;stop();done(statsOut);
 }
 
 /* ============================================================
    SYSTEM 3 · LOGIC ROUTER
    ============================================================ */
+
+
+/* ---------------- Level 3: continuous Logic Router expedition ---------------- */
+
+function levelThreeJourneyStages(){
+  return [
+    {short:'IF',name:'BOOLEAN FORKS',sub:'Simple TRUE / FALSE gates'},
+    {short:'<>',name:'COMPARATOR LANES',sub:'Mixed comparison operators'},
+    {short:'AND',name:'AND JUNCTIONS',sub:'Two-condition control'},
+    {short:'D1',name:'DECISION ENGINE I',sub:'IF / ELSE outputs'},
+    {short:'D2',name:'DECISION ENGINE II',sub:'ELSE IF chains'},
+    {short:'D3',name:'DECISION ENGINE III',sub:'AND / OR sensor logic'},
+    {short:'OR',name:'OR SWITCHING YARD',sub:'Either condition may pass'},
+    {short:'N',name:'NESTED CONTROL DEPTHS',sub:'Decision inside decision'},
+    {short:'LC',name:'LOGIC CORE',sub:'Combined control routing'}
+  ];
+}
+function logicRouterRouteCopy(stageIndex,phase){
+  if(phase==='start')return {
+    kicker:'LEVEL 3 · LOGIC ROUTER · NINE STAGES',
+    title:'BIT enters the control-routing layers',
+    copy:'The Randomiser Core is stable. BIT now follows decision traces where comparisons and conditions physically control which routes can open.',
+    button:'Enter Boolean Forks →'
+  };
+  const messages=[
+    ['Boolean Forks stable','Simple TRUE/FALSE control gates are working. Mixed comparison operators wait in the next lanes.','Enter Comparator Lanes →'],
+    ['Comparator Lanes stable','The comparison gates respond correctly. Next, two conditions must agree at the AND Junctions.','Enter AND Junctions →'],
+    ['Branching sector stable','The first control sector is restored. BIT can enter the Decision Engine.','Enter Decision Engine I →'],
+    ['Decision Engine I stable','Simple IF/ELSE outputs are routing correctly. The next chamber introduces ELSE IF.','Enter Decision Engine II →'],
+    ['Decision Engine II stable','Three-way decisions are stable. The final engine chamber combines AND and OR sensor tests.','Enter Decision Engine III →'],
+    ['Decision Engine stable','The engine is restored. Deeper routing now exposes OR-controlled physical switching.','Enter OR Switching Yard →'],
+    ['OR Switching Yard stable','Either-input switching is operational. Nested decisions now control the route ahead.','Enter Nested Control Depths →'],
+    ['Nested Control stable','The nested route is stable. One combined Logic Core remains.','Enter Logic Core →'],
+    ['Logic Router expedition complete','All nine control-routing stages are stable. Three comparator keys now guard the Central Knowledge Archive.','Enter Logic Chamber →']
+  ];
+  const m=messages[Math.max(0,Math.min(8,stageIndex))];
+  return {kicker:stageIndex===8?'NINE STAGES COMPLETE':'STAGE '+(stageIndex+1)+'/9 COMPLETE',title:m[0],copy:m[1],button:m[2]};
+}
+function renderLogicRouterRoute(stageIndex,phase,onContinue){
+  const root=active?.root;if(!root){onContinue?.();return;}
+  const screen=document.getElementById('screen-adventure'),stages=levelThreeJourneyStages();
+  const completedThrough=phase==='complete'?stageIndex:stageIndex-1,current=phase==='complete'?Math.min(stageIndex+1,stages.length):stageIndex,meta=logicRouterRouteCopy(stageIndex,phase);
+  screen?.classList.add('expedition-map-mode','logic-router-map-mode');
+  setProgress('LOGIC ROUTER · LEVEL 3 JOURNEY MAP · '+Math.max(0,completedThrough+1)+'/9 STAGES');root.replaceChildren();
+  const panel=document.createElement('section');panel.className='expedition-route-screen level-one-route-screen logic-router-route-screen';
+  const intro=document.createElement('div');intro.className='expedition-route-intro';intro.innerHTML='<small>'+meta.kicker+'</small><h2>'+meta.title+'</h2><p>'+meta.copy+'</p>';
+  const map=document.createElement('div');map.className='level-one-journey-map level-three-journey-map';
+  const groups=[['BRANCHING TRACES',0],['DECISION ENGINE',3],['CONTROL DEPTHS',6]];
+  for(let g=0;g<groups.length;g++){
+    const region=document.createElement('section');region.className='level-one-route-region level-three-route-region region-'+(g+1);
+    const head=document.createElement('div');head.className='level-one-route-region-head';head.innerHTML='<small>ZONE '+(g+1)+'</small><strong>'+groups[g][0]+'</strong>';
+    const rail=document.createElement('div');rail.className='level-one-route-rail';
+    stages.slice(groups[g][1],groups[g][1]+3).forEach((stage,local)=>{
+      const i=groups[g][1]+local,stop=document.createElement('div');stop.className='level-one-mini-stop '+(i<=completedThrough?'complete':i===current?'current':'locked');
+      const marker=document.createElement('b');marker.textContent=i<=completedThrough?'✓':i===current?'BIT':stage.short;
+      const label=document.createElement('span');label.innerHTML='<strong>'+(i+1)+'. '+stage.name+'</strong><small>'+stage.sub+'</small>';stop.append(marker,label);rail.appendChild(stop);
+      if(local<2){const link=document.createElement('i');link.className='level-one-mini-link '+(i<completedThrough?'complete':'');rail.appendChild(link);}
+    });
+    region.append(head,rail);map.appendChild(region);
+  }
+  const final=document.createElement('div');final.className='level-one-final-node '+(current===stages.length?'current':completedThrough>=8?'ready':'locked');final.innerHTML='<b>'+(current===stages.length?'LOG':completedThrough>=8?'✓':'LOG')+'</b><span><strong>LOGIC CHAMBER</strong><small>3 comparator keys · then Knowledge Archive</small></span>';map.appendChild(final);
+  const keyEl=document.createElement('div');keyEl.className='expedition-route-key';keyEl.innerHTML='<span><i class="done"></i> cleared</span><span><i class="here"></i> BIT location</span><span><i class="locked"></i> locked route</span><span><strong>'+Math.max(0,completedThrough+1)+'/9</strong> stages repaired</span>';
+  const action=document.createElement('button');action.type='button';action.className='expedition-route-action';action.textContent=meta.button;action.addEventListener('click',()=>{screen?.classList.remove('expedition-map-mode','logic-router-map-mode');onContinue?.();});
+  panel.append(intro,map,keyEl,action);root.appendChild(panel);requestAnimationFrame(()=>action.focus({preventScroll:true}));
+}
+
+function logicRouterExpeditionConfig(stage){
+  return [
+    {zone:'BRANCHING TRACES',area:'BOOLEAN FORKS',theme:'logic-cyan',rows:15,cols:23,chambers:2,tokens:2,hazards:1,arcs:1,hazardMs:930},
+    {zone:'BRANCHING TRACES',area:'COMPARATOR LANES',theme:'logic-blue',rows:17,cols:25,chambers:3,tokens:3,hazards:2,arcs:1,hazardMs:900},
+    {zone:'BRANCHING TRACES',area:'AND JUNCTIONS',theme:'logic-indigo',rows:17,cols:27,chambers:3,tokens:3,hazards:2,arcs:2,hazardMs:860},
+    {zone:'DECISION ENGINE',area:'DECISION ENGINE I',theme:'logic-green',rows:17,cols:27,chambers:3,tokens:3,hazards:2,arcs:2,hazardMs:850},
+    {zone:'DECISION ENGINE',area:'DECISION ENGINE II',theme:'logic-amber',rows:19,cols:29,chambers:4,tokens:3,hazards:3,arcs:2,hazardMs:820},
+    {zone:'DECISION ENGINE',area:'DECISION ENGINE III',theme:'logic-violet',rows:19,cols:31,chambers:4,tokens:4,hazards:3,arcs:3,hazardMs:800},
+    {zone:'CONTROL DEPTHS',area:'OR SWITCHING YARD',theme:'logic-or',rows:19,cols:31,chambers:4,tokens:3,hazards:3,arcs:3,hazardMs:790},
+    {zone:'CONTROL DEPTHS',area:'NESTED CONTROL DEPTHS',theme:'logic-nested',rows:21,cols:33,chambers:5,tokens:4,hazards:3,arcs:4,hazardMs:770},
+    {zone:'CONTROL DEPTHS',area:'LOGIC CORE',theme:'logic-core',rows:21,cols:35,chambers:6,tokens:4,hazards:4,arcs:4,hazardMs:750}
+  ][stage]||null;
+}
+function logicRouterStageCopy(stage){
+  return [
+    'Follow the first decision traces. Recover two condition tokens and restore a simple TRUE/FALSE gate.',
+    'Mixed >, <, = and ≠ comparators now control the lanes. Recover three tokens and recalibrate the gate.',
+    'Two-input AND gates control this junction. Both visible comparisons must pass together.',
+    'The first Decision Engine chamber converts a condition into one of two actions.',
+    'The engine now uses IF / ELSE IF / ELSE. Read the branches from top to bottom.',
+    'Sensor-style values combine AND and OR. The first matching branch controls the gate.',
+    'Either side of an OR condition may energise this switching yard.',
+    'A decision inside another decision controls the route. Work from the outside branch inward.',
+    'The Logic Core combines comparisons, AND, OR and multi-branch decisions while corruption defends the final gate.'
+  ][stage];
+}
+function logicRouterTaskRounds(stage,seed){
+  const rng=rngFromSeed(seed+':logic-router-gate:'+stage);
+  if(stage<=2){
+    return Array.from({length:3},(_,i)=>{
+      const q=branchTrial(stage,rng,i);
+      return {rule:stage===0?'IF / ELSE':stage===1?'COMPARISON GATE':'AND GATE',prompt:q.code+' · '+q.value+' · Is this condition TRUE or FALSE?',options:['TRUE','FALSE'],answer:q.result?'TRUE':'FALSE',explain:q.detail+' is '+(q.result?'TRUE.':'FALSE.')};
+    });
+  }
+  if(stage<=5){
+    return decisionChallenges(stage-3,seed+':gate').slice(0,3).map(q=>({rule:stage===3?'IF / ELSE OUTPUT':stage===4?'ELSE IF CHAIN':'COMPOUND SENSOR DECISION',prompt:q.value+'\n'+q.code,options:q.options,answer:q.answer,explain:q.explain}));
+  }
+  if(stage===6){
+    return Array.from({length:3},()=>{
+      const t=randomInt(rng,10,30),l=randomInt(rng,20,80),tl=randomInt(rng,15,24),ll=randomInt(rng,35,60),result=t>tl||l<ll;
+      return {rule:'OR SWITCH',prompt:'temp = '+t+' · light = '+l+'\nIF temp > '+tl+' OR light < '+ll,options:['TRUE','FALSE'],answer:result?'TRUE':'FALSE',explain:'OR is true when at least one comparison is true.'};
+    });
+  }
+  if(stage===7){
+    return Array.from({length:3},()=>{
+      const x=randomInt(rng,1,9),y=randomInt(rng,1,9),a=randomInt(rng,3,7),b=randomInt(rng,3,7);
+      const answer=x>a?(y<b?'PATH A':'PATH B'):'PATH C';
+      return {rule:'NESTED DECISION',prompt:'x = '+x+' · y = '+y+'\nIF x > '+a+'\n  IF y < '+b+' → PATH A\n  ELSE → PATH B\nELSE → PATH C',options:['PATH A','PATH B','PATH C'],answer,explain:x>a?'The outer IF is TRUE, so only the inner y test decides between A and B.':'The outer IF is FALSE, so PATH C runs and the inner test is skipped.'};
+    });
+  }
+  return decisionChallenges(2,seed+':logic-core').slice(0,3).map(q=>({rule:'LOGIC CORE · MIXED CONTROL',prompt:q.value+'\n'+q.code,options:q.options,answer:q.answer,explain:q.explain}));
+}
+function showLogicRouterGuide(onClose){
+  const host=overlayHost();if(!host)return;document.body.classList.add('adventure-modal-open');
+  const shade=document.createElement('div');shade.className='adventure-popup-shade expedition-guide-shade';
+  const card=document.createElement('div');card.className='adventure-popup expedition-guide-popup logic-router-guide-popup';
+  const head=document.createElement('div');head.className='expedition-guide-head';const copy=document.createElement('div');copy.innerHTML='<small>LEVEL 3 · LOGIC ROUTER</small><strong>Control-routing field guide</strong><span>Conditions now control physical gates inside the micro:bit.</span>';const close=document.createElement('button');close.type='button';close.className='secondary expedition-guide-close';close.textContent='CLOSE';head.append(copy,close);
+  const grid=document.createElement('div');grid.className='expedition-guide-grid';
+  const items=[['●','BIT','Move through open decision traces.'],['C','Condition token','Recover every token before the local gate can be tested.'],['G','Decision gate','Stand on G and PULSE. Solve three checks to open the service route.'],['◆','Chaser','Moves towards BIT. PULSE stuns nearby corruption.'],['▲','Patrol','Roams corridors and chambers.'],['⊕','Sentry','Warns before firing along clear lines. Break sight or PULSE.'],['≈','Control surge','Cross while the surge is quiet.'],['OPEN','Service gate','Opens after the decision gate is calibrated.']];
+  for(const item of items){const row=document.createElement('div');row.className='expedition-guide-item';const icon=document.createElement('div');icon.className='expedition-guide-icon expedition-cell trace';icon.textContent=item[0];const cc=document.createElement('div');cc.className='expedition-guide-copy';cc.innerHTML='<strong>'+item[1]+'</strong><span>'+item[2]+'</span>';row.append(icon,cc);grid.appendChild(row);}
+  card.append(head,grid);shade.appendChild(card);host.replaceChildren(shade);const finish=()=>{clearOverlay();onClose?.();};close.addEventListener('click',finish);requestAnimationFrame(()=>close.focus({preventScroll:true}));
+}
+
+function renderLogicRouterExpeditionStage(){
+  const stage=active.room*3+(active.roomStage||0),stageNo=stage+1,cfg=logicRouterExpeditionConfig(stage);
+  if(stage===0&&!active.logicRouterMapSeen){active.logicRouterMapSeen=true;renderLogicRouterRoute(0,'start',()=>renderRoom());return;}
+  setProgress('LOGIC ROUTER · LEVEL 3 · STAGE '+stageNo+'/9 · '+cfg.area);
+  const root=active.root;root.appendChild(roomHeader('LEVEL 3 · STAGE '+stageNo+'/9 · '+cfg.zone,cfg.area,logicRouterStageCopy(stage)));
+  const info=document.createElement('div');info.className='adventure-info-strip expedition-info-strip';info.innerHTML='<span><strong>MISSION</strong> condition tokens → decision gate G → OPEN route</span><span><strong>MOVE</strong> arrows / WASD · joystick on mobile</span><span><strong>PULSE</strong> stun corruption / activate G</span>';const guideTop=document.createElement('button');guideTop.type='button';guideTop.className='secondary expedition-info-guide';guideTop.textContent='FIELD GUIDE';info.appendChild(guideTop);root.appendChild(info);
+
+  const maze=makeExpeditionMaze(cfg.rows,cfg.cols,active.seed+':logic-router:'+stage,stage%3,cfg.chambers),names=Array.from({length:cfg.tokens},(_,i)=>'C'+(i+1)),tokens=chooseExpeditionPickups(maze,cfg.tokens,names);
+  const banned=new Set([key(...maze.start),key(...maze.exit),...tokens.map(t=>key(...t.pos))]);
+  const gateCandidates=maze.floors.filter(p=>!banned.has(key(...p))&&!same(p,maze.exit)&&maze.dist[p[0]][p[1]]>=Math.max(7,Math.floor(maze.dist[maze.exit[0]][maze.exit[1]]*.45)));
+  const gate=(gateCandidates[Math.min(2,Math.max(0,gateCandidates.length-1))]||maze.floors.find(p=>!banned.has(key(...p))&&!same(p,maze.exit))||maze.start).slice();banned.add(key(...gate));
+  const hazards=chooseExpeditionHazards(maze,cfg.hazards,banned),arcs=chooseExpeditionArcs(maze,cfg.arcs,banned),collected=new Set(),visited=new Set();
+  let player=maze.start.slice(),live=false,finished=false,faultLock=false,pulseReadyAt=0,gateSolved=false,gateOpen=false;expeditionVisibleCells(maze.grid,player,visited);
+
+  const shell=document.createElement('div');shell.className='expedition-shell expedition-neon logic-router-expedition '+cfg.theme+' logic-router-stage-'+stageNo;
+  const hud=document.createElement('div');hud.className='expedition-hud';const objective=document.createElement('strong'),areaStatus=document.createElement('span'),gateStatus=document.createElement('span');hud.append(objective,areaStatus,gateStatus);
+  const board=document.createElement('div');board.className='expedition-grid logic-router-expedition-grid';board.style.setProperty('--exp-cols',String(cfg.cols));board.style.setProperty('--exp-rows',String(cfg.rows));board.style.aspectRatio=cfg.cols+'/'+cfg.rows;board.setAttribute('role','application');board.setAttribute('aria-label','Logic Router expedition stage '+stageNo);const cells=[];
+  for(let r=0;r<cfg.rows;r++)for(let c=0;c<cfg.cols;c++){const cell=document.createElement('div');cell.className='expedition-cell';cell.dataset.key=key(r,c);board.appendChild(cell);cells.push(cell);}
+  const display=document.createElement('div');display.className='expedition-display-actions';const guide=document.createElement('button');guide.type='button';guide.className='expedition-guide-toggle';guide.textContent='GUIDE';const immersive=document.createElement('button');immersive.type='button';immersive.className='expedition-immersive-toggle';immersive.textContent='FULL SCREEN';immersive.setAttribute('aria-pressed','false');display.append(guide,immersive);
+  const controls=document.createElement('div');controls.className='expedition-controls';const defs=[['↑','up',-1,0],['←','left',0,-1],['PULSE','pulse',0,0],['→','right',0,1],['↓','down',1,0]];
+  for(const d of defs){const b=document.createElement('button');b.type='button';b.className='expedition-'+d[1];b.textContent=d[0];if(d[1]==='pulse')b.addEventListener('click',()=>usePulse(b));else b.addEventListener('click',()=>movePlayer(d[2],d[3],b));controls.appendChild(b);}
+  const joystick=document.createElement('div');joystick.className='expedition-joystick';const jb=document.createElement('div');jb.className='expedition-joystick-base';const jk=document.createElement('div');jk.className='expedition-joystick-knob';const jl=document.createElement('span');jl.className='expedition-joystick-label';jl.textContent='MOVE';jb.append(jk,jl);joystick.appendChild(jb);controls.appendChild(joystick);
+  const pulseButton=controls.querySelector('.expedition-pulse'),mission=document.createElement('div');mission.className='expedition-mission',rotate=document.createElement('div');rotate.className='expedition-rotate-notice';rotate.innerHTML='<div class="expedition-rotate-phone">▯↻</div><strong>Rotate your phone</strong><span>System Rescue is designed for landscape play on mobile.</span>';shell.append(hud,display,board,mission,controls,rotate);root.appendChild(shell);
+
+  let jp=null,jo=null,jr=null,jd=null,jdir=null;
+  function clearJR(){if(jd){clearTimeout(jd);jd=null;}if(jr){clearInterval(jr);jr=null;}}
+  function stopJ(){clearJR();jp=null;jo=null;jdir=null;jk.style.transform='translate3d(0,0,0)';joystick.classList.remove('active');}
+  function startJR(v){clearJR();jd=setTimeout(()=>{jd=null;if(!jdir)return;jr=setInterval(()=>{if(jdir)movePlayer(v[0],v[1]);},175);},225);}
+  function driveJ(e){if(!jo)return;const rect=jb.getBoundingClientRect(),limit=Math.min(rect.width,rect.height)*.31;let dx=e.clientX-jo.x,dy=e.clientY-jo.y,mag=Math.hypot(dx,dy)||1;if(mag>limit){dx=dx/mag*limit;dy=dy/mag*limit;}jk.style.transform='translate3d('+dx+'px,'+dy+'px,0)';if(Math.hypot(dx,dy)<limit*.28){jdir=null;clearJR();return;}const angle=Math.atan2(dy,dx);let v;if(angle>=-Math.PI/4&&angle<Math.PI/4)v=[0,1];else if(angle>=Math.PI/4&&angle<3*Math.PI/4)v=[1,0];else if(angle>=-3*Math.PI/4&&angle<-Math.PI/4)v=[-1,0];else v=[0,-1];const code=v[0]+':'+v[1];if(code!==jdir){jdir=code;movePlayer(v[0],v[1]);startJR(v);}}
+  jb.addEventListener('pointerdown',e=>{e.preventDefault();jp=e.pointerId;jo={x:e.clientX,y:e.clientY};joystick.classList.add('active');try{jb.setPointerCapture(e.pointerId);}catch(_){}});
+  jb.addEventListener('pointermove',e=>{if(jp!==e.pointerId)return;e.preventDefault();driveJ(e);});jb.addEventListener('pointerup',e=>{if(jp===e.pointerId)stopJ();});jb.addEventListener('pointercancel',stopJ);jb.addEventListener('lostpointercapture',stopJ);
+
+  const viewport=document.getElementById('screen-adventure');
+  async function setImmersive3(on){shell.classList.toggle('expedition-immersive',on);document.body.classList.toggle('expedition-immersive-open',on);viewport?.classList.toggle('expedition-fullscreen-host',on);immersive.textContent=on?'EXIT':'FULL SCREEN';immersive.setAttribute('aria-pressed',on?'true':'false');if(on){try{if(viewport?.requestFullscreen&&!document.fullscreenElement)await viewport.requestFullscreen({navigationUI:'hide'});}catch(_){}try{await screen.orientation?.lock?.('landscape');}catch(_){}}else{try{screen.orientation?.unlock?.();}catch(_){}try{if(document.fullscreenElement&&document.exitFullscreen)await document.exitFullscreen();}catch(_){}}}
+  immersive.addEventListener('click',()=>setImmersive3(!shell.classList.contains('expedition-immersive')));
+  function openGuide(){const resume=live&&!finished;live=false;stopJ();showLogicRouterGuide(()=>{if(resume&&!finished)live=true;});}guide.addEventListener('click',openGuide);guideTop.addEventListener('click',openGuide);
+
+  function tokenAt(k){return tokens.find(t=>key(...t.pos)===k&&!collected.has(t.name));}
+  function hazardAt(k){return hazards.find(h=>key(...h.pos)===k&&Date.now()>=h.stunUntil);}
+  function arcAt(k){return arcs.find(x=>key(...x.pos)===k);}
+  function arcActive(x,now=Date.now()){return Math.floor(now/x.period+x.phase)%2===0;}
+  function allTokens(){return collected.size===tokens.length;}
+  function sentryThreat(h){const dr=Math.abs(h.pos[0]-player[0]),dc=Math.abs(h.pos[1]-player[1]);if(dr&&dc)return false;if(dr+dc>7)return false;return expeditionLineClear(maze.grid,h.pos,player);}
+  function paint(){
+    expeditionVisibleCells(maze.grid,player,visited);const now=Date.now(),beam=new Set();
+    for(const h of hazards){if(h.type!=='sentry'||now<h.stunUntil||!h.lockSince||!sentryThreat(h))continue;const dr=Math.sign(player[0]-h.pos[0]),dc=Math.sign(player[1]-h.pos[1]);let r=h.pos[0],c=h.pos[1];while(true){beam.add(key(r,c));if(r===player[0]&&c===player[1])break;r+=dr;c+=dc;}}
+    for(const cell of cells){const [r,c]=cell.dataset.key.split(':').map(Number),p=[r,c],k=cell.dataset.key,known=visited.has(k),wall=maze.grid[r][c]===1,token=tokenAt(k),hazard=hazards.find(h=>key(...h.pos)===k),arc=arcAt(k),isGate=same(p,gate);cell.className='expedition-cell';if(wall)cell.classList.add('wall');else{cell.classList.add('trace');if(maze.chamberSet.has(k))cell.classList.add('chamber');}if(!known)cell.classList.add('fog');if(known&&beam.has(k))cell.classList.add('sentry-beam');if(same(p,maze.start))cell.classList.add('entry');if(same(p,maze.exit))cell.classList.add('exit');if(isGate)cell.classList.add(gateSolved?'logic-decision-gate-solved':'logic-decision-gate');if(same(p,player))cell.classList.add('player');if(token&&known)cell.classList.add('logic-condition-token');if(arc&&known)cell.classList.add(arcActive(arc,now)?'arc-active':'arc-idle');if(hazard&&known){cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard','enemy-'+hazard.type);if(hazard.type==='sentry'&&now>=hazard.stunUntil&&hazard.lockSince)cell.classList.add('sentry-aiming');}cell.replaceChildren();if(!known)continue;if(same(p,player)){const s=document.createElement('span');s.className='expedition-player';s.textContent='●';cell.appendChild(s);}else if(hazard){const s=document.createElement('span');s.className='expedition-hazard';s.textContent=now<hazard.stunUntil?'×':hazard.type==='chaser'?'◆':hazard.type==='patrol'?'▲':'⊕';cell.appendChild(s);}else if(token){const s=document.createElement('span');s.className='expedition-pickup';s.textContent=token.name;cell.appendChild(s);}else if(isGate){const s=document.createElement('span');s.className='logic-gate-label';s.textContent=gateSolved?'✓':'G';cell.appendChild(s);}else if(arc){const s=document.createElement('span');s.className='expedition-arc';s.textContent=arcActive(arc,now)?'≈':'·';cell.appendChild(s);}else if(same(p,maze.exit)){const s=document.createElement('span');s.className='expedition-exit';s.textContent=gateSolved?'OPEN':'LOCK';cell.appendChild(s);}else if(same(p,maze.start)){const s=document.createElement('span');s.className='expedition-entry';s.textContent='IN';cell.appendChild(s);}}
+    objective.textContent='CONDITION TOKENS '+collected.size+'/'+tokens.length;areaStatus.textContent=cfg.zone+' · '+cfg.rows+'×'+cfg.cols;gateStatus.textContent=gateSolved?'GATE ✓':'GATE '+(allTokens()?'READY':'LOCKED');mission.textContent=!allTokens()?'Explore the '+cfg.area.toLowerCase()+' and recover every condition token.':!gateSolved?'Find decision gate G and PULSE it.':'Decision gate calibrated. Reach the OPEN service route.';const remain=Math.max(0,pulseReadyAt-now);pulseButton.disabled=remain>0&&!same(player,gate);pulseButton.textContent=remain>0&&!same(player,gate)?'PULSE '+Math.ceil(remain/1000)+'s':'PULSE';led()?.setCells([led()?.mapPoint(player[0],player[1],cfg.rows,cfg.cols),...hazards.filter(h=>now>=h.stunUntil).map(h=>led()?.mapPoint(h.pos[0],h.pos[1],cfg.rows,cfg.cols)),led()?.mapPoint(gate[0],gate[1],cfg.rows,cfg.cols)].filter(Boolean));
+  }
+  function collectHere(){const t=tokenAt(key(...player));if(!t)return;collected.add(t.name);active.bits.add('LOG'+stageNo+'-'+t.name);active.playTone(720,.05,'sine',.025);showNotice('Recovered '+t.name+' · '+collected.size+'/'+tokens.length,'success',700);}
+  function resetAfterHit(reason){player=maze.start.slice();hazards.forEach(h=>{h.pos=h.spawn.slice();h.stunUntil=Date.now()+1100;h.lockSince=0;});expeditionVisibleCells(maze.grid,player,visited);paint();showNotice(reason+' BIT returns to the stage entry; recovered tokens are safe.','fault',1450);}
+  function collide(reason){if(faultLock||finished)return;faultLock=true;active.branchFaults++;const depleted=applyAdventurePenalty();active.playTone(140,.1,'sawtooth',.03);led()?.flash('x',340);if(depleted)return;resetAfterHit(reason);later(()=>faultLock=false,900);}
+  function checkExit(){if(!same(player,maze.exit))return;if(!gateSolved){showNotice(allTokens()?'Service route locked. Calibrate decision gate G first.':'Service route locked. Recover all condition tokens first.','warn',950);return;}finished=true;live=false;clearTimers();led()?.setPattern('check');paint();if(stage===2||stage===5||stage===8)active.roomsCompleted=Math.max(active.roomsCompleted,Math.floor(stage/3)+1);renderLogicRouterRoute(stage,'complete',()=>{if(stage<8){if(active.roomStage<2)active.roomStage++;else{active.room++;active.roomStage=0;}renderRoom();}else{active.room=3;active.roomStage=0;renderRoom();}});}
+  function movePlayer(dr,dc,b){if(!live||finished||faultLock||gateOpen)return;const next=[player[0]+dr,player[1]+dc];if(next[0]<0||next[1]<0||next[0]>=cfg.rows||next[1]>=cfg.cols||maze.grid[next[0]][next[1]]===1){active.playTone(170,.025,'square',.012);return;}if(b){b.classList.add('pressed');later(()=>b.classList.remove('pressed'),90);}player=next;collectHere();const arc=arcAt(key(...player));if(arc&&arcActive(arc)){collide('A control surge hit BIT.');return;}if(hazardAt(key(...player))){collide('Corruption intercepted BIT.');return;}checkExit();paint();}
+  function gateFault(){if(stage<=2)active.branchFaults++;else active.decisionFaults++;return applyAdventurePenalty();}
+  function openGate(){
+    if(gateSolved){showNotice('Decision gate already calibrated. Head for the OPEN route.','info',850);return;}if(!allTokens()){showNotice('Decision gate locked. Recover every condition token first.','warn',900);return;}const host=overlayHost();if(!host)return;clearOverlay();
+    const shade=document.createElement('div');shade.className='adventure-popup-shade logic-gate-shade';const card=document.createElement('div');card.className='adventure-popup randomiser-task-terminal logic-gate-terminal';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');const head=document.createElement('div');head.className='randomiser-task-head';const hc=document.createElement('div');hc.className='randomiser-task-head-copy';hc.innerHTML='<small>LEVEL 3 · STAGE '+stageNo+'/9 · '+cfg.area+'</small><strong>Decision gate</strong><span>Clear three control checks to energise the physical route.</span>';const leave=document.createElement('button');leave.type='button';leave.className='secondary randomiser-task-leave';leave.textContent='RETURN TO CORRIDOR';head.append(hc,leave);const body=document.createElement('div');body.className='randomiser-task-body';const feedback=document.createElement('div');feedback.className='randomiser-task-feedback';feedback.hidden=true;card.append(head,body,feedback);shade.appendChild(card);host.replaceChildren(shade);document.body.classList.add('adventure-modal-open');gateOpen=true;live=false;stopJ();
+    const rounds=logicRouterTaskRounds(stage,active.seed);let ri=0,locked=false;function resume(){if(!gateOpen)return;gateOpen=false;clearOverlay();live=true;paint();}leave.addEventListener('click',resume);
+    function setFeedback(text,tone){feedback.hidden=false;feedback.className='randomiser-task-feedback '+tone;feedback.textContent=text;}
+    function draw(){locked=false;feedback.hidden=true;const q=rounds[ri];body.replaceChildren();const prog=document.createElement('div');prog.className='randomiser-task-progress';prog.textContent='CONTROL CHECK '+(ri+1)+'/3';const rule=document.createElement('div');rule.className='randomiser-task-rule';rule.textContent=q.rule;const prompt=document.createElement('pre');prompt.className='logic-gate-prompt';prompt.textContent=q.prompt;const opts=document.createElement('div');opts.className='randomiser-task-options';q.options.forEach(label=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',()=>answer(label,b));opts.appendChild(b);});body.append(prog,rule,prompt,opts);requestAnimationFrame(()=>opts.querySelector('button')?.focus({preventScroll:true}));}
+    function answer(label,b){if(locked)return;const q=rounds[ri];if(label!==q.answer){locked=true;b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',300);const depleted=gateFault();if(depleted){gateOpen=false;return;}setFeedback(q.explain,'fault');later(()=>{b.classList.remove('wrong');locked=false;},650);return;}locked=true;b.classList.add('correct');active.playTone(760,.055,'sine',.024);setFeedback(q.explain,'success');ri++;if(ri<rounds.length){later(draw,650);return;}gateSolved=true;later(()=>{gateOpen=false;clearOverlay();live=true;led()?.setPattern('check');showNotice('Decision gate calibrated · service route OPEN.','success',1250);paint();},650);}
+    draw();
+  }
+  function usePulse(b){if(!live||finished||faultLock||gateOpen)return;if(same(player,gate)){openGate();return;}const now=Date.now();if(now<pulseReadyAt)return;pulseReadyAt=now+4200;let hit=0,dist=expeditionDistances(maze.grid,player);for(const h of hazards){const d=dist[h.pos[0]][h.pos[1]],range=h.type==='sentry'?7:3;if(d<=range){h.stunUntil=now+(h.type==='sentry'?5200:2900);h.lockSince=0;hit++;}}active.playTone(hit?620:300,.07,'sine',.024);showNotice(hit?'PULSE jammed '+hit+' corruption signal'+(hit===1?'':'s')+'.':'No corruption within PULSE range.','info',750);b?.classList.add('pressed');if(b)later(()=>b.classList.remove('pressed'),100);paint();}
+  function patrol(h){const ns=expeditionNeighbours(maze.grid,h.pos[0],h.pos[1]).filter(p=>!same(p,maze.exit));if(!ns.length)return;const f=[h.pos[0]+h.dir[0],h.pos[1]+h.dir[1]],fo=ns.find(p=>same(p,f));if(fo&&maze.rng()>.18){h.pos=fo.slice();return;}const p=ns[Math.floor(maze.rng()*ns.length)];h.dir=[p[0]-h.pos[0],p[1]-h.pos[1]];h.pos=p.slice();}
+  function hazardTick(){if(!live||finished||faultLock||gateOpen)return;const now=Date.now(),dist=expeditionDistances(maze.grid,player),standing=arcAt(key(...player));if(standing&&arcActive(standing,now)){collide('A control surge erupted under BIT.');return;}let shot=false;for(const h of hazards){if(now<h.stunUntil){h.lockSince=0;continue;}if(h.type==='sentry'){if(sentryThreat(h)){if(!h.lockSince){h.lockSince=now;active.playTone(360,.05,'square',.02);showNotice('SENTRY LOCK — break line of sight or PULSE!','warn',850);}else if(now-h.lockSince>=1450)shot=true;}else h.lockSince=0;continue;}if(h.type==='patrol'){patrol(h);continue;}const opts=expeditionNeighbours(maze.grid,h.pos[0],h.pos[1]).filter(p=>!same(p,maze.exit)).sort((x,y)=>dist[x[0]][x[1]]-dist[y[0]][y[1]]);if(opts.length)h.pos=(opts.length>1&&maze.rng()<.14?opts[1]:opts[0]).slice();}if(shot){collide('A sentry beam locked onto BIT.');return;}if(hazards.some(h=>now>=h.stunUntil&&h.type!=='sentry'&&same(h.pos,player))){collide('Corruption intercepted BIT.');return;}paint();}
+  active.keyHandler=e=>{if(active?.systemId!=='3'||finished||gateOpen)return;const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};if(map[e.key]){e.preventDefault();movePlayer(map[e.key][0],map[e.key][1]);return;}if(e.key===' '||e.key==='Enter'){e.preventDefault();usePulse(pulseButton);}};document.addEventListener('keydown',active.keyHandler);
+  paint();const start=document.createElement('button');start.type='button';start.className='expedition-start';start.textContent='Continue into '+cfg.area+' →';start.addEventListener('click',()=>{if(live||finished)return;if(window.matchMedia('(max-width:950px) and (pointer:coarse)').matches)setImmersive3(true);start.remove();focusPlayArea(board,()=>{live=true;hazards.forEach(h=>h.stunUntil=Date.now()+1200);every(hazardTick,cfg.hazardMs);every(paint,220);showNotice('BIT moving. Recover condition tokens, solve gate G, then reach the service route.','success',1500);});});shell.insertBefore(start,board);
+}
 
 /* ---------------- Room 1: Branch Runner ---------------- */
 
@@ -2824,6 +3038,56 @@ function logicFutoCandidates(p,state,r,c){
     if(r<n-1&&!logicFutoSatisfies(p.vSigns[r][c],v,state[r+1][c]||null))return false;
     return true;
   });
+}
+
+
+function openFutoshikiLogicKey(index,onSolved,onLeave){
+  const cfg=logicFutoStageConfig(index);
+  const ui=logicPuzzleShell('K'+(index+1)+' · '+logicKeyName('3',index),cfg.copy,onLeave);
+  if(!ui){onLeave?.();return;}
+  const puzzle=makeLogicFutoshiki(index,active.seed+':logic-chamber-futo:'+index);
+  if(!puzzle){logicFeedback(ui.feedback,'Comparator grid could not be generated. Return to the chamber and try again.','fault');return;}
+  const n=puzzle.n,state=puzzle.display.map(row=>row.slice()),givenMask=puzzle.display.map(row=>row.map(v=>v>0)),cellButtons=new Map();
+  let selected=null,finished=false;
+
+  const rules=document.createElement('div');rules.className='futo-rules logic-futo-rules';
+  rules.innerHTML='<span><strong>1…'+n+'</strong> once in every row</span><span><strong>1…'+n+'</strong> once in every column</span><span><strong>&lt; &gt;</strong> pointed side faces the smaller number</span>';
+  const meta=document.createElement('div');meta.className='futo-meta';
+  meta.innerHTML='<strong>'+cfg.label+'</strong><span>'+puzzle.givens.length+' starting numbers · '+(puzzle.hSigns.flat().filter(Boolean).length+puzzle.vSigns.flat().filter(Boolean).length)+' inequality signs</span>';
+  const board=document.createElement('div');board.className='logic-futo-grid logic-key-futo-grid';board.dataset.futoSize=String(n);board.style.gridTemplateColumns='repeat('+(n*2-1)+',minmax(0,1fr))';board.style.gridTemplateRows='repeat('+(n*2-1)+',minmax(0,1fr))';
+  function place(node,row,col){node.style.gridRow=String(row);node.style.gridColumn=String(col);board.appendChild(node);}
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    const b=document.createElement('button');b.type='button';b.className='futo-cell';b.dataset.r=r;b.dataset.c=c;
+    if(givenMask[r][c]){b.classList.add('given');b.disabled=true;}else b.addEventListener('click',()=>selectCell(r,c));
+    cellButtons.set(r+':'+c,b);place(b,r*2+1,c*2+1);
+    if(c<n-1){const s=document.createElement('div');s.className='futo-sign horizontal';s.textContent=puzzle.hSigns[r][c]||'';place(s,r*2+1,c*2+2);}
+    if(r<n-1){const raw=puzzle.vSigns[r][c],s=document.createElement('div');s.className='futo-sign vertical';s.textContent=raw==='^'?'∧':raw==='v'?'∨':'';place(s,r*2+2,c*2+1);}
+  }
+  const keypad=document.createElement('div');keypad.className='futo-keypad';
+  for(let v=1;v<=n;v++){const b=document.createElement('button');b.type='button';b.textContent=String(v);b.addEventListener('click',()=>enterValue(v));keypad.appendChild(b);}
+  const clear=document.createElement('button');clear.type='button';clear.className='secondary';clear.textContent='Clear';clear.addEventListener('click',()=>enterValue(0));keypad.appendChild(clear);
+  const actions=document.createElement('div');actions.className='futo-actions';const hint=document.createElement('button');hint.type='button';hint.className='secondary';hint.textContent='Highlight useful cell';const check=document.createElement('button');check.type='button';check.textContent='Unlock key';actions.append(hint,check);
+
+  function paint(){for(let r=0;r<n;r++)for(let c=0;c<n;c++){const b=cellButtons.get(r+':'+c),v=state[r][c];b.textContent=v?String(v):'';b.classList.toggle('selected',!!selected&&selected[0]===r&&selected[1]===c);}}
+  function selectCell(r,c){if(finished||givenMask[r][c])return;selected=[r,c];cellButtons.forEach(b=>b.classList.remove('hint'));paint();}
+  function enterValue(v){if(finished||!selected)return;const [r,c]=selected;state[r][c]=v;const b=cellButtons.get(r+':'+c);b.classList.remove('wrong','hint');paint();}
+  hint.addEventListener('click',()=>{
+    cellButtons.forEach(b=>b.classList.remove('hint'));const opts=[];
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(!givenMask[r][c]&&!state[r][c]){const cand=logicFutoCandidates(puzzle,state,r,c);if(cand.length)opts.push({r,c,count:cand.length});}
+    opts.sort((x,y)=>x.count-y.count);const q=opts[0];if(!q){logicFeedback(ui.feedback,'Every cell is filled. Run Unlock key.','success');return;}
+    selected=[q.r,q.c];cellButtons.get(q.r+':'+q.c).classList.add('hint');paint();logicFeedback(ui.feedback,'This cell currently has '+q.count+' possible value'+(q.count===1?'':'s')+'. Use its row, column and inequality signs.','success');
+  });
+  check.addEventListener('click',()=>{
+    let wrong=0,blank=0;cellButtons.forEach((b,k)=>{b.classList.remove('wrong');const [r,c]=k.split(':').map(Number),v=state[r][c];if(!v)blank++;else if(v!==puzzle.solution[r][c]){wrong++;if(!givenMask[r][c])b.classList.add('wrong');}});
+    if(!wrong&&!blank){
+      finished=true;check.disabled=true;hint.disabled=true;keypad.querySelectorAll('button').forEach(b=>b.disabled=true);cellButtons.forEach(b=>b.disabled=true);
+      active.playTone(920,.1,'sine',.04);logicFeedback(ui.feedback,'Comparator grid solved. K'+(index+1)+' is energising…','success');
+      later(()=>{clearOverlay();onSolved?.();},700);return;
+    }
+    if(wrong){active.futoshikiFaults++;const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.025);led()?.flash('x',380);if(depleted)return;logicFeedback(ui.feedback,wrong+' entered number'+(wrong===1?' is':'s are')+' inconsistent.','fault');}
+    else logicFeedback(ui.feedback,blank+' cell'+(blank===1?' is':'s are')+' still blank.','fault');
+  });
+  paint();ui.body.append(rules,meta,board,keypad,actions);
 }
 
 function renderLogicFutoshiki(){
