@@ -5527,3 +5527,128 @@ button{font-size:16px}
   .logic-key-futo-grid{width:min(430px,58vw)}
   .logic-router-route-screen .level-one-mini-stop>span strong{font-size:7px}
 }
+
+
+/* ============================================================
+   Continuous scrolling worlds · Levels 1–3
+   ============================================================ */
+.continuous-world-shell{
+  --world-cell:26px;
+  --maze-wall:#274b58;
+  --maze-wall-hi:#396574;
+  --maze-floor:#02090d;
+  --maze-line:#65e9ff;
+  width:100%;
+  max-width:none;
+}
+.continuous-journey{
+  margin:0 0 9px;
+  padding:9px 14px 18px;
+  border:1px solid rgba(73,214,232,.20);
+  border-radius:10px;
+  background:rgba(4,14,22,.92);
+}
+.continuous-journey-track{
+  position:relative;height:5px;margin-top:14px;border-radius:99px;
+  background:linear-gradient(90deg,rgba(82,232,247,.22),rgba(201,157,255,.24));
+  box-shadow:inset 0 0 8px rgba(0,0,0,.5);
+}
+.continuous-journey-stop{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:13px;height:13px;border:2px solid #45606c;border-radius:50%;background:#07111a;
+}
+.continuous-journey-stop b{
+  position:absolute;top:13px;left:50%;transform:translateX(-50%);
+  color:#7894a4;font:900 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;
+}
+.continuous-journey-stop.solved{border-color:#5ce0a0;background:#123323;box-shadow:0 0 10px rgba(92,224,160,.30)}
+.continuous-journey-stop.solved b{color:#93f7c7}
+.continuous-journey-stop.ready{border-color:#c99dff;box-shadow:0 0 11px rgba(201,157,255,.28)}
+.continuous-journey-bit{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  min-width:32px;height:19px;padding:0 5px;display:grid;place-items:center;border-radius:10px;
+  border:1px solid #67efff;background:#0a2630;color:#a5f7ff;
+  font:950 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  box-shadow:0 0 12px rgba(84,239,255,.30);transition:left .16s ease;
+}
+.continuous-world-viewport{
+  position:relative;width:100%;height:min(56vh,525px);
+  overflow:hidden;border:1px solid rgba(65,218,237,.30);border-radius:12px;
+  background:#000307;box-shadow:inset 0 0 34px rgba(0,0,0,.88);
+  scroll-behavior:smooth;overscroll-behavior:none;
+}
+.continuous-world-grid{
+  grid-template-columns:repeat(var(--world-cols),var(--world-cell))!important;
+  grid-template-rows:repeat(var(--world-rows),var(--world-cell))!important;
+  width:calc(var(--world-cols) * var(--world-cell))!important;
+  height:calc(var(--world-rows) * var(--world-cell))!important;
+  max-width:none!important;
+  aspect-ratio:auto!important;
+  padding:4px;
+  flex:none;
+}
+.continuous-world-grid .expedition-cell{width:var(--world-cell);height:var(--world-cell)}
+.continuous-world-grid .trace:not(.player):not(.hazard):not(.hazard-stunned):not(.arc-active):not(.arc-idle):not(.continuous-terminal):not(.continuous-terminal-solved):not(.continuous-bulkhead-open):not(.continuous-bulkhead-locked):not(.entry):not(.exit){
+  background:#02080d!important;
+}
+.continuous-world-grid .world-region-0.trace:not(.player)::before{background:#5be8f7!important}
+.continuous-world-grid .world-region-1.trace:not(.player)::before{background:#f2bd55!important}
+.continuous-world-grid .world-region-2.trace:not(.player)::before{background:#c388ef!important}
+.world-cyan{--maze-wall:#275665;--maze-wall-hi:#397686;--maze-line:#61e9fa}
+.world-blue{--maze-wall:#2b4e71;--maze-wall-hi:#3e6b92;--maze-line:#73cfff}
+.world-green{--maze-wall:#285b49;--maze-wall-hi:#39795f;--maze-line:#69efb2}
+.world-amber{--maze-wall:#60471f;--maze-wall-hi:#80622d;--maze-line:#ffd267}
+.world-violet{--maze-wall:#50356a;--maze-wall-hi:#6b498b;--maze-line:#cf9dff}
+.world-pink{--maze-wall:#602a52;--maze-wall-hi:#7f396e;--maze-line:#ff80d3}
+.continuous-world-hud strong,.continuous-world-mission{color:var(--maze-line)}
+.continuous-terminal,.continuous-terminal-solved{
+  background:#152d38!important;
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--maze-line) 76%,transparent),0 0 16px color-mix(in srgb,var(--maze-line) 28%,transparent)!important;
+}
+.continuous-terminal-solved{
+  background:#103427!important;
+  box-shadow:inset 0 0 0 2px rgba(92,224,160,.78),0 0 16px rgba(92,224,160,.23)!important;
+}
+.continuous-terminal-label{
+  position:relative;z-index:3;color:#d8faff;
+  font:950 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-shadow:0 0 8px rgba(84,239,255,.48);
+}
+.continuous-terminal-solved .continuous-terminal-label{color:#a2ffd2}
+.continuous-bulkhead-locked{
+  background:#45151f!important;
+  box-shadow:inset 0 0 0 2px rgba(255,107,125,.78),0 0 12px rgba(255,80,108,.20)!important;
+}
+.continuous-bulkhead-open{
+  background:#113927!important;
+  box-shadow:inset 0 0 0 2px rgba(92,224,160,.72)!important;
+}
+.continuous-bulkhead-label{
+  position:relative;z-index:3;color:#ffd7dc;
+  font:950 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  transform:rotate(-90deg);white-space:nowrap;
+}
+.continuous-bulkhead-open .continuous-bulkhead-label{color:#a0ffd2}
+.continuous-world-grid .exit .expedition-exit{font-size:8px}
+.continuous-terminal-popup{width:min(720px,calc(100vw - 24px))}
+#screen-adventure.expedition-fullscreen-host .continuous-terminal-shade{
+  position:absolute!important;inset:0!important;z-index:2147483647!important;
+}
+@media(min-width:1180px){
+  body.adventure-wide .continuous-world-shell{width:100%}
+  body.adventure-wide .continuous-world-viewport{height:min(58vh,540px)}
+}
+@media(max-width:950px){
+  .continuous-world-shell{--world-cell:23px}
+  .continuous-world-viewport{height:min(58vh,430px)}
+  .continuous-journey{padding:7px 10px 16px}
+  .continuous-journey-stop b{font-size:8px}
+}
+@media(max-width:950px) and (orientation:landscape){
+  .continuous-world-shell{--world-cell:22px;padding:7px}
+  .continuous-world-viewport{height:calc(100dvh - 154px);min-height:230px}
+  .continuous-world-shell.expedition-immersive .continuous-world-viewport{height:calc(100dvh - 104px);border-radius:7px}
+  .continuous-world-shell.expedition-immersive .continuous-journey{margin-bottom:4px;padding:5px 9px 13px}
+  .continuous-world-shell.expedition-immersive .continuous-world-hud{margin-bottom:4px}
+  .continuous-terminal-popup{max-height:calc(100dvh - 14px);overflow:auto}
+}
