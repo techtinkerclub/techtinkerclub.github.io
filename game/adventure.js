@@ -171,7 +171,7 @@ function roomHeader(kicker,title,copy){
   left.appendChild(eyebrow);
   if(active&&active.room<3){
     const stage=document.createElement('span');stage.className='room-stage-badge';
-    if(active.systemId==='1'||active.systemId==='2'){
+    if(active.systemId==='1'||active.systemId==='2'||active.systemId==='3'){
       const globalStage=active.room*3+(active.roomStage||0)+1;
       stage.textContent='STAGE '+Math.min(9,globalStage)+'/9';
     }else{
@@ -2592,7 +2592,11 @@ function renderLogicRouterExpeditionStage(){
   const controls=document.createElement('div');controls.className='expedition-controls';const defs=[['↑','up',-1,0],['←','left',0,-1],['PULSE','pulse',0,0],['→','right',0,1],['↓','down',1,0]];
   for(const d of defs){const b=document.createElement('button');b.type='button';b.className='expedition-'+d[1];b.textContent=d[0];if(d[1]==='pulse')b.addEventListener('click',()=>usePulse(b));else b.addEventListener('click',()=>movePlayer(d[2],d[3],b));controls.appendChild(b);}
   const joystick=document.createElement('div');joystick.className='expedition-joystick';const jb=document.createElement('div');jb.className='expedition-joystick-base';const jk=document.createElement('div');jk.className='expedition-joystick-knob';const jl=document.createElement('span');jl.className='expedition-joystick-label';jl.textContent='MOVE';jb.append(jk,jl);joystick.appendChild(jb);controls.appendChild(joystick);
-  const pulseButton=controls.querySelector('.expedition-pulse'),mission=document.createElement('div');mission.className='expedition-mission',rotate=document.createElement('div');rotate.className='expedition-rotate-notice';rotate.innerHTML='<div class="expedition-rotate-phone">▯↻</div><strong>Rotate your phone</strong><span>System Rescue is designed for landscape play on mobile.</span>';shell.append(hud,display,board,mission,controls,rotate);root.appendChild(shell);
+  const pulseButton=controls.querySelector('.expedition-pulse');
+  const mission=document.createElement('div');mission.className='expedition-mission';
+  const rotate=document.createElement('div');rotate.className='expedition-rotate-notice';
+  rotate.innerHTML='<div class="expedition-rotate-phone">▯↻</div><strong>Rotate your phone</strong><span>System Rescue is designed for landscape play on mobile.</span>';
+  shell.append(hud,display,board,mission,controls,rotate);root.appendChild(shell);
 
   let jp=null,jo=null,jr=null,jd=null,jdir=null;
   function clearJR(){if(jd){clearTimeout(jd);jd=null;}if(jr){clearInterval(jr);jr=null;}}
