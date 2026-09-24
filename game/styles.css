@@ -5337,3 +5337,111 @@ button{font-size:16px}
   .randomiser-task-head strong{font-size:16px}
   .randomiser-task-options button{font-size:11px}
 }
+
+
+/* ============================================================
+   Universal expedition endgame · Terminals, Logic Chamber, Archive
+   ============================================================ */
+.level-one-startup-cyan{--maze-wall:#285162;--maze-wall-hi:#397184;--maze-floor:#020b10;--maze-line:#60ebf9}
+.level-one-startup-amber{--maze-wall:#60461f;--maze-wall-hi:#80602c;--maze-floor:#100b04;--maze-line:#ffd667}
+.level-one-startup-violet{--maze-wall:#4d3468;--maze-wall-hi:#68488a;--maze-floor:#0b0712;--maze-line:#c99dff}
+.level-one-memory-cyan{--maze-wall:#214f59;--maze-wall-hi:#32717c;--maze-floor:#020b0d;--maze-line:#57e6ef}
+.level-one-memory-amber{--maze-wall:#5e4420;--maze-wall-hi:#7a5d2e;--maze-floor:#100b04;--maze-line:#ffd067}
+.level-one-memory-violet{--maze-wall:#512e65;--maze-wall-hi:#6b3f83;--maze-floor:#0d0712;--maze-line:#c99dff}
+.expedition-cell.expedition-terminal,
+.expedition-cell.expedition-terminal-solved{
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--maze-line,#55d9ff) 72%,transparent),0 0 16px color-mix(in srgb,var(--maze-line,#55d9ff) 22%,transparent);
+}
+.expedition-terminal-label{
+  position:relative;z-index:3;color:var(--maze-line,#55d9ff);
+  font:950 clamp(9px,1vw,13px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-shadow:0 0 8px color-mix(in srgb,var(--maze-line,#55d9ff) 45%,transparent);
+}
+.expedition-terminal-solved .expedition-terminal-label{color:#8dffd8}
+.expedition-task-terminal{
+  width:min(650px,calc(100vw - 28px));padding:15px;border-color:rgba(85,217,255,.38);background:rgba(5,16,24,.99)
+}
+
+.logic-chamber-shell{
+  --maze-wall:#32404e;--maze-wall-hi:#475c6e;--maze-floor:#03070c;--maze-line:#c99dff;
+  background:radial-gradient(circle at 50% 20%,rgba(201,157,255,.10),transparent 34%),#02060b;
+}
+.logic-chamber-grid .logic-key-node{
+  background:#1b1130!important;
+  box-shadow:inset 0 0 0 2px rgba(201,157,255,.62),0 0 18px rgba(201,157,255,.16)!important;
+}
+.logic-chamber-grid .logic-key-solved{
+  background:#0b3024!important;
+  box-shadow:inset 0 0 0 2px rgba(92,224,160,.72),0 0 18px rgba(92,224,160,.16)!important;
+}
+.logic-key-label{
+  position:relative;z-index:3;color:#e5d4ff;
+  font:950 clamp(9px,1.05vw,14px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-shadow:0 0 9px rgba(201,157,255,.55);
+}
+.logic-key-solved .logic-key-label{color:#9fffd4}
+.logic-chamber-grid .logic-door-locked{
+  background:#32121a!important;
+  box-shadow:inset 0 0 0 2px rgba(255,119,135,.62)!important;
+}
+.logic-chamber-grid .logic-door-open{
+  background:#123522!important;
+  box-shadow:inset 0 0 0 2px rgba(92,224,160,.72),0 0 18px rgba(92,224,160,.18)!important;
+}
+
+.logic-puzzle-popup{
+  width:min(760px,calc(100vw - 24px));
+  max-height:calc(100dvh - 28px);
+  overflow:auto;
+  padding:15px;
+  border-color:rgba(201,157,255,.38);
+  background:rgba(5,12,21,.99);
+}
+.logic-puzzle-body{display:flex;flex-direction:column;gap:11px}
+.logic-memory-grid{width:min(520px,100%);margin:0 auto}
+.logic-memory-rules{margin:0}
+.logic-router-grid{width:min(560px,100%);margin:0 auto}
+
+.knowledge-archive{
+  width:min(760px,100%);margin:0 auto;padding:24px;
+  border:1px solid rgba(92,224,160,.28);border-radius:20px;
+  background:radial-gradient(circle at 50% 0,rgba(92,224,160,.09),transparent 35%),linear-gradient(145deg,#0a1a23,#07101a);
+  text-align:center;box-shadow:0 22px 60px rgba(0,0,0,.28);
+}
+.knowledge-archive-door{
+  width:min(440px,100%);min-height:170px;margin:0 auto 20px;padding:22px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-content:center;
+  border:2px solid rgba(92,224,160,.48);border-radius:16px;
+  background:linear-gradient(180deg,#0c2b25,#071713);
+  box-shadow:inset 0 0 40px rgba(92,224,160,.06),0 0 28px rgba(92,224,160,.08);
+}
+.knowledge-archive-door span{
+  display:grid;place-items:center;height:54px;border:1px solid rgba(92,224,160,.48);
+  border-radius:10px;color:#a9ffd4;background:#09231b;
+  font:950 14px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.knowledge-archive-door strong{
+  grid-column:1/-1;color:#8dffc5;
+  font:950 15px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.08em;
+}
+.knowledge-archive-copy small{color:var(--green);font-weight:900;letter-spacing:.12em}
+.knowledge-archive-copy h3{margin:5px 0 8px;font-size:26px}
+.knowledge-archive-copy p{max-width:580px;margin:0 auto 18px;color:var(--muted);font-size:15px;line-height:1.55}
+.knowledge-archive-action{min-width:260px}
+
+@media(max-width:700px){
+  .logic-chamber-shell .expedition-hud>*{font-size:10px}
+  .logic-key-label{font-size:10px}
+}
+@media(max-width:950px) and (orientation:landscape){
+  .logic-puzzle-popup{padding:10px;max-height:calc(100dvh - 14px)}
+  .logic-puzzle-body{gap:7px}
+  .logic-memory-grid{width:min(390px,55vw)}
+  .logic-router-grid{width:min(430px,60vw)}
+  .knowledge-archive{padding:14px}
+  .knowledge-archive-door{min-height:105px;margin-bottom:10px;padding:12px}
+  .knowledge-archive-door span{height:38px}
+  .knowledge-archive-copy h3{font-size:20px}
+  .knowledge-archive-copy p{font-size:12px;margin-bottom:10px}
+}
