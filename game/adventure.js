@@ -1393,9 +1393,9 @@ function levelTwoJourneyStages(){
 function randomiserRouteCopy(stageIndex,phase){
   if(phase==='start')return {
     kicker:'LEVEL 2 · RANDOMISER CORE · NINE STAGES',
-    title:'BIT enters the Randomiser Core',
-    copy:'First intercept live random data, then audit output streams, then route packets through number-property filters.',
-    button:'Enter Dice Feed →'
+    title:'BIT continues deeper into the micro:bit',
+    copy:'The Boot Sequence and Memory Bank are restored. BIT now follows the internal data traces into the Randomiser Core without leaving the micro:bit.',
+    button:'Continue to Dice Feed →'
   };
   const messages=[
     ['Dice Feed stable','BIT has calibrated the basic 1–6 packet feed. Next, random values become LED coordinates.','Enter Coordinate Stream →'],
@@ -1432,6 +1432,9 @@ function renderRandomiserRoute(stageIndex,phase,onContinue){
   const copy=document.createElement('p');copy.textContent=meta.copy;
   intro.append(kicker,title,copy);
 
+  const continuity=document.createElement('div');continuity.className='level-two-continuity';
+  continuity.innerHTML='<div class="level-two-previous"><b>✓</b><span><strong>LEVEL 1 RESTORED</strong><small>Power · Data Bus · CPU · Startup · Memory</small></span></div><i></i><div class="level-two-entry"><b>BIT</b><span><strong>DEEPER DATA TRACES</strong><small>Continue inside the same micro:bit</small></span></div>';
+
   const map=document.createElement('div');map.className='level-one-journey-map level-two-journey-map';
   const groups=[
     ['LIVE PACKET INTAKE',0],
@@ -1466,7 +1469,7 @@ function renderRandomiserRoute(stageIndex,phase,onContinue){
   key.innerHTML='<span><i class="done"></i> cleared</span><span><i class="here"></i> BIT location</span><span><i class="locked"></i> locked route</span><span><strong>'+Math.max(0,completedThrough+1)+'/9</strong> stages repaired</span>';
   const action=document.createElement('button');action.type='button';action.className='expedition-route-action';action.textContent=meta.button;
   action.addEventListener('click',()=>{screen?.classList.remove('expedition-map-mode','randomiser-map-mode');onContinue?.();});
-  panel.append(intro,map,key,action);root.appendChild(panel);
+  panel.append(intro,continuity,map,key,action);root.appendChild(panel);
   requestAnimationFrame(()=>action.focus({preventScroll:true}));
 }
 
@@ -1506,7 +1509,7 @@ function renderRandomPacketCatcher(){
   const arena=document.createElement('div');arena.className='random-catcher-arena random-catcher-stage-'+stageNo;
   arena.setAttribute('role','application');arena.setAttribute('aria-label','Three-lane random packet catcher stage '+stageNo);
   for(let i=0;i<3;i++){const lane=document.createElement('div');lane.className='random-lane';lane.dataset.lane=String(i);arena.appendChild(lane);}
-  const catcher=document.createElement('div');catcher.className='random-catcher';catcher.innerHTML='<span>CORE</span>';
+  const catcher=document.createElement('div');catcher.className='random-catcher';catcher.innerHTML='<span>BIT</span>';
 
   const controls=document.createElement('div');controls.className='random-catcher-controls';
   const left=document.createElement('button');left.type='button';left.textContent='←';left.setAttribute('aria-label','Move catcher left');
@@ -1524,11 +1527,13 @@ function renderRandomPacketCatcher(){
   startRow.append(startHint,startButton);
 
   const legend=document.createElement('div');legend.className='adventure-info-strip';
+  const continuityNote=document.createElement('div');continuityNote.className='level-two-stage-location';
+  continuityNote.innerHTML='<strong>BIT LOCATION</strong><span>Randomiser Core · '+cfg.label+' · still inside the micro:bit</span>';
   legend.innerHTML=cfg.kind==='coordinate'
     ?'<span><strong>VALID</strong> both x and y are 0–4</span><span><strong>FAULT</strong> either coordinate is outside 0–4</span><span><strong>TARGET</strong> catch '+cfg.target+'</span>'
     :'<span><strong>IN RANGE</strong> catch it</span><span><strong>OUT OF RANGE</strong> let it pass</span><span><strong>TARGET</strong> catch '+cfg.target+'</span>';
 
-  root.append(hud,legend,startRow,arena,controls);
+  root.append(continuityNote,hud,legend,startRow,arena,controls);
 
   function paintRule(){
     const ruleText=cfg.kind==='coordinate'?'x,y = random 0 to 4':'random '+cfg.min+' to '+cfg.max;
@@ -1671,6 +1676,9 @@ function renderBrokenRandomiser(){
     'Stage '+stageNo+' shows '+round.length+' outputs. Select the one sequence containing a value that cannot come from '+round.code+'.'
   ));
 
+  const location=document.createElement('div');location.className='level-two-stage-location';
+  location.innerHTML='<strong>BIT LOCATION</strong><span>Randomiser Core · Range Diagnostics · Stage '+(stageIndex+4)+'/9</span>';
+
   const note=document.createElement('div');note.className='reality-note';
   note.innerHTML='<strong>Important</strong><span>You cannot prove randomness from a short sequence. Repeats are allowed. We are checking one thing we can know for certain: every output must stay inside the configured range.</span>';
 
@@ -1678,7 +1686,7 @@ function renderBrokenRandomiser(){
   const title=document.createElement('div');title.className='random-diagnostic-title';
   const streams=document.createElement('div');streams.className='random-streams';
   const counter=document.createElement('div');counter.className='logic-status';
-  root.append(note,consoleEl);consoleEl.append(title,streams,counter);
+  root.append(location,note,consoleEl);consoleEl.append(title,streams,counter);
 
   title.innerHTML='<small>STAGE '+stageNo+'/3 · '+round.name+'</small><strong>'+round.code+'</strong><span>Select the sequence that does not match this rule.</span>';
   round.streams.forEach((stream,i)=>{
@@ -1853,6 +1861,9 @@ function renderPropertyRouter(){
     stageCopy
   ));
 
+  const location=document.createElement('div');location.className='level-two-stage-location';
+  location.innerHTML='<strong>BIT LOCATION</strong><span>Randomiser Core · Property Router · Stage '+(stageIndex+7)+'/9</span>';
+
   const rule=document.createElement('div');rule.className='property-router-rule';
   rule.innerHTML='<small>STAGE '+stageNo+'/3 · ROUTING FILTER</small><strong>'+puzzle.rule.shortLabel+'</strong><span>Use only '+puzzle.rule.label+'</span>';
 
@@ -1872,7 +1883,7 @@ function renderPropertyRouter(){
 
   const hint=document.createElement('div');hint.className='logic-status';
   hint.textContent='Stage '+stageNo+'/3 · '+puzzle.n+'×'+puzzle.n+' grid · route length '+puzzle.solutionPath.length+' · use '+puzzle.rule.label+' only · tap your previous square to backtrack.';
-  root.append(rule,board,hint);
+  root.append(location,rule,board,hint);
 
   function current(){return path[path.length-1];}
   function pathSet(){return new Set(path.map(routerKey));}
@@ -1925,8 +1936,8 @@ function renderRandomiserFinalGate(){
   const root=active.root;
   root.appendChild(roomHeader(
     'RANDOMISER CORE STABLE',
-    'Events and random outputs are responding again',
-    'All nine Randomiser Core adventure stages are stable. The final boss is 12 questions split into three increasingly difficult sets of four.'
+    'BIT has repaired the next region of the micro:bit',
+    'The journey from Level 1 continued through all nine Randomiser Core stages. One final diagnostic remains before BIT can travel deeper into the micro:bit.'
   ));
 
   const board=document.createElement('div');board.className='microbit-face full-face';

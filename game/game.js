@@ -123,8 +123,14 @@
 
   function openBriefing(id){
     const w=DATA.weeks[id],sys=systemFor(id);if(!w)return;pendingBriefId=id;
-    byId('brief-system-label').textContent=`SYSTEM ${id}`;byId('briefing-title').textContent=sys.name;byId('brief-topic').textContent=cleanTopic(w.title,id);byId('brief-description').textContent=w.description||'';byId('brief-objective').textContent=sys.objective;
-    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=['1','2','3','4'].includes(String(id))?['3 rooms · 3 stages each',`${(w.questions||[]).length} questions · 3 diagnostic stages`,'inside a micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
+    byId('brief-system-label').textContent=`SYSTEM ${id}`;byId('briefing-title').textContent=sys.name;byId('brief-topic').textContent=cleanTopic(w.title,id);
+    byId('brief-description').textContent=String(id)==='2'&&state.clears['1']
+      ?'BIT is continuing directly from the restored Boot Sequence into the next region of the same micro:bit. '+(w.description||'')
+      :(w.description||'');
+    byId('brief-objective').textContent=String(id)==='2'
+      ?'Continue BIT’s journey through the internal data traces and restore the Randomiser Core.'
+      :sys.objective;
+    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=['1','2','3','4'].includes(String(id))?['9-stage journey',`${(w.questions||[]).length} questions · 3 diagnostic stages`,String(id)==='1'?'inside a micro:bit':'continues inside the same micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
   }
 
   function difficultyRank(q){
@@ -441,6 +447,7 @@
     }
     const ids=weekIds(),next=ids[ids.indexOf(G.id)+1];
     byId('next-system').hidden=failed||!next;
+    if(next)byId('next-system').textContent=String(G.id)==='1'?'Continue deeper into the micro:bit →':'Continue journey →';
     showScreen('results');
     renderHeader();
     byId('retry').focus({preventScroll:true});
