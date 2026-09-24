@@ -4801,3 +4801,97 @@ body.expedition-immersive-open{
   border-color:rgba(194,149,255,.38);
   box-shadow:0 0 24px rgba(177,115,255,.08);
 }
+
+
+/* ============================================================
+   Level 2 · Randomiser Core nine-stage journey + stage variation
+   ============================================================ */
+.level-two-journey-map{
+  background:
+    radial-gradient(circle at 14% 22%,rgba(91,255,184,.06),transparent 18%),
+    radial-gradient(circle at 52% 18%,rgba(255,214,103,.06),transparent 19%),
+    radial-gradient(circle at 84% 24%,rgba(194,149,255,.07),transparent 18%),
+    #02090e;
+}
+.level-two-route-region.region-1{
+  background:linear-gradient(180deg,rgba(15,72,59,.30),rgba(6,20,29,.88));
+}
+.level-two-route-region.region-2{
+  background:linear-gradient(180deg,rgba(91,59,12,.30),rgba(6,20,29,.88));
+}
+.level-two-route-region.region-3{
+  background:linear-gradient(180deg,rgba(64,31,90,.32),rgba(6,20,29,.88));
+}
+.randomiser-route-screen .expedition-route-intro small{color:#7dffc2}
+.randomiser-route-screen .level-one-mini-stop.current b{
+  border-color:#7dffc2;
+  color:#d5ffed;
+  background:#0a2b22;
+  box-shadow:0 0 16px rgba(125,255,194,.18);
+}
+.randomiser-route-screen .level-one-final-node.current b{
+  border-color:#c99dff;
+  color:#eedcff;
+  box-shadow:0 0 18px rgba(201,157,255,.18);
+}
+
+/* Live packet intake changes visual language from stage to stage. */
+.random-catcher-stage-1{
+  background:
+    linear-gradient(90deg,rgba(78,241,194,.035),transparent 45%,rgba(78,241,194,.035)),
+    #06141d;
+}
+.random-catcher-stage-2{
+  background:
+    linear-gradient(rgba(85,217,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(85,217,255,.035) 1px,transparent 1px),
+    #06121d;
+  background-size:24px 24px;
+}
+.random-catcher-stage-3{
+  background:
+    radial-gradient(circle at 50% 35%,rgba(201,157,255,.08),transparent 38%),
+    #0c0a19;
+}
+.random-packet.coordinate{
+  width:54px;
+  margin-left:-5px;
+  font-size:9px;
+  letter-spacing:-.03em;
+}
+.random-catcher-stage-3 .random-packet{
+  border-color:rgba(201,157,255,.42);
+  box-shadow:0 0 13px rgba(201,157,255,.10);
+}
+
+/* Stored-output audits get progressively more instrument-like. */
+.random-diagnostic-stage-1{
+  border-color:rgba(125,255,194,.22);
+}
+.random-diagnostic-stage-2{
+  border-color:rgba(255,214,103,.24);
+  background:
+    linear-gradient(90deg,rgba(255,214,103,.025),transparent 34%,rgba(255,214,103,.025)),
+    #07131f;
+}
+.random-diagnostic-stage-3{
+  border-color:rgba(201,157,255,.27);
+  background:
+    linear-gradient(rgba(201,157,255,.024) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,157,255,.024) 1px,transparent 1px),
+    #090d1c;
+  background-size:18px 18px;
+}
+
+/* Property router stages signal the new mathematical rule family visually. */
+.property-router-stage-1{
+  border-color:rgba(125,255,194,.30);
+}
+.property-router-stage-2{
+  border-color:rgba(255,214,103,.32);
+  box-shadow:0 0 20px rgba(255,214,103,.05);
+}
+.property-router-stage-3{
+  border-color:rgba(201,157,255,.36);
+  box-shadow:0 0 24px rgba(201,157,255,.07);
+}
