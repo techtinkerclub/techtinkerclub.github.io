@@ -5682,3 +5682,18 @@ button{font-size:16px}
 .continuous-world-grid .hazard-stunned>.continuous-static-label{
   opacity:0;
 }
+
+
+/* Stable continuous-world colour language:
+   region changes are spatial/narrative only; palette changes happen between levels. */
+.continuous-world-grid .world-region-0.trace:not(.player)::before,
+.continuous-world-grid .world-region-1.trace:not(.player)::before,
+.continuous-world-grid .world-region-2.trace:not(.player)::before{
+  background:var(--maze-line)!important;
+  box-shadow:0 0 6px color-mix(in srgb,var(--maze-line) 28%,transparent)!important;
+}
+.continuous-world-grid .world-region-0.trace:not(.player)::after,
+.continuous-world-grid .world-region-1.trace:not(.player)::after,
+.continuous-world-grid .world-region-2.trace:not(.player)::after{
+  background:color-mix(in srgb,var(--maze-line) 40%,transparent)!important;
+}
