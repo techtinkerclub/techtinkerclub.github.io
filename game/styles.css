@@ -4895,3 +4895,54 @@ body.expedition-immersive-open{
   border-color:rgba(201,157,255,.36);
   box-shadow:0 0 24px rgba(201,157,255,.07);
 }
+
+
+/* Level 2 continues BIT's journey inside the same micro:bit. */
+.level-two-continuity{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  margin:0 0 9px;
+  padding:8px 10px;
+  border:1px solid rgba(91,255,184,.18);
+  border-radius:12px;
+  background:linear-gradient(90deg,rgba(72,219,183,.055),rgba(85,217,255,.025));
+}
+.level-two-continuity>i{
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#48dbb7,#55d9ff);
+  box-shadow:0 0 10px rgba(85,217,255,.15);
+}
+.level-two-previous,.level-two-entry{
+  display:flex;align-items:center;gap:8px;min-width:0;
+}
+.level-two-previous b,.level-two-entry b{
+  display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;
+  border:1px solid #48dbb7;border-radius:50%;color:#a9ffe7;background:#08211b;
+  font:950 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.level-two-entry b{border-color:#55d9ff;color:#c7f8ff;background:#08212a}
+.level-two-previous span,.level-two-entry span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.level-two-previous strong,.level-two-entry strong{
+  color:#c5e9e9;font:900 8px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.level-two-previous small,.level-two-entry small{color:#66818b;font-size:7px;line-height:1.2}
+.level-two-stage-location{
+  display:flex;align-items:center;gap:9px;margin-bottom:8px;padding:7px 10px;
+  border-left:3px solid #55d9ff;border-radius:7px;background:rgba(85,217,255,.045);
+}
+.level-two-stage-location strong{
+  color:#55d9ff;font:900 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;
+}
+.level-two-stage-location span{color:#78929d;font-size:9px}
+@media(max-width:700px){
+  .level-two-continuity{grid-template-columns:1fr 24px 1fr;padding:6px 7px}
+  .level-two-previous small,.level-two-entry small{display:none}
+}
+@media(max-width:950px) and (orientation:landscape){
+  .level-two-continuity{margin-bottom:5px;padding:5px 7px}
+  .level-two-previous b,.level-two-entry b{width:26px;height:26px;flex-basis:26px}
+  .level-two-previous strong,.level-two-entry strong{font-size:6.5px}
+}
