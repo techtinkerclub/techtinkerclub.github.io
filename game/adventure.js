@@ -524,31 +524,31 @@ function showExpeditionGuide(onClose){
 function continuousWorldConfig(systemId){
   const id=String(systemId);
   if(id==='1')return {
-    level:1,name:'BOOT SEQUENCE',
+    level:1,name:'BOOT SEQUENCE',theme:'world-cyan',
     regions:[
-      {name:'POWER CONDUITS',theme:'world-cyan'},
-      {name:'STARTUP CONTROLLER',theme:'world-amber'},
-      {name:'MEMORY DEPTHS',theme:'world-violet'}
+      {name:'POWER CONDUITS'},
+      {name:'STARTUP CONTROLLER'},
+      {name:'MEMORY DEPTHS'}
     ],
     terminalNames:['POWER CONTROL','BOOT CONTROL','MEMORY CONTROL'],
     intro:'BIT enters one connected boot path. Repair three terminals while travelling through Power Conduits, the Startup Controller and Memory Depths, then reach the Logic Chamber.'
   };
   if(id==='2')return {
-    level:2,name:'RANDOMISER CORE',
+    level:2,name:'RANDOMISER CORE',theme:'world-green',
     regions:[
-      {name:'PACKET TUNNELS',theme:'world-green'},
-      {name:'ENTROPY CAVERNS',theme:'world-amber'},
-      {name:'ROUTING DEPTHS',theme:'world-pink'}
+      {name:'PACKET TUNNELS'},
+      {name:'ENTROPY CAVERNS'},
+      {name:'ROUTING DEPTHS'}
     ],
     terminalNames:['PACKET CONTROL','RANGE AUDIT','ROUTING CONTROL'],
     intro:'BIT continues through one long Randomiser Core route. Three terminal checkpoints guard the path from Packet Tunnels through Entropy Caverns into the Routing Depths.'
   };
   return {
-    level:3,name:'LOGIC ROUTER',
+    level:3,name:'LOGIC ROUTER',theme:'world-violet',
     regions:[
-      {name:'BOOLEAN TUNNELS',theme:'world-blue'},
-      {name:'DECISION ENGINE',theme:'world-green'},
-      {name:'CONTROL DEPTHS',theme:'world-violet'}
+      {name:'BOOLEAN TUNNELS'},
+      {name:'DECISION ENGINE'},
+      {name:'CONTROL DEPTHS'}
     ],
     terminalNames:['BOOLEAN CONTROL','DECISION CONTROL','LOGIC CORE CONTROL'],
     intro:'BIT enters one continuous Logic Router. Conditions and decisions guard the route through Boolean Tunnels, the Decision Engine and the Control Depths.'
@@ -698,7 +698,7 @@ function renderContinuousSystemWorld(){
   const arcs=continuousWorldArcs(world,id==='1'?10:id==='2'?12:13,banned,active.seed+':system-'+id);
   let player=world.start.slice(),checkpoint=world.start.slice(),live=false,finished=false,faultLock=false,terminalOpen=false,pulseReadyAt=0,currentRegion=0;
 
-  const shell=document.createElement('div');shell.className='expedition-shell continuous-world-shell continuous-system-'+id+' '+cfg.regions[0].theme;
+  const shell=document.createElement('div');shell.className='expedition-shell continuous-world-shell continuous-system-'+id+' '+cfg.theme;
   const journey=document.createElement('div');journey.className='continuous-journey';
   const track=document.createElement('div');track.className='continuous-journey-track';
   const bit=document.createElement('i');bit.className='continuous-journey-bit';bit.textContent='BIT';
@@ -764,7 +764,7 @@ function renderContinuousSystemWorld(){
   function arcActive(x,now=Date.now()){return Math.floor(now/x.period+x.phase)%2===0;}
   function terminalCount(){return world.terminals.filter(t=>t.solved).length;}
   function regionForCol(c){return Math.max(0,Math.min(2,Math.floor(c/(world.cols/3))));}
-  function setRegion(i){if(i===currentRegion&&shell.classList.contains(cfg.regions[i].theme))return;cfg.regions.forEach(r=>shell.classList.remove(r.theme));currentRegion=i;shell.classList.add(cfg.regions[i].theme);setProgress(cfg.name+' · CONTINUOUS EXPEDITION · '+cfg.regions[i].name);}
+  function setRegion(i){if(i===currentRegion)return;currentRegion=i;setProgress(cfg.name+' · CONTINUOUS EXPEDITION · '+cfg.regions[i].name);}
   function sentryThreat(h){const dr=Math.abs(h.pos[0]-player[0]),dc=Math.abs(h.pos[1]-player[1]);if(dr&&dc)return false;if(dr+dc>8)return false;return expeditionLineClear(world.grid,h.pos,player);}
   function journeyPaint(){bit.style.left=Math.max(0,Math.min(100,player[1]/(world.cols-1)*100))+'%';const stops=track.querySelectorAll?.('.continuous-journey-stop')||[];stops.forEach((el,i)=>{if(i===0)el.classList.add('solved');else if(i<=3)el.classList.toggle('solved',world.terminals[i-1].solved);else el.classList.toggle('ready',terminalCount()===3);});}
 
@@ -857,7 +857,7 @@ function renderContinuousSystemWorld(){
     next.forEach(k=>cellForKey(k)?.classList.add('sentry-beam'));lastBeam=next;
   }
   function refreshHud(now=Date.now()){
-    setRegion(regionForCol(player[1]));objective.textContent='TERMINALS '+terminalCount()+'/3';regionLabel.textContent=cfg.regions[currentRegion].name;checkpointLabel.textContent=terminalCount()?'CHECKPOINT T'+terminalCount():'CHECKPOINT ENTRY';
+    const nextRegion=regionForCol(player[1]);if(nextRegion!==currentRegion)setRegion(nextRegion);objective.textContent='TERMINALS '+terminalCount()+'/3';regionLabel.textContent=cfg.regions[currentRegion].name;checkpointLabel.textContent=terminalCount()?'CHECKPOINT T'+terminalCount():'CHECKPOINT ENTRY';
     mission.textContent=terminalCount()<3?'Explore forward. Reach T'+(terminalCount()+1)+', PULSE it, then continue through the opened bulkhead.':'All terminals repaired. Continue to the LOGIC CHAMBER.';
     const remain=Math.max(0,pulseReadyAt-now),onTerminal=!!terminalAt(player);pulseButton.disabled=remain>0&&!onTerminal;pulseButton.textContent=remain>0&&!onTerminal?'PULSE '+Math.ceil(remain/1000)+'s':'PULSE';journeyPaint();
   }
