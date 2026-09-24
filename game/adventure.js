@@ -738,7 +738,7 @@ function renderContinuousSystemWorld(){
   let jp=null,jo=null,jr=null,jd=null,jdir=null;
   function clearJR(){if(jd){clearTimeout(jd);jd=null;}if(jr){clearInterval(jr);jr=null;}}
   function stopJ(){clearJR();jp=null;jo=null;jdir=null;jk.style.transform='translate3d(0,0,0)';joystick.classList.remove('active');}
-  function startJR(v){clearJR();jd=setTimeout(()=>{jd=null;if(!jdir)return;jr=setInterval(()=>{if(jdir)movePlayer(v[0],v[1]);},175);},225);}
+  function startJR(v){clearJR();jd=setTimeout(()=>{jd=null;if(!jdir)return;jr=setInterval(()=>{if(jdir)movePlayer(v[0],v[1]);},145);},185);}
   function driveJ(e){if(!jo)return;const rect=jb.getBoundingClientRect(),limit=Math.min(rect.width,rect.height)*.31;let dx=e.clientX-jo.x,dy=e.clientY-jo.y,mag=Math.hypot(dx,dy)||1;if(mag>limit){dx=dx/mag*limit;dy=dy/mag*limit;}jk.style.transform='translate3d('+dx+'px,'+dy+'px,0)';if(Math.hypot(dx,dy)<limit*.28){jdir=null;clearJR();return;}const angle=Math.atan2(dy,dx);let v;if(angle>=-Math.PI/4&&angle<Math.PI/4)v=[0,1];else if(angle>=Math.PI/4&&angle<3*Math.PI/4)v=[1,0];else if(angle>=-3*Math.PI/4&&angle<-Math.PI/4)v=[-1,0];else v=[0,-1];const code=v[0]+':'+v[1];if(code!==jdir){jdir=code;movePlayer(v[0],v[1]);startJR(v);}}
   jb.addEventListener('pointerdown',e=>{e.preventDefault();jp=e.pointerId;jo={x:e.clientX,y:e.clientY};joystick.classList.add('active');try{jb.setPointerCapture(e.pointerId);}catch(_){}});
   jb.addEventListener('pointermove',e=>{if(jp!==e.pointerId)return;e.preventDefault();driveJ(e);});jb.addEventListener('pointerup',e=>{if(jp===e.pointerId)stopJ();});jb.addEventListener('pointercancel',stopJ);jb.addEventListener('lostpointercapture',stopJ);
@@ -748,35 +748,125 @@ function renderContinuousSystemWorld(){
   immersive.addEventListener('click',()=>setImmersive(!shell.classList.contains('expedition-immersive')));
   function openGuide(){const resume=live&&!finished;live=false;stopJ();showContinuousWorldGuide(cfg,()=>{if(resume&&!finished)live=true;});}guide.addEventListener('click',openGuide);guideTop.addEventListener('click',openGuide);
 
-  function terminalAt(p){return world.terminals.find(t=>same(t.pos,p));}
-  function barrierAt(p){return world.barriers.find(b=>same(b.pos,p));}
+  const terminalMap=new Map(world.terminals.map(t=>[key(...t.pos),t]));
+  const barrierMap=new Map(world.barriers.map(b=>[key(...b.pos),b]));
+  const arcMap=new Map(arcs.map(x=>[key(...x.pos),x]));
+  const cellFor=p=>cells[p[0]*world.cols+p[1]];
+  const cellForKey=k=>{const parts=k.split(':');return cells[(+parts[0])*world.cols+(+parts[1])];};
+  const hazardNodes=new Map(),arcNodes=new Map();
+  const playerNode=document.createElement('span');playerNode.className='expedition-player';playerNode.textContent='●';
+  let playerRenderKey='',lastBeam=new Set(),staticBuilt=false,camX=0,camY=0;
+
+  function terminalAt(p){return terminalMap.get(key(...p));}
+  function barrierAt(p){return barrierMap.get(key(...p));}
   function hazardAt(p){return hazards.find(h=>same(h.pos,p)&&Date.now()>=h.stunUntil);}
-  function arcAt(p){return arcs.find(x=>same(x.pos,p));}
+  function arcAt(p){return arcMap.get(key(...p));}
   function arcActive(x,now=Date.now()){return Math.floor(now/x.period+x.phase)%2===0;}
   function terminalCount(){return world.terminals.filter(t=>t.solved).length;}
   function regionForCol(c){return Math.max(0,Math.min(2,Math.floor(c/(world.cols/3))));}
   function setRegion(i){if(i===currentRegion&&shell.classList.contains(cfg.regions[i].theme))return;cfg.regions.forEach(r=>shell.classList.remove(r.theme));currentRegion=i;shell.classList.add(cfg.regions[i].theme);setProgress(cfg.name+' · CONTINUOUS EXPEDITION · '+cfg.regions[i].name);}
-  function cameraToPlayer(immediate=false){const target=cells[player[0]*world.cols+player[1]];if(!target)return;const left=Math.max(0,(target.offsetLeft||player[1]*26)-(viewport.clientWidth||800)*.45),top=Math.max(0,(target.offsetTop||player[0]*26)-(viewport.clientHeight||450)*.5);try{viewport.scrollTo({left,top,behavior:immediate?'auto':'smooth'});}catch(_){viewport.scrollLeft=left;viewport.scrollTop=top;}}
-  function journeyPaint(){bit.style.left=Math.max(0,Math.min(100,player[1]/(world.cols-1)*100))+'%';const stops=track.querySelectorAll?.('.continuous-journey-stop')||[];stops.forEach((el,i)=>{if(i===0)el.classList.add('solved');else if(i<=3)el.classList.toggle('solved',world.terminals[i-1].solved);else el.classList.toggle('ready',terminalCount()===3);});}
   function sentryThreat(h){const dr=Math.abs(h.pos[0]-player[0]),dc=Math.abs(h.pos[1]-player[1]);if(dr&&dc)return false;if(dr+dc>8)return false;return expeditionLineClear(world.grid,h.pos,player);}
+  function journeyPaint(){bit.style.left=Math.max(0,Math.min(100,player[1]/(world.cols-1)*100))+'%';const stops=track.querySelectorAll?.('.continuous-journey-stop')||[];stops.forEach((el,i)=>{if(i===0)el.classList.add('solved');else if(i<=3)el.classList.toggle('solved',world.terminals[i-1].solved);else el.classList.toggle('ready',terminalCount()===3);});}
 
-  function paint(){
-    setRegion(regionForCol(player[1]));const now=Date.now(),beam=new Set();
-    hazards.forEach(h=>{if(h.type!=='sentry'||now<h.stunUntil||!h.lockSince||!sentryThreat(h))return;const dr=Math.sign(player[0]-h.pos[0]),dc=Math.sign(player[1]-h.pos[1]);let r=h.pos[0],c=h.pos[1];while(true){beam.add(key(r,c));if(r===player[0]&&c===player[1])break;r+=dr;c+=dc;}});
-    for(const cell of cells){
-      const [r,c]=cell.dataset.key.split(':').map(Number),p=[r,c],wall=world.grid[r][c]===1,t=terminalAt(p),barrier=barrierAt(p),hazard=hazards.find(h=>same(h.pos,p)),arc=arcAt(p),region=regionForCol(c);
-      cell.className='expedition-cell '+(wall?'wall':'trace')+' world-region-'+region;if(world.chamberSet.has(key(r,c)))cell.classList.add('chamber');if(beam.has(key(r,c)))cell.classList.add('sentry-beam');if(same(p,world.start))cell.classList.add('entry');if(same(p,world.exit))cell.classList.add('exit');if(t)cell.classList.add(t.solved?'continuous-terminal-solved':'continuous-terminal');if(barrier)cell.classList.add(world.terminals[barrier.index].solved?'continuous-bulkhead-open':'continuous-bulkhead-locked');if(arc)cell.classList.add(arcActive(arc,now)?'arc-active':'arc-idle');if(hazard){cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard','enemy-'+hazard.type);if(hazard.type==='sentry'&&now>=hazard.stunUntil&&hazard.lockSince)cell.classList.add('sentry-aiming');}if(same(p,player))cell.classList.add('player');cell.replaceChildren();
-      if(same(p,player)){const s=document.createElement('span');s.className='expedition-player';s.textContent='●';cell.appendChild(s);}
-      else if(hazard){const s=document.createElement('span');s.className='expedition-hazard';s.textContent=now<hazard.stunUntil?'×':hazard.type==='chaser'?'◆':hazard.type==='patrol'?'▲':'⊕';cell.appendChild(s);}
-      else if(t){const s=document.createElement('span');s.className='continuous-terminal-label';s.textContent=t.solved?'✓':'T'+(t.index+1);cell.appendChild(s);}
-      else if(barrier){const s=document.createElement('span');s.className='continuous-bulkhead-label';s.textContent=world.terminals[barrier.index].solved?'OPEN':'LOCK';cell.appendChild(s);}
-      else if(arc){const s=document.createElement('span');s.className='expedition-arc';s.textContent=arcActive(arc,now)?'≈':'·';cell.appendChild(s);}
-      else if(same(p,world.start)){const s=document.createElement('span');s.className='expedition-entry';s.textContent='ENTRY';cell.appendChild(s);}
-      else if(same(p,world.exit)){const s=document.createElement('span');s.className='expedition-exit';s.textContent=terminalCount()===3?'LOGIC':'LOCK';cell.appendChild(s);}
+  function cameraToPlayer(immediate=false){
+    const target=cellFor(player);if(!target)return;
+    const vw=viewport.clientWidth||800,vh=viewport.clientHeight||450;
+    const px=target.offsetLeft||player[1]*27,py=target.offsetTop||player[0]*27;
+    const worldW=board.offsetWidth||world.cols*27,worldH=board.offsetHeight||world.rows*27;
+    const maxX=Math.max(0,worldW-vw),maxY=Math.max(0,worldH-vh);
+    if(immediate){
+      camX=Math.max(0,Math.min(maxX,px-vw*.30));
+      camY=Math.max(0,Math.min(maxY,py-vh*.50));
+    }else{
+      const sx=px-camX,sy=py-camY;
+      if(sx>vw*.67)camX=px-vw*.62;
+      else if(sx<vw*.27)camX=px-vw*.32;
+      if(sy>vh*.72)camY=py-vh*.67;
+      else if(sy<vh*.28)camY=py-vh*.33;
+      camX=Math.max(0,Math.min(maxX,camX));camY=Math.max(0,Math.min(maxY,camY));
     }
-    objective.textContent='TERMINALS '+terminalCount()+'/3';regionLabel.textContent=cfg.regions[currentRegion].name;checkpointLabel.textContent=terminalCount()?'CHECKPOINT T'+terminalCount():'CHECKPOINT ENTRY';
+    board.style.transitionDuration=immediate?'0ms':'68ms';
+    board.style.transform='translate3d('+(-Math.round(camX))+'px,'+(-Math.round(camY))+'px,0)';
+  }
+
+  function addStaticLabel(cell,className,text){
+    const s=document.createElement('span');s.className=className+' continuous-static-label';s.textContent=text;cell.appendChild(s);return s;
+  }
+  function buildStaticWorld(){
+    if(staticBuilt)return;staticBuilt=true;
+    for(let r=0;r<world.rows;r++)for(let c=0;c<world.cols;c++){
+      const p=[r,c],k=key(r,c),cell=cells[r*world.cols+c],wall=world.grid[r][c]===1,t=terminalMap.get(k),barrier=barrierMap.get(k),arc=arcMap.get(k);
+      cell.className='expedition-cell '+(wall?'wall':'trace')+' world-region-'+regionForCol(c);
+      if(world.chamberSet.has(k))cell.classList.add('chamber');
+      if(same(p,world.start)){cell.classList.add('entry');addStaticLabel(cell,'expedition-entry','ENTRY');}
+      if(same(p,world.exit)){cell.classList.add('exit');addStaticLabel(cell,'expedition-exit','LOCK');}
+      if(t){cell.classList.add('continuous-terminal');addStaticLabel(cell,'continuous-terminal-label','T'+(t.index+1));}
+      if(barrier){cell.classList.add('continuous-bulkhead-locked');addStaticLabel(cell,'continuous-bulkhead-label','LOCK');}
+      if(arc){const s=addStaticLabel(cell,'expedition-arc','·');arcNodes.set(k,s);cell.classList.add('arc-idle');}
+    }
+    hazards.forEach(h=>{const s=document.createElement('span');s.className='expedition-hazard';hazardNodes.set(h.id,s);h.renderKey='';});
+  }
+  function refreshProgressObjects(){
+    world.terminals.forEach(t=>{
+      const cell=cellFor(t.pos),label=cell?.querySelector?.('.continuous-terminal-label');if(!cell)return;
+      cell.classList.toggle('continuous-terminal',!t.solved);cell.classList.toggle('continuous-terminal-solved',t.solved);if(label)label.textContent=t.solved?'✓':'T'+(t.index+1);
+    });
+    world.barriers.forEach(b=>{
+      const open=world.terminals[b.index].solved,cell=cellFor(b.pos),label=cell?.querySelector?.('.continuous-bulkhead-label');if(!cell)return;
+      cell.classList.toggle('continuous-bulkhead-locked',!open);cell.classList.toggle('continuous-bulkhead-open',open);if(label)label.textContent=open?'OPEN':'LOCK';
+    });
+    const exitCell=cellFor(world.exit),exitLabel=exitCell?.querySelector?.('.expedition-exit');if(exitLabel)exitLabel.textContent=terminalCount()===3?'LOGIC':'LOCK';
+  }
+  function refreshPlayer(){
+    const k=key(...player);
+    if(playerRenderKey&&playerRenderKey!==k)cellForKey(playerRenderKey)?.classList.remove('player');
+    const cell=cellFor(player);if(!cell)return;cell.classList.add('player');cell.appendChild(playerNode);playerRenderKey=k;
+  }
+  function applyHazardCell(k,now){
+    const cell=cellForKey(k);if(!cell)return;
+    cell.classList.remove('hazard','hazard-stunned','enemy-chaser','enemy-patrol','enemy-sentry','sentry-aiming');
+    const here=hazards.filter(h=>key(...h.pos)===k);
+    if(!here.length)return;
+    const activeHazard=here.find(h=>now>=h.stunUntil)||here[0];
+    cell.classList.add(now<activeHazard.stunUntil?'hazard-stunned':'hazard','enemy-'+activeHazard.type);
+    if(activeHazard.type==='sentry'&&now>=activeHazard.stunUntil&&activeHazard.lockSince)cell.classList.add('sentry-aiming');
+  }
+  function refreshHazards(now=Date.now()){
+    const affected=new Set();
+    hazards.forEach(h=>{
+      const k=key(...h.pos),node=hazardNodes.get(h.id);if(h.renderKey)affected.add(h.renderKey);affected.add(k);
+      node.textContent=now<h.stunUntil?'×':h.type==='chaser'?'◆':h.type==='patrol'?'▲':'⊕';
+      cellFor(h.pos)?.appendChild(node);h.renderKey=k;
+    });
+    affected.forEach(k=>applyHazardCell(k,now));
+  }
+  function refreshArcs(now=Date.now()){
+    arcs.forEach(arc=>{
+      const k=key(...arc.pos),cell=cellFor(arc.pos),on=arcActive(arc,now),node=arcNodes.get(k);if(!cell)return;
+      cell.classList.toggle('arc-active',on);cell.classList.toggle('arc-idle',!on);if(node)node.textContent=on?'≈':'·';
+    });
+  }
+  function refreshBeam(now=Date.now()){
+    lastBeam.forEach(k=>cellForKey(k)?.classList.remove('sentry-beam'));
+    const next=new Set();
+    hazards.forEach(h=>{
+      if(h.type!=='sentry'||now<h.stunUntil||!h.lockSince||!sentryThreat(h))return;
+      const dr=Math.sign(player[0]-h.pos[0]),dc=Math.sign(player[1]-h.pos[1]);let r=h.pos[0],c=h.pos[1];
+      while(true){next.add(key(r,c));if(r===player[0]&&c===player[1])break;r+=dr;c+=dc;}
+    });
+    next.forEach(k=>cellForKey(k)?.classList.add('sentry-beam'));lastBeam=next;
+  }
+  function refreshHud(now=Date.now()){
+    setRegion(regionForCol(player[1]));objective.textContent='TERMINALS '+terminalCount()+'/3';regionLabel.textContent=cfg.regions[currentRegion].name;checkpointLabel.textContent=terminalCount()?'CHECKPOINT T'+terminalCount():'CHECKPOINT ENTRY';
     mission.textContent=terminalCount()<3?'Explore forward. Reach T'+(terminalCount()+1)+', PULSE it, then continue through the opened bulkhead.':'All terminals repaired. Continue to the LOGIC CHAMBER.';
     const remain=Math.max(0,pulseReadyAt-now),onTerminal=!!terminalAt(player);pulseButton.disabled=remain>0&&!onTerminal;pulseButton.textContent=remain>0&&!onTerminal?'PULSE '+Math.ceil(remain/1000)+'s':'PULSE';journeyPaint();
+  }
+  function paint(){
+    const now=Date.now();buildStaticWorld();refreshProgressObjects();refreshPlayer();refreshHazards(now);refreshArcs(now);refreshBeam(now);refreshHud(now);
+  }
+  function fastVisualTick(){
+    if(!live||finished||terminalOpen)return;
+    const now=Date.now();refreshArcs(now);refreshHud(now);
   }
 
   function resetHazards(){const now=Date.now();hazards.forEach(h=>{h.pos=h.spawn.slice();h.stunUntil=now+1300;h.lockSince=0;});}
@@ -844,7 +934,7 @@ function renderContinuousSystemWorld(){
 
   paint();
   const start=document.createElement('button');start.type='button';start.className='expedition-start continuous-world-start';start.textContent='Enter '+cfg.regions[0].name+' →';
-  start.addEventListener('click',()=>{if(live||finished)return;if(window.matchMedia('(max-width:950px) and (pointer:coarse)').matches)setImmersive(true);start.remove();focusPlayArea(viewport,()=>{live=true;resetHazards();every(hazardTick,id==='1'?860:id==='2'?810:780);every(paint,230);cameraToPlayer(true);showNotice('Continuous route online. Repair T1 → T2 → T3, then find the Logic Chamber.','success',1700);});});
+  start.addEventListener('click',()=>{if(live||finished)return;if(window.matchMedia('(max-width:950px) and (pointer:coarse)').matches)setImmersive(true);start.remove();focusPlayArea(viewport,()=>{live=true;resetHazards();every(hazardTick,id==='1'?860:id==='2'?810:780);every(fastVisualTick,180);cameraToPlayer(true);showNotice('Continuous route online. Repair T1 → T2 → T3, then find the Logic Chamber.','success',1700);});});
   shell.insertBefore(start,viewport);
 }
 
