@@ -33,6 +33,7 @@ function start(opts){
     roomStage:0,
     seed:`microbit-system-${String(opts.systemId||'1')}-${Date.now()}`,
     bits:new Set(),
+    logicKeys:new Set(),
     arcadeFaults:0,
     sequenceFaults:0,
     memoryFaults:0,
@@ -109,7 +110,7 @@ function renderRoom(){
   active.root.replaceChildren();
   if(active.systemId==='2'){
     if(active.room<3)renderRandomiserExpeditionStage();
-    else renderRandomiserFinalGate();
+    else renderSystemLogicChamber();
     return;
   }
   if(active.systemId==='3'){
@@ -126,10 +127,8 @@ function renderRoom(){
     else renderSensorArrayFinalGate();
     return;
   }
-  if(active.room===0)renderPulseRun();
-  else if(active.room===1)renderBootOrder();
-  else if(active.room===2)renderMemoryBank();
-  else renderFinalGate();
+  if(active.room<3)renderPulseRun();
+  else renderSystemLogicChamber();
 }
 
 function paintAdventureIntegrity(){
@@ -254,22 +253,37 @@ function finishRoomStage(stageTitle,stageText,finalTitle,finalText,nextButton,on
 
 function expeditionConfig(stage){
   return [
-    {
-      rows:15,cols:23,pickups:3,relays:2,hazards:1,arcs:2,hazardMs:920,ordered:false,chambers:2,
-      area:'POWER INTAKE',module:'POWER COUPLER',pickupNames:['P1','P2','P3'],
-      copy:'Explore the power intake, recover three couplers, then energise relays R1 → R2 to unlock the maintenance gate.'
-    },
-    {
-      rows:17,cols:27,pickups:4,relays:2,hazards:2,arcs:3,hazardMs:840,ordered:false,chambers:3,
-      area:'DATA BUS',module:'BUS INTERFACE',pickupNames:['A','B','C','D'],
-      copy:'Search the wider data bus, recover four boot fragments and energise R1 → R2 while corruption patrols the board.'
-    },
-    {
-      rows:19,cols:31,pickups:5,relays:3,hazards:3,arcs:4,hazardMs:780,ordered:true,chambers:4,
-      area:'CPU CORE',module:'CORE LINK',pickupNames:['A','B','C','D','E'],
-      copy:'Recover core keys A → B → C → D → E, energise relays R1 → R2 → R3, then reach the CPU repair port.'
-    }
+    {rows:15,cols:23,pickups:3,relays:2,hazards:1,arcs:2,hazardMs:920,ordered:false,chambers:2,theme:'power',area:'POWER INTAKE',module:'POWER COUPLER',pickupNames:['P1','P2','P3'],copy:'Explore the power intake, recover three couplers, then energise relays R1 → R2 to unlock the maintenance gate.'},
+    {rows:17,cols:27,pickups:4,relays:2,hazards:2,arcs:3,hazardMs:840,ordered:false,chambers:3,theme:'bus',area:'DATA BUS',module:'BUS INTERFACE',pickupNames:['A','B','C','D'],copy:'Search the wider data bus, recover four boot fragments and energise R1 → R2 while corruption patrols the board.'},
+    {rows:19,cols:31,pickups:5,relays:3,hazards:3,arcs:4,hazardMs:780,ordered:true,chambers:4,theme:'cpu',area:'CPU CORE',module:'CORE LINK',pickupNames:['A','B','C','D','E'],copy:'Recover core keys A → B → C → D → E, energise relays R1 → R2 → R3, then reach the CPU repair port.'},
+    {rows:17,cols:27,pickups:3,relays:0,hazards:2,arcs:2,hazardMs:860,ordered:false,chambers:3,theme:'startup-cyan',terminal:true,area:'BOOT SEQUENCER I',module:'POWER PATH',pickupNames:['S1','S2','S3'],copy:'Follow the startup conduits, recover three sequence fragments and calibrate terminal T before the service gate can open.'},
+    {rows:19,cols:29,pickups:3,relays:0,hazards:2,arcs:3,hazardMs:830,ordered:false,chambers:4,theme:'startup-amber',terminal:true,area:'BOOT SEQUENCER II',module:'CHECK GATE',pickupNames:['C1','C2','C3'],copy:'Corruption has split the hardware-check path. Recover the fragments and rebuild the dependency chain at terminal T.'},
+    {rows:19,cols:31,pickups:4,relays:0,hazards:3,arcs:3,hazardMs:800,ordered:false,chambers:4,theme:'startup-violet',terminal:true,area:'BOOT SEQUENCER III',module:'CONTROL MATRIX',pickupNames:['M1','M2','M3','M4'],copy:'Cross the full controller matrix, collect four control fragments and restore the complete startup chain at terminal T.'},
+    {rows:19,cols:31,pickups:3,relays:0,hazards:2,arcs:2,hazardMs:820,ordered:false,chambers:4,theme:'memory-cyan',terminal:true,area:'ADDRESS GRID',module:'BANK A',pickupNames:['B1','B2','B3'],copy:'Enter the Memory Bank approach, recover three address fragments and use terminal T to verify a binary balance rule.'},
+    {rows:21,cols:33,pickups:4,relays:0,hazards:3,arcs:3,hazardMs:790,ordered:false,chambers:5,theme:'memory-amber',terminal:true,area:'FRAGMENTED RAM',module:'BANK B',pickupNames:['F1','F2','F3','F4'],copy:'The RAM paths are fragmented. Recover four memory pieces and verify the no-three-identical rule at terminal T.'},
+    {rows:21,cols:35,pickups:4,relays:0,hazards:4,arcs:4,hazardMs:760,ordered:false,chambers:6,theme:'memory-violet',terminal:true,area:'CORE RESTORE',module:'CORE BANK',pickupNames:['K1','K2','K3','K4'],copy:'Reach the deepest memory chamber, recover four core fragments and pass the final memory-rule terminal before the Logic Chamber.'}
   ][stage]||null;
+}
+
+function levelOneTerminalRounds(stage,seed){
+  const rng=rngFromSeed(seed+':level1-terminal:'+stage);
+  if(stage>=3&&stage<=5){
+    const steps=bootOrderSteps(stage-3),picks=steps.length<=3?[0,1,2]:[0,Math.floor((steps.length-1)/2),steps.length-1];
+    return picks.map(pos=>{
+      const completed=pos===0?'Nothing has run yet.':steps.slice(0,pos).map(s=>s.short).join(' → ')+' is complete.';
+      return {rule:'STARTUP ORDER',prompt:completed+' Which operation must happen next?',options:shuffled(steps.map(s=>s.short),rng),answer:steps[pos].short,explain:steps[pos].short+' is the next valid operation in this startup chain.'};
+    });
+  }
+  if(stage===6){
+    return shuffled([{p:'0  0  1  1  1  ·',a:'0'},{p:'1  0  0  1  0  ·',a:'1'},{p:'1  1  0  0  1  ·',a:'0'}],rng)
+      .map(x=>({rule:'MEMORY BALANCE · three 0s and three 1s',prompt:'Complete this six-bit row: '+x.p,options:['0','1'],answer:x.a,explain:'The completed row must contain exactly three 0s and three 1s.'}));
+  }
+  if(stage===7){
+    return shuffled([{p:'1  1  ·',a:'0'},{p:'·  0  0',a:'1'},{p:'1  ·  1',a:'0'}],rng)
+      .map(x=>({rule:'MEMORY PATTERN · never three identical bits together',prompt:'Which bit is forced? '+x.p,options:['0','1'],answer:x.a,explain:'A third identical bit would create an illegal run of three.'}));
+  }
+  return shuffled([{p:'0  1  1  0  1  ·',a:'0'},{p:'1  0  0  1  0  ·',a:'1'},{p:'1  1  ·  0  0  1',a:'0'}],rng)
+    .map(x=>({rule:'CORE MEMORY CHECK · balance + no triples',prompt:'Choose the forced bit: '+x.p,options:['0','1'],answer:x.a,explain:'Use the memory balance and no-three-identical rules together.'}));
 }
 function expeditionNeighbours(grid,r,c){
   const out=[];
@@ -467,6 +481,7 @@ function expeditionGuideEntries(){
     {cell:'trace player',inner:'expedition-player',symbol:'●',title:'BIT',copy:'Your repair probe. Move through open circuit paths.'},
     {cell:'trace pickup',inner:'expedition-pickup',symbol:'A',title:'Module / core key',copy:'Walk onto it to recover it. In the CPU Core, collect A → B → C → D → E in order.'},
     {cell:'trace relay',inner:'expedition-relay',symbol:'R1',title:'Relay',copy:'After every module is recovered, stand on R1, R2… in order and use PULSE.'},
+    {cell:'trace expedition-terminal',inner:'expedition-terminal-label',symbol:'T',title:'Terminal',copy:'Some regions contain an in-world task terminal. Recover the local fragments, stand on T and PULSE to calibrate it.'},
     {cell:'trace exit',inner:'expedition-exit',symbol:'LOCK',title:'Maintenance gate',copy:'It changes to OPEN only after the modules and relay chain are complete.'},
     {cell:'trace hazard enemy-chaser',inner:'expedition-hazard',symbol:'◆',title:'Chaser',copy:'Actively moves towards BIT. A nearby PULSE stuns it temporarily.'},
     {cell:'trace hazard enemy-patrol',inner:'expedition-hazard',symbol:'▲',title:'Patrol',copy:'Roams the corridors. Watch its movement and PULSE when it gets too close.'},
@@ -538,7 +553,7 @@ function expeditionRouteCopy(stageIndex,phase){
     ['Startup Controller stable','All three startup stages are restored. BIT can now cross into the Memory Bank.','Open Memory Bank →'],
     ['Address Grid stable','The first RAM bank is repaired. The next bank has fewer fixed bits and a more fragmented layout.','Continue to Fragmented RAM →'],
     ['Fragmented RAM stable','The second bank passes its checksum. One final core-memory repair remains.','Continue to Core Restore →'],
-    ['Level 1 repair complete','All nine repair stages are stable. The micro:bit is ready for the final diagnostic boot check.','Proceed to Final Diagnostic →']
+    ['Level 1 expedition complete','All nine travel stages are stable. A sealed Logic Chamber now blocks the route to the Central Knowledge Archive.','Enter Logic Chamber →']
   ];
   const m=messages[Math.max(0,Math.min(messages.length-1,stageIndex))];
   return {
@@ -595,7 +610,7 @@ function renderExpeditionRoute(stageIndex,phase,onContinue){
 
   const final=document.createElement('div');
   final.className='level-one-final-node '+(current===stages.length?'current':completedThrough>=stages.length-1?'ready':'locked');
-  final.innerHTML='<b>'+(current===stages.length?'BOOT':completedThrough>=8?'✓':'BOOT')+'</b><span><strong>FINAL DIAGNOSTIC</strong><small>12-question boot check</small></span>';
+  final.innerHTML='<b>'+(current===stages.length?'BOOT':completedThrough>=8?'✓':'BOOT')+'</b><span><strong>LOGIC CHAMBER</strong><small>3 logic keys · then Knowledge Archive</small></span>';
   map.appendChild(final);
 
   const key=document.createElement('div');key.className='expedition-route-key';
@@ -611,7 +626,7 @@ function renderExpeditionRoute(stageIndex,phase,onContinue){
   requestAnimationFrame(()=>action.focus({preventScroll:true}));
 }
 function renderPulseRun(){
-  const stageIndex=active.roomStage||0,areaNo=stageIndex+1,cfg=expeditionConfig(stageIndex);
+  const stageIndex=active.room*3+(active.roomStage||0),areaNo=stageIndex+1,cfg=expeditionConfig(stageIndex);
   active.expeditionModules=active.expeditionModules||new Set();
   if(stageIndex===0&&!active.expeditionMapSeen){
     active.expeditionMapSeen=true;
@@ -627,7 +642,7 @@ function renderPulseRun(){
   ));
 
   const info=document.createElement('div');info.className='adventure-info-strip expedition-info-strip';
-  info.innerHTML='<span><strong>DESKTOP</strong> arrows / WASD move · <kbd>SPACE</kbd> PULSE</span><span><strong>MISSION</strong> modules → relays → OPEN gate</span>'+
+  info.innerHTML='<span><strong>DESKTOP</strong> arrows / WASD move · <kbd>SPACE</kbd> PULSE</span><span><strong>MISSION</strong> '+(cfg.terminal?'fragments → terminal T → OPEN gate':'modules → relays → OPEN gate')+'</span>'+
     (cfg.ordered?'<span><strong>CPU CORE</strong> collect A → B → C → D → E in order</span>':'');
   const infoGuide=document.createElement('button');infoGuide.type='button';infoGuide.className='secondary expedition-info-guide';infoGuide.textContent='FIELD GUIDE';
   info.appendChild(infoGuide);root.appendChild(info);
@@ -636,13 +651,19 @@ function renderPulseRun(){
   const pickups=chooseExpeditionPickups(maze,cfg.pickups,cfg.pickupNames);
   const banned=new Set([key(...maze.start),key(...maze.exit),...pickups.map(x=>key(...x.pos))]);
   const relays=chooseExpeditionRelays(maze,cfg.relays,banned);
+  let terminal=null;
+  if(cfg.terminal){
+    const tc=maze.floors.filter(p=>!banned.has(key(...p))&&!same(p,maze.exit)&&maze.dist[p[0]][p[1]]>=8);
+    terminal=(tc[Math.min(2,Math.max(0,tc.length-1))]||maze.floors.find(p=>!banned.has(key(...p))&&!same(p,maze.exit))||maze.start).slice();
+    banned.add(key(...terminal));
+  }
   const hazards=chooseExpeditionHazards(maze,cfg.hazards,banned);
   const arcs=chooseExpeditionArcs(maze,cfg.arcs,banned);
   const collected=new Set(),visited=new Set();
-  let player=maze.start.slice(),live=false,finished=false,faultLock=false,pulseReadyAt=0,relayIndex=0;
+  let player=maze.start.slice(),live=false,finished=false,faultLock=false,pulseReadyAt=0,relayIndex=0,terminalSolved=!cfg.terminal,terminalOpen=false;
   expeditionVisibleCells(maze.grid,player,visited);
 
-  const shell=document.createElement('div');shell.className='expedition-shell expedition-neon';
+  const shell=document.createElement('div');shell.className='expedition-shell expedition-neon level-one-expedition level-one-'+(cfg.theme||'traces');
   const hud=document.createElement('div');hud.className='expedition-hud';
   const objective=document.createElement('strong');
   const areaStatus=document.createElement('span');
@@ -822,13 +843,14 @@ function renderPulseRun(){
 
   function pickupAt(k){return pickups.find(x=>key(...x.pos)===k&&!collected.has(x.name));}
   function relayAt(k){return relays.find(x=>key(...x.pos)===k);}
+  function terminalAt(k){return terminal&&key(...terminal)===k;}
   function hazardAt(k){return hazards.find(h=>key(...h.pos)===k&&Date.now()>=h.stunUntil);}
   function arcAt(k){return arcs.find(a=>key(...a.pos)===k);}
   function arcActive(arc,now=Date.now()){return Math.floor(now/arc.period+arc.phase)%2===0;}
   function pickupNext(){return cfg.ordered?cfg.pickupNames[collected.size]:null;}
   function relayNext(){return relays[relayIndex]||null;}
   function objectivesReady(){return collected.size===cfg.pickups;}
-  function exitReady(){return objectivesReady()&&relayIndex===relays.length;}
+  function exitReady(){return objectivesReady()&&relayIndex===relays.length&&terminalSolved;}
 
   function paint(){
     expeditionVisibleCells(maze.grid,player,visited);
@@ -847,7 +869,7 @@ function renderPulseRun(){
     for(const cell of cells){
       const parts=cell.dataset.key.split(':').map(Number),r=parts[0],c=parts[1],k=cell.dataset.key;
       const known=visited.has(k),wall=maze.grid[r][c]===1;
-      const pickup=pickupAt(k),relay=relayAt(k),hazard=hazards.find(h=>key(...h.pos)===k),arc=arcAt(k);
+      const pickup=pickupAt(k),relay=relayAt(k),isTerminal=terminalAt(k),hazard=hazards.find(h=>key(...h.pos)===k),arc=arcAt(k);
       cell.className='expedition-cell';
       if(wall)cell.classList.add('wall');
       else {
@@ -861,6 +883,7 @@ function renderPulseRun(){
       if(same([r,c],player))cell.classList.add('player');
       if(pickup&&known)cell.classList.add('pickup');
       if(relay&&known)cell.classList.add(relay.active?'relay-active':'relay');
+      if(isTerminal&&known)cell.classList.add(terminalSolved?'expedition-terminal-solved':'expedition-terminal');
       if(arc&&known)cell.classList.add(arcActive(arc,now)?'arc-active':'arc-idle');
       if(hazard&&known){
         cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard','enemy-'+hazard.type);
@@ -879,6 +902,8 @@ function renderPulseRun(){
         const s=document.createElement('span');s.className='expedition-pickup';s.textContent=pickup.name;cell.appendChild(s);
       }else if(relay){
         const s=document.createElement('span');s.className='expedition-relay';s.textContent=relay.active?'✓':relay.name;cell.appendChild(s);
+      }else if(isTerminal){
+        const s=document.createElement('span');s.className='expedition-terminal-label';s.textContent=terminalSolved?'✓':'T';cell.appendChild(s);
       }else if(arc){
         const s=document.createElement('span');s.className='expedition-arc';s.textContent=arcActive(arc,now)?'≈':'·';cell.appendChild(s);
       }else if(same([r,c],maze.exit)){
@@ -893,21 +918,23 @@ function renderPulseRun(){
       ?'CORE KEYS '+collected.size+'/'+cfg.pickups+(next?' · NEXT '+next:'')
       :'MODULES '+collected.size+'/'+cfg.pickups;
     areaStatus.textContent=cfg.area+' · '+cfg.rows+'×'+cfg.cols;
-    moduleStatus.textContent='RELAYS '+relayIndex+'/'+relays.length;
+    moduleStatus.textContent=cfg.terminal?(terminalSolved?'TERMINAL ✓':'TERMINAL '+(objectivesReady()?'READY':'LOCKED')):'RELAYS '+relayIndex+'/'+relays.length;
 
     if(!objectivesReady()){
       mission.textContent=cfg.ordered
         ?'Explore the board and recover '+next+' next. Wrong-order keys remain locked.'
-        :'Explore the board and recover every glowing module.';
+        :'Explore the board and recover every glowing '+(cfg.terminal?'fragment':'module')+'.';
+    }else if(cfg.terminal&&!terminalSolved){
+      mission.textContent='Fragments recovered. Find terminal T and press PULSE while standing on it.';
     }else if(nextRelay){
       mission.textContent='Modules recovered. Find '+nextRelay.name+' and press PULSE while standing on it.';
     }else{
-      mission.textContent='Relay chain stable. Reach the OPEN maintenance gate.';
+      mission.textContent=(cfg.terminal?'Terminal calibrated. ':'Relay chain stable. ')+'Reach the OPEN maintenance gate.';
     }
 
-    const remain=Math.max(0,pulseReadyAt-now);
-    pulseButton.disabled=remain>0;
-    pulseButton.textContent=remain>0?'PULSE '+Math.ceil(remain/1000)+'s':'PULSE';
+    const remain=Math.max(0,pulseReadyAt-now),onTerminal=cfg.terminal&&same(player,terminal);
+    pulseButton.disabled=remain>0&&!onTerminal;
+    pulseButton.textContent=remain>0&&!onTerminal?'PULSE '+Math.ceil(remain/1000)+'s':'PULSE';
 
     const ledCells=[
       led()?.mapPoint(player[0],player[1],cfg.rows,cfg.cols),
@@ -961,25 +988,20 @@ function renderPulseRun(){
   function checkExit(){
     if(!same(player,maze.exit))return;
     if(!exitReady()){
-      if(!objectivesReady())showNotice('Maintenance gate locked. Recover every module first.','warn',1050);
+      if(!objectivesReady())showNotice('Maintenance gate locked. Recover every '+(cfg.terminal?'fragment':'module')+' first.','warn',1050);
+      else if(cfg.terminal&&!terminalSolved)showNotice('Maintenance gate locked. Calibrate terminal T first.','warn',1050);
       else showNotice('Maintenance gate locked. Complete the relay chain first.','warn',1050);
       return;
     }
     finished=true;live=false;clearTimers();active.expeditionModules.add(stageIndex);led()?.setPattern('check');paint();
-    if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
+    if(stageIndex===2||stageIndex===5||stageIndex===8)active.roomsCompleted=Math.max(active.roomsCompleted,Math.floor(stageIndex/3)+1);
     renderExpeditionRoute(stageIndex,'complete',()=>{
-      if(stageIndex<2){
-        active.roomStage++;
-        renderRoom();
-      }else{
-        active.roomStage=0;
-        active.room=1;
-        renderRoom();
-      }
+      if(stageIndex<8){if(active.roomStage<2)active.roomStage++;else{active.room++;active.roomStage=0;}renderRoom();}
+      else{active.room=3;active.roomStage=0;renderRoom();}
     });
   }
   function movePlayer(dr,dc,button){
-    if(!live||finished||faultLock)return;
+    if(!live||finished||faultLock||terminalOpen)return;
     const next=[player[0]+dr,player[1]+dc];
     if(next[0]<0||next[1]<0||next[0]>=cfg.rows||next[1]>=cfg.cols||maze.grid[next[0]][next[1]]===1){
       active.playTone(170,.025,'square',.012);return;
@@ -991,8 +1013,29 @@ function renderPulseRun(){
     if(hazardAt(key(...player))){collide('Corruption intercepted BIT.');return;}
     checkExit();paint();
   }
+  function openLevelOneTerminal(){
+    if(!cfg.terminal||!terminal)return;
+    if(terminalSolved){showNotice('Terminal already calibrated. Head for the OPEN gate.','info',850);return;}
+    if(!objectivesReady()){showNotice('Terminal locked. Recover every local fragment first.','warn',900);return;}
+    const host=overlayHost();if(!host)return;
+    clearOverlay();terminalOpen=true;live=false;stopJoystick();document.body.classList.add('adventure-modal-open');
+    const shade=document.createElement('div');shade.className='adventure-popup-shade expedition-terminal-shade';
+    const card=document.createElement('div');card.className='adventure-popup expedition-task-terminal';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
+    const head=document.createElement('div');head.className='randomiser-task-head';const hc=document.createElement('div');hc.className='randomiser-task-head-copy';
+    hc.innerHTML='<small>LEVEL 1 · STAGE '+areaNo+'/9 · '+cfg.area+'</small><strong>Subsystem terminal</strong><span>Complete three short checks to open the service route.</span>';
+    const leave=document.createElement('button');leave.type='button';leave.className='secondary randomiser-task-leave';leave.textContent='RETURN TO CORRIDOR';head.append(hc,leave);
+    const body=document.createElement('div');body.className='randomiser-task-body';const feedback=document.createElement('div');feedback.className='randomiser-task-feedback';feedback.hidden=true;card.append(head,body,feedback);shade.appendChild(card);host.replaceChildren(shade);
+    const rounds=levelOneTerminalRounds(stageIndex,active.seed);let ri=0,locked=false;
+    function resume(){if(!terminalOpen)return;terminalOpen=false;clearOverlay();live=true;paint();}
+    leave.addEventListener('click',resume);
+    function feedbackSet(text,tone){feedback.hidden=false;feedback.className='randomiser-task-feedback '+tone;feedback.textContent=text;}
+    function draw(){locked=false;feedback.hidden=true;const q=rounds[ri];body.replaceChildren();const prog=document.createElement('div');prog.className='randomiser-task-progress';prog.textContent='CHECK '+(ri+1)+'/3';const rule=document.createElement('div');rule.className='randomiser-task-rule';rule.textContent=q.rule;const prompt=document.createElement('div');prompt.className='randomiser-task-prompt';prompt.textContent=q.prompt;const opts=document.createElement('div');opts.className='randomiser-task-options';q.options.forEach(label=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',()=>answer(label,b));opts.appendChild(b);});body.append(prog,rule,prompt,opts);requestAnimationFrame(()=>opts.querySelector('button')?.focus({preventScroll:true}));}
+    function answer(label,b){if(locked)return;const q=rounds[ri];if(label!==q.answer){locked=true;b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',300);if(stageIndex<=5)active.sequenceFaults++;else active.memoryFaults++;const depleted=applyAdventurePenalty();if(depleted){terminalOpen=false;return;}feedbackSet(q.explain,'fault');later(()=>{b.classList.remove('wrong');locked=false;},650);return;}locked=true;b.classList.add('correct');active.playTone(760,.055,'sine',.024);feedbackSet(q.explain,'success');ri++;if(ri<rounds.length){later(draw,650);return;}terminalSolved=true;later(()=>{terminalOpen=false;clearOverlay();live=true;led()?.setPattern('check');showNotice('Terminal calibrated · service gate OPEN.','success',1200);paint();},650);}
+    draw();
+  }
   function usePulse(button){
-    if(!live||finished||faultLock)return;
+    if(!live||finished||faultLock||terminalOpen)return;
+    if(cfg.terminal&&same(player,terminal)){openLevelOneTerminal();return;}
     if(activateRelay()){paint();return;}
     const now=Date.now();
     if(now<pulseReadyAt)return;
@@ -1065,7 +1108,7 @@ function renderPulseRun(){
   }
 
   active.keyHandler=(e)=>{
-    if(active?.systemId!=='1'||active.room!==0||finished)return;
+    if(active?.systemId!=='1'||active.room>=3||finished||terminalOpen)return;
     const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};
     if(map[e.key]){e.preventDefault();movePlayer(map[e.key][0],map[e.key][1]);return;}
     if(e.key===' '||e.key==='Enter'){e.preventDefault();usePulse(pulseButton);}
@@ -1087,7 +1130,7 @@ function renderPulseRun(){
       hazards.forEach(h=>h.stunUntil=Date.now()+1200);
       every(hazardTick,cfg.hazardMs);
       every(paint,220);
-      showNotice('BIT online. Modules first, then relays, then the OPEN gate. SPACE uses PULSE on desktop.','success',1650);
+      showNotice(cfg.terminal?'BIT online. Recover fragments, calibrate terminal T, then reach the OPEN gate.':'BIT online. Modules first, then relays, then the OPEN gate. SPACE uses PULSE on desktop.','success',1650);
     });
   }
   startButton.addEventListener('click',beginArea);
@@ -1404,7 +1447,7 @@ function randomiserRouteCopy(stageIndex,phase){
     ['Range Diagnostics stable','All stored output streams have been checked without mistaking ordinary repeats for faults.','Open Parity Router →'],
     ['Parity Router stable','The first property route is restored. Next, route only multiples through a larger grid.','Open Multiple Router →'],
     ['Multiple Router stable','The multiples route is stable. The final stage introduces PRIME or SQUARE routing.','Open Prime / Square Router →'],
-    ['Randomiser Core repaired','All nine Level 2 stages are stable. BIT can now run the final Randomiser diagnostic.','Proceed to Final Diagnostic →']
+    ['Randomiser expedition complete','All nine Randomiser travel stages are stable. Three property-routing keys guard the Central Knowledge Archive.','Enter Logic Chamber →']
   ];
   const m=messages[Math.max(0,Math.min(8,stageIndex))];
   return {
@@ -1460,7 +1503,7 @@ function renderRandomiserRoute(stageIndex,phase,onContinue){
   }
   const final=document.createElement('div');
   final.className='level-one-final-node '+(current===stages.length?'current':completedThrough>=8?'ready':'locked');
-  final.innerHTML='<b>'+(current===stages.length?'RNG':completedThrough>=8?'✓':'RNG')+'</b><span><strong>FINAL DIAGNOSTIC</strong><small>12-question Randomiser check</small></span>';
+  final.innerHTML='<b>'+(current===stages.length?'RNG':completedThrough>=8?'✓':'RNG')+'</b><span><strong>LOGIC CHAMBER</strong><small>3 property-router keys · then Knowledge Archive</small></span>';
   map.appendChild(final);
 
   const key=document.createElement('div');key.className='expedition-route-key';
@@ -2308,6 +2351,77 @@ function renderRandomiserFinalGate(){
   ),250);
 }
 
+
+
+/* ============================================================
+   UNIVERSAL ENDGAME · LOGIC CHAMBER → CENTRAL KNOWLEDGE ARCHIVE
+   ============================================================ */
+function logicKeyName(systemId,index){
+  if(String(systemId)==='1')return ['MEMORY BALANCE','PATTERN LOCK','CORE MEMORY'][index]||('KEY '+(index+1));
+  return ['PARITY ROUTER','MULTIPLE ROUTER','PRIME / SQUARE'][index]||('KEY '+(index+1));
+}
+function logicKeyId(systemId,index){return String(systemId)+':'+index;}
+function logicKeysSolved(systemId){let n=0;for(let i=0;i<3;i++)if(active.logicKeys.has(logicKeyId(systemId,i)))n++;return n;}
+
+function renderSystemLogicChamber(){
+  const systemId=String(active.systemId),systemName=systemId==='1'?'BOOT SEQUENCE':'RANDOMISER CORE';
+  setProgress(systemName+' · LOGIC CHAMBER · '+logicKeysSolved(systemId)+'/3 KEYS');
+  const root=active.root;
+  root.appendChild(roomHeader(systemName+' · LOGIC CHAMBER','Three logic keys guard the Central Knowledge Archive',systemId==='1'?'Activate each memory lock and solve all three binary logic puzzles. The Archive door opens only when all keys are lit.':'Activate each routing lock and solve the parity, multiples and prime/square property mazes. The Archive door opens only when all keys are lit.'));
+  const info=document.createElement('div');info.className='adventure-info-strip expedition-info-strip';info.innerHTML='<span><strong>MISSION</strong> unlock K1 · K2 · K3 → OPEN Archive door</span><span><strong>MOVE</strong> arrows / WASD · joystick on mobile</span><span><strong>PULSE</strong> activate a key console</span>';root.appendChild(info);
+
+  const rows=11,cols=21,start=[9,10],door=[1,10],nodes=[[4,4],[4,10],[4,16]],grid=Array.from({length:rows},()=>Array(cols).fill(0));
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)if(r===0||c===0||r===rows-1||c===cols-1)grid[r][c]=1;
+  for(let c=2;c<cols-2;c++)if(![4,10,16].includes(c))grid[6][c]=1;
+  let player=start.slice(),live=false,finished=false,puzzleOpen=false;
+  const shell=document.createElement('div');shell.className='expedition-shell expedition-neon logic-chamber-shell logic-system-'+systemId;
+  const hud=document.createElement('div');hud.className='expedition-hud';const objective=document.createElement('strong'),area=document.createElement('span'),doorStatus=document.createElement('span');hud.append(objective,area,doorStatus);
+  const board=document.createElement('div');board.className='expedition-grid logic-chamber-grid';board.style.setProperty('--exp-cols',String(cols));board.style.setProperty('--exp-rows',String(rows));board.style.aspectRatio=cols+'/'+rows;board.setAttribute('role','application');board.setAttribute('aria-label','Logic Chamber');
+  const cells=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const cell=document.createElement('div');cell.className='expedition-cell';cell.dataset.key=key(r,c);board.appendChild(cell);cells.push(cell);}
+  const controls=document.createElement('div');controls.className='expedition-controls';const defs=[['↑','up',-1,0],['←','left',0,-1],['PULSE','pulse',0,0],['→','right',0,1],['↓','down',1,0]];
+  for(const d of defs){const b=document.createElement('button');b.type='button';b.className='expedition-'+d[1];b.textContent=d[0];if(d[1]==='pulse')b.addEventListener('click',usePulse);else b.addEventListener('click',()=>move(d[2],d[3],b));controls.appendChild(b);}
+  const joystick=document.createElement('div');joystick.className='expedition-joystick';const jb=document.createElement('div');jb.className='expedition-joystick-base';const jk=document.createElement('div');jk.className='expedition-joystick-knob';const jl=document.createElement('span');jl.className='expedition-joystick-label';jl.textContent='MOVE';jb.append(jk,jl);joystick.appendChild(jb);controls.appendChild(joystick);
+  const mission=document.createElement('div');mission.className='expedition-mission';shell.append(hud,board,mission,controls);root.appendChild(shell);
+  let jp=null,jo=null,jr=null,jd=null,jdir=null;
+  function clearJR(){if(jd){clearTimeout(jd);jd=null;}if(jr){clearInterval(jr);jr=null;}}
+  function stopJ(){clearJR();jp=null;jo=null;jdir=null;jk.style.transform='translate3d(0,0,0)';joystick.classList.remove('active');}
+  function startJR(v){clearJR();jd=setTimeout(()=>{jd=null;if(!jdir)return;jr=setInterval(()=>{if(jdir)move(v[0],v[1]);},175);},225);}
+  function driveJ(e){if(!jo)return;const rect=jb.getBoundingClientRect(),limit=Math.min(rect.width,rect.height)*.31;let dx=e.clientX-jo.x,dy=e.clientY-jo.y,mag=Math.hypot(dx,dy)||1;if(mag>limit){dx=dx/mag*limit;dy=dy/mag*limit;}jk.style.transform='translate3d('+dx+'px,'+dy+'px,0)';if(Math.hypot(dx,dy)<limit*.28){jdir=null;clearJR();return;}const angle=Math.atan2(dy,dx);let v;if(angle>=-Math.PI/4&&angle<Math.PI/4)v=[0,1];else if(angle>=Math.PI/4&&angle<3*Math.PI/4)v=[1,0];else if(angle>=-3*Math.PI/4&&angle<-Math.PI/4)v=[-1,0];else v=[0,-1];const code=v[0]+':'+v[1];if(code!==jdir){jdir=code;move(v[0],v[1]);startJR(v);}}
+  jb.addEventListener('pointerdown',e=>{e.preventDefault();jp=e.pointerId;jo={x:e.clientX,y:e.clientY};joystick.classList.add('active');try{jb.setPointerCapture(e.pointerId);}catch(_){}});
+  jb.addEventListener('pointermove',e=>{if(jp!==e.pointerId)return;e.preventDefault();driveJ(e);});jb.addEventListener('pointerup',e=>{if(jp===e.pointerId)stopJ();});jb.addEventListener('pointercancel',stopJ);jb.addEventListener('lostpointercapture',stopJ);
+  function nodeIndexAt(p){return nodes.findIndex(n=>same(n,p));}
+  function allSolved(){return logicKeysSolved(systemId)===3;}
+  function paint(){const solved=logicKeysSolved(systemId);objective.textContent='LOGIC KEYS '+solved+'/3';area.textContent='CENTRAL ACCESS CHAMBER';doorStatus.textContent=allSolved()?'ARCHIVE DOOR OPEN':'ARCHIVE DOOR LOCKED';mission.textContent=allSolved()?'All three keys are online. Walk through the OPEN Archive door.':'Stand on K1, K2 or K3 and PULSE to enter that logic lock.';for(const cell of cells){const [r,c]=cell.dataset.key.split(':').map(Number),p=[r,c],wall=grid[r][c]===1,ni=nodeIndexAt(p),isDoor=same(p,door);cell.className='expedition-cell '+(wall?'wall':'trace');if(ni>=0)cell.classList.add(active.logicKeys.has(logicKeyId(systemId,ni))?'logic-key-solved':'logic-key-node');if(isDoor)cell.classList.add(allSolved()?'logic-door-open':'logic-door-locked');if(same(p,player))cell.classList.add('player');cell.replaceChildren();if(same(p,player)){const s=document.createElement('span');s.className='expedition-player';s.textContent='●';cell.appendChild(s);}else if(ni>=0){const s=document.createElement('span');s.className='logic-key-label';s.textContent=active.logicKeys.has(logicKeyId(systemId,ni))?'✓':'K'+(ni+1);cell.appendChild(s);}else if(isDoor){const s=document.createElement('span');s.className='expedition-exit';s.textContent=allSolved()?'OPEN':'LOCK';cell.appendChild(s);}}led()?.progress(solved,3);}
+  function move(dr,dc,b){if(!live||finished||puzzleOpen)return;const next=[player[0]+dr,player[1]+dc];if(next[0]<0||next[1]<0||next[0]>=rows||next[1]>=cols||grid[next[0]][next[1]]===1){active.playTone(170,.025,'square',.012);return;}if(b){b.classList.add('pressed');later(()=>b.classList.remove('pressed'),90);}player=next;if(same(player,door)&&allSolved()){finished=true;live=false;clearTimers();led()?.setPattern('check');renderKnowledgeArchive();return;}if(same(player,door)&&!allSolved())showNotice('Archive door locked · '+logicKeysSolved(systemId)+'/3 logic keys online.','warn',950);paint();}
+  function usePulse(){if(!live||finished||puzzleOpen)return;const ni=nodeIndexAt(player);if(ni<0){showNotice('Stand on a logic key console before using PULSE.','info',800);return;}if(active.logicKeys.has(logicKeyId(systemId,ni))){showNotice('K'+(ni+1)+' is already online.','success',700);return;}puzzleOpen=true;live=false;stopJ();const done=()=>{active.logicKeys.add(logicKeyId(systemId,ni));puzzleOpen=false;live=true;active.playTone(900,.08,'sine',.03);led()?.setPattern('check');paint();showNotice('K'+(ni+1)+' unlocked · '+logicKeysSolved(systemId)+'/3 keys online.','success',1100);};const leave=()=>{puzzleOpen=false;live=true;paint();};if(systemId==='1')openMemoryLogicKey(ni,done,leave);else openRouterLogicKey(ni,done,leave);}
+  active.keyHandler=(e)=>{if(!active||active.room!==3||finished||puzzleOpen)return;const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};if(map[e.key]){e.preventDefault();move(map[e.key][0],map[e.key][1]);return;}if(e.key===' '||e.key==='Enter'){e.preventDefault();usePulse();}};
+  document.addEventListener('keydown',active.keyHandler);paint();const startBtn=document.createElement('button');startBtn.type='button';startBtn.className='expedition-start';startBtn.textContent='Enter Logic Chamber →';startBtn.addEventListener('click',()=>{startBtn.remove();focusPlayArea(board,()=>{live=true;showNotice('Three logic keys. Solve all three to open the Central Knowledge Archive.','success',1500);});});shell.insertBefore(startBtn,board);
+}
+function logicPuzzleShell(title,subtitle,onLeave){
+  const host=overlayHost();if(!host)return null;clearOverlay();document.body.classList.add('adventure-modal-open');const shade=document.createElement('div');shade.className='adventure-popup-shade logic-puzzle-shade';const card=document.createElement('div');card.className='adventure-popup logic-puzzle-popup';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');const head=document.createElement('div');head.className='randomiser-task-head';const copy=document.createElement('div');copy.className='randomiser-task-head-copy';copy.innerHTML='<small>LOGIC CHAMBER</small><strong>'+title+'</strong><span>'+subtitle+'</span>';const leave=document.createElement('button');leave.type='button';leave.className='secondary randomiser-task-leave';leave.textContent='RETURN TO CHAMBER';head.append(copy,leave);const body=document.createElement('div');body.className='logic-puzzle-body';const feedback=document.createElement('div');feedback.className='randomiser-task-feedback';feedback.hidden=true;card.append(head,body,feedback);shade.appendChild(card);host.replaceChildren(shade);leave.addEventListener('click',()=>{clearOverlay();onLeave?.();});return {body,feedback,card};
+}
+function logicFeedback(el,text,tone){el.hidden=false;el.className='randomiser-task-feedback '+tone;el.textContent=text;}
+function openMemoryLogicKey(index,onSolved,onLeave){
+  const ui=logicPuzzleShell('K'+(index+1)+' · '+logicKeyName('1',index),'Restore this binary memory lock to energise one Archive key.',onLeave);if(!ui){onLeave?.();return;}const targets=[26,23,20],puzzle=makeTakuzu(active.seed+':logic-memory:'+index,{target:targets[index]})||makeTakuzu(active.seed+':logic-memory:fallback:'+index,{target:targets[index]});if(!puzzle){logicFeedback(ui.feedback,'Memory lock could not be generated. Return to the chamber and try again.','fault');return;}
+  const rules=document.createElement('div');rules.className='memory-rules logic-memory-rules';rules.innerHTML='<span><strong>1</strong> Three 0s and three 1s per row/column</span><span><strong>2</strong> Never three identical bits together</span><span><strong>3</strong> No duplicate complete rows/columns</span>';const state=puzzle.display.map(r=>r.slice()),board=document.createElement('div');board.className='memory-grid logic-memory-grid';board.style.setProperty('--memory-n',String(puzzle.n));const buttons=[];
+  for(let r=0;r<puzzle.n;r++)for(let c=0;c<puzzle.n;c++){const given=puzzle.display[r][c]!=null,b=document.createElement('button');b.type='button';b.className='memory-cell'+(given?' given':'');b.dataset.r=r;b.dataset.c=c;b.disabled=given;const repaint=()=>{const v=state[r][c];b.textContent=v==null?'·':String(v);b.classList.toggle('zero',v===0);b.classList.toggle('one',v===1);};if(!given)b.addEventListener('click',()=>{state[r][c]=state[r][c]==null?0:state[r][c]===0?1:null;b.classList.remove('wrong','hint');repaint();});repaint();board.appendChild(b);buttons.push(b);}
+  const actions=document.createElement('div');actions.className='memory-actions';const hint=document.createElement('button');hint.type='button';hint.className='secondary';hint.textContent='Highlight useful cell';const check=document.createElement('button');check.type='button';check.textContent='Unlock key';actions.append(hint,check);hint.addEventListener('click',()=>{buttons.forEach(b=>b.classList.remove('hint'));const candidate=buttons.find(b=>!b.disabled&&state[+b.dataset.r][+b.dataset.c]==null);if(candidate){candidate.classList.add('hint');logicFeedback(ui.feedback,'Inspect this row and column for balance, a pair, or a forced bit.','success');}});
+  check.addEventListener('click',()=>{let wrong=0,blank=0;buttons.forEach(b=>{b.classList.remove('wrong');const r=+b.dataset.r,c=+b.dataset.c,v=state[r][c];if(v==null)blank++;else if(v!==puzzle.solution[r][c]){wrong++;if(!b.disabled)b.classList.add('wrong');}});if(!wrong&&!blank){check.disabled=true;hint.disabled=true;logicFeedback(ui.feedback,'Memory lock solved. K'+(index+1)+' is energising…','success');later(()=>{clearOverlay();onSolved?.();},650);return;}active.memoryFaults++;const depleted=applyAdventurePenalty();if(depleted)return;logicFeedback(ui.feedback,wrong?wrong+' bit'+(wrong===1?' is':'s are')+' inconsistent.':'Complete all '+blank+' remaining blank cell'+(blank===1?'':'s')+'.','fault');});ui.body.append(rules,board,actions);
+}
+function openRouterLogicKey(index,onSolved,onLeave){
+  const ui=logicPuzzleShell('K'+(index+1)+' · '+logicKeyName('2',index),'Build one continuous number-property route from START to FINISH.',onLeave);if(!ui){onLeave?.();return;}const cfg=routerStageConfig(index),seed=active.seed+':logic-router:'+index,puzzle=makePropertyRouter(seed,cfg)||makePropertyRouter(seed+':fallback',cfg);if(!puzzle){logicFeedback(ui.feedback,'Routing lock could not be generated. Return to the chamber and try again.','fault');return;}
+  const rule=document.createElement('div');rule.className='property-router-rule';rule.innerHTML='<small>LOGIC KEY '+(index+1)+'/3</small><strong>'+puzzle.rule.shortLabel+'</strong><span>Use only '+puzzle.rule.label+'</span>';const board=document.createElement('div');board.className='property-router-grid logic-router-grid';board.style.setProperty('--router-n',String(puzzle.n));board.dataset.routerSize=String(puzzle.n);const path=[puzzle.start.slice()],buttons=[];let finished=false;
+  for(let r=0;r<puzzle.n;r++)for(let c=0;c<puzzle.n;c++){const p=[r,c],b=document.createElement('button');b.type='button';b.className='property-router-cell';b.dataset.r=r;b.dataset.c=c;const isStart=same(p,puzzle.start),isFinish=same(p,puzzle.finish);if(isStart)b.classList.add('is-start');if(isFinish)b.classList.add('is-finish');const label=document.createElement('small');label.textContent=isStart?'START':isFinish?'FINISH':'';const value=document.createElement('strong');value.textContent=String(puzzle.grid[r][c]);b.append(label,value);b.addEventListener('click',()=>choose(p,b));board.appendChild(b);buttons.push(b);}
+  function current(){return path[path.length-1];}function paint(){const used=new Set(path.map(routerKey)),cur=current();buttons.forEach(b=>{const p=[+b.dataset.r,+b.dataset.c],k=routerKey(p);b.classList.toggle('is-path',used.has(k));b.classList.toggle('is-current',same(p,cur));b.disabled=finished;});}
+  function choose(p,b){if(finished)return;const cur=current();if(path.length>1&&same(p,path[path.length-2])){path.pop();paint();return;}if(Math.abs(cur[0]-p[0])+Math.abs(cur[1]-p[1])!==1){logicFeedback(ui.feedback,'Choose a square touching the current route.','fault');return;}if(path.some(q=>same(q,p))){logicFeedback(ui.feedback,'The route cannot loop through an earlier square.','fault');return;}if(!routerMatches(puzzle.grid[p[0]][p[1]],puzzle.rule)){active.routerFaults++;b.classList.add('wrong');const depleted=applyAdventurePenalty();if(depleted)return;logicFeedback(ui.feedback,puzzle.grid[p[0]][p[1]]+' does not match '+puzzle.rule.label+'.','fault');later(()=>b.classList.remove('wrong'),500);return;}path.push(p);paint();if(same(p,puzzle.finish)){const exact=path.length===puzzle.solutionPath.length&&path.every((q,i)=>same(q,puzzle.solutionPath[i]));if(!exact){logicFeedback(ui.feedback,'FINISH reached through a dead end. Backtrack and find the unique complete route.','fault');return;}finished=true;paint();logicFeedback(ui.feedback,'Routing lock solved. K'+(index+1)+' is energising…','success');later(()=>{clearOverlay();onSolved?.();},650);}}
+  paint();ui.body.append(rule,board);
+}
+function renderKnowledgeArchive(){
+  if(active.keyHandler){document.removeEventListener('keydown',active.keyHandler);active.keyHandler=null;}clearTimers();clearOverlay();clearExpeditionViewport();const systemId=String(active.systemId),systemName=systemId==='1'?'BOOT SEQUENCE':'RANDOMISER CORE';setProgress(systemName+' · CENTRAL KNOWLEDGE ARCHIVE');const root=active.root;root.replaceChildren();root.appendChild(roomHeader('CENTRAL KNOWLEDGE ARCHIVE','Archive door unlocked','Three logic keys are online. BIT has reached the final knowledge records for this subsystem. One 12-question diagnostic remains.'));const archive=document.createElement('section');archive.className='knowledge-archive';archive.innerHTML='<div class="knowledge-archive-door"><span>K1</span><span>K2</span><span>K3</span><strong>ACCESS GRANTED</strong></div><div class="knowledge-archive-copy"><small>'+systemName+'</small><h3>Final knowledge verification</h3><p>The expedition and Logic Chamber are complete. Verify the subsystem knowledge to bring it fully online.</p></div>';const button=document.createElement('button');button.type='button';button.className='knowledge-archive-action';button.textContent='Run 12-question diagnostic →';button.addEventListener('click',handoffKnowledgeDiagnostic);archive.appendChild(button);root.appendChild(archive);led()?.setPattern('check');requestAnimationFrame(()=>button.focus({preventScroll:true}));
+}
+function handoffKnowledgeDiagnostic(){
+  if(active.completed)return;active.completed=true;const systemId=String(active.systemId);let statsOut;if(systemId==='1'){statsOut={systemId:'1',bits:active.bits.size,arcadeFaults:active.arcadeFaults,sequenceFaults:active.sequenceFaults,memoryFaults:active.memoryFaults,totalFaults:active.arcadeFaults+active.sequenceFaults+active.memoryFaults,roomsCompleted:active.roomsCompleted,roomRestarts:active.roomRestarts,logicKeys:3,bonusScore:Math.max(0,300-(active.arcadeFaults*20+active.sequenceFaults*15+active.memoryFaults*25)-active.roomRestarts*25)};}else{statsOut={systemId:'2',arcadeFaults:active.arcadeFaults,logicFaults:active.logicFaults,routerFaults:active.routerFaults,totalFaults:active.arcadeFaults+active.logicFaults+active.routerFaults,roomsCompleted:active.roomsCompleted,roomRestarts:active.roomRestarts,logicKeys:3,bonusScore:Math.max(0,300-(active.arcadeFaults*18+active.logicFaults*18+active.routerFaults*18)-active.roomRestarts*25)};}const done=active.onComplete;stop();done(statsOut);
+}
 
 /* ============================================================
    SYSTEM 3 · LOGIC ROUTER
