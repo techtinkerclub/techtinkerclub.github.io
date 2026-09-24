@@ -358,7 +358,9 @@
       };
       byId('results-title').textContent=isAdventure?(failureTitles[adventureId]||'System verification incomplete'):'System still unstable';
       byId('results-summary').textContent=isAdventure
-        ?`The continuous expedition and Logic Chamber are complete, but only ${G.mastered.size} of ${G.questions.length} Archive checks were verified. Review the fault log and re-run the mission.`
+        ?(['1','2','3'].includes(adventureId)
+          ?`The continuous expedition and Logic Chamber are complete, but only ${G.mastered.size} of ${G.questions.length} Archive checks were verified. Review the fault log and re-run the mission.`
+          :`The adventure stages are complete, but only ${G.mastered.size} of ${G.questions.length} diagnostic checks were verified. Review the fault log and re-run the mission.`)
         :`You repaired ${G.mastered.size} of ${G.questions.length} circuits. Review the fault log and re-run the mission.`;
     }else{
       if(isAdventure){
