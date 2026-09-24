@@ -606,13 +606,15 @@ function makeContinuousWorld(seed){
   const terminals=terminalCols.map((c,index)=>({index,pos:[spine[c]??9,c],solved:false}));
   const dist=expeditionDistances(grid,start),floors=[];
   for(let r=1;r<rows-1;r++)for(let c=1;c<cols-1;c++)if(grid[r][c]===0)floors.push([r,c]);
-  return {rows,cols,grid,start,exit,spine,chamberSet,terminals,barriers,dist,floors,rng};
+  const spineKeys=new Set(spine.map((yy,c)=>yy==null?null:key(yy,c)).filter(Boolean));
+  return {rows,cols,grid,start,exit,spine,spineKeys,chamberSet,terminals,barriers,dist,floors,rng};
 }
 function continuousWorldHazards(world,count,banned,seed){
   const rng=rngFromSeed(seed+':hazards'),types=['chaser','patrol','sentry'],out=[];
   for(let i=0;i<count;i++){
     const lo=Math.floor(7+i*(world.cols-16)/count),hi=Math.floor(7+(i+1)*(world.cols-16)/count);
-    let type=types[i%3],candidates=world.floors.filter(p=>p[1]>=lo&&p[1]<=hi&&!banned.has(key(...p)));
+    let type=types[i%3],candidates=world.floors.filter(p=>p[1]>=lo&&p[1]<=hi&&!banned.has(key(...p))&&(!world.spineKeys.has(key(...p))||world.chamberSet.has(key(...p))));
+    if(!candidates.length)candidates=world.floors.filter(p=>p[1]>=lo&&p[1]<=hi&&!banned.has(key(...p)));
     if(type==='sentry'){
       const tactical=candidates.filter(p=>world.chamberSet.has(key(...p))||expeditionNeighbours(world.grid,p[0],p[1]).length>=3);
       if(tactical.length)candidates=tactical;else type='patrol';
@@ -788,9 +790,11 @@ function renderContinuousSystemWorld(){
     const host=overlayHost();if(!host)return;clearOverlay();
     const shade=document.createElement('div');shade.className='adventure-popup-shade continuous-terminal-shade';
     const card=document.createElement('div');card.className='adventure-popup randomiser-task-terminal continuous-terminal-popup';
-    const head=document.createElement('div');head.className='randomiser-task-head',hc=document.createElement('div');hc.className='randomiser-task-head-copy';hc.innerHTML='<small>LEVEL '+cfg.level+' · '+cfg.regions[t.index].name+'</small><strong>T'+(t.index+1)+' · '+cfg.terminalNames[t.index]+'</strong><span>Three short checks repair this terminal and save a checkpoint.</span>';
+    const head=document.createElement('div');head.className='randomiser-task-head';
+    const hc=document.createElement('div');hc.className='randomiser-task-head-copy';hc.innerHTML='<small>LEVEL '+cfg.level+' · '+cfg.regions[t.index].name+'</small><strong>T'+(t.index+1)+' · '+cfg.terminalNames[t.index]+'</strong><span>Three short checks repair this terminal and save a checkpoint.</span>';
     const leave=document.createElement('button');leave.type='button';leave.className='secondary randomiser-task-leave';leave.textContent='RETURN TO WORLD';head.append(hc,leave);
-    const body=document.createElement('div');body.className='randomiser-task-body',feedback=document.createElement('div');feedback.className='randomiser-task-feedback';feedback.hidden=true;card.append(head,body,feedback);shade.appendChild(card);host.replaceChildren(shade);document.body.classList.add('adventure-modal-open');
+    const body=document.createElement('div');body.className='randomiser-task-body';
+    const feedback=document.createElement('div');feedback.className='randomiser-task-feedback';feedback.hidden=true;card.append(head,body,feedback);shade.appendChild(card);host.replaceChildren(shade);document.body.classList.add('adventure-modal-open');
     terminalOpen=true;live=false;stopJ();const rounds=continuousTerminalRounds(id,t.index,active.seed),total=rounds.length;let ri=0,locked=false;
     function resume(){if(!terminalOpen)return;terminalOpen=false;clearOverlay();live=true;paint();}
     leave.addEventListener('click',resume);
