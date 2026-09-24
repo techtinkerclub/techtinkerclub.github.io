@@ -3040,6 +3040,56 @@ function logicFutoCandidates(p,state,r,c){
   });
 }
 
+
+function openFutoshikiLogicKey(index,onSolved,onLeave){
+  const cfg=logicFutoStageConfig(index);
+  const ui=logicPuzzleShell('K'+(index+1)+' · '+logicKeyName('3',index),cfg.copy,onLeave);
+  if(!ui){onLeave?.();return;}
+  const puzzle=makeLogicFutoshiki(index,active.seed+':logic-chamber-futo:'+index);
+  if(!puzzle){logicFeedback(ui.feedback,'Comparator grid could not be generated. Return to the chamber and try again.','fault');return;}
+  const n=puzzle.n,state=puzzle.display.map(row=>row.slice()),givenMask=puzzle.display.map(row=>row.map(v=>v>0)),cellButtons=new Map();
+  let selected=null,finished=false;
+
+  const rules=document.createElement('div');rules.className='futo-rules logic-futo-rules';
+  rules.innerHTML='<span><strong>1…'+n+'</strong> once in every row</span><span><strong>1…'+n+'</strong> once in every column</span><span><strong>&lt; &gt;</strong> pointed side faces the smaller number</span>';
+  const meta=document.createElement('div');meta.className='futo-meta';
+  meta.innerHTML='<strong>'+cfg.label+'</strong><span>'+puzzle.givens.length+' starting numbers · '+(puzzle.hSigns.flat().filter(Boolean).length+puzzle.vSigns.flat().filter(Boolean).length)+' inequality signs</span>';
+  const board=document.createElement('div');board.className='logic-futo-grid logic-key-futo-grid';board.dataset.futoSize=String(n);board.style.gridTemplateColumns='repeat('+(n*2-1)+',minmax(0,1fr))';board.style.gridTemplateRows='repeat('+(n*2-1)+',minmax(0,1fr))';
+  function place(node,row,col){node.style.gridRow=String(row);node.style.gridColumn=String(col);board.appendChild(node);}
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+    const b=document.createElement('button');b.type='button';b.className='futo-cell';b.dataset.r=r;b.dataset.c=c;
+    if(givenMask[r][c]){b.classList.add('given');b.disabled=true;}else b.addEventListener('click',()=>selectCell(r,c));
+    cellButtons.set(r+':'+c,b);place(b,r*2+1,c*2+1);
+    if(c<n-1){const s=document.createElement('div');s.className='futo-sign horizontal';s.textContent=puzzle.hSigns[r][c]||'';place(s,r*2+1,c*2+2);}
+    if(r<n-1){const raw=puzzle.vSigns[r][c],s=document.createElement('div');s.className='futo-sign vertical';s.textContent=raw==='^'?'∧':raw==='v'?'∨':'';place(s,r*2+2,c*2+1);}
+  }
+  const keypad=document.createElement('div');keypad.className='futo-keypad';
+  for(let v=1;v<=n;v++){const b=document.createElement('button');b.type='button';b.textContent=String(v);b.addEventListener('click',()=>enterValue(v));keypad.appendChild(b);}
+  const clear=document.createElement('button');clear.type='button';clear.className='secondary';clear.textContent='Clear';clear.addEventListener('click',()=>enterValue(0));keypad.appendChild(clear);
+  const actions=document.createElement('div');actions.className='futo-actions';const hint=document.createElement('button');hint.type='button';hint.className='secondary';hint.textContent='Highlight useful cell';const check=document.createElement('button');check.type='button';check.textContent='Unlock key';actions.append(hint,check);
+
+  function paint(){for(let r=0;r<n;r++)for(let c=0;c<n;c++){const b=cellButtons.get(r+':'+c),v=state[r][c];b.textContent=v?String(v):'';b.classList.toggle('selected',!!selected&&selected[0]===r&&selected[1]===c);}}
+  function selectCell(r,c){if(finished||givenMask[r][c])return;selected=[r,c];cellButtons.forEach(b=>b.classList.remove('hint'));paint();}
+  function enterValue(v){if(finished||!selected)return;const [r,c]=selected;state[r][c]=v;const b=cellButtons.get(r+':'+c);b.classList.remove('wrong','hint');paint();}
+  hint.addEventListener('click',()=>{
+    cellButtons.forEach(b=>b.classList.remove('hint'));const opts=[];
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(!givenMask[r][c]&&!state[r][c]){const cand=logicFutoCandidates(puzzle,state,r,c);if(cand.length)opts.push({r,c,count:cand.length});}
+    opts.sort((x,y)=>x.count-y.count);const q=opts[0];if(!q){logicFeedback(ui.feedback,'Every cell is filled. Run Unlock key.','success');return;}
+    selected=[q.r,q.c];cellButtons.get(q.r+':'+q.c).classList.add('hint');paint();logicFeedback(ui.feedback,'This cell currently has '+q.count+' possible value'+(q.count===1?'':'s')+'. Use its row, column and inequality signs.','success');
+  });
+  check.addEventListener('click',()=>{
+    let wrong=0,blank=0;cellButtons.forEach((b,k)=>{b.classList.remove('wrong');const [r,c]=k.split(':').map(Number),v=state[r][c];if(!v)blank++;else if(v!==puzzle.solution[r][c]){wrong++;if(!givenMask[r][c])b.classList.add('wrong');}});
+    if(!wrong&&!blank){
+      finished=true;check.disabled=true;hint.disabled=true;keypad.querySelectorAll('button').forEach(b=>b.disabled=true);cellButtons.forEach(b=>b.disabled=true);
+      active.playTone(920,.1,'sine',.04);logicFeedback(ui.feedback,'Comparator grid solved. K'+(index+1)+' is energising…','success');
+      later(()=>{clearOverlay();onSolved?.();},700);return;
+    }
+    if(wrong){active.futoshikiFaults++;const depleted=applyAdventurePenalty();active.playTone(150,.08,'square',.025);led()?.flash('x',380);if(depleted)return;logicFeedback(ui.feedback,wrong+' entered number'+(wrong===1?' is':'s are')+' inconsistent.','fault');}
+    else logicFeedback(ui.feedback,blank+' cell'+(blank===1?' is':'s are')+' still blank.','fault');
+  });
+  paint();ui.body.append(rules,meta,board,keypad,actions);
+}
+
 function renderLogicFutoshiki(){
   const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
   const cfg=logicFutoStageConfig(stageIndex);
