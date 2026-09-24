@@ -5113,3 +5113,227 @@ body.expedition-immersive-open{
   .randomiser-task-head{gap:7px}
   .randomiser-task-leave{padding:6px 7px;font-size:7px}
 }
+
+
+/* ============================================================
+   Readability pass · stronger maze contrast + larger game type
+   ============================================================ */
+
+/* Strong visual separation between solid maze structure and walkable floor.
+   Special cells (BIT, enemies, pickups, relays, terminals, arcs, exits) keep
+   their own colours on top of this base treatment. */
+.expedition-shell{
+  --maze-wall:#234657;
+  --maze-wall-hi:#315f70;
+  --maze-floor:#020a0f;
+  --maze-line:#54efff;
+}
+.expedition-grid .expedition-cell.wall{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.09),transparent 38%),
+    repeating-linear-gradient(135deg,var(--maze-wall-hi) 0 4px,var(--maze-wall) 4px 9px)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(158,220,231,.24),
+    inset 0 -3px 8px rgba(0,0,0,.30)!important;
+}
+.expedition-grid .expedition-cell.trace:not(.player):not(.pickup):not(.relay):not(.relay-active):not(.arc-active):not(.arc-idle):not(.hazard):not(.hazard-stunned):not(.entry):not(.exit):not(.randomiser-shard):not(.randomiser-terminal):not(.randomiser-terminal-solved):not(.sentry-beam){
+  background:var(--maze-floor)!important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb,var(--maze-line) 12%,transparent),
+    inset 0 0 8px rgba(0,0,0,.52)!important;
+}
+.expedition-grid .expedition-cell.trace:not(.player):not(.pickup):not(.relay):not(.relay-active):not(.arc-active):not(.arc-idle):not(.hazard):not(.hazard-stunned):not(.entry):not(.exit):not(.randomiser-shard):not(.randomiser-terminal):not(.randomiser-terminal-solved)::before{
+  background:color-mix(in srgb,var(--maze-line) 62%,transparent)!important;
+  box-shadow:0 0 6px color-mix(in srgb,var(--maze-line) 28%,transparent)!important;
+}
+.expedition-grid .expedition-cell.trace:not(.player):not(.pickup):not(.relay):not(.relay-active):not(.arc-active):not(.arc-idle):not(.hazard):not(.hazard-stunned):not(.entry):not(.exit):not(.randomiser-shard):not(.randomiser-terminal):not(.randomiser-terminal-solved)::after{
+  background:color-mix(in srgb,var(--maze-line) 40%,transparent)!important;
+}
+.expedition-grid .expedition-cell.chamber:not(.player):not(.pickup):not(.relay):not(.relay-active):not(.arc-active):not(.arc-idle):not(.hazard):not(.hazard-stunned):not(.entry):not(.exit):not(.randomiser-shard):not(.randomiser-terminal):not(.randomiser-terminal-solved){
+  background:
+    radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--maze-line) 10%,transparent),transparent 72%),
+    var(--maze-floor)!important;
+}
+
+/* Level 2 keeps its changing regional palette, but every region now has a
+   deliberately bright structural wall against a very dark walkable floor. */
+.randomiser-tunnels{--maze-wall:#245657;--maze-wall-hi:#377272;--maze-floor:#020c0d;--maze-line:#69f0d0}
+.randomiser-junction{--maze-wall:#264a64;--maze-wall-hi:#376985;--maze-floor:#030b13;--maze-line:#55d9ff}
+.randomiser-window{--maze-wall:#374273;--maze-wall-hi:#4b5792;--maze-floor:#07091a;--maze-line:#8da7ff}
+.randomiser-caves{--maze-wall:#5b3b1a;--maze-wall-hi:#765024;--maze-floor:#100a04;--maze-line:#ffce6a}
+.randomiser-caves-amber{--maze-wall:#63351b;--maze-wall-hi:#844a26;--maze-floor:#120905;--maze-line:#ffb95c}
+.randomiser-vault{--maze-wall:#4b2d5d;--maze-wall-hi:#68407d;--maze-floor:#0d0712;--maze-line:#d7a2ff}
+.randomiser-routing{--maze-wall:#453466;--maze-wall-hi:#604a86;--maze-floor:#08070f;--maze-line:#a880ff}
+.randomiser-routing-amber{--maze-wall:#5b421e;--maze-wall-hi:#78592a;--maze-floor:#100b04;--maze-line:#ffcf74}
+.randomiser-routing-core{--maze-wall:#5f244c;--maze-wall-hi:#7d3266;--maze-floor:#12050e;--maze-line:#ff77cf}
+
+/* Maze symbols are deliberately larger. */
+.expedition-player,
+.expedition-hazard,
+.expedition-pickup,
+.expedition-relay,
+.expedition-arc,
+.expedition-exit,
+.expedition-entry,
+.randomiser-terminal-label{
+  font-size:clamp(9px,1vw,13px);
+}
+.expedition-player,.expedition-hazard{font-size:clamp(12px,1.35vw,18px)}
+.expedition-arc{font-size:clamp(11px,1.2vw,16px)}
+.expedition-exit,.expedition-entry{font-size:clamp(7px,.82vw,11px)}
+
+/* General game UI: stop using tiny 7–10px labels for information the player
+   actually needs to read. */
+body{font-size:17px;line-height:1.55}
+button{font-size:16px}
+.brand{font-size:20px}
+.brand-subtitle{font-size:14px}
+.stat-pill{font-size:14px}
+.eyebrow{font-size:12px}
+.hero-copy{font-size:16px}
+.hero-status span,.hero-status small{font-size:11px}
+.mission-key{font-size:12px}
+.system-id{font-size:12px}
+.card h3{font-size:20px}
+.card-topic{font-size:14px}
+.card-description{font-size:13px;line-height:1.5}
+.tag{font-size:12px}
+.card-note{font-size:12px}
+.brief-topic{font-size:15px}
+.brief-copy>p{font-size:15px}
+.brief-objective strong{font-size:12px}
+.brief-objective span{font-size:15px}
+.battle-week{font-size:13px}
+.repair-count{font-size:13px}
+.module{font-size:11px}
+.hud-label{font-size:11px}
+.hud-item strong{font-size:15px}
+.hint-button{font-size:13px}
+.question-count{font-size:13px}
+.retry-badge{font-size:11px}
+.qcode{font-size:14px}
+.option-button{font-size:15px}
+.option-key{font-size:12px}
+.match-intro{font-size:14px}
+.match-column-title{font-size:11px}
+.match-term,.match-definition{font-size:14px}
+.paired-with,.correct-match{font-size:12px}
+.feedback-copy{font-size:14px}
+.feedback-copy strong{font-size:16px}
+.results-summary{font-size:15px}
+.result-stat span{font-size:11px}
+.review{font-size:13px}
+.toast{font-size:14px}
+.how-grid strong{font-size:14px}
+.how-grid p,.keyboard-tip,.setting-row small,.install-copy small{font-size:13px}
+
+.adventure-progress{font-size:12px}
+.adventure-room-head p:not(.eyebrow){font-size:15px}
+.room-stage-badge{font-size:12px}
+.adventure-info-strip span{font-size:12px;padding:6px 10px}
+.adventure-integrity small{font-size:11px}
+.adventure-integrity-value{font-size:14px}
+.pulse-status,.logic-status{font-size:14px}
+.reality-note strong{font-size:12px}
+.reality-note span{font-size:13px}
+.adventure-success strong{font-size:15px}
+.adventure-success span{font-size:13px}
+.adventure-popup.notice{font-size:15px}
+.adventure-popup-copy strong{font-size:16px}
+.adventure-popup-copy span{font-size:14px}
+
+.expedition-hud>*{font-size:12px}
+.expedition-mission{font-size:13px}
+.expedition-immersive-toggle,
+.expedition-guide-toggle{font-size:11px}
+.expedition-joystick-label{font-size:10px}
+.expedition-guide-controls,.expedition-map-controls{font-size:11px}
+.expedition-guide-copy strong{font-size:12px}
+.expedition-guide-copy span{font-size:10px}
+.expedition-route-key{font-size:12px}
+.expedition-map-label strong{font-size:12px}
+.expedition-map-label span{font-size:10px}
+
+/* Nine-stage maps were especially small. */
+.level-one-route-region-head small{font-size:9px}
+.level-one-route-region-head strong{font-size:11px}
+.level-one-mini-stop b,.level-one-final-node b{font-size:10px}
+.level-one-mini-stop>span strong{font-size:9px}
+.level-one-mini-stop>span small{font-size:8px}
+.level-one-final-node strong{font-size:10px}
+.level-one-final-node small{font-size:9px}
+.level-two-previous b,.level-two-entry b{font-size:9px}
+.level-two-previous strong,.level-two-entry strong{font-size:10px}
+.level-two-previous small,.level-two-entry small{font-size:9px}
+.level-two-stage-location strong{font-size:10px}
+.level-two-stage-location span{font-size:11px}
+
+/* Startup / memory / terminal text. */
+.startup-scene-meta small{font-size:10px}
+.startup-scene-meta strong{font-size:14px}
+.startup-scene-meta span{font-size:11px}
+.startup-scene-node b{font-size:10px}
+.startup-scene-node span{font-size:9px}
+.boot-slot small{font-size:11px}
+.boot-slot span{font-size:14px}
+.boot-choice strong{font-size:14px}
+.boot-choice span{font-size:13px}
+.memory-rules span{font-size:12px}
+.memory-scene-copy small{font-size:10px}
+.memory-scene-copy strong{font-size:13px}
+.memory-scene-copy span{font-size:11px}
+.randomiser-task-head small{font-size:10px}
+.randomiser-task-head span{font-size:12px}
+.randomiser-task-progress{font-size:10px}
+.randomiser-task-rule{font-size:12px}
+.randomiser-task-prompt{font-size:15px}
+.randomiser-task-options button{font-size:14px}
+.randomiser-task-leave{font-size:10px}
+.randomiser-task-feedback{font-size:12px}
+
+/* Mobile/immersive used to collapse critical information to 5–8px. Keep it
+   compact, but readable. */
+@media(max-width:700px){
+  .hero-copy{font-size:14px}
+  .card-topic,.card-description{font-size:13px}
+  .tag,.card-note{font-size:11px}
+  .stat-pill{font-size:12px}
+  .adventure-progress{font-size:11px}
+  .adventure-room-head p:not(.eyebrow){font-size:13px}
+  .room-stage-badge{font-size:11px}
+  .expedition-hud>*{font-size:10px}
+  .expedition-player,.expedition-hazard{font-size:11px}
+  .expedition-pickup,.expedition-relay,.randomiser-terminal-label{font-size:9px}
+  .expedition-exit,.expedition-entry{font-size:7px}
+  .expedition-mission{font-size:11px}
+  .expedition-guide-copy strong{font-size:11px}
+  .expedition-guide-copy span{font-size:9px}
+}
+@media(max-width:950px) and (orientation:landscape){
+  #screen-adventure.expedition-map-mode .adventure-progress{font-size:10px}
+  .expedition-route-intro small{font-size:10px}
+  .expedition-route-intro p{font-size:12px}
+  .expedition-map-label strong{font-size:10px}
+  .expedition-map-label span{font-size:9px}
+  .expedition-route-key{font-size:10px}
+  .expedition-route-action{font-size:12px}
+
+  .expedition-shell.expedition-immersive .expedition-hud>*{font-size:10px}
+  .expedition-shell.expedition-immersive .expedition-mission{font-size:10px}
+  .expedition-shell.expedition-immersive .expedition-guide-toggle,
+  .expedition-shell.expedition-immersive .expedition-immersive-toggle{font-size:10px}
+  .expedition-shell.expedition-immersive .expedition-controls .expedition-pulse{font-size:12px}
+
+  .level-one-route-region-head strong{font-size:9px}
+  .level-one-route-region-head small{font-size:8px}
+  .level-one-mini-stop b{font-size:8px}
+  .level-one-mini-stop>span strong{font-size:7px}
+  .level-one-final-node b{font-size:8px}
+  .level-one-final-node strong{font-size:8px}
+
+  .level-two-previous strong,.level-two-entry strong{font-size:8px}
+  .randomiser-expedition .expedition-hud{font-size:10px}
+  .randomiser-expedition .expedition-mission{font-size:10px}
+  .randomiser-task-head strong{font-size:16px}
+  .randomiser-task-options button{font-size:11px}
+}
