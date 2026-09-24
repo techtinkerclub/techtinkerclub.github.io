@@ -721,7 +721,10 @@ function renderContinuousSystemWorld(){
     if(d[1]==='pulse')b.addEventListener('click',()=>usePulse(b));else b.addEventListener('click',()=>movePlayer(d[2],d[3],b));controls.appendChild(b);
   });
   const joystick=document.createElement('div');joystick.className='expedition-joystick';
-  const jb=document.createElement('div');jb.className='expedition-joystick-base',jk=document.createElement('div');jk.className='expedition-joystick-knob',jl=document.createElement('span');jl.className='expedition-joystick-label';jl.textContent='MOVE';jb.append(jk,jl);joystick.appendChild(jb);controls.appendChild(joystick);
+  const jb=document.createElement('div');jb.className='expedition-joystick-base';
+  const jk=document.createElement('div');jk.className='expedition-joystick-knob';
+  const jl=document.createElement('span');jl.className='expedition-joystick-label';jl.textContent='MOVE';
+  jb.append(jk,jl);joystick.appendChild(jb);controls.appendChild(joystick);
   const pulseButton=controls.querySelector('.expedition-pulse');
   const mission=document.createElement('div');mission.className='expedition-mission continuous-world-mission';
   const rotate=document.createElement('div');rotate.className='expedition-rotate-notice';rotate.innerHTML='<div class="expedition-rotate-phone">▯↻</div><strong>Rotate your phone</strong><span>The continuous expedition is designed for landscape play on mobile.</span>';
