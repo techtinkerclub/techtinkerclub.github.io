@@ -5652,3 +5652,33 @@ button{font-size:16px}
   .continuous-world-shell.expedition-immersive .continuous-world-hud{margin-bottom:4px}
   .continuous-terminal-popup{max-height:calc(100dvh - 14px);overflow:auto}
 }
+
+
+/* Continuous-world performance: move the world as one composited layer instead
+   of asking the browser to smooth-scroll and repaint thousands of cells. */
+.continuous-world-viewport{
+  scroll-behavior:auto!important;
+  contain:layout paint style;
+}
+.continuous-world-grid{
+  will-change:transform;
+  transform:translate3d(0,0,0);
+  transition-property:transform;
+  transition-duration:68ms;
+  transition-timing-function:cubic-bezier(.2,.72,.3,1);
+  transform-origin:0 0;
+  contain:layout paint style;
+  backface-visibility:hidden;
+}
+.continuous-world-grid .expedition-cell{
+  transition:none!important;
+  contain:layout paint style;
+}
+.continuous-world-grid .continuous-static-label{
+  transition:none!important;
+}
+.continuous-world-grid .player>.continuous-static-label,
+.continuous-world-grid .hazard>.continuous-static-label,
+.continuous-world-grid .hazard-stunned>.continuous-static-label{
+  opacity:0;
+}
