@@ -384,8 +384,8 @@
             kicker:'LOGIC ROUTER ONLINE',
             perfect:'Flawless logic!',
             title:'Logic Router online!',
-            perfectSummary:'Branch routing, decision logic, Futoshiki repair and the final diagnostic all completed without a fault.',
-            summary:'Conditional routing is stable again. Replay the mission if you want the clean-adventure and flawless-diagnostic stars.'
+            perfectSummary:'The nine-stage Logic Router expedition, three Futoshiki comparator keys and Knowledge Archive diagnostic all completed without a fault.',
+            summary:'Conditional routing is stable again. Replay the expedition if you want the clean-adventure and flawless-diagnostic stars.'
           },
           '4':{
             kicker:'SENSOR ARRAY ONLINE',
