@@ -4895,3 +4895,28 @@ body.expedition-immersive-open{
   border-color:rgba(201,157,255,.36);
   box-shadow:0 0 24px rgba(201,157,255,.07);
 }
+
+
+/* Level 2 continues the same BIT journey inside the micro:bit. */
+.randomiser-continuity-strip{
+  display:flex;flex-wrap:wrap;align-items:center;gap:7px 16px;
+  margin:0 0 10px;padding:8px 10px;
+  border:1px solid rgba(85,217,255,.16);border-radius:10px;
+  background:rgba(4,15,24,.78);color:#6f8994;
+  font:750 8px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.randomiser-continuity-strip span{display:flex;gap:5px;align-items:center}
+.randomiser-continuity-strip strong{color:#9feef5;font-size:7px;letter-spacing:.07em}
+.random-catcher.bit-catcher{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.random-catcher.bit-catcher b{color:#7dffc2;font-size:20px;line-height:.72;text-shadow:0 0 9px rgba(125,255,194,.7)}
+.random-catcher.bit-catcher span{font-size:7px;letter-spacing:.08em}
+.property-router-cell{position:relative}
+.property-router-cell.bit-position::after{
+  content:"● BIT";position:absolute;right:3px;bottom:2px;color:#7dffc2;
+  font:950 6px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-shadow:0 0 7px rgba(125,255,194,.58);pointer-events:none;
+}
+@media(max-width:700px){
+  .randomiser-continuity-strip{gap:4px 10px;font-size:7px}
+  .randomiser-continuity-strip strong{font-size:6px}
+}
