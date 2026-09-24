@@ -1714,27 +1714,76 @@ function renderRandomiserExpeditionStage(){
   function openTerminal(){
     if(terminalSolved){showNotice('Terminal already calibrated. Head for the OPEN gate.','info',850);return;}
     if(!allShards()){showNotice('Terminal locked. Recover every data shard first.','warn',900);return;}
-    terminalOpen=true;live=false;stopJoy();
-    const host=overlayHost();if(!host)return;document.body.classList.add('adventure-modal-open');
+
+    // Build and mount the terminal before pausing the expedition. This avoids
+    // leaving BIT frozen if the overlay host is unavailable for any reason.
+    const host=overlayHost();
+    if(!host){
+      showNotice('Terminal display unavailable. Move away and try PULSE again.','fault',1200);
+      return;
+    }
+    clearOverlay();
     const shade=document.createElement('div');shade.className='adventure-popup-shade randomiser-terminal-shade';
-    const card=document.createElement('div');card.className='adventure-popup randomiser-task-terminal';
-    const head=document.createElement('div');head.className='randomiser-task-head';head.innerHTML='<small>STAGE '+stageNo+'/9 · '+cfg.area+'</small><strong>Calibration terminal</strong><span>Clear three logic checks to unlock the service gate.</span>';
-    const body=document.createElement('div');body.className='randomiser-task-body';card.append(head,body);shade.appendChild(card);host.replaceChildren(shade);
-    const rounds=randomiserTaskRounds(stage,active.seed),buttons=[];let ri=0;
+    const card=document.createElement('div');card.className='adventure-popup randomiser-task-terminal';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label','Randomiser calibration terminal');
+    const head=document.createElement('div');head.className='randomiser-task-head';
+    const headCopy=document.createElement('div');headCopy.className='randomiser-task-head-copy';
+    headCopy.innerHTML='<small>STAGE '+stageNo+'/9 · '+cfg.area+'</small><strong>Calibration terminal</strong><span>Clear three logic checks to unlock the service gate.</span>';
+    const leave=document.createElement('button');leave.type='button';leave.className='secondary randomiser-task-leave';leave.textContent='RETURN TO CORRIDOR';
+    head.append(headCopy,leave);
+    const body=document.createElement('div');body.className='randomiser-task-body';
+    const feedback=document.createElement('div');feedback.className='randomiser-task-feedback';feedback.hidden=true;
+    card.append(head,body,feedback);shade.appendChild(card);host.replaceChildren(shade);
+    document.body.classList.add('adventure-modal-open');
+
+    terminalOpen=true;live=false;stopJoy();
+
+    const rounds=randomiserTaskRounds(stage,active.seed);let ri=0,locked=false;
+
+    function resumeCorridor(){
+      if(!terminalOpen)return;
+      terminalOpen=false;clearOverlay();live=true;paint();
+      showNotice('Terminal closed. PULSE on T whenever you are ready.','info',900);
+    }
+    leave.addEventListener('click',resumeCorridor);
+
+    function setFeedback(text,tone){
+      feedback.hidden=false;
+      feedback.className='randomiser-task-feedback '+tone;
+      feedback.textContent=text;
+    }
     function paintRound(){
+      locked=false;feedback.hidden=true;
       const q=rounds[ri];body.replaceChildren();
       const progress=document.createElement('div');progress.className='randomiser-task-progress';progress.textContent='CHECK '+(ri+1)+'/3';
       const rule=document.createElement('div');rule.className='randomiser-task-rule';rule.textContent=q.rule;
       const prompt=document.createElement('div');prompt.className='randomiser-task-prompt';prompt.textContent=q.prompt;
       const opts=document.createElement('div');opts.className='randomiser-task-options';
-      for(const label of q.options){const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',()=>answer(label,b));opts.appendChild(b);}
-      body.append(progress,rule,prompt,opts);requestAnimationFrame(()=>opts.querySelector('button')?.focus({preventScroll:true}));
+      for(const label of q.options){
+        const b=document.createElement('button');b.type='button';b.textContent=label;
+        b.addEventListener('click',()=>answer(label,b));opts.appendChild(b);
+      }
+      body.append(progress,rule,prompt,opts);
+      requestAnimationFrame(()=>opts.querySelector('button')?.focus({preventScroll:true}));
     }
     function answer(label,b){
-      const q=rounds[ri];if(label!==q.answer){b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',300);const depleted=taskFault();if(depleted){terminalOpen=false;return;}showNotice(q.explain,'fault',1200);later(()=>b.classList.remove('wrong'),500);return;}
-      b.classList.add('correct');active.playTone(760,.055,'sine',.024);showNotice(q.explain,'success',850);ri++;
-      if(ri<rounds.length){later(paintRound,500);return;}
-      terminalSolved=true;terminalOpen=false;clearOverlay();live=true;led()?.setPattern('check');showNotice('Terminal calibrated · service gate OPEN.','success',1300);paint();
+      if(locked)return;
+      const q=rounds[ri];
+      if(label!==q.answer){
+        locked=true;b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',300);
+        const depleted=taskFault();
+        if(depleted){terminalOpen=false;return;}
+        setFeedback(q.explain,'fault');
+        later(()=>{b.classList.remove('wrong');locked=false;},650);
+        return;
+      }
+      locked=true;b.classList.add('correct');active.playTone(760,.055,'sine',.024);
+      setFeedback(q.explain,'success');ri++;
+      if(ri<rounds.length){later(paintRound,650);return;}
+      terminalSolved=true;
+      later(()=>{
+        terminalOpen=false;clearOverlay();live=true;led()?.setPattern('check');
+        showNotice('Terminal calibrated · service gate OPEN.','success',1300);paint();
+      },650);
     }
     paintRound();
   }
