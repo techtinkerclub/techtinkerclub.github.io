@@ -105,7 +105,7 @@ function renderRoom(){
   clearTimers();
   clearOverlay();
   clearExpeditionViewport();
-  document.getElementById('screen-adventure')?.classList.remove('expedition-map-mode','randomiser-map-mode');
+  document.getElementById('screen-adventure')?.classList.remove('expedition-map-mode','randomiser-map-mode','logic-router-map-mode');
   active.roomIntegrity=active.roomIntegrityMax;
   active.root.replaceChildren();
   if(active.systemId==='2'){
