@@ -5063,3 +5063,53 @@ body.expedition-immersive-open{
   .randomiser-task-body{gap:7px}
   .randomiser-task-options button{min-height:34px;padding:6px 8px;font-size:9px}
 }
+
+
+/* Randomiser terminal: keep the task visible and self-contained while play is paused. */
+.randomiser-task-head{
+  flex-direction:row;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.randomiser-task-head-copy{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+}
+.randomiser-task-leave{
+  flex:0 0 auto;
+  padding:7px 9px;
+  font-size:8px;
+  white-space:nowrap;
+}
+.randomiser-task-feedback{
+  margin-top:10px;
+  padding:9px 10px;
+  border:1px solid var(--line2);
+  border-radius:9px;
+  color:var(--muted);
+  background:#07121e;
+  font-size:10px;
+  line-height:1.4;
+}
+.randomiser-task-feedback.success{
+  border-color:rgba(92,224,160,.38);
+  color:#bff7d9;
+  background:rgba(92,224,160,.06);
+}
+.randomiser-task-feedback.fault{
+  border-color:rgba(255,119,135,.42);
+  color:#ffd4da;
+  background:rgba(255,119,135,.06);
+}
+#screen-adventure.expedition-fullscreen-host .randomiser-terminal-shade{
+  position:absolute!important;
+  inset:0!important;
+  z-index:2147483647!important;
+}
+@media(max-width:700px){
+  .randomiser-task-head{gap:7px}
+  .randomiser-task-leave{padding:6px 7px;font-size:7px}
+}
