@@ -174,7 +174,16 @@ function roomHeader(kicker,title,copy){
   const h=document.createElement('h2');h.id='adventure-title';h.textContent=title;
   const p=document.createElement('p');p.textContent=copy;
   left.appendChild(eyebrow);
-  if(active&&active.room<3){const stage=document.createElement('span');stage.className='room-stage-badge';const word=active.systemId==='1'&&active.room===0?'AREA':'STAGE';stage.textContent=`${word} ${Math.min(3,(active.roomStage||0)+1)}/3`;left.appendChild(stage);}
+  if(active&&active.room<3){
+    const stage=document.createElement('span');stage.className='room-stage-badge';
+    if(active.systemId==='1'||active.systemId==='2'){
+      const globalStage=active.room*3+(active.roomStage||0)+1;
+      stage.textContent='STAGE '+Math.min(9,globalStage)+'/9';
+    }else{
+      stage.textContent='STAGE '+Math.min(3,(active.roomStage||0)+1)+'/3';
+    }
+    left.appendChild(stage);
+  }
   left.append(h,p);
   head.appendChild(left);
   if(active&&active.room<3){
@@ -1368,22 +1377,120 @@ function randomInt(rng,min,max){return min+Math.floor(rng()*(max-min+1));}
 
 /* ---------------- Room 1: Random Packet Catcher ---------------- */
 
+function levelTwoJourneyStages(){
+  return [
+    {short:'D1',name:'DICE FEED',sub:'Catch 1–6 packets'},
+    {short:'XY',name:'COORDINATE STREAM',sub:'Catch valid LED coordinates'},
+    {short:'WIN',name:'WINDOW FILTER',sub:'Tight 2–5 range'},
+    {short:'C1',name:'COIN AUDIT',sub:'Check 0/1 outputs'},
+    {short:'D2',name:'DICE AUDIT',sub:'Check 1–6 outputs'},
+    {short:'CA',name:'COORDINATE AUDIT',sub:'Scan longer output streams'},
+    {short:'P',name:'PARITY ROUTER',sub:'Even or odd path'},
+    {short:'×',name:'MULTIPLE ROUTER',sub:'Multiples path'},
+    {short:'★',name:'PRIME / SQUARE',sub:'Advanced property path'}
+  ];
+}
+function randomiserRouteCopy(stageIndex,phase){
+  if(phase==='start')return {
+    kicker:'LEVEL 2 · RANDOMISER CORE · NINE STAGES',
+    title:'BIT enters the Randomiser Core',
+    copy:'First intercept live random data, then audit output streams, then route packets through number-property filters.',
+    button:'Enter Dice Feed →'
+  };
+  const messages=[
+    ['Dice Feed stable','BIT has calibrated the basic 1–6 packet feed. Next, random values become LED coordinates.','Enter Coordinate Stream →'],
+    ['Coordinate Stream stable','Valid x/y positions are passing correctly. The next filter uses a narrow 2–5 window with close boundary values.','Enter Window Filter →'],
+    ['Packet Intake stable','All three live packet filters are stable. BIT can now inspect stored random output streams.','Open Coin Audit →'],
+    ['Coin Audit stable','Binary 0/1 outputs are valid. Next, inspect a longer six-sided-die stream.','Open Dice Audit →'],
+    ['Dice Audit stable','The die stream passes its range checks. One longer coordinate-style audit remains.','Open Coordinate Audit →'],
+    ['Range Diagnostics stable','All stored output streams have been checked without mistaking ordinary repeats for faults.','Open Parity Router →'],
+    ['Parity Router stable','The first property route is restored. Next, route only multiples through a larger grid.','Open Multiple Router →'],
+    ['Multiple Router stable','The multiples route is stable. The final stage introduces PRIME or SQUARE routing.','Open Prime / Square Router →'],
+    ['Randomiser Core repaired','All nine Level 2 stages are stable. BIT can now run the final Randomiser diagnostic.','Proceed to Final Diagnostic →']
+  ];
+  const m=messages[Math.max(0,Math.min(8,stageIndex))];
+  return {
+    kicker:stageIndex===8?'NINE STAGES COMPLETE':'STAGE '+(stageIndex+1)+'/9 COMPLETE',
+    title:m[0],copy:m[1],button:m[2]
+  };
+}
+function renderRandomiserRoute(stageIndex,phase,onContinue){
+  const root=active?.root;if(!root){onContinue?.();return;}
+  const screen=document.getElementById('screen-adventure');
+  const stages=levelTwoJourneyStages();
+  const completedThrough=phase==='complete'?stageIndex:stageIndex-1;
+  const current=phase==='complete'?Math.min(stageIndex+1,stages.length):stageIndex;
+  const meta=randomiserRouteCopy(stageIndex,phase);
+  screen?.classList.add('expedition-map-mode','randomiser-map-mode');
+  setProgress('RANDOMISER CORE · LEVEL 2 JOURNEY MAP · '+Math.max(0,completedThrough+1)+'/9 STAGES');
+  root.replaceChildren();
+
+  const panel=document.createElement('section');panel.className='expedition-route-screen level-one-route-screen randomiser-route-screen';
+  const intro=document.createElement('div');intro.className='expedition-route-intro';
+  const kicker=document.createElement('small');kicker.textContent=meta.kicker;
+  const title=document.createElement('h2');title.textContent=meta.title;
+  const copy=document.createElement('p');copy.textContent=meta.copy;
+  intro.append(kicker,title,copy);
+
+  const map=document.createElement('div');map.className='level-one-journey-map level-two-journey-map';
+  const groups=[
+    ['LIVE PACKET INTAKE',0],
+    ['RANGE DIAGNOSTICS',3],
+    ['PROPERTY ROUTER',6]
+  ];
+  for(let g=0;g<groups.length;g++){
+    const region=document.createElement('section');region.className='level-one-route-region level-two-route-region region-'+(g+1);
+    const head=document.createElement('div');head.className='level-one-route-region-head';
+    const zone=document.createElement('small');zone.textContent='ZONE '+(g+1);
+    const name=document.createElement('strong');name.textContent=groups[g][0];
+    head.append(zone,name);
+    const rail=document.createElement('div');rail.className='level-one-route-rail';
+    stages.slice(groups[g][1],groups[g][1]+3).forEach((stage,local)=>{
+      const i=groups[g][1]+local;
+      const stop=document.createElement('div');stop.className='level-one-mini-stop '+(i<=completedThrough?'complete':i===current?'current':'locked');
+      const marker=document.createElement('b');marker.textContent=i<=completedThrough?'✓':i===current?'BIT':stage.short;
+      const label=document.createElement('span');
+      const strong=document.createElement('strong');strong.textContent=(i+1)+'. '+stage.name;
+      const sub=document.createElement('small');sub.textContent=stage.sub;
+      label.append(strong,sub);stop.append(marker,label);rail.appendChild(stop);
+      if(local<2){const link=document.createElement('i');link.className='level-one-mini-link '+(i<completedThrough?'complete':'');rail.appendChild(link);}
+    });
+    region.append(head,rail);map.appendChild(region);
+  }
+  const final=document.createElement('div');
+  final.className='level-one-final-node '+(current===stages.length?'current':completedThrough>=8?'ready':'locked');
+  final.innerHTML='<b>'+(current===stages.length?'RNG':completedThrough>=8?'✓':'RNG')+'</b><span><strong>FINAL DIAGNOSTIC</strong><small>12-question Randomiser check</small></span>';
+  map.appendChild(final);
+
+  const key=document.createElement('div');key.className='expedition-route-key';
+  key.innerHTML='<span><i class="done"></i> cleared</span><span><i class="here"></i> BIT location</span><span><i class="locked"></i> locked route</span><span><strong>'+Math.max(0,completedThrough+1)+'/9</strong> stages repaired</span>';
+  const action=document.createElement('button');action.type='button';action.className='expedition-route-action';action.textContent=meta.button;
+  action.addEventListener('click',()=>{screen?.classList.remove('expedition-map-mode','randomiser-map-mode');onContinue?.();});
+  panel.append(intro,map,key,action);root.appendChild(panel);
+  requestAnimationFrame(()=>action.focus({preventScroll:true}));
+}
+
 function randomPacketStage(stage){
   return [
-    {label:'DICE MODE',min:1,max:6,target:5,validChance:.72,copy:'Catch 5 numbers from 1 to 6.'},
-    {label:'LED POSITION',min:0,max:4,target:5,validChance:.64,copy:'Catch 5 numbers from 0 to 4.'},
-    {label:'NARROW RANGE',min:2,max:5,target:5,validChance:.54,copy:'Catch 5 numbers from 2 to 5. Out-of-range values are deliberately close.'}
+    {label:'DICE FEED',kind:'number',min:1,max:6,target:5,validChance:.72,spawnMs:930,fallStep:2.0,copy:'Catch 5 numbers from 1 to 6.'},
+    {label:'COORDINATE STREAM',kind:'coordinate',min:0,max:4,target:5,validChance:.64,spawnMs:860,fallStep:2.05,copy:'Catch 5 LED coordinates where BOTH x and y are from 0 to 4.'},
+    {label:'WINDOW FILTER',kind:'number',min:2,max:5,target:5,validChance:.54,spawnMs:780,fallStep:2.2,copy:'Catch 5 numbers from 2 to 5. Boundary faults sit just outside the valid window.'}
   ][stage]||null;
 }
 
 function renderRandomPacketCatcher(){
   const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
   const cfg=randomPacketStage(stageIndex);
-  setProgress('RANDOMISER CORE · ROOM 1/3 · PACKET FILTER · STAGE '+stageNo+'/3');
+  if(stageIndex===0&&!active.randomiserMapSeen){
+    active.randomiserMapSeen=true;
+    renderRandomiserRoute(0,'start',()=>renderRoom());
+    return;
+  }
+  setProgress('RANDOMISER CORE · LEVEL 2 · STAGE '+stageNo+'/9 · '+cfg.label);
   const root=active.root;
   root.appendChild(roomHeader(
-    'ROOM 1 · RANDOM PACKET CATCHER',
-    'Catch '+cfg.target+' numbers in the range',
+    'LEVEL 2 · STAGE '+stageNo+'/9 · LIVE PACKET INTAKE',
+    cfg.label,
     cfg.copy+' Move left and right to catch in-range numbers and let the others fall past.'
   ));
 
@@ -1396,7 +1503,7 @@ function renderRandomPacketCatcher(){
   const progress=document.createElement('div');progress.className='random-catch-progress';
   hud.append(ruleBox,progress);
 
-  const arena=document.createElement('div');arena.className='random-catcher-arena';
+  const arena=document.createElement('div');arena.className='random-catcher-arena random-catcher-stage-'+stageNo;
   arena.setAttribute('role','application');arena.setAttribute('aria-label','Three-lane random packet catcher stage '+stageNo);
   for(let i=0;i<3;i++){const lane=document.createElement('div');lane.className='random-lane';lane.dataset.lane=String(i);arena.appendChild(lane);}
   const catcher=document.createElement('div');catcher.className='random-catcher';catcher.innerHTML='<span>CORE</span>';
@@ -1409,17 +1516,23 @@ function renderRandomPacketCatcher(){
   const startRow=document.createElement('div');startRow.className='random-catcher-start';
   const startButton=document.createElement('button');startButton.type='button';startButton.className='random-catcher-start-button';startButton.textContent='Start stage '+stageNo+' →';
   const startHint=document.createElement('span');
-  startHint.textContent=stageIndex===0?'Nothing moves until you start.':stageIndex===1?'Same speed, but more out-of-range packets.':'Same speed again. The final range is narrower and the distractors sit closer to its limits.';
+  startHint.textContent=stageIndex===0
+    ?'Learn the feed: only values 1–6 belong in the dice stream.'
+    :stageIndex===1
+      ?'New rule: each packet is an (x,y) coordinate and BOTH values must be 0–4.'
+      :'Final intake stage: the valid window is only 2–5 and near-miss values arrive faster.';
   startRow.append(startHint,startButton);
 
   const legend=document.createElement('div');legend.className='adventure-info-strip';
-  legend.innerHTML='<span><strong>IN RANGE</strong> catch it</span><span><strong>OUT OF RANGE</strong> let it pass</span><span><strong>TARGET</strong> catch '+cfg.target+'</span>';
+  legend.innerHTML=cfg.kind==='coordinate'
+    ?'<span><strong>VALID</strong> both x and y are 0–4</span><span><strong>FAULT</strong> either coordinate is outside 0–4</span><span><strong>TARGET</strong> catch '+cfg.target+'</span>'
+    :'<span><strong>IN RANGE</strong> catch it</span><span><strong>OUT OF RANGE</strong> let it pass</span><span><strong>TARGET</strong> catch '+cfg.target+'</span>';
 
   root.append(hud,legend,startRow,arena,controls);
 
-  function validValue(v){return Number.isInteger(v)&&v>=cfg.min&&v<=cfg.max;}
   function paintRule(){
-    ruleBox.innerHTML='<small>'+cfg.label+'</small><strong>random '+cfg.min+' to '+cfg.max+'</strong><span>'+cfg.copy+'</span>';
+    const ruleText=cfg.kind==='coordinate'?'x,y = random 0 to 4':'random '+cfg.min+' to '+cfg.max;
+    ruleBox.innerHTML='<small>'+cfg.label+'</small><strong>'+ruleText+'</strong><span>'+cfg.copy+'</span>';
     progress.textContent='CAUGHT '+caught+'/'+cfg.target+' · RANGE '+cfg.min+'–'+cfg.max;
   }
   function paintPlayer(){
@@ -1429,7 +1542,7 @@ function renderRandomPacketCatcher(){
   function startLive(){
     if(live||finished)return;
     live=true;startRow.hidden=true;
-    every(spawn,900);every(tick,50);spawn();
+    every(spawn,cfg.spawnMs);every(tick,50);spawn();
   }
   startButton.addEventListener('click',()=>{startButton.disabled=true;focusPlayArea(arena,startLive);});
   function move(delta){
@@ -1447,15 +1560,28 @@ function renderRandomPacketCatcher(){
   function spawn(){
     if(!live||finished)return;
     const shouldValid=rng()<cfg.validChance;
-    let value;
-    if(shouldValid)value=randomInt(rng,cfg.min,cfg.max);
-    else{
-      const pool=[cfg.min-2,cfg.min-1,cfg.max+1,cfg.max+2].filter(v=>v>=0);
-      value=pool[Math.floor(rng()*pool.length)] ?? cfg.max+1;
+    let display,valid;
+    if(cfg.kind==='coordinate'){
+      let x=randomInt(rng,0,4),y=randomInt(rng,0,4);
+      if(!shouldValid){
+        if(rng()<.5)x=rng()<.5?-1:5;
+        else y=rng()<.5?-1:5;
+      }
+      display='('+x+','+y+')';
+      valid=x>=0&&x<=4&&y>=0&&y<=4;
+    }else{
+      let value;
+      if(shouldValid)value=randomInt(rng,cfg.min,cfg.max);
+      else{
+        const pool=stageIndex===2?[cfg.min-1,cfg.max+1]:[cfg.min-2,cfg.min-1,cfg.max+1,cfg.max+2].filter(v=>v>=0);
+        value=pool[Math.floor(rng()*pool.length)] ?? cfg.max+1;
+      }
+      display=String(value);
+      valid=Number.isInteger(value)&&value>=cfg.min&&value<=cfg.max;
     }
-    const packet={id:nextPacketId++,lane:randomInt(rng,0,2),value,y:-12,resolved:false,el:document.createElement('div')};
-    packet.el.className='random-packet';packet.el.style.left='calc('+(packet.lane*33.333+16.666)+'% - 22px)';
-    packet.el.style.top=packet.y+'%';packet.el.textContent=String(packet.value);arena.appendChild(packet.el);packets.push(packet);
+    const packet={id:nextPacketId++,lane:randomInt(rng,0,2),display,valid,y:-12,resolved:false,el:document.createElement('div')};
+    packet.el.className='random-packet'+(cfg.kind==='coordinate'?' coordinate':'');packet.el.style.left='calc('+(packet.lane*33.333+16.666)+'% - 22px)';
+    packet.el.style.top=packet.y+'%';packet.el.textContent=packet.display;arena.appendChild(packet.el);packets.push(packet);
   }
   function clearPacketNodes(){for(const p of packets)p.el?.remove();packets.splice(0,packets.length);}
   function renderPackets(){
@@ -1471,33 +1597,31 @@ function renderRandomPacketCatcher(){
   function resolvePacket(p){
     if(p.lane!==playerLane||p.resolved)return;
     p.resolved=true;
-    if(validValue(p.value)){
+    if(p.valid){
       caught++;active.playTone(720,.055,'sine',.025);paintRule();
-      showNotice(p.value+' is in range · '+caught+'/'+cfg.target+' caught.','success',650);
+      showNotice(p.display+' accepted · '+caught+'/'+cfg.target+' caught.','success',650);
       if(caught>=cfg.target){
         finished=true;live=false;clearTimers();clearPacketNodes();led()?.setPattern('check');
         if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,1);
-        finishRoomStage(
-          'Packet stage '+stageNo+'/3 complete',
-          stageIndex===0?'Next: the 0–4 LED-position range with more distractors.':'Next: a narrower 2–5 range with close distractors.',
-          'Packet filter fully restored',
-          'All three range-catching stages are stable.',
-          'Check output sequences →',
-          ()=>{active.room=1;renderRoom();}
-        );
+        later(()=>renderRandomiserRoute(stageIndex,'complete',()=>{
+          if(stageIndex<2){active.roomStage++;renderRoom();}
+          else{active.roomStage=0;active.room=1;renderRoom();}
+        }),420);
       }
     }else{
       active.arcadeFaults++;const depleted=applyAdventurePenalty();
       active.playTone(150,.08,'square',.026);led()?.flash('x',260);
       arena.classList.remove('fault');void arena.offsetWidth;arena.classList.add('fault');
       if(depleted){live=false;return;}
-      showNotice(p.value+' is outside random '+cfg.min+' to '+cfg.max+'.','fault',850);
+      showNotice(cfg.kind==='coordinate'
+        ?p.display+' is not a valid 5×5 LED coordinate.'
+        :p.display+' is outside random '+cfg.min+' to '+cfg.max+'.','fault',850);
       later(()=>arena.classList.remove('fault'),350);
     }
   }
   function tick(){
     if(!live||finished)return;
-    for(const p of packets)p.y+=2;
+    for(const p of packets)p.y+=cfg.fallStep;
     for(let i=packets.length-1;i>=0;i--){
       const p=packets[i];
       if(p.y>=78&&p.y<86){
@@ -1539,18 +1663,18 @@ function makeRandomDiagnosticRounds(seed){
 function renderBrokenRandomiser(){
   const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
   const round=makeRandomDiagnosticRounds(active.seed)[stageIndex];
-  setProgress('RANDOMISER CORE · ROOM 2/3 · RANGE DIAGNOSTICS · STAGE '+stageNo+'/3');
+  setProgress('RANDOMISER CORE · LEVEL 2 · STAGE '+(stageIndex+4)+'/9 · RANGE DIAGNOSTICS');
   const root=active.root;
   root.appendChild(roomHeader(
-    'ROOM 2 · RANGE DIAGNOSTICS',
-    'Select the sequence that does not match',
+    'LEVEL 2 · STAGE '+(stageIndex+4)+'/9 · RANGE DIAGNOSTICS',
+    stageIndex===0?'COIN AUDIT':stageIndex===1?'DICE AUDIT':'COORDINATE AUDIT',
     'Stage '+stageNo+' shows '+round.length+' outputs. Select the one sequence containing a value that cannot come from '+round.code+'.'
   ));
 
   const note=document.createElement('div');note.className='reality-note';
   note.innerHTML='<strong>Important</strong><span>You cannot prove randomness from a short sequence. Repeats are allowed. We are checking one thing we can know for certain: every output must stay inside the configured range.</span>';
 
-  const consoleEl=document.createElement('div');consoleEl.className='random-diagnostic-console';
+  const consoleEl=document.createElement('div');consoleEl.className='random-diagnostic-console random-diagnostic-stage-'+stageNo;
   const title=document.createElement('div');title.className='random-diagnostic-title';
   const streams=document.createElement('div');streams.className='random-streams';
   const counter=document.createElement('div');counter.className='logic-status';
@@ -1586,14 +1710,10 @@ function renderBrokenRandomiser(){
     const badValue=stream.values.find(v=>v<round.min||v>round.max);
     showNotice(badValue+' cannot come from '+round.code+'.','success',850);
     if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,2);
-    later(()=>finishRoomStage(
-      'Range stage '+stageNo+'/3 complete',
-      stageIndex===0?'Next: a longer six-sided-die sequence.':'Next: nine LED-coordinate outputs to scan.',
-      'Range diagnostics fully restored',
-      'You found the out-of-range sequence in all three stages without treating ordinary repeats as faults.',
-      'Open data router →',
-      ()=>{active.room=2;renderRoom();}
-    ),650);
+    later(()=>renderRandomiserRoute(stageIndex+3,'complete',()=>{
+      if(stageIndex<2){active.roomStage++;renderRoom();}
+      else{active.roomStage=0;active.room=2;renderRoom();}
+    }),650);
   }
 }
 
@@ -1715,7 +1835,7 @@ function makePropertyRouter(seed,options={}){
 function renderPropertyRouter(){
   const stageIndex=active.roomStage||0,stageNo=stageIndex+1;
   const cfg=routerStageConfig(stageIndex);
-  setProgress('RANDOMISER CORE · ROOM 3/3 · DATA ROUTER · STAGE '+stageNo+'/3');
+  setProgress('RANDOMISER CORE · LEVEL 2 · STAGE '+(stageIndex+7)+'/9 · PROPERTY ROUTER');
   const root=active.root;
 
   const seed=active.seed+':router-stage-'+stageNo;
@@ -1728,15 +1848,15 @@ function renderPropertyRouter(){
   const ruleName=puzzle.rule.label.toUpperCase();
   const stageCopy='This '+puzzle.n+'×'+puzzle.n+' board uses '+ruleName+' only. Follow touching '+puzzle.rule.label+' from START to FINISH. Other number properties do not count on this board.';
   root.appendChild(roomHeader(
-    'ROOM 3 · DATA / PROPERTY ROUTER',
-    'Route data using '+puzzle.rule.label,
+    'LEVEL 2 · STAGE '+(stageIndex+7)+'/9 · PROPERTY ROUTER',
+    stageIndex===0?'PARITY ROUTER':stageIndex===1?'MULTIPLE ROUTER':'PRIME / SQUARE ROUTER',
     stageCopy
   ));
 
   const rule=document.createElement('div');rule.className='property-router-rule';
   rule.innerHTML='<small>STAGE '+stageNo+'/3 · ROUTING FILTER</small><strong>'+puzzle.rule.shortLabel+'</strong><span>Use only '+puzzle.rule.label+'</span>';
 
-  const board=document.createElement('div');board.className='property-router-grid';board.style.setProperty('--router-n',String(puzzle.n));board.dataset.routerSize=String(puzzle.n);
+  const board=document.createElement('div');board.className='property-router-grid property-router-stage-'+stageNo;board.style.setProperty('--router-n',String(puzzle.n));board.dataset.routerSize=String(puzzle.n);
   const path=[puzzle.start.slice()];
   let finished=false;
   const buttons=[];
@@ -1789,14 +1909,10 @@ function renderPropertyRouter(){
       if(!exact){showNotice('FINISH reached, but this route is incomplete. Backtrack and try the other matching branch.','warn',1200);return;}
       finished=true;paint();led()?.setPattern('check');
       if(stageIndex===2)active.roomsCompleted=Math.max(active.roomsCompleted,3);
-      finishRoomStage(
-        'Router stage '+stageNo+'/3 complete',
-        stageIndex===0?'Next: a 6×6 grid, multiples and more dead ends.':'Next: a 7×7 grid using one advanced property — PRIME or SQUARE.',
-        'Data router fully restored',
-        'All three number-property routes are stable.',
-        'Continue →',
-        ()=>{active.room=3;renderRoom();}
-      );
+      later(()=>renderRandomiserRoute(stageIndex+6,'complete',()=>{
+        if(stageIndex<2){active.roomStage++;renderRoom();}
+        else{active.roomStage=0;active.room=3;renderRoom();}
+      }),420);
     }
   }
   paint();
