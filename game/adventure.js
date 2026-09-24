@@ -104,13 +104,11 @@ function renderRoom(){
   clearTimers();
   clearOverlay();
   clearExpeditionViewport();
-  document.getElementById('screen-adventure')?.classList.remove('expedition-map-mode');
+  document.getElementById('screen-adventure')?.classList.remove('expedition-map-mode','randomiser-map-mode');
   active.roomIntegrity=active.roomIntegrityMax;
   active.root.replaceChildren();
   if(active.systemId==='2'){
-    if(active.room===0)renderRandomPacketCatcher();
-    else if(active.room===1)renderBrokenRandomiser();
-    else if(active.room===2)renderPropertyRouter();
+    if(active.room<3)renderRandomiserExpeditionStage();
     else renderRandomiserFinalGate();
     return;
   }
@@ -1379,15 +1377,15 @@ function randomInt(rng,min,max){return min+Math.floor(rng()*(max-min+1));}
 
 function levelTwoJourneyStages(){
   return [
-    {short:'D1',name:'DICE FEED',sub:'Catch 1–6 packets'},
-    {short:'XY',name:'COORDINATE STREAM',sub:'Catch valid LED coordinates'},
-    {short:'WIN',name:'WINDOW FILTER',sub:'Tight 2–5 range'},
-    {short:'C1',name:'COIN AUDIT',sub:'Check 0/1 outputs'},
-    {short:'D2',name:'DICE AUDIT',sub:'Check 1–6 outputs'},
-    {short:'CA',name:'COORDINATE AUDIT',sub:'Scan longer output streams'},
-    {short:'P',name:'PARITY ROUTER',sub:'Even or odd path'},
-    {short:'×',name:'MULTIPLE ROUTER',sub:'Multiples path'},
-    {short:'★',name:'PRIME / SQUARE',sub:'Advanced property path'}
+    {short:'D1',name:'DICE INTAKE TUNNEL',sub:'Random packet conduit'},
+    {short:'XY',name:'COORDINATE JUNCTION',sub:'5×5 address stream'},
+    {short:'WIN',name:'WINDOW GATE',sub:'Tight range checkpoint'},
+    {short:'C1',name:'COIN AUDIT CAVERN',sub:'Binary stream chamber'},
+    {short:'D2',name:'DICE AUDIT CAVERN',sub:'Six-value stream chamber'},
+    {short:'CA',name:'COORDINATE VAULT',sub:'Long address audit'},
+    {short:'P',name:'PARITY SWITCHYARD',sub:'Even / odd routing'},
+    {short:'×',name:'MULTIPLE CONDUITS',sub:'Multiples routing'},
+    {short:'★',name:'PRIME / SQUARE CORE',sub:'Final property chamber'}
   ];
 }
 function randomiserRouteCopy(stageIndex,phase){
@@ -1471,6 +1469,294 @@ function renderRandomiserRoute(stageIndex,phase,onContinue){
   action.addEventListener('click',()=>{screen?.classList.remove('expedition-map-mode','randomiser-map-mode');onContinue?.();});
   panel.append(intro,continuity,map,key,action);root.appendChild(panel);
   requestAnimationFrame(()=>action.focus({preventScroll:true}));
+}
+
+
+function randomiserExpeditionConfig(stage){
+  const configs=[
+    {zone:'PACKET TUNNELS',area:'DICE INTAKE TUNNEL',theme:'tunnels',rows:15,cols:23,chambers:2,shards:2,hazards:1,arcs:1,hazardMs:930,task:'dice',
+      copy:'Follow the live data conduit, recover two calibration shards and reach the dice terminal.'},
+    {zone:'PACKET TUNNELS',area:'COORDINATE JUNCTION',theme:'junction',rows:17,cols:25,chambers:3,shards:3,hazards:2,arcs:2,hazardMs:900,task:'coordinate',
+      copy:'The conduit opens into a junction network. Recover three address shards while patrol corruption enters the route.'},
+    {zone:'PACKET TUNNELS',area:'WINDOW GATE',theme:'window',rows:17,cols:27,chambers:3,shards:3,hazards:2,arcs:3,hazardMs:860,task:'window',
+      copy:'A narrow range gate blocks the deeper core. Recover the shards, calibrate its 2–5 window and escape through the service gate.'},
+    {zone:'ENTROPY CAVERNS',area:'COIN AUDIT CAVERN',theme:'caves',rows:17,cols:27,chambers:4,shards:3,hazards:2,arcs:2,hazardMs:850,task:'coin-audit',
+      copy:'BIT descends into the entropy caverns. Find the buried audit terminal and identify impossible 0/1 outputs.'},
+    {zone:'ENTROPY CAVERNS',area:'DICE AUDIT CAVERN',theme:'caves-amber',rows:19,cols:29,chambers:4,shards:3,hazards:3,arcs:2,hazardMs:820,task:'dice-audit',
+      copy:'The cavern widens and corruption patrols the data seams. Rebuild the die-output audit terminal.'},
+    {zone:'ENTROPY CAVERNS',area:'COORDINATE VAULT',theme:'vault',rows:19,cols:31,chambers:5,shards:4,hazards:3,arcs:3,hazardMs:800,task:'coordinate-audit',
+      copy:'Reach the sealed coordinate vault, recover four data fragments and audit the longer address stream.'},
+    {zone:'ROUTING DEPTHS',area:'PARITY SWITCHYARD',theme:'routing',rows:19,cols:31,chambers:4,shards:3,hazards:3,arcs:3,hazardMs:790,task:'parity',
+      copy:'Deep routing rails split around BIT. Restore the parity switchyard while sentries defend the junctions.'},
+    {zone:'ROUTING DEPTHS',area:'MULTIPLE CONDUITS',theme:'routing-amber',rows:21,cols:33,chambers:5,shards:4,hazards:3,arcs:4,hazardMs:770,task:'multiple',
+      copy:'The conduits now branch by number property. Recover four route keys and recalibrate the multiples terminal.'},
+    {zone:'ROUTING DEPTHS',area:'PRIME / SQUARE CORE',theme:'routing-core',rows:21,cols:35,chambers:6,shards:4,hazards:4,arcs:4,hazardMs:750,task:'prime-square',
+      copy:'The deepest Randomiser chamber combines moving corruption, sentry fire and the final prime/square routing lock.'}
+  ];
+  return configs[stage]||null;
+}
+function randomiserTaskRounds(stage,seed){
+  const rng=rngFromSeed(seed+':randomiser-terminal:'+stage);
+  const rounds=[];
+  const choose=(arr)=>arr[Math.floor(rng()*arr.length)];
+  const unique=(arr)=>Array.from(new Set(arr));
+  if(stage<=2){
+    for(let i=0;i<3;i++){
+      if(stage===0){
+        const valid=rng()<.55,value=valid?randomInt(rng,1,6):choose([0,7,8]);
+        rounds.push({rule:'DICE FEED · valid outputs are 1–6',prompt:'Packet '+value+' arrives. Route it through the terminal?',options:['ACCEPT','REJECT'],answer:valid?'ACCEPT':'REJECT',explain:value+(valid?' is inside 1–6.':' cannot come from random 1 to 6.')});
+      }else if(stage===1){
+        const valid=rng()<.55;let x=randomInt(rng,0,4),y=randomInt(rng,0,4);
+        if(!valid){if(rng()<.5)x=choose([-1,5]);else y=choose([-1,5]);}
+        const label='('+x+','+y+')';
+        rounds.push({rule:'COORDINATE STREAM · both x and y must be 0–4',prompt:'Address '+label+' arrives. Is it a valid LED coordinate?',options:['ACCEPT','REJECT'],answer:valid?'ACCEPT':'REJECT',explain:valid?label+' fits the 5×5 display.':label+' has a coordinate outside 0–4.'});
+      }else{
+        const valid=rng()<.55,value=valid?randomInt(rng,2,5):choose([1,6]);
+        rounds.push({rule:'WINDOW FILTER · only 2–5 may pass',prompt:'Value '+value+' reaches the range gate.',options:['ACCEPT','REJECT'],answer:valid?'ACCEPT':'REJECT',explain:value+(valid?' is inside the 2–5 window.':' is outside the 2–5 window.')});
+      }
+    }
+    return rounds;
+  }
+  if(stage>=3&&stage<=5){
+    const min=stage===3?0:stage===4?1:0,max=stage===3?1:stage===4?6:4;
+    for(let i=0;i<3;i++){
+      const cards=[];
+      for(let c=0;c<3;c++){
+        let bad=c===i;
+        if(stage===5){
+          const vals=Array.from({length:4},()=>[randomInt(rng,0,4),randomInt(rng,0,4)]);
+          if(bad){const j=randomInt(rng,0,vals.length-1);if(rng()<.5)vals[j][0]=5;else vals[j][1]=-1;}
+          cards.push({label:vals.map(p=>'('+p[0]+','+p[1]+')').join('  '),bad});
+        }else{
+          const vals=Array.from({length:stage===3?5:7},()=>randomInt(rng,min,max));
+          if(bad)vals[randomInt(rng,1,vals.length-2)]=stage===3?choose([-1,2]):choose([0,7]);
+          cards.push({label:vals.join('  '),bad});
+        }
+      }
+      const shuffledCards=shuffled(cards,rng);
+      rounds.push({
+        rule:stage===3?'COIN AUDIT · every output must be 0 or 1':stage===4?'DICE AUDIT · every output must be 1–6':'COORDINATE AUDIT · every x and y must be 0–4',
+        prompt:'Which stored stream contains an impossible output?',
+        options:shuffledCards.map((c,j)=>String.fromCharCode(65+j)+' · '+c.label),
+        answer:shuffledCards.map((c,j)=>c.bad?String.fromCharCode(65+j)+' · '+c.label:null).find(Boolean),
+        explain:'Only one stream contains a value that the configured random range cannot produce.'
+      });
+    }
+    return rounds;
+  }
+  for(let i=0;i<3;i++){
+    let rule,goodPool,badPool;
+    if(stage===6){
+      rule=rng()<.5?'EVEN':'ODD';
+      goodPool=Array.from({length:20},(_,k)=>k+2).filter(v=>(v%2===0)===(rule==='EVEN'));
+      badPool=Array.from({length:20},(_,k)=>k+2).filter(v=>(v%2===0)!==(rule==='EVEN'));
+    }else if(stage===7){
+      const d=rng()<.5?3:4;rule='MULTIPLE OF '+d;
+      goodPool=Array.from({length:40},(_,k)=>k+2).filter(v=>v%d===0);
+      badPool=Array.from({length:40},(_,k)=>k+2).filter(v=>v%d!==0);
+    }else{
+      rule=rng()<.5?'PRIME':'SQUARE';
+      goodPool=rule==='PRIME'?[2,3,5,7,11,13,17,19,23,29]:[4,9,16,25,36,49,64,81];
+      badPool=Array.from({length:40},(_,k)=>k+4).filter(v=>rule==='PRIME'?!routerIsPrime(v):!Number.isInteger(Math.sqrt(v)));
+    }
+    const answer=choose(goodPool);
+    const opts=shuffled(unique([answer,...shuffled(badPool,rng).slice(0,3)]),rng);
+    while(opts.length<4){const v=choose(badPool);if(!opts.includes(v))opts.push(v);}
+    rounds.push({rule:rule+' ROUTE',prompt:'Which packet is allowed through this routing gate?',options:opts.map(String),answer:String(answer),explain:answer+' matches the active '+rule.toLowerCase()+' rule.'});
+  }
+  return rounds;
+}
+function showRandomiserGuide(onClose){
+  const host=overlayHost();if(!host)return;
+  document.body.classList.add('adventure-modal-open');
+  const shade=document.createElement('div');shade.className='adventure-popup-shade expedition-guide-shade';
+  const card=document.createElement('div');card.className='adventure-popup expedition-guide-popup randomiser-guide-popup';
+  const head=document.createElement('div');head.className='expedition-guide-head';
+  const copy=document.createElement('div');copy.innerHTML='<small>LEVEL 2 · CONTINUOUS EXPEDITION</small><strong>Randomiser field guide</strong><span>BIT is still travelling inside the same micro:bit.</span>';
+  const close=document.createElement('button');close.type='button';close.className='secondary expedition-guide-close';close.textContent='CLOSE';head.append(copy,close);
+  const grid=document.createElement('div');grid.className='expedition-guide-grid';
+  const items=[
+    ['●','BIT','Move through the internal corridors and chambers.'],
+    ['D','Data shard','Recover every shard before a terminal can be calibrated.'],
+    ['T','Terminal','Stand on it and use PULSE to open the stage task.'],
+    ['◆','Chaser','Moves toward BIT. PULSE stuns nearby corruption.'],
+    ['▲','Patrol','Roams corridors and chambers.'],
+    ['⊕','Sentry','Locks along clear lines, warns, then fires. Break line of sight or PULSE.'],
+    ['≈','Data surge','Cycles live/quiet. Cross while quiet.'],
+    ['OPEN','Service gate','Opens after the terminal task is complete.']
+  ];
+  for(const item of items){
+    const row=document.createElement('div');row.className='expedition-guide-item';
+    const icon=document.createElement('div');icon.className='expedition-guide-icon expedition-cell trace';icon.textContent=item[0];
+    const cc=document.createElement('div');cc.className='expedition-guide-copy';cc.innerHTML='<strong>'+item[1]+'</strong><span>'+item[2]+'</span>';
+    row.append(icon,cc);grid.appendChild(row);
+  }
+  card.append(head,grid);shade.appendChild(card);host.replaceChildren(shade);
+  const finish=()=>{clearOverlay();onClose?.();};close.addEventListener('click',finish);requestAnimationFrame(()=>close.focus({preventScroll:true}));
+}
+function renderRandomiserExpeditionStage(){
+  const stage=active.room*3+(active.roomStage||0),stageNo=stage+1,cfg=randomiserExpeditionConfig(stage);
+  if(!cfg){active.room=3;renderRoom();return;}
+  if(stage===0&&!active.randomiserMapSeen){active.randomiserMapSeen=true;renderRandomiserRoute(0,'start',()=>renderRoom());return;}
+
+  setProgress('RANDOMISER CORE · LEVEL 2 · STAGE '+stageNo+'/9 · '+cfg.area);
+  const root=active.root;
+  root.appendChild(roomHeader('LEVEL 2 · STAGE '+stageNo+'/9 · '+cfg.zone,cfg.area,cfg.copy));
+
+  const info=document.createElement('div');info.className='adventure-info-strip randomiser-expedition-info';
+  info.innerHTML='<span><strong>MISSION</strong> shards → terminal task → service gate</span><span><strong>MOVE</strong> arrows / WASD · joystick on mobile</span><span><strong>PULSE</strong> SPACE · stun enemies / open terminal</span>';
+  const guideButton=document.createElement('button');guideButton.type='button';guideButton.className='secondary expedition-info-guide';guideButton.textContent='FIELD GUIDE';info.appendChild(guideButton);root.appendChild(info);
+
+  const maze=makeExpeditionMaze(cfg.rows,cfg.cols,active.seed+':randomiser:'+stage,stage,cfg.chambers);
+  const shardNames=Array.from({length:cfg.shards},(_,i)=>'D'+(i+1));
+  const shards=chooseExpeditionPickups(maze,cfg.shards,shardNames);
+  const banned=new Set([key(...maze.start),key(...maze.exit),...shards.map(s=>key(...s.pos))]);
+  const terminalCandidates=maze.floors.filter(p=>!banned.has(key(...p))&&!same(p,maze.exit)&&maze.dist[p[0]][p[1]]>=Math.max(7,Math.floor(maze.dist[maze.exit[0]][maze.exit[1]]*.45)));
+  const terminal=(terminalCandidates[Math.min(2,terminalCandidates.length-1)]||maze.floors.find(p=>!banned.has(key(...p))&&!same(p,maze.exit))||maze.start).slice();
+  banned.add(key(...terminal));
+  const hazards=chooseExpeditionHazards(maze,cfg.hazards,banned);
+  const arcs=chooseExpeditionArcs(maze,cfg.arcs,banned);
+
+  const collected=new Set(),visited=new Set();
+  let player=maze.start.slice(),live=false,finished=false,faultLock=false,pulseReadyAt=0,terminalSolved=false,terminalOpen=false;
+  expeditionVisibleCells(maze.grid,player,visited);
+
+  const shell=document.createElement('div');shell.className='expedition-shell expedition-neon randomiser-expedition randomiser-'+cfg.theme+' randomiser-stage-'+stageNo;
+  const hud=document.createElement('div');hud.className='expedition-hud';
+  const objective=document.createElement('strong'),areaStatus=document.createElement('span'),moduleStatus=document.createElement('span');hud.append(objective,areaStatus,moduleStatus);
+  const board=document.createElement('div');board.className='expedition-grid randomiser-expedition-grid';board.style.setProperty('--exp-cols',String(cfg.cols));board.style.setProperty('--exp-rows',String(cfg.rows));board.style.aspectRatio=cfg.cols+'/'+cfg.rows;board.setAttribute('role','application');board.setAttribute('aria-label','Randomiser Core exploration stage '+stageNo);
+  const cells=[];
+  for(let r=0;r<cfg.rows;r++)for(let c=0;c<cfg.cols;c++){const cell=document.createElement('div');cell.className='expedition-cell';cell.dataset.key=key(r,c);board.appendChild(cell);cells.push(cell);}
+
+  const displayActions=document.createElement('div');displayActions.className='expedition-display-actions';
+  const guide=document.createElement('button');guide.type='button';guide.className='expedition-guide-toggle';guide.textContent='GUIDE';
+  const immersive=document.createElement('button');immersive.type='button';immersive.className='expedition-immersive-toggle';immersive.textContent='FULL SCREEN';immersive.setAttribute('aria-pressed','false');displayActions.append(guide,immersive);
+
+  const controls=document.createElement('div');controls.className='expedition-controls';
+  const defs=[['↑','up',-1,0],['←','left',0,-1],['PULSE','pulse',0,0],['→','right',0,1],['↓','down',1,0]];
+  for(const d of defs){const b=document.createElement('button');b.type='button';b.className='expedition-'+d[1];b.textContent=d[0];if(d[1]==='pulse')b.addEventListener('click',()=>usePulse(b));else b.addEventListener('click',()=>movePlayer(d[2],d[3],b));controls.appendChild(b);}
+  const joystick=document.createElement('div');joystick.className='expedition-joystick';joystick.setAttribute('role','application');joystick.setAttribute('aria-label','Movement joystick');
+  const joystickBase=document.createElement('div');joystickBase.className='expedition-joystick-base';
+  const joystickKnob=document.createElement('div');joystickKnob.className='expedition-joystick-knob';
+  const joystickLabel=document.createElement('span');joystickLabel.className='expedition-joystick-label';joystickLabel.textContent='MOVE';joystickBase.append(joystickKnob,joystickLabel);joystick.appendChild(joystickBase);controls.appendChild(joystick);
+  const pulseButton=controls.querySelector('.expedition-pulse');
+  const mission=document.createElement('div');mission.className='expedition-mission';
+  const rotateNotice=document.createElement('div');rotateNotice.className='expedition-rotate-notice';rotateNotice.innerHTML='<div class="expedition-rotate-phone" aria-hidden="true">▯↻</div><strong>Rotate your phone</strong><span>System Rescue is designed for landscape play on mobile.</span>';
+  shell.append(hud,displayActions,board,mission,controls,rotateNotice);root.appendChild(shell);
+
+  let joyPointer=null,joyOrigin=null,joyRepeat=null,joyDelay=null,joyDir=null;
+  function clearJoyRepeat(){if(joyDelay){clearTimeout(joyDelay);joyDelay=null;}if(joyRepeat){clearInterval(joyRepeat);joyRepeat=null;}}
+  function stopJoy(){clearJoyRepeat();joyPointer=null;joyOrigin=null;joyDir=null;joystickKnob.style.transform='translate3d(0,0,0)';joystick.classList.remove('active');}
+  function startJoyRepeat(next){clearJoyRepeat();joyDelay=setTimeout(()=>{joyDelay=null;if(!joyDir)return;joyRepeat=setInterval(()=>{if(joyDir)movePlayer(next[0],next[1],null);},175);},225);}
+  function driveJoy(e){
+    if(!joyOrigin)return;const rect=joystickBase.getBoundingClientRect(),limit=Math.min(rect.width,rect.height)*.31;
+    let dx=e.clientX-joyOrigin.x,dy=e.clientY-joyOrigin.y;const mag=Math.hypot(dx,dy)||1;if(mag>limit){dx=dx/mag*limit;dy=dy/mag*limit;}
+    joystickKnob.style.transform='translate3d('+dx+'px,'+dy+'px,0)';if(Math.hypot(dx,dy)<limit*.28){joyDir=null;clearJoyRepeat();return;}
+    const angle=Math.atan2(dy,dx);let next;if(angle>=-Math.PI/4&&angle<Math.PI/4)next=[0,1];else if(angle>=Math.PI/4&&angle<3*Math.PI/4)next=[1,0];else if(angle>=-3*Math.PI/4&&angle<-Math.PI/4)next=[-1,0];else next=[0,-1];
+    const code=next[0]+':'+next[1];if(code!==joyDir){joyDir=code;movePlayer(next[0],next[1],null);startJoyRepeat(next);}
+  }
+  joystickBase.addEventListener('pointerdown',e=>{e.preventDefault();joyPointer=e.pointerId;joyOrigin={x:e.clientX,y:e.clientY};joystick.classList.add('active');try{joystickBase.setPointerCapture(e.pointerId);}catch(_){}});
+  joystickBase.addEventListener('pointermove',e=>{if(joyPointer!==e.pointerId)return;e.preventDefault();driveJoy(e);});
+  joystickBase.addEventListener('pointerup',e=>{if(joyPointer===e.pointerId)stopJoy();});joystickBase.addEventListener('pointercancel',stopJoy);joystickBase.addEventListener('lostpointercapture',stopJoy);
+
+  const viewportHost=document.getElementById('screen-adventure');
+  function mobileMode(){return window.matchMedia('(max-width:950px) and (pointer:coarse)').matches;}
+  async function setImmersive2(entering){
+    shell.classList.toggle('expedition-immersive',entering);document.body.classList.toggle('expedition-immersive-open',entering);viewportHost?.classList.toggle('expedition-fullscreen-host',entering);
+    immersive.textContent=entering?'EXIT':'FULL SCREEN';immersive.setAttribute('aria-pressed',entering?'true':'false');
+    if(entering){try{if(viewportHost?.requestFullscreen&&!document.fullscreenElement)await viewportHost.requestFullscreen({navigationUI:'hide'});}catch(_){}try{if(screen.orientation?.lock)await screen.orientation.lock('landscape');}catch(_){}}
+    else{try{if(screen.orientation?.unlock)screen.orientation.unlock();}catch(_){}try{if(document.fullscreenElement&&document.exitFullscreen)await document.exitFullscreen();}catch(_){}}
+  }
+  immersive.addEventListener('click',()=>setImmersive2(!shell.classList.contains('expedition-immersive')));
+  function openGuide(){const resume=live&&!finished;live=false;stopJoy();showRandomiserGuide(()=>{if(resume&&!finished)live=true;});}
+  guide.addEventListener('click',openGuide);guideButton.addEventListener('click',openGuide);
+
+  function shardAt(k){return shards.find(s=>key(...s.pos)===k&&!collected.has(s.name));}
+  function hazardAt(k){return hazards.find(h=>key(...h.pos)===k&&Date.now()>=h.stunUntil);}
+  function arcAt(k){return arcs.find(x=>key(...x.pos)===k);}
+  function arcActive(x,now=Date.now()){return Math.floor(now/x.period+x.phase)%2===0;}
+  function allShards(){return collected.size===shards.length;}
+  function exitReady(){return terminalSolved;}
+  function sentryThreat2(h){
+    const dr=Math.abs(h.pos[0]-player[0]),dc=Math.abs(h.pos[1]-player[1]);if(dr&&dc)return false;if(dr+dc>7)return false;return expeditionLineClear(maze.grid,h.pos,player);
+  }
+
+  function paint(){
+    expeditionVisibleCells(maze.grid,player,visited);const now=Date.now(),beam=new Set();
+    for(const h of hazards){if(h.type!=='sentry'||now<h.stunUntil||!h.lockSince||!sentryThreat2(h))continue;const dr=Math.sign(player[0]-h.pos[0]),dc=Math.sign(player[1]-h.pos[1]);let r=h.pos[0],c=h.pos[1];while(true){beam.add(key(r,c));if(r===player[0]&&c===player[1])break;r+=dr;c+=dc;}}
+    for(const cell of cells){
+      const [r,c]=cell.dataset.key.split(':').map(Number),k=cell.dataset.key,known=visited.has(k),wall=maze.grid[r][c]===1,shard=shardAt(k),hazard=hazards.find(h=>key(...h.pos)===k),arc=arcAt(k),isTerminal=same([r,c],terminal);
+      cell.className='expedition-cell';if(wall)cell.classList.add('wall');else{cell.classList.add('trace');if(maze.chamberSet.has(k))cell.classList.add('chamber');}
+      if(!known)cell.classList.add('fog');if(known&&beam.has(k))cell.classList.add('sentry-beam');
+      if(same([r,c],maze.start))cell.classList.add('entry');if(same([r,c],maze.exit))cell.classList.add('exit');if(isTerminal)cell.classList.add(terminalSolved?'randomiser-terminal-solved':'randomiser-terminal');if(same([r,c],player))cell.classList.add('player');
+      if(shard&&known)cell.classList.add('randomiser-shard');if(arc&&known)cell.classList.add(arcActive(arc,now)?'arc-active':'arc-idle');
+      if(hazard&&known){cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard','enemy-'+hazard.type);if(hazard.type==='sentry'&&now>=hazard.stunUntil&&hazard.lockSince)cell.classList.add('sentry-aiming');}
+      cell.replaceChildren();if(!known)continue;
+      if(same([r,c],player)){const s=document.createElement('span');s.className='expedition-player';s.textContent='●';cell.appendChild(s);}
+      else if(hazard){const s=document.createElement('span');s.className='expedition-hazard';s.textContent=now<hazard.stunUntil?'×':hazard.type==='chaser'?'◆':hazard.type==='patrol'?'▲':'⊕';cell.appendChild(s);}
+      else if(shard){const s=document.createElement('span');s.className='expedition-pickup';s.textContent=shard.name;cell.appendChild(s);}
+      else if(isTerminal){const s=document.createElement('span');s.className='randomiser-terminal-label';s.textContent=terminalSolved?'✓':'T';cell.appendChild(s);}
+      else if(arc){const s=document.createElement('span');s.className='expedition-arc';s.textContent=arcActive(arc,now)?'≈':'·';cell.appendChild(s);}
+      else if(same([r,c],maze.exit)){const s=document.createElement('span');s.className='expedition-exit';s.textContent=exitReady()?'OPEN':'LOCK';cell.appendChild(s);}
+      else if(same([r,c],maze.start)){const s=document.createElement('span');s.className='expedition-entry';s.textContent='IN';cell.appendChild(s);}
+    }
+    objective.textContent='DATA SHARDS '+collected.size+'/'+shards.length;areaStatus.textContent=cfg.zone+' · '+cfg.rows+'×'+cfg.cols;moduleStatus.textContent=terminalSolved?'TERMINAL ✓':'TERMINAL '+(allShards()?'READY':'LOCKED');
+    mission.textContent=!allShards()?'Explore the '+cfg.area.toLowerCase()+' and recover every data shard.':!terminalSolved?'Find terminal T and use PULSE while standing on it.':'Terminal calibrated. Reach the OPEN service gate.';
+    const remain=Math.max(0,pulseReadyAt-now);pulseButton.disabled=remain>0&&!same(player,terminal);pulseButton.textContent=remain>0&&!same(player,terminal)?'PULSE '+Math.ceil(remain/1000)+'s':'PULSE';
+    led()?.setCells([led()?.mapPoint(player[0],player[1],cfg.rows,cfg.cols),...hazards.filter(h=>now>=h.stunUntil).map(h=>led()?.mapPoint(h.pos[0],h.pos[1],cfg.rows,cfg.cols)),led()?.mapPoint(terminal[0],terminal[1],cfg.rows,cfg.cols)].filter(Boolean));
+  }
+  function collectHere(){const p=shardAt(key(...player));if(!p)return;collected.add(p.name);active.bits.add('RNG'+stageNo+'-'+p.name);active.playTone(720,.05,'sine',.025);showNotice('Recovered '+p.name+' · '+collected.size+'/'+shards.length,'success',700);}
+  function resetAfterHit(reason){player=maze.start.slice();hazards.forEach(h=>{h.pos=h.spawn.slice();h.stunUntil=Date.now()+1100;h.lockSince=0;});expeditionVisibleCells(maze.grid,player,visited);paint();showNotice(reason+' BIT returns to the stage entry; recovered shards are safe.','fault',1450);}
+  function collide(reason){if(faultLock||finished)return;faultLock=true;active.arcadeFaults++;const depleted=applyAdventurePenalty();active.playTone(140,.1,'sawtooth',.03);led()?.flash('x',340);if(depleted)return;resetAfterHit(reason);later(()=>faultLock=false,900);}
+  function checkExit(){if(!same(player,maze.exit))return;if(!exitReady()){showNotice(allShards()?'Service gate locked. Calibrate terminal T first.':'Service gate locked. Recover all data shards first.','warn',950);return;}finished=true;live=false;clearTimers();led()?.setPattern('check');paint();if(stage===8)active.roomsCompleted=Math.max(active.roomsCompleted,3);renderRandomiserRoute(stage,'complete',()=>{if(stage<8){if(active.roomStage<2)active.roomStage++;else{active.room++;active.roomStage=0;}renderRoom();}else{active.room=3;active.roomStage=0;renderRoom();}});}
+  function movePlayer(dr,dc,button){if(!live||finished||faultLock||terminalOpen)return;const next=[player[0]+dr,player[1]+dc];if(next[0]<0||next[1]<0||next[0]>=cfg.rows||next[1]>=cfg.cols||maze.grid[next[0]][next[1]]===1){active.playTone(170,.025,'square',.012);return;}if(button){button.classList.add('pressed');later(()=>button.classList.remove('pressed'),90);}player=next;collectHere();const arc=arcAt(key(...player));if(arc&&arcActive(arc)){collide('A live data surge hit BIT.');return;}if(hazardAt(key(...player))){collide('Corruption intercepted BIT.');return;}checkExit();paint();}
+  function taskFault(){if(stage<=2)active.arcadeFaults++;else if(stage<=5)active.logicFaults++;else active.routerFaults++;return applyAdventurePenalty();}
+  function openTerminal(){
+    if(terminalSolved){showNotice('Terminal already calibrated. Head for the OPEN gate.','info',850);return;}
+    if(!allShards()){showNotice('Terminal locked. Recover every data shard first.','warn',900);return;}
+    terminalOpen=true;live=false;stopJoy();
+    const host=overlayHost();if(!host)return;document.body.classList.add('adventure-modal-open');
+    const shade=document.createElement('div');shade.className='adventure-popup-shade randomiser-terminal-shade';
+    const card=document.createElement('div');card.className='adventure-popup randomiser-task-terminal';
+    const head=document.createElement('div');head.className='randomiser-task-head';head.innerHTML='<small>STAGE '+stageNo+'/9 · '+cfg.area+'</small><strong>Calibration terminal</strong><span>Clear three logic checks to unlock the service gate.</span>';
+    const body=document.createElement('div');body.className='randomiser-task-body';card.append(head,body);shade.appendChild(card);host.replaceChildren(shade);
+    const rounds=randomiserTaskRounds(stage,active.seed),buttons=[];let ri=0;
+    function paintRound(){
+      const q=rounds[ri];body.replaceChildren();
+      const progress=document.createElement('div');progress.className='randomiser-task-progress';progress.textContent='CHECK '+(ri+1)+'/3';
+      const rule=document.createElement('div');rule.className='randomiser-task-rule';rule.textContent=q.rule;
+      const prompt=document.createElement('div');prompt.className='randomiser-task-prompt';prompt.textContent=q.prompt;
+      const opts=document.createElement('div');opts.className='randomiser-task-options';
+      for(const label of q.options){const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',()=>answer(label,b));opts.appendChild(b);}
+      body.append(progress,rule,prompt,opts);requestAnimationFrame(()=>opts.querySelector('button')?.focus({preventScroll:true}));
+    }
+    function answer(label,b){
+      const q=rounds[ri];if(label!==q.answer){b.classList.add('wrong');active.playTone(150,.07,'square',.024);led()?.flash('x',300);const depleted=taskFault();if(depleted){terminalOpen=false;return;}showNotice(q.explain,'fault',1200);later(()=>b.classList.remove('wrong'),500);return;}
+      b.classList.add('correct');active.playTone(760,.055,'sine',.024);showNotice(q.explain,'success',850);ri++;
+      if(ri<rounds.length){later(paintRound,500);return;}
+      terminalSolved=true;terminalOpen=false;clearOverlay();live=true;led()?.setPattern('check');showNotice('Terminal calibrated · service gate OPEN.','success',1300);paint();
+    }
+    paintRound();
+  }
+  function usePulse(button){
+    if(!live||finished||faultLock||terminalOpen)return;
+    if(same(player,terminal)){openTerminal();return;}
+    const now=Date.now();if(now<pulseReadyAt)return;pulseReadyAt=now+4200;let hit=0;const dist=expeditionDistances(maze.grid,player);
+    for(const h of hazards){const d=dist[h.pos[0]][h.pos[1]],range=h.type==='sentry'?7:3;if(d<=range){h.stunUntil=now+(h.type==='sentry'?5200:2900);h.lockSince=0;hit++;}}
+    active.playTone(hit?620:300,.07,'sine',.024);showNotice(hit?'PULSE jammed '+hit+' corruption signal'+(hit===1?'':'s')+'.':'No corruption within PULSE range.','info',750);button?.classList.add('pressed');if(button)later(()=>button.classList.remove('pressed'),100);paint();
+  }
+  function patrolStep(h){const ns=expeditionNeighbours(maze.grid,h.pos[0],h.pos[1]).filter(p=>!same(p,maze.exit));if(!ns.length)return;const forward=[h.pos[0]+h.dir[0],h.pos[1]+h.dir[1]],fo=ns.find(p=>same(p,forward));if(fo&&maze.rng()>.18){h.pos=fo.slice();return;}const p=ns[Math.floor(maze.rng()*ns.length)];h.dir=[p[0]-h.pos[0],p[1]-h.pos[1]];h.pos=p.slice();}
+  function hazardTick(){
+    if(!live||finished||faultLock||terminalOpen)return;const now=Date.now(),dist=expeditionDistances(maze.grid,player),standingArc=arcAt(key(...player));if(standingArc&&arcActive(standingArc,now)){collide('A data surge erupted under BIT.');return;}let sentryHit=false;
+    for(const h of hazards){if(now<h.stunUntil){h.lockSince=0;continue;}if(h.type==='sentry'){if(sentryThreat2(h)){if(!h.lockSince){h.lockSince=now;active.playTone(360,.05,'square',.02);showNotice('SENTRY LOCK — break line of sight or PULSE!','warn',850);}else if(now-h.lockSince>=1450)sentryHit=true;}else h.lockSince=0;continue;}if(h.type==='patrol'){patrolStep(h);continue;}const opts=expeditionNeighbours(maze.grid,h.pos[0],h.pos[1]).filter(p=>!same(p,maze.exit)).sort((x,y)=>dist[x[0]][x[1]]-dist[y[0]][y[1]]);if(!opts.length)continue;h.pos=(opts.length>1&&maze.rng()<.14?opts[1]:opts[0]).slice();}
+    if(sentryHit){collide('A sentry beam locked onto BIT.');return;}if(hazards.some(h=>now>=h.stunUntil&&h.type!=='sentry'&&same(h.pos,player))){collide('Corruption intercepted BIT.');return;}paint();
+  }
+  active.keyHandler=(e)=>{if(active?.systemId!=='2'||finished||terminalOpen)return;const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};if(map[e.key]){e.preventDefault();movePlayer(map[e.key][0],map[e.key][1]);return;}if(e.key===' '||e.key==='Enter'){e.preventDefault();usePulse(pulseButton);}};
+  document.addEventListener('keydown',active.keyHandler);
+  paint();
+  const start=document.createElement('button');start.type='button';start.className='expedition-start';start.textContent='Continue into '+cfg.area+' →';
+  start.addEventListener('click',()=>{if(live||finished)return;if(mobileMode())setImmersive2(true);start.remove();focusPlayArea(board,()=>{live=true;hazards.forEach(h=>h.stunUntil=Date.now()+1200);every(hazardTick,cfg.hazardMs);every(paint,220);showNotice('BIT moving. Recover shards, find terminal T, then reach the service gate.','success',1500);});});
+  shell.insertBefore(start,board);
 }
 
 function randomPacketStage(stage){
