@@ -613,8 +613,11 @@ function continuousWorldHazards(world,count,banned,seed){
   const rng=rngFromSeed(seed+':hazards'),types=['chaser','patrol','sentry'],out=[];
   for(let i=0;i<count;i++){
     const lo=Math.floor(7+i*(world.cols-16)/count),hi=Math.floor(7+(i+1)*(world.cols-16)/count);
-    let type=types[i%3],candidates=world.floors.filter(p=>p[1]>=lo&&p[1]<=hi&&!banned.has(key(...p))&&(!world.spineKeys.has(key(...p))||world.chamberSet.has(key(...p))));
-    if(!candidates.length)candidates=world.floors.filter(p=>p[1]>=lo&&p[1]<=hi&&!banned.has(key(...p)));
+    let type=types[i%3],candidates=world.floors.filter(p=>p[1]>=lo&&p[1]<=hi&&!banned.has(key(...p))&&!world.spineKeys.has(key(...p)));
+    // Never deliberately spawn an enemy on the one-cell forward spine.
+    // If this band has no fair side-room/loop position, skip it rather than
+    // making progress depend on colliding with a blocking enemy.
+    if(!candidates.length)continue;
     if(type==='sentry'){
       const tactical=candidates.filter(p=>world.chamberSet.has(key(...p))||expeditionNeighbours(world.grid,p[0],p[1]).length>=3);
       if(tactical.length)candidates=tactical;else type='patrol';
