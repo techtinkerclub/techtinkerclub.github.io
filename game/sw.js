@@ -1,8 +1,8 @@
-/* Tech Tinker: System Rescue service worker v1.47.0 */
+/* Tech Tinker: System Rescue service worker v1.48.0 */
 'use strict';
 
 const CACHE_PREFIX = 'tt-system-rescue-';
-const CACHE_NAME = CACHE_PREFIX + 'v1.47.0';
+const CACHE_NAME = CACHE_PREFIX + 'v1.48.0';
 const APP_ROOT = '/game/';
 const CORE = [
   '/game/',
