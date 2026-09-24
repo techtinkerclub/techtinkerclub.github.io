@@ -108,13 +108,8 @@ function renderRoom(){
   document.getElementById('screen-adventure')?.classList.remove('expedition-map-mode','randomiser-map-mode','logic-router-map-mode');
   active.roomIntegrity=active.roomIntegrityMax;
   active.root.replaceChildren();
-  if(active.systemId==='2'){
-    if(active.room<3)renderRandomiserExpeditionStage();
-    else renderSystemLogicChamber();
-    return;
-  }
-  if(active.systemId==='3'){
-    if(active.room<3)renderLogicRouterExpeditionStage();
+  if(active.systemId==='1'||active.systemId==='2'||active.systemId==='3'){
+    if(active.room===0)renderContinuousSystemWorld();
     else renderSystemLogicChamber();
     return;
   }
@@ -125,8 +120,7 @@ function renderRoom(){
     else renderSensorArrayFinalGate();
     return;
   }
-  if(active.room<3)renderPulseRun();
-  else renderSystemLogicChamber();
+  renderPulseRun();
 }
 
 function paintAdventureIntegrity(){
@@ -171,7 +165,9 @@ function roomHeader(kicker,title,copy){
   left.appendChild(eyebrow);
   if(active&&active.room<3){
     const stage=document.createElement('span');stage.className='room-stage-badge';
-    if(active.systemId==='1'||active.systemId==='2'||active.systemId==='3'){
+    if(active.continuousWorld){
+      stage.textContent='CONTINUOUS EXPEDITION';
+    }else if(active.systemId==='1'||active.systemId==='2'||active.systemId==='3'){
       const globalStage=active.room*3+(active.roomStage||0)+1;
       stage.textContent='STAGE '+Math.min(9,globalStage)+'/9';
     }else{
@@ -521,6 +517,327 @@ function showExpeditionGuide(onClose){
   card.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();finish();}});
   requestAnimationFrame(()=>close.focus({preventScroll:true}));
 }
+
+/* ============================================================
+   CONTINUOUS WORLD ENGINE · Levels 1–3
+   ============================================================ */
+function continuousWorldConfig(systemId){
+  const id=String(systemId);
+  if(id==='1')return {
+    level:1,name:'BOOT SEQUENCE',
+    regions:[
+      {name:'POWER CONDUITS',theme:'world-cyan'},
+      {name:'STARTUP CONTROLLER',theme:'world-amber'},
+      {name:'MEMORY DEPTHS',theme:'world-violet'}
+    ],
+    terminalNames:['POWER CONTROL','BOOT CONTROL','MEMORY CONTROL'],
+    intro:'BIT enters one connected boot path. Repair three terminals while travelling through Power Conduits, the Startup Controller and Memory Depths, then reach the Logic Chamber.'
+  };
+  if(id==='2')return {
+    level:2,name:'RANDOMISER CORE',
+    regions:[
+      {name:'PACKET TUNNELS',theme:'world-green'},
+      {name:'ENTROPY CAVERNS',theme:'world-amber'},
+      {name:'ROUTING DEPTHS',theme:'world-pink'}
+    ],
+    terminalNames:['PACKET CONTROL','RANGE AUDIT','ROUTING CONTROL'],
+    intro:'BIT continues through one long Randomiser Core route. Three terminal checkpoints guard the path from Packet Tunnels through Entropy Caverns into the Routing Depths.'
+  };
+  return {
+    level:3,name:'LOGIC ROUTER',
+    regions:[
+      {name:'BOOLEAN TUNNELS',theme:'world-blue'},
+      {name:'DECISION ENGINE',theme:'world-green'},
+      {name:'CONTROL DEPTHS',theme:'world-violet'}
+    ],
+    terminalNames:['BOOLEAN CONTROL','DECISION CONTROL','LOGIC CORE CONTROL'],
+    intro:'BIT enters one continuous Logic Router. Conditions and decisions guard the route through Boolean Tunnels, the Decision Engine and the Control Depths.'
+  };
+}
+function carveContinuousRect(grid,chamberSet,r0,c0,h,w){
+  for(let r=Math.max(1,r0);r<Math.min(grid.length-1,r0+h);r++){
+    for(let c=Math.max(1,c0);c<Math.min(grid[0].length-1,c0+w);c++){
+      grid[r][c]=0;chamberSet.add(key(r,c));
+    }
+  }
+}
+function makeContinuousWorld(seed){
+  const rows=21,cols=137,rng=rngFromSeed(seed+':continuous-world');
+  const grid=Array.from({length:rows},()=>Array(cols).fill(1));
+  const chamberSet=new Set(),spine=Array(cols).fill(null);
+  let y=9,nextShift=10;
+  grid[y][1]=0;spine[1]=y;
+  for(let c=2;c<cols-1;c++){
+    if(c===nextShift){
+      const ny=Math.max(3,Math.min(rows-4,y+(rng()<.5?-1:1)*(rng()<.72?2:4)));
+      const step=Math.sign(ny-y);
+      for(let rr=y;rr!==ny;rr+=step)grid[rr][c]=0;
+      grid[ny][c]=0;y=ny;nextShift+=8+randomInt(rng,0,7);
+    }
+    grid[y][c]=0;spine[c]=y;
+    if(c%11===0)carveContinuousRect(grid,chamberSet,y-1,c-2,3,5);
+  }
+
+  const terminalCols=[31,70,108],barrierCols=[41,81,119];
+  terminalCols.forEach(c=>carveContinuousRect(grid,chamberSet,(spine[c]??9)-2,c-4,5,9));
+
+  // Forward loops and side chambers create exploration, but reconnect ahead
+  // so required progress does not depend on long backtracking.
+  [10,19,49,58,89,98,126].forEach((c,i)=>{
+    if(barrierCols.some(b=>Math.abs(b-c)<7))return;
+    const sy=spine[c]??9,dir=i%2===0?-1:1,ty=Math.max(3,Math.min(rows-4,sy+dir*4)),end=Math.min(cols-3,c+8);
+    const step=Math.sign(ty-sy);for(let rr=sy;rr!==ty;rr+=step)grid[rr][c]=0;grid[ty][c]=0;
+    for(let cc=c;cc<=end;cc++)grid[ty][cc]=0;
+    const ey=spine[end]??sy,back=Math.sign(ey-ty);for(let rr=ty;rr!==ey;rr+=back)grid[rr][end]=0;grid[ey][end]=0;
+    carveContinuousRect(grid,chamberSet,ty-1,c+2,3,5);
+  });
+
+  const barriers=barrierCols.map((c,index)=>{
+    const gy=spine[c]??9;
+    for(let r=1;r<rows-1;r++)grid[r][c]=1;
+    grid[gy][c]=0;
+    return {index,pos:[gy,c]};
+  });
+  for(let c=1;c<cols-1;c++){const yy=spine[c];if(yy!=null&&!barrierCols.includes(c))grid[yy][c]=0;}
+  barriers.forEach(b=>grid[b.pos[0]][b.pos[1]]=0);
+
+  const start=[spine[1]??9,1],exit=[spine[cols-2]??9,cols-2];
+  grid[start[0]][start[1]]=0;grid[exit[0]][exit[1]]=0;
+  const terminals=terminalCols.map((c,index)=>({index,pos:[spine[c]??9,c],solved:false}));
+  const dist=expeditionDistances(grid,start),floors=[];
+  for(let r=1;r<rows-1;r++)for(let c=1;c<cols-1;c++)if(grid[r][c]===0)floors.push([r,c]);
+  return {rows,cols,grid,start,exit,spine,chamberSet,terminals,barriers,dist,floors,rng};
+}
+function continuousWorldHazards(world,count,banned,seed){
+  const rng=rngFromSeed(seed+':hazards'),types=['chaser','patrol','sentry'],out=[];
+  for(let i=0;i<count;i++){
+    const lo=Math.floor(7+i*(world.cols-16)/count),hi=Math.floor(7+(i+1)*(world.cols-16)/count);
+    let type=types[i%3],candidates=world.floors.filter(p=>p[1]>=lo&&p[1]<=hi&&!banned.has(key(...p)));
+    if(type==='sentry'){
+      const tactical=candidates.filter(p=>world.chamberSet.has(key(...p))||expeditionNeighbours(world.grid,p[0],p[1]).length>=3);
+      if(tactical.length)candidates=tactical;else type='patrol';
+    }
+    if(!candidates.length)continue;
+    const pos=candidates[Math.floor(rng()*candidates.length)];
+    out.push({pos:pos.slice(),spawn:pos.slice(),stunUntil:0,lockSince:0,id:i,type,dir:[0,1]});
+    banned.add(key(...pos));
+  }
+  return out;
+}
+function continuousWorldArcs(world,count,banned,seed){
+  const rng=rngFromSeed(seed+':arcs'),pool=shuffled(world.floors.filter(p=>p[1]>6&&p[1]<world.cols-6&&!banned.has(key(...p))&&!world.chamberSet.has(key(...p))),rng),out=[];
+  for(const p of pool){
+    if(out.length>=count)break;
+    if(out.some(a=>Math.abs(a.pos[1]-p[1])<5))continue;
+    out.push({pos:p.slice(),phase:Math.floor(rng()*3),period:1350+Math.floor(rng()*650)});banned.add(key(...p));
+  }
+  return out;
+}
+function continuousTerminalRounds(systemId,index,seed){
+  const id=String(systemId);
+  if(id==='1')return levelOneTerminalRounds(index===0?3:index===1?5:8,seed+':continuous:'+index);
+  if(id==='2'){
+    const stages=index===0?[0,1,2]:index===1?[3,4,5]:[6,7,8];
+    return stages.map((stage,i)=>randomiserTaskRounds(stage,seed+':continuous-rng:'+index+':'+i)[0]);
+  }
+  if(index===0){
+    const rng=rngFromSeed(seed+':continuous-logic-t1');
+    return [0,1,2].map((stage,i)=>{
+      const q=branchTrial(stage,rng,i);
+      return {rule:stage===0?'IF / ELSE':stage===1?'COMPARISON':'AND',prompt:q.code+' · '+q.value+' · TRUE or FALSE?',options:['TRUE','FALSE'],answer:q.result?'TRUE':'FALSE',explain:q.detail+' is '+(q.result?'TRUE.':'FALSE.')};
+    });
+  }
+  if(index===1){
+    return [0,1,2].map((stage,i)=>{
+      const q=decisionChallenges(stage,seed+':continuous-logic-t2:'+i)[0];
+      return {rule:stage===0?'IF / ELSE OUTPUT':stage===1?'ELSE IF CHAIN':'AND / OR DECISION',prompt:q.value+'\n'+q.code,options:q.options,answer:q.answer,explain:q.explain};
+    });
+  }
+  return [6,7,8].map((stage,i)=>logicRouterTaskRounds(stage,seed+':continuous-logic-t3:'+i)[0]);
+}
+function continuousTerminalFaultCounter(id,index){
+  id=String(id);
+  if(id==='1'){if(index<2)active.sequenceFaults++;else active.memoryFaults++;return;}
+  if(id==='2'){if(index===0)active.arcadeFaults++;else if(index===1)active.logicFaults++;else active.routerFaults++;return;}
+  if(index===0)active.branchFaults++;else active.decisionFaults++;
+}
+function continuousEnemyFaultCounter(id){
+  id=String(id);
+  if(id==='1'||id==='2')active.arcadeFaults++;else active.branchFaults++;
+}
+function showContinuousWorldGuide(cfg,onClose){
+  const host=overlayHost();if(!host)return;document.body.classList.add('adventure-modal-open');
+  const shade=document.createElement('div');shade.className='adventure-popup-shade expedition-guide-shade';
+  const card=document.createElement('div');card.className='adventure-popup expedition-guide-popup';
+  const head=document.createElement('div');head.className='expedition-guide-head';
+  const copy=document.createElement('div');copy.innerHTML='<small>LEVEL '+cfg.level+' · '+cfg.name+'</small><strong>Continuous expedition field guide</strong><span>The world continues beyond the screen. Repaired terminals become checkpoints.</span>';
+  const close=document.createElement('button');close.type='button';close.className='secondary expedition-guide-close';close.textContent='CLOSE';head.append(copy,close);
+  const grid=document.createElement('div');grid.className='expedition-guide-grid';
+  const items=[['●','BIT','The camera follows BIT through one connected level.'],['T','Terminal','PULSE T1, T2 and T3. Each opens the next bulkhead and saves a checkpoint.'],['LOCK','Bulkhead','Blocks the forward route until the previous terminal is repaired.'],['◆','Chaser','Moves towards BIT.'],['▲','Patrol','Roams corridors and chambers.'],['⊕','Sentry','Warns before firing along a clear line.'],['≈','Surge','Cross while it is quiet.'],['LOGIC','Logic Chamber','Three puzzle keys guard the final Knowledge Archive.']];
+  items.forEach(item=>{const row=document.createElement('div');row.className='expedition-guide-item';const icon=document.createElement('div');icon.className='expedition-guide-icon expedition-cell trace';icon.textContent=item[0];const cc=document.createElement('div');cc.className='expedition-guide-copy';cc.innerHTML='<strong>'+item[1]+'</strong><span>'+item[2]+'</span>';row.append(icon,cc);grid.appendChild(row);});
+  card.append(head,grid);shade.appendChild(card);host.replaceChildren(shade);
+  const done=()=>{clearOverlay();onClose?.();};close.addEventListener('click',done);requestAnimationFrame(()=>close.focus({preventScroll:true}));
+}
+function renderContinuousSystemWorld(){
+  active.continuousWorld=true;
+  const id=String(active.systemId),cfg=continuousWorldConfig(id),world=makeContinuousWorld(active.seed+':system-'+id);
+  setProgress(cfg.name+' · CONTINUOUS EXPEDITION · '+cfg.regions[0].name);
+  const root=active.root;root.appendChild(roomHeader('LEVEL '+cfg.level+' · CONTINUOUS MICRO:BIT EXPEDITION',cfg.name,cfg.intro));
+
+  const info=document.createElement('div');info.className='adventure-info-strip expedition-info-strip';
+  info.innerHTML='<span><strong>MISSION</strong> T1 → T2 → T3 → Logic Chamber</span><span><strong>MOVE</strong> arrows / WASD · joystick on mobile</span><span><strong>PULSE</strong> terminals / nearby corruption</span>';
+  const guideTop=document.createElement('button');guideTop.type='button';guideTop.className='secondary expedition-info-guide';guideTop.textContent='FIELD GUIDE';info.appendChild(guideTop);root.appendChild(info);
+
+  const banned=new Set([key(...world.start),key(...world.exit),...world.terminals.map(t=>key(...t.pos)),...world.barriers.map(b=>key(...b.pos))]);
+  const hazards=continuousWorldHazards(world,id==='1'?11:id==='2'?13:14,banned,active.seed+':system-'+id);
+  const arcs=continuousWorldArcs(world,id==='1'?10:id==='2'?12:13,banned,active.seed+':system-'+id);
+  let player=world.start.slice(),checkpoint=world.start.slice(),live=false,finished=false,faultLock=false,terminalOpen=false,pulseReadyAt=0,currentRegion=0;
+
+  const shell=document.createElement('div');shell.className='expedition-shell continuous-world-shell continuous-system-'+id+' '+cfg.regions[0].theme;
+  const journey=document.createElement('div');journey.className='continuous-journey';
+  const track=document.createElement('div');track.className='continuous-journey-track';
+  const bit=document.createElement('i');bit.className='continuous-journey-bit';bit.textContent='BIT';
+  [['ENTRY',0],['T1',world.terminals[0].pos[1]],['T2',world.terminals[1].pos[1]],['T3',world.terminals[2].pos[1]],['LOGIC',world.exit[1]]].forEach(([label,col],i)=>{
+    const s=document.createElement('span');s.className='continuous-journey-stop';s.dataset.stop=i;s.style.left=(col/(world.cols-1)*100)+'%';s.innerHTML='<b>'+label+'</b>';track.appendChild(s);
+  });
+  track.appendChild(bit);journey.appendChild(track);
+
+  const hud=document.createElement('div');hud.className='expedition-hud continuous-world-hud';
+  const objective=document.createElement('strong'),regionLabel=document.createElement('span'),checkpointLabel=document.createElement('span');hud.append(objective,regionLabel,checkpointLabel);
+
+  const viewport=document.createElement('div');viewport.className='continuous-world-viewport';
+  const board=document.createElement('div');board.className='continuous-world-grid expedition-grid';board.style.setProperty('--world-cols',world.cols);board.style.setProperty('--world-rows',world.rows);board.setAttribute('role','application');board.setAttribute('aria-label',cfg.name+' continuous world');
+  const cells=[];
+  for(let r=0;r<world.rows;r++)for(let c=0;c<world.cols;c++){const cell=document.createElement('div');cell.className='expedition-cell';cell.dataset.key=key(r,c);board.appendChild(cell);cells.push(cell);}
+  viewport.appendChild(board);
+
+  const display=document.createElement('div');display.className='expedition-display-actions';
+  const guide=document.createElement('button');guide.type='button';guide.className='expedition-guide-toggle';guide.textContent='GUIDE';
+  const immersive=document.createElement('button');immersive.type='button';immersive.className='expedition-immersive-toggle';immersive.textContent='FULL SCREEN';immersive.setAttribute('aria-pressed','false');display.append(guide,immersive);
+
+  const controls=document.createElement('div');controls.className='expedition-controls';
+  [['↑','up',-1,0],['←','left',0,-1],['PULSE','pulse',0,0],['→','right',0,1],['↓','down',1,0]].forEach(d=>{
+    const b=document.createElement('button');b.type='button';b.className='expedition-'+d[1];b.textContent=d[0];
+    if(d[1]==='pulse')b.addEventListener('click',()=>usePulse(b));else b.addEventListener('click',()=>movePlayer(d[2],d[3],b));controls.appendChild(b);
+  });
+  const joystick=document.createElement('div');joystick.className='expedition-joystick';
+  const jb=document.createElement('div');jb.className='expedition-joystick-base',jk=document.createElement('div');jk.className='expedition-joystick-knob',jl=document.createElement('span');jl.className='expedition-joystick-label';jl.textContent='MOVE';jb.append(jk,jl);joystick.appendChild(jb);controls.appendChild(joystick);
+  const pulseButton=controls.querySelector('.expedition-pulse');
+  const mission=document.createElement('div');mission.className='expedition-mission continuous-world-mission';
+  const rotate=document.createElement('div');rotate.className='expedition-rotate-notice';rotate.innerHTML='<div class="expedition-rotate-phone">▯↻</div><strong>Rotate your phone</strong><span>The continuous expedition is designed for landscape play on mobile.</span>';
+  shell.append(journey,hud,display,viewport,mission,controls,rotate);root.appendChild(shell);
+
+  let jp=null,jo=null,jr=null,jd=null,jdir=null;
+  function clearJR(){if(jd){clearTimeout(jd);jd=null;}if(jr){clearInterval(jr);jr=null;}}
+  function stopJ(){clearJR();jp=null;jo=null;jdir=null;jk.style.transform='translate3d(0,0,0)';joystick.classList.remove('active');}
+  function startJR(v){clearJR();jd=setTimeout(()=>{jd=null;if(!jdir)return;jr=setInterval(()=>{if(jdir)movePlayer(v[0],v[1]);},175);},225);}
+  function driveJ(e){if(!jo)return;const rect=jb.getBoundingClientRect(),limit=Math.min(rect.width,rect.height)*.31;let dx=e.clientX-jo.x,dy=e.clientY-jo.y,mag=Math.hypot(dx,dy)||1;if(mag>limit){dx=dx/mag*limit;dy=dy/mag*limit;}jk.style.transform='translate3d('+dx+'px,'+dy+'px,0)';if(Math.hypot(dx,dy)<limit*.28){jdir=null;clearJR();return;}const angle=Math.atan2(dy,dx);let v;if(angle>=-Math.PI/4&&angle<Math.PI/4)v=[0,1];else if(angle>=Math.PI/4&&angle<3*Math.PI/4)v=[1,0];else if(angle>=-3*Math.PI/4&&angle<-Math.PI/4)v=[-1,0];else v=[0,-1];const code=v[0]+':'+v[1];if(code!==jdir){jdir=code;movePlayer(v[0],v[1]);startJR(v);}}
+  jb.addEventListener('pointerdown',e=>{e.preventDefault();jp=e.pointerId;jo={x:e.clientX,y:e.clientY};joystick.classList.add('active');try{jb.setPointerCapture(e.pointerId);}catch(_){}});
+  jb.addEventListener('pointermove',e=>{if(jp!==e.pointerId)return;e.preventDefault();driveJ(e);});jb.addEventListener('pointerup',e=>{if(jp===e.pointerId)stopJ();});jb.addEventListener('pointercancel',stopJ);jb.addEventListener('lostpointercapture',stopJ);
+
+  const screen=document.getElementById('screen-adventure');
+  async function setImmersive(on){shell.classList.toggle('expedition-immersive',on);document.body.classList.toggle('expedition-immersive-open',on);screen?.classList.toggle('expedition-fullscreen-host',on);immersive.textContent=on?'EXIT':'FULL SCREEN';immersive.setAttribute('aria-pressed',on?'true':'false');if(on){try{if(screen?.requestFullscreen&&!document.fullscreenElement)await screen.requestFullscreen({navigationUI:'hide'});}catch(_){}try{await globalThis.screen?.orientation?.lock?.('landscape');}catch(_){}}else{try{globalThis.screen?.orientation?.unlock?.();}catch(_){}try{if(document.fullscreenElement&&document.exitFullscreen)await document.exitFullscreen();}catch(_){}}}
+  immersive.addEventListener('click',()=>setImmersive(!shell.classList.contains('expedition-immersive')));
+  function openGuide(){const resume=live&&!finished;live=false;stopJ();showContinuousWorldGuide(cfg,()=>{if(resume&&!finished)live=true;});}guide.addEventListener('click',openGuide);guideTop.addEventListener('click',openGuide);
+
+  function terminalAt(p){return world.terminals.find(t=>same(t.pos,p));}
+  function barrierAt(p){return world.barriers.find(b=>same(b.pos,p));}
+  function hazardAt(p){return hazards.find(h=>same(h.pos,p)&&Date.now()>=h.stunUntil);}
+  function arcAt(p){return arcs.find(x=>same(x.pos,p));}
+  function arcActive(x,now=Date.now()){return Math.floor(now/x.period+x.phase)%2===0;}
+  function terminalCount(){return world.terminals.filter(t=>t.solved).length;}
+  function regionForCol(c){return Math.max(0,Math.min(2,Math.floor(c/(world.cols/3))));}
+  function setRegion(i){if(i===currentRegion&&shell.classList.contains(cfg.regions[i].theme))return;cfg.regions.forEach(r=>shell.classList.remove(r.theme));currentRegion=i;shell.classList.add(cfg.regions[i].theme);setProgress(cfg.name+' · CONTINUOUS EXPEDITION · '+cfg.regions[i].name);}
+  function cameraToPlayer(immediate=false){const target=cells[player[0]*world.cols+player[1]];if(!target)return;const left=Math.max(0,(target.offsetLeft||player[1]*26)-(viewport.clientWidth||800)*.45),top=Math.max(0,(target.offsetTop||player[0]*26)-(viewport.clientHeight||450)*.5);try{viewport.scrollTo({left,top,behavior:immediate?'auto':'smooth'});}catch(_){viewport.scrollLeft=left;viewport.scrollTop=top;}}
+  function journeyPaint(){bit.style.left=Math.max(0,Math.min(100,player[1]/(world.cols-1)*100))+'%';const stops=track.querySelectorAll?.('.continuous-journey-stop')||[];stops.forEach((el,i)=>{if(i===0)el.classList.add('solved');else if(i<=3)el.classList.toggle('solved',world.terminals[i-1].solved);else el.classList.toggle('ready',terminalCount()===3);});}
+  function sentryThreat(h){const dr=Math.abs(h.pos[0]-player[0]),dc=Math.abs(h.pos[1]-player[1]);if(dr&&dc)return false;if(dr+dc>8)return false;return expeditionLineClear(world.grid,h.pos,player);}
+
+  function paint(){
+    setRegion(regionForCol(player[1]));const now=Date.now(),beam=new Set();
+    hazards.forEach(h=>{if(h.type!=='sentry'||now<h.stunUntil||!h.lockSince||!sentryThreat(h))return;const dr=Math.sign(player[0]-h.pos[0]),dc=Math.sign(player[1]-h.pos[1]);let r=h.pos[0],c=h.pos[1];while(true){beam.add(key(r,c));if(r===player[0]&&c===player[1])break;r+=dr;c+=dc;}});
+    for(const cell of cells){
+      const [r,c]=cell.dataset.key.split(':').map(Number),p=[r,c],wall=world.grid[r][c]===1,t=terminalAt(p),barrier=barrierAt(p),hazard=hazards.find(h=>same(h.pos,p)),arc=arcAt(p),region=regionForCol(c);
+      cell.className='expedition-cell '+(wall?'wall':'trace')+' world-region-'+region;if(world.chamberSet.has(key(r,c)))cell.classList.add('chamber');if(beam.has(key(r,c)))cell.classList.add('sentry-beam');if(same(p,world.start))cell.classList.add('entry');if(same(p,world.exit))cell.classList.add('exit');if(t)cell.classList.add(t.solved?'continuous-terminal-solved':'continuous-terminal');if(barrier)cell.classList.add(world.terminals[barrier.index].solved?'continuous-bulkhead-open':'continuous-bulkhead-locked');if(arc)cell.classList.add(arcActive(arc,now)?'arc-active':'arc-idle');if(hazard){cell.classList.add(now<hazard.stunUntil?'hazard-stunned':'hazard','enemy-'+hazard.type);if(hazard.type==='sentry'&&now>=hazard.stunUntil&&hazard.lockSince)cell.classList.add('sentry-aiming');}if(same(p,player))cell.classList.add('player');cell.replaceChildren();
+      if(same(p,player)){const s=document.createElement('span');s.className='expedition-player';s.textContent='●';cell.appendChild(s);}
+      else if(hazard){const s=document.createElement('span');s.className='expedition-hazard';s.textContent=now<hazard.stunUntil?'×':hazard.type==='chaser'?'◆':hazard.type==='patrol'?'▲':'⊕';cell.appendChild(s);}
+      else if(t){const s=document.createElement('span');s.className='continuous-terminal-label';s.textContent=t.solved?'✓':'T'+(t.index+1);cell.appendChild(s);}
+      else if(barrier){const s=document.createElement('span');s.className='continuous-bulkhead-label';s.textContent=world.terminals[barrier.index].solved?'OPEN':'LOCK';cell.appendChild(s);}
+      else if(arc){const s=document.createElement('span');s.className='expedition-arc';s.textContent=arcActive(arc,now)?'≈':'·';cell.appendChild(s);}
+      else if(same(p,world.start)){const s=document.createElement('span');s.className='expedition-entry';s.textContent='ENTRY';cell.appendChild(s);}
+      else if(same(p,world.exit)){const s=document.createElement('span');s.className='expedition-exit';s.textContent=terminalCount()===3?'LOGIC':'LOCK';cell.appendChild(s);}
+    }
+    objective.textContent='TERMINALS '+terminalCount()+'/3';regionLabel.textContent=cfg.regions[currentRegion].name;checkpointLabel.textContent=terminalCount()?'CHECKPOINT T'+terminalCount():'CHECKPOINT ENTRY';
+    mission.textContent=terminalCount()<3?'Explore forward. Reach T'+(terminalCount()+1)+', PULSE it, then continue through the opened bulkhead.':'All terminals repaired. Continue to the LOGIC CHAMBER.';
+    const remain=Math.max(0,pulseReadyAt-now),onTerminal=!!terminalAt(player);pulseButton.disabled=remain>0&&!onTerminal;pulseButton.textContent=remain>0&&!onTerminal?'PULSE '+Math.ceil(remain/1000)+'s':'PULSE';journeyPaint();
+  }
+
+  function resetHazards(){const now=Date.now();hazards.forEach(h=>{h.pos=h.spawn.slice();h.stunUntil=now+1300;h.lockSince=0;});}
+  function penalty(reason,insideTerminal=false){
+    active.roomIntegrity=Math.max(0,active.roomIntegrity-1);paintAdventureIntegrity();active.playTone(145,.09,'square',.027);led()?.flash('x',350);
+    if(active.roomIntegrity>0){if(!insideTerminal){player=checkpoint.slice();resetHazards();paint();cameraToPlayer();}showNotice(reason+(insideTerminal?'':' Returning to the last checkpoint.'),'fault',1250);return false;}
+    active.roomRestarts++;active.roomIntegrity=active.roomIntegrityMax;paintAdventureIntegrity();if(terminalOpen){terminalOpen=false;clearOverlay();}player=checkpoint.slice();resetHazards();paint();cameraToPlayer(true);showNotice('Integrity depleted. BIT restored at the last terminal checkpoint.','fault',1500);return true;
+  }
+  function collide(reason){if(faultLock||finished||terminalOpen)return;faultLock=true;continuousEnemyFaultCounter(id);penalty(reason,false);later(()=>faultLock=false,900);}
+
+  function openTerminal(t){
+    if(t.solved){showNotice('T'+(t.index+1)+' is already repaired. Continue forward.','success',800);return;}
+    if(t.index>0&&!world.terminals[t.index-1].solved){showNotice('T'+(t.index+1)+' is offline until the previous terminal is repaired.','warn',900);return;}
+    const host=overlayHost();if(!host)return;clearOverlay();
+    const shade=document.createElement('div');shade.className='adventure-popup-shade continuous-terminal-shade';
+    const card=document.createElement('div');card.className='adventure-popup randomiser-task-terminal continuous-terminal-popup';
+    const head=document.createElement('div');head.className='randomiser-task-head',hc=document.createElement('div');hc.className='randomiser-task-head-copy';hc.innerHTML='<small>LEVEL '+cfg.level+' · '+cfg.regions[t.index].name+'</small><strong>T'+(t.index+1)+' · '+cfg.terminalNames[t.index]+'</strong><span>Three short checks repair this terminal and save a checkpoint.</span>';
+    const leave=document.createElement('button');leave.type='button';leave.className='secondary randomiser-task-leave';leave.textContent='RETURN TO WORLD';head.append(hc,leave);
+    const body=document.createElement('div');body.className='randomiser-task-body',feedback=document.createElement('div');feedback.className='randomiser-task-feedback';feedback.hidden=true;card.append(head,body,feedback);shade.appendChild(card);host.replaceChildren(shade);document.body.classList.add('adventure-modal-open');
+    terminalOpen=true;live=false;stopJ();const rounds=continuousTerminalRounds(id,t.index,active.seed),total=rounds.length;let ri=0,locked=false;
+    function resume(){if(!terminalOpen)return;terminalOpen=false;clearOverlay();live=true;paint();}
+    leave.addEventListener('click',resume);
+    function setFeedback(text,tone){feedback.hidden=false;feedback.className='randomiser-task-feedback '+tone;feedback.textContent=text;}
+    function draw(){locked=false;feedback.hidden=true;const q=rounds[ri];body.replaceChildren();const prog=document.createElement('div');prog.className='randomiser-task-progress';prog.textContent='TERMINAL CHECK '+(ri+1)+'/'+total;const rule=document.createElement('div');rule.className='randomiser-task-rule';rule.textContent=q.rule;const prompt=document.createElement(q.prompt&&q.prompt.includes('\n')?'pre':'div');prompt.className=q.prompt&&q.prompt.includes('\n')?'logic-gate-prompt':'randomiser-task-prompt';prompt.textContent=q.prompt;const opts=document.createElement('div');opts.className='randomiser-task-options';q.options.forEach(label=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',()=>answer(label,b));opts.appendChild(b);});body.append(prog,rule,prompt,opts);requestAnimationFrame(()=>opts.querySelector('button')?.focus({preventScroll:true}));}
+    function answer(label,b){if(locked)return;const q=rounds[ri];if(label!==q.answer){locked=true;b.classList.add('wrong');continuousTerminalFaultCounter(id,t.index);const depleted=penalty(q.explain||'Incorrect terminal check.',true);if(depleted)return;setFeedback(q.explain||'Not quite.','fault');later(()=>{b.classList.remove('wrong');locked=false;},650);return;}locked=true;b.classList.add('correct');active.playTone(760,.055,'sine',.024);setFeedback(q.explain||'Correct.','success');ri++;if(ri<total){later(draw,650);return;}t.solved=true;checkpoint=t.pos.slice();active.roomIntegrity=active.roomIntegrityMax;paintAdventureIntegrity();later(()=>{terminalOpen=false;clearOverlay();live=true;led()?.setPattern('check');paint();cameraToPlayer();showNotice('T'+(t.index+1)+' repaired · checkpoint saved · bulkhead OPEN.','success',1400);},650);}
+    draw();
+  }
+
+  function movePlayer(dr,dc,b){
+    if(!live||finished||faultLock||terminalOpen)return;
+    const next=[player[0]+dr,player[1]+dc];
+    if(next[0]<0||next[1]<0||next[0]>=world.rows||next[1]>=world.cols||world.grid[next[0]][next[1]]===1){active.playTone(170,.025,'square',.012);return;}
+    const barrier=barrierAt(next);if(barrier&&!world.terminals[barrier.index].solved){showNotice('LOCKED BULKHEAD · repair T'+(barrier.index+1)+' first.','warn',850);return;}
+    if(b){b.classList.add('pressed');later(()=>b.classList.remove('pressed'),90);}player=next;
+    const arc=arcAt(player);if(arc&&arcActive(arc)){collide('A live system surge hit BIT.');return;}if(hazardAt(player)){collide('Corruption intercepted BIT.');return;}
+    if(same(player,world.exit)){if(terminalCount()<3){showNotice('Logic Chamber route locked. Repair all three terminals first.','warn',950);}else{finished=true;live=false;clearTimers();active.roomsCompleted=3;active.room=3;active.roomStage=0;active.continuousWorld=false;led()?.setPattern('check');later(()=>renderRoom(),350);return;}}
+    paint();cameraToPlayer();
+  }
+  function usePulse(b){
+    if(!live||finished||faultLock||terminalOpen)return;
+    const t=terminalAt(player);if(t){openTerminal(t);return;}
+    const now=Date.now();if(now<pulseReadyAt)return;pulseReadyAt=now+4200;const dist=expeditionDistances(world.grid,player);let hit=0;
+    hazards.forEach(h=>{const d=dist[h.pos[0]][h.pos[1]],range=h.type==='sentry'?8:3;if(d<=range){h.stunUntil=now+(h.type==='sentry'?5200:2900);h.lockSince=0;hit++;}});
+    active.playTone(hit?620:300,.07,'sine',.024);showNotice(hit?'PULSE stunned '+hit+' corruption signal'+(hit===1?'':'s')+'.':'No corruption within PULSE range.','info',750);b?.classList.add('pressed');if(b)later(()=>b.classList.remove('pressed'),100);paint();
+  }
+  function patrol(h){const ns=expeditionNeighbours(world.grid,h.pos[0],h.pos[1]).filter(p=>!world.barriers.some(b=>same(b.pos,p)&&!world.terminals[b.index].solved));if(!ns.length)return;const f=[h.pos[0]+h.dir[0],h.pos[1]+h.dir[1]],fo=ns.find(p=>same(p,f));if(fo&&world.rng()>.18){h.pos=fo.slice();return;}const p=ns[Math.floor(world.rng()*ns.length)];h.dir=[p[0]-h.pos[0],p[1]-h.pos[1]];h.pos=p.slice();}
+  function hazardTick(){
+    if(!live||finished||faultLock||terminalOpen)return;
+    const now=Date.now(),dist=expeditionDistances(world.grid,player),standing=arcAt(player);if(standing&&arcActive(standing,now)){collide('A system surge erupted under BIT.');return;}let shot=false;
+    for(const h of hazards){
+      if(now<h.stunUntil){h.lockSince=0;continue;}
+      if(world.barriers.some(b=>!world.terminals[b.index].solved&&h.pos[1]>b.pos[1]))continue;
+      if(h.type==='sentry'){if(sentryThreat(h)){if(!h.lockSince){h.lockSince=now;active.playTone(360,.05,'square',.02);showNotice('SENTRY LOCK — break line of sight or PULSE!','warn',850);}else if(now-h.lockSince>=1450)shot=true;}else h.lockSince=0;continue;}
+      if(h.type==='patrol'){patrol(h);continue;}
+      const opts=expeditionNeighbours(world.grid,h.pos[0],h.pos[1]).filter(p=>!world.barriers.some(b=>same(b.pos,p)&&!world.terminals[b.index].solved)).sort((x,y)=>dist[x[0]][x[1]]-dist[y[0]][y[1]]);
+      if(opts.length)h.pos=(opts.length>1&&world.rng()<.12?opts[1]:opts[0]).slice();
+    }
+    if(shot){collide('A sentry beam locked onto BIT.');return;}if(hazards.some(h=>now>=h.stunUntil&&h.type!=='sentry'&&same(h.pos,player))){collide('Corruption intercepted BIT.');return;}paint();
+  }
+
+  active.keyHandler=e=>{if(!active||active.room!==0||finished||terminalOpen)return;const map={ArrowUp:[-1,0],w:[-1,0],W:[-1,0],ArrowDown:[1,0],s:[1,0],S:[1,0],ArrowLeft:[0,-1],a:[0,-1],A:[0,-1],ArrowRight:[0,1],d:[0,1],D:[0,1]};if(map[e.key]){e.preventDefault();movePlayer(map[e.key][0],map[e.key][1]);return;}if(e.key===' '||e.key==='Enter'){e.preventDefault();usePulse(pulseButton);}};
+  document.addEventListener('keydown',active.keyHandler);
+
+  paint();
+  const start=document.createElement('button');start.type='button';start.className='expedition-start continuous-world-start';start.textContent='Enter '+cfg.regions[0].name+' →';
+  start.addEventListener('click',()=>{if(live||finished)return;if(window.matchMedia('(max-width:950px) and (pointer:coarse)').matches)setImmersive(true);start.remove();focusPlayArea(viewport,()=>{live=true;resetHazards();every(hazardTick,id==='1'?860:id==='2'?810:780);every(paint,230);cameraToPlayer(true);showNotice('Continuous route online. Repair T1 → T2 → T3, then find the Logic Chamber.','success',1700);});});
+  shell.insertBefore(start,viewport);
+}
+
 function levelOneJourneyStages(){
   return [
     {region:'INTERNAL TRACES',short:'PWR',name:'POWER INTAKE',sub:'Coupler bay'},
