@@ -130,7 +130,7 @@
     byId('brief-objective').textContent=String(id)==='2'
       ?'Continue BIT’s journey through the internal data traces and restore the Randomiser Core.'
       :sys.objective;
-    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=['1','2','3','4'].includes(String(id))?['9-stage journey + Logic Chamber',`${(w.questions||[]).length} questions · 3 diagnostic stages`,String(id)==='1'?'inside a micro:bit':'continues inside the same micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
+    const meta=byId('brief-meta');meta.replaceChildren();const metaItems=['1','2','3'].includes(String(id))?['continuous world · 3 terminals · Logic Chamber',`${(w.questions||[]).length} questions · 3 diagnostic stages`,String(id)==='1'?'inside a micro:bit':'continues inside the same micro:bit']:String(id)==='4'?['9-stage journey + Logic Chamber',`${(w.questions||[]).length} questions · 3 diagnostic stages`,'continues inside the same micro:bit']:[`${(w.questions||[]).length} challenges`,'4 integrity','2 diagnostics'];for(const text of metaItems){const tag=document.createElement('span');tag.className='tag';tag.textContent=text;meta.appendChild(tag);}renderMatrix(byId('brief-visual'),id,state.clears[id]?'complete':'ready');showScreen('briefing');byId('brief-start').focus({preventScroll:true});
   }
 
   function difficultyRank(q){
@@ -358,7 +358,7 @@
       };
       byId('results-title').textContent=isAdventure?(failureTitles[adventureId]||'System verification incomplete'):'System still unstable';
       byId('results-summary').textContent=isAdventure
-        ?`The nine-stage journey and Logic Chamber are complete, but only ${G.mastered.size} of ${G.questions.length} Archive checks were verified. Review the fault log and re-run the mission.`
+        ?`The continuous expedition and Logic Chamber are complete, but only ${G.mastered.size} of ${G.questions.length} Archive checks were verified. Review the fault log and re-run the mission.`
         :`You repaired ${G.mastered.size} of ${G.questions.length} circuits. Review the fault log and re-run the mission.`;
     }else{
       if(isAdventure){
@@ -370,21 +370,21 @@
             kicker:'MICRO:BIT BOOT COMPLETE',
             perfect:'Flawless boot!',
             title:'Boot Sequence online!',
-            perfectSummary:'The nine-stage expedition, three-key Logic Chamber and Knowledge Archive diagnostic all completed without a fault.',
+            perfectSummary:'The continuous Boot Sequence expedition, all three terminals, the Logic Chamber and Knowledge Archive diagnostic all completed without a fault.',
             summary:'The micro:bit can boot again. Replay the expedition if you want the clean-adventure and flawless-diagnostic stars.'
           },
           '2':{
             kicker:'RANDOMISER CORE ONLINE',
             perfect:'Perfect randomisation!',
             title:'Randomiser Core online!',
-            perfectSummary:'The Randomiser expedition, three property-router logic keys and Knowledge Archive diagnostic all completed without a fault.',
+            perfectSummary:'The continuous Randomiser expedition, all three terminals, the three property-router keys and Knowledge Archive diagnostic all completed without a fault.',
             summary:'Random behaviour is stable again. Replay the mission if you want the clean-adventure and flawless-diagnostic stars.'
           },
           '3':{
             kicker:'LOGIC ROUTER ONLINE',
             perfect:'Flawless logic!',
             title:'Logic Router online!',
-            perfectSummary:'The nine-stage Logic Router expedition, three Futoshiki comparator keys and Knowledge Archive diagnostic all completed without a fault.',
+            perfectSummary:'The continuous Logic Router expedition, all three terminals, the three Futoshiki comparator keys and Knowledge Archive diagnostic all completed without a fault.',
             summary:'Conditional routing is stable again. Replay the expedition if you want the clean-adventure and flawless-diagnostic stars.'
           },
           '4':{
@@ -425,7 +425,7 @@
 
     const stats=byId('result-stats');stats.replaceChildren();
     if(isAdventure){
-      addStat(stats,'Adventure','9 stages');
+      addStat(stats,'Adventure',['1','2','3'].includes(adventureId)?'continuous world':'9 stages');
       addStat(stats,'Adventure faults',String(adventureFaults));
       addStat(stats,'Diagnostic',`${accuracy}%`);
       addStat(stats,'Score',String(G.score));
