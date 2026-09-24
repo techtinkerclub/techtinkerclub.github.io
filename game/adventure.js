@@ -1491,7 +1491,7 @@ function renderRandomPacketCatcher(){
   root.appendChild(roomHeader(
     'LEVEL 2 · STAGE '+stageNo+'/9 · LIVE PACKET INTAKE',
     cfg.label,
-    cfg.copy+' Move left and right to catch in-range numbers and let the others fall past.'
+    cfg.copy+' Move left and right to catch valid packets and let the others fall past.'
   ));
 
   let caught=0,playerLane=1,live=false,finished=false,nextPacketId=1;
@@ -1533,7 +1533,7 @@ function renderRandomPacketCatcher(){
   function paintRule(){
     const ruleText=cfg.kind==='coordinate'?'x,y = random 0 to 4':'random '+cfg.min+' to '+cfg.max;
     ruleBox.innerHTML='<small>'+cfg.label+'</small><strong>'+ruleText+'</strong><span>'+cfg.copy+'</span>';
-    progress.textContent='CAUGHT '+caught+'/'+cfg.target+' · RANGE '+cfg.min+'–'+cfg.max;
+    progress.textContent='CAUGHT '+caught+'/'+cfg.target+(cfg.kind==='coordinate'?' · BOTH COORDINATES 0–4':' · RANGE '+cfg.min+'–'+cfg.max);
   }
   function paintPlayer(){
     catcher.style.left='calc('+(playerLane*33.333+16.666)+'% - 32px)';
@@ -1634,7 +1634,7 @@ function renderRandomPacketCatcher(){
   }
 
   paintRule();paintPlayer();renderPackets();led()?.setPattern('question');
-  showNotice('Stage '+stageNo+'/3 · press Start when you are ready.','info',1300);
+  showNotice('Stage '+stageNo+'/9 · press Start when you are ready.','info',1300);
 }
 
 /* ---------------- Room 2: Randomiser Range Diagnostics ---------------- */
