@@ -59,6 +59,12 @@ sitemap: false
 <tr><td><code>r-r</code></td><td>Run / reset</td><td><code>run</code> or <code>rst</code></td><td>Operation</td></tr>
 <tr><td><code>at</code></td><td>Autotune execute/cancel</td><td><code>at-2</code> 100% AT; <code>off</code> cancel</td><td>Adjustment</td></tr>
 </table></section>
+<div class="card"><h2>Reset and fault output checks</h2>
+<p>For the intended fail-safe design, both the <em>software run/reset state</em> and the <em>physical heater enable interlock</em> must be checked separately. The Omron supports a parameter called <code>mv-r</code> (MV at Reset), normally defaulting to <code>0.0%</code> for the standard heating model, and an <code>mv-e</code> output on process-variable error. The values may be masked from the normal menus.</p>
+<ol><li>Before live use, have the commissioning engineer confirm and document <strong><code>rtsm = stop</code>, <code>p-on = rst</code>, and <code>mv-r = 0.0%</code></strong>.</li>
+<li>Verify the programmed control output does not assert the SSR on reset, on power restoration or following a thermocouple fault. A controller parameter setting alone does not prove this.</li>
+<li>Confirm the independent Finder 13.61 enable circuit stays <strong>OFF after control-power restoration</strong>. Verify the behaviour on the actual hardware, not just the relay's general datasheet.</li></ol>
+<p class="note">Omron H185 §§5-16-2 and 6-5: MV at Reset has precedence over MV at PV Error when in reset, and <code>mv-r</code> may be masked from the normal setting sequence. Do not change hidden advanced parameters without a documented commissioning plan.</p></div>
 <section class="card" id="calculator"><h2>Nominal ramp duration calculator</h2><p class="muted">Estimate duration for a requested programmed setpoint ramp. This calculates the trajectory, not the measured heater response.</p>
 <div class="calc"><div><label for="start">Starting temperature (°C)</label><input id="start" type="number" value="20" step="0.1"></div><div><label for="end">Target (°C)</label><input id="end" type="number" value="120" step="0.1"></div><div><label for="slope">Rate (°C/min)</label><input id="slope" type="number" value="2" step="0.1" min="0.1"></div><div><label for="hold">Soak (minutes)</label><input id="hold" type="number" value="15" step="1" min="0"></div></div>
 <div id="result" class="result" aria-live="polite"><strong>50 min ramp + 15 min soak = 65 min</strong></div></section>
