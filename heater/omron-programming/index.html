@@ -42,10 +42,11 @@ html{scroll-behavior:smooth}section[id],details[id]{scroll-margin-top:16px}
 <section class="card" id="fixed"><div class="sectiontag">WORKED EXAMPLE 1</div><h2>Heat to 80 °C and hold that target</h2><p class="subtitle">For a fixed temperature target, not a specified rate. First-time sensor and safety settings are in <a href="#initial">One-time configuration</a>.</p>
 <div class="examplegrid"><div><div class="check smallfacts"><span><span class="label">Setpoint</span><br><strong>80 °C</strong></span><span><span class="label">Mode</span><br><strong>Fixed SP</strong></span><span><span class="label">Ramp duration</span><br><strong>Not defined</strong></span></div><div class="plot" role="group" aria-label="Fixed setpoint profile"><div class="plothead"><strong>Commanded temperature setpoint</strong><span>Illustrative starting point 20 °C</span></div>
 <svg viewBox="0 0 760 278" role="img" aria-label="When RUN starts, the controller commands a fixed setpoint of 80 degrees Celsius. The starting process temperature of 20 degrees Celsius is shown only as a grey reference, not as a controlled setpoint.">
-<g stroke="#d9e5ee" stroke-width="1"><path d="M70 211H715 M70 134H715 M70 58H715"/><path d="M70 38V211H715"/></g>
+<rect x="0" y="0" width="760" height="278" fill="#ffffff"/>
+<g stroke="#d9e5ee" stroke-width="1" fill="none"><path d="M70 211H715 M70 134H715 M70 58H715" fill="none"/><path d="M70 38V211H715" fill="none"/></g>
 <g fill="#617d94" font-family="Segoe UI,Arial,sans-serif" font-size="13"><text x="16" y="215">20 °C</text><text x="16" y="138">50 °C</text><text x="16" y="62">80 °C</text><text x="59" y="236">0</text><text x="680" y="236">Time →</text></g>
 <path d="M70 211H160" fill="none" stroke="#9eb6c7" stroke-width="2" stroke-dasharray="6 5"/><path d="M160 58H705" fill="none" stroke="#1874a8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M160 58V212" stroke="#a9c4d8" stroke-dasharray="5 5"/><circle cx="160" cy="58" r="6" fill="#1874a8"/>
+<path d="M160 58V212" stroke="#a9c4d8" stroke-dasharray="5 5" fill="none"/><circle cx="160" cy="58" r="6" fill="#1874a8"/>
 <g fill="#235c85" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700"><text x="175" y="44">80 °C fixed SP</text><text x="169" y="195">RUN begins · starting PV about 20 °C</text></g>
 <text x="365" y="259" fill="#607c93" font-family="Segoe UI,Arial,sans-serif" font-size="12">The temperature does not jump immediately — only the controller target does.</text>
 </svg><p class="note">Not a predicted PV curve. Time to reach 80 °C depends on heater power, thermal load and PID response. This mode does not impose a heating rate.</p></div></div><div class="recipe"><h3>What to enter</h3><table class="table"><tr><th>Display</th><th>Value</th></tr><tr><td><code>spmd</code></td><td><code>fsp</code></td></tr><tr><td><code>fsp</code></td><td><code>80.0</code> °C</td></tr><tr><td><code>r-r</code> (to start)</td><td><code>run</code></td></tr><tr><td><code>r-r</code> (to stop)</td><td><code>rst</code></td></tr></table><p class="mini"><b>Expected result:</b> the controller seeks to regulate at 80 °C, but the actual temperature rises gradually, depending on the load.</p></div></div>
@@ -54,10 +55,11 @@ html{scroll-behavior:smooth}section[id],details[id]{scroll-margin-top:16px}
 <div class="check smallfacts"><span><span class="label">Example start</span><br><strong>20 °C</strong></span><span><span class="label">Target</span><br><strong>120 °C</strong></span><span><span class="label">Ramp rate</span><br><strong>2 °C/min</strong></span><span><span class="label">Ramp time</span><br><strong>50 min</strong></span><span><span class="label">Soak</span><br><strong>15 min</strong></span></div>
 <div class="examplegrid"><div><div class="plot" role="group" aria-label="Ramp and soak temperature setpoint profile"><div class="plothead"><strong>Commanded temperature setpoint</strong><span>Program 0 · rate programming</span></div>
 <svg viewBox="0 0 760 292" role="img" aria-label="Setpoint ramps from 20 degrees Celsius to 120 degrees Celsius at 2 degrees per minute over 50 minutes; holds at 120 for 15 minutes; at 65 minutes the controller enters reset and stops control, if commissioned as described.">
-<g stroke="#d9e5ee" stroke-width="1"><path d="M70 213H713 M70 168H713 M70 123H713 M70 77H713"/><path d="M70 42V213H713"/></g>
+<rect x="0" y="0" width="760" height="292" fill="#ffffff"/>
+<g stroke="#d9e5ee" stroke-width="1" fill="none"><path d="M70 213H713 M70 168H713 M70 123H713 M70 77H713" fill="none"/><path d="M70 42V213H713" fill="none"/></g>
 <g fill="#617d94" font-family="Segoe UI,Arial,sans-serif" font-size="13"><text x="13" y="217">20 °C</text><text x="13" y="172">50 °C</text><text x="13" y="127">85 °C</text><text x="7" y="81">120 °C</text><text x="66" y="236">0</text><text x="525" y="236">50</text><text x="687" y="236">65</text><text x="295" y="266">Elapsed time (minutes)</text></g>
 <path d="M70 213L538 77H698" fill="none" stroke="#1874a8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M538 77V213M698 77V213" stroke="#7ea8c8" stroke-width="1.5" stroke-dasharray="5 5"/>
+<path d="M538 77V213M698 77V213" stroke="#7ea8c8" stroke-width="1.5" stroke-dasharray="5 5" fill="none"/>
 <g fill="#235c85" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700"><text x="235" y="116">Ramp · 2 °C/min</text><text x="566" y="61">15 min soak</text></g>
 <circle cx="70" cy="213" r="6" fill="#1874a8"/><circle cx="538" cy="77" r="6" fill="#1874a8"/><circle cx="698" cy="77" r="6" fill="#1874a8"/>
 <text x="693" y="36" text-anchor="end" font-family="Segoe UI,Arial,sans-serif" fill="#935a22" font-size="12" font-weight="700">RESET at end</text>
@@ -111,7 +113,8 @@ html{scroll-behavior:smooth}section[id],details[id]{scroll-margin-top:16px}
 <div id="result" class="result" aria-live="polite"><strong>50 min ramp + 15 min soak = 65 min</strong></div>
 <div class="plot" style="margin-top:14px"><div class="plothead"><strong>Your setpoint profile</strong><span>Updates when you change the values above</span></div>
 <svg viewBox="0 0 760 275" role="img" aria-label="Editable ramp and soak setpoint profile, calculated using the entered temperatures, rate and soak duration">
-<g stroke="#d9e5ee" stroke-width="1"><path d="M85 204H710 M85 70H710 M85 40V204H710"/></g>
+<rect x="0" y="0" width="760" height="275" fill="#ffffff"/>
+<g stroke="#d9e5ee" stroke-width="1" fill="none"><path d="M85 204H710 M85 70H710 M85 40V204H710" fill="none"/></g>
 <g font-family="Segoe UI,Arial,sans-serif" font-size="13" fill="#607d93"><text id="graphStart" x="5" y="208">20 °C</text><text id="graphEnd" x="5" y="74">120 °C</text><text x="83" y="234">0</text><text id="graphRamp" x="566" y="234" text-anchor="middle">50 min</text><text id="graphTotal" x="710" y="234" text-anchor="end">65 min</text><text x="306" y="267">Elapsed time (minutes)</text></g>
 <path id="liveLine" d="M85 204L565 70H710" fill="none" stroke="#1874a8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
 <path id="liveTransition" d="M565 70V204" fill="none" stroke="#91b8d3" stroke-dasharray="5 5"/>
