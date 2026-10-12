@@ -197,7 +197,7 @@ permalink: /heater/
     tc:["06 · JTC1 / JTC2","Type K thermocouple input","Green thermocouple socket for each Omron controller.","CH1 TC / CH2 TC",["Polarity needs to be maintained to the controller.","Use correct Type K mating hardware."]],
     psu:["07 · JP1 / JP3","External PSU input","The UPPER red-and-black connector pair accepts the separate external DC heater supply.","PSU IN + / −",["External DC supply is connected to the upper pair.","Final current-rating and polarity marking checks outstanding."]],
     heater:["08 · JP2 / JP4","Heater output","The LOWEST red-and-black connector pair is the outgoing connection to the resistive heater.","HEATER + / −",["The heater is connected to the lowest pair.","Observe independent positive switch path and negative return."]],
-    ch2:["09 · mirrored panel","Channel 2 cut-out layout","The finished arrangement contains the same controls and connectors on both channels.","CHANNEL 2",["Door v2 STL gives the panel stencil geometry (198 × 248 mm).","Do not interpret the blank apertures as final fitted components."]]
+    ch2:["09 · mirrored panel","Channel 2 completed layout","The finished arrangement contains the same controls and connectors on both channels.","CHANNEL 2",["Both channels are illustrated fully populated, using the symmetrical arrangement.","The physical assembly should be checked against the 198 × 248 mm door stencil before final labeling."]]
   };
   document.querySelectorAll(".point").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll(".point").forEach(x=>x.classList.remove("on"));b.classList.add("on");const a=parts[b.dataset.part];
