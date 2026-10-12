@@ -33,6 +33,7 @@ sitemap: false
 <article><h3>5. Test without a live heater</h3><p>Use approved dead tests and suitable low-energy functional checks. Verify independent channel control, SSR command and LED operation, 24 V reset and loss/return-of-power response.</p></article>
 <article><h3>6. Release a revised drawing</h3><p>Record replacement date, fitted suffix/serial, changed nets and test results. Issue an updated circuit revision and operating procedure; re-approve before a powered test.</p></article>
 </div>
+<div class="warning" style="margin-top:18px"><strong>Omron reset-output check.</strong> On both E5CC-T controllers, confirm <code>p-on = rst</code> and <code>rtsm = stop</code>, and verify <code>mv-r = 0.0%</code> as applicable. The reset output can be configured independently of the programme reset state. None of these settings replaces a physical restart-inhibit interlock.</div>
 <div class="warning" style="margin-top:18px"><strong>Outstanding hardware details.</strong>Physical Schurter terminals, X1–X4 distribution blocks and jumpers, actual Schneider second-contact blocks, Finder 62.31 socket suffix and suppressor, protection coordination, SSR thermal design and emergency disconnection remain to be verified.</div>
 </section>
 <section class="card"><h2>Manufacturer reference documents</h2>
