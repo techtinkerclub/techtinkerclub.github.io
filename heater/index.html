@@ -63,11 +63,15 @@ permalink: /heater/
 <button class="point" data-part="psu" title="External PSU input" aria-label="7: PSU input" style="left:45.48%;top:72.98%">7</button>
 <button class="point" data-part="heater" title="Heater output" aria-label="8: Heater output" style="left:45.48%;top:82.98%">8</button>
 <button class="point" data-part="ch2" title="Second channel" aria-label="9: Channel 2" style="left:91.13%;top:42.86%">9</button>
-</div><p class="note">Panel labels are proposed markings; verify clearance on the real panel before applying them. The illustration is not a dimensioned manufacturing drawing.</p></article>
+</div><p class="note">Panel labels are proposed markings; verify clearance on the real panel before applying them. The illustration shows the intended finished panel, with both channels populated; it is not dimensioned CAD.</p></article>
 <article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Panel marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Further notes</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
 </section>
 
 <section id="wiring" class="view"><h2 class="heading">Electrical system</h2><p class="intro">Follow how the mains control supply, channel enable circuit and external DC heater connections work together. The diagrams explain the functional paths; always use the approved terminal-by-terminal schematics for installation or servicing.</p>
+<div class="card" style="border-left:4px solid #276ba2"><h3>Full electrical schematics and connection schedule</h3>
+<p>The detailed reference now follows the D12 engineering drawing set, covering all ten circuits and schedule sheets, including terminal numbers and maintenance notes. The complete connection schedule contains 39 functional nets for the two channels.</p>
+<div class="tagrow"><a class="btn" href="./electrical/">Open circuit-by-circuit maintenance reference →</a></div>
+<p class="note">This is a working design-review schedule, not the final numbered terminal-strip or cable list. Physical distribution blocks, relay sockets, protection and power restoration still require validation.</p></div>
 <div class="card"><h3>Shared control supply and two branches</h3>
 <svg class="sw" viewBox="0 0 900 240" role="img" aria-label="Simplified control power distribution"><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#bb683d"/></marker></defs>
 <rect x="18" y="70" width="144" height="80" rx="9" fill="#e8f1f9" stroke="#82a7c3"/><text x="90" y="102" text-anchor="middle" font-size="15" font-weight="bold" fill="#254c6e">Schurter mains</text><text x="90" y="122" text-anchor="middle" font-size="13" fill="#607c95">230 V / PE</text>
@@ -128,19 +132,23 @@ permalink: /heater/
 <div class="card warn callout"><strong>Loss and restoration of power</strong><p>The system must not automatically resume heater operation after a control-power interruption. The proposed Finder 13.61 implementation has not yet passed this verification test. Treat this behaviour as unconfirmed until commissioning evidence is recorded.</p></div></section>
 
 <section id="omron" class="view">
-<h2 class="heading">Omron E5CC — setup and autotune</h2><p class="intro">Use this section when setting up a channel or checking its performance. Parameter names, menu availability and acceptable settings depend on the exact Omron variant and approved heating method.</p>
+<div class="card" style="border-left:4px solid #276ba2"><h3>E5CC-T practical programming guide</h3>
+<p>Both controllers are <strong>programmable E5CC-T</strong> models: CH1 E5CC-TQX3A5M-000 and CH2 E5CC-TQX3A5M-003. The new step-by-step guide documents the actual button sequences, parameter display codes, units, timed segments, rate-of-rise segments and autotune.</p>
+<div class="tagrow"><a class="btn" href="./omron-programming/">Open step-by-step programming guide →</a></div>
+<p class="note">Includes a fixed 80 °C example, a 2 °C/min ramp to 120 °C followed by a 15-minute soak, plus a ramp-time calculator.</p></div>
+<h2 class="heading">Omron E5CC-T — setup and autotune</h2><p class="intro">Use this section when setting up a channel or checking its performance. Parameter names, menu availability and acceptable settings depend on the exact Omron variant and approved heating method.</p>
 <div class="two"><div class="card"><h3>Controller setup</h3>
 <ol class="compactlist"><li>Identify the fitted E5CC part number and confirm which channel is being configured.</li><li>Verify that the input is configured for the installed Type K thermocouple and the correct temperature units.</li><li>Check that the displayed process value is plausible and that sensor errors are handled correctly.</li><li>Confirm the control method, heating direction and output assignment for the installed SSR drive circuit.</li><li>Check the control period, required limits and any configured alarms.</li><li>Enter the approved setpoint or time/temperature programme.</li><li>Record the final configuration and confirm it independently for the other channel.</li></ol>
 <p class="note">The exact parameter-by-parameter instructions will be completed after the final control strategy and E5CC variants are confirmed.</p></div>
 <div class="card"><h3>Autotune procedure</h3>
 <ol class="compactlist"><li>Only start autotune after commissioning, with the real heater, thermocouple placement and representative thermal load in place.</li><li>Assess the risk of temperature overshoot and confirm the independent safeguards before tuning.</li><li>Choose an appropriate tuning target and begin the Omron's autotune function as specified in its user manual.</li><li>Leave the arrangement stable while tuning operates. Do not change the test load or sensor positions.</li><li>When tuning finishes, record the resulting control settings and evaluate a controlled heating response.</li><li>If temperature oscillates or overshoots excessively, stop and investigate rather than repeatedly retuning.</li></ol>
 <p class="note">Autotune is not a substitute for verifying safety limits. It is unsuitable during an actual thermal-runaway event.</p></div></div>
-<div class="card callout"><h3>Official Omron documentation</h3><div class="links"><a target="_blank" rel="noreferrer" href="https://www.ia.omron.com/products/family/3101/download/catalog.html">Omron E5CC user manuals, instruction sheets and data sheets</a></div><p class="note">Use the instructions matching the controller's exact part number and firmware. Approved parameter values will be added after commissioning.</p></div></section>
+<div class="card callout"><h3>Official Omron documentation</h3><div class="links"><a target="_blank" rel="noreferrer" href="https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf">Omron E5CC user manuals, instruction sheets and data sheets</a></div><p class="note">Use the instructions matching the controller's exact part number and firmware. Approved parameter values will be added after commissioning.</p></div></section>
 
 <section id="components" class="view"><h2 class="heading">Component register</h2><p class="intro">Identify the main control and power-switching components by reference and manufacturer part number. Confirm the exact fitted meter, terminal and socket versions when servicing the equipment.</p>
 <input id="search" class="search" placeholder="Search components, part numbers or purposes…" aria-label="Search component register">
 <div id="componentGrid" class="grid3">
-<div class="card comp"><span class="tag">E1 / E2</span><h3>Omron E5CC</h3><p class="brief">Temperature controller, one per channel</p></div><div class="card comp"><span class="tag">PS1</span><h3>Mean Well XDR-120E-24</h3><p class="brief">Shared 24 V control supply</p></div>
+<div class="card comp"><span class="tag">E1 / E2</span><h3>Omron E5CC-T</h3><p class="brief">Temperature controller, one per channel</p></div><div class="card comp"><span class="tag">PS1</span><h3>Mean Well XDR-120E-24</h3><p class="brief">Shared 24 V control supply</p></div>
 <div class="card comp"><span class="tag">S1 / S2</span><h3>Schneider XB5AD23</h3><p class="brief">Maintained channel selectors, final intended part</p></div><div class="card comp"><span class="tag">SB1 / SB2</span><h3>EAO illuminated pushbutton</h3><p class="brief">Momentary enable command</p></div>
 <div class="card comp"><span class="tag">K1 / K2</span><h3>Finder 13.61</h3><p class="brief">24 V impulse/step relays</p></div><div class="card comp"><span class="tag">K3 / K4</span><h3>Finder 62.31.9.024.4800</h3><p class="brief">24 V coil, polarity-sensitive DC power contact</p></div>
 <div class="card comp"><span class="tag">SK3 / SK4</span><h3>Finder 92.03 socket family</h3><p class="brief">Exact fitted suffix to confirm</p></div><div class="card comp"><span class="tag">W1 / W2</span><h3>Weidmüller 8950770000</h3><p class="brief">12 V input / 24 V SSR + LED interface</p></div>
@@ -149,7 +157,7 @@ permalink: /heater/
 </div></section>
 
 <section id="datasheets" class="view"><h2 class="heading">Manufacturer documentation</h2><p class="intro">Use the original manufacturer manuals and data sheets to check ratings, terminal markings and parameter instructions. These links open the manufacturers’ sites and require internet access.</p><div class="card links">
-<a href="https://www.ia.omron.com/products/family/3101/download/catalog.html" target="_blank" rel="noreferrer">Omron E5CC / E5C-T data sheets and user manuals</a>
+<a href="https://www.ia.omron.com/products/family/3101/download/catalog.html" target="_blank" rel="noreferrer">Omron E5_C-T official H185 programmable controller user manual</a>
 <a href="https://www.meanwell.com/webapp/product/search.aspx?prod=XDR-120" target="_blank" rel="noreferrer">Mean Well XDR series power supply</a>
 <a href="https://www.se.com/uk/en/product/XB5AD23/" target="_blank" rel="noreferrer">Schneider Harmony XB5AD23 selector</a>
 <a href="https://eao.com/en/product/82-4151.1134" target="_blank" rel="noreferrer">EAO illuminated pushbutton</a>
@@ -183,13 +191,13 @@ permalink: /heater/
   const parts={
     sb:["01 · SB1 / SB2","Heater enable pushbutton","Illuminated EAO momentary switch, commanding the relevant channel's heater-enable circuit.","HEATER ENABLE",["24 V illuminated ring is intended to indicate heater enable.","Finder 13.61 power-return state needs verification."]],
     hl:["02 · HL1 / HL2","Red activity indicator","A small red pilot lamp at each channel's top left.","HEAT ACTIVE",["Provisional role: flashes in response to Omron heat demand.","Actual LED part and circuit role still to be confirmed."]],
-    om:["03 · E1 / E2","Omron E5CC temperature controller","Process-value and setpoint display, controller configuration, and heater-demand output.","CH1 TEMP / CH2 TEMP",["Channel 1 is physically installed.","Channel 2 will be installed in the symmetrical cut-out."]],
+    om:["03 · E1 / E2","Omron E5CC temperature controller","Process-value and setpoint display, controller configuration, and heater-demand output.","CH1 TEMP / CH2 TEMP",["Channel 1 shown with the installed components in the physical photograph.","The finished front panel uses the symmetrical layout shown in the illustration."]],
     sel:["04 · S1 / S2","Maintained channel selector","Channel-specific ON/OFF control, distinct from the heater enable command.","CH1 CONTROL / CH2 CONTROL",["Channel 1 fitted selector is a temporary similar substitute.","Final selected part is Schneider XB5AD23."]],
     vol:["05 · PV1 / PV2","DC voltmeter","Round local DC voltmeter; the model and final wiring need verification.","CH1 DC VOLTS / CH2 DC VOLTS",["Indicates voltage, not heater power or current.","Display can remain off even when mains/control is available."]],
     tc:["06 · JTC1 / JTC2","Type K thermocouple input","Green thermocouple socket for each Omron controller.","CH1 TC / CH2 TC",["Polarity needs to be maintained to the controller.","Use correct Type K mating hardware."]],
     psu:["07 · JP1 / JP3","External PSU input","The UPPER red-and-black connector pair accepts the separate external DC heater supply.","PSU IN + / −",["External DC supply is connected to the upper pair.","Final current-rating and polarity marking checks outstanding."]],
     heater:["08 · JP2 / JP4","Heater output","The LOWEST red-and-black connector pair is the outgoing connection to the resistive heater.","HEATER + / −",["The heater is connected to the lowest pair.","Observe independent positive switch path and negative return."]],
-    ch2:["09 · mirrored panel","Channel 2 cut-out layout","This half is not yet populated. Its cut-outs mirror the built Channel 1.","CHANNEL 2",["Door v2 STL gives the panel stencil geometry (198 × 248 mm).","Do not interpret the blank apertures as final fitted components."]]
+    ch2:["09 · mirrored panel","Channel 2 cut-out layout","The finished arrangement contains the same controls and connectors on both channels.","CHANNEL 2",["Door v2 STL gives the panel stencil geometry (198 × 248 mm).","Do not interpret the blank apertures as final fitted components."]]
   };
   document.querySelectorAll(".point").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll(".point").forEach(x=>x.classList.remove("on"));b.classList.add("on");const a=parts[b.dataset.part];
