@@ -41,12 +41,12 @@ html{scroll-behavior:smooth}section[id],details[id]{scroll-margin-top:16px}
 <div class="note"><strong>The shortcut is not a safety stop:</strong> MODE + DOWN only changes the controller's RUN/RESET state. It does not guarantee isolation of the 0–60 V external heater circuit.</div></section>
 <section class="card" id="fixed"><div class="sectiontag">WORKED EXAMPLE 1</div><h2>Heat to 80 °C and hold that target</h2><p class="subtitle">For a fixed temperature target, not a specified rate. First-time sensor and safety settings are in <a href="#initial">One-time configuration</a>.</p>
 <div class="examplegrid"><div><div class="check smallfacts"><span><span class="label">Setpoint</span><br><strong>80 °C</strong></span><span><span class="label">Mode</span><br><strong>Fixed SP</strong></span><span><span class="label">Ramp duration</span><br><strong>Not defined</strong></span></div><div class="plot" role="group" aria-label="Fixed setpoint profile"><div class="plothead"><strong>Commanded temperature setpoint</strong><span>Illustrative starting point 20 °C</span></div>
-<svg viewBox="0 0 760 278" role="img" aria-label="Setpoint changes from 20 to 80 degrees Celsius when RUN starts and remains at 80 until stopped. Measured temperature is not shown.">
+<svg viewBox="0 0 760 278" role="img" aria-label="When RUN starts, the controller commands a fixed setpoint of 80 degrees Celsius. The starting process temperature of 20 degrees Celsius is shown only as a grey reference, not as a controlled setpoint.">
 <g stroke="#d9e5ee" stroke-width="1"><path d="M70 211H715 M70 134H715 M70 58H715"/><path d="M70 38V211H715"/></g>
 <g fill="#617d94" font-family="Segoe UI,Arial,sans-serif" font-size="13"><text x="16" y="215">20 °C</text><text x="16" y="138">50 °C</text><text x="16" y="62">80 °C</text><text x="59" y="236">0</text><text x="680" y="236">Time →</text></g>
-<path d="M70 211H160V58H705" fill="none" stroke="#1874a8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M70 211H160" fill="none" stroke="#9eb6c7" stroke-width="2" stroke-dasharray="6 5"/><path d="M160 58H705" fill="none" stroke="#1874a8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M160 58V212" stroke="#a9c4d8" stroke-dasharray="5 5"/><circle cx="160" cy="58" r="6" fill="#1874a8"/>
-<g fill="#235c85" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700"><text x="175" y="44">80 °C fixed SP</text><text x="169" y="195">RUN begins</text></g>
+<g fill="#235c85" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700"><text x="175" y="44">80 °C fixed SP</text><text x="169" y="195">RUN begins · starting PV about 20 °C</text></g>
 <text x="365" y="259" fill="#607c93" font-family="Segoe UI,Arial,sans-serif" font-size="12">The temperature does not jump immediately — only the controller target does.</text>
 </svg><p class="note">Not a predicted PV curve. Time to reach 80 °C depends on heater power, thermal load and PID response. This mode does not impose a heating rate.</p></div></div><div class="recipe"><h3>What to enter</h3><table class="table"><tr><th>Display</th><th>Value</th></tr><tr><td><code>spmd</code></td><td><code>fsp</code></td></tr><tr><td><code>fsp</code></td><td><code>80.0</code> °C</td></tr><tr><td><code>r-r</code> (to start)</td><td><code>run</code></td></tr><tr><td><code>r-r</code> (to stop)</td><td><code>rst</code></td></tr></table><p class="mini"><b>Expected result:</b> the controller seeks to regulate at 80 °C, but the actual temperature rises gradually, depending on the load.</p></div></div>
 <h3>Every button press</h3><ol class="steps"><li><span class="idx">1</span><div>With the external DC heater supply isolated, start at the <strong>PV/SP</strong> display. Check <a href="#initial">one-time configuration</a> is already approved (thermocouple type, °C, control mode, reset and restart behaviour).</div></li><li><span class="idx">2</span><div>Press <strong>LEVEL (O) briefly twice</strong> (less than one second each) to enter <strong>Adjustment Level</strong>. You should see the <code>l.adj</code> entry display.</div></li><li><span class="idx">3</span><div>Press <strong>MODE (M)</strong> repeatedly until <code>spmd</code> is displayed. Use <strong>▲/▼</strong> to select <code>fsp</code> (<b>fixed setpoint mode</b>). Press <strong>MODE</strong> to apply the setting.</div></li><li><span class="idx">4</span><div>Continue pressing <strong>MODE</strong> until <code>fsp</code> (fixed setpoint value) appears. Use the <strong>SHIFT/PF (S)</strong> key to select a digit where its default function is enabled, and <strong>▲/▼</strong> to enter <code>80.0</code> °C (or <code>80</code> when the commissioned input uses 1 °C resolution). Press <strong>MODE</strong> to store.</div></li><li><span class="idx">5</span><div>Press <strong>LEVEL (O) briefly twice</strong> to return to Operation Level. Confirm PV is plausible and the configured fixed setpoint is 80 °C. Read <code>r-r</code> via <strong>MODE</strong> and ensure it is <code>rst</code> until the authorised start.</div></li><li><span class="idx">6</span><div>After commissioning checks, set <code>r-r = run</code> using <strong>▲/▼</strong>, then press <strong>MODE</strong> to commit. Only then deliberately enable the heater power path according to the operator procedure. Watch PV move towards 80 °C; the exact heating rate is <b>not controlled</b> by this example.</div></li><li><span class="idx">7</span><div>To stop, set <code>r-r = rst</code>, disengage the independent heater enable, isolate external DC power and allow the heater to cool. Confirm the output-off behaviour was validated during commissioning.</div></li></ol></section>
@@ -108,7 +108,50 @@ html{scroll-behavior:smooth}section[id],details[id]{scroll-margin-top:16px}
 <p class="note">Omron H185 §§5-16-2 and 6-5: MV at Reset has precedence over MV at PV Error when in reset, and <code>mv-r</code> may be masked from the normal setting sequence. Do not change hidden advanced parameters without a documented commissioning plan.</p></div>
 <section class="card" id="calculator"><h2>Nominal ramp duration calculator</h2><p class="muted">Estimate duration for a requested programmed setpoint ramp. This calculates the trajectory, not the measured heater response.</p>
 <div class="calc"><div><label for="start">Starting temperature (°C)</label><input id="start" type="number" value="20" step="0.1"></div><div><label for="end">Target (°C)</label><input id="end" type="number" value="120" step="0.1"></div><div><label for="slope">Rate (°C/min)</label><input id="slope" type="number" value="2" step="0.1" min="0.1"></div><div><label for="hold">Soak (minutes)</label><input id="hold" type="number" value="15" step="1" min="0"></div></div>
-<div id="result" class="result" aria-live="polite"><strong>50 min ramp + 15 min soak = 65 min</strong></div></section>
+<div id="result" class="result" aria-live="polite"><strong>50 min ramp + 15 min soak = 65 min</strong></div>
+<div class="plot" style="margin-top:14px"><div class="plothead"><strong>Your setpoint profile</strong><span>Updates when you change the values above</span></div>
+<svg viewBox="0 0 760 275" role="img" aria-label="Editable ramp and soak setpoint profile, calculated using the entered temperatures, rate and soak duration">
+<g stroke="#d9e5ee" stroke-width="1"><path d="M85 204H710 M85 70H710 M85 40V204H710"/></g>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="13" fill="#607d93"><text id="graphStart" x="5" y="208">20 °C</text><text id="graphEnd" x="5" y="74">120 °C</text><text x="83" y="234">0</text><text id="graphRamp" x="566" y="234" text-anchor="middle">50 min</text><text id="graphTotal" x="710" y="234" text-anchor="end">65 min</text><text x="306" y="267">Elapsed time (minutes)</text></g>
+<path id="liveLine" d="M85 204L565 70H710" fill="none" stroke="#1874a8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<path id="liveTransition" d="M565 70V204" fill="none" stroke="#91b8d3" stroke-dasharray="5 5"/>
+<text id="graphRate" x="245" y="112" font-family="Segoe UI,Arial,sans-serif" fill="#20577d" font-size="14" font-weight="700">2 °C/min</text>
+</svg><p class="note">This graph visualises the commanded setpoint only, assuming a ramp starts from the temperature entered above. It does not estimate measured temperature or guarantee that the load can follow this rate.</p></div></section>
 <section class="card"><h2>Manufacturer source</h2><p>Omron <a href="https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf" target="_blank" rel="noopener noreferrer">E5_C-T Programmable Digital Temperature Controllers User's Manual H185</a>. Relevant chapters: 3 (keys and levels), 4-3 (input type), 4-7 (programmes), 4-9 (autotune), and programme settings in chapter 6.</p><p class="muted">This guide has not yet been checked key-for-key on the physical controller. Validate every step against the actual screen indications before releasing as the production SOP, especially after changing a protected or advanced setting.</p></section>
 <footer>Heating Rate Controller · E5CC-T programming training guide · Pre-commissioning edition</footer></div>
-<script>(function(){const ids=['start','end','slope','hold'];function calc(){const [s,e,r,h]=ids.map(x=>Number(document.getElementById(x).value));const el=document.getElementById('result');if(!Number.isFinite(s+e+r+h)||r<=0||h<0||e<s){el.textContent='Enter a positive rate, a final temperature at or above the start, and a non-negative soak.';return;}const m=(e-s)/r;el.innerHTML='<strong>'+m.toFixed(1)+' min ramp + '+h+' min soak = '+(m+h).toFixed(1)+' min</strong><br><span class="muted">The real process temperature may lag the setpoint.</span>';}ids.forEach(id=>document.getElementById(id).addEventListener('input',calc));calc();})();</script></body></html>
+<script>
+(function(){
+  const ids=['start','end','slope','hold'];
+  const g=id=>document.getElementById(id);
+  const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1);
+  function calc(){
+    const [s,e,r,h]=ids.map(id=>Number(g(id).value));
+    const el=g('result');
+    if(ids.some(id=>g(id).value.trim()==='')||![s,e,r,h].every(Number.isFinite)||r<=0||h<0||e<s){
+      el.textContent='Enter a positive rate, a target at or above the start, and a non-negative soak.';
+      g('liveLine').setAttribute('visibility','hidden');
+      g('liveTransition').setAttribute('visibility','hidden');
+      return;
+    }
+    const m=(e-s)/r,total=m+h;
+    el.innerHTML='<strong>'+fmt(m)+' min ramp + '+fmt(h)+' min soak = '+fmt(total)+' min</strong><br><span class="muted">The actual process temperature may lag the setpoint. Set the controller units correctly before running.</span>';
+    const startX=85,endX=710;
+    const rampX=total>0 ? startX+(endX-startX)*m/total : startX;
+    const yStart=e===s?70:204;
+    g('liveLine').setAttribute('d','M'+startX+' '+yStart+'L'+rampX+' 70H'+endX);
+    g('liveLine').setAttribute('visibility','visible');
+    g('liveTransition').setAttribute('d','M'+rampX+' 70V204');
+    g('liveTransition').setAttribute('visibility',h>0&&m>0?'visible':'hidden');
+    g('graphStart').textContent=fmt(s)+' °C';
+    g('graphEnd').textContent=fmt(e)+' °C';
+    g('graphRamp').setAttribute('x',String(rampX));
+    g('graphRamp').textContent=fmt(m)+' min';
+    g('graphRamp').setAttribute('visibility',h>0&&m>0?'visible':'hidden');
+    g('graphTotal').textContent=fmt(total)+' min';
+    g('graphRate').textContent=fmt(r)+' °C/min';
+    g('graphRate').setAttribute('visibility',m>0?'visible':'hidden');
+  }
+  ids.forEach(id=>g(id).addEventListener('input',calc));
+  calc();
+})();
+</script></body></html>
