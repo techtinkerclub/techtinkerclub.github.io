@@ -24,13 +24,11 @@
 <use href="#tc" x="100" y="613"/>
 <use href="#jackred" x="183" y="613"/><use href="#jackblack" x="239" y="613"/>
 <use href="#jackred" x="183" y="697"/><use href="#jackblack" x="239" y="697"/>
-<rect x="314" y="87" width="153" height="151" rx="1" fill="#1b2129" stroke="#71808b" stroke-width="2"/>
-<circle cx="504" cy="141" r="37" fill="#202a33" stroke="#75818a"/>
-<circle cx="504" cy="226" r="24" fill="#212d35" stroke="#8999a7"/>
-<circle cx="395" cy="319" r="52" fill="#29333b" stroke="#9caab5" stroke-width="2"/>
-<circle cx="395" cy="487" r="55" fill="#26313c" stroke="#96a4b3" stroke-width="2"/>
-<rect x="463" y="587" width="82" height="52" rx="3" fill="#35414c" stroke="#9aaab7" stroke-width="2"/>
-<use href="#jackblack" x="367" y="613"/><use href="#jackblack" x="423" y="613"/>
-<use href="#jackblack" x="367" y="697"/><use href="#jackblack" x="423" y="697"/>
-
+<!-- Channel 2 duplicates the installed component arrangement in the symmetrical locations. Illustrative, not dimensional CAD. -->
+<use href="#button" x="504" y="141"/><use href="#pilot" x="504" y="226"/>
+<use href="#omron" x="390" y="165"/>
+<use href="#rot" x="395" y="319"/><use href="#meter" x="395" y="487"/>
+<use href="#tc" x="504" y="613"/>
+<use href="#jackred" x="367" y="613"/><use href="#jackblack" x="423" y="613"/>
+<use href="#jackred" x="367" y="697"/><use href="#jackblack" x="423" y="697"/>
 <g id="panel-physical-labels" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" fill="#3f5567" letter-spacing=".38" text-anchor="middle"><text x="100" y="91">ENABLE</text><text x="100" y="267">ACTIVE</text><text x="215" y="255">TEMP CTRL</text><text x="215" y="393">CONTROL</text><text x="215" y="562">DC VOLTS</text><text x="100" y="659">TC INPUT</text><text x="210" y="653">PSU IN</text><text x="210" y="743">HEATER OUT</text><text x="504" y="91">ENABLE</text><text x="504" y="267">ACTIVE</text><text x="390" y="255">TEMP CTRL</text><text x="395" y="393">CONTROL</text><text x="395" y="562">DC VOLTS</text><text x="504" y="659">TC INPUT</text><text x="395" y="653">PSU IN</text><text x="395" y="743">HEATER OUT</text></g></svg>
