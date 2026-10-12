@@ -104,6 +104,7 @@ const newProg=()=>({n:8,segments:Array.from({length:32},()=>({type:"ramp",sp:0,r
 let vm;
 function resetVM(){vm={level:"operation",param:"pv",prg:0,seg:"end",progs:Array.from({length:8},newProg),settings:{"in-t":6,"d-u":"c",cntl:"pid","t-u":"h-m","t-pr":"pr",pru:"m",rtsm:"stop","p-on":"rst",eset:"rst",spmd:"psp"},status:"rst",pv:Number(cur().start)||20,time:0,digit:0,history:[]};showVM()}
 const prog=()=>vm.progs[vm.prg];
+function simReady(){let x=vm.settings,p=prog();return x["t-pr"]==="pr"&&x["t-u"]==="h-m"&&x.pru==="m"&&x.rtsm==="stop"&&x.spmd==="psp"&&p.rpt===0&&p.link==="end"}
 const minTime=n=>{n=Math.min(5999,Math.max(0,Number(n)||0));return Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0")};
 function keys(){let x=vm.level==="operation"?["pv","r-r"]:vm.level==="initial"?["in-t","d-u","cntl","t-u","t-pr","pru","rtsm","p-on","eset"]:vm.level==="adjustment"?["l.adj","spmd"]:vm.level==="pid"?["d.pid"]:["d.prg","s-no","d.seg"];
  if(vm.level==="program"&&vm.seg!=="end"){let s=prog().segments[vm.seg];x.push("styp");if(s.type==="ramp")x.push("sp","pr");if(s.type==="soak")x.push("time");if(s.type==="step")x.push("sp")}
@@ -117,6 +118,7 @@ function value(p){
  if(p==="l.adj")return "--";return vm.settings[p]??"--";
 }
 function setpoint(){
+ if(!simReady())return "----";
  let g=prog(),a=evaluate({start:vm.pv,steps:g.segments.slice(0,g.n),finish:vm.settings.eset});
  if(a.err.length)return "----";let last=vm.pv,clock=0;
  for(const s of a.list){if(s.type==="step"){last=s.sp;continue}let end=clock+s.minutes;if(vm.time<=end){if(s.type==="soak")return fmt(last);return fmt(last+(s.sp-last)*(s.minutes?(vm.time-clock)/s.minutes:1))}clock=end;last=s.sp}
@@ -155,7 +157,7 @@ function showVM(){
  $("state").textContent=vm.level.toUpperCase()+" · "+vm.status.toUpperCase()+" · programme "+vm.prg+(vm.seg==="end"?"":" · seg "+vm.seg);
  $("elapsed").textContent=fmt(vm.time)+" min · "+vm.status.toUpperCase();
  let a=evaluate({start:vm.pv,steps:prog().segments.slice(0,prog().n),finish:vm.settings.eset});
- $("simchart").innerHTML=a.err.length?'<p class="tiny muted">Complete the segment values to preview this virtual programme.</p>':graph(a.pts);
+ $("simchart").innerHTML=!simReady()?'<p class="warn">This virtual configuration is outside the supported profile (rate-of-rise, hours.minutes, rate per minute, reset stops control, programmed SP, no repetitions or links). Restore those settings to preview.</p>':a.err.length?'<p class="tiny muted">Complete the segment values to preview this virtual programme.</p>':graph(a.pts);
  $("history").innerHTML=vm.history.slice(-14).map(esc).join("<br>")||"No keys pressed yet.";goal();
 }
 function goal(){
@@ -166,7 +168,7 @@ function goal(){
 }
 document.querySelectorAll("[data-key]").forEach(x=>x.addEventListener("click",()=>{push(x.dataset.key,$("holdmode").value==="long");$("holdmode").value="short"}));
 $("combo").onclick=()=>{vm.status=vm.status==="run"?"rst":"run";vm.time=0;history("MODE+DOWN → "+vm.status);showVM()};
-function advance(n){if(vm.status!=="run"){history("Not running");showVM();return}let p=prog(),a=evaluate({start:vm.pv,steps:p.segments.slice(0,p.n),finish:vm.settings.eset});if(a.err.length){history("Programme invalid");showVM();return}
+function advance(n){if(vm.status!=="run"){history("Not running");showVM();return}if(!simReady()){history("Unsupported simulation configuration; time not advanced");showVM();return}let p=prog(),a=evaluate({start:vm.pv,steps:p.segments.slice(0,p.n),finish:vm.settings.eset});if(a.err.length){history("Programme invalid");showVM();return}
  vm.time+=n;if(vm.time>=a.time&&vm.settings.eset==="rst"&&p.rpt===0&&p.link==="end"){vm.time=a.time;vm.status="rst";history("PROGRAMME END → RESET")}else history("Advanced "+n+" min (setpoint only)");showVM()}
 $("minute").onclick=()=>advance(1);$("five").onclick=()=>advance(5);$("reset").onclick=()=>{vm.status="rst";vm.time=0;history("RESET");showVM()};
 $("empty").onclick=()=>{if(confirm("Clear all eight virtual programme memories? Builder remains saved."))resetVM()};
