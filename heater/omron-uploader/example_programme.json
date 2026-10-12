@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "method": "rate",
+  "programmeNumber": 0,
+  "programme": {
+    "name": "20 to 120 Celsius at 2 Celsius/min, 15 minute soak",
+    "start": 20,
+    "finish": "rst",
+    "steps": [
+      {"type": "ramp", "sp": 120, "rate": 2},
+      {"type": "soak", "minutes": 15}
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+test_32_segment_limit (test_studio.ProgramTests.test_32_segment_limit) ... ok
+test_65_minute (test_studio.ProgramTests.test_65_minute) ... ok
+test_cont_end_blocks_upload (test_studio.ProgramTests.test_cont_end_blocks_upload) ... ok
+test_hex_address_map (test_studio.ProgramTests.test_hex_address_map) ... ok
+test_site_json_import (test_studio.ProgramTests.test_site_json_import) ... ok
+test_time_encoding_hhmm (test_studio.ProgramTests.test_time_encoding_hhmm) ... ok
+test_wrong_rate_range (test_studio.ProgramTests.test_wrong_rate_range) ... ok
+test_corrupted_bcc (test_studio.ProtocolTests.test_corrupted_bcc) ... ok
+test_request (test_studio.ProtocolTests.test_request) ... ok
+test_response (test_studio.ProtocolTests.test_response) ... ok
+test_unknown_node (test_studio.ProtocolTests.test_unknown_node) ... ok
+test_write_command_whitelist (test_studio.ProtocolTests.test_write_command_whitelist) ... ok
+test_wrong_function (test_studio.ProtocolTests.test_wrong_function) ... ok
+test_replug_check_and_bad_data (test_studio.ReceiptTests.test_replug_check_and_bad_data) ... ok
+test_cable_error_aborts_without_save (test_studio.TransferTests.test_cable_error_aborts_without_save) ... ok
+test_full_backup_ram_stage_save (test_studio.TransferTests.test_full_backup_ram_stage_save) ... ok
+test_model_mismatch_refuses (test_studio.TransferTests.test_model_mismatch_refuses) ... ok
+test_preflight_mismatch_allows_backup_but_blocks_writes (test_studio.TransferTests.test_preflight_mismatch_allows_backup_but_blocks_writes) ... ok
+test_running_blocks_stage (test_studio.TransferTests.test_running_blocks_stage) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.006s
+
+OK
+
+Tkinter GUI smoke test: PASS under Linux Xvfb (window creation, tab creation,
+editing segments, disabled transfer controls, rendering via virtual display).
+This is not a Windows EXE test and not a hardware communication test.
