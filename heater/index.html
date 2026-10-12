@@ -64,10 +64,10 @@ permalink: /heater/
 <button class="point" data-part="heater" title="Heater output" aria-label="8: Heater output" style="left:45.48%;top:82.98%">8</button>
 <button class="point" data-part="ch2" title="Second channel" aria-label="9: Channel 2" style="left:91.13%;top:42.86%">9</button>
 </div><p class="note">Panel labels are proposed markings; verify clearance on the real panel before applying them. The illustration is not a dimensioned manufacturing drawing.</p></article>
-<article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Suggested physical marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Further notes</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
+<article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Panel marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Further notes</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
 </section>
 
-<section id="wiring" class="view"><h2 class="heading">Electrical overview</h2><p class="intro">Functional illustrations for understanding the system. These are <strong>not</strong> replacements for the numbered, manufacturer-verified wiring sheets.</p>
+<section id="wiring" class="view"><h2 class="heading">Electrical system</h2><p class="intro">Follow how the mains control supply, channel enable circuit and external DC heater connections work together. The diagrams explain the functional paths; always use the approved terminal-by-terminal schematics for installation or servicing.</p>
 <div class="card"><h3>Shared control supply and two branches</h3>
 <svg class="sw" viewBox="0 0 900 240" role="img" aria-label="Simplified control power distribution"><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#bb683d"/></marker></defs>
 <rect x="18" y="70" width="144" height="80" rx="9" fill="#e8f1f9" stroke="#82a7c3"/><text x="90" y="102" text-anchor="middle" font-size="15" font-weight="bold" fill="#254c6e">Schurter mains</text><text x="90" y="122" text-anchor="middle" font-size="13" fill="#607c95">230 V / PE</text>
@@ -137,7 +137,7 @@ permalink: /heater/
 <p class="note">Autotune is not a substitute for verifying safety limits. It is unsuitable during an actual thermal-runaway event.</p></div></div>
 <div class="card callout"><h3>Official Omron documentation</h3><div class="links"><a target="_blank" rel="noreferrer" href="https://www.ia.omron.com/products/family/3101/download/catalog.html">Omron E5CC user manuals, instruction sheets and data sheets</a></div><p class="note">Use the instructions matching the controller's exact part number and firmware. Approved parameter values will be added after commissioning.</p></div></section>
 
-<section id="components" class="view"><h2 class="heading">Component register</h2><p class="intro">Electrical parts currently documented in the design review. The physical meter and some connector/socket variants remain to be identified.</p>
+<section id="components" class="view"><h2 class="heading">Component register</h2><p class="intro">Identify the main control and power-switching components by reference and manufacturer part number. Confirm the exact fitted meter, terminal and socket versions when servicing the equipment.</p>
 <input id="search" class="search" placeholder="Search components, part numbers or purposes…" aria-label="Search component register">
 <div id="componentGrid" class="grid3">
 <div class="card comp"><span class="tag">E1 / E2</span><h3>Omron E5CC</h3><p class="brief">Temperature controller, one per channel</p></div><div class="card comp"><span class="tag">PS1</span><h3>Mean Well XDR-120E-24</h3><p class="brief">Shared 24 V control supply</p></div>
@@ -148,7 +148,7 @@ permalink: /heater/
 <div class="card comp"><span class="tag">JTC1 / JTC2</span><h3>Type K panel connectors</h3><p class="brief">Thermocouple interface</p></div><div class="card comp"><span class="tag">PV1 / PV2</span><h3>Round DC voltmeters</h3><p class="brief">Part number and electrical connections to confirm</p></div>
 </div></section>
 
-<section id="datasheets" class="view"><h2 class="heading">Manufacturer documentation</h2><p class="intro">Official documentation links. The documents open online; downloadable PDF copies are not yet bundled into this website.</p><div class="card links">
+<section id="datasheets" class="view"><h2 class="heading">Manufacturer documentation</h2><p class="intro">Use the original manufacturer manuals and data sheets to check ratings, terminal markings and parameter instructions. These links open the manufacturers’ sites and require internet access.</p><div class="card links">
 <a href="https://www.ia.omron.com/products/family/3101/download/catalog.html" target="_blank" rel="noreferrer">Omron E5CC / E5C-T data sheets and user manuals</a>
 <a href="https://www.meanwell.com/webapp/product/search.aspx?prod=XDR-120" target="_blank" rel="noreferrer">Mean Well XDR series power supply</a>
 <a href="https://www.se.com/uk/en/product/XB5AD23/" target="_blank" rel="noreferrer">Schneider Harmony XB5AD23 selector</a>
@@ -174,7 +174,7 @@ permalink: /heater/
 <li>Check the final point-to-point wiring against the physical build, then record a signed electrical and functional inspection.</li>
 </ol></div></section>
 
-</main></div><footer class="fot">Heating Rate Controller · review manual · 2026 · separate unlisted page · noindex</footer></div>
+</main></div><footer class="fot">Heating Rate Controller · Operating and maintenance manual · Pre-commissioning edition · 2026</footer></div>
 <script>
 (function(){
   const btns=[...document.querySelectorAll("[data-v]")];
@@ -187,8 +187,8 @@ permalink: /heater/
     sel:["04 · S1 / S2","Maintained channel selector","Channel-specific ON/OFF control, distinct from the heater enable command.","CH1 CONTROL / CH2 CONTROL",["Channel 1 fitted selector is a temporary similar substitute.","Final selected part is Schneider XB5AD23."]],
     vol:["05 · PV1 / PV2","DC voltmeter","Round local DC voltmeter; the model and final wiring need verification.","CH1 DC VOLTS / CH2 DC VOLTS",["Indicates voltage, not heater power or current.","Display can remain off even when mains/control is available."]],
     tc:["06 · JTC1 / JTC2","Type K thermocouple input","Green thermocouple socket for each Omron controller.","CH1 TC / CH2 TC",["Polarity needs to be maintained to the controller.","Use correct Type K mating hardware."]],
-    psu:["07 · JP1 / JP3","External PSU input","The UPPER red-and-black connector pair accepts the separate external DC heater supply.","PSU IN + / −",["User-confirmed assignment: upper pair is PSU input.","Final current-rating and polarity marking checks outstanding."]],
-    heater:["08 · JP2 / JP4","Heater output","The LOWEST red-and-black connector pair is the outgoing connection to the resistive heater.","HEATER + / −",["User-confirmed assignment: very bottom pair is heater.","Observe independent positive switch path and negative return."]],
+    psu:["07 · JP1 / JP3","External PSU input","The UPPER red-and-black connector pair accepts the separate external DC heater supply.","PSU IN + / −",["External DC supply is connected to the upper pair.","Final current-rating and polarity marking checks outstanding."]],
+    heater:["08 · JP2 / JP4","Heater output","The LOWEST red-and-black connector pair is the outgoing connection to the resistive heater.","HEATER + / −",["The heater is connected to the lowest pair.","Observe independent positive switch path and negative return."]],
     ch2:["09 · mirrored panel","Channel 2 cut-out layout","This half is not yet populated. Its cut-outs mirror the built Channel 1.","CHANNEL 2",["Door v2 STL gives the panel stencil geometry (198 × 248 mm).","Do not interpret the blank apertures as final fitted components."]]
   };
   document.querySelectorAll(".point").forEach(b=>b.addEventListener("click",()=>{
