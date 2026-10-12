@@ -49,9 +49,8 @@ permalink: /heater/
 <div class="card callout"><h3>Manual quick access</h3><div class="tagrow"><button class="btn jump" data-v="front">Identify front-panel controls</button><button class="btn jump" data-v="sop">Operating procedure</button><button class="btn jump" data-v="omron">Omron setup and autotune</button><button class="btn jump" data-v="datasheets">Component documentation</button></div></div></section>
 
 <section id="front" class="view">
-<h2 class="heading">Front-panel controls and connections</h2><p class="intro">Each channel has its own controls, temperature measurement and DC connectors. Select the numbered labels beside the illustrated components to see their functions, or switch to the photo for a view of the physical panel.</p>
+<h2 class="heading">Front-panel controls and connections</h2><p class="intro">Each channel has its own controls, temperature measurement and DC connectors. Select the numbered callouts beside the illustrated components to see their functions.</p>
 <div class="split"><article class="card">
-<div class="tabrow"><button id="illustrationButton" class="sel" type="button">Labelled panel</button><button id="photoButton" type="button">Original photograph</button></div>
 <div class="panelphoto" id="panelViewer">
 <img id="panelImage" alt="Labelled engineering illustration of the dual-channel controller panel" src="./assets/front-panel.svg" loading="eager">
 <svg class="leaders" viewBox="0 0 620 840" aria-hidden="true"><g fill="none" stroke="#3477a3" stroke-width="1.7" stroke-linecap="round"><path d="M44 141 H63"/><path d="M43 226 H75"/><path d="M145 257 V243"/><path d="M146 319 H166"/><path d="M142 487 H159"/><path d="M45 613 H59"/><path d="M282 613 H259"/><path d="M282 697 H259"/><path d="M565 360 H549"/></g></svg>
@@ -64,7 +63,7 @@ permalink: /heater/
 <button class="point" data-part="psu" title="External PSU input" aria-label="7: PSU input" style="left:45.48%;top:72.98%">7</button>
 <button class="point" data-part="heater" title="Heater output" aria-label="8: Heater output" style="left:45.48%;top:82.98%">8</button>
 <button class="point" data-part="ch2" title="Second channel" aria-label="9: Channel 2" style="left:91.13%;top:42.86%">9</button>
-</div><p class="note">Panel labels are proposed markings; verify clearance on the real panel before applying them. The original photograph is unannotated because its camera perspective differs from the illustration.</p></article>
+</div><p class="note">Panel labels are proposed markings; verify clearance on the real panel before applying them. The illustration is not a dimensioned manufacturing drawing.</p></article>
 <article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Suggested physical marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Further notes</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
 </section>
 
@@ -202,11 +201,5 @@ permalink: /heater/
   s.addEventListener("input",()=>document.querySelectorAll(".comp").forEach(c=>c.classList.toggle("hide",!c.textContent.toLowerCase().includes(s.value.toLowerCase()))));
 })();
 </script>
-<script>
-(function(){
-var img=document.getElementById('panelImage'),illustration=document.getElementById('illustrationButton'),photo=document.getElementById('photoButton'),viewer=document.getElementById('panelViewer');
-function setImage(actual){img.src=actual?'./assets/front-panel-photo.svg':'./assets/front-panel.svg';img.alt=actual?'Original photographed front panel with Channel 1 fitted and Channel 2 unpopulated':'Engineering illustration of front panel and symmetric cutouts';illustration.classList.toggle('sel',!actual);photo.classList.toggle('sel',actual);viewer.classList.toggle('photo-mode',actual);}
-illustration.addEventListener('click',function(){setImage(false)});photo.addEventListener('click',function(){setImage(true)});
-})();
-</script>
+
 </body></html>
