@@ -40,9 +40,9 @@ permalink: /heater/
 </section>
 
 <section id="front" class="view">
-<h2 class="heading">Real front panel</h2><p class="intro">Select a numbered component marker. The left channel is photographed as built; the right channel is still unpopulated, with a symmetrical cut-out layout.</p>
-<div class="split"><article class="card"><div class="panelphoto">
-<img alt="Actual front panel, fitted Channel 1 and unpopulated Channel 2, with access to explanatory callouts" src="./assets/front-panel.svg" loading="eager">
+<h2 class="heading">Front-panel guide</h2><p class="intro">Explore the illustrated panel or switch to the original workshop photograph. Channel 1 is fitted; Channel 2 is represented by its symmetrical cut-outs.</p>
+<div class="split"><article class="card"><div class="tabrow"><button id="illustrationButton" class="sel" type="button">Illustrated layout</button><button id="photoButton" type="button">Original photo</button></div><div class="panelphoto">
+<img id="panelImage" alt="Illustration based on actual front panel and symmetric cutouts" src="./assets/front-panel.svg" loading="eager">
 <button class="point on" data-part="sb" style="left:16%;top:16.8%">1</button>
 <button class="point" data-part="hl" style="left:16%;top:27.1%">2</button>
 <button class="point" data-part="om" style="left:34%;top:21%">3</button>
@@ -52,7 +52,7 @@ permalink: /heater/
 <button class="point" data-part="psu" style="left:34%;top:73%">7</button>
 <button class="point" data-part="heater" style="left:34%;top:83%">8</button>
 <button class="point" data-part="ch2" style="left:78%;top:45%">9</button>
-</div><p class="note">The large stainless pushbutton and small red indicator are physically fitted on Channel 1. The rotary selector is a temporary substitute for the final Schneider.</p></article>
+</div><p class="note">The illustrated layout is a guide, not a product photograph or dimensioned CAD. Select Original photo to see Channel 1 as fitted. Its selector is a temporary substitute for the final Schneider.</p></article>
 <article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Suggested physical marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Further notes</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
 </section>
 
@@ -163,6 +163,13 @@ permalink: /heater/
   document.querySelector('.point[data-part="sb"]').click();
   const s=document.getElementById("search");
   s.addEventListener("input",()=>document.querySelectorAll(".comp").forEach(c=>c.classList.toggle("hide",!c.textContent.toLowerCase().includes(s.value.toLowerCase()))));
+})();
+</script>
+<script>
+(function(){
+var img=document.getElementById('panelImage'),illustration=document.getElementById('illustrationButton'),photo=document.getElementById('photoButton');
+function setImage(actual){img.src=actual?'./assets/front-panel-photo.svg':'./assets/front-panel.svg';img.alt=actual?'Original photographed front panel with Channel 1 fitted and Channel 2 unpopulated':'Engineering illustration of front panel and symmetric cutouts';illustration.classList.toggle('sel',!actual);photo.classList.toggle('sel',actual);}
+illustration.addEventListener('click',function(){setImage(false)});photo.addEventListener('click',function(){setImage(true)});
 })();
 </script>
 </body></html>
