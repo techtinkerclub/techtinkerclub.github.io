@@ -157,6 +157,69 @@ class FiveStepWizardTests(unittest.TestCase):
             self.ui.stage()
         warning.assert_called_once()
         self.assertFalse(self.ui.safe_to_stage())
+    def test_unplugged_com_port_auto_disconnects_without_erasing_design(self):
+        """When Windows removes COM7 the GUI must lose write capability automatically."""
+        from types import SimpleNamespace
+        class DummyUSB:
+            def __init__(self):self.closed=False
+            def close(self):self.closed=True
+        client=DummyUSB()
+        self.ui.choose_mode("connected")
+        self.ui.client=client
+        self.ui.session=SimpleNamespace(ram_touched=False,committed=True,backup_data={"programmes":{}})
+        self.ui.connected=True
+        self.ui.active_port="COM7"
+        self.ui.approved_preview=("old",0,())
+        before=self.ui.progs[0].as_json()
+        with patch("serial.tools.list_ports.comports",return_value=[]):
+            self.ui._poll_connection()
+        self.assertFalse(self.ui.connected)
+        self.assertTrue(client.closed)
+        self.assertIsNone(self.ui.session)
+        self.assertIsNone(self.ui.approved_preview)
+        self.assertIn("USB DISCONNECTED",self.ui.status.get())
+        self.assertFalse(self.ui.safe_to_stage())
+        self.assertEqual(self.ui.progs[0].as_json(),before)
+    def test_unplugging_only_controller_end_detects_missing_heartbeat(self):
+        """COM port may remain enumerated if the PC-side USB adaptor remains."""
+        from types import SimpleNamespace
+        class LostController:
+            closed=False
+            def close(self):self.closed=True
+            def status(self):raise RuntimeError("No response from controller")
+        client=LostController()
+        self.ui.choose_mode("connected")
+        self.ui.client=client
+        self.ui.session=SimpleNamespace(ram_touched=False,committed=False)
+        self.ui.connected=True
+        self.ui.active_port="COM7"
+        self.ui._connection_poll_counter=3
+        def fake_job(label,fn,success,write=False,quiet=False):
+            self.assertEqual(label,"USB connection health check")
+            self.assertTrue(quiet)
+            try:success(fn())
+            except Exception as exc:self.ui.events.put(("ERROR",(label,str(exc),False,"simulated")))
+        self.ui._job=fake_job
+        with patch("serial.tools.list_ports.comports",return_value=[SimpleNamespace(device="COM7")]):
+            self.ui._poll_connection()
+        with patch("tkinter.messagebox.showerror"):
+            self.ui._pump()
+        self.assertFalse(self.ui.connected)
+        self.assertTrue(client.closed)
+        self.assertIn("USB DISCONNECTED",self.ui.status.get())
+    def test_uncommitted_ram_unplug_shows_safety_warning(self):
+        from types import SimpleNamespace
+        self.ui.choose_mode("connected")
+        self.ui.connected=True
+        self.ui.active_port="COM7"
+        self.ui.session=SimpleNamespace(ram_touched=True,committed=False)
+        self.ui.client=SimpleNamespace(close=lambda:None)
+        with patch("tkinter.messagebox.showwarning") as warn:
+            self.ui._connection_lost("Controller power lost")
+        warn.assert_called_once()
+        self.assertFalse(self.ui.connected)
+        self.assertFalse(self.ui.safe_to_stage())
+        self.assertIn("DISCONNECTED",self.ui.status.get())
     def test_manual_includes_programme_and_initial_setting_without_website(self):
         self.ui.choose_mode("offline")
         self.ui.progs[0]=Programme(name="120 C ramp / 50 C cool",start="20",finish="rst",
