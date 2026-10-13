@@ -107,7 +107,8 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - **Menu loop physically confirmed:** With programme 0 selected and `d.seg=end`, pressing MODE after `link=end` returns to `d.prg=0`, exactly as the simulator currently does. This completes the read-only **single-segment Programme Setting Level navigation** comparison (including displayed `pid=1`, `al-1=al-2=al-3=0`, `rpt=0`, `link=end`).
 - **LEVEL transition confirmed:** Starting from `d.prg=0` in Programme Setting Level, one brief LEVEL press displayed `l.adj` (Adjustment Level). The user did not report the lower-display value, so no value is assumed.
 - **SP mode confirmed:** User reports `spmd=psp` (Program SP Mode) on the physical Omron. This is an **Adjustment Level** parameter. Exact key (MODE vs LEVEL) used to move from `l.adj` to `spmd` has not been confirmed; do not infer it.
-- **Next validation:** Clarify whether MODE or LEVEL was pressed to move from `l.adj` to `spmd=psp`. Do not change `spmd`. Then continue verifying key-by-key navigation; PID Setting Level remains unverified. Multi-segment navigation remains unverified.
+- **PID-level transition confirmed:** From `spmd=psp` in Adjustment Level, user pressed brief LEVEL and observed `d.pid=1` (reported as `dpid`). This confirms the PID Setting Level entry and selection of PID set 1. Actual PID tuning values are not recorded; earlier movement from `l.adj` to `spmd` was *probably* MODE, but user was unsure.
+- **Next validation:** From `d.pid=1`, press MODE **once** without changing values and record the exact upper and lower screen text. Document parameter order in PID Setting Level. Multi-segment navigation remains unverified.
 - **Limitations:** USB-only inspection provides no heater-output or restart-interlock qualification.
 
 ## Results
