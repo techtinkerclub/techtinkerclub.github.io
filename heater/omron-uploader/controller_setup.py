@@ -120,19 +120,28 @@ def validate_snapshot(snapshot):
             raise ValueError(f"Bad raw value for {code}")
     return snapshot
 
+def offline_snapshot():
+    """Empty planning template. No value is claimed to have been read from a controller."""
+    fields = {parameter["code"]:None for parameter in CONFIG}
+    return dict(schema=SCHEMA, read_utc="OFFLINE — NO CONTROLLER READ",
+                controller={"model10":"E5CC-TQX3A","buffer_bytes":None},
+                fields=fields, errors={}, changed_since_inspection={}, mode="offline",
+                scope="OFFLINE PLANNING ONLY: not a readback, not a device backup.",
+                warning="Unknown live values. Verify all intended changes on the physical controller.")
+
 def apply_draft(snapshot, draft, code, new_value):
     """Set an offline proposal only; never communicates with controller."""
     validate_snapshot(snapshot)
     if code not in DRAFT_CODES:
         raise ValueError("This setting is review-only: no safe offline proposal defined")
     raw = snapshot["fields"].get(code)
-    if raw is None:
-        raise ValueError("Cannot propose a change to an unread parameter")
+    if raw is None and snapshot.get("mode") != "offline":
+        raise ValueError("Cannot propose a change to an unread live parameter")
     options = BY_CODE[code]["options"]
     if type(new_value) is not int or new_value not in options:
         raise ValueError("Proposed value is not a documented menu choice")
     out = dict(draft)
-    if new_value == signed32(raw):
+    if raw is not None and new_value == signed32(raw):
         out.pop(code,None)
     else:
         out[code] = new_value
@@ -146,11 +155,12 @@ def build_proposal(snapshot, draft):
         if code not in DRAFT_CODES or type(new_value) is not int:
             raise ValueError("Proposal contains unsupported changes")
         old = snapshot["fields"].get(code)
-        if old is None or new_value not in BY_CODE[code]["options"]:
+        if (old is None and snapshot.get("mode") != "offline") or new_value not in BY_CODE[code]["options"]:
             raise ValueError(f"Invalid or unread field {code}")
-        if signed32(old) != new_value:
+        if old is None or signed32(old) != new_value:
             changes.append({"register":code,"name":BY_CODE[code]["name"],
-                            "previous_raw":f"{old:08X}","previous":value_text(code,old),
+                            "previous_raw":f"{old:08X}" if old is not None else None,
+                            "previous":value_text(code,old) if old is not None else "Unknown (offline)",
                             "requested_raw":f"{new_value & 0xffffffff:08X}",
                             "requested":BY_CODE[code]["options"][new_value]})
     return dict(schema=PLAN_SCHEMA, created_utc=datetime.now(timezone.utc).isoformat(),
