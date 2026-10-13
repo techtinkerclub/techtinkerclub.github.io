@@ -336,7 +336,7 @@ class Window:
 
  def _connect(self):
     panel,body=self.card(self.t_connect,"Connection wizard — read-only");panel.pack(fill="x",padx=10,pady=10)
-    self.message(body,"1. Keep panel mains OFF and 0–60 V heater PSU physically disconnected. 2. Plug E58-CIFQ2 into the controller setup port. 3. Windows should show a COM port. 4. Identify using 0503 and inspect 9 C3 configuration fields. This stage NEVER writes anything.")
+    self.message(body,"One controller per USB session. 1. Isolate controller mains and external heater DC. 2. Connect E58-CIFQ2. 3. Select a COM port (e.g. COM7). 4. Read identity, operating status and nine C3 fields. This is read-only; no process-output control.")
     row=tk.Frame(body,bg="white");row.pack(fill="x",pady=10)
     tk.Label(row,text="COM port",bg="white").pack(side="left")
     self.port=tk.StringVar();self.portbox=ttk.Combobox(row,textvariable=self.port,width=40);self.portbox.pack(side="left",padx=9)
@@ -345,7 +345,7 @@ class Window:
     self.btn_disconnect=self.b(row,"Disconnect",self.disconnect);self.btn_disconnect.pack(side="left")
     self.inspecttext=scrolledtext.ScrolledText(body,height=13,wrap="word",font=("Consolas",10));self.inspecttext.pack(fill="both",expand=True)
     self.inspecttext.insert("end","No controller connected.\nModel identification is only 10 characters: the full -000 suffix must be confirmed on the nameplate.\n")
-    self.message(body,"The read-only preflight requires: input type 6, °C, h.mm programme time, rate programming, slope per minute, RESET stops, power-up RESET, end RESET, PV-start enabled. Mismatches block transfers. These settings are NOT changed automatically.")
+    self.message(body,"COM7 proved input type 5 (valid Type K) and SP Start 0, while the experimental upload gate expects input 6 and PV Start 1. These assumptions need engineering review before writes. Do not alter valid hardware parameters to please the software. Read-only connection and backup still work.")
  def refresh_ports(self):
     try:
         from serial.tools import list_ports
@@ -370,9 +370,9 @@ class Window:
         self.inspecttext.insert("end",f"CONNECTED: {port}\nModel prefix: {info['model10']}\nStatus: {info['status']}\n\n")
         for addr,(wanted,note) in PREFLIGHT.items():
             got=info["settings"][f"C3:{addr:04X}"]
-            self.inspecttext.insert("end",f"C3:{addr:04X}  {got} / required {wanted}   {note}\n")
+            self.inspecttext.insert("end",f"C3:{addr:04X}  actual {got} / provisional upload gate {wanted}   {note}\n")
         self.inspecttext.insert("end","\nNEXT: Back up all 8 programme blocks before considering any write.\n")
-        if info["mismatches"]:self.inspecttext.insert("end","\nCONFIGURATION MISMATCH: reads/backups allowed; UPLOAD BLOCKED until reviewed and fixed by qualified personnel.\n")
+        if info["mismatches"]:self.inspecttext.insert("end","\nUPLOAD BLOCKED: old preflight assumptions need correction, not necessarily the controller. USB read and backup remain allowed.\n")
         self.book.select(self.t_backup);self.refresh_buttons()
     self._job("Read-only identification/preflight",work,success)
  def disconnect(self):
@@ -390,7 +390,7 @@ class Window:
  def _backup(self):
     panel,body=self.card(self.t_backup,"Mandatory backup of existing controller programme memory");panel.pack(fill="both",expand=True,padx=10,pady=10)
     self.message(body,"Read every DA register in the eight programme blocks (8 × 150). The resulting JSON also includes the 9 checked C3 initial configuration parameters. This is NOT a complete clone of every controller setting, and it is NOT a verified restoration utility.")
-    self.message(body,"Do this separately for Channel 1 and Channel 2. The stored copy must remain outside the application folder and be retained before attempting any upload.")
+    self.message(body,"This app connects to ONE controller at a time. Keep each controller backup in its own folder or filename, away from the app. Backing up does not authorise an upload.")
     self.backdir=tk.StringVar(value=str(Path.home()/"Documents"/"Omron E5CC-T Backups"))
     row=tk.Frame(body,bg="white");row.pack(fill="x",pady=7)
     ttk.Entry(row,textvariable=self.backdir).pack(side="left",expand=True,fill="x")
@@ -450,10 +450,10 @@ class Window:
     self.lab_info=tk.StringVar(value="WRITE MODE LOCKED" if not self.lab_mode else "LAB TRANSFER MODE ENABLED — strict safety checks still required")
     tk.Label(body,textvariable=self.lab_info,bg="#fff4e6",fg="#8e461c",font=("Segoe UI",11,"bold"),padx=10,pady=8).pack(fill="x")
     self.message(body,"A transfer changes only the selected DA programme block (segment count, segment types, active SP/rates/times, repetition=0, link=none). It deliberately NEVER edits the sensor type, PID, alarms, control output, START/RUN state, or firmware. End behaviour must already be set to RESET.")
-    self.channel=tk.StringVar(value="Channel 1")
+    self.channel=tk.StringVar(value="Bench controller")
     row=tk.Frame(body,bg="white");row.pack(anchor="w",pady=8)
-    ttk.Label(row,text="Physical channel (audit label):").pack(side="left")
-    ttk.Combobox(row,textvariable=self.channel,values=["Channel 1","Channel 2"],state="readonly",width=17).pack(side="left",padx=8)
+    ttk.Label(row,text="Connected controller ID (audit label):").pack(side="left")
+    ttk.Entry(row,textvariable=self.channel,width=32).pack(side="left",padx=8)
     self.check_vars=[]
     checks=[
         "The controller is physically isolated from mains and external DC heater supply.",
@@ -523,7 +523,7 @@ class Window:
     row=tk.Frame(body,bg="white");row.pack(anchor="w",pady=8)
     self.b(row,"Export log",self.save_log).pack(side="left")
     self.b(row,"Open Omron H186 manual",lambda:self.open_url("https://files.omron.eu/downloads/latest/manual/en/h186_e5_c-t_digital_temperature_controllers_communications_manual_en.pdf")).pack(side="left",padx=8)
-    self.message(body,"Recommended commissioning: offline identity → record type and configuration → full programme backup → verify rate/time/reset/PV-start settings → RAM stage → register read-back → explicit save → re-read → physical display check → electrical interlock checks → inert-load functional qualification. USB programme transfer never proves SSR isolation or restart inhibition.")
+    self.message(body,"Workflow: design offline → inspect identity and configuration → read-only programme backup → review every planned register change → supervised RAM stage → separate nonvolatile save → reread → manual keypad verification → independent electrical commissioning. No real-time process monitor is provided for -000. Do not enable writes until input scaling and PV/SP Start assumptions are reviewed.")
  def save_log(self):
     path=filedialog.asksaveasfilename(defaultextension=".txt",initialfile="E5CC-T-transfer-log.txt")
     if path:Path(path).write_text(self.output.get("1.0","end"),encoding="utf-8")
