@@ -93,8 +93,8 @@ class ModernStudioTests(unittest.TestCase):
         self.assertTrue(row.target.editor.isVisibleTo(row))
         self.assertFalse(row.target.spin.isVisible())
         self.assertEqual(row.target.editor.text(),"120.0")
-        self.assertIn("QLineEdit#numericEntry",self.app.styleSheet())
-        self.assertIn("color:#18334a",self.app.styleSheet())
+        self.assertIn("QLineEdit#numericEntry",self.win.styleSheet())
+        self.assertIn("color:#18334a",self.win.styleSheet())
         self.assertEqual(row.rate.editor.text(),"2")
         self.assertEqual(self.win.segment_table.cellWidget(1,0).hold.editor.text(),"15")
         row.target.editor.setFocus()
@@ -140,7 +140,7 @@ class ModernStudioTests(unittest.TestCase):
                     self.win.parameter_choices,self.win.manual_phase,
                     self.win.segment_table.cellWidget(0,0).kind]
         self.assertTrue(all(isinstance(combo,StudioCombo) for combo in all_combos))
-        qss=self.app.styleSheet()
+        qss=self.win.styleSheet()
         for token in ("QComboBox::drop-down","QTabBar::tab","QFrame#valueField",
                       "QLineEdit#numericEntry","QToolButton#rowAction",
                       "QToolButton#spinArrow"):
