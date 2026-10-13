@@ -157,11 +157,13 @@ class Window:
     if self.connection_mode.get()=="offline" and idx==2:idx=0
     else:idx=max(0,idx-1)
     self.book.select(idx)
+    self._wizard_changed()
  def wizard_next(self):
     idx=self.book.index("current")
     if idx==0 and self.connection_mode.get()=="offline":idx=2
     else:idx=min(4,idx+1)
     self.book.select(idx)
+    self._wizard_changed()
  def _wizard_changed(self,event=None):
     if not hasattr(self,"btn_next"):return
     idx=self.book.index("current")
