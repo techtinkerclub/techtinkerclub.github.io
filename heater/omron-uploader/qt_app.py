@@ -266,6 +266,10 @@ class Studio(QMainWindow):
         self.start_pv.setRange(-20,500);self.start_pv.setDecimals(1)
         self.start_pv.setSuffix(" °C")
         meta.addWidget(text("Assumed starting PV"));meta.addWidget(self.start_pv)
+        self.finish_mode=QComboBox()
+        self.finish_mode.addItem("RESET (stop)", "rst")
+        self.finish_mode.addItem("CONTINUE", "cont")
+        meta.addWidget(text("Programme end"));meta.addWidget(self.finish_mode)
         v.addLayout(meta)
         split=QSplitter(Qt.Orientation.Vertical)
         curve_card,curve_layout=card(12)
@@ -308,6 +312,7 @@ class Studio(QMainWindow):
         self.pages.addWidget(page)
         self.programme_name.editingFinished.connect(self.update_programme)
         self.start_pv.valueChanged.connect(self.update_programme)
+        self.finish_mode.currentIndexChanged.connect(self.update_programme)
         self._render_programme()
 
     def _settings_page(self):
@@ -883,6 +888,7 @@ class Studio(QMainWindow):
         p=self.programmes[self.slot]
         self.programme_name.setText(p.name)
         self.start_pv.setValue(float(p.start))
+        self.finish_mode.setCurrentIndex(0 if p.finish=="rst" else 1)
         self.segment_table.setRowCount(len(p.steps))
         for row,s in enumerate(p.steps):
             self._cell(self.segment_table,row,0,row+1)
@@ -912,6 +918,7 @@ class Studio(QMainWindow):
         p=self.programmes[self.slot]
         p.name=self.programme_name.text().strip()[:100] or "Unnamed programme"
         p.start=str(self.start_pv.value())
+        p.finish=self.finish_mode.currentData()
         p.steps=[]
         for row in range(self.segment_table.rowCount()):
             kind=self.segment_table.cellWidget(row,1).currentText()
@@ -1131,6 +1138,7 @@ class Studio(QMainWindow):
         self.segment_table.setEnabled(not staged)
         self.programme_name.setEnabled(not staged)
         self.start_pv.setEnabled(not staged)
+        self.finish_mode.setEnabled(not staged)
         self.btn_read.setEnabled(not self.busy and self.mode=="connected")
         self.btn_disconnect.setEnabled(not self.busy and bool(self.client))
         self.next_button.setEnabled(not self.busy)
@@ -1145,6 +1153,8 @@ class Studio(QMainWindow):
             if not self.lab:reasons.append("Hardware writes disabled: use the isolated-lab launcher.")
             if session.mismatches:reasons.append("Preflight values differ from the tested bench configuration.")
             if self.draft:reasons.append(f"{len(self.draft)} initial/PID setting proposals are not writable via USB.")
+            if self.programmes[self.slot].finish!="rst":
+                reasons.append("Programme end CONTINUE requires manual setup; DA upload only supports RESET.")
             if self.fail_latched:reasons.append("A write failed: stop and inspect; do not retry blindly.")
             if self.busy:reasons.append("Communication in progress.")
             if session.staged is not None and not session.committed:
