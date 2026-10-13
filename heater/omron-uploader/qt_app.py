@@ -344,6 +344,7 @@ class Studio(QMainWindow):
         meta.addWidget(text("Description"));meta.addWidget(self.programme_name,1)
         self.start_pv=QDoubleSpinBox()
         self.start_pv.setRange(-20,500);self.start_pv.setDecimals(1)
+        self.start_pv.setSingleStep(0.1)
         self.start_pv.setSuffix(" °C")
         self.start_pv_editor=Stepper("STARTING PV (ASSUMED)",self.start_pv)
         self.start_pv_editor.setMinimumWidth(170)
