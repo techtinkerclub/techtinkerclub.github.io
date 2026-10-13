@@ -221,7 +221,11 @@ class Studio(QMainWindow):
         self.explorer_info=QTextEdit();self.explorer_info.setReadOnly(True)
         self.explorer_info.setMinimumWidth(240);low.addWidget(self.explorer_info,1)
         ol.addLayout(low,2)
-        ol.addWidget(button("Edit selected stored programme in Step 3",self.copy_stored))
+        tools=QHBoxLayout()
+        tools.addWidget(button("Edit selected stored programme in Step 3",self.copy_stored))
+        tools.addWidget(button("Verify save receipt after USB power cycle…",self.verify_receipt))
+        tools.addStretch()
+        ol.addLayout(tools)
         tabs.addTab(one,"Stored programmes")
         self.initial_text=QTextEdit();self.initial_text.setReadOnly(True)
         tabs.addTab(self.initial_text,"Initial configuration")
@@ -282,6 +286,8 @@ class Studio(QMainWindow):
         bottom.addWidget(self.programme_info,1)
         bottom.addWidget(button("Load 120 → 50 °C test example",self.load_example))
         bottom.addWidget(button("Use saved controller programme",self.copy_stored))
+        bottom.addWidget(button("Save project",self.save_project))
+        bottom.addWidget(button("Open project",self.open_project))
         tlay.addLayout(bottom)
         split.addWidget(table_card)
         split.setSizes([300,320])
@@ -489,15 +495,23 @@ class Studio(QMainWindow):
                 setup=read_snapshot(client,ses.info,ses.settings)
                 setup_path=save_json_fresh(folder,"initial-settings",setup)
                 progress("Reading extended documented inventory (read only)…")
-                inv=read_inventory(client,ses.info,progress=lambda done,total:
-                   progress(f"Extended register inventory: {done}/{total}…"))
-                inv_path=save_json_fresh(folder,"full-inventory",inv)
-                return client,ses,setup,inv,setup_path,inv_path
+                inventory_error=None
+                try:
+                    inv=read_inventory(client,ses.info,progress=lambda done,total:
+                       progress(f"Extended register inventory: {done}/{total}…"))
+                    inv_path=save_json_fresh(folder,"full-inventory",inv)
+                except Exception as exc:
+                    # A missing optional register or interrupted extended survey
+                    # must not discard the successfully verified DA backup.
+                    inv=offline_inventory()
+                    inv_path=None
+                    inventory_error=str(exc)
+                return client,ses,setup,inv,setup_path,inv_path,inventory_error
             except BaseException:
                 client.close()
                 raise
         def completed(result):
-            self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file=result
+            self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file,inventory_error=result
             self.port=port
             self.backup=self.session.backup_data
             self.draft={}
@@ -508,11 +522,17 @@ class Studio(QMainWindow):
             self.device_detail.setText("Connected on "+port+" · full suffix requires nameplate confirmation")
             self.device_state.setText("●  Connected")
             self.device_state.setObjectName("success")
-            self.read_message.setText("Read-only backup and inventory complete. "
-                f"{len(CATALOG)-len(self.inventory['errors'])} extended registers read; "
-                f"{len(self.inventory['errors'])} unavailable.")
+            if inventory_error:
+                self.read_message.setText("Programme backup and essential setup completed. "
+                    "Extended inventory NOT available: "+inventory_error)
+            else:
+                self.read_message.setText("Read-only backup and inventory complete. "
+                    f"{len(CATALOG)-len(self.inventory['errors'])} extended registers read; "
+                    f"{len(self.inventory['errors'])} unavailable.")
             self.initial_text.setPlainText(setup_report(self.snapshot))
-            self.inventory_text.setPlainText(report_inventory(self.inventory))
+            self.inventory_text.setPlainText(
+                ("Extended inventory failed: "+inventory_error+"\nOnly offline unknown-value planning is available."
+                 if inventory_error else report_inventory(self.inventory)))
             self._populate_memories()
             self.refresh_settings()
             self.refresh_review()
@@ -520,7 +540,8 @@ class Studio(QMainWindow):
             self.message("Controller read completed",
                 "All eight programme memory blocks were saved and verified.\n"
                 f"Initial settings saved: {setup_file.name}\n"
-                f"Extended inventory saved: {inventory_file.name}\n"
+                ("Extended inventory was NOT completed: "+inventory_error+"\n"
+                 if inventory_error else f"Extended inventory saved: {inventory_file.name}\n")+
                 "No controller writes performed.")
         self._work("Read everything",job,completed)
 
@@ -584,6 +605,77 @@ class Studio(QMainWindow):
     def _lost_link(self,reason):
         if self.busy:return
         self._mark_link_lost(reason)
+
+    def verify_receipt(self):
+        if not self.session or self.busy:
+            self.message("Reconnect first",
+                "After a full USB power cycle, reconnect and read all eight memories before verifying a receipt.",
+                True)
+            return
+        path,_=QFileDialog.getOpenFileName(self,"Open original upload receipt",
+                                           str(self.session.backup_file.parent),
+                                           "E5CC-T receipt (*.json)")
+        if not path:return
+        def job(progress):
+            return self.session.verify_persistence(path)
+        def done(out):
+            self.feedback.setText("Saved programme receipt compared with current controller memory.")
+            self.message("Post-power-cycle comparison",
+                "The controller's registers matched the saved receipt. "
+                "This compares the current memory with the receipt; make sure "
+                "you actually unplugged USB and the controller display turned off.")
+        self._work("Verify programme memory persistence (read only)",job,done)
+
+    def save_project(self):
+        self.update_programme()
+        try:
+            for p in self.programmes:p.validate()
+        except Exception as exc:
+            self.message("Project contains an invalid programme",str(exc),True);return
+        path,_=QFileDialog.getSaveFileName(self,"Save local studio project",
+                    "E5CC-T-offline-project.json","Studio projects (*.json)")
+        if not path:return
+        document={"schema":"e5cct-modern-studio-project-1",
+                  "programmes":[p.as_json() for p in self.programmes],
+                  "selected_slot":self.slot,
+                  "configuration_changes":[{"address":k,"value":v} for k,v in sorted(self.draft.items())],
+                  "note":"Local offline workspace; not a controller register backup."}
+        try:
+            with open(path,"x",encoding="utf-8") as out:
+                json.dump(document,out,indent=2,ensure_ascii=False)
+        except Exception as exc:
+            self.message("Cannot save local project",str(exc),True);return
+        self.feedback.setText("Local offline project saved to "+str(path))
+
+    def open_project(self):
+        path,_=QFileDialog.getOpenFileName(self,"Open local studio project",
+                    "","Studio projects (*.json)")
+        if not path:return
+        try:
+            obj=json.loads(Path(path).read_text(encoding="utf-8"))
+            if obj.get("schema")!="e5cct-modern-studio-project-1" or len(obj["programmes"])!=8:
+                raise ValueError("Invalid or incomplete eight-programme project")
+            programs=[Programme.from_json(p) for p in obj["programmes"]]
+            draft={}
+            for item in obj.get("configuration_changes",[]):
+                key,value=item["address"],item["value"]
+                if key not in CATALOG or type(value) is not int or not 0<=value<=0xffffffff:
+                    raise ValueError("Unknown or invalid configuration change")
+                draft[key]=value
+            slot=obj.get("selected_slot",0)
+            if type(slot) is not int or slot not in range(8):raise ValueError("Invalid memory slot")
+        except Exception as exc:
+            self.message("Cannot open local project",str(exc),True);return
+        self.programmes=programs
+        self.draft=draft
+        self.slot=slot
+        self.slot_combo.blockSignals(True)
+        self.slot_combo.setCurrentIndex(slot)
+        self.slot_combo.blockSignals(False)
+        self._render_programme()
+        self.preview_stamp=None
+        self.refresh_settings()
+        self.feedback.setText("Local offline project opened; no controller write performed")
 
     def open_backup(self):
         file,_=QFileDialog.getOpenFileName(self,"Open saved controller backup","","JSON (*.json)")
