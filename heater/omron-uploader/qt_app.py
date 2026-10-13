@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
 from serial.tools import list_ports
 
 from qt_components import STYLE,Task,Profile,card,heading,text,button
+from qt_segment_row import SegmentRow
 from compoway import SerialClient
 from transfer import TransferSession
 from program_model import Programme,Segment,blank_programme,ValidationError
@@ -250,67 +251,88 @@ class Studio(QMainWindow):
         self.read_tabs=tabs
 
     def _programme_page(self):
-        page=QWidget();v=QVBoxLayout(page);v.setSpacing(10)
+        page=QWidget();v=QVBoxLayout(page);v.setSpacing(9)
         top=QHBoxLayout()
         top.addWidget(heading("Programme editor",
-            "Edit segments directly; changes update the nominal setpoint graph immediately."),1)
+            "Each segment shows only its applicable settings. The setpoint curve updates as you edit."),1)
         top.addWidget(text("Memory"))
         self.slot_combo=QComboBox()
         self.slot_combo.addItems([f"Programme {i}" for i in range(8)])
         self.slot_combo.currentIndexChanged.connect(self._slot_changed)
         top.addWidget(self.slot_combo)
         v.addLayout(top)
+
         meta=QHBoxLayout()
         self.programme_name=QLineEdit()
         meta.addWidget(text("Description"));meta.addWidget(self.programme_name,1)
         self.start_pv=QDoubleSpinBox()
         self.start_pv.setRange(-20,500);self.start_pv.setDecimals(1)
         self.start_pv.setSuffix(" °C")
-        meta.addWidget(text("Assumed starting PV"));meta.addWidget(self.start_pv)
+        self.start_pv.setMinimumWidth(110)
+        meta.addWidget(text("Starting PV (assumed)"));meta.addWidget(self.start_pv)
         self.finish_mode=QComboBox()
         self.finish_mode.addItem("RESET (stop)", "rst")
         self.finish_mode.addItem("CONTINUE", "cont")
-        meta.addWidget(text("Programme end"));meta.addWidget(self.finish_mode)
+        meta.addWidget(text("At programme end"));meta.addWidget(self.finish_mode)
         v.addLayout(meta)
+
         split=QSplitter(Qt.Orientation.Vertical)
+        split.setChildrenCollapsible(False)
+        split.setHandleWidth(7)
         curve_card,curve_layout=card(12)
-        curve_layout.addWidget(text("TEMPERATURE PROFILE  ·  commanded SP, not measured PV"))
+        curve_layout.addWidget(text("COMMANDED TEMPERATURE PROFILE   ·   PV is not measured"))
         self.chart=Profile()
-        self.chart.setMinimumHeight(165)
+        self.chart.setMinimumHeight(150)
         curve_layout.addWidget(self.chart,1)
+        curve_card.setMinimumHeight(206)
         split.addWidget(curve_card)
+
         table_card,tlay=card(12)
-        row=QHBoxLayout()
-        h=QLabel("Segments");h.setObjectName("subheading")
-        row.addWidget(h);row.addStretch()
-        for title,fn in [
-            ("+ Ramp",lambda:self.add_segment("ramp")),
-            ("+ Soak",lambda:self.add_segment("soak")),
-            ("+ Step",lambda:self.add_segment("step")),
-            ("Duplicate",self.duplicate_segment),
-            ("Move ↑",lambda:self.move_segment(-1)),
-            ("Move ↓",lambda:self.move_segment(1)),
-            ("Remove",self.remove_segment)]:
-            row.addWidget(button(title,fn))
-        tlay.addLayout(row)
-        self.segment_table=QTableWidget(0,5)
-        self.segment_table.setHorizontalHeaderLabels(["#","Type","Target (°C)","Rate (°C/min)","Hold (min)"])
-        self._table_defaults(self.segment_table)
-        self.segment_table.horizontalHeader().setSectionResizeMode(1,QHeaderView.ResizeMode.Stretch)
+        actionbar=QHBoxLayout()
+        self.segment_heading=QLabel("Segments")
+        self.segment_heading.setObjectName("subheading")
+        actionbar.addWidget(self.segment_heading)
+        actionbar.addStretch()
+        actionbar.addWidget(text("ADD SEGMENT:",True))
+        for title,kind in [("+ Ramp","ramp"),("+ Soak","soak"),("+ Step","step")]:
+            actionbar.addWidget(button(title,lambda checked=False,k=kind:self.add_segment(k)))
+        tlay.addLayout(actionbar)
+        tlay.addWidget(text("Ramp = target + rate   ·   Soak = hold time only   ·   "
+                           "Step = immediate target. Use the controls on each segment to reorder, duplicate or remove it.",True))
+
+        # Each row is a compact self-contained, type-aware editor. The
+        # table itself is just a vertical, scrollable host; there are no
+        # irrelevant Target/Rate/Hold columns.
+        self.segment_table=QTableWidget(0,1)
+        self.segment_table.setObjectName("segmentRows")
+        self.segment_table.horizontalHeader().hide()
+        self.segment_table.verticalHeader().hide()
+        self.segment_table.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeMode.Stretch)
+        self.segment_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.segment_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.segment_table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.segment_table.setShowGrid(False)
+        self.segment_table.setMinimumHeight(245)
         tlay.addWidget(self.segment_table,1)
-        bottom=QHBoxLayout()
-        self.programme_info=text("Enter valid segments to see the nominal duration.",True)
-        bottom.addWidget(self.programme_info,1)
-        bottom.addWidget(button("Load 120 → 50 °C test example",self.load_example))
-        bottom.addWidget(button("Use saved controller programme",self.copy_stored))
-        bottom.addWidget(button("Save project",self.save_project))
-        bottom.addWidget(button("Open project",self.open_project))
-        tlay.addLayout(bottom)
+
+        foot=QHBoxLayout()
+        self.programme_info=text("Set the target and segment rate or hold duration.",True)
+        foot.addWidget(self.programme_info,1)
+        for caption,callback in [
+            ("Load 120 → 50 °C example",self.load_example),
+            ("Copy stored programme",self.copy_stored),
+            ("Save project",self.save_project),
+            ("Open project",self.open_project)]:
+            foot.addWidget(button(caption,callback))
+        tlay.addLayout(foot)
+        table_card.setMinimumHeight(325)
         split.addWidget(table_card)
-        split.setSizes([300,320])
+        split.setStretchFactor(0,2)
+        split.setStretchFactor(1,5)
+        split.setSizes([220,440])
         v.addWidget(split,1)
         self.pages.addWidget(page)
+
         self.programme_name.editingFinished.connect(self.update_programme)
         self.start_pv.valueChanged.connect(self.update_programme)
         self.finish_mode.currentIndexChanged.connect(self.update_programme)
@@ -901,29 +923,28 @@ class Studio(QMainWindow):
         self.programme_name.setText(p.name)
         self.start_pv.setValue(float(p.start))
         self.finish_mode.setCurrentIndex(0 if p.finish=="rst" else 1)
+        self.segment_table.setRowCount(0)
         self.segment_table.setRowCount(len(p.steps))
-        for row,s in enumerate(p.steps):
-            self._cell(self.segment_table,row,0,row+1)
-            kind=QComboBox();kind.addItems(["ramp","soak","step"])
-            kind.setCurrentText(s.type)
-            kind.currentTextChanged.connect(self.update_programme)
-            self.segment_table.setCellWidget(row,1,kind)
-            target=QDoubleSpinBox();target.setRange(-20,500);target.setDecimals(1)
-            target.setValue(float(s.sp));target.valueChanged.connect(self.update_programme)
-            self.segment_table.setCellWidget(row,2,target)
-            rate=QSpinBox();rate.setRange(1,9999)
-            rate.setValue(max(1,int(float(s.rate))))
-            rate.valueChanged.connect(self.update_programme)
-            self.segment_table.setCellWidget(row,3,rate)
-            duration=QSpinBox();duration.setRange(0,5999)
-            duration.setValue(int(float(s.minutes)))
-            duration.valueChanged.connect(self.update_programme)
-            self.segment_table.setCellWidget(row,4,duration)
-            target.setEnabled(s.type!="soak")
-            rate.setEnabled(s.type=="ramp")
-            duration.setEnabled(s.type=="soak")
+        for index,segment in enumerate(p.steps):
+            row=SegmentRow(index,segment)
+            row.changed.connect(self.update_programme)
+            row.move_up.connect(lambda i=index:self._segment_action(i,"up"))
+            row.move_down.connect(lambda i=index:self._segment_action(i,"down"))
+            row.duplicate.connect(lambda i=index:self._segment_action(i,"duplicate"))
+            row.remove.connect(lambda i=index:self._segment_action(i,"remove"))
+            self.segment_table.setCellWidget(index,0,row)
+            self.segment_table.setRowHeight(index,96)
+        if p.steps:self.segment_table.selectRow(0)
+        self.segment_heading.setText(f"Segments   {len(p.steps)} / 32")
         self._rendering=False
         self._graph_current()
+
+    def _segment_action(self,index,action):
+        self.segment_table.selectRow(index)
+        if action=="up":self.move_segment(-1)
+        elif action=="down":self.move_segment(1)
+        elif action=="duplicate":self.duplicate_segment()
+        elif action=="remove":self.remove_segment()
 
     def update_programme(self,*unused):
         if self._rendering or not hasattr(self,"segment_table"):return
@@ -931,16 +952,12 @@ class Studio(QMainWindow):
         p.name=self.programme_name.text().strip()[:100] or "Unnamed programme"
         p.start=str(self.start_pv.value())
         p.finish=self.finish_mode.currentData()
-        p.steps=[]
-        for row in range(self.segment_table.rowCount()):
-            kind=self.segment_table.cellWidget(row,1).currentText()
-            sp=self.segment_table.cellWidget(row,2).value()
-            rate=self.segment_table.cellWidget(row,3).value()
-            hold=self.segment_table.cellWidget(row,4).value()
-            p.steps.append(Segment(kind,str(sp),str(rate),str(hold)))
-            self.segment_table.cellWidget(row,2).setEnabled(kind!="soak")
-            self.segment_table.cellWidget(row,3).setEnabled(kind=="ramp")
-            self.segment_table.cellWidget(row,4).setEnabled(kind=="soak")
+        rows=[]
+        for index in range(self.segment_table.rowCount()):
+            editor=self.segment_table.cellWidget(index,0)
+            if editor is None:return
+            rows.append(editor.as_segment())
+        p.steps=rows
         self.preview_stamp=None
         self._graph_current()
         self.refresh_actions()
@@ -952,10 +969,11 @@ class Studio(QMainWindow):
             self.chart.show_points(metrics["points"])
             self.programme_info.setText(
                 f"{len(p.steps)} segments   ·   {metrics['minutes']:.1f} min nominal   ·   "
-                f"Final SP {metrics['final_sp']:g} °C   ·   Model constraints passed")
+                f"Final SP {metrics['final_sp']:g} °C   ·   Constraints passed")
         except Exception as exc:
             self.chart.show_points([])
             self.programme_info.setText("Needs correction: "+str(exc))
+
 
     def add_segment(self,kind):
         if self._editing_locked():return
