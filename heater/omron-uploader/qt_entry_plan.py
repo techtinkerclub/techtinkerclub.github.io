@@ -65,7 +65,7 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
         ("t-u","h-m","Segment time unit: hours.minutes"),
         ("rtsm","stop","Program restarts stop at intended stage"),
         ("p-on","rst","Restore controller in RESET on power-up"),
-        ("eset","rst","Reset at the end of the programme")]:
+        ("eset",programme.finish,"Controller action when programme ends")]:
         add("Preparation",code,value+" — VERIFY",purpose,
             "In Initial Setting Level press MODE until this code is displayed. "
             "Check the actual setting; make a change only if it is an approved change "
@@ -142,6 +142,13 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
         "remove controller setup power until its display turns off, "
         "then restore USB-only power and reread programme. "
         "Never unplug during an active edit.","check")
+
+    if programme.finish=="cont":
+        add("Finish and verify","eset","cont — CAUTION",
+            "Controller may continue output after profile completion",
+            "The requested CONTINUE end action requires a separate approved initial-setting "
+            "change. The DA USB programme writer does not set this parameter. "
+            "Verify the external emergency cut-off and control behaviour before any heater use.","check")
 
     proposals=[]
     for code,raw in sorted(changes.items()):
