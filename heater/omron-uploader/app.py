@@ -26,6 +26,8 @@ class Window:
     self.slot=tk.IntVar(value=0);self.current_segment=None;self.client=None;self.session=None;self.busy=False
     self.events=queue.Queue();self.connected=False;self.fail_latched=False;self.approved_preview=None
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False;self.connection_mode=tk.StringVar(value="connected")
+    self.active_port=None
+    self._connection_poll_counter=0
     root.title(APP_TITLE);root.geometry("1370x890");root.minsize(1090,720);root.configure(bg=BG)
     style=ttk.Style();style.theme_use("clam")
     style.configure("TNotebook",background=BG,borderwidth=0)
@@ -123,6 +125,7 @@ class Window:
     self.book.select(self.t_web)
     self._wizard_changed()
     self.root.after(100,self._pump)
+    self.root.after(1800,self._poll_connection)
     self.root.protocol("WM_DELETE_WINDOW",self.exit)
 
  def _web_studio(self):
@@ -596,6 +599,7 @@ class Window:
         return(client,session,result)
     def success(result):
         self.client,self.session,info=result;self.connected=True;self.fail_latched=False;self.approved_preview=None
+        self.active_port=port;self._connection_poll_counter=0
         self.inspecttext.delete("1.0","end")
         self.inspecttext.insert("end",f"CONNECTED: {port}\nModel prefix: {info['model10']}\nStatus: {info['status']}\n\n")
         for addr,(wanted,note) in PREFLIGHT.items():
@@ -617,11 +621,76 @@ class Window:
     if self.client:
         try:self.client.close()
         except Exception:pass
-    self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.approved_preview=None;self.status.set("Disconnected")
+    self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.approved_preview=None;self.active_port=None;self.status.set("Disconnected")
     self.status.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
     for v in self.check_vars:v.set(False)
     self.log("Disconnected (no controller operation command issued)");self.refresh_buttons()
+
+ def _connection_lost(self,reason):
+    """Fail closed on unplug/lost serial response; never delete local edits or backups.
+
+    No serial command is sent here. An unexpected loss while uncommitted RAM
+    changes exist is deliberately reported as uncertain, not as a rollback.
+    """
+    if not self.connected:return
+    was_uncommitted=bool(self.session and self.session.ram_touched and not self.session.committed)
+    old_port=self.active_port or self.port.get().strip()
+    old_client=self.client
+    self.client=None;self.session=None;self.connected=False;self.approved_preview=None;self.active_port=None
+    self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
+    self._connection_poll_counter=0
+    self.fail_latched=was_uncommitted
+    if old_client is not None:
+        try:old_client.close()
+        except Exception:pass
+    for v in self.check_vars:v.set(False)
+    self.status.set(f"USB DISCONNECTED ({old_port}) — reconnect and take a fresh backup")
+    self.inspecttext.insert("end",f"\\nUSB LINK LOST: {reason}\\nPrior readings are NOT a live connection.\\n")
+    self.log(f"USB DISCONNECTED / {old_port}: {reason}. Session and upload authorisation invalidated.")
+    if was_uncommitted:
+        self.log("CAUTION: RAM staging was not confirmed saved when USB link was lost. Controller state UNKNOWN.")
+        messagebox.showwarning("Controller connection lost during uncommitted changes",
+            "The USB connection was lost while the controller had uncommitted RAM changes. "
+            "Do not assume the write was saved or rolled back. Keep the heater isolated, reconnect, "
+            "read all programme memory, and inspect the front panel before further writes.")
+    self.refresh_buttons()
+
+ def _poll_connection(self):
+    """Non-blocking USB monitor: detect missing COM port and, periodically, lost
+    controller-side connection even if the USB converter stays enumerated.
+
+    Both GUI changes and worker completion are handled on the Tk main thread.
+    Never send a heartbeat while another read or write is in progress.
+    """
+    try:
+        if self.connected and not self.busy and self.client is not None:
+            port=self.active_port
+            try:
+                from serial.tools import list_ports
+                seen={item.device.casefold() for item in list_ports.comports()}
+            except (OSError,ImportError,AttributeError) as exc:
+                # Port enumeration may be temporarily unavailable; the read-only
+                # status probe below is the independent communication check.
+                seen=None
+                self.log("USB port enumeration unavailable: "+str(exc))
+            if port and seen is not None and port.casefold() not in seen:
+                self._connection_lost("COM port disappeared from Windows")
+            else:
+                self._connection_poll_counter+=1
+                # At ~1.8-second poll intervals, probe only about every 7 sec.
+                # This is read-only 0601, on the same serial worker path as
+                # other operations, so it never interleaves with a transfer.
+                if self._connection_poll_counter>=4:
+                    self._connection_poll_counter=0
+                    def check():
+                        response=self.client.status()
+                        if not response:raise ProtocolError("Empty 0601 status response")
+                        return response
+                    self._job("USB connection health check",check,lambda _:None,quiet=True)
+    finally:
+        try:self.root.after(1800,self._poll_connection)
+        except tk.TclError:pass
 
  def _backup(self):
     panel,body=self.card(self.t_backup,"Mandatory backup of existing controller programme memory");panel.pack(fill="both",expand=True,padx=10,pady=10)
@@ -1326,9 +1395,13 @@ class Window:
     from datetime import datetime
     stamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     self.events.put(("LOG",stamp+"  "+str(msg)))
- def _job(self,label,fn,success,write=False):
+ def _job(self,label,fn,success,write=False,quiet=False):
     if self.busy:return
-    self.busy=True;self.status.set("Working: "+label);self.refresh_buttons();self.log("BEGIN: "+label)
+    self.busy=True
+    if not quiet:
+        self.status.set("Working: "+label)
+        self.log("BEGIN: "+label)
+    self.refresh_buttons()
     def run():
         try:self.events.put(("DONE",(label,fn(),success)))
         except Exception as err:self.events.put(("ERROR",(label,str(err),write,traceback.format_exc())))
@@ -1344,12 +1417,17 @@ class Window:
                 self.back_progress.set(completed)
                 self.backupdetail.set(f"Read {completed}/{total} programme blocks — {completed*150}/1200 DA registers; no writes.")
             elif event=="DONE":
-                title,out,callback=payload;self.busy=False;self.status.set("Completed: "+title);self.log("SUCCESS: "+title)
+                title,out,callback=payload;self.busy=False
+                if title!="USB connection health check":
+                    self.status.set("Completed: "+title);self.log("SUCCESS: "+title)
                 try:callback(out)
                 except Exception as err:messagebox.showerror("Display issue",str(err))
                 self.refresh_buttons()
             elif event=="ERROR":
                 title,msg,iswrite,debug=payload;self.busy=False
+                if title=="USB connection health check":
+                    self._connection_lost("Controller stopped responding: "+msg)
+                    continue
                 self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
                 if iswrite:self.fail_latched=True
                 self.status.set("FAILED: "+title);self.log("ERROR "+title+": "+msg);self.log(debug)
