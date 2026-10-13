@@ -10,6 +10,9 @@ from program_model import Programme,Segment,ValidationError,blank_programme,TARG
 from transfer import TransferSession,PreflightError,PREFLIGHT
 from compoway import SerialClient
 from offline_creator import open_studio
+from controller_setup import (CONFIG, BY_CODE, read_snapshot, validate_snapshot, value_text,
+                              apply_draft, build_proposal, report as setup_report,
+                              write_new_json)
 from backup_explorer import load_backup, decode_slot, profile_points, config_explanation, summary_as_plaintext, DecodeError
 
 BLUE="#1966a3";BG="#eef3f8";DARK="#1b344d";RED="#b43e45";GREEN="#287953"
@@ -65,16 +68,18 @@ class Window:
     self.book=ttk.Notebook(root);self.book.pack(expand=True,fill="both",padx=18,pady=(4,8))
     self.t_web=ttk.Frame(self.book);self.t_builder=ttk.Frame(self.book)
     self.t_connect=ttk.Frame(self.book);self.t_backup=ttk.Frame(self.book)
-    self.t_explore=ttk.Frame(self.book);self.t_upload=ttk.Frame(self.book);self.t_audit=ttk.Frame(self.book)
+    self.t_explore=ttk.Frame(self.book);self.t_setup=ttk.Frame(self.book)
+    self.t_upload=ttk.Frame(self.book);self.t_audit=ttk.Frame(self.book)
     for tab,title in [(self.t_web,"1  Full offline creator"),
                       (self.t_builder,"2  Desktop editor"),
                       (self.t_connect,"3  USB inspect"),
                       (self.t_backup,"4  Memory backup"),
                       (self.t_explore,"5  Explore memory"),
-                      (self.t_upload,"6  Lab transfer"),
-                      (self.t_audit,"7  Audit log")]:
+                      (self.t_setup,"6  Controller setup"),
+                      (self.t_upload,"7  Lab transfer"),
+                      (self.t_audit,"8  Audit log")]:
         self.book.add(tab,text=title)
-    self._web_studio();self._builder();self._connect();self._backup();self._explorer();self._upload();self._audit()
+    self._web_studio();self._builder();self._connect();self._backup();self._explorer();self._setup();self._upload();self._audit()
     self.status=tk.StringVar(value="Ready · offline planning; controller not connected")
     footer=tk.Frame(root,bg=WHITE,padx=19,pady=10);footer.pack(fill="x",side="bottom")
     tk.Label(footer,text="STATUS",bg=WHITE,fg="#6b879c",
@@ -739,6 +744,175 @@ class Window:
         Path(target).write_text(report,encoding="utf-8")
         self.log("Saved read-only human-language profile description: "+target)
 
+
+ def _setup(self):
+    """Read actual device settings and prepare a separate OFFLINE draft; no serial writes."""
+    self.setup_snapshot=None
+    self.setup_draft={}
+    self.setup_choices={}
+    panel,body=self.card(self.t_setup,"Controller setup — read, understand, compare")
+    panel.pack(fill="both",expand=True,padx=10,pady=10)
+    tk.Label(body,text="LIVE CONTROLLER READS / OFFLINE PLANNING — NO HARDWARE SETUP WRITES",
+             bg="#eef5fc",fg="#1b557c",font=("Segoe UI",10,"bold"),padx=10,pady=8).pack(fill="x")
+    self.message(body,"Read the existing controller configuration over E58-CIFQ2, or open a previously saved snapshot. Values are shown in plain language, beside their Omron menu abbreviations and raw register addresses. Changing a proposed value changes ONLY the local draft.")
+    self.message(body,"Selected high-value settings, NOT a full controller clone. Alarm thresholds, all PID sets, auxiliary output assignments and other advanced/protect parameters still need a wider read-only audit.")
+    buttons=tk.Frame(body,bg="white");buttons.pack(fill="x",pady=(9,6))
+    self.btn_setup_read=self.b(buttons,"READ CONTROLLER SETTINGS (no writes)",self.setup_read,True)
+    self.btn_setup_read.pack(side="left",padx=(0,6))
+    self.b(buttons,"Open saved snapshot…",self.setup_open).pack(side="left",padx=4)
+    self.b(buttons,"Save actual snapshot…",self.setup_save_snapshot).pack(side="left",padx=4)
+    self.b(buttons,"Export comparison…",self.setup_export).pack(side="left",padx=4)
+    self.b(buttons,"Clear proposed changes",self.setup_clear).pack(side="left",padx=4)
+    self.setup_summary=tk.StringVar(value="No setup snapshot loaded. Connect and click READ, or open a saved setup snapshot.")
+    tk.Label(body,textvariable=self.setup_summary,bg="white",fg="#365d79",justify="left",
+             wraplength=1000).pack(fill="x",pady=7)
+    content=tk.Frame(body,bg="white");content.pack(fill="both",expand=True,pady=7)
+    table_frame=tk.Frame(content,bg="white");table_frame.pack(side="left",fill="both",expand=True)
+    self.setup_tree=ttk.Treeview(table_frame,columns=("group","parameter","actual","proposed"),show="headings",selectmode="browse")
+    for name,heading,width in [("group","Group",140),("parameter","Controller setting",225),("actual","Read from controller",280),("proposed","Proposed OFFLINE change",265)]:
+        self.setup_tree.heading(name,text=heading);self.setup_tree.column(name,width=width,stretch=True)
+    self.setup_tree.pack(side="left",fill="both",expand=True)
+    sc=ttk.Scrollbar(table_frame,orient="vertical",command=self.setup_tree.yview)
+    sc.pack(side="right",fill="y");self.setup_tree.configure(yscrollcommand=sc.set)
+    self.setup_tree.bind("<<TreeviewSelect>>",lambda _:self.setup_select())
+    editor=tk.Frame(content,bg="#f2f7fb",padx=13,pady=13,width=285)
+    editor.pack(side="right",fill="y",padx=(9,0));editor.pack_propagate(False)
+    tk.Label(editor,text="SELECTED SETTING",bg="#f2f7fb",fg=BLUE,font=("Segoe UI",10,"bold")).pack(anchor="w")
+    self.setup_info=tk.StringVar(value="Select a row to see its purpose and available offline choices.")
+    tk.Label(editor,textvariable=self.setup_info,bg="#f2f7fb",fg=INK,wraplength=255,
+             justify="left").pack(anchor="w",pady=(10,14))
+    tk.Label(editor,text="PROPOSE A CHANGE (OFFLINE ONLY)",bg="#f2f7fb",fg=BLUE,
+             font=("Segoe UI",9,"bold")).pack(anchor="w")
+    self.setup_choice=tk.StringVar()
+    self.setup_box=ttk.Combobox(editor,textvariable=self.setup_choice,state="disabled",width=35)
+    self.setup_box.pack(fill="x",pady=9)
+    self.b(editor,"Add to proposed changes",self.setup_apply).pack(anchor="w",pady=8)
+    tk.Label(editor,text="This screen NEVER sends a setting change to the controller. A proposal must be validated, then programmed and independently verified in a separate approved procedure.",
+             bg="#f2f7fb",fg=RED,wraplength=255,justify="left").pack(anchor="w",pady=15)
+ def setup_read(self):
+    if not self.session or self.busy:
+        messagebox.showwarning("Connect first","Identify a controller on the USB inspect tab before reading setup.")
+        return
+    def work():
+        # Reuse the 9 real C3 preflight values and read the remaining selected C3/C1 registers.
+        # Unsupported options become explicit 'Not read' rows.
+        return read_snapshot(self.client,self.session.info,self.session.settings)
+    def done(snapshot):
+        self.setup_load(snapshot,"Live read (one attached controller)")
+        self.book.select(self.t_setup)
+        unavailable=len(snapshot["errors"])
+        self.log(f"SETUP READ ONLY: {sum(v is not None for v in snapshot['fields'].values())} registers read; {unavailable} unavailable; zero writes")
+        messagebox.showinfo("Controller configuration read",
+                            f"Read {sum(v is not None for v in snapshot['fields'].values())} selected settings.\n"
+                            f"{unavailable} optional settings unavailable.\n\n"
+                            "Save this setup snapshot as well as the separate eight-programme backup.\n"
+                            "No values were changed on the Omron.")
+    self._job("Read controller setup registers (read only)",work,done)
+ def setup_open(self):
+    filename=filedialog.askopenfilename(title="Open controller setup snapshot",filetypes=[("E5CC setup JSON","*.json")])
+    if not filename:return
+    try:
+        snapshot=json.loads(Path(filename).read_text(encoding="utf-8"))
+        validate_snapshot(snapshot)
+        self.setup_load(snapshot,"Saved file: "+str(filename))
+    except (OSError,ValueError,TypeError,KeyError) as exc:
+        messagebox.showerror("Cannot open snapshot",str(exc))
+ def setup_load(self,snapshot,source):
+    validate_snapshot(snapshot)
+    self.setup_snapshot=snapshot
+    self.setup_draft={}
+    self.setup_summary.set(f"{source} · {snapshot['controller']['model10']} · "
+                           f"{sum(v is not None for v in snapshot['fields'].values())} selected settings read · "
+                           f"{len(snapshot.get('errors',{}))} unavailable · 0 proposed changes · NEVER WRITTEN")
+    self.setup_refresh()
+ def setup_refresh(self):
+    selection=self.setup_tree.selection()
+    selected=selection[0] if selection else None
+    for row in self.setup_tree.get_children():self.setup_tree.delete(row)
+    if self.setup_snapshot:
+        fields=self.setup_snapshot["fields"]
+        for p in CONFIG:
+            code=p["code"];raw=fields.get(code)
+            actual=value_text(code,raw)
+            if raw is not None: actual=f"{actual}   [{raw:08X}]"
+            proposed=p["options"][self.setup_draft[code]] if code in self.setup_draft else "—"
+            self.setup_tree.insert("", "end",iid=code,values=(p["group"],p["name"],actual,proposed))
+    if selected in self.setup_tree.get_children():self.setup_tree.selection_set(selected)
+    self.setup_select()
+ def setup_select(self):
+    selected=self.setup_tree.selection()
+    if not selected or not self.setup_snapshot:
+        self.setup_info.set("Select a setting to review it.")
+        self.setup_box.config(state="disabled",values=[])
+        self.setup_choice.set("")
+        return
+    code=selected[0];p=BY_CODE[code]
+    raw=self.setup_snapshot["fields"].get(code)
+    self.setup_info.set(f"{p['name']} ({p['menu']})\n{code}\n\n"
+                        f"Actual: {value_text(code,raw)}\n\n{p['explanation']}")
+    if p["options"] and raw is not None:
+        self.setup_choices={f"{i}: {meaning}":i for i,meaning in p["options"].items()}
+        self.setup_box.config(state="readonly",values=list(self.setup_choices))
+        proposed=self.setup_draft.get(code)
+        choice=next((k for k,v in self.setup_choices.items() if v==proposed),"")
+        self.setup_choice.set(choice)
+    else:
+        self.setup_choices={}
+        self.setup_box.config(state="disabled",values=[])
+        self.setup_choice.set("")
+ def setup_apply(self):
+    selected=self.setup_tree.selection()
+    if not selected or not self.setup_snapshot:return
+    code=selected[0]
+    value=self.setup_choices.get(self.setup_choice.get())
+    try:self.setup_draft=apply_draft(self.setup_snapshot,self.setup_draft,code,value)
+    except ValueError as exc:
+        messagebox.showwarning("Invalid offline proposal",str(exc));return
+    self.setup_summary.set(f"Loaded configuration: {self.setup_snapshot['controller']['model10']} · "
+                           f"{len(self.setup_draft)} UNSAVED OFFLINE PROPOSED CHANGES · hardware untouched")
+    self.setup_refresh()
+ def setup_clear(self):
+    self.setup_draft={}
+    if self.setup_snapshot:
+        self.setup_summary.set(f"Snapshot {self.setup_snapshot['controller']['model10']} · "
+                               "all proposed changes cleared · no hardware writes")
+    self.setup_refresh()
+ def setup_save_snapshot(self):
+    if not self.setup_snapshot:
+        messagebox.showwarning("Read first","Read or open a real setup snapshot before saving.");return
+    filename=filedialog.asksaveasfilename(title="Save unmodified controller setup snapshot",
+                                          defaultextension=".json",
+                                          initialfile="E5CC-T-controller-setup-snapshot.json",
+                                          filetypes=[("JSON","*.json")])
+    if not filename:return
+    try:
+        write_new_json(filename,self.setup_snapshot)
+        self.log("Saved unmodified read-only setup snapshot: "+filename)
+        messagebox.showinfo("Snapshot saved","Saved and verified the unmodified configuration snapshot. No controller changes.")
+    except (OSError,ValueError) as exc:messagebox.showerror("Not saved",str(exc)+"\nOriginal snapshots are never overwritten.")
+ def setup_export(self):
+    if not self.setup_snapshot:
+        messagebox.showwarning("Read first","Load a setup snapshot before exporting.");return
+    try:
+        proposal=build_proposal(self.setup_snapshot,self.setup_draft)
+        content=setup_report(self.setup_snapshot,self.setup_draft)
+    except (ValueError,KeyError) as exc:
+        messagebox.showerror("Invalid proposal",str(exc));return
+    filename=filedialog.asksaveasfilename(title="Save OFFLINE configuration proposal",
+                                          defaultextension=".json",
+                                          initialfile="E5CC-T-OFFLINE-setup-proposal.json",
+                                          filetypes=[("JSON","*.json")])
+    if not filename:return
+    try:
+        write_new_json(filename,proposal)
+        textpath=Path(filename).with_suffix(".txt")
+        with textpath.open("x",encoding="utf-8") as handle:handle.write(content)
+        self.log(f"Exported OFFLINE configuration comparison ({len(proposal['proposed_changes'])} proposals): {filename}")
+        messagebox.showinfo("Offline comparison exported",
+                            f"{len(proposal['proposed_changes'])} changes PROPOSED, not applied.\n"
+                            f"JSON: {filename}\nText report: {textpath}\n\nNo controller writes.")
+    except (OSError,ValueError) as exc:messagebox.showerror("Export incomplete",str(exc))
+
  def _upload(self):
     panel,body=self.card(self.t_upload,"Controlled RAM upload — isolated hardware bench only");panel.pack(fill="both",expand=True,padx=10,pady=10)
     self.lab_info=tk.StringVar(value="WRITE MODE LOCKED" if not self.lab_mode else "LAB TRANSFER MODE ENABLED — strict safety checks still required")
@@ -779,6 +953,7 @@ class Window:
     self.btn_connect.config(state="normal" if not self.busy and not self.client else "disabled")
     self.btn_disconnect.config(state="normal" if not self.busy and self.client else "disabled")
     self.btn_backup.config(state="normal" if self.connected and not self.busy and not self.fail_latched else "disabled")
+    self.btn_setup_read.config(state="normal" if self.connected and not self.busy else "disabled")
     self.btn_preview.config(state="normal" if self.connected and self.session.backup_data and not self.busy else "disabled")
     self.btn_stage.config(state="normal" if self.safe_to_stage() else "disabled")
     self.btn_commit.config(state="normal" if self.lab_mode and not self.busy and not self.fail_latched and self.session and self.session.staged and not self.session.committed else "disabled")
