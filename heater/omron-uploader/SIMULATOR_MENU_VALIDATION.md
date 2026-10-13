@@ -109,7 +109,8 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - **SP mode confirmed:** User reports `spmd=psp` (Program SP Mode) on the physical Omron. This is an **Adjustment Level** parameter. Exact key (MODE vs LEVEL) used to move from `l.adj` to `spmd` has not been confirmed; do not infer it.
 - **PID-level transition confirmed:** From `spmd=psp` in Adjustment Level, user pressed brief LEVEL and observed `d.pid=1` (reported as `dpid`). This confirms the PID Setting Level entry and selection of PID set 1. Actual PID tuning values are not recorded; earlier movement from `l.adj` to `spmd` was *probably* MODE, but user was unsure.
 - **PID proportional band observed:** A brief MODE from `d.pid=1` showed `1.p` (user transcribed `i.p`) with lower display reported as `8`. This is PID set 1 proportional band; Omron H177 E5_C-T programming diagram lists factory default `8.0` (temperature units °C). Exact displayed decimal place not confirmed by user, so retain reported value `8` in field notes.
-- **Next validation:** With PID 1 proportional band visible, press MODE once and record next upper/lower displays; Omron documentation predicts `1.i` (integral time), typically `233` seconds default. Do not change value. After that, investigate `1.d` (derivative time) similarly. Multi-segment navigation remains unverified.
+- **PID integral time confirmed:** From `1.p`, brief MODE displayed `1.i=233` (user replied 'yep' to expected code/value), corresponding to PID set 1 integral time, 233 seconds. No parameter edits performed.
+- **Next validation:** From `1.i=233`, press MODE once and record next upper/lower displays, expected `1.d` derivative time. Do not change value. Multi-segment navigation remains unverified.
 - **Limitations:** USB-only inspection provides no heater-output or restart-interlock qualification.
 
 ## Results
