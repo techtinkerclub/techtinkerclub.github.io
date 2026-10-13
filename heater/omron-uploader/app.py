@@ -419,7 +419,7 @@ class Window:
     self.message(body,"Recommended shortcut: connect, inspect and save a read-only backup in one guided action. The original memories are not modified.")
     self.inspecttext=scrolledtext.ScrolledText(body,height=13,wrap="word",font=("Consolas",10));self.inspecttext.pack(fill="both",expand=True)
     self.inspecttext.insert("end","No controller connected.\nModel identification is only 10 characters: the full -000 suffix must be confirmed on the nameplate.\n")
-    self.message(body,"COM7 proved input type 5 (valid Type K) and SP Start 0, while the experimental upload gate expects input 6 and PV Start 1. These assumptions need engineering review before writes. Do not alter valid hardware parameters to please the software. Read-only connection and backup still work.")
+    self.message(body,"This bench build expects the observed Type K input 5 (whole degrees) and SP Start 0. Any configuration change blocks lab transfer. Keep the heater isolated; a successful communications write is not approval to energise it.")
  def refresh_ports(self):
     try:
         from serial.tools import list_ports
@@ -737,6 +737,8 @@ class Window:
             else:
                 steps.append(Segment("ramp",sp=str(section["sp"]),
                                      rate=str(section["rate"])))
+        elif section["type"]=="step" and section["sp"] is not None:
+            steps.append(Segment("step",sp=str(section["sp"])))
         elif section["type"]=="soak" and section["minutes"] is not None:
             steps.append(Segment("soak",minutes=str(section["minutes"])))
         else:
@@ -975,7 +977,7 @@ class Window:
     self.btn_preview=self.b(controls,"Preview exact register changes",self.preview);self.btn_preview.pack(side="left",padx=3)
     self.btn_stage=self.b(controls,"1 · STAGE & VERIFY IN RAM",self.stage,True);self.btn_stage.pack(side="left",padx=3)
     self.btn_commit=self.b(controls,"2 · EXPLICIT SAVE TO CONTROLLER",self.commit);self.btn_commit.pack(side="left",padx=3)
-    self.message(body,"If a communication fault occurs during staging, stop: no retry, no automatic rollback, no automatic save. Keep the heater isolated and inspect RAM/backup with appropriate expert assistance. Do not power the heating system until the saved programme has been checked at the front panel.",RED)
+    self.message(body,"EXPERIMENTAL, ISOLATED LAB ONLY. Register encoder supports the observed input type 5/whole-degree SP values, but this version has NOT yet completed a hardware write qualification. Start with a disposable test slot and inspect every changed register. No heater or SSR power. On a communications fault, stop; no automatic rollback or save.",RED)
  def safe_to_stage(self):
     return self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.confirm.get()=="AUTHORISE LAB TRANSFER" and self.session.staged is None and not self.session.mismatches and str(self.session.status).startswith("01")
  def refresh_buttons(self):
