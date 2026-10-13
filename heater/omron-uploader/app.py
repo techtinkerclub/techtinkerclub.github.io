@@ -1073,8 +1073,10 @@ class Window:
              wraplength=980,font=("Segoe UI",11,"bold"),padx=7,pady=12).pack(fill="x")
     self.b(body,"GENERATE COMPLETE OFFLINE MANUAL ENTRY SHEET",self.entry_sheet,True).pack(anchor="w",pady=(0,7))
     self.message(body,"Connected: preview the intended changes, then (lab-only) stage and verify the selected programme. Offline: generate all front-panel programming steps. Initial configuration changes are included in the manual sheet; USB writing of C3/C1 settings requires separate hardware validation and is not enabled yet.")
+    self.lab_section=tk.Frame(body,bg=WHITE)
+    self.lab_section.pack(fill="x")
     self.channel=tk.StringVar(value="Bench controller")
-    row=tk.Frame(body,bg="white");row.pack(anchor="w",pady=8)
+    row=tk.Frame(self.lab_section,bg="white");row.pack(anchor="w",pady=8)
     ttk.Label(row,text="Connected controller ID (audit label):").pack(side="left")
     ttk.Entry(row,textvariable=self.channel,width=32).pack(side="left",padx=8)
     self.check_vars=[]
@@ -1088,19 +1090,19 @@ class Window:
     ]
     for c in checks:
         v=tk.BooleanVar(value=False);self.check_vars.append(v)
-        cb=tk.Checkbutton(body,text=c,variable=v,bg="white",anchor="w",justify="left",wraplength=820,command=self.refresh_buttons)
+        cb=tk.Checkbutton(self.lab_section,text=c,variable=v,bg="white",anchor="w",justify="left",wraplength=820,command=self.refresh_buttons)
         cb.pack(fill="x",anchor="w",pady=3)
-    self.confirm=tk.StringVar();r=tk.Frame(body,bg="white");r.pack(fill="x",pady=9)
+    self.confirm=tk.StringVar();r=tk.Frame(self.lab_section,bg="white");r.pack(fill="x",pady=9)
     tk.Label(r,text="Type AUTHORISE LAB TRANSFER:",bg="white",fg=DARK).pack(side="left")
     ttk.Entry(r,textvariable=self.confirm,width=27).pack(side="left",padx=10)
     self.confirm.trace_add("write",lambda *_:self.refresh_buttons())
     self.transfer_summary=tk.StringVar(value="Select a programme in Builder. No upload plan prepared.")
-    tk.Label(body,textvariable=self.transfer_summary,bg="white",fg=DARK,wraplength=850,justify="left").pack(fill="x",pady=8)
-    controls=tk.Frame(body,bg="white");controls.pack(fill="x",pady=6)
+    tk.Label(self.lab_section,textvariable=self.transfer_summary,bg="white",fg=DARK,wraplength=850,justify="left").pack(fill="x",pady=8)
+    controls=tk.Frame(self.lab_section,bg="white");controls.pack(fill="x",pady=6)
     self.btn_preview=self.b(controls,"Preview exact register changes",self.preview);self.btn_preview.pack(side="left",padx=3)
     self.btn_stage=self.b(controls,"1 · STAGE & VERIFY IN RAM",self.stage,True);self.btn_stage.pack(side="left",padx=3)
     self.btn_commit=self.b(controls,"2 · EXPLICIT SAVE TO CONTROLLER",self.commit);self.btn_commit.pack(side="left",padx=3)
-    self.message(body,"EXPERIMENTAL, ISOLATED LAB ONLY. Register encoder supports the observed input type 5/whole-degree SP values, but this version has NOT yet completed a hardware write qualification. Start with a disposable test slot and inspect every changed register. No heater or SSR power. On a communications fault, stop; no automatic rollback or save.",RED)
+    self.message(self.lab_section,"EXPERIMENTAL, ISOLATED LAB ONLY. Register encoder supports the observed input type 5/whole-degree SP values, but this version has NOT yet completed a hardware write qualification. Start with a disposable test slot and inspect every changed register. No heater or SSR power. On a communications fault, stop; no automatic rollback or save.",RED)
  def review_current_plan(self):
     if not hasattr(self,"review_note"):return
     slot=self.slot.get()
@@ -1123,6 +1125,13 @@ class Window:
     else:
         mode+="\nNo initial configuration changes proposed."
     self.review_note.set(overview+"\n"+mode)
+    if self.connection_mode.get()=="offline":
+        self.lab_info.set("OFFLINE MANUAL MODE — NO DEVICE WRITES")
+        self.lab_section.pack_forget()
+    else:
+        self.lab_info.set("ISOLATED LAB PROGRAMME TRANSFER — EXPERIMENTAL" if self.lab_mode else
+                          "USB INSPECTION ONLY — RESTART WITH LAB LAUNCHER FOR PROGRAMME WRITES")
+        self.lab_section.pack(fill="x")
     if hasattr(self,"btn_stage"):self.refresh_buttons()
 
  def safe_to_stage(self):
@@ -1136,7 +1145,7 @@ class Window:
     self.btn_setup_read.config(state="normal" if self.connected and not self.busy else "disabled")
     self.btn_preview.config(state="normal" if self.connected and self.session.backup_data and not self.busy else "disabled")
     self.btn_stage.config(state="normal" if self.safe_to_stage() else "disabled")
-    self.btn_commit.config(state="normal" if self.lab_mode and not self.busy and not self.fail_latched and self.session and self.session.staged and not self.session.committed else "disabled")
+    self.btn_commit.config(state="normal" if self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and not self.busy and not self.fail_latched and self.session and self.session.staged and not self.session.committed else "disabled")
  def preview(self):
     self._store_meta()
     try:
@@ -1159,7 +1168,7 @@ class Window:
     self.transfer_summary.set(f"RAM verified: {len(out['changes'])} register differences. Nonvolatile memory NOT saved yet. Review values before committing.")
     self.refresh_buttons();self.log("Pending explicit Save RAM Data")
  def commit(self):
-    if not(self.lab_mode and self.session and self.session.staged and not self.session.committed and not self.fail_latched and not self.busy):return
+    if not(self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and self.session and self.session.staged and not self.session.committed and not self.fail_latched and not self.busy):return
     if not messagebox.askyesno("FINAL NONVOLATILE SAVE", "This sends Omron SAVE RAM DATA, writing ALL currently pending operation/adjustment/programme/PID RAM changes to nonvolatile controller memory — not only the selected programme.\n\nOnly proceed after reviewing the RAM-verified values and with all heaters isolated.\n\nSAVE now?"):return
     self._job("Explicit Save RAM Data",lambda:self.session.commit(),lambda receipt:self._commit_success(receipt),write=True)
  def _commit_success(self,receipt):
