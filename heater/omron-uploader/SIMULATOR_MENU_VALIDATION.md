@@ -1,3 +1,14 @@
+## 13 October 2026 — FIRST REAL COM7 READ-ONLY SERIAL CONNECTION (PASS)
+
+- **Physical serial link PASS:** E58-CIFQ2 installed with Windows virtual COM driver, Programme Studio `START_READ_ONLY.cmd` connected using `COM7`. Identity command 0503 returned model prefix `E5CC-TQX3A` (10 chars; model suffix still requires physical nameplate); raw status command 0601 returned `0100`.
+- **Configuration C3 reads PASSED:** `0000=5`, `0004=0`, `00B9=0`, `00BA=1`, `00BB=0`, `00BC=0`, `00BD=1`, `00BE=0`, `00BF=0`. All were actually returned by real serial I/O, unlike prior simulations.
+- **Two application PRE-FLIGHT assumptions discovered to be too restrictive (not physical faults):**
+  1. Omron H185 §4-3 lists `in-t=5` as a **valid factory-default Type K, −200..1300 °C** range, resolution 1 °C; `in-t=6` is also Type K but narrower −20.0..500.0 °C, resolution 0.1 °C. App presently hard-codes `C3:0000=6`; needs a deliberate sensor-range policy and range-aware model validation before enabling any writes, not a forced setting change on the controller.
+  2. Omron H186 §3-3 maps `C3:00BF=0` to **SP Start**, `=1` to **PV Start**. H185 §5-15-12 specifically advises **rate-of-rise programming + RESET Stop Control** when starting segment zero's ramp from the measured PV; do **not** enable PV Start simply to get that behavior. The app presently hard-codes `C3:00BF=1` in `transfer.py`, and `README.md`/builder references require that value. Correct the specification and tests before enabling writes.
+- **Do NOT change hardware settings just to silence the preflight.** Old app reports 7/9 match and **upload blocked**; this is appropriate while write assumptions are under review. Maintain USB-only setup power and leave physical heater AC/DC supplies isolated.
+- **NEXT:** Read-only **Back up memory** tab → save all eight programme blocks (`DA` 150 registers per programme, including previously edited Programme 1); save timestamped JSON, no overwrite, preserve copy. This is programme memory backup + nine C3 values **not** a complete controller configuration clone. Upload/stage/save have **NOT** been exercised on physical hardware.
+- **Independent sources:** Omron H185 https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf ; H186 https://files.omron.eu/downloads/latest/manual/en/h186_e5_c-t_digital_temperature_controllers_communications_manual_en.pdf?v=1 .
+
 # E5CC-TQX3A5M-000 — front-panel simulator validation
 
 **Test type:** Read-only menu inspection (not heating programme execution)  
