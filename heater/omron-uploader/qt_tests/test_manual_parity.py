@@ -52,6 +52,17 @@ class OfflineManualTests(unittest.TestCase):
         self.assertIn("NOT VERIFIED",plan["setup_proposals"][0]["entry"])
         html=make_manual(EXAMPLE,0,draft={"C5:0000":255})
         self.assertIn("Additional configuration change proposals",html)
+    def test_connected_type5_manual_cannot_show_fractional_targets(self):
+        p=Programme("test","20","rst",[Segment("ramp",sp="80.5",rate="2")])
+        with self.assertRaises(ValueError):
+            make_entry_plan(p,0,baseline={"C3:0000":5})
+        plan=make_entry_plan(p,0,baseline={"C3:0000":6})
+        self.assertTrue(any("0.1 °C" in r["value"] for r in plan["entry_rows"]
+                            if r["code"]=="in-t"))
+    def test_offline_unknown_input_resolution_is_explicit(self):
+        plan=make_entry_plan(EXAMPLE,0)
+        self.assertTrue(any("UNKNOWN" in r["value"] for r in plan["entry_rows"]
+                            if r["code"]=="in-t"))
     def test_verified_initial_setting_menu_gets_specific_key_instructions(self):
         plan=make_entry_plan(EXAMPLE,0,changes={"C3:00BD":1})
         proposal=plan["setup_proposals"][0]
