@@ -1553,7 +1553,7 @@ class Window:
         # to avoid hiding duplicate or inconsistent choices for one register.
         original=setup_report(self.setup_snapshot,self.setup_draft) if self.setup_draft else (
             "No separate Essential Controls draft selections.")
-        txt=format_config_review(plan)+"\\n\\nESSENTIAL CONTROLS\\n"+original
+        txt=format_config_review(plan)+"\n\nESSENTIAL CONTROLS\n"+original
     except (ValueError,TypeError,KeyError) as exc:
         messagebox.showerror("Cannot export review",str(exc));return
     dest=filedialog.asksaveasfilename(defaultextension=".txt",
@@ -1565,7 +1565,7 @@ class Window:
         self.log("Exported controller configuration change-readiness review: "+dest)
         messagebox.showinfo("Offline change review saved",
             "The review includes proposed settings, before/after raw values, "
-            "setting-area restrictions and risks.\\n"
+            "setting-area restrictions and risks.\n"
             "NO initial/PID/communications settings were written to the controller.")
     except OSError as exc:messagebox.showerror("Export failed",str(exc))
 
