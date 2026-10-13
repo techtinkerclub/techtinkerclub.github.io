@@ -60,7 +60,7 @@ class FiveStepWizardTests(unittest.TestCase):
     def test_connected_flow_groups_three_views_in_step_two(self):
         self.ui.choose_mode("connected")
         self.assertEqual(self.ui.book.index("current"),1)
-        self.assertEqual(len(self.ui.readbook.tabs()),4)
+        self.assertEqual(len(self.ui.readbook.tabs()),5)
         self.assertFalse(self.ui.connected)
         self.ui.wizard_next()
         self.assertEqual(self.ui.book.index("current"),2)
@@ -117,7 +117,9 @@ class FiveStepWizardTests(unittest.TestCase):
             self.assertIsNotNone(self.ui.session.backup_data)
             self.assertEqual(len(self.ui.session.backup_data["programmes"]),8)
             self.assertEqual(self.ui.setup_snapshot["fields"]["C3:0000"],5)
-            self.assertEqual(self.ui.readbook.select(),str(self.ui.t_initial_view))
+            self.assertEqual(self.ui.readbook.select(),str(self.ui.t_inventory))
+            self.assertIsNotNone(self.ui.full_snapshot)
+            self.assertTrue(list(Path(folder).glob("*full-inventory*.json")))
             self.assertEqual(self.ui.book.index("current"),1)
             self.assertTrue(list(Path(folder).glob("*programme-backup*.json")))
             self.assertTrue(list(Path(folder).glob("*initial-settings*.json")))
@@ -131,6 +133,26 @@ class FiveStepWizardTests(unittest.TestCase):
         self.assertEqual(self.ui.btn_stage.winfo_manager(),"pack")
         self.assertEqual(self.ui.btn_commit.winfo_manager(),"pack")
         self.assertIn("Not connected",self.ui.upload_blocker.get())
+        self.assertFalse(self.ui.safe_to_stage())
+    def test_full_inventory_step_four_grouped_editor(self):
+        from controller_inventory import read_inventory,CATALOG
+        class Reader:
+            def read(self,bank,addr,count=1):return [5 if bank=="C3" and addr+i==0 else 0 for i in range(count)]
+        snap=read_inventory(Reader(),{"model10":"E5CC-TQX3A"})
+        self.ui.inventory_load(snap,"Fake controller")
+        self.ui.book.select(self.ui.t_setup)
+        self.ui.setupbook.select(self.ui.t_setup_all)
+        self.ui.inventory_group.set("PID sets / PID 1")
+        self.assertTrue(self.ui.inventory_tree.get_children())
+        self.assertEqual(len(self.ui.inventory_tree.get_children()),12)
+        self.ui.inventory_tree.selection_set("C5:0000")
+        self.ui.inventory_select()
+        self.ui.inventory_new.set("25.5")
+        self.ui.inventory_propose()
+        self.assertEqual(self.ui.full_draft["C5:0000"],255)
+        self.ui.book.select(self.ui.t_upload)
+        self.ui.review_current_plan()
+        self.assertIn("C5:0000",self.ui.review_changes.get("1.0","end"))
         self.assertFalse(self.ui.safe_to_stage())
     def test_stage_requires_preview_and_blocks_stale_profile(self):
         """A changed local design invalidates the reviewed register plan."""
