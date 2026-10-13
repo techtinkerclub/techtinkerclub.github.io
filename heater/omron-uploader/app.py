@@ -85,6 +85,68 @@ class Window:
     self.root.after(100,self._pump)
     self.root.protocol("WM_DELETE_WINDOW",self.exit)
 
+ def _web_studio(self):
+    shell=tk.Frame(self.t_web,bg=BG,padx=15,pady=18);shell.pack(fill="both",expand=True)
+    intro=tk.Frame(shell,bg=WHITE,padx=26,pady=22,
+                   highlightbackground=BORDER,highlightthickness=1)
+    intro.pack(fill="x")
+    tk.Label(intro,text="THE COMPLETE PROGRAMME WORKSHOP",bg=WHITE,fg=BLUE,
+             font=("Segoe UI",10,"bold")).pack(anchor="w")
+    tk.Label(intro,text="Plan now. Program the Omron later.",bg=WHITE,fg=INK,
+             font=("Segoe UI",21,"bold")).pack(anchor="w",pady=(6,9))
+    tk.Label(intro,text="The actual website Programme Studio, bundled for offline use. "
+             "Build eight programme memories, preview ramp / soak / step profiles, "
+             "print keypad-entry sheets, and practise on the interactive five-button "
+             "E5CC-T simulator. It works without the USB cable or internet.",
+             bg=WHITE,fg="#526f84",wraplength=830,justify="left",
+             font=("Segoe UI",11)).pack(anchor="w",pady=(0,16))
+    self.b(intro,"LAUNCH OFFLINE PROGRAMME STUDIO  ↗",
+           self.open_offline_creator,True).pack(anchor="w")
+    cards=tk.Frame(shell,bg=BG);cards.pack(fill="both",expand=True,pady=(14,8))
+    content=[
+      ("01  DESIGN","Create 1–32 segments in each of the eight programme slots. See a graph of the commanded temperature versus time."),
+      ("02  PRACTISE","Use the same virtual five-button Omron as our website: d.prg edit, prg RUN selection, read-back and virtual restart."),
+      ("03  EXPORT","Save programme JSON and printable manual-entry sheets, or import the JSON into the native desktop editor for later USB use.")
+    ]
+    for label,desc in content:
+        card=tk.Frame(cards,bg=WHITE,padx=16,pady=14,
+                      highlightbackground=BORDER,highlightthickness=1)
+        card.pack(side="left",fill="both",expand=True,padx=(0,8))
+        tk.Label(card,text=label,bg=WHITE,fg=BLUE,
+                 font=("Segoe UI",11,"bold")).pack(anchor="w",pady=(0,8))
+        tk.Label(card,text=desc,bg=WHITE,fg="#557185",wraplength=255,
+                 justify="left",font=("Segoe UI",10)).pack(anchor="w")
+    tk.Label(shell,text="This creator is local to your computer and never connects to the controller. "
+             "Export your programme JSON regularly; local browser storage is not a substitute for a project backup.",
+             bg=BG,fg="#607b91",wraplength=950,justify="left",
+             font=("Segoe UI",10)).pack(anchor="w",pady=(8,0))
+
+ def open_offline_creator(self):
+    try:
+        path,opened=open_studio()
+        self.status.set("Offline website creator: "+str(path))
+        self.log("Opened bundled website Programme Studio (no serial activity): "+str(path))
+        if not opened:
+            messagebox.showinfo("Offline creator ready",
+                "The creator is available as this local HTML file:\n"+str(path)+
+                "\n\nOpen it in Edge or Chrome if your browser did not launch automatically.")
+    except Exception as err:
+        messagebox.showerror("Offline creator could not open",str(err))
+
+ def load_bench_example(self):
+    slot=self.slot.get()
+    if not messagebox.askyesno("Load verified 50 °C example",
+        f"Replace local editor programme {slot} with the 50 °C at 2 °C/min ramp "
+        "and 15-minute soak? This does NOT change the physical Omron."):
+        return
+    self.progs[slot]=Programme(name="Verified 50°C ramp + 15-minute soak",
+        start="20",finish="rst",steps=[
+            Segment("ramp",sp="50",rate="2"),
+            Segment("soak",minutes="15")
+        ])
+    self._refresh_programme()
+    self.log(f"Loaded 50 °C example in LOCAL memory {slot}; no controller write")
+
  def card(self,parent,heading):
     outer=tk.Frame(parent,bg="white",bd=1,relief="solid",highlightthickness=0)
     tk.Label(outer,text=heading,anchor="w",font=("Segoe UI",12,"bold"),fg=DARK,bg="white",pady=10,padx=12).pack(fill="x")
@@ -101,7 +163,7 @@ class Window:
     self.t_builder.columnconfigure(0,weight=5);self.t_builder.columnconfigure(1,weight=3);self.t_builder.rowconfigure(0,weight=1)
     left=tk.Frame(self.t_builder,bg=BG);left.grid(row=0,column=0,sticky="nsew",padx=(0,8));left.rowconfigure(1,weight=1);left.columnconfigure(0,weight=1)
     right=tk.Frame(self.t_builder,bg=BG);right.grid(row=0,column=1,sticky="nsew");right.rowconfigure(0,weight=1);right.columnconfigure(0,weight=1)
-    panel,body=self.card(left,"Choose programme memory and starting conditions");panel.grid(row=0,column=0,sticky="ew",pady=(0,9))
+    panel,body=self.card(left,"Local programme memory and starting conditions");panel.grid(row=0,column=0,sticky="ew",pady=(0,9))
     row=tk.Frame(body,bg="white");row.pack(fill="x")
     tk.Label(row,text="Memory:",bg="white").pack(side="left")
     self.slot_box=ttk.Combobox(row,values=[str(i) for i in range(8)],textvariable=self.slot,width=4,state="readonly");self.slot_box.pack(side="left",padx=7);self.slot_box.bind("<<ComboboxSelected>>",lambda e:self._refresh_programme())
@@ -141,7 +203,10 @@ class Window:
     self.b(r2,"Print entry sheet",self.entry_sheet).pack(side="left",padx=3)
     self.b(r2,"Save all 8",self.save_project).pack(side="left",padx=3)
     self.b(r2,"Open project",self.open_project).pack(side="left",padx=3)
-    self.message(body,"Uses 8 programme memories and 32 segments; Ramp / Soak / Step. Only rate-of-rise mode is supported. No physical controller settings are changed in this tab.")
+    r3=tk.Frame(body,bg=WHITE);r3.pack(fill="x",pady=7)
+    self.b(r3,"Load verified 50 °C example",self.load_bench_example).pack(side="left",padx=3)
+    self.b(r3,"Full offline website creator  ↗",self.open_offline_creator,True).pack(side="left",padx=3)
+    self.message(body,"This desktop editor works without a controller. Import or export website programme JSON here, or use the first tab for the full interactive website generator and keypad simulator.")
 
  def _store_meta(self):
     p=self.progs[self.slot.get()];p.name=self.name.get();p.start=self.start.get();p.finish="rst";self.update_chart()
