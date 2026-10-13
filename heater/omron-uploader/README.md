@@ -2,9 +2,9 @@
 
 **Target controller (both channels): Omron E5CC-TQX3A5M-000**. Cable: **E58-CIFQ2**.
 
-**Status:** production-intent source with working offline programme builder, read-only serial inspection, eight-programme memory backup, guarded RAM transfer, read-back, explicit nonvolatile save and post-reconnect persistence comparison. **It has NOT yet been tested against the owner's physical E5CC-TQX3A5M-000 or the E58-CIFQ2. It is NOT approved for use with an energised heater.** The protocol is grounded in the H186 manual and tested against synthetic responses; actual-hardware qualification remains essential.
+**Status (13 October 2026):** Portable Windows source with a refreshed native GUI, bundled full offline website Programme Studio, human-readable Controller Explorer, read-only COM serial inspection and verified eight-programme JSON backups. **Physical COM7 read-only identification and nine C3 reads have PASSED; eight-programme backup was generated on the real controller. No controller upload, RAM staging or nonvolatile save has yet been physically validated.** It is **NOT approved for use with an energised heater**. All writing remains deliberately blocked on the observed type-5 / SP-Start controller until the upload parameter assumptions and temperature register scaling have been reviewed.
 
-The desktop application uses Tkinter (Python standard library GUI) and PySerial for USB/COM. No internet or cloud service is needed to operate it after installation. The supplied Windows build workflow can create an **offline, portable `.exe`** that bundles Python, Tkinter and PySerial. The Omron USB driver may still need to be installed by your organisation.
+The desktop shell uses Tkinter and PySerial for USB/COM, and bundles the identical website's full Programme Studio HTML as an offline browser page. A cable or internet is not required for programme design, manual-entry sheets or the five-button simulator. The Controller Explorer can use previously saved controller backup JSON without reconnecting. The supplied Windows build workflow can create an **offline, portable `.exe`** that bundles Python, Tkinter and PySerial. The Omron USB driver may still need to be installed by your organisation.
 
 ## Run without installing Python (once the Windows build has completed)
 
@@ -42,65 +42,51 @@ A local Windows command-line build, if permitted:
 ```powershell
 py -3 -m pip install -r requirements.txt pyinstaller
 py -3 -m unittest discover -s tests -v
-py -3 -m PyInstaller --onefile --windowed --hidden-import serial.tools.list_ports --name E5CC-Programme-Studio app.py
+py -3 -m PyInstaller --onefile --windowed --hidden-import serial.tools.list_ports --add-data "../program-tools/index.html;offline" --name E5CC-Programme-Studio app.py
 ```
 
 Copy the resulting `dist/E5CC-Programme-Studio.exe`, both `START_*.cmd` files and this README to the same directory for an offline package.
 
-## Application tabs
+## Application tabs and recommended workflow
 
-### 1 — Programme builder (fully offline)
+### 1 — Full offline creator (identical website functionality)
 
-Use the **Programme** selector for slots 0–7. Add, remove or reorder up to 32 segments per programme:
+Opens the real Programme Studio from a copy **bundled inside the portable executable** in the computer's usual web browser. It includes eight programme slots, ramp/soak/step entry, commanded-setpoint graph, manual parameter-entry sheet and virtual five-button Omron simulator. It works without the USB cable and without internet. Save/export JSON regularly: local browser storage may be cleared or constrained by company browser policy. This has NO serial-port access.
 
-- **Ramp:** target SP (°C) and slope (whole °C/min, range 1–9999). The curve can rise or fall.
-- **Soak:** hold the preceding SP for a number of complete minutes (0–5999), encoded as hours.minutes.
-- **Step:** commanded instantaneous change to a new SP; the measured PV is not expected to jump.
+### 2 — Desktop editor (offline)
 
-The graph plots the **commanded setpoint** only and assumes the temperature entered in `Starting PV` at RUN. `PV Start = 1` must be commissioned. Actual temperature may lag, and the programme duration is not an actual temperature guarantee. If you require 15 minutes of **measured** temperature at target, a different specification (and qualified control strategy) is needed.
+The native compact editor can import/export the *same* programme JSON format as the website, keep an eight-slot local design project, display a simple commanded-SP graph and print the verified button-by-button entry sheet. The **Load verified 50 °C example** button creates the physical bench-test 50 °C at 2 °C/min + 15-minute soak profile without any controller write.
 
-The builder supports saving/reading all eight programmes as a project file, importing a JSON export from our existing GitHub Pages Programme Studio, exporting a single programme JSON, and generating a printable Omron button-entry sheet. JSON data is never transferred to the controller without explicit steps in the later tabs.
+### 3 — USB inspect (read-only)
 
-**Scope:** rate-of-rise programming only (`t-pr = pr`). Do not mix with time-step programming. Completion RESET is required for hardware upload. Different controller-wide `eset` end behaviours are intentionally not overwritten by the upload tool.
+Connect one Omron at a time using its E58-CIFQ2 cable. Select the Windows COM port (COM7 on the first successfully connected unit), inspect the 10-character model prefix, status and nine selected C3 settings. The full -000/-003 model suffix **cannot** be inferred from the serial prefix and needs nameplate confirmation. The -000 model has no verified live PV/multi-input monitoring capability in this tool; do not treat this software as a live data logger.
 
-### 2 — Connect & inspect (read-only)
+**Important:** real controller reads returned `C3:0000=5` (valid wider Type K range) and `C3:00BF=0` (SP Start). The current upload preflight's demand for input 6 and PV Start 1 is too rigid. Do not change correct controller configuration to satisfy experimental uploader gates. Writing remains blocked on the actual configuration while register scaling / start method are reviewed.
 
-1. Remove controller normal supply **and** externally powered heater supply. On the completed cabinet, have a competent person establish and verify the required safe isolation. Do not assume a front-panel selector alone provides full isolation.
-2. Connect the E58-CIFQ2 to **one** of the two E5CC-T controllers and to the Windows laptop.
-3. Check **Device Manager → Ports (COM & LPT)** for the assigned COM port. Only COM ports recognised by Windows will appear. Do not change 38400 baud, 7 data bits, even parity and 2 stop bits for the setup cable.
-4. Select the COM port, choose **Connect + inspect**. The app sends only `0503`, `0601` and `0101` read commands in this tab.
-5. Confirm the returned **10-character model prefix** looks like `E5CC-T…`. The full `E5CC-TQX3A5M-000` suffix **cannot** be established from `0503`; read the controller nameplate.
-6. The app reads nine C3 configuration fields without changing them (see table below). A mismatch **does not prevent backing up**, but prevents uploading. A different model prefix prevents connecting this version.
+### 4 — Memory backup (read-only)
 
-### 3 — Back up the existing memory (read-only)
+Read all eight DA programme blocks (8 × 150 four-byte words), retaining the nine selected initial C3 readings. The app displays progress, reopens the saved JSON and verifies it matches the data captured in the same controller read, then **stays on the backup tab and displays a success message**. Keep the JSON file somewhere safe. A file check is not an independent second read or a full controller-configuration backup.
 
-Choose a writable local folder, then click **READ AND SAVE ALL PROGRAMME MEMORY**. This reads each of the eight documented DA programme blocks, `0000..0095` (150 four-byte registers per programme), including alarm and time-signal fields as well as all 32 segment fields. It also records the nine selected C3 initial-configuration values used for safety checks. Each run saves a timestamped JSON with no overwrite.
+### 5 — Explore memory (read-only human-language reverse builder)
 
-**Revised backup feedback (after the Windows app is rebuilt):** a progress bar and status line show `1/8` through `8/8` programme blocks. The tool then reopens the saved JSON and compares its contents with the 1,200 DA registers and nine selected C3 values collected in that session. **A visible success dialogue shows the file path, 8/8 block count and read-only status.** The app deliberately stays on **Tab 3 — Back up memory** and will **not** automatically open the Lab transfer tab. A failed/incomplete new read or an invalid saved file displays an error and cannot be treated as a verified current-session backup.
+Open the saved `E5CC-T-programme-backup-...json` file, even without a controller/cable, or select **Use current session backup** after completing Step 4. The left-side table lists programmes 0–7 and their active segment count; selecting a memory shows:
 
-This verification checks **the saved file against the data collected during the first controller read**, not a second independent controller read. For extra assurance, disconnect/reconnect while power sources remain physically isolated and repeat a separate read-only backup to compare the two sets. The existing JSON made by an **older build** may still be valid, but its creation alone was not independently file-verified by that version.
+- Each segment in plain English, including target, ramp rate, soak duration or an unrecognised field warning.
+- A clear **commanded-setpoint versus time graph**, calculated using an editable *assumed initial PV*. The start temperature isn't stored in the programme. This is neither measured PV nor an assurance that the heater can follow the profile.
+- The repeat/link settings and human-language descriptions of the nine selected C3 configuration fields, including Type K scale 5/6 and SP/PV Start.
+- A text report export, and **Copy selected to local editor** to make a design copy you can modify offline. This never writes to the Omron and refuses unknown/unsupported segments or non-zero repeat/chaining.
 
-**Scope limitation:** this is a **complete programme-area backup**, not a complete clone of every controller configuration register. Restoration is **not yet implemented or hardware-qualified**; keep CX-Thermo and the controller's existing settings as fallback. Backup capture is a prerequisite for lab uploading but does not, by itself, ensure recoverability.
+**Decoder caveat:** This first Explorer interprets the H186 segment fields used in our rate-mode bench example. Other stored special functions, unknown alarm/time-signal assignments and unused register fields are not fully decoded. The app preserves the full 150-word raw memory block in the backup; it **must not infer that a programme is safe to overwrite from the graph alone**. Type K 5/6 SP register scaling is based on the documented decimal-point semantics, but should be compared with actual front-panel read-back on our COM7 controller before uploading.
 
-### 4 — Lab transfer: strict two-phase upload
+### 6 — Lab transfer (guarded and unqualified on real hardware)
 
-First launch via `START_LAB_UPLOAD.cmd` (or the `--enable-lab-writes` flag). Complete ALL six physical checks, select the channel and type the exact authorisation phrase.
+The app does **not** assume two channels. The editable controller ID is just an audit label for whichever physical Omron is attached; only one serial controller can be connected in a session. The separate `START_LAB_UPLOAD.cmd` launcher requires explicit authorisation, stopped controller, compatible preflight, complete backup and review of all DA register changes. RAM staging/read-back and nonvolatile save are separate operations, each requiring deliberate confirmation.
 
-**Additional blocking conditions:** accepted model prefix, stopped-control status, correct C3 settings, complete file backup, and an error-free 1..32-segment programme. The app re-reads current settings and each changed register before sending the first parameter write.
+**Do not start physical upload yet:** the observed valid input type 5 and SP Start 0 do not match the provisional upload gates. We need the saved real DA backup or its relevant read-only decoded values, verify target scaling and segment mapping against the physical keypad, and review write safeguards before authorising a supervised bench experiment. The physical heater mains/DC supplies must remain isolated. A failed stage may leave partially changed RAM; no automatic rollback is implemented.
 
-1. **Preview exact register changes.** This is read-only; review the DA address, existing value and intended new value.
-2. **Stage and verify in RAM.** Sends only allowlisted Omron CompoWay/F operations: enable communications writing `30050001`, select RAM write mode `30050401`, then `0102 DA` writes for the selected programme, followed immediately by `0101 DA` read-back comparisons. Only differing registers are written. The uploader never sends RUN, software reset, firmware upgrade, change-sensor, PID/autotune, or change alarm commands.
-3. **Separate explicit SAVE RAM DATA.** Requires a further confirmation. Sends `30050500` after verifying every staged changed register. Then performs one more read-back. The app writes a receipt JSON in your backup folder.
-4. **Verify persistence after controller USB power cycle.** Disconnect while heater supplies remain isolated; unplug and reconnect the USB programming cable so the controller actually loses and regains setup power. Reconnect, inspect, then choose **VERIFY SAVED PROGRAMME AFTER USB POWER CYCLE**, select the receipt JSON, and compare the stored DA values. Save the generated verification JSON.
-5. On the controller's front display, independently check segment count, SPs, slopes, times, repeat/link settings and behaviour when program ends. Record the result in the commissioning form. Repeat the process for the **other channel**, with its own named backup and receipt.
+### 7 — Audit log
 
-**Crucial Omron subtlety:** `SAVE RAM DATA` may save **other RAM changes that are pending** (not just the selected programme). Do not run our tool in parallel with CX-Thermo or any other controller configurator. Do not issue additional writes before the bench qualification proves memory-save semantics. Changing communications writing mode also has documented memory-write side effects (H186 §2-3-8); the tool does **not** automatically flip it back at the end or claim that it restored the prior communications state.
-
-**If any transfer operation fails:** the app latches a fail-closed lock. No further writes in that session; it performs **no automatic retry, save, restore, reset, restart, or output change**. The controller might contain partially staged RAM changes. Keep all heater supplies isolated, retain backup and log, investigate before any subsequent commissioning. A restart/disconnection is **not** a substitute for inspection.
-
-### 5 — Log & commissioning checklist
-
-The event log records the basic sequence, changed registers, acknowledgement, errors and receipt location. Export it to a text file; it is not yet a digitally signed audit log.
+Record identification, reads, errors and any later supervised transfer approvals and save a local text log. The workflow is still **prototype / laboratory commissioning**, not a certified temperature-control safety system.
 
 ## Exactly which controller values the app verifies
 
@@ -138,7 +124,7 @@ Manufacturer references:
 
 ## Verification status and release gates
 
-This version has passed **19 backend unit tests** (synthetic protocol replies and simulated controller memory) plus Tkinter smoke tests under a virtual display. The Windows EXE has **not** been built here; GitHub Actions contains the build instructions. **No hardware reads, staged writes, nonvolatile saves, thermal validation or Windows driver tests have yet been performed.**
+Automated tests cover protocol framing, synthetic programme memory, backup integrity, unknown segment handling, sample profile graphs, offline HTML packaging and numerical interpretation. The portable executable is built by GitHub Actions; check the latest successful workflow run before downloading. **Real COM7 identification and selected C3 read-back have passed; controller programme upload, RAM staging, EEPROM save, post-save persistence, and heater operation remain untested.**
 
 Before a production-approved release, complete and record: correct COM driver and discovery; verified `0503` identification; H186 `0601` status interpretation on your exact E5CC-T; full DA read-back including unused slot memory; C3 values and button-screen confirmation; time encoding verification against the physical display; RAM write vs saved memory persistence; interrupted transfer tests; second-channel tests; independent physical safety interlock checks; and a source-reviewed signed Windows build in the actual corporate environment.
 
