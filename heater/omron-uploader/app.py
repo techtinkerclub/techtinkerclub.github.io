@@ -291,7 +291,7 @@ class Window:
     self.backupdetail=tk.StringVar(value="Not backed up in this session — 0/8 programme blocks")
     tk.Label(body,textvariable=self.backupdetail,bg="white",fg=DARK,justify="left",wraplength=850).pack(fill="x",pady=11)
     self.b(body,"VERIFY SAVED PROGRAMME AFTER USB POWER CYCLE (read only)",self.verify_receipt).pack(anchor="w",pady=10)
-        self.message(body,"A failed read invalidates the backup: transfers stay blocked. If a controller has previously been configured by CX-Thermo, this is how we capture what is already on it before changing anything.")
+    self.message(body,"A failed read invalidates the backup: transfers stay blocked. If a controller has previously been configured by CX-Thermo, this is how we capture what is already on it before changing anything.")
  def pick_dir(self):
     x=filedialog.askdirectory();
     if x:self.backdir.set(x)
