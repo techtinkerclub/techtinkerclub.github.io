@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (
 )
 from serial.tools import list_ports
 
-from qt_components import STYLE,Task,Profile,card,heading,text,button,StudioCombo
+from qt_components import STYLE,Task,Profile,card,heading,text,button,StudioCombo,form_field
 from qt_segment_row import SegmentRow,Stepper
 from compoway import SerialClient
 from transfer import TransferSession
@@ -340,19 +340,22 @@ class Studio(QMainWindow):
         v.addLayout(top)
 
         meta=QHBoxLayout()
+        meta.setSpacing(12)
         self.programme_name=QLineEdit()
-        meta.addWidget(text("Description"));meta.addWidget(self.programme_name,1)
+        self.programme_name.setMinimumHeight(38)
+        meta.addWidget(form_field("Description",self.programme_name),1)
         self.start_pv=QDoubleSpinBox()
         self.start_pv.setRange(-20,500);self.start_pv.setDecimals(1)
         self.start_pv.setSingleStep(0.1)
         self.start_pv.setSuffix(" °C")
-        self.start_pv_editor=Stepper("STARTING PV (ASSUMED)",self.start_pv)
-        self.start_pv_editor.setMinimumWidth(170)
+        self.start_pv_editor=Stepper("Starting PV (assumed)",self.start_pv)
+        self.start_pv_editor.setMinimumWidth(175)
         meta.addWidget(self.start_pv_editor)
         self.finish_mode=StudioCombo()
         self.finish_mode.addItem("RESET (stop)", "rst")
         self.finish_mode.addItem("CONTINUE", "cont")
-        meta.addWidget(text("At programme end"));meta.addWidget(self.finish_mode)
+        self.finish_mode.setMinimumWidth(150)
+        meta.addWidget(form_field("At programme end",self.finish_mode))
         v.addLayout(meta)
 
         split=QSplitter(Qt.Orientation.Vertical)
