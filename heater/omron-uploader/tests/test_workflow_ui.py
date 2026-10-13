@@ -65,6 +65,71 @@ class FiveStepWizardTests(unittest.TestCase):
         self.ui.wizard_next()
         self.assertEqual(self.ui.book.index("current"),2)
         self.assertFalse(self.ui.safe_to_stage())
+    def test_connected_read_backup_and_setup_callbacks_do_not_crash(self):
+        """Replay the user's broken COM7 wizard path without opening a real serial port."""
+        import app
+        from transfer import PREFLIGHT
+        from program_model import Segment
+        class FakeUSB:
+            def __init__(self,*args,**kwargs):
+                self.c3={address:value for address,(value,_) in PREFLIGHT.items()}
+                self.closed=False
+                self.calls=[]
+                self.da=[[0]*150 for _ in range(8)]
+                self.da[0][0]=1
+                self.da[0][0x16]=0
+                self.da[0][0x17]=50
+                self.da[0][0x18]=0
+                self.da[0][0x0F]=0xFFFFFFFF
+                for bank in self.da[1:]:
+                    bank[0]=1
+                    bank[0x16]=0
+                    bank[0x17]=50
+                    bank[0x18]=0
+                    bank[0x0F]=0xFFFFFFFF
+            def identify(self):return {"model10":"E5CC-TQX3A","buffer_bytes":217}
+            def status(self):return "0100"
+            def read1(self,kind,address):return self.read(kind,address,1)[0]
+            def read(self,kind,address,count=1):
+                self.calls.append(("READ",kind,address,count))
+                if kind=="C3":
+                    return [self.c3[address+i] for i in range(count)]
+                if kind=="DA":
+                    return self.da[address>>8][address&255:(address&255)+count]
+                raise RuntimeError("Optional device setting not fitted")
+            def close(self):self.closed=True
+            def write1(self,*args):raise AssertionError("READ-ONLY path unexpectedly wrote device")
+            def operation(self,*args):raise AssertionError("READ-ONLY path unexpectedly sent operation")
+        self.ui.choose_mode("connected")
+        self.ui.port.set("COM7")
+        def immediate_job(label, work, callback, write=False):
+            out=work()
+            callback(out)
+        self.ui._job=immediate_job
+        with tempfile.TemporaryDirectory() as folder,\
+             patch.object(app,"SerialClient",FakeUSB),\
+             patch("tkinter.messagebox.showinfo"):
+            self.ui.backdir.set(folder)
+            self.ui.quick_scan()
+            self.assertTrue(self.ui.connected)
+            self.assertIsNotNone(self.ui.session.backup_data)
+            self.assertEqual(len(self.ui.session.backup_data["programmes"]),8)
+            self.assertEqual(self.ui.setup_snapshot["fields"]["C3:0000"],5)
+            self.assertEqual(self.ui.readbook.select(),str(self.ui.t_initial_view))
+            self.assertEqual(self.ui.book.index("current"),1)
+            self.assertTrue(list(Path(folder).glob("*programme-backup*.json")))
+            self.assertTrue(list(Path(folder).glob("*initial-settings*.json")))
+            self.assertEqual(self.ui.session.client.calls[0][0],"READ")
+            self.assertFalse(self.ui.lab_mode)
+    def test_hardware_action_buttons_stay_before_checklist(self):
+        self.ui.choose_mode("connected")
+        self.ui.book.select(self.ui.t_upload)
+        self.ui.review_current_plan()
+        self.assertEqual(self.ui.btn_preview.winfo_manager(),"pack")
+        self.assertEqual(self.ui.btn_stage.winfo_manager(),"pack")
+        self.assertEqual(self.ui.btn_commit.winfo_manager(),"pack")
+        self.assertIn("Not connected",self.ui.upload_blocker.get())
+        self.assertFalse(self.ui.safe_to_stage())
     def test_manual_includes_programme_and_initial_setting_without_website(self):
         self.ui.choose_mode("offline")
         self.ui.progs[0]=Programme(name="120 C ramp / 50 C cool",start="20",finish="rst",
