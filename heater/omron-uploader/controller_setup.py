@@ -75,22 +75,25 @@ def value_text(code, raw):
 
 def read_snapshot(client, identity, preflight=None):
     """Per-address read so unsupported options are shown as unavailable, not zero."""
-    fields, errors = {}, {}
+    fields, errors, changed = {}, {}, {}
     preflight = preflight or {}
     for p in CONFIG:
         key = p["code"]
-        if key in preflight and type(preflight[key]) is int:
-            fields[key] = preflight[key]
-            continue
         type_name, address = key.split(":")
         try:
+            # This is deliberately a FRESH controller read, including the original nine.
+            # USB inspection happened earlier and is not a substitute for this snapshot.
             fields[key] = client.read1(type_name, int(address, 16))
+            old = preflight.get(key)
+            if type(old) is int and old != fields[key]:
+                changed[key] = {"at_inspection":old, "at_setup_read":fields[key]}
         except Exception as exc:
             fields[key] = None
             errors[key] = f"{type(exc).__name__}: {exc}"
     snapshot = dict(schema=SCHEMA, read_utc=datetime.now(timezone.utc).isoformat(),
                     controller={"model10":identity.get("model10",""),"buffer_bytes":identity.get("buffer_bytes")},
-                    fields=fields, errors=errors, scope="Selected C3 and C1 settings only; not a full controller configuration clone.",
+                    fields=fields, errors=errors, changed_since_inspection=changed,
+                    scope="Selected C3 and C1 settings only; not a full controller configuration clone.",
                     warning="All reads only. A stopped controller may still drive MV at RESET. USB success is not heater safety.")
     validate_snapshot(snapshot)
     return snapshot
