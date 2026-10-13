@@ -159,6 +159,9 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - **Next physical check:** Monitor `pgsg` at ramp completion if desired, with USB-only and all other supplies isolated. The controller may have wait/hold settings affecting soak entry when PV never reaches SP. Then **return to `r-r = rst`** and report the observed button direction and display result before unplugging USB.
 - **Sources:** https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf (sections 2-4, 3-3-1, Appendix A output troubleshooting).
 - **Status:** Internal RUN clock/SV ramp PASS; hardware outputs, programme-end action and output-safety functions remain NOT TESTED.
+- **Updated code/docs (committed to `master`):** Main manual commit `dd3e4e391824413c44b820be2b8357b3e4fa41a2`, programming guide commit `75a9378547f1d26c1c728c72efc6e9d17488488d`, simulator commit `cc0ccb4b7300af8b738a5fe1cfcfee3abe0a1efb`. Simulator shows a virtual RST lamp but intentionally does **not** model OUT1/OUT2 since no actual output observation exists. The +1/+5-minute buttons deliberately accelerate its simulated time while the actual USB-powered unit's programme clock advances in real time.
+- **Regression tests:** PASS: JavaScript syntax and tag nesting for all three pages; observed Operation Level order; DOWN from RST → RUN / UP from RST stays RST / expected virtual reverse direction; visual RST status changes; memory power cycle and sample builder. Physical RUN → RESET direction, indicator illumination and soak/end behaviour require new observations.
+
 
 ## 13 October 2026 — USB-only RUN key behaviour (live physical observation)
 
