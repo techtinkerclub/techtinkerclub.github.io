@@ -1,9 +1,9 @@
 """Shared Qt widgets for the portable Omron Studio (no serial I/O)."""
 from __future__ import annotations
-from PySide6.QtCore import QObject, QRunnable, Signal, Qt, QRectF
+from PySide6.QtCore import QObject, QRunnable, Signal, Qt, QRectF, QRect
 from PySide6.QtWidgets import (QFrame, QLabel, QVBoxLayout, QHBoxLayout,
                               QPushButton, QWidget, QComboBox)
-from PySide6.QtGui import QColor, QPainter, QPen, QFont
+from PySide6.QtGui import QColor, QPainter, QPen, QPixmap, QIcon
 import pyqtgraph as pg
 
 BG="#f4f7fb"
@@ -67,7 +67,6 @@ QSpinBox:focus,QDoubleSpinBox:focus { border-color:#278bdd; }
 
 /* Numeric fields and dropdowns share the same outer shell. */
 QFrame#valueField { background:#ffffff; border:1px solid #cbddea; border-radius:8px; }
-QFrame#valueField:focus-within { border-color:#278bdd; }
 QLineEdit#numericEntry { background:#ffffff; border:0; border-radius:0;
  padding:5px 7px; min-height:0; font:600 13px 'Segoe UI'; color:#18334a;
  selection-background-color:#d4e9fb; selection-color:#18334a; }
@@ -109,6 +108,44 @@ QProgressBar::chunk { background:#1584de; border-radius:5px; }
 QScrollArea { border:none; background:transparent; }
 QSplitter::handle { background:#dde9f2; }
 """
+
+
+def control_icon(name,colour="#28618d"):
+    """Consistent vector icons for small controls, independent of system fonts."""
+    pix=QPixmap(20,20)
+    pix.fill(Qt.GlobalColor.transparent)
+    painter=QPainter(pix)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing,True)
+    pen=QPen(QColor(colour),2)
+    pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+    pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+    painter.setPen(pen)
+    if name=="up":
+        painter.drawLine(10,16,10,4)
+        painter.drawLine(10,4,5,9)
+        painter.drawLine(10,4,15,9)
+    elif name=="down":
+        painter.drawLine(10,4,10,16)
+        painter.drawLine(10,16,5,11)
+        painter.drawLine(10,16,15,11)
+    elif name=="chevron-up":
+        painter.drawLine(4,13,10,7)
+        painter.drawLine(10,7,16,13)
+    elif name=="chevron-down":
+        painter.drawLine(4,7,10,13)
+        painter.drawLine(10,13,16,7)
+    elif name=="duplicate":
+        painter.drawRect(QRect(3,3,10,11))
+        painter.fillRect(QRect(7,7,10,11),QColor("#ffffff"))
+        painter.drawRect(QRect(7,7,10,11))
+    elif name=="remove":
+        painter.drawLine(5,5,15,15)
+        painter.drawLine(15,5,5,15)
+    else:
+        painter.end()
+        raise ValueError("Unknown UI icon "+str(name))
+    painter.end()
+    return QIcon(pix)
 
 
 class StudioCombo(QComboBox):
