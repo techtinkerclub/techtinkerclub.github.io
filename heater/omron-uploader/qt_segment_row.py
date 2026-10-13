@@ -5,12 +5,12 @@ emit local changes; they never issue serial commands to the controller.
 """
 from __future__ import annotations
 
-from PySide6.QtCore import Signal,Qt,QRect,QSize
+from PySide6.QtCore import Signal,Qt,QSize
 from PySide6.QtWidgets import (
     QWidget,QFrame,QHBoxLayout,QVBoxLayout,QLabel,QComboBox,QDoubleSpinBox,
     QSpinBox,QAbstractSpinBox,QToolButton,QLineEdit
 )
-from PySide6.QtGui import QIcon,QPixmap,QPainter,QPen,QColor
+from qt_components import StudioCombo,control_icon
 from program_model import Segment
 
 
@@ -38,7 +38,8 @@ class Stepper(QWidget):
         shell.addWidget(header)
 
         strip=QFrame()
-        strip.setObjectName("stepperFrame")
+        strip.setObjectName("valueField")
+        strip.setFixedHeight(38)
         line=QHBoxLayout(strip)
         line.setContentsMargins(0,0,0,0)
         line.setSpacing(0)
@@ -50,22 +51,12 @@ class Stepper(QWidget):
         self.editor.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.editor.setAccessibleName(label)
         self.editor.setToolTip(f"{label}. Type a value or use the up/down arrows.")
-        self.editor.setStyleSheet(
-            "QLineEdit#numericEntry { background:#ffffff; color:#18334a;"
-            "border:0; border-radius:0; padding:5px 7px;"
-            "selection-background-color:#d4e9fb; selection-color:#18334a;"
-            "font:600 13px 'Segoe UI'; }"
-            "QLineEdit#numericEntry:focus {background:#ffffff;color:#18334a;}"
-        )
         line.addWidget(self.editor,1)
 
         units=spin.suffix().strip()
         if units:
             suffix=QLabel(units)
             suffix.setObjectName("numericUnit")
-            suffix.setStyleSheet(
-                "color:#476b85; background:#ffffff; padding:0 4px;"
-                "font:12px 'Segoe UI';")
             line.addWidget(suffix,0)
 
         arrows=QWidget()
@@ -74,13 +65,16 @@ class Stepper(QWidget):
         vert.setSpacing(0)
         self.up=QToolButton()
         self.down=QToolButton()
-        for control,sign,callback in (
-            (self.up,"▲",self.spin.stepUp),(self.down,"▼",self.spin.stepDown)):
+        for control,name,callback in (
+            (self.up,"chevron-up",self.spin.stepUp),
+            (self.down,"chevron-down",self.spin.stepDown)):
             control.setObjectName("spinArrow")
-            control.setText(sign)
+            control.setIcon(control_icon(name))
+            control.setIconSize(QSize(13,13))
             control.setAutoRepeat(True)
-            control.setFixedSize(31,18)
-            control.setToolTip(("Increase" if control is self.up else "Decrease")+" "+label)
+            control.setFixedSize(34,19)
+            control.setAccessibleName(("Increase" if control is self.up else "Decrease")+" "+label)
+            control.setToolTip(control.accessibleName())
             control.clicked.connect(lambda checked=False,fn=callback:fn())
             vert.addWidget(control)
         line.addWidget(arrows)
@@ -142,35 +136,6 @@ class Stepper(QWidget):
                 self.editor.text().strip().replace(",",".") != "-")
 
 
-def _action_icon(name):
-    """Tiny vector-drawn icons, avoiding unsupported Windows Unicode glyphs."""
-    pixmap=QPixmap(20,20)
-    pixmap.fill(Qt.GlobalColor.transparent)
-    painter=QPainter(pixmap)
-    painter.setRenderHint(QPainter.RenderHint.Antialiasing,True)
-    pen=QPen(QColor("#28618d"),2)
-    pen.setCapStyle(Qt.PenCapStyle.RoundCap)
-    pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
-    painter.setPen(pen)
-    if name=="up":
-        painter.drawLine(10,16,10,4)
-        painter.drawLine(10,4,5,9)
-        painter.drawLine(10,4,15,9)
-    elif name=="down":
-        painter.drawLine(10,4,10,16)
-        painter.drawLine(10,16,5,11)
-        painter.drawLine(10,16,15,11)
-    elif name=="duplicate":
-        painter.drawRect(QRect(3,3,10,11))
-        painter.fillRect(QRect(7,7,10,11),QColor("#ffffff"))
-        painter.drawRect(QRect(7,7,10,11))
-    elif name=="remove":
-        painter.drawLine(5,5,15,15)
-        painter.drawLine(15,5,5,15)
-    painter.end()
-    return QIcon(pixmap)
-
-
 class SegmentRow(QFrame):
     changed=Signal()
     move_up=Signal()
@@ -198,11 +163,11 @@ class SegmentRow(QFrame):
         label=QLabel("SEGMENT TYPE")
         label.setObjectName("tiny")
         type_layout.addWidget(label)
-        self.kind=QComboBox()
+        self.kind=StudioCombo()
         self.kind.addItems(["ramp","soak","step"])
         self.kind.setCurrentText(segment.type)
         self.kind.setMinimumWidth(116)
-        self.kind.setMinimumHeight(36)
+        self.kind.setMinimumHeight(38)
         type_layout.addWidget(self.kind)
         outer.addWidget(typebox)
 
@@ -249,7 +214,7 @@ class SegmentRow(QFrame):
         ]:
             b=QToolButton()
             b.setObjectName("rowAction")
-            b.setIcon(_action_icon(symbol))
+            b.setIcon(control_icon(symbol))
             b.setIconSize(QSize(18,18))
             b.setAccessibleName(tip)
             b.setToolTip(tip)
