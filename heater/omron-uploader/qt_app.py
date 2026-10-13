@@ -696,8 +696,15 @@ class Studio(QMainWindow):
                   "configuration_changes":[{"address":k,"value":v} for k,v in sorted(self.draft.items())],
                   "note":"Local offline workspace; not a controller register backup."}
         try:
-            with open(path,"x",encoding="utf-8") as out:
-                json.dump(document,out,indent=2,ensure_ascii=False)
+            # Qt's native Save dialog asks before replacing existing files.
+            # Write atomically so a failed export cannot truncate an old project.
+            from PySide6.QtCore import QSaveFile, QIODevice
+            file=QSaveFile(str(path))
+            if not file.open(QIODevice.OpenModeFlag.WriteOnly):
+                raise OSError(file.errorString())
+            data=json.dumps(document,indent=2,ensure_ascii=False).encode("utf-8")
+            if file.write(data)!=len(data) or not file.commit():
+                raise OSError(file.errorString())
         except Exception as exc:
             self.message("Cannot save local project",str(exc),True);return
         self.feedback.setText("Local offline project saved to "+str(path))
