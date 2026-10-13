@@ -399,6 +399,9 @@ class Studio(QMainWindow):
             actions.addWidget(item)
         actions.addStretch()
         uv.addLayout(actions)
+        self.usb_next_action=text("Connect and take a full backup before writing.")
+        self.usb_next_action.setStyleSheet("color:#a8610f;font-weight:600")
+        uv.addWidget(self.usb_next_action)
         uv.addWidget(text("Only DA programme memory is writable. Initial, PID and communications "
             "changes remain offline drafts. The heater must be isolated.",True))
         self.safety=[]
@@ -1131,6 +1134,31 @@ class Studio(QMainWindow):
         self.btn_read.setEnabled(not self.busy and self.mode=="connected")
         self.btn_disconnect.setEnabled(not self.busy and bool(self.client))
         self.next_button.setEnabled(not self.busy)
+        reasons=[]
+        if self.mode!="connected":
+            reasons.append("Offline mode: use the complete manual keypad table.")
+        elif not connected:
+            reasons.append("Connect to the Omron and read all eight memories in Step 2.")
+        elif session.backup_data is None:
+            reasons.append("Take a fresh verified programme backup.")
+        if connected:
+            if not self.lab:reasons.append("Hardware writes disabled: use the isolated-lab launcher.")
+            if session.mismatches:reasons.append("Preflight values differ from the tested bench configuration.")
+            if self.draft:reasons.append(f"{len(self.draft)} initial/PID setting proposals are not writable via USB.")
+            if self.fail_latched:reasons.append("A write failed: stop and inspect; do not retry blindly.")
+            if self.busy:reasons.append("Communication in progress.")
+            if session.staged is not None and not session.committed:
+                reasons.append("RAM verified: review and use SAVE TO CONTROLLER.")
+            elif session.committed:
+                reasons.append("Save acknowledged: power-cycle USB and verify the receipt in Step 2.")
+            elif not self.preview_stamp:
+                reasons.append("Preview the exact differences before any RAM write.")
+            elif not all(c.isChecked() for c in self.safety):
+                reasons.append("Complete all six safety confirmations.")
+            elif can_stage:
+                reasons.append("Ready for guarded RAM staging (heater power must remain isolated).")
+        self.usb_next_action.setText("NEXT ACTION  ·  "+"  ·  ".join(reasons))
+        self.usb_next_action.setStyleSheet("color:"+("#157952" if can_stage else "#a8610f")+";font-weight:600")
 
     def _controls(self):
         if hasattr(self,"stage_button"):self.refresh_actions()
