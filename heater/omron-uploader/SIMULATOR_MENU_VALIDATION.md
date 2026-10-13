@@ -112,7 +112,8 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - **PID integral time confirmed:** From `1.p`, brief MODE displayed `1.i=233` (user replied 'yep' to expected code/value), corresponding to PID set 1 integral time, 233 seconds. No parameter edits performed.
 - **PID derivative time confirmed:** From `1.i=233`, brief MODE displayed `1.d=40`, PID set 1 derivative time 40 seconds. No edits reported. PID set 1 recorded as P=8 (reported display, decimal unverified), I=233 s, D=40 s.
 - **PID output upper limit confirmed:** From `1.d=40`, brief MODE displayed `1.olh=100`, corresponding to PID set 1 manipulated-variable (MV) upper limit of 100% as defined by Omron H185 §5-10. This is a *control-output percentage limit*, not an electrical current limit or physical safe isolation setting. No change made.
-- **Next validation:** From `1.olh=100`, press MODE once and record the next parameter and value; expected `1.oll` (MV lower limit, documented standard-control default 0.0%). Do not change it. Other PID pages may depend on configuration. Multi-segment navigation remains unverified.
+- **PID output lower limit confirmed:** From `1.olh=100`, brief MODE displayed `1.oll=0`, corresponding to PID set 1 MV lower limit of 0%. P=8 (displayed as reported), I=233 seconds, D=40 seconds, OLH=100%, OLL=0%. None of this establishes safety of physical output at RESET; these are PID set bounds, not independent hardware isolation.
+- **Next validation:** From `1.oll=0`, press MODE once and record the next upper and lower displays, without editing values. Continue mapping PID Setting Level until it loops back to `d.pid=1` (or another observed exit). Multi-segment navigation remains unverified.
 - **Limitations:** USB-only inspection provides no heater-output or restart-interlock qualification.
 
 ## Results
