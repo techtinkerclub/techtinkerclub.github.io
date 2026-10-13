@@ -50,6 +50,14 @@ for old in CONFIG:
         access="documented R/W; application draft only" if old["options"] is not None
                else "documented R/W; review-only in application")
 
+# Correctly expose documented control period as a selectable controller
+# register, including Omron's special negative encodings for sub-second cycles.
+from dataclasses import replace as _replace_metadata
+for _code in ("C3:000A","C3:000B"):
+    if _code in CATALOG:
+        CATALOG[_code]=_replace_metadata(CATALOG[_code],minimum=-2,maximum=99,
+            meaning="SSR output cycle period. Special raw settings -2, -1, 0 mean 0.1, 0.2, 0.5 seconds; 1–99 are whole seconds. Verify controller and SSR thermal/electrical limits.")
+
 # C0 (read-only operating monitors), pp. 3-2..3-3. PV scaling depends on input.
 C0=[
 (0x0000,"Process value","Actual measured process value (PV); engineering scaling depends on input type."),
@@ -457,6 +465,14 @@ def read_inventory(client,identity,progress=None):
             finished+=len(addresses)
             if progress:progress(finished,total)
         except Exception as exc:
+            # A disappearing USB cable is NOT equivalent to an unsupported
+            # optional register. Never recursively probe hundreds of addresses
+            # after a serial timeout or transport failure.
+            message=str(exc).lower()
+            if any(term in message for term in (
+                 "timeout","no response","port is closed","device disconnected",
+                 "serialexception","lost connection","empty 0601")):
+                raise ConnectionError(f"Controller link lost while reading {bank}:{addresses[0]:04X}") from exc
             if len(addresses)==1:
                 k=f"{bank}:{addresses[0]:04X}"
                 fields[k]=None
@@ -507,6 +523,8 @@ def human_value(key,raw):
     param=CATALOG[key]
     signed=signed32(raw)
     if key=="C1:0029":return "Protected password (hidden; read value is not actual password)"
+    if key in ("C3:000A","C3:000B"):
+        return {-2:"0.1 s", -1:"0.2 s",0:"0.5 s"}.get(signed,f"{signed} s")
     if param.options is not None:return param.options.get(signed,f"Unknown option {signed}")
     if param.scale!=1:
         # conditional cases stay raw, even if other controllers offer tenths.
