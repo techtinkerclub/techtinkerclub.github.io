@@ -124,7 +124,13 @@ class TransferTests(unittest.TestCase):
             s.backup(folder)
             self.assertIsNotNone(s.backup_data)
             # A new failed attempt must not leave the prior backup usable.
-            d.blocks[1]=[0]*149
+            original_read=d.read
+            def short_da_read(kind,addr,count=1):
+                data=original_read(kind,addr,count)
+                if kind=="DA" and addr==0x0100:
+                    return data[:-1]  # emulate a 24-register return for a 25-register request
+                return data
+            d.read=short_da_read
             self.assertRaises(ProtocolError,s.backup,folder)
             self.assertIsNone(s.backup_data)
             self.assertIsNone(s.backup_file)
