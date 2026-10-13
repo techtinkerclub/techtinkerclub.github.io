@@ -66,7 +66,7 @@ class SerialClient:
         return {"model10":data[:10].rstrip(),"buffer_bytes":buf}
     def status(self):return self.query("0601")
     def read(self,vtype,addr,count=1):
-        if vtype not in ("DA","C3","C1","C0"):raise ValueError("Variable type not allowlisted")
+        if vtype not in ("DA","C0","C1","C3","C4","C5","C9"):raise ValueError("Variable type not allowlisted for read")
         if not (0<=addr<=0xffff and 1<=count<=25):raise ValueError("Invalid variable range")
         data=self.query(f"0101{vtype}{addr:04X}00{count:04X}")
         if len(data)!=count*8:raise ProtocolError(f"Read count mismatch at {vtype}:{addr:04X} expected {count*8} received {len(data)}")
