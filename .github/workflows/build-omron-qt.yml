@@ -52,7 +52,7 @@ jobs:
             New-Item -ItemType Directory -Force $dir | Out-Null
             $source = Join-Path (Join-Path 'heater' $section) 'index.html'
             $html = Get-Content -Path $source -Raw -Encoding UTF8
-            $html = [regex]::Replace($html, '^---\\r?\\n.*?\\r?\\n---\\r?\\n', '', 'Singleline')
+            $html = [regex]::Replace($html, '^---\r?\n.*?\r?\n---\r?\n', '', 'Singleline')
             [System.IO.File]::WriteAllText((Join-Path (Resolve-Path $dir) 'index.html'), $html, [System.Text.UTF8Encoding]::new($false))
           }
           Compress-Archive -Path portable-qt/* -DestinationPath E5CC-T-Modern-Studio-Windows.zip
