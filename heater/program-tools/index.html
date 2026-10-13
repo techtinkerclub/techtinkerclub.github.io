@@ -210,16 +210,17 @@ function goal(){
  const tr=row=>{
    if(row.section)return '<tr class="goal-group"><th colspan="4" scope="rowgroup">'+esc(row.section)+'</th></tr>';
    const valueDisplay=row.selector
-      ?'<span class="goal-nav">'+esc(row.virtual)+(row.active?' ← selected':'')+'</span>'
+      ?'<span class="goal-nav">'+(row.active?esc(row.virtual)+' ✓':vm.seg==='end'?'—': '—')+'</span>'
       :'<span class="'+(row.pass?'goal-ok':'goal-miss')+'">'+esc(row.virtual)+(row.pass?' ✓':'')+'</span>';
    return '<tr class="'+(row.active?'goal-current':'')+(row.selector?' goal-selector':'')+'"><td>'+esc(row.meaning)+'</td><td><code>'+esc(row.code)+'</code>'+(row.active?' <span class="goal-here">on screen</span>':'')+'</td><td>'+esc(row.target)+'</td><td>'+valueDisplay+'</td></tr>';
  };
  $("goal").innerHTML='<strong>'+esc(b.name)+'</strong> · programme '+slot
    +'<br><span class="badge">'+matched+' / '+checks.length+' values match</span>'
+   +'<p class="tiny muted">Currently selected: <strong><code>d.seg = '+esc(vm.seg)+'</code></strong> — '+(vm.seg==='end'?'<strong>end</strong> means programme-wide settings, not the end of a segment. Select <code>0</code> or <code>1</code> to edit that segment.':'Segment '+esc(vm.seg)+' is selected for editing.')+'</p>'
    +'<p class="tiny muted">Find the <strong>Controller display</strong> code on the upper Omron display. For example, slope is <code>pr</code>, not “slope”. Select each segment using <code>d.seg</code> before editing its settings.</p>'
    +'<div class="scroll goal-scroll"><table class="goal-table"><thead><tr><th scope="col">What it means</th><th scope="col">Controller display</th><th scope="col">Target</th><th scope="col">Virtual</th></tr></thead><tbody>'
    +rows.map(tr).join("")+'</tbody></table></div>'
-   +'<p class="tiny muted"><code>d.seg</code> is a <strong>navigation selector</strong> (shown in italics), not a saved setting. It is deliberately excluded from the match total. Rows highlighted blue correspond to the parameter currently shown by the simulator.</p>'
+   +'<p class="tiny muted">For segment selection rows, <strong>—</strong> means that segment is not currently selected. The current <code>d.seg</code> value is shown above the table. The selector is excluded from the match total. Blue highlighting shows the parameter currently visible on the simulator.</p>'
    +(vm.prg!==slot?'<p class="note">The simulator is currently viewing programme '+esc(vm.prg)+'. Select <code>d.prg = '+esc(slot)+'</code> to edit the programme used for this comparison.</p>':'');
 }
 document.querySelectorAll("[data-key]").forEach(x=>x.addEventListener("click",()=>{push(x.dataset.key,$("holdmode").value==="long");$("holdmode").value="short"}));
