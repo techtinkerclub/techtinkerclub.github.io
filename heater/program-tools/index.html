@@ -50,7 +50,7 @@ permalink: /heater/program-tools/
 <div class="row noprint" style="margin-top:12px"><label for="holdmode">Next key press:</label><select id="holdmode" class="control" style="width:auto"><option value="short">Short</option><option value="long">Hold</option></select><button id="combo" class="btn">MODE + DOWN (RUN/RST)</button></div>
 <p class="note">LEVEL moves Operation → Programme → Adjustment → PID → Operation. Hold LEVEL from Operation to enter Initial Settings and from Initial Settings to return. MODE scrolls displayed parameters, or previous parameter when held. Some real parameters are omitted, so never learn a fixed number of MODE presses from this simulator.</p></div>
 <div class="card"><h3>Run the virtual programme</h3><div class="row noprint"><button class="btn" id="minute">+1 min</button><button class="btn" id="five">+5 min</button><button class="btn" id="reset">RESET</button><span id="elapsed" class="badge">0 min</span></div><div id="simchart" class="plot" style="margin-top:10px"></div><p class="tiny muted">Time advances on button press only. PV remains the assumed starting temperature: this is not a PID, physics or safety simulation.</p></div>
-</div><div><div class="card"><h2>Practice target</h2><p class="tiny muted">Match each plain-English setting to the exact code on the Omron screen. Select a segment with d.seg before editing styp, sp, pr or time. MODE after the final segment parameter returns to d.seg = end (verified for one active segment). On the tested real controller, programme 0 shows al-1 = al-2 = al-3 = 0; the simulator mirrors these read-only values for slot 0. Other slots remain unverified (--). This does not mean alarms are disabled.</p><div id="goal" class="goal"></div><div class="row noprint" style="margin-top:12px"><button class="btn" id="empty">Reset virtual memory</button><button class="btn" id="load">Load for RUN preview</button></div><p class="tiny muted">Load is an explicit shortcut for exploring a completed programme; it does not represent physically programming the device.</p></div>
+</div><div><div class="card"><h2>Practice target</h2><p class="tiny muted">Match each plain-English setting to the exact code on the Omron screen. Select a segment with d.seg before editing styp, sp, pr or time. MODE after the final segment parameter returns to d.seg = end (verified for one active segment). On the tested real controller, programme 0 shows al-1 = al-2 = al-3 = 0; the simulator mirrors these read-only values for slot 0. Other slots remain unverified (--). This does not mean alarms are disabled. PID Setting Level now follows the observed <code>d.pid → 1.p → 1.i → 1.d → 1.olh → 1.oll → 1.aut → d.pid</code> loop when PID set 1 is selected. These PID-1 values are a <strong>read-only example copied from one real controller</strong>; PID editing, other PID sets and masked parameters are not simulated.</p><div id="goal" class="goal"></div><div class="row noprint" style="margin-top:12px"><button class="btn" id="empty">Reset virtual memory</button><button class="btn" id="load">Load for RUN preview</button></div><p class="tiny muted">Load is an explicit shortcut for exploring a completed programme; it does not represent physically programming the device.</p></div>
 <div class="card"><h3>Button history</h3><div id="history" class="history"></div></div><div class="card"><h3>Known limitations</h3><p class="tiny muted">This first simulator covers a restricted parameter subset, approximate PF numeric digit editing, mode navigation, segment editing and virtual setpoint progression. It does not exactly model firmware-specific parameter masking, alarms, autotuning, programme linking/repeats, wait/hold, protected levels or control outputs. Training accuracy must be checked against both installed E5CC-TQX3A5M-000 controllers.</p><a href="https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf" target="_blank" rel="noopener noreferrer">Omron H185 manual ↗</a></div>
 </div></div></section>
 <footer>E5CC-T Programme Studio · No AI or server required once the page is loaded · Pre-commissioning edition</footer>
@@ -118,14 +118,17 @@ $("print").onclick=()=>window.print();
 $("json").onclick=()=>{let str=JSON.stringify({version:1,method:"rate",programmeNumber:slot,programme:cur()},null,2),blob=new Blob([str],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="E5CC-T-programme-"+slot+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 function tab(sim){$("builder").classList.toggle("hidden",sim);$("simulator").classList.toggle("hidden",!sim);$("bt").classList.toggle("on",!sim);$("st").classList.toggle("on",sim);if(sim)goal();location.hash=sim?"simulator":"builder"}
 $("bt").onclick=()=>tab(false);$("st").onclick=()=>tab(true);$("practice").onclick=()=>tab(true);
-/* Simulator subset: real-menu navigation observed on E5CC-T, with unmodelled alarm values shown as read-only --. */
+/* Simulator subset: real-menu navigation measured on one physical E5CC-T.
+   PID-1 values below are a non-editable sample snapshot, not factory defaults
+   guaranteed for every unit or actual PID tuning simulation. */
+const observedPid1=Object.freeze({"1.p":"8","1.i":"233","1.d":"40","1.olh":"100","1.oll":"0","1.aut":"1320"});
 const newProg=()=>({n:8,segments:Array.from({length:32},()=>({type:"ramp",sp:0,rate:0,minutes:0})),pid:1,rpt:0,link:"end"});
 let vm;
-function resetVM(){vm={level:"operation",param:"pv",prg:0,seg:"end",progs:Array.from({length:8},newProg),settings:{"in-t":6,"d-u":"c",cntl:"pid","t-u":"h-m","t-pr":"pr",pru:"m",rtsm:"stop","p-on":"rst",eset:"rst",spmd:"psp"},status:"rst",pv:Number(cur().start)||20,time:0,digit:0,history:[]};showVM()}
+function resetVM(){vm={level:"operation",param:"pv",prg:0,seg:"end",pidSet:1,progs:Array.from({length:8},newProg),settings:{"in-t":6,"d-u":"c",cntl:"pid","t-u":"h-m","t-pr":"pr",pru:"m",rtsm:"stop","p-on":"rst",eset:"rst",spmd:"psp"},status:"rst",pv:Number(cur().start)||20,time:0,digit:0,history:[]};showVM()}
 const prog=()=>vm.progs[vm.prg];
 function simReady(){let x=vm.settings,p=prog();return x["t-pr"]==="pr"&&x["t-u"]==="h-m"&&x.pru==="m"&&x.rtsm==="stop"&&x.spmd==="psp"&&p.rpt===0&&p.link==="end"}
 const minTime=n=>{n=Math.min(5999,Math.max(0,Number(n)||0));return Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0")};
-function keys(){let x=vm.level==="operation"?["pv","r-r"]:vm.level==="initial"?["in-t","d-u","cntl","t-u","t-pr","pru","rtsm","p-on","eset"]:vm.level==="adjustment"?["l.adj","spmd"]:vm.level==="pid"?["d.pid"]:["d.prg","s-no","d.seg"];
+function keys(){let x=vm.level==="operation"?["pv","r-r"]:vm.level==="initial"?["in-t","d-u","cntl","t-u","t-pr","pru","rtsm","p-on","eset"]:vm.level==="adjustment"?["l.adj","spmd"]:vm.level==="pid"?["d.pid",...(vm.pidSet===1?Object.keys(observedPid1):[])]:["d.prg","s-no","d.seg"];
  if(vm.level==="program"&&vm.seg!=="end"){let s=prog().segments[vm.seg];x.push("styp");if(s.type==="ramp")x.push("sp","pr");if(s.type==="soak")x.push("time");if(s.type==="step")x.push("sp")}
  if(vm.level==="program"&&vm.seg==="end")x.push("pid","al-1","al-2","al-3","rpt","link");return x}
 function value(p){
@@ -133,7 +136,7 @@ function value(p){
  if(p==="pv")return vm.status==="rst"?"rst":setpoint();
  if(p==="r-r")return vm.status;if(p==="d.prg")return vm.prg;if(p==="s-no")return g.n;if(p==="d.seg")return vm.seg;
  if(p==="styp")return s?.type;if(p==="sp")return s?.sp;if(p==="pr")return s?.rate;if(p==="time")return minTime(s?.minutes);
- if(p==="pid"||p==="d.pid")return g.pid;if(/^al-[123]$/.test(p))return vm.prg===0?0:"--";if(p==="rpt")return g.rpt;if(p==="link")return g.link;
+ if(p==="pid")return g.pid;if(p==="d.pid")return vm.pidSet;if(Object.hasOwn(observedPid1,p))return vm.pidSet===1?observedPid1[p]:"--";if(/^al-[123]$/.test(p))return vm.prg===0?0:"--";if(p==="rpt")return g.rpt;if(p==="link")return g.link;
  if(p==="l.adj")return "--";return vm.settings[p]??"--";
 }
 function setpoint(){
@@ -147,7 +150,7 @@ function history(x){vm.history.push(x);if(vm.history.length>100)vm.history.shift
 const choose=(arr,old,d)=>{let idx=arr.indexOf(String(old));return arr[(Math.max(0,idx)+d+arr.length)%arr.length]};
 function change(d){
  let p=vm.param,g=prog(),s=vm.seg==="end"?null:g.segments[vm.seg],mult=Math.pow(10,vm.digit);
- if(p==="pv"||p==="l.adj")return;
+ if(p==="pv"||p==="l.adj"||Object.hasOwn(observedPid1,p))return;
  if(p==="r-r"){vm.status=d>0?"run":"rst";vm.time=0;return}
  if(p==="d.prg"){vm.prg=Math.max(0,Math.min(7,vm.prg+d));vm.seg="end";return}
  if(p==="s-no"){g.n=Math.max(1,Math.min(32,g.n+d*mult));if(vm.seg!=="end"&&vm.seg>=g.n)vm.seg="end";return}
@@ -156,7 +159,8 @@ function change(d){
  if(p==="sp"&&s){s.sp=Math.max(-20,Math.min(500,Math.round((s.sp+d*.1*mult)*10)/10));return}
  if(p==="pr"&&s){s.rate=Math.max(0,Math.min(9999,s.rate+d*mult));return}
  if(p==="time"&&s){s.minutes=Math.max(0,Math.min(5999,s.minutes+d*[1,10,60,600][vm.digit%4]));return}
- if(p==="pid"||p==="d.pid"){g.pid=Math.max(0,Math.min(8,g.pid+d));return}
+ if(p==="pid"){g.pid=Math.max(1,Math.min(8,g.pid+d));return}
+ if(p==="d.pid"){vm.pidSet=Math.max(1,Math.min(8,vm.pidSet+d));return}
  if(p==="rpt"){g.rpt=Math.max(0,Math.min(9999,g.rpt+d*mult));return}
  if(p==="link"){g.link=choose(["end","0","1","2","3","4","5","6","7"],g.link,d);return}
  let opts={"in-t":["5","6"],"d-u":["c","f"],cntl:["pid","onof"],"t-u":["h-m","m-s"],"t-pr":["time","pr"],pru:["m","h"],rtsm:["stop","fsp"],"p-on":["rst","cont","run","manu"],eset:["rst","cont","fsp"],spmd:["psp","fsp"]};
