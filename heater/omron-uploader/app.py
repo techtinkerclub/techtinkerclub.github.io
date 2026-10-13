@@ -1066,13 +1066,18 @@ class Window:
     except (OSError,ValueError) as exc:messagebox.showerror("Export incomplete",str(exc))
 
  def _upload(self):
-    panel,body=self.card(self.t_upload,"Controlled RAM upload — isolated hardware bench only");panel.pack(fill="both",expand=True,padx=10,pady=10)
+    panel,body=self.card(self.t_upload,"Step 5 — Review, transfer or print manual instructions");panel.pack(fill="both",expand=True,padx=10,pady=10)
     self.lab_info=tk.StringVar(value="PROGRAMME WRITES LOCKED — READ-ONLY LAUNCHER" if not self.lab_mode else "ISOLATED LAB PROGRAMME TRANSFER — EXPERIMENTAL")
     tk.Label(body,textvariable=self.lab_info,bg="#fff4e6",fg="#8e461c",font=("Segoe UI",11,"bold"),padx=10,pady=8).pack(fill="x")
     self.review_note=tk.StringVar(value="Choose a programme in Step 3 and review any initial changes in Step 4.")
     tk.Label(body,textvariable=self.review_note,bg=WHITE,fg=INK,justify="left",
              wraplength=980,font=("Segoe UI",11,"bold"),padx=7,pady=12).pack(fill="x")
-    self.b(body,"GENERATE COMPLETE OFFLINE MANUAL ENTRY SHEET",self.entry_sheet,True).pack(anchor="w",pady=(0,7))
+    self.review_changes=scrolledtext.ScrolledText(body,height=5,wrap="word",font=("Segoe UI",10),
+             bg="#f5f9fc",fg=INK,relief="flat")
+    self.review_changes.pack(fill="x",pady=(0,9))
+    self.review_changes.insert("1.0","No initial setting changes proposed.")
+    self.review_changes.configure(state="disabled")
+    self.b(body,"GENERATE COMPLETE MANUAL PROGRAMMING SHEET",self.entry_sheet,True).pack(anchor="w",pady=(0,7))
     self.message(body,"Connected: preview the intended changes, then (lab-only) stage and verify the selected programme. Offline: generate all front-panel programming steps. Initial configuration changes are included in the manual sheet; USB writing of C3/C1 settings requires separate hardware validation and is not enabled yet.")
     self.lab_section=tk.Frame(body,bg=WHITE)
     self.lab_section.pack(fill="x")
@@ -1126,6 +1131,23 @@ class Window:
     else:
         mode+="\nNo initial configuration changes proposed."
     self.review_note.set(overview+"\n"+mode)
+    lines=[]
+    if self.setup_draft:
+        lines.append("INITIAL SETTINGS PROPOSED IN STEP 4 — NOT APPLIED TO THE CONTROLLER:")
+        for code,new_value in sorted(self.setup_draft.items()):
+            meta=BY_CODE[code]
+            old_raw=self.setup_snapshot["fields"].get(code) if self.setup_snapshot else None
+            existing=value_text(code,old_raw) if old_raw is not None else "unknown (offline)"
+            lines.append(f"  {meta['name']} / {meta['menu']}: {existing}  →  {meta['options'][new_value]}")
+        lines.append("These changes will be included in the manual guide. Hardware writes remain locked.")
+    else:
+        lines.append("INITIAL SETTINGS: No changes proposed.")
+        if self.connection_mode.get()=="connected":
+            lines.append("The currently read configuration will be checked again before any programme transfer.")
+    self.review_changes.configure(state="normal")
+    self.review_changes.delete("1.0","end")
+    self.review_changes.insert("1.0","\n".join(lines))
+    self.review_changes.configure(state="disabled")
     if self.connection_mode.get()=="offline":
         self.lab_info.set("OFFLINE MANUAL MODE — NO DEVICE WRITES")
         self.lab_section.pack_forget()
