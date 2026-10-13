@@ -8,6 +8,25 @@ permalink: /heater/program-tools/
 <style>
 :root{font:14px/1.55 Inter,"Segoe UI",Arial,sans-serif;background:#edf3f8;color:#243b52}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}a{color:#135d98}.wrap{max-width:1230px;margin:auto;padding:22px}header{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}h1{margin:5px 0;font-size:29px}h2{margin:0 0 13px;font-size:20px}h3{margin:0 0 8px}.muted{color:#617b93}.tiny{font-size:12px}.kicker{color:#577893;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px}.card{background:white;border:1px solid #d9e5ef;border-radius:15px;padding:19px;margin:14px 0}.columns{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(315px,.8fr);gap:16px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.spread{justify-content:space-between}.tabs{display:flex;gap:8px;margin:17px 0}.btn,.tabs button{background:#e8f2f9;color:#155b90;border:1px solid #bdd3e3;border-radius:9px;padding:9px 12px;font-weight:750;font-size:13px}.btn.primary,.tabs button.on{background:#17639a;color:white;border-color:#17639a}.btn.danger{color:#a64d36;background:#fff4ed;border-color:#eecbb9}.btn:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}.warn{background:#fff7e8;border:1px solid #e8cea3;border-radius:10px;padding:12px 15px;color:#83591f;font-size:12px;line-height:1.6;margin:15px 0}.good{background:#ecf9f2;color:#28634b;padding:9px 11px;border-radius:8px;font-size:12px}.note{border-left:3px solid #5897c7;background:#f0f7fc;color:#54718a;padding:9px 13px;font-size:12px;margin:12px 0;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{display:flex;flex-direction:column;gap:4px;min-width:0}.field label{font-size:12px;color:#496b87;font-weight:750}.field input,.field select,select.control{width:100%;min-width:0;padding:9px;border:1px solid #bcd0e0;border-radius:8px;background:white;color:#283e53}.segment{border:1px solid #dde8f0;padding:12px;border-radius:11px;margin:10px 0;background:#fbfdff}.segment .row{justify-content:space-between;margin-bottom:10px}.segment .grid{grid-template-columns:repeat(3,minmax(0,1fr))}.mini{font-size:11px;padding:5px 8px}.plot{border:1px solid #dbe7f0;border-radius:10px;padding:6px;background:white}.plot svg{display:block;width:100%;height:auto}table{border-collapse:collapse;width:100%;font-size:12px}th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid #e1eaf1}th{background:#f3f8fc}code{background:#e8f1f8;border-radius:5px;padding:2px 5px;font-weight:800;color:#155d93}.scroll{overflow-x:auto}.badge{background:#e6f2fb;border-radius:15px;padding:5px 9px;font-size:11px;font-weight:800;color:#2b658d}.device{max-width:470px;margin:0 auto;background:#28333c;border:10px solid #161e24;border-radius:25px;color:#f4f5f6;padding:15px;box-shadow:0 12px 24px #13253336}.brand{display:flex;justify-content:space-between;font-weight:850}.lcd{background:#111a1f;border:2px solid #50616b;border-radius:10px;margin:14px 0;padding:14px 16px}.lcdrow{display:flex;justify-content:space-between;align-items:center}.lcdrow span{color:#899da8;font-size:12px}.digits{color:#ff7170;font:bold 32px "Courier New",monospace;letter-spacing:2px;text-shadow:0 0 8px #db484755}.digits.green{color:#a7e7ad;text-shadow:0 0 9px #4fc36b55}.keys{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.keys button{min-width:0;background:#43525d;border:2px solid #81919b;border-radius:8px;color:white;min-height:57px;padding:5px 1px}.keys button:active{background:#678096}.keys svg{width:29px;height:20px;fill:none;stroke:white;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;display:block;margin:auto}.keys small{display:block;font-size:9px;margin-top:3px}.devicefoot{text-align:center;color:#afc0cc;font-size:11px;margin-top:9px}.goal{background:#f3f9fc;border:1px solid #d6e6f0;padding:11px;border-radius:10px}.history{font:11px/1.65 monospace;max-height:140px;overflow:auto;background:#f5f8fb;padding:10px;border-radius:8px}.row p{margin:0}footer{font-size:11px;color:#71869a;text-align:center;padding:22px}
 @media(max-width:850px){.columns{grid-template-columns:1fr}.wrap{padding:12px}}@media(max-width:470px){.card{padding:14px}.segment .grid{grid-template-columns:repeat(2,minmax(0,1fr))}.digits{font-size:26px}.tabs button{flex:1}}@media print{body{background:white}.noprint,header a,#simulator,.tabs{display:none!important}.columns{display:block}.card{box-shadow:none;break-inside:avoid}.segment{break-inside:avoid}}
+
+/* Programme practice: meaningful labels, literal Omron display codes, and segment navigation. */
+.goal-scroll{margin-top:12px}
+.goal-table{table-layout:fixed;width:100%;font-size:12px}
+.goal-table th:nth-child(1),.goal-table td:nth-child(1){width:35%}
+.goal-table th:nth-child(2),.goal-table td:nth-child(2){width:27%}
+.goal-table th:nth-child(3),.goal-table td:nth-child(3){width:17%}
+.goal-table th:nth-child(4),.goal-table td:nth-child(4){width:21%}
+.goal-table th,.goal-table td{padding:9px 7px;overflow-wrap:break-word}
+.goal-table td:nth-child(2) code{font-size:12px;white-space:nowrap}
+.goal-group th{background:#e1edf7;color:#23597e;padding:10px 8px;text-align:left;border-top:2px solid #c6dae9}
+.goal-selector td{background:#f8fbfe;color:#567087;font-style:italic}
+.goal-selector code{font-style:normal}
+.goal-current td,.goal-selector.goal-current td{background:#d9efff;color:#174f7e}
+.goal-here{font-size:10px;color:#17679b;font-weight:800;white-space:nowrap}
+.goal-ok{color:#247552;font-weight:700}
+.goal-miss{color:#9f5d2c;font-weight:700}
+.goal-nav{color:#54758c}
+@media(max-width:470px){.goal-table{font-size:11px}.goal-table th,.goal-table td{padding:8px 5px}.goal-table th:nth-child(1),.goal-table td:nth-child(1){width:34%}.goal-table th:nth-child(2),.goal-table td:nth-child(2){width:28%}.goal-table td:nth-child(2) code{font-size:11px}}
 </style></head><body><div class="wrap">
 <header><div><div class="kicker">Heating Rate Controller · E5CC-T</div><h1>Programme Studio</h1><div class="muted">Build a heating programme, then practise entering it using a virtual Omron front panel.</div></div><a href="../" class="btn">← Operator manual</a></header>
 <div class="warn"><strong>Pre-commissioning training software, not a real controller.</strong> These graphs show the commanded setpoint, not measured PV or heater behaviour. This simulator intentionally models only the documented common settings; protection, alarms, PID, wait/hold, and several special functions are not reproduced. Check actual controller screens and complete the independent electrical safety commissioning before live use.</div>
@@ -31,7 +50,7 @@ permalink: /heater/program-tools/
 <div class="row noprint" style="margin-top:12px"><label for="holdmode">Next key press:</label><select id="holdmode" class="control" style="width:auto"><option value="short">Short</option><option value="long">Hold</option></select><button id="combo" class="btn">MODE + DOWN (RUN/RST)</button></div>
 <p class="note">LEVEL moves Operation → Programme → Adjustment → PID → Operation. Hold LEVEL from Operation to enter Initial Settings and from Initial Settings to return. MODE scrolls displayed parameters, or previous parameter when held. Some real parameters are omitted, so never learn a fixed number of MODE presses from this simulator.</p></div>
 <div class="card"><h3>Run the virtual programme</h3><div class="row noprint"><button class="btn" id="minute">+1 min</button><button class="btn" id="five">+5 min</button><button class="btn" id="reset">RESET</button><span id="elapsed" class="badge">0 min</span></div><div id="simchart" class="plot" style="margin-top:10px"></div><p class="tiny muted">Time advances on button press only. PV remains the assumed starting temperature: this is not a PID, physics or safety simulation.</p></div>
-</div><div><div class="card"><h2>Practice target</h2><p class="tiny muted">The builder is your goal. The simulator has its own memory, initially blank. Change its settings using the five buttons and compare values below.</p><div id="goal" class="goal"></div><div class="row noprint" style="margin-top:12px"><button class="btn" id="empty">Reset virtual memory</button><button class="btn" id="load">Load for RUN preview</button></div><p class="tiny muted">Load is an explicit shortcut for exploring a completed programme; it does not represent physically programming the device.</p></div>
+</div><div><div class="card"><h2>Practice target</h2><p class="tiny muted">Match each plain-English setting to the exact code on the Omron screen. Select a segment with d.seg before editing styp, sp, pr or time.</p><div id="goal" class="goal"></div><div class="row noprint" style="margin-top:12px"><button class="btn" id="empty">Reset virtual memory</button><button class="btn" id="load">Load for RUN preview</button></div><p class="tiny muted">Load is an explicit shortcut for exploring a completed programme; it does not represent physically programming the device.</p></div>
 <div class="card"><h3>Button history</h3><div id="history" class="history"></div></div><div class="card"><h3>Known limitations</h3><p class="tiny muted">This first simulator covers a restricted parameter subset, approximate PF numeric digit editing, mode navigation, segment editing and virtual setpoint progression. It does not exactly model firmware-specific parameter masking, alarms, autotuning, programme linking/repeats, wait/hold, protected levels or control outputs. Training accuracy must be checked against both installed E5CC-TQX3A5M-000 controllers.</p><a href="https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf" target="_blank" rel="noopener noreferrer">Omron H185 manual ↗</a></div>
 </div></div></section>
 <footer>E5CC-T Programme Studio · No AI or server required once the page is loaded · Pre-commissioning edition</footer>
@@ -161,10 +180,47 @@ function showVM(){
  $("history").innerHTML=vm.history.slice(-14).map(esc).join("<br>")||"No keys pressed yet.";goal();
 }
 function goal(){
- if(!vm)return;let b=cur(),g=vm.progs[slot],checks=[["d.prg",slot,vm.prg],["s-no",b.steps.length,g.n]];
- b.steps.forEach((s,i)=>{checks.push(["seg "+i+" type",s.type,g.segments[i].type]);if(s.type!=="soak")checks.push(["seg "+i+" SP",s.sp,g.segments[i].sp]);if(s.type==="ramp")checks.push(["seg "+i+" slope",s.rate,g.segments[i].rate]);if(s.type==="soak")checks.push(["seg "+i+" time",minTime(s.minutes),minTime(g.segments[i].minutes)])});
- checks.push(["rpt",0,g.rpt],["link","end",g.link]);let good=checks.filter(x=>String(x[1])===String(x[2])).length;
- $("goal").innerHTML='<strong>'+esc(b.name)+'</strong> · programme '+slot+'<br><span class="badge">'+good+' / '+checks.length+' values match</span><div class="scroll" style="margin-top:10px"><table><tr><th>Parameter</th><th>Target</th><th>Virtual</th></tr>'+checks.map(x=>'<tr><td>'+esc(x[0])+'</td><td>'+esc(x[1])+'</td><td style="color:'+(String(x[1])===String(x[2])?"#287654":"#a25f2e")+'">'+esc(x[2])+(String(x[1])===String(x[2])?" ✓":"")+'</td></tr>').join("")+'</table></div>';
+ if(!vm)return;
+ const b=cur(),g=vm.progs[slot],checks=[],rows=[];
+ const push=(meaning,code,target,virtual,segment=null)=>{
+   const pass=String(target)===String(virtual);
+   const active=vm.level==="program"&&vm.param===code&&(segment===null||vm.seg===segment);
+   checks.push(pass);
+   rows.push({meaning,code,target,virtual,pass,active,selector:false});
+ };
+ const selectSegment=i=>{
+   const active=vm.level==="program"&&vm.param==="d.seg"&&vm.seg===i;
+   rows.push({meaning:"Select segment "+i,code:"d.seg",target:i,virtual:vm.seg,active,selector:true});
+ };
+ const section=(label)=>rows.push({section:label});
+ push("Programme number","d.prg",slot,vm.prg);
+ push("Number of segments","s-no",b.steps.length,g.n);
+ b.steps.forEach((seg,i)=>{
+   section("Segment "+i+" · "+seg.type.toUpperCase());
+   selectSegment(i);
+   push("Segment type","styp",seg.type,g.segments[i].type,i);
+   if(seg.type!=="soak")push("Target setpoint (°C)","sp",seg.sp,g.segments[i].sp,i);
+   if(seg.type==="ramp")push("Ramp slope (°C/min)","pr",seg.rate,g.segments[i].rate,i);
+   if(seg.type==="soak")push("Hold duration (h.mm)","time",minTime(seg.minutes),minTime(g.segments[i].minutes),i);
+ });
+ section("Programme completion");
+ push("Repetitions","rpt",0,g.rpt);
+ push("Link destination","link","end",g.link);
+ const matched=checks.filter(Boolean).length;
+ const tr=row=>{
+   if(row.section)return '<tr class="goal-group"><th colspan="4" scope="rowgroup">'+esc(row.section)+'</th></tr>';
+   const valueDisplay=row.selector
+      ?'<span class="goal-nav">'+esc(row.virtual)+(row.active?' ← selected':'')+'</span>'
+      :'<span class="'+(row.pass?'goal-ok':'goal-miss')+'">'+esc(row.virtual)+(row.pass?' ✓':'')+'</span>';
+   return '<tr class="'+(row.active?'goal-current':'')+(row.selector?' goal-selector':'')+'"><td>'+esc(row.meaning)+'</td><td><code>'+esc(row.code)+'</code>'+(row.active?' <span class="goal-here">on screen</span>':'')+'</td><td>'+esc(row.target)+'</td><td>'+valueDisplay+'</td></tr>';
+ };
+ $("goal").innerHTML='<strong>'+esc(b.name)+'</strong> · programme '+slot
+   +'<br><span class="badge">'+matched+' / '+checks.length+' values match</span>'
+   +'<p class="tiny muted">Find the <strong>Controller display</strong> code on the upper Omron display. For example, slope is <code>pr</code>, not “slope”. Select each segment using <code>d.seg</code> before editing its settings.</p>'
+   +'<div class="scroll goal-scroll"><table class="goal-table"><thead><tr><th scope="col">What it means</th><th scope="col">Controller display</th><th scope="col">Target</th><th scope="col">Virtual</th></tr></thead><tbody>'
+   +rows.map(tr).join("")+'</tbody></table></div>'
+   +'<p class="tiny muted"><code>d.seg</code> is a <strong>navigation selector</strong> (shown in italics), not a saved setting. It is deliberately excluded from the match total. Rows highlighted blue correspond to the parameter currently shown by the simulator.</p>'
+   +(vm.prg!==slot?'<p class="note">The simulator is currently viewing programme '+esc(vm.prg)+'. Select <code>d.prg = '+esc(slot)+'</code> to edit the programme used for this comparison.</p>':'');
 }
 document.querySelectorAll("[data-key]").forEach(x=>x.addEventListener("click",()=>{push(x.dataset.key,$("holdmode").value==="long");$("holdmode").value="short"}));
 $("combo").onclick=()=>{vm.status=vm.status==="run"?"rst":"run";vm.time=0;history("MODE+DOWN → "+vm.status);showVM()};
