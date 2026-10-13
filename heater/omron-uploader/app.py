@@ -1412,15 +1412,15 @@ class Window:
     code=selection[0]
     p=FULL_CATALOG[code]
     original=self.full_snapshot["fields"][code]
-    content=(f"{p.name}\\n{code}  ·  H186 {p.manual_page}\\n\\n"
-             f"{p.meaning}\\n\\n"
+    content=(f"{p.name}\n{code}  ·  H186 {p.manual_page}\n\n"
+             f"{p.meaning}\n\n"
              f"Current: {inventory_value(code,original)}"
              f"  [{original:08X}]" if original is not None else
-             f"{p.name}\\n{code}\\n{p.meaning}\\nCURRENT VALUE NOT AVAILABLE")
-    content+=f"\\n\\nAccess: {p.access}"
-    if p.context:content+=f"\\nContext: {p.context}"
+             f"{p.name}\n{code}\n{p.meaning}\nCURRENT VALUE NOT AVAILABLE")
+    content+=f"\n\nAccess: {p.access}"
+    if p.context:content+=f"\nContext: {p.context}"
     if self.full_snapshot["errors"].get(code):
-        content+="\\nRead error: "+self.full_snapshot["errors"][code]
+        content+="\nRead error: "+self.full_snapshot["errors"][code]
     self.inventory_info.set(content)
     if original is None:
         self.inventory_input.configure(state="disabled")
