@@ -94,10 +94,11 @@ class OfflineManualTests(unittest.TestCase):
                  for i in range(w.entry_table.rowCount())]
         self.assertIn("C3:00BD",visible)
         i=visible.index("C3:00BD")
-        self.assertIn("p-on",w.entry_table.item(i,3).text())
-        self.assertIn("RESET",w.entry_table.item(i,2).text().upper()
-                      if "RESET" in w.entry_table.item(i,2).text().upper() else
-                      w.entry_table.item(i,1).text().upper())
+        w.entry_table.selectRow(i)
+        self.assertIn("p-on",w.manual_instructions.toPlainText())
+        self.assertIn("RESET",w.manual_purpose.text().upper()
+                      if "RESET" in w.manual_purpose.text().upper() else
+                      w.manual_value.text().upper())
         w.close()
     def test_bundled_keypad_simulator_is_local_and_optional(self):
         from unittest.mock import patch
@@ -118,11 +119,17 @@ class OfflineManualTests(unittest.TestCase):
         window._render_programme()
         window.show_step(4)
         self.assertEqual(window.apply_tabs.currentIndex(),0)
-        self.assertEqual(window.entry_table.columnCount(),4)
+        self.assertEqual(window.entry_table.columnCount(),2)
         self.assertGreater(window.entry_table.rowCount(),20)
-        headers=[window.entry_table.horizontalHeaderItem(i).text() for i in range(4)]
-        self.assertEqual(headers,["Controller display","Value to set / verify",
-                                  "Meaning","How to enter it"])
+        headers=[window.entry_table.horizontalHeaderItem(i).text() for i in range(2)]
+        self.assertEqual(headers,["Omron display","Value to set / check"])
+        self.assertIn("rst",window.manual_value.text())
+        self.assertIn("MODE",window.manual_instructions.toPlainText())
+        window.manual_phase.setCurrentText("Segment 1 — SOAK")
+        self.assertEqual(window.entry_table.rowCount(),3)
+        window._manual_move(1)
+        self.assertIn("2 of 3",window.manual_position.text())
+        window.manual_phase.setCurrentText("All stages")
         shown=[window.entry_table.item(i,0).text()
                for i in range(window.entry_table.rowCount())]
         self.assertIn("time",shown)
