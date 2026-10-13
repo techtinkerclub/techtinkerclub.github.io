@@ -1,3 +1,11 @@
+## 13 October 2026 — first eight-programme backup attempt and UI fix
+
+- **Live operator observation:** In the existing portable Windows read-only build, operator clicked **READ AND SAVE ALL PROGRAMME MEMORY** while connected on COM7. A timestamped JSON appeared in the selected folder and the app silently jumped from Tab 3 to **Tab 4**. The original success callback contained `self.backupdetail.set(...); self.book.select(self.t_upload)`; this navigation indicates `TransferSession.backup()` returned without throwing, but the original build did **not independently reopen or verify the saved file**. The actual JSON has not been supplied for inspection; do not call this a verified backup yet.
+- **Fixed in source:** `transfer.py` now emits 1–8 block progress, verifies each group contains 150 DA registers, clears any previous backup eligibility before a new attempt, reopens the final JSON and compares its exact contents with the captured 8 × 150 registers plus nine selected C3 values before enabling a successful in-session backup flag.
+- **Fixed in Windows app:** `app.py` shows a progress bar, explicit 8/8 status with the saved path and a **Backup complete — file checked** dialog; remains on **Tab 3**, never auto-enters the Lab transfer tab; failure remains prominent and fail-closed.
+- **Tests:** New tests cover block progress, on-disk content equality, lack of writes, and simulated incomplete block response leaving no valid backup flag; GitHub Windows action `38412666477` passed its `Test protocol and model` step (21 tests). Build artifact confirmation remains separate.
+- **Unrelated open issue:** Current preflight still hard-codes `in-t=6` and `PV Start=1`. Real controller has valid `in-t=5` and `SP Start=0`; **upload remains blocked deliberately** until the application specification and write assumptions are reviewed. No actual write performed.
+
 ## 13 October 2026 — FIRST REAL COM7 READ-ONLY SERIAL CONNECTION (PASS)
 
 - **Physical serial link PASS:** E58-CIFQ2 installed with Windows virtual COM driver, Programme Studio `START_READ_ONLY.cmd` connected using `COM7`. Identity command 0503 returned model prefix `E5CC-TQX3A` (10 chars; model suffix still requires physical nameplate); raw status command 0601 returned `0100`.
