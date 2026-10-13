@@ -970,15 +970,33 @@ class Window:
         self.initial_read_text.delete("1.0","end")
         self.initial_read_text.insert("1.0",setup_report(snapshot))
         self.initial_read_text.configure(state="disabled")
+        # The guided Step 2 saves both the DA programme memory and the
+        # wider C3/C1 snapshot; do not make users discover a second Save screen.
+        save_notice=""
+        if stay_on_read and self.session and self.session.backup_file:
+            from datetime import datetime,timezone
+            stamp=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            folder=self.session.backup_file.parent
+            output=folder/f"E5CC-T-initial-settings-{stamp}.json"
+            try:
+                write_new_json(output,snapshot)
+                save_notice="\nInitial settings snapshot saved and checked:\n"+str(output)+"\n"
+                self.log("Saved detailed read-only controller settings: "+str(output))
+                self.initial_read_text.configure(state="normal")
+                self.initial_read_text.insert("1.0","Saved detailed initial settings: "+str(output)+"\n\n")
+                self.initial_read_text.configure(state="disabled")
+            except (OSError,ValueError) as exc:
+                save_notice="\nINITIAL SETTINGS FILE NOT SAVED: "+str(exc)+"\n"
+                self.log("Initial settings auto-save failed: "+str(exc))
         unavailable=len(snapshot["errors"])
         changed=len(snapshot.get("changed_since_inspection",{}))
         self.log(f"SETUP READ ONLY: {sum(v is not None for v in snapshot['fields'].values())} fresh register reads; {unavailable} unavailable; {changed} changed since inspection; zero writes")
         messagebox.showinfo("Controller configuration read",
                             f"Read {sum(v is not None for v in snapshot['fields'].values())} selected settings.\n"
                             f"{unavailable} optional settings unavailable.\n"
-                            f"{changed} settings changed since initial inspection.\n\n"
-                            "Save this setup snapshot as well as the separate eight-programme backup.\n"
-                            "No values were changed on the Omron.")
+                            f"{changed} settings changed since initial inspection.\n"
+                            +save_notice+
+                            "\nNo values were changed on the Omron.")
     self._job("Read controller setup registers (read only)",work,done)
  def setup_open(self):
     filename=filedialog.askopenfilename(title="Open controller setup snapshot",filetypes=[("E5CC setup JSON","*.json")])
