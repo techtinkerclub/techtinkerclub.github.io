@@ -123,7 +123,8 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 ## Two-segment manual-entry test — 13 October 2026 (in progress)
 
 - User deliberately changed `s-no` from **1 to 2** while the actual selected slot was **`d.prg=0`** (confirmed by user afterward). Thus the modification was applied to Programme 0, not Programme 1. This was identified before editing segment content. Instructed user to restore Programme 0 `s-no=1` first, then select `d.prg=1` and inspect its existing `s-no`. Reversion and programme switch **not yet confirmed**.
-- **Next action:** Confirm Programme 0 `s-no` was restored to 1. Then at `d.prg`, select programme 1; MODE to `s-no`, record its value before editing. No heater RUN.
+- **Programme 1 pre-edit observation:** User reports `s-no=8` after being instructed to select `d.prg=1`. This is eight *active* segments, not proof the programme is empty. No existing segment data has yet been backed up. `s-no=8` recorded before intentional test changes. Programme 0 restoration to `s-no=1` was requested but not explicitly re-confirmed.
+- **Next action:** With external heater supply disconnected, confirm permission to repurpose Programme 1 before reducing `s-no` to 2; original eight active segments and any stored values would no longer all be active. Then inspect selected segments before changing setpoints, times and rates. No RUN.
 - Intended isolated, non-running test profile: Segment 0 ramp to 50 °C at 2 °C/min, Segment 1 soak 15 min (`0.15` with `t-u=h-m`), `rpt=0`, `link=end`, `eset=rst`. No external heater supply; none of these programme values have yet been confirmed entered.
 
 ## Results
