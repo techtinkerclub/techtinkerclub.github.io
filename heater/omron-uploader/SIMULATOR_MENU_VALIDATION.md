@@ -150,6 +150,14 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - **Power-on RESET indication confirmed on real hardware:** After unplugging E58-CIFQ2 USB supply and reconnecting, user verified `prg=1` is retained **and `r-r=rst` appears**. Combined with `p-on=rst` surviving an earlier power cycle, this validates the displayed power-on/reset state for USB setup power. It **does not verify** electrical control output state, restored normal-mains behavior, interrupted RUN recovery, or any independent heater cutoff.
 - **Next validation:** Optionally record the exact `pgsg` format on the real controller. The next meaningful stage is a deliberately authorized programme RUN/timing test **only after separately checking Omron USB setup power limitations and maintaining verified isolation of all mains and external heater DC supplies**. Do not treat a software RESET or an indicated RUN as proof of safe heater output.
 
+## 13 October 2026 — USB-only RUN key behaviour (live physical observation)
+
+- With the E5CC-T powered **only from the E58-CIFQ2 USB setup cable** (normal mains and external heater DC isolated), in Operation Level at **`r-r = rst`**, the user pressed **UP**: `r-r` remained `rst`. Then the user pressed **DOWN**: the real display changed to **`r-r = run`**.
+- **PASS: controller accepts the RUN indication from USB-only setup power**. This does **not** yet show that `prgt` increments, a segment advances, PV/SP tracks, any output works, or that heater power could energise. Omron's USB setup-power limitations still apply.
+- **Key direction corrected:** `r-r = rst` → **DOWN** → `run`. The reverse `run` → **UP** → `rst` is the logical parameter order and now used by the simulator but **has not yet been physically validated**. Do not assume RESET until it appears on the display.
+- **Next physical test:** while USB-only, with the controller currently showing `r-r = run`, use brief MODE presses to locate `prgt`; record the displayed value and whether it increments. Afterwards verify a deliberate return to `r-r = rst` before unplugging.
+- **Simulator / guide:** fixed the RUN/RESET arrow orientation in the virtual keypad and updated the USB-only and normal operating procedures. User must continue maintaining electrical isolation throughout the trial.
+
 ## 13 October 2026 — documentation and simulator consolidation
 
 **Next USB-only trial procedure documented:** The programming guide now includes [USB-only RUN indication check](https://techtinker.club/heater/omron-programming/#usbtrial) which explicitly requires controller terminal power and heater DC isolated, observes whether `r-r=run` and `prgt` change, and returns to `rst`. H185 also warns against switching the normal controller supply while the USB cable is connected. No physical RUN check yet; this trial cannot verify physical control outputs.
