@@ -1226,6 +1226,241 @@ class Window:
                             f"JSON: {filename}\nText report: {textpath}\n\nNo controller writes.")
     except (OSError,ValueError) as exc:messagebox.showerror("Export incomplete",str(exc))
 
+ def _inventory_ui(self):
+    """Comprehensive read-only catalogue shared by Step 2 and Step 4.
+    Hardware configuration edits remain LOCAL DRAFTS until their own verified
+    communication-write procedures have been separately commissioned.
+    """
+    page=tk.Frame(self.t_inventory,bg=BG,padx=14,pady=12)
+    page.pack(fill="both",expand=True)
+    tk.Label(page,text="Complete controller parameter inventory",bg=BG,fg=INK,
+             font=("Segoe UI",17,"bold")).pack(anchor="w")
+    tk.Label(page,text="Documented C0/C1/C3/C4/C5/C9 registers, including all eight PID sets. "
+             "The existing DA programme backup is separate. Optional model features may be unavailable.",
+             bg=BG,fg="#526f84",font=("Segoe UI",10),
+             wraplength=1010,justify="left").pack(anchor="w",pady=(7,12))
+    bar=tk.Frame(page,bg=BG);bar.pack(fill="x",pady=6)
+    self.b(bar,"READ ALL DOCUMENTED PARAMETERS (no writes)",self.inventory_read,True).pack(side="left",padx=(0,8))
+    self.b(bar,"Open saved inventory",self.inventory_open).pack(side="left",padx=7)
+    self.b(bar,"Export readable report",self.inventory_export).pack(side="left",padx=7)
+    self.inventory_progress=tk.StringVar(value="No extended inventory loaded; use Connect + Read Everything in Step 2.")
+    tk.Label(page,textvariable=self.inventory_progress,bg=BG,fg=BLUE,
+             font=("Segoe UI",10,"bold"),wraplength=1100,justify="left").pack(fill="x",pady=8)
+    self.inventory_report=scrolledtext.ScrolledText(page,font=("Consolas",10),wrap="word",
+                         height=22,bg=WHITE,fg=INK,relief="flat")
+    self.inventory_report.pack(fill="both",expand=True)
+    self.inventory_report.insert("1.0","A documented register list is built in. "
+      "Select CONNECT + READ EVERYTHING to capture actual values from one E5CC-T.")
+    self.inventory_report.configure(state="disabled")
+    # Full registered parameter editor, with search, grouping, old values,
+    # numerical/enum draft entry, explanations and risk/restriction labels.
+    area=tk.Frame(self.t_setup_all,bg=BG,padx=12,pady=12)
+    area.pack(fill="both",expand=True)
+    toolbar=tk.Frame(area,bg=BG);toolbar.pack(fill="x",pady=(0,9))
+    tk.Label(toolbar,text="Group",bg=BG,fg=INK).pack(side="left")
+    self.inventory_group=tk.StringVar(value="All groups")
+    self.inventory_group_box=ttk.Combobox(toolbar,textvariable=self.inventory_group,
+        values=["All groups"]+inventory_groups(),width=33,state="readonly")
+    self.inventory_group_box.pack(side="left",padx=(7,15))
+    tk.Label(toolbar,text="Search",bg=BG,fg=INK).pack(side="left")
+    self.inventory_query=tk.StringVar()
+    ttk.Entry(toolbar,textvariable=self.inventory_query,width=36).pack(side="left",padx=7)
+    self.inventory_group.trace_add("write",lambda *_:self.inventory_refresh())
+    self.inventory_query.trace_add("write",lambda *_:self.inventory_refresh())
+    self.b(toolbar,"Clear draft",self.inventory_clear).pack(side="right",padx=6)
+    self.b(toolbar,"Export change report",self.inventory_export_changes).pack(side="right",padx=6)
+    self.inventory_status=tk.StringVar(value="No controller inventory read. Step 2 reads actual values.")
+    tk.Label(area,textvariable=self.inventory_status,bg=BG,fg="#365d79",
+             font=("Segoe UI",10,"bold"),anchor="w").pack(fill="x",pady=(0,7))
+    content=tk.Frame(area,bg=BG);content.pack(fill="both",expand=True)
+    tbl=tk.Frame(content,bg=WHITE);tbl.pack(side="left",fill="both",expand=True)
+    self.inventory_tree=ttk.Treeview(tbl,
+        columns=("group","name","actual","proposed"),show="headings",selectmode="browse")
+    for code,label,width in [("group","Group",160),("name","Setting",250),
+                             ("actual","Read from controller",180),("proposed","Proposed change",190)]:
+        self.inventory_tree.heading(code,text=label)
+        self.inventory_tree.column(code,width=width,stretch=True)
+    self.inventory_tree.pack(side="left",fill="both",expand=True)
+    ys=ttk.Scrollbar(tbl,orient="vertical",command=self.inventory_tree.yview)
+    ys.pack(side="right",fill="y");self.inventory_tree.configure(yscrollcommand=ys.set)
+    self.inventory_tree.bind("<<TreeviewSelect>>",lambda _:self.inventory_select())
+    right=tk.Frame(content,bg="#f1f7fb",padx=14,pady=14,width=310)
+    right.pack(side="right",fill="y",padx=(10,0));right.pack_propagate(False)
+    tk.Label(right,text="SETTING DETAILS",bg="#f1f7fb",fg=BLUE,
+             font=("Segoe UI",10,"bold")).pack(anchor="w")
+    self.inventory_info=tk.StringVar(value="Select any parameter for a plain-English explanation, "
+                                             "units, H186 page and capability.")
+    tk.Label(right,textvariable=self.inventory_info,wraplength=275,justify="left",
+             bg="#f1f7fb",fg=INK).pack(anchor="w",pady=(12,13))
+    tk.Label(right,text="NEW VALUE (LOCAL DRAFT)",bg="#f1f7fb",fg=BLUE,
+             font=("Segoe UI",10,"bold")).pack(anchor="w")
+    self.inventory_new=tk.StringVar()
+    self.inventory_input=ttk.Entry(right,textvariable=self.inventory_new,width=28)
+    self.inventory_input.pack(fill="x",pady=8)
+    self.inventory_options_box=ttk.Combobox(right,textvariable=self.inventory_new,
+                                           state="readonly",width=33)
+    self.inventory_options_box.pack(fill="x",pady=8)
+    self.inventory_options_box.pack_forget()
+    self.b(right,"ADD TO STEP 5 REVIEW",self.inventory_propose,True).pack(anchor="w",pady=7)
+    tk.Label(right,text="Numerical proposals are validated against the documented raw register "
+             "range and precision. Some values depend on other settings or fitted options. "
+             "NO C0/C1/C3/C4/C5/C9 USB WRITES ARE CURRENTLY ENABLED.",
+             wraplength=275,justify="left",bg="#f1f7fb",fg=RED).pack(anchor="w",pady=14)
+    self.inventory_refresh()
+
+ def inventory_read(self):
+    if not self.session or not self.connected or self.busy:
+        messagebox.showwarning("Connect first","Step 2 must identify the physical Omron before the extended read.")
+        return
+    def work():
+        return read_inventory(self.client,self.session.info,
+                 progress=lambda done,total:self.events.put(("INVENTORY_PROGRESS",(done,total))))
+    def done(snapshot):
+        self.inventory_load(snapshot,"Fresh USB read")
+        if self.session and self.session.backup_file:
+            from datetime import datetime,timezone
+            stamp=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+            target=self.session.backup_file.parent/f"E5CC-T-full-inventory-{stamp}.json"
+            try:
+                write_new_json(target,snapshot)
+                self.inventory_progress.set(self.inventory_progress.get()+"   •   Saved: "+str(target))
+                self.log("Saved and verified extended read-only inventory: "+str(target))
+            except (OSError,ValueError) as exc:
+                self.inventory_progress.set(self.inventory_progress.get()+"   •   SAVE FAILED: "+str(exc))
+                self.log("Extended inventory save failed: "+str(exc))
+        self.book.select(self.t_read);self.readbook.select(self.t_inventory)
+        messagebox.showinfo("Full parameter inventory read",
+              f"{len(FULL_CATALOG)-len(snapshot['errors'])} parameters read; "
+              f"{len(snapshot['errors'])} unavailable on this configuration.\n"
+              "All 8 programme DA memories were handled by the separate backup.\n"
+              "Nothing was written to the controller.")
+    self._job("Read extended controller parameter inventory (no writes)",work,done)
+
+ def inventory_load(self,snapshot,source):
+    validate_inventory(snapshot)
+    self.full_snapshot=snapshot
+    self.full_draft={}
+    success=len(FULL_CATALOG)-len(snapshot["errors"])
+    self.inventory_progress.set(f"{source}: {success}/{len(FULL_CATALOG)} documented parameters read; "
+                               f"{len(snapshot['errors'])} unavailable; NO WRITES")
+    self.inventory_report.configure(state="normal")
+    self.inventory_report.delete("1.0","end")
+    self.inventory_report.insert("1.0",report_inventory(snapshot))
+    self.inventory_report.configure(state="disabled")
+    self.inventory_refresh()
+ def inventory_open(self):
+    path=filedialog.askopenfilename(title="Open saved full controller inventory",
+                                      filetypes=[("JSON","*.json")])
+    if not path:return
+    try:
+        snapshot=json.loads(Path(path).read_text(encoding="utf-8"))
+        self.inventory_load(snapshot,"SAVED FILE (offline; not a live hardware read)")
+    except (OSError,ValueError,TypeError,KeyError) as exc:
+        messagebox.showerror("Cannot open inventory",str(exc))
+ def inventory_export(self):
+    if not self.full_snapshot:
+        messagebox.showwarning("Nothing to export","Read or open a full controller inventory first.");return
+    output=filedialog.asksaveasfilename(defaultextension=".txt",
+       initialfile="E5CC-T-full-parameter-inventory.txt",
+       filetypes=[("Text","*.txt")])
+    if output:
+        try:Path(output).write_text(report_inventory(self.full_snapshot),encoding="utf-8")
+        except OSError as exc:messagebox.showerror("Export failed",str(exc))
+ def inventory_refresh(self):
+    if not hasattr(self,"inventory_tree"):return
+    selected=self.inventory_tree.selection()
+    code=selected[0] if selected else None
+    self.inventory_tree.delete(*self.inventory_tree.get_children())
+    group=self.inventory_group.get();term=self.inventory_query.get()
+    if self.full_snapshot:
+        for row in readable_rows(self.full_snapshot,group,term):
+            proposed=(inventory_value(row["code"],self.full_draft[row["code"]])
+                      if row["code"] in self.full_draft else "—")
+            self.inventory_tree.insert("","end",iid=row["code"],
+                        values=(row["group"],row["name"],row["actual"],proposed))
+        self.inventory_status.set(
+           f"{len(self.inventory_tree.get_children())} visible of {len(FULL_CATALOG)} documented settings  ·  "
+           f"{len(self.full_draft)} proposed change(s)  ·  actual values are from the saved/current inventory")
+    else:
+        self.inventory_status.set(f"{len(FULL_CATALOG)} documented settings available; read in Step 2.")
+    if code and code in self.inventory_tree.get_children():
+        self.inventory_tree.selection_set(code)
+    self.inventory_select()
+
+ def inventory_select(self):
+    selection=self.inventory_tree.selection()
+    if not selection or not self.full_snapshot:
+        self.inventory_info.set("Choose a parameter after reading the actual controller inventory.")
+        self.inventory_input.configure(state="disabled")
+        self.inventory_options_box.pack_forget()
+        self.inventory_new.set("")
+        return
+    code=selection[0]
+    p=FULL_CATALOG[code]
+    original=self.full_snapshot["fields"][code]
+    content=(f"{p.name}\\n{code}  ·  H186 {p.manual_page}\\n\\n"
+             f"{p.meaning}\\n\\n"
+             f"Current: {inventory_value(code,original)}"
+             f"  [{original:08X}]" if original is not None else
+             f"{p.name}\\n{code}\\n{p.meaning}\\nCURRENT VALUE NOT AVAILABLE")
+    content+=f"\\n\\nAccess: {p.access}"
+    if p.context:content+=f"\\nContext: {p.context}"
+    if self.full_snapshot["errors"].get(code):
+        content+="\\nRead error: "+self.full_snapshot["errors"][code]
+    self.inventory_info.set(content)
+    if original is None:
+        self.inventory_input.configure(state="disabled")
+        self.inventory_options_box.pack_forget()
+        self.inventory_new.set("")
+        return
+    if p.options:
+        choices=[f"{k} — {v}" for k,v in sorted(p.options.items())]
+        self.inventory_options_box.configure(values=choices,state="readonly")
+        self.inventory_input.pack_forget()
+        self.inventory_options_box.pack(fill="x",pady=8)
+        raw=self.full_draft.get(code,original)
+        signed=raw-(1<<32) if raw>=1<<31 else raw
+        self.inventory_new.set(next((v for v in choices if v.startswith(str(signed)+" —")),""))
+    else:
+        self.inventory_options_box.pack_forget()
+        self.inventory_input.pack(fill="x",pady=8)
+        self.inventory_input.configure(state="normal")
+        raw=self.full_draft.get(code,original)
+        signed=raw-(1<<32) if raw>=1<<31 else raw
+        self.inventory_new.set(f"{signed/p.scale:g}")
+
+ def inventory_propose(self):
+    selected=self.inventory_tree.selection()
+    if not selected or not self.full_snapshot:return
+    code=selected[0]
+    raw_text=self.inventory_new.get().strip()
+    if " — " in raw_text:
+        raw_text=raw_text.split(" — ",1)[0]
+    try:
+        self.full_draft=inventory_add_proposal(self.full_snapshot,self.full_draft,code,raw_text)
+    except (ValueError,KeyError) as exc:
+        messagebox.showwarning("Cannot propose change",str(exc));return
+    self.inventory_refresh()
+    self.log(f"Drafted extended controller configuration change {code}; NO hardware writes")
+
+ def inventory_clear(self):
+    if self.full_draft and not messagebox.askyesno("Clear configuration changes?",
+                 "Clear all proposed changes from the full inventory editor? No hardware changes occurred."):
+        return
+    self.full_draft={}
+    self.inventory_refresh()
+ def inventory_export_changes(self):
+    if not self.full_snapshot:
+        messagebox.showwarning("Read first","Open or read a controller inventory first.");return
+    try:document=inventory_proposal_report(self.full_snapshot,self.full_draft)
+    except ValueError as exc:messagebox.showerror("Cannot export",str(exc));return
+    output=filedialog.asksaveasfilename(defaultextension=".json",
+       initialfile="E5CC-T-config-proposal-OFFLINE.json",
+       filetypes=[("JSON","*.json")])
+    if not output:return
+    try:write_new_json(output,document)
+    except (OSError,ValueError) as exc:messagebox.showerror("Export failed",str(exc))
+
  def _upload(self):
     panel,body=self.card(self.t_upload,"Step 5 — Review, transfer or print manual instructions");panel.pack(fill="both",expand=True,padx=10,pady=10)
     self.lab_info=tk.StringVar(value="PROGRAMME WRITES LOCKED — READ-ONLY LAUNCHER" if not self.lab_mode else "ISOLATED LAB PROGRAMME TRANSFER — EXPERIMENTAL")
