@@ -24,7 +24,7 @@ class Window:
     self.root=root;self.lab_mode=lab_mode;self.progs=[blank_programme() for _ in range(8)];self.progs[0]=Programme()
     for i in range(1,8):self.progs[i].name=f"Programme {i}"
     self.slot=tk.IntVar(value=0);self.current_segment=None;self.client=None;self.session=None;self.busy=False
-    self.events=queue.Queue();self.connected=False;self.fail_latched=False
+    self.events=queue.Queue();self.connected=False;self.fail_latched=False;self.approved_preview=None
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False;self.connection_mode=tk.StringVar(value="connected")
     root.title(APP_TITLE);root.geometry("1370x890");root.minsize(1090,720);root.configure(bg=BG)
     style=ttk.Style();style.theme_use("clam")
@@ -594,7 +594,7 @@ class Window:
             client.close();raise
         return(client,session,result)
     def success(result):
-        self.client,self.session,info=result;self.connected=True;self.fail_latched=False
+        self.client,self.session,info=result;self.connected=True;self.fail_latched=False;self.approved_preview=None
         self.inspecttext.delete("1.0","end")
         self.inspecttext.insert("end",f"CONNECTED: {port}\nModel prefix: {info['model10']}\nStatus: {info['status']}\n\n")
         for addr,(wanted,note) in PREFLIGHT.items():
@@ -616,7 +616,7 @@ class Window:
     if self.client:
         try:self.client.close()
         except Exception:pass
-    self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.status.set("Disconnected")
+    self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.approved_preview=None;self.status.set("Disconnected")
     self.status.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
     for v in self.check_vars:v.set(False)
@@ -643,6 +643,7 @@ class Window:
  def backup(self):
     if not self.session:return
     self.back_progress.set(0)
+    self.approved_preview=None
     self.backupdetail.set("Reading programme memories — 0 of 8 complete (read-only)")
     def work():
         return self.session.backup(self.backdir.get(),progress=lambda done,total:self.events.put(("BACKUP_PROGRESS",(done,total))))
@@ -1236,7 +1237,7 @@ class Window:
     if hasattr(self,"btn_stage"):self.refresh_buttons()
 
  def safe_to_stage(self):
-    return self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.session.staged is None and not self.session.mismatches and str(self.session.status).startswith("01")
+    return self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.session.staged is None and self.approved_preview is not None and not self.session.mismatches and str(self.session.status).startswith("01")
  def refresh_buttons(self):
     if not hasattr(self,"btn_stage"):return
     self.btn_connect.config(state="normal" if not self.busy and not self.client else "disabled")
@@ -1266,6 +1267,8 @@ class Window:
         if self.connected and self.lab_mode and self.session and not self.session.staged:
             unchecked=sum(not v.get() for v in self.check_vars)
             if unchecked:blockers.append(f"Complete {unchecked} remaining safety checklist item(s)")
+            if self.session.backup_data is not None and self.approved_preview is None:
+                blockers.append("Click 1 PREVIEW CHANGES before writing")
     ready=not blockers and self.safe_to_stage()
     if ready:blockers.append("Ready to preview or stage to RAM. Keep external heater supplies isolated.")
     self.upload_blocker.set("NEXT ACTION: "+"  •  ".join(blockers))
@@ -1274,7 +1277,9 @@ class Window:
     self._store_meta()
     try:
         self.progs[self.slot.get()].validate();changes=self.session.build_plan(self.slot.get(),self.progs[self.slot.get()])
-        self.transfer_summary.set(f"{self.channel.get()}: programme {self.slot.get()} · {len(changes)} changes out of {len(self.progs[self.slot.get()].steps)} active segments. No writes performed.")
+        self.approved_preview=(id(self.session),self.slot.get(),tuple(changes)) if changes else None
+        self.transfer_summary.set(f"{self.channel.get()}: programme {self.slot.get()} · {len(changes)} changed registers reviewed; hardware unchanged.")
+        self.refresh_buttons()
         preview="\n".join(f"DA:{a:04X}   {o:08X} → {n:08X}" for a,o,n in changes)
         self.log("Read-only planned changes:\n"+preview)
         messagebox.showinfo("Preview (read only)", f"{len(changes)} changed registers for programme {self.slot.get()}\n\n"+preview[:3500])
@@ -1286,9 +1291,15 @@ class Window:
     except Exception as e:messagebox.showerror("Cannot stage",str(e));return
     if not changes:
         messagebox.showinfo("Already matches", "Target programme already matches the backed-up registers. No write needed.");return
+    if self.approved_preview != (id(self.session),s,tuple(changes)):
+        self.approved_preview=None
+        self.refresh_buttons()
+        messagebox.showwarning("Programme changed since preview", "Preview the latest programme changes again before writing to the Omron.")
+        return
     if not messagebox.askyesno("LAST CHECK BEFORE WRITING RAM",f"Controller: {self.session.info['model10']} (prefix)\n{self.channel.get()} · programme {s}\n{len(changes)} registers will be WRITTEN TO CONTROLLER RAM.\n\nNormal controller supply AND DC heater power must be physically disconnected.\nProceed with RAM STAGING only?"):return
     self._job("Staging programme to controller RAM",lambda:self.session.stage(s,p),lambda out:self._staged_success(out),write=True)
  def _staged_success(self,out):
+    self.approved_preview=None
     self.transfer_summary.set(f"RAM verified: {len(out['changes'])} register differences. Nonvolatile memory NOT saved yet. Review values before committing.")
     self.refresh_buttons();self.log("Pending explicit Save RAM Data")
  def commit(self):
