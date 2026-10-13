@@ -25,7 +25,8 @@ class Window:
     for i in range(1,8):self.progs[i].name=f"Programme {i}"
     self.slot=tk.IntVar(value=0);self.current_segment=None;self.client=None;self.session=None;self.busy=False
     self.events=queue.Queue();self.connected=False;self.fail_latched=False
-    root.title(APP_TITLE);root.geometry("1260x880");root.minsize(1030,720);root.configure(bg=BG)
+    self._auto_backup=False;self._auto_show_explorer=False
+    root.title(APP_TITLE);root.geometry("1370x890");root.minsize(1090,720);root.configure(bg=BG)
     style=ttk.Style();style.theme_use("clam")
     style.configure("TNotebook",background=BG,borderwidth=0)
     style.configure("TNotebook.Tab",font=("Segoe UI",10,"bold"),padding=(17,12),
@@ -61,7 +62,7 @@ class Window:
     tk.Label(hero,text=mode,bg="#315c72" if lab_mode else "#255e65",
              fg="#f0fafb",padx=13,pady=9,font=("Segoe UI",10,"bold")).pack(side="right")
     actions=tk.Frame(root,bg=BG,padx=18,pady=9);actions.pack(fill="x")
-    self.b(actions,"Open complete offline website creator  ↗",self.open_offline_creator,True).pack(side="left",padx=(0,9))
+    self.b(actions,"DESIGN A PROGRAMME  ↗",self.open_offline_creator,True).pack(side="left",padx=(0,9))
     self.b(actions,"Manual-entry sheet",self.entry_sheet).pack(side="left",padx=(0,9))
     tk.Label(actions,text="ONE controller connected at a time",
              bg=BG,fg="#627d92",font=("Segoe UI",10)).pack(side="right")
@@ -70,14 +71,14 @@ class Window:
     self.t_connect=ttk.Frame(self.book);self.t_backup=ttk.Frame(self.book)
     self.t_explore=ttk.Frame(self.book);self.t_setup=ttk.Frame(self.book)
     self.t_upload=ttk.Frame(self.book);self.t_audit=ttk.Frame(self.book)
-    for tab,title in [(self.t_web,"1  Full offline creator"),
-                      (self.t_builder,"2  Desktop editor"),
-                      (self.t_connect,"3  USB inspect"),
-                      (self.t_backup,"4  Memory backup"),
-                      (self.t_explore,"5  Explore memory"),
-                      (self.t_setup,"6  Controller setup"),
-                      (self.t_upload,"7  Lab transfer"),
-                      (self.t_audit,"8  Audit log")]:
+    for tab,title in [(self.t_web,"START"),
+                      (self.t_builder,"EDIT"),
+                      (self.t_connect,"CONNECT"),
+                      (self.t_backup,"BACK UP"),
+                      (self.t_explore,"EXPLORE"),
+                      (self.t_setup,"SETUP"),
+                      (self.t_upload,"UPLOAD"),
+                      (self.t_audit,"LOG")]:
         self.book.add(tab,text=title)
     self._web_studio();self._builder();self._connect();self._backup();self._explorer();self._setup();self._upload();self._audit()
     self.status=tk.StringVar(value="Ready · offline planning; controller not connected")
@@ -93,41 +94,47 @@ class Window:
     self.root.protocol("WM_DELETE_WINDOW",self.exit)
 
  def _web_studio(self):
-    shell=tk.Frame(self.t_web,bg=BG,padx=15,pady=18);shell.pack(fill="both",expand=True)
-    intro=tk.Frame(shell,bg=WHITE,padx=26,pady=22,
-                   highlightbackground=BORDER,highlightthickness=1)
-    intro.pack(fill="x")
-    tk.Label(intro,text="THE COMPLETE PROGRAMME WORKSHOP",bg=WHITE,fg=BLUE,
+    """Task-oriented start screen. The rich browser creator is launched from here."""
+    root=tk.Frame(self.t_web,bg=BG,padx=20,pady=20)
+    root.pack(fill="both",expand=True)
+    header=tk.Frame(root,bg=WHITE,padx=25,pady=21,highlightbackground=BORDER,highlightthickness=1)
+    header.pack(fill="x")
+    tk.Label(header,text="WORKFLOW  /  E5CC-T",bg=WHITE,fg=BLUE,
              font=("Segoe UI",10,"bold")).pack(anchor="w")
-    tk.Label(intro,text="Plan now. Program the Omron later.",bg=WHITE,fg=INK,
-             font=("Segoe UI",21,"bold")).pack(anchor="w",pady=(6,9))
-    tk.Label(intro,text="The actual website Programme Studio, bundled for offline use. "
-             "Build eight programme memories, preview ramp / soak / step profiles, "
-             "print keypad-entry sheets, and practise on the interactive five-button "
-             "E5CC-T simulator. It works without the USB cable or internet.",
-             bg=WHITE,fg="#526f84",wraplength=830,justify="left",
-             font=("Segoe UI",11)).pack(anchor="w",pady=(0,16))
-    self.b(intro,"LAUNCH OFFLINE PROGRAMME STUDIO  ↗",
-           self.open_offline_creator,True).pack(anchor="w")
-    cards=tk.Frame(shell,bg=BG);cards.pack(fill="both",expand=True,pady=(14,8))
-    content=[
-      ("01  DESIGN","Create 1–32 segments in each of the eight programme slots. See a graph of the commanded temperature versus time."),
-      ("02  PRACTISE","Use the same virtual five-button Omron as our website: d.prg edit, prg RUN selection, read-back and virtual restart."),
-      ("03  EXPORT","Save programme JSON and printable manual-entry sheets, or import the JSON into the native desktop editor for later USB use.")
-    ]
-    for label,desc in content:
-        card=tk.Frame(cards,bg=WHITE,padx=16,pady=14,
+    tk.Label(header,text="One controller. One clear workflow.",bg=WHITE,fg=INK,
+             font=("Segoe UI",21,"bold")).pack(anchor="w",pady=(3,7))
+    tk.Label(header,text="Design offline or connect your E58-CIFQ2 cable to inspect, save and safely review existing controller data. "
+             "All USB reads work without an internet connection.",bg=WHITE,fg="#4d718c",
+             wraplength=980,justify="left",font=("Segoe UI",11)).pack(anchor="w")
+    steps=tk.Frame(root,bg=BG)
+    steps.pack(fill="both",expand=True,pady=(16,0))
+    for col in range(2):steps.grid_columnconfigure(col,weight=1,uniform="workflow")
+    for row in range(2):steps.grid_rowconfigure(row,weight=1)
+    def tile(pos,title,subtitle,body,button,fn,primary=False):
+        row,col=divmod(pos,2)
+        pane=tk.Frame(steps,bg=WHITE,padx=24,pady=19,
                       highlightbackground=BORDER,highlightthickness=1)
-        card.pack(side="left",fill="both",expand=True,padx=(0,8))
-        tk.Label(card,text=label,bg=WHITE,fg=BLUE,
-                 font=("Segoe UI",11,"bold")).pack(anchor="w",pady=(0,8))
-        tk.Label(card,text=desc,bg=WHITE,fg="#557185",wraplength=255,
-                 justify="left",font=("Segoe UI",10)).pack(anchor="w")
-    tk.Label(shell,text="This creator is local to your computer and never connects to the controller. "
-             "Export your programme JSON regularly; local browser storage is not a substitute for a project backup.",
-             bg=BG,fg="#607b91",wraplength=950,justify="left",
-             font=("Segoe UI",10)).pack(anchor="w",pady=(8,0))
-
+        pane.grid(row=row,column=col,sticky="nsew",padx=(0,9) if col==0 else (9,0),pady=(0,15))
+        tk.Label(pane,text=subtitle,bg=WHITE,fg=BLUE,font=("Segoe UI",9,"bold")).pack(anchor="w")
+        tk.Label(pane,text=title,bg=WHITE,fg=INK,font=("Segoe UI",16,"bold")).pack(anchor="w",pady=(4,9))
+        tk.Label(pane,text=body,bg=WHITE,fg="#526f84",justify="left",
+                 wraplength=460,font=("Segoe UI",10)).pack(anchor="w",pady=(0,15))
+        self.b(pane,button,fn,primary).pack(anchor="w")
+    tile(0,"Build a heating programme","STEP 01  ·  NO CABLE REQUIRED",
+         "Open the full graphical programme designer and keypad simulator. You can work without connecting a controller.",
+         "OPEN PROGRAMME DESIGNER ↗",self.open_offline_creator,True)
+    tile(1,"Connect and read everything","STEP 02  ·  READ-ONLY USB",
+         "With heater supplies isolated, choose the COM port on Connect. Read the controller's identity and create a verified backup of its eight programme memories.",
+         "GO TO CONNECTION",lambda:self.book.select(self.t_connect),True)
+    tile(2,"Review what's already stored","STEP 03  ·  HUMAN-READABLE",
+         "Browse all eight programme slots with ramps, soaks, steps and charts. Import a stored programme into the editor without writing to hardware.",
+         "EXPLORE EXISTING PROGRAMMES",lambda:self.book.select(self.t_explore))
+    tile(3,"Preview a controlled transfer","STEP 04  ·  ISOLATED LAB ONLY",
+         "Compare the intended changes with the saved original registers. Only an explicitly enabled lab session can stage changes, verify them and save separately.",
+         "REVIEW UPLOAD WORKFLOW",lambda:self.book.select(self.t_upload))
+    self.home_note=tk.StringVar(value="READY  •  No controller connected  •  No hardware writes")
+    tk.Label(root,textvariable=self.home_note,bg=PALE,fg=INK,padx=15,pady=13,
+             font=("Segoe UI",10,"bold"),anchor="w").pack(fill="x")
  def open_offline_creator(self):
     try:
         path,opened=open_studio()
@@ -405,8 +412,11 @@ class Window:
     tk.Label(row,text="COM port",bg="white").pack(side="left")
     self.port=tk.StringVar();self.portbox=ttk.Combobox(row,textvariable=self.port,width=40);self.portbox.pack(side="left",padx=9)
     self.b(row,"Refresh",self.refresh_ports).pack(side="left")
-    self.btn_connect=self.b(row,"Connect + inspect (read only)",self.inspect,True);self.btn_connect.pack(side="left",padx=9)
+    self.btn_connect=self.b(row,"CONNECT + INSPECT",self.inspect,True);self.btn_connect.pack(side="left",padx=9)
     self.btn_disconnect=self.b(row,"Disconnect",self.disconnect);self.btn_disconnect.pack(side="left")
+    self.btn_quick=self.b(body,"CONNECT + AUTOMATICALLY BACK UP ALL 8 PROGRAMMES",self.quick_scan)
+    self.btn_quick.pack(anchor="w",pady=(0,7))
+    self.message(body,"Recommended shortcut: connect, inspect and save a read-only backup in one guided action. The original memories are not modified.")
     self.inspecttext=scrolledtext.ScrolledText(body,height=13,wrap="word",font=("Consolas",10));self.inspecttext.pack(fill="both",expand=True)
     self.inspecttext.insert("end","No controller connected.\nModel identification is only 10 characters: the full -000 suffix must be confirmed on the nameplate.\n")
     self.message(body,"COM7 proved input type 5 (valid Type K) and SP Start 0, while the experimental upload gate expects input 6 and PV Start 1. These assumptions need engineering review before writes. Do not alter valid hardware parameters to please the software. Read-only connection and backup still work.")
@@ -417,6 +427,10 @@ class Window:
         self.portbox["values"]=ports
         if ports and not self.port.get():self.port.set(ports[0])
     except ImportError:self.portbox["values"]=[];self.status.set("PySerial missing — Windows portable package should include it")
+ def quick_scan(self):
+    if self.busy or self.client:return
+    self._auto_backup=True
+    self.inspect()
  def inspect(self):
     if self.client or self.busy:return
     port=self.port.get().strip()
@@ -438,6 +452,11 @@ class Window:
         self.inspecttext.insert("end","\nNEXT: Back up all 8 programme blocks before considering any write.\n")
         if info["mismatches"]:self.inspecttext.insert("end","\nUPLOAD BLOCKED: old preflight assumptions need correction, not necessarily the controller. USB read and backup remain allowed.\n")
         self.book.select(self.t_backup);self.refresh_buttons()
+        self.home_note.set(f"CONNECTED  •  {info['model10']} on {port}  •  Read-only status checked")
+        if self._auto_backup:
+            self._auto_backup=False
+            self._auto_show_explorer=True
+            self.backup()
     self._job("Read-only identification/preflight",work,success)
  def disconnect(self):
     if self.busy:return
@@ -447,6 +466,8 @@ class Window:
         try:self.client.close()
         except Exception:pass
     self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.status.set("Disconnected")
+    self.home_note.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
+    self._auto_backup=False;self._auto_show_explorer=False
     for v in self.check_vars:v.set(False)
     self.confirm.set("")
     self.log("Disconnected (no controller operation command issued)");self.refresh_buttons()
@@ -482,6 +503,7 @@ class Window:
         if self.session.backup_data:
             self.explorer_load(self.session.backup_data,"Verified current backup: "+str(path))
             self.book.select(self.t_backup)
+        self.home_note.set(f"BACKUP COMPLETE  •  {count} DA registers saved  •  Controller unchanged")
         self.backupdetail.set(
             f"✓ SAVED FILE VERIFIED — 8/8 programme blocks, {count} DA registers, 9 C3 settings.\n"
             f"Location: {path}\n"
@@ -489,8 +511,12 @@ class Window:
         )
         self.status.set("SUCCESS — eight programmes backed up; saved JSON reopened and checked")
         self.log(f"BACKUP COMPLETE — 8/8 programmes, {count} registers and 9 C3 values; verified disk file: {path}")
-        # Stay on Step 3; the operator must decide when to progress.
-        self.book.select(self.t_backup)
+        # Continue directly to the Explorer only when the quick scan was requested.
+        if self._auto_show_explorer:
+            self._auto_show_explorer=False
+            self.book.select(self.t_explore)
+        else:
+            self.book.select(self.t_backup)
         self.refresh_buttons()
         messagebox.showinfo(
             "Backup complete — file checked",
@@ -955,6 +981,7 @@ class Window:
  def refresh_buttons(self):
     if not hasattr(self,"btn_stage"):return
     self.btn_connect.config(state="normal" if not self.busy and not self.client else "disabled")
+    self.btn_quick.config(state="normal" if not self.busy and not self.client else "disabled")
     self.btn_disconnect.config(state="normal" if not self.busy and self.client else "disabled")
     self.btn_backup.config(state="normal" if self.connected and not self.busy and not self.fail_latched else "disabled")
     self.btn_setup_read.config(state="normal" if self.connected and not self.busy else "disabled")
@@ -1029,6 +1056,7 @@ class Window:
                 self.refresh_buttons()
             elif event=="ERROR":
                 title,msg,iswrite,debug=payload;self.busy=False
+                self._auto_backup=False;self._auto_show_explorer=False
                 if iswrite:self.fail_latched=True
                 self.status.set("FAILED: "+title);self.log("ERROR "+title+": "+msg);self.log(debug)
                 if title.startswith("Reading 8 programmes"):
