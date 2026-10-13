@@ -37,6 +37,7 @@ from controller_inventory import (
 )
 from config_change_review import build_review,readable_review
 from qt_manual import save_manual
+from qt_entry_plan import make_entry_plan,plain_instructions
 
 STEPS=["1   Mode","2   Read & Backup","3   Programme",
        "4   Initial Settings","5   Apply / Manual"]
@@ -345,43 +346,67 @@ class Studio(QMainWindow):
         self.refresh_settings()
 
     def _apply_page(self):
-        page=QWidget();v=QVBoxLayout(page);v.setSpacing(11)
-        v.addWidget(heading("Review & apply",
-            "A single review of the selected programme and proposed settings before any transfer."))
+        page=QWidget();v=QVBoxLayout(page);v.setSpacing(10)
+        v.addWidget(heading("Review, upload or program manually",
+            "One consistent programme. No website, JSON hand-off or internet connection required."))
         self.apply_overview=text("")
         v.addWidget(self.apply_overview)
+        self.apply_tabs=QTabWidget()
+        manual=QWidget();mv=QVBoxLayout(manual);mv.setSpacing(7)
+        mv.addWidget(text("Complete Omron keypad entry table — display codes, values, meanings "
+            "and button-by-button instructions. Check actual menu visibility and protections.",True))
+        self.entry_table=QTableWidget(0,4)
+        self.entry_table.setHorizontalHeaderLabels(
+            ["Controller display","Value to set / verify","Meaning","How to enter it"])
+        self._table_defaults(self.entry_table)
+        self.entry_table.horizontalHeader().setSectionResizeMode(3,QHeaderView.ResizeMode.Stretch)
+        self.entry_table.setColumnWidth(0,145)
+        self.entry_table.setColumnWidth(1,150)
+        self.entry_table.setColumnWidth(2,185)
+        self.entry_table.setWordWrap(True)
+        mv.addWidget(self.entry_table,3)
+        self.entry_summary=text("Select a programme in Step 3.",True)
+        mv.addWidget(self.entry_summary)
+        row=QHBoxLayout()
+        row.addWidget(button("Save / print full entry guide",self.export_manual,True))
+        row.addWidget(button("Copy all keypad instructions",self.copy_manual))
+        row.addWidget(button("Export settings change report",self.export_review))
+        row.addStretch()
+        mv.addLayout(row)
+        mv.addWidget(text("d.prg selects a memory to EDIT; prg selects a memory to RUN. "
+            "Ordinary front-panel edits do not use USB SAVE RAM DATA. No heater operation is started.",True))
+        self.apply_tabs.addTab(manual,"Offline / manual entry")
+        usb=QWidget();uv=QVBoxLayout(usb);uv.setSpacing(9)
         self.apply_details=QTextEdit();self.apply_details.setReadOnly(True)
-        v.addWidget(self.apply_details,1)
+        uv.addWidget(self.apply_details,1)
         actions=QHBoxLayout()
         self.preview_button=button("1   Preview exact changes",self.preview,True)
         self.stage_button=button("2   Write to RAM + verify",self.stage)
         self.save_button=button("3   Save to controller",self.commit)
-        self.manual_button=button("Generate offline keypad guide",self.export_manual)
-        self.config_review_button=button("Export settings change report",self.export_review)
-        for b in (self.preview_button,self.stage_button,self.save_button,
-                  self.manual_button,self.config_review_button):
-            actions.addWidget(b)
-        v.addLayout(actions)
-        note=text("Only programme DA-memory writes are supported. "
-                  "If configuration changes are pending, those cannot be partially uploaded. "
-                  "The existing safety-gated Omron backend performs immediate register read-back.")
-        note.setObjectName("muted");v.addWidget(note)
+        for item in (self.preview_button,self.stage_button,self.save_button):
+            actions.addWidget(item)
+        actions.addStretch()
+        uv.addLayout(actions)
+        uv.addWidget(text("Only DA programme memory is writable. Initial, PID and communications "
+            "changes remain offline drafts. The heater must be isolated.",True))
         self.safety=[]
         checks=[
             "Controller normal mains supply and external heater DC are physically isolated",
             "Full E5CC-TQX3A5M-000 suffix confirmed on the physical nameplate",
             "Controller is stopped/RESET; no live heater operation",
             "Fresh backup of all eight programme memories has completed",
-            "Understand RAM stage is temporary; SAVE RAM DATA is a separate action",
+            "Understand RAM stage is temporary; SAVE RAM DATA is separate",
             "This is isolated commissioning, not permission to energise the heater",
         ]
-        checks_card,checks_layout=card(12)
+        checks_card,checks_layout=card(10)
         for caption in checks:
             check=QCheckBox(caption)
             check.toggled.connect(self.refresh_actions)
             checks_layout.addWidget(check)
             self.safety.append(check)
-        v.addWidget(checks_card)
+        uv.addWidget(checks_card)
+        self.apply_tabs.addTab(usb,"Connected USB transfer")
+        v.addWidget(self.apply_tabs,1)
         self.pages.addWidget(page)
 
     @staticmethod
@@ -417,7 +442,9 @@ class Studio(QMainWindow):
             b.setChecked(i==self._current_step)
         self.back_button.setEnabled(self._current_step!=0)
         self.next_button.setVisible(self._current_step!=4)
-        if self._current_step==4:self.refresh_review()
+        if self._current_step==4:
+            self.apply_tabs.setCurrentIndex(0 if self.mode=="offline" else 1)
+            self.refresh_review()
         if self._current_step==3:self.refresh_settings()
         self._controls()
 
@@ -998,6 +1025,7 @@ class Studio(QMainWindow):
         else:
             lines.append("\nProgramme writing requires a fresh verified backup and exact preview.")
         self.apply_details.setPlainText("\n".join(lines))
+        self.refresh_manual()
         self.refresh_actions()
 
     def refresh_actions(self):
@@ -1090,6 +1118,46 @@ class Studio(QMainWindow):
                 "Unplug USB until the controller turns off, reconnect, back up again "
                 "and verify the saved receipt before trusting persistence.\n"+str(path))
         self._work("Save verified RAM data",job,done,True)
+
+    def refresh_manual(self):
+        """One authoritative keypad plan for on-screen and printable entry."""
+        if not hasattr(self,"entry_table"):return
+        try:
+            plan=make_entry_plan(self.programmes[self.slot],self.slot,
+                                 self.inventory["fields"],self.draft)
+        except Exception as exc:
+            self.entry_table.setRowCount(0)
+            self.entry_summary.setText("Fix the programme: "+str(exc))
+            self._manual_plan=None
+            return
+        self._manual_plan=plan
+        rows=plan["entry_rows"]
+        self.entry_table.setRowCount(len(rows))
+        previous=None
+        for i,item in enumerate(rows):
+            for j,value in enumerate((item["code"],item["value"],
+                                      item["purpose"],item["instruction"])):
+                self._cell(self.entry_table,i,j,value)
+                cell=self.entry_table.item(i,j)
+                if item["section"]!=previous:
+                    cell.setBackground(QColor("#e6f1fb"))
+                if item["kind"]=="check" and j==1:
+                    cell.setForeground(QColor("#946314"))
+            previous=item["section"]
+        self.entry_summary.setText(
+            f"Programme {self.slot} · "
+            f"{sum(r['code']=='styp' for r in rows)} segments · "
+            f"{plan['nominal_minutes']:g} minutes nominal · "
+            f"{len(rows)} parameter/action rows · "
+            f"{len(plan['setup_proposals'])} settings proposals (review only). "
+            "VERIFY-marked entries need actual controller inspection."
+        )
+
+    def copy_manual(self):
+        if getattr(self,"_manual_plan",None) is None:self.refresh_manual()
+        if getattr(self,"_manual_plan",None):
+            QApplication.clipboard().setText(plain_instructions(self._manual_plan))
+            self.feedback.setText("Complete offline keypad entry instructions copied")
 
     def export_manual(self):
         self.update_programme()
