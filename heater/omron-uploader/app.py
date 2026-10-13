@@ -486,12 +486,12 @@ class Window:
     for code,raw in sorted(self.full_draft.items()):
         meta=FULL_CATALOG[code]
         original=self.full_snapshot["fields"].get(code) if self.full_snapshot else None
-        old=inventory_value(code,original)
+        old=inventory_value(code,original,self.full_snapshot["fields"].get("C3:0000"))
         # Many C5/C9/advanced parameters are not front-panel editable on
         # every model. Never fabricate keypad codes or claim instructions to
         # set undocumented menus.
         requested.append(("H186 register; keypad sequence NEEDS VERIFICATION",
-            code,meta.name,old,inventory_value(code,raw)))
+            code,meta.name,old,inventory_value(code,raw,self.full_snapshot["fields"].get("C3:0000"))))
     setting_lines=[]
     for scope,menu,name,old,new in requested:
         setting_lines.append("<tr><td>"+html.escape(scope)+"</td><td><code>"+
@@ -1388,7 +1388,7 @@ class Window:
     group=self.inventory_group.get();term=self.inventory_query.get()
     if self.full_snapshot:
         for row in readable_rows(self.full_snapshot,group,term):
-            proposed=(inventory_value(row["code"],self.full_draft[row["code"]])
+            proposed=(inventory_value(row["code"],self.full_draft[row["code"]],self.full_snapshot["fields"].get("C3:0000"))
                       if row["code"] in self.full_draft else "—")
             self.inventory_tree.insert("","end",iid=row["code"],
                         values=(row["group"],row["name"],row["actual"],proposed))
@@ -1414,7 +1414,7 @@ class Window:
     original=self.full_snapshot["fields"][code]
     content=(f"{p.name}\n{code}  ·  H186 {p.manual_page}\n\n"
              f"{p.meaning}\n\n"
-             f"Current: {inventory_value(code,original)}"
+             f"Current: {inventory_value(code,original,self.full_snapshot['fields'].get('C3:0000'))}"
              f"  [{original:08X}]" if original is not None else
              f"{p.name}\n{code}\n{p.meaning}\nCURRENT VALUE NOT AVAILABLE")
     content+=f"\n\nAccess: {p.access}"
@@ -1441,7 +1441,9 @@ class Window:
         self.inventory_input.configure(state="normal")
         raw=self.full_draft.get(code,original)
         signed=raw-(1<<32) if raw>=1<<31 else raw
-        self.inventory_new.set(f"{signed/p.scale:g}")
+        scale=(10 if self.full_snapshot["fields"].get("C3:0000")==6
+               and code in ("C3:0005","C3:0006","C1:0012") else p.scale)
+        self.inventory_new.set(f"{signed/scale:g}")
 
  def inventory_propose(self):
     selected=self.inventory_tree.selection()
@@ -1563,8 +1565,8 @@ class Window:
         for code,new_raw in sorted(self.full_draft.items()):
             param=FULL_CATALOG[code]
             old_raw=self.full_snapshot["fields"].get(code) if self.full_snapshot else None
-            existing=inventory_value(code,old_raw)
-            lines.append(f"  {param.name} / {code}: {existing}  →  {inventory_value(code,new_raw)}")
+            existing=inventory_value(code,old_raw,self.full_snapshot["fields"].get("C3:0000"))
+            lines.append(f"  {param.name} / {code}: {existing}  →  {inventory_value(code,new_raw,self.full_snapshot['fields'].get('C3:0000'))}")
         lines.append("These are OFFLINE proposals. No C1/C3/C5/C9 USB writes are available. Programme upload remains locked.")
     else:
         lines.append("INITIAL SETTINGS: No changes proposed.")
