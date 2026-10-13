@@ -61,7 +61,7 @@ The native Windows app has a single workflow, with no website or programme JSON 
 
 With controller mains and external heater DC physically isolated, select the COM port, click **Connect + automatically back up all 8 programmes**, and wait for the read-only file verification. The device is identified by 10-character model prefix; check the full -000 nameplate separately. The initial nine C3 values and controller status are shown. The eight DA programme blocks are saved (8 × 150 registers) and the Stored programmes view displays the existing segments and graphs.
 
-Additional selected controller setup and PID settings are read through Step 4, and can be saved as a separate snapshot. This is not a complete controller clone or a restoration guarantee. Always keep the original backup.
+The guided read proceeds to the detailed C3/C1 initial-setting snapshot and shows it within Step 2 alongside the programme memories. Step 4 uses those live values to prepare a change proposal; you can also save the unmodified configuration snapshot there. This is not a complete controller clone or a restoration guarantee. Always keep the original backup.
 
 ### 3 — Create or edit a programme
 
