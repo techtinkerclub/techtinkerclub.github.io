@@ -138,9 +138,12 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 ## Operation Level follow-up — 13 October 2026
 
 - **Physical navigation:** After returning from PID Setting Level to Operation Level and connecting the Type K sensor, user pressed MODE once. Real controller displayed **`a-m`** (Auto/Manual Switch). This corrects the previous simulator assumption that first MODE would display `r-r`.
+- **Next Operation Level screen physically confirmed:** One brief MODE after `a-m` showed **`pgsg=0.00`**. Omron H185 §6-3 defines `pgsg` as **Programme Number / Segment Number Monitor**, formatted programme.segment (e.g. `2.03` means programme 2, segment 3). Here monitor reports programme 0, segment 0; this must not be mistaken for the previously edited Programme 1. During RESET, the monitor does **not** imply active heating.
+- **Crucial difference:** In H185 §6-3, `d.prg` (Programme Setting Level) chooses the **editing target**, while `prg` (Operation Level) chooses which programme is used at RUN when RESET and no event-input programme override. `prg` on this particular controller **has not yet been read**, and should be checked before any RUN test. Never assume `d.prg=1` means Programme 1 will run.
+- **Simulator patch:** Added `pgsg` and `prg` at their documented operation-menu positions and separated edit programme from RUN programme in the virtual model. Stub later operation monitors are approximations of H185 and not physical-hardware verified. Virtual selection of `prg` is allowed only in RESET. Commit `fa5a518424ec37ddc6dcb2ce2ab8be88249cae4b`; mock-button tests passed.
 - **Safety:** Omron H185 §§5-11/6-3 states holding LEVEL for at least three seconds on `a-m` switches to Manual Control Level, where manual MV can take priority even during programme RESET. No such key hold or manual control was requested or tested.
 - **Simulator patch:** Inserted a non-editable `a-m` page as first MODE after PV/SP, commit `933950f4aa926477a0674e6c9d0be479db304afb`, and passed a basic button-flow test. Other Operation Level pages and their visibility have **not** yet been validated. Simulator's subsequent `r-r` screen is provisional, not real-hardware confirmed.
-- **Next validation:** While actual `a-m` is displayed, press **MODE briefly once**; report exact upper and lower display. Do not use UP/DOWN or hold LEVEL. No heater RUN.
+- **Next validation:** With `pgsg=0.00` displayed, press **MODE briefly once** and report exact upper/lower display. H185 predicts `prg` (selected programme for RUN), which may still be `0` even though `d.prg=1` was edited. Do not change `prg` or press RUN yet; maintain heater isolation.
 
 ## Results
 
