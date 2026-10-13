@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
 from serial.tools import list_ports
 
 from qt_components import STYLE,Task,Profile,card,heading,text,button
-from qt_segment_row import SegmentRow
+from qt_segment_row import SegmentRow,Stepper
 from compoway import SerialClient
 from transfer import TransferSession
 from program_model import Programme,Segment,blank_programme,ValidationError
@@ -345,8 +345,9 @@ class Studio(QMainWindow):
         self.start_pv=QDoubleSpinBox()
         self.start_pv.setRange(-20,500);self.start_pv.setDecimals(1)
         self.start_pv.setSuffix(" °C")
-        self.start_pv.setMinimumWidth(110)
-        meta.addWidget(text("Starting PV (assumed)"));meta.addWidget(self.start_pv)
+        self.start_pv_editor=Stepper("STARTING PV (ASSUMED)",self.start_pv)
+        self.start_pv_editor.setMinimumWidth(170)
+        meta.addWidget(self.start_pv_editor)
         self.finish_mode=QComboBox()
         self.finish_mode.addItem("RESET (stop)", "rst")
         self.finish_mode.addItem("CONTINUE", "cont")
