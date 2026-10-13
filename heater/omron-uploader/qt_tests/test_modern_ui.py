@@ -93,7 +93,8 @@ class ModernStudioTests(unittest.TestCase):
         self.assertTrue(row.target.editor.isVisibleTo(row))
         self.assertFalse(row.target.spin.isVisible())
         self.assertEqual(row.target.editor.text(),"120.0")
-        self.assertIn("color:#18334a",row.target.editor.styleSheet())
+        self.assertIn("QLineEdit#numericEntry",self.app.styleSheet())
+        self.assertIn("color:#18334a",self.app.styleSheet())
         self.assertEqual(row.rate.editor.text(),"2")
         self.assertEqual(self.win.segment_table.cellWidget(1,0).hold.editor.text(),"15")
         row.target.editor.setFocus()
@@ -125,6 +126,43 @@ class ModernStudioTests(unittest.TestCase):
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
         row.target._typed_value("501")
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
+
+    def test_uniform_controls_across_programme_and_other_steps(self):
+        from PySide6.QtWidgets import QComboBox,QToolButton
+        from PySide6.QtGui import QPixmap
+        from PySide6.QtCore import Qt
+        from qt_components import StudioCombo
+        self.win.show()
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        all_combos=[self.win.port_combo,self.win.slot_combo,
+                    self.win.finish_mode,self.win.group,
+                    self.win.parameter_choices,self.win.manual_phase,
+                    self.win.segment_table.cellWidget(0,0).kind]
+        self.assertTrue(all(isinstance(combo,StudioCombo) for combo in all_combos))
+        qss=self.app.styleSheet()
+        for token in ("QComboBox::drop-down","QTabBar::tab","QFrame#valueField",
+                      "QLineEdit#numericEntry","QToolButton#rowAction",
+                      "QToolButton#spinArrow"):
+            self.assertIn(token,qss)
+        for combo in all_combos:
+            self.assertGreaterEqual(combo.minimumHeight(),38)
+        row=self.win.segment_table.cellWidget(0,0)
+        self.assertEqual(row.target.findChild(
+            __import__("PySide6.QtWidgets",fromlist=["QFrame"]).QFrame,
+            "valueField").height(),38)
+        self.assertTrue(row.target.up.icon().isNull() is False)
+        self.assertTrue(row.target.down.icon().isNull() is False)
+        dropdown=self.win.slot_combo
+        dropdown.resize(220,40)
+        snapshot=QPixmap(dropdown.size())
+        snapshot.fill(Qt.GlobalColor.transparent)
+        dropdown.render(snapshot)
+        self.assertFalse(snapshot.isNull())
+        self.assertEqual(dropdown.itemText(0),"Programme 0")
+        dropdown.setCurrentIndex(1)
+        self.assertEqual(dropdown.currentIndex(),1)
+        self.win.hide()
 
     def test_offline_configuration_proposal_blocks_upload(self):
         self.win.choose_mode("offline")
