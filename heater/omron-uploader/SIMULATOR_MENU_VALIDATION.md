@@ -89,6 +89,18 @@ Exit the Initial Setting Level with LEVEL held **at least 1 second**.
 
 **Do not** test RUN/RESET, output controls, editable digit shifting or protected/advanced settings during this session. PF can be user-configured to another function, so leave it alone for now.
 
+
+## Physical controller observation — 13 October 2026 (Channel not yet identified)
+
+Reported by user while controller is powered from E58-CIFQ2 with Windows driver unavailable (Code 28). Normal sensor input currently reports flashing `S.ERR`.
+
+- **Before change:** `t-pr=time`; when `d.seg=0`, the actual controller displayed **only `sp` and `time`**. This is consistent with step-time programming and does not prove the simulator's rate-of-rise display is wrong.
+- **User-initiated change:** `t-pr` was changed to `pr`. Subsequent Segment 0 parameter visibility **has not yet been checked**.
+- **Observed configuration:** `pru=m`, `t-u=h-m`, `rtsm=stop`, `p-on=cont`, `eset=rst`.
+- **Safety follow-up required:** Omron H185 §4-7-4 explains that `p-on=cont` restores interrupted controller programme status. For the heater cabinet, recommend assessment of `p-on=rst` to inhibit automatic post-power-loss continuation. This concerns loss of Omron controller supply, **not ordinary PWM/SSR switching of the independent heater DC supply**. `rtsm=stop` alone is not physical isolation; independently verify `mv-r=0` and hardware fail-safe.
+- **Next validation:** With normal mains/heater supplies isolated, return to Program Setting Level, choose `d.seg=0`, record real `styp` and whether `sp`/`pr`/`time` appear according to segment type. Do not RUN.
+- **Limitations:** USB-only inspection provides no heater-output or restart-interlock qualification.
+
 ## Results
 
 - Actual `t-pr`: __________ ; actual `t-u`: __________ ; actual `pru`: __________
