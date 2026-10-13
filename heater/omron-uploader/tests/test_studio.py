@@ -102,6 +102,34 @@ class TransferTests(unittest.TestCase):
             s.commit()
             self.assertEqual(d.nonvolatile_saves,1)
             self.assertTrue(s.committed)
+    def test_backup_reports_progress_and_verifies_file_on_disk(self):
+        d=FakeDevice();s=TransferSession(d)
+        s.preflight()
+        completed=[]
+        with tempfile.TemporaryDirectory() as folder:
+            path=s.backup(folder,progress=lambda n,total:completed.append((n,total)))
+            self.assertEqual(completed,[(i,8) for i in range(1,9)])
+            self.assertEqual(s.backup_file,path)
+            stored=json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(stored["schema"],"e5cct-backup-1")
+            self.assertEqual(len(stored["programmes"]),8)
+            self.assertEqual(sum(len(v) for v in stored["programmes"].values()),1200)
+            self.assertEqual(len(stored["preflight"]),9)
+            self.assertEqual(s.backup_data,stored)
+            self.assertEqual(d.operations,[])  # pure read-only; no uploads
+    def test_short_read_invalidates_backup_and_disallows_plan(self):
+        d=FakeDevice();s=TransferSession(d)
+        s.preflight()
+        with tempfile.TemporaryDirectory() as folder:
+            s.backup(folder)
+            self.assertIsNotNone(s.backup_data)
+            # A new failed attempt must not leave the prior backup usable.
+            d.blocks[1]=[0]*149
+            self.assertRaises(ProtocolError,s.backup,folder)
+            self.assertIsNone(s.backup_data)
+            self.assertIsNone(s.backup_file)
+            self.assertRaises(PreflightError,s.build_plan,0,Programme())
+            self.assertEqual(d.operations,[])
     def test_preflight_mismatch_allows_backup_but_blocks_writes(self):
         d=FakeDevice();d.c3[0x00BF]=0;s=TransferSession(d)
         report=s.preflight();self.assertTrue(report["mismatches"])
