@@ -646,8 +646,12 @@ class Window:
         except Exception:pass
     for v in self.check_vars:v.set(False)
     self.status.set(f"USB DISCONNECTED ({old_port}) — reconnect and take a fresh backup")
-    self.inspecttext.insert("end",f"\\nUSB LINK LOST: {reason}\\nPrior readings are NOT a live connection.\\n")
+    self.inspecttext.insert("end",f"\nUSB LINK LOST: {reason}\nPrior readings are NOT a live connection.\n")
     self.log(f"USB DISCONNECTED / {old_port}: {reason}. Session and upload authorisation invalidated.")
+    self.setup_summary.set("DISCONNECTED — previously read initial settings are a saved snapshot, not live values.")
+    if getattr(self,"explorer_backup",None) is not None:
+        self.backupdetail.set("USB DISCONNECTED — previous read-only backup remains available in Explorer. "
+                              "Reconnect and make a new backup for any further transfer.")
     if was_uncommitted:
         self.log("CAUTION: RAM staging was not confirmed saved when USB link was lost. Controller state UNKNOWN.")
         messagebox.showwarning("Controller connection lost during uncommitted changes",
