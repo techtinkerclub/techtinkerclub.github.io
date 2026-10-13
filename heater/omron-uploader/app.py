@@ -562,11 +562,12 @@ class Window:
     tk.Label(row,text="COM port",bg="white").pack(side="left")
     self.port=tk.StringVar();self.portbox=ttk.Combobox(row,textvariable=self.port,width=40);self.portbox.pack(side="left",padx=9)
     self.b(row,"Refresh",self.refresh_ports).pack(side="left")
-    self.btn_connect=self.b(row,"CONNECT + INSPECT",self.inspect,True);self.btn_connect.pack(side="left",padx=9)
+    self.btn_connect=self.b(row,"CONNECT + READ EVERYTHING",self.quick_scan,True);self.btn_connect.pack(side="left",padx=9)
     self.btn_disconnect=self.b(row,"Disconnect",self.disconnect);self.btn_disconnect.pack(side="left")
-    self.btn_quick=self.b(body,"CONNECT + AUTOMATICALLY BACK UP ALL 8 PROGRAMMES",self.quick_scan)
-    self.btn_quick.pack(anchor="w",pady=(0,7))
-    self.message(body,"Recommended shortcut: connect, inspect and save a read-only backup in one guided action. The original memories are not modified.")
+    # Backward-compatible internal alias; one clear button starts the entire
+    # read-only connection + programme backup + initial-settings snapshot flow.
+    self.btn_quick=self.btn_connect
+    self.message(body,"One button reads and saves the existing programmes AND detailed initial settings. No hardware settings are changed. The results are displayed under this Step 2.")
     self.inspecttext=scrolledtext.ScrolledText(body,height=13,wrap="word",font=("Consolas",10));self.inspecttext.pack(fill="both",expand=True)
     self.inspecttext.insert("end","No controller connected.\nModel identification is only 10 characters: the full -000 suffix must be confirmed on the nameplate.\n")
     self.message(body,"This bench build expects the observed Type K input 5 (whole degrees) and SP Start 0. Any configuration change blocks lab transfer. Keep the heater isolated; a successful communications write is not approval to energise it.")
