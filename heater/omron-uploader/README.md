@@ -47,6 +47,12 @@ py -3 -m PyInstaller --onefile --windowed --hidden-import serial.tools.list_port
 
 Copy the resulting `dist/E5CC-Programme-Studio.exe`, both `START_*.cmd` files and this README to the same directory for an offline package.
 
+## Troubleshooting the first connected lab session
+
+If an older version shows `'Window' object has no attribute 'home_note'`, that is a known callback bug in the earlier wizard release: download a build containing the fix (commit `09a776a` or newer). No writing follows from that exception, and the guided backup may not have finished. The fixed version uses the status footer rather than the removed widget.
+
+For the requested Programme 0 replacement, first use the Step 2 guided read, then Step 3 **LOAD 120 → 50 °C FOUR-SEGMENT TEST** with memory 0 selected. Step 4 should remain unchanged for a programme-only USB transfer. Step 5 now clearly identifies missing prerequisites (cable connection, saved backup, preflight mismatch, pending initial setting changes, incomplete six-item checklist, missing reviewed preview or staged RAM). Keep heater mains and DC isolated throughout; do not attempt unqualified real-device writes if a prerequisite fails.
+
 ## Five-step connected or offline workflow
 
 The native Windows app has a single workflow, with no website or programme JSON hand-off required.
@@ -59,13 +65,13 @@ The native Windows app has a single workflow, with no website or programme JSON 
 
 ### 2 — Read/save/backup/show existing (Connected only)
 
-With controller mains and external heater DC physically isolated, select the COM port, click **Connect + automatically back up all 8 programmes**, and wait for the read-only file verification. The device is identified by 10-character model prefix; check the full -000 nameplate separately. The initial nine C3 values and controller status are shown. The eight DA programme blocks are saved (8 × 150 registers) and the Stored programmes view displays the existing segments and graphs.
+With controller mains and external heater DC physically isolated, select the COM port, click the single **CONNECT + READ EVERYTHING** button, and wait while the read-only programme memory and initial configuration are both saved and checked. The device is identified by 10-character model prefix; check the full -000 nameplate separately. The initial nine C3 values and controller status are shown. The eight DA programme blocks are saved (8 × 150 registers) and the Stored programmes view displays the existing segments and graphs.
 
 The guided read proceeds to the detailed C3/C1 initial-setting snapshot and shows it within Step 2 alongside the programme memories. **The detailed settings are automatically saved and checked as a second timestamped JSON next to the programme backup.** Step 4 uses the read values to prepare a change proposal; you can also save an additional unmodified snapshot there. This is not a complete controller clone or a restoration guarantee. Always keep the original backup.
 
 ### 3 — Create or edit a programme
 
-Choose local target memory 0–7. Add, edit, remove and reorder ramp, soak and commanded-SP step segments, with a nominal temperature-versus-time preview. In Connected mode, **Use saved controller programme** copies the selected backed-up memory directly into the native editor, never to the hardware. Unknown segments, unsupported repetition and programme links cannot silently be discarded.
+Choose local target memory 0–7. Add, edit, remove and reorder ramp, soak and commanded-SP step segments, with a nominal temperature-versus-time preview. **LOAD 120 → 50 °C FOUR-SEGMENT TEST** creates the requested 120 °C at 2 °C/min, 15 min soak, 50 °C at 2 °C/min, 15 min soak example immediately inside the desktop editor without any JSON import. In Connected mode, **Use saved controller programme** copies the selected backed-up memory directly into the native editor, never to the hardware. Unknown segments, unsupported repetition and programme links cannot silently be discarded.
 
 There is no requirement to export/import a website JSON to transfer between screens.
 
@@ -79,7 +85,7 @@ In Offline/manual mode, the baseline is explicitly UNKNOWN; selected setup choic
 
 **Offline/manual**: **GENERATE COMPLETE OFFLINE MANUAL ENTRY SHEET** produces a self-contained, printable HTML document containing the selected programme, exact per-segment values, menu labels, keypad-navigation guidance, the initial-setting proposals from Step 4, and final check/read-back steps. No website access is needed.
 
-**Connected**: review the selected programme and proposed changes. With no initial-setting changes pending, the isolated-laboratory route offers exact DA change preview, a separately authorised RAM stage with immediate readback, and a separate explicit nonvolatile SAVE. The first physical controller upload is **not yet qualified**; keep the heater completely isolated and use an intentionally supervised bench experiment only.
+**Connected**: review the selected programme and proposed changes. The three actions **1 PREVIEW CHANGES → 2 WRITE TO RAM + VERIFY → 3 SAVE TO CONTROLLER** remain visible at the top of Step 5. There is no case-sensitive magic authorisation phrase. The six safety checklist items must be completed and the final RAM-write confirmation accepted. Stage is disabled until the **current** register changes have been previewed; editing the programme after preview forces another preview. The screen explains what is blocking the next action. With no initial-setting changes pending, this guarded experimental route transfers only the selected DA programme memory. The first physical controller upload is **not yet qualified**; keep the heater completely isolated and use an intentionally supervised bench experiment only.
 
 **Current limitation:** USB writes for C3/C1 initial settings are **not yet implemented or validated**. If Step 4 has pending initial-setting changes, programme staging and SAVE are locked to prevent uploading a profile that relies on unapplied configuration. Step 5 includes those initial changes in the offline manual instructions; do not interpret that as an automatic controller setup write.
 
