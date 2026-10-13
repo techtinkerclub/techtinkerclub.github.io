@@ -110,7 +110,8 @@ class FiveStepWizardTests(unittest.TestCase):
              patch.object(app,"SerialClient",FakeUSB),\
              patch("tkinter.messagebox.showinfo"):
             self.ui.backdir.set(folder)
-            self.ui.quick_scan()
+            self.assertEqual(self.ui.btn_connect.cget("text"),"CONNECT + READ EVERYTHING")
+            self.ui.btn_connect.invoke()
             self.assertTrue(self.ui.connected)
             self.assertIsNotNone(self.ui.session.backup_data)
             self.assertEqual(len(self.ui.session.backup_data["programmes"]),8)
