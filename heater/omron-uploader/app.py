@@ -28,6 +28,7 @@ class Window:
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False;self.connection_mode=tk.StringVar(value="connected")
     self.active_port=None
     self._connection_poll_counter=0
+    self.connection_state=tk.StringVar(value="USB DISCONNECTED")
     root.title(APP_TITLE);root.geometry("1370x890");root.minsize(1090,720);root.configure(bg=BG)
     style=ttk.Style();style.theme_use("clam")
     style.configure("TNotebook",background=BG,borderwidth=0)
@@ -63,6 +64,8 @@ class Window:
     mode="ISOLATED LAB MODE" if lab_mode else "READ-ONLY SERIAL MODE"
     tk.Label(hero,text=mode,bg="#315c72" if lab_mode else "#255e65",
              fg="#f0fafb",padx=13,pady=9,font=("Segoe UI",10,"bold")).pack(side="right")
+    tk.Label(hero,textvariable=self.connection_state,bg="#2b556c",
+             fg="#f0fafb",padx=13,pady=9,font=("Segoe UI",10,"bold")).pack(side="right",padx=(0,10))
     self.book=ttk.Notebook(root)
     self.book.pack(expand=True,fill="both",padx=16,pady=(13,6))
     # Exactly five user-facing workflow steps. All legacy diagnostic views live inside Step 2.
@@ -600,6 +603,7 @@ class Window:
     def success(result):
         self.client,self.session,info=result;self.connected=True;self.fail_latched=False;self.approved_preview=None
         self.active_port=port;self._connection_poll_counter=0
+        self.connection_state.set("USB CONNECTED · "+port)
         self.inspecttext.delete("1.0","end")
         self.inspecttext.insert("end",f"CONNECTED: {port}\nModel prefix: {info['model10']}\nStatus: {info['status']}\n\n")
         for addr,(wanted,note) in PREFLIGHT.items():
@@ -622,6 +626,7 @@ class Window:
         try:self.client.close()
         except Exception:pass
     self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.approved_preview=None;self.active_port=None;self.status.set("Disconnected")
+    self.connection_state.set("USB DISCONNECTED")
     self.status.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
     for v in self.check_vars:v.set(False)
@@ -638,6 +643,7 @@ class Window:
     old_port=self.active_port or self.port.get().strip()
     old_client=self.client
     self.client=None;self.session=None;self.connected=False;self.approved_preview=None;self.active_port=None
+    self.connection_state.set("USB DISCONNECTED")
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
     self._connection_poll_counter=0
     self.fail_latched=was_uncommitted
@@ -668,7 +674,7 @@ class Window:
     Never send a heartbeat while another read or write is in progress.
     """
     try:
-        if self.connected and not self.busy and self.client is not None:
+        if self.connected and not self.busy and not self._auto_backup and not self._auto_setup and self.client is not None:
             port=self.active_port
             try:
                 from serial.tools import list_ports
