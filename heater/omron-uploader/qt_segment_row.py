@@ -5,40 +5,68 @@ emit local changes; they never issue serial commands to the controller.
 """
 from __future__ import annotations
 
-from PySide6.QtCore import Signal,Qt
+from PySide6.QtCore import Signal,Qt,QLocale
 from PySide6.QtWidgets import (
     QWidget,QFrame,QHBoxLayout,QVBoxLayout,QLabel,QComboBox,QDoubleSpinBox,
-    QSpinBox,QAbstractSpinBox,QToolButton
+    QSpinBox,QAbstractSpinBox,QToolButton,QLineEdit
 )
 from program_model import Segment
 
 
 class Stepper(QWidget):
-    """Labeled numeric editor with always-visible ▲/▼ buttons.
+    """Visible QLineEdit + up/down buttons; hidden spinbox validates the number.
 
-    These are actual QToolButtons, independent of Windows theme-specific
-    QSpinBox arrow rendering.
+    QSpinBox embeds a QLineEdit which was rendered at an unusable width when
+    nested in the application's global Windows QSS. Here *only* the ordinary,
+    readable QLineEdit is presented. The original spinbox still supplies
+    validated range/precision and stepUp/stepDown; its valueChanged signal
+    remains the single source of truth for the programme model.
     """
     def __init__(self,label,spin,parent=None):
         super().__init__(parent)
+        self.spin=spin
+        self.spin.setParent(self)
+        self.spin.hide()
+        self._syncing=False
+        self._invalid=False
         shell=QVBoxLayout(self)
         shell.setContentsMargins(0,0,0,0)
         shell.setSpacing(4)
         header=QLabel(label)
         header.setObjectName("tiny")
         shell.addWidget(header)
+
         strip=QFrame()
         strip.setObjectName("stepperFrame")
         line=QHBoxLayout(strip)
         line.setContentsMargins(0,0,0,0)
         line.setSpacing(0)
-        self.spin=spin
-        spin.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
-        spin.setMinimumHeight(36)
-        spin.setMinimumWidth(72)
-        spin.setFrame(False)
-        spin.setAlignment(Qt.AlignmentFlag.AlignRight)
-        line.addWidget(spin,1)
+
+        self.editor=QLineEdit()
+        self.editor.setObjectName("numericEntry")
+        self.editor.setMinimumWidth(62)
+        self.editor.setMinimumHeight(35)
+        self.editor.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.editor.setAccessibleName(label)
+        self.editor.setToolTip(f"{label}. Type a value or use the up/down arrows.")
+        self.editor.setStyleSheet(
+            "QLineEdit#numericEntry { background:#ffffff; color:#18334a;"
+            "border:0; border-radius:0; padding:5px 7px;"
+            "selection-background-color:#d4e9fb; selection-color:#18334a;"
+            "font:600 13px 'Segoe UI'; }"
+            "QLineEdit#numericEntry:focus {background:#ffffff;color:#18334a;}"
+        )
+        line.addWidget(self.editor,1)
+
+        units=spin.suffix().strip()
+        if units:
+            suffix=QLabel(units)
+            suffix.setObjectName("numericUnit")
+            suffix.setStyleSheet(
+                "color:#476b85; background:#ffffff; padding:0 4px;"
+                "font:12px 'Segoe UI';")
+            line.addWidget(suffix,0)
+
         arrows=QWidget()
         vert=QVBoxLayout(arrows)
         vert.setContentsMargins(0,0,0,0)
@@ -46,16 +74,71 @@ class Stepper(QWidget):
         self.up=QToolButton()
         self.down=QToolButton()
         for control,sign,callback in (
-            (self.up,"▲",spin.stepUp),(self.down,"▼",spin.stepDown)):
+            (self.up,"▲",self.spin.stepUp),(self.down,"▼",self.spin.stepDown)):
             control.setObjectName("spinArrow")
             control.setText(sign)
             control.setAutoRepeat(True)
             control.setFixedSize(31,18)
-            control.clicked.connect(callback)
+            control.setToolTip(("Increase" if control is self.up else "Decrease")+" "+label)
+            control.clicked.connect(lambda checked=False,fn=callback:fn())
             vert.addWidget(control)
         line.addWidget(arrows)
         shell.addWidget(strip)
-        self.setMinimumWidth(133)
+        self.setMinimumWidth(153)
+
+        # Only the line edit is painted. Spinbox internals cannot clip text.
+        self.spin.valueChanged.connect(self._value_updated)
+        self.editor.textEdited.connect(self._typed_value)
+        self.editor.editingFinished.connect(self._finish_edit)
+        self._value_updated(self.spin.value())
+
+    def _display_value(self):
+        value=self.spin.value()
+        if isinstance(self.spin,QDoubleSpinBox):
+            return f"{value:.{self.spin.decimals()}f}"
+        return str(value)
+
+    def _value_updated(self,*args):
+        if not self._syncing:
+            self.editor.setText(self._display_value())
+            self.editor.setProperty("invalid",False)
+
+    def _typed_value(self,text):
+        raw=text.strip().replace(",",".")
+        if not raw or raw in ("-","+","-.","."):
+            self._invalid=True
+            return
+        try:
+            number=float(raw) if isinstance(self.spin,QDoubleSpinBox) else int(raw)
+        except (ValueError,OverflowError):
+            self._invalid=True
+            return
+        if not self.spin.minimum() <= number <= self.spin.maximum():
+            self._invalid=True
+            return
+        if isinstance(self.spin,QSpinBox) and not raw.lstrip("-").isdigit():
+            self._invalid=True
+            return
+        self._invalid=False
+        self._syncing=True
+        try:
+            # Emits valueChanged, which updates the live programme and plot.
+            self.spin.setValue(number)
+        finally:
+            self._syncing=False
+
+    def _finish_edit(self):
+        # If the user left incomplete/invalid text, revert to the last valid
+        # numeric value rather than silently using a different quantity.
+        raw=self.editor.text().strip()
+        self._typed_value(raw)
+        self._value_updated()
+        self._invalid=False
+
+    def is_valid_display(self):
+        return (not self._invalid and
+                bool(self.editor.text().strip()) and
+                self.editor.text().strip().replace(",",".") != "-")
 
 
 class SegmentRow(QFrame):
