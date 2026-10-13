@@ -426,6 +426,41 @@ class Window:
                  ("prg",f"{slot} — select programme to RUN (not d.prg)"),
                  ("pgsg",f"confirm programme {slot} in monitor"),
                  ("r-r","rst before starting or saving")])
+    # Complete front-panel changes are derived from the SAME in-memory editor
+    # and the Step 4 configuration draft. No website, JSON import or cable is used.
+    requested=[]
+    for code, value in sorted(self.setup_draft.items()):
+        meta=BY_CODE[code]
+        scope="Initial/advanced setting" if code.startswith("C3:") else "Adjustment/protection (verify level)"
+        actual=self.setup_snapshot["fields"].get(code) if self.setup_snapshot else None
+        old=value_text(code,actual) if actual is not None else "not read — verify at the controller"
+        new=meta["options"][value]
+        requested.append((scope,meta["menu"],meta["name"],old,new))
+    setting_lines=[]
+    for scope,menu,name,old,new in requested:
+        setting_lines.append("<tr><td>"+html.escape(scope)+"</td><td><code>"+
+                             html.escape(menu)+"</code> — "+html.escape(name)+"</td><td>"+
+                             html.escape(old)+"</td><td><strong>"+html.escape(new)+
+                             "</strong></td></tr>")
+    if requested:
+        settings_html="""<h3>Requested initial setting changes (from Step 4)</h3>
+        <p>First read the existing value on the physical controller. From the operation
+        display, hold LEVEL for at least 3 seconds to enter Initial Setting Level.
+        Press MODE to navigate to the exact parameter shown, use UP/DOWN to adjust the
+        required value, and revisit the same screen to confirm it. Some advanced or
+        protected parameters require a different level; do not guess a shortcut or
+        bypass protection if the parameter is not displayed. Consult the controller's
+        H185 parameter flow for that level. Record each actual observed value below.</p>
+        <table><thead><tr><th>Parameter group</th><th>Omron menu label</th>
+        <th>Value before change</th><th>Value required</th></tr></thead><tbody>"""+"" .join(setting_lines)+"""</tbody></table>
+        <div class="warn">These settings are OFFLINE INSTRUCTIONS, not confirmed
+        controller writes. Changing sensor type, control direction, reset behaviour
+        or protection settings can affect output safety. Verify actual values and
+        commissioning requirements before connecting any heater.</div>"""
+    else:
+        settings_html="""<p>No initial setting changes were selected in Step 4.
+        Verify the controller configuration before using this programme; no changes
+        to setup have been assumed.</p>"""
     cells="".join("<tr><td><code>"+html.escape(k)+"</code></td><td>"+
                   html.escape(v)+"</td></tr>" for k,v in rows)
     description=html.escape(p.name)
@@ -455,6 +490,7 @@ class Window:
     The first real unit reported <code>in-t = 5</code> (valid Type K, whole-degree display)
     and <code>PV/SP Start = 0</code> (SP Start). These are NOT automatically faults;
     do not change them merely to satisfy a provisional uploader rule.</p>
+    {settings_html}
     <h2>2 · Enter programme values, using real display codes</h2>
     <p>From PV/SP, briefly press <strong>LEVEL</strong> once to get <code>d.prg</code>.
     Set memory {slot}. Press <strong>MODE</strong> to step through the following parameter
@@ -470,12 +506,13 @@ class Window:
     separately — this is the programme that would RUN, whereas <code>d.prg</code>
     only chooses which memory you edit. Verify the <code>pgsg</code> monitor and
     <code>r-r = rst</code>.</p>
-    <div class="note">For deeper instructions, use the <strong>Offline Programme Studio</strong>
-    and its five-button simulator bundled with this Windows application.</div>
+    <div class="note">This report was generated entirely from this desktop app's
+    programme editor and initial setting draft. No website or import file is needed.
+    Check every value against the physical controller after entry.</div>
     <p>Controller ID: ____________________ &nbsp; Date: ___________ &nbsp; Checked by: ____________________</p>
     </main></body></html>"""
     path=filedialog.asksaveasfilename(defaultextension=".html",
-        initialfile=f"E5CC-T-entry-sheet-{slot}.html",
+        initialfile=f"E5CC-T-COMPLETE-manual-programming-{slot}.html",
         filetypes=[("HTML","*.html")])
     if path:
         Path(path).write_text(content,encoding="utf-8")
