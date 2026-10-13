@@ -6,7 +6,7 @@ No CompoWay/F commands or controller writes are available in this module.
 """
 from __future__ import annotations
 import json
-from dataclasses import dataclass
+import math
 from pathlib import Path
 from program_model import decode_time, signed
 
@@ -122,6 +122,8 @@ def decode_slot(backup, slot):
         "link": link, "link_text": "No chaining" if link == -1 else f"Link destination = {link} (verify before use)",
         "warnings": warnings, "model": backup.get("controller",{}).get("model10","unknown"),
         "scale": input_kind, "unit": "°C" if cel else "unconfirmed",
+        "start_mode": cfg.get("C3:00BF"), "method": cfg.get("C3:00BA"),
+        "duration_unit": cfg.get("C3:00B9"), "slope_unit": cfg.get("C3:00BB"),
         "raw_header": {f"DA:{off:02X}":f"{regs[off]:08X}" for off in [0,0x0e,0x0f]},
     }
     return result
@@ -130,13 +132,16 @@ def profile_points(summary, initial_pv=20.0):
     """Commanded *illustrative* SP trajectory, never measured PV or actual timing."""
     try:
         initial = float(initial_pv)
-        if not -200 <= initial <= 1300: raise ValueError
+        if not math.isfinite(initial) or not -200 <= initial <= 1300: raise ValueError
     except (ValueError, TypeError):
         raise DecodeError("Starting temperature must be a finite value between −200 and 1300 °C")
+    if not math.isfinite(initial):
+        raise DecodeError("Starting temperature must be finite")
     if summary["warnings"]:
-        # Warnings from unsupported configuration make the nominal timing uncertain.
-        if summary["scale"] not in (5,6) or summary["unit"] != "°C":
-            return None
+        # Do not claim trustworthy graph timing for uncertain programme method/units.
+        return None
+    if summary["scale"] not in (5, 6) or summary["unit"] != "°C":
+        return None
     x, y = 0.0, initial
     points = [(x, y)]
     for seg in summary["segments"]:
@@ -152,3 +157,29 @@ def profile_points(summary, initial_pv=20.0):
         else:return None
         points.append((x, y))
     return points
+
+
+def summary_as_plaintext(summary, assumed_start=20):
+    """Printable concise report. Explicitly states any unverified interpretation."""
+    lines = [f"PROGRAMME {summary['slot']} — READ-ONLY CONTROLLER MEMORY",
+             f"Controller prefix: {summary['model']}",
+             f"Active segments: {summary['count']}",
+             f"Start mode: {'SP Start' if summary['start_mode']==0 else 'PV Start' if summary['start_mode']==1 else 'unverified'}",
+             ""]
+    if not summary["segments"]:
+        lines.append("No interpretable active segments.")
+    for segment in summary["segments"]:
+        lines.append(f"{segment['index'] + 1}. {segment['description']}")
+    lines.extend(["", summary["repeat_text"], summary["link_text"]])
+    curve = profile_points(summary, assumed_start)
+    if curve is not None:
+        lines.append(f"Nominal setpoint duration from ASSUMED {assumed_start:g} °C start: {curve[-1][0]:.1f} min")
+    else:
+        lines.append("Nominal curve unavailable: unsupported or uncertain values")
+    lines.append("SV curve is a prediction from stored settings, NOT measured PV or heater performance.")
+    lines.append("Type K raw SP scaling, including type 5, must be checked against the real panel before replacing a programme.")
+    if summary["warnings"]:
+        lines.append("WARNINGS / VALUES TO VERIFY:")
+        lines.extend(" • " + v for v in summary["warnings"])
+    lines.append("Original 150-word raw register block remains in the JSON backup.")
+    return "\n".join(lines)
