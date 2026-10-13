@@ -861,8 +861,8 @@ class Window:
     panel.pack(fill="both",expand=True,padx=10,pady=10)
     tk.Label(body,text="LIVE CONTROLLER READS / OFFLINE PLANNING — NO HARDWARE SETUP WRITES",
              bg="#eef5fc",fg="#1b557c",font=("Segoe UI",10,"bold"),padx=10,pady=8).pack(fill="x")
-    self.message(body,"Read the existing controller configuration over E58-CIFQ2, or open a previously saved snapshot. Values are shown in plain language, beside their Omron menu abbreviations and raw register addresses. Changing a proposed value changes ONLY the local draft.")
-    self.message(body,"Selected high-value settings, NOT a full controller clone. Alarm thresholds, all PID sets, auxiliary output assignments and other advanced/protect parameters still need a wider read-only audit.")
+    self.message(body,"Select the initial settings to change. Connected mode reads the current values. Offline mode shows Unknown for anything not read. Draft choices stay local until the final step.")
+    self.message(body,"Most common setup choices are explained here. Less-common parameter values can be reviewed but are not editable until their behaviour is verified. This is not a complete controller clone.")
     buttons=tk.Frame(body,bg="white");buttons.pack(fill="x",pady=(9,6))
     self.btn_setup_read=self.b(buttons,"READ CONTROLLER SETTINGS (no writes)",self.setup_read,True)
     self.btn_setup_read.pack(side="left",padx=(0,6))
@@ -961,7 +961,7 @@ class Window:
     raw=self.setup_snapshot["fields"].get(code)
     self.setup_info.set(f"{p['name']} ({p['menu']})\n{code}\n\n"
                         f"Actual: {value_text(code,raw)}\n\n{p['explanation']}")
-    if p["options"] and raw is not None:
+    if p["options"] and (raw is not None or self.setup_snapshot.get("mode")=="offline"):
         self.setup_choices={f"{i}: {meaning}":i for i,meaning in p["options"].items()}
         self.setup_box.config(state="readonly",values=list(self.setup_choices))
         proposed=self.setup_draft.get(code)
@@ -989,6 +989,9 @@ class Window:
                                "all proposed changes cleared · no hardware writes")
     self.setup_refresh()
  def setup_save_snapshot(self):
+    if self.setup_snapshot and self.setup_snapshot.get("mode")=="offline":
+        messagebox.showwarning("No live read","Offline mode has no measured values. Export a setup proposal instead of a controller backup.")
+        return
     if not self.setup_snapshot:
         messagebox.showwarning("Read first","Read or open a real setup snapshot before saving.");return
     filename=filedialog.asksaveasfilename(title="Save unmodified controller setup snapshot",
@@ -1026,9 +1029,13 @@ class Window:
 
  def _upload(self):
     panel,body=self.card(self.t_upload,"Controlled RAM upload — isolated hardware bench only");panel.pack(fill="both",expand=True,padx=10,pady=10)
-    self.lab_info=tk.StringVar(value="WRITE MODE LOCKED" if not self.lab_mode else "LAB TRANSFER MODE ENABLED — strict safety checks still required")
+    self.lab_info=tk.StringVar(value="PROGRAMME WRITES LOCKED — READ-ONLY LAUNCHER" if not self.lab_mode else "ISOLATED LAB PROGRAMME TRANSFER — EXPERIMENTAL")
     tk.Label(body,textvariable=self.lab_info,bg="#fff4e6",fg="#8e461c",font=("Segoe UI",11,"bold"),padx=10,pady=8).pack(fill="x")
-    self.message(body,"A transfer changes only the selected DA programme block (segment count, segment types, active SP/rates/times, repetition=0, link=none). It deliberately NEVER edits the sensor type, PID, alarms, control output, START/RUN state, or firmware. End behaviour must already be set to RESET.")
+    self.review_note=tk.StringVar(value="Choose a programme in Step 3 and review any initial changes in Step 4.")
+    tk.Label(body,textvariable=self.review_note,bg=WHITE,fg=INK,justify="left",
+             wraplength=980,font=("Segoe UI",11,"bold"),padx=7,pady=12).pack(fill="x")
+    self.b(body,"GENERATE COMPLETE OFFLINE MANUAL ENTRY SHEET",self.entry_sheet,True).pack(anchor="w",pady=(0,7))
+    self.message(body,"Connected: preview the intended changes, then (lab-only) stage and verify the selected programme. Offline: generate all front-panel programming steps. Initial configuration changes are included in the manual sheet; USB writing of C3/C1 settings requires separate hardware validation and is not enabled yet.")
     self.channel=tk.StringVar(value="Bench controller")
     row=tk.Frame(body,bg="white");row.pack(anchor="w",pady=8)
     ttk.Label(row,text="Connected controller ID (audit label):").pack(side="left")
@@ -1057,8 +1064,32 @@ class Window:
     self.btn_stage=self.b(controls,"1 · STAGE & VERIFY IN RAM",self.stage,True);self.btn_stage.pack(side="left",padx=3)
     self.btn_commit=self.b(controls,"2 · EXPLICIT SAVE TO CONTROLLER",self.commit);self.btn_commit.pack(side="left",padx=3)
     self.message(body,"EXPERIMENTAL, ISOLATED LAB ONLY. Register encoder supports the observed input type 5/whole-degree SP values, but this version has NOT yet completed a hardware write qualification. Start with a disposable test slot and inspect every changed register. No heater or SSR power. On a communications fault, stop; no automatic rollback or save.",RED)
+ def review_current_plan(self):
+    if not hasattr(self,"review_note"):return
+    slot=self.slot.get()
+    self._store_meta()
+    programme=self.progs[slot]
+    try:
+        metrics=programme.validate()
+        overview=f"PROGRAMME {slot}: {len(programme.steps)} segments · {metrics['minutes']:.1f} min nominal · Final SP {metrics['final_sp']:g} °C"
+    except ValidationError as exc:
+        overview=f"PROGRAMME {slot} NEEDS CORRECTION: {exc}"
+    count=len(getattr(self,"setup_draft",{}))
+    if self.connection_mode.get()=="offline":
+        mode="OFFLINE/MANUAL: export a complete step-by-step front-panel sheet. No USB required."
+    elif not self.connected:
+        mode="CONTROLLER NOT CONNECTED: return to Step 2 before any hardware transfer."
+    else:
+        mode="CONNECTED: review register differences. Hardware programme writes require isolated lab mode."
+    if count:
+        mode+=f"\n{count} INITIAL SETTING CHANGE(S) DRAFTED: these cannot yet be written via USB. Do not upload a programme that depends on unapplied settings."
+    else:
+        mode+="\nNo initial configuration changes proposed."
+    self.review_note.set(overview+"\n"+mode)
+    if hasattr(self,"btn_stage"):self.refresh_buttons()
+
  def safe_to_stage(self):
-    return self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.confirm.get()=="AUTHORISE LAB TRANSFER" and self.session.staged is None and not self.session.mismatches and str(self.session.status).startswith("01")
+    return self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.confirm.get()=="AUTHORISE LAB TRANSFER" and self.session.staged is None and not self.session.mismatches and str(self.session.status).startswith("01")
  def refresh_buttons(self):
     if not hasattr(self,"btn_stage"):return
     self.btn_connect.config(state="normal" if not self.busy and not self.client else "disabled")
