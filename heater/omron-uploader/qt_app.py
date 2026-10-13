@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (
     QApplication,QMainWindow,QWidget,QFrame,QVBoxLayout,QHBoxLayout,QGridLayout,
     QLabel,QPushButton,QLineEdit,QComboBox,QSpinBox,QDoubleSpinBox,QTextEdit,
     QTableWidget,QTableWidgetItem,QAbstractItemView,QHeaderView,QFileDialog,
-    QMessageBox,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar
+    QMessageBox,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar,QScrollArea
 )
 from serial.tools import list_ports
 
@@ -317,7 +317,18 @@ class Studio(QMainWindow):
             self.show_step(2)
 
     def _programme_page(self):
-        page=QWidget();v=QVBoxLayout(page);v.setSpacing(9)
+        page=QWidget()
+        outer=QVBoxLayout(page)
+        outer.setContentsMargins(0,0,0,0)
+        scroller=QScrollArea()
+        scroller.setWidgetResizable(True)
+        scroller.setFrameShape(QFrame.Shape.NoFrame)
+        body=QWidget()
+        v=QVBoxLayout(body)
+        v.setContentsMargins(2,2,2,2)
+        v.setSpacing(9)
+        scroller.setWidget(body)
+        outer.addWidget(scroller)
         top=QHBoxLayout()
         top.addWidget(heading("Programme editor",
             "Each segment shows only its applicable settings. The setpoint curve updates as you edit."),1)
