@@ -81,6 +81,51 @@ class ModernStudioTests(unittest.TestCase):
         self.assertTrue(soak.hold.isHidden())
         self.assertEqual(self.win.programmes[0].steps[1].type,"step")
 
+    def test_numeric_fields_have_visible_readable_text_and_programme_updates(self):
+        from PySide6.QtTest import QTest
+        from PySide6.QtCore import Qt
+        import copy
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win._render_programme()
+        row=self.win.segment_table.cellWidget(0,0)
+        # The painted widget must be an ordinary high-contrast QLineEdit,
+        # not the clipped internal editor of a nested QSpinBox.
+        self.assertTrue(row.target.editor.isVisibleTo(row))
+        self.assertFalse(row.target.spin.isVisible())
+        self.assertEqual(row.target.editor.text(),"120.0")
+        self.assertIn("color:#18334a",row.target.editor.styleSheet())
+        self.assertEqual(row.rate.editor.text(),"2")
+        self.assertEqual(self.win.segment_table.cellWidget(1,0).hold.editor.text(),"15")
+        row.target.editor.setFocus()
+        row.target.editor.selectAll()
+        QTest.keyClicks(row.target.editor,"125.0")
+        self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),125.0)
+        self.assertEqual(row.target.editor.text(),"125.0")
+        row.target.down.click()
+        self.assertEqual(row.target.editor.text(),"124.9")
+        self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),124.9)
+        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.0")
+        self.win.start_pv_editor.up.click()
+        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.1")
+        self.assertAlmostEqual(float(self.win.programmes[0].start),20.1)
+        # All four row actions use actual QIcons, not missing font glyphs.
+        for control in row.findChildren(__import__(
+                "PySide6.QtWidgets",fromlist=["QToolButton"]).QToolButton):
+            if control.objectName()=="rowAction":
+                self.assertFalse(control.icon().isNull())
+                self.assertTrue(control.accessibleName())
+
+    def test_invalid_number_never_changes_heater_profile(self):
+        import copy
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win._render_programme()
+        row=self.win.segment_table.cellWidget(0,0)
+        before=float(self.win.programmes[0].steps[0].sp)
+        row.target._typed_value("not a number")
+        self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
+        row.target._typed_value("501")
+        self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
+
     def test_offline_configuration_proposal_blocks_upload(self):
         self.win.choose_mode("offline")
         self.win.group.setCurrentText("All groups")
