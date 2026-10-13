@@ -12,6 +12,16 @@ This is the NEW PARALLEL Windows app, not a replacement for the working Tkinter 
 
 Serial work is performed in a worker, not the GUI thread. Read-only status checks monitor a disconnected USB port and a non-responsive controller. The app uses a compact sidebar rather than sacrificing graph and table space.
 
+## Programme and offline UX refinements (13 October 2026)
+
+- Step 2 in Offline mode now contains a **real preparation workspace**, offering a fresh programme, existing project, saved controller backup, configuration browsing and direct manual-entry access. No serial port is opened for offline operations.
+- Step 3 now uses **type-aware segment cards**, not a wide fixed column grid. Ramp shows Target + Rate; Soak shows Hold time only; Step shows Target only. Dedicated, visible ▲/▼ controls are present on each numerical input. Segment cards provide their own move/duplicate/remove actions.
+- The graph remains above the taller segment area, with an adjustable vertical splitter and an outer scrollbar for smaller laptop displays.
+- Step 5's manual-entry view now follows the site's readable **two-column Omron display/value table** on the left, with an explicit explanation and full keypad directions on the right. There are stage filters and Previous/Next navigation; printable HTML still contains every step.
+- The website's own segment cards now align the applicable controls dynamically and expose consistent increase/decrease buttons, including keyboard-operable numeric inputs.
+- A website-script syntax and conditional-field regression test is included in the original backend test suite.
+- **No new controller communication-writing commands** were introduced by these layout changes.
+
 ## Functional parity with Tkinter and the website
 
 The Qt app is intended to be a replacement for the proven Tkinter workflow,
