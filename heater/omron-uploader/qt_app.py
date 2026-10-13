@@ -833,6 +833,7 @@ class Studio(QMainWindow):
         self.preview_stamp=None
         self.refresh_settings()
         self.feedback.setText("Local offline project opened; no controller write performed")
+        return True
 
     def log_event(self,detail):
         stamp=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -852,6 +853,7 @@ class Studio(QMainWindow):
         self.snapshot=data
         self.initial_text.setPlainText("SAVED FILE (not live controller data)\n\n"+setup_report(data))
         self.log_event("Opened saved initial setup "+file)
+        if self.mode=="offline":self.offline_inspect_saved=True
         self.show_step(1);self.read_tabs.setCurrentIndex(1)
 
     def open_inventory(self):
@@ -869,6 +871,7 @@ class Studio(QMainWindow):
                                           report_inventory(data))
         self.refresh_settings()
         self.log_event("Opened saved extended parameter inventory "+file)
+        if self.mode=="offline":self.offline_inspect_saved=True
         self.show_step(1);self.read_tabs.setCurrentIndex(2)
 
     def export_stored_profile(self):
@@ -902,6 +905,7 @@ class Studio(QMainWindow):
         except Exception as exc:self.message("Invalid backup",str(exc),True);return
         self._populate_memories()
         self.feedback.setText("Read-only backup loaded; it does not constitute a connected device.")
+        if self.mode=="offline":self.offline_inspect_saved=True
         self.show_step(1)
 
     def _populate_memories(self):
