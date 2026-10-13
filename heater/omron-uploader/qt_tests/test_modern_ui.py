@@ -104,9 +104,11 @@ class ModernStudioTests(unittest.TestCase):
         self.win.show_step(4)
         self.assertEqual(self.win.programmes[0].finish,"cont")
         self.assertEqual(self.win.apply_tabs.currentIndex(),0)
-        self.assertIn("CONTINUE",self.win.entry_table.item(0,1).text()
-                      if "CONTINUE" in self.win.entry_table.item(0,1).text()
-                      else self.win.entry_table.item(7,1).text())
+        end_rows=[i for i in range(self.win.entry_table.rowCount())
+                  if self.win.entry_table.item(i,0).text()=="eset"]
+        self.assertTrue(end_rows)
+        self.assertTrue(any("cont" in self.win.entry_table.item(i,1).text().lower()
+                            for i in end_rows))
         self.assertFalse(self.win.stage_button.isEnabled())
     def test_serial_writes_impossible_without_lab_flag(self):
         self.win.mode="connected"
