@@ -842,6 +842,9 @@ class Studio(QMainWindow):
             self.explorer_info.setPlainText(str(exc));self.explorer_chart.show_points([])
 
     def _editing_locked(self):
+        if self.busy:
+            self.feedback.setText("Wait for the active USB operation before editing programmes.")
+            return True
         if self.session and self.session.staged is not None and not self.session.committed:
             self.message("Finish staged upload",
                 "Verified RAM data is awaiting SAVE. Save or disconnect and inspect the controller "
@@ -1143,11 +1146,12 @@ class Studio(QMainWindow):
         self.stage_button.setEnabled(bool(can_stage))
         self.save_button.setEnabled(bool(can_save))
         staged=bool(session and session.staged is not None and not session.committed)
-        self.slot_combo.setEnabled(not staged)
-        self.segment_table.setEnabled(not staged)
-        self.programme_name.setEnabled(not staged)
-        self.start_pv.setEnabled(not staged)
-        self.finish_mode.setEnabled(not staged)
+        editing_locked=staged or self.busy
+        self.slot_combo.setEnabled(not editing_locked)
+        self.segment_table.setEnabled(not editing_locked)
+        self.programme_name.setEnabled(not editing_locked)
+        self.start_pv.setEnabled(not editing_locked)
+        self.finish_mode.setEnabled(not editing_locked)
         self.btn_read.setEnabled(not self.busy and self.mode=="connected")
         self.btn_disconnect.setEnabled(not self.busy and bool(self.client))
         self.next_button.setEnabled(not self.busy)
