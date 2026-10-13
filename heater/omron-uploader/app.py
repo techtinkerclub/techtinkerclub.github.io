@@ -411,13 +411,12 @@ class Window:
     slot=self.slot.get()
     rows=[("d.prg",str(slot)),("s-no",str(len(p.steps)))]
     for i,seg in enumerate(p.steps):
-        styp="soak" if seg.type=="soak" else "ramp"
-        rows.extend([("d.seg",str(i)),("styp",styp)])
+        rows.extend([("d.seg",str(i)),("styp",seg.type)])
         if seg.type!="soak":
             rows.append(("sp",f"{float(seg.sp):g} °C"))
-            rows.append(("pr","0 °C/min (instant SP step)" if seg.type=="step"
-                        else str(seg.rate)+" °C/min"))
-        else:
+        if seg.type=="ramp":
+            rows.append(("pr",str(seg.rate)+" °C/min"))
+        if seg.type=="soak":
             n=int(seg.minutes)
             rows.append(("time",f"{n//60}.{n%60:02d} (hours.minutes)"))
     rows.extend([("d.seg","end (programme-wide)"),
@@ -498,7 +497,7 @@ class Window:
     Set memory {slot}. Press <strong>MODE</strong> to step through the following parameter
     screens; use UP/DOWN to change values and PF for digit editing where supported.
     A segment automatically advances to the next <code>d.seg</code> after its last parameter.
-    A soak uses <code>time</code> but no separate SP. <code>d.seg = end</code> means programme-wide settings.</p>
+    A soak uses <code>time</code> but no separate SP; a step uses <code>styp = step</code> and its <code>sp</code> without a ramp-rate field. <code>d.seg = end</code> means programme-wide settings.</p>
     <table><thead><tr><th>Omron display</th><th>Value / check</th></tr></thead><tbody>{cells}</tbody></table>
     <h2>3 · Save and select for execution</h2>
     <p>There is no dedicated Save key for ordinary front-panel editing.
