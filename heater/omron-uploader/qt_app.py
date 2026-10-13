@@ -1260,7 +1260,14 @@ class Studio(QMainWindow):
             self._manual_plan=None
             return
         self._manual_plan=plan
-        rows=plan["entry_rows"]
+        rows=list(plan["entry_rows"])
+        for proposal in plan["setup_proposals"]:
+            rows.append(dict(section="PROPOSED INITIAL / ADVANCED SETTINGS (not applied)",
+                code=proposal["code"],
+                value=proposal["proposed"],
+                purpose=proposal["name"]+" · current: "+proposal["current"],
+                instruction=proposal["entry"],
+                kind="check"))
         self.entry_table.setRowCount(len(rows))
         previous=None
         for i,item in enumerate(rows):
