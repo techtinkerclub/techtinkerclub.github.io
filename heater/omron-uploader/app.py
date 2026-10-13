@@ -12,7 +12,7 @@ from compoway import SerialClient
 from offline_creator import open_studio
 from controller_setup import (CONFIG, BY_CODE, read_snapshot, validate_snapshot, value_text,
                               apply_draft, build_proposal, report as setup_report,
-                              write_new_json)
+                              write_new_json, offline_snapshot)
 from backup_explorer import load_backup, decode_slot, profile_points, config_explanation, summary_as_plaintext, DecodeError
 
 BLUE="#1966a3";BG="#eef3f8";DARK="#1b344d";RED="#b43e45";GREEN="#287953"
@@ -25,7 +25,7 @@ class Window:
     for i in range(1,8):self.progs[i].name=f"Programme {i}"
     self.slot=tk.IntVar(value=0);self.current_segment=None;self.client=None;self.session=None;self.busy=False
     self.events=queue.Queue();self.connected=False;self.fail_latched=False
-    self._auto_backup=False;self._auto_show_explorer=False
+    self._auto_backup=False;self._auto_show_explorer=False;self.connection_mode=tk.StringVar(value="connected")
     root.title(APP_TITLE);root.geometry("1370x890");root.minsize(1090,720);root.configure(bg=BG)
     style=ttk.Style();style.theme_use("clam")
     style.configure("TNotebook",background=BG,borderwidth=0)
@@ -56,32 +56,49 @@ class Window:
     lefthead=tk.Frame(hero,bg="#193951");lefthead.pack(side="left",fill="x",expand=True)
     tk.Label(lefthead,text="E5CC-T   /   PROGRAMME STUDIO",bg="#193951",fg=WHITE,
              anchor="w",font=("Segoe UI",19,"bold")).pack(anchor="w")
-    tk.Label(lefthead,text="Design offline   •   Practice keypad   •   Inspect USB   •   Back up memory",
+    tk.Label(lefthead,text="Connect or offline → Read → Programme → Settings → Apply",
              bg="#193951",fg="#bad4e8",font=("Segoe UI",10)).pack(anchor="w",pady=(3,0))
     mode="ISOLATED LAB MODE" if lab_mode else "READ-ONLY SERIAL MODE"
     tk.Label(hero,text=mode,bg="#315c72" if lab_mode else "#255e65",
              fg="#f0fafb",padx=13,pady=9,font=("Segoe UI",10,"bold")).pack(side="right")
-    actions=tk.Frame(root,bg=BG,padx=18,pady=9);actions.pack(fill="x")
-    self.b(actions,"DESIGN A PROGRAMME  ↗",self.open_offline_creator,True).pack(side="left",padx=(0,9))
-    self.b(actions,"Manual-entry sheet",self.entry_sheet).pack(side="left",padx=(0,9))
-    tk.Label(actions,text="ONE controller connected at a time",
-             bg=BG,fg="#627d92",font=("Segoe UI",10)).pack(side="right")
-    self.book=ttk.Notebook(root);self.book.pack(expand=True,fill="both",padx=18,pady=(4,8))
-    self.t_web=ttk.Frame(self.book);self.t_builder=ttk.Frame(self.book)
-    self.t_connect=ttk.Frame(self.book);self.t_backup=ttk.Frame(self.book)
-    self.t_explore=ttk.Frame(self.book);self.t_setup=ttk.Frame(self.book)
-    self.t_upload=ttk.Frame(self.book);self.t_audit=ttk.Frame(self.book)
-    for tab,title in [(self.t_web,"START"),
-                      (self.t_builder,"EDIT"),
-                      (self.t_connect,"CONNECT"),
-                      (self.t_backup,"BACK UP"),
-                      (self.t_explore,"EXPLORE"),
-                      (self.t_setup,"SETUP"),
-                      (self.t_upload,"UPLOAD"),
-                      (self.t_audit,"LOG")]:
+    self.book=ttk.Notebook(root)
+    self.book.pack(expand=True,fill="both",padx=16,pady=(13,6))
+    # Exactly five user-facing workflow steps. All legacy diagnostic views live inside Step 2.
+    self.t_web=ttk.Frame(self.book)
+    self.t_read=ttk.Frame(self.book)
+    self.t_builder=ttk.Frame(self.book)
+    self.t_setup=ttk.Frame(self.book)
+    self.t_upload=ttk.Frame(self.book)
+    for tab,title in [
+         (self.t_web,"1   MODE"),
+         (self.t_read,"2   READ & BACK UP"),
+         (self.t_builder,"3   PROGRAMME"),
+         (self.t_setup,"4   INITIAL SETTINGS"),
+         (self.t_upload,"5   APPLY / MANUAL")]:
         self.book.add(tab,text=title)
+    self.readbook=ttk.Notebook(self.t_read)
+    self.readbook.pack(fill="both",expand=True,padx=10,pady=10)
+    self.t_connect=ttk.Frame(self.readbook)
+    self.t_backup=ttk.Frame(self.readbook)
+    self.t_explore=ttk.Frame(self.readbook)
+    for tab,title in [(self.t_connect,"Connect & inspect"),
+                      (self.t_backup,"Save backup"),
+                      (self.t_explore,"Existing programmes")]:
+        self.readbook.add(tab,text=title)
+    # Log stays available for diagnostics, but is not another workflow step.
+    self.t_audit=ttk.Frame(root)
     self._web_studio();self._builder();self._connect();self._backup();self._explorer();self._setup();self._upload();self._audit()
-    self.status=tk.StringVar(value="Ready · offline planning; controller not connected")
+    self.status=tk.StringVar(value="Choose Connected or Offline/manual to begin.")
+    controls=tk.Frame(root,bg=WHITE,padx=19,pady=9)
+    controls.pack(fill="x",side="bottom")
+    self.btn_previous=self.b(controls,"←  Back",self.wizard_previous)
+    self.btn_previous.pack(side="left",padx=(0,10))
+    self.btn_next=self.b(controls,"Continue  →",self.wizard_next,True)
+    self.btn_next.pack(side="right",padx=(10,0))
+    self.wizard_position=tk.StringVar(value="STEP 1 OF 5  ·  Choose operating mode")
+    tk.Label(controls,textvariable=self.wizard_position,bg=WHITE,fg=INK,
+             font=("Segoe UI",10,"bold")).pack(side="left",padx=10)
+    self.book.bind("<<NotebookTabChanged>>",self._wizard_changed)
     footer=tk.Frame(root,bg=WHITE,padx=19,pady=10);footer.pack(fill="x",side="bottom")
     tk.Label(footer,text="STATUS",bg=WHITE,fg="#6b879c",
              font=("Segoe UI",9,"bold")).pack(side="left",padx=(0,12))
@@ -90,51 +107,76 @@ class Window:
     self.log("Started in "+("LAB TRANSFER ENABLED" if lab_mode else "READ-ONLY")+" mode")
     if not lab_mode:self.log("No hardware writes available. Run with --enable-lab-writes to unlock separate physical safety workflow.")
     self._refresh_programme();self.refresh_ports();self.refresh_buttons()
+    self.setup_load(offline_snapshot(),"Offline planning — device values unknown")
+    self.book.select(self.t_web)
+    self._wizard_changed()
     self.root.after(100,self._pump)
     self.root.protocol("WM_DELETE_WINDOW",self.exit)
 
  def _web_studio(self):
-    """Task-oriented start screen. The rich browser creator is launched from here."""
-    root=tk.Frame(self.t_web,bg=BG,padx=20,pady=20)
-    root.pack(fill="both",expand=True)
-    header=tk.Frame(root,bg=WHITE,padx=25,pady=21,highlightbackground=BORDER,highlightthickness=1)
-    header.pack(fill="x")
-    tk.Label(header,text="WORKFLOW  /  E5CC-T",bg=WHITE,fg=BLUE,
+    outer=tk.Frame(self.t_web,bg=BG,padx=22,pady=23);outer.pack(fill="both",expand=True)
+    head=tk.Frame(outer,bg=WHITE,padx=28,pady=25,highlightthickness=1,highlightbackground=BORDER)
+    head.pack(fill="x")
+    tk.Label(head,text="STEP 1 / CONNECTION",bg=WHITE,fg=BLUE,
              font=("Segoe UI",10,"bold")).pack(anchor="w")
-    tk.Label(header,text="One controller. One clear workflow.",bg=WHITE,fg=INK,
-             font=("Segoe UI",21,"bold")).pack(anchor="w",pady=(3,7))
-    tk.Label(header,text="Design offline or connect your E58-CIFQ2 cable to inspect, save and safely review existing controller data. "
-             "All USB reads work without an internet connection.",bg=WHITE,fg="#4d718c",
-             wraplength=980,justify="left",font=("Segoe UI",11)).pack(anchor="w")
-    steps=tk.Frame(root,bg=BG)
-    steps.pack(fill="both",expand=True,pady=(16,0))
-    for col in range(2):steps.grid_columnconfigure(col,weight=1,uniform="workflow")
-    for row in range(2):steps.grid_rowconfigure(row,weight=1)
-    def tile(pos,title,subtitle,body,button,fn,primary=False):
-        row,col=divmod(pos,2)
-        pane=tk.Frame(steps,bg=WHITE,padx=24,pady=19,
+    tk.Label(head,text="How are you programming the controller?",bg=WHITE,fg=INK,
+             font=("Segoe UI",23,"bold")).pack(anchor="w",pady=(6,8))
+    tk.Label(head,text="Both modes use the same programme editor and setup planner. You never need the website or a JSON hand-off.",
+             bg=WHITE,fg="#506f87",font=("Segoe UI",11),wraplength=890,justify="left").pack(anchor="w")
+    options=tk.Frame(outer,bg=BG);options.pack(fill="both",expand=True,pady=18)
+    options.columnconfigure(0,weight=1);options.columnconfigure(1,weight=1)
+    for index,(name,title,detail,button) in enumerate([
+        ("connected","Connected to Omron","Use the E58-CIFQ2 cable to inspect, back up and verify the actual device. Only an explicitly authorised isolated lab session can change programme memory.","USE CONNECTED MODE"),
+        ("offline","Offline / manual programming","No cable needed. Create or edit a heating profile, choose initial settings, then produce a detailed Omron front-panel entry sheet.","USE OFFLINE MODE")]):
+        card=tk.Frame(options,bg=WHITE,padx=24,pady=25,
                       highlightbackground=BORDER,highlightthickness=1)
-        pane.grid(row=row,column=col,sticky="nsew",padx=(0,9) if col==0 else (9,0),pady=(0,15))
-        tk.Label(pane,text=subtitle,bg=WHITE,fg=BLUE,font=("Segoe UI",9,"bold")).pack(anchor="w")
-        tk.Label(pane,text=title,bg=WHITE,fg=INK,font=("Segoe UI",16,"bold")).pack(anchor="w",pady=(4,9))
-        tk.Label(pane,text=body,bg=WHITE,fg="#526f84",justify="left",
-                 wraplength=460,font=("Segoe UI",10)).pack(anchor="w",pady=(0,15))
-        self.b(pane,button,fn,primary).pack(anchor="w")
-    tile(0,"Build a heating programme","STEP 01  ·  NO CABLE REQUIRED",
-         "Open the full graphical programme designer and keypad simulator. You can work without connecting a controller.",
-         "OPEN PROGRAMME DESIGNER ↗",self.open_offline_creator,True)
-    tile(1,"Connect and read everything","STEP 02  ·  READ-ONLY USB",
-         "With heater supplies isolated, choose the COM port on Connect. Read the controller's identity and create a verified backup of its eight programme memories.",
-         "GO TO CONNECTION",lambda:self.book.select(self.t_connect),True)
-    tile(2,"Review what's already stored","STEP 03  ·  HUMAN-READABLE",
-         "Browse all eight programme slots with ramps, soaks, steps and charts. Import a stored programme into the editor without writing to hardware.",
-         "EXPLORE EXISTING PROGRAMMES",lambda:self.book.select(self.t_explore))
-    tile(3,"Preview a controlled transfer","STEP 04  ·  ISOLATED LAB ONLY",
-         "Compare the intended changes with the saved original registers. Only an explicitly enabled lab session can stage changes, verify them and save separately.",
-         "REVIEW UPLOAD WORKFLOW",lambda:self.book.select(self.t_upload))
-    self.home_note=tk.StringVar(value="READY  •  No controller connected  •  No hardware writes")
-    tk.Label(root,textvariable=self.home_note,bg=PALE,fg=INK,padx=15,pady=13,
-             font=("Segoe UI",10,"bold"),anchor="w").pack(fill="x")
+        card.grid(row=0,column=index,sticky="nsew",padx=(0,9) if index==0 else (9,0))
+        tk.Label(card,text="OPTION 0"+str(index+1),bg=WHITE,fg=BLUE,
+                 font=("Segoe UI",10,"bold")).pack(anchor="w")
+        tk.Label(card,text=title,bg=WHITE,fg=INK,font=("Segoe UI",17,"bold")).pack(anchor="w",pady=(12,12))
+        tk.Label(card,text=detail,bg=WHITE,fg="#526f84",font=("Segoe UI",11),
+                 wraplength=435,justify="left").pack(anchor="w",pady=(0,25))
+        self.b(card,button,lambda choice=name:self.choose_mode(choice),True).pack(anchor="w")
+    self.mode_summary=tk.StringVar(value="CONNECTED SELECTED  ·  Continue to read the controller")
+    tk.Label(outer,textvariable=self.mode_summary,bg=PALE,fg=DARK,
+             padx=18,pady=14,anchor="w",font=("Segoe UI",11,"bold")).pack(fill="x")
+ def choose_mode(self,mode):
+    if mode not in ("connected","offline"):return
+    self.connection_mode.set(mode)
+    if mode=="offline":
+        self.mode_summary.set("OFFLINE/MANUAL  ·  No device needed; continue directly to the programme")
+        self.setup_load(offline_snapshot(),"Offline planning — device values unknown")
+        self.book.select(self.t_builder)
+    else:
+        self.mode_summary.set("CONNECTED  ·  Read the device before editing or uploading")
+        self.book.select(self.t_read)
+        self.readbook.select(self.t_connect)
+    self._wizard_changed()
+ def wizard_previous(self):
+    idx=self.book.index("current")
+    if self.connection_mode.get()=="offline" and idx==2:idx=0
+    else:idx=max(0,idx-1)
+    self.book.select(idx)
+ def wizard_next(self):
+    idx=self.book.index("current")
+    if idx==0 and self.connection_mode.get()=="offline":idx=2
+    else:idx=min(4,idx+1)
+    self.book.select(idx)
+ def _wizard_changed(self,event=None):
+    if not hasattr(self,"btn_next"):return
+    idx=self.book.index("current")
+    title=["Choose connection mode","Read actual controller data",
+           "Create or edit heating programme","Review initial settings",
+           "Upload or generate manual entry"][idx]
+    self.wizard_position.set(f"STEP {idx+1} OF 5  ·  {title}")
+    self.btn_previous.config(state="normal" if idx>0 else "disabled")
+    self.btn_next.config(text="Finish / Review" if idx==3 else "Continue  →",
+                         state="disabled" if idx==4 else "normal")
+    if idx==3 and self.connection_mode.get()=="connected" and self.connected and not self.busy:
+        if self.setup_snapshot is None or self.setup_snapshot.get("mode")=="offline":
+            self.setup_read()
+    if idx==4:
+        self.review_current_plan()
  def open_offline_creator(self):
     try:
         path,opened=open_studio()
