@@ -5,11 +5,12 @@ emit local changes; they never issue serial commands to the controller.
 """
 from __future__ import annotations
 
-from PySide6.QtCore import Signal,Qt,QLocale
+from PySide6.QtCore import Signal,Qt,QRect,QSize
 from PySide6.QtWidgets import (
     QWidget,QFrame,QHBoxLayout,QVBoxLayout,QLabel,QComboBox,QDoubleSpinBox,
     QSpinBox,QAbstractSpinBox,QToolButton,QLineEdit
 )
+from PySide6.QtGui import QIcon,QPixmap,QPainter,QPen,QColor
 from program_model import Segment
 
 
@@ -141,6 +142,35 @@ class Stepper(QWidget):
                 self.editor.text().strip().replace(",",".") != "-")
 
 
+def _action_icon(name):
+    """Tiny vector-drawn icons, avoiding unsupported Windows Unicode glyphs."""
+    pixmap=QPixmap(20,20)
+    pixmap.fill(Qt.GlobalColor.transparent)
+    painter=QPainter(pixmap)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing,True)
+    pen=QPen(QColor("#28618d"),2)
+    pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+    pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+    painter.setPen(pen)
+    if name=="up":
+        painter.drawLine(10,16,10,4)
+        painter.drawLine(10,4,5,9)
+        painter.drawLine(10,4,15,9)
+    elif name=="down":
+        painter.drawLine(10,4,10,16)
+        painter.drawLine(10,16,5,11)
+        painter.drawLine(10,16,15,11)
+    elif name=="duplicate":
+        painter.drawRect(QRect(3,3,10,11))
+        painter.fillRect(QRect(7,7,10,11),QColor("#ffffff"))
+        painter.drawRect(QRect(7,7,10,11))
+    elif name=="remove":
+        painter.drawLine(5,5,15,15)
+        painter.drawLine(15,5,5,15)
+    painter.end()
+    return QIcon(pixmap)
+
+
 class SegmentRow(QFrame):
     changed=Signal()
     move_up=Signal()
@@ -211,17 +241,19 @@ class SegmentRow(QFrame):
         buttons=QHBoxLayout(buttonbar)
         buttons.setContentsMargins(0,0,0,0)
         buttons.setSpacing(3)
-        for label,tip,signal in [
-            ("↑","Move this segment earlier",self.move_up),
-            ("↓","Move this segment later",self.move_down),
-            ("⧉","Duplicate this segment",self.duplicate),
-            ("×","Remove this segment",self.remove),
+        for symbol,tip,signal in [
+            ("up","Move this segment earlier",self.move_up),
+            ("down","Move this segment later",self.move_down),
+            ("duplicate","Duplicate this segment",self.duplicate),
+            ("remove","Remove this segment",self.remove),
         ]:
             b=QToolButton()
             b.setObjectName("rowAction")
-            b.setText(label)
+            b.setIcon(_action_icon(symbol))
+            b.setIconSize(QSize(18,18))
+            b.setAccessibleName(tip)
             b.setToolTip(tip)
-            b.setFixedSize(30,32)
+            b.setFixedSize(32,34)
             b.clicked.connect(lambda checked=False,sig=signal:sig.emit())
             buttons.addWidget(b)
         outer.addWidget(buttonbar)
