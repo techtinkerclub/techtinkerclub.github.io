@@ -5,7 +5,7 @@ emit local changes; they never issue serial commands to the controller.
 """
 from __future__ import annotations
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal,Qt
 from PySide6.QtWidgets import (
     QWidget,QFrame,QHBoxLayout,QVBoxLayout,QLabel,QComboBox,QDoubleSpinBox,
     QSpinBox,QAbstractSpinBox,QToolButton
@@ -37,7 +37,7 @@ class Stepper(QWidget):
         spin.setMinimumHeight(36)
         spin.setMinimumWidth(72)
         spin.setFrame(False)
-        spin.setAlignment(__import__("PySide6.QtCore",fromlist=["Qt"]).Qt.AlignmentFlag.AlignRight)
+        spin.setAlignment(Qt.AlignmentFlag.AlignRight)
         line.addWidget(spin,1)
         arrows=QWidget()
         vert=QVBoxLayout(arrows)
