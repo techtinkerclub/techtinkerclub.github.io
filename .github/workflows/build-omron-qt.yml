@@ -1,0 +1,49 @@
+name: Build modern E5CC-T Studio (Qt) for Windows
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'heater/omron-uploader/qt_*.py'
+      - 'heater/omron-uploader/program_model.py'
+      - 'heater/omron-uploader/transfer.py'
+      - 'heater/omron-uploader/compoway.py'
+      - 'heater/omron-uploader/controller_*.py'
+      - 'heater/omron-uploader/config_change_review.py'
+      - 'heater/omron-uploader/backup_explorer.py'
+      - 'heater/omron-uploader/qt_tests/**'
+      - '.github/workflows/build-omron-qt.yml'
+
+jobs:
+  windows-portable:
+    runs-on: windows-latest
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Qt and serial dependencies
+        run: python -m pip install --disable-pip-version-check PySide6 pyqtgraph numpy pyserial pyinstaller
+      - name: Validate Python module syntax
+        run: python -m compileall -q heater/omron-uploader
+      - name: Test Omron backend
+        run: python -m unittest discover -s heater/omron-uploader/tests -v
+      - name: Run native Qt GUI regression tests
+        run: python -m unittest discover -s heater/omron-uploader/qt_tests -v
+      - name: Package portable Qt application
+        working-directory: heater/omron-uploader
+        run: python -m PyInstaller --noconfirm --clean --onedir --windowed --name E5CC-Programme-Studio-Modern --hidden-import serial.tools.list_ports --collect-all pyqtgraph qt_app.py
+      - name: Create isolated portable folder
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force portable-qt | Out-Null
+          Copy-Item -Path heater/omron-uploader/dist/E5CC-Programme-Studio-Modern/* -Destination portable-qt/ -Recurse
+          Set-Content -Path portable-qt/START_READ_ONLY.cmd -Value '@echo off', 'cd /d "%~dp0"', 'start "" "E5CC-Programme-Studio-Modern.exe"'
+          Set-Content -Path portable-qt/START_ISOLATED_LAB.cmd -Value '@echo off', 'cd /d "%~dp0"', 'start "" "E5CC-Programme-Studio-Modern.exe" --enable-lab-writes'
+          Copy-Item heater/omron-uploader/README.md portable-qt/Legacy-and-Qt-Notes.txt
+          Compress-Archive -Path portable-qt/* -DestinationPath E5CC-T-Modern-Studio-Windows.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: E5CC-T-Modern-Studio-Windows
+          path: E5CC-T-Modern-Studio-Windows.zip
