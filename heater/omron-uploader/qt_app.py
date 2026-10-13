@@ -14,6 +14,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import webbrowser
 
 from PySide6.QtCore import Qt, QTimer, QThreadPool
 from PySide6.QtGui import QColor, QFont
@@ -387,6 +388,7 @@ class Studio(QMainWindow):
         row=QHBoxLayout()
         row.addWidget(button("Save / print full entry guide",self.export_manual,True))
         row.addWidget(button("Copy all keypad instructions",self.copy_manual))
+        row.addWidget(button("Practise five-button keypad (offline)",self.open_keypad_practice))
         row.addWidget(button("Export settings change report",self.export_review))
         row.addStretch()
         mv.addLayout(row)
@@ -1279,6 +1281,24 @@ class Studio(QMainWindow):
             f"{len(plan['setup_proposals'])} settings proposals (review only). "
             "VERIFY-marked entries need actual controller inspection."
         )
+
+    def open_keypad_practice(self):
+        """Optional familiar website keypad trainer, bundled as a LOCAL HTML file.
+
+        The native Qt programme/entry table are primary; the simulator does
+        NOT alter local designs and NEVER sends Omron communications.
+        """
+        if getattr(sys,"frozen",False):
+            trainer=Path(sys.executable).resolve().parent/"program-tools"/"index.html"
+        else:
+            trainer=Path(__file__).resolve().parent.parent/"program-tools"/"index.html"
+        if not trainer.exists():
+            self.message("Offline keypad trainer unavailable",
+                "The bundled practice page could not be found. The in-app manual "
+                "entry table and complete printed guide still work without it.",True)
+            return
+        webbrowser.open(trainer.as_uri())
+        self.log_event("Opened local, offline five-button keypad training page")
 
     def copy_manual(self):
         if getattr(self,"_manual_plan",None) is None:self.refresh_manual()
