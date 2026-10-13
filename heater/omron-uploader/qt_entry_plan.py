@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from program_model import Programme
 from controller_inventory import CATALOG,human_value
+from controller_setup import BY_CODE
 
 @dataclass(frozen=True)
 class Entry:
@@ -49,6 +50,17 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
     met=programme.validate()
     baseline=baseline or {}
     changes=changes or {}
+    # This worksheet is explicitly a rate-of-rise, degrees/minute, hours.minutes
+    # workflow. A different programme method needs a different manual procedure.
+    for code,expected,label in (
+        ("C3:00B9",0,"hours.minutes timing"),
+        ("C3:00BA",1,"rate-of-rise method"),
+        ("C3:00BB",0,"degrees-per-minute ramps"),
+    ):
+        if code in changes and changes[code] != expected:
+            raise ValueError(f"Selected {label} configuration is incompatible with "
+                             "this keypad worksheet. Do not enter the programme until "
+                             "the programming method and time encoding are redesigned.")
     entries=[]
     add=lambda section,code,value,purpose,instruction,kind="set":entries.append(
         Entry(section,code,str(value),purpose,instruction,kind))
@@ -65,7 +77,8 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
         ("t-u","h-m","Segment time unit: hours.minutes"),
         ("rtsm","stop","Program restarts stop at intended stage"),
         ("p-on","rst","Restore controller in RESET on power-up"),
-        ("eset",programme.finish,"Controller action when programme ends")]:
+        ("eset",programme.finish,"Controller action when programme ends"),
+        ("pvst","0 (SP Start)","Ramp start method — check against actual controller")]:
         add("Preparation",code,value+" — VERIFY",purpose,
             "In Initial Setting Level press MODE until this code is displayed. "
             "Check the actual setting; make a change only if it is an approved change "
@@ -156,13 +169,23 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
         p=CATALOG[code]
         old=baseline.get(code)
         typ=baseline.get("C3:0000")
+        item=BY_CODE.get(code)
+        if item and code.startswith("C3:"):
+            keypad=(f"From normal PV/SP, hold LEVEL for at least 3 seconds to reach "
+                    f"Initial Setting Level. Press MODE until {item['menu']} is displayed; "
+                    f"verify the existing value. If this change has been independently "
+                    f"approved, use UP/DOWN to enter the requested value and press MODE "
+                    f"to store. If the menu is hidden/protected, STOP rather than guessing "
+                    f"a substitute button path. Read back and check persistence.")
+        else:
+            keypad=("Specific front-panel menu or setting-area sequence is NOT VERIFIED "
+                    "for this parameter; consult the exact H185 menu before changing it.")
         proposals.append(dict(
             code=code,name=p.name,
             current=human_value(code,old,typ) if old is not None else "Unknown — must check device",
             proposed=human_value(code,raw,typ),
             meaning=p.meaning,
-            entry="Front-panel key sequence is NOT VERIFIED for this parameter; "
-                  "consult the exact H185 menu before changing it."
+            entry=keypad
         ))
     return dict(slot=slot,name=programme.name,
                 nominal_minutes=float(met["minutes"]),final_sp=float(met["final_sp"]),
