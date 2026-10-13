@@ -135,6 +135,13 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - **Test outcome:** PASS for manual button entry, menu progression, and configuration readback after full USB power removal and restoration. NOT YET TESTED: programme execution/RUN sequence, measured PV tracking, timing against actual heater, control SSR output, RESET output behaviour, any safety interlock or USB communications.
 - **Next action:** With normal mains and heater DC safely isolated and controller USB powered, navigate to normal Operation Level and inspect displayed status/read-only RESET indication without pressing RUN or changing any parameter. Record screen codes, actual PV, and displayed state. Bench commissioning and controlled heater testing require separate safety review.
 
+## Operation Level follow-up — 13 October 2026
+
+- **Physical navigation:** After returning from PID Setting Level to Operation Level and connecting the Type K sensor, user pressed MODE once. Real controller displayed **`a-m`** (Auto/Manual Switch). This corrects the previous simulator assumption that first MODE would display `r-r`.
+- **Safety:** Omron H185 §§5-11/6-3 states holding LEVEL for at least three seconds on `a-m` switches to Manual Control Level, where manual MV can take priority even during programme RESET. No such key hold or manual control was requested or tested.
+- **Simulator patch:** Inserted a non-editable `a-m` page as first MODE after PV/SP, commit `933950f4aa926477a0674e6c9d0be479db304afb`, and passed a basic button-flow test. Other Operation Level pages and their visibility have **not** yet been validated. Simulator's subsequent `r-r` screen is provisional, not real-hardware confirmed.
+- **Next validation:** While actual `a-m` is displayed, press **MODE briefly once**; report exact upper and lower display. Do not use UP/DOWN or hold LEVEL. No heater RUN.
+
 ## Results
 
 - Actual `t-pr`: __________ ; actual `t-u`: __________ ; actual `pru`: __________
