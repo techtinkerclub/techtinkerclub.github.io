@@ -130,6 +130,32 @@ class FiveStepWizardTests(unittest.TestCase):
         self.assertEqual(self.ui.btn_commit.winfo_manager(),"pack")
         self.assertIn("Not connected",self.ui.upload_blocker.get())
         self.assertFalse(self.ui.safe_to_stage())
+    def test_stage_requires_preview_and_blocks_stale_profile(self):
+        """A changed local design invalidates the reviewed register plan."""
+        from types import SimpleNamespace
+        class Plan:
+            backup_data={"programmes":{"0":["00000000"]*150}}
+            staged=None
+            mismatches=[]
+            status="0100"
+            def build_plan(self,slot,programme):
+                return [(0x0017,50,int(float(programme.steps[0].sp)))]
+        self.ui.choose_mode("connected")
+        self.ui.lab_mode=True
+        self.ui.connected=True
+        self.ui.session=Plan()
+        for var in self.ui.check_vars:var.set(True)
+        self.ui.refresh_buttons()
+        self.assertFalse(self.ui.safe_to_stage())
+        with patch("tkinter.messagebox.showinfo"):
+            self.ui.preview()
+        self.assertTrue(self.ui.safe_to_stage())
+        self.ui.progs[0].steps[0].sp="130"
+        with patch("tkinter.messagebox.showwarning") as warning,\
+             patch("tkinter.messagebox.askyesno",return_value=False):
+            self.ui.stage()
+        warning.assert_called_once()
+        self.assertFalse(self.ui.safe_to_stage())
     def test_manual_includes_programme_and_initial_setting_without_website(self):
         self.ui.choose_mode("offline")
         self.ui.progs[0]=Programme(name="120 C ramp / 50 C cool",start="20",finish="rst",
