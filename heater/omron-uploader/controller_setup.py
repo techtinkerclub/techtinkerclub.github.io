@@ -76,7 +76,7 @@ def value_text(code, raw):
     if code == "C3:000A":
         return {-2:"0.1 seconds", -1:"0.2 seconds", 0:"0.5 seconds"}.get(value, f"{value} seconds" if 1<=value<=99 else f"Unknown ({value})")
     if code in ("C1:0022","C1:0023"):
-        return f"{value / 10:g}% (conditional on output mode; verify)"
+        return f"{value / 10:.1f}% (conditional on output mode; verify)"
     if code in ("C3:0005","C3:0006"):
         return f"Raw {value} (check thermocouple display scale)"
     return f"Raw {value}"
