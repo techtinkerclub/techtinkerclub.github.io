@@ -101,16 +101,25 @@ def address(slot,offset):
     if not 0<=slot<8 or not 0<=offset<=0xff:raise ValidationError("Invalid programme address")
     return (slot<<8)+offset
 
-def planned_writes(slot,p:Programme):
+def planned_writes(slot,p:Programme,input_type=6):
     """Only writes programme data. Never writes initial settings, PID or alarms.
     Order: disable repeats/link, segment fields, segment count LAST.
     """
-    p.validate(); out=[(address(slot,0x0e),0),(address(slot,0x0f),0xffffffff)]
+    p.validate()
+    if input_type not in (5,6):
+        raise ValidationError("Unverified thermocouple display resolution")
+    # H186 programme SP values are encoded without a display decimal point.
+    scale = 1 if input_type == 5 else 10
+    if input_type == 5:
+        for i,seg in enumerate(p.steps):
+            if seg.type in ("ramp","step") and decimal(seg.sp) != decimal(seg.sp).to_integral_value():
+                raise ValidationError(f"Segment {i+1}: input type 5 needs whole-degree targets")
+    out=[(address(slot,0x0e),0),(address(slot,0x0f),0xffffffff)]
     for i,s in enumerate(p.steps):
         base=0x16+4*i
         out.append((address(slot,base),KIND_CODE[s.type]))
         if s.type in ("ramp","step"):
-            out.append((address(slot,base+1),uint32(decimal(s.sp)*10)))
+            out.append((address(slot,base+1),uint32(decimal(s.sp)*scale)))
         if s.type=="ramp":out.append((address(slot,base+2),int(decimal(s.rate))))
         if s.type=="soak":out.append((address(slot,base+3),encode_time(s.minutes)))
     out.append((address(slot,0),len(p.steps)))
