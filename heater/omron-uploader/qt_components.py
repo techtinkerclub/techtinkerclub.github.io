@@ -50,7 +50,20 @@ QTextEdit { background:#ffffff; border:1px solid #dce5ee; border-radius:8px; }
 QProgressBar { border:0; background:#e3edf7; border-radius:5px;height:8px; }
 QProgressBar::chunk { background:#1584de; border-radius:5px; }
 QScrollArea { border:none;background:transparent; }
-QSplitter::handle { background:#e3eaf1; }
+QFrame#segmentRow { background:#f9fcff; border:1px solid #dbe7f1; border-radius:10px; }
+QFrame#segmentRow:hover { border-color:#a6c8e5; }
+QFrame#stepperFrame { border:1px solid #cbddea; border-radius:8px; background:#ffffff; }
+QFrame#stepperFrame QAbstractSpinBox { background:transparent;border:0;
+ font:600 13px 'Segoe UI';padding:3px 7px; }
+QToolButton#spinArrow { border:0;border-left:1px solid #dbe7f0; border-radius:0;
+ background:#edf5fd; color:#24638e; font:600 10px 'Segoe UI'; }
+QToolButton#spinArrow:hover { background:#cfe7fa; }
+QToolButton#rowAction { border:1px solid #d6e3ee; background:white;
+ border-radius:6px;color:#315b7a;font:600 16px 'Segoe UI'; }
+QToolButton#rowAction:hover { background:#e6f3ff; }
+QTableWidget#segmentRows { background:white; border:0;alternate-background-color:white; }
+QTableWidget#segmentRows::item { background:white;border:0; }
+QSplitter::handle { background:#dde9f2; }
 """
 
 
