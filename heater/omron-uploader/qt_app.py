@@ -747,6 +747,7 @@ class Studio(QMainWindow):
         self.programmes[selected]=loaded
         self.slot_combo.setCurrentIndex(selected)
         self._render_programme()
+        self.preview_stamp=None
         self.show_step(2)
 
     def _slot_changed(self,slot):
@@ -986,7 +987,8 @@ class Studio(QMainWindow):
         if not hasattr(self,"stage_button"):return
         session=self.session
         connected=bool(session and self.client and self.mode=="connected")
-        can_preview=connected and session.backup_data is not None and not self.busy and not self.draft
+        can_preview=(connected and session.backup_data is not None and not self.busy
+                     and not self.draft and session.staged is None)
         can_stage=(can_preview and self.lab and not self.fail_latched and not session.mismatches
             and session.staged is None and self.preview_stamp==self._programme_fingerprint()
             and bool(self.preview_changes) and all(x.isChecked() for x in self.safety))
@@ -995,6 +997,11 @@ class Studio(QMainWindow):
         self.preview_button.setEnabled(can_preview)
         self.stage_button.setEnabled(bool(can_stage))
         self.save_button.setEnabled(bool(can_save))
+        staged=bool(session and session.staged is not None and not session.committed)
+        self.slot_combo.setEnabled(not staged)
+        self.segment_table.setEnabled(not staged)
+        self.programme_name.setEnabled(not staged)
+        self.start_pv.setEnabled(not staged)
         self.btn_read.setEnabled(not self.busy and self.mode=="connected")
         self.btn_disconnect.setEnabled(not self.busy and bool(self.client))
         self.next_button.setEnabled(not self.busy)
