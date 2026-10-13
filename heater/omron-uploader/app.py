@@ -599,7 +599,6 @@ class Window:
     self.status.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
     for v in self.check_vars:v.set(False)
-    self.confirm.set("")
     self.log("Disconnected (no controller operation command issued)");self.refresh_buttons()
 
  def _backup(self):
@@ -1115,7 +1114,22 @@ class Window:
     self.review_note=tk.StringVar(value="Choose a programme in Step 3 and review any initial changes in Step 4.")
     tk.Label(body,textvariable=self.review_note,bg=WHITE,fg=INK,justify="left",
              wraplength=980,font=("Segoe UI",11,"bold"),padx=7,pady=12).pack(fill="x")
-    self.review_changes=scrolledtext.ScrolledText(body,height=5,wrap="word",font=("Segoe UI",10),
+    # Keep the three actual hardware actions visible at the TOP of Step 5,
+    # rather than below the checklist where they disappeared on smaller screens.
+    self.transfer_bar=tk.Frame(body,bg=WHITE)
+    self.transfer_bar.pack(fill="x",pady=(0,9))
+    self.btn_preview=self.b(self.transfer_bar,"1  PREVIEW CHANGES",self.preview)
+    self.btn_preview.pack(side="left",padx=(0,7))
+    self.btn_stage=self.b(self.transfer_bar,"2  WRITE TO RAM + VERIFY",self.stage,True)
+    self.btn_stage.pack(side="left",padx=7)
+    self.btn_commit=self.b(self.transfer_bar,"3  SAVE TO CONTROLLER",self.commit)
+    self.btn_commit.pack(side="left",padx=7)
+    self.upload_blocker=tk.StringVar(value="Connect to the Omron and back up its memory first.")
+    self.upload_blocker_label=tk.Label(body,textvariable=self.upload_blocker,bg=WHITE,
+                                      fg="#8e461c",anchor="w",justify="left",
+                                      font=("Segoe UI",10),wraplength=1000)
+    self.upload_blocker_label.pack(fill="x",pady=(0,9))
+    self.review_changes=scrolledtext.ScrolledText(body,height=4,wrap="word",font=("Segoe UI",10),
              bg="#f5f9fc",fg=INK,relief="flat")
     self.review_changes.pack(fill="x",pady=(0,9))
     self.review_changes.insert("1.0","No initial setting changes proposed.")
@@ -1141,16 +1155,12 @@ class Window:
         v=tk.BooleanVar(value=False);self.check_vars.append(v)
         cb=tk.Checkbutton(self.lab_section,text=c,variable=v,bg="white",anchor="w",justify="left",wraplength=820,command=self.refresh_buttons)
         cb.pack(fill="x",anchor="w",pady=3)
-    self.confirm=tk.StringVar();r=tk.Frame(self.lab_section,bg="white");r.pack(fill="x",pady=9)
-    tk.Label(r,text="Type AUTHORISE LAB TRANSFER:",bg="white",fg=DARK).pack(side="left")
-    ttk.Entry(r,textvariable=self.confirm,width=27).pack(side="left",padx=10)
-    self.confirm.trace_add("write",lambda *_:self.refresh_buttons())
+    # All important conditions are still confirmed by checkboxes and a final
+    # unambiguous yes/no question immediately before any physical RAM write.
+    # No error-prone magic phrase to type.
     self.transfer_summary=tk.StringVar(value="Select a programme in Builder. No upload plan prepared.")
     tk.Label(self.lab_section,textvariable=self.transfer_summary,bg="white",fg=DARK,wraplength=850,justify="left").pack(fill="x",pady=8)
-    controls=tk.Frame(self.lab_section,bg="white");controls.pack(fill="x",pady=6)
-    self.btn_preview=self.b(controls,"Preview exact register changes",self.preview);self.btn_preview.pack(side="left",padx=3)
-    self.btn_stage=self.b(controls,"1 · STAGE & VERIFY IN RAM",self.stage,True);self.btn_stage.pack(side="left",padx=3)
-    self.btn_commit=self.b(controls,"2 · EXPLICIT SAVE TO CONTROLLER",self.commit);self.btn_commit.pack(side="left",padx=3)
+    self.message(self.lab_section,"The three upload actions stay visible at the top. Complete the checklist before writing to RAM; a separate confirmation is required to save.",DARK)
     self.message(self.lab_section,"EXPERIMENTAL, ISOLATED LAB ONLY. Register encoder supports the observed input type 5/whole-degree SP values, but this version has NOT yet completed a hardware write qualification. Start with a disposable test slot and inspect every changed register. No heater or SSR power. On a communications fault, stop; no automatic rollback or save.",RED)
  def review_current_plan(self):
     if not hasattr(self,"review_note"):return
@@ -1194,14 +1204,18 @@ class Window:
     if self.connection_mode.get()=="offline":
         self.lab_info.set("OFFLINE MANUAL MODE — NO DEVICE WRITES")
         self.lab_section.pack_forget()
+        self.transfer_bar.pack_forget()
+        self.upload_blocker_label.pack_forget()
     else:
         self.lab_info.set("ISOLATED LAB PROGRAMME TRANSFER — EXPERIMENTAL" if self.lab_mode else
                           "USB INSPECTION ONLY — RESTART WITH LAB LAUNCHER FOR PROGRAMME WRITES")
+        self.transfer_bar.pack(fill="x",before=self.review_changes,pady=(0,9))
+        self.upload_blocker_label.pack(fill="x",before=self.review_changes,pady=(0,9))
         self.lab_section.pack(fill="x")
     if hasattr(self,"btn_stage"):self.refresh_buttons()
 
  def safe_to_stage(self):
-    return self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.confirm.get()=="AUTHORISE LAB TRANSFER" and self.session.staged is None and not self.session.mismatches and str(self.session.status).startswith("01")
+    return self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.session.staged is None and not self.session.mismatches and str(self.session.status).startswith("01")
  def refresh_buttons(self):
     if not hasattr(self,"btn_stage"):return
     self.btn_connect.config(state="normal" if not self.busy and not self.client else "disabled")
@@ -1212,6 +1226,23 @@ class Window:
     self.btn_preview.config(state="normal" if self.connected and self.session.backup_data and not self.busy else "disabled")
     self.btn_stage.config(state="normal" if self.safe_to_stage() else "disabled")
     self.btn_commit.config(state="normal" if self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and not self.busy and not self.fail_latched and self.session and self.session.staged and not self.session.committed else "disabled")
+    blockers=[]
+    if self.connection_mode.get()!="connected":blockers.append("Offline/manual mode: use Generate Manual Programming Sheet")
+    elif not self.connected:blockers.append("Not connected to controller: return to Step 2")
+    elif not self.session or self.session.backup_data is None:blockers.append("Take a fresh complete eight-programme backup in Step 2")
+    if not self.lab_mode:blockers.append("Writing disabled: launch START_LAB_UPLOAD.cmd")
+    if self.setup_draft:blockers.append(f"{len(self.setup_draft)} initial-setting change(s) pending — USB initial setup writing is not implemented")
+    if self.session and self.session.mismatches:blockers.append("Controller's nine checked settings differ from supported bench profile")
+    if self.session and self.session.staged and not self.session.committed:
+        blockers.append("RAM staged and verified. Review and select SAVE TO CONTROLLER to persist it.")
+    if self.fail_latched:blockers.append("A previous write failed. Disconnect, inspect and do not retry blindly")
+    if self.busy:blockers.append("Please wait for the current USB operation to finish")
+    unchecked=sum(not v.get() for v in self.check_vars)
+    if self.connection_mode.get()=="connected" and self.connected and self.lab_mode and not self.session.staged if self.session else False:
+        if unchecked:blockers.append(f"Complete {unchecked} remaining safety checklist item(s) below")
+    if not blockers:blockers.append("Ready to preview / write the programme. Controller and heater supplies must remain physically isolated.")
+    self.upload_blocker.set("WHAT TO DO NEXT:  "+"  |  ".join(blockers))
+    self.upload_blocker_label.configure(fg=GREEN if not self.safe_to_stage() is False and not blockers[0].startswith("Ready") is False else "#8e461c")
  def preview(self):
     self._store_meta()
     try:
