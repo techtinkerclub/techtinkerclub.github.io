@@ -52,10 +52,10 @@ permalink: /heater/
 <h2 class="heading">Front-panel controls and connections</h2><p class="intro">Each channel has its own controls, temperature measurement and DC connectors. Select the numbered callouts beside the illustrated components to see their functions.</p>
 <div class="split"><article class="card">
 <div class="panelphoto" id="panelViewer">
-<img id="panelImage" alt="Labelled engineering illustration of the dual-channel controller panel" src="./assets/front-panel.svg" loading="eager">
-<svg class="leaders" viewBox="0 0 620 840" aria-hidden="true"><g fill="none" stroke="#3477a3" stroke-width="1.7" stroke-linecap="round"><path d="M44 141 H63"/><path d="M43 226 H75"/><path d="M145 257 V243"/><path d="M146 319 H166"/><path d="M142 487 H159"/><path d="M45 613 H59"/><path d="M282 613 H259"/><path d="M282 697 H259"/><path d="M565 360 H549"/></g></svg>
-<button class="point on" data-part="sb" title="Heater enable" aria-label="1: Heater enable" style="left:7.10%;top:16.79%">1</button>
-<button class="point" data-part="hl" title="Heat active indicator" aria-label="2: Heat active indicator" style="left:6.94%;top:26.90%">2</button>
+<img id="panelImage" alt="Finished-panel illustration with two Omron controllers, clear space to the side ENABLE buttons, and amber ACTIVE lamps" src="./assets/front-panel.svg?v=amber-clearance-20261013" loading="eager">
+<svg class="leaders" viewBox="0 0 620 840" aria-hidden="true"><g fill="none" stroke="#3477a3" stroke-width="1.7" stroke-linecap="round"><path d="M32 141 H49"/><path d="M32 226 H62"/><path d="M145 257 V243"/><path d="M146 319 H166"/><path d="M142 487 H159"/><path d="M45 613 H59"/><path d="M282 613 H259"/><path d="M282 697 H259"/><path d="M565 360 H549"/></g></svg>
+<button class="point on" data-part="sb" title="Heater enable" aria-label="1: Heater enable" style="left:5.16%;top:16.79%">1</button>
+<button class="point" data-part="hl" title="Amber heat active indicator" aria-label="2: Amber heat active indicator" style="left:5.16%;top:26.90%">2</button>
 <button class="point" data-part="om" title="Temperature controller" aria-label="3: Temperature controller" style="left:23.39%;top:30.60%">3</button>
 <button class="point" data-part="sel" title="Channel control selector" aria-label="4: Channel selector" style="left:23.55%;top:37.98%">4</button>
 <button class="point" data-part="vol" title="DC voltage display" aria-label="5: DC voltmeter" style="left:22.90%;top:57.98%">5</button>
@@ -63,7 +63,7 @@ permalink: /heater/
 <button class="point" data-part="psu" title="External PSU input" aria-label="7: PSU input" style="left:45.48%;top:72.98%">7</button>
 <button class="point" data-part="heater" title="Heater output" aria-label="8: Heater output" style="left:45.48%;top:82.98%">8</button>
 <button class="point" data-part="ch2" title="Second channel" aria-label="9: Channel 2" style="left:91.13%;top:42.86%">9</button>
-</div><p class="note">Panel labels are proposed markings; verify clearance on the real panel before applying them. The illustration shows the intended finished panel, with both channels populated; it is not dimensioned CAD.</p></article>
+</div><p class="note">The intended finished panel is illustrated with <strong>amber ACTIVE lamps</strong> and extra visible separation between each Omron controller and its side-mounted ENABLE button and ACTIVE lamp. This is a visual refinement, <strong>not a change to confirmed hole positions or mechanical clearances</strong>. Panel labels are proposed markings; verify everything against the actual stencil, components and door before manufacture. The drawing is not dimensioned CAD.</p></article>
 <article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Panel marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Further notes</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
 </section>
 
@@ -92,7 +92,7 @@ permalink: /heater/
 <path d="M847 139 V232 H90 V139" stroke="#556a7d" stroke-width="4" fill="none"/><text x="477" y="221" text-anchor="middle" fill="#556a7d" font-size="14">DC negative return • separate conductor</text><text x="475" y="259" text-anchor="middle" font-size="12" fill="#6e879d">Illustrative only — actual terminals, protection and current capacity require validation</text>
 </svg>
 <p class="note">Finder 14 (−) and Crydom −2 are polarity-labelled switched-positive terminals, not DC 0 V terminals.</p></div>
-<div class="card callout"><h3>SSR command and activity indicator</h3><p>Omron's control-demand output drives the Weidmüller interface. The Weidmüller output is intended to switch the 24 V SSR input and a suitable 24 V activity LED in parallel, within its rated 100 mA current limit. The LED reports a <strong>command</strong>, not measured heater current.</p></div>
+<div class="card callout"><h3>SSR command and activity indicator</h3><p>Omron's control-demand output drives the Weidmüller interface. The Weidmüller output is intended to switch the 24 V SSR input and a suitable 24 V activity LED in parallel, within its rated 100 mA current limit. The <strong>amber ACTIVE lamp</strong> reports an intended heater-drive <strong>command</strong>, not measured heater current. The actual indicator wiring and operation require commissioning.</p></div>
 </section>
 
 <section id="labels" class="view">
@@ -100,7 +100,7 @@ permalink: /heater/
 <article class="card"><div class="two"><div><h3>Channel 1</h3><table class="table"><tr><th>Reference</th><th>Panel label</th></tr>
 <tr><td>SB1</td><td>ENABLE</td></tr><tr><td>HL1</td><td>ACTIVE</td></tr><tr><td>E1</td><td>TEMP CTRL</td></tr><tr><td>S1</td><td>CONTROL</td></tr><tr><td>PV1</td><td>DC VOLTS</td></tr><tr><td>JTC1</td><td>TC INPUT</td></tr><tr><td>JP1 · upper pair</td><td>PSU IN (+ / −)</td></tr><tr><td>JP2 · lower pair</td><td>HEATER OUT (+ / −)</td></tr></table></div>
 <div><h3>Channel 2</h3><table class="table"><tr><th>Reference</th><th>Panel label</th></tr><tr><td>SB2</td><td>ENABLE</td></tr><tr><td>HL2</td><td>ACTIVE</td></tr><tr><td>E2</td><td>TEMP CTRL</td></tr><tr><td>S2</td><td>CONTROL</td></tr><tr><td>PV2</td><td>DC VOLTS</td></tr><tr><td>JTC2</td><td>TC INPUT</td></tr><tr><td>JP3 · upper pair</td><td>PSU IN (+ / −)</td></tr><tr><td>JP4 · lower pair</td><td>HEATER OUT (+ / −)</td></tr></table></div></div>
-<p class="note"><strong>Note:</strong> ACTIVE is intended to identify controller heating demand, not an independently measured heater current. Confirm the indicator wiring before engraving the label or commissioning the system.</p>
+<p class="note"><strong>Note:</strong> Both HL1 and HL2 are shown with <strong>amber</strong> lenses. ACTIVE is intended to identify controller heating demand, not independently measured heater current. Confirm actual lens colour, indicator part, output wiring and functionality before commissioning.</p>
 </article></section>
 
 <section id="sop" class="view">
@@ -191,7 +191,7 @@ permalink: /heater/
   btns.forEach(b=>b.addEventListener("click",()=>go(b.dataset.v)));
   const parts={
     sb:["01 · SB1 / SB2","Heater enable pushbutton","Illuminated EAO momentary switch, commanding the relevant channel's heater-enable circuit.","HEATER ENABLE",["24 V illuminated ring is intended to indicate heater enable.","Finder 13.61 power-return state needs verification."]],
-    hl:["02 · HL1 / HL2","Red activity indicator","A small red pilot lamp at each channel's top left.","HEAT ACTIVE",["Provisional role: flashes in response to Omron heat demand.","Actual LED part and circuit role still to be confirmed."]],
+    hl:["02 · HL1 / HL2","Amber ACTIVE indicator","An amber pilot lamp at the outer side of each Omron controller, below the ENABLE button.","HEAT ACTIVE",["Intended to show the heater control-command/demand signal, not independently measured heater current.","Amber lens is the intended final appearance; exact installed lamp and wiring require confirmation.","Indicator operation is not validated by the controller-only USB-power tests."]],
     om:["03 · E1 / E2","Omron E5CC temperature controller","Process-value and setpoint display, controller configuration, and heater-demand output.","CH1 TEMP / CH2 TEMP",["Channel 1 shown with the installed components in the physical photograph.","The finished front panel uses the symmetrical layout shown in the illustration."]],
     sel:["04 · S1 / S2","Maintained channel selector","Channel-specific ON/OFF control, distinct from the heater enable command.","CH1 CONTROL / CH2 CONTROL",["Channel 1 fitted selector is a temporary similar substitute.","Final selected part is Schneider XB5AD23."]],
     vol:["05 · PV1 / PV2","DC voltmeter","Round local DC voltmeter; the model and final wiring need verification.","CH1 DC VOLTS / CH2 DC VOLTS",["Indicates voltage, not heater power or current.","Display can remain off even when mains/control is available."]],
