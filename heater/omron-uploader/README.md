@@ -78,13 +78,28 @@ Open the saved `E5CC-T-programme-backup-...json` file, even without a controller
 
 **Decoder caveat:** This first Explorer interprets the H186 segment fields used in our rate-mode bench example. Other stored special functions, unknown alarm/time-signal assignments and unused register fields are not fully decoded. The app preserves the full 150-word raw memory block in the backup; it **must not infer that a programme is safe to overwrite from the graph alone**. Type K 5/6 SP register scaling is based on the documented decimal-point semantics, but should be compared with actual front-panel read-back on our COM7 controller before uploading.
 
-### 6 — Lab transfer (guarded and unqualified on real hardware)
+### 6 — Controller setup (read-only device inspection + offline configuration planner)
+
+The **Controller setup** tab reads the physical attached controller through the E58-CIFQ2 cable, and shows a documented selection of important **C3** and **C1** settings. This is separate from the eight DA programme memories and their backups. It also works without the USB cable when opening a previously saved setup snapshot.
+
+**To use:**
+1. Connect in **USB inspect** as usual with the heater power isolated.
+2. Open **Controller setup** and click **READ CONTROLLER SETTINGS (no writes)**. The tool reuses the nine real preflight values and individually reads other selected documented registers, including Type K input range, SP limits, PID/ON-OFF, heating/cooling selection, SSR heating cycle time, reverse/direct action, alarm types, programme execution/reset/power-up behaviour, and MV at RESET / PV error.
+3. Review the actual values and the plain-English descriptions alongside Omron menu codes and C3/C1 register addresses. Optional settings that cannot be read (e.g. unsupported model options) are explicitly marked unavailable, **not interpreted as zero**.
+4. Click **Save actual snapshot…** to retain an unmodified, read-verified JSON setup snapshot, separately from the existing 8-programme backup JSON.
+5. For supported enumerated choices, select a row and use **Add to proposed changes** to create an *OFFLINE* alternative. **Clear proposed changes** resets your local draft. **Export comparison…** saves a proposal JSON and human-readable text comparison with original values.
+
+**CRITICAL:** No control in this tab can write controller configuration, even when the executable was opened with `START_LAB_UPLOAD.cmd`. These are **offline proposed changes** only. There is deliberately no "Apply settings to Omron" button in this unqualified release. The existing lab uploader writes only allowlisted DA programme addresses and remains blocked on real COM7 input type 5 / SP Start 0 pending verification. Do not change correct hardware settings to satisfy outdated upload preflight assumptions.
+
+**Scope:** This is not a complete configuration clone. Additional alarms thresholds, selected PID sets, advanced function and protection parameters, external output assignments, and actual interlock/SSR wiring are outside the current inspector. Output in RESET or on a thermocouple error may not be zero just because the controller's `0601` status reports stopped; inspect these values and verify electrical isolation independently. Read-only output parameters may appear as raw tenths of percent and are dependent on control mode. Omron H186 CompoWay/F C3 and C1 tables are the reference.
+
+### 7 — Lab transfer (guarded and unqualified on real hardware)
 
 The app does **not** assume two channels. The editable controller ID is just an audit label for whichever physical Omron is attached; only one serial controller can be connected in a session. The separate `START_LAB_UPLOAD.cmd` launcher requires explicit authorisation, stopped controller, compatible preflight, complete backup and review of all DA register changes. RAM staging/read-back and nonvolatile save are separate operations, each requiring deliberate confirmation.
 
 **Do not start physical upload yet:** the observed valid input type 5 and SP Start 0 do not match the provisional upload gates. We need the saved real DA backup or its relevant read-only decoded values, verify target scaling and segment mapping against the physical keypad, and review write safeguards before authorising a supervised bench experiment. The physical heater mains/DC supplies must remain isolated. A failed stage may leave partially changed RAM; no automatic rollback is implemented.
 
-### 7 — Audit log
+### 8 — Audit log
 
 Record identification, reads, errors and any later supervised transfer approvals and save a local text log. The workflow is still **prototype / laboratory commissioning**, not a certified temperature-control safety system.
 
