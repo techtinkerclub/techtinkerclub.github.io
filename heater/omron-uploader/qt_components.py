@@ -212,6 +212,19 @@ def card(padding=16, vertical=True):
     return frame,layout
 
 
+def form_field(label,control):
+    """Standard aligned label-over-control wrapper for programme/setting rows."""
+    box=QWidget()
+    column=QVBoxLayout(box)
+    column.setContentsMargins(0,0,0,0)
+    column.setSpacing(4)
+    label_widget=QLabel(label.upper())
+    label_widget.setObjectName("tiny")
+    column.addWidget(label_widget)
+    column.addWidget(control)
+    return box
+
+
 def heading(title,subtitle=None):
     box=QWidget()
     lay=QVBoxLayout(box);lay.setContentsMargins(0,0,0,0);lay.setSpacing(3)
