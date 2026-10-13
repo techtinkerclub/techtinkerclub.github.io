@@ -71,6 +71,17 @@ class OfflineManualTests(unittest.TestCase):
         self.assertIn("cont", [r["value"] for r in plan["entry_rows"]
                                if r["code"]=="eset"][0])
         self.assertTrue(any("CAUTION" in r["value"] for r in plan["entry_rows"]))
+    def test_bundled_keypad_simulator_is_local_and_optional(self):
+        from unittest.mock import patch
+        w=Studio(enable_lab_writes=False)
+        w.connection_timer.stop()
+        with patch("qt_app.webbrowser.open") as open_page:
+            w.open_keypad_practice()
+        open_page.assert_called_once()
+        uri=open_page.call_args.args[0]
+        self.assertTrue(uri.startswith("file:"))
+        self.assertTrue(uri.endswith("/program-tools/index.html"))
+        w.close()
     def test_qt_offline_shows_full_entry_table(self):
         window=Studio(enable_lab_writes=False)
         window.connection_timer.stop()
