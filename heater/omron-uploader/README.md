@@ -74,7 +74,11 @@ The builder supports saving/reading all eight programmes as a project file, impo
 
 ### 3 — Back up the existing memory (read-only)
 
-Choose a writable local folder, then click **READ AND SAVE ALL PROGRAMME MEMORY**. This reads each of the eight documented DA programme blocks, `0000..0095` (150 four-byte registers per programme), including alarm and time-signal fields as well as all 32 segment fields. It also records the nine initial-configuration values used for safety checks. Each run saves a timestamped JSON with no overwrite.
+Choose a writable local folder, then click **READ AND SAVE ALL PROGRAMME MEMORY**. This reads each of the eight documented DA programme blocks, `0000..0095` (150 four-byte registers per programme), including alarm and time-signal fields as well as all 32 segment fields. It also records the nine selected C3 initial-configuration values used for safety checks. Each run saves a timestamped JSON with no overwrite.
+
+**Revised backup feedback (after the Windows app is rebuilt):** a progress bar and status line show `1/8` through `8/8` programme blocks. The tool then reopens the saved JSON and compares its contents with the 1,200 DA registers and nine selected C3 values collected in that session. **A visible success dialogue shows the file path, 8/8 block count and read-only status.** The app deliberately stays on **Tab 3 — Back up memory** and will **not** automatically open the Lab transfer tab. A failed/incomplete new read or an invalid saved file displays an error and cannot be treated as a verified current-session backup.
+
+This verification checks **the saved file against the data collected during the first controller read**, not a second independent controller read. For extra assurance, disconnect/reconnect while power sources remain physically isolated and repeat a separate read-only backup to compare the two sets. The existing JSON made by an **older build** may still be valid, but its creation alone was not independently file-verified by that version.
 
 **Scope limitation:** this is a **complete programme-area backup**, not a complete clone of every controller configuration register. Restoration is **not yet implemented or hardware-qualified**; keep CX-Thermo and the controller's existing settings as fallback. Backup capture is a prerequisite for lab uploading but does not, by itself, ensure recoverability.
 
