@@ -128,7 +128,8 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - Intended isolated, non-running test profile: Segment 0 ramp to 50 °C at 2 °C/min, Segment 1 soak 15 min (`0.15` with `t-u=h-m`), `rpt=0`, `link=end`, `eset=rst`. No external heater supply.
 - **Segment 0 entered:** User reports having configured Segment 0 `sp=50`, `pr=2` in Programme 1 (the chosen ramp-and-soak test). Exact `styp` setting at this time not independently re-read; previously instructed to set it to `ramp`.
 - **Physical multi-segment navigation confirmed:** With `s-no=2` and `d.seg=0`, pressing MODE immediately after `pr=2` **automatically displayed `d.seg=1`**. This differs from the single-segment case where the same key press displayed `d.seg=end`. Simulator updated to auto-select next active segment and to show `end` after the last segment (commit `a760438bd970f2e52a6c6c887c20492355f3bebb`). Both the one-segment and two-segment cases passed mocked-button sequence checks; more-than-two progression is extrapolated, not hardware-verified.
-- **Next action:** With `d.seg=1` already selected, press MODE to inspect `styp`, then set it to `soak` and enter `time=0.15`. Do not energise the heater or command RUN. Verify the updated display after configuration.
+- **Final-segment menu navigation confirmed:** In the two-segment Programme 1 test, user reports MODE advanced from the last Segment 1 parameter to `d.seg=end`, then another MODE advanced to `pid=1`. This validates final-segment return to programme-wide settings. The user has **not yet explicitly confirmed** the recorded Segment 1 type and `time=0.15` values; do not mark these as checked until read back.
+- **Next action:** Confirm the saved Segment 1 `styp=soak` and `time=0.15` from the physical display. Then inspect `rpt=0` and `link=end` under `d.seg=end`, without running or energising the heater.
 
 ## Results
 
