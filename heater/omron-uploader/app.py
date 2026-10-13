@@ -8,7 +8,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, scrolledtext
 from program_model import Programme,Segment,ValidationError,blank_programme,TARGET_MODEL
 from transfer import TransferSession,PreflightError,PREFLIGHT
-from compoway import SerialClient
+from compoway import SerialClient, ProtocolError
 from offline_creator import open_studio
 from controller_setup import (CONFIG, BY_CODE, read_snapshot, validate_snapshot, value_text,
                               apply_draft, build_proposal, report as setup_report,
