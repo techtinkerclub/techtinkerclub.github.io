@@ -47,6 +47,14 @@ py -3 -m PyInstaller --onefile --windowed --hidden-import serial.tools.list_port
 
 Copy the resulting `dist/E5CC-Programme-Studio.exe`, both `START_*.cmd` files and this README to the same directory for an offline package.
 
+## Automatic USB disconnect monitoring
+
+The connected app now checks Windows USB/COM presence approximately every 1.8 seconds and, if the COM port remains present, performs a **read-only Omron 0601 status request** about every 7 seconds while idle. This covers both unplugging the USB cable from the PC and disconnecting the controller-side end while the PC's serial adaptor stays enumerated.
+
+When a link is lost the app closes the stale serial handle, disables programme writes and invalidates old preview authorisations and the current session. A new connection requires a new programme backup and fresh initial-setting reads before a transfer. Previously saved JSON files, the offline editor and the last read-only Explorer view remain available (they are clearly no longer live).
+
+Never assume loss of the USB link automatically resets or rolls back controller RAM. If the link is lost with uncommitted staged RAM values, a warning explicitly marks the controller state unknown. The monitor is read-only, skips probes during active reads and writes, and cannot diagnose the external heater, SSR or other power-circuit faults.
+
 ## Troubleshooting the first connected lab session
 
 If an older version shows `'Window' object has no attribute 'home_note'`, that is a known callback bug in the earlier wizard release: download a build containing the fix (commit `09a776a` or newer). No writing follows from that exception, and the guided backup may not have finished. The fixed version uses the status footer rather than the removed widget.
