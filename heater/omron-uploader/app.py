@@ -10,6 +10,7 @@ from program_model import Programme,Segment,ValidationError,blank_programme,TARG
 from transfer import TransferSession,PreflightError,PREFLIGHT
 from compoway import SerialClient
 from offline_creator import open_studio
+from backup_explorer import load_backup, decode_slot, profile_points, config_explanation, summary_as_plaintext, DecodeError
 
 BLUE="#1966a3";BG="#eef3f8";DARK="#1b344d";RED="#b43e45";GREEN="#287953"
 INK="#162d45";PALE="#e4eff9";BORDER="#d6e3ed";WHITE="#ffffff"
@@ -64,15 +65,16 @@ class Window:
     self.book=ttk.Notebook(root);self.book.pack(expand=True,fill="both",padx=18,pady=(4,8))
     self.t_web=ttk.Frame(self.book);self.t_builder=ttk.Frame(self.book)
     self.t_connect=ttk.Frame(self.book);self.t_backup=ttk.Frame(self.book)
-    self.t_upload=ttk.Frame(self.book);self.t_audit=ttk.Frame(self.book)
+    self.t_explore=ttk.Frame(self.book);self.t_upload=ttk.Frame(self.book);self.t_audit=ttk.Frame(self.book)
     for tab,title in [(self.t_web,"1  Full offline creator"),
                       (self.t_builder,"2  Desktop editor"),
                       (self.t_connect,"3  USB inspect"),
                       (self.t_backup,"4  Memory backup"),
-                      (self.t_upload,"5  Lab transfer"),
-                      (self.t_audit,"6  Audit log")]:
+                      (self.t_explore,"5  Explore memory"),
+                      (self.t_upload,"6  Lab transfer"),
+                      (self.t_audit,"7  Audit log")]:
         self.book.add(tab,text=title)
-    self._web_studio();self._builder();self._connect();self._backup();self._upload();self._audit()
+    self._web_studio();self._builder();self._connect();self._backup();self._explorer();self._upload();self._audit()
     self.status=tk.StringVar(value="Ready · offline planning; controller not connected")
     footer=tk.Frame(root,bg=WHITE,padx=19,pady=10);footer.pack(fill="x",side="bottom")
     tk.Label(footer,text="STATUS",bg=WHITE,fg="#6b879c",
@@ -471,6 +473,10 @@ class Window:
     def success(path):
         count=sum(len(block) for block in self.session.backup_data["programmes"].values())
         self.back_progress.set(8)
+        # Populate Controller Explorer automatically without leaving the backup page.
+        if self.session.backup_data:
+            self.explorer_load(self.session.backup_data,"Verified current backup: "+str(path))
+            self.book.select(self.t_backup)
         self.backupdetail.set(
             f"✓ SAVED FILE VERIFIED — 8/8 programme blocks, {count} DA registers, 9 C3 settings.\n"
             f"Location: {path}\n"
@@ -501,6 +507,237 @@ class Window:
     file=filedialog.askopenfilename(title="Choose saved upload receipt",filetypes=[("JSON","*.json")])
     if not file:return
     self._job("Read-only persistence verification",lambda:self.session.verify_persistence(file),lambda path:messagebox.showinfo("Persistence compared", "Read-back matches receipt after your reported power cycle. Verification: "+str(path)))
+
+ def _explorer(self):
+    """Presentation-only inspector. Never changes a controller or raw backup."""
+    self.explorer_backup=None
+    self.explorer_source=""
+    root=tk.Frame(self.t_explore,bg=BG,padx=13,pady=13)
+    root.pack(fill="both",expand=True)
+    head=tk.Frame(root,bg=WHITE,padx=16,pady=13,
+                  highlightthickness=1,highlightbackground=BORDER)
+    head.pack(fill="x",pady=(0,11))
+    tk.Label(head,text="CONTROLLER EXPLORER   /   READ ONLY",
+             bg=WHITE,fg=BLUE,font=("Segoe UI",10,"bold")).pack(anchor="w")
+    tk.Label(head,text="What's already stored in this Omron?",
+             bg=WHITE,fg=INK,font=("Segoe UI",18,"bold")).pack(anchor="w",pady=(5,3))
+    tk.Label(head,text="Understand all eight programme memories without deciphering hexadecimal registers. "
+             "Read from the current session's backup or open a saved JSON file, even without a cable. "
+             "The graphs are estimated SETPOINT curves, never measured temperatures.",
+             bg=WHITE,fg="#557389",wraplength=1060,justify="left").pack(anchor="w",pady=(1,8))
+    row=tk.Frame(head,bg=WHITE);row.pack(fill="x",pady=(5,0))
+    self.b(row,"Open a controller backup JSON",self.explorer_open,True).pack(side="left",padx=(0,9))
+    self.b(row,"Use current session backup",self.explorer_current).pack(side="left",padx=(0,9))
+    self.b(row,"Copy selected to local editor",self.explorer_copy).pack(side="left",padx=(0,9))
+    self.b(row,"Save human-readable report",self.explorer_export).pack(side="left",padx=(0,9))
+    self.explorer_status=tk.StringVar(value="No backup loaded · Back up an Omron or open a previous backup file")
+    tk.Label(root,textvariable=self.explorer_status,bg=BG,fg="#52728b",
+             justify="left",anchor="w",wraplength=1070).pack(fill="x",pady=(0,11))
+    content=tk.Frame(root,bg=BG);content.pack(fill="both",expand=True)
+    content.columnconfigure(0,weight=1);content.columnconfigure(1,weight=2)
+    content.rowconfigure(0,weight=1)
+    left,body=self.card(content,"Saved programme memories (0–7)")
+    left.grid(row=0,column=0,sticky="nsew",padx=(0,10))
+    body.columnconfigure(0,weight=1)
+    body.rowconfigure(0,weight=1)
+    self.explorer_list=ttk.Treeview(body,columns=("n","segments","profile"),
+        show="headings",height=8,selectmode="browse")
+    for col,label,width in [("n","Slot",48),("segments","Segments",75),("profile","What it does",260)]:
+        self.explorer_list.heading(col,text=label)
+        self.explorer_list.column(col,width=width,anchor="w",stretch=(col=="profile"))
+    self.explorer_list.grid(row=0,column=0,sticky="nsew")
+    exscroll=ttk.Scrollbar(body,orient="vertical",command=self.explorer_list.yview)
+    exscroll.grid(row=0,column=1,sticky="ns")
+    self.explorer_list.configure(yscrollcommand=exscroll.set)
+    self.explorer_list.bind("<<TreeviewSelect>>",lambda _event:self.explorer_select())
+    self.explorer_start=tk.StringVar(value="20")
+    startrow=tk.Frame(body,bg=WHITE);startrow.grid(row=1,column=0,columnspan=2,sticky="ew",pady=8)
+    tk.Label(startrow,text="Assumed starting PV (°C)",bg=WHITE,fg="#547188").pack(side="left",padx=(0,8))
+    ttk.Entry(startrow,textvariable=self.explorer_start,width=9).pack(side="left")
+    self.b(startrow,"Update curve",self.explorer_select).pack(side="left",padx=6)
+    tk.Label(body,text="The real start temperature isn't stored in a rate-mode profile.",
+             bg=WHITE,fg="#617c8d",wraplength=330,justify="left").grid(row=2,column=0,columnspan=2,sticky="w")
+    right=tk.Frame(content,bg=BG);right.grid(row=0,column=1,sticky="nsew")
+    right.rowconfigure(0,weight=2);right.rowconfigure(1,weight=3)
+    right.columnconfigure(0,weight=1)
+    upper,ubody=self.card(right,"Commanded setpoint · reconstructed from memory")
+    upper.grid(row=0,column=0,sticky="nsew",pady=(0,10))
+    self.explorer_canvas=tk.Canvas(ubody,bg=WHITE,height=225,highlightthickness=0)
+    self.explorer_canvas.pack(fill="both",expand=True)
+    self.explorer_canvas.bind("<Configure>",lambda _event:self.explorer_plot())
+    lower,lbody=self.card(right,"Plain-English programme explanation")
+    lower.grid(row=1,column=0,sticky="nsew")
+    self.explorer_text=scrolledtext.ScrolledText(lbody,height=12,wrap="word",
+        bg="#f9fcff",fg=INK,font=("Segoe UI",10),bd=0,padx=12,pady=10)
+    self.explorer_text.pack(fill="both",expand=True)
+    self.explorer_text.insert("1.0","Load a controller backup to view each stored programme, "
+        "the nine decoded controller configuration fields and any interpretation warnings.")
+    self.explorer_text.config(state="disabled")
+
+ def explorer_open(self):
+    path=filedialog.askopenfilename(title="Open read-only controller memory backup",
+        filetypes=[("E5CC-T backup JSON","*.json"),("All files","*.*")])
+    if not path:return
+    try:
+        backup=load_backup(path)
+        self.explorer_load(backup,"Saved file: "+path)
+    except (OSError,ValueError,TypeError,KeyError) as err:
+        messagebox.showerror("Cannot interpret backup",str(err))
+
+ def explorer_current(self):
+    if not self.session or not self.session.backup_data:
+        messagebox.showinfo("No current backup","Complete Step 4 Memory backup first, "
+                            "or open an existing backup JSON file. No serial commands were sent.")
+        return
+    self.explorer_load(self.session.backup_data,
+                       "Current read-only session: "+str(self.session.backup_file or "memory"))
+
+ def explorer_load(self,backup,source):
+    self.explorer_backup=backup
+    self.explorer_source=source
+    self.explorer_list.delete(*self.explorer_list.get_children())
+    for slot in range(8):
+        info=decode_slot(backup,slot)
+        preview=(info["segments"][0]["description"] if info["segments"]
+                 else "No active profile decoded")
+        if len(preview)>57:preview=preview[:54]+"…"
+        self.explorer_list.insert("","end",iid=str(slot),
+             values=(slot,info["count"],preview))
+    self.explorer_status.set("READ ONLY · "+source+"  •  8 programme blocks available")
+    self.explorer_list.selection_set("0")
+    self.explorer_select()
+    self.book.select(self.t_explore)
+
+ def explorer_selected(self):
+    selected=self.explorer_list.selection()
+    if not selected or self.explorer_backup is None:return None
+    return decode_slot(self.explorer_backup,int(selected[0]))
+
+ def explorer_select(self):
+    info=self.explorer_selected()
+    if info is None:return
+    try:
+        assumed=float(self.explorer_start.get())
+        points=profile_points(info,assumed)
+        report=summary_as_plaintext(info,assumed)
+    except (ValueError,TypeError) as err:
+        points=None
+        report=summary_as_plaintext(info,20)+"\n\nInvalid assumed PV: "+str(err)
+    config=config_explanation(self.explorer_backup)
+    report+="\n\nCONTROLLER-WIDE SETTINGS FROM THIS BACKUP:\n"
+    for c in config:
+        report+=f"  • {c['name']}: {c['meaning']} (raw {c['raw']})\n"
+    report+="\nREMEMBER: A downloaded/loaded memory is NOT a live PV trace.\n"
+    self.explorer_text.config(state="normal")
+    self.explorer_text.delete("1.0","end")
+    self.explorer_text.insert("1.0",report)
+    self.explorer_text.config(state="disabled")
+    self.explorer_plot(points)
+
+ def explorer_plot(self,points=None):
+    canvas=self.explorer_canvas
+    if not canvas or not canvas.winfo_exists():return
+    canvas.delete("all")
+    info=self.explorer_selected()
+    if info is None:
+        canvas.create_text(50,45,text="Open a backup to see a programme",anchor="w",fill="#617b92")
+        return
+    if points is None:
+        try:points=profile_points(info,float(self.explorer_start.get()))
+        except (ValueError,TypeError):points=None
+    if not points:
+        canvas.create_text(34,38,text="Profile cannot be drawn reliably from these settings",
+                           anchor="w",fill="#a5643e",font=("Segoe UI",10,"bold"))
+        canvas.create_text(34,62,text="Check the warning list and verify the raw parameter values.",
+                           anchor="w",fill="#667c91")
+        return
+    width=max(380,canvas.winfo_width())
+    height=max(210,canvas.winfo_height())
+    left,top,right,bottom=58,24,width-23,height-37
+    values=[y for _,y in points]
+    lo,hi=min(values),max(values)
+    if hi==lo:lo-=5;hi+=5
+    spread=hi-lo;lo-=spread*.12;hi+=spread*.12
+    max_t=max(1.,points[-1][0])
+    def xy(t,y):return(left+(t/max_t)*(right-left),
+                       bottom-((y-lo)/(hi-lo))*(bottom-top))
+    for k in range(5):
+        y=top+(bottom-top)*k/4
+        canvas.create_line(left,y,right,y,fill="#e3ecf4",width=1)
+        canvas.create_text(left-9,y,text=f"{hi-(hi-lo)*k/4:g}°",
+                           anchor="e",fill="#6a8598",font=("Segoe UI",9))
+    coords=[]
+    for t,temp in points:
+        x,y=xy(t,temp)
+        coords.extend((x,y))
+        canvas.create_oval(x-3,y-3,x+3,y+3,fill=BLUE,outline=WHITE)
+    if len(coords)>=4:
+        canvas.create_line(*coords,fill="#187ab6",width=3)
+    canvas.create_text(left,bottom+18,text="0 min",anchor="w",fill="#647e91")
+    canvas.create_text(right,bottom+18,text=f"{points[-1][0]:.1f} min",
+                       anchor="e",fill="#647e91")
+    canvas.create_text(right,top-9,text="SV ONLY  /  NOT MEASURED PV",
+                       anchor="e",fill="#687d92",font=("Segoe UI",9,"bold"))
+
+ def explorer_copy(self):
+    info=self.explorer_selected()
+    if info is None:
+        messagebox.showinfo("Select programme","Open a controller backup and select a memory first.")
+        return
+    # Never pretend a partial or unknown decode can be converted to a writable design.
+    if info["warnings"] or not info["segments"] or any(s["type"]=="unknown" for s in info["segments"]):
+        messagebox.showwarning("Interpretation needs checking",
+            "This memory has unknown or unsupported values. Inspect the raw backup and "
+            "front-panel programme before copying it to an editable design.")
+        return
+    if info["repeat"]!=0 or info["link"]!=-1:
+        messagebox.showwarning("Nonstandard repeat / chaining",
+            "The local editor does not model repetitions or programme chaining. "
+            "Do not discard these settings silently.")
+        return
+    from program_model import Segment,Programme
+    steps=[]
+    for section in info["segments"]:
+        if section["type"]=="ramp":
+            if section["sp"] is None or section["rate"] is None:
+                messagebox.showwarning("Incomplete ramp","Cannot safely interpret SP/rate.");return
+            if section["rate"]==0:
+                steps.append(Segment("step",sp=str(section["sp"])))
+            else:
+                steps.append(Segment("ramp",sp=str(section["sp"]),
+                                     rate=str(section["rate"])))
+        elif section["type"]=="soak" and section["minutes"] is not None:
+            steps.append(Segment("soak",minutes=str(section["minutes"])))
+        else:
+            messagebox.showwarning("Unknown segment","Inspect raw memory first.");return
+    try:
+        candidate=Programme(name=f"Copy of controller memory {info['slot']} (offline)",
+            start=self.explorer_start.get(),finish="rst",steps=steps)
+        candidate.validate()
+    except (ValueError,TypeError) as err:
+        messagebox.showwarning("Editor cannot represent this programme",str(err));return
+    slot=info["slot"]
+    if not messagebox.askyesno("Copy to LOCAL editor only",
+       f"Replace the unsaved local designer memory {slot} with this decoded copy?\n"
+       "This does not edit controller memory or upload anything.\n\n"
+       "Verify SP scaling and all parameters on the real Omron before using an upload."):
+        return
+    self.progs[slot]=candidate
+    self.slot.set(slot)
+    self._refresh_programme()
+    self.book.select(self.t_builder)
+    self.log(f"Copied decoded memory {slot} to offline native editor ONLY; no controller writes")
+
+ def explorer_export(self):
+    info=self.explorer_selected()
+    if info is None:return
+    report=self.explorer_text.get("1.0","end").strip()
+    target=filedialog.asksaveasfilename(defaultextension=".txt",
+        initialfile=f"E5CC-T-memory-{info['slot']}-explanation.txt",
+        filetypes=[("Text report","*.txt")])
+    if target:
+        Path(target).write_text(report,encoding="utf-8")
+        self.log("Saved read-only human-language profile description: "+target)
 
  def _upload(self):
     panel,body=self.card(self.t_upload,"Controlled RAM upload — isolated hardware bench only");panel.pack(fill="both",expand=True,padx=10,pady=10)
