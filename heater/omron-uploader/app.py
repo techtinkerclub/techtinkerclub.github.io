@@ -11,7 +11,7 @@ from transfer import TransferSession,PreflightError,PREFLIGHT
 from compoway import SerialClient, ProtocolError
 from offline_creator import open_studio
 from controller_inventory import (CATALOG as FULL_CATALOG, group_names as inventory_groups,
-    read_inventory, validate_inventory, readable_rows, report_inventory,
+    read_inventory, validate_inventory, readable_rows, report_inventory, offline_inventory,
     human_value as inventory_value, add_proposal as inventory_add_proposal,
     proposal_report as inventory_proposal_report, SENSOR_INPUTS)
 from controller_setup import (CONFIG, BY_CODE, read_snapshot, validate_snapshot, value_text,
@@ -171,6 +171,7 @@ class Window:
     if mode=="offline":
         self.mode_summary.set("OFFLINE/MANUAL  ·  No device needed; continue directly to the programme")
         self.setup_load(offline_snapshot(),"Offline planning — device values unknown")
+        self.inventory_load(offline_inventory(),"OFFLINE / MANUAL — actual values unknown")
         self.book.select(self.t_builder)
     else:
         self.mode_summary.set("CONNECTED  ·  Read the device before editing or uploading")
@@ -1354,9 +1355,12 @@ class Window:
     validate_inventory(snapshot)
     self.full_snapshot=snapshot
     self.full_draft={}
-    success=len(FULL_CATALOG)-len(snapshot["errors"])
-    self.inventory_progress.set(f"{source}: {success}/{len(FULL_CATALOG)} documented parameters read; "
-                               f"{len(snapshot['errors'])} unavailable; NO WRITES")
+    success=sum(x is not None for x in snapshot["fields"].values())
+    if snapshot.get("mode")=="offline":
+        self.inventory_progress.set(f"{source}: {len(FULL_CATALOG)} entries available for local planning; NO hardware read")
+    else:
+        self.inventory_progress.set(f"{source}: {success}/{len(FULL_CATALOG)} documented parameters read; "
+                                   f"{len(snapshot['errors'])} unavailable; NO WRITES")
     self.inventory_report.configure(state="normal")
     self.inventory_report.delete("1.0","end")
     self.inventory_report.insert("1.0",report_inventory(snapshot))
@@ -1422,7 +1426,7 @@ class Window:
     if self.full_snapshot["errors"].get(code):
         content+="\nRead error: "+self.full_snapshot["errors"][code]
     self.inventory_info.set(content)
-    if original is None:
+    if original is None and self.full_snapshot.get("mode")!="offline":
         self.inventory_input.configure(state="disabled")
         self.inventory_options_box.pack_forget()
         self.inventory_new.set("")
@@ -1433,17 +1437,17 @@ class Window:
         self.inventory_input.pack_forget()
         self.inventory_options_box.pack(fill="x",pady=8)
         raw=self.full_draft.get(code,original)
-        signed=raw-(1<<32) if raw>=1<<31 else raw
-        self.inventory_new.set(next((v for v in choices if v.startswith(str(signed)+" —")),""))
+        signed=raw-(1<<32) if raw is not None and raw>=1<<31 else raw
+        self.inventory_new.set(next((v for v in choices if signed is not None and v.startswith(str(signed)+" —")),""))
     else:
         self.inventory_options_box.pack_forget()
         self.inventory_input.pack(fill="x",pady=8)
         self.inventory_input.configure(state="normal")
         raw=self.full_draft.get(code,original)
-        signed=raw-(1<<32) if raw>=1<<31 else raw
+        signed=raw-(1<<32) if raw is not None and raw>=1<<31 else raw
         scale=(10 if self.full_snapshot["fields"].get("C3:0000")==6
                and code in ("C3:0005","C3:0006","C1:0012") else p.scale)
-        self.inventory_new.set(f"{signed/scale:g}")
+        self.inventory_new.set(f"{signed/scale:g}" if signed is not None else "")
 
  def inventory_propose(self):
     selected=self.inventory_tree.selection()
