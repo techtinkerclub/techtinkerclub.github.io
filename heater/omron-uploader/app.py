@@ -9,9 +9,11 @@ from tkinter import ttk, filedialog, messagebox, scrolledtext
 from program_model import Programme,Segment,ValidationError,blank_programme,TARGET_MODEL
 from transfer import TransferSession,PreflightError,PREFLIGHT
 from compoway import SerialClient
+from offline_creator import open_studio
 
-BLUE="#135c91";BG="#edf3f8";DARK="#203950";RED="#aa4636";GREEN="#327656"
-APP_TITLE="Omron E5CC-T Programme Studio · bench validation"
+BLUE="#1966a3";BG="#eef3f8";DARK="#1b344d";RED="#b43e45";GREEN="#287953"
+INK="#162d45";PALE="#e4eff9";BORDER="#d6e3ed";WHITE="#ffffff"
+APP_TITLE="E5CC-T Programme Studio · Offline + USB"
 
 class Window:
  def __init__(self,root,lab_mode=False):
@@ -19,21 +21,64 @@ class Window:
     for i in range(1,8):self.progs[i].name=f"Programme {i}"
     self.slot=tk.IntVar(value=0);self.current_segment=None;self.client=None;self.session=None;self.busy=False
     self.events=queue.Queue();self.connected=False;self.fail_latched=False
-    root.title(APP_TITLE);root.geometry("1110x795");root.minsize(840,600);root.configure(bg=BG)
-    style=ttk.Style();style.theme_use("clam");style.configure("TNotebook.Tab",padding=(15,9),font=("Segoe UI",10,"bold"));style.configure("TButton",padding=6)
-    style.configure("TFrame",background=BG);style.configure("TLabel",background=BG,foreground=DARK,font=("Segoe UI",10))
-    style.configure("Title.TLabel",font=("Segoe UI",17,"bold"),foreground=DARK)
-    style.configure("Primary.TButton",foreground="white",background=BLUE,padding=9)
-    header=ttk.Frame(root);header.pack(fill="x",padx=18,pady=(14,7));ttk.Label(header,text="E5CC-T  |  Programme Studio",style="Title.TLabel").pack(side="left")
-    ttk.Label(header,text="E5CC-TQX3A5M-000  ·  two identical channels").pack(side="right")
-    note=tk.Label(root,text="LAB VALIDATION BUILD  •  No heater control  •  Connect over E58-CIFQ2 at 38400 / 7E2  •  No live PSU during transfer",
-         bg="#fff5dc",fg="#76521b",anchor="w",padx=16,pady=9,font=("Segoe UI",10,"bold"));note.pack(fill="x",padx=18,pady=(0,8))
-    self.book=ttk.Notebook(root);self.book.pack(expand=True,fill="both",padx=18,pady=5)
-    self.t_builder=ttk.Frame(self.book);self.t_connect=ttk.Frame(self.book);self.t_backup=ttk.Frame(self.book);self.t_upload=ttk.Frame(self.book);self.t_audit=ttk.Frame(self.book)
-    for t,title in [(self.t_builder,"1  Programme builder"),(self.t_connect,"2  Connect & inspect"),(self.t_backup,"3  Back up memory"),(self.t_upload,"4  Lab transfer"),(self.t_audit,"5  Log & checklist")]:self.book.add(t,text=title)
-    self._builder();self._connect();self._backup();self._upload();self._audit()
+    root.title(APP_TITLE);root.geometry("1260x880");root.minsize(1030,720);root.configure(bg=BG)
+    style=ttk.Style();style.theme_use("clam")
+    style.configure("TNotebook",background=BG,borderwidth=0)
+    style.configure("TNotebook.Tab",font=("Segoe UI",10,"bold"),padding=(17,12),
+                    background="#dfe9f2",foreground="#506f88",borderwidth=0)
+    style.map("TNotebook.Tab",
+              background=[("selected",WHITE),("active","#f5f9fc")],
+              foreground=[("selected",BLUE),("active",INK)])
+    style.configure("TButton",padding=(12,8),font=("Segoe UI",10),
+                    background="#e4f0f8",foreground="#1d577f",
+                    borderwidth=1,relief="flat")
+    style.map("TButton",background=[("active","#d0e5f4"),("disabled","#eff3f7")])
+    style.configure("Primary.TButton",padding=(14,10),font=("Segoe UI",10,"bold"),
+                    background=BLUE,foreground=WHITE,borderwidth=0,relief="flat")
+    style.map("Primary.TButton",background=[("active","#0d507f"),("disabled","#9eb7c9")],
+              foreground=[("disabled","#f2f4f6")])
+    style.configure("TFrame",background=BG)
+    style.configure("TLabel",background=BG,foreground=DARK,font=("Segoe UI",10))
+    style.configure("Title.TLabel",background=BG,font=("Segoe UI",17,"bold"),foreground=DARK)
+    style.configure("Treeview",background=WHITE,fieldbackground=WHITE,
+                    foreground=INK,rowheight=30,relief="flat",borderwidth=0,
+                    font=("Segoe UI",10))
+    style.configure("Treeview.Heading",font=("Segoe UI",10,"bold"),
+                    background="#edf4fa",foreground="#345976",padding=(8,10))
+    style.map("Treeview",background=[("selected","#d8ebfa")],
+              foreground=[("selected",INK)])
+    hero=tk.Frame(root,bg="#193951",padx=20,pady=14);hero.pack(fill="x")
+    lefthead=tk.Frame(hero,bg="#193951");lefthead.pack(side="left",fill="x",expand=True)
+    tk.Label(lefthead,text="E5CC-T   /   PROGRAMME STUDIO",bg="#193951",fg=WHITE,
+             anchor="w",font=("Segoe UI",19,"bold")).pack(anchor="w")
+    tk.Label(lefthead,text="Design offline   •   Practice keypad   •   Inspect USB   •   Back up memory",
+             bg="#193951",fg="#bad4e8",font=("Segoe UI",10)).pack(anchor="w",pady=(3,0))
+    mode="ISOLATED LAB MODE" if lab_mode else "READ-ONLY SERIAL MODE"
+    tk.Label(hero,text=mode,bg="#315c72" if lab_mode else "#255e65",
+             fg="#f0fafb",padx=13,pady=9,font=("Segoe UI",10,"bold")).pack(side="right")
+    actions=tk.Frame(root,bg=BG,padx=18,pady=9);actions.pack(fill="x")
+    self.b(actions,"Open complete offline website creator  ↗",self.open_offline_creator,True).pack(side="left",padx=(0,9))
+    self.b(actions,"Manual-entry sheet",self.entry_sheet).pack(side="left",padx=(0,9))
+    tk.Label(actions,text="ONE controller connected at a time",
+             bg=BG,fg="#627d92",font=("Segoe UI",10)).pack(side="right")
+    self.book=ttk.Notebook(root);self.book.pack(expand=True,fill="both",padx=18,pady=(4,8))
+    self.t_web=ttk.Frame(self.book);self.t_builder=ttk.Frame(self.book)
+    self.t_connect=ttk.Frame(self.book);self.t_backup=ttk.Frame(self.book)
+    self.t_upload=ttk.Frame(self.book);self.t_audit=ttk.Frame(self.book)
+    for tab,title in [(self.t_web,"1  Full offline creator"),
+                      (self.t_builder,"2  Desktop editor"),
+                      (self.t_connect,"3  USB inspect"),
+                      (self.t_backup,"4  Memory backup"),
+                      (self.t_upload,"5  Lab transfer"),
+                      (self.t_audit,"6  Audit log")]:
+        self.book.add(tab,text=title)
+    self._web_studio();self._builder();self._connect();self._backup();self._upload();self._audit()
     self.status=tk.StringVar(value="Ready · offline planning; controller not connected")
-    ttk.Label(root,textvariable=self.status).pack(fill="x",padx=19,pady=7)
+    footer=tk.Frame(root,bg=WHITE,padx=19,pady=10);footer.pack(fill="x",side="bottom")
+    tk.Label(footer,text="STATUS",bg=WHITE,fg="#6b879c",
+             font=("Segoe UI",9,"bold")).pack(side="left",padx=(0,12))
+    tk.Label(footer,textvariable=self.status,bg=WHITE,fg=INK,
+             font=("Segoe UI",10)).pack(side="left")
     self.log("Started in "+("LAB TRANSFER ENABLED" if lab_mode else "READ-ONLY")+" mode")
     if not lab_mode:self.log("No hardware writes available. Run with --enable-lab-writes to unlock separate physical safety workflow.")
     self._refresh_programme();self.refresh_ports();self.refresh_buttons()
