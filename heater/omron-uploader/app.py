@@ -10,6 +10,10 @@ from program_model import Programme,Segment,ValidationError,blank_programme,TARG
 from transfer import TransferSession,PreflightError,PREFLIGHT
 from compoway import SerialClient, ProtocolError
 from offline_creator import open_studio
+from controller_inventory import (CATALOG as FULL_CATALOG, group_names as inventory_groups,
+    read_inventory, validate_inventory, readable_rows, report_inventory,
+    human_value as inventory_value, add_proposal as inventory_add_proposal,
+    proposal_report as inventory_proposal_report, SENSOR_INPUTS)
 from controller_setup import (CONFIG, BY_CODE, read_snapshot, validate_snapshot, value_text,
                               apply_draft, build_proposal, report as setup_report,
                               write_new_json, offline_snapshot)
@@ -28,6 +32,7 @@ class Window:
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False;self.connection_mode=tk.StringVar(value="connected")
     self.active_port=None
     self._connection_poll_counter=0
+    self.full_snapshot=None;self.full_draft={};self._auto_inventory=False
     self.connection_state=tk.StringVar(value="USB DISCONNECTED")
     root.title(APP_TITLE);root.geometry("1370x890");root.minsize(1090,720);root.configure(bg=BG)
     style=ttk.Style();style.theme_use("clam")
@@ -87,14 +92,16 @@ class Window:
     self.t_backup=ttk.Frame(self.readbook)
     self.t_explore=ttk.Frame(self.readbook)
     self.t_initial_view=ttk.Frame(self.readbook)
+    self.t_inventory=ttk.Frame(self.readbook)
     for tab,title in [(self.t_connect,"Connect & inspect"),
                       (self.t_backup,"Save backup"),
                       (self.t_explore,"Existing programmes"),
-                      (self.t_initial_view,"Existing initial settings")]:
+                      (self.t_initial_view,"Existing initial settings"),
+                      (self.t_inventory,"Complete parameter inventory")]:
         self.readbook.add(tab,text=title)
     # Log stays available for diagnostics, but is not another workflow step.
     self.t_audit=ttk.Frame(root)
-    self._web_studio();self._builder();self._connect();self._backup();self._explorer();self._setup();self._upload();self._audit()
+    self._web_studio();self._builder();self._connect();self._backup();self._explorer();self._setup();self._inventory_ui();self._upload();self._audit()
     view=tk.Frame(self.t_initial_view,bg=BG,padx=13,pady=13);view.pack(fill="both",expand=True)
     tk.Label(view,text="READ-ONLY CONTROLLER CONFIGURATION",
              bg=BG,fg=INK,font=("Segoe UI",15,"bold")).pack(anchor="w",pady=(0,8))
@@ -588,6 +595,7 @@ class Window:
     if self.busy or self.client:return
     self._auto_backup=True
     self._auto_setup=True
+    self._auto_inventory=True
     self.inspect()
  def inspect(self):
     if self.client or self.busy:return
@@ -628,7 +636,7 @@ class Window:
     self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.approved_preview=None;self.active_port=None;self.status.set("Disconnected")
     self.connection_state.set("USB DISCONNECTED")
     self.status.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
-    self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
+    self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False;self._auto_inventory=False
     for v in self.check_vars:v.set(False)
     self.log("Disconnected (no controller operation command issued)");self.refresh_buttons()
 
@@ -644,7 +652,7 @@ class Window:
     old_client=self.client
     self.client=None;self.session=None;self.connected=False;self.approved_preview=None;self.active_port=None
     self.connection_state.set("USB DISCONNECTED")
-    self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
+    self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False;self._auto_inventory=False
     self._connection_poll_counter=0
     self.fail_latched=was_uncommitted
     if old_client is not None:
@@ -674,7 +682,7 @@ class Window:
     Never send a heartbeat while another read or write is in progress.
     """
     try:
-        if self.connected and not self.busy and not self._auto_backup and not self._auto_setup and self.client is not None:
+        if self.connected and not self.busy and not self._auto_backup and not self._auto_setup and not self._auto_inventory and self.client is not None:
             port=self.active_port
             try:
                 from serial.tools import list_ports
@@ -1012,7 +1020,13 @@ class Window:
     self.setup_snapshot=None
     self.setup_draft={}
     self.setup_choices={}
-    panel,body=self.card(self.t_setup,"Controller setup — read, understand, compare")
+    self.setupbook=ttk.Notebook(self.t_setup)
+    self.setupbook.pack(fill="both",expand=True)
+    self.t_setup_core=ttk.Frame(self.setupbook)
+    self.t_setup_all=ttk.Frame(self.setupbook)
+    self.setupbook.add(self.t_setup_core,text="Essential controls")
+    self.setupbook.add(self.t_setup_all,text="All documented parameters")
+    panel,body=self.card(self.t_setup_core,"Controller setup — read, understand, compare")
     panel.pack(fill="both",expand=True,padx=10,pady=10)
     tk.Label(body,text="LIVE CONTROLLER READS / OFFLINE PLANNING — NO HARDWARE SETUP WRITES",
              bg="#eef5fc",fg="#1b557c",font=("Segoe UI",10,"bold"),padx=10,pady=8).pack(fill="x")
@@ -1098,6 +1112,9 @@ class Window:
                             f"{changed} settings changed since initial inspection.\n"
                             +save_notice+
                             "\nNo values were changed on the Omron.")
+        if stay_on_read and self._auto_inventory:
+            self._auto_inventory=False
+            self.inventory_read()
     self._job("Read controller setup registers (read only)",work,done)
  def setup_open(self):
     filename=filedialog.askopenfilename(title="Open controller setup snapshot",filetypes=[("E5CC setup JSON","*.json")])
@@ -1422,6 +1439,10 @@ class Window:
             event,payload=self.events.get_nowait()
             if event=="LOG":
                 if hasattr(self,"output"):self.output.insert("end",payload+"\n");self.output.see("end")
+            elif event=="INVENTORY_PROGRESS":
+                completed,total=payload
+                if hasattr(self,"inventory_progress"):
+                    self.inventory_progress.set(f"Reading documented parameters: {completed} / {total} (read-only)")
             elif event=="BACKUP_PROGRESS":
                 completed,total=payload
                 self.back_progress.set(completed)
@@ -1438,7 +1459,7 @@ class Window:
                 if title=="USB connection health check":
                     self._connection_lost("Controller stopped responding: "+msg)
                     continue
-                self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
+                self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False;self._auto_inventory=False
                 if iswrite:self.fail_latched=True
                 self.status.set("FAILED: "+title);self.log("ERROR "+title+": "+msg);self.log(debug)
                 if title.startswith("Reading 8 programmes"):
