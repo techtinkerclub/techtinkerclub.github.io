@@ -582,7 +582,7 @@ class Window:
         self.inspecttext.insert("end","\nNEXT: Back up all 8 programme blocks before considering any write.\n")
         if info["mismatches"]:self.inspecttext.insert("end","\nUPLOAD LOCKED: one or more settings differ from the observed safe bench profile. Review the real values. Read-only backup remains available.\n")
         self.book.select(self.t_read);self.readbook.select(self.t_backup);self.refresh_buttons()
-        self.home_note.set(f"CONNECTED  •  {info['model10']} on {port}  •  Read-only status checked")
+        self.status.set(f"CONNECTED  •  {info['model10']} on {port}  •  Read-only status checked")
         if self._auto_backup:
             self._auto_backup=False
             self._auto_show_explorer=True
@@ -596,7 +596,7 @@ class Window:
         try:self.client.close()
         except Exception:pass
     self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.status.set("Disconnected")
-    self.home_note.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
+    self.status.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
     self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
     for v in self.check_vars:v.set(False)
     self.confirm.set("")
@@ -633,7 +633,7 @@ class Window:
         if self.session.backup_data:
             self.explorer_load(self.session.backup_data,"Verified current backup: "+str(path))
             self.book.select(self.t_read);self.readbook.select(self.t_backup)
-        self.home_note.set(f"BACKUP COMPLETE  •  {count} DA registers saved  •  Controller unchanged")
+        self.status.set(f"BACKUP COMPLETE  •  {count} DA registers saved  •  Controller unchanged")
         self.backupdetail.set(
             f"✓ SAVED FILE VERIFIED — 8/8 programme blocks, {count} DA registers, 9 C3 settings.\n"
             f"Location: {path}\n"
