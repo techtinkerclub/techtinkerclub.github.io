@@ -30,7 +30,7 @@ permalink: /heater/program-tools/
 </style></head><body><div class="wrap">
 <header><div><div class="kicker">Heating Rate Controller · E5CC-T</div><h1>Programme Studio</h1><div class="muted">Build a heating programme, then practise entering it using a virtual Omron front panel.</div></div><a href="../" class="btn">← Operator manual</a></header>
 <div class="warn"><strong>Pre-commissioning training software, not a real controller.</strong> These graphs show the commanded setpoint, not measured PV or heater behaviour. This simulator intentionally models only the documented common settings; protection, alarms, PID, wait/hold, and several special functions are not reproduced. Check actual controller screens and complete the independent electrical safety commissioning before live use.</div>
-<div class="tabs noprint"><button id="bt" class="on">1 · Programme builder</button><button id="st">2 · Button simulator</button></div>
+<div class="note"><strong>Real Omron test, 13 October 2026:</strong> Programme 1 was saved on the physical controller (ramp to 50 °C at 2 °C/min; 15-minute soak). Its values and <code>prg = 1</code> persisted after power removal, and <code>r-r = rst</code> appeared on reconnection. Full <a href="../omron-programming/#bench">button-by-button guide</a>. No physical RUN or output tested.</div><div class="tabs noprint"><button id="bt" class="on">1 · Programme builder</button><button id="st">2 · Button simulator</button></div>
 <section id="builder"><div class="columns"><div>
 <div class="card"><div class="row spread"><h2>Programme</h2><span class="badge">Rate-of-rise method</span></div><div class="grid">
 <div class="field"><label for="slot">Programme memory</label><select id="slot"></select></div>
@@ -38,28 +38,28 @@ permalink: /heater/program-tools/
 <div class="field"><label for="start">Starting PV, °C (assumed)</label><input id="start" type="number" min="-20" max="500" step=".1"></div>
 <div class="field"><label for="finish">End behaviour (controller-wide setting)</label><select id="finish"><option value="rst">RESET — stop regulating</option><option value="cont">CONT — hold final SP</option></select></div></div>
 <div class="note">Only <strong>rate-of-rise mode</strong> is implemented in v1 (<code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>). The separate step-time programming method requires a different parameter model. The starting PV is assumed for the graph and cannot be forced by a leading ramp.</div></div>
-<div class="card"><div class="row spread"><h2>Segments</h2><span id="count" class="badge">2 / 32</span></div><div id="segments"></div><div class="row noprint"><button class="btn primary" id="addRamp">+ Ramp</button><button class="btn" id="addSoak">+ Soak</button><button class="btn" id="addStep">+ Step</button><button class="btn danger" id="clear">Clear all</button></div>
+<div class="card"><div class="row spread"><h2>Segments</h2><span id="count" class="badge">2 / 32</span></div><div id="segments"></div><div class="row noprint"><button class="btn primary" id="addRamp">+ Ramp</button><button class="btn" id="addSoak">+ Soak</button><button class="btn" id="addStep">+ Step</button><button class="btn" id="benchExample">Use verified 50 °C example</button><button class="btn danger" id="clear">Clear all</button></div>
 <p class="tiny muted">Ramp = SP + whole-number slope (°C/min). Soak = hold existing SP for a duration. Step = immediate setpoint change (zero time). You can move and delete segments independently.</p></div>
 </div><div><div class="card"><h2>Temperature setpoint profile</h2><div id="chart" class="plot"></div><div id="summary"></div><div id="errors"></div></div>
-<div class="card"><h2>Omron entry sheet</h2><div class="scroll" id="sheet"></div><div class="row noprint" style="margin-top:13px"><button class="btn" id="print">Print</button><button class="btn" id="json">Export JSON</button><button class="btn primary" id="practice">Practise this programme →</button></div><p class="tiny muted">Your programmes are saved in this browser (local storage), not sent anywhere or written to the physical Omron.</p></div></div></div></section>
+<div class="card"><h2>Omron entry sheet</h2><div class="scroll" id="sheet"></div><div class="row noprint" style="margin-top:13px"><button class="btn" id="print">Print</button><button class="btn" id="json">Export JSON</button><button class="btn primary" id="practice">Practise this programme →</button></div><p class="tiny muted">Builder values live only in this browser. The entry sheet includes the separate <code>prg</code> RUN selection; no browser action writes to the physical Omron.</p></div></div></div></section>
 <section id="simulator" class="hidden"><div class="columns"><div>
 <div class="card"><div class="row spread"><h2>Virtual Omron E5CC-T</h2><span class="badge">Training subset</span></div><p class="tiny muted">Buttons match the symbol positions on your actual panel. Choose HOLD for a long press; otherwise a tap is short.</p>
 <div class="device"><div class="brand"><span>OMRON</span><span>E5CC-T</span></div><div class="lcd"><div class="lcdrow"><span id="labA">PV</span><div id="screenA" class="digits">20.0</div></div><hr style="border:0;border-top:1px solid #394b53"><div class="lcdrow"><span id="labB">SV</span><div id="screenB" class="digits green">rst</div></div></div>
 <div class="keys"><button data-key="level" aria-label="LEVEL rectangle"><svg viewBox="0 0 36 24"><rect x="6" y="8" width="24" height="8" rx="2"/></svg><small>LEVEL</small></button><button data-key="mode" aria-label="MODE looped arrow"><svg viewBox="0 0 36 24"><path d="M26 17C20 21 9 18 9 12C9 5 24 5 26 11L23 15M23 11L26 15L30 12"/></svg><small>MODE</small></button><button data-key="pf" aria-label="PF shift"><strong>≪PF</strong><small>SHIFT</small></button><button data-key="down" aria-label="Down chevrons"><svg viewBox="0 0 36 24"><path d="M6 5L18 13L30 5 M6 12L18 20L30 12"/></svg><small>DOWN</small></button><button data-key="up" aria-label="Up chevrons"><svg viewBox="0 0 36 24"><path d="M6 19L18 11L30 19 M6 12L18 4L30 12"/></svg><small>UP</small></button></div>
 <div id="state" class="devicefoot">Operation · RESET</div></div>
-<div class="row noprint" style="margin-top:12px"><label for="holdmode">Next key press:</label><select id="holdmode" class="control" style="width:auto"><option value="short">Short</option><option value="long">Hold</option></select><button id="combo" class="btn">MODE + DOWN (RUN/RST)</button></div>
-<p class="note">LEVEL moves Operation → Programme → Adjustment → PID → Operation. Hold LEVEL from Operation to enter Initial Settings and from Initial Settings to return. MODE scrolls displayed parameters, or previous parameter when held. Some real parameters are omitted, so never learn a fixed number of MODE presses from this simulator.</p></div>
+<div class="row noprint" style="margin-top:12px"><label for="holdmode">Next key press:</label><select id="holdmode" class="control" style="width:auto"><option value="short">Short</option><option value="long">Hold</option></select><button id="combo" class="btn">MODE + DOWN (RUN/RST)</button><button id="powercycle" class="btn">Power-cycle virtual Omron</button></div>
+<p class="note">Virtual programme values are automatically kept in this browser, even after page reload. The Power-cycle button resets the virtual operating state (for <code>p-on = rst</code>) while retaining programme memory and <code>prg</code>. This models our observed USB restart test, <strong>not</strong> any real controller output. LEVEL moves Operation → Programme → Adjustment → PID → Operation. Hold LEVEL from Operation to enter Initial Settings and from Initial Settings to return. MODE scrolls displayed parameters, or previous parameter when held. Some real parameters are omitted, so never learn a fixed number of MODE presses from this simulator.</p></div>
 <div class="card"><h3>Run the virtual programme</h3><div class="row noprint"><button class="btn" id="minute">+1 min</button><button class="btn" id="five">+5 min</button><button class="btn" id="reset">RESET</button><span id="elapsed" class="badge">0 min</span></div><div id="simchart" class="plot" style="margin-top:10px"></div><p class="tiny muted">Time advances on button press only. PV remains the assumed starting temperature: this is not a PID, physics or safety simulation.</p></div>
-</div><div><div class="card"><h2>Practice target</h2><p class="tiny muted">Match each plain-English setting to the exact code on the Omron screen. Select a segment with d.seg before editing styp, sp, pr or time. MODE after a segment's final parameter automatically selects the next segment (<code>d.seg = 1</code> after Segment 0 when <code>s-no = 2</code>); the final active segment advances to <code>d.seg = end</code>. Both one- and two-segment behaviour have been checked on the real Omron. On the tested real controller, programme 0 shows al-1 = al-2 = al-3 = 0; the simulator mirrors these read-only values for slot 0. Other slots remain unverified (--). This does not mean alarms are disabled. Operation Level now includes <code>pgsg</code> (programme.segment), <code>prg</code> (programme selected to run), and later pages in Omron H185 not yet checked on this particular unit. The simulator uses approximate virtual timing and does not model physical output current. PID Setting Level follows the observed <code>d.pid → 1.p → 1.i → 1.d → 1.olh → 1.oll → 1.aut → d.pid</code> loop when PID set 1 is selected. These PID-1 values are a <strong>read-only example copied from one real controller</strong>; PID editing, other PID sets and masked parameters are not simulated.</p><div id="goal" class="goal"></div><div class="row noprint" style="margin-top:12px"><button class="btn" id="empty">Reset virtual memory</button><button class="btn" id="load">Load for RUN preview</button></div><p class="tiny muted">Load is an explicit shortcut for exploring a completed programme; it does not represent physically programming the device.</p></div>
-<div class="card"><h3>Button history</h3><div id="history" class="history"></div></div><div class="card"><h3>Known limitations</h3><p class="tiny muted">This first simulator covers a restricted parameter subset, approximate PF numeric digit editing, mode navigation, segment editing and virtual setpoint progression. It does not exactly model firmware-specific parameter masking, alarms, autotuning, programme linking/repeats, wait/hold, protected levels or control outputs. Training accuracy must be checked against both installed E5CC-TQX3A5M-000 controllers.</p><a href="https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf" target="_blank" rel="noopener noreferrer">Omron H185 manual ↗</a></div>
+</div><div><div class="card"><h2>Practice target</h2><p class="tiny muted">Match each plain-English setting to the exact code on the Omron screen. Select a segment with d.seg before editing styp, sp, pr or time. MODE after a segment's final parameter automatically selects the next segment (<code>d.seg = 1</code> after Segment 0 when <code>s-no = 2</code>); the final active segment advances to <code>d.seg = end</code>. Both one- and two-segment behaviour have been checked on the real Omron. On the tested real controller, programme 0 shows al-1 = al-2 = al-3 = 0; the simulator mirrors these read-only values for slot 0. Other slots remain unverified (--). This does not mean alarms are disabled. Operation Level now includes <code>pgsg</code> (programme.segment), <code>prg</code> (programme selected to run), and later pages in Omron H185 not yet checked on this particular unit. The simulator uses approximate virtual timing and does not model physical output current. PID Setting Level follows the observed <code>d.pid → 1.p → 1.i → 1.d → 1.olh → 1.oll → 1.aut → d.pid</code> loop when PID set 1 is selected. These PID-1 values are a <strong>read-only example copied from one real controller</strong>; PID editing, other PID sets and masked parameters are not simulated.</p><div id="goal" class="goal"></div><div class="row noprint" style="margin-top:12px"><button class="btn" id="empty">Reset virtual memory</button><button class="btn" id="load">Load for RUN preview</button></div><p class="tiny muted">Load is a shortcut to populate virtual memory for practice; it does not represent physically programming the device. To practise accurately, instead enter every value with LEVEL, MODE, UP/DOWN and PF, then select <code>prg</code> in Operation Level. <a href="../omron-programming/#bench">Follow the verified 11-step procedure ↗</a></p></div>
+<div class="card"><h3>How to create, save and select a programme</h3><ol class="tiny"><li>Set <code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>, <code>p-on = rst</code>, <code>eset = rst</code> in Initial Level, and <code>spmd = psp</code> in Adjustment Level.</li><li>From Operation, short LEVEL → <code>d.prg</code>: choose an editing slot. MODE → <code>s-no</code> → <code>d.seg</code>; for each ramp enter <code>styp</code>, <code>sp</code>, <code>pr</code>; for a soak enter <code>styp</code>, <code>time</code>.</li><li>After the final segment, MODE advances to <code>d.seg = end</code>. Check programme-wide <code>pid</code>, <code>rpt = 0</code>, <code>link = end</code>. There is no separate physical Save key: confirm the stored values by returning to the menu and power-cycling.</li><li>Return to Operation. At <code>prg</code> select the programme to <em>run</em>; check <code>pgsg</code> and <code>r-r = rst</code>. The RUN programme can differ from the <code>d.prg</code> editing slot.</li></ol><div class="note">Operation screen sequence observed in RESET: <code>a-m → pgsg → prg → prgt → rptm → r-r</code>. Real firmware may mask additional screens. USB power allows display/configuration only; no real control outputs.</div></div><div class="card"><h3>Button history</h3><div id="history" class="history"></div></div><div class="card"><h3>Known limitations</h3><p class="tiny muted">This first simulator covers a restricted parameter subset, approximate PF numeric digit editing, mode navigation, segment editing and virtual setpoint progression. It does not exactly model firmware-specific parameter masking, alarms, autotuning, programme linking/repeats, wait/hold, protected levels or control outputs. Training accuracy must be checked against both installed E5CC-TQX3A5M-000 controllers.</p><a href="https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf" target="_blank" rel="noopener noreferrer">Omron H185 manual ↗</a></div>
 </div></div></section>
 <footer>E5CC-T Programme Studio · No AI or server required once the page is loaded · Pre-commissioning edition</footer>
 </div>
 <script>
 (()=>{"use strict";
-const $=x=>document.getElementById(x),K="e5cct-program-studio-v1",MAX=32,esc=x=>String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),fmt=x=>Number.isFinite(x)?(Math.round(x*100)/100).toString():"?",num=x=>x!==""&&x!==undefined&&x!==null&&Number.isFinite(Number(x));
+const $=x=>document.getElementById(x),K="e5cct-program-studio-v1",VMKEY="e5cct-virtual-omron-v2",MAX=32,esc=x=>String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),fmt=x=>Number.isFinite(x)?(Math.round(x*100)/100).toString():"?",num=x=>x!==""&&x!==undefined&&x!==null&&Number.isFinite(Number(x));
 const blank=t=>t==="soak"?{type:t,minutes:15}:t==="step"?{type:t,sp:120}:{type:"ramp",sp:120,rate:2};
-const initial=()=>Array.from({length:8},(_,i)=>({name:i===0?"20 to 120°C example":"Programme "+i,start:20,finish:"rst",steps:i===0?[{type:"ramp",sp:120,rate:2},{type:"soak",minutes:15}]:[{type:"ramp",sp:80,rate:2}]}));
+const initial=()=>Array.from({length:8},(_,i)=>({name:i===0?"20 to 120°C example":i===1?"Verified 50°C bench example":"Programme "+i,start:20,finish:"rst",steps:i===0?[{type:"ramp",sp:120,rate:2},{type:"soak",minutes:15}]:i===1?[{type:"ramp",sp:50,rate:2},{type:"soak",minutes:15}]:[{type:"ramp",sp:80,rate:2}]}));
 let bank=initial(),slot=0;
 try{let x=JSON.parse(localStorage.getItem(K)||"null");if(x&&Array.isArray(x.bank)&&x.bank.length===8){bank=x.bank.map((v,i)=>({name:String(v.name||"Programme "+i).slice(0,80),start:v.start,finish:v.finish==="cont"?"cont":"rst",steps:Array.isArray(v.steps)?v.steps.slice(0,MAX).filter(t=>["ramp","soak","step"].includes(t.type)):[]}));slot=Math.max(0,Math.min(7,Number(x.slot)||0));}}catch(_){}
 const save=()=>{try{localStorage.setItem(K,JSON.stringify({bank,slot}));}catch(_){}},cur=()=>bank[slot];
@@ -99,8 +99,8 @@ function update(){
  if(a.notes.length)$("errors").innerHTML+='<p class="note">'+a.notes.map(esc).join("<br>")+'</p>';
  let rows=[["d.prg",slot],["s-no",b.steps.length]];
  b.steps.forEach((s,i)=>{rows.push(["d.seg",i],["styp",s.type]);if(s.type!=="soak")rows.push(["sp",s.sp+" °C"]);if(s.type==="ramp")rows.push(["pr",s.rate+" °C/min"]);if(s.type==="soak"){let n=Number(s.minutes);rows.push(["time",num(s.minutes)&&Number.isInteger(n)?Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0"):"INVALID"]);}});
- rows.push(["rpt",0],["link","end"],["eset (initial)",b.finish]);
- $("sheet").innerHTML='<p class="tiny muted">Initial settings: <code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>, <code>rtsm = stop</code>, <code>spmd = psp</code>. Keep <code>p-on = rst</code> and verify output at reset. <a href="../omron-programming/#initial">Initial configuration guide ↗</a></p><table><tr><th>Omron display</th><th>Set value</th></tr>'+rows.map(x=>'<tr><td><code>'+esc(x[0])+'</code></td><td>'+esc(x[1])+'</td></tr>').join("")+'</table><p class="note">From normal PV/SP: LEVEL once briefly enters Program Setting Level. MODE moves through codes; UP/DOWN edits; PF selects digit where assigned. Parameter masking and model configuration can change visible menu order.</p>';
+ rows.push(["d.seg (programme-wide)","end"],["pid (programme-wide)",1],["rpt",0],["link","end"],["eset (initial)",b.finish],["prg (Operation — select to RUN)",slot]);
+ $("sheet").innerHTML='<p class="tiny muted">Initial settings: <code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>, <code>rtsm = stop</code>, <code>spmd = psp</code>. Keep <code>p-on = rst</code> and verify output at reset. <a href="../omron-programming/#initial">Initial configuration guide ↗</a></p><table><tr><th>Omron display</th><th>Set value</th></tr>'+rows.map(x=>'<tr><td><code>'+esc(x[0])+'</code></td><td>'+esc(x[1])+'</td></tr>').join("")+'</table><p class="note"><strong>Editing vs running:</strong> <code>d.prg</code> selects the stored profile to edit. Once the profile has been entered and verified, return to Operation Level and set <code>prg</code> to the same programme number to RUN it. <code>pgsg</code> is a monitor, not a selector. Normal front-panel edits have no separate Save button; check values after a complete power cycle before use. LEVEL enters Program Setting Level; MODE moves; UP/DOWN edits; PF selects a digit where enabled.</p>';
 }
 function render(){let b=cur();$("slot").value=slot;$("name").value=b.name;$("start").value=b.start;$("finish").value=b.finish;$("segments").innerHTML=b.steps.map(entry).join("")||'<p class="muted">No segments yet.</p>';["addRamp","addSoak","addStep"].forEach(x=>$(x).disabled=b.steps.length>=MAX);update()}
 $("slot").innerHTML=Array.from({length:8},(_,i)=>'<option value="'+i+'">Programme '+i+'</option>').join("");
@@ -120,20 +120,36 @@ function tab(sim){$("builder").classList.toggle("hidden",sim);$("simulator").cla
 $("bt").onclick=()=>tab(false);$("st").onclick=()=>tab(true);$("practice").onclick=()=>tab(true);
 /* Simulator subset: real-menu navigation measured on one physical E5CC-T.
    Operation Level: a-m -> pgsg observed directly on real controller.
-   pgsg format (programme.segment) and prg execution selection verified against
-   Omron H185 §6-3; following operation pages shown in H185 but not hardware
-   checked on this unit. Manual MV control intentionally unavailable.
+   prg -> prgt -> rptm -> r-r were observed after selecting runPrg=1.
+   Other operation pages are masked by default in RESET on this unit.
+   pgsg segment suffix remains an unverified physical display detail.
+   Manual MV control intentionally unavailable.
    PID-1 values below are a non-editable sample snapshot, not factory defaults
    guaranteed for every unit or actual PID tuning simulation. */
 const observedPid1=Object.freeze({"1.p":"8","1.i":"233","1.d":"40","1.olh":"100","1.oll":"0","1.aut":"1320"});
 const newProg=()=>({n:8,segments:Array.from({length:32},()=>({type:"ramp",sp:0,rate:0,minutes:0})),pid:1,rpt:0,link:"end"});
 let vm;
-function resetVM(){vm={level:"operation",param:"pv",prg:0,runPrg:0,seg:"end",pidSet:1,progs:Array.from({length:8},newProg),settings:{"in-t":6,"d-u":"c",cntl:"pid","t-u":"h-m","t-pr":"pr",pru:"m",rtsm:"stop","p-on":"rst",eset:"rst",spmd:"psp"},status:"rst",pv:Number(cur().start)||20,time:0,digit:0,history:[]};showVM()}
+function resetVM(wipe=false){
+ vm={level:"operation",param:"pv",prg:0,runPrg:0,seg:"end",pidSet:1,progs:Array.from({length:8},newProg),settings:{"in-t":6,"d-u":"c",cntl:"pid","t-u":"h-m","t-pr":"pr",pru:"m",rtsm:"stop","p-on":"rst",eset:"rst",spmd:"psp"},status:"rst",pv:Number(cur().start)||20,time:0,digit:0,history:[]};
+ if(!wipe)try{
+   const saved=JSON.parse(localStorage.getItem(VMKEY)||"null");
+   if(saved&&Array.isArray(saved.progs)&&saved.progs.length===8&&saved.settings&&Number.isInteger(saved.prg)&&Number.isInteger(saved.runPrg)&&saved.prg>=0&&saved.prg<8&&saved.runPrg>=0&&saved.runPrg<8){
+     vm.progs=saved.progs;vm.prg=saved.prg;vm.runPrg=saved.runPrg;vm.settings={...vm.settings,...saved.settings};vm.pidSet=Number(saved.pidSet)||1;
+   }
+ }catch(_){}
+ showVM();
+}
+function saveVM(){try{localStorage.setItem(VMKEY,JSON.stringify({progs:vm.progs,prg:vm.prg,runPrg:vm.runPrg,pidSet:vm.pidSet,settings:vm.settings}))}catch(_){}}
+function powerCycleVM(){
+ if(vm.settings["p-on"]!=="rst"){history("Virtual power cycle currently models p-on = rst only; restore this setting first");showVM();return}
+ vm.status="rst";vm.param="pv";vm.level="operation";vm.seg="end";vm.time=0;vm.digit=0;
+ history("USB power removed and restored (VIRTUAL) — programme memory retained, r-r = rst");showVM();
+}
 const prog=()=>vm.progs[vm.prg];
 const runprog=()=>vm.progs[vm.runPrg];
 function simReady(){let x=vm.settings,p=runprog();return x["t-pr"]==="pr"&&x["t-u"]==="h-m"&&x.pru==="m"&&x.rtsm==="stop"&&x.spmd==="psp"&&p.rpt===0&&p.link==="end"}
 const minTime=n=>{n=Math.min(5999,Math.max(0,Number(n)||0));return Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0")};
-function keys(){let x=vm.level==="operation"?["pv","a-m","pgsg","prg","hold","seg","stbm","prgt","rptm","r-r","o"]:vm.level==="initial"?["in-t","d-u","cntl","t-u","t-pr","pru","rtsm","p-on","eset"]:vm.level==="adjustment"?["l.adj","spmd"]:vm.level==="pid"?["d.pid",...(vm.pidSet===1?Object.keys(observedPid1):[])]:["d.prg","s-no","d.seg"];
+function keys(){let x=vm.level==="operation"?["pv","a-m","pgsg","prg",...(vm.status==="run"?["hold","seg"]:[]),"prgt","rptm","r-r"]:vm.level==="initial"?["in-t","d-u","cntl","t-u","t-pr","pru","rtsm","p-on","eset"]:vm.level==="adjustment"?["l.adj","spmd"]:vm.level==="pid"?["d.pid",...(vm.pidSet===1?Object.keys(observedPid1):[])]:["d.prg","s-no","d.seg"];
  if(vm.level==="program"&&vm.seg!=="end"){let s=prog().segments[vm.seg];x.push("styp");if(s.type==="ramp")x.push("sp","pr");if(s.type==="soak")x.push("time");if(s.type==="step")x.push("sp")}
  if(vm.level==="program"&&vm.seg==="end")x.push("pid","al-1","al-2","al-3","rpt","link");return x}
 function value(p){
@@ -218,7 +234,7 @@ function showVM(){
  $("elapsed").textContent=fmt(vm.time)+" min · "+vm.status.toUpperCase();
  let a=evaluate({start:vm.pv,steps:runprog().segments.slice(0,runprog().n),finish:vm.settings.eset});
  $("simchart").innerHTML=!simReady()?'<p class="warn">This virtual configuration is outside the supported profile (rate-of-rise, hours.minutes, rate per minute, reset stops control, programmed SP, no repetitions or links). Restore those settings to preview.</p>':a.err.length?'<p class="tiny muted">Complete the segment values to preview this virtual programme.</p>':graph(a.pts);
- $("history").innerHTML=vm.history.slice(-14).map(esc).join("<br>")||"No keys pressed yet.";goal();
+ $("history").innerHTML=vm.history.slice(-14).map(esc).join("<br>")||"No keys pressed yet.";saveVM();goal();
 }
 function goal(){
  if(!vm)return;
@@ -234,6 +250,9 @@ function goal(){
    rows.push({meaning:"Select segment "+i,code:"d.seg",target:i,virtual:vm.seg,active,selector:true});
  };
  const section=(label)=>rows.push({section:label});
+ section("Initial/adjustment setup required for rate profiles");
+ [["Rate-of-rise method","t-pr","pr"],["Slope unit","pru","m"],["Duration format","t-u","h-m"],["RESET stops control","rtsm","stop"],["Power-on RESET","p-on","rst"],["Programme end","eset",b.finish],["Programmed setpoint","spmd","psp"]].forEach(x=>push(x[0],x[1],x[2],vm.settings[x[1]]));
+ section("Programme memory and execution selection");
  push("Programme being edited","d.prg",slot,vm.prg);
  push("Programme selected for RUN","prg",slot,vm.runPrg);
  push("Number of segments","s-no",b.steps.length,g.n);
@@ -245,7 +264,8 @@ function goal(){
    if(seg.type==="ramp")push("Ramp slope (°C/min)","pr",seg.rate,g.segments[i].rate,i);
    if(seg.type==="soak")push("Hold duration (h.mm)","time",minTime(seg.minutes),minTime(g.segments[i].minutes),i);
  });
- section("Programme completion");
+ section("Programme-wide settings (d.seg = end)");
+ push("PID set","pid",1,g.pid);
  push("Repetitions","rpt",0,g.rpt);
  push("Link destination","link","end",g.link);
  const matched=checks.filter(Boolean).length;
@@ -265,12 +285,17 @@ function goal(){
    +'<p class="tiny muted">For segment selection rows, <strong>—</strong> means that segment is not currently selected. The current <code>d.seg</code> value is shown above the table. The selector is excluded from the match total. Blue highlighting shows the parameter currently visible on the simulator.</p>'
    +(vm.prg!==slot?'<p class="note">The simulator is currently viewing programme '+esc(vm.prg)+'. Select <code>d.prg = '+esc(slot)+'</code> to edit the programme used for this comparison.</p>':'');
 }
+$("benchExample").onclick=()=>{
+ if(!confirm("Replace browser builder Programme 1 with the verified 50°C/2°C/min/15 min example? This does not write to the physical Omron."))return;
+ slot=1;bank[1]={name:"Verified bench: 50°C at 2°C/min, soak 15 min",start:20,finish:"rst",steps:[{type:"ramp",sp:50,rate:2},{type:"soak",minutes:15}]};save();render();goal();
+};
+$("powercycle").onclick=powerCycleVM;
 document.querySelectorAll("[data-key]").forEach(x=>x.addEventListener("click",()=>{push(x.dataset.key,$("holdmode").value==="long");$("holdmode").value="short"}));
 $("combo").onclick=()=>{vm.status=vm.status==="run"?"rst":"run";vm.time=0;history("MODE+DOWN → "+vm.status);showVM()};
 function advance(n){if(vm.status!=="run"){history("Not running");showVM();return}if(!simReady()){history("Unsupported simulation configuration; time not advanced");showVM();return}let p=runprog(),a=evaluate({start:vm.pv,steps:p.segments.slice(0,p.n),finish:vm.settings.eset});if(a.err.length){history("Programme invalid");showVM();return}
  vm.time+=n;if(vm.time>=a.time&&vm.settings.eset==="rst"&&p.rpt===0&&p.link==="end"){vm.time=a.time;vm.status="rst";history("PROGRAMME END → RESET")}else history("Advanced "+n+" min (setpoint only)");showVM()}
 $("minute").onclick=()=>advance(1);$("five").onclick=()=>advance(5);$("reset").onclick=()=>{vm.status="rst";vm.time=0;history("RESET");showVM()};
-$("empty").onclick=()=>{if(confirm("Clear all eight virtual programme memories? Builder remains saved."))resetVM()};
+$("empty").onclick=()=>{if(confirm("Clear all eight virtual programme memories? Builder remains saved."))resetVM(true)};
 $("load").onclick=()=>{let b=cur(),a=evaluate(b);if(a.err.length){alert("Correct builder errors first.");return}
  let p=vm.progs[slot];p.n=b.steps.length;p.segments=Array.from({length:32},(_,i)=>{let s=b.steps[i];return s?{type:s.type,sp:Number(s.sp)||0,rate:Number(s.rate)||0,minutes:Number(s.minutes)||0}:{type:"ramp",sp:0,rate:0,minutes:0}});p.rpt=0;p.link="end";vm.prg=slot;vm.runPrg=slot;vm.seg="end";vm.level="operation";vm.param="pv";vm.pv=Number(b.start);vm.settings.eset=b.finish;vm.status="rst";vm.time=0;history("Loaded generator programme into virtual memory and selected programme "+slot+" for virtual RUN");showVM()};
 render();resetVM();if(location.hash==="#simulator")tab(true);
