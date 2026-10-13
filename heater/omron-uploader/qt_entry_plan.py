@@ -37,7 +37,7 @@ def _min_to_hm(raw):
 
 def _target(raw):
     d=Decimal(str(raw))
-    return f"{d:g} °C"
+    return f"{d.normalize():f} °C"
 
 def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
     """Return ordered keypad worksheet model for one valid native programme.
