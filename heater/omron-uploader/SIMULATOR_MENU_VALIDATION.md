@@ -97,8 +97,10 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - **Before change:** `t-pr=time`; when `d.seg=0`, the actual controller displayed **only `sp` and `time`**. This is consistent with step-time programming and does not prove the simulator's rate-of-rise display is wrong.
 - **User-initiated change:** `t-pr` was changed to `pr`. Subsequent Segment 0 parameter visibility **has not yet been checked**.
 - **Observed configuration:** `pru=m`, `t-u=h-m`, `rtsm=stop`, `p-on=cont`, `eset=rst`.
+- **After switching to `t-pr=pr`:** Setting `d.seg=0` revealed `styp=ramp` → `sp=50` → `pr=0` in that order. Validates the rate-mode display flow. Omron H185 §4-7-4 explicitly says `pr=0` causes the segment to behave as a **step** despite `styp=ramp`; a positive rate must be set for an actual ramp. Do not run the test profile yet.
+
 - **Safety follow-up required:** Omron H185 §4-7-4 explains that `p-on=cont` restores interrupted controller programme status. For the heater cabinet, recommend assessment of `p-on=rst` to inhibit automatic post-power-loss continuation. This concerns loss of Omron controller supply, **not ordinary PWM/SSR switching of the independent heater DC supply**. `rtsm=stop` alone is not physical isolation; Omron H185 §6-5 confirms `mv-r` (MV at Reset) is an **Adjustment Level** parameter **masked by default**, with factory default `0.0%` for standard control. Its actual value is **not yet verified** on this unit. Do not change parameter masking merely to display it; verify later by a qualified commissioning method alongside the hardware fail-safe.
-- **Next validation:** With normal mains/heater supplies isolated, return to Program Setting Level, choose `d.seg=0`, record real `styp` and whether `sp`/`pr`/`time` appear according to segment type. Do not RUN.
+- **Next validation:** Check `s-no` to determine the active segment count, then inspect `d.seg=1` (if active) without changing parameters; capture segment format and visible fields. Do not RUN.
 - **Limitations:** USB-only inspection provides no heater-output or restart-interlock qualification.
 
 ## Results
