@@ -16,7 +16,7 @@ from pathlib import Path
 import sys
 
 from PySide6.QtCore import Qt, QTimer, QThreadPool
-from PySide6.QtGui import QColor
+from PySide6.QtGui import QColor, QFont
 from PySide6.QtWidgets import (
     QApplication,QMainWindow,QWidget,QFrame,QVBoxLayout,QHBoxLayout,QGridLayout,
     QLabel,QPushButton,QLineEdit,QComboBox,QSpinBox,QDoubleSpinBox,QTextEdit,
@@ -438,19 +438,22 @@ class Studio(QMainWindow):
         if current in found:self.port_combo.setCurrentText(current)
         if not found:self.read_message.setText("No USB serial port detected. Offline mode still works.")
 
-    def _work(self,title,action,success,is_write=False):
+    def _work(self,title,action,success,is_write=False,quiet=False):
         if self.busy:return
         self.busy=True
-        self.progress.show()
-        self.feedback.setText("Working: "+title)
+        if not quiet:
+            self.progress.show()
+            self.feedback.setText("Working: "+title)
         self._controls()
         worker=Task(action);self.workers.add(worker)
-        worker.signals.progress.connect(lambda value:self.feedback.setText(str(value)))
+        worker.signals.progress.connect(lambda value:self.feedback.setText(str(value)) if not quiet else None)
         worker.signals.result.connect(success)
-        worker.signals.error.connect(lambda message:self._job_error(title,message,is_write))
+        worker.signals.error.connect(
+            lambda message:self._mark_link_lost("Controller heartbeat failed: "+message)
+            if quiet else self._job_error(title,message,is_write))
         def cleanup():
             self.busy=False
-            self.progress.hide()
+            if not quiet:self.progress.hide()
             self.workers.discard(worker)
             self._controls()
         worker.signals.finished.connect(cleanup)
@@ -557,15 +560,30 @@ class Studio(QMainWindow):
         def ok(status):
             if not status: self._lost_link("Controller returned empty status")
         # Health is a read-only transaction and skipped during any other work.
-        self._work("Read-only USB health check",probe,ok)
+        self._work("Read-only USB health check",probe,ok,quiet=True)
+    def _mark_link_lost(self,reason):
+        staged=bool(self.session and self.session.ram_touched and not self.session.committed)
+        previous=self.client
+        self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.fail_latched=staged
+        if previous:
+            try:previous.close()
+            except Exception:pass
+        self.link_status.setText("●  USB disconnected")
+        self.link_status.setStyleSheet("color:#a8610f;font-weight:600")
+        self.device_state.setText("●  Disconnected")
+        self.device_model.setText("Offline controller workspace")
+        self.device_detail.setText("Stored local programmes and backups are still available.")
+        self.feedback.setText("USB DISCONNECTED — "+reason+" · reconnect and re-read before any write")
+        if staged:
+            self.message("Controller RAM state unknown",
+              "USB was lost while RAM data may not have been saved. Keep the heater isolated; "
+              "reconnect and inspect before considering another write.",True)
+        self.refresh_review()
+
     def _lost_link(self,reason):
         if self.busy:return
-        staged=bool(self.session and self.session.ram_touched and not self.session.committed)
-        self.disconnect()
-        self.feedback.setText("USB DISCONNECTED — "+reason)
-        if staged:self.message("Uncommitted RAM may exist",
-            "Connection was lost with unsaved RAM changes. Controller state is unknown. "
-            "Keep the heater isolated and read the hardware again.",True)
+        self._mark_link_lost(reason)
 
     def open_backup(self):
         file,_=QFileDialog.getOpenFileName(self,"Open saved controller backup","","JSON (*.json)")
@@ -1007,7 +1025,7 @@ def main():
     args=parser.parse_args()
     app=QApplication(sys.argv[:1])
     app.setStyle("Fusion")
-    app.setFont("Segoe UI")
+    app.setFont(QFont("Segoe UI",10))
     window=Studio(args.enable_lab_writes)
     window.show()
     sys.exit(app.exec())
