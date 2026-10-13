@@ -10,6 +10,7 @@ from program_model import Programme,Segment,ValidationError,blank_programme,TARG
 from transfer import TransferSession,PreflightError,PREFLIGHT
 from compoway import SerialClient, ProtocolError
 from offline_creator import open_studio
+from config_change_review import build_review as build_config_review, readable_review as format_config_review
 from controller_inventory import (CATALOG as FULL_CATALOG, group_names as inventory_groups,
     read_inventory, validate_inventory, readable_rows, report_inventory, offline_inventory,
     human_value as inventory_value, add_proposal as inventory_add_proposal,
@@ -1508,7 +1509,10 @@ class Window:
     self.review_changes.pack(fill="x",pady=(0,9))
     self.review_changes.insert("1.0","No initial setting changes proposed.")
     self.review_changes.configure(state="disabled")
-    self.b(body,"GENERATE COMPLETE MANUAL PROGRAMMING SHEET",self.entry_sheet,True).pack(anchor="w",pady=(0,7))
+    actions=tk.Frame(body,bg=WHITE)
+    actions.pack(fill="x",pady=(0,9))
+    self.b(actions,"GENERATE MANUAL PROGRAMMING SHEET",self.entry_sheet,True).pack(side="left",padx=(0,8))
+    self.b(actions,"EXPORT CONTROLLER CONFIGURATION CHANGE REVIEW",self.export_combined_review).pack(side="left",padx=8)
     self.message(body,"Connected: preview the intended changes, then (lab-only) stage and verify the selected programme. Offline: generate all front-panel programming steps. Initial configuration changes are included in the manual sheet; USB writing of C3/C1 settings requires separate hardware validation and is not enabled yet.")
     self.lab_section=tk.Frame(body,bg=WHITE)
     self.lab_section.pack(fill="x")
@@ -1536,6 +1540,35 @@ class Window:
     tk.Label(self.lab_section,textvariable=self.transfer_summary,bg="white",fg=DARK,wraplength=850,justify="left").pack(fill="x",pady=8)
     self.message(self.lab_section,"The three upload actions stay visible at the top. Complete the checklist before writing to RAM; a separate confirmation is required to save.",DARK)
     self.message(self.lab_section,"EXPERIMENTAL, ISOLATED LAB ONLY. Register encoder supports the observed input type 5/whole-degree SP values, but this version has NOT yet completed a hardware write qualification. Start with a disposable test slot and inspect every changed register. No heater or SSR power. On a communications fault, stop; no automatic rollback or save.",RED)
+ def export_combined_review(self):
+    """Export the full-parameter read-versus-requested schedule without writes."""
+    if self.full_snapshot is None:
+        messagebox.showwarning("Inventory needed",
+            "Step 2 must read the extended controller inventory (or Step 1 Offline must "
+            "initialise a no-device planning catalogue) before exporting a configuration review.")
+        return
+    try:
+        plan=build_config_review(self.full_snapshot,self.full_draft,selected_slot=self.slot.get())
+        # Essential-control proposals use the previous subset and are kept separate
+        # to avoid hiding duplicate or inconsistent choices for one register.
+        original=setup_report(self.setup_snapshot,self.setup_draft) if self.setup_draft else (
+            "No separate Essential Controls draft selections.")
+        txt=format_config_review(plan)+"\\n\\nESSENTIAL CONTROLS\\n"+original
+    except (ValueError,TypeError,KeyError) as exc:
+        messagebox.showerror("Cannot export review",str(exc));return
+    dest=filedialog.asksaveasfilename(defaultextension=".txt",
+        initialfile=f"E5CC-T-controller-config-change-review-programme-{self.slot.get()}.txt",
+        filetypes=[("Text report","*.txt")])
+    if not dest:return
+    try:
+        with open(dest,"x",encoding="utf-8") as out:out.write(txt)
+        self.log("Exported controller configuration change-readiness review: "+dest)
+        messagebox.showinfo("Offline change review saved",
+            "The review includes proposed settings, before/after raw values, "
+            "setting-area restrictions and risks.\\n"
+            "NO initial/PID/communications settings were written to the controller.")
+    except OSError as exc:messagebox.showerror("Export failed",str(exc))
+
  def review_current_plan(self):
     if not hasattr(self,"review_note"):return
     slot=self.slot.get()
