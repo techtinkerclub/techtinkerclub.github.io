@@ -12,7 +12,7 @@ class FakeDevice:
     def __init__(self):
         self.data={k:0 for k in []}
         self.blocks=[[0]*150 for _ in range(8)]
-        self.c3={k:v[0] for k,v in PREFLIGHT.items()};self.c3[0x0000]=6
+        self.c3={k:v[0] for k,v in PREFLIGHT.items()}
         self.model="E5CC-TQX3A";self.running=False;self.write_allowed=True
         self.operations=[];self.nonvolatile_saves=0
         self.inject_fault=None
@@ -72,6 +72,14 @@ class ExplorerTests(unittest.TestCase):
         program=decode_slot(self.example(6),1)
         self.assertEqual(program["segments"][0]["sp"],50.0)
         self.assertEqual(profile_points(program,20)[-1],(30.0,50.0))
+    def test_step_segment_from_device(self):
+        obj=self.example(5)
+        obj["programmes"]["1"][0x1A]="00000002"
+        obj["programmes"]["1"][0x1B]="00000028"
+        dec=decode_slot(obj,1)
+        self.assertEqual(dec["segments"][1]["type"],"step")
+        self.assertEqual(dec["segments"][1]["sp"],40)
+        self.assertEqual(profile_points(dec,20)[-1],(15.0,40))
     def test_unknown_segment_disallows_curve(self):
         obj=self.example()
         obj["programmes"]["1"][0x1A]="00000063"
@@ -132,6 +140,17 @@ class ProgramTests(unittest.TestCase):
         self.assertEqual(pairs[0x001D],0x15) # 0 h,15 min
         second=dict(planned_writes(7,Programme()))
         self.assertEqual(second[0x0717],1200)
+    def test_type5_scaling_and_precision_guard(self):
+        p=Programme(steps=[Segment("ramp",sp="50",rate="2"),Segment("soak",minutes="15"),Segment("step",sp="40")])
+        vals=dict(planned_writes(1,p,input_type=5))
+        self.assertEqual(vals[0x0117],50)
+        self.assertEqual(vals[0x011A],1)
+        self.assertEqual(vals[0x011E],2)
+        self.assertEqual(vals[0x011F],40)
+        self.assertEqual(vals[0x0100],3)
+        self.assertEqual(dict(planned_writes(1,p,input_type=6))[0x0117],500)
+        with self.assertRaises(ValidationError):
+            planned_writes(1,Programme(steps=[Segment("ramp",sp="50.5")]),input_type=5)
     def test_site_json_import(self):
         example={"version":1,"method":"rate","programmeNumber":0,"programme":{"name":"Web", "start":20,"finish":"rst","steps":[{"type":"ramp","sp":120,"rate":2},{"type":"soak","minutes":15}]}}
         self.assertEqual(Programme.from_json(example).validate()["minutes"],65)
@@ -212,7 +231,7 @@ class TransferTests(unittest.TestCase):
             self.assertRaises(PreflightError,s.build_plan,0,Programme())
             self.assertEqual(d.operations,[])
     def test_preflight_mismatch_allows_backup_but_blocks_writes(self):
-        d=FakeDevice();d.c3[0x00BF]=0;s=TransferSession(d)
+        d=FakeDevice();d.c3[0x00BF]=1;s=TransferSession(d)
         report=s.preflight();self.assertTrue(report["mismatches"])
         with tempfile.TemporaryDirectory() as dir:
             self.assertTrue(s.backup(dir).exists())
