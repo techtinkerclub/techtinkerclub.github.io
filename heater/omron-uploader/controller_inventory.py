@@ -58,6 +58,23 @@ for _code in ("C3:000A","C3:000B"):
         CATALOG[_code]=_replace_metadata(CATALOG[_code],minimum=-2,maximum=99,
             meaning="SSR output cycle period. Special raw settings -2, -1, 0 mean 0.1, 0.2, 0.5 seconds; 1–99 are whole seconds. Verify controller and SSR thermal/electrical limits.")
 
+# Selected legacy fields that were raw-only can also be drafted when the
+# H186 encoding/range is explicit. Context-dependent bounds are checked again
+# by validate_proposal with the *actual read-back* input configuration.
+for _code,_min,_max,_scale,_unit in [
+ ("C3:0005",-2000,13000,1,"°C"),
+ ("C3:0006",-2000,13000,1,"°C"),
+ ("C1:0012",-1999,9999,1,"°C"),
+ ("C1:0015",1,9999,10,"°C"),
+ ("C1:0016",0,9999,1,"conditional seconds"),
+ ("C1:0017",0,9999,1,"conditional seconds"),
+ ("C1:0022",-1050,1050,10,"%"),
+ ("C1:0023",-1050,1050,10,"%"),
+]:
+    _param=CATALOG[_code]
+    CATALOG[_code]=_replace_metadata(_param,minimum=_min,maximum=_max,
+                                     scale=_scale,unit=_unit)
+
 # C0 (read-only operating monitors), pp. 3-2..3-3. PV scaling depends on input.
 C0=[
 (0x0000,"Process value","Actual measured process value (PV); engineering scaling depends on input type."),
@@ -399,6 +416,25 @@ def validate_proposal(snapshot,key,display_value):
     raw=value*p.scale
     if raw!=raw.to_integral_value():raise ValueError(f"Use a multiple of 1/{p.scale:g} in the displayed units")
     raw=int(raw)
+    # Dynamic constraints from the currently installed thermocouple.
+    if key in ("C3:0005","C3:0006"):
+        input_type=snapshot["fields"].get("C3:0000")
+        if input_type not in (5,6):
+            raise ValueError("Setpoint limits are only decoded for Type K 5/6 in this release")
+        limits=(-200,1300) if input_type==5 else (-200,5000)
+        # Type K 6 uses 0.1-degree setpoint raw registers.
+        real_raw=raw if input_type==5 else raw*10
+        if not limits[0]<=real_raw<=limits[1]:
+            raise ValueError("Setpoint limit outside the selected thermocouple range")
+        if key=="C3:0005" and real_raw<=signed32(snapshot["fields"]["C3:0006"]):
+            raise ValueError("Upper SP must remain above the current lower SP")
+        if key=="C3:0006" and real_raw>=signed32(snapshot["fields"]["C3:0005"]):
+            raise ValueError("Lower SP must remain below the current upper SP")
+        raw=real_raw
+    if key in ("C1:0022","C1:0023"):
+        standard=snapshot["fields"].get("C3:0008")
+        if standard==0 and raw < -50:
+            raise ValueError("Standard heating control restricts MV minimum to −5.0%")
     if p.options is not None and raw not in p.options:
         raise ValueError("Use one of the documented choice numbers")
     if p.minimum is not None and raw<p.minimum:raise ValueError(f"Below register minimum {p.minimum/p.scale:g}")
