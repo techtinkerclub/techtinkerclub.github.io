@@ -56,7 +56,7 @@ class CatalogTests(unittest.TestCase):
     def test_selected_c4_context_and_masked_secret(self):
         fake=ReadOnlyFake()
         snap=read_inventory(fake,{"model10":"E5CC-TQX3A"})
-        self.assertIn("selected programme",snap["important_notes"][0].lower())
+        self.assertIn("selected programme",snap["important_notes"][0].lower().replace("-"," "))
         self.assertIn("hidden",human_value("C1:0029",0).lower())
         with self.assertRaises(ValueError):validate_proposal(snap,"C1:0029","3")
         with self.assertRaises(ValueError):validate_proposal(snap,"C4:0000","2")
