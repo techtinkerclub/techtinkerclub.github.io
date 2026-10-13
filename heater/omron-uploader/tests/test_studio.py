@@ -90,7 +90,7 @@ class ExplorerTests(unittest.TestCase):
             p.write_text(json.dumps({"schema":"e5cct-backup-1","programmes":{"0":[]}}))
             self.assertRaises(DecodeError,load_backup,p)
     def test_offline_creator_uses_exact_website_html(self):
-        src='---\\nlayout: null\\n---\\n<!doctype html><html><body><a href="../omron-programming/#bench">guide</a></body></html>'
+        src="\n".join(["---","layout: null","---","<!doctype html><html><body><a href=\"../omron-programming/#bench\">guide</a></body></html>"])
         text=prepare_html(src)
         self.assertTrue(text.startswith("<!doctype html>"))
         self.assertIn("OFFLINE DESKTOP EDITION",text)
