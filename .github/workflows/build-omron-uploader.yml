@@ -19,7 +19,7 @@ jobs:
         run: python -m unittest discover -s heater/omron-uploader/tests -v
       - name: Build offline executable
         working-directory: heater/omron-uploader
-        run: python -m PyInstaller --onefile --windowed --hidden-import serial.tools.list_ports --name E5CC-Programme-Studio --clean app.py
+        run: python -m PyInstaller --onefile --windowed --hidden-import serial.tools.list_ports --add-data "../program-tools/index.html;offline" --name E5CC-Programme-Studio --clean app.py
       - name: Assemble portable folder
         shell: pwsh
         run: |
@@ -27,6 +27,7 @@ jobs:
           Copy-Item heater/omron-uploader/dist/E5CC-Programme-Studio.exe portable/
           Copy-Item heater/omron-uploader/START_*.cmd portable/
           Copy-Item heater/omron-uploader/README.md portable/
+          Copy-Item heater/program-tools/index.html portable/Offline-Programme-Studio-source.html
           Compress-Archive -Path portable/* -DestinationPath E5CC-T-Programme-Studio-Windows.zip
       - uses: actions/upload-artifact@v4
         with:
