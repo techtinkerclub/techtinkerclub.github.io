@@ -306,33 +306,90 @@ class Window:
     except Exception as err:messagebox.showerror("Could not open project",str(err))
 
  def entry_sheet(self):
+    """Create a practical stand-alone manual programming sheet, no cable needed."""
     import html,webbrowser
-    self._store_meta();p=self.progs[self.slot.get()]
+    self._store_meta()
+    p=self.progs[self.slot.get()]
     try:metrics=p.validate()
-    except ValidationError as err:messagebox.showerror("Invalid programme",str(err));return
-    slot=self.slot.get();rows=[("d.prg",str(slot)),("s-no",str(len(p.steps)))]
-    for i,x in enumerate(p.steps):
-        rows.extend([("d.seg",str(i)),("styp",x.type)])
-        if x.type!="soak":rows.append(("sp",f"{float(x.sp):.1f} °C"))
-        if x.type=="ramp":rows.append(("pr",str(x.rate)+" °C/min"))
-        if x.type=="soak":
-            n=int(x.minutes);rows.append(("time",f"{n//60}.{n%60:02d} (h.mm)"))
-    rows.extend([("rpt","0"),("link","end"),("eset (controller wide)","rst")])
-    cells="".join("<tr><td>"+html.escape(k)+"</td><td>"+html.escape(v)+"</td></tr>" for k,v in rows)
-    content=f"""<!doctype html><html lang="en-GB"><meta charset="utf-8"><title>Omron programme {slot} entry sheet</title>
-    <style>body{{font-family:Arial,sans-serif;max-width:800px;margin:30px auto;color:#22384e;line-height:1.5}}h1{{margin-bottom:5px}}table{{border-collapse:collapse;width:100%}}td,th{{border:1px solid #d5e2ec;padding:8px;text-align:left}}th{{background:#edf4fa}}.note{{padding:10px;background:#fff5e8}}</style>
-    <h1>E5CC-TQX3A5M-000 · Programme {slot}</h1><p>{html.escape(p.name)} · {len(p.steps)} segments · nominal {metrics['minutes']:.2f} minutes at assumed start PV {p.start} °C</p>
-    <p class="note"><b>Training only:</b> the operator must verify actual controller parameter codes and commissioned settings. No mains or DC heater supply should be connected when first entering an unverified programme.</p>
-    <h2>Initial settings (verify once; uploader will not change)</h2><p>Input Type 6, °C, t-pr=pr, pru=m, t-u=h-m, rtsm=stop, p-on=rst, eset=rst, PV Start enabled; confirm PID/output and independent safety systems separately.</p>
-    <h2>Programme parameter entries</h2><table><thead><tr><th>Omron parameter</th><th>Value</th></tr></thead><tbody>{cells}</tbody></table>
-    <p>From PV/SP: press leftmost rectangle LEVEL once briefly to enter Programme Setting. Use looping-arrow MODE to locate codes, ≪PF to move selected numeric digit where supported, DOWN/UP to adjust. MODE confirms. Segment selection is via d.seg. Scroll counts vary with masked parameters.</p>
-    <h2>Commissioning sign-off</h2><p>Controller/channel: _______________________  Date: ______________  Operator: _________________</p><p>Programme displayed and checked: ____  Control output off at RESET: ____  Independently isolated before connection: ____</p>
-    </html>"""
-    path=filedialog.asksaveasfilename(defaultextension=".html",initialfile=f"E5CC-T-entry-sheet-{slot}.html",filetypes=[("HTML","*.html")])
+    except ValidationError as err:
+        messagebox.showerror("Programme needs attention",str(err));return
+    slot=self.slot.get()
+    rows=[("d.prg",str(slot)),("s-no",str(len(p.steps)))]
+    for i,seg in enumerate(p.steps):
+        styp="soak" if seg.type=="soak" else "ramp"
+        rows.extend([("d.seg",str(i)),("styp",styp)])
+        if seg.type!="soak":
+            rows.append(("sp",f"{float(seg.sp):g} °C"))
+            rows.append(("pr","0 °C/min (instant SP step)" if seg.type=="step"
+                        else str(seg.rate)+" °C/min"))
+        else:
+            n=int(seg.minutes)
+            rows.append(("time",f"{n//60}.{n%60:02d} (hours.minutes)"))
+    rows.extend([("d.seg","end (programme-wide)"),
+                 ("pid","check actual selected PID set; bench value was 1"),
+                 ("al-1 / al-2 / al-3","inspect, do not alter without wiring review"),
+                 ("rpt","0 (do not repeat)"),("link","end (do not chain)"),
+                 ("LEVEL","short ×3 from Programme Level to Operation Level"),
+                 ("prg",f"{slot} — select programme to RUN (not d.prg)"),
+                 ("pgsg",f"confirm programme {slot} in monitor"),
+                 ("r-r","rst before starting or saving")])
+    cells="".join("<tr><td><code>"+html.escape(k)+"</code></td><td>"+
+                  html.escape(v)+"</td></tr>" for k,v in rows)
+    description=html.escape(p.name)
+    start=html.escape(str(p.start))
+    content=f"""<!doctype html><html lang="en-GB"><head><meta charset="utf-8">
+    <title>Omron programme {slot} — manual entry</title>
+    <style>body{{font:14px/1.6 'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1c344a;max-width:860px;margin:25px auto;padding:0 18px}}
+    .paper{{background:white;padding:25px 32px;border-radius:14px;border:1px solid #d9e6ef}}
+    h1{{margin:0;color:#155783}}h2{{margin-top:27px;color:#195e90}}
+    .over{{text-transform:uppercase;letter-spacing:1px;color:#567c99;font-size:11px;font-weight:700}}
+    p{{margin:9px 0}}table{{border-collapse:collapse;width:100%;margin-top:10px}}
+    td,th{{padding:10px;border-bottom:1px solid #dae5ee;text-align:left}}
+    th{{background:#eaf3fa}}td:first-child{{width:34%}}
+    .note{{border-left:4px solid #2692ba;background:#edf7fc;padding:10px 15px;margin:17px 0}}
+    .warn{{border-left:4px solid #c7933b;background:#fff7e7;padding:10px 15px;margin:17px 0}}
+    @media print{{body{{background:white;margin:0}}.paper{{border:0;padding:0}}}}</style></head>
+    <body><main class="paper"><p class="over">E5CC-T · portable studio · offline keypad guide</p>
+    <h1>Programme {slot}: {description}</h1>
+    <p>{len(p.steps)} segments · assumed start PV {start} °C · nominal {metrics['minutes']:.1f} min · commanded final SP {metrics['final_sp']:g} °C</p>
+    <div class="warn"><strong>Controller mains and heater DC must be physically isolated during configuration.</strong>
+    This sheet documents programmed setpoints; it cannot establish measured heating or electrical safety.
+    Confirm the unit's full suffix and settings before use.</div>
+    <h2>1 · Check existing setup, do not force changes</h2>
+    <p>Rate method <code>t-pr = pr</code>; <code>pru = m</code> (°C per minute);
+    <code>t-u = h-m</code> (hours.minutes); <code>rtsm = stop</code>;
+    <code>p-on = rst</code>; <code>eset = rst</code>; programmed setpoint <code>spmd = psp</code>.
+    The first real unit reported <code>in-t = 5</code> (valid Type K, whole-degree display)
+    and <code>PV/SP Start = 0</code> (SP Start). These are NOT automatically faults;
+    do not change them merely to satisfy a provisional uploader rule.</p>
+    <h2>2 · Enter programme values, using real display codes</h2>
+    <p>From PV/SP, briefly press <strong>LEVEL</strong> once to get <code>d.prg</code>.
+    Set memory {slot}. Press <strong>MODE</strong> to step through the following parameter
+    screens; use UP/DOWN to change values and PF for digit editing where supported.
+    A segment automatically advances to the next <code>d.seg</code> after its last parameter.
+    A soak uses <code>time</code> but no separate SP. <code>d.seg = end</code> means programme-wide settings.</p>
+    <table><thead><tr><th>Omron display</th><th>Value / check</th></tr></thead><tbody>{cells}</tbody></table>
+    <h2>3 · Save and select for execution</h2>
+    <p>There is no dedicated Save key for ordinary front-panel editing.
+    Return to Operation Level, revisit <code>d.prg</code>, and read every segment back.
+    With power safely isolated, verify that settings survive a complete controller
+    power cycle before use. In <strong>Operation Level</strong>, select <code>prg = {slot}</code>
+    separately — this is the programme that would RUN, whereas <code>d.prg</code>
+    only chooses which memory you edit. Verify the <code>pgsg</code> monitor and
+    <code>r-r = rst</code>.</p>
+    <div class="note">For deeper instructions, use the <strong>Offline Programme Studio</strong>
+    and its five-button simulator bundled with this Windows application.</div>
+    <p>Controller ID: ____________________ &nbsp; Date: ___________ &nbsp; Checked by: ____________________</p>
+    </main></body></html>"""
+    path=filedialog.asksaveasfilename(defaultextension=".html",
+        initialfile=f"E5CC-T-entry-sheet-{slot}.html",
+        filetypes=[("HTML","*.html")])
     if path:
         Path(path).write_text(content,encoding="utf-8")
-        self.log("Generated printable entry sheet: "+path)
-        if messagebox.askyesno("Open entry sheet", "Open the saved entry sheet in your browser for printing?"):webbrowser.open(Path(path).resolve().as_uri())
+        self.log("Created offline front-panel entry sheet: "+path)
+        if messagebox.askyesno("Open manual entry sheet",
+             "Open the saved sheet in your browser for printing?"):
+            webbrowser.open(Path(path).resolve().as_uri())
 
  def _connect(self):
     panel,body=self.card(self.t_connect,"Connection wizard — read-only");panel.pack(fill="x",padx=10,pady=10)
