@@ -4,6 +4,9 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from program_model import Programme,Segment,ValidationError,encode_time,decode_time,planned_writes
 from compoway import encode_request,parse_response,bcc,ProtocolError,SerialClient
 from transfer import TransferSession,PreflightError,PREFLIGHT
+from backup_explorer import decode_slot,load_backup,profile_points,config_explanation,summary_as_plaintext,DecodeError
+from offline_creator import prepare_html,local_copy
+
 
 class FakeDevice:
     def __init__(self):
@@ -27,6 +30,78 @@ class FakeDevice:
         self.operations.append((code,info))
         if (code,info)==("05","00"):self.nonvolatile_saves+=1
         return ""
+
+class ExplorerTests(unittest.TestCase):
+    def example(self, input_type=5):
+        # Two segments: 50 °C at 2 °C/min, 15 min soak. Second stored memory.
+        regs = [0]*150
+        regs[0]=2
+        regs[0x0E]=0
+        regs[0x0F]=0xFFFFFFFF
+        regs[0x16]=0
+        regs[0x17]=50 if input_type==5 else 500
+        regs[0x18]=2
+        regs[0x1A]=1
+        regs[0x1D]=0x15
+        bank = {str(i):["00000000"]*150 for i in range(8)}
+        bank["1"]=[f"{x:08X}" for x in regs]
+        return {"schema":"e5cct-backup-1",
+                "controller":{"model10":"E5CC-TQX3A"},
+                "status":"0100",
+                "preflight":{"C3:0000":input_type,"C3:0004":0,"C3:00B9":0,
+                             "C3:00BA":1,"C3:00BB":0,"C3:00BC":0,
+                             "C3:00BD":1,"C3:00BE":0,"C3:00BF":0},
+                "programmes":bank}
+    def test_realistic_50_degree_programme_and_curve(self):
+        obj=self.example(5)
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp)/"captured.json"
+            p.write_text(json.dumps(obj),encoding="utf-8")
+            captured=load_backup(p)
+        program=decode_slot(captured,1)
+        self.assertEqual(program["count"],2)
+        self.assertFalse(program["warnings"])
+        self.assertIn("50 °C", program["segments"][0]["description"])
+        self.assertIn("15 min", program["segments"][1]["description"])
+        self.assertEqual(program["repeat_text"],"No repetition")
+        self.assertEqual(program["link_text"],"No chaining")
+        self.assertEqual(profile_points(program,20.0),[(0.0,20.0),(15.0,50.0),(30.0,50.0)])
+        self.assertIn("SP Start",summary_as_plaintext(program))
+        self.assertIn("whole-degree display",config_explanation(obj)[0]["meaning"])
+    def test_type6_scales_temperature_tenths(self):
+        program=decode_slot(self.example(6),1)
+        self.assertEqual(program["segments"][0]["sp"],50.0)
+        self.assertEqual(profile_points(program,20)[-1],(30.0,50.0))
+    def test_unknown_segment_disallows_curve(self):
+        obj=self.example()
+        obj["programmes"]["1"][0x1A]="00000063"
+        program=decode_slot(obj,1)
+        self.assertTrue(program["warnings"])
+        self.assertIsNone(profile_points(program,20))
+    def test_invalid_hmm_does_not_invent_soak_duration(self):
+        obj=self.example()
+        obj["programmes"]["1"][0x1D]="0000007F"
+        program=decode_slot(obj,1)
+        self.assertIsNone(program["segments"][1]["minutes"])
+        self.assertIsNone(profile_points(program,20))
+    def test_bad_backup_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp)/"bad.json"
+            p.write_text(json.dumps({"schema":"e5cct-backup-1","programmes":{"0":[]}}))
+            self.assertRaises(DecodeError,load_backup,p)
+    def test_offline_creator_uses_exact_website_html(self):
+        src='---\\nlayout: null\\n---\\n<!doctype html><html><body><a href="../omron-programming/#bench">guide</a></body></html>'
+        text=prepare_html(src)
+        self.assertTrue(text.startswith("<!doctype html>"))
+        self.assertIn("OFFLINE DESKTOP EDITION",text)
+        self.assertIn("https://techtinker.club/heater/omron-programming/#bench",text)
+        with tempfile.TemporaryDirectory() as tmp:
+            try:
+                import offline_creator
+                source=offline_creator.bundled_source()
+            except FileNotFoundError:
+                self.skipTest("Website source not present in standalone uploaded source tests")
+            self.assertTrue(local_copy(tmp).is_file())
 
 class ProgramTests(unittest.TestCase):
     def test_65_minute(self):
