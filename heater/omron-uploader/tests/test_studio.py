@@ -168,6 +168,20 @@ class ProtocolTests(unittest.TestCase):
         f=self.response();self.assertRaises(ProtocolError,parse_response,f[:-1]+bytes([f[-1]^1]),"0503")
     def test_wrong_function(self):self.assertRaises(ProtocolError,parse_response,self.response(),"0101")
     def test_unknown_node(self):self.assertRaises(ProtocolError,parse_response,self.response(),"0503",2)
+    def test_all_documented_variable_banks_read_only(self):
+        # The extended catalogue must not be silently blocked at protocol layer.
+        client=SerialClient.__new__(SerialClient)
+        client.write_allowed=False
+        calls=[]
+        def fake_query(cmd):
+            calls.append(cmd)
+            return "0000002A"
+        client.query=fake_query
+        for bank in ("DA","C0","C1","C3","C4","C5","C9"):
+            self.assertEqual(client.read(bank,0,1),[42])
+            self.assertEqual(calls[-1],f"0101{bank}0000000001")
+        self.assertRaises(ValueError,client.read,"ZZ",0,1)
+        self.assertRaises(PermissionError,client.write1,0,42)
     def test_write_command_whitelist(self):
         obj=SerialClient.__new__(SerialClient);obj.write_allowed=True
         self.assertRaises(PermissionError,obj.operation,"01","00")
