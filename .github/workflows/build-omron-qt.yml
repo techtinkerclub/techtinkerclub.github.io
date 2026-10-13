@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'heater/omron-uploader/qt_*.py'
+      - 'heater/program-tools/index.html'
+      - 'heater/omron-programming/index.html'
       - 'heater/omron-uploader/program_model.py'
       - 'heater/omron-uploader/transfer.py'
       - 'heater/omron-uploader/compoway.py'
@@ -41,7 +43,18 @@ jobs:
           Copy-Item -Path heater/omron-uploader/dist/E5CC-Programme-Studio-Modern/* -Destination portable-qt/ -Recurse
           Set-Content -Path portable-qt/START_READ_ONLY.cmd -Value '@echo off', 'cd /d "%~dp0"', 'start "" "E5CC-Programme-Studio-Modern.exe"'
           Set-Content -Path portable-qt/START_ISOLATED_LAB.cmd -Value '@echo off', 'cd /d "%~dp0"', 'start "" "E5CC-Programme-Studio-Modern.exe" --enable-lab-writes'
+          Copy-Item heater/omron-uploader/QT_MODERN_README.md portable-qt/Modern-Studio-Notes.txt
           Copy-Item heater/omron-uploader/README.md portable-qt/Legacy-and-Qt-Notes.txt
+          # Full locally bundled website keypad practice and its step-by-step
+          # manual companion. No internet connection or Jekyll is needed.
+          foreach ($section in @('program-tools', 'omron-programming')) {
+            $dir = Join-Path portable-qt $section
+            New-Item -ItemType Directory -Force $dir | Out-Null
+            $source = Join-Path (Join-Path 'heater' $section) 'index.html'
+            $html = Get-Content -Path $source -Raw -Encoding UTF8
+            $html = [regex]::Replace($html, '^---\\r?\\n.*?\\r?\\n---\\r?\\n', '', 'Singleline')
+            [System.IO.File]::WriteAllText((Join-Path (Resolve-Path $dir) 'index.html'), $html, [System.Text.UTF8Encoding]::new($false))
+          }
           Compress-Archive -Path portable-qt/* -DestinationPath E5CC-T-Modern-Studio-Windows.zip
       - uses: actions/upload-artifact@v4
         with:
