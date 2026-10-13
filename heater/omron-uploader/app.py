@@ -203,6 +203,26 @@ class Window:
     except Exception as err:
         messagebox.showerror("Offline creator could not open",str(err))
 
+ def load_four_segment_example(self):
+    """Offer the actual four-step profile requested for Programme 0 on the bench."""
+    slot=self.slot.get()
+    if not messagebox.askyesno("Use four-segment test programme",
+       f"Replace LOCAL programme {slot} with the requested profile?\n\n"
+       "20 → 120 °C at 2 °C/min\nHold 120 °C for 15 min\n"
+       "120 → 50 °C at 2 °C/min\nHold 50 °C for 15 min\n\n"
+       "This edits only the local designer. It does NOT start or write the Omron."):
+        return
+    self.progs[slot]=Programme(
+        name="120 °C then 50 °C / 2 °C/min / 15-minute holds",
+        start="20",finish="rst",
+        steps=[Segment("ramp",sp="120",rate="2"),
+               Segment("soak",minutes="15"),
+               Segment("ramp",sp="50",rate="2"),
+               Segment("soak",minutes="15")])
+    self._refresh_programme()
+    self.status.set(f"Local Programme {slot}: four segments and 115-minute commanded-SP profile. Not uploaded.")
+    self.log(f"Loaded local four-segment 120→50 profile into {slot}; no hardware writes")
+
  def load_bench_example(self):
     slot=self.slot.get()
     if not messagebox.askyesno("Load verified 50 °C example",
@@ -272,7 +292,8 @@ class Window:
     self.b(r2,"Save offline project",self.save_project).pack(side="left",padx=3)
     self.b(r2,"Open offline project",self.open_project).pack(side="left",padx=3)
     r3=tk.Frame(body,bg=WHITE);r3.pack(fill="x",pady=7)
-    self.b(r3,"Load 50 °C example",self.load_bench_example).pack(side="left",padx=3)
+    self.b(r3,"LOAD 120 → 50 °C FOUR-SEGMENT TEST",self.load_four_segment_example,True).pack(side="left",padx=3)
+    self.b(r3,"Load simple 50 °C example",self.load_bench_example).pack(side="left",padx=3)
     self.message(body,"Changes here stay in this application until Step 5. Offline mode needs no cable or website. The preview is the commanded setpoint, not measured temperature.")
 
  def _store_meta(self):
