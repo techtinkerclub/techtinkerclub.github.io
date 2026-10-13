@@ -286,18 +286,44 @@ class Window:
     ttk.Entry(row,textvariable=self.backdir).pack(side="left",expand=True,fill="x")
     self.b(row,"Folder…",self.pick_dir).pack(side="left",padx=6)
     self.btn_backup=self.b(body,"READ AND SAVE ALL PROGRAMME MEMORY (no writes)",self.backup,True);self.btn_backup.pack(anchor="w",pady=10)
+    self.back_progress=tk.IntVar(value=0)
+    ttk.Progressbar(body,maximum=8,mode="determinate",variable=self.back_progress).pack(fill="x",pady=(2,7))
+    self.backupdetail=tk.StringVar(value="Not backed up in this session — 0/8 programme blocks")
+    tk.Label(body,textvariable=self.backupdetail,bg="white",fg=DARK,justify="left",wraplength=850).pack(fill="x",pady=11)
     self.b(body,"VERIFY SAVED PROGRAMME AFTER USB POWER CYCLE (read only)",self.verify_receipt).pack(anchor="w",pady=10)
-    self.backupdetail=tk.StringVar(value="Not backed up in this session")
-    tk.Label(body,textvariable=self.backupdetail,bg="white",fg=DARK,justify="left",wraplength=720).pack(fill="x",pady=11)
-    self.message(body,"A failed read invalidates the backup: transfers stay blocked. If a controller has previously been configured by CX-Thermo, this is how we capture what is already on it before changing anything.")
+        self.message(body,"A failed read invalidates the backup: transfers stay blocked. If a controller has previously been configured by CX-Thermo, this is how we capture what is already on it before changing anything.")
  def pick_dir(self):
     x=filedialog.askdirectory();
     if x:self.backdir.set(x)
  def backup(self):
     if not self.session:return
-    def work():return self.session.backup(self.backdir.get())
+    self.back_progress.set(0)
+    self.backupdetail.set("Reading programme memories — 0 of 8 complete (read-only)")
+    def work():
+        return self.session.backup(self.backdir.get(),progress=lambda done,total:self.events.put(("BACKUP_PROGRESS",(done,total))))
     def success(path):
-        self.backupdetail.set("✓ Backup saved: "+str(path));self.book.select(self.t_upload);self.refresh_buttons()
+        count=sum(len(block) for block in self.session.backup_data["programmes"].values())
+        self.back_progress.set(8)
+        self.backupdetail.set(
+            f"✓ SAVED FILE VERIFIED — 8/8 programme blocks, {count} DA registers, 9 C3 settings.\n"
+            f"Location: {path}\n"
+            "READ-ONLY: no controller writes performed."
+        )
+        self.status.set("SUCCESS — eight programmes backed up; saved JSON reopened and checked")
+        self.log(f"BACKUP COMPLETE — 8/8 programmes, {count} registers and 9 C3 values; verified disk file: {path}")
+        # Stay on Step 3; the operator must decide when to progress.
+        self.book.select(self.t_backup)
+        self.refresh_buttons()
+        messagebox.showinfo(
+            "Backup complete — file checked",
+            f"All eight programme areas were read successfully.\n"
+            f"{count} DA registers and 9 selected C3 values captured.\n\n"
+            f"The JSON file was reopened and matched the data read during this session.\n"
+            f"Location:\n{path}\n\n"
+            "No controller settings were written.\n"
+            "This is not a complete controller clone or an independent second controller read.\n"
+            "Keep a second copy of this JSON file."
+        )
     self._job("Reading 8 programmes (1200 registers)",work,success)
 
  def verify_receipt(self):
@@ -409,6 +435,10 @@ class Window:
             event,payload=self.events.get_nowait()
             if event=="LOG":
                 if hasattr(self,"output"):self.output.insert("end",payload+"\n");self.output.see("end")
+            elif event=="BACKUP_PROGRESS":
+                completed,total=payload
+                self.back_progress.set(completed)
+                self.backupdetail.set(f"Read {completed}/{total} programme blocks — {completed*150}/1200 DA registers; no writes.")
             elif event=="DONE":
                 title,out,callback=payload;self.busy=False;self.status.set("Completed: "+title);self.log("SUCCESS: "+title)
                 try:callback(out)
@@ -418,6 +448,9 @@ class Window:
                 title,msg,iswrite,debug=payload;self.busy=False
                 if iswrite:self.fail_latched=True
                 self.status.set("FAILED: "+title);self.log("ERROR "+title+": "+msg);self.log(debug)
+                if title.startswith("Reading 8 programmes"):
+                    self.backupdetail.set("✕ BACKUP FAILED — no newly verified complete backup. Check the error; do not upload.")
+                    self.book.select(self.t_backup)
                 messagebox.showerror("Operation stopped — fail closed",msg+("\n\nWRITE FAILED: lock remains set for this connection. Keep heater isolated. Do not retry until memory is inspected." if iswrite else ""))
                 self.refresh_buttons()
     except queue.Empty:pass
