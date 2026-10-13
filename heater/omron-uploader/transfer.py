@@ -47,20 +47,31 @@ class TransferSession:
         if mismatches:self.log("READ-ONLY INSPECTION FOUND MISMATCHES (backup remains available; upload forbidden):\n"+"\n".join(mismatches))
         else:self.log("Read-only preflight passed (9 controller settings)")
         return {"model10":model,"status":self.status,"settings":self.settings.copy(),"mismatches":mismatches}
-    def backup(self,directory):
-        """Read programme memory 0..7 and the 9 preflight config fields.
-        Save BEFORE enabling any serial writes. DA base+0000..0095 is 150 regs.
-        Includes alarms, time signals, even unused segment values.
+    def backup(self,directory,progress=None):
+        """READ ONLY. Back up all 8 DA programme blocks plus nine selected C3 fields.
+
+        Progress callback receives (completed_blocks, 8). The JSON is reopened
+        and compared to the collected data before this counts as a successful
+        file backup. This is NOT an independent second read of the controller.
         """
+        # Fail closed: a fresh backup failure cannot leave an earlier backup
+        # authorising a later transfer in this connected session.
+        self.backup_data=None
+        self.backup_file=None
         if not self.info: self.preflight()
         data={}
         for slot in range(8):
             vals=[]
             for offset in range(0,150,25):
-                vals.extend(self.client.read("DA",(slot<<8)+offset,min(25,150-offset)))
+                count=min(25,150-offset)
+                chunk=self.client.read("DA",(slot<<8)+offset,count)
+                if len(chunk)!=count:
+                    raise ProtocolError(f"Incomplete programme {slot}: expected {count} registers at offset {offset}, got {len(chunk)}")
+                vals.extend(chunk)
             if len(vals)!=150:raise ProtocolError(f"Incomplete programme {slot} backup")
             data[str(slot)]=[f"{x:08X}" for x in vals]
             self.log(f"Read programme {slot}: 150 registers")
+            if progress is not None:progress(slot+1,8)
         timestamp=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         result={"schema":"e5cct-backup-1","read_utc":timestamp,
             "controller":self.info,"status":self.status,"preflight":self.settings,
@@ -70,8 +81,17 @@ class TransferSession:
         folder=Path(directory);folder.mkdir(parents=True,exist_ok=True)
         name=f"E5CC-T-programme-backup-{timestamp}-{hashlib.sha256(json.dumps(result,sort_keys=True).encode()).hexdigest()[:8]}.json"
         filepath=folder/name
-        with filepath.open("x",encoding="utf-8") as f:json.dump(result,f,indent=2,ensure_ascii=False)
+        with filepath.open("x",encoding="utf-8") as handle:
+            json.dump(result,handle,indent=2,ensure_ascii=False)
+        # Read the actual on-disk file back. An existing file, interrupted
+        # write, malformed JSON, or mismatched payload is NOT a successful save.
+        with filepath.open("r",encoding="utf-8") as handle:
+            saved=json.load(handle)
+        blocks=saved.get("programmes",{})
+        if saved!=result or set(blocks)!={str(i) for i in range(8)} or any(len(blocks[str(i)])!=150 for i in range(8)):
+            raise ProtocolError("Saved JSON does not match all 8 programme blocks and 9 C3 settings")
         self.backup_data=result;self.backup_file=filepath
+        self.log("PASS: 8/8 programmes, 1200 DA registers and 9 selected C3 values saved and checked on disk.")
         self.log("Saved read-only controller programme backup: "+str(filepath))
         return filepath
     def build_plan(self,slot,prog):
