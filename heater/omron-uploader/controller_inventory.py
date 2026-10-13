@@ -413,8 +413,12 @@ def validate_proposal(snapshot,key,display_value):
     try: value=Decimal(display_value.strip())
     except InvalidOperation:raise ValueError("Enter a numeric value in the displayed units")
     if not value.is_finite():raise ValueError("Non-finite numeric value not allowed")
-    raw=value*p.scale
-    if raw!=raw.to_integral_value():raise ValueError(f"Use a multiple of 1/{p.scale:g} in the displayed units")
+    input_type=snapshot["fields"].get("C3:0000")
+    effective_scale=(10 if input_type==6 and key in ("C3:0005","C3:0006","C1:0012")
+                     else p.scale)
+    raw=value*effective_scale
+    if raw!=raw.to_integral_value():
+        raise ValueError(f"Use a multiple of 1/{effective_scale:g} in the displayed units")
     raw=int(raw)
     # Dynamic constraints from the currently installed thermocouple.
     if key in ("C3:0005","C3:0006"):
@@ -422,8 +426,8 @@ def validate_proposal(snapshot,key,display_value):
         if input_type not in (5,6):
             raise ValueError("Setpoint limits are only decoded for Type K 5/6 in this release")
         limits=(-200,1300) if input_type==5 else (-200,5000)
-        # Type K 6 uses 0.1-degree setpoint raw registers.
-        real_raw=raw if input_type==5 else raw*10
+        # Raw integer has already been encoded using the read input type.
+        real_raw=raw
         if not limits[0]<=real_raw<=limits[1]:
             raise ValueError("Setpoint limit outside the selected thermocouple range")
         if key=="C3:0005" and real_raw<=signed32(snapshot["fields"]["C3:0006"]):
@@ -463,7 +467,8 @@ def proposal_report(snapshot,draft):
         if before is None:raise ValueError("Cannot review unread register "+key)
         if type(after) is not int or not 0<=after<=0xffffffff:raise ValueError("Invalid encoded value")
         rows.append(dict(register=key,group=p.group,name=p.name,
-                         previous=human_value(key,before),proposed=human_value(key,after),
+                         previous=human_value(key,before,snapshot["fields"].get("C3:0000")),
+                         proposed=human_value(key,after,snapshot["fields"].get("C3:0000")),
                          previous_hex=f"{before:08X}",proposed_hex=f"{after:08X}",
                          danger=key in DANGEROUS_CODES,
                          context=p.context,meaning=p.meaning))
@@ -554,11 +559,13 @@ def validate_inventory(obj):
             raise ValueError("Invalid value "+key)
     return obj
 
-def human_value(key,raw):
+def human_value(key,raw,input_type=None):
     if raw is None:return "Unavailable / not read"
     param=CATALOG[key]
     signed=signed32(raw)
     if key=="C1:0029":return "Protected password (hidden; read value is not actual password)"
+    if input_type==6 and key in ("C3:0005","C3:0006","C1:0012"):
+        return f"{signed/10:g} °C"
     if key in ("C3:000A","C3:000B"):
         return {-2:"0.1 s", -1:"0.2 s",0:"0.5 s"}.get(signed,f"{signed} s")
     if param.options is not None:return param.options.get(signed,f"Unknown option {signed}")
@@ -574,7 +581,8 @@ def readable_rows(snapshot,group=None,query=""):
         if group and group!="All groups" and param.group!=group:continue
         if terms and terms not in (" ".join([code,param.name,param.meaning,param.group])).casefold():continue
         raw=snapshot["fields"][code]
-        yield dict(code=code,name=param.name,group=param.group,actual=human_value(code,raw),
+        yield dict(code=code,name=param.name,group=param.group,
+                   actual=human_value(code,raw,snapshot["fields"].get("C3:0000")),
                    raw=f"{raw:08X}" if raw is not None else "",
                    meaning=param.meaning,access=param.access,page=param.manual_page,
                    error=snapshot["errors"].get(code,""),context=param.context)
