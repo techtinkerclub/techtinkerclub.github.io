@@ -483,6 +483,15 @@ class Window:
         old=value_text(code,actual) if actual is not None else "not read — verify at the controller"
         new=meta["options"][value]
         requested.append((scope,meta["menu"],meta["name"],old,new))
+    for code,raw in sorted(self.full_draft.items()):
+        meta=FULL_CATALOG[code]
+        original=self.full_snapshot["fields"].get(code) if self.full_snapshot else None
+        old=inventory_value(code,original)
+        # Many C5/C9/advanced parameters are not front-panel editable on
+        # every model. Never fabricate keypad codes or claim instructions to
+        # set undocumented menus.
+        requested.append(("H186 register; keypad sequence NEEDS VERIFICATION",
+            code,meta.name,old,inventory_value(code,raw)))
     setting_lines=[]
     for scope,menu,name,old,new in requested:
         setting_lines.append("<tr><td>"+html.escape(scope)+"</td><td><code>"+
@@ -500,7 +509,10 @@ class Window:
         H185 parameter flow for that level. Record each actual observed value below.</p>
         <table><thead><tr><th>Parameter group</th><th>Omron menu label</th>
         <th>Value before change</th><th>Value required</th></tr></thead><tbody>"""+"" .join(setting_lines)+"""</tbody></table>
-        <div class="warn">These settings are OFFLINE INSTRUCTIONS, not confirmed
+        <div class="warn">Parameters identified only by a C-register address DO NOT yet
+        have verified front-panel button sequences. Treat them as an engineering
+        change schedule, not step-by-step keypad instructions. Do not try to guess
+        the display code. These settings are OFFLINE INSTRUCTIONS, not confirmed
         controller writes. Changing sensor type, control direction, reset behaviour
         or protection settings can affect output safety. Verify actual values and
         commissioning requirements before connecting any heater.</div>"""
@@ -1526,7 +1538,7 @@ class Window:
         overview=f"PROGRAMME {slot}: {len(programme.steps)} segments · {metrics['minutes']:.1f} min nominal · Final SP {metrics['final_sp']:g} °C"
     except ValidationError as exc:
         overview=f"PROGRAMME {slot} NEEDS CORRECTION: {exc}"
-    count=len(getattr(self,"setup_draft",{}))
+    count=len(getattr(self,"setup_draft",{}))+len(getattr(self,"full_draft",{}))
     if self.connection_mode.get()=="offline":
         mode="OFFLINE/MANUAL: export a complete step-by-step front-panel sheet. No USB required."
     elif not self.connected:
@@ -1539,14 +1551,19 @@ class Window:
         mode+="\nNo initial configuration changes proposed."
     self.review_note.set(overview+"\n"+mode)
     lines=[]
-    if self.setup_draft:
+    if self.setup_draft or self.full_draft:
         lines.append("INITIAL SETTINGS PROPOSED IN STEP 4 — NOT APPLIED TO THE CONTROLLER:")
         for code,new_value in sorted(self.setup_draft.items()):
             meta=BY_CODE[code]
             old_raw=self.setup_snapshot["fields"].get(code) if self.setup_snapshot else None
             existing=value_text(code,old_raw) if old_raw is not None else "unknown (offline)"
             lines.append(f"  {meta['name']} / {meta['menu']}: {existing}  →  {meta['options'][new_value]}")
-        lines.append("These changes will be included in the manual guide. Hardware writes remain locked.")
+        for code,new_raw in sorted(self.full_draft.items()):
+            param=FULL_CATALOG[code]
+            old_raw=self.full_snapshot["fields"].get(code) if self.full_snapshot else None
+            existing=inventory_value(code,old_raw)
+            lines.append(f"  {param.name} / {code}: {existing}  →  {inventory_value(code,new_raw)}")
+        lines.append("These are OFFLINE proposals. No C1/C3/C5/C9 USB writes are available. Programme upload remains locked.")
     else:
         lines.append("INITIAL SETTINGS: No changes proposed.")
         if self.connection_mode.get()=="connected":
@@ -1569,7 +1586,7 @@ class Window:
     if hasattr(self,"btn_stage"):self.refresh_buttons()
 
  def safe_to_stage(self):
-    return self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.session.staged is None and self.approved_preview is not None and not self.session.mismatches and str(self.session.status).startswith("01")
+    return self.connection_mode.get()=="connected" and not self.setup_draft and not self.full_draft and self.lab_mode and self.connected and self.session is not None and self.session.backup_data is not None and not self.fail_latched and not self.busy and all(x.get() for x in self.check_vars) and self.session.staged is None and self.approved_preview is not None and not self.session.mismatches and str(self.session.status).startswith("01")
  def refresh_buttons(self):
     if not hasattr(self,"btn_stage"):return
     self.btn_connect.config(state="normal" if not self.busy and not self.client else "disabled")
@@ -1579,7 +1596,7 @@ class Window:
     self.btn_setup_read.config(state="normal" if self.connected and not self.busy else "disabled")
     self.btn_preview.config(state="normal" if self.connected and self.session.backup_data and not self.busy else "disabled")
     self.btn_stage.config(state="normal" if self.safe_to_stage() else "disabled")
-    self.btn_commit.config(state="normal" if self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and not self.busy and not self.fail_latched and self.session and self.session.staged and not self.session.committed else "disabled")
+    self.btn_commit.config(state="normal" if self.connection_mode.get()=="connected" and not self.setup_draft and not self.full_draft and self.lab_mode and not self.busy and not self.fail_latched and self.session and self.session.staged and not self.session.committed else "disabled")
     blockers=[]
     if self.connection_mode.get()!="connected":
         blockers.append("Offline/manual mode — generate the manual entry sheet")
@@ -1589,7 +1606,7 @@ class Window:
         blockers.append("Read and back up all eight programme memories in Step 2")
     if self.connection_mode.get()=="connected":
         if not self.lab_mode:blockers.append("Restart with START_LAB_UPLOAD.cmd to allow programme writes")
-        if self.setup_draft:blockers.append(f"{len(self.setup_draft)} initial-setting change(s) pending — USB writing unsupported")
+        if self.setup_draft or self.full_draft:blockers.append(f"{len(self.setup_draft)+len(self.full_draft)} initial-setting change(s) pending — USB writing unsupported")
         if self.session and self.session.mismatches:blockers.append("Controller setup differs from the supported bench profile")
         if self.session and self.session.staged:
             blockers.append("Verified RAM changes are pending SAVE" if not self.session.committed
@@ -1635,7 +1652,7 @@ class Window:
     self.transfer_summary.set(f"RAM verified: {len(out['changes'])} register differences. Nonvolatile memory NOT saved yet. Review values before committing.")
     self.refresh_buttons();self.log("Pending explicit Save RAM Data")
  def commit(self):
-    if not(self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and self.session and self.session.staged and not self.session.committed and not self.fail_latched and not self.busy):return
+    if not(self.connection_mode.get()=="connected" and not self.setup_draft and not self.full_draft and self.lab_mode and self.session and self.session.staged and not self.session.committed and not self.fail_latched and not self.busy):return
     if not messagebox.askyesno("FINAL NONVOLATILE SAVE", "This sends Omron SAVE RAM DATA, writing ALL currently pending operation/adjustment/programme/PID RAM changes to nonvolatile controller memory — not only the selected programme.\n\nOnly proceed after reviewing the RAM-verified values and with all heaters isolated.\n\nSAVE now?"):return
     self._job("Explicit Save RAM Data",lambda:self.session.commit(),lambda receipt:self._commit_success(receipt),write=True)
  def _commit_success(self,receipt):
