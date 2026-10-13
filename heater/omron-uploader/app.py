@@ -253,16 +253,13 @@ class Window:
     self.summary=tk.StringVar();tk.Label(body,textvariable=self.summary,bg="white",fg=BLUE,font=("Segoe UI",10,"bold"),wraplength=385).pack(fill="x",pady=10)
     self.valid=tk.StringVar();self.valid_label=tk.Label(body,textvariable=self.valid,bg="white",fg=GREEN,wraplength=340,justify="left");self.valid_label.pack(fill="x")
     r=tk.Frame(body,bg="white");r.pack(fill="x",pady=14)
-    self.b(r,"Open website JSON",self.import_program).pack(side="left",padx=3)
-    self.b(r,"Save programme JSON",self.export_program).pack(side="left",padx=3)
+    self.b(r,"Use saved controller programme",self.use_controller_memory,True).pack(side="left",padx=3)
     r2=tk.Frame(body,bg="white");r2.pack(fill="x",pady=4)
-    self.b(r2,"Print entry sheet",self.entry_sheet).pack(side="left",padx=3)
-    self.b(r2,"Save all 8",self.save_project).pack(side="left",padx=3)
-    self.b(r2,"Open project",self.open_project).pack(side="left",padx=3)
+    self.b(r2,"Save offline project",self.save_project).pack(side="left",padx=3)
+    self.b(r2,"Open offline project",self.open_project).pack(side="left",padx=3)
     r3=tk.Frame(body,bg=WHITE);r3.pack(fill="x",pady=7)
-    self.b(r3,"Load verified 50 °C example",self.load_bench_example).pack(side="left",padx=3)
-    self.b(r3,"Full offline website creator  ↗",self.open_offline_creator,True).pack(side="left",padx=3)
-    self.message(body,"This desktop editor works without a controller. Import or export website programme JSON here, or use the first tab for the full interactive website generator and keypad simulator.")
+    self.b(r3,"Load 50 °C example",self.load_bench_example).pack(side="left",padx=3)
+    self.message(body,"Changes here stay in this application until Step 5. Offline mode needs no cable or website. The preview is the commanded setpoint, not measured temperature.")
 
  def _store_meta(self):
     p=self.progs[self.slot.get()];p.name=self.name.get();p.start=self.start.get();p.finish="rst";self.update_chart()
@@ -320,6 +317,46 @@ class Window:
         self.valid.set("Model constraints passed. Still requires preflight / safety review.");self.valid_label.configure(fg=GREEN)
     except ValidationError as err:self.summary.set("Programme incomplete");self.valid.set(str(err));self.valid_label.configure(fg=RED)
     self.refresh_buttons()
+ def use_controller_memory(self):
+    """Copy decoded controller memory into editable local workspace, never hardware."""
+    data=self.session.backup_data if self.session and self.session.backup_data else self.explorer_backup
+    if not data:
+        messagebox.showinfo("Read controller first",
+            "Step 2: connect and back up the actual controller, then return to this programme editor. "
+            "Offline: create your programme here from scratch.")
+        return
+    slot=self.slot.get()
+    try:
+        decoded=decode_slot(data,slot)
+        if decoded["warnings"] or not decoded["segments"] or decoded["repeat"]!=0 or decoded["link"]!=-1:
+            raise ValueError("Controller memory has nonstandard settings or unknown segments. "
+                             "Open Step 2 → Existing programmes to inspect it without changing anything.")
+        steps=[]
+        for section in decoded["segments"]:
+            if section["type"]=="ramp":
+                rate=section["rate"];sp=section["sp"]
+                if rate is None or sp is None:raise ValueError("Unknown ramp parameters")
+                if rate==0:steps.append(Segment("step",sp=str(sp)))
+                else:steps.append(Segment("ramp",sp=str(sp),rate=str(rate)))
+            elif section["type"]=="step" and section["sp"] is not None:
+                steps.append(Segment("step",sp=str(section["sp"])))
+            elif section["type"]=="soak" and section["minutes"] is not None:
+                steps.append(Segment("soak",minutes=str(section["minutes"])))
+            else:raise ValueError("Unsupported segment. Cannot safely convert to editor.")
+        proposed=Programme(name=f"Existing Omron programme {slot} — editable copy",
+                           start=self.start.get() or "20",finish="rst",steps=steps)
+        proposed.validate()
+    except (ValueError,KeyError,IndexError) as exc:
+        messagebox.showwarning("Not safely editable",str(exc));return
+    if not messagebox.askyesno("Copy from controller backup?",
+                f"Load programme {slot} from your read-only backup into the editor?\n"
+                "This replaces only the LOCAL design, not the controller."):
+        return
+    self.progs[slot]=proposed
+    self._refresh_programme()
+    self.status.set(f"Loaded programme {slot} from controller backup into local editor. Nothing uploaded.")
+    self.log(f"Loaded backed-up memory {slot} to editable local profile; controller unchanged")
+
  def import_program(self):
     path=filedialog.askopenfilename(filetypes=[("Programme JSON","*.json")]);
     if not path:return
@@ -493,7 +530,7 @@ class Window:
             self.inspecttext.insert("end",f"C3:{addr:04X}  actual {got} / provisional upload gate {wanted}   {note}\n")
         self.inspecttext.insert("end","\nNEXT: Back up all 8 programme blocks before considering any write.\n")
         if info["mismatches"]:self.inspecttext.insert("end","\nUPLOAD LOCKED: one or more settings differ from the observed safe bench profile. Review the real values. Read-only backup remains available.\n")
-        self.book.select(self.t_backup);self.refresh_buttons()
+        self.book.select(self.t_read);self.readbook.select(self.t_backup);self.refresh_buttons()
         self.home_note.set(f"CONNECTED  •  {info['model10']} on {port}  •  Read-only status checked")
         if self._auto_backup:
             self._auto_backup=False
@@ -544,7 +581,7 @@ class Window:
         # Populate Controller Explorer automatically without leaving the backup page.
         if self.session.backup_data:
             self.explorer_load(self.session.backup_data,"Verified current backup: "+str(path))
-            self.book.select(self.t_backup)
+            self.book.select(self.t_read);self.readbook.select(self.t_backup)
         self.home_note.set(f"BACKUP COMPLETE  •  {count} DA registers saved  •  Controller unchanged")
         self.backupdetail.set(
             f"✓ SAVED FILE VERIFIED — 8/8 programme blocks, {count} DA registers, 9 C3 settings.\n"
@@ -556,9 +593,9 @@ class Window:
         # Continue directly to the Explorer only when the quick scan was requested.
         if self._auto_show_explorer:
             self._auto_show_explorer=False
-            self.book.select(self.t_explore)
+            self.book.select(self.t_read);self.readbook.select(self.t_explore)
         else:
-            self.book.select(self.t_backup)
+            self.book.select(self.t_read);self.readbook.select(self.t_backup)
         self.refresh_buttons()
         messagebox.showinfo(
             "Backup complete — file checked",
@@ -679,7 +716,7 @@ class Window:
     self.explorer_status.set("READ ONLY · "+source+"  •  8 programme blocks available")
     self.explorer_list.selection_set("0")
     self.explorer_select()
-    self.book.select(self.t_explore)
+    self.book.select(self.t_read);self.readbook.select(self.t_explore)
 
  def explorer_selected(self):
     selected=self.explorer_list.selection()
@@ -1105,7 +1142,7 @@ class Window:
                 self.status.set("FAILED: "+title);self.log("ERROR "+title+": "+msg);self.log(debug)
                 if title.startswith("Reading 8 programmes"):
                     self.backupdetail.set("✕ BACKUP FAILED — no newly verified complete backup. Check the error; do not upload.")
-                    self.book.select(self.t_backup)
+                    self.book.select(self.t_read);self.readbook.select(self.t_backup)
                 messagebox.showerror("Operation stopped — fail closed",msg+("\n\nWRITE FAILED: lock remains set for this connection. Keep heater isolated. Do not retry until memory is inspected." if iswrite else ""))
                 self.refresh_buttons()
     except queue.Empty:pass
