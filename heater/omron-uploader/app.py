@@ -450,7 +450,7 @@ class Window:
             got=info["settings"][f"C3:{addr:04X}"]
             self.inspecttext.insert("end",f"C3:{addr:04X}  actual {got} / provisional upload gate {wanted}   {note}\n")
         self.inspecttext.insert("end","\nNEXT: Back up all 8 programme blocks before considering any write.\n")
-        if info["mismatches"]:self.inspecttext.insert("end","\nUPLOAD BLOCKED: old preflight assumptions need correction, not necessarily the controller. USB read and backup remain allowed.\n")
+        if info["mismatches"]:self.inspecttext.insert("end","\nUPLOAD LOCKED: one or more settings differ from the observed safe bench profile. Review the real values. Read-only backup remains available.\n")
         self.book.select(self.t_backup);self.refresh_buttons()
         self.home_note.set(f"CONNECTED  •  {info['model10']} on {port}  •  Read-only status checked")
         if self._auto_backup:
