@@ -89,8 +89,8 @@ function graph(pts){
 function segmentNumber(i,key,label,value,step,min,max){
  return '<div class="field"><label>'+label+'</label><div class="number-stepper">'+
  '<input aria-label="'+label+'" data-i="'+i+'" data-p="'+key+'" type="number" inputmode="decimal" step="'+step+'" min="'+min+'" max="'+max+'" value="'+esc(value??"")+'">'+
- '<div class="stepper-buttons"><button type="button" data-spin="-1" aria-label="Decrease '+label+'" title="Decrease '+label+'">▼</button>'+
- '<button type="button" data-spin="1" aria-label="Increase '+label+'" title="Increase '+label+'">▲</button></div></div></div>';
+ '<div class="stepper-buttons"><button type="button" data-spin="1" aria-label="Increase '+label+'" title="Increase '+label+'">▲</button>'+
+ '<button type="button" data-spin="-1" aria-label="Decrease '+label+'" title="Decrease '+label+'">▼</button></div></div></div>';
 }
 function entry(s,i){
  const fields=['<div class="field"><label>Segment type</label><select data-i="'+i+'" data-p="type">'+["ramp","soak","step"].map(x=>'<option value="'+x+'" '+(x===s.type?"selected":"")+'>'+x.toUpperCase()+'</option>').join("")+'</select></div>'];
