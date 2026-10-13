@@ -56,7 +56,7 @@ def make_manual(programme, slot, configuration=None, draft=None):
 <h1>Programme {slot}: {escape(plan['name'])}</h1>
 <p>{sum(r['code']=='styp' for r in plan['entry_rows'])} segments · assumed start
 PV {escape(plan['assumed_start_pv'])} °C · nominal
-{plan['nominal_minutes']:g} minutes · final commanded SP {plan['final_sp']:g} °C</p>
+{plan['nominal_minutes']:.1f} minutes · final commanded SP {plan['final_sp']:g} °C</p>
 <div class="warn"><strong>Safety:</strong> This is a commanded setpoint programme,
 not a measured temperature trajectory. Do not energise the heater during
 keypad programming, and check the actual hardware model and available menus.</div>
