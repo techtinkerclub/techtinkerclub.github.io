@@ -182,6 +182,100 @@ for n in range(3):
         ["Transfer output type","Transfer output upper limit","Transfer output lower limit"][n],
         "Optional analogue transfer output; not necessarily fitted on the -000 model.","3-13",
         access="documented R/W; review-only in app")
+# H186 pp. 3-13..3-19: output assignments, advanced alarms,
+# display/operation parameters and autotuning options.
+output_choices={
+ 0:"Not assigned",1:"Control heating",2:"Control cooling",
+ 3:"Alarm 1",4:"Alarm 2",5:"Alarm 3",6:"Alarm 4",
+ 7:"Heater alarm",8:"Heater burnout",9:"Heater short",
+ 10:"Input error",11:"Programme end",12:"Stage output",
+ 13:"RUN output",14:"Time signal 1",15:"Time signal 2",
+ 16:"Integrated alarm",
+ **{17+i:f"Work bit {i+1}" for i in range(8)}
+}
+advanced=[
+(0x002E,"Automatic display return time","Returns the panel to the normal display after a delay; 0 disables it.",0,99,1,"s",None),
+(0x002F,"Alarm 1 latch","Keep Alarm 1 latched until acknowledged.",0,1,1,"",{0:"Off",1:"On"}),
+(0x0030,"Alarm 2 latch","Keep Alarm 2 latched until acknowledged.",0,1,1,"",{0:"Off",1:"On"}),
+(0x0031,"Alarm 3 latch","Keep Alarm 3 latched until acknowledged.",0,1,1,"",{0:"Off",1:"On"}),
+(0x0032,"Protect-level activation time","Time to hold the key before entering protect level.",1,30,1,"s",None),
+(0x0033,"Integrated alarm assignment","Controller alarm output mask; interpret its bits using H185.",0,255,1,"bit mask",None),
+(0x0034,"Cold-junction compensation","Enable internal thermocouple cold-junction compensation.",0,1,1,"",{0:"Off",1:"On"}),
+(0x0038,"Alarm 1 ON delay","Delay before alarm 1 activates.",0,999,1,"s",None),
+(0x0039,"Alarm 2 ON delay","Delay before alarm 2 activates.",0,999,1,"s",None),
+(0x003A,"Alarm 3 ON delay","Delay before alarm 3 activates.",0,999,1,"s",None),
+(0x003B,"Alarm 1 OFF delay","Delay before alarm 1 clears.",0,999,1,"s",None),
+(0x003C,"Alarm 2 OFF delay","Delay before alarm 2 clears.",0,999,1,"s",None),
+(0x003D,"Alarm 3 OFF delay","Delay before alarm 3 clears.",0,999,1,"s",None),
+(0x0041,"Control output 1 current signal","Only applicable to analogue current-output variants.",0,1,1,"",{0:"4–20 mA",1:"0–20 mA"}),
+(0x004A,"Loop burnout level","Alarm deviation criterion for loop burnout.",1,9999,10,"°C",None),
+(0x004C,"Communications protocol","Protocol setting; changing can make this software unable to reconnect.",0,4,1,"",{0:"CompoWay/F",1:"Modbus",2:"Component",3:"FINS host link",4:"MC Format 4"}),
+(0x004D,"Send-data wait time","Serial communications reply delay.",0,99,1,"ms",None),
+(0x004E,"Control output 1 assignment","Control/SSR output function; VERIFY actual wiring.",0,24,1,"",output_choices),
+(0x004F,"Control output 2 assignment","Control/SSR output function; VERIFY actual wiring.",0,24,1,"",output_choices),
+(0x0050,"Auxiliary output 1 assignment","Function of auxiliary relay/logic output, if fitted.",0,24,1,"",output_choices),
+(0x0051,"Auxiliary output 2 assignment","Function of auxiliary relay/logic output, if fitted.",0,24,1,"",output_choices),
+(0x0055,"Alarm setpoint selection","Alarm reference can be ramp setpoint or target setpoint.",0,1,1,"",{0:"Setpoint during ramp",1:"Setpoint"}),
+(0x0056,"Auxiliary output 3 assignment","Optional third auxiliary output.",0,22,1,"",output_choices),
+(0x0057,"Position proportional mode","Floating versus closed-loop position proportional action.",0,1,1,"",{0:"Floating",1:"Closed"}),
+(0x0058,"Valve travel time","Time for position proportional valve movement.",1,999,1,"s",None),
+(0x0059,"PV dead band","Sensor-response dead band.",0,9999,1,"raw",None),
+(0x005B,"Manual MV limit enable","Apply output limits in manual mode.",0,1,1,"",{0:"Off",1:"On"}),
+(0x005C,"Direct position MV setting","Option-dependent manual valve opening.",0,1,1,"",{0:"Off",1:"On"}),
+(0x005D,"AT calculated gain","Autotune-related gain parameter.",1,100,10,"",None),
+(0x005E,"AT hysteresis","Autotune oscillation hysteresis.",1,9999,10,"°C",None),
+(0x005F,"Limit-cycle MV amplitude","Auto-tuning excitation amplitude.",50,500,10,"%",None),
+(0x0063,"SP tracking","Tracks SP across mode changes.",0,1,1,"",{0:"Off",1:"On"}),
+(0x0065,"PID automatic selection input","Select PID set from PV, deviation or SP.",0,2,1,"",{0:"PV",1:"Deviation",2:"SP"}),
+(0x0066,"PID automatic selection hysteresis","Avoid chattering between automatically selected PID sets.",10,9999,100,"°C",None),
+(0x0067,"PV change-rate calculation period","Time base for PV rate-of-change alarms/monitors.",1,999,1,"s",None),
+(0x0068,"Heating/cooling tuning method","Autotune mode for various thermal cooling applications.",0,3,1,"",{0:"Same",1:"Linear",2:"Air cooling",3:"Water cooling"}),
+(0x006C,"Square-root input transform","Select square-root extraction for compatible analogue input.",0,1,1,"",{0:"Off",1:"On"}),
+(0x006D,"Programmable front-panel PF key","Assign a permitted PF key action.",0,13,1,"",None),
+(0x0073,"Primary panel display layout","Which PV/SP information the controller shows.",0,7,1,"",None),
+(0x0076,"PV status display function","Meaning of the PV status indicator.",0,9,1,"",None),
+(0x0077,"SV status display function","Meaning of the SV status indicator.",0,9,1,"",None),
+(0x0083,"Panel display refresh period","How frequently front-panel display refreshes.",0,3,1,"",{0:"Off",1:"0.25 s",2:"0.5 s",3:"1.0 s"}),
+(0x0084,"Alarm 4 type","Fourth alarm type, only on supporting models.",0,17,1,"",None),
+(0x0087,"Auxiliary output 4 contact sense","Alarm signal normally closed/open.",0,1,1,"",{0:"Close in alarm",1:"Open in alarm"}),
+(0x0088,"Alarm 4 hysteresis","Reset hysteresis for fourth alarm.",1,9999,10,"°C",None),
+(0x0089,"PV moving average count","Number of averaged samples.",0,5,1,"",{0:"Off",1:"2",2:"4",3:"8",4:"16",5:"32"}),
+(0x008A,"Alarm 4 latch","Latch until alarm acknowledged.",0,1,1,"",{0:"Off",1:"On"}),
+(0x008B,"Alarm 4 ON delay","Delay before fourth alarm activates.",0,999,1,"s",None),
+(0x008C,"Alarm 4 OFF delay","Delay before fourth alarm clears.",0,999,1,"s",None),
+(0x008D,"Control output 2 current signal","Only for linear analogue current-output variant.",0,1,1,"",{0:"4–20 mA",1:"0–20 mA"}),
+(0x0091,"Integral/derivative time unit","Changes interpretation of I/D controller values.",0,1,1,"",{0:"1 second",1:"0.1 seconds"}),
+(0x0092,"Manual output behaviour","Controller output when switching to manual mode.",0,1,1,"",{0:"HOLD",1:"Initial value"}),
+(0x0093,"Initial manual MV","Controller output that may apply in manual mode.",-1050,1050,10,"%",None),
+(0x0094,"Minimum output ON/OFF band","Hysteresis band controlling minimum output.",0,500,10,"°C",None),
+(0x0095,"Panel brightness","Brightness of Omron front-panel display.",1,3,1,"",None),
+(0x0096,"Highest communications unit number","Network unit limit for programless communications.",0,99,1,"",None),
+(0x0097,"Linked data area","PLC register-memory area for component communications.",0,25,1,"",None),
+(0x0098,"First address upper word","Upper part of mapped communications address.",0,99,1,"",None),
+(0x0099,"First address lower word","Lower part of mapped communications address.",0,9999,1,"",None),
+(0x009A,"Receive-data wait time","Wait time in milliseconds before linked data transmission.",100,9999,1,"ms",None),
+(0x009B,"Communications node number","Node number for component/programless communications.",0,99,1,"",None),
+]
+for addr,name,meaning,lo,hi,scale,unit,choices in advanced:
+    code=f"C3:{addr:04X}"
+    if code not in CATALOG:
+        group=("Physical outputs & assignments" if addr in (0x0041,0x004E,0x004F,0x0050,0x0051,0x0056,0x0087,0x008D)
+               else "Communications configuration" if addr in (0x004C,0x004D,0x0096,0x0097,0x0098,0x0099,0x009A,0x009B)
+               else "Alarms / outputs / advanced")
+        add(group,code,name,meaning,"3-13–3-19",minimum=lo,maximum=hi,scale=scale,unit=unit,
+            options=choices,access="documented R/W; offline draft only")
+for i in range(5):
+    code=f"C3:{0x006E+i:04X}"
+    if code not in CATALOG:
+        add("Display configuration",code,f"Monitor/setting item {i+1}",
+            "Which of the documented 31 monitoring values appears on the controller display.","3-16–3-17",
+            minimum=0,maximum=30)
+for i in (5,6):
+    code=f"C3:{0x0080+i:04X}"
+    if code not in CATALOG:
+        add("Digital input assignments",code,f"Event input {i}",
+            "Optional event input; can command RUN/RESET and other actions depending on wiring.","3-17",
+            minimum=0,maximum=21)
 # The H186 parameter tables include C3 upload/download programless settings
 # overlapping the C9 extended bank. Preserve both mappings as distinct registers.
 for i in range(13):
