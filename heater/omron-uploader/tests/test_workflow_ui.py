@@ -113,6 +113,7 @@ class FiveStepWizardTests(unittest.TestCase):
             self.assertEqual(self.ui.btn_connect.cget("text"),"CONNECT + READ EVERYTHING")
             self.ui.btn_connect.invoke()
             self.assertTrue(self.ui.connected)
+            self.assertEqual(self.ui.connection_state.get(),"USB CONNECTED · COM7")
             self.assertIsNotNone(self.ui.session.backup_data)
             self.assertEqual(len(self.ui.session.backup_data["programmes"]),8)
             self.assertEqual(self.ui.setup_snapshot["fields"]["C3:0000"],5)
@@ -178,6 +179,7 @@ class FiveStepWizardTests(unittest.TestCase):
         self.assertIsNone(self.ui.session)
         self.assertIsNone(self.ui.approved_preview)
         self.assertIn("USB DISCONNECTED",self.ui.status.get())
+        self.assertEqual(self.ui.connection_state.get(),"USB DISCONNECTED")
         self.assertFalse(self.ui.safe_to_stage())
         self.assertEqual(self.ui.progs[0].as_json(),before)
     def test_unplugging_only_controller_end_detects_missing_heartbeat(self):
