@@ -794,17 +794,19 @@ class Window:
         messagebox.showwarning("Connect first","Identify a controller on the USB inspect tab before reading setup.")
         return
     def work():
-        # Reuse the 9 real C3 preflight values and read the remaining selected C3/C1 registers.
-        # Unsupported options become explicit 'Not read' rows.
+        # Re-read ALL selected C3/C1 settings, and compare the original nine
+        # against inspection time. Unsupported settings become explicit 'Not read' rows.
         return read_snapshot(self.client,self.session.info,self.session.settings)
     def done(snapshot):
         self.setup_load(snapshot,"Live read (one attached controller)")
         self.book.select(self.t_setup)
         unavailable=len(snapshot["errors"])
-        self.log(f"SETUP READ ONLY: {sum(v is not None for v in snapshot['fields'].values())} registers read; {unavailable} unavailable; zero writes")
+        changed=len(snapshot.get("changed_since_inspection",{}))
+        self.log(f"SETUP READ ONLY: {sum(v is not None for v in snapshot['fields'].values())} fresh register reads; {unavailable} unavailable; {changed} changed since inspection; zero writes")
         messagebox.showinfo("Controller configuration read",
                             f"Read {sum(v is not None for v in snapshot['fields'].values())} selected settings.\n"
-                            f"{unavailable} optional settings unavailable.\n\n"
+                            f"{unavailable} optional settings unavailable.\n"
+                            f"{changed} settings changed since initial inspection.\n\n"
                             "Save this setup snapshot as well as the separate eight-programme backup.\n"
                             "No values were changed on the Omron.")
     self._job("Read controller setup registers (read only)",work,done)
@@ -823,7 +825,9 @@ class Window:
     self.setup_draft={}
     self.setup_summary.set(f"{source} · {snapshot['controller']['model10']} · "
                            f"{sum(v is not None for v in snapshot['fields'].values())} selected settings read · "
-                           f"{len(snapshot.get('errors',{}))} unavailable · 0 proposed changes · NEVER WRITTEN")
+                           f"{len(snapshot.get('errors',{}))} unavailable · "
+                           f"{len(snapshot.get('changed_since_inspection',{}))} changed since connection · "
+                           "0 proposed changes · NEVER WRITTEN")
     self.setup_refresh()
  def setup_refresh(self):
     selection=self.setup_tree.selection()
