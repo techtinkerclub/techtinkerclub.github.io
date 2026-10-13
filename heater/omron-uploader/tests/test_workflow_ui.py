@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from controller_setup import offline_snapshot, apply_draft, build_proposal, validate_snapshot
+from program_model import Programme, Segment
 
 class OfflineConfigurationTests(unittest.TestCase):
     def test_offline_values_are_unknown_not_fabricated(self):
@@ -66,6 +67,11 @@ class FiveStepWizardTests(unittest.TestCase):
         self.assertFalse(self.ui.safe_to_stage())
     def test_manual_includes_programme_and_initial_setting_without_website(self):
         self.ui.choose_mode("offline")
+        self.ui.progs[0]=Programme(name="120 C ramp / 50 C cool",start="20",finish="rst",
+            steps=[Segment("ramp",sp="120",rate="2"),Segment("soak",minutes="15"),
+                   Segment("ramp",sp="50",rate="2"),Segment("soak",minutes="15")])
+        self.ui.slot.set(0)
+        self.ui._refresh_programme()
         self.ui.setup_draft=apply_draft(self.ui.setup_snapshot,{},"C3:00BF",0)
         self.ui.setup_draft=apply_draft(self.ui.setup_snapshot,self.ui.setup_draft,"C3:00BD",1)
         with tempfile.TemporaryDirectory() as temp:
@@ -75,6 +81,8 @@ class FiveStepWizardTests(unittest.TestCase):
                 self.ui.entry_sheet()
             html=Path(output).read_text(encoding="utf-8")
             self.assertIn("Programme 0",html)
+            self.assertIn("115.0 min",html)
+            self.assertIn("4 segments",html)
             self.assertIn("ramp",html.lower())
             self.assertIn("Power-up action",html)
             self.assertIn("Requested initial setting changes",html)
