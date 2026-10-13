@@ -1,10 +1,10 @@
 # Omron E5CC-T Programme Studio — laboratory validation release (v0.1)
 
-**Target controller (both channels): Omron E5CC-TQX3A5M-000**. Cable: **E58-CIFQ2**.
+**Target controller (one controller per USB session): Omron E5CC-TQX3A5M-000**. Cable: **E58-CIFQ2**.
 
 **Status (13 October 2026, updated):** The desktop shell now has a task-oriented Start screen, compact tabs and a connect+backup shortcut. Read-only COM7 hardware identification has passed. The isolated-lab writer was updated for the observed Type K input 5 (whole-degree SP values) and SP Start 0. **No physical RAM write, read-back or nonvolatile save has yet been qualified.** Heater power must remain isolated during any supervised test. Use only a newly built Windows artifact after the CI tests succeed.
 
-The desktop shell uses Tkinter and PySerial for USB/COM, and bundles the identical website's full Programme Studio HTML as an offline browser page. A cable or internet is not required for programme design, manual-entry sheets or the five-button simulator. The Controller Explorer can use previously saved controller backup JSON without reconnecting. The supplied Windows build workflow can create an **offline, portable `.exe`** that bundles Python, Tkinter and PySerial. The Omron USB driver may still need to be installed by your organisation.
+The desktop shell uses Tkinter and PySerial for USB/COM. Its native programme editor, self-contained manual guide and the five-step wizard do not need a website or Internet. The controller Explorer can open previously saved backup JSON files without reconnecting.
 
 ## Run without installing Python (once the Windows build has completed)
 
@@ -47,61 +47,43 @@ py -3 -m PyInstaller --onefile --windowed --hidden-import serial.tools.list_port
 
 Copy the resulting `dist/E5CC-Programme-Studio.exe`, both `START_*.cmd` files and this README to the same directory for an offline package.
 
-## Application tabs and recommended workflow
+## Five-step connected or offline workflow
 
-### START — Task-oriented workflow and full offline creator
+The native Windows app has a single workflow, with no website or programme JSON hand-off required.
 
-The Start screen leads directly to Design, Connect, Explore and Upload. The main DESIGN button opens the real Programme Studio from a copy **bundled inside the portable executable** in the computer's usual web browser. It includes eight programme slots, ramp/soak/step entry, commanded-setpoint graph, manual parameter-entry sheet and virtual five-button Omron simulator. It works without the USB cable and without internet. Save/export JSON regularly: local browser storage may be cleared or constrained by company browser policy. This has NO serial-port access.
+### 1 — Choose Connected or Offline/manual
 
-### 2 — Desktop editor (offline)
+**Connected**: one E5CC-T at a time through the E58-CIFQ2 USB setup cable. Continue to Step 2.
 
-The native compact editor can import/export the *same* programme JSON format as the website, keep an eight-slot local design project, display a simple commanded-SP graph and print the verified button-by-button entry sheet. The **Load verified 50 °C example** button creates the physical bench-test 50 °C at 2 °C/min + 15-minute soak profile without any controller write.
+**Offline/manual**: skip Step 2, open the same native programme editor in Step 3, and finish with a printable manual-entry guide. No cable, browser or Internet required.
 
-### 3 — USB inspect (read-only)
+### 2 — Read/save/backup/show existing (Connected only)
 
-Connect one Omron at a time using its E58-CIFQ2 cable. Select the Windows COM port (COM7 on the first successfully connected unit), inspect the 10-character model prefix, status and nine selected C3 settings. The full -000/-003 model suffix **cannot** be inferred from the serial prefix and needs nameplate confirmation. The -000 model has no verified live PV/multi-input monitoring capability in this tool; do not treat this software as a live data logger.
+With controller mains and external heater DC physically isolated, select the COM port, click **Connect + automatically back up all 8 programmes**, and wait for the read-only file verification. The device is identified by 10-character model prefix; check the full -000 nameplate separately. The initial nine C3 values and controller status are shown. The eight DA programme blocks are saved (8 × 150 registers) and the Stored programmes view displays the existing segments and graphs.
 
-**Important:** the real controller returned `C3:0000=5` (Type K, whole degrees) and `C3:00BF=0` (SP Start). The isolated-lab policy and SP scaling now match these observed values. A different input type or start setting blocks writing. Always confirm the full -000 model suffix on its nameplate.
+Additional selected controller setup and PID settings are read through Step 4, and can be saved as a separate snapshot. This is not a complete controller clone or a restoration guarantee. Always keep the original backup.
 
-### 4 — Memory backup (read-only)
+### 3 — Create or edit a programme
 
-Read all eight DA programme blocks (8 × 150 four-byte words), retaining the nine selected initial C3 readings. The app displays progress, verifies the saved JSON and displays a success message. The Connect + automatic backup shortcut can also open Explorer automatically. Keep the JSON file somewhere safe. A file check is not an independent second read or a full controller-configuration backup.
+Choose local target memory 0–7. Add, edit, remove and reorder ramp, soak and commanded-SP step segments, with a nominal temperature-versus-time preview. In Connected mode, **Use saved controller programme** copies the selected backed-up memory directly into the native editor, never to the hardware. Unknown segments, unsupported repetition and programme links cannot silently be discarded.
 
-### 5 — Explore memory (read-only human-language reverse builder)
+There is no requirement to export/import a website JSON to transfer between screens.
 
-Open the saved `E5CC-T-programme-backup-...json` file, even without a controller/cable, or select **Use current session backup** after completing Step 4. The left-side table lists programmes 0–7 and their active segment count; selecting a memory shows:
+### 4 — Initial settings
 
-- Each segment in plain English, including target, ramp rate, soak duration or an unrecognised field warning.
-- A clear **commanded-setpoint versus time graph**, calculated using an editable *assumed initial PV*. The start temperature isn't stored in the programme. This is neither measured PV nor an assurance that the heater can follow the profile.
-- The repeat/link settings and human-language descriptions of the nine selected C3 configuration fields, including Type K scale 5/6 and SP/PV Start.
-- A text report export, and **Copy selected to local editor** to make a design copy you can modify offline. This never writes to the Omron and refuses unknown/unsupported segments or non-zero repeat/chaining.
+In Connected mode the app reads the selected C3/C1 parameter values and gives human-readable descriptions. You can propose changes for supported mapped enumerations. Other PID/advanced numeric values are shown for review but are not yet safely editable or writable.
 
-**Decoder caveat:** This first Explorer interprets the H186 segment fields used in our rate-mode bench example. Other stored special functions, unknown alarm/time-signal assignments and unused register fields are not fully decoded. The app preserves the full 150-word raw memory block in the backup; it **must not infer that a programme is safe to overwrite from the graph alone**. Type K 5/6 SP register scaling is based on the documented decimal-point semantics, but should be compared with actual front-panel read-back on our COM7 controller before uploading.
+In Offline/manual mode, the baseline is explicitly UNKNOWN; selected setup choices are proposals only, not values claimed to have been read from hardware.
 
-### 6 — Controller setup (read-only device inspection + offline configuration planner)
+### 5 — Apply or generate manual instructions
 
-The **Controller setup** tab reads the physical attached controller through the E58-CIFQ2 cable, and shows a documented selection of important **C3** and **C1** settings. This is separate from the eight DA programme memories and their backups. It also works without the USB cable when opening a previously saved setup snapshot.
+**Offline/manual**: **GENERATE COMPLETE OFFLINE MANUAL ENTRY SHEET** produces a self-contained, printable HTML document containing the selected programme, exact per-segment values, menu labels, keypad-navigation guidance, the initial-setting proposals from Step 4, and final check/read-back steps. No website access is needed.
 
-**To use:**
-1. Connect in **USB inspect** as usual with the heater power isolated.
-2. Open **Controller setup** and click **READ CONTROLLER SETTINGS (no writes)**. the tool freshly re-reads the nine original preflight values and individually reads other selected documented registers, including Type K input range, SP limits, PID/ON-OFF, heating/cooling selection, SSR heating cycle time, reverse/direct action, alarm types, programme execution/reset/power-up behaviour, and MV at RESET / PV error.
-3. Review the actual values and the plain-English descriptions alongside Omron menu codes and C3/C1 register addresses. Optional settings that cannot be read (e.g. unsupported model options) are explicitly marked unavailable, **not interpreted as zero**.
-4. Click **Save actual snapshot…** to retain an unmodified, read-verified JSON setup snapshot, separately from the existing 8-programme backup JSON.
-5. For supported enumerated choices, select a row and use **Add to proposed changes** to create an *OFFLINE* alternative. **Clear proposed changes** resets your local draft. **Export comparison…** saves a proposal JSON and human-readable text comparison with original values.
+**Connected**: review the selected programme and proposed changes. With no initial-setting changes pending, the isolated-laboratory route offers exact DA change preview, a separately authorised RAM stage with immediate readback, and a separate explicit nonvolatile SAVE. The first physical controller upload is **not yet qualified**; keep the heater completely isolated and use an intentionally supervised bench experiment only.
 
-**CRITICAL:** No control in this tab can write controller configuration, even when the executable was opened with `START_LAB_UPLOAD.cmd`. These are **offline proposed changes** only. There is deliberately no "Apply settings to Omron" button in this unqualified release. The experimental lab uploader writes only allowlisted DA programme addresses with the observed input type 5 and SP Start 0; no real-device write has yet been proven. Do not change correct hardware settings to satisfy outdated upload preflight assumptions.
+**Current limitation:** USB writes for C3/C1 initial settings are **not yet implemented or validated**. If Step 4 has pending initial-setting changes, programme staging and SAVE are locked to prevent uploading a profile that relies on unapplied configuration. Step 5 includes those initial changes in the offline manual instructions; do not interpret that as an automatic controller setup write.
 
-**Scope:** This is not a complete configuration clone. Additional alarms thresholds, selected PID sets, advanced function and protection parameters, external output assignments, and actual interlock/SSR wiring are outside the current inspector. Output in RESET or on a thermocouple error may not be zero just because the controller's `0601` status reports stopped; inspect these values and verify electrical isolation independently. Read-only output parameters may appear as raw tenths of percent and are dependent on control mode. Omron H186 CompoWay/F C3 and C1 tables are the reference.
-
-### 7 — Lab transfer (guarded and unqualified on real hardware)
-
-The app does **not** assume two channels. The editable controller ID is just an audit label for whichever physical Omron is attached; only one serial controller can be connected in a session. The separate `START_LAB_UPLOAD.cmd` launcher requires explicit authorisation, stopped controller, compatible preflight, complete backup and review of all DA register changes. RAM staging/read-back and nonvolatile save are separate operations, each requiring deliberate confirmation.
-
-**The first isolated bench upload is experimental.** The source now handles the observed Type K 5/SP Start settings. Before staging RAM on the real unit, examine its saved DA memory backup and cross-check a known SP/segment on its physical keypad. Use a sacrificial test slot, review the exact changed registers and keep heater mains and DC fully isolated. No automatic rollback exists; do not energise the heater with an unqualified uploaded programme.
-
-### 8 — Audit log
-
-Record identification, reads, errors and any later supervised transfer approvals and save a local text log. The workflow is still **prototype / laboratory commissioning**, not a certified temperature-control safety system.
+A communication success does not prove heater safety, thermocouple response, SSR isolation or that the real temperature will follow the commanded setpoint graph.
 
 ## Exactly which controller values the app verifies
 
