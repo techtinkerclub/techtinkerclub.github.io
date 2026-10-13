@@ -50,7 +50,7 @@ permalink: /heater/program-tools/
 <div class="row noprint" style="margin-top:12px"><label for="holdmode">Next key press:</label><select id="holdmode" class="control" style="width:auto"><option value="short">Short</option><option value="long">Hold</option></select><button id="combo" class="btn">MODE + DOWN (RUN/RST)</button></div>
 <p class="note">LEVEL moves Operation → Programme → Adjustment → PID → Operation. Hold LEVEL from Operation to enter Initial Settings and from Initial Settings to return. MODE scrolls displayed parameters, or previous parameter when held. Some real parameters are omitted, so never learn a fixed number of MODE presses from this simulator.</p></div>
 <div class="card"><h3>Run the virtual programme</h3><div class="row noprint"><button class="btn" id="minute">+1 min</button><button class="btn" id="five">+5 min</button><button class="btn" id="reset">RESET</button><span id="elapsed" class="badge">0 min</span></div><div id="simchart" class="plot" style="margin-top:10px"></div><p class="tiny muted">Time advances on button press only. PV remains the assumed starting temperature: this is not a PID, physics or safety simulation.</p></div>
-</div><div><div class="card"><h2>Practice target</h2><p class="tiny muted">Match each plain-English setting to the exact code on the Omron screen. Select a segment with d.seg before editing styp, sp, pr or time.</p><div id="goal" class="goal"></div><div class="row noprint" style="margin-top:12px"><button class="btn" id="empty">Reset virtual memory</button><button class="btn" id="load">Load for RUN preview</button></div><p class="tiny muted">Load is an explicit shortcut for exploring a completed programme; it does not represent physically programming the device.</p></div>
+</div><div><div class="card"><h2>Practice target</h2><p class="tiny muted">Match each plain-English setting to the exact code on the Omron screen. Select a segment with d.seg before editing styp, sp, pr or time. MODE after the final segment parameter returns to d.seg = end (verified for one active segment). Alarm screens are navigation placeholders; their values are not simulated.</p><div id="goal" class="goal"></div><div class="row noprint" style="margin-top:12px"><button class="btn" id="empty">Reset virtual memory</button><button class="btn" id="load">Load for RUN preview</button></div><p class="tiny muted">Load is an explicit shortcut for exploring a completed programme; it does not represent physically programming the device.</p></div>
 <div class="card"><h3>Button history</h3><div id="history" class="history"></div></div><div class="card"><h3>Known limitations</h3><p class="tiny muted">This first simulator covers a restricted parameter subset, approximate PF numeric digit editing, mode navigation, segment editing and virtual setpoint progression. It does not exactly model firmware-specific parameter masking, alarms, autotuning, programme linking/repeats, wait/hold, protected levels or control outputs. Training accuracy must be checked against both installed E5CC-TQX3A5M-000 controllers.</p><a href="https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf" target="_blank" rel="noopener noreferrer">Omron H185 manual ↗</a></div>
 </div></div></section>
 <footer>E5CC-T Programme Studio · No AI or server required once the page is loaded · Pre-commissioning edition</footer>
@@ -118,7 +118,7 @@ $("print").onclick=()=>window.print();
 $("json").onclick=()=>{let str=JSON.stringify({version:1,method:"rate",programmeNumber:slot,programme:cur()},null,2),blob=new Blob([str],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="E5CC-T-programme-"+slot+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 function tab(sim){$("builder").classList.toggle("hidden",sim);$("simulator").classList.toggle("hidden",!sim);$("bt").classList.toggle("on",!sim);$("st").classList.toggle("on",sim);if(sim)goal();location.hash=sim?"simulator":"builder"}
 $("bt").onclick=()=>tab(false);$("st").onclick=()=>tab(true);$("practice").onclick=()=>tab(true);
-/* Simulator subset: deliberately omits unrelated/masked parameters */
+/* Simulator subset: real-menu navigation observed on E5CC-T, with unmodelled alarm values shown as read-only --. */
 const newProg=()=>({n:8,segments:Array.from({length:32},()=>({type:"ramp",sp:0,rate:0,minutes:0})),pid:1,rpt:0,link:"end"});
 let vm;
 function resetVM(){vm={level:"operation",param:"pv",prg:0,seg:"end",progs:Array.from({length:8},newProg),settings:{"in-t":6,"d-u":"c",cntl:"pid","t-u":"h-m","t-pr":"pr",pru:"m",rtsm:"stop","p-on":"rst",eset:"rst",spmd:"psp"},status:"rst",pv:Number(cur().start)||20,time:0,digit:0,history:[]};showVM()}
@@ -127,7 +127,7 @@ function simReady(){let x=vm.settings,p=prog();return x["t-pr"]==="pr"&&x["t-u"]
 const minTime=n=>{n=Math.min(5999,Math.max(0,Number(n)||0));return Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0")};
 function keys(){let x=vm.level==="operation"?["pv","r-r"]:vm.level==="initial"?["in-t","d-u","cntl","t-u","t-pr","pru","rtsm","p-on","eset"]:vm.level==="adjustment"?["l.adj","spmd"]:vm.level==="pid"?["d.pid"]:["d.prg","s-no","d.seg"];
  if(vm.level==="program"&&vm.seg!=="end"){let s=prog().segments[vm.seg];x.push("styp");if(s.type==="ramp")x.push("sp","pr");if(s.type==="soak")x.push("time");if(s.type==="step")x.push("sp")}
- if(vm.level==="program")x.push("pid","rpt","link");return x}
+ if(vm.level==="program"&&vm.seg==="end")x.push("pid","al-1","al-2","al-3","rpt","link");return x}
 function value(p){
  let g=prog(),s=vm.seg==="end"?null:g.segments[vm.seg];
  if(p==="pv")return vm.status==="rst"?"rst":setpoint();
@@ -165,7 +165,13 @@ function change(d){
 function push(k,long){
  if(k==="level"){if(long){if(vm.level==="operation"){vm.level="initial";vm.param="in-t"}else if(vm.level==="initial"){vm.level="operation";vm.param="pv"}else history("Long LEVEL unsupported in this level")}
  else if(vm.level==="initial")history("Hold LEVEL to return from Initial Setting");else{let levels=["operation","program","adjustment","pid"];vm.level=levels[(levels.indexOf(vm.level)+1)%levels.length];vm.param={operation:"pv",program:"d.prg",adjustment:"l.adj",pid:"d.pid"}[vm.level]}vm.digit=0}
- else if(k==="mode"){let all=keys(),i=all.indexOf(vm.param);vm.param=all[(Math.max(0,i)+(long?-1:1)+all.length)%all.length];vm.digit=0}
+ else if(k==="mode"){let all=keys(),i=all.indexOf(vm.param);
+   // Verified on physical E5CC-T (programme 0, one active ramp):
+   // short MODE after final segment parameter (pr) returns to d.seg=end.
+   // Multi-segment navigation has not yet been tested on the real unit.
+   if(!long&&vm.level==="program"&&vm.seg!=="end"&&i===all.length-1){vm.seg="end";vm.param="d.seg"}
+   else vm.param=all[(Math.max(0,i)+(long?-1:1)+all.length)%all.length];
+   vm.digit=0}
  else if(k==="pf")vm.digit=(vm.digit+1)%4;
  else change(k==="up"?1:-1);
  history((long?"HOLD ":"")+k.toUpperCase()+" → "+vm.level+" / "+vm.param+" = "+value(vm.param));showVM();
