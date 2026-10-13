@@ -1400,45 +1400,102 @@ class Studio(QMainWindow):
         self._work("Save verified RAM data",job,done,True)
 
     def refresh_manual(self):
-        """One authoritative keypad plan for on-screen and printable entry."""
+        """Same complete parameter plan drives the guided UI and printed guide."""
         if not hasattr(self,"entry_table"):return
         try:
             plan=make_entry_plan(self.programmes[self.slot],self.slot,
                                  self.inventory["fields"],self.draft)
         except Exception as exc:
-            self.entry_table.setRowCount(0)
-            self.entry_summary.setText("Fix the programme: "+str(exc))
             self._manual_plan=None
+            self._manual_all_rows=[]
+            self.entry_table.setRowCount(0)
+            self.entry_summary.setText("Cannot generate instructions: "+str(exc))
+            self.manual_instructions.setPlainText(
+                "Correct the programme/settings in Steps 3–4 first. "
+                "No potentially misleading instructions have been generated.")
             return
         self._manual_plan=plan
         rows=list(plan["entry_rows"])
         for proposal in plan["setup_proposals"]:
-            rows.append(dict(section="PROPOSED INITIAL / ADVANCED SETTINGS (not applied)",
+            rows.append(dict(
+                section="PROPOSED INITIAL / ADVANCED SETTINGS",
                 code=proposal["code"],
                 value=proposal["proposed"],
                 purpose=proposal["name"]+" · current: "+proposal["current"],
-                instruction=proposal["entry"],
-                kind="check"))
+                instruction=proposal["entry"],kind="check"))
+        self._manual_all_rows=rows
+        sections=list(dict.fromkeys(r["section"] for r in rows))
+        previously=self.manual_phase.currentText()
+        self.manual_phase.blockSignals(True)
+        self.manual_phase.clear()
+        self.manual_phase.addItems(["All stages"]+sections)
+        self.manual_phase.setCurrentText(previously if previously in sections else "All stages")
+        self.manual_phase.blockSignals(False)
+        self._manual_fill()
+        self.entry_summary.setText(
+            f"Programme {self.slot}  ·  "
+            f"{sum(r['code']=='styp' for r in rows)} segments  ·  "
+            f"{plan['nominal_minutes']:.1f} minutes nominal  ·  "
+            f"{len(rows)} documented parameters/actions  ·  "
+            f"{len(plan['setup_proposals'])} optional setting changes (review only)."
+        )
+
+    def _manual_fill(self,*unused):
+        if not hasattr(self,"_manual_all_rows"):return
+        section=self.manual_phase.currentText()
+        rows=[r for r in self._manual_all_rows
+              if section=="All stages" or section==r["section"]]
+        self._manual_rows=rows
+        self._manual_rendering=True
         self.entry_table.setRowCount(len(rows))
         previous=None
         for i,item in enumerate(rows):
-            for j,value in enumerate((item["code"],item["value"],
-                                      item["purpose"],item["instruction"])):
-                self._cell(self.entry_table,i,j,value)
-                cell=self.entry_table.item(i,j)
-                if item["section"]!=previous:
-                    cell.setBackground(QColor("#e6f1fb"))
-                if item["kind"]=="check" and j==1:
-                    cell.setForeground(QColor("#946314"))
+            self._cell(self.entry_table,i,0,item["code"])
+            self._cell(self.entry_table,i,1,item["value"])
+            if item["section"]!=previous:
+                for j in range(2):
+                    self.entry_table.item(i,j).setBackground(QColor("#e5f1fb"))
+            if item["kind"]=="check":
+                self.entry_table.item(i,1).setForeground(QColor("#98631b"))
             previous=item["section"]
-        self.entry_summary.setText(
-            f"Programme {self.slot} · "
-            f"{sum(r['code']=='styp' for r in rows)} segments · "
-            f"{plan['nominal_minutes']:g} minutes nominal · "
-            f"{len(rows)} parameter/action rows · "
-            f"{len(plan['setup_proposals'])} settings proposals (review only). "
-            "VERIFY-marked entries need actual controller inspection."
+            self.entry_table.setRowHeight(i,39)
+        self._manual_rendering=False
+        if rows:
+            self.entry_table.selectRow(0)
+            self._manual_selected()
+        else:
+            self.manual_position.setText("No parameters in this stage")
+            self.manual_code.setText("—")
+            self.manual_value.setText("")
+            self.manual_purpose.setText("")
+            self.manual_instructions.clear()
+
+    def _manual_selected(self):
+        if getattr(self,"_manual_rendering",False):return
+        row=self.entry_table.currentRow()
+        rows=getattr(self,"_manual_rows",[])
+        if not 0<=row<len(rows):return
+        item=rows[row]
+        self.manual_position.setText(
+            f"{item['section']}   ·   {row+1} of {len(rows)}")
+        self.manual_code.setText(item["code"])
+        self.manual_value.setText(item["value"])
+        self.manual_purpose.setText(item["purpose"])
+        self.manual_instructions.setPlainText(item["instruction"])
+        self.manual_risk.setText(
+            "CHECK the actual controller. A protected or unavailable menu must "
+            "not be bypassed." if item["kind"]=="check" else
+            "Programme editing instructions only. Do not press RUN while setting up."
         )
+
+    def _manual_move(self,direction):
+        row=self.entry_table.currentRow()
+        n=self.entry_table.rowCount()
+        if not n:return
+        row=max(0,min(n-1,row+direction))
+        self.entry_table.selectRow(row)
+        self.entry_table.scrollToItem(self.entry_table.item(row,0))
+        self._manual_selected()
 
     def open_keypad_practice(self):
         """Optional familiar website keypad trainer, bundled as a LOCAL HTML file.
