@@ -1,9 +1,9 @@
 """Shared Qt widgets for the portable Omron Studio (no serial I/O)."""
 from __future__ import annotations
-from PySide6.QtCore import QObject, QRunnable, Signal, Qt
+from PySide6.QtCore import QObject, QRunnable, Signal, Qt, QRectF
 from PySide6.QtWidgets import (QFrame, QLabel, QVBoxLayout, QHBoxLayout,
-                              QPushButton, QGraphicsDropShadowEffect, QWidget)
-from PySide6.QtGui import QColor
+                              QPushButton, QWidget, QComboBox)
+from PySide6.QtGui import QColor, QPainter, QPen, QFont
 import pyqtgraph as pg
 
 BG="#f4f7fb"
@@ -15,6 +15,8 @@ GREEN="#157952"
 AMBER="#a8610f"
 
 STYLE = """
+/* One control system across all five steps. Numeric and dropdown inputs share
+   38px field chrome, the same border/typography, and pale-blue affordances. */
 QMainWindow, QWidget#root { background: #f4f7fb; color: #1b344c; }
 QFrame#card { background: white; border: 1px solid #dce5ee; border-radius: 12px; }
 QFrame#header { background: #ffffff; border-bottom: 1px solid #dce5ee; }
@@ -23,13 +25,15 @@ QLabel { color: #1b344c; background: transparent; }
 QLabel#muted { color: #627a90; }
 QLabel#heading { font: 600 21px 'Segoe UI'; }
 QLabel#subheading { font: 600 15px 'Segoe UI'; }
-QLabel#tiny { color: #627a90; font: 11px 'Segoe UI'; }
+QLabel#tiny { color: #526f86; font: 600 10px 'Segoe UI'; }
 QLabel#success { color: #137b54; }
 QLabel#warning { color: #9e5d0c; }
-QPushButton { background: #ffffff; border: 1px solid #d1deea; border-radius: 8px;
- padding: 9px 13px; font: 600 12px 'Segoe UI'; color:#245271; min-height:21px; }
-QPushButton:hover { background: #eaf3fd; border-color: #8ebbea; }
-QPushButton:disabled { background:#f0f3f6; color:#91a2b1; border-color:#e3e8ee; }
+
+QPushButton { background: #ffffff; border: 1px solid #cbddea; border-radius: 8px;
+ padding: 8px 13px; font: 600 12px 'Segoe UI'; color: #245271; min-height: 22px; }
+QPushButton:hover { background: #edf5fd; border-color: #95c2e7; }
+QPushButton:pressed { background: #daeafb; }
+QPushButton:disabled { background: #f0f3f6; color: #91a2b1; border-color: #e3e8ee; }
 QPushButton[primary="true"] { color:white; background:#086fd1; border-color:#086fd1; }
 QPushButton[primary="true"]:hover { background:#045db4; }
 QPushButton[primary="true"]:disabled { color:#b1bfcc;background:#e8eef4;border-color:#e8eef4; }
@@ -37,34 +41,106 @@ QPushButton[nav="true"] { text-align:left; padding: 12px 16px; border:0;
  border-radius:8px; color:#59728b; background:transparent; }
 QPushButton[nav="true"]:checked { background:#e6f1fc;color:#075bb3; }
 QPushButton[nav="true"]:hover { background:#edf5fd; }
-QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox { background:white; border:1px solid #d2e0eb;
- padding:7px;border-radius:7px; min-height:20px; color:#1b344c; }
-QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus
- { border-color:#278bdd; }
+
+QLineEdit { background:#ffffff; border:1px solid #cbddea; border-radius:8px;
+ padding:7px 10px; min-height:22px; color:#18334a;
+ selection-background-color:#d4e9fb; selection-color:#18334a;
+ font: 12px 'Segoe UI'; }
+QLineEdit:focus { border-color:#278bdd; background:#ffffff; }
+QLineEdit:disabled { background:#f3f6fa; color:#8a9bab; }
+QComboBox { background:#ffffff; border:1px solid #cbddea; border-radius:8px;
+ padding:7px 42px 7px 10px; min-height:22px; color:#18334a;
+ font:600 12px 'Segoe UI'; selection-background-color:#d4e9fb; }
+QComboBox:hover { border-color:#95c2e7; }
+QComboBox:focus { border-color:#278bdd; }
+QComboBox:disabled { background:#f3f6fa; color:#8a9bab; }
+/* The entire dropdown/arrow is drawn consistently by StudioCombo.paintEvent. */
+QComboBox::drop-down { subcontrol-origin: padding; subcontrol-position:top right;
+ width:34px; border:0; background:transparent; }
+QComboBox::down-arrow { image:none; width:0; height:0; }
+QComboBox QAbstractItemView { background:#ffffff; border:1px solid #cbddea;
+ color:#18334a; outline:none; selection-background-color:#e3f1fc;
+ selection-color:#164e7b; padding:3px; }
+QSpinBox,QDoubleSpinBox { background:white; border:1px solid #cbddea;
+ color:#18334a; border-radius:8px; padding:7px 10px; min-height:22px; }
+QSpinBox:focus,QDoubleSpinBox:focus { border-color:#278bdd; }
+
+/* Numeric fields and dropdowns share the same outer shell. */
+QFrame#valueField { background:#ffffff; border:1px solid #cbddea; border-radius:8px; }
+QFrame#valueField:focus-within { border-color:#278bdd; }
+QLineEdit#numericEntry { background:#ffffff; border:0; border-radius:0;
+ padding:5px 7px; min-height:0; font:600 13px 'Segoe UI'; color:#18334a;
+ selection-background-color:#d4e9fb; selection-color:#18334a; }
+QLineEdit#numericEntry:focus { background:#ffffff; border:0; color:#18334a; }
+QLabel#numericUnit { color:#526f86; background:#ffffff;
+ font:11px 'Segoe UI'; padding:0 3px; }
+QToolButton#spinArrow { background:#edf5fd; border:0; border-left:1px solid #dce7f0;
+ border-radius:0; color:#24638e; }
+QToolButton#spinArrow:hover { background:#dbeefd; }
+QToolButton#spinArrow:pressed { background:#c9e4fa; }
+QToolButton#rowAction { background:#ffffff; border:1px solid #cbddea; border-radius:7px; }
+QToolButton#rowAction:hover { background:#edf5fd; border-color:#95c2e7; }
+QToolButton#rowAction:pressed { background:#daeafb; }
+
 QTableWidget { background:white; alternate-background-color:#f7fafc;
- border:1px solid #dae5ef; border-radius:7px;gridline-color:#e5edf5;
- selection-background-color:#deecfb;selection-color:#1b344c;}
+ border:1px solid #dae5ef; border-radius:8px; gridline-color:#e5edf5;
+ selection-background-color:#deecfb; selection-color:#1b344c; }
 QHeaderView::section { background:#f0f5fa; border:0; border-bottom:1px solid #d9e4ee;
- padding:9px;color:#41617c;font:600 12px 'Segoe UI'; }
-QTextEdit { background:#ffffff; border:1px solid #dce5ee; border-radius:8px; }
-QProgressBar { border:0; background:#e3edf7; border-radius:5px;height:8px; }
-QProgressBar::chunk { background:#1584de; border-radius:5px; }
-QScrollArea { border:none;background:transparent; }
+ padding:9px; color:#41617c; font:600 12px 'Segoe UI'; }
+QTableWidget#segmentRows { background:#ffffff; border:0; alternate-background-color:#ffffff; }
+QTableWidget#segmentRows::item { background:#ffffff; border:0; }
 QFrame#segmentRow { background:#f9fcff; border:1px solid #dbe7f1; border-radius:10px; }
 QFrame#segmentRow:hover { border-color:#a6c8e5; }
-QFrame#stepperFrame { border:1px solid #cbddea; border-radius:8px; background:#ffffff; }
-QFrame#stepperFrame QAbstractSpinBox { background:transparent;border:0;
- font:600 13px 'Segoe UI';padding:3px 7px; }
-QToolButton#spinArrow { border:0;border-left:1px solid #dbe7f0; border-radius:0;
- background:#edf5fd; color:#24638e; font:600 10px 'Segoe UI'; }
-QToolButton#spinArrow:hover { background:#cfe7fa; }
-QToolButton#rowAction { border:1px solid #d6e3ee; background:white;
- border-radius:6px;color:#315b7a;font:600 16px 'Segoe UI'; }
-QToolButton#rowAction:hover { background:#e6f3ff; }
-QTableWidget#segmentRows { background:white; border:0;alternate-background-color:white; }
-QTableWidget#segmentRows::item { background:white;border:0; }
+
+QTextEdit { background:#ffffff; border:1px solid #dce5ee; border-radius:8px;
+ color:#1b344c; selection-background-color:#d4e9fb; }
+QTabWidget::pane { border:1px solid #dce5ee; background:#ffffff;
+ border-radius:8px; top:-1px; }
+QTabBar::tab { background:#f0f5fa; border:1px solid #dce5ee;
+ padding:10px 16px; min-width:100px; color:#50718c;
+ font:600 12px 'Segoe UI'; }
+QTabBar::tab:selected { background:#ffffff; color:#0865b9;
+ border-bottom-color:#ffffff; }
+QTabBar::tab:hover:!selected { background:#e4effa; }
+QCheckBox { color:#2b4b62; spacing:8px; font:12px 'Segoe UI'; }
+QCheckBox::indicator { width:16px; height:16px; }
+QProgressBar { border:0; background:#e3edf7; border-radius:5px;height:8px; }
+QProgressBar::chunk { background:#1584de; border-radius:5px; }
+QScrollArea { border:none; background:transparent; }
 QSplitter::handle { background:#dde9f2; }
 """
+
+
+class StudioCombo(QComboBox):
+    """Shared Windows 11-style dropdown with a painted, non-font chevron.
+
+    Unlike system/native arrow glyphs, this chevron has predictable weight
+    and alignment at Windows 100%, 125% and 150% DPI. The popup and keyboard
+    behaviour remain the native, accessible QComboBox implementation.
+    """
+    def __init__(self,parent=None):
+        super().__init__(parent)
+        self.setMinimumHeight(38)
+        self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.setMinimumContentsLength(5)
+
+    def paintEvent(self,event):
+        super().paintEvent(event)
+        if self.width()<42:return
+        painter=QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing,True)
+        # This painted area intentionally matches Stepper's tinted button stack.
+        r=self.rect()
+        x=r.width()-34
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor("#edf5fd") if self.isEnabled() else QColor("#f1f4f7"))
+        painter.drawRoundedRect(QRectF(x+1,1,32,r.height()-2),4,4)
+        painter.setPen(QPen(QColor("#dce7f0"),1))
+        painter.drawLine(x,5,x,r.height()-6)
+        painter.setPen(QPen(QColor("#28618d") if self.isEnabled() else QColor("#9aaab7"),2))
+        painter.drawLine(x+12,r.height()//2-3,x+18,r.height()//2+3)
+        painter.drawLine(x+18,r.height()//2+3,x+24,r.height()//2-3)
+        painter.end()
 
 
 class WorkerSignals(QObject):
