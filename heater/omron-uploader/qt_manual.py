@@ -1,122 +1,88 @@
-"""Offline keypad guide from the native Qt editor. No controller access or website needed.
-
-Use only verified front-panel codes from the existing Tkinter entry-sheet workflow.
-Advanced settings without verified keypad paths are a change schedule, NOT invented
-button presses.
+"""Standalone print-ready Omron keypad instructions — exactly the same source
+of truth as the Qt in-app offline entry table. No website, controller or browser
+connection is needed to GENERATE this file. The saved HTML opens/prints offline.
 """
 from __future__ import annotations
 from html import escape
 from pathlib import Path
+from qt_entry_plan import make_entry_plan,plain_instructions
 
-from program_model import Programme, decimal
-from controller_inventory import CATALOG, human_value
+STYLE="""<style>
+:root{font:14px/1.5 'Segoe UI',Arial,sans-serif;color:#18334a;background:#eef4f9}
+*{box-sizing:border-box}body{max-width:1060px;margin:30px auto;padding:0 18px}
+main{background:white;border:1px solid #d7e4ee;padding:34px;border-radius:14px}
+h1{font-size:26px;margin:0 0 10px}h2{font-size:19px;color:#145a84;margin-top:30px}
+p{margin:10px 0}.muted{color:#59748a}.warn{background:#fff5df;border-left:4px solid #ca901b;
+padding:12px 16px;margin:14px 0}.good{background:#eaf5fb;padding:12px 16px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th{background:#e8f1f8;text-align:left;color:#33536c}
+td,th{border-bottom:1px solid #dce7f0;vertical-align:top;padding:9px 10px;overflow-wrap:anywhere}
+code{font:13px/1.4 Consolas,monospace;background:#e9f1f8;border-radius:4px;
+padding:3px 5px;color:#0d598c}.section td{background:#f1f6fa;font-weight:700}
+.key{font-weight:700;color:#165d9d}.foot{margin-top:26px;color:#607b8e;font-size:12px}
+@media print{body{background:white;margin:0;padding:0}main{border:0;border-radius:0;padding:0}
+tr{break-inside:avoid}thead{display:table-header-group}h2{break-after:avoid}}
+</style>"""
 
-
-def make_manual(programme: Programme, slot: int, configuration=None, draft=None) -> str:
-    metrics = programme.validate()
-    if not 0 <= slot <= 7:
-        raise ValueError("Programme memory must be 0–7")
-    configuration = configuration or {}
-    draft = draft or {}
-    parts = [("d.prg", str(slot)), ("s-no", str(len(programme.steps)))]
-    for index, segment in enumerate(programme.steps):
-        parts.extend([("d.seg", str(index)), ("styp", segment.type)])
-        if segment.type in ("ramp", "step"):
-            parts.append(("sp", f"{decimal(segment.sp):g} °C"))
-        if segment.type == "ramp":
-            parts.append(("pr", f"{decimal(segment.rate):g} °C/min"))
-        elif segment.type == "soak":
-            minutes = int(decimal(segment.minutes))
-            parts.append(("time", f"{minutes // 60}.{minutes % 60:02d} (hours.minutes)"))
-    parts.extend([
-        ("d.seg", "end — programme-wide settings"),
-        ("pid", "inspect selected PID set; do not change without review"),
-        ("al-1 / al-2 / al-3", "inspect alarm functions and actual wiring"),
-        ("rpt", "0 — no repetition"),
-        ("link", "end — no programme chaining"),
-        ("LEVEL", "return to Operation Level as described in H185"),
-        ("prg", f"{slot} — programme to RUN, distinct from d.prg"),
-        ("r-r", "rst — ensure not RUN while configuring"),
-    ])
-    rows = "".join(f"<tr><td><code>{escape(k)}</code></td><td>{escape(v)}</td></tr>"
-                   for k, v in parts)
-    changed = []
-    for code, value in sorted(draft.items()):
-        if code not in CATALOG:
-            raise ValueError("Unknown configuration setting " + code)
-        item = CATALOG[code]
-        original = configuration.get(code)
-        before = (human_value(code, original, configuration.get("C3:0000"))
-                  if original is not None else "Unknown — not read from a device")
-        after = human_value(code, value, configuration.get("C3:0000"))
-        changed.append((code, item.name, before, after, item.meaning))
-    changes = "".join(
-        "<tr><td><code>" + escape(c) + "</code><p>" + escape(name) + "</p></td>"
-        "<td>" + escape(old) + "</td><td><strong>" + escape(new) + "</strong></td>"
-        "<td>" + escape(meaning) + "</td></tr>"
-        for c, name, old, new, meaning in changed)
-    note = ("<h2>Configuration changes proposed in Step 4</h2>"
-            "<p>The table is a review schedule, not a verified per-button guide for "
-            "advanced parameters. Only follow documented front-panel paths on the "
-            "actual fitted model; do not guess menu levels or bypass protections.</p>"
-            "<table><thead><tr><th>Register / setting</th><th>Actual</th>"
-            "<th>Requested</th><th>Meaning</th></tr></thead><tbody>" + changes +
-            "</tbody></table>") if changed else (
-            "<p>No configuration changes have been proposed. Confirm the actual "
-            "controller input, programme mode and power-on behaviour before use.</p>")
-    title = escape(programme.name)
+def make_manual(programme, slot, configuration=None, draft=None):
+    plan=make_entry_plan(programme,slot,configuration,draft)
+    rows=[]
+    previous=None
+    for item in plan["entry_rows"]:
+        sec=item["section"]
+        if sec!=previous:
+            rows.append('<tr class="section"><td colspan="4">'+escape(sec)+'</td></tr>')
+            previous=sec
+        rows.append('<tr><td><code>'+escape(item["code"])+'</code></td>'+
+                    '<td><strong>'+escape(item["value"])+'</strong></td>'+
+                    '<td>'+escape(item["purpose"])+'</td>'+
+                    '<td>'+escape(item["instruction"])+'</td></tr>')
+    proposals=[]
+    for change in plan["setup_proposals"]:
+        proposals.append('<tr><td><code>'+escape(change["code"])+'</code> '+
+                         escape(change["name"])+'</td><td>'+escape(change["current"])+
+                         '</td><td>'+escape(change["proposed"])+'</td><td>'+
+                         escape(change["meaning"])+'<p><strong>Manual action:</strong> '+
+                         escape(change["entry"])+'</p></td></tr>')
+    proposed_html=("<h2>Additional configuration change proposals</h2><p>These changes "
+                   "are a review schedule. Their specific menu sequence is NOT VERIFIED and "
+                   "must not be guessed.</p><table><thead><tr><th>Parameter</th><th>Existing</th>"
+                   "<th>Requested</th><th>Purpose and limitation</th></tr></thead><tbody>"+
+                   "".join(proposals)+"</tbody></table>") if proposals else ""
+    warnings="".join("<li>"+escape(item)+"</li>" for item in plan["warnings"])
     return f"""<!doctype html><html lang="en-GB"><head><meta charset="utf-8">
-<title>E5CC-T programme {slot} — keypad entry</title>
-<style>
-body{{max-width:950px;margin:28px auto;padding:0 18px;background:#edf3f8;color:#1b3347;
-font:14px/1.65 'Segoe UI',Arial,sans-serif}}
-main{{background:white;padding:36px;border:1px solid #d5e2ec;border-radius:16px}}
-h1,h2{{color:#174e73}}h1{{margin-top:0}}h2{{margin-top:27px}}
-table{{width:100%;border-collapse:collapse}}th,td{{border-bottom:1px solid #d8e4ed;
-text-align:left;padding:9px;vertical-align:top}}th{{background:#e9f1f8}}
-code{{font:13px Consolas,monospace}}.warn{{padding:12px 16px;background:#fff4df;
-border-left:4px solid #c78c2a}}.note{{background:#ebf5ff;padding:12px 16px}}
-@media print{{body{{background:white;margin:0}}main{{padding:0;border:0}}}}
-</style></head><body><main>
-<p>E5CC-T Programme Studio · offline front-panel guide · programme {slot}</p>
-<h1>{title}</h1>
-<p>{len(programme.steps)} segments · assumed PV {escape(str(programme.start))} °C ·
-nominal {metrics["minutes"]:.1f} minutes · final commanded SP {metrics["final_sp"]:g} °C</p>
-<div class="warn"><strong>Safety:</strong> Keep the controller's normal mains
-and external DC heater supply isolated during setup. This document specifies
-commanded setpoints, not measured temperatures or verified electrical interlocks.
-Never assume an actual cooling ramp follows the plotted slope.</div>
-<h2>1. Verify the controller's existing setup</h2>
-<p>For the tested bench configuration: <code>in-t=5</code> (Type K whole degrees),
-<code>t-pr=pr</code> (rate programme), <code>pru=m</code> (degrees/min),
-<code>t-u=h-m</code> (hours.minutes), <code>rtsm=stop</code>,
-<code>p-on=rst</code>, <code>eset=rst</code>, and SP Start.
-These are <em>settings to verify</em>, not commands to apply blindly.
-Refer to H185/H186 and the actual controller's installed options.</p>
-{note}
-<h2>2. Enter the selected programme using the front panel</h2>
-<p>From PV/SP, press LEVEL briefly to reach Programme Level (<code>d.prg</code>).
-Select programme memory {slot}. Use MODE to navigate through the codes below
-and UP/DOWN to adjust each value. Where applicable use PF for digit editing.
-For each segment set <code>d.seg</code>, then <code>styp</code>; enter only
-the fields appropriate to Ramp, Soak or Step. Segment time values are
-hours.minutes, not decimal fractions of an hour.</p>
-<table><thead><tr><th>Omron display</th><th>Enter / check</th></tr></thead>
-<tbody>{rows}</tbody></table>
-<h2>3. Read back and verify</h2>
-<p>Return to the operation display. Revisit <code>d.prg</code> and read
-each segment and programme-wide setting back. The programme selected for
-execution is <code>prg</code>, not <code>d.prg</code>. Verify <code>r-r=rst</code>.
-Do not RUN the heater during this procedure. Confirm persistence after
-a complete controller power cycle with the heater isolated.</p>
-<div class="note">Generated entirely offline from the native application.
-Unknown advanced parameters have no fabricated keypad sequence.</div>
-<p>Controller ID: ___________________ &nbsp; Date: ____________
-&nbsp; Checked by: ___________________</p>
+<title>E5CC-T Programme {slot} — complete manual entry guide</title>{STYLE}
+</head><body><main><p class="muted">E5CC-T PROGRAMME STUDIO · OFFLINE MANUAL GUIDE</p>
+<h1>Programme {slot}: {escape(plan['name'])}</h1>
+<p>{sum(r['code']=='styp' for r in plan['entry_rows'])} segments · assumed start
+PV {escape(plan['assumed_start_pv'])} °C · nominal
+{plan['nominal_minutes']:g} minutes · final commanded SP {plan['final_sp']:g} °C</p>
+<div class="warn"><strong>Safety:</strong> This is a commanded setpoint programme,
+not a measured temperature trajectory. Do not energise the heater during
+keypad programming, and check the actual hardware model and available menus.</div>
+<h2>Step-by-step Omron keypad entry worksheet</h2>
+<p>This uses the same <code>d.prg</code>, <code>s-no</code>,
+<code>d.seg</code>, <code>styp</code>, <code>sp</code>, <code>pr</code>
+and <code>time</code> sequence as the offline website builder.
+The <strong>HOW TO ENTER IT</strong> column explains the actual LEVEL, MODE,
+UP/DOWN and PF operations. Confirm each code on the controller
+display before entering a value.</p>
+<table><colgroup><col style="width:15%"><col style="width:17%">
+<col style="width:23%"><col style="width:45%"></colgroup>
+<thead><tr><th>Omron display</th><th>Required value</th>
+<th>What it controls</th><th>How to enter or verify it</th></tr></thead>
+<tbody>{''.join(rows)}</tbody></table>
+{proposed_html}
+<h2>Checks before leaving the controller</h2>
+<ul>{warnings}</ul>
+<p><strong>Important:</strong> The physical keypad does not use the separate
+USB SAVE RAM DATA operation. Read the entered programme back, then verify
+retention after an appropriate, fully isolated controller power cycle.</p>
+<p class="foot">Controller ID: ____________________ &nbsp; Operator:
+____________________ &nbsp; Date: ____________________</p>
 </main></body></html>"""
 
-
-def save_manual(path, programme, slot, configuration=None, draft=None):
-    html = make_manual(programme, slot, configuration, draft)
-    Path(path).write_text(html, encoding="utf-8")
+def save_manual(path,programme,slot,configuration=None,draft=None):
+    content=make_manual(programme,slot,configuration,draft)
+    Path(path).write_text(content,encoding="utf-8")
     return path
