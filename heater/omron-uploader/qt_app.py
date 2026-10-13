@@ -65,6 +65,7 @@ class Studio(QMainWindow):
         super().__init__()
         self.lab=bool(enable_lab_writes)
         self.mode="connected"
+        self.offline_inspect_saved=False
         self.client=None
         self.session=None
         self.port=None
@@ -196,7 +197,9 @@ class Studio(QMainWindow):
         page=QWidget();lay=QVBoxLayout(page);lay.setSpacing(9)
         lay.addWidget(heading("Read & back up your controller",
             "Read-only hardware inspection, verified file backups and understandable stored programmes."))
-        row=QHBoxLayout()
+        self.connection_controls=QWidget()
+        row=QHBoxLayout(self.connection_controls)
+        row.setContentsMargins(0,0,0,0)
         self.port_combo=QComboBox();self.port_combo.setMinimumWidth(120)
         row.addWidget(text("COM port"));row.addWidget(self.port_combo)
         row.addWidget(button("Refresh ports",self.refresh_ports))
@@ -207,7 +210,10 @@ class Studio(QMainWindow):
         row.addWidget(self.btn_read)
         self.btn_disconnect=button("Disconnect",self.disconnect)
         row.addWidget(self.btn_disconnect)
-        lay.addLayout(row)
+        lay.addWidget(self.connection_controls)
+        self.offline_return=button("← Return to offline workspace",self._offline_home)
+        self.offline_return.hide()
+        lay.addWidget(self.offline_return)
         self.read_message=text("Connect and inspect. The first extended inventory is not yet qualified on hardware.",True)
         lay.addWidget(self.read_message)
         tabs=QTabWidget()
@@ -247,8 +253,68 @@ class Studio(QMainWindow):
             filetools.addWidget(button(caption,callback))
         filetools.addStretch()
         lay.addLayout(filetools)
-        self.pages.addWidget(page)
         self.read_tabs=tabs
+        # Offline is a real preparation stage, not a silent jump to Step 3.
+        # Inspecting a saved backup can display the above read-only explorer
+        # without ever opening a serial port.
+        offline=QWidget()
+        o=QVBoxLayout(offline);o.setSpacing(15)
+        o.addWidget(heading("Your offline workspace",
+            "Plan and prepare programmes without the USB cable, then enter them using the complete keypad guide."))
+        notice,notice_l=card(14)
+        notice_l.addWidget(text("OFFLINE · NO DEVICE CONNECTED"))
+        notice_l.addWidget(text("No live controller values are assumed. You can build a profile, "
+            "view saved memories, draft documented settings, and print the exact Omron entry worksheet. "
+            "Nothing here changes the physical controller.",True))
+        o.addWidget(notice)
+        cards=QHBoxLayout()
+        choices=[
+            ("Create a heating programme",
+             "Start from a blank segment. Add ramps, soaks and steps; watch the plot update.",
+             self._new_offline_programme,"Start programme editor →"),
+            ("Resume an existing project",
+             "Open an earlier eight-programme Studio project and continue where you left off.",
+             self._open_offline_project,"Open a project…"),
+            ("Inspect saved controller data",
+             "Open a backup from an earlier USB session. Compare stored programmes without connecting.",
+             self.open_backup,"Open a saved backup…"),
+        ]
+        for title,description,callback,caption in choices:
+            item,body=card(18)
+            title_label=QLabel(title);title_label.setObjectName("subheading")
+            body.addWidget(title_label)
+            body.addWidget(text(description,True))
+            body.addStretch()
+            body.addWidget(button(caption,callback,True))
+            cards.addWidget(item,1)
+        o.addLayout(cards,1)
+        more=QHBoxLayout()
+        more.addWidget(button("Browse / draft initial settings",lambda:self.show_step(3)))
+        more.addWidget(button("Open a saved parameter inventory",self.open_inventory))
+        more.addWidget(button("Show manual keypad entry worksheet",lambda:self.show_step(4)))
+        more.addStretch()
+        o.addLayout(more)
+        o.addWidget(text("Offline workflow: prepare → programme → settings → guided keypad entry. "
+                         "If the controller is connected tomorrow, switch back to Connected mode in Step 1.",True))
+        self.read_host=QStackedWidget()
+        self.read_host.addWidget(page)
+        self.read_host.addWidget(offline)
+        self.pages.addWidget(self.read_host)
+
+    def _offline_home(self):
+        self.offline_inspect_saved=False
+        self.show_step(1)
+
+    def _new_offline_programme(self):
+        if self._editing_locked():return
+        self.programmes[self.slot]=blank_programme()
+        self._render_programme()
+        self.preview_stamp=None
+        self.show_step(2)
+
+    def _open_offline_project(self):
+        if self.open_project():
+            self.show_step(2)
 
     def _programme_page(self):
         page=QWidget();v=QVBoxLayout(page);v.setSpacing(9)
@@ -472,12 +538,14 @@ class Studio(QMainWindow):
         if mode not in ("connected","offline"):return
         if mode=="offline" and self.client:
             self.disconnect()
+            if self.client:return
         self.mode=mode
+        self.offline_inspect_saved=False
         if mode=="offline":
             self.inventory=offline_inventory()
             self.draft={}
             self.refresh_settings()
-        self.show_step(1 if mode=="connected" else 2)
+        self.show_step(1)
 
     def show_step(self,index):
         self._current_step=max(0,min(4,index))
@@ -486,6 +554,10 @@ class Studio(QMainWindow):
             b.setChecked(i==self._current_step)
         self.back_button.setEnabled(self._current_step!=0)
         self.next_button.setVisible(self._current_step!=4)
+        if self._current_step==1:
+            self.read_host.setCurrentIndex(0 if self.mode=="connected" or self.offline_inspect_saved else 1)
+            self.connection_controls.setVisible(self.mode=="connected")
+            self.offline_return.setVisible(self.mode=="offline" and self.offline_inspect_saved)
         if self._current_step==4:
             self.apply_tabs.setCurrentIndex(0 if self.mode=="offline" else 1)
             self.refresh_review()
@@ -493,12 +565,10 @@ class Studio(QMainWindow):
         self._controls()
 
     def next(self):
-        if self._current_step==0 and self.mode=="offline":self.show_step(2)
-        elif self._current_step<4:self.show_step(self._current_step+1)
+        if self._current_step<4:self.show_step(self._current_step+1)
 
     def back(self):
-        if self.mode=="offline" and self._current_step==2:self.show_step(0)
-        else:self.show_step(self._current_step-1)
+        self.show_step(self._current_step-1)
 
     def message(self,title,body,warning=False):
         (QMessageBox.warning if warning else QMessageBox.information)(self,title,body)
