@@ -1,0 +1,1016 @@
+"""Modern, self-contained E5CC-T Studio (PySide6 + PyQtGraph).
+
+This GUI deliberately reuses the already-tested backend modules. It does not
+write any C0/C1/C3/C4/C5/C9 configuration register. The only hardware write
+route is the existing safety-gated DA transfer, and only when explicitly
+launched with --enable-lab-writes. Run in offline mode without a controller.
+"""
+from __future__ import annotations
+
+import argparse
+import copy
+from datetime import datetime,timezone
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+from PySide6.QtCore import Qt, QTimer, QThreadPool
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import (
+    QApplication,QMainWindow,QWidget,QFrame,QVBoxLayout,QHBoxLayout,QGridLayout,
+    QLabel,QPushButton,QLineEdit,QComboBox,QSpinBox,QDoubleSpinBox,QTextEdit,
+    QTableWidget,QTableWidgetItem,QAbstractItemView,QHeaderView,QFileDialog,
+    QMessageBox,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar
+)
+from serial.tools import list_ports
+
+from qt_components import STYLE,Task,Profile,card,heading,text,button
+from compoway import SerialClient
+from transfer import TransferSession
+from program_model import Programme,Segment,blank_programme,ValidationError
+from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
+from controller_setup import read_snapshot,report as setup_report,write_new_json
+from controller_inventory import (
+    CATALOG,group_names,offline_inventory,read_inventory,readable_rows,
+    human_value,add_proposal,proposal_report,report_inventory
+)
+from config_change_review import build_review,readable_review
+from qt_manual import save_manual
+
+STEPS=["1   Mode","2   Read & Backup","3   Programme",
+       "4   Initial Settings","5   Apply / Manual"]
+EXAMPLE=Programme(
+    name="120 °C / 50 °C four-segment example",start="20",finish="rst",
+    steps=[Segment("ramp",sp="120",rate="2"),Segment("soak",minutes="15"),
+           Segment("ramp",sp="50",rate="2"),Segment("soak",minutes="15")])
+
+def save_json_fresh(folder,tag,payload):
+    path=Path(folder)
+    path.mkdir(parents=True,exist_ok=True)
+    stamp=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    output=path/f"E5CC-T-{tag}-{stamp}.json"
+    write_new_json(output,payload)
+    return output
+
+def serial_ports():
+    return [item.device for item in list_ports.comports()]
+
+
+class Studio(QMainWindow):
+    def __init__(self,enable_lab_writes=False):
+        super().__init__()
+        self.lab=bool(enable_lab_writes)
+        self.mode="connected"
+        self.client=None
+        self.session=None
+        self.port=None
+        self.backup=None
+        self.snapshot=None
+        self.inventory=offline_inventory()
+        self.draft={}
+        self.programmes=[blank_programme() for _ in range(8)]
+        self.slot=0
+        self.preview_stamp=None
+        self.preview_changes=[]
+        self.fail_latched=False
+        self.busy=False
+        self.workers=set()
+        self.pool=QThreadPool(self)
+        self.pool.setMaxThreadCount(1)   # one serial operation at a time
+        self._rendering=False
+        self._current_step=0
+        self._heartbeat_tick=0
+        self.setWindowTitle("E5CC-T Programme Studio · Modern Desktop")
+        self.resize(1390,875)
+        self.setMinimumSize(1050,690)
+        self.setStyleSheet(STYLE)
+        self._make_ui()
+        self.refresh_ports()
+        self.show_step(0)
+        self.connection_timer=QTimer(self)
+        self.connection_timer.timeout.connect(self._monitor_connection)
+        self.connection_timer.start(1800)
+
+    def _make_ui(self):
+        root=QWidget();root.setObjectName("root")
+        self.setCentralWidget(root)
+        main=QVBoxLayout(root);main.setContentsMargins(0,0,0,0);main.setSpacing(0)
+        header=QFrame();header.setObjectName("header")
+        head=QHBoxLayout(header);head.setContentsMargins(24,14,24,14)
+        left=QVBoxLayout()
+        name=QLabel("E5CC-T   /   PROGRAMME STUDIO")
+        name.setStyleSheet("font:600 20px 'Segoe UI';color:#173d59")
+        left.addWidget(name)
+        left.addWidget(text("Controller programming & configuration",True))
+        head.addLayout(left,1)
+        self.link_status=QLabel("●  Offline / disconnected")
+        self.link_status.setStyleSheet("color:#627a90;font-weight:600")
+        head.addWidget(self.link_status)
+        mode=QLabel("ISOLATED LAB MODE" if self.lab else "READ-ONLY STARTUP")
+        mode.setStyleSheet("color:#4c6981;background:#eaf1f7;"
+                           "border-radius:8px;padding:9px 12px;font-weight:600")
+        head.addWidget(mode)
+        main.addWidget(header)
+        nav=QWidget()
+        nav.setStyleSheet("background:#fff;border-bottom:1px solid #dce5ee")
+        n=QHBoxLayout(nav);n.setContentsMargins(20,7,20,7);n.setSpacing(5)
+        self.navbuttons=[]
+        for index,label in enumerate(STEPS):
+            b=QPushButton(label);b.setProperty("nav",True)
+            b.setCheckable(True);b.clicked.connect(lambda checked,i=index:self.show_step(i))
+            b.setMinimumWidth(135)
+            self.navbuttons.append(b);n.addWidget(b)
+        n.addStretch(1)
+        main.addWidget(nav)
+        body=QWidget()
+        body_lay=QHBoxLayout(body)
+        body_lay.setContentsMargins(16,13,16,13);body_lay.setSpacing(12)
+        self.side,self.side_lay=card(14)
+        self.side.setMinimumWidth(174);self.side.setMaximumWidth(235)
+        label=QLabel("CONTROLLER");label.setObjectName("subheading")
+        self.side_lay.addWidget(label)
+        self.device_model=text("No controller connected",False)
+        self.device_model.setStyleSheet("font-weight:600;color:#1b344c")
+        self.side_lay.addWidget(self.device_model)
+        self.device_detail=text("Connect in Step 2, or work completely offline.",True)
+        self.side_lay.addWidget(self.device_detail)
+        self.device_state=QLabel("●  Not connected")
+        self.device_state.setObjectName("warning")
+        self.side_lay.addWidget(self.device_state)
+        self.side_lay.addWidget(text("The real hardware identity is limited to the model prefix. The full suffix must be checked on the nameplate.",True))
+        self.side_lay.addSpacing(12)
+        self.side_lay.addWidget(button("Reconnect / Read",lambda:self.show_step(1)))
+        self.side_lay.addWidget(button("Open backup…",self.open_backup))
+        self.side_lay.addWidget(button("Export inventory…",self.export_inventory))
+        self.side_lay.addStretch(1)
+        body_lay.addWidget(self.side)
+        self.pages=QStackedWidget()
+        body_lay.addWidget(self.pages,1)
+        self._mode_page();self._read_page();self._programme_page()
+        self._settings_page();self._apply_page()
+        main.addWidget(body,1)
+        foot=QFrame();foot.setObjectName("footer")
+        f=QHBoxLayout(foot);f.setContentsMargins(20,8,20,8)
+        self.feedback=QLabel("Choose Connected or Offline to begin")
+        self.feedback.setObjectName("muted")
+        self.feedback.setWordWrap(True)
+        f.addWidget(self.feedback,1)
+        self.progress=QProgressBar()
+        self.progress.setRange(0,0);self.progress.setFixedWidth(120)
+        self.progress.setVisible(False);f.addWidget(self.progress)
+        self.back_button=button("← Back",self.back)
+        self.next_button=button("Continue →",self.next)
+        self.next_button.setProperty("primary",True)
+        f.addWidget(self.back_button);f.addWidget(self.next_button)
+        main.addWidget(foot)
+
+    def _mode_page(self):
+        page=QWidget();lay=QVBoxLayout(page);lay.setSpacing(14)
+        lay.addWidget(heading("How would you like to work?",
+                 "Choose once. Everything stays in this desktop application, with no website or JSON hand-off."))
+        choices=QHBoxLayout()
+        for title,subtitle,callback in [
+            ("Connected to Omron","Connect with the E58-CIFQ2 cable, read current "
+             "settings, back up all eight programme memories and review changes.",lambda:self.choose_mode("connected")),
+            ("Offline / manual","Design heating profiles and draft controller settings "
+             "without the USB cable, then generate a complete front-panel entry guide.",
+             lambda:self.choose_mode("offline"))]:
+            frame,fl=card(22)
+            heading_label=QLabel(title);heading_label.setObjectName("heading");fl.addWidget(heading_label)
+            fl.addWidget(text(subtitle,True))
+            fl.addSpacing(10)
+            fl.addWidget(button("Select "+title,callback,True))
+            fl.addStretch()
+            choices.addWidget(frame)
+        lay.addLayout(choices,1)
+        lay.addWidget(text("The app never starts the controller or energises the heater. "
+                           "A programme graph is a commanded setpoint, not a measured temperature.",True))
+        self.pages.addWidget(page)
+
+    def _read_page(self):
+        page=QWidget();lay=QVBoxLayout(page);lay.setSpacing(9)
+        lay.addWidget(heading("Read & back up your controller",
+            "Read-only hardware inspection, verified file backups and understandable stored programmes."))
+        row=QHBoxLayout()
+        self.port_combo=QComboBox();self.port_combo.setMinimumWidth(120)
+        row.addWidget(text("COM port"));row.addWidget(self.port_combo)
+        row.addWidget(button("Refresh ports",self.refresh_ports))
+        self.folder=QLineEdit(str(Path.home()/"Documents"/"Omron E5CC-T Backups"))
+        self.folder.setMinimumWidth(180);row.addWidget(self.folder,1)
+        row.addWidget(button("Folder…",self.choose_folder))
+        self.btn_read=button("CONNECT + READ EVERYTHING",self.connect_read,True)
+        row.addWidget(self.btn_read)
+        self.btn_disconnect=button("Disconnect",self.disconnect)
+        row.addWidget(self.btn_disconnect)
+        lay.addLayout(row)
+        self.read_message=text("Connect and inspect. The first extended inventory is not yet qualified on hardware.",True)
+        lay.addWidget(self.read_message)
+        tabs=QTabWidget()
+        one=QWidget();ol=QVBoxLayout(one)
+        self.memory_table=QTableWidget(8,3)
+        self.memory_table.setHorizontalHeaderLabels(["Programme","Segments","Stored meaning"])
+        self._table_defaults(self.memory_table)
+        self.memory_table.horizontalHeader().setSectionResizeMode(2,QHeaderView.ResizeMode.Stretch)
+        self.memory_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.memory_table.itemSelectionChanged.connect(self._memory_selected)
+        ol.addWidget(self.memory_table,1)
+        low=QHBoxLayout()
+        self.explorer_chart=Profile();self.explorer_chart.setMinimumHeight(185)
+        low.addWidget(self.explorer_chart,2)
+        self.explorer_info=QTextEdit();self.explorer_info.setReadOnly(True)
+        self.explorer_info.setMinimumWidth(240);low.addWidget(self.explorer_info,1)
+        ol.addLayout(low,2)
+        ol.addWidget(button("Edit selected stored programme in Step 3",self.copy_stored))
+        tabs.addTab(one,"Stored programmes")
+        self.initial_text=QTextEdit();self.initial_text.setReadOnly(True)
+        tabs.addTab(self.initial_text,"Initial configuration")
+        self.inventory_text=QTextEdit();self.inventory_text.setReadOnly(True)
+        tabs.addTab(self.inventory_text,"Extended inventory")
+        lay.addWidget(tabs,1)
+        self.pages.addWidget(page)
+        self.read_tabs=tabs
+
+    def _programme_page(self):
+        page=QWidget();v=QVBoxLayout(page);v.setSpacing(10)
+        top=QHBoxLayout()
+        top.addWidget(heading("Programme editor",
+            "Edit segments directly; changes update the nominal setpoint graph immediately."),1)
+        top.addWidget(text("Memory"))
+        self.slot_combo=QComboBox()
+        self.slot_combo.addItems([f"Programme {i}" for i in range(8)])
+        self.slot_combo.currentIndexChanged.connect(self._slot_changed)
+        top.addWidget(self.slot_combo)
+        v.addLayout(top)
+        meta=QHBoxLayout()
+        self.programme_name=QLineEdit()
+        meta.addWidget(text("Description"));meta.addWidget(self.programme_name,1)
+        self.start_pv=QDoubleSpinBox()
+        self.start_pv.setRange(-20,500);self.start_pv.setDecimals(1)
+        self.start_pv.setSuffix(" °C")
+        meta.addWidget(text("Assumed starting PV"));meta.addWidget(self.start_pv)
+        v.addLayout(meta)
+        split=QSplitter(Qt.Orientation.Vertical)
+        curve_card,curve_layout=card(12)
+        curve_layout.addWidget(text("TEMPERATURE PROFILE  ·  commanded SP, not measured PV"))
+        self.chart=Profile()
+        self.chart.setMinimumHeight(165)
+        curve_layout.addWidget(self.chart,1)
+        split.addWidget(curve_card)
+        table_card,tlay=card(12)
+        row=QHBoxLayout()
+        h=QLabel("Segments");h.setObjectName("subheading")
+        row.addWidget(h);row.addStretch()
+        for title,fn in [
+            ("+ Ramp",lambda:self.add_segment("ramp")),
+            ("+ Soak",lambda:self.add_segment("soak")),
+            ("+ Step",lambda:self.add_segment("step")),
+            ("Duplicate",self.duplicate_segment),
+            ("Move ↑",lambda:self.move_segment(-1)),
+            ("Move ↓",lambda:self.move_segment(1)),
+            ("Remove",self.remove_segment)]:
+            row.addWidget(button(title,fn))
+        tlay.addLayout(row)
+        self.segment_table=QTableWidget(0,5)
+        self.segment_table.setHorizontalHeaderLabels(["#","Type","Target (°C)","Rate (°C/min)","Hold (min)"])
+        self._table_defaults(self.segment_table)
+        self.segment_table.horizontalHeader().setSectionResizeMode(1,QHeaderView.ResizeMode.Stretch)
+        self.segment_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        tlay.addWidget(self.segment_table,1)
+        bottom=QHBoxLayout()
+        self.programme_info=text("Enter valid segments to see the nominal duration.",True)
+        bottom.addWidget(self.programme_info,1)
+        bottom.addWidget(button("Load 120 → 50 °C test example",self.load_example))
+        bottom.addWidget(button("Use saved controller programme",self.copy_stored))
+        tlay.addLayout(bottom)
+        split.addWidget(table_card)
+        split.setSizes([300,320])
+        v.addWidget(split,1)
+        self.pages.addWidget(page)
+        self.programme_name.editingFinished.connect(self.update_programme)
+        self.start_pv.valueChanged.connect(self.update_programme)
+        self._render_programme()
+
+    def _settings_page(self):
+        page=QWidget();v=QVBoxLayout(page);v.setSpacing(8)
+        v.addWidget(heading("Initial settings",
+           "Search all documented groups; current values and proposed local changes are clearly separated."))
+        controls=QHBoxLayout()
+        self.group=QComboBox()
+        self.group.addItems(["All groups"]+group_names())
+        controls.addWidget(self.group,1)
+        self.search=QLineEdit();self.search.setPlaceholderText("Search by purpose, parameter or register…")
+        controls.addWidget(self.search,2)
+        self.draft_count=text("0 proposed changes",True)
+        controls.addWidget(self.draft_count)
+        controls.addWidget(button("Clear proposed changes",self.clear_draft))
+        v.addLayout(controls)
+        split=QSplitter(Qt.Orientation.Horizontal)
+        list_card,lc=card(10)
+        self.setting_table=QTableWidget(0,4)
+        self.setting_table.setHorizontalHeaderLabels(
+            ["Parameter","Read from controller","Proposed value","Group"])
+        self._table_defaults(self.setting_table)
+        self.setting_table.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeMode.Stretch)
+        self.setting_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setting_table.itemSelectionChanged.connect(self._setting_selected)
+        lc.addWidget(self.setting_table)
+        split.addWidget(list_card)
+        detail,dl=card(16)
+        dl.addWidget(QLabel("SETTING EXPLANATION"))
+        self.parameter_detail=QTextEdit()
+        self.parameter_detail.setReadOnly(True)
+        self.parameter_detail.setMinimumWidth(235)
+        dl.addWidget(self.parameter_detail,1)
+        self.parameter_editor=QLineEdit()
+        self.parameter_editor.setPlaceholderText("Documented numeric value")
+        dl.addWidget(self.parameter_editor)
+        self.parameter_choices=QComboBox()
+        dl.addWidget(self.parameter_choices)
+        dl.addWidget(button("Add to change review",self.propose_setting,True))
+        dl.addWidget(text("Settings here are local proposals. USB configuration writing "
+                          "is not yet enabled. Special/conditional registers must be verified on the actual controller.",True))
+        split.addWidget(detail)
+        split.setSizes([750,310])
+        v.addWidget(split,1)
+        self.pages.addWidget(page)
+        self.group.currentTextChanged.connect(self.refresh_settings)
+        self.search.textChanged.connect(self.refresh_settings)
+        self.refresh_settings()
+
+    def _apply_page(self):
+        page=QWidget();v=QVBoxLayout(page);v.setSpacing(11)
+        v.addWidget(heading("Review & apply",
+            "A single review of the selected programme and proposed settings before any transfer."))
+        self.apply_overview=text("")
+        v.addWidget(self.apply_overview)
+        self.apply_details=QTextEdit();self.apply_details.setReadOnly(True)
+        v.addWidget(self.apply_details,1)
+        actions=QHBoxLayout()
+        self.preview_button=button("1   Preview exact changes",self.preview,True)
+        self.stage_button=button("2   Write to RAM + verify",self.stage)
+        self.save_button=button("3   Save to controller",self.commit)
+        self.manual_button=button("Generate offline keypad guide",self.export_manual)
+        self.config_review_button=button("Export settings change report",self.export_review)
+        for b in (self.preview_button,self.stage_button,self.save_button,
+                  self.manual_button,self.config_review_button):
+            actions.addWidget(b)
+        v.addLayout(actions)
+        note=text("Only programme DA-memory writes are supported. "
+                  "If configuration changes are pending, those cannot be partially uploaded. "
+                  "The existing safety-gated Omron backend performs immediate register read-back.")
+        note.setObjectName("muted");v.addWidget(note)
+        self.safety=[]
+        checks=[
+            "Controller normal mains supply and external heater DC are physically isolated",
+            "Full E5CC-TQX3A5M-000 suffix confirmed on the physical nameplate",
+            "Controller is stopped/RESET; no live heater operation",
+            "Fresh backup of all eight programme memories has completed",
+            "Understand RAM stage is temporary; SAVE RAM DATA is a separate action",
+            "This is isolated commissioning, not permission to energise the heater",
+        ]
+        checks_card,checks_layout=card(12)
+        for caption in checks:
+            check=QCheckBox(caption)
+            check.toggled.connect(self.refresh_actions)
+            checks_layout.addWidget(check)
+            self.safety.append(check)
+        v.addWidget(checks_card)
+        self.pages.addWidget(page)
+
+    @staticmethod
+    def _table_defaults(table):
+        table.setAlternatingRowColors(True)
+        table.verticalHeader().setVisible(False)
+        table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        table.horizontalHeader().setStretchLastSection(True)
+        table.setShowGrid(False)
+
+    @staticmethod
+    def _cell(table,r,c,s):
+        item=QTableWidgetItem(str(s))
+        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        table.setItem(r,c,item)
+
+    def choose_mode(self,mode):
+        if mode not in ("connected","offline"):return
+        if mode=="offline" and self.client:
+            self.disconnect()
+        self.mode=mode
+        if mode=="offline":
+            self.inventory=offline_inventory()
+            self.draft={}
+            self.refresh_settings()
+        self.show_step(1 if mode=="connected" else 2)
+
+    def show_step(self,index):
+        self._current_step=max(0,min(4,index))
+        self.pages.setCurrentIndex(self._current_step)
+        for i,b in enumerate(self.navbuttons):
+            b.setChecked(i==self._current_step)
+        self.back_button.setEnabled(self._current_step!=0)
+        self.next_button.setVisible(self._current_step!=4)
+        if self._current_step==4:self.refresh_review()
+        if self._current_step==3:self.refresh_settings()
+        self._controls()
+
+    def next(self):
+        if self._current_step==0 and self.mode=="offline":self.show_step(2)
+        elif self._current_step<4:self.show_step(self._current_step+1)
+
+    def back(self):
+        if self.mode=="offline" and self._current_step==2:self.show_step(0)
+        else:self.show_step(self._current_step-1)
+
+    def message(self,title,body,warning=False):
+        (QMessageBox.warning if warning else QMessageBox.information)(self,title,body)
+
+    def choose_folder(self):
+        folder=QFileDialog.getExistingDirectory(self,"Choose backup folder",self.folder.text())
+        if folder:self.folder.setText(folder)
+
+    def refresh_ports(self):
+        current=self.port_combo.currentText() if hasattr(self,"port_combo") else ""
+        self.port_combo.clear()
+        found=serial_ports()
+        self.port_combo.addItems(found)
+        if current in found:self.port_combo.setCurrentText(current)
+        if not found:self.read_message.setText("No USB serial port detected. Offline mode still works.")
+
+    def _work(self,title,action,success,is_write=False):
+        if self.busy:return
+        self.busy=True
+        self.progress.show()
+        self.feedback.setText("Working: "+title)
+        self._controls()
+        worker=Task(action);self.workers.add(worker)
+        worker.signals.progress.connect(lambda value:self.feedback.setText(str(value)))
+        worker.signals.result.connect(success)
+        worker.signals.error.connect(lambda message:self._job_error(title,message,is_write))
+        def cleanup():
+            self.busy=False
+            self.progress.hide()
+            self.workers.discard(worker)
+            self._controls()
+        worker.signals.finished.connect(cleanup)
+        self.pool.start(worker)
+
+    def _job_error(self,title,error,is_write):
+        if is_write:self.fail_latched=True
+        self.feedback.setText("Failed: "+title)
+        self.message("Controller operation stopped",error+
+            ("\n\nWRITE STATE UNCERTAIN. Keep the heater isolated and inspect the controller before retrying."
+             if is_write else ""),True)
+
+    def connect_read(self):
+        if self.busy:return
+        port=self.port_combo.currentText().strip()
+        if not port:
+            self.message("Connect USB cable","Choose the actual COM port first.",True);return
+        if self.client:self.disconnect()
+        folder=self.folder.text().strip()
+        if not folder:
+            self.message("Backup folder required","Select a location for verified backups.",True);return
+        self.preview_stamp=None
+        def job(progress):
+            client=SerialClient(port,write_allowed=self.lab)
+            try:
+                ses=TransferSession(client)
+                progress("Reading controller identity and nine preflight settings…")
+                ses.preflight()
+                progress("Backing up eight programme memories (read only)…")
+                ses.backup(folder,progress=lambda done,total:
+                           progress(f"Backing up programme {done}/{total}…"))
+                progress("Reading initial configuration…")
+                setup=read_snapshot(client,ses.info,ses.settings)
+                setup_path=save_json_fresh(folder,"initial-settings",setup)
+                progress("Reading extended documented inventory (read only)…")
+                inv=read_inventory(client,ses.info,progress=lambda done,total:
+                   progress(f"Extended register inventory: {done}/{total}…"))
+                inv_path=save_json_fresh(folder,"full-inventory",inv)
+                return client,ses,setup,inv,setup_path,inv_path
+            except BaseException:
+                client.close()
+                raise
+        def completed(result):
+            self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file=result
+            self.port=port
+            self.backup=self.session.backup_data
+            self.draft={}
+            self.fail_latched=False
+            self.link_status.setText("●  "+port+" · Connected")
+            self.link_status.setStyleSheet("color:#157952;font-weight:600")
+            self.device_model.setText(self.session.info["model10"]+" (prefix)")
+            self.device_detail.setText("Connected on "+port+" · full suffix requires nameplate confirmation")
+            self.device_state.setText("●  Connected")
+            self.device_state.setObjectName("success")
+            self.read_message.setText("Read-only backup and inventory complete. "
+                f"{len(CATALOG)-len(self.inventory['errors'])} extended registers read; "
+                f"{len(self.inventory['errors'])} unavailable.")
+            self.initial_text.setPlainText(setup_report(self.snapshot))
+            self.inventory_text.setPlainText(report_inventory(self.inventory))
+            self._populate_memories()
+            self.refresh_settings()
+            self.refresh_review()
+            self.feedback.setText("Backups saved: "+str(self.session.backup_file))
+            self.message("Controller read completed",
+                "All eight programme memory blocks were saved and verified.\n"
+                f"Initial settings saved: {setup_file.name}\n"
+                f"Extended inventory saved: {inventory_file.name}\n"
+                "No controller writes performed.")
+        self._work("Read everything",job,completed)
+
+    def disconnect(self):
+        if self.busy:
+            self.message("USB busy","Wait for the serial operation to finish.",True);return
+        if self.session and self.session.ram_touched and not self.session.committed:
+            if QMessageBox.question(self,"Uncommitted RAM",
+               "RAM has been modified without a confirmed nonvolatile save. "
+               "Do not assume a rollback. Disconnect anyway?")!=QMessageBox.StandardButton.Yes:return
+        if self.client:
+            try:self.client.close()
+            except Exception:pass
+        self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.link_status.setText("●  Offline / disconnected")
+        self.link_status.setStyleSheet("color:#627a90;font-weight:600")
+        self.device_state.setText("●  Not connected")
+        self.device_model.setText("Offline controller workspace")
+        self.device_detail.setText("Previously saved files remain available.")
+        self.feedback.setText("USB disconnected. Local programmes and files retained.")
+        self._controls()
+        self.refresh_review()
+
+    def _monitor_connection(self):
+        if not self.client or self.busy:return
+        try:
+            present={p.casefold() for p in serial_ports()}
+        except Exception:return
+        if self.port and self.port.casefold() not in present:
+            self._lost_link("COM port disappeared from Windows")
+            return
+        self._heartbeat_tick+=1
+        if self._heartbeat_tick<4:return
+        self._heartbeat_tick=0
+        def probe(progress):
+            return self.client.status()
+        def ok(status):
+            if not status: self._lost_link("Controller returned empty status")
+        # Health is a read-only transaction and skipped during any other work.
+        self._work("Read-only USB health check",probe,ok)
+    def _lost_link(self,reason):
+        if self.busy:return
+        staged=bool(self.session and self.session.ram_touched and not self.session.committed)
+        self.disconnect()
+        self.feedback.setText("USB DISCONNECTED — "+reason)
+        if staged:self.message("Uncommitted RAM may exist",
+            "Connection was lost with unsaved RAM changes. Controller state is unknown. "
+            "Keep the heater isolated and read the hardware again.",True)
+
+    def open_backup(self):
+        file,_=QFileDialog.getOpenFileName(self,"Open saved controller backup","","JSON (*.json)")
+        if not file:return
+        try:self.backup=load_backup(file)
+        except Exception as exc:self.message("Invalid backup",str(exc),True);return
+        self._populate_memories()
+        self.feedback.setText("Read-only backup loaded; it does not constitute a connected device.")
+        self.show_step(1)
+
+    def _populate_memories(self):
+        if not self.backup:return
+        self.memory_table.setRowCount(8)
+        for i in range(8):
+            try:
+                data=decode_slot(self.backup,i)
+                desc=data["segments"][0]["description"] if data["segments"] else "Unknown"
+                if data["warnings"]:desc="Unverified interpretation · "+desc
+                self._cell(self.memory_table,i,0,i)
+                self._cell(self.memory_table,i,1,data["count"])
+                self._cell(self.memory_table,i,2,desc)
+            except Exception as exc:
+                self._cell(self.memory_table,i,0,i)
+                self._cell(self.memory_table,i,1,"—")
+                self._cell(self.memory_table,i,2,"Unavailable: "+str(exc))
+        self.memory_table.selectRow(0)
+
+    def _memory_selected(self):
+        if not self.backup:return
+        row=self.memory_table.currentRow()
+        if row<0:return
+        try:
+            summary=decode_slot(self.backup,row)
+            self.explorer_info.setPlainText(summary_as_plaintext(summary))
+            points=profile_points(summary,20)
+            self.explorer_chart.show_points(points)
+        except Exception as exc:
+            self.explorer_info.setPlainText(str(exc));self.explorer_chart.show_points([])
+
+    def copy_stored(self):
+        if not self.backup:
+            self.message("No stored programmes","Connect and back up in Step 2, or open a saved backup.",True);return
+        selected=self.memory_table.currentRow()
+        if selected<0:selected=self.slot
+        try:
+            summary=decode_slot(self.backup,selected)
+            if summary["warnings"] or summary["repeat"]!=0 or summary["link"]!=-1:
+                raise ValueError("Unsupported or uncertain programme. Refusing to omit unknown data.")
+            steps=[]
+            for entry in summary["segments"]:
+                kind=entry["type"]
+                if kind=="soak":
+                    if entry["minutes"] is None:raise ValueError("Unknown soak duration")
+                    steps.append(Segment("soak",minutes=str(entry["minutes"])))
+                elif kind=="step":
+                    if entry["sp"] is None:raise ValueError("Unknown target")
+                    steps.append(Segment("step",sp=str(entry["sp"])))
+                elif kind=="ramp":
+                    if entry["sp"] is None or entry["rate"] is None:raise ValueError("Unknown ramp")
+                    if entry["rate"]==0:steps.append(Segment("step",sp=str(entry["sp"])))
+                    else:steps.append(Segment("ramp",sp=str(entry["sp"]),rate=str(entry["rate"])))
+                else:raise ValueError("Unknown segment type")
+            loaded=Programme("Copy of stored programme "+str(selected),"20","rst",steps)
+            loaded.validate()
+        except Exception as exc:
+            self.message("Cannot safely edit stored programme",str(exc),True);return
+        if QMessageBox.question(self,"Edit stored programme",
+            f"Copy stored memory {selected} into local editor? This does NOT write the Omron.")!=QMessageBox.StandardButton.Yes:return
+        self.programmes[selected]=loaded
+        self.slot_combo.setCurrentIndex(selected)
+        self._render_programme()
+        self.show_step(2)
+
+    def _slot_changed(self,slot):
+        if slot<0:return
+        self.update_programme()
+        self.slot=slot
+        self._render_programme()
+        self.preview_stamp=None;self.refresh_review()
+
+    def _render_programme(self):
+        self._rendering=True
+        p=self.programmes[self.slot]
+        self.programme_name.setText(p.name)
+        self.start_pv.setValue(float(p.start))
+        self.segment_table.setRowCount(len(p.steps))
+        for row,s in enumerate(p.steps):
+            self._cell(self.segment_table,row,0,row+1)
+            kind=QComboBox();kind.addItems(["ramp","soak","step"])
+            kind.setCurrentText(s.type)
+            kind.currentTextChanged.connect(self.update_programme)
+            self.segment_table.setCellWidget(row,1,kind)
+            target=QDoubleSpinBox();target.setRange(-20,500);target.setDecimals(1)
+            target.setValue(float(s.sp));target.valueChanged.connect(self.update_programme)
+            self.segment_table.setCellWidget(row,2,target)
+            rate=QSpinBox();rate.setRange(1,9999)
+            rate.setValue(max(1,int(float(s.rate))))
+            rate.valueChanged.connect(self.update_programme)
+            self.segment_table.setCellWidget(row,3,rate)
+            duration=QSpinBox();duration.setRange(0,5999)
+            duration.setValue(int(float(s.minutes)))
+            duration.valueChanged.connect(self.update_programme)
+            self.segment_table.setCellWidget(row,4,duration)
+            target.setEnabled(s.type!="soak")
+            rate.setEnabled(s.type=="ramp")
+            duration.setEnabled(s.type=="soak")
+        self._rendering=False
+        self._graph_current()
+
+    def update_programme(self,*unused):
+        if self._rendering or not hasattr(self,"segment_table"):return
+        p=self.programmes[self.slot]
+        p.name=self.programme_name.text().strip()[:100] or "Unnamed programme"
+        p.start=str(self.start_pv.value())
+        p.steps=[]
+        for row in range(self.segment_table.rowCount()):
+            kind=self.segment_table.cellWidget(row,1).currentText()
+            sp=self.segment_table.cellWidget(row,2).value()
+            rate=self.segment_table.cellWidget(row,3).value()
+            hold=self.segment_table.cellWidget(row,4).value()
+            p.steps.append(Segment(kind,str(sp),str(rate),str(hold)))
+            self.segment_table.cellWidget(row,2).setEnabled(kind!="soak")
+            self.segment_table.cellWidget(row,3).setEnabled(kind=="ramp")
+            self.segment_table.cellWidget(row,4).setEnabled(kind=="soak")
+        self.preview_stamp=None
+        self._graph_current()
+        self.refresh_actions()
+
+    def _graph_current(self):
+        try:
+            p=self.programmes[self.slot]
+            metrics=p.validate()
+            self.chart.show_points(metrics["points"])
+            self.programme_info.setText(
+                f"{len(p.steps)} segments   ·   {metrics['minutes']:.1f} min nominal   ·   "
+                f"Final SP {metrics['final_sp']:g} °C   ·   Model constraints passed")
+        except Exception as exc:
+            self.chart.show_points([])
+            self.programme_info.setText("Needs correction: "+str(exc))
+
+    def add_segment(self,kind):
+        self.update_programme()
+        self.programmes[self.slot].steps.append(Segment(kind))
+        self._render_programme()
+        self.preview_stamp=None
+    def remove_segment(self):
+        row=self.segment_table.currentRow()
+        if row<0:return
+        self.update_programme()
+        if len(self.programmes[self.slot].steps)<=1:
+            self.message("Keep one segment","A programme requires at least one segment.",True);return
+        self.programmes[self.slot].steps.pop(row)
+        self._render_programme()
+    def duplicate_segment(self):
+        row=self.segment_table.currentRow()
+        if row<0:return
+        self.update_programme()
+        p=self.programmes[self.slot]
+        if len(p.steps)>=32:return
+        p.steps.insert(row+1,copy.deepcopy(p.steps[row]))
+        self._render_programme()
+    def move_segment(self,delta):
+        row=self.segment_table.currentRow()
+        if row<0:return
+        self.update_programme()
+        steps=self.programmes[self.slot].steps;target=row+delta
+        if target<0 or target>=len(steps):return
+        steps[row],steps[target]=steps[target],steps[row]
+        self._render_programme();self.segment_table.selectRow(target)
+    def load_example(self):
+        if QMessageBox.question(self,"Use example",
+            f"Replace local Programme {self.slot} with the four-segment 120 → 50 °C example?")!=QMessageBox.StandardButton.Yes:return
+        self.programmes[self.slot]=copy.deepcopy(EXAMPLE)
+        self._render_programme();self.preview_stamp=None
+
+    def refresh_settings(self,*unused):
+        if not hasattr(self,"setting_table"):return
+        category=self.group.currentText()
+        query=self.search.text().casefold()
+        selected=self._selected_setting_code()
+        self._rendering=True
+        rows=[]
+        for code,p in CATALOG.items():
+            if category!="All groups" and category!=p.group:continue
+            if query and query not in (code+" "+p.name+" "+p.group+" "+p.meaning).casefold():continue
+            rows.append((code,p))
+        self.setting_table.setRowCount(len(rows))
+        self.setting_keys=[]
+        for index,(code,p) in enumerate(rows):
+            self.setting_keys.append(code)
+            raw=self.inventory["fields"].get(code)
+            current=human_value(code,raw,self.inventory["fields"].get("C3:0000"))
+            proposed=(human_value(code,self.draft[code],self.inventory["fields"].get("C3:0000"))
+                      if code in self.draft else "—")
+            for col,txt in enumerate((p.name+" · "+code,current,proposed,p.group)):
+                self._cell(self.setting_table,index,col,txt)
+        self._rendering=False
+        self.draft_count.setText(f"{len(self.draft)} proposed changes · {len(rows)} visible")
+        if selected in self.setting_keys:self.setting_table.selectRow(self.setting_keys.index(selected))
+        elif rows:self.setting_table.selectRow(0)
+        else:self.parameter_detail.clear()
+        self.refresh_actions()
+
+    def _selected_setting_code(self):
+        if not hasattr(self,"setting_keys"):return None
+        row=self.setting_table.currentRow()
+        return self.setting_keys[row] if 0<=row<len(self.setting_keys) else None
+
+    def _setting_selected(self):
+        if self._rendering:return
+        code=self._selected_setting_code()
+        if not code:return
+        p=CATALOG[code]
+        raw=self.inventory["fields"].get(code)
+        display=human_value(code,raw,self.inventory["fields"].get("C3:0000"))
+        self.parameter_detail.setPlainText(
+            f"{p.name}\n{code} · H186 {p.manual_page}\n\n"
+            f"{p.meaning}\n\nCurrent: {display}\n"
+            f"Raw: {raw:08X}\n" if raw is not None else
+            f"{p.name}\n{code}\n\n{p.meaning}\n\nCurrent: UNKNOWN / unavailable")
+        self.parameter_detail.append("\nAccess: "+p.access+
+                                     ("\nContext: "+p.context if p.context else ""))
+        draft=self.draft.get(code,raw)
+        is_known=raw is not None or self.inventory.get("mode")=="offline"
+        can_edit=is_known and not code.startswith(("C0:","C4:")) and code!="C1:0029"
+        self.parameter_editor.clear()
+        self.parameter_choices.clear()
+        if p.options:
+            self.parameter_editor.hide();self.parameter_choices.show()
+            self.parameter_choices.addItem("Choose a documented value",None)
+            for key,label in sorted(p.options.items()):
+                self.parameter_choices.addItem(f"{key} — {label}",key)
+            if draft is not None:
+                signed=draft-(1<<32) if draft>=(1<<31) else draft
+                idx=self.parameter_choices.findData(signed)
+                if idx>=0:self.parameter_choices.setCurrentIndex(idx)
+            self.parameter_choices.setEnabled(can_edit)
+        else:
+            self.parameter_editor.show();self.parameter_choices.hide()
+            if draft is not None:
+                signed=draft-(1<<32) if draft>=(1<<31) else draft
+                scale=(10 if self.inventory["fields"].get("C3:0000")==6 and
+                         code in ("C3:0005","C3:0006","C1:0012") else p.scale)
+                self.parameter_editor.setText(f"{signed/scale:g}")
+            self.parameter_editor.setEnabled(can_edit)
+
+    def propose_setting(self):
+        code=self._selected_setting_code()
+        if not code:return
+        p=CATALOG[code]
+        if p.options:
+            val=self.parameter_choices.currentData()
+            if val is None:
+                self.message("Choose a value","Select a documented setting.",True);return
+            value=str(val)
+        else:value=self.parameter_editor.text()
+        try:self.draft=add_proposal(self.inventory,self.draft,code,value)
+        except Exception as exc:self.message("Value not valid",str(exc),True);return
+        self.preview_stamp=None
+        self.refresh_settings()
+        self.feedback.setText(f"{len(self.draft)} configuration changes in LOCAL DRAFT. No controller settings written.")
+
+    def clear_draft(self):
+        if self.draft and QMessageBox.question(self,"Clear proposals",
+             "Discard all proposed configuration changes?")!=QMessageBox.StandardButton.Yes:return
+        self.draft={}
+        self.refresh_settings();self.refresh_review()
+
+    def _programme_fingerprint(self):
+        p=self.programmes[self.slot]
+        return (self.slot,hashlib.sha256(json.dumps(p.as_json(),sort_keys=True).encode()).hexdigest())
+
+    def refresh_review(self):
+        if not hasattr(self,"apply_details"):return
+        self.update_programme()
+        p=self.programmes[self.slot]
+        try:
+            m=p.validate()
+            self.apply_overview.setText(
+                f"Programme {self.slot}  ·  {len(p.steps)} segments  ·  {m['minutes']:.1f} minutes "
+                f"nominal  ·  Final SP {m['final_sp']:g} °C  ·  {len(self.draft)} proposed configuration changes")
+        except Exception as exc:self.apply_overview.setText("Invalid programme: "+str(exc))
+        lines=[]
+        for i,s in enumerate(p.steps,1):
+            if s.type=="ramp":desc=f"Ramp to {s.sp} °C at {s.rate} °C/min"
+            elif s.type=="soak":desc=f"Soak for {s.minutes} minutes"
+            else:desc=f"Instant setpoint change to {s.sp} °C"
+            lines.append(f"{i}. {desc}")
+        if self.draft:
+            lines.append("\nCONFIGURATION CHANGE LIST (NOT WRITTEN TO CONTROLLER)")
+            for code,value in sorted(self.draft.items()):
+                old=self.inventory["fields"].get(code)
+                lines.append(f"{CATALOG[code].name}: {human_value(code,old)}"
+                             f"  →  {human_value(code,value)}   [{code}]")
+            lines.append("USB configuration writes are not enabled; programme staging is locked.")
+        elif not self.session:
+            lines.append("\nNo live connected controller; offline manual export is available.")
+        elif self.session.staged and not self.session.committed:
+            lines.append("\nRAM staging was read back and verified; nonvolatile save is still pending.")
+        elif self.session.committed:
+            lines.append("\nSave command acknowledged. A separate USB power-cycle persistence test is needed.")
+        else:
+            lines.append("\nProgramme writing requires a fresh verified backup and exact preview.")
+        self.apply_details.setPlainText("\n".join(lines))
+        self.refresh_actions()
+
+    def refresh_actions(self):
+        if not hasattr(self,"stage_button"):return
+        session=self.session
+        connected=bool(session and self.client and self.mode=="connected")
+        can_preview=connected and session.backup_data is not None and not self.busy and not self.draft
+        can_stage=(can_preview and self.lab and not self.fail_latched and not session.mismatches
+            and session.staged is None and self.preview_stamp==self._programme_fingerprint()
+            and bool(self.preview_changes) and all(x.isChecked() for x in self.safety))
+        can_save=(connected and self.lab and not self.busy and not self.draft and
+                  not self.fail_latched and session.staged is not None and not session.committed)
+        self.preview_button.setEnabled(can_preview)
+        self.stage_button.setEnabled(bool(can_stage))
+        self.save_button.setEnabled(bool(can_save))
+        self.btn_read.setEnabled(not self.busy and self.mode=="connected")
+        self.btn_disconnect.setEnabled(not self.busy and bool(self.client))
+        self.next_button.setEnabled(not self.busy)
+
+    def _controls(self):
+        if hasattr(self,"stage_button"):self.refresh_actions()
+
+    def preview(self):
+        if not self.session or self.busy or self.draft:return
+        try:
+            self.update_programme()
+            selected=copy.deepcopy(self.programmes[self.slot])
+            changes=self.session.build_plan(self.slot,selected)
+        except Exception as exc:self.message("Cannot prepare upload",str(exc),True);return
+        self.preview_changes=changes
+        self.preview_stamp=self._programme_fingerprint() if changes else None
+        if changes:
+            details="\n".join(f"DA:{addr:04X}  {old:08X}  →  {new:08X}"
+                    for addr,old,new in changes)
+            self.message("Read-only write preview",
+                 f"{len(changes)} register differences for Programme {self.slot}:\n\n{details}\n\n"
+                 "NO controller data has been written.")
+        else:self.message("Programme already matches",
+                          "There are no DA register changes to transfer.")
+        self.refresh_actions()
+
+    def stage(self):
+        if self.busy or not self.session:return
+        if not (self.lab and self.preview_stamp==self._programme_fingerprint()
+                and not self.draft and all(x.isChecked() for x in self.safety)):
+            self.message("Cannot write","Complete all safety checks and preview again.",True);return
+        if QMessageBox.warning(self,"First RAM write confirmation",
+           "This will WRITE the reviewed programme registers into controller RAM.\n"
+           "Both the normal controller mains and external heater DC supplies must remain isolated.\n"
+           "A partial communication failure may leave RAM changed. Continue?",
+           QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+           QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        slot=self.slot;p=copy.deepcopy(self.programmes[slot])
+        self.preview_stamp=None
+        def action(progress):
+            return self.session.stage(slot,p)
+        def done(result):
+            self.feedback.setText("RAM verified for Programme "+str(slot)+"; nonvolatile memory NOT YET SAVED.")
+            self.refresh_review()
+            self.message("RAM verified","Controller RAM changes were written and read back. "
+                         "They are not yet saved to nonvolatile memory.")
+        self._work("Stage and verify programme RAM",action,done,True)
+
+    def commit(self):
+        if not self.session or not self.session.staged or self.busy or self.draft:return
+        if QMessageBox.warning(self,"Confirm nonvolatile save",
+           "Omron SAVE RAM DATA persists all pending RAM changes, not necessarily only "
+           "this programme. Confirm there are no unrelated unsaved settings and that "
+           "the external heater supplies are isolated. Save now?",
+           QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+           QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def job(progress):return self.session.commit()
+        def done(path):
+            self.feedback.setText("Save acknowledged. Receipt: "+str(path))
+            self.refresh_review()
+            self.message("Programme saved; power-cycle still required",
+                "Nonvolatile SAVE was acknowledged and registers read back.\n"
+                "Unplug USB until the controller turns off, reconnect, back up again "
+                "and verify the saved receipt before trusting persistence.\n"+str(path))
+        self._work("Save verified RAM data",job,done,True)
+
+    def export_manual(self):
+        self.update_programme()
+        p=self.programmes[self.slot]
+        try:p.validate()
+        except Exception as exc:self.message("Programme invalid",str(exc),True);return
+        path,_=QFileDialog.getSaveFileName(self,"Save manual keypad sheet",
+                    f"E5CC-T-manual-programme-{self.slot}.html","HTML (*.html)")
+        if not path:return
+        try:save_manual(path,p,self.slot,self.inventory["fields"],self.draft)
+        except Exception as exc:self.message("Manual export error",str(exc),True);return
+        self.feedback.setText("Offline manual programming guide saved: "+path)
+        self.message("Guide saved","The standalone front-panel guide was saved:\n"+path)
+
+    def export_review(self):
+        try:
+            report=build_review(self.inventory,self.draft,selected_slot=self.slot)
+            body=readable_review(report)
+        except Exception as exc:self.message("Review unavailable",str(exc),True);return
+        path,_=QFileDialog.getSaveFileName(self,"Save settings change report",
+                        "E5CC-T-configuration-change-review.txt","Text (*.txt)")
+        if not path:return
+        try:Path(path).write_text(body,encoding="utf-8")
+        except Exception as exc:self.message("Cannot save review",str(exc),True);return
+        self.message("Review saved","Local change report saved without hardware writes:\n"+path)
+
+    def export_inventory(self):
+        if not self.inventory or self.inventory.get("mode")=="offline":
+            self.message("No real inventory","Connect in Step 2 to read hardware or open a saved inventory.",True);return
+        path,_=QFileDialog.getSaveFileName(self,"Export readable inventory",
+                              "E5CC-T-parameter-inventory.txt","Text (*.txt)")
+        if not path:return
+        try:Path(path).write_text(report_inventory(self.inventory),encoding="utf-8")
+        except Exception as exc:self.message("Export failed",str(exc),True)
+
+    def closeEvent(self,event):
+        if self.busy:
+            self.message("USB operation in progress","Wait until the serial operation has finished.",True)
+            event.ignore();return
+        if self.session and self.session.ram_touched and not self.session.committed:
+            if QMessageBox.question(self,"Unsaved RAM changes",
+                 "Controller RAM may contain uncommitted data. Exit anyway?")!=QMessageBox.StandardButton.Yes:
+                event.ignore();return
+        self.connection_timer.stop()
+        if self.client:
+            try:self.client.close()
+            except Exception:pass
+        event.accept()
+
+
+def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--enable-lab-writes",action="store_true",
+        help="Enable DA-only experimental writes with a heater physically isolated")
+    args=parser.parse_args()
+    app=QApplication(sys.argv[:1])
+    app.setStyle("Fusion")
+    app.setFont("Segoe UI")
+    window=Studio(args.enable_lab_writes)
+    window.show()
+    sys.exit(app.exec())
+
+if __name__=="__main__":
+    main()
