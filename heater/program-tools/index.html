@@ -251,7 +251,7 @@ function goal(){
  };
  const section=(label)=>rows.push({section:label});
  section("Initial/adjustment setup required for rate profiles");
- [["Rate-of-rise method","t-pr","pr"],["Slope unit","pru","m"],["Duration format","t-u","h-m"],["RESET stops control","rtsm","stop"],["Power-on RESET","p-on","rst"],["Programme end","eset",b.finish],["Programmed setpoint","spmd","psp"]].forEach(x=>push(x[0],x[1],x[2],vm.settings[x[1]]));
+ [["Type K input","in-t",6],["Temperature units","d-u","c"],["PID control","cntl","pid"],["Rate-of-rise method","t-pr","pr"],["Slope unit","pru","m"],["Duration format","t-u","h-m"],["RESET stops control","rtsm","stop"],["Power-on RESET","p-on","rst"],["Programme end","eset",b.finish],["Programmed setpoint","spmd","psp"]].forEach(x=>push(x[0],x[1],x[2],vm.settings[x[1]]));
  section("Programme memory and execution selection");
  push("Programme being edited","d.prg",slot,vm.prg);
  push("Programme selected for RUN","prg",slot,vm.runPrg);
