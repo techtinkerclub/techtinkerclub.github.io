@@ -2,7 +2,7 @@
 
 **Target controller (one controller per USB session): Omron E5CC-TQX3A5M-000**. Cable: **E58-CIFQ2**.
 
-**Status (13 October 2026, updated):** The desktop shell now has a task-oriented Start screen, compact tabs and a connect+backup shortcut. Read-only COM7 hardware identification has passed. The isolated-lab writer was updated for the observed Type K input 5 (whole-degree SP values) and SP Start 0. **No physical RAM write, read-back or nonvolatile save has yet been qualified.** Heater power must remain isolated during any supervised test. Use only a newly built Windows artifact after the CI tests succeed.
+**Status (13 October 2026, extended parameter development):** Real COM7 reads, eight-programme DA memory backup, a supervised programme-0 RAM stage/read-back and a nonvolatile save acknowledgement have been observed; a four-segment profile was subsequently read after USB power cycling. These results validate an initial **DA programme transfer**, not a complete heater commissioning or configuration-write procedure. The source now includes a much larger H186-derived parameter catalogue and new extended read-only inventory plus numeric/dropdown *offline* change editor. **This new inventory/editor code and its Windows build are NOT yet tested on the physical controller. Non-DA initial/PID/communications USB writes remain DISABLED.**
 
 The desktop shell uses Tkinter and PySerial for USB/COM. Its native programme editor, self-contained manual guide and the five-step wizard do not need a website or Internet. The controller Explorer can open previously saved backup JSON files without reconnecting.
 
@@ -61,6 +61,30 @@ If an older version shows `'Window' object has no attribute 'home_note'`, that i
 
 For the requested Programme 0 replacement, first use the Step 2 guided read, then Step 3 **LOAD 120 → 50 °C FOUR-SEGMENT TEST** with memory 0 selected. Step 4 should remain unchanged for a programme-only USB transfer. Step 5 now clearly identifies missing prerequisites (cable connection, saved backup, preflight mismatch, pending initial setting changes, incomplete six-item checklist, missing reviewed preview or staged RAM). Keep heater mains and DC isolated throughout; do not attempt unqualified real-device writes if a prerequisite fails.
 
+## Extended H186 parameter catalogue — current implementation
+
+This development branch contains `controller_inventory.py`, built from the documented 32-bit CompoWay/F variable types in Omron H186-E1-06 §3-1, and `tests/test_controller_inventory.py`.
+
+**Step 2**: the main **CONNECT + READ EVERYTHING** operation is now designed to run three read-only phases in sequence: the existing verified eight-programme DA backup (1200 words), the familiar nine plus wider initial setup inspection, and an **extended batched parameter inventory** from C0, C1, C3, C4, C5 and C9. The new full inventory is timestamped and saved alongside the other two JSON files, and can be browsed without an active USB connection. Individual unsupported options are marked *unavailable*, never silently replaced with zero. The operator receives one completion message after the guided read.
+
+**Step 4**: there are now **Essential controls** and **Extended catalogue & editing** sub-tabs. The latter has group filters and text search, read values plus raw words, human descriptions, H186 references, per-setting limits and a choice or numeric input where the encoding is documented. All eight PID sets are represented separately in the C5 area. Configuration changes are held locally, displayed in the Step 5 change-review and can be exported as an offline change schedule. An offline/no-cable plan starts with all device values explicitly unknown.
+
+**Capabilities and important exceptions**:
+
+- `C0` exposes operating monitors/status and is read-only. USB setup-powered values must not be misrepresented as live heater measurements.
+- `C1` holds operation/protection/adjustment parameters; many apply to the selected PID set. A protected password always reads as zero, so it is **not** a restorable backup value.
+- `C3` contains initial configuration, controls, output assignments and communications options. Many writes require Omron **setting area 1**, so these are explicitly **not sent to hardware yet**. Changes to sensor, output, protection, power-on behaviour and serial settings carry additional safety/dependency restrictions.
+- `C4` is a view of the **selected programme and selected segment**. Reading its values does not independently capture eight sets. This editor does not rewrite C4 selection state for browsing.
+- `C5` holds eight independently addressed PID sets. Scaling of integral/derivative time can depend on C3 integral/derivative unit.
+- `C9` is **programless communications mapping**, not a programme uploader.
+- `DA` is the separate and already tested complete eight-programme backup and guarded programme writer.
+- This catalogue is a **curated subset of documented entries and currently not certified exhaustive** across firmware/model options. The full H186 list, controller nameplate and exact options still determine final coverage. Some entries are model-dependent or require conditional read/interpretation. The app must never scan undocumented addresses or claim a failed read equals zero.
+- A full inventory is **not** a firmware image or guaranteed restorability test. Future C1/C3/C5/C9 writes require area/level-protection handling, register-specific validation, baseline reread, safe persistence semantics, and live qualification of one representative low-risk setting with the heater isolated before being enabled in the GUI.
+
+**Current hardware-write limitation:** Only the existing guarded `DA` programme transfer is available; all extended catalogue and essential configuration proposals are **offline plans only**. When configuration proposals exist, programme RAM staging/save remain blocked to avoid applying only part of a requested change.
+
+**Source:** [Omron H186 Communications Manual](https://files.omron.eu/downloads/latest/manual/en/h186_e5_c-t_digital_temperature_controllers_communications_manual_en.pdf), especially §§2-3, 3-1 and the variable-type/setting-area restrictions.
+
 ## Five-step connected or offline workflow
 
 The native Windows app has a single workflow, with no website or programme JSON hand-off required.
@@ -75,7 +99,7 @@ The native Windows app has a single workflow, with no website or programme JSON 
 
 With controller mains and external heater DC physically isolated, select the COM port, click the single **CONNECT + READ EVERYTHING** button, and wait while the read-only programme memory and initial configuration are both saved and checked. The device is identified by 10-character model prefix; check the full -000 nameplate separately. The initial nine C3 values and controller status are shown. The eight DA programme blocks are saved (8 × 150 registers) and the Stored programmes view displays the existing segments and graphs.
 
-The guided read proceeds to the detailed C3/C1 initial-setting snapshot and shows it within Step 2 alongside the programme memories. **The detailed settings are automatically saved and checked as a second timestamped JSON next to the programme backup.** Step 4 uses the read values to prepare a change proposal; you can also save an additional unmodified snapshot there. This is not a complete controller clone or a restoration guarantee. Always keep the original backup.
+The guided read proceeds to the detailed C3/C1 setup snapshot and then the extended H186 catalogue (C0/C1/C3/C4/C5/C9), all shown in Step 2 alongside the programme memories. **The detailed settings are automatically saved and checked as a second timestamped JSON next to the programme backup.** Step 4 uses the read values to prepare a change proposal; you can also save an additional unmodified snapshot there. This is not a complete controller clone or a restoration guarantee. Always keep the original backup.
 
 ### 3 — Create or edit a programme
 
@@ -85,7 +109,7 @@ There is no requirement to export/import a website JSON to transfer between scre
 
 ### 4 — Initial settings
 
-In Connected mode the app reads the selected C3/C1 parameter values and gives human-readable descriptions. You can propose changes for supported mapped enumerations. Other PID/advanced numeric values are shown for review but are not yet safely editable or writable.
+In Connected mode the app reads the selected C3/C1 parameter values and the extended catalogue, with human-readable explanations and register references. You can propose changes for documented enumerations and numeric ranges in the Extended catalogue tab. These are **offline change proposals**; no C1/C3/C5/C9 USB writes occur.
 
 In Offline/manual mode, the baseline is explicitly UNKNOWN; selected setup choices are proposals only, not values claimed to have been read from hardware.
 
