@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (
 )
 from serial.tools import list_ports
 
-from qt_components import STYLE,Task,Profile,card,heading,text,button
+from qt_components import STYLE,Task,Profile,card,heading,text,button,StudioCombo
 from qt_segment_row import SegmentRow,Stepper
 from compoway import SerialClient
 from transfer import TransferSession
@@ -200,7 +200,7 @@ class Studio(QMainWindow):
         self.connection_controls=QWidget()
         row=QHBoxLayout(self.connection_controls)
         row.setContentsMargins(0,0,0,0)
-        self.port_combo=QComboBox();self.port_combo.setMinimumWidth(120)
+        self.port_combo=StudioCombo();self.port_combo.setMinimumWidth(120)
         row.addWidget(text("COM port"));row.addWidget(self.port_combo)
         row.addWidget(button("Refresh ports",self.refresh_ports))
         self.folder=QLineEdit(str(Path.home()/"Documents"/"Omron E5CC-T Backups"))
@@ -333,7 +333,7 @@ class Studio(QMainWindow):
         top.addWidget(heading("Programme editor",
             "Each segment shows only its applicable settings. The setpoint curve updates as you edit."),1)
         top.addWidget(text("Memory"))
-        self.slot_combo=QComboBox()
+        self.slot_combo=StudioCombo()
         self.slot_combo.addItems([f"Programme {i}" for i in range(8)])
         self.slot_combo.currentIndexChanged.connect(self._slot_changed)
         top.addWidget(self.slot_combo)
@@ -349,7 +349,7 @@ class Studio(QMainWindow):
         self.start_pv_editor=Stepper("STARTING PV (ASSUMED)",self.start_pv)
         self.start_pv_editor.setMinimumWidth(170)
         meta.addWidget(self.start_pv_editor)
-        self.finish_mode=QComboBox()
+        self.finish_mode=StudioCombo()
         self.finish_mode.addItem("RESET (stop)", "rst")
         self.finish_mode.addItem("CONTINUE", "cont")
         meta.addWidget(text("At programme end"));meta.addWidget(self.finish_mode)
@@ -422,7 +422,7 @@ class Studio(QMainWindow):
         v.addWidget(heading("Initial settings",
            "Search all documented groups; current values and proposed local changes are clearly separated."))
         controls=QHBoxLayout()
-        self.group=QComboBox()
+        self.group=StudioCombo()
         self.group.addItems(["All groups"]+group_names())
         controls.addWidget(self.group,1)
         self.search=QLineEdit();self.search.setPlaceholderText("Search by purpose, parameter or register…")
@@ -451,7 +451,7 @@ class Studio(QMainWindow):
         self.parameter_editor=QLineEdit()
         self.parameter_editor.setPlaceholderText("Documented numeric value")
         dl.addWidget(self.parameter_editor)
-        self.parameter_choices=QComboBox()
+        self.parameter_choices=StudioCombo()
         dl.addWidget(self.parameter_choices)
         dl.addWidget(button("Add to change review",self.propose_setting,True))
         dl.addWidget(text("Settings here are local proposals. USB configuration writing "
@@ -477,7 +477,7 @@ class Studio(QMainWindow):
         intro.addWidget(text("Omron keypad entry · select a setting to see its exact "
                              "meaning and key presses.",True),1)
         intro.addWidget(text("Stage:",True))
-        self.manual_phase=QComboBox()
+        self.manual_phase=StudioCombo()
         self.manual_phase.setMinimumWidth(170)
         self.manual_phase.addItem("All stages")
         intro.addWidget(self.manual_phase)
