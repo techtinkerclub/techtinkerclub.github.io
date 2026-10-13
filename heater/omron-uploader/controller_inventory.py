@@ -430,10 +430,12 @@ def validate_proposal(snapshot,key,display_value):
         real_raw=raw
         if not limits[0]<=real_raw<=limits[1]:
             raise ValueError("Setpoint limit outside the selected thermocouple range")
-        if key=="C3:0005" and real_raw<=signed32(snapshot["fields"]["C3:0006"]):
-            raise ValueError("Upper SP must remain above the current lower SP")
-        if key=="C3:0006" and real_raw>=signed32(snapshot["fields"]["C3:0005"]):
-            raise ValueError("Lower SP must remain below the current upper SP")
+        lower=snapshot["fields"].get("C3:0006")
+        upper=snapshot["fields"].get("C3:0005")
+        if key=="C3:0005" and lower is not None and real_raw<=signed32(lower):
+            raise ValueError("Upper SP must remain above lower SP")
+        if key=="C3:0006" and upper is not None and real_raw>=signed32(upper):
+            raise ValueError("Lower SP must remain below upper SP")
         raw=real_raw
     if key in ("C1:0022","C1:0023"):
         standard=snapshot["fields"].get("C3:0008")
@@ -448,9 +450,13 @@ def validate_proposal(snapshot,key,display_value):
 
 def add_proposal(snapshot,draft,key,new_value):
     validate_inventory(snapshot)
-    unsigned=validate_proposal(snapshot,key,new_value)
+    # Proposals already made in offline mode provide context for subsequent
+    # dependent values, such as selecting Type K 5 before entering SP limits.
+    effective=dict(snapshot)
+    effective["fields"]=dict(snapshot["fields"],**draft)
+    unsigned=validate_proposal(effective,key,new_value)
     before=snapshot["fields"][key]
-    if before is None:
+    if before is None and snapshot.get("mode")!="offline":
         raise ValueError("Cannot propose changes against an unread parameter on a connected unit")
     next_draft=dict(draft)
     if before==unsigned:next_draft.pop(key,None)
@@ -464,12 +470,14 @@ def proposal_report(snapshot,draft):
     rows=[]
     for key in sorted(draft):
         p=CATALOG[key];before=snapshot["fields"][key];after=draft[key]
-        if before is None:raise ValueError("Cannot review unread register "+key)
+        if before is None and snapshot.get("mode")!="offline":
+            raise ValueError("Cannot review unread register "+key)
         if type(after) is not int or not 0<=after<=0xffffffff:raise ValueError("Invalid encoded value")
         rows.append(dict(register=key,group=p.group,name=p.name,
                          previous=human_value(key,before,snapshot["fields"].get("C3:0000")),
                          proposed=human_value(key,after,snapshot["fields"].get("C3:0000")),
-                         previous_hex=f"{before:08X}",proposed_hex=f"{after:08X}",
+                         previous_hex=f"{before:08X}" if before is not None else None,
+                         proposed_hex=f"{after:08X}",
                          danger=key in DANGEROUS_CODES,
                          context=p.context,meaning=p.meaning))
     return dict(schema="e5cct-config-offline-proposal-1",
@@ -546,6 +554,19 @@ def read_inventory(client,identity,progress=None):
                 ])
     validate_inventory(result)
     return result
+
+def offline_inventory(model="E5CC-TQX3A"):
+    """Local planning template, NOT a real configuration read or device backup."""
+    if not isinstance(model,str) or not model.startswith("E5CC-T"):
+        raise ValueError("Expected E5CC-T model prefix")
+    obj=dict(schema=SCHEMA,read_utc="OFFLINE — NO DEVICE READ",
+             controller={"model10":model},fields={key:None for key in CATALOG},
+             errors={},register_count=len(CATALOG),
+             group_count=len(group_names()),mode="offline",
+             source_manual=MANUAL,source_url=SOURCE,
+             important_notes=["Offline plan: no actual controller readings are known. "
+                              "Values must be checked against the physical device."])
+    return validate_inventory(obj)
 
 def validate_inventory(obj):
     if not isinstance(obj,dict) or obj.get("schema")!=SCHEMA:raise ValueError("Not an extended E5CC-T inventory")
