@@ -61,13 +61,24 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
             raise ValueError(f"Selected {label} configuration is incompatible with "
                              "this keypad worksheet. Do not enter the programme until "
                              "the programming method and time encoding are redesigned.")
+    input_type=changes.get("C3:0000",baseline.get("C3:0000"))
+    if input_type==5:
+        for idx,segment in enumerate(programme.steps):
+            if segment.type in ("ramp","step"):
+                raw=Decimal(str(segment.sp))
+                if raw!=raw.to_integral_value():
+                    raise ValueError(f"Segment {idx}: this Type K input 5 controller "
+                                     "uses whole-degree setpoints. Choose whole degrees "
+                                     "or explicitly plan/validate a different input range.")
     entries=[]
     add=lambda section,code,value,purpose,instruction,kind="set":entries.append(
         Entry(section,code,str(value),purpose,instruction,kind))
     add("Preparation","r-r","rst","Confirm controller stopped",
         "From PV/SP in Operation Level, press MODE briefly until r-r is displayed. "
         "Confirm rst. Do not run during programming.","check")
-    add("Preparation","in-t","5 (Type K, whole °C) — VERIFY",
+    sensor_label=({5:"5 — Type K, whole °C",6:"6 — Type K, 0.1 °C"}
+                  .get(input_type,"UNKNOWN — check sensor type and SP resolution"))
+    add("Preparation","in-t",sensor_label+" — VERIFY",
         "Thermocouple input range and temperature resolution",
         "From PV/SP, hold LEVEL ≥3 s for Initial Setting Level; press MODE until in-t. "
         "Compare the actual value with the sensor wiring. Do not change it casually.","check")
@@ -198,7 +209,8 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
                     "A parameter absent from the screen may be protected, masked or model-dependent.",
                     "For value edits, press MODE once or wait at least 3 seconds to register a change.",
                     "Do not confuse d.prg (edit), prg (select for RUN), and pgsg (monitor).",
-                    "Advanced initial-setting proposals are not validated front-panel keypresses."
+                    "Advanced initial-setting proposals are not validated front-panel keypresses.",
+                    "For offline designs, verify the actual thermocouple/input resolution before entering fractional temperatures."
                 ])
 
 def plain_instructions(plan):
