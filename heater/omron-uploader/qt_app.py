@@ -30,9 +30,9 @@ from compoway import SerialClient
 from transfer import TransferSession
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
-from controller_setup import read_snapshot,report as setup_report,write_new_json
+from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
 from controller_inventory import (
-    CATALOG,group_names,offline_inventory,read_inventory,readable_rows,
+    CATALOG,group_names,offline_inventory,read_inventory,validate_inventory,readable_rows,
     human_value,add_proposal,proposal_report,report_inventory
 )
 from config_change_review import build_review,readable_review
@@ -77,6 +77,7 @@ class Studio(QMainWindow):
         self.fail_latched=False
         self.busy=False
         self.workers=set()
+        self.audit_entries=[]
         self.pool=QThreadPool(self)
         self.pool.setMaxThreadCount(1)   # one serial operation at a time
         self._rendering=False
@@ -232,7 +233,18 @@ class Studio(QMainWindow):
         tabs.addTab(self.initial_text,"Initial configuration")
         self.inventory_text=QTextEdit();self.inventory_text.setReadOnly(True)
         tabs.addTab(self.inventory_text,"Extended inventory")
+        self.audit_text=QTextEdit();self.audit_text.setReadOnly(True)
+        tabs.addTab(self.audit_text,"Activity log")
         lay.addWidget(tabs,1)
+        filetools=QHBoxLayout()
+        for caption,callback in [
+            ("Open saved initial setup…",self.open_setup),
+            ("Open saved parameter inventory…",self.open_inventory),
+            ("Export selected programme explanation",self.export_stored_profile),
+            ("Export activity log",self.export_log)]:
+            filetools.addWidget(button(caption,callback))
+        filetools.addStretch()
+        lay.addLayout(filetools)
         self.pages.addWidget(page)
         self.read_tabs=tabs
 
@@ -477,10 +489,17 @@ class Studio(QMainWindow):
         if not quiet:
             self.progress.show()
             self.feedback.setText("Working: "+title)
+        self.log_event("START "+title+(" [hardware write]" if is_write else " [read only/local]"))
         self._controls()
         worker=Task(action);self.workers.add(worker)
         worker.signals.progress.connect(lambda value:self.feedback.setText(str(value)) if not quiet else None)
-        worker.signals.result.connect(success)
+        def delivered(value):
+            try:
+                success(value)
+                if not quiet:self.log_event("DONE "+title)
+            except Exception as exc:
+                self._job_error(title,f"Completion callback failed: {exc}",is_write)
+        worker.signals.result.connect(delivered)
         worker.signals.error.connect(
             lambda message:self._mark_link_lost("Controller heartbeat failed: "+message)
             if quiet else self._job_error(title,message,is_write))
@@ -494,6 +513,7 @@ class Studio(QMainWindow):
 
     def _job_error(self,title,error,is_write):
         if is_write:self.fail_latched=True
+        self.log_event("FAILED "+title+": "+error)
         self.feedback.setText("Failed: "+title)
         self.message("Controller operation stopped",error+
             ("\n\nWRITE STATE UNCERTAIN. Keep the heater isolated and inspect the controller before retrying."
@@ -704,6 +724,67 @@ class Studio(QMainWindow):
         self.preview_stamp=None
         self.refresh_settings()
         self.feedback.setText("Local offline project opened; no controller write performed")
+
+    def log_event(self,detail):
+        stamp=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        row=f"{stamp} | {detail}"
+        self.audit_entries.append(row)
+        if hasattr(self,"audit_text"):self.audit_text.append(row)
+
+    def open_setup(self):
+        file,_=QFileDialog.getOpenFileName(self,"Open saved controller initial settings",
+                                              "","JSON (*.json)")
+        if not file:return
+        try:
+            data=json.loads(Path(file).read_text(encoding="utf-8"))
+            validate_snapshot(data)
+        except Exception as exc:
+            self.message("Invalid initial settings snapshot",str(exc),True);return
+        self.snapshot=data
+        self.initial_text.setPlainText("SAVED FILE (not live controller data)\n\n"+setup_report(data))
+        self.log_event("Opened saved initial setup "+file)
+        self.show_step(1);self.read_tabs.setCurrentIndex(1)
+
+    def open_inventory(self):
+        file,_=QFileDialog.getOpenFileName(self,"Open saved H186 parameter inventory",
+                                              "","JSON (*.json)")
+        if not file:return
+        try:
+            data=json.loads(Path(file).read_text(encoding="utf-8"))
+            validate_inventory(data)
+        except Exception as exc:
+            self.message("Invalid parameter inventory",str(exc),True);return
+        self.inventory=data
+        self.draft={}
+        self.inventory_text.setPlainText("SAVED FILE (not a live hardware reading)\n\n"+
+                                          report_inventory(data))
+        self.refresh_settings()
+        self.log_event("Opened saved extended parameter inventory "+file)
+        self.show_step(1);self.read_tabs.setCurrentIndex(2)
+
+    def export_stored_profile(self):
+        if not self.backup:
+            self.message("No backup loaded","Connect and read, or open a saved backup.",True);return
+        slot=self.memory_table.currentRow()
+        if not 0<=slot<=7:slot=0
+        try: content=summary_as_plaintext(decode_slot(self.backup,slot))
+        except Exception as exc:
+            self.message("Cannot decode programme",str(exc),True);return
+        output,_=QFileDialog.getSaveFileName(self,"Save stored programme explanation",
+            f"E5CC-T-stored-programme-{slot}-read-only.txt","Text (*.txt)")
+        if not output:return
+        try:Path(output).write_text(content,encoding="utf-8")
+        except Exception as exc:
+            self.message("Export failed",str(exc),True);return
+        self.log_event(f"Exported stored programme {slot} explanation: "+output)
+
+    def export_log(self):
+        output,_=QFileDialog.getSaveFileName(self,"Export controller session activity log",
+            "E5CC-T-session-log.txt","Text (*.txt)")
+        if not output:return
+        try:Path(output).write_text("\n".join(self.audit_entries)+"\n",encoding="utf-8")
+        except Exception as exc:
+            self.message("Export failed",str(exc),True);return
 
     def open_backup(self):
         file,_=QFileDialog.getOpenFileName(self,"Open saved controller backup","","JSON (*.json)")
@@ -1062,6 +1143,7 @@ class Studio(QMainWindow):
             changes=self.session.build_plan(self.slot,selected)
         except Exception as exc:self.message("Cannot prepare upload",str(exc),True);return
         self.preview_changes=changes
+        self.log_event(f"Previewed Programme {self.slot}: {len(changes)} differences, no writes")
         self.preview_stamp=self._programme_fingerprint() if changes else None
         if changes:
             details="\n".join(f"DA:{addr:04X}  {old:08X}  →  {new:08X}"
@@ -1201,6 +1283,7 @@ class Studio(QMainWindow):
             if QMessageBox.question(self,"Unsaved RAM changes",
                  "Controller RAM may contain uncommitted data. Exit anyway?")!=QMessageBox.StandardButton.Yes:
                 event.ignore();return
+        self.log_event("Application closing; controller session terminating")
         self.connection_timer.stop()
         if self.client:
             try:self.client.close()
