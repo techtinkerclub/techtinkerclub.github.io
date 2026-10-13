@@ -769,16 +769,17 @@ class Window:
         else:
             self.book.select(self.t_read);self.readbook.select(self.t_backup)
         self.refresh_buttons()
-        messagebox.showinfo(
-            "Backup complete — file checked",
-            f"All eight programme areas were read successfully.\n"
-            f"{count} DA registers and 9 selected C3 values captured.\n\n"
-            f"The JSON file was reopened and matched the data read during this session.\n"
-            f"Location:\n{path}\n\n"
-            "No controller settings were written.\n"
-            "This is not a complete controller clone or an independent second controller read.\n"
-            "Keep a second copy of this JSON file."
-        )
+        if not self._auto_setup:
+            messagebox.showinfo(
+                "Backup complete — file checked",
+                f"All eight programme areas were read successfully.\n"
+                f"{count} DA registers and 9 selected C3 values captured.\n\n"
+                f"The JSON file was reopened and matched the data read during this session.\n"
+                f"Location:\n{path}\n\n"
+                "No controller settings were written.\n"
+                "This is not a complete controller clone or an independent second controller read.\n"
+                "Keep a second copy of this JSON file."
+            )
         if self._auto_setup:
             self._auto_setup=False
             self.setup_read(stay_on_read=True)
@@ -1037,7 +1038,7 @@ class Window:
     self.t_setup_core=ttk.Frame(self.setupbook)
     self.t_setup_all=ttk.Frame(self.setupbook)
     self.setupbook.add(self.t_setup_core,text="Essential controls")
-    self.setupbook.add(self.t_setup_all,text="All documented parameters")
+    self.setupbook.add(self.t_setup_all,text="Extended catalogue & editing")
     panel,body=self.card(self.t_setup_core,"Controller setup — read, understand, compare")
     panel.pack(fill="both",expand=True,padx=10,pady=10)
     tk.Label(body,text="LIVE CONTROLLER READS / OFFLINE PLANNING — NO HARDWARE SETUP WRITES",
@@ -1118,12 +1119,13 @@ class Window:
         unavailable=len(snapshot["errors"])
         changed=len(snapshot.get("changed_since_inspection",{}))
         self.log(f"SETUP READ ONLY: {sum(v is not None for v in snapshot['fields'].values())} fresh register reads; {unavailable} unavailable; {changed} changed since inspection; zero writes")
-        messagebox.showinfo("Controller configuration read",
-                            f"Read {sum(v is not None for v in snapshot['fields'].values())} selected settings.\n"
-                            f"{unavailable} optional settings unavailable.\n"
-                            f"{changed} settings changed since initial inspection.\n"
-                            +save_notice+
-                            "\nNo values were changed on the Omron.")
+        if not (stay_on_read and self._auto_inventory):
+            messagebox.showinfo("Controller configuration read",
+                                f"Read {sum(v is not None for v in snapshot['fields'].values())} selected settings.\n"
+                                f"{unavailable} optional settings unavailable.\n"
+                                f"{changed} settings changed since initial inspection.\n"
+                                +save_notice+
+                                "\nNo values were changed on the Omron.")
         if stay_on_read and self._auto_inventory:
             self._auto_inventory=False
             self.inventory_read()
@@ -1245,14 +1247,14 @@ class Window:
     """
     page=tk.Frame(self.t_inventory,bg=BG,padx=14,pady=12)
     page.pack(fill="both",expand=True)
-    tk.Label(page,text="Complete controller parameter inventory",bg=BG,fg=INK,
+    tk.Label(page,text="Extended controller parameter inventory",bg=BG,fg=INK,
              font=("Segoe UI",17,"bold")).pack(anchor="w")
-    tk.Label(page,text="Documented C0/C1/C3/C4/C5/C9 registers, including all eight PID sets. "
+    tk.Label(page,text="Curated H186-documented C0/C1/C3/C4/C5/C9 registers, including all eight PID sets. "
              "The existing DA programme backup is separate. Optional model features may be unavailable.",
              bg=BG,fg="#526f84",font=("Segoe UI",10),
              wraplength=1010,justify="left").pack(anchor="w",pady=(7,12))
     bar=tk.Frame(page,bg=BG);bar.pack(fill="x",pady=6)
-    self.b(bar,"READ ALL DOCUMENTED PARAMETERS (no writes)",self.inventory_read,True).pack(side="left",padx=(0,8))
+    self.b(bar,"READ EXTENDED CONTROLLER CATALOGUE (no writes)",self.inventory_read,True).pack(side="left",padx=(0,8))
     self.b(bar,"Open saved inventory",self.inventory_open).pack(side="left",padx=7)
     self.b(bar,"Export readable report",self.inventory_export).pack(side="left",padx=7)
     self.inventory_progress=tk.StringVar(value="No extended inventory loaded; use Connect + Read Everything in Step 2.")
