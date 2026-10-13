@@ -119,6 +119,9 @@ $("json").onclick=()=>{let str=JSON.stringify({version:1,method:"rate",programme
 function tab(sim){$("builder").classList.toggle("hidden",sim);$("simulator").classList.toggle("hidden",!sim);$("bt").classList.toggle("on",!sim);$("st").classList.toggle("on",sim);if(sim)goal();location.hash=sim?"simulator":"builder"}
 $("bt").onclick=()=>tab(false);$("st").onclick=()=>tab(true);$("practice").onclick=()=>tab(true);
 /* Simulator subset: real-menu navigation measured on one physical E5CC-T.
+   Operation Level: a-m display confirmed by hardware as first MODE after PV/SP.
+   Other Operation Level screens are not yet mapped from this unit; simulated r-r
+   is provisional. Manual MV control intentionally unavailable in simulator.
    PID-1 values below are a non-editable sample snapshot, not factory defaults
    guaranteed for every unit or actual PID tuning simulation. */
 const observedPid1=Object.freeze({"1.p":"8","1.i":"233","1.d":"40","1.olh":"100","1.oll":"0","1.aut":"1320"});
@@ -128,12 +131,13 @@ function resetVM(){vm={level:"operation",param:"pv",prg:0,seg:"end",pidSet:1,pro
 const prog=()=>vm.progs[vm.prg];
 function simReady(){let x=vm.settings,p=prog();return x["t-pr"]==="pr"&&x["t-u"]==="h-m"&&x.pru==="m"&&x.rtsm==="stop"&&x.spmd==="psp"&&p.rpt===0&&p.link==="end"}
 const minTime=n=>{n=Math.min(5999,Math.max(0,Number(n)||0));return Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0")};
-function keys(){let x=vm.level==="operation"?["pv","r-r"]:vm.level==="initial"?["in-t","d-u","cntl","t-u","t-pr","pru","rtsm","p-on","eset"]:vm.level==="adjustment"?["l.adj","spmd"]:vm.level==="pid"?["d.pid",...(vm.pidSet===1?Object.keys(observedPid1):[])]:["d.prg","s-no","d.seg"];
+function keys(){let x=vm.level==="operation"?["pv","a-m","r-r"]:vm.level==="initial"?["in-t","d-u","cntl","t-u","t-pr","pru","rtsm","p-on","eset"]:vm.level==="adjustment"?["l.adj","spmd"]:vm.level==="pid"?["d.pid",...(vm.pidSet===1?Object.keys(observedPid1):[])]:["d.prg","s-no","d.seg"];
  if(vm.level==="program"&&vm.seg!=="end"){let s=prog().segments[vm.seg];x.push("styp");if(s.type==="ramp")x.push("sp","pr");if(s.type==="soak")x.push("time");if(s.type==="step")x.push("sp")}
  if(vm.level==="program"&&vm.seg==="end")x.push("pid","al-1","al-2","al-3","rpt","link");return x}
 function value(p){
  let g=prog(),s=vm.seg==="end"?null:g.segments[vm.seg];
  if(p==="pv")return vm.status==="rst"?"rst":setpoint();
+ if(p==="a-m")return ""; // Non-editable menu item; actual manual-mode switching intentionally not simulated.
  if(p==="r-r")return vm.status;if(p==="d.prg")return vm.prg;if(p==="s-no")return g.n;if(p==="d.seg")return vm.seg;
  if(p==="styp")return s?.type;if(p==="sp")return s?.sp;if(p==="pr")return s?.rate;if(p==="time")return minTime(s?.minutes);
  if(p==="pid")return g.pid;if(p==="d.pid")return vm.pidSet;if(Object.hasOwn(observedPid1,p))return vm.pidSet===1?observedPid1[p]:"--";if(/^al-[123]$/.test(p))return vm.prg===0?0:"--";if(p==="rpt")return g.rpt;if(p==="link")return g.link;
@@ -150,7 +154,7 @@ function history(x){vm.history.push(x);if(vm.history.length>100)vm.history.shift
 const choose=(arr,old,d)=>{let idx=arr.indexOf(String(old));return arr[(Math.max(0,idx)+d+arr.length)%arr.length]};
 function change(d){
  let p=vm.param,g=prog(),s=vm.seg==="end"?null:g.segments[vm.seg],mult=Math.pow(10,vm.digit);
- if(p==="pv"||p==="l.adj"||Object.hasOwn(observedPid1,p))return;
+ if(p==="pv"||p==="a-m"||p==="l.adj"||Object.hasOwn(observedPid1,p))return;
  if(p==="r-r"){vm.status=d>0?"run":"rst";vm.time=0;return}
  if(p==="d.prg"){vm.prg=Math.max(0,Math.min(7,vm.prg+d));vm.seg="end";return}
  if(p==="s-no"){g.n=Math.max(1,Math.min(32,g.n+d*mult));if(vm.seg!=="end"&&vm.seg>=g.n)vm.seg="end";return}
