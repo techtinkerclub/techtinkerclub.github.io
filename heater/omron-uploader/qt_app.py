@@ -648,6 +648,7 @@ class Studio(QMainWindow):
         self.feedback.setText("Local offline project saved to "+str(path))
 
     def open_project(self):
+        if self._editing_locked():return
         path,_=QFileDialog.getOpenFileName(self,"Open local studio project",
                     "","Studio projects (*.json)")
         if not path:return
@@ -715,7 +716,16 @@ class Studio(QMainWindow):
         except Exception as exc:
             self.explorer_info.setPlainText(str(exc));self.explorer_chart.show_points([])
 
+    def _editing_locked(self):
+        if self.session and self.session.staged is not None and not self.session.committed:
+            self.message("Finish staged upload",
+                "Verified RAM data is awaiting SAVE. Save or disconnect and inspect the controller "
+                "before changing this local programme or initial settings.",True)
+            return True
+        return False
+
     def copy_stored(self):
+        if self._editing_locked():return
         if not self.backup:
             self.message("No stored programmes","Connect and back up in Step 2, or open a saved backup.",True);return
         selected=self.memory_table.currentRow()
@@ -818,11 +828,13 @@ class Studio(QMainWindow):
             self.programme_info.setText("Needs correction: "+str(exc))
 
     def add_segment(self,kind):
+        if self._editing_locked():return
         self.update_programme()
         self.programmes[self.slot].steps.append(Segment(kind))
         self._render_programme()
         self.preview_stamp=None
     def remove_segment(self):
+        if self._editing_locked():return
         row=self.segment_table.currentRow()
         if row<0:return
         self.update_programme()
@@ -831,6 +843,7 @@ class Studio(QMainWindow):
         self.programmes[self.slot].steps.pop(row)
         self._render_programme()
     def duplicate_segment(self):
+        if self._editing_locked():return
         row=self.segment_table.currentRow()
         if row<0:return
         self.update_programme()
@@ -839,6 +852,7 @@ class Studio(QMainWindow):
         p.steps.insert(row+1,copy.deepcopy(p.steps[row]))
         self._render_programme()
     def move_segment(self,delta):
+        if self._editing_locked():return
         row=self.segment_table.currentRow()
         if row<0:return
         self.update_programme()
@@ -847,6 +861,7 @@ class Studio(QMainWindow):
         steps[row],steps[target]=steps[target],steps[row]
         self._render_programme();self.segment_table.selectRow(target)
     def load_example(self):
+        if self._editing_locked():return
         if QMessageBox.question(self,"Use example",
             f"Replace local Programme {self.slot} with the four-segment 120 → 50 °C example?")!=QMessageBox.StandardButton.Yes:return
         self.programmes[self.slot]=copy.deepcopy(EXAMPLE)
@@ -924,6 +939,7 @@ class Studio(QMainWindow):
             self.parameter_editor.setEnabled(can_edit)
 
     def propose_setting(self):
+        if self._editing_locked():return
         code=self._selected_setting_code()
         if not code:return
         p=CATALOG[code]
@@ -940,6 +956,7 @@ class Studio(QMainWindow):
         self.feedback.setText(f"{len(self.draft)} configuration changes in LOCAL DRAFT. No controller settings written.")
 
     def clear_draft(self):
+        if self._editing_locked():return
         if self.draft and QMessageBox.question(self,"Clear proposals",
              "Discard all proposed configuration changes?")!=QMessageBox.StandardButton.Yes:return
         self.draft={}
@@ -1052,6 +1069,12 @@ class Studio(QMainWindow):
 
     def commit(self):
         if not self.session or not self.session.staged or self.busy or self.draft:return
+        if (self.session.staged["slot"]!=self.slot or
+                self.session.staged["programme"]!=self.programmes[self.slot].as_json()):
+            self.message("Local programme differs from verified RAM",
+                "The local editor no longer matches the RAM-staged programme. Do not save blindly. "
+                "Keep the heater isolated and inspect the session.",True)
+            return
         if QMessageBox.warning(self,"Confirm nonvolatile save",
            "Omron SAVE RAM DATA persists all pending RAM changes, not necessarily only "
            "this programme. Confirm there are no unrelated unsaved settings and that "
