@@ -78,6 +78,36 @@ class ModernStudioTests(unittest.TestCase):
         self.assertIn("50",html)
         self.assertIn("nominal",html)
         self.assertNotIn("download a website",html)
+    def test_native_offline_project_round_trip_with_atomic_save(self):
+        import copy
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        from program_model import blank_programme
+        with TemporaryDirectory() as folder:
+            p=str(Path(folder)/"qt-project.json")
+            self.win.choose_mode("offline")
+            self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+            self.win._render_programme()
+            with patch("qt_app.QFileDialog.getSaveFileName",return_value=(p,"")):
+                self.win.save_project()
+            self.assertTrue(Path(p).exists())
+            self.win.programmes[0]=blank_programme()
+            self.win._render_programme()
+            with patch("qt_app.QFileDialog.getOpenFileName",return_value=(p,"")):
+                self.win.open_project()
+            self.assertEqual(len(self.win.programmes[0].steps),4)
+            self.assertAlmostEqual(self.win.programmes[0].validate()["minutes"],115)
+            self.assertIsNone(self.win.session)
+    def test_manual_continue_end_mode_is_local_and_not_uploadable(self):
+        self.win.choose_mode("offline")
+        self.win.finish_mode.setCurrentIndex(1)
+        self.win.show_step(4)
+        self.assertEqual(self.win.programmes[0].finish,"cont")
+        self.assertEqual(self.win.apply_tabs.currentIndex(),0)
+        self.assertIn("CONTINUE",self.win.entry_table.item(0,1).text()
+                      if "CONTINUE" in self.win.entry_table.item(0,1).text()
+                      else self.win.entry_table.item(7,1).text())
+        self.assertFalse(self.win.stage_button.isEnabled())
     def test_serial_writes_impossible_without_lab_flag(self):
         self.win.mode="connected"
         self.win.show_step(4)
