@@ -596,7 +596,7 @@ class Studio(QMainWindow):
             self.feedback.setText("Backups saved: "+str(self.session.backup_file))
             self.message("Controller read completed",
                 "All eight programme memory blocks were saved and verified.\n"
-                f"Initial settings saved: {setup_file.name}\n"
+                f"Initial settings saved: {setup_file.name}\n"+
                 ("Extended inventory was NOT completed: "+inventory_error+"\n"
                  if inventory_error else f"Extended inventory saved: {inventory_file.name}\n")+
                 "No controller writes performed.")
