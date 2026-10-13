@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from controller_inventory import (CATALOG,SUPPORTED_READ_TYPES,group_names,
   read_inventory,validate_inventory,readable_rows,proposal_report,
-  validate_proposal,add_proposal,human_value)
+  validate_proposal,add_proposal,human_value,offline_inventory)
 
 class ReadOnlyFake:
     def __init__(self,unavailable=None):
@@ -71,6 +71,28 @@ class CatalogTests(unittest.TestCase):
         with self.assertRaises(ValueError):validate_proposal(snap,"C3:0000","40")
         with self.assertRaises(ValueError):validate_proposal(snap,"C3:0000","NaN")
         with self.assertRaises(ValueError):validate_proposal(snap,"C5:0000","-1")
+    def test_offline_full_catalogue_does_not_invent_values(self):
+        snapshot=offline_inventory()
+        self.assertEqual(len(snapshot["fields"]),len(CATALOG))
+        self.assertTrue(all(v is None for v in snapshot["fields"].values()))
+        self.assertEqual(snapshot["mode"],"offline")
+        draft=add_proposal(snapshot,{},"C3:0000","5")
+        draft=add_proposal(snapshot,draft,"C3:0005","200")
+        self.assertEqual(draft["C3:0000"],5)
+        self.assertEqual(draft["C3:0005"],200)
+        doc=proposal_report(snapshot,draft)
+        self.assertFalse(doc["writes_performed"])
+        self.assertIsNone(doc["changes"][0]["previous_hex"])
+        with self.assertRaises(ValueError):add_proposal(snapshot,draft,"C3:0005","2000")
+    def test_temperature_encoding_for_type6(self):
+        fake=ReadOnlyFake()
+        snap=read_inventory(fake,{"model10":"E5CC-TQX3A"})
+        snap["fields"]["C3:0000"]=6
+        snap["fields"]["C3:0006"]=0
+        snap["fields"]["C3:0005"]=5000
+        self.assertEqual(human_value("C3:0005",5000,6),"500 °C")
+        self.assertEqual(validate_proposal(snap,"C3:0005","400.5"),4005)
+        with self.assertRaises(ValueError):validate_proposal(snap,"C3:0005","400.55")
     def test_draft_report_never_writes(self):
         fake=ReadOnlyFake()
         snap=read_inventory(fake,{"model10":"E5CC-TQX3A"})
