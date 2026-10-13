@@ -60,7 +60,7 @@ class FiveStepWizardTests(unittest.TestCase):
     def test_connected_flow_groups_three_views_in_step_two(self):
         self.ui.choose_mode("connected")
         self.assertEqual(self.ui.book.index("current"),1)
-        self.assertEqual(len(self.ui.readbook.tabs()),3)
+        self.assertEqual(len(self.ui.readbook.tabs()),4)
         self.assertFalse(self.ui.connected)
         self.ui.wizard_next()
         self.assertEqual(self.ui.book.index("current"),2)
