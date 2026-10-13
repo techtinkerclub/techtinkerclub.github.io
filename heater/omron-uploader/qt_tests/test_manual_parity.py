@@ -71,6 +71,23 @@ class OfflineManualTests(unittest.TestCase):
         self.assertIn("cont", [r["value"] for r in plan["entry_rows"]
                                if r["code"]=="eset"][0])
         self.assertTrue(any("CAUTION" in r["value"] for r in plan["entry_rows"]))
+    def test_initial_setting_draft_visible_in_native_manual_table(self):
+        w=Studio(enable_lab_writes=False)
+        w.connection_timer.stop()
+        w.choose_mode("offline")
+        w.programmes[0]=EXAMPLE
+        w._render_programme()
+        w.draft={"C3:00BD":1}
+        w.show_step(4)
+        visible=[w.entry_table.item(i,0).text()
+                 for i in range(w.entry_table.rowCount())]
+        self.assertIn("C3:00BD",visible)
+        i=visible.index("C3:00BD")
+        self.assertIn("p-on",w.entry_table.item(i,3).text())
+        self.assertIn("RESET",w.entry_table.item(i,2).text().upper()
+                      if "RESET" in w.entry_table.item(i,2).text().upper() else
+                      w.entry_table.item(i,1).text().upper())
+        w.close()
     def test_bundled_keypad_simulator_is_local_and_optional(self):
         from unittest.mock import patch
         w=Studio(enable_lab_writes=False)
