@@ -11,7 +11,7 @@ from compoway import ProtocolError
 
 # Omron H186 C3 initial setting addresses, read-only preflight.
 PREFLIGHT={
-  0x0000:(6,"Type K, -20.0 to 500.0°C, 0.1°C"),
+  0x0000:(5,"Type K, -200 to 1300°C, whole degrees (observed COM7 bench policy)"),
   0x0004:(0,"Temperature unit °C"),
   0x00B9:(0,"Programme time hours.minutes"),
   0x00BA:(1,"Rate-of-rise programming"),
@@ -19,7 +19,7 @@ PREFLIGHT={
   0x00BC:(0,"RESET stops control"),
   0x00BD:(1,"Power-up enters RESET"),
   0x00BE:(0,"End-of-programme enters RESET"),
-  0x00BF:(1,"PV start enabled"),
+  0x00BF:(0,"SP Start (observed COM7 bench policy)"),
 }
 class PreflightError(RuntimeError):pass
 
@@ -102,7 +102,7 @@ class TransferSession:
         if self.staged is not None:raise PreflightError("Staged changes already exist")
         if not 0<=slot<=7:raise PreflightError("Wrong programme number")
         if prog.finish!="rst":raise PreflightError("Production-intent transfers only allow controller-wide RESET on completion")
-        pairs=planned_writes(slot,prog)
+        pairs=planned_writes(slot,prog,input_type=self.settings["C3:0000"])
         existing=self.backup_data["programmes"][str(slot)]
         changes=[]
         for a,v in pairs:
