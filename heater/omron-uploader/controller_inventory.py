@@ -247,8 +247,93 @@ for i in range(43):
     add("Programless communications",f"C9:{0x17+i:04X}",f"Download mapping {i+1}",
         "Programless communications setting; unrelated to reading heating programmes.",
         "3-25–3-27",minimum=30,maximum=179)
+# Expanded thermocouple/RTD/analogue input catalogue from H186 3-8.
+# Actual hardware may not support every selectable input: this is NOT an
+# instruction to fit a different sensor or change the controller's wiring.
+from dataclasses import replace as dataclass_replace
+SENSOR_INPUTS={
+ 0:"Pt100 −200…850 °C",1:"Pt100 −199.9…500.0 °C",2:"Pt100 0.0…100.0 °C",
+ 3:"JPt100 −199.9…500.0 °C",4:"JPt100 0.0…100.0 °C",
+ 5:"Type K −200…1300 °C (1 °C)",6:"Type K −20.0…500.0 °C (0.1 °C)",
+ 7:"Type J −100…850 °C",8:"Type J −20.0…400.0 °C",
+ 9:"Type T −200…400 °C",10:"Type T −199.9…400.0 °C",
+ 11:"Type E −200…600 °C",12:"Type L −100…850 °C",
+ 13:"Type U −200…400 °C",14:"Type U −199.9…400.0 °C",
+ 15:"Type N −200…1300 °C",16:"Type R 0…1700 °C",
+ 17:"Type S 0…1700 °C",18:"Type B 100…1800 °C",
+ 19:"Type W 0…2300 °C",20:"PLII 0…1300 °C",
+ 21:"IR input 60 °C",22:"IR input 120 °C",23:"IR input 140 °C",
+ 24:"IR input 220 °C",25:"4–20 mA",26:"0–20 mA",
+ 27:"1–5 V",28:"0–5 V",29:"0–10 V"
+}
+CATALOG["C3:0000"]=dataclass_replace(CATALOG["C3:0000"],options=SENSOR_INPUTS,
+    minimum=0,maximum=29,
+    meaning="Sensor input type and range. CRITICAL: modifies all temperature scaling and programme interpretation; requires independent hardware validation.",
+    access="documented R/W; offline proposal only, no live write")
 # Documentation-verified variant catalogue. DA is captured separately.
 SUPPORTED_READ_TYPES={"C0","C1","C3","C4","C5","C9"}
+from decimal import Decimal,InvalidOperation
+
+DANGEROUS_CODES={"C1:0024","C1:0028","C1:0029","C3:0000",
+                 "C3:0007","C3:0008","C3:000C","C3:00BC","C3:00BD","C3:00BE","C3:00C9"}
+def validate_proposal(snapshot,key,display_value):
+    """Offline proposal encoder only. NEVER write to a controller.
+    Avoid accidental round-off, signed overflow and invalid listed values.
+    The return value is an *unsigned* 32-bit transport word.
+    """
+    if key not in CATALOG:raise ValueError("Unknown register")
+    bank=key.split(":")[0]
+    p=CATALOG[key]
+    if bank=="C0":raise ValueError("Operating monitors are read-only")
+    if bank=="C4":raise ValueError("Selected C4 context cannot be changed from this inventory editor; use full DA programme editor")
+    if key=="C1:0029":raise ValueError("Protected password cannot be read back or compared safely")
+    if p.minimum is None and p.maximum is None and p.options is None:
+        raise ValueError("Range/encoding not yet verified; review-only")
+    if not isinstance(display_value,str) or not display_value.strip():
+        raise ValueError("Enter a new value")
+    try: value=Decimal(display_value.strip())
+    except InvalidOperation:raise ValueError("Enter a numeric value in the displayed units")
+    if not value.is_finite():raise ValueError("Non-finite numeric value not allowed")
+    raw=value*p.scale
+    if raw!=raw.to_integral_value():raise ValueError(f"Use a multiple of 1/{p.scale:g} in the displayed units")
+    raw=int(raw)
+    if p.options is not None and raw not in p.options:
+        raise ValueError("Use one of the documented choice numbers")
+    if p.minimum is not None and raw<p.minimum:raise ValueError(f"Below register minimum {p.minimum/p.scale:g}")
+    if p.maximum is not None and raw>p.maximum:raise ValueError(f"Above register maximum {p.maximum/p.scale:g}")
+    if not -(2**31)<=raw<=2**31-1:raise ValueError("Signed 32-bit range exceeded")
+    return raw & 0xFFFFFFFF
+
+def add_proposal(snapshot,draft,key,new_value):
+    validate_inventory(snapshot)
+    unsigned=validate_proposal(snapshot,key,new_value)
+    before=snapshot["fields"][key]
+    if before is None:
+        raise ValueError("Cannot propose changes against an unread parameter on a connected unit")
+    next_draft=dict(draft)
+    if before==unsigned:next_draft.pop(key,None)
+    else:next_draft[key]=unsigned
+    return next_draft
+
+def proposal_report(snapshot,draft):
+    validate_inventory(snapshot)
+    if not isinstance(draft,dict) or set(draft)-set(CATALOG):
+        raise ValueError("Unrecognised proposal data")
+    rows=[]
+    for key in sorted(draft):
+        p=CATALOG[key];before=snapshot["fields"][key];after=draft[key]
+        if before is None:raise ValueError("Cannot review unread register "+key)
+        if type(after) is not int or not 0<=after<=0xffffffff:raise ValueError("Invalid encoded value")
+        rows.append(dict(register=key,group=p.group,name=p.name,
+                         previous=human_value(key,before),proposed=human_value(key,after),
+                         previous_hex=f"{before:08X}",proposed_hex=f"{after:08X}",
+                         danger=key in DANGEROUS_CODES,
+                         context=p.context,meaning=p.meaning))
+    return dict(schema="e5cct-config-offline-proposal-1",
+                controller=snapshot["controller"],source_read_utc=snapshot["read_utc"],
+                changes=rows,writes_performed=False,
+                warning="OFFLINE PROPOSAL ONLY. No C0/C1/C3/C4/C5/C9 register writes are implemented or validated.")
+
 def group_names():
     return sorted({p.group for p in CATALOG.values()})
 
