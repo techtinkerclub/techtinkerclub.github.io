@@ -1,5 +1,8 @@
 # Omron E5CC-T Programme Studio — laboratory validation release (v0.1)
 
+> **Modern Qt interface:** A separate PySide6 version is being developed alongside this validated Tkinter app. It uses the same Omron protocol backend and adds an editable programme graph, grouped initial settings and the five-step workflow. See [Qt build notes](QT_MODERN_README.md) and the [new Windows build workflow](../../.github/workflows/build-omron-qt.yml). Qt hardware transfer has not yet been independently validated; retain this original version as a fallback.
+
+
 **Target controller (one controller per USB session): Omron E5CC-TQX3A5M-000**. Cable: **E58-CIFQ2**.
 
 **Status (13 October 2026, extended parameter development):** Real COM7 reads, eight-programme DA memory backup, a supervised programme-0 RAM stage/read-back and a nonvolatile save acknowledgement have been observed; a four-segment profile was subsequently read after USB power cycling. These results validate an initial **DA programme transfer**, not a complete heater commissioning or configuration-write procedure. The source now includes a much larger H186-derived parameter catalogue and new extended read-only inventory plus numeric/dropdown *offline* change editor. **This new inventory/editor code and its Windows build are NOT yet tested on the physical controller. Non-DA initial/PID/communications USB writes remain DISABLED.**
