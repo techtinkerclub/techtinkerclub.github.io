@@ -964,13 +964,13 @@ class Window:
     self.setup_info=tk.StringVar(value="Select a row to see its purpose and available offline choices.")
     tk.Label(editor,textvariable=self.setup_info,bg="#f2f7fb",fg=INK,wraplength=255,
              justify="left").pack(anchor="w",pady=(10,14))
-    tk.Label(editor,text="PROPOSE A CHANGE (OFFLINE ONLY)",bg="#f2f7fb",fg=BLUE,
+    tk.Label(editor,text="CHOOSE A NEW VALUE (LOCAL DRAFT)",bg="#f2f7fb",fg=BLUE,
              font=("Segoe UI",9,"bold")).pack(anchor="w")
     self.setup_choice=tk.StringVar()
     self.setup_box=ttk.Combobox(editor,textvariable=self.setup_choice,state="disabled",width=35)
     self.setup_box.pack(fill="x",pady=9)
-    self.b(editor,"Add to proposed changes",self.setup_apply).pack(anchor="w",pady=8)
-    tk.Label(editor,text="This screen NEVER sends a setting change to the controller. A proposal must be validated, then programmed and independently verified in a separate approved procedure.",
+    self.b(editor,"ADD TO STEP 5 CHANGE LIST",self.setup_apply).pack(anchor="w",pady=8)
+    tk.Label(editor,text="Selected changes appear in Step 5 and the printable keypad instructions. This version cannot write initial C3/C1 settings by USB; only the isolated lab programme writer can write DA memories.",
              bg="#f2f7fb",fg=RED,wraplength=255,justify="left").pack(anchor="w",pady=15)
  def setup_read(self,stay_on_read=False):
     if not self.session or self.busy:
