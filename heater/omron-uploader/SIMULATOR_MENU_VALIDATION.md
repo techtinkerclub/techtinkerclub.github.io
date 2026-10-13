@@ -120,6 +120,12 @@ Reported by user while controller is powered from E58-CIFQ2 with Windows driver 
 - **Next validation:** Continue checking other read-only menus (e.g. Operation Level), or plan an isolated multi-segment programme navigation test once deliberate programming is approved. Keep heater supply isolated and do not RUN. Other PID sets, PID editing behaviour and physically masked settings are not yet validated.
 - **Limitations:** USB-only inspection provides no heater-output or restart-interlock qualification.
 
+## Two-segment manual-entry test — 13 October 2026 (in progress)
+
+- User reports deliberately changing `s-no` to **2** after being asked to select programme slot `d.prg=1`; the selected slot has **not yet been independently re-confirmed**. Programme 0 had previously been observed as `s-no=1`.
+- **Next action:** Read `d.prg` and confirm `1` before touching any segment values. If not `1`, stop and identify the current slot and preserve existing settings.
+- Intended isolated, non-running test profile: Segment 0 ramp to 50 °C at 2 °C/min, Segment 1 soak 15 min (`0.15` with `t-u=h-m`), `rpt=0`, `link=end`, `eset=rst`. No external heater supply; none of these programme values have yet been confirmed entered.
+
 ## Results
 
 - Actual `t-pr`: __________ ; actual `t-u`: __________ ; actual `pru`: __________
