@@ -42,11 +42,18 @@ class SetupTests(unittest.TestCase):
         self.assertIn("Reverse",value_text("C3:000C",0))
         self.assertIn("2 seconds",value_text("C3:000A",2))
         self.assertIn("-20.0%",value_text("C1:0022",0xFFFFFF38))
-        self.assertNotIn("C3:0000",device.reads)
+        self.assertIn("C3:0000",device.reads)  # a new, live read, not cached
         self.assertEqual(device.writes,[])
         self.assertIsNone(snap["fields"]["C3:000F"])
         self.assertIn("C3:000F",snap["errors"])
         self.assertIn("unavailable",report(snap).lower())
+    def test_changed_register_vs_inspection_is_detected(self):
+        device=FakeReadOnly()
+        snap=read_snapshot(device,{"model10":"E5CC-TQX3A","buffer_bytes":217},
+                           {"C3:00BF":1,"C3:0000":5})
+        self.assertEqual(snap["changed_since_inspection"]["C3:00BF"],
+                         {"at_inspection":1,"at_setup_read":0})
+        self.assertEqual(device.writes,[])
     def test_offline_plan_is_separate_and_no_writes(self):
         device,snap=self.make_snapshot()
         draft=apply_draft(snap,{},"C3:00BF",1)
