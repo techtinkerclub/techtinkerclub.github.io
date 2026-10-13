@@ -139,7 +139,7 @@ class SegmentRow(QFrame):
             b.setText(label)
             b.setToolTip(tip)
             b.setFixedSize(30,32)
-            b.clicked.connect(signal.emit)
+            b.clicked.connect(lambda checked=False,sig=signal:sig.emit())
             buttons.addWidget(b)
         outer.addWidget(buttonbar)
 
