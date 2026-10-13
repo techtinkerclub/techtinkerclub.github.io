@@ -52,6 +52,25 @@ class OfflineManualTests(unittest.TestCase):
         self.assertIn("NOT VERIFIED",plan["setup_proposals"][0]["entry"])
         html=make_manual(EXAMPLE,0,draft={"C5:0000":255})
         self.assertIn("Additional configuration change proposals",html)
+    def test_verified_initial_setting_menu_gets_specific_key_instructions(self):
+        plan=make_entry_plan(EXAMPLE,0,changes={"C3:00BD":1})
+        proposal=plan["setup_proposals"][0]
+        self.assertEqual(proposal["code"],"C3:00BD")
+        self.assertIn("p-on",proposal["entry"])
+        self.assertIn("hold LEVEL",proposal["entry"])
+        self.assertIn("press MODE",proposal["entry"])
+    def test_incompatible_rate_or_time_unit_must_not_produce_wrong_sheet(self):
+        for parameter,wrong in (("C3:00B9",1),("C3:00BA",0),("C3:00BB",1)):
+            with self.subTest(parameter=parameter):
+                with self.assertRaises(ValueError):
+                    make_entry_plan(EXAMPLE,0,changes={parameter:wrong})
+    def test_end_continue_is_explicit_and_not_auto_uploaded(self):
+        p=Programme("End mode", "20","cont",
+              [Segment("ramp",sp="80",rate="2")])
+        plan=make_entry_plan(p,0)
+        self.assertIn("cont", [r["value"] for r in plan["entry_rows"]
+                               if r["code"]=="eset"][0])
+        self.assertTrue(any("CAUTION" in r["value"] for r in plan["entry_rows"]))
     def test_qt_offline_shows_full_entry_table(self):
         window=Studio(enable_lab_writes=False)
         window.connection_timer.stop()
