@@ -86,11 +86,11 @@ def decode_slot(backup, slot):
     for i in range(count):
         base = 0x16 + 4*i
         kind_raw, sp_raw, rate_raw, time_raw = regs[base:base+4]
-        kind = {0: "ramp", 1: "soak"}.get(signed(kind_raw))
+        kind = {0: "ramp", 1: "soak", 2: "step"}.get(signed(kind_raw))
         if kind is None:
             warnings.append(f"Segment {i}: styp={signed(kind_raw)} is not validated; raw fields shown only")
             kind = "unknown"
-        sp = (signed(sp_raw) / decimal_factor) if decimal_factor and cel and mode and kind == "ramp" else None
+        sp = (signed(sp_raw) / decimal_factor) if decimal_factor and cel and mode and kind in ("ramp", "step") else None
         rate = signed(rate_raw) if mode and kind == "ramp" else None
         if kind == "ramp" and rate is not None and rate < 0:
             warnings.append(f"Segment {i}: negative rate {rate} — verify actual programme")
@@ -106,6 +106,8 @@ def decode_slot(backup, slot):
                 target = f"{sp:g} °C" if sp is not None else "unknown temperature"
                 unit = "°C/min" if slope_min else "controller slope units"
                 description = f"Ramp to {target} at {rate} {unit}"
+        elif kind == "step":
+            description = f"Immediately change commanded SP to {sp:g} °C" if sp is not None else "Step with unverified temperature scale"
         elif kind == "soak":
             description = f"Hold the previous target for {minutes} min" if minutes is not None else "Soak; time needs manual verification"
         else:
@@ -147,6 +149,10 @@ def profile_points(summary, initial_pv=20.0):
     for seg in summary["segments"]:
         if seg["type"] == "soak" and seg["minutes"] is not None:
             x += seg["minutes"]
+        elif seg["type"] == "step" and seg["sp"] is not None:
+            y=seg["sp"]
+            points.append((x,y))
+            continue
         elif seg["type"] == "ramp" and seg["sp"] is not None and seg["rate"] is not None:
             if seg["rate"] == 0:
                 points.append((x, seg["sp"]))
