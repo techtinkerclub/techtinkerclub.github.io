@@ -1227,22 +1227,28 @@ class Window:
     self.btn_stage.config(state="normal" if self.safe_to_stage() else "disabled")
     self.btn_commit.config(state="normal" if self.connection_mode.get()=="connected" and not self.setup_draft and self.lab_mode and not self.busy and not self.fail_latched and self.session and self.session.staged and not self.session.committed else "disabled")
     blockers=[]
-    if self.connection_mode.get()!="connected":blockers.append("Offline/manual mode: use Generate Manual Programming Sheet")
-    elif not self.connected:blockers.append("Not connected to controller: return to Step 2")
-    elif not self.session or self.session.backup_data is None:blockers.append("Take a fresh complete eight-programme backup in Step 2")
-    if not self.lab_mode:blockers.append("Writing disabled: launch START_LAB_UPLOAD.cmd")
-    if self.setup_draft:blockers.append(f"{len(self.setup_draft)} initial-setting change(s) pending — USB initial setup writing is not implemented")
-    if self.session and self.session.mismatches:blockers.append("Controller's nine checked settings differ from supported bench profile")
-    if self.session and self.session.staged and not self.session.committed:
-        blockers.append("RAM staged and verified. Review and select SAVE TO CONTROLLER to persist it.")
-    if self.fail_latched:blockers.append("A previous write failed. Disconnect, inspect and do not retry blindly")
-    if self.busy:blockers.append("Please wait for the current USB operation to finish")
-    unchecked=sum(not v.get() for v in self.check_vars)
-    if self.connection_mode.get()=="connected" and self.connected and self.lab_mode and not self.session.staged if self.session else False:
-        if unchecked:blockers.append(f"Complete {unchecked} remaining safety checklist item(s) below")
-    if not blockers:blockers.append("Ready to preview / write the programme. Controller and heater supplies must remain physically isolated.")
-    self.upload_blocker.set("WHAT TO DO NEXT:  "+"  |  ".join(blockers))
-    self.upload_blocker_label.configure(fg=GREEN if not self.safe_to_stage() is False and not blockers[0].startswith("Ready") is False else "#8e461c")
+    if self.connection_mode.get()!="connected":
+        blockers.append("Offline/manual mode — generate the manual entry sheet")
+    elif not self.connected:
+        blockers.append("Not connected — return to Step 2 and connect")
+    elif self.session is None or self.session.backup_data is None:
+        blockers.append("Read and back up all eight programme memories in Step 2")
+    if self.connection_mode.get()=="connected":
+        if not self.lab_mode:blockers.append("Restart with START_LAB_UPLOAD.cmd to allow programme writes")
+        if self.setup_draft:blockers.append(f"{len(self.setup_draft)} initial-setting change(s) pending — USB writing unsupported")
+        if self.session and self.session.mismatches:blockers.append("Controller setup differs from the supported bench profile")
+        if self.session and self.session.staged:
+            blockers.append("Verified RAM changes are pending SAVE" if not self.session.committed
+                            else "Programme saved — power-cycle USB and verify persistence")
+        if self.fail_latched:blockers.append("A write failed — inspect before trying again")
+        if self.busy:blockers.append("USB operation in progress — please wait")
+        if self.connected and self.lab_mode and self.session and not self.session.staged:
+            unchecked=sum(not v.get() for v in self.check_vars)
+            if unchecked:blockers.append(f"Complete {unchecked} remaining safety checklist item(s)")
+    ready=not blockers and self.safe_to_stage()
+    if ready:blockers.append("Ready to preview or stage to RAM. Keep external heater supplies isolated.")
+    self.upload_blocker.set("NEXT ACTION: "+"  •  ".join(blockers))
+    self.upload_blocker_label.configure(fg=GREEN if ready else "#8e461c")
  def preview(self):
     self._store_meta()
     try:
