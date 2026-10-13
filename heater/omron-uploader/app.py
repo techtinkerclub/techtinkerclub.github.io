@@ -25,7 +25,7 @@ class Window:
     for i in range(1,8):self.progs[i].name=f"Programme {i}"
     self.slot=tk.IntVar(value=0);self.current_segment=None;self.client=None;self.session=None;self.busy=False
     self.events=queue.Queue();self.connected=False;self.fail_latched=False
-    self._auto_backup=False;self._auto_show_explorer=False;self.connection_mode=tk.StringVar(value="connected")
+    self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False;self.connection_mode=tk.StringVar(value="connected")
     root.title(APP_TITLE);root.geometry("1370x890");root.minsize(1090,720);root.configure(bg=BG)
     style=ttk.Style();style.theme_use("clam")
     style.configure("TNotebook",background=BG,borderwidth=0)
@@ -81,13 +81,25 @@ class Window:
     self.t_connect=ttk.Frame(self.readbook)
     self.t_backup=ttk.Frame(self.readbook)
     self.t_explore=ttk.Frame(self.readbook)
+    self.t_initial_view=ttk.Frame(self.readbook)
     for tab,title in [(self.t_connect,"Connect & inspect"),
                       (self.t_backup,"Save backup"),
-                      (self.t_explore,"Existing programmes")]:
+                      (self.t_explore,"Existing programmes"),
+                      (self.t_initial_view,"Existing initial settings")]:
         self.readbook.add(tab,text=title)
     # Log stays available for diagnostics, but is not another workflow step.
     self.t_audit=ttk.Frame(root)
     self._web_studio();self._builder();self._connect();self._backup();self._explorer();self._setup();self._upload();self._audit()
+    view=tk.Frame(self.t_initial_view,bg=BG,padx=13,pady=13);view.pack(fill="both",expand=True)
+    tk.Label(view,text="READ-ONLY CONTROLLER CONFIGURATION",
+             bg=BG,fg=INK,font=("Segoe UI",15,"bold")).pack(anchor="w",pady=(0,8))
+    tk.Label(view,text="These are actual values collected over USB, not your proposed changes. "
+             "Select Step 4 to compare and edit initial setup. Save a separate setup snapshot there.",
+             bg=BG,fg="#526f84",wraplength=900,justify="left").pack(anchor="w",pady=(0,9))
+    self.initial_read_text=scrolledtext.ScrolledText(view,wrap="word",font=("Consolas",10),relief="flat")
+    self.initial_read_text.pack(fill="both",expand=True)
+    self.initial_read_text.insert("1.0","No detailed controller setup read yet. Use Connect + automatically back up.")
+    self.initial_read_text.configure(state="disabled")
     self.status=tk.StringVar(value="Choose Connected or Offline/manual to begin.")
     controls=tk.Frame(root,bg=WHITE,padx=19,pady=9)
     controls.pack(fill="x",side="bottom")
@@ -547,6 +559,7 @@ class Window:
  def quick_scan(self):
     if self.busy or self.client:return
     self._auto_backup=True
+    self._auto_setup=True
     self.inspect()
  def inspect(self):
     if self.client or self.busy:return
@@ -584,7 +597,7 @@ class Window:
         except Exception:pass
     self.client=None;self.session=None;self.connected=False;self.fail_latched=False;self.status.set("Disconnected")
     self.home_note.set("DISCONNECTED  •  Offline editing available  •  No controller writes")
-    self._auto_backup=False;self._auto_show_explorer=False
+    self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
     for v in self.check_vars:v.set(False)
     self.confirm.set("")
     self.log("Disconnected (no controller operation command issued)");self.refresh_buttons()
@@ -645,6 +658,9 @@ class Window:
             "This is not a complete controller clone or an independent second controller read.\n"
             "Keep a second copy of this JSON file."
         )
+        if self._auto_setup:
+            self._auto_setup=False
+            self.setup_read(stay_on_read=True)
     self._job("Reading 8 programmes (1200 registers)",work,success)
 
  def verify_receipt(self):
@@ -934,7 +950,7 @@ class Window:
     self.b(editor,"Add to proposed changes",self.setup_apply).pack(anchor="w",pady=8)
     tk.Label(editor,text="This screen NEVER sends a setting change to the controller. A proposal must be validated, then programmed and independently verified in a separate approved procedure.",
              bg="#f2f7fb",fg=RED,wraplength=255,justify="left").pack(anchor="w",pady=15)
- def setup_read(self):
+ def setup_read(self,stay_on_read=False):
     if not self.session or self.busy:
         messagebox.showwarning("Connect first","Identify a controller on the USB inspect tab before reading setup.")
         return
@@ -944,7 +960,16 @@ class Window:
         return read_snapshot(self.client,self.session.info,self.session.settings)
     def done(snapshot):
         self.setup_load(snapshot,"Live read (one attached controller)")
-        self.book.select(self.t_setup)
+        # Preserve Step 2's review flow when the full read was started automatically.
+        if stay_on_read:
+            self.book.select(self.t_read)
+            self.readbook.select(self.t_initial_view)
+        else:
+            self.book.select(self.t_setup)
+        self.initial_read_text.configure(state="normal")
+        self.initial_read_text.delete("1.0","end")
+        self.initial_read_text.insert("1.0",setup_report(snapshot))
+        self.initial_read_text.configure(state="disabled")
         unavailable=len(snapshot["errors"])
         changed=len(snapshot.get("changed_since_inspection",{}))
         self.log(f"SETUP READ ONLY: {sum(v is not None for v in snapshot['fields'].values())} fresh register reads; {unavailable} unavailable; {changed} changed since inspection; zero writes")
@@ -1237,7 +1262,7 @@ class Window:
                 self.refresh_buttons()
             elif event=="ERROR":
                 title,msg,iswrite,debug=payload;self.busy=False
-                self._auto_backup=False;self._auto_show_explorer=False
+                self._auto_backup=False;self._auto_show_explorer=False;self._auto_setup=False
                 if iswrite:self.fail_latched=True
                 self.status.set("FAILED: "+title);self.log("ERROR "+title+": "+msg);self.log(debug)
                 if title.startswith("Reading 8 programmes"):
