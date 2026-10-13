@@ -12,6 +12,43 @@ This is the NEW PARALLEL Windows app, not a replacement for the working Tkinter 
 
 Serial work is performed in a worker, not the GUI thread. Read-only status checks monitor a disconnected USB port and a non-responsive controller. The app uses a compact sidebar rather than sacrificing graph and table space.
 
+## Functional parity with Tkinter and the website
+
+The Qt app is intended to be a replacement for the proven Tkinter workflow,
+not a limited visual prototype.
+
+| Established function | Modern Qt |
+| --- | --- |
+| Five-step connected/offline wizard | Native navigation |
+| All 8 DA memories, read-only backup and human-readable Explorer | Implemented with plots |
+| Detailed initial setup and expanded C0/C1/C3/C4/C5/C9 inventory | Read-only capture; saved snapshots |
+| Open saved backup/setup/inventory files | Implemented, clearly labelled offline |
+| Programme editing, ramp, soak, step, reorder, duplicate | Native live graph/table |
+| One-click four-segment bench example | Implemented |
+| Local eight-programme projects | Open and atomic save |
+| Website-quality manual-entry parameter table | Built into Step 5, no browser |
+| Full printable manual with keypad navigation and explanations | Same source as displayed table |
+| Initial-setting manual steps | Verified menu paths where documented; unknown paths flagged |
+| Website five-button simulator | Original simulator bundled locally, available offline and optional |
+| DA register-change preview, RAM stage, SAVE RAM DATA | Original tested backend retained; Qt path pending real-device qualification |
+| Receipt verification after USB power cycle | Implemented |
+| Automatic USB disconnect detection and heartbeat | Implemented |
+| Clear reason when upload is disabled | Implemented |
+| Session activity log, saved-profile export | Implemented |
+| Configuration C1/C3/C5/C9 writes | **Not hardware-validated in either app** |
+
+The main Qt GUI requires **no online website**. For optional keypad practice,
+the original simulator and its detailed programming guide are supplied inside
+the ZIP as local HTML in the folders \`program-tools\` and \`omron-programming\`.
+The simulator opens in the default browser but does not require internet and
+cannot communicate with the physical Omron.
+
+The native manual worksheet uses the documented rate-of-rise, degrees/minute,
+hours.minutes programme convention. If an offline initial-setting draft changes
+one of these assumptions, the programme-entry guide refuses to present
+incompatible instructions. It marks known initial-level keypad routes separately
+from advanced parameters whose exact front-panel navigation is unverified.
+
 ## Boundaries
 
 - This is development code. The Qt build has not yet been verified with the physical controller. Keep the known-good Tkinter ZIP and original programme backup/receipt.
