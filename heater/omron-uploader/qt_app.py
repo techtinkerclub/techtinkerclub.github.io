@@ -40,7 +40,7 @@ from c5_transfer import C5PIDTransfer,ALLOWED as QUALIFIED_C5_CODES,verify_c5_re
 from controller_restart import restart_and_audit
 from hardware_profile import confirm_model,supports,documented_models
 from program_model import planned_writes
-from programme_constraints import effective_limits,programme_issues,check_global_programming
+from programme_constraints import effective_limits,programme_issues,check_global_programming,compatible_temperature_inputs,SENSOR_RANGES
 from transfer_capabilities import transfer_plan
 from parameter_write_plan import create_write_plan,requirements
 from settings_presentation import VIEWS,visible_in_view,scope_for,view_for
@@ -49,7 +49,7 @@ from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
 from backup_compare import compare_saved_backups,comparison_text
 from programme_audit import interpreted_temperature_changes
-from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
+from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot,SENSOR_INPUTS
 from controller_inventory import (
     CATALOG,group_names,offline_inventory,read_inventory,validate_inventory,readable_rows,
     human_value,add_proposal,proposal_report,report_inventory
@@ -449,7 +449,7 @@ class Studio(QMainWindow):
         self.programme_name.setMinimumHeight(38)
         meta.addWidget(form_field("Description",self.programme_name),1)
         self.start_pv=QDoubleSpinBox()
-        self.start_pv.setRange(-20,500);self.start_pv.setDecimals(1)
+        self.start_pv.setRange(-1999,9999);self.start_pv.setDecimals(3)
         self.start_pv.setSingleStep(0.1)
         self.start_pv.setSuffix(" °C")
         self.start_pv_editor=Stepper("Starting PV (assumed)",self.start_pv)
@@ -465,6 +465,17 @@ class Studio(QMainWindow):
             "write that system setting as part of the programme upload.")
         meta.addWidget(form_field("Controller-wide end behaviour",self.finish_mode))
         v.addLayout(meta)
+        sensor_line=QHBoxLayout()
+        self.editor_sensor=StudioCombo()
+        self.editor_sensor.addItem("Controller as read / Type K provisional offline",None)
+        for code,name in SENSOR_INPUTS.items():
+            self.editor_sensor.addItem(f"{code:02d}  {name}",code)
+        self.editor_sensor.currentIndexChanged.connect(self._editor_sensor_changed)
+        sensor_line.addWidget(form_field("Sensor / range for planning (no hardware change)",
+                                         self.editor_sensor),1)
+        self.sensor_change_button=button("Propose on controller…",self.propose_editor_sensor)
+        sensor_line.addWidget(self.sensor_change_button)
+        v.addLayout(sensor_line)
         self.temperature_limits_hint=QLabel("")
         self.temperature_limits_hint.setWordWrap(True)
         v.addWidget(self.temperature_limits_hint)
@@ -2401,18 +2412,17 @@ class Studio(QMainWindow):
         p=self.programmes[self.slot]
         self.programme_name.setText(p.name)
         limits,_=self._effective_programme_limits()
-        sensor_min=float(limits.sensor_min) if limits else -20.0
-        sensor_max=float(limits.sensor_max) if limits else 500.0
+        # Offline editing is independent of configured hardware limits.
         original_pv=float(p.start)
-        self.start_pv.setRange(min(sensor_min,original_pv),max(sensor_max,original_pv))
+        self.start_pv.setRange(min(-1999.0,original_pv),max(9999.0,original_pv))
         self.start_pv.setValue(original_pv)
         self.finish_mode.setCurrentIndex(0 if p.finish=="rst" else 1)
         self.segment_table.setRowCount(0)
         self.segment_table.setRowCount(len(p.steps))
         for index,segment in enumerate(p.steps):
             row=SegmentRow(index,segment,
-                           temperature_min=(float(limits.minimum) if limits else -20.0),
-                           temperature_max=(float(limits.maximum) if limits else 500.0))
+                           temperature_min=-1999.0,
+                           temperature_max=9999.0)
             row.changed.connect(self.update_programme)
             row.move_up.connect(lambda i=index:self._segment_action(i,"up"))
             row.move_down.connect(lambda i=index:self._segment_action(i,"down"))
@@ -2463,8 +2473,22 @@ class Studio(QMainWindow):
         try:
             # Offline editor can still draw a provisional default graph.
             # Actual USB preview is separately blocked on missing/invalid live limits.
-            metrics=p.validate(limits=limits)
+            metrics=p.validate(limits=limits,strict_range=False)
             self.chart.show_points(metrics["points"])
+            selected_sensor=self.editor_sensor.currentData()
+            if selected_sensor is not None:
+                try:
+                    reference=effective_limits({"C3:0000":selected_sensor},
+                                               require_readback=False)
+                    note+=("\nEDITOR REFERENCE ONLY: "+reference.description()+
+                           "; hardware has not been changed.")
+                except ValueError as exc:
+                    note+="\nPlanning input needs scaling: "+str(exc)
+            if limits is not None:
+                mismatches=programme_issues(p,limits)
+                if mismatches:
+                    note+="\nWARNING — PROGRAMME / CURRENT INPUT MISMATCH: "+"; ".join(mismatches[:3])
+                    note+="\nProgramme preserved. Propose a suitable input setting, then re-read before USB transfer."
             has_step=any(seg.type=="step" for seg in p.steps)
             self.programme_info.setText(
                 f"{len(p.steps)} segments   ·   {metrics['minutes']:.1f} min programmed "
@@ -2997,6 +3021,9 @@ class Studio(QMainWindow):
         self.programme_name.setEnabled(not editing_locked)
         self.start_pv.setEnabled(not editing_locked)
         self.finish_mode.setEnabled(not editing_locked)
+        self.editor_sensor.setEnabled(not editing_locked)
+        self.sensor_change_button.setEnabled(bool(not editing_locked and connected and
+            self.inventory_current_session and self.editor_sensor.currentData() is not None))
         self.btn_read.setEnabled(not self.busy and self.mode=="connected")
         self.btn_disconnect.setEnabled(not self.busy and bool(self.client))
         self.next_button.setEnabled(not self.busy)
