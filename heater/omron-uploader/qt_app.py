@@ -2204,6 +2204,25 @@ class Studio(QMainWindow):
         except ValueError as exc:
             return None,str(exc)
 
+    def _pending_compatibility_issues(self):
+        """Warn about proposed global settings WITHOUT applying them to graphs.
+
+        Local proposals have no effect on the connected hardware until written.
+        This check is advisory for global C3 writing; DA upload still requires
+        a fresh current hardware read and its own strict compatibility guard.
+        """
+        if not self.draft or not self.inventory_current_session:
+            return []
+        if not any(code in self.draft for code in
+                   ("C3:0000","C3:0005","C3:0006")):
+            return []
+        try:
+            proposed=effective_limits(self.inventory["fields"],self.draft,
+                                      require_readback=True)
+            return programme_issues(self.programmes[self.slot],proposed)
+        except ValueError as exc:
+            return ["Proposed sensor/SP settings need review: "+str(exc)]
+
     def _programming_conflicts(self):
         # Never invent unknown configuration in offline mode.
         if self.inventory.get("mode")=="offline" or not self.inventory_current_session:
@@ -2266,6 +2285,7 @@ class Studio(QMainWindow):
         p=self.programmes[self.slot]
         limits,error=self._effective_programme_limits()
         conflicts=self._programming_conflicts()
+        pending_issues=self._pending_compatibility_issues()
         if limits is not None:
             prefix=("BEFORE-change reference (fresh read required)"
                     if error else "Controller readback limits" if limits.verified
@@ -2284,10 +2304,15 @@ class Studio(QMainWindow):
                 f"(excludes Wait delays){' — total time cannot be predicted' if has_step else ''}   ·   "
                 f"Final SP {metrics['final_sp']:g} °C")
             if conflicts:note+="\nGlobal configuration conflicts: "+"; ".join(conflicts[:3])
+            if pending_issues:
+                note+=("\nPENDING GLOBAL SETTING (not active yet): "
+                       +"; ".join(pending_issues[:3]))
             if error:note+="\n"+error
             self.temperature_limits_hint.setText(note)
             self.temperature_limits_hint.setStyleSheet(
-                "color:"+("#a8610f" if error or conflicts or not limits or not limits.verified else "#157952")+";font-weight:600")
+                "color:"+("#a8610f" if error or conflicts or pending_issues or
+                                   not limits or not limits.verified else "#157952")
+                +";font-weight:600")
             self._refresh_wait_hint()
         except Exception as exc:
             self.chart.show_points([])
@@ -2616,6 +2641,12 @@ class Studio(QMainWindow):
             else:desc=f"Instant setpoint change to {s.sp} °C"
             lines.append(f"{i}. {desc}")
         if self.draft:
+            issues=self._pending_compatibility_issues()
+            if issues:
+                lines.append("\nPENDING GLOBAL SETTINGS — CHECK PROGRAMME COMPATIBILITY")
+                lines.extend("  "+issue for issue in issues)
+                lines.append("These proposed settings are NOT active. "
+                             "The editor has not altered any programme values.")
             lines.append("\nCONFIGURATION CHANGE LIST (NOT WRITTEN TO CONTROLLER)")
             for code,value in sorted(self.draft.items()):
                 old=self.inventory["fields"].get(code)
