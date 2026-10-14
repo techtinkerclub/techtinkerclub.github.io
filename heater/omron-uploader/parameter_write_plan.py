@@ -98,6 +98,8 @@ def create_write_plan(snapshot,draft,*,programme_changed=False,include_programme
         status="blocked: at least one setting requires hardware qualification"
     elif combined_eligible:
         status="combined C1 Wait Band + DA pilot eligible subject to live preflight"
+    elif qualified and programme_changed and not include_programme:
+        status="Wait Band-only selected; changed local programme is NOT included"
     elif qualified:
         status="qualified setting-only pilot eligible subject to live preflight"
     elif programme_changed:
@@ -115,7 +117,7 @@ def create_write_plan(snapshot,draft,*,programme_changed=False,include_programme
         "programme_changed":bool(programme_changed),
         "programme_explicitly_included":bool(include_programme),
         "combined_qualified":combined_eligible,
-        "all_changes_usb_writable":not blocked and (not combined or combined_eligible),
+        "all_changes_usb_writable":not blocked and (not programme_changed or not rows or combined_eligible),
         "status":status,
         "warning":("C3/C9 writes require setup area 1 and a distinct persistence/"
                    "restart procedure; they MUST NOT be processed by the DA/C1 "
