@@ -128,17 +128,10 @@ class C3ConfigurationTransfer:
             raise PreflightError("Controller backup file has changed")
         if not str(self.client.status()).startswith("01"):
             raise PreflightError("Controller must be RESET/stopped")
-        # This is a GLOBAL setting editor, not the DA programme uploader.
-        # Do not impose unrelated programme-method defaults (time units,
-        # slope units, end action, etc.) on otherwise valid C3 changes.
-        # Confirm only the relevant display/RESET safety assumptions.
-        conditions={0x0004:0,0x00BC:0,0x00BD:1}
-        for address,expected in conditions.items():
-            actual=self.client.read1("C3",address)
-            if actual!=expected:
-                raise PreflightError(
-                    f"Global configuration not qualified with C3:{address:04X}"
-                    f"={signed32(actual)}; expected {expected}")
+        # Treat C3 exactly as front-panel configuration. An existing choice
+        # (for example Fahrenheit or another sensor) must not prevent the
+        # operator from changing it back. DA programme uploads have separate,
+        # stricter temperature-encoding preflight checks.
         addresses={0,4,5,6,7,0x0a} | {
             int(k.split(":",1)[1],16) for k in extra
         }
