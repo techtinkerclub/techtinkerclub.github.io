@@ -61,6 +61,34 @@ class ModernStudioTests(unittest.TestCase):
             self.assertIn("120 °C -> 12 °C",text)
             self.assertIn("No USB operations",text)
 
+    def test_website_sensor_programme_import_and_project_roundtrip(self):
+        import json
+        from PySide6.QtWidgets import QMessageBox
+        self.win.choose_mode("offline")
+        with tempfile.TemporaryDirectory() as folder:
+            incoming=Path(folder)/"web.json"
+            incoming.write_text(json.dumps({
+                "version":2,"method":"rate","programmeNumber":3,
+                "planned_input_type":5,
+                "programme":{"name":"600C profile","start":20,"finish":"rst",
+                             "steps":[{"type":"ramp","sp":600,"rate":5},
+                                      {"type":"soak","minutes":10}]} }),encoding="utf-8")
+            with patch("qt_app.QFileDialog.getOpenFileName",
+                       return_value=(str(incoming),"Programme JSON (*.json)")),\
+                 patch("qt_app.QMessageBox.question",
+                       return_value=QMessageBox.StandardButton.Yes):
+                self.win.import_website_programme()
+            self.assertEqual(self.win.slot,3)
+            self.assertEqual(self.win.planned_sensor_by_slot[3],5)
+            self.assertEqual(float(self.win.programmes[3].steps[0].sp),600)
+            outgoing=Path(folder)/"project.json"
+            with patch("qt_app.QFileDialog.getSaveFileName",
+                       return_value=(str(outgoing),"Studio projects (*.json)")):
+                self.win.save_project()
+            data=json.loads(outgoing.read_text(encoding="utf-8"))
+            self.assertEqual(data["planned_sensor_by_slot"][3],5)
+            self.assertEqual(data["programmes"][3]["steps"][0]["sp"],"600")
+
     def test_five_steps_and_offline_mode(self):
         self.assertEqual(self.win.pages.count(),5)
         self.assertEqual(len(self.win.navbuttons),5)
