@@ -320,10 +320,12 @@ class Studio(QMainWindow):
             self.show_step(2)
 
     def _show_setting_apply(self):
-        """Step 4 explicitly opens the Settings USB/Manual review of Step 5."""
+        """Step 4 opens unified USB transfer with Settings selected."""
         self.show_step(4)
         if self.mode=="connected":
-            self.apply_tabs.setCurrentIndex(2)
+            self.apply_tabs.setCurrentIndex(1)
+            self.transfer_operation.setCurrentIndex(1)
+            self._transfer_operation_changed()
 
     def _programme_page(self):
         page=QWidget()
@@ -577,6 +579,9 @@ class Studio(QMainWindow):
         self.apply_tabs.addTab(manual,"Offline / manual entry")
 
         usb=QWidget();uv=QVBoxLayout(usb);uv.setSpacing(9)
+        uv.addWidget(text("PROGRAMME MEMORY / DA TRANSFER — Only the selected programme "
+                          "is previewed and uploaded here. Controller settings are tracked "
+                          "separately in the transfer summary.",True))
         self.apply_details=QTextEdit();self.apply_details.setReadOnly(True)
         uv.addWidget(self.apply_details,1)
         actions=QHBoxLayout()
@@ -619,7 +624,6 @@ class Studio(QMainWindow):
             checks_layout.addWidget(check)
             self.safety.append(check)
         uv.addWidget(checks_card)
-        self.apply_tabs.addTab(usb,"Programme USB transfer")
         config=QWidget()
         cv=QVBoxLayout(config)
         cv.setSpacing(10)
@@ -650,7 +654,32 @@ class Studio(QMainWindow):
                           "A SAVE may also persist other outstanding controller RAM changes.",True))
         cv.addWidget(wt_card)
         cv.addStretch(1)
-        self.apply_tabs.addTab(config,"Settings USB transfer")
+        transfer=QWidget()
+        transfer_layout=QVBoxLayout(transfer)
+        transfer_layout.setSpacing(9)
+        self.transfer_summary=QLabel("")
+        self.transfer_summary.setWordWrap(True)
+        self.transfer_summary.setObjectName("transferSummary")
+        self.transfer_summary.setStyleSheet(
+            "QLabel#transferSummary {background:#eff6fc;border:1px solid #d8e6f2;"
+            "border-radius:8px;padding:12px;color:#214965;}")
+        transfer_layout.addWidget(self.transfer_summary)
+        operation=QHBoxLayout()
+        operation.addWidget(text("TRANSFER OPERATION:",True))
+        self.transfer_operation=StudioCombo()
+        self.transfer_operation.addItem("Programme memory (DA)", "programme")
+        self.transfer_operation.addItem("Controller settings (wt-b)", "settings")
+        self.transfer_operation.setMinimumWidth(240)
+        operation.addWidget(self.transfer_operation)
+        operation.addWidget(text("Each transfer has its own preview, RAM verification, "
+                                 "SAVE and receipt; they cannot be mixed in one session.",True),1)
+        transfer_layout.addLayout(operation)
+        self.transfer_stack=QStackedWidget()
+        self.transfer_stack.addWidget(usb)
+        self.transfer_stack.addWidget(config)
+        transfer_layout.addWidget(self.transfer_stack,1)
+        self.transfer_operation.currentIndexChanged.connect(self._transfer_operation_changed)
+        self.apply_tabs.addTab(transfer,"USB transfer")
         v.addWidget(self.apply_tabs,1)
         self.pages.addWidget(page)
 
@@ -683,6 +712,55 @@ class Studio(QMainWindow):
             self.refresh_settings()
         self.show_step(1)
 
+    def _transfer_operation_changed(self,*unused):
+        if not hasattr(self,"transfer_stack"):return
+        choice=self.transfer_operation.currentData()
+        self.transfer_stack.setCurrentIndex(1 if choice=="settings" else 0)
+        self._refresh_transfer_summary()
+
+    def _refresh_transfer_summary(self):
+        """One accurate summary for programme and settings transfers."""
+        if not hasattr(self,"transfer_summary"):return
+        ses=self.session
+        tx=self.setting_transfer
+        if ses and ses.committed:
+            programme_status="SAVE acknowledged; power-cycle verification still required"
+        elif ses and ses.staged is not None:
+            programme_status="RAM verified; SAVE still required"
+        elif ses and ses.ram_touched:
+            programme_status="RAM touched; state requires inspection"
+        else:
+            programme_status="Local editor only; no programme write in this connection"
+        if tx:
+            if tx.saved:
+                wt_status=(f"wt-b {tx.preview_data['old_raw']/10:g} → "
+                           f"{tx.preview_data['new_raw']/10:g} °C: SAVE acknowledged "
+                           "and read back. Power-cycle verification still required.")
+                if tx.cmw_off:wt_status+=" CMW OFF acknowledged."
+            elif tx.staged:
+                wt_status="wt-b written to RAM and verified; NOT yet saved"
+            elif tx.ram_touched:
+                wt_status="wt-b RAM state uncertain — STOP and inspect"
+            elif tx.preview_data:
+                wt_status="wt-b preview complete; NOT written yet"
+            else:
+                wt_status="No completed Wait Band operation"
+        elif self.draft:
+            eligible=(set(self.draft)=={"C1:0021"})
+            wt_status=(f"{len(self.draft)} proposed setting change(s), NOT written"
+                       + ("; wt-b transfer available" if eligible else
+                          "; only wt-b is currently USB-writable"))
+        elif self.inventory_current_session and self.inventory["fields"].get("C1:0021") is not None:
+            raw=self.inventory["fields"]["C1:0021"]
+            wt_status=f"No pending changes; wt-b read from controller: {raw/10:g} °C"
+        else:
+            wt_status="No settings transfer in this connection"
+        self.transfer_summary.setText(
+            f"PROGRAMME {self.slot}  ·  {programme_status}\n"
+            f"CONTROLLER SETTINGS  ·  {wt_status}\n"
+            "Each SAVE is separate. A new DA upload after a settings write requires "
+            "reconnection and a fresh backup.")
+
     def show_step(self,index):
         self._current_step=max(0,min(4,index))
         self.pages.setCurrentIndex(self._current_step)
@@ -695,9 +773,10 @@ class Studio(QMainWindow):
             self.connection_controls.setVisible(self.mode=="connected")
             self.offline_return.setVisible(self.mode=="offline" and self.offline_inspect_saved)
         if self._current_step==4:
-            selected_tab=0 if self.mode=="offline" else (
-                2 if (self.draft or self.setting_transfer) else 1)
-            self.apply_tabs.setCurrentIndex(selected_tab)
+            self.apply_tabs.setCurrentIndex(0 if self.mode=="offline" else 1)
+            preferred=1 if (self.draft or self.setting_transfer) else 0
+            self.transfer_operation.setCurrentIndex(preferred)
+            self._transfer_operation_changed()
             self.refresh_review()
         if self._current_step==3:self.refresh_settings()
         self._controls()
@@ -1106,7 +1185,7 @@ class Studio(QMainWindow):
                 return "Only one wt-b proposal may be present. Other settings must be reviewed separately."
             return "Ready to READ live wt-b and preview. Nothing has been written."
         if tx.saved:
-            return ("SAVE RAM DATA acknowledged; receipt: "+str(tx.receipt_file) if tx.receipt_file
+            return ("SAVE acknowledged and post-SAVE wt-b read back; power-cycle verification PENDING. Receipt: "+str(tx.receipt_file) if tx.receipt_file
                     else "SAVE acknowledged but receipt missing. Inspect controller, do not repeat SAVE.")
         if tx.staged:return "RAM read-back PASSED. NEXT: explicit SAVE RAM DATA; do not disconnect."
         if tx.ram_touched:return "WRITE STATE UNKNOWN after a failed RAM operation. Stop and inspect."
@@ -1188,6 +1267,7 @@ class Studio(QMainWindow):
             self.draft.pop("C1:0021",None)
             self.refresh_settings()
             self.wt_status.setText(self._wait_status_text())
+            self._refresh_transfer_summary()
             self.message("Wait Band save acknowledged",
                 f"wt-b = {actual/10:g} °C. Post-save readback passed.\n"
                 f"Receipt:\n{receipt}\n\n"
@@ -1208,7 +1288,7 @@ class Studio(QMainWindow):
         def job(progress):return tx.disable_cmw()
         def done(ok):
             self.wt_status.setText("CMW OFF acknowledged. Visually check the CMW lamp. "
-                "Power-cycle USB next and verify retention in Step 4.")
+                "Power-cycle USB next and verify retention in Step 5 → USB transfer.")
             self.message("CMW OFF acknowledged",
                 "Check the physical CMW lamp went out. Only then power-cycle the USB setup "
                 "cable and reconnect to verify nonvolatile retention.")
@@ -1577,6 +1657,7 @@ class Studio(QMainWindow):
             lines.append("\nProgramme writing requires a fresh verified backup and exact preview.")
         self.apply_details.setPlainText("\n".join(lines))
         self._refresh_config_review()
+        self._refresh_transfer_summary()
         self.refresh_manual()
         self.refresh_actions()
 
@@ -1689,6 +1770,7 @@ class Studio(QMainWindow):
                 reasons.append("Ready for guarded RAM staging (heater power must remain isolated).")
         self.usb_next_action.setText("NEXT ACTION  ·  "+"  ·  ".join(reasons))
         self.usb_next_action.setStyleSheet("color:"+("#157952" if can_stage else "#a8610f")+";font-weight:600")
+        self._refresh_transfer_summary()
 
     def _controls(self):
         if hasattr(self,"stage_button"):self.refresh_actions()
