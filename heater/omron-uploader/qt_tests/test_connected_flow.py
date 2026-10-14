@@ -294,7 +294,11 @@ class QtConnectedTests(unittest.TestCase):
         self.win.toggle_programme_inclusion()
         self.assertIn("ON",self.win.include_programme_button.text())
         self.assertTrue(self.win.unified_preview.isEnabled())
+        messages=[]
+        self.win.message=lambda title,body,*unused: messages.append((title,body))
         self.win.unified_preview_action()
+        self.assertIn("°C\nProgramme",messages[-1][1])
+        self.assertNotIn(r"\n",messages[-1][1])
         tx=self.win.combined_transfer
         self.assertEqual(tx.preview_data["wait_band"]["new"],20)
         self.assertEqual(len(tx.preview_data["programme_changes"]),9)
