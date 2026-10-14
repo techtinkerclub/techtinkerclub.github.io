@@ -8,16 +8,17 @@ from transfer_capabilities import capability, transfer_plan
 class CapabilityTests(unittest.TestCase):
     def test_wait_band_qualified(self):
         self.assertTrue(capability("C1:0021").hardware_writable)
-    def test_sensor_initial_setting_not_yet_qualified(self):
+    def test_sensor_initial_setting_is_experimental(self):
         info=capability("C3:0000")
-        self.assertFalse(info.hardware_writable)
-        self.assertEqual(info.status,"qualification-required")
+        self.assertTrue(info.hardware_writable)
+        self.assertEqual(info.status,"qualified")
     def test_monitor_never_writable(self):
         self.assertEqual(capability("C0:0000").status,"read-only")
     def test_mixed_draft_no_silent_partial_write(self):
         p=transfer_plan({"C1:0021":20,"C3:0000":6},programme_changed=True)
-        self.assertEqual(len(p["blocked"]),1)
-        self.assertEqual(len(p["settings_eligible"]),1)
+        self.assertEqual(len(p["blocked"]),0)
+        self.assertEqual(len(p["settings_eligible"]),2)
+        self.assertTrue(p["mixed_setting_areas"])
         self.assertFalse(p["can_write_all"])
         self.assertFalse(p["simultaneous_transfer_qualified"])
     def test_programme_with_wait_band_not_falsely_atomic(self):
