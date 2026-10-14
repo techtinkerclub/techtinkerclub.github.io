@@ -106,12 +106,16 @@ def create_write_plan(snapshot,draft,*,programme_changed=False,include_programme
     qualified=[row for row in rows if row["usb_writable"]]
     combined=bool(programme_changed and include_programme)
     combined_eligible=bool(combined and len(rows)==1 and rows[0]["register"]=="C1:0021")
+    mixed_areas=any(row["setting_area"]=="0" for row in rows) and any(
+        row["setting_area"]=="1" for row in rows)
     if include_programme and not programme_changed:
         raise ValueError("Cannot include an unchanged programme")
     if combined and not combined_eligible:
         status="blocked: proposed settings cannot be combined with DA programme memory"
     elif blocked:
         status="blocked: at least one setting requires hardware qualification"
+    elif mixed_areas:
+        status="blocked: C1 and C3 require separate setting-area transfers"
     elif combined_eligible:
         status="combined C1 Wait Band + DA pilot eligible subject to live preflight"
     elif qualified and programme_changed and not include_programme:
@@ -133,7 +137,8 @@ def create_write_plan(snapshot,draft,*,programme_changed=False,include_programme
         "programme_changed":bool(programme_changed),
         "programme_explicitly_included":bool(include_programme),
         "combined_qualified":combined_eligible,
-        "all_changes_usb_writable":not blocked and (not programme_changed or not rows or combined_eligible),
+        "all_changes_usb_writable":not blocked and not mixed_areas and (
+            not programme_changed or not rows or combined_eligible),
         "status":status,
         "warning":("C3/C9 writes require setup area 1 and a distinct persistence/"
                    "restart procedure; they MUST NOT be processed by the DA/C1 "
