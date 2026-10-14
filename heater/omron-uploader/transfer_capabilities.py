@@ -58,10 +58,10 @@ def transfer_plan(draft: dict, *, programme_changed: bool = False, include_progr
                        and rows[0]["register"]=="C1:0021")
     if include_programme and not programme_changed:
         raise ValueError("Cannot include unchanged programme")
-    can_write=not blocked and (not combined or eligible_combined)
+    can_write=not blocked and (not programme_changed or not rows or eligible_combined)
     return dict(settings=rows, programme_changed=bool(programme_changed),
                 blocked=blocked, settings_eligible=settings,
-                simultaneous_transfer_qualified=eligible_combined if combined else not blocked,
+                simultaneous_transfer_qualified=bool(eligible_combined),
                 can_write_all=can_write,
                 reason=("Explicit C1 Wait Band + DA pilot; live hardware preflight required"
                         if eligible_combined else
