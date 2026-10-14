@@ -287,7 +287,7 @@ class QtConnectedTests(unittest.TestCase):
     def test_unified_controls_never_write_unqualified_configuration(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
-        self.win.draft={"C3:0000":6}
+        self.win.draft={"C3:000D":0}
         self.win.show_step(4)
         self.assertFalse(self.win.unified_preview.isEnabled())
         self.assertFalse(self.win.unified_stage.isEnabled())
@@ -460,7 +460,7 @@ class QtConnectedTests(unittest.TestCase):
         self.win.connect_read()
         self.win.draft={"C1:0015":140,"C3:0000":6}
         self.win.show_step(4)
-        self.assertEqual(self.win._active_transfer_kind(),"c1")
+        self.assertEqual(self.win._active_transfer_kind(),"c3")
         self.assertFalse(self.win.unified_preview.isEnabled())
         self.assertFalse(self.win.unified_stage.isEnabled())
         self.assertFalse(self.win.unified_save.isEnabled())
