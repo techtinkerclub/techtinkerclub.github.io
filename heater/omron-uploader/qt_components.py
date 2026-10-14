@@ -1,6 +1,6 @@
 """Shared Qt widgets for the portable Omron Studio (no serial I/O)."""
 from __future__ import annotations
-from PySide6.QtCore import QObject, QRunnable, Signal, Qt, QRectF, QRect
+from PySide6.QtCore import QObject, QRunnable, Signal, Qt, QRectF, QRect, QSize
 from PySide6.QtWidgets import (QFrame, QLabel, QVBoxLayout, QHBoxLayout,
                               QPushButton, QWidget, QComboBox)
 from PySide6.QtGui import QColor, QPainter, QPen, QPixmap, QIcon
@@ -149,24 +149,65 @@ def control_icon(name,colour="#28618d"):
 
 
 class StudioCombo(QComboBox):
-    """Shared Windows 11-style dropdown with a painted, non-font chevron.
+    """Consistent dropdown with measured text width and drawn chevron.
 
-    Unlike system/native arrow glyphs, this chevron has predictable weight
-    and alignment at Windows 100%, 125% and 150% DPI. The popup and keyboard
-    behaviour remain the native, accessible QComboBox implementation.
+    The Windows crop reported in October 2026 was not missing text: the
+    34px affordance and Qt's own combo padding had consumed the available
+    space for labels such as 'Programme 0' and 'RESET (stop)'.
     """
+    TEXT_MARGIN=78   # arrow 34 + text-left 10 + QSS margins / DPI allowance
+    MAX_INLINE=310
+
     def __init__(self,parent=None):
         super().__init__(parent)
         self.setMinimumHeight(38)
-        self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
-        self.setMinimumContentsLength(5)
+        self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.setMinimumContentsLength(1)
+        self.setToolTip("")
+        self.currentTextChanged.connect(self._update_selection_tooltip)
+        self.model().rowsInserted.connect(self._refit)
+        self.model().rowsRemoved.connect(self._refit)
+        self.model().modelReset.connect(self._refit)
+
+    def _content_width(self):
+        fm=self.fontMetrics()
+        text_width=max((fm.horizontalAdvance(self.itemText(i)) for i in range(self.count())),
+                       default=fm.horizontalAdvance(self.currentText()))
+        return text_width+self.TEXT_MARGIN
+
+    def _refit(self,*args):
+        # Compact enough for grouped/filter controls, but ALWAYS wide enough
+        # for typical choices (Programme 0, RESET (stop), Type K, ...).
+        preferred=max(110,min(self.MAX_INLINE,self._content_width()))
+        self.setMinimumWidth(preferred)
+        self.updateGeometry()
+        self._update_selection_tooltip()
+
+    def _update_selection_tooltip(self,*args):
+        # Even intentionally capped long H186 enum descriptions remain
+        # discoverable by hover, and the popup can be wider than the field.
+        self.setToolTip(self.currentText())
+        if self.count():
+            fm=self.fontMetrics()
+            full=min(660,max(self.width(),self._content_width()+10))
+            self.view().setMinimumWidth(full)
+            for i in range(self.count()):
+                self.setItemData(i,self.itemText(i),Qt.ItemDataRole.ToolTipRole)
+
+    def sizeHint(self):
+        normal=super().sizeHint()
+        return QSize(max(normal.width(),min(self.MAX_INLINE,self._content_width())),
+                     max(38,normal.height()))
+
+    def showEvent(self,event):
+        self._refit()
+        super().showEvent(event)
 
     def paintEvent(self,event):
         super().paintEvent(event)
         if self.width()<42:return
         painter=QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing,True)
-        # This painted area intentionally matches Stepper's tinted button stack.
         r=self.rect()
         x=r.width()-34
         painter.setPen(Qt.PenStyle.NoPen)
