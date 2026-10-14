@@ -10,15 +10,26 @@ data or rescales stored segment temperatures. A fresh read establishes the
 resulting settings. C3 initial settings use a separate setting-area-1
 finish/return-to-operation procedure.
 
-- **30 documented universal sensor input codes (0–29)** are offered in the
-  setup catalogue and the C3 writer. The stored-programme graph decoder and
-  DA uploader are deliberately limited to verified K input codes 5 and 6.
-  Choosing another input does **not** imply that DA temperatures can safely
-  be edited or graphed as degrees Celsius in this release.
-- USB command `0503` identifies only the **ten-character model prefix**.
-  It cannot identify a `-000` versus `-003` option suffix. The connected
-  settings sidebar has **Confirm full model…** for a one-time manual nameplate
-  confirmation **per connection**. The app never invents or caches a suffix.
+- **All 30 documented universal input codes (0–29)** are available in the
+  programme editor and in C3 global settings. The editor **never clamps** a
+  target just because the connected sensor range is narrower: it displays
+  the complete draft graph plus explicit current-input compatibility warnings.
+  A failed DA preview can offer a compatible range as a **separate C3 proposal**.
+  No input change, programme-temperature rescaling, or DA write is automatic.
+- The DA encoder and stored-memory explorer now use the documented resolution
+  for temperature inputs 0–24. Analogue inputs 25–29 require a **fresh read
+  of the actual engineering scaling and decimal position** (C3:0001–0003).
+  They are scaled engineering values, NOT necessarily degrees Celsius. All
+  newly enabled sensor-dependent DA encodings are simulator-level work pending
+  verification against the real controller display, saved memory and behaviour.
+- USB command `0503` identifies only the **ten-character model prefix**
+  (e.g. `E5CC-TQX3A`). The final `5M` terminal/input code and `-NNN`
+  fitted option code are NOT returned. The sidebar offers a **dropdown of
+  Omron-documented full models matching that prefix**. The operator must
+  select exactly what the controller's PHYSICAL NAMEPLATE reports; no value
+  is inferred from readable registers, guessed, or saved across connections.
+  E5CC-T 5M variants do not offer 002/007; suffix 004 has event inputs
+  3 and 4 (not 1 and 2).
 - The hardware profile uses the documented suffix matrix for fitted event
   inputs, CTs, RS-485, transfer output, auxiliary outputs and control output
   types. An absent fitted option is hidden, and a failed read is not
