@@ -58,8 +58,11 @@ class ConstraintsTests(unittest.TestCase):
 
     def test_sensor_type_change_requires_explicit_new_sp_bounds(self):
         fields=setup(5,-200,1300)
+        provisional=effective_limits(fields,{"C3:0000":6})
+        self.assertFalse(provisional.verified)
+        self.assertEqual((provisional.minimum,provisional.maximum),(-20,500))
         with self.assertRaisesRegex(ValueError,"BOTH"):
-            effective_limits(fields,{"C3:0000":6})
+            effective_limits(fields,{"C3:0000":6,"C3:0005":5000})
         limits=effective_limits(fields,{"C3:0000":6,
             "C3:0005":5000,"C3:0006":0xffffff38})
         self.assertEqual((limits.minimum,limits.maximum),(-20,500))
