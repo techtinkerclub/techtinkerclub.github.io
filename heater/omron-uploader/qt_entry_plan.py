@@ -73,6 +73,24 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
     entries=[]
     add=lambda section,code,value,purpose,instruction,kind="set":entries.append(
         Entry(section,code,str(value),purpose,instruction,kind))
+    if any(step.type=="step" for step in programme.steps):
+        raw_wait=baseline.get("C1:0021")
+        planned_wait=changes.get("C1:0021")
+        measured=("NOT READ" if raw_wait is None else
+                  "OFF" if raw_wait==0 else f"±{raw_wait/10:g} °C (as read)")
+        desired=("" if planned_wait is None else
+                 " · PROPOSED ONLY: "+("OFF" if planned_wait==0 else f"±{planned_wait/10:g} °C"))
+        add("Preparation","wt-b",measured+desired+" — CHECK",
+            "GLOBAL Wait Band: applies at ends of all segments in all eight programmes",
+            "From normal PV/SP, press LEVEL briefly twice to enter Adjustment Level. "
+            "Press MODE until wt-b. If OFF, Step advances immediately; to wait for "
+            "actual temperature, an APPROVED, nonzero band must be entered with UP/DOWN. "
+            "Check the displayed value, then press LEVEL briefly twice to return. "
+            "On Step arrival, the programme advances only once PV is within SP ± band. "
+            "IMPORTANT: wt-b also affects Ramp/Soak boundaries and all programmes, "
+            "and an event input can disable waiting. A locally proposed value "
+            "has NOT been applied to hardware. Read the controller again to verify.",
+            "check")
     add("Preparation","r-r","rst","Confirm controller stopped",
         "From PV/SP in Operation Level, press MODE briefly until r-r is displayed. "
         "Confirm rst. Do not run during programming.","check")
@@ -122,7 +140,7 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
                 "Press MODE until pr; set the specified degrees per minute. "
                 "This is the setpoint rate, not a measured heating-rate guarantee.")
         elif seg.type=="step":
-            add(sec,"sp",_target(seg.sp),"Immediate commanded setpoint",
+            add(sec,"sp",_target(seg.sp),"Immediate commanded setpoint; wait for PV at segment end if wt-b is enabled",
                 "Press MODE until sp and set the target. An instant STEP uses "
                 "styp = step and does NOT have a ramp-rate field.")
         elif seg.type=="soak":
@@ -198,6 +216,18 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
             meaning=p.meaning,
             entry=keypad
         ))
+    if any(seg.type=="step" for seg in programme.steps):
+        raw=baseline.get("C1:0021")
+        if not raw:
+            # An offline plan or unread controller does not prove Wait.
+            entries.append(Entry("Final checks","WAIT VERIFICATION",
+                "REQUIRED BEFORE STEP RUN",
+                "Do not mistake a local wt-b proposal for an active hardware setting",
+                "Step segment duration is zero. If wt-b is not verified ON on "
+                "the physical unit, the profile can jump straight to the next "
+                "segment. Check wt-b at the controller and ensure event inputs "
+                "do not disable Wait. A ±band is a first-arrival condition, "
+                "not proof of stable temperature.", "check"))
     return dict(slot=slot,name=programme.name,
                 nominal_minutes=float(met["minutes"]),final_sp=float(met["final_sp"]),
                 assumed_start_pv=str(programme.start),
