@@ -40,7 +40,7 @@ from c5_transfer import C5PIDTransfer,ALLOWED as QUALIFIED_C5_CODES,verify_c5_re
 from controller_restart import restart_and_audit
 from hardware_profile import confirm_model,supports,documented_models
 from program_model import planned_writes
-from programme_constraints import effective_limits,programme_issues,check_global_programming,compatible_temperature_inputs,SENSOR_RANGES
+from programme_constraints import effective_limits,programme_issues,check_global_programming,compatible_temperature_inputs,SENSOR_RANGES,ANALOGUE_TYPES
 from transfer_capabilities import transfer_plan
 from parameter_write_plan import create_write_plan,requirements
 from settings_presentation import VIEWS,visible_in_view,scope_for,view_for
@@ -2495,6 +2495,11 @@ class Studio(QMainWindow):
         p=self.programmes[self.slot]
         self.programme_name.setText(p.name)
         limits,_=self._effective_programme_limits()
+        chosen=self.editor_sensor.currentData()
+        input_code=chosen if chosen is not None else (limits.input_type if limits else 6)
+        display_unit="EU" if input_code in ANALOGUE_TYPES else "°C"
+        self.start_pv_editor.set_unit(display_unit)
+        self.chart.setLabel("left","Commanded setpoint",display_unit)
         # Offline editing is independent of configured hardware limits.
         original_pv=float(p.start)
         self.start_pv.setRange(min(-1999.0,original_pv),max(9999.0,original_pv))
@@ -2505,7 +2510,7 @@ class Studio(QMainWindow):
         for index,segment in enumerate(p.steps):
             row=SegmentRow(index,segment,
                            temperature_min=-1999.0,
-                           temperature_max=9999.0)
+                           temperature_max=9999.0,display_unit=display_unit)
             row.changed.connect(self.update_programme)
             row.move_up.connect(lambda i=index:self._segment_action(i,"up"))
             row.move_down.connect(lambda i=index:self._segment_action(i,"down"))
@@ -2577,10 +2582,14 @@ class Studio(QMainWindow):
                     note+="\nWARNING — PROGRAMME / CURRENT INPUT MISMATCH: "+"; ".join(mismatches[:3])
                     note+="\nProgramme preserved. Propose a suitable input setting, then re-read before USB transfer."
             has_step=any(seg.type=="step" for seg in p.steps)
+            input_code=(self.editor_sensor.currentData()
+                        if self.editor_sensor.currentData() is not None
+                        else (limits.input_type if limits else 6))
+            shown_unit="EU" if input_code in ANALOGUE_TYPES else "°C"
             self.programme_info.setText(
                 f"{len(p.steps)} segments   ·   {metrics['minutes']:.1f} min programmed "
                 f"(excludes Wait delays){' — total time cannot be predicted' if has_step else ''}   ·   "
-                f"Final SP {metrics['final_sp']:g} °C")
+                f"Final SP {metrics['final_sp']:g} {shown_unit}")
             if conflicts:note+="\nGlobal configuration conflicts: "+"; ".join(conflicts[:3])
             if pending_issues:
                 note+=("\nPENDING GLOBAL SETTING (not active yet): "
