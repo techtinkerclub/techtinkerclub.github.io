@@ -26,6 +26,10 @@ class Fake:
         if bank=="C3":return [self.c3.get(address+i,0) for i in range(count)]
         if bank=="C1":return [self.c1.get(address+i,0) for i in range(count)]
         if bank=="C0" and address==0x000D:return [self.pid]
+        if bank=="C5":
+            return [self.c1[{0:0x0015,1:0x0016,2:0x0017}[address+i]]
+                    if (address+i)//0x10==self.pid-1 and (address+i)%0x10 in (0,1,2)
+                    else 0 for i in range(count)]
         raise AssertionError(f"Unsupported read {bank} {address:04X}")
     def read1(self,bank,address):return self.read(bank,address,1)[0]
     def write_setting(self,bank,address,value):
