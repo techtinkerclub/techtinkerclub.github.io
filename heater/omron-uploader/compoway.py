@@ -78,17 +78,21 @@ class SerialClient:
     def write1(self,addr,value):
         self._guard();return self.query(f"0102DA{addr:04X}000001{value&0xffffffff:08X}")
     def write_setting(self,vtype,addr,value):
-        """First permitted parameter-write target: H186 C1:0021 Wait Band.
+        """Write only explicitly validated C1 targets in isolated-lab sessions.
 
-        No generic arbitrary-address writer is exposed. New register types
-        must be independently qualified and explicitly reviewed before
-        extending this allowlist.
+        A C1 address's presence in H186 is NOT authorisation to write it.
+        Runtime state, control-mode and PID-set checks are performed by
+        C1SettingsTransfer before calling this protocol-level guard.
         """
         self._guard()
-        if (vtype,addr)!=("C1",0x0021):
+        # Imported at call time to avoid a module-import cycle with ProtocolError.
+        from c1_transfer import check_value, QUALIFIED_C1_CODES
+        if vtype!="C1" or type(addr) is not int or not 0<=addr<=0xffff:
+            raise PermissionError("Only selected C1 adjustment registers are supported")
+        code=f"C1:{addr:04X}"
+        if code not in QUALIFIED_C1_CODES:
             raise PermissionError("Parameter-write hardware target not qualified")
-        if type(value) is not int or not 0<=value<=9999:
-            raise ValueError("Invalid Wait Band raw value; expected 0..9999")
+        check_value(code,value)
         return self.query(f"0102C1{addr:04X}000001{value:08X}")
 
     def operation(self,code,data):
