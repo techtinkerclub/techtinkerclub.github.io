@@ -38,7 +38,7 @@ from c1_transfer import C1SettingsTransfer,QUALIFIED_C1_CODES,verify_c1_receipt
 from c3_transfer import C3ConfigurationTransfer,ALLOWED as QUALIFIED_C3_CODES,verify_c3_receipt
 from c5_transfer import C5PIDTransfer,ALLOWED as QUALIFIED_C5_CODES,verify_c5_receipt
 from controller_restart import restart_and_audit
-from hardware_profile import confirm_model,supports
+from hardware_profile import confirm_model,supports,documented_models
 from program_model import planned_writes
 from programme_constraints import effective_limits,programme_issues,check_global_programming
 from transfer_capabilities import transfer_plan
@@ -369,11 +369,23 @@ class Studio(QMainWindow):
             self.message("Connect first","Read the USB model identity before confirming a nameplate.",True)
             return
         prefix=self.session.info["model10"]
-        entry,ok=QInputDialog.getText(
-            self,"Confirm the Omron model",
-            "Enter the ENTIRE model number from the physical label.\n"
-            "USB identifies only "+prefix+". Do not infer the -000/-003 suffix.")
+        candidates=documented_models(prefix)
+        if not candidates:
+            self.message("Unsupported USB identity",
+                         "No documented E5CC-T 5M model matches "+prefix+". "
+                         "Do not guess the output or option hardware.",True)
+            return
+        options=[model+"  ·  "+description for model,description in candidates]
+        current=next((i for i,(model,_) in enumerate(candidates)
+                      if self.hardware_profile and model==self.hardware_profile.full_model),0)
+        selection,ok=QInputDialog.getItem(
+            self,"Confirm the Omron nameplate",
+            "USB reports "+prefix+" only; it does NOT report 5M or -NNN.\n"
+            "Select the EXACT full order code printed on the physical label.\n"
+            "Do not select a suffix by guessing from available settings:",
+            options,current,False)
         if not ok:return
+        entry=candidates[options.index(selection)][0]
         try: profile=confirm_model(entry,prefix)
         except ValueError as exc:
             self.hardware_profile=None
