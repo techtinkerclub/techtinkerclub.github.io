@@ -53,9 +53,9 @@ function testAtlas(){
  assert.equal(d.getElementById("lcd").textContent,"s-no");
  // Numbered segment vs programme-wide branch stays explicit.
  change(dom.window,d.getElementById("programBranch"),"end");
- click(dom.window,d.querySelector('[data-entry="program-7"]'));
+ click(dom.window,d.querySelector('[data-entry="program-4"]'));
  assert.equal(d.getElementById("status").textContent,"Conditional display"); // segment SP excluded in END
- click(dom.window,d.querySelector('[data-entry="program-8"]'));
+ click(dom.window,d.querySelector('[data-entry="program-7"]'));
  assert.equal(d.getElementById("status").textContent,"In documented path"); // pid when END
  // Known hardware absences must not masquerade as active.
  click(dom.window,d.querySelector('[data-level="operation"]'));
