@@ -411,22 +411,30 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(tx.preview_data["changes"][0]["register"],"C3:0007")
         self.assertTrue(self.win.unified_stage.isEnabled())
         self.assertIn("area 1",self.win.unified_stage.text())
+        def reopen(port,write_allowed=False):
+            self.assertEqual(port,"COM7")
+            self.assertFalse(write_allowed)
+            fake.closed=False
+            return fake
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
             self.assertTrue(tx.staged)
             self.assertTrue(self.win.unified_save.isEnabled())
-            self.win.unified_save_action()
+            self.assertIn("Return to normal",self.win.unified_save.text())
+            with patch("qt_app.SerialClient",side_effect=reopen):
+                self.win.unified_save_action()
         self.assertTrue(tx.finished)
         self.assertTrue(tx.cmw_off)
         self.assertTrue(tx.receipt_file.is_file())
         self.assertEqual(fake.c3[7],1)
         self.assertNotIn(("operation","05","00"),fake.calls)
-        self.assertNotIn(("operation","06","00"),fake.calls)
-        self.assertEqual(fake.area,1)
+        self.assertEqual(fake.calls.count(("software_reset",)),1)
+        self.assertEqual(fake.area,0)
         self.assertEqual(self.win.draft,{})
-        self.assertIn("restart",self.win.transfer_summary.text().lower())
-        self.assertTrue(self.win.restart_c3_button.isEnabled())
-        self.assertFalse(self.win.preview_button.isEnabled())
+        self.assertIsNone(self.win.session) # fresh read required before next write
+        self.assertIsNotNone(tx.restart_audit)
+        self.assertTrue(tx.restart_audit["configuration_verified"])
+        self.assertFalse(self.win.restart_c3_button.isEnabled())
 
     def test_sensor_change_with_populated_memories_previews_with_complete_backup(self):
         self.win.connect_read()
@@ -470,7 +478,7 @@ class QtConnectedTests(unittest.TestCase):
         self.win.unified_preview_action()
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
-            self.win.unified_save_action()
+            self.win.finish_c3()  # legacy manual finishing remains available
         self.assertEqual(
             tuple((seg.type,float(seg.sp)) for seg in
                   self.win.programmes[0].steps if seg.type!="soak"),
@@ -515,7 +523,7 @@ class QtConnectedTests(unittest.TestCase):
         tx=self.win.c3_transfer
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
-            self.win.unified_save_action()
+            self.win.finish_c3()  # exercise recovery route for existing two-step session
         self.assertTrue(tx.finished)
         self.assertTrue(self.win.restart_c3_button.isEnabled())
         # The test reuses one simulated controller: its settings/memories
