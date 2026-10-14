@@ -44,7 +44,7 @@ permalink: /heater/program-tools/
 <div class="card"><div class="row spread"><h2>Segments</h2><span id="count" class="badge">2 / 32</span></div><div id="segments"></div><div class="row noprint"><button class="btn primary" id="addRamp">+ Ramp</button><button class="btn" id="addSoak">+ Soak</button><button class="btn" id="addStep">+ Step</button><button class="btn" id="benchExample">Use 50 °C example</button><button class="btn danger" id="clear">Clear all</button></div>
 <p class="tiny muted">Ramp = SP + whole-number slope (profile units/min). Soak = hold existing SP for a duration. Step = immediate setpoint jump (zero programmed time). To wait for the actual temperature before the next segment, verify controller-wide <code>wt-b</code> is enabled in Adjustment Level. It affects all segments/programmes; this website cannot change it.</p></div>
 </div><div><div class="card"><h2>Commanded setpoint profile</h2><div id="chart" class="plot"></div><div id="summary"></div><div id="errors"></div></div>
-<div class="card"><h2>Omron entry sheet</h2><div class="scroll" id="sheet"></div><div class="row noprint" style="margin-top:13px"><button class="btn" id="print">Print</button><button class="btn" id="json">Export JSON</button><button class="btn primary" id="practice">Practise this programme →</button></div><p class="tiny muted">Builder values live only in this browser. The entry sheet includes the planned <code>in-t</code> and the separate <code>prg</code> RUN selection; no browser action writes to the physical Omron.</p></div></div></div></section>
+<div class="card"><h2>Omron entry sheet</h2><div class="scroll" id="sheet"></div><div class="row noprint" style="margin-top:13px"><button class="btn" id="print">Print</button><button class="btn" id="json">Export JSON</button><button class="btn" id="guide">Guided keypad entry ↗</button><button class="btn primary" id="practice">Practise this programme →</button></div><p class="tiny muted">Builder values live only in this browser. The entry sheet includes the planned <code>in-t</code> and the separate <code>prg</code> RUN selection; no browser action writes to the physical Omron.</p></div></div></div></section>
 <section id="simulator" class="hidden"><div class="columns"><div>
 <div class="card"><div class="row spread"><h2>Virtual Omron E5CC-T</h2><span class="badge">Training subset</span></div><p id="virtualSensorNotice" class="note">The virtual keypad is a Type K input-6 training subset; it cannot emulate all sensor and option hardware.</p><p class="tiny muted">Buttons match the symbol positions on your actual panel. Choose HOLD for a long press; otherwise a tap is short.</p>
 <div class="device"><div class="brand"><span>OMRON</span><span>E5CC-T</span></div><div class="lcd"><div class="lcdrow"><span id="labA">PV</span><div id="screenA" class="digits">20.0</div></div><hr style="border:0;border-top:1px solid #394b53"><div class="lcdrow"><span id="labB">SV</span><div id="screenB" class="digits green">rst</div></div></div>
@@ -200,6 +200,17 @@ $("segments").addEventListener("click",ev=>{
 function add(type){let arr=cur().steps;if(arr.length>=MAX)return;arr.push(blank(type));save();render()}
 $("addRamp").onclick=()=>add("ramp");$("addSoak").onclick=()=>add("soak");$("addStep").onclick=()=>add("step");
 $("clear").onclick=()=>{if(confirm("Clear all programme segments?")){cur().steps=[];save();render()}};
+$("guide").onclick=()=>{
+ const p=cur(),seg=p.steps;
+ if(sensorPlan.code===6&&seg.length===2&&seg[0].type==="ramp"&&seg[1].type==="soak"){
+   const params=new URLSearchParams({slot:String(slot),target:String(seg[0].sp),rate:String(seg[0].rate),
+      hold:String(seg[1].minutes),start:String(p.start)});
+   location.href="../programming-assistant/?"+params.toString();
+ }else{
+   alert("The guided keypad walkthrough currently supports one Type K input-6 RAMP followed by one SOAK. The full Omron entry sheet above remains available for this programme; the walkthrough will open with a suitable example.");
+   location.href="../programming-assistant/";
+ }
+};
 $("print").onclick=()=>window.print();
 $("json").onclick=()=>{let str=JSON.stringify({version:2,method:"rate",programmeNumber:slot,planned_input_type:sensorPlan.code,planned_analogue_scaling:sensorPlan.code>=25?{low:sensorPlan.analogLower,high:sensorPlan.analogUpper,decimals:sensorPlan.analogDp}:null,programme:cur(),note:"Planned input is global; must be confirmed against connected hardware before transfer."},null,2),blob=new Blob([str],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="E5CC-T-programme-"+slot+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 function tab(sim){$("virtualSensorNotice").textContent=(sensorPlan.code===6
