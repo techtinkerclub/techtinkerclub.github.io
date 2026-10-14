@@ -34,6 +34,7 @@ C1_SPECS={
 # own dedicated state/recovery workflow and are not generic writes.
 _DEDICATED_C1={
     "C1:0024","C1:0028","C1:0029","C1:002A","C1:002B",
+    "C1:0022","C1:0023",  # May energise outputs in RESET or sensor fault
     "C1:004E","C1:004F","C1:0050","C1:0051",
     "C1:0012","C1:0019",
 }
@@ -64,6 +65,9 @@ def check_value(key,value):
     if type(value) is not int or not 0<=value<=0xffffffff:
         raise PreflightError(f"{key}: expected unsigned 32-bit raw value")
     low,high,_,_=C1_SPECS[key]
+    p=CATALOG[key]
+    if p.options is not None and signed(value) not in p.options:
+        raise PreflightError(f"{key}: undocumented choice {signed(value)}")
     if not low<=signed(value)<=high:
         raise PreflightError(f"{key}: value outside supported raw range {low}..{high}")
     return value
