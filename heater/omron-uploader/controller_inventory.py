@@ -385,6 +385,15 @@ SENSOR_INPUTS={
  24:"IR input 220 °C",25:"4–20 mA",26:"0–20 mA",
  27:"1–5 V",28:"0–5 V",29:"0–10 V"
 }
+# C1 tuning values reflect the active PID set, not a ninth independent set.
+for _addr,_name in (("C1:0015","Proportional band — active PID set"),
+                    ("C1:0016","Integral time — active PID set"),
+                    ("C1:0017","Derivative time — active PID set")):
+    if _addr in CATALOG:
+        CATALOG[_addr]=dataclass_replace(CATALOG[_addr],name=_name,
+            meaning=CATALOG[_addr].meaning+
+                    " This refers to the currently selected PID set; C5 PID 1–8 "
+                    "values are those eight stored sets, not additional integral times.")
 CATALOG["C3:0000"]=dataclass_replace(CATALOG["C3:0000"],options=SENSOR_INPUTS,
     minimum=0,maximum=29,
     meaning="Sensor input type and range. CRITICAL: modifies all temperature scaling and programme interpretation; requires independent hardware validation.",
