@@ -72,6 +72,7 @@ class Studio(QMainWindow):
         self.backup=None
         self.snapshot=None
         self.inventory=offline_inventory()
+        self.inventory_current_session=False
         self.draft={}
         self.programmes=[blank_programme() for _ in range(8)]
         self.slot=0
@@ -631,6 +632,7 @@ class Studio(QMainWindow):
         self.offline_inspect_saved=False
         if mode=="offline":
             self.inventory=offline_inventory()
+            self.inventory_current_session=False
             self.draft={}
             self.refresh_settings()
         self.show_step(1)
@@ -749,6 +751,7 @@ class Studio(QMainWindow):
                 raise
         def completed(result):
             self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file,inventory_error=result
+            self.inventory_current_session=(inventory_error is None)
             self.port=port
             self.backup=self.session.backup_data
             self.draft={}
@@ -793,6 +796,7 @@ class Studio(QMainWindow):
             try:self.client.close()
             except Exception:pass
         self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.inventory_current_session=False
         self.link_status.setText("●  Offline / disconnected")
         self.link_status.setStyleSheet("color:#627a90;font-weight:600")
         self.device_state.setText("●  Not connected")
@@ -954,6 +958,7 @@ class Studio(QMainWindow):
         except Exception as exc:
             self.message("Invalid parameter inventory",str(exc),True);return
         self.inventory=data
+        self.inventory_current_session=False
         self.draft={}
         self.inventory_text.setPlainText("SAVED FILE (not a live hardware reading)\n\n"+
                                           report_inventory(data))
@@ -1151,7 +1156,7 @@ class Studio(QMainWindow):
         raw=self.inventory.get("fields",{}).get("C1:0021")
         proposal=self.draft.get("C1:0021")
         live=(self.session is not None and self.client is not None and
-              self.inventory.get("mode")!="offline")
+              self.inventory_current_session)
         if raw is None or not live:
             label="NOT VERIFIED on connected hardware"
         elif raw==0:
