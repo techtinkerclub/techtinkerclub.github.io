@@ -92,7 +92,12 @@ class SerialClient:
         code=f"C1:{addr:04X}"
         if code not in QUALIFIED_C1_CODES:
             raise PermissionError("Parameter-write hardware target not qualified")
-        check_value(code,value)
+        try:
+            check_value(code,value)
+        except ValueError:
+            raise
+        except RuntimeError as exc:
+            raise ValueError(str(exc)) from exc
         return self.query(f"0102C1{addr:04X}000001{value:08X}")
 
     def operation(self,code,data):
