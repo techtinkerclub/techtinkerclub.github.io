@@ -2064,7 +2064,10 @@ class Studio(QMainWindow):
         if connected:
             if not self.lab:reasons.append("Hardware writes disabled: use the isolated-lab launcher.")
             if session.mismatches:reasons.append("Preflight values differ from the tested bench configuration.")
-            if self.draft:reasons.append(f"{len(self.draft)} settings proposals are pending; DA upload is locked.")
+            if self.draft and self._active_transfer_kind()!="combined":
+                reasons.append(f"{len(self.draft)} settings proposals are pending; separate DA upload is locked.")
+            elif self._active_transfer_kind()=="combined":
+                reasons.append("Combined programme + Wait Band selected; one verified save required.")
             if self.setting_transfer is not None:
                 reasons.append("Wait Band USB transfer is active/finished in this connection; reconnect before DA upload.")
             if self.programmes[self.slot].finish!="rst":
@@ -2087,13 +2090,46 @@ class Studio(QMainWindow):
         self._refresh_transfer_summary()
         if hasattr(self,"unified_preview"):
             kind=self._active_transfer_kind()
-            source=(self.wt_preview,self.wt_stage,self.wt_save) if kind=="settings" else (
-                self.preview_button,self.stage_button,self.save_button)
-            for target,original in zip(
-                    (self.unified_preview,self.unified_stage,self.unified_save),source):
-                target.setEnabled(original.isEnabled())
+            self.include_programme_button.setText(
+                "Programme included in transfer: ON" if self.include_programme_with_settings
+                else "Include selected programme with Wait Band: OFF")
+            self.include_programme_button.setEnabled(bool(
+                connected and not self.busy and not self.fail_latched
+                and set(self.draft)=={"C1:0021"} and self._programme_pending()
+                and self.combined_transfer is None and not session.ram_touched
+                and self.setting_transfer is None))
+            if kind=="combined":
+                combo=self.combined_transfer
+                can_preview_combined=bool(
+                    connected and self.lab and not self.busy and not self.fail_latched
+                    and set(self.draft)=={"C1:0021"} and self.include_programme_with_settings
+                    and self._programme_pending() and combo is None
+                    and not session.ram_touched and not session.mismatches
+                    and self.setting_transfer is None)
+                can_stage_combined=bool(
+                    connected and self.lab and not self.busy and not self.fail_latched
+                    and combo and combo.preview_data and not combo.ram_touched
+                    and self._programme_fingerprint()==getattr(self,"combined_programme_stamp",None)
+                    and self.draft=={"C1:0021":combo.preview_data["wait_band"]["new"]})
+                can_save_combined=bool(
+                    connected and self.lab and not self.busy and not self.fail_latched
+                    and combo and combo.staged and not combo.saved
+                    and self._programme_fingerprint()==getattr(self,"combined_programme_stamp",None)
+                    and self.draft=={"C1:0021":combo.preview_data["wait_band"]["new"]})
+                for control,enabled in [
+                        (self.unified_preview,can_preview_combined),
+                        (self.unified_stage,can_stage_combined),
+                        (self.unified_save,can_save_combined)]:
+                    control.setEnabled(bool(enabled))
+            else:
+                source=(self.wt_preview,self.wt_stage,self.wt_save) if kind=="settings" else (
+                    self.preview_button,self.stage_button,self.save_button)
+                for target,original in zip(
+                        (self.unified_preview,self.unified_stage,self.unified_save),source):
+                    target.setEnabled(original.isEnabled())
             self.unified_verify.setEnabled(bool(
-                kind=="settings" and self.wt_verify.isEnabled()))
+                connected and not self.busy and not self._settings_ram_pending()
+                and not (self.session and self.session.ram_touched and not self.session.committed)))
             self.unified_save.setText("3  Save + Finish (CMW OFF)")
 
     def _controls(self):
