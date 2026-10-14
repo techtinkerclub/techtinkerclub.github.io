@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (
     QApplication,QMainWindow,QWidget,QFrame,QVBoxLayout,QHBoxLayout,QGridLayout,
     QLabel,QPushButton,QLineEdit,QComboBox,QSpinBox,QDoubleSpinBox,QTextEdit,
     QTableWidget,QTableWidgetItem,QAbstractItemView,QHeaderView,QFileDialog,
-    QMessageBox,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar,QScrollArea
+    QMessageBox,QInputDialog,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar,QScrollArea
 )
 from serial.tools import list_ports
 
@@ -37,6 +37,7 @@ from combined_transfer import CombinedTransfer,verify_combined_receipt
 from c1_transfer import C1SettingsTransfer,QUALIFIED_C1_CODES,verify_c1_receipt
 from c3_transfer import C3ConfigurationTransfer,ALLOWED as QUALIFIED_C3_CODES,verify_c3_receipt
 from controller_restart import restart_and_audit
+from hardware_profile import confirm_model,supports
 from program_model import planned_writes
 from programme_constraints import effective_limits,programme_issues,check_global_programming
 from transfer_capabilities import transfer_plan
@@ -83,6 +84,7 @@ class Studio(QMainWindow):
         self.offline_inspect_saved=False
         self.client=None
         self.session=None
+        self.hardware_profile=None
         self.setting_transfer=None
         self.c1_transfer=None
         self.c3_transfer=None
@@ -170,7 +172,10 @@ class Studio(QMainWindow):
         self.device_state=QLabel("●  Not connected")
         self.device_state.setObjectName("warning")
         self.side_lay.addWidget(self.device_state)
-        self.side_lay.addWidget(text("The real hardware identity is limited to the model prefix. The full suffix must be checked on the nameplate.",True))
+        self.side_lay.addWidget(text(
+            "USB provides only the model prefix. Confirm the complete nameplate "
+            "suffix for fitted-option controls; never assume it.",True))
+        self.side_lay.addWidget(button("Confirm full model…",self.confirm_hardware_model))
         self.side_lay.addSpacing(12)
         self.side_lay.addWidget(button("Reconnect / Read",lambda:self.show_step(1)))
         self.side_lay.addWidget(button("Open backup…",self.open_backup))
@@ -354,6 +359,34 @@ class Studio(QMainWindow):
     def _offline_home(self):
         self.offline_inspect_saved=False
         self.show_step(1)
+
+    def confirm_hardware_model(self):
+        """Operator confirms the physical suffix; USB 0503 never returns it."""
+        if not self.session or not self.session.info:
+            self.message("Connect first","Read the USB model identity before confirming a nameplate.",True)
+            return
+        prefix=self.session.info["model10"]
+        entry,ok=QInputDialog.getText(
+            self,"Confirm the Omron model",
+            "Enter the ENTIRE model number from the physical label.\n"
+            "USB identifies only "+prefix+". Do not infer the -000/-003 suffix.")
+        if not ok:return
+        try: profile=confirm_model(entry,prefix)
+        except ValueError as exc:
+            self.hardware_profile=None
+            self.device_detail.setText("Model suffix unconfirmed — optional hardware settings hidden")
+            self.refresh_settings()
+            self.message("Model not confirmed",str(exc),True)
+            return
+        self.hardware_profile=profile
+        self.device_model.setText(profile.full_model)
+        self.device_detail.setText(
+            f"Confirmed from nameplate · {profile.auxiliary_count} AUX, "
+            f"{profile.event_inputs} event inputs, {profile.ct_inputs} CT inputs, "
+            +("RS-485" if profile.rs485 else "no RS-485"))
+        self.refresh_settings()
+        self.log_event("Operator confirmed full model "+profile.full_model+
+                       " for THIS connection; model suffix not supplied by USB.")
 
     def _new_offline_programme(self):
         if self._editing_locked():return
@@ -978,7 +1011,8 @@ class Studio(QMainWindow):
                 "Only the supported C3 setup-area-1 settings can be written together. "
                 "Split C1 and C3 proposals into separate transfers.",True)
             return
-        tx=C3ConfigurationTransfer(self.client,self.session,self.folder.text(),emit=self.log_event)
+        tx=C3ConfigurationTransfer(self.client,self.session,self.folder.text(),
+                                   emit=self.log_event,hardware=self.hardware_profile)
         def action(progress):return tx.preview(dict(self.draft))
         def done(data):
             self.c3_transfer=tx
@@ -1612,6 +1646,7 @@ class Studio(QMainWindow):
         def completed(result):
             self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file,inventory_error=result
             self.setting_transfer=None
+            self.hardware_profile=None
             self.c1_transfer=None
             self.c1_receipt_match=None
             self.combined_transfer=None
@@ -1642,6 +1677,7 @@ class Studio(QMainWindow):
                 ("Extended inventory failed: "+inventory_error+"\nOnly offline unknown-value planning is available."
                  if inventory_error else report_inventory(self.inventory)))
             self._populate_memories()
+            self.confirm_hardware_model()
             self.refresh_settings()
             self.refresh_review()
             self.feedback.setText("Backups saved: "+str(self.session.backup_file))
@@ -1654,6 +1690,7 @@ class Studio(QMainWindow):
         self._work("Read everything",job,completed)
 
     def disconnect(self):
+        self.hardware_profile=None
         if self.busy:
             self.message("USB busy","Wait for the serial operation to finish.",True);return
         if (self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending():
@@ -2417,6 +2454,9 @@ class Studio(QMainWindow):
         self._rendering=True
         rows=[]
         for code,p in CATALOG.items():
+            if (self.mode=="connected" and self.session and
+                    supports(self.hardware_profile,code) is not True):
+                continue
             if not visible_in_view(code,p.group,view,query):continue
             # Search is global regardless of the view/group shortcuts.
             if not query and category!="All groups" and category!=p.group:continue
@@ -2503,7 +2543,9 @@ class Studio(QMainWindow):
         self.parameter_detail.setPlainText("\n".join(friendly))
         draft=self.draft.get(code,raw)
         is_known=raw is not None or self.inventory.get("mode")=="offline"
-        can_edit=is_known and not code.startswith(("C0:","C4:")) and code!="C1:0029"
+        can_edit=(is_known and not code.startswith(("C0:","C4:")) and
+                  code!="C1:0029" and (self.mode!="connected" or
+                  supports(self.hardware_profile,code) is True))
         self.parameter_editor.clear()
         self.parameter_choices.clear()
         if p.options:
