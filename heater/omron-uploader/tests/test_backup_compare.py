@@ -37,6 +37,8 @@ class TestBackupCompare(unittest.TestCase):
         self.assertEqual(data["changed_raw_words"],0)
         self.assertEqual(data["raw_words_compared"],1200)
         self.assertEqual(len(data["interpreted_target_changes"]),8)
+        self.assertEqual(data["global_settings_changes"],[
+            {"register":"C3:0000","before_raw":5,"after_raw":6}])
         row=data["interpreted_target_changes"][0]
         self.assertEqual((row["old_interpretation_c"],row["new_interpretation_c"]),(120,12))
         self.assertTrue(data["requires_review"])
@@ -49,6 +51,7 @@ class TestBackupCompare(unittest.TestCase):
         report=self.compare(make_backup(5),make_backup(5))
         self.assertEqual(report["changed_raw_words"],0)
         self.assertEqual(report["interpreted_target_changes"],[])
+        self.assertEqual(report["global_settings_changes"],[])
         self.assertFalse(report["requires_review"])
 
     def test_actual_da_edit_is_distinguished_from_scale_change(self):
