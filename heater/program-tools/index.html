@@ -170,12 +170,25 @@ function update(){
  $("sheet").innerHTML='<p class="tiny muted"><strong>PLANNED, not read from controller.</strong> Check sensor hardware, upper/lower setpoint limits <code>sl-h/sl-l</code> and input resolution. Initial setup: <code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>, <code>rtsm = stop</code>, <code>spmd = psp</code>. Keep <code>p-on = rst</code>; verify reset output independently. <a href="../omron-programming/#hardware-matrix">Configuration/USB guide ↗</a></p><table><tr><th>Omron display / register</th><th>Plan value / check</th></tr>'+rows.map(x=>'<tr><td><code>'+esc(x[0])+'</code></td><td>'+esc(x[1])+'</td></tr>').join("")+'</table><p class="note"><strong>Configure first:</strong> the input choice is global and may reinterpret ALL eight programme memories. A Windows USB transfer cannot automatically rescale existing memories. Apply any global input change separately, return to normal, then re-read all settings/DA backup and verify displayed SP before uploading a programme. <strong>Editing vs running:</strong> <code>d.prg</code> selects a stored profile to edit; <code>prg</code> selects a programme to RUN.</p>';
 }
 
-function render(){let b=cur();$("slot").value=slot;$("name").value=b.name;$("start").value=b.start;$("finish").value=b.finish;$("segments").innerHTML=b.steps.map(entry).join("")||'<p class="muted">No segments yet.</p>';["addRamp","addSoak","addStep"].forEach(x=>$(x).disabled=b.steps.length>=MAX);update()}
+$("sensor").innerHTML=Object.entries(INPUTS).map(([code,data])=>'<option value="'+code+'">'+code+' · '+esc(data[0])+'</option>').join("");
+function render(){let b=cur();$("sensor").value=String(sensorPlan.code);
+ $("analow").value=sensorPlan.analogLower;$("anahi").value=sensorPlan.analogUpper;$("anadp").value=String(sensorPlan.analogDp);
+ $("virtualSensorNotice").textContent=(sensorPlan.code===6
+     ?"Virtual keypad simulates only Type K input 6, −20.0…500.0 °C (0.1 °C). All optional hardware and alternative sensors are excluded."
+     :"Selected builder input "+sensorPlan.code+" is NOT represented by the Type K-6 virtual keypad. You may practise the keys, but its setpoints and settings do not represent this planned sensor.");
+ $("slot").value=slot;$("name").value=b.name;$("start").value=b.start;$("finish").value=b.finish;$("segments").innerHTML=b.steps.map(entry).join("")||'<p class="muted">No segments yet.</p>';["addRamp","addSoak","addStep"].forEach(x=>$(x).disabled=b.steps.length>=MAX);update()}
 $("slot").innerHTML=Array.from({length:8},(_,i)=>'<option value="'+i+'">Programme '+i+'</option>').join("");
 $("slot").onchange=()=>{slot=Number($("slot").value);save();render();goal()};
 $("name").oninput=()=>{cur().name=$("name").value;save()};
 $("start").oninput=()=>{cur().start=$("start").value===""?"":Number($("start").value);save();update()};
 $("finish").onchange=()=>{cur().finish=$("finish").value;save();update()};
+$("sensor").onchange=()=>{sensorPlan.code=Number($("sensor").value);save();render();goal()};
+function scalingChanged(){
+ sensorPlan.analogLower=$("analow").value; sensorPlan.analogUpper=$("anahi").value;
+ sensorPlan.analogDp=Number($("anadp").value);
+ save();update();
+}
+["analow","anahi","anadp"].forEach(id=>$(id).addEventListener("input",scalingChanged));
 $("segments").addEventListener("input",ev=>{let x=ev.target,i=Number(x.dataset.i),p=x.dataset.p;if(!p||!cur().steps[i])return;if(p==="type"){cur().steps[i]=blank(x.value);save();render()}else{cur().steps[i][p]=x.value===""?"":Number(x.value);save();update()}});
 $("segments").addEventListener("click",ev=>{
  let spin=ev.target.closest("[data-spin]");
@@ -188,8 +201,11 @@ function add(type){let arr=cur().steps;if(arr.length>=MAX)return;arr.push(blank(
 $("addRamp").onclick=()=>add("ramp");$("addSoak").onclick=()=>add("soak");$("addStep").onclick=()=>add("step");
 $("clear").onclick=()=>{if(confirm("Clear all programme segments?")){cur().steps=[];save();render()}};
 $("print").onclick=()=>window.print();
-$("json").onclick=()=>{let str=JSON.stringify({version:1,method:"rate",programmeNumber:slot,programme:cur()},null,2),blob=new Blob([str],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="E5CC-T-programme-"+slot+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-function tab(sim){$("builder").classList.toggle("hidden",sim);$("simulator").classList.toggle("hidden",!sim);$("bt").classList.toggle("on",!sim);$("st").classList.toggle("on",sim);if(sim)goal();location.hash=sim?"simulator":"builder"}
+$("json").onclick=()=>{let str=JSON.stringify({version:2,method:"rate",programmeNumber:slot,planned_input_type:sensorPlan.code,planned_analogue_scaling:sensorPlan.code>=25?{low:sensorPlan.analogLower,high:sensorPlan.analogUpper,decimals:sensorPlan.analogDp}:null,programme:cur(),note:"Planned input is global; must be confirmed against connected hardware before transfer."},null,2),blob=new Blob([str],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="E5CC-T-programme-"+slot+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+function tab(sim){$("virtualSensorNotice").textContent=(sensorPlan.code===6
+ ?"Type K-6 keypad practice (limited subset). No real USB/hardware connection."
+ :"WARNING: the virtual keypad supports only input 6. Selected builder input "+sensorPlan.code+" is NOT simulated; do not treat its display as this programme.");
+ $("builder").classList.toggle("hidden",sim);$("simulator").classList.toggle("hidden",!sim);$("bt").classList.toggle("on",!sim);$("st").classList.toggle("on",sim);if(sim)goal();location.hash=sim?"simulator":"builder"}
 $("bt").onclick=()=>tab(false);$("st").onclick=()=>tab(true);$("practice").onclick=()=>tab(true);
 /* Simulator subset: real-menu navigation measured on one physical E5CC-T.
    Operation Level: a-m -> pgsg observed directly on real controller.
@@ -379,6 +395,8 @@ function advance(n){if(vm.status!=="run"){history("Not running");showVM();return
 $("minute").onclick=()=>advance(1);$("five").onclick=()=>advance(5);$("reset").onclick=()=>{vm.status="rst";vm.time=0;history("RESET");showVM()};
 $("empty").onclick=()=>{if(confirm("Clear all eight virtual programme memories? Builder remains saved."))resetVM(true)};
 $("load").onclick=()=>{let b=cur(),a=evaluate(b);if(a.err.length){alert("Correct builder errors first.");return}
+ if(sensorPlan.code!==6){alert("This virtual keypad is qualified only for Type K input 6. The programme remains saved in the builder and entry sheet; no simulated programme will be loaded for another sensor.");return}
+ if(a.warnings.length){alert("The programme has sensor-range/resolution warnings. Review them in the builder before using virtual practice.");return}
  let p=vm.progs[slot];p.n=b.steps.length;p.segments=Array.from({length:32},(_,i)=>{let s=b.steps[i];return s?{type:s.type,sp:Number(s.sp)||0,rate:Number(s.rate)||0,minutes:Number(s.minutes)||0}:{type:"ramp",sp:0,rate:0,minutes:0}});p.rpt=0;p.link="end";vm.prg=slot;vm.runPrg=slot;vm.seg="end";vm.level="operation";vm.param="pv";vm.pv=Number(b.start);vm.settings.eset=b.finish;vm.status="rst";vm.time=0;history("Loaded generator programme into virtual memory and selected programme "+slot+" for virtual RUN");showVM()};
 render();resetVM();if(location.hash==="#simulator")tab(true);
 })();
