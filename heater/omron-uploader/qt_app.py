@@ -46,6 +46,7 @@ from setting_dependencies import dependency_for
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
 from backup_compare import compare_saved_backups,comparison_text
+from programme_audit import interpreted_temperature_changes
 from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
 from controller_inventory import (
     CATALOG,group_names,offline_inventory,read_inventory,validate_inventory,readable_rows,
@@ -984,6 +985,30 @@ class Studio(QMainWindow):
             lines=[f"{r['register']}: {human_value(r['register'],r['old_raw'])}"
                    f" → {human_value(r['register'],r['new_raw'])}"
                    for r in data["changes"]]
+            if data["sensor_change"]:
+                old_sensor=self.session.settings["C3:0000"]
+                new_sensor=next(r["new_raw"] for r in data["changes"]
+                                if r["register"]=="C3:0000")
+                estimate,warnings=interpreted_temperature_changes(
+                    self.session.backup_data["programmes"],
+                    self.session.backup_data["programmes"],
+                    old_sensor,new_sensor)
+                lines+=["",f"SENSOR CHANGE CONSEQUENCE: {len(estimate)} existing "
+                        "ramp/step targets may be displayed differently IF their "
+                        "raw memory words remain unchanged."]
+                for row in estimate[:8]:
+                    lines.append(
+                        f"  Programme {row['programme']}, segment {row['segment']}: "
+                        f"{row['old_interpretation_c']:g} °C → "
+                        f"{row['new_interpretation_c']:g} °C")
+                if len(estimate)>8:
+                    lines.append(f"  ... and {len(estimate)-8} more.")
+                lines+=warnings
+                lines.append(
+                    "These are estimates from our decoder, NOT verified Omron "
+                    "post-change temperatures. Omron may clamp/reset or "
+                    "otherwise adjust programmes internally. Inspect the full "
+                    "read-only audit after the configuration change.")
             self.message("Read-only initial configuration preview",
                 "\n".join(lines)+"\n\nNOT WRITTEN. Apply enters setup area 1 "
                 "and can affect the controller immediately. No automatic rollback "
