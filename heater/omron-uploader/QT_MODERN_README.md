@@ -95,11 +95,52 @@ Regression tests exercise the real Qt field geometry and selection.
 **References:** Omron H185 §4-1-3 (Adjustment Level), §6-5
 (`cmwt`), H186 §2-3-8 (Communications Writing operation command).
 
+## First USB configuration-write trial: Wait Band
+
+**Modern Qt isolated-lab launcher only.** The first supported target is the
+global Omron Wait Band (wt-b): H186 C1:0021, 0–9999 raw, 0 means OFF.
+For temperature input, a desired 3.0 °C band encodes as raw 30 (hex 0000001E).
+
+Procedure, with controller mains and external heater DC physically isolated:
+
+1. Connect and take a full eight-programme backup in Step 2.
+2. In Step 4, search C1:0021, enter 3.0 °C and add a LOCAL change proposal.
+   No other proposed settings can be present.
+3. Click Read + preview wt-b. The app reads the live controller setting and
+   writes a separate checked backup of the ORIGINAL parameter.
+4. Click Write RAM + verify, confirming hardware isolation and the exact
+   old/new value. This sends C1:0021 write variable command 0102 and
+   independently reads the value back. No nonvolatile save has occurred.
+5. Click Save wt-b, with another explicit confirmation. H186 SAVE RAM DATA
+   can persist OTHER unsaved adjustment, PID and programme RAM settings.
+   The app saves a receipt and checks the value again.
+6. Click CMW OFF, check that the CMW lamp extinguishes.
+7. Actually power-cycle the USB cable (heater isolated) until the controller
+   display turns off, reconnect and take another fresh backup.
+8. Select Verify saved receipt in Step 4, choose the original receipt, and
+   compare the newly read C1 value. Merely reconnecting without removing
+   controller power does not establish persistence.
+
+Stop on ANY communications error, unexpected readback or unclear RAM state;
+do not repeat or attempt a blind recovery.
+
+The write API is hard-allowlisted to this single C1:0021 register for the
+first physical experiment. The new backend module settings_transfer.py adds
+read-only preview, disk-checked evidence, one-time RAM staging, explicit
+nonvolatile save, CMW OFF, and read-only receipt verification. It prevents
+mixing with pending DA programme uploads. General settings remain local
+review-only drafts pending their own qualification, especially C3/C5/C9
+parameters requiring setup-area-1 access and dependencies.
+
+Reference: Omron Communications Manual H186-E1-06 sections 2-3-2, 2-3-8
+and 3-1, table C1:0021. The new writer has not yet been checked on the
+physical controller; successful CI simulation alone is not hardware proof.
+
 ## Boundaries
 
 - This is development code. The Qt build has not yet been verified with the physical controller. Keep the known-good Tkinter ZIP and original programme backup/receipt.
 - The H186 extended catalogue is NOT yet qualified as exhaustive for the exact -000 model and its options. Some documented registers may be unavailable.
-- Only DA programme-memory writes are implemented; C0/C1/C3/C4/C5/C9 configuration USB writing remains DISABLED. Draft configuration changes block the DA transfer to prevent partial application.
+- DA programme-memory writing and the isolated first-test C1:0021 Wait Band writer are available. Other C0/C1/C3/C4/C5/C9 configuration writes remain DISABLED. Draft configuration changes block the DA transfer to prevent partial application.
 - An HTML guide describes actual known keypad programme codes, not invented steps for unverified advanced parameters.
 - The controller's normal mains and external DC heater supply must be physically isolated before USB bench operations. Confirm the full suffix on the actual nameplate.
 - Read-only preview is separate from write. DA staging requires an explicit isolated-lab launcher, complete current backup, nine real preflight values, exact current preview fingerprint and six confirmations. Nonvolatile SAVE is separately confirmed and may save other RAM changes. Test persistence after a full USB power cycle.
