@@ -26,17 +26,7 @@ permalink: /heater/omron-atlas/
 <section class="hero"><div><div class="eyebrow">Omron E5C-T · Interactive control map</div><h1>Every level.<br>Every meaningful press.</h1><p>Follow the controller from its normal PV/SP display through programme editing, PID, initial settings, protection and advanced functions. Discover what each parameter does, when it appears and where MODE takes you next.</p></div><div class="heroStats"><div class="stat"><strong id="total">—</strong><span>documented entries</span></div><div class="stat"><strong id="levelTotal">10</strong><span>navigation levels</span></div></div></section>
 <div class="notice"><strong>Navigation atlas, not a live controller.</strong> Sequences are derived from the Omron H185 printed parameter-flow chart, not inferred from CompoWay register address order. MODE skips screens hidden by hardware, protection or settings; the exact omissions depend on the actual controller. Some E5EC/E5AC features are shown as reference-only. No control or write operation is performed here.</div>
 <div class="toolbar" role="group" aria-label="Configuration filters">
-<div class="field model"><label for="model">Model from physical nameplate</label><select id="model">
-<option value="QX-000">E5CC-TQX3A5M-000 · standard voltage pulse</option>
-<option value="QX-001">E5CC-TQX3A5M-001 · 2 events / 1 CT</option>
-<option value="QX-003">E5CC-TQX3A5M-003 · RS-485 / 2 CT</option>
-<option value="QX-005">E5CC-TQX3A5M-005 · 4 events</option>
-<option value="QX-006">E5CC-TQX3A5M-006 · events / transfer</option>
-<option value="CX-000">E5CC-TCX3A5M-000 · current-output variant</option>
-<option value="CX-004">E5CC-TCX3A5M-004 · RS-485 / events 3–4</option>
-<option value="CX-005">E5CC-TCX3A5M-005 · 4 events</option>
-<option value="other">Other E5□C-T · full manual / features unconfirmed</option>
-</select></div>
+<div class="field model"><label for="model">Full model (match the physical nameplate)</label><select id="model"></select></div>
 <div class="field"><label for="algorithm">Control method</label><select id="algorithm"><option value="pid">PID</option><option value="onoff">ON/OFF</option></select></div>
 <div class="field"><label for="heatcool">Control output arrangement</label><select id="heatcool"><option value="standard">Standard / heating only</option><option value="heatcool">Heating + cooling</option></select></div>
 <div class="field"><label for="method">Programme method</label><select id="method"><option value="rate">Rate-of-rise</option><option value="time">Step time</option></select></div>
@@ -72,17 +62,24 @@ permalink: /heater/omron-atlas/
 (function(){
  "use strict";
  const A=window.OMRON_ATLAS,L=A.levels,$=id=>document.getElementById(id),IDS=Object.keys(L);
- const state={level:"operation",id:"operation-0",model:"QX-000",algorithm:"pid",heatcool:"standard",method:"rate",programBranch:"segment",segmentType:"ramp",pidBank:1,showSkipped:true};
- const MODEL={
- "QX-000":{aux:3,event:[],ct:0,serial:false,transfer:false,output2:false,current1:false},
- "QX-001":{aux:3,event:[1,2],ct:1,serial:false,transfer:false,output2:false,current1:false},
- "QX-003":{aux:3,event:[],ct:2,serial:true,transfer:false,output2:false,current1:false},
- "QX-005":{aux:3,event:[1,2,3,4],ct:0,serial:false,transfer:false,output2:false,current1:false},
- "QX-006":{aux:3,event:[1,2],ct:0,serial:false,transfer:true,output2:false,current1:false},
- "CX-000":{aux:3,event:[],ct:0,serial:false,transfer:false,output2:false,current1:true},
- "CX-004":{aux:3,event:[3,4],ct:0,serial:true,transfer:false,output2:false,current1:true},
- "CX-005":{aux:3,event:[1,2,3,4],ct:0,serial:false,transfer:false,output2:false,current1:true}
- };
+ const state={level:"operation",id:"operation-0",model:"E5CC-TQX3A5M-000",algorithm:"pid",heatcool:"standard",method:"rate",programBranch:"segment",segmentType:"ramp",pidBank:1,showSkipped:true};
+ const MODEL={};
+ const prefixes=["RX","QX","CX","QQ","CQ"];
+ const suffixes=["000","001","003","004","005","006"];
+ const modelCodes=[];
+ for(const output of prefixes)for(const aux of [2,3])for(const supply of ["A","D"])for(const suffix of suffixes){
+  if(["001","003"].includes(suffix)&&["CX","CQ"].includes(output))continue;
+  if(suffix==="004"&&output!=="CX")continue;
+  const model="E5CC-T"+output+aux+supply+"5M-"+suffix;
+  const events=suffix==="004"?[3,4]:suffix==="005"?[1,2,3,4]:["001","006"].includes(suffix)?[1,2]:[];
+  MODEL[model]={aux,event:events,ct:suffix==="001"?1:suffix==="003"?2:0,
+    serial:["003","004"].includes(suffix),transfer:suffix==="006",
+    output2:["QQ","CQ"].includes(output),current1:["CX","CQ"].includes(output)};
+  modelCodes.push(model);
+ }
+ $("model").innerHTML=modelCodes.map(x=>'<option value="'+x+'">'+x+'</option>').join("")+
+     '<option value="other">Other E5□C-T — catalogue reference only</option>';
+ $("model").value="E5CC-TQX3A5M-000";
  const entryMap=new Map;IDS.forEach(k=>L[k].entries.forEach(e=>entryMap.set(e.id,{...e,level:k})));
  const routes={
  operation:[["POWER","Power ON → Operation level"],["MODE","Cycle normal screens"],["LEVEL","Short → Programme level"]],
