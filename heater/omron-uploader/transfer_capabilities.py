@@ -8,8 +8,9 @@ from dataclasses import dataclass
 from controller_inventory import CATALOG
 from c1_transfer import QUALIFIED_C1_CODES
 from c3_transfer import ALLOWED as QUALIFIED_C3_CODES
+from c5_transfer import ALLOWED as QUALIFIED_C5_CODES
 
-QUALIFIED_WRITES = QUALIFIED_C1_CODES | QUALIFIED_C3_CODES
+QUALIFIED_WRITES = QUALIFIED_C1_CODES | QUALIFIED_C3_CODES | QUALIFIED_C5_CODES
 READ_ONLY_BANKS = frozenset({"C0"})
 CONTEXT_DEPENDENT_BANKS = frozenset({"C4", "C5", "C9"})
 
