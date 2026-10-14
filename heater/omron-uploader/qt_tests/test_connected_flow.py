@@ -23,6 +23,7 @@ class FakeOmron:
         self.closed=False
         self.calls=[]
         self.c3={addr:expected for addr,(expected,_) in PREFLIGHT.items()}
+        self.c1={0x0021:0}
         self.da=[[0]*150 for _ in range(8)]
         for block in self.da:
             block[0]=1
@@ -43,12 +44,20 @@ class FakeOmron:
             return self.da[slot][off:off+count]
         if bank=="C3":
             return [self.c3.get(addr+i,0) for i in range(count)]
+        if bank=="C1":
+            return [self.c1.get(addr+i,0) for i in range(count)]
         return [0 for _ in range(count)]
     def read1(self,bank,addr):return self.read(bank,addr,1)[0]
     def write1(self,addr,value):
         assert self.write_allowed,"A disabled lab session attempted a write!"
         self.calls.append(("write","DA",addr,value))
         self.da[addr>>8][addr&255]=value&0xffffffff
+    def write_setting(self,bank,addr,value):
+        assert self.write_allowed
+        assert (bank,addr)==("C1",0x0021)
+        assert 0<=value<=9999
+        self.calls.append(("setting-write",bank,addr,value))
+        self.c1[addr]=value
     def operation(self,code,data):
         assert self.write_allowed
         assert (code,data) in {("00","01"),("00","00"),("04","01"),("05","00")}
@@ -134,6 +143,51 @@ class QtConnectedTests(unittest.TestCase):
         with self.assertRaises(Exception):
             self.win.session.disable_communications_writing()
         self.assertNotIn(("operation","00","00"),fake.calls)
+
+    def test_real_qt_buttons_preview_stage_save_cmw_for_one_wait_band(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C1:0021":30}
+        self.win.show_step(3)
+        self.win.refresh_actions()
+        self.assertTrue(self.win.wt_preview.isEnabled())
+        self.assertFalse(self.win.wt_stage.isEnabled())
+        self.win.preview_wait()
+        self.assertIsNotNone(self.win.setting_transfer)
+        self.assertEqual(self.win.setting_transfer.preview_data["old_raw"],0)
+        self.assertTrue(self.win.wt_stage.isEnabled())
+        self.assertNotIn(("setting-write","C1",0x0021,30),fake.calls)
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.stage_wait()
+        self.assertTrue(self.win.setting_transfer.staged)
+        self.assertEqual(fake.c1[0x0021],30)
+        self.assertTrue(self.win.wt_save.isEnabled())
+        self.assertFalse(self.win.stage_button.isEnabled())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.save_wait()
+        self.assertTrue(self.win.setting_transfer.saved)
+        self.assertTrue(self.win.setting_transfer.receipt_file.exists())
+        self.assertEqual(self.win.draft,{})
+        self.assertTrue(self.win.wt_cmw_off.isEnabled())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.finish_wait()
+        self.assertTrue(self.win.setting_transfer.cmw_off)
+        self.assertEqual(sum(x[0]=="setting-write" for x in fake.calls),1)
+        self.assertEqual(sum(x==("operation","05","00") for x in fake.calls),1)
+        with patch("qt_app.QFileDialog.getOpenFileName",
+                   return_value=(str(self.win.setting_transfer.receipt_file),"")):
+            self.win.verify_wait()
+        self.assertFalse(self.win.stage_button.isEnabled())
+
+    def test_qt_settings_cannot_stage_two_unrelated_drafts(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C1:0021":30,"C1:0026":500}
+        self.win.show_step(3)
+        self.win.refresh_actions()
+        self.assertFalse(self.win.wt_preview.isEnabled())
+        self.win.preview_wait()
+        self.assertNotIn(("setting-write","C1",0x0021,30),fake.calls)
 
     def test_configuration_draft_disables_da_programme_write(self):
         self.win.connect_read()
