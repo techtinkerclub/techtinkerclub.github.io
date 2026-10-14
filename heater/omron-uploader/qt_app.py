@@ -2430,6 +2430,14 @@ class Studio(QMainWindow):
         """Offer, but never silently apply, compatible sensor configurations."""
         if not self.inventory_current_session or self.draft or self.busy:
             return False
+        # A failed COM connection, STOP check or backup verification is NOT
+        # evidence of a sensor incompatibility and must keep its own error.
+        reason=str(why).lower()
+        if not any(fragment in reason for fragment in (
+                "temperature restrictions","outside permitted","outside sensor range",
+                "input resolution","valid increment","unverified thermocouple",
+                "sensor range","input type")):
+            return False
         candidates=compatible_temperature_inputs(self.programmes[self.slot])
         current=self.inventory.get("fields",{}).get("C3:0000")
         if not candidates or current in candidates:
