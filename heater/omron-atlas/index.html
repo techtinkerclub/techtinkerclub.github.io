@@ -179,7 +179,7 @@ permalink: /heater/omron-atlas/
    for(let i=1;i<=6;i++)if(flags.includes("event"+i)&&!m.event.includes(i))reasons.push("Event input "+i+" not fitted");
    if(flags.includes("motor"))reasons.push("Requires position-proportional motor model, not selected E5CC-T");
   } else reasons.push("Full hardware option code unconfirmed; compare the physical nameplate");
-  const unavailable=reasons.some(x=>/not fitted|Requires a second CT|not selected E5CC|No RS-485|No transfer-output|Requires current-output/.test(x));
+  const unavailable=reasons.some(x=>/not fitted|No CT fitted|Requires a second CT|not selected E5CC|No RS-485|No transfer-output|Requires current-output/.test(x));
   return {kind:unavailable?"unavailable":reasons.length?"conditional":"normal",reasons};
  }
  function entries(level=state.level){return L[level].entries.filter(e=>state.showSkipped||availability(e).kind==="normal")}
