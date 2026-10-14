@@ -194,6 +194,28 @@ class ModernStudioTests(unittest.TestCase):
         long.close()
         self.win.hide()
 
+    def test_step_wait_band_requires_hardware_verification_and_links_to_setting(self):
+        import copy
+        from program_model import Segment,Programme
+        self.win.choose_mode("offline")
+        self.win.programmes[0]=Programme("Step test","20","rst",[
+            Segment("step",sp="180"),Segment("soak",minutes="15")])
+        self.win._render_programme()
+        self.assertIn("NOT VERIFIED",self.win.wait_hint.text())
+        self.assertIn("GLOBAL",self.win.wait_hint.text() or "global")
+        self.assertFalse(self.win.stage_button.isEnabled())
+        self.win.goto_wait_setting()
+        self.assertEqual(self.win._current_step,3)
+        self.assertEqual(self.win.search.text(),"C1:0021")
+        self.assertIn("C1:0021",self.win.setting_keys)
+        self.win.inventory["fields"]["C1:0021"]=0
+        self.win._refresh_wait_hint()
+        self.assertIn("NOT VERIFIED",self.win.wait_hint.text())
+        self.win.search.setText("")
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win._render_programme()
+        self.assertFalse(self.win.wait_configure.isVisibleTo(self.win.pages.widget(2)))
+
     def test_offline_configuration_proposal_blocks_upload(self):
         self.win.choose_mode("offline")
         self.win.group.setCurrentText("All groups")
