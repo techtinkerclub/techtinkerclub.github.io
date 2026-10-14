@@ -210,6 +210,27 @@ class TransferTests(unittest.TestCase):
             s.commit()
             self.assertEqual(d.nonvolatile_saves,1)
             self.assertTrue(s.committed)
+    def test_communications_write_off_only_after_saved_receipt(self):
+        device=FakeDevice()
+        session=TransferSession(device)
+        session.preflight()
+        with self.assertRaises(PreflightError):
+            session.disable_communications_writing()
+        self.assertNotIn(("00","00"),device.operations)
+        with tempfile.TemporaryDirectory() as folder:
+            session.backup(folder)
+            session.stage(0,Programme())
+            with self.assertRaises(PreflightError):
+                session.disable_communications_writing()
+            self.assertNotIn(("00","00"),device.operations)
+            session.commit()
+            self.assertTrue(session.disable_communications_writing())
+            self.assertEqual(device.operations[-1],("00","00"))
+            self.assertTrue(session.communications_write_disabled)
+            self.assertEqual(device.nonvolatile_saves,1)
+            with self.assertRaises(PreflightError):
+                session.disable_communications_writing()
+
     def test_backup_reports_progress_and_verifies_file_on_disk(self):
         d=FakeDevice();s=TransferSession(d)
         s.preflight()
