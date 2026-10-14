@@ -8,9 +8,6 @@ from __future__ import annotations
 import os
 os.environ.setdefault("QT_QPA_PLATFORM","offscreen")
 import sys,tempfile,unittest
-import faulthandler
-# CI diagnostic: fail with a traceback rather than hang forever if Qt blocks.
-faulthandler.dump_traceback_later(50, exit=True)
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -85,7 +82,10 @@ class QtConnectedTests(unittest.TestCase):
         self.win.mode="connected"
         self.win._work=self.immediate_job
     def tearDown(self):
-        self.win.close()
+        # Automated tests must acknowledge the real UI safety guard for
+        # simulated uncommitted RAM. Production confirmation is unchanged.
+        with patch.object(QMessageBox,"question",return_value=QMessageBox.StandardButton.Yes):
+            self.win.close()
         self.oldserial.stop()
         self.dir.cleanup()
     def immediate_job(self,title,work,success,is_write=False,quiet=False):
