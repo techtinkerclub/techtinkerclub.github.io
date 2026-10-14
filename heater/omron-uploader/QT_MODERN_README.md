@@ -215,3 +215,27 @@ For a combined transfer on the verified E5CC-T bench configuration:
 **Important:** The combined C1/DA transaction has passed simulated Windows and backend tests but is not yet confirmed against physical hardware. Treat it as isolated laboratory commissioning only; leave the heater supplies disconnected.
 
 Changing thermocouple/input type (`C3:0000`), alarms, PID sets, output parameters, and other configuration is **not** yet supported by hardware writes. These parameters can be reviewed as local drafts; their register-specific setting area, applicable hardware features, and persistence rules must be qualified before enabling writing. Unsupported draft parameters block transfer, rather than being silently ignored. E58-CIFQ2 model identification supplies only a truncated prefix, so do not assume different Omron models are interchangeable.
+
+## Receipt verification and parameter planning (14 October 2026)
+
+**Verify saved receipt** is read-only. A successful SAVE creates a JSON receipt with the
+controller model prefix, exact programme/Wait Band registers and expected values.
+After the operator physically unplugs the setup cable and confirms the controller
+display turns OFF, reconnecting and selecting the saved receipt triggers new
+CompoWay/F reads. The application compares the live register values with that
+file and reports matches or differences. It does **not** power-cycle the device,
+prove that a power cycle happened, switch RUN/RESET, or energise the heater.
+
+The configuration editor now displays the setting area, persistence expectations,
+and qualification state of the selected parameter. Proposed configurations are
+assigned to setting area 0 (operation/adjustment/PID) or 1 (initial/advanced/
+communications). Changes spanning both are visibly identified as separate,
+dependent procedures. This groundwork does not enable C3/C5/C9 USB writing.
+
+Manufacturer source: Omron H186-E1-06, §§2-2-3, 2-3-8 and 3-1. C3 sensor type,
+alarm setup and control settings in area 1 require entry to area 1 (operation 3005
+code 07), separate persistence qualification, and a subsequent controller
+restart/power cycle to return to area 0. DA/C1 SAVE RAM DATA must not be assumed
+to save initial configuration. No unqualified 3005 operations are available
+from the current serial writer. Reading a parameter is not evidence of
+hardware support for writing that parameter.
