@@ -79,7 +79,10 @@ class SerialClient:
         self._guard();return self.query(f"0102DA{addr:04X}000001{value&0xffffffff:08X}")
     def operation(self,code,data):
         self._guard()
-        allow={("00","01"),("04","01"),("05","00")}
+        # H186 §2-3-8: 00/00 disables communications writing (CMW OFF).
+        # Expose only to a guarded post-save finishing action, never auto-close
+        # an uncertain/uncommitted RAM session.
+        allow={("00","00"),("00","01"),("04","01"),("05","00")}
         # Intentionally no RUN/RESET, firmware, setup area changes, or auto/manual.
         if (code,data) not in allow:raise PermissionError("Operation command not permitted")
         return self.query("3005"+code+data)
