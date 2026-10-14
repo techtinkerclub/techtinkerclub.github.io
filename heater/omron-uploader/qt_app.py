@@ -734,9 +734,13 @@ class Studio(QMainWindow):
             programme_status="Local editor only; no programme write in this connection"
         if tx:
             if tx.saved:
-                wt_status=(f"wt-b {tx.preview_data['old_raw']/10:g} → "
-                           f"{tx.preview_data['new_raw']/10:g} °C: SAVE acknowledged "
-                           "and read back. Power-cycle verification still required.")
+                if tx.receipt_file:
+                    wt_status=(f"wt-b {tx.preview_data['old_raw']/10:g} → "
+                               f"{tx.preview_data['new_raw']/10:g} °C: SAVE acknowledged "
+                               "and read back. Power-cycle verification still required.")
+                else:
+                    wt_status=("wt-b SAVE may have been issued, but post-save readback "
+                               "or receipt is INCOMPLETE. Stop and inspect, do not retry.")
                 if tx.cmw_off:wt_status+=" CMW OFF acknowledged."
                 if self.draft:
                     wt_status+=(f"  ·  {len(self.draft)} NEW proposed settings change(s) "
@@ -1683,8 +1687,12 @@ class Studio(QMainWindow):
         tx=self.setting_transfer
         if tx:
             if tx.saved:
-                lines.append("Wait Band SAVE acknowledged; receipt exists. "
-                             "Power-cycle verification still required.")
+                lines.append(
+                    "Wait Band SAVE acknowledged; checked receipt exists. "
+                    "Power-cycle verification still required."
+                    if tx.receipt_file else
+                    "CAUTION: SAVE may have run, but post-save verification/receipt "
+                    "is missing. Keep heater isolated; inspect rather than retry.")
                 if self.draft:
                     lines.append("Additional settings proposals are NEW and NOT applied; "
                                  "reconnect and take a fresh backup before another USB write.")
