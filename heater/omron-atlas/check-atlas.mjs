@@ -46,6 +46,12 @@ function testAtlas(){
  assert.equal(d.getElementById("total").textContent,String(total));
  assert.ok(d.getElementById("levelList").querySelectorAll("button").length===10);
  assert.ok(d.getElementById("model").options.length>=60,"Full E5CC variants selectable");
+ // Start with likely settings, not the reference-only catalogue.
+ assert.equal(d.getElementById("showSkipped").checked,false);
+ assert.equal(d.getElementById("sequenceDetails").open,false);
+ assert.equal(d.getElementById("mapDetails").open,false);
+ assert.equal(d.getElementById("extraConfig").open,false);
+ assert.equal(d.getElementById("levelSelect").options.length,10);
  // MODE navigation has a true deterministic next item.
  click(dom.window,d.querySelector('[data-level="program"]'));
  assert.equal(d.getElementById("lcd").textContent,"d.prg");
@@ -53,16 +59,23 @@ function testAtlas(){
  assert.equal(d.getElementById("lcd").textContent,"s-no");
  // Numbered segment vs programme-wide branch stays explicit.
  change(dom.window,d.getElementById("programBranch"),"end");
+ assert.equal(d.querySelector('[data-entry="program-4"]'),null,"conditional segment SP hidden by default");
+ change(dom.window,d.getElementById("showSkipped"),true);
  click(dom.window,d.querySelector('[data-entry="program-4"]'));
- assert.equal(d.getElementById("status").textContent,"Conditional display"); // segment SP excluded in END
+ assert.equal(d.getElementById("status").textContent,"May be hidden"); // segment SP excluded in END
  click(dom.window,d.querySelector('[data-entry="program-7"]'));
- assert.equal(d.getElementById("status").textContent,"In documented path"); // pid when END
+ assert.equal(d.getElementById("status").textContent,"Likely visible"); // pid when END
  // Known hardware absences must not masquerade as active.
  click(dom.window,d.querySelector('[data-level="operation"]'));
  click(dom.window,d.querySelector('[data-entry="operation-10"]'));
- assert.equal(d.getElementById("status").textContent,"Hardware unavailable");
+ assert.equal(d.getElementById("status").textContent,"Not fitted / unavailable");
+ change(dom.window,d.getElementById("showSkipped"),false);
+ assert.ok(d.querySelector('[data-entry="operation-10"]'),"selected hidden item remains inspectable");
+ click(dom.window,d.getElementById("showAll"));
+ assert.equal(d.getElementById("sequenceDetails").open,true);
  // Per-parameter documented input choices (all 30) are visible.
- click(dom.window,d.querySelector('[data-level="initial"]'));
+ change(dom.window,d.getElementById("levelSelect"),"initial");
+ assert.equal(d.getElementById("lcd").textContent,"in-t");
  const inT=cat.levels.initial.entries.find(x=>x.code==="in-t");
  click(dom.window,d.querySelector('[data-entry="'+inT.id+'"]'));
  assert.equal(d.querySelectorAll("#choiceBox .choice").length,30);
@@ -80,6 +93,14 @@ function testAtlas(){
  assert.ok(d.getElementById("modePath").textContent.includes("MODE"));
  assert.ok(d.querySelectorAll("#allMap .mapGroup").length===10);
  assert.ok(d.querySelectorAll("#allMap [data-map-level]").length>0);
+ // Searching for a hidden CT should still open that reference without switching on Show hidden.
+ const hidden=d.getElementById("showSkipped");
+ hidden.checked=false;hidden.dispatchEvent(new dom.window.Event("change",{bubbles:true}));
+ input.value="heater current";input.dispatchEvent(new dom.window.Event("input",{bubbles:true}));
+ const firstHit=d.querySelector('[data-hit^="operation-"]');
+ assert.ok(firstHit);click(dom.window,firstHit);
+ assert.equal(hidden.checked,false);
+ assert.ok(d.getElementById("lcd").textContent.length>0);
  // Semantics: website makes no USB write claims.
  assert.ok(html.includes("No control or write operation"));
  dom.window.close();
