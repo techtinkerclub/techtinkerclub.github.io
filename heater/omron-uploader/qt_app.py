@@ -43,7 +43,7 @@ from qt_manual import save_manual
 from qt_entry_plan import make_entry_plan,plain_instructions
 
 STEPS=["1   Mode","2   Read & Backup","3   Programme",
-       "4   Initial Settings","5   Apply / Manual"]
+       "4   Controller Settings","5   Apply / Manual"]
 EXAMPLE=Programme(
     name="120 °C / 50 °C four-segment example",start="20",finish="rst",
     steps=[Segment("ramp",sp="120",rate="2"),Segment("soak",minutes="15"),
@@ -432,8 +432,8 @@ class Studio(QMainWindow):
 
     def _settings_page(self):
         page=QWidget();v=QVBoxLayout(page);v.setSpacing(8)
-        v.addWidget(heading("Initial settings",
-           "Search all documented groups; current values and proposed local changes are clearly separated."))
+        v.addWidget(heading("Controller settings",
+           "Browse, edit and propose controller settings here. Review and apply in Step 5."))
         controls=QHBoxLayout()
         self.group=StudioCombo()
         self.group.addItems(["All groups"]+group_names())
@@ -473,26 +473,12 @@ class Studio(QMainWindow):
         split.addWidget(detail)
         split.setSizes([750,310])
         v.addWidget(split,1)
-        wt_card,wt=card(11)
-        wt.addWidget(text("USB PARAMETER COMMISSIONING   ·   ONE ALLOWLISTED REGISTER: wt-b (C1:0021)",True))
-        self.wt_status=QLabel("Read the controller, then propose a single Wait Band change.")
-        self.wt_status.setWordWrap(True)
-        wt.addWidget(self.wt_status)
-        wt_buttons=QHBoxLayout()
-        self.wt_preview=button("1  Read + preview wt-b",self.preview_wait)
-        self.wt_stage=button("2  Write RAM + verify",self.stage_wait)
-        self.wt_save=button("3  Save wt-b",self.save_wait)
-        self.wt_cmw_off=button("4  CMW OFF",self.finish_wait)
-        self.wt_verify=button("Verify saved receipt",self.verify_wait)
-        for b in (self.wt_preview,self.wt_stage,self.wt_save,self.wt_cmw_off,self.wt_verify):
-            wt_buttons.addWidget(b)
-        wt_buttons.addStretch()
-        wt.addLayout(wt_buttons)
-        wt.addWidget(text("This Wait Band is GLOBAL to every programme and affects segment-end "
-                          "timing. Heater mains and external DC must be physically isolated. "
-                          "A SAVE may also persist other outstanding controller RAM changes.",True))
-        v.addWidget(wt_card)
         v.addWidget(split,1)
+        nextrow=QHBoxLayout()
+        nextrow.addWidget(text("Changes remain local until confirmed in Step 5.",True),1)
+        nextrow.addWidget(button("Review / apply settings →",
+                                 lambda:self.show_step(4),True))
+        v.addLayout(nextrow)
         self.pages.addWidget(page)
         self.group.currentTextChanged.connect(self.refresh_settings)
         self.search.textChanged.connect(self.refresh_settings)
@@ -609,8 +595,9 @@ class Studio(QMainWindow):
         self.usb_next_action=text("Connect and take a full backup before writing.")
         self.usb_next_action.setStyleSheet("color:#a8610f;font-weight:600")
         uv.addWidget(self.usb_next_action)
-        uv.addWidget(text("Only DA programme memory is writable. Initial, PID and communications "
-            "changes remain offline drafts. The heater must be isolated.",True))
+        uv.addWidget(text("This tab transfers DA programme memory only. "
+            "The qualified Wait Band writer is in Settings USB transfer. "
+            "All other configuration writes remain disabled. Keep the heater isolated.",True))
         self.safety=[]
         checks=[
             "Controller normal mains supply and external heater DC are physically isolated",
@@ -627,7 +614,38 @@ class Studio(QMainWindow):
             checks_layout.addWidget(check)
             self.safety.append(check)
         uv.addWidget(checks_card)
-        self.apply_tabs.addTab(usb,"Connected USB transfer")
+        self.apply_tabs.addTab(usb,"Programme USB transfer")
+        config=QWidget()
+        cv=QVBoxLayout(config)
+        cv.setSpacing(10)
+        cv.addWidget(heading("Controller setting transfer",
+            "Only Wait Band (wt-b / C1:0021) has been enabled for USB writing."))
+        self.config_review=QTextEdit()
+        self.config_review.setReadOnly(True)
+        self.config_review.setMinimumHeight(92)
+        self.config_review.setMaximumHeight(180)
+        cv.addWidget(self.config_review)
+        wt_card,wt=card(11)
+        wt.addWidget(text("USB PARAMETER COMMISSIONING   ·   ONE ALLOWLISTED REGISTER: wt-b (C1:0021)",True))
+        self.wt_status=QLabel("Read the controller, then propose a single Wait Band change.")
+        self.wt_status.setWordWrap(True)
+        wt.addWidget(self.wt_status)
+        wt_buttons=QHBoxLayout()
+        self.wt_preview=button("1  Read + preview wt-b",self.preview_wait)
+        self.wt_stage=button("2  Write RAM + verify",self.stage_wait)
+        self.wt_save=button("3  Save wt-b",self.save_wait)
+        self.wt_cmw_off=button("4  CMW OFF",self.finish_wait)
+        self.wt_verify=button("Verify saved receipt",self.verify_wait)
+        for b in (self.wt_preview,self.wt_stage,self.wt_save,self.wt_cmw_off,self.wt_verify):
+            wt_buttons.addWidget(b)
+        wt_buttons.addStretch()
+        wt.addLayout(wt_buttons)
+        wt.addWidget(text("This Wait Band is GLOBAL to every programme and affects segment-end "
+                          "timing. Heater mains and external DC must be physically isolated. "
+                          "A SAVE may also persist other outstanding controller RAM changes.",True))
+        cv.addWidget(wt_card)
+        cv.addStretch(1)
+        self.apply_tabs.addTab(config,"Settings USB transfer")
         v.addWidget(self.apply_tabs,1)
         self.pages.addWidget(page)
 
@@ -672,7 +690,9 @@ class Studio(QMainWindow):
             self.connection_controls.setVisible(self.mode=="connected")
             self.offline_return.setVisible(self.mode=="offline" and self.offline_inspect_saved)
         if self._current_step==4:
-            self.apply_tabs.setCurrentIndex(0 if self.mode=="offline" else 1)
+            selected_tab=0 if self.mode=="offline" else (
+                2 if (self.draft or self.setting_transfer) else 1)
+            self.apply_tabs.setCurrentIndex(selected_tab)
             self.refresh_review()
         if self._current_step==3:self.refresh_settings()
         self._controls()
@@ -1426,6 +1446,7 @@ class Studio(QMainWindow):
                 self._cell(self.setting_table,index,col,txt)
         self._rendering=False
         self.draft_count.setText(f"{len(self.draft)} proposed changes · {len(rows)} visible")
+        self._refresh_config_review()
         if hasattr(self,"wait_hint"):self._refresh_wait_hint()
         if selected in self.setting_keys:self.setting_table.selectRow(self.setting_keys.index(selected))
         elif rows:self.setting_table.selectRow(0)
@@ -1525,7 +1546,13 @@ class Studio(QMainWindow):
                 old=self.inventory["fields"].get(code)
                 lines.append(f"{CATALOG[code].name}: {human_value(code,old)}"
                              f"  →  {human_value(code,value)}   [{code}]")
-            lines.append("USB configuration writes are not enabled; programme staging is locked.")
+            if set(self.draft)=={"C1:0021"}:
+                lines.append("Wait Band C1:0021 can be transferred in the Settings USB tab. "
+                             "DA programme staging remains locked while it is proposed.")
+            else:
+                lines.append("Other configuration changes are review-only. "
+                             "Only the qualified Wait Band C1:0021 has a USB setting writer. "
+                             "DA programme staging is locked while settings proposals remain.")
         elif not self.session:
             lines.append("\nNo live connected controller; offline manual export is available.")
         elif self.session.staged and not self.session.committed:
@@ -1535,8 +1562,39 @@ class Studio(QMainWindow):
         else:
             lines.append("\nProgramme writing requires a fresh verified backup and exact preview.")
         self.apply_details.setPlainText("\n".join(lines))
+        self._refresh_config_review()
         self.refresh_manual()
         self.refresh_actions()
+
+    def _refresh_config_review(self):
+        """Keep settings transfer review truthful and separate from DA upload."""
+        if not hasattr(self,"config_review"):return
+        lines=[]
+        for code,value in sorted(self.draft.items()):
+            current=self.inventory["fields"].get(code)
+            t=self.inventory["fields"].get("C3:0000")
+            before=human_value(code,current,t) if current is not None else "Unknown (requires live read)"
+            after=human_value(code,value,t)
+            title=CATALOG[code].name if code in CATALOG else code
+            eligibility=("USB pilot available" if code=="C1:0021" else
+                         "Review only; USB writing not qualified")
+            lines.append(f"{title} [{code}]: {before} → {after}. {eligibility}.")
+        if not lines:lines.append("No pending configuration proposals.")
+        tx=self.setting_transfer
+        if tx:
+            if tx.saved:
+                lines.append("Wait Band SAVE acknowledged; inspect receipt, then CMW OFF and power-cycle.")
+            elif tx.staged:
+                lines.append("Wait Band verified in RAM but NOT YET SAVED.")
+            elif tx.ram_touched:
+                lines.append("WARNING: RAM state uncertain — stop, do not retry.")
+            elif tx.preview_data:
+                lines.append(f"Wait Band read-only preview: "
+                             f"{tx.preview_data['old_raw']/10:g} °C → "
+                             f"{tx.preview_data['new_raw']/10:g} °C. No write yet.")
+        lines.append("Wait Band applies globally to all programmes. "
+                     "SAVE RAM DATA can persist unrelated pending RAM edits.")
+        self.config_review.setPlainText("\n".join(lines))
 
     def refresh_actions(self):
         if not hasattr(self,"stage_button"):return
