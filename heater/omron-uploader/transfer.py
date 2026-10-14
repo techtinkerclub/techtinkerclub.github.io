@@ -103,6 +103,26 @@ class TransferSession:
         if self.staged is not None:raise PreflightError("Staged changes already exist")
         if not 0<=slot<=7:raise PreflightError("Wrong programme number")
         if prog.finish!="rst":raise PreflightError("Production-intent transfers only allow controller-wide RESET on completion")
+        # E5C-T H185 §5-15-4: Step consumes no programmed time.
+        # For a meaningful target-arrival Step, the controller-wide Wait Band
+        # (Adjustment Level wt-b; H186 C1:0021) must be active. A local draft
+        # cannot satisfy this: it must already be true on the actual hardware.
+        if any(seg.type=="step" for seg in prog.steps):
+            try:
+                wait_raw=self.client.read1("C1",0x0021)
+            except Exception as exc:
+                raise PreflightError(
+                    "Step upload requires a live read of the controller's "
+                    "wt-b Wait Band (C1:0021). Read failed; no write attempted."
+                ) from exc
+            if not isinstance(wait_raw,int) or not 1<=wait_raw<=9999:
+                raise PreflightError(
+                    "Step programme requires the controller-wide Wait Band wt-b "
+                    "to be enabled before upload. C1:0021 currently reads OFF/invalid. "
+                    "Set it using the approved front-panel Adjustment Level procedure, "
+                    "then reconnect and read it back. This app cannot write C1 settings."
+                )
+            self.log(f"Step safety check: live Wait Band C1:0021={wait_raw} ({wait_raw/10:g} °C).")
         pairs=planned_writes(slot,prog,input_type=self.settings["C3:0000"])
         existing=self.backup_data["programmes"][str(slot)]
         changes=[]
