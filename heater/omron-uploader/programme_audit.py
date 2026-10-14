@@ -89,9 +89,13 @@ def audit_after_restart(client,receipt_path,model10,folder):
         after_settings[key]=new
         if old!=new:
             setting_differences.append({"register":key,"before_raw":old,"after_raw":new})
+    intended={row["register"]:row["new_raw"] for row in receipt["changes"]}
+    unrequested=[row for row in setting_differences
+                 if row["register"] not in intended]
     result["initial_configuration_changes"]=setting_differences
+    result["unrequested_global_changes"]=unrequested
     result["current_global_settings"]=after_settings
-    result["configuration_side_effects"]=len(setting_differences)
+    result["configuration_side_effects"]=len(unrequested)
     # Comparing the original input resolution with the new one is essential
     # even if all DA words still match bit-for-bit.
     if setting_differences:
