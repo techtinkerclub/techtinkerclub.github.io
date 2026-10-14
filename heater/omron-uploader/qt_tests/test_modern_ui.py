@@ -164,6 +164,36 @@ class ModernStudioTests(unittest.TestCase):
         self.assertEqual(dropdown.currentIndex(),1)
         self.win.hide()
 
+    def test_dropdowns_fit_short_values_and_explain_long_ones(self):
+        from qt_components import StudioCombo
+        from PySide6.QtGui import QFont
+        from PySide6.QtWidgets import QComboBox
+        self.win.show()
+        self.win.show_step(2)
+        values=[(self.win.slot_combo,"Programme 0"),
+                (self.win.finish_mode,"RESET (stop)")]
+        for combo,value in values:
+            self.assertIsInstance(combo,StudioCombo)
+            self.assertEqual(combo.currentText(),value)
+            # Includes text, 34px arrow and Qt stylesheet's padding.
+            required=combo.fontMetrics().horizontalAdvance(value)+68
+            self.assertGreaterEqual(combo.minimumWidth(),required)
+            self.assertGreaterEqual(combo.width(),required)
+            self.assertEqual(combo.toolTip(),value)
+        self.win.slot_combo.setCurrentIndex(7)
+        self.assertEqual(self.win.slot_combo.toolTip(),"Programme 7")
+        self.win.finish_mode.setCurrentIndex(1)
+        self.assertEqual(self.win.finish_mode.toolTip(),"CONTINUE")
+        long=StudioCombo()
+        long.addItems(["Short","A very long conditional initial-setting explanation for the controller"])
+        long.show()
+        self.assertLessEqual(long.minimumWidth(),310)
+        long.setCurrentIndex(1)
+        self.assertEqual(long.toolTip(),long.currentText())
+        self.assertGreater(long.view().minimumWidth(),long.minimumWidth())
+        long.close()
+        self.win.hide()
+
     def test_offline_configuration_proposal_blocks_upload(self):
         self.win.choose_mode("offline")
         self.win.group.setCurrentText("All groups")
