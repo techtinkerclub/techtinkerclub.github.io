@@ -36,6 +36,7 @@ from combined_transfer import CombinedTransfer,verify_combined_receipt
 from program_model import planned_writes
 from transfer_capabilities import transfer_plan
 from parameter_write_plan import create_write_plan,requirements
+from settings_presentation import VIEWS,visible_in_view,scope_for,view_for
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
 from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
@@ -373,9 +374,17 @@ class Studio(QMainWindow):
         self.finish_mode.addItem("RESET (stop)", "rst")
         self.finish_mode.addItem("CONTINUE", "cont")
         self.finish_mode.setMinimumWidth(150)
-        meta.addWidget(form_field("At programme end",self.finish_mode))
+        self.finish_mode.setToolTip(
+            "GLOBAL controller setting C3:00BE. This changes the end behaviour "
+            "for every programme, not just this memory. This editor does NOT "
+            "write that system setting as part of the programme upload.")
+        meta.addWidget(form_field("Controller-wide end behaviour",self.finish_mode))
         v.addLayout(meta)
-
+        v.addWidget(text(
+            "Programme-end RESET/CONTINUE is a GLOBAL controller configuration "
+            "(eset), not stored per programme. This field describes the intended "
+            "behaviour; it is NOT uploaded as part of a programme.",True))
+        
         split=QSplitter(Qt.Orientation.Vertical)
         split.setChildrenCollapsible(False)
         split.setHandleWidth(7)
@@ -448,7 +457,25 @@ class Studio(QMainWindow):
     def _settings_page(self):
         page=QWidget();v=QVBoxLayout(page);v.setSpacing(8)
         v.addWidget(heading("Controller settings",
-           "Browse, edit and propose controller settings here. Review and apply in Step 5."))
+           "Find what you need without knowing Omron register codes. "
+           "All parameters remain available; USB writing is limited to qualified settings."))
+        shortcuts=QHBoxLayout()
+        shortcuts.addWidget(text("SHOW:",True))
+        self.settings_view=StudioCombo()
+        self.settings_view.addItems(list(VIEWS))
+        self.settings_view.setToolTip(
+            "A browsing shortcut, not a permission level. "
+            "All users can view all documented settings.")
+        shortcuts.addWidget(self.settings_view,1)
+        shortcuts.addWidget(text("Search always covers every parameter.",True),2)
+        self.show_setting_technical=QCheckBox("Show register / technical details")
+        self.show_setting_technical.setChecked(False)
+        shortcuts.addWidget(self.show_setting_technical)
+        v.addLayout(shortcuts)
+        v.addWidget(text(
+            "Everyday essentials affect tests; Control & tuning alters responses; "
+            "Equipment & system affects the physical controller and all its programmes. "
+            "Critical changes still require specific safeguards.",True))
         controls=QHBoxLayout()
         self.group=StudioCombo()
         self.group.addItems(["All groups"]+group_names())
@@ -471,7 +498,7 @@ class Studio(QMainWindow):
         lc.addWidget(self.setting_table)
         split.addWidget(list_card)
         detail,dl=card(16)
-        dl.addWidget(QLabel("SETTING EXPLANATION"))
+        dl.addWidget(QLabel("WHAT THIS SETTING DOES"))
         self.parameter_detail=QTextEdit()
         self.parameter_detail.setReadOnly(True)
         self.parameter_detail.setMinimumWidth(235)
@@ -482,9 +509,10 @@ class Studio(QMainWindow):
         self.parameter_choices=StudioCombo()
         dl.addWidget(self.parameter_choices)
         dl.addWidget(button("Add to change review",self.propose_setting,True))
-        dl.addWidget(text("General settings remain proposals. USB WRITING IS ENABLED ONLY for "
-                          "Wait Band (wt-b, C1:0021) in isolated lab mode. Other registers are "
-                          "review-only until independently qualified.",True))
+        dl.addWidget(text(
+            "Anyone can plan changes here. Only qualified parameters can currently "
+            "be uploaded. The controller must meet the required state and safety checks; "
+            "other changes remain local or require manual setup.",True))
         split.addWidget(detail)
         split.setSizes([750,310])
         v.addWidget(split,1)
@@ -496,6 +524,8 @@ class Studio(QMainWindow):
         self.pages.addWidget(page)
         self.group.currentTextChanged.connect(self.refresh_settings)
         self.search.textChanged.connect(self.refresh_settings)
+        self.settings_view.currentTextChanged.connect(self.refresh_settings)
+        self.show_setting_technical.toggled.connect(self.refresh_settings)
         self.refresh_settings()
 
     def _apply_page(self):
@@ -1820,11 +1850,14 @@ class Studio(QMainWindow):
         if not hasattr(self,"setting_table"):return
         category=self.group.currentText()
         query=self.search.text().casefold()
+        view=self.settings_view.currentText()
         selected=self._selected_setting_code()
         self._rendering=True
         rows=[]
         for code,p in CATALOG.items():
-            if category!="All groups" and category!=p.group:continue
+            if not visible_in_view(code,p.group,view,query):continue
+            # Search is global regardless of the view/group shortcuts.
+            if not query and category!="All groups" and category!=p.group:continue
             if query and query not in (code+" "+p.name+" "+p.group+" "+p.meaning).casefold():continue
             rows.append((code,p))
         self.setting_table.setRowCount(len(rows))
@@ -1835,7 +1868,8 @@ class Studio(QMainWindow):
             current=human_value(code,raw,self.inventory["fields"].get("C3:0000"))
             proposed=(human_value(code,self.draft[code],self.inventory["fields"].get("C3:0000"))
                       if code in self.draft else "—")
-            for col,txt in enumerate((p.name+" · "+code,current,proposed,p.group)):
+            label=p.name+(" · "+code if self.show_setting_technical.isChecked() else "")
+            for col,txt in enumerate((label,current,proposed,view_for(code,p.group))):
                 self._cell(self.setting_table,index,col,txt)
         self._rendering=False
         self.draft_count.setText(f"{len(self.draft)} proposed changes · {len(rows)} visible")
@@ -1867,22 +1901,37 @@ class Studio(QMainWindow):
         p=CATALOG[code]
         raw=self.inventory["fields"].get(code)
         display=human_value(code,raw,self.inventory["fields"].get("C3:0000"))
-        self.parameter_detail.setPlainText(
-            f"{p.name}\n{code} · H186 {p.manual_page}\n\n"
-            f"{p.meaning}\n\nCurrent: {display}\n"
-            f"Raw: {raw:08X}\n" if raw is not None else
-            f"{p.name}\n{code}\n\n{p.meaning}\n\nCurrent: UNKNOWN / unavailable")
         req=requirements(code)
-        self.parameter_detail.append(
-            "\nAccess: "+p.access+
-            ("\nContext: "+p.context if p.context else "")+
-            "\n\nUSB writing: "+("Qualified isolated-lab pilot"
-                 if req.allowed_in_current_app else
-                 "NOT YET QUALIFIED — planning and manual entry only")+
-            "\nController setting area: "+req.area+
-            "\nPersistence: "+req.persistence+
-            "\nQualification: "+req.qualification+
-            "\nImportant: "+req.note)
+        editable_status=("Qualified USB writing (isolated-lab safeguards)"
+                         if req.allowed_in_current_app else
+                         "Available to review and plan; USB write not yet qualified")
+        friendly=[
+            p.name.upper(),
+            "",
+            p.meaning,
+            "",
+            "WHERE IT APPLIES",
+            scope_for(code),
+            "",
+            "CURRENT CONTROLLER VALUE",
+            display,
+            "",
+            "CAN I CHANGE IT HERE?",
+            editable_status,
+        ]
+        if p.context:
+            friendly.extend(["","ADDITIONAL CONTEXT",p.context])
+        if self.show_setting_technical.isChecked():
+            friendly.extend([
+                "", "TECHNICAL DETAILS",f"Omron register: {code}",
+                f"H186 manual reference: {p.manual_page}",
+                f"Raw value: {raw:08X}" if raw is not None else "Raw value: unavailable",
+                "Documented access: "+p.access,
+                "Setting area: "+req.area,
+                "Persistence: "+req.persistence,
+                "Qualification: "+req.qualification,
+                "Conditions: "+req.note])
+        self.parameter_detail.setPlainText("\\n".join(friendly))
         draft=self.draft.get(code,raw)
         is_known=raw is not None or self.inventory.get("mode")=="offline"
         can_edit=is_known and not code.startswith(("C0:","C4:")) and code!="C1:0029"
