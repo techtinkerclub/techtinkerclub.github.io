@@ -65,11 +65,19 @@ class C3Tests(unittest.TestCase):
         self.assertNotIn(("operation","05","00"),self.client.calls)
         self.assertNotIn(("operation","06","00"),self.client.calls)
 
-    def test_sensor_change_with_populated_memory_refused_before_writes(self):
+    def test_sensor_change_with_populated_memory_allowed_and_backed_up(self):
         self.setup(blank=False)
-        with self.assertRaisesRegex(PreflightError,"all eight"):
-            self.tx.preview({"C3:0000":6,"C3:0005":5000,"C3:0006":0xffffff38})
+        doc=self.tx.preview({"C3:0000":6})
+        self.assertTrue(doc["sensor_change"])
+        self.assertEqual(doc["changes"][0]["register"],"C3:0000")
         self.assertEqual(self.client.calls,[])
+        self.assertEqual(self.tx.stage(),1)
+        receipt=self.tx.finish()
+        stored=json.loads(receipt.read_text(encoding="utf-8"))
+        self.assertEqual(len(stored["original_programmes"]),8)
+        self.assertEqual(stored["original_programmes"]["0"][0],"00000001")
+        self.assertTrue(stored["programme_audit_required"])
+        self.assertNotIn(("operation","06","00"),self.client.calls)
 
     def test_sensor_change_blank_memory_has_exact_bounds(self):
         self.setup(blank=True)
