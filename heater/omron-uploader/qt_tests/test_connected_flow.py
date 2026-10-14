@@ -21,6 +21,7 @@ class FakeOmron:
         self.port=port
         self.write_allowed=write_allowed
         self.closed=False
+        self.area=0
         self.calls=[]
         self.c3={addr:expected for addr,(expected,_) in PREFLIGHT.items()}
         self.c3[0x0005]=1300
@@ -61,13 +62,20 @@ class FakeOmron:
     def write_setting(self,bank,addr,value):
         assert self.write_allowed
         from c1_transfer import check_value
-        assert bank=="C1"
-        check_value(f"C1:{addr:04X}",value)
+        if bank=="C3":
+            from c3_transfer import check_setting
+            assert self.area==1
+            check_setting(f"C3:{addr:04X}",value)
+            self.c3[addr]=value
+        else:
+            assert bank=="C1"
+            check_value(f"C1:{addr:04X}",value)
+            self.c1[addr]=value
         self.calls.append(("setting-write",bank,addr,value))
-        self.c1[addr]=value
     def operation(self,code,data):
         assert self.write_allowed
-        assert (code,data) in {("00","01"),("00","00"),("04","01"),("05","00")}
+        assert (code,data) in {("00","01"),("00","00"),("04","01"),("05","00"),("07","00")}
+        if (code,data)==("07","00"):self.area=1
         self.calls.append(("operation",code,data))
         return ""
     def close(self):self.closed=True
@@ -381,6 +389,46 @@ class QtConnectedTests(unittest.TestCase):
         self.assertFalse(self.win.unified_preview.isEnabled())
         self.assertFalse(self.win.unified_stage.isEnabled())
         self.assertFalse(self.win.unified_save.isEnabled())
+
+    def test_global_c3_control_algorithm_usb_transfer_and_receipt(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C3:0007":1}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c3")
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.win.unified_preview_action()
+        tx=self.win.c3_transfer
+        self.assertEqual(tx.preview_data["changes"][0]["register"],"C3:0007")
+        self.assertTrue(self.win.unified_stage.isEnabled())
+        self.assertIn("area 1",self.win.unified_stage.text())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(tx.staged)
+            self.assertTrue(self.win.unified_save.isEnabled())
+            self.win.unified_save_action()
+        self.assertTrue(tx.finished)
+        self.assertTrue(tx.cmw_off)
+        self.assertTrue(tx.receipt_file.is_file())
+        self.assertEqual(fake.c3[7],1)
+        self.assertNotIn(("operation","05","00"),fake.calls)
+        self.assertNotIn(("operation","06","00"),fake.calls)
+        self.assertEqual(fake.area,1)
+        self.assertEqual(self.win.draft,{})
+        self.assertIn("POWER CYCLE",self.win.transfer_summary.text())
+        self.assertFalse(self.win.preview_button.isEnabled())
+
+    def test_initial_type_range_change_blocks_populated_programmes(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C3:0000":6,"C3:0005":5000,"C3:0006":0xffffff38}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c3")
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        with self.assertRaisesRegex(Exception,"all eight"):
+            self.win.unified_preview_action()
+        self.assertEqual(fake.area,0)
+        self.assertFalse(any(c[0]=="setting-write" for c in fake.calls))
 
     def test_unified_c1_pid_and_wait_transfer_one_save(self):
         self.win.connect_read()
