@@ -371,3 +371,37 @@ Omron source: H186-E1-06 §§2-2-3, 2-3-2, 2-3-8 and 3-1.
 The ordinary C1 Proportional/Integral/Derivative values are the **active PID
 set** view; the C5 PID 1–8 values are the eight stored sets, not additional
 unrelated integral-time variables.
+
+
+## 14 October 2026: stop-use warning after real sensor change
+A physical E5CC-T changed from `in-t=5` to `in-t=6` and returned
+an audit of ZERO raw DA word changes while users saw different programme
+graphs. **Do not treat identical raw data as preserved temperatures.**
+Our reader currently decodes a segment SP as signed DA integer /1 for
+Type K input 5 and /10 for Type K input 6. Thus a raw `00000078`
+is rendered as 120 °C under input 5 but 12.0 °C under input 6.
+The observed result has not yet been checked against the physical
+front-panel segment SP display; there may also be H185-defined
+clamping/parameter initialization effects.
+
+H185-E1-08 appendix A-6-11 explicitly documents that changing Input
+Type resets the SP upper/lower limits and clamps Segment SP according
+to those limits. It does NOT guarantee automatic conversion of each
+stored programme to preserve its previous temperatures. This is
+why the application now emits *possible before/after interpreted SP
+changes* in the C3 audit JSON and the Step 5 result dialog even
+when the original/new DA words match exactly. These are deliberately
+labelled as UNVERIFIED until compared with actual front-panel data.
+
+A software reset frame (3005 06 00) has no response, so neither a
+successful serial transmission nor rapid reconnection proves a restart
+physically occurred. Status must say 'reset command sent, restart not
+independently confirmed' and never treat a same-connection receipt
+comparison as proof of power-loss persistence.
+
+Until physical verification is complete: keep heater/output supply
+isolated, refrain from another sensor input write/reset and do not
+transfer or run the suspect programmes. Retain original programme
+backup, C3 change receipt, restart audit, and a current read-only backup.
+The operator should inspect the programme segment SP on the controller,
+without changing it, to establish the actual temperature interpretation.
