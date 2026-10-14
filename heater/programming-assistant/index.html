@@ -157,7 +157,7 @@ function render(){
 }
 $("flowCreate").addEventListener("click",()=>{state.flow="create";configure()});
 $("flowSelect").addEventListener("click",()=>{state.flow="select";configure()});
-["memory","target","rate","minutes","startPV"].forEach(id=>$(id).addEventListener("input",()=>configure()));
+["memory","target","rate","minutes","startPV"].forEach(id=>{for(const event of ["input","change"])$(id).addEventListener(event,()=>configure())});
 $("previous").addEventListener("click",()=>{if(state.index>0){state.index--;render()}});
 $("next").addEventListener("click",()=>{state.index=state.index===state.steps.length-1?0:state.index+1;render()});
 $("printRecipe").addEventListener("click",()=>{if(settings().problem){$("fieldError").focus();return}
