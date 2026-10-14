@@ -54,8 +54,11 @@ class OfflineManualTests(unittest.TestCase):
         self.assertIn("Additional configuration change proposals",html)
     def test_connected_type5_manual_cannot_show_fractional_targets(self):
         p=Programme("test","20","rst",[Segment("ramp",sp="80.5",rate="2")])
-        with self.assertRaises(ValueError):
-            make_entry_plan(p,0,baseline={"C3:0000":5})
+        plan5=make_entry_plan(p,0,baseline={"C3:0000":5})
+        self.assertTrue(any("increment" in warning or "resolution" in warning
+                            for warning in plan5["warnings"]))
+        self.assertTrue(any(r["code"]=="INPUT / SETPOINT REVIEW"
+                            for r in plan5["entry_rows"]))
         plan=make_entry_plan(p,0,baseline={"C3:0000":6})
         self.assertTrue(any("0.1 °C" in r["value"] for r in plan["entry_rows"]
                             if r["code"]=="in-t"))
