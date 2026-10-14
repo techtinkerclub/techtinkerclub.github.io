@@ -28,10 +28,19 @@ def restart_and_audit(transfer,port,serial_factory,folder,*,timeout_seconds=22,
     clock=clock or time.monotonic
     sleep=sleep or time.sleep
     expected_model=transfer.preview_data["model10"]
-    transfer.reset_attempted=True  # Set BEFORE sending: a timeout is uncertain.
+    transfer.reset_attempted=True  # Set BEFORE sending: uncertainty means no retry.
     old=transfer.client
     try:
+        # H186 operation commands may be refused when communications writing
+        # is OFF. The previous release disabled CMW in C3.finish() and then
+        # sent an unacknowledged software-reset frame. That is NOT a verified
+        # reset sequence and explains a possible silent no-op.
+        # First obtain a NORMAL 3005 00 01 acknowledgement. On failure do
+        # NOT send the no-response reset. Do not retry a reset after uncertainty.
+        old.operation("00","01")
+        transfer.restart_cmw_on_acknowledged=True
         old.software_reset()       # H186: intentionally NO controller response
+        transfer.reset_command_transmitted=True
     finally:
         try:old.close()
         except Exception:pass
