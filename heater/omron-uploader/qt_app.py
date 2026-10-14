@@ -28,6 +28,7 @@ from serial.tools import list_ports
 
 from qt_components import STYLE,Task,Profile,card,heading,text,button,StudioCombo,form_field
 from qt_segment_row import SegmentRow,Stepper
+from settings_transfer import WaitBandTransfer,verify_wait_receipt
 from compoway import SerialClient
 from transfer import TransferSession
 from program_model import Programme,Segment,blank_programme,ValidationError
@@ -68,6 +69,7 @@ class Studio(QMainWindow):
         self.offline_inspect_saved=False
         self.client=None
         self.session=None
+        self.setting_transfer=None
         self.port=None
         self.backup=None
         self.snapshot=None
@@ -465,10 +467,31 @@ class Studio(QMainWindow):
         self.parameter_choices=StudioCombo()
         dl.addWidget(self.parameter_choices)
         dl.addWidget(button("Add to change review",self.propose_setting,True))
-        dl.addWidget(text("Settings here are local proposals. USB configuration writing "
-                          "is not yet enabled. Special/conditional registers must be verified on the actual controller.",True))
+        dl.addWidget(text("General settings remain proposals. USB WRITING IS ENABLED ONLY for "
+                          "Wait Band (wt-b, C1:0021) in isolated lab mode. Other registers are "
+                          "review-only until independently qualified.",True))
         split.addWidget(detail)
         split.setSizes([750,310])
+        v.addWidget(split,1)
+        wt_card,wt=card(11)
+        wt.addWidget(text("USB PARAMETER COMMISSIONING   ·   ONE ALLOWLISTED REGISTER: wt-b (C1:0021)",True))
+        self.wt_status=QLabel("Read the controller, then propose a single Wait Band change.")
+        self.wt_status.setWordWrap(True)
+        wt.addWidget(self.wt_status)
+        wt_buttons=QHBoxLayout()
+        self.wt_preview=button("1  Read + preview wt-b",self.preview_wait)
+        self.wt_stage=button("2  Write RAM + verify",self.stage_wait)
+        self.wt_save=button("3  Save wt-b",self.save_wait)
+        self.wt_cmw_off=button("4  CMW OFF",self.finish_wait)
+        self.wt_verify=button("Verify saved receipt",self.verify_wait)
+        for b in (self.wt_preview,self.wt_stage,self.wt_save,self.wt_cmw_off,self.wt_verify):
+            wt_buttons.addWidget(b)
+        wt_buttons.addStretch()
+        wt.addLayout(wt_buttons)
+        wt.addWidget(text("This Wait Band is GLOBAL to every programme and affects segment-end "
+                          "timing. Heater mains and external DC must be physically isolated. "
+                          "A SAVE may also persist other outstanding controller RAM changes.",True))
+        v.addWidget(wt_card)
         v.addWidget(split,1)
         self.pages.addWidget(page)
         self.group.currentTextChanged.connect(self.refresh_settings)
@@ -751,6 +774,7 @@ class Studio(QMainWindow):
                 raise
         def completed(result):
             self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file,inventory_error=result
+            self.setting_transfer=None
             self.inventory_current_session=(inventory_error is None)
             self.port=port
             self.backup=self.session.backup_data
@@ -788,14 +812,14 @@ class Studio(QMainWindow):
     def disconnect(self):
         if self.busy:
             self.message("USB busy","Wait for the serial operation to finish.",True);return
-        if self.session and self.session.ram_touched and not self.session.committed:
+        if (self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending():
             if QMessageBox.question(self,"Uncommitted RAM",
                "RAM has been modified without a confirmed nonvolatile save. "
                "Do not assume a rollback. Disconnect anyway?")!=QMessageBox.StandardButton.Yes:return
         if self.client:
             try:self.client.close()
             except Exception:pass
-        self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.client=None;self.session=None;self.setting_transfer=None;self.port=None;self.preview_stamp=None
         self.inventory_current_session=False
         self.link_status.setText("●  Offline / disconnected")
         self.link_status.setStyleSheet("color:#627a90;font-weight:600")
@@ -824,7 +848,7 @@ class Studio(QMainWindow):
         # Health is a read-only transaction and skipped during any other work.
         self._work("Read-only USB health check",probe,ok,quiet=True)
     def _mark_link_lost(self,reason):
-        staged=bool(self.session and self.session.ram_touched and not self.session.committed)
+        staged=bool((self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending())
         previous=self.client
         self.client=None;self.session=None;self.port=None;self.preview_stamp=None
         self.fail_latched=staged
@@ -1030,7 +1054,16 @@ class Studio(QMainWindow):
         except Exception as exc:
             self.explorer_info.setPlainText(str(exc));self.explorer_chart.show_points([])
 
+    def _settings_ram_pending(self):
+        tx=self.setting_transfer
+        return bool(tx and tx.ram_touched and not tx.saved)
+
     def _editing_locked(self):
+        if self._settings_ram_pending():
+            self.message("Wait Band RAM pending SAVE",
+                "Finish or inspect the Wait Band USB transfer before modifying local designs. "
+                "Do not disconnect until its state is understood.",True)
+            return True
         if self.busy:
             self.feedback.setText("Wait for the active USB operation before editing programmes.")
             return True
@@ -1677,7 +1710,7 @@ class Studio(QMainWindow):
         if self.busy:
             self.message("USB operation in progress","Wait until the serial operation has finished.",True)
             event.ignore();return
-        if self.session and self.session.ram_touched and not self.session.committed:
+        if (self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending():
             if QMessageBox.question(self,"Unsaved RAM changes",
                  "Controller RAM may contain uncommitted data. Exit anyway?")!=QMessageBox.StandardButton.Yes:
                 event.ignore();return
