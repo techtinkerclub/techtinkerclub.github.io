@@ -1,0 +1,28 @@
+name: Heating controller website documentation QA
+on:
+  push:
+    paths:
+      - 'heater/index.html'
+      - 'heater/electrical/index.html'
+      - 'heater/omron-programming/index.html'
+      - 'heater/omron-atlas/**'
+      - '.github/workflows/heater-documentation-qa.yml'
+  pull_request:
+    paths:
+      - 'heater/index.html'
+      - 'heater/electrical/index.html'
+      - 'heater/omron-programming/index.html'
+      - 'heater/omron-atlas/**'
+      - '.github/workflows/heater-documentation-qa.yml'
+jobs:
+  documentation-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install lightweight DOM test environment
+        run: npm install --no-save --ignore-scripts jsdom@26
+      - name: Test parameter atlas and website navigation
+        run: node heater/omron-atlas/check-atlas.mjs
