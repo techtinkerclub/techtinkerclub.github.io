@@ -1,0 +1,172 @@
+---
+layout: null
+sitemap: false
+---
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow,noarchive">
+<title>Guided Omron programming · Heating Rate Controller</title>
+<style>
+:root{font:14px/1.55 Inter,"Segoe UI",Arial,sans-serif;color:#1a324a;background:#f3f7fa}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}a{color:#176d96}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #148795;outline-offset:2px}
+.wrap{max-width:1120px;margin:auto;padding:0 23px 65px}.top{padding:17px 0;display:flex;justify-content:space-between;align-items:center;gap:17px;border-bottom:1px solid #d8e5ed;flex-wrap:wrap}.brand{font-size:13px;font-weight:850}.brand span{color:#17818e}.nav{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;font-weight:750}.nav a{text-decoration:none;color:#5d788a}.hero{padding:37px 0 23px}.eyebrow{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:850;color:#137887}h1{font-size:clamp(28px,4vw,46px);letter-spacing:-1.25px;line-height:1.15;margin:8px 0 12px}.hero p{font-size:15px;color:#5b7287;max-width:800px;margin:0}.warning{border:1px solid #dfcba8;border-radius:11px;padding:12px 16px;background:#fff8ea;color:#785727;font-size:12px;margin:15px 0}.warning strong{color:#684820}.container{display:grid;grid-template-columns:320px minmax(0,1fr);align-items:start;gap:16px;margin-top:20px}.card{border:1px solid #dce5ec;background:white;border-radius:15px;padding:21px;box-shadow:0 5px 20px #193c5410}.settings{position:sticky;top:15px}.card h2{font-size:17px;margin:0 0 14px}.field{margin:14px 0}.field label{display:block;font-size:12px;font-weight:760;color:#567085;margin-bottom:5px}.field input,.field select{width:100%;border:1px solid #cbdde7;border-radius:9px;padding:10px 12px;background:#fff;color:#1c425f;min-height:43px}.field small{font-size:11px;color:#71869a;display:block;margin-top:4px}.formatError{font-size:12px;color:#985424;font-weight:780;line-height:1.55;margin:9px 0}.segmented{display:grid;grid-template-columns:1fr 1fr;gap:5px;background:#e8f2f6;border:1px solid #d3e3eb;padding:4px;border-radius:10px;margin:0 0 14px}.segmented button{border:0;border-radius:8px;padding:10px 7px;font-weight:750;font-size:12px;background:transparent;color:#56718a}.segmented button.active{background:white;color:#1b687e;box-shadow:0 2px 6px #163b4f15}.preview{display:grid;grid-template-columns:1fr 32px 1fr;gap:7px;align-items:center;border:1px solid #d5e4eb;border-radius:11px;padding:13px;background:#f8fbfd;margin:17px 0}.preview strong{display:block;font-size:16px}.preview small{font-size:11px;color:#6a8295}.preview .arrow{text-align:center;font-size:22px;color:#49899b}.help{font-size:12px;color:#6e8396}.miniLink{font-size:12px}.viewer{min-width:0}.progressRow{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:12px;color:#688197;font-weight:800;margin-bottom:10px}.progress{height:8px;border-radius:10px;background:#e5eef3;overflow:hidden}.progress div{height:100%;background:#147d87;width:0;transition:width .18s}.stepTitle{font-size:clamp(23px,2.7vw,32px);line-height:1.2;letter-spacing:-.6px;margin:17px 0 8px}.stepIntro{font-size:14px;color:#607a8d;margin:0 0 18px}.stepBody{background:#f5f9fc;border:1px solid #dbe8f0;border-radius:12px;padding:17px;margin-top:17px}.stepBody h3{font-size:12px;text-transform:uppercase;letter-spacing:1.05px;color:#6b869b;margin:0 0 10px}.stepBody p{margin:0;font-size:14px;line-height:1.68}.key{background:#fdfdfd;border:2px solid #a9c9d9;border-radius:8px;padding:5px 9px;font:800 12px/1.1 ui-monospace,Consolas,monospace;display:inline-block;color:#225e7c;margin:0 2px}.display{display:grid;grid-template-columns:minmax(90px,.55fr) 1fr;gap:17px;align-items:center;padding:19px;border:5px solid #364e61;border-radius:14px;background:#192a3b;box-shadow:inset 0 0 0 1px #738393;color:#e3edf4;margin:17px 0}.display .displayCode{color:#ff7a58;font:850 clamp(27px,3.6vw,42px)/1.1 ui-monospace,Consolas,monospace;word-break:break-all}.display .displayHelp{font-size:12px;color:#b5cbdb}.displayHelp strong{display:block;color:#e1f2fd;font-weight:750;font-size:14px;margin-bottom:4px}.note{background:#fff8ed;border:1px solid #ebdbbf;border-radius:10px;padding:13px 15px;font-size:12px;color:#815a2b;margin:15px 0}.explore{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0;font-size:12px}.explore a{background:#eaf5f7;border:1px solid #c5e3e8;padding:8px 11px;border-radius:8px;text-decoration:none;font-weight:740}.actions{display:flex;gap:9px;margin-top:24px}.btn{border:1px solid #c0d5df;background:#e9f3f7;border-radius:9px;color:#235e79;padding:12px 16px;font-weight:800;min-height:44px}.btn.primary{background:#137b86;border-color:#137b86;color:white;flex:1}.btn:disabled{opacity:.35;cursor:not-allowed}.full{margin-top:17px}.full summary{cursor:pointer;padding:15px 18px;font-weight:780;font-size:13px;color:#215f7a}.full[open] summary{border-bottom:1px solid #dce8ef}.full .inner{padding:10px 18px 20px}.fullList{list-style:none;padding:0;display:grid;gap:7px}.fullList li button{display:block;width:100%;text-align:left;padding:11px 12px;border:1px solid #e0e8ed;background:#fff;border-radius:9px;color:#365a71;font-size:12px}.fullList li button strong{display:block;margin-bottom:5px;color:#1b506f}.fullList li button.current{background:#e9f6f6;border-color:#83c1c5}.printNote{font-size:11px;color:#7690a2;margin:16px 0}footer{font-size:12px;color:#708698;padding-top:30px}.noscript{color:#a53f2a}
+@media(max-width:780px){.wrap{padding:0 13px 43px}.container{grid-template-columns:1fr}.settings{position:static;padding:17px}.card{padding:16px}.hero{padding-top:25px}.fieldrow{display:grid;grid-template-columns:1fr 1fr;gap:11px}.fieldrow .field{margin:9px 0}.viewer{margin-top:0}.nav{gap:9px}}
+@media print{body{background:white}.wrap{max-width:none;padding:0}.top,.nav,.settings,.actions,.warning,.explore,.progressRow,.progress,.printNote,footer{display:none!important}.container{display:block}.viewer{display:none}.full{display:block!important;border:0;box-shadow:none}.full summary{display:none}.full .inner{display:block}.fullList li{break-inside:avoid}.fullList li button{border-bottom:1px solid #ccd5dd;border-radius:0;break-inside:avoid}.hero{padding:4px 0}.hero p{font-size:12px}}
+</style></head><body><div class="wrap">
+<header class="top"><div class="brand">HEATING RATE CONTROLLER <span>/ GUIDED PROGRAMMING</span></div><nav class="nav" aria-label="Document navigation"><a href="../">← Operator manual</a><a href="../omron-atlas/">Omron menu map</a><a href="../program-tools/">Programme builder</a></nav></header>
+<section class="hero"><div class="eyebrow">Step-by-step Omron E5CC-T · keypad guide</div><h1>One screen. One action. Next step.</h1><p>Set up a two-segment ramp-and-soak example or select a stored programme. The instructions update when you change the programme number, target, rate or hold time.</p></section>
+<div class="warning"><strong>Before using a real controller:</strong> isolate the external heater supply and follow the approved equipment procedure. The controller must be in RESET before editing. This guide cannot read, verify or change hardware and does not authorise heater operation. The worked ramp example assumes <strong>Type K input 6 (−20.0 to 500.0 °C)</strong> with rate-of-rise programming.</div>
+<div class="container">
+<aside class="card settings"><h2>Choose your task</h2><div class="segmented" role="group" aria-label="Programming task"><button id="flowCreate" type="button" class="active" aria-pressed="true">Create ramp + soak</button><button id="flowSelect" type="button" aria-pressed="false">Select saved profile</button></div>
+<div class="field"><label for="memory">Programme number (0–7)</label><select id="memory"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select><small>Choose a free/approved slot before overwriting its contents.</small></div>
+<div id="rampSettings"><div class="fieldrow">
+<div class="field"><label for="target">Target temperature (°C)</label><input id="target" type="number" value="50.0" step="0.1" min="-20" max="500" required></div>
+<div class="field"><label for="rate">Ramp rate (°C/min)</label><input id="rate" type="number" value="2" step="1" min="1" max="9999" required></div></div>
+<div class="fieldrow"><div class="field"><label for="minutes">Soak duration (minutes)</label><input id="minutes" type="number" value="15" step="1" min="1" max="5999" required></div>
+<div class="field"><label for="startPV">Assumed starting PV (°C)</label><input id="startPV" type="number" value="20.0" step="0.1" min="-20" max="500"></div></div>
+<p id="fieldError" class="formatError" role="alert" hidden></p>
+<div class="preview"><div><small>Ramp to</small><strong id="previewTarget">50.0 °C</strong><small id="previewRate">at 2 °C/min</small></div><div class="arrow">→</div><div><small>Then soak</small><strong id="previewSoak">15 min</strong><small id="previewTime">Display: 0.15</small></div></div>
+<p id="estimate" class="help">If PV begins near 20.0 °C, nominal ramp is 15 min before the 15-minute hold. Wait Band or PV lag can extend the real programme.</p></div>
+<div class="explore"><a href="../omron-atlas/#program/d.seg">Open d.seg menu map ↗</a><a href="../omron-programming/#bench">Full worked instructions ↗</a></div><button type="button" id="printRecipe" class="btn" style="width:100%">Print the complete steps</button><p class="help" style="margin-top:11px">Changing settings resets your progress to step 1. Nothing here is sent to the Omron.</p></aside>
+<main class="viewer"><article class="card" id="stepCard" aria-live="polite">
+<div class="progressRow"><span id="progressName">Create ramp + soak</span><span id="progressLabel">Step 1 of 19</span></div><div class="progress" aria-label="Guide progress"><div id="progressFill"></div></div>
+<div class="eyebrow" id="sectionName" style="margin-top:20px">Before editing</div><h2 class="stepTitle" id="stepTitle">Check the controller</h2><p class="stepIntro" id="stepIntro"></p>
+<div class="display"><div class="displayCode" id="screenCode">PV/SP</div><div class="displayHelp"><strong id="screenName">Expected display</strong><span id="screenValue"></span></div></div>
+<div class="stepBody"><h3>Button action / check</h3><p id="stepAction"></p></div><div class="note" id="stepNote"></div><div class="explore" id="stepLinks"></div>
+<div class="actions"><button type="button" id="previous" class="btn">← Previous</button><button type="button" id="next" class="btn primary">Next step →</button></div>
+</article>
+<details class="card full" id="allSteps"><summary>Show the full procedure (<span id="fullCount">19</span> steps)</summary><div class="inner"><ol id="fullSteps" class="fullList"></ol><p class="printNote">This list is for an isolated setup, not a commissioning certificate or permission to energise a heater.</p></div></details>
+</main></div><noscript><p class="noscript">JavaScript is required for the interactive walkthrough. Use the <a href="../omron-programming/#bench">written Omron programming instructions</a>.</p></noscript>
+<footer>Heating Rate Controller · Manual-entry guide · <a href="../development/#open">Equipment release status</a> · Based on the Omron H185 parameter flow.</footer></div>
+<script>
+(function(){"use strict";
+const $=id=>document.getElementById(id);const state={flow:"create",index:0,steps:[]};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const code=text=>'<code class="key">'+esc(text)+'</code>';
+function makeStep(group,title,screen,value,action,note,link){
+ return {group,title,screen,value,action,note,link};
+}
+function fmtTemp(v){return Number(v).toFixed(1)}
+function hhmm(minutes){return String(Math.floor(minutes/60))+"."+String(minutes%60).padStart(2,"0")}
+function settings(){
+ const slot=Number($("memory").value),target=Number($("target").value),rate=Number($("rate").value),minutes=Number($("minutes").value),start=Number($("startPV").value);
+ let problem="";
+ if(!Number.isInteger(slot)||slot<0||slot>7)problem="Select a programme memory from 0 to 7.";
+ if(state.flow==="create"){
+  if(!$("target").value.trim()||!Number.isFinite(target)||target< -20||target>500||Math.abs(target*10-Math.round(target*10))>1e-6)problem="Target must be from −20.0 to 500.0 °C in 0.1 °C steps.";
+  else if(!$("rate").value.trim()||!Number.isInteger(rate)||rate<1||rate>9999)problem="Ramp rate must be a whole number from 1 to 9999 °C/min.";
+  else if(!$("minutes").value.trim()||!Number.isInteger(minutes)||minutes<1||minutes>5999)problem="Soak duration must be a whole number between 1 and 5999 minutes.";
+  else if(!$("startPV").value.trim()||!Number.isFinite(start)||start< -20||start>500)problem="Assumed starting PV must be from −20 to 500 °C.";
+ }
+ return {slot,target,rate,minutes,start,problem};
+}
+function build(p){
+ const g=[],add=(...args)=>g.push(makeStep(...args));const slot=p.slot;
+ if(state.flow==="select"){
+  add("Before starting","Confirm equipment is isolated","PV/SP","Normal display",
+    "Confirm the external DC heater supply is isolated. Read the actual PV and check the approved programme and controller nameplate.","This changes programme selection only; it does not enter RUN.","../#sop");
+  add("Operation level","Confirm RESET","r-r","rst",
+    "From normal PV/SP, press "+code("MODE")+" briefly until "+code("r-r")+" appears. Confirm "+code("rst")+".","If a programme is running, stop only using the approved shutdown/RESET procedure.","../omron-atlas/#operation/r-r");
+  add("Operation level","Find the RUN programme selector","prg",String(slot),
+    "Press "+code("MODE")+" until "+code("prg")+" appears. Press "+code("UP")+" / "+code("DOWN")+" to select "+code(slot)+".","Do not use d.prg; that selects a memory for EDITING, not execution.","../omron-atlas/#operation/prg");
+  add("Operation level","Verify programme / segment","pgsg","Programme "+slot,
+    "Use "+code("MODE")+" to find "+code("pgsg")+". Confirm the programme number is "+code(slot)+"; the segment suffix depends on the controller state.","The programme number and segment are displayed together. Do not infer that the heater is enabled.","../omron-atlas/#operation/pgsg");
+  add("Programme setting","Inspect the profile without modifying it","d.prg",String(slot),
+    "If you need to check the segment data, return to normal PV/SP and press "+code("LEVEL")+" briefly once. At "+code("d.prg")+" choose "+code(slot)+", then inspect "+code("s-no")+" and the segments via "+code("MODE")+".","Do not edit a stored profile unless authorised; select it for RUN using prg in Operation level.","../omron-atlas/#program/d.prg");
+  add("Final check","Return to normal display and RESET","r-r","rst",
+    "Return to Operation level. Confirm "+code("prg")+" is "+code(slot)+" and "+code("r-r")+" reads "+code("rst")+". Leave the controller in RESET.","Selecting a profile does not start heating. Actual RUN requires the separate approved operating procedure.","../omron-programming/#run");
+  return g;
+ }
+ add("Before editing","Isolate and back up","PV/SP","Starting display",
+  "With external heater power disconnected and the controller in its approved setup condition, note the actual sensor type and save the existing contents of Programme "+slot+" before overwriting it.","The new programme will replace the selected memory, not automatically preserve the old one.","../#sop");
+ add("Before editing","Confirm programme RESET","r-r","rst",
+  "From PV/SP, press "+code("MODE")+" briefly until "+code("r-r")+" is shown. Confirm "+code("rst")+" before entering programme setting.","RESET does not electrically isolate the heater; the independent supply must remain disconnected.","../omron-atlas/#operation/r-r");
+ add("Controller-wide configuration","Check input and programming mode","in-t","6 · Type K, 0.1°C",
+  "Check the fitted sensor is Type K and the global input setting is "+code("in-t = 6")+". Confirm "+code("t-pr = pr")+", "+code("pru = m")+" and "+code("t-u = h-m")+" using the documented Initial Setting level.","If any setting differs, stop and review the global configuration procedure before changing it. A new input range affects ALL eight programmes.","../omron-atlas/#initial/in-t");
+ add("Controller-wide configuration","Check programmed setpoint mode","spmd","psp",
+  "Verify "+code("spmd = psp")+" in Adjustment Level, then return to the normal PV/SP display before continuing.","Controller-wide settings and protection may change which parameter pages are visible.","../omron-atlas/#adjustment/spmd");
+ add("Programme setting","Select memory "+slot+" for editing","d.prg",String(slot),
+  "From normal PV/SP, press "+code("LEVEL")+" briefly once. At "+code("d.prg")+" use "+code("UP")+" / "+code("DOWN")+" to display "+code(slot)+".","d.prg is the EDITING memory, not the programme selected to RUN.","../omron-atlas/#program/d.prg");
+ add("Programme setting","Choose two active segments","s-no","2",
+  "Press "+code("MODE")+" to "+code("s-no")+". Select "+code("2")+" active segments using UP/DOWN.","Segment 0 will be a ramp; Segment 1 will be a soak.","../omron-atlas/#program/s-no");
+ add("Segment 0 · ramp","Select first segment","d.seg","0",
+  "Press "+code("MODE")+" to "+code("d.seg")+". Select "+code("0")+".","Segment numbering starts at 0, even though Programme memories are numbered 0–7.","../omron-atlas/#program/d.seg");
+ add("Segment 0 · ramp","Set segment type to RAMP","styp","ramp",
+  "Press "+code("MODE")+" to "+code("styp")+", then choose "+code("ramp")+".","Ramp changes the commanded setpoint at the specified rate.","../omron-atlas/#program/styp");
+ add("Segment 0 · ramp","Enter target temperature","sp",fmtTemp(p.target)+" °C",
+  "Press "+code("MODE")+" to "+code("sp")+". Enter "+code(fmtTemp(p.target))+" using UP/DOWN and the controller's normal numeric editing method.","Check that the input range and global setpoint limits allow this target.","../omron-atlas/#program/sp");
+ add("Segment 0 · ramp","Enter the heating rate","pr",String(p.rate)+" °C/min",
+  "Press "+code("MODE")+" to "+code("pr")+". Enter "+code(p.rate)+". The previously checked "+code("pru = m")+" means per minute.","This is a commanded SP slope, not a guarantee of measured PV response.","../omron-atlas/#program/pr");
+ add("Segment 1 · soak","Move to the second segment","d.seg","1",
+  "Press "+code("MODE")+" to the next active segment cursor. Confirm "+code("d.seg = 1")+" before editing the soak.","If protection or the active segment count changes the menu, use the visible mnemonic rather than counting presses.","../omron-atlas/#program/d.seg");
+ add("Segment 1 · soak","Choose SOAK","styp","soak",
+  "At segment 1 press "+code("MODE")+" until "+code("styp")+" appears; select "+code("soak")+".","Soak holds the preceding setpoint. It does not need a second target in rate mode.","../omron-atlas/#program/styp");
+ add("Segment 1 · soak","Set hold duration","time",hhmm(p.minutes),
+  "Press "+code("MODE")+" to "+code("time")+". Enter "+code(hhmm(p.minutes))+" for "+p.minutes+" minutes.","In H.MM mode, 0.15 means 15 minutes, not 0.15 hours.","../omron-atlas/#program/time");
+ add("Programme-wide settings","Move to end-of-programme fields","d.seg","end",
+  "Continue with "+code("MODE")+" until the programme-wide "+code("d.seg = end")+" cursor is shown.","END here means the editing position for programme-wide fields, not the stop command.","../omron-atlas/#program/d.seg");
+ add("Programme-wide settings","Confirm PID selection","pid","Approved PID bank",
+  "Find "+code("pid")+" and confirm the bank approved for this equipment. Do not overwrite any PID tuning values merely to follow this example.","This setting selects a PID bank for the programme. Autotune and actual tuning are separate procedures.","../omron-atlas/#program/pid");
+ add("Programme-wide settings","Disable repeats","rpt","0",
+  "Press "+code("MODE")+" until "+code("rpt")+". Set "+code("0")+" for no repeats.","Some alarm-value fields may appear first; do not change them unless required.","../omron-atlas/#program/rpt");
+ add("Programme-wide settings","Disable programme linking","link","end",
+  "Press "+code("MODE")+" until "+code("link")+". Set "+code("end")+".","This finishes the chosen programme rather than automatically chaining to another memory.","../omron-atlas/#program/link");
+ add("Verify and finish","Re-read the programme","d.prg",String(slot),
+  "Return to "+code("d.prg")+" and re-enter memory "+code(slot)+" for inspection. Confirm "+code("s-no = 2")+", Ramp SP "+code(fmtTemp(p.target))+", PR "+code(p.rate)+", and Soak time "+code(hhmm(p.minutes))+".","There is no separate Save key for manual entry; verify stored values instead of assuming the last button press was applied.","../omron-programming/#bench");
+ add("Verify and finish","Select which programme would run","prg",String(slot),
+  "Return to Operation Level, press "+code("MODE")+" until "+code("prg")+", then select "+code(slot)+". Check "+code("pgsg")+" reports the correct programme number.","prg is separate from the d.prg editing memory. Do not enter RUN here.","../omron-atlas/#operation/prg");
+ add("Verify and finish","Leave the controller in RESET","r-r","rst",
+  "At "+code("r-r")+", confirm "+code("rst")+" and leave the isolated controller in RESET. Preserve the approved programme record.","Before heating, complete all electrical/functional commissioning and the site's independent enable procedure.","../#review");
+ return g;
+}
+function configure(reset=true){
+ const p=settings(),error=$("fieldError");
+ error.hidden=!p.problem;error.textContent=p.problem;
+ $("rampSettings").hidden=state.flow!=="create";
+ $("flowCreate").classList.toggle("active",state.flow==="create");$("flowSelect").classList.toggle("active",state.flow==="select");
+ $("flowCreate").setAttribute("aria-pressed",String(state.flow==="create"));$("flowSelect").setAttribute("aria-pressed",String(state.flow==="select"));
+ if(state.flow==="create"&&!p.problem){
+   $("previewTarget").textContent=fmtTemp(p.target)+" °C";$("previewRate").textContent="at "+p.rate+" °C/min";
+   $("previewSoak").textContent=p.minutes+" min";$("previewTime").textContent="Display: "+hhmm(p.minutes);
+   const ramp=Math.abs(p.target-p.start)/p.rate;
+   $("estimate").textContent="From an assumed starting PV of "+fmtTemp(p.start)+" °C, nominal ramp ≈ "+Math.round(ramp*10)/10+" min; hold "+p.minutes+" min. Wait Band and physical temperature lag may extend execution.";
+ }
+ if(p.problem){state.steps=[];$("stepCard").hidden=true;$("allSteps").hidden=true;return}
+ state.steps=build(p);
+ if(reset)state.index=0;
+ state.index=Math.max(0,Math.min(state.index,state.steps.length-1));
+ $("stepCard").hidden=false;$("allSteps").hidden=false;render();
+}
+function render(){
+ const s=state.steps[state.index],last=state.steps.length-1;
+ $("progressName").textContent=state.flow==="create"?"Enter a ramp + soak":"Select a stored programme";
+ $("progressLabel").textContent="Step "+(state.index+1)+" of "+state.steps.length;
+ $("progressFill").style.width=String((state.index+1)/state.steps.length*100)+"%";
+ $("sectionName").textContent=s.group;$("stepTitle").textContent=s.title;$("stepIntro").textContent="Use the display mnemonic to confirm you are in the right setting before changing any value.";
+ $("screenCode").textContent=s.screen;$("screenName").textContent=s.screen==="PV/SP"?"Normal process / setpoint screen":"Omron display code";$("screenValue").textContent=s.value;
+ $("stepAction").innerHTML=s.action;$("stepNote").textContent=s.note;
+ $("stepLinks").replaceChildren();
+ const link=document.createElement("a");link.href=s.link;link.textContent="View this setting in the full manual ↗";$("stepLinks").append(link);
+ $("previous").disabled=state.index===0;
+ $("next").textContent=state.index===last?"Back to first step ↺":"Next step →";
+ $("fullCount").textContent=state.steps.length;
+ $("fullSteps").replaceChildren();
+ state.steps.forEach((it,i)=>{
+   const li=document.createElement("li"),btn=document.createElement("button");btn.type="button";btn.className=i===state.index?"current":"";
+   const head=document.createElement("strong");head.textContent=(i+1)+". "+it.title+" · "+it.screen+" = "+it.value;
+   const p=document.createElement("span");p.innerHTML=it.action;btn.append(head,p);
+   btn.addEventListener("click",()=>{state.index=i;render();$("stepCard").scrollIntoView({block:"start",behavior:"smooth"})});li.append(btn);$("fullSteps").append(li);
+ });
+}
+$("flowCreate").addEventListener("click",()=>{state.flow="create";configure()});
+$("flowSelect").addEventListener("click",()=>{state.flow="select";configure()});
+["memory","target","rate","minutes","startPV"].forEach(id=>$(id).addEventListener("input",()=>configure()));
+$("previous").addEventListener("click",()=>{if(state.index>0){state.index--;render()}});
+$("next").addEventListener("click",()=>{state.index=state.index===state.steps.length-1?0:state.index+1;render()});
+$("printRecipe").addEventListener("click",()=>{if(settings().problem){$("fieldError").focus();return}
+ $("allSteps").open=true;window.print()});
+const q=new URLSearchParams(location.search);
+if(q.has("flow")&&q.get("flow")==="select")state.flow="select";
+for(const [query,id] of [["slot","memory"],["target","target"],["rate","rate"],["hold","minutes"],["start","startPV"]]){
+ if(q.has(query)&&String(q.get(query)).length<16)$(id).value=q.get(query);
+}
+configure();
+})();
+</script></body></html>
