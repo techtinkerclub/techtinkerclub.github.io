@@ -39,18 +39,30 @@ class Programme:
     finish: str = "rst"  # controller-wide setting; NOT transferred
     steps: list[Segment] = field(default_factory=lambda:[Segment("ramp"),Segment("soak")])
 
-    def validate(self):
+    def validate(self,limits=None):
+        # Default is only a provisional Type K input-6 planning envelope.
+        # Connected USB transfers supply fresh live sensor + setpoint limits.
+        if limits is None:
+            from programme_constraints import effective_limits
+            limits=effective_limits({"C3:0000":6},require_readback=False)
         if len(self.steps)<1 or len(self.steps)>SEGMENT_LIMIT: raise ValidationError("Must have 1..32 segments")
         start=decimal(self.start)
-        if start<Decimal("-20") or start>500:raise ValidationError("Assumed PV must be -20..500 °C")
+        if not limits.sensor_min<=start<=limits.sensor_max:
+            raise ValidationError(f"Assumed starting PV {start:g} °C outside sensor range "
+                                  f"{limits.sensor_min:g}…{limits.sensor_max:g} °C")
         if self.finish not in ("rst","cont"):raise ValidationError("Invalid finish mode")
         t=Decimal(0); pv=start; points=[(float(t),float(pv))]
         for i,s in enumerate(self.steps):
             if s.type not in KIND_CODE:raise ValidationError(f"Segment {i}: unsupported type")
             if s.type in ("ramp","step"):
                 sp=decimal(s.sp)
-                if not Decimal(-20)<=sp<=Decimal(500):raise ValidationError(f"Segment {i}: target outside type K input 6 range")
-                if sp*10 != (sp*10).to_integral_value():raise ValidationError(f"Segment {i}: target has more than one decimal place")
+                if not limits.minimum<=sp<=limits.maximum:
+                    raise ValidationError(f"Segment {i+1}: {sp:g} °C outside permitted "
+                                          f"{limits.minimum:g}…{limits.maximum:g} °C "
+                                          "(sensor range and controller setpoint limits)")
+                units=sp/limits.resolution
+                if units!=units.to_integral_value():
+                    raise ValidationError(f"Segment {i+1}: target must use {limits.resolution:g} °C increments")
             if s.type=="ramp":
                 r=decimal(s.rate)
                 if r!=r.to_integral_value() or not 1<=r<=9999:raise ValidationError(f"Segment {i}: slope must be an integer from 1 to 9999")
@@ -101,13 +113,19 @@ def address(slot,offset):
     if not 0<=slot<8 or not 0<=offset<=0xff:raise ValidationError("Invalid programme address")
     return (slot<<8)+offset
 
-def planned_writes(slot,p:Programme,input_type=6):
-    """Only writes programme data. Never writes initial settings, PID or alarms.
+def planned_writes(slot,p:Programme,input_type=6,limits=None):
+    """Only DA programme data, using the same sensor/SP constraints as the editor.
+
     Order: disable repeats/link, segment fields, segment count LAST.
     """
-    p.validate()
     if input_type not in (5,6):
         raise ValidationError("Unverified thermocouple display resolution")
+    if limits is None:
+        from programme_constraints import effective_limits
+        limits=effective_limits({"C3:0000":input_type},require_readback=False)
+    if limits.input_type!=input_type:
+        raise ValidationError("Programme input resolution changed since limits were calculated")
+    p.validate(limits=limits)
     # H186 programme SP values are encoded without a display decimal point.
     scale = 1 if input_type == 5 else 10
     if input_type == 5:
