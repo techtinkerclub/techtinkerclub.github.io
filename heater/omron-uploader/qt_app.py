@@ -734,8 +734,9 @@ class Studio(QMainWindow):
         self.usb_next_action.setStyleSheet("color:#a8610f;font-weight:600")
         uv.addWidget(self.usb_next_action)
         uv.addWidget(text("This tab transfers DA programme memory only. "
-            "The qualified Wait Band writer is available through the unified controls. "
-            "All other configuration writes remain disabled. Keep the heater isolated.",True))
+            "Documented C1 and C3 settings use separate guarded workflows; "
+            "C4/C5/C9 and link-changing settings remain subject to further qualification. "
+            "Keep the heater isolated.",True))
         uv.addWidget(text("Before writing: confirm the model nameplate, stopped controller, "
             "fresh backup and physically isolated heater supplies. The first RAM write "
             "requires a specific confirmation.",True))
@@ -743,14 +744,14 @@ class Studio(QMainWindow):
         cv=QVBoxLayout(config)
         cv.setSpacing(10)
         cv.addWidget(heading("Controller setting transfer",
-            "Only Wait Band (wt-b / C1:0021) has been enabled for USB writing."))
+            "The available USB edits depend on the documented register, current hardware and safety checks."))
         self.config_review=QTextEdit()
         self.config_review.setReadOnly(True)
         self.config_review.setMinimumHeight(92)
         self.config_review.setMaximumHeight(180)
         cv.addWidget(self.config_review)
         wt_card,wt=card(11)
-        wt.addWidget(text("USB PARAMETER COMMISSIONING   ·   ONE ALLOWLISTED REGISTER: wt-b (C1:0021)",True))
+        wt.addWidget(text("WAIT BAND   ·   GLOBAL SETTING C1:0021",True))
         self.wt_status=QLabel("Read the controller, then propose a single Wait Band change.")
         self.wt_status.setWordWrap(True)
         wt.addWidget(self.wt_status)
@@ -2721,7 +2722,7 @@ class Studio(QMainWindow):
                 include_programme=self.include_programme_with_settings)
             if write_plan["setting_area_1"]:
                 lines.append("\nINITIAL CONFIGURATION — SETTING AREA 1")
-                lines.append("C3 pilot: Control algorithm, Type K sensor 5/6, SP limits "
+                lines.append( "C3 pilot: Control algorithm, all 30 input choices, SP limits "
                              "and heating control period only. A special write procedure "
                              "is required; SAVE RAM DATA is NOT used to claim C3 persistence.")
                 lines.append("C3 writes address only the selected setting registers; "
