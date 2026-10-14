@@ -55,6 +55,32 @@ finish/return-to-operation procedure.
 The stable application is unchanged. Do not treat successful unit tests as
 validation of live heater behaviour or EEPROM persistence.
 
+## Website and native Studio parity — 14 October 2026 (draft)
+
+- The website `/heater/program-tools/` now offers sensor codes 0–29 with
+  offline sensor-range compatibility warnings, a commanded setpoint curve and
+  analogue engineering scaling fields. The virtual five-button keypad remains
+  a **Type K input-6 training subset**; choosing another input for the programme
+  never silently changes the virtual controller.
+- Website single-programme JSON exports (`version: 1` and `version: 2`)
+  can be imported from **Step 3 → Import website JSON…** in the Windows app.
+  The exact selected programme number and planned input code are restored to
+  local draft memory. This does **not** write controller registers.
+  Website analogue engineering scaling values do NOT constitute confirmed
+  hardware configuration: read C3:0001/0002/0003 and upper/lower setpoint limits
+  again before any USB DA programme write.
+- Native eight-programme project saves retain one planned sensor input code
+  per local programme. Actual Omron `in-t` is a **single global setting**,
+  so only one of those local planned choices can be active on a connected
+  controller at a time. Programmes with targets outside the current sensor
+  range remain editable/saveable and their incompatibility is identified.
+- Website `/heater/omron-programming/` now contains a nameplate-derived
+  option matrix and sequential C3 → reset/return → fresh read → DA transfer
+  procedure. Main `/heater/` manual has a separate Windows USB Studio section.
+- This is a development release. Compile/Qt regression/packaging success is
+  not physical validation of non-Type-K DA encoding, physical sensor wiring,
+  EEPROM persistence after global changes or live-heater controls.
+
 ## Functional five-step workflow
 
 1. Mode — Connected or completely offline/manual, no website required.
