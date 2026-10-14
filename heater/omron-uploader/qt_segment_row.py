@@ -177,7 +177,7 @@ class SegmentRow(QFrame):
         original_target=float(segment.sp)
         target.setRange(min(float(temperature_min),original_target),
                         max(float(temperature_max),original_target))
-        target.setDecimals(1)
+        target.setDecimals(3)
         target.setSingleStep(0.1)
         target.setSuffix(" °C")
         target.setValue(float(segment.sp))
