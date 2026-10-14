@@ -98,6 +98,7 @@ class Studio(QMainWindow):
         self.snapshot=None
         self.inventory=offline_inventory()
         self.inventory_current_session=False
+        self._editor_last_verified_limits=None
         self.draft={}
         self.programmes=[blank_programme() for _ in range(8)]
         self.slot=0
@@ -845,7 +846,7 @@ class Studio(QMainWindow):
     def _programme_pending(self):
         """Compare exact planned DA register values against the fresh backup."""
         ses=self.session
-        if not ses or not ses.backup_data or not ses.settings:
+        if not ses or not ses.backup_data or not ses.settings or not self.inventory_current_session:
             return False
         try:
             existing=ses.backup_data["programmes"][str(self.slot)]
@@ -1608,6 +1609,7 @@ class Studio(QMainWindow):
             self.wait_receipt_match=None
             self.programme_receipt_match=None
             self.inventory_current_session=(inventory_error is None)
+            self._editor_last_verified_limits=None
             self.port=port
             self.backup=self.session.backup_data
             self.draft={}
@@ -2188,12 +2190,16 @@ class Studio(QMainWindow):
         values after writing initial/global configuration.
         """
         if self.mode=="connected" and self.client and not self.inventory_current_session:
-            return None,("Controller settings are stale after a global change. "
-                         "Read everything again in Step 2.")
+            return self._editor_last_verified_limits,(
+                "Controller settings are stale after a global change. "
+                "The editor still shows the BEFORE-change programme values. "
+                "Read everything again in Step 2 before another upload.")
         fields=self.inventory.get("fields",{})
         try:
             limits=effective_limits(fields,require_readback=bool(
                 self.mode=="connected" and self.inventory_current_session))
+            if self.inventory_current_session and limits.verified:
+                self._editor_last_verified_limits=limits
             return limits,None
         except ValueError as exc:
             return None,str(exc)
@@ -2261,7 +2267,9 @@ class Studio(QMainWindow):
         limits,error=self._effective_programme_limits()
         conflicts=self._programming_conflicts()
         if limits is not None:
-            prefix="Live + proposed limits" if limits.verified else "Provisional sensor limits"
+            prefix=("BEFORE-change reference (fresh read required)"
+                    if error else "Controller readback limits" if limits.verified
+                    else "Provisional sensor limits")
             note=prefix+" · "+limits.description()
         else:
             note="Controller temperature limits NOT VERIFIED: "+(error or "unknown")
@@ -2276,6 +2284,7 @@ class Studio(QMainWindow):
                 f"(excludes Wait delays){' — total time cannot be predicted' if has_step else ''}   ·   "
                 f"Final SP {metrics['final_sp']:g} °C")
             if conflicts:note+="\nGlobal configuration conflicts: "+"; ".join(conflicts[:3])
+            if error:note+="\n"+error
             self.temperature_limits_hint.setText(note)
             self.temperature_limits_hint.setStyleSheet(
                 "color:"+("#a8610f" if error or conflicts or not limits or not limits.verified else "#157952")+";font-weight:600")
