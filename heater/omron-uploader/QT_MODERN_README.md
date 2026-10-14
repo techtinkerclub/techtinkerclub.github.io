@@ -442,3 +442,37 @@ against the original backup using Step 2 → Compare backups. If input type
 matches again and no programme raw words changed, report that finding,
 not a blanket claim of hardware safety. Verification on the controller
 display is still required before RUN.
+
+
+## Front-panel-equivalent global setting changes (14 October 2026 update)
+
+The global configuration writer is now intentionally simple:
+- **Current, confirmed controller readback** governs local programme
+  editor graphs, target values and limits. A proposed sensor setting is
+  NOT treated as active hardware; it can only raise a *pending*
+  compatibility warning, never change an entered temperature.
+- C3 settings transfer sends only the user's **exact selected C3
+  register value(s)**, with permitted-encoding, model, RESET and
+  temperature-limit compatibility guards. It does **NOT** touch DA
+  memory, compute new programme setpoints or perform implicit migration.
+- Because changing one C3 parameter can make Omron initialise other
+  parameters, after C3 Finish the prior extended inventory is marked
+  **STALE**. Before any further DA upload the user must return to normal
+  operation as documented, then **Read everything** in Step 2. The
+  original editor graph remains available as a before-change reference,
+  marked accordingly.
+- C3 initial-settings preflight no longer imposes unrelated rate/time
+  format defaults used by the DA uploader. It still requires a
+  qualifying controller model and stopped RESET/output-safe conditions.
+- The documented reset button is labelled **Return to normal (reset +
+  read back)**. Reset is a separate, explicitly authorised operation,
+  not automatically sent after every setting change.
+- A complete eight-programme backup remains a useful read-only safety
+  snapshot and is never used to rewrite/reset programmes. The optional
+  old/new backup comparison is diagnostic only.
+
+Automated tests confirm that a Type K 5→6 selection sends exactly
+`C3:0000=6` with no DA writes, that a local 800 °C programme is
+preserved with an advisory pending-range warning, and that settings
+are marked stale after C3 Finish. Physical hardware behaviour remains
+to be validated; no active heater is required to test communications.
