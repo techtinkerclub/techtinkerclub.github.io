@@ -1543,7 +1543,8 @@ class Studio(QMainWindow):
         session=self.session
         connected=bool(session and self.client and self.mode=="connected")
         can_preview=(connected and session.backup_data is not None and not self.busy
-                     and not self.draft and session.staged is None)
+                     and not self.draft and session.staged is None
+                     and self.setting_transfer is None)
         can_stage=(can_preview and self.lab and not self.fail_latched and not session.mismatches
             and session.staged is None and self.preview_stamp==self._programme_fingerprint()
             and bool(self.preview_changes) and all(x.isChecked() for x in self.safety))
@@ -1553,11 +1554,28 @@ class Studio(QMainWindow):
         self.stage_button.setEnabled(bool(can_stage))
         self.save_button.setEnabled(bool(can_save))
         can_cmw_off=(connected and self.lab and not self.busy and not self.fail_latched
-                     and session.committed and session.receipt_file is not None
+                     and self.setting_transfer is None and session.committed
+                     and session.receipt_file is not None
                      and not session.communications_write_disabled)
         self.cmw_off_button.setEnabled(bool(can_cmw_off))
         staged=bool(session and session.staged is not None and not session.committed)
-        editing_locked=staged or self.busy
+        editing_locked=staged or self._settings_ram_pending() or self.busy
+        wt=self.setting_transfer
+        if hasattr(self,"wt_preview"):
+            self.wt_preview.setEnabled(self._can_begin_wait())
+            self.wt_stage.setEnabled(bool(
+                wt and wt.preview_data and not wt.ram_touched and not self.busy
+                and not self.fail_latched and
+                self.draft=={"C1:0021":wt.preview_data["new_raw"]}))
+            self.wt_save.setEnabled(bool(
+                wt and wt.staged and not wt.saved and not self.busy and
+                not self.fail_latched and
+                self.draft=={"C1:0021":wt.preview_data["new_raw"]}))
+            self.wt_cmw_off.setEnabled(bool(
+                wt and wt.saved and wt.receipt_file and not wt.cmw_off
+                and not self.busy and not self.fail_latched))
+            self.wt_verify.setEnabled(bool(connected and not self.busy))
+            self.wt_status.setText(self._wait_status_text())
         self.slot_combo.setEnabled(not editing_locked)
         self.segment_table.setEnabled(not editing_locked)
         self.programme_name.setEnabled(not editing_locked)
@@ -1576,7 +1594,9 @@ class Studio(QMainWindow):
         if connected:
             if not self.lab:reasons.append("Hardware writes disabled: use the isolated-lab launcher.")
             if session.mismatches:reasons.append("Preflight values differ from the tested bench configuration.")
-            if self.draft:reasons.append(f"{len(self.draft)} initial/PID setting proposals are not writable via USB.")
+            if self.draft:reasons.append(f"{len(self.draft)} settings proposals are pending; DA upload is locked.")
+            if self.setting_transfer is not None:
+                reasons.append("Wait Band USB transfer is active/finished in this connection; reconnect before DA upload.")
             if self.programmes[self.slot].finish!="rst":
                 reasons.append("Programme end CONTINUE requires manual setup; DA upload only supports RESET.")
             if self.fail_latched:reasons.append("A write failed: stop and inspect; do not retry blindly.")
