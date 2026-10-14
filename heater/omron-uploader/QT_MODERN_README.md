@@ -328,21 +328,44 @@ These C3 values may affect controller operation immediately and persistence is
 not established by same-session readback. After the write, the operator MUST
 physically power-cycle and reconnect to verify the receipt before using the heater.
 
-**Sensor type safety:** raw DA programme temperatures are interpreted at the
-sensor's chosen decimal resolution. Switching between Type K input 5 and 6 is
-allowed only after a complete eight-memory backup confirms that ALL 8 stored
-programmes are empty. Both SP limits must also be explicitly included in that
-change, even if an integer word remains identical but means a different
-temperature. The application refuses to silently migrate existing DA segments;
-this must be a separate migration feature. Tightening SP limits with populated
-programmes is likewise refused.
+**Sensor input change with populated programmes:** the former artificial
+"all eight programmes must be empty" requirement has been REMOVED. The
+original complete 1,200 DA words are preserved in a durable transfer receipt.
+On a Type K input 5 ↔ 6 change, Omron may update stored programme temperatures
+and reset global setpoint limits internally. The application never predicts
+or silently overrides that firmware behaviour. If no explicit SP limits are
+provided, let the controller choose its input-type defaults. If the operator
+chooses to override those defaults, BOTH bounds must be proposed.
+
+**Software restart and full audit:** after Step 5 completes a verified C3
+write and CMW OFF, a new guarded "Software restart + audit all 8 programmes"
+action is available. It requires explicit confirmation that mains/output/heater
+power supplies are PHYSICALLY ISOLATED. H186's `3005 06 00` software-reset
+command returns no normal controller response: the USB library sends it ONCE,
+never waits for a reply and **never retries the reset command** if sending was
+uncertain. The app reopens the selected COM port read-only, validates model
+and stopped state, rereads all 1,200 DA words, checks the C3 receipt and
+compares the postrestart global C3 values with the original snapshot.
+A dated JSON audit is written even when the C3 receipt readback differs,
+provided the programme readings succeeded. The report names changed DA
+registers, affected programme numbers and changed global parameters.
+
+**Important:** an identical raw DA value after sensor resolution changes
+does NOT prove its physical temperature interpretation remained identical.
+Any sensor-type transition remains flagged for review, even if all 1,200 raw
+words match; a controller-managed conversion is reported by the actual
+observed differences. After the audit, all old snapshots are invalidated:
+Step 2 must take a completely fresh controller read before any more writes.
+Software reset is **not** equivalent to a genuine loss of power, so optional
+physical power-cycle receipt verification remains valuable.
 
 **Different setting areas cannot be merged into one CMW/SAVE transaction.**
-Apply eligible C3 changes by themselves, physically power-cycle and verify,
-then make C1 or DA changes after a new read and backup. Initial configuration
-is hardware-experimental and has not yet been observed on the actual -000 unit.
-No alarms, output assignments, polarity, communications parameters or arbitrary
-C3 registers have been enabled.
+Apply eligible C3 changes by themselves, restart and verify, then take a fresh
+backup before any C1 or DA changes. Do not use software reset after ordinary
+programme uploads or C1 RAM saves: it is only available after finished C3
+configuration, because it can invoke global power-up behaviour. This feature
+remains hardware-experimental; no alarms, output assignments, polarity,
+communications parameters or arbitrary C3 registers have been enabled.
 
 Omron source: H186-E1-06 §§2-2-3, 2-3-2, 2-3-8 and 3-1.
 The ordinary C1 Proportional/Integral/Derivative values are the **active PID
