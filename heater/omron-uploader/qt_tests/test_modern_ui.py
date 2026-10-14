@@ -274,6 +274,56 @@ class ModernStudioTests(unittest.TestCase):
         self.assertEqual(self.win.parameter_editor.text(),"1")
         self.assertEqual(self.win._selected_setting_code(),"C1:0021")
 
+    def test_revert_edit_and_just_one_proposal_without_retyping_original(self):
+        self.win.choose_mode("offline")
+        self.win.inventory["fields"]["C1:0021"]=20
+        self.win.inventory["fields"]["C1:0015"]=120
+        self.win.search.setText("C1:0021")
+        self.assertEqual(self.win.parameter_editor.text(),"2")
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+        # A typed but not-yet-proposed value should be reversible as well.
+        self.win.parameter_editor.setText("3.5")
+        self.assertTrue(self.win.revert_setting_button.isEnabled())
+        self.win.revert_setting()
+        self.assertEqual(self.win.parameter_editor.text(),"2")
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+        # Changing one setting must not erase an unrelated pending proposal.
+        self.win.parameter_editor.setText("1.5")
+        self.win.propose_setting()
+        self.assertEqual(self.win.draft["C1:0021"],15)
+        self.win.search.setText("C1:0015")
+        self.win.parameter_editor.setText("13.5")
+        self.win.propose_setting()
+        self.assertEqual(self.win.draft["C1:0015"],135)
+        self.win.search.setText("C1:0021")
+        self.assertTrue(self.win.revert_setting_button.isEnabled())
+        self.win.revert_setting()
+        self.assertNotIn("C1:0021",self.win.draft)
+        self.assertEqual(self.win.draft["C1:0015"],135)
+        self.assertEqual(self.win.parameter_editor.text(),"2")
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+
+    def test_control_algorithm_dependency_navigable_and_dropdown_revert(self):
+        self.win.choose_mode("offline")
+        self.win.inventory["fields"]["C1:0015"]=120
+        self.win.inventory["fields"]["C3:0007"]=0
+        self.win.search.setText("C1:0015")
+        self.assertIn("REQUIRES: Control algorithm = PID",self.win.setting_dependency_note.text())
+        self.assertIn("ON/OFF",self.win.setting_dependency_note.text())
+        self.assertTrue(self.win.open_dependency_button.isVisibleTo(self.win.pages.widget(3)))
+        self.win.open_required_setting()
+        self.assertEqual(self.win._selected_setting_code(),"C3:0007")
+        self.assertIn("Control algorithm",self.win.parameter_detail.toPlainText())
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+        self.win.parameter_choices.setCurrentIndex(self.win.parameter_choices.findData(1))
+        self.assertTrue(self.win.revert_setting_button.isEnabled())
+        self.win.propose_setting()
+        self.assertEqual(self.win.draft["C3:0007"],1)
+        self.win.revert_setting()
+        self.assertNotIn("C3:0007",self.win.draft)
+        self.assertEqual(self.win.parameter_choices.currentData(),0)
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+
     def test_offline_configuration_proposal_blocks_upload(self):
         self.win.choose_mode("offline")
         self.win.group.setCurrentText("All groups")
