@@ -738,7 +738,7 @@ class Studio(QMainWindow):
                            "and read back. Power-cycle verification still required.")
                 if tx.cmw_off:wt_status+=" CMW OFF acknowledged."
                 if self.draft:
-                    wt_status+=(f"  ·  {len(self.draft)} NEW settings proposal(s) "
+                    wt_status+=(f"  ·  {len(self.draft)} NEW proposed settings change(s) "
                                 "NOT written. Reconnect and take a fresh backup "
                                 "before any further setting write.")
             elif tx.staged:
