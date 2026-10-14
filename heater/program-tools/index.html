@@ -89,7 +89,7 @@ function selectedInput(){
  return {code:c,name:x[0],lo:x[1],hi:x[2],step:x[3],unit:"°C",valid:true};
 }
 const blank=t=>t==="soak"?{type:t,minutes:15}:t==="step"?{type:t,sp:120}:{type:"ramp",sp:120,rate:2};
-const initial=()=>Array.from({length:8},(_,i)=>({name:i===0?"20 to 120°C example":i===1?"Verified 50°C bench example":"Programme "+i,start:20,finish:"rst",steps:i===0?[{type:"ramp",sp:120,rate:2},{type:"soak",minutes:15}]:i===1?[{type:"ramp",sp:50,rate:2},{type:"soak",minutes:15}]:[{type:"ramp",sp:80,rate:2}]}));
+const initial=()=>Array.from({length:8},(_,i)=>({name:i===0?"20 to 120°C example":i===1?"50°C ramp + 15-minute soak example":"Programme "+i,start:20,finish:"rst",steps:i===0?[{type:"ramp",sp:120,rate:2},{type:"soak",minutes:15}]:i===1?[{type:"ramp",sp:50,rate:2},{type:"soak",minutes:15}]:[{type:"ramp",sp:80,rate:2}]}));
 let bank=initial(),slot=0;
 try{let x=JSON.parse(localStorage.getItem(K)||"null");if(x&&Array.isArray(x.bank)&&x.bank.length===8){bank=x.bank.map((v,i)=>({name:String(v.name||"Programme "+i).slice(0,80),start:v.start,finish:v.finish==="cont"?"cont":"rst",steps:Array.isArray(v.steps)?v.steps.slice(0,MAX).filter(t=>["ramp","soak","step"].includes(t.type)):[]}));slot=Math.max(0,Math.min(7,Number(x.slot)||0));if(x.sensorPlan&&Number.isInteger(x.sensorPlan.code)&&INPUTS[x.sensorPlan.code])sensorPlan={...sensorPlan,...x.sensorPlan};}}catch(_){}
 const save=()=>{try{localStorage.setItem(K,JSON.stringify({bank,slot,sensorPlan}));}catch(_){}},cur=()=>bank[slot];
@@ -384,8 +384,8 @@ function goal(){
    +(vm.prg!==slot?'<p class="note">The simulator is currently viewing programme '+esc(vm.prg)+'. Select <code>d.prg = '+esc(slot)+'</code> to edit the programme used for this comparison.</p>':'');
 }
 $("benchExample").onclick=()=>{
- if(!confirm("Replace browser builder Programme 1 with the verified 50°C/2°C/min/15 min example? This does not write to the physical Omron."))return;
- slot=1;bank[1]={name:"Verified bench: 50°C at 2°C/min, soak 15 min",start:20,finish:"rst",steps:[{type:"ramp",sp:50,rate:2},{type:"soak",minutes:15}]};save();render();goal();
+ if(!confirm("Replace browser builder Programme 1 with the 50°C/2°C/min/15 min example? This does not write to the physical Omron."))return;
+ slot=1;bank[1]={name:"Example: 50°C at 2°C/min, soak 15 min",start:20,finish:"rst",steps:[{type:"ramp",sp:50,rate:2},{type:"soak",minutes:15}]};save();render();goal();
 };
 $("powercycle").onclick=powerCycleVM;
 document.querySelectorAll("[data-key]").forEach(x=>x.addEventListener("click",()=>{push(x.dataset.key,$("holdmode").value==="long");$("holdmode").value="short"}));
