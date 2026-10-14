@@ -202,7 +202,7 @@ $("addRamp").onclick=()=>add("ramp");$("addSoak").onclick=()=>add("soak");$("add
 $("clear").onclick=()=>{if(confirm("Clear all programme segments?")){cur().steps=[];save();render()}};
 $("guide").onclick=()=>{
  const p=cur(),seg=p.steps;
- if(sensorPlan.code===6&&seg.length===2&&seg[0].type==="ramp"&&seg[1].type==="soak"){
+ if(sensorPlan.code===6&&seg.length===2&&seg[0].type==="ramp"&&seg[1].type==="soak"&&evaluate(p).err.length===0&&evaluate(p).warnings.length===0&&Number.isInteger(Number(seg[1].minutes))&&Number(seg[1].minutes)>0){
    const params=new URLSearchParams({slot:String(slot),target:String(seg[0].sp),rate:String(seg[0].rate),
       hold:String(seg[1].minutes),start:String(p.start)});
    location.href="../programming-assistant/?"+params.toString();
