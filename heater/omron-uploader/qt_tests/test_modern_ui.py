@@ -216,6 +216,34 @@ class ModernStudioTests(unittest.TestCase):
         self.win._render_programme()
         self.assertFalse(self.win.wait_configure.isVisibleTo(self.win.pages.widget(2)))
 
+    def test_settings_search_updates_detail_even_when_selected_row_stays_zero(self):
+        # Regression for first filtered item reusing row zero after a previous
+        # setting was selected. Qt does not necessarily emit selectionChanged.
+        self.win.choose_mode("offline")
+        self.win.inventory["fields"]["C1:0021"]=20
+        self.win.inventory["fields"]["C1:0026"]=500
+        self.win.refresh_settings()
+        first=self.win._selected_setting_code()
+        self.assertNotEqual(first,"C1:0021")
+        self.win.search.setText("C1:0021")
+        self.assertEqual(self.win.setting_table.rowCount(),1)
+        self.assertEqual(self.win._selected_setting_code(),"C1:0021")
+        self.assertIn("Wait band",self.win.parameter_detail.toPlainText())
+        self.assertFalse(self.win.parameter_editor.isHidden())
+        self.assertEqual(self.win.parameter_editor.text(),"2")
+        self.win.parameter_editor.setText("1.0")
+        self.win.propose_setting()
+        self.assertEqual(self.win.draft["C1:0021"],10)
+        # Search for a neighbouring register, then return to Wait Band:
+        # the right-hand editor must switch BOTH times.
+        self.win.search.setText("C1:0026")
+        self.assertIn("MV upper limit",self.win.parameter_detail.toPlainText())
+        self.assertEqual(self.win._selected_setting_code(),"C1:0026")
+        self.win.search.setText("C1:0021")
+        self.assertIn("Wait band",self.win.parameter_detail.toPlainText())
+        self.assertEqual(self.win.parameter_editor.text(),"1")
+        self.assertEqual(self.win._selected_setting_code(),"C1:0021")
+
     def test_offline_configuration_proposal_blocks_upload(self):
         self.win.choose_mode("offline")
         self.win.group.setCurrentText("All groups")
