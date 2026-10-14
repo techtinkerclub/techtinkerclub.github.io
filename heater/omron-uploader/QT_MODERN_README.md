@@ -100,12 +100,24 @@ Regression tests exercise the real Qt field geometry and selection.
 - **Step 3 — Programme:** design/edit DA programme segments.
 - **Step 4 — Controller Settings:** view and propose changes, including global wt-b.
   No hardware writes are issued simply by proposing a change.
-- **Step 5 — Apply / Manual:** three distinct tabs: Offline/manual keypad guide,
-  Programme USB transfer (DA memory), and Settings USB transfer (qualified
-  C1:0021 only). A pending settings proposal automatically selects Settings
-  USB transfer so the user doesn't see disabled DA controls by mistake.
-  The programme writer stays locked while setting changes are pending.
-  General USB settings writing is NOT enabled beyond wt-b.
+- **Step 5 — Apply / Manual:** only two tabs: **Offline/manual entry**
+  and **USB transfer**. The USB page has a single always-visible status summary
+  for BOTH programme memory and controller settings, plus a transfer-operation
+  selector for either DA programme writes or the qualified C1:0021 setting.
+  If settings proposals are pending or a settings write was started, the
+  settings operation opens automatically; disabled programme buttons cannot
+  be mistaken for the settings transfer. These are still separate safe
+  staged operations internally, with distinct readback, SAVE and receipts.
+  A settings write cannot be mixed with a DA write in the same connection.
+- Search/list selection in Step 4 always refreshes its detail editor even if
+  the displayed search result remains on the same row number (Qt's normal
+  selection-change signal would otherwise be skipped).
+- A settings SAVE is shown as **acknowledged/read back**, with
+  **power-cycle verification pending** until actually checked. A second
+  local settings proposal remains **NOT written**, even if an earlier value
+  was saved in that USB session.
+- Other settings outside wt-b remain review-only; we have NOT enabled bulk
+  USB register writes.
 
 ## First USB configuration-write trial: Wait Band
 
@@ -118,8 +130,8 @@ Procedure, with controller mains and external heater DC physically isolated:
 1. Connect and take a full eight-programme backup in Step 2.
 2. In Step 4, search C1:0021, enter 3.0 °C and add a LOCAL change proposal.
    No other proposed settings can be present.
-3. Continue to **Step 5 — Apply / Manual**, and choose **Settings USB transfer**
-   (automatically selected if wt-b is proposed). Click Read + preview wt-b.
+3. Continue to **Step 5 — Apply / Manual** → **USB transfer**, where
+   **Controller settings (wt-b)** is automatically selected. Click Read + preview wt-b.
    The app reads the live controller setting and
    writes a separate checked backup of the ORIGINAL parameter.
 4. Click Write RAM + verify, confirming hardware isolation and the exact
@@ -131,7 +143,7 @@ Procedure, with controller mains and external heater DC physically isolated:
 6. Click CMW OFF, check that the CMW lamp extinguishes.
 7. Actually power-cycle the USB cable (heater isolated) until the controller
    display turns off, reconnect and take another fresh backup.
-8. In Step 5 → Settings USB transfer, select Verify saved receipt,
+8. In Step 5 → USB transfer → Controller settings (wt-b), select Verify saved receipt,
    choose the original receipt, and
    compare the newly read C1 value. Merely reconnecting without removing
    controller power does not establish persistence.
