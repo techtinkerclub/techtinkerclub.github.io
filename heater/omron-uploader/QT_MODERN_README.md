@@ -239,3 +239,44 @@ restart/power cycle to return to area 0. DA/C1 SAVE RAM DATA must not be assumed
 to save initial configuration. No unqualified 3005 operations are available
 from the current serial writer. Reading a parameter is not evidence of
 hardware support for writing that parameter.
+
+
+## Experimental extra USB-write support: C1 adjustments (14 October 2026)
+
+The first actual **additional parameter writes** beyond Wait Band are:
+
+| Register | H186 setting | Applicability | Raw write range |
+| --- | --- | --- | --- |
+| C1:0015 | Proportional band (P) | PID only; selected PID set | 1…9999 (tenths of degree) |
+| C1:0016 | Integral time (I) | PID only; selected PID set | 0…9999 (unit depends on configuration) |
+| C1:0017 | Derivative time (D) | PID only; selected PID set | 0…9999 (unit depends on configuration) |
+| C1:001B | Heating hysteresis | ON/OFF only | 1…9999 (controller raw tenths) |
+| C1:0021 | Wait Band | Global, all programmes | 0…9999 |
+
+Unlike earlier releases, several compatible C1 settings can now be **previewed,
+written to RAM, read back, and persisted together with a single SAVE RAM DATA**.
+Step 5 routes settings-only drafts containing only these registers through the
+new isolated-lab C1 transaction. The changed local DA programme is NOT included.
+The single Wait Band path and already-qualified one-programme + Wait Band path
+remain available unchanged. No C3, C4, C5 or C9 arbitrary writes were added;
+C5 is used for **READ ONLY confirmation** of PID-set identity and values.
+
+**Extra PID-set protection:** P/I/D through C1 refer to the currently selected
+PID set. The app reads the PID monitor (C0:000D, documented 1..8), then compares
+C1 P/I/D values with the corresponding fixed-address C5 PID-set entries before
+staging. It checks C1 and C5 after staging and after SAVE. If the active PID set
+changes, differs from fixed-address memory, or cannot be read, NO write is
+attempted. Power-cycle receipt verification also requires the same PID context.
+
+This functionality is **experimental, not yet validated on real Omron hardware**.
+The protocol write target list is explicitly restricted, the controller must
+remain RESET/stopped, the heater supplies must be physically isolated, and a
+current eight-programme backup is required. Failures after initiating a write
+latch an uncertain-state warning; the application must not retry or send an
+automatic CMW OFF after an unverified SAVE. Hardware writes must be tested using
+the isolated-lab launcher. A completed automated test is not a claim that the
+controller's power-cycle persistence or PID-set semantics have been verified.
+
+C3 input range/sensor type, alarms, system behaviour and communications
+configuration remain review/manual only pending an independently verified
+setting-area-1 entry/exit and persistence procedure.
