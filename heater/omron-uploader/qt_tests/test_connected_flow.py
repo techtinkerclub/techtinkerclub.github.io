@@ -23,6 +23,8 @@ class FakeOmron:
         self.closed=False
         self.calls=[]
         self.c3={addr:expected for addr,(expected,_) in PREFLIGHT.items()}
+        self.c3[0x0005]=1300
+        self.c3[0x0006]=0xffffff38
         self.c1={0x0015:120,0x0016:100,0x0017:40,0x001B:20,0x0021:0}
         self.da=[[0]*150 for _ in range(8)]
         for block in self.da:
