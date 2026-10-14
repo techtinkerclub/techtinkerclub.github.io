@@ -185,8 +185,10 @@ class ModernStudioTests(unittest.TestCase):
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
         row.target._typed_value("501")
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),501)
-        self.assertIn("501",self.win.programme_info.text())
-        self.assertIn("WARNING",self.win.temperature_limits_hint.text())
+        # Even if the active sensor range is unknown in offline mode,
+        # the target remains stored rather than being clamped or rejected.
+        self.assertIn("501",str(self.win.programmes[0].steps[0].sp))
+        self.assertIn("NOT VERIFIED",self.win.temperature_limits_hint.text())
 
     def test_all_sensor_choices_allow_offline_drafting_without_clamping(self):
         import copy
@@ -196,6 +198,9 @@ class ModernStudioTests(unittest.TestCase):
         row=self.win.segment_table.cellWidget(0,0)
         row.target._typed_value("1800")
         self.assertEqual(float(self.win.programmes[0].steps[0].sp),1800)
+        # The editor is offline, so there is not yet an active sensor readback.
+        idx_small=self.win.editor_sensor.findData(23)
+        self.win.editor_sensor.setCurrentIndex(idx_small)
         self.assertIn("WARNING",self.win.temperature_limits_hint.text())
         idx=self.win.editor_sensor.findData(19)
         self.win.editor_sensor.setCurrentIndex(idx)
