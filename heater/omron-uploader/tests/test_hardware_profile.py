@@ -58,6 +58,14 @@ class ModelCapabilitiesTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             confirm_model(self.prefix+"5M-007",self.prefix)
 
+    def test_two_auxiliary_prefix_offers_only_matching_nameplate_candidates(self):
+        prefix="E5CC-TQX2A"
+        options=dict(documented_models(prefix))
+        self.assertIn(prefix+"5M-000",options)
+        profile=confirm_model(prefix+"5M-000",prefix)
+        self.assertEqual(profile.auxiliary_count,2)
+        self.assertFalse(supports(profile,"C3:0056"))
+
     def test_option_004_has_event_inputs_three_and_four_not_one_and_two(self):
         cx=confirm_model("E5CC-TCX3A5M-004","E5CC-TCX3A")
         self.assertEqual(cx.event_numbers,(3,4))
