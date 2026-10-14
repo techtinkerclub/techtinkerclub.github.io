@@ -92,6 +92,7 @@ class Studio(QMainWindow):
         self.c3_transfer=None
         self.c3_receipt_match=None
         self.c1_receipt_match=None
+        self.c5_receipt_match=None
         self.combined_transfer=None
         self.include_programme_with_settings=False
         self.wait_receipt_match=None
@@ -1021,8 +1022,8 @@ class Studio(QMainWindow):
     def preview_c3(self):
         if (not self.client or not self.session or not self.lab or self.busy
                 or self.fail_latched or self.c3_transfer is not None
-                or self.c1_transfer is not None or self.combined_transfer is not None
-                or self.setting_transfer is not None or
+                or self.c1_transfer is not None or self.c5_transfer is not None
+                or self.combined_transfer is not None or self.setting_transfer is not None or
                 not self.draft or not set(self.draft).issubset(QUALIFIED_C3_CODES)
                 or self.include_programme_with_settings or self.session.ram_touched):
             self.message("Global configuration preview unavailable",
@@ -1283,7 +1284,7 @@ class Studio(QMainWindow):
     def preview_c1(self):
         if (not self.client or not self.session or not self.lab or self.busy
                 or self.fail_latched or self.combined_transfer
-                or self.setting_transfer or self.c1_transfer
+                or self.setting_transfer or self.c1_transfer or self.c5_transfer
                 or not self.draft or not set(self.draft).issubset(QUALIFIED_C1_CODES)
                 or self.include_programme_with_settings or self.session.ram_touched):
             self.message("Settings preview blocked",
@@ -1510,7 +1511,18 @@ class Studio(QMainWindow):
         ses=self.session
         tx=self.setting_transfer
         c1=self.c1_transfer
+        c5=self.c5_transfer
         combo=self.combined_transfer
+        if c5 is not None:
+            if c5.cmw_off:state="SAVE acknowledged, CMW OFF; power-cycle check needed"
+            elif c5.saved:state="SAVE acknowledged; CMW OFF not confirmed"
+            elif c5.staged:state="C5 RAM readback matched; SAVE REQUIRED"
+            elif c5.ram_touched:state="C5 RAM uncertain — stop and inspect"
+            else:state="C5 read-only preview; nothing written"
+            self.transfer_summary.setText(
+                f"FIXED PID 1–8 BANKS · {state}\\n"
+                "Only explicitly selected PID registers; programme memory unchanged.")
+            return
         if self.c3_transfer is not None:
             tx3=self.c3_transfer
             if getattr(tx3,"restart_audit",None):
@@ -1737,6 +1749,8 @@ class Studio(QMainWindow):
             self.setting_transfer=None
             self.hardware_profile=None
             self.c1_transfer=None
+            self.c5_transfer=None
+            self.c5_receipt_match=None
             self.c1_receipt_match=None
             self.combined_transfer=None
             self.include_programme_with_settings=False
@@ -1788,10 +1802,13 @@ class Studio(QMainWindow):
             try:self.client.close()
             except Exception:pass
         self.client=None;self.session=None;self.hardware_profile=None
-        self.setting_transfer=None;self.port=None;self.preview_stamp=None
+        self.setting_transfer=None;self.c5_transfer=None
+        self.port=None;self.preview_stamp=None
         self.c3_transfer=None
         self.c3_receipt_match=None
         self.c1_transfer=None
+        self.c5_transfer=None
+        self.c5_receipt_match=None
         self.c3_transfer=None
         self.c3_receipt_match=None
         self.c1_receipt_match=None
@@ -2102,8 +2119,10 @@ class Studio(QMainWindow):
     def _settings_ram_pending(self):
         tx=self.setting_transfer
         c1=self.c1_transfer
+        c5=self.c5_transfer
         tx3=self.c3_transfer
         return (bool(tx and tx.ram_touched and not tx.saved)
+                or bool(c5 and c5.ram_touched and not c5.saved)
                 or bool(c1 and c1.ram_touched and not c1.saved)
                 or bool(tx3 and tx3.area_entered and not tx3.finished)
                 or self._combined_ram_pending())
@@ -2116,7 +2135,7 @@ class Studio(QMainWindow):
             and not ses.mismatches and not ses.ram_touched
             and not self.fail_latched and not self.busy
             and self.draft.keys()=={"C1:0021"}
-            and self.setting_transfer is None
+            and self.setting_transfer is None and self.c5_transfer is None
         )
 
     def _wait_status_text(self):
