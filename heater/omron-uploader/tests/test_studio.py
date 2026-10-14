@@ -307,6 +307,46 @@ class TransferTests(unittest.TestCase):
                 s.build_plan(0,p)
             self.assertEqual(d.operations,[])
 
+    def test_global_sp_ceiling_blocks_da_preview_and_any_write(self):
+        device=FakeDevice()
+        device.c3[0x0005]=100  # Type K 5, maximum permitted SP 100 °C
+        ses=TransferSession(device)
+        ses.preflight()
+        p=Programme(steps=[Segment("ramp",sp="120",rate="2")])
+        with tempfile.TemporaryDirectory() as folder:
+            ses.backup(folder)
+            with self.assertRaisesRegex(PreflightError,"Segment 1"):
+                ses.build_plan(0,p)
+            with self.assertRaisesRegex(PreflightError,"Segment 1"):
+                ses.stage(0,p)
+            self.assertEqual(device.operations,[])
+            self.assertFalse(ses.ram_touched)
+
+    def test_live_limit_changed_after_preview_blocks_stage(self):
+        device=FakeDevice()
+        ses=TransferSession(device)
+        ses.preflight()
+        p=Programme(steps=[Segment("ramp",sp="120",rate="2")])
+        with tempfile.TemporaryDirectory() as folder:
+            ses.backup(folder)
+            self.assertTrue(ses.build_plan(0,p))
+            device.c3[0x0005]=110 # Changed elsewhere after preview
+            with self.assertRaisesRegex(PreflightError,"Segment 1"):
+                ses.stage(0,p)
+            self.assertEqual(device.operations,[])
+            self.assertFalse(ses.ram_touched)
+
+    def test_live_missing_sp_limit_fails_closed(self):
+        device=FakeDevice()
+        ses=TransferSession(device)
+        ses.preflight()
+        with tempfile.TemporaryDirectory() as folder:
+            ses.backup(folder)
+            device.c3.pop(0x0005)
+            with self.assertRaises(Exception):
+                ses.build_plan(0,Programme())
+            self.assertEqual(device.operations,[])
+
     def test_running_blocks_stage(self):
         d=FakeDevice();s=TransferSession(d);s.preflight()
         with tempfile.TemporaryDirectory() as dir:s.backup(dir)
