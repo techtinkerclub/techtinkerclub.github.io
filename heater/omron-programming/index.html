@@ -27,7 +27,7 @@ html{scroll-behavior:smooth}section[id],details[id]{scroll-margin-top:16px}
 <section class="card introcard" aria-labelledby="choice-head"><div class="kicker">How to use this manual</div><h2 id="choice-head">The everyday steps come first. Configuration comes later.</h2>
 <div class="path"><div><span class="pathnum">1</span><strong>Once per controller</strong><p>Commission its sensor, units, control and safety settings. <a href="#initial">Initial setup →</a></p></div><div><span class="pathnum">2</span><strong>For each experiment</strong><p>Choose a saved programme or enter a new target and rate.</p></div><div><span class="pathnum">3</span><strong>During the test</strong><p>Start deliberately, observe PV versus SP, then safely stop and isolate.</p></div></div>
 <p class="note"><b>Nothing has been omitted.</b> Every worked procedure starts from the normal PV/SP display and says which button to press, which display to look for and what value to enter. Parameters that are set once are deliberately separated from experiment-by-experiment editing.</p>
-<nav class="nav" aria-label="Quick links"><a href="#run">Select / run</a><a href="#bench">Create &amp; save Programme 1</a><a href="#monitors">Parameter map / PID</a><a href="#usbtrial">USB-only RUN check</a><a href="#fixed">Fixed target · 80 °C</a><a href="#rate">Ramp · 2 °C/min</a><a href="#initial">One-time configuration</a><a href="#calculator">Ramp calculator</a><a href="#tuning">Autotune</a></nav></section>
+<nav class="nav" aria-label="Quick links"><a href="#hardware-matrix">USB Studio &amp; hardware options</a><a href="#run">Select / run</a><a href="#bench">Create &amp; save Programme 1</a><a href="#monitors">Parameter map / PID</a><a href="#usbtrial">USB-only RUN check</a><a href="#fixed">Fixed target · 80 °C</a><a href="#rate">Ramp · 2 °C/min</a><a href="#initial">One-time configuration</a><a href="#calculator">Ramp calculator</a><a href="#tuning">Autotune</a></nav></section>
 <div class="card" id="buttons"><h2>Five controller keys — exactly as on the front panel</h2>
 <p class="mini"><strong>The physical buttons are not marked O, M or S.</strong> Those are abbreviations used in Omron's technical documentation. Read the symbols below from left to right, matching the real controller. Use the named key in the instructions, not a letter that you expect to see printed on the panel.</p>
 <div class="map" aria-label="Omron E5CC-T physical buttons in left-to-right order">
@@ -62,6 +62,28 @@ html{scroll-behavior:smooth}section[id],details[id]{scroll-margin-top:16px}
 <li><span class="idx">8</span><div>During a commissioned run, monitor actual PV versus programmed SP and the <code>pgsg</code> segment, <code>prgt</code> elapsed time and <code>rptm</code> repetitions. The ACTIVE LED shows demand, not measured current. To stop, use the authorised shutdown, command <code>r-r = rst</code>, disable the heater channel and isolate external DC. If <code>eset = rst</code>, the controller should return to RESET at the programme end, subject to actual electrical verification.</div></li>
 </ol>
 <div class="warn"><strong>USB setup power limitation (Omron H185 §§2-4 and 5-23):</strong> the E58-CIFQ2 allows parameter editing and PV display, but the controller's control, alarm and auxiliary outputs will <strong>not</strong> operate without its specified terminal supply. Our USB-only bench test subsequently showed <strong><code>prgt</code> advancing and SV increasing</strong> with <code>r-r = run</code>: the controller executes its internal setpoint schedule without terminal power. This does <strong>not</strong> prove heater switching, safe output-off behaviour or genuine PID temperature tracking.</div>
+</section>
+<section class="card" id="hardware-matrix">
+<div class="sectiontag">SOFTWARE REFERENCE · 14 OCTOBER 2026 · DEVELOPMENT BUILD</div>
+<h2>Windows E5CC-T Studio: USB identification, sensor choices and settings</h2>
+<p>The Windows Studio communicates with <strong>one Omron controller at a time</strong>. It is an alternative way of reading and setting that controller; it does not monitor actual heater current or prove the assembled heater is safe. The website builder works entirely offline and cannot write hardware. The native Windows build is on a separate review branch, not yet approved as the commissioned control interface.</p>
+<div class="warn"><strong>What USB identifies:</strong> the documented <code>0503</code> command gives a <strong>10-character model prefix</strong> such as <code>E5CC-TQX3A</code>. It does <em>not</em> return the following <code>5M</code> terminal/input code or the final <code>-000 / -003</code> option suffix. Confirm the full number on the physical nameplate. A successful parameter read does not prove that a particular optional input/output is fitted or correctly wired.</div>
+<p><label for="demoSuffix"><strong>Interactive hardware example: E5CC-TQX3A5M-</strong></label>
+<select id="demoSuffix" aria-label="Example E5CC-TQX3A model suffix"><option value="000">000 · basic</option><option value="001">001 · event + CT</option><option value="003">003 · CT + RS-485</option><option value="005">005 · four event inputs</option><option value="006">006 · event + transfer output</option></select></p>
+<div class="result" id="modelMatrixResult" role="status" aria-live="polite">Choose the suffix written on the nameplate to view applicable option categories.</div>
+<p class="mini"><strong>Illustration only:</strong> this selector does not detect hardware. Other output variants may offer different valid suffixes; e.g. option <code>-004</code> is a current-output variant with event inputs 3 and 4 and RS-485. The Windows app filters possible full order codes by the actual USB prefix, then requires an explicit nameplate choice <em>for each connection</em>. It exposes applicable settings only after a successful register read, while keeping unknown and read-only parameters protected.</p>
+<h3>Supported programme input catalogue</h3>
+<p>All documented input-selection codes <code>0–29</code> are offered: Pt100/JPt100, K/J/T/E/L/U/N/R/S/B/W and PLII thermocouples, supported infrared inputs, and analogue mA/V ranges. Different input codes have different limits and decimal resolutions. Analogue inputs additionally depend on engineering upper/lower limits and decimal-point settings (<code>C3:0001–0003</code>); those readings are not automatically degrees Celsius. The browser builder and Windows editor should keep a valid local programme even if it does not match the current connected sensor.</p>
+<div class="path"><div><span class="pathnum">1</span><strong>Plan freely</strong><p>Choose the intended input in the <a href="../program-tools/#builder">website builder</a> or Windows Programme editor. Out-of-range targets remain editable but generate warnings; check segment setpoints, sensor resolution and all controller-wide SP limits.</p></div><div><span class="pathnum">2</span><strong>Review global change</strong><p>If a range change is needed, the Windows app offers a proposed <code>in-t</code> change. Confirm the probe actually fitted. A proposed setting is not an applied setting, and one controller-wide input selection affects all eight programmes.</p></div><div><span class="pathnum">3</span><strong>Apply and verify</strong><p>With power supplies isolated, use the separate global C3 write process, return to normal operation, read fresh input/SP limits and back up DA programme memory again. Only then validate, preview and write the selected programme.</p></div></div>
+<div class="warn"><strong>Do not combine global sensor changes and DA programme writes blindly.</strong> USB initial-setting writes use setting area 1. After selected C3 values are written and read back, the native app's <strong>Finish + Return to normal</strong> action requires explicit confirmation, closes communications writing and issues one documented software-reset command. The reset has no response; reconnecting alone does not confirm the front panel has returned to PV/SP. Visually check the display, then reconnect and perform a <em>new</em> Step 2 read before any programme transfer. An old DA programme can be reinterpreted at a different sensor resolution without its raw memory changing.</div>
+<h3>Transfer capabilities and limits</h3>
+<table class="table"><tr><th>Parameter family</th><th>Current Windows Studio workflow</th></tr>
+<tr><td>Programme memories DA (8 × 150 words)</td><td>Read/backup all eight. Edit one programme, preview specific differences, guarded RAM write and readback, SAVE, CMW OFF and later verification; only under validated configuration.</td></tr>
+<tr><td>C3 input, limits, control mode and selected initial settings</td><td>Hardware-aware local proposal and separately confirmed setting-area-1 transfer; must re-read configuration after exit/reset. Global change never silently rescales DA programmes.</td></tr>
+<tr><td>C1 adjustments and fixed C5 PID banks</td><td>Selected qualified values can be proposed and transferred with appropriate readback/save procedures; masked, unread or option-dependent parameters remain restricted.</td></tr>
+<tr><td>C0 monitor values</td><td>Read only, not controller write targets.</td></tr>
+<tr><td>Unqualified C4 context-dependent, C9 programless communications, serial-link changes, protection/password and direct output/fault forcing</td><td>Shown only when applicable for review, but USB writing remains restricted pending separate qualification.</td></tr></table>
+<p class="note">This is a software-capability guide, not evidence of successful physical tests for all 30 inputs or of EEPROM retention after a new sensor-range change. The previously verified Type K 50 °C exercise below remains the bench reference. Read the exact model on both installed controllers; the proposed <code>E5CC-TQX3A5M-000</code> designation is a design specification until individually checked against their nameplates.</p>
 </section>
 <section class="card" id="bench"><div class="sectiontag">VERIFIED EXAMPLE · ENTERED ON REAL E5CC-T</div>
 <h2>Create, save and select Programme 1: 50 °C at 2 °C/min, 15-minute soak</h2>
@@ -235,5 +257,33 @@ html{scroll-behavior:smooth}section[id],details[id]{scroll-margin-top:16px}
   }
   ids.forEach(id=>g(id).addEventListener('input',calc));
   calc();
+})();
+</script><script>
+(function(){
+ const choice=document.getElementById('demoSuffix'),out=document.getElementById('modelMatrixResult');
+ if(!choice||!out)return;
+ const opts={
+ '000':{event:[],ct:0,rs:false,tr:false},
+ '001':{event:[1,2],ct:1,rs:false,tr:false},
+ '003':{event:[],ct:2,rs:true,tr:false},
+ '005':{event:[1,2,3,4],ct:0,rs:false,tr:false},
+ '006':{event:[1,2],ct:0,rs:false,tr:true}
+ };
+ function draw(){
+  const x=opts[choice.value];
+  const rows=[
+   ['Full model example','E5CC-TQX3A5M-'+choice.value],
+   ['Temperature input / common C1 and C3','Universal input; settings depend on mode and current readback'],
+   ['Control output 1','Voltage pulse (verify actual terminals and SSR interface)'],
+   ['Auxiliary outputs','3 on this model prefix (confirm physical wiring)'],
+   ['Event input assignments',x.event.length?x.event.map(n=>'Event '+n).join(', '):'Not fitted'],
+   ['Current-transformer inputs',x.ct?x.ct+' CT channel'+(x.ct>1?'s':''):'Not fitted'],
+   ['RS-485 settings',x.rs?'Option available (serial-link writes restricted)':'Not fitted'],
+   ['Analogue transfer output',x.tr?'Option available (separate qualification required)':'Not fitted'],
+   ['Read-only operating values','Available as supported by firmware; never writable as C0'],
+  ];
+  out.innerHTML='<table class="table"><tbody>'+rows.map(r=>'<tr><th>'+r[0]+'</th><td>'+r[1]+'</td></tr>').join('')+'</tbody></table><p class="mini">No live controller is connected. These are possible features from the full model code, NOT proof a setting exists or can be written. The desktop app still requires successful readback and an allowlisted writer.</p>';
+ }
+ choice.addEventListener('change',draw);draw();
 })();
 </script></body></html>
