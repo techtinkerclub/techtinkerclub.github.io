@@ -679,11 +679,19 @@ class Studio(QMainWindow):
         self.unified_stage=button("2  Write RAM + Verify",self.unified_stage_action)
         self.unified_save=button("3  Save + Finish (CMW OFF)",self.unified_save_action)
         self.unified_verify=button("Verify saved receipt",self.unified_verify_action)
+        self.unified_verify.setToolTip(
+            "READ ONLY: After the controller genuinely loses power and you reconnect, "
+            "compare each saved register in the receipt JSON with live values. "
+            "No writes, reset or power-cycle commands are sent.")
         for control in (self.unified_preview,self.unified_stage,
                         self.unified_save,self.unified_verify):
             unified_actions.addWidget(control)
         unified_actions.addStretch()
         transfer_layout.addLayout(unified_actions)
+        transfer_layout.addWidget(text(
+            "Verify saved receipt (read-only): AFTER unplugging USB until the "
+            "controller turns off, reconnect and compare the saved register values "
+            "with the receipt JSON. This does not power-cycle the controller for you.",True))
         self.usb_next_action.setWordWrap(True) if hasattr(self.usb_next_action,"setWordWrap") else None
         transfer_layout.addWidget(self.usb_next_action)
         transfer_layout.addWidget(text(
@@ -842,9 +850,9 @@ class Studio(QMainWindow):
             self.refresh_review()
             self.message("Read-only combined preview",
                 f"Wait Band: {data['wait_band']['old']/10:g} → "
-                f"{data['wait_band']['new']/10:g} °C\\n"
+                f"{data['wait_band']['new']/10:g} °C\n"
                 f"Programme {data['programme_slot']}: "
-                f"{len(data['programme_changes'])} changed DA registers.\\n"
+                f"{len(data['programme_changes'])} changed DA registers.\n"
                 "NOT WRITTEN. Both will be verified before one SAVE.")
         self._work("Preview one C1 + DA combined transfer",action,done)
 
@@ -897,7 +905,7 @@ class Studio(QMainWindow):
             self.message("Combined transfer saved",
                 "Wait Band + programme saved, read back and CMW OFF acknowledged. "
                 "The result is NOT verified across a power cycle. "
-                "Keep heater isolated and verify using the saved receipt:\\n"+str(receipt))
+                "Keep heater isolated and verify using the saved receipt:\n"+str(receipt))
         self._work("Combined SAVE and CMW OFF",action,done,True)
 
     def verify_combined(self):
@@ -943,7 +951,7 @@ class Studio(QMainWindow):
             self.refresh_review()
             self.message("Settings transfer complete",
                 "Save, post-save readback and CMW OFF acknowledged. "
-                "Check the CMW lamp, then power-cycle and verify the receipt:\\n"+str(receipt))
+                "Check the CMW lamp, then power-cycle and verify the receipt:\n"+str(receipt))
         self._work("Save Wait Band and disable CMW",action,done,True)
 
     def save_and_finish_programme(self):
@@ -967,7 +975,7 @@ class Studio(QMainWindow):
             self.refresh_review()
             self.message("Programme transfer complete",
                 "Save, post-save readback and CMW OFF acknowledged. "
-                "Check the CMW lamp, then power-cycle and verify the receipt:\\n"+str(receipt))
+                "Check the CMW lamp, then power-cycle and verify the receipt:\n"+str(receipt))
         self._work("Save programme and disable CMW",action,done,True)
 
     def _refresh_transfer_summary(self):
@@ -988,7 +996,7 @@ class Studio(QMainWindow):
             else:
                 state="Combined C1 + DA preview ready; nothing written"
             self.transfer_summary.setText(
-                f"PROGRAMME {combo.preview_data['programme_slot']} + WAIT BAND  ·  {state}\\n"
+                f"PROGRAMME {combo.preview_data['programme_slot']} + WAIT BAND  ·  {state}\n"
                 "Power-cycle retention remains unverified. Other settings are not included.")
             return
         if self.programme_receipt_match:
