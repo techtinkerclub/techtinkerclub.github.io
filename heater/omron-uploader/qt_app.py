@@ -479,7 +479,6 @@ class Studio(QMainWindow):
         split.addWidget(detail)
         split.setSizes([750,310])
         v.addWidget(split,1)
-        v.addWidget(split,1)
         nextrow=QHBoxLayout()
         nextrow.addWidget(text("Changes remain local until confirmed in Step 5.",True),1)
         nextrow.addWidget(button("Review / apply settings →",
@@ -1454,9 +1453,18 @@ class Studio(QMainWindow):
         self.draft_count.setText(f"{len(self.draft)} proposed changes · {len(rows)} visible")
         self._refresh_config_review()
         if hasattr(self,"wait_hint"):self._refresh_wait_hint()
-        if selected in self.setting_keys:self.setting_table.selectRow(self.setting_keys.index(selected))
-        elif rows:self.setting_table.selectRow(0)
-        else:self.parameter_detail.clear()
+        if selected in self.setting_keys:
+            self.setting_table.selectRow(self.setting_keys.index(selected))
+        elif rows:
+            self.setting_table.selectRow(0)
+        else:
+            self.parameter_detail.clear()
+            self.parameter_editor.clear()
+            self.parameter_choices.clear()
+        # A filter rebuild can replace row 0 while leaving Qt's selected row
+        # number unchanged. No selectionChanged event is emitted in that case.
+        # Explicitly refresh the detail/editor for the newly mapped register.
+        if rows:self._setting_selected()
         self.refresh_actions()
 
     def _selected_setting_code(self):
