@@ -476,3 +476,39 @@ Automated tests confirm that a Type K 5→6 selection sends exactly
 preserved with an advisory pending-range warning, and that settings
 are marked stale after C3 Finish. Physical hardware behaviour remains
 to be validated; no active heater is required to test communications.
+
+ 
+## Finish C3 and return from `in-t` screen (14 October 2026)
+
+The displayed `in-t` is Omron's **Input Type parameter** in the
+Initial Setting Level (e.g. a value of `5` is Type K whole-degree range).
+Changing `in-t` over USB previously left the controller in setting area 1,
+because the user had to press Step 5 Finish and a separate Return-to-normal
+button. An old build could show `in-t` even after all selected C3 writes
+had been accepted.
+
+**New preferred C3 workflow:** Step 5 → Read + Preview → Apply C3 + Verify
+→ **Finish + Return to normal** (ONE deliberate final action).
+
+The final action checks the selected C3 values once more, creates a receipt,
+turns Communications Writing OFF, re-enables it with an acknowledged command
+as required for the operation reset, then transmits precisely ONE H186
+Software Reset (3005 06 00). It opens the USB port read-only, checks the
+controller model prefix, reads STOP/RESET status, verifies the C3 receipt
+and checks all eight DA programme memories. The reset has NO response:
+the software therefore says *command sent; visually check the normal
+PV/SP display*. A successful read-only reconnect does not independently
+prove that the display left the initial level. If a stage fails, the app
+must not retry the reset blindly or claim the controller is back in area 0.
+
+**Manual recovery:** on the real E5CC-T front panel, hold the **Level (O)**
+key for **at least one second** while `in-t` is displayed to return to the
+Operation Level (H185-E1-08 §4-1-1). This does not change the chosen sensor
+type. The user may also use the separate Return-to-normal recovery button
+after a prior two-step session with CMW OFF but no attempted reset.
+
+**Hardware use:** even if currently powered only through the USB cable, the
+controller may be connected to outputs in future. Keep explicit isolated-output
+confirmation before a software reset. The new workflow neither sends RUN
+nor modifies DA programme values. A completely new Step 2 read is required
+before the next programme transfer.
