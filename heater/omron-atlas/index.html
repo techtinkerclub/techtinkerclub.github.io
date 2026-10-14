@@ -108,14 +108,25 @@ permalink: /heater/omron-atlas/
  "d.seg":[["segment","0–31 · segment editing"],["end","END · programme-wide settings"]],
  "pid":[["0","Automatic bank selection"],...Array.from({length:8},(_,i)=>[String(i+1),"PID bank "+(i+1)])],
  "d.pid":Array.from({length:8},(_,i)=>[String(i+1),"Inspect/edit PID bank "+(i+1)]),
- "eset":[["rst","RESET · stop at programme end"],["cont","CONTINUE · hold final setpoint"]],
+ "eset":[["rst","RESET · stop at programme end"],["cont","CONTINUE · hold final setpoint"],["fsp","Fixed SP mode (conditional)"]],
  "r-r":[["rst","RESET programme"],["run","RUN programme (can request heating)"]],
  "spmd":[["psp","Programmed setpoint"],["fsp","Fixed setpoint"]],
- "rtsm":[["stop","Stop regulation at RESET"],["cont","Continue as configured"]],
+ "rtsm":[["stop","Stop regulation at RESET"],["fsp","Fixed SP regulation at RESET"]],
+ "p-on":[["cont","Continue final SP"],["rst","RESET on power-up"],["run","RUN on power-up"],["manu","Manual (if supported)"]],
+ "pvst":[["sp","SP start"],["pv","PV start"]],
+ "t-u":[["h-m","Hours:minutes (H.MM)"],["m-s","Minutes:seconds (M.SS)"]],
+ "pru":[["m","Per minute"],["h","Per hour"]],
+ "orev":[["or-r","Reverse (usual heating)"],["or-d","Direct (usual cooling)"]],
  "d-u":[["c","°C"],["f","°F"]],
+ "s-no":Array.from({length:32},(_,i)=>[String(i+1),String(i+1)+" active segments"]),
+ "ts1s":Array.from({length:32},(_,i)=>[String(i),"Time signal 1 begins at segment "+i]),
+ "ts2s":Array.from({length:32},(_,i)=>[String(i),"Time signal 2 begins at segment "+i]),
+ "trst":[["4-20","4–20 mA"],["0-20","0–20 mA, if supported by variant"]],
+ "prty":[["none","No parity"],["even","Even parity"],["odd","Odd parity"]],
+
  "alt1":[["0","Off"],["1","Upper/lower limit"],["2","Upper limit"],["3","Lower limit"],["4","Upper/lower range"],["5","Upper/lower with standby"],["6","Upper with standby"],["7","Lower with standby"],["8","Absolute upper"],["9","Absolute lower"],["10","Absolute upper with standby"],["11","Absolute lower with standby"],["12","Loop burnout (alarm 1)"],["13","PV change rate"],["14","SP absolute upper"],["15","SP absolute lower"],["16","MV absolute upper"],["17","MV absolute lower"]]
  };
- OPTIONS.alt2=OPTIONS.alt1;OPTIONS.alt3=OPTIONS.alt1;OPTIONS.alt4=OPTIONS.alt1;
+ OPTIONS.alt2=OPTIONS.alt1.filter(x=>x[0]!=="12");OPTIONS.alt3=OPTIONS.alt2;OPTIONS.alt4=OPTIONS.alt2;
  function getChoices(cur){
   const opts=OPTIONS[cur.code];return opts||null;
  }
