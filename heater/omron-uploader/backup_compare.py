@@ -21,6 +21,14 @@ def compare_saved_backups(before_path,after_path):
                                    sensor_changed=(old_type!=new_type))
     estimates,warnings=interpreted_temperature_changes(
         before["programmes"],after["programmes"],old_type,new_type)
+    old_global=before.get("preflight",{})
+    new_global=after.get("preflight",{})
+    comparable=set(old_global) & set(new_global)
+    settings_changes=[
+        {"register":key,"before_raw":old_global[key],"after_raw":new_global[key]}
+        for key in sorted(comparable) if old_global[key]!=new_global[key]
+    ]
+    unavailable=sorted(set(old_global)^set(new_global))
     return {
         "schema":"e5cct-backup-comparison-1",
         "before_file":str(Path(before_path).resolve()),
@@ -32,10 +40,13 @@ def compare_saved_backups(before_path,after_path):
         "changed_raw_words":comparison["changes_total"],
         "raw_changes_by_programme":comparison["changes_by_programme"],
         "raw_differences":comparison["differences"],
+        "global_settings_changes":settings_changes,
+        "global_settings_not_comparable":unavailable,
         "interpreted_target_changes":estimates,
         "interpretation_warnings":warnings,
         "requires_review":bool(
-            old_type!=new_type or comparison["changes_total"] or warnings or estimates),
+            old_type!=new_type or comparison["changes_total"] or settings_changes
+            or unavailable or warnings or estimates),
         "warning":(
             "An unchanged raw DA word is NOT evidence of an unchanged temperature "
             "when sensor resolution changes. Interpretations are estimates from "
@@ -51,7 +62,8 @@ def comparison_text(result,max_targets=80,max_raw=40):
         "",
         "Before: "+result["before_file"],
         "After:  "+result["after_file"],
-        "Controller prefix: "+result["model10"],
+        "Controller prefix: "+result["model10"]+
+        " (model prefix alone is NOT unique device identification)",
         "Sensor before: "+sensor_name(result["before_input_type"]),
         "Sensor after:  "+sensor_name(result["after_input_type"]),
         "",
@@ -65,7 +77,16 @@ def comparison_text(result,max_targets=80,max_raw=40):
         lines+=["SENSOR INPUT CHANGED — RECHECK PROGRAMME TEMPERATURES",
                 "A controller may retain the same DA words yet display different "
                 "temperatures under the new resolution.",""]
-    lines+=["POSSIBLE TARGET TEMPERATURE CHANGES (our decoder, NOT panel-verified)"]
+    lines+=["GLOBAL SETTINGS (recorded in both backups)"]
+    if not result["global_settings_changes"]:
+        lines.append("No changes in comparable global preflight settings.")
+    for row in result["global_settings_changes"]:
+        lines.append(
+            f"{row['register']}: {row['before_raw']} -> {row['after_raw']}")
+    if result["global_settings_not_comparable"]:
+        lines.append("Not comparable (missing from one backup): "+
+                     ", ".join(result["global_settings_not_comparable"]))
+    lines+=["","POSSIBLE TARGET TEMPERATURE CHANGES (our decoder, NOT panel-verified)"]
     if not result["interpreted_target_changes"]:
         lines+=["No changed targets identified by the limited ramp/step decoder."]
     for row in result["interpreted_target_changes"][:max_targets]:
