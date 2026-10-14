@@ -76,8 +76,39 @@ class C3Tests(unittest.TestCase):
         stored=json.loads(receipt.read_text(encoding="utf-8"))
         self.assertEqual(len(stored["original_programmes"]),8)
         self.assertEqual(stored["original_programmes"]["0"][0],"00000001")
-        self.assertTrue(stored["programme_audit_required"])
+        self.assertTrue(stored["programme_audit_available"])
+        self.assertEqual(stored["write_scope"],"C3-only, no DA register writes")
         self.assertNotIn(("operation","06","00"),self.client.calls)
+
+    def test_sensor_only_write_does_not_modify_any_programme_register(self):
+        self.setup(blank=False)
+        from copy import deepcopy
+        before=deepcopy(self.client.da)
+        preview=self.tx.preview({"C3:0000":6})
+        self.assertEqual([row["register"] for row in preview["changes"]],
+                         ["C3:0000"])
+        self.tx.stage()
+        self.tx.finish()
+        self.assertEqual(self.client.da,before)
+        self.assertEqual([call for call in self.client.calls if call[0]=="write"],
+                         [("write","C3",0,6)])
+        self.assertEqual(self.client.c3[0],6)
+
+    def test_c3_edit_not_blocked_by_unrelated_programme_method_defaults(self):
+        self.setup()
+        # A normal manual front-panel mode change is permitted even if the
+        # stored programme slope/time mode differs from our DA editor preset.
+        self.client.c3[0x00BA]=0
+        self.client.c3[0x00BB]=1
+        self.tx.preview({"C3:0007":1})
+        self.tx.stage()
+        self.assertEqual(self.client.c3[7],1)
+
+    def test_c3_rejects_incompatible_sp_limit_before_area_entry(self):
+        self.setup()
+        with self.assertRaisesRegex(PreflightError,"SP limits"):
+            self.tx.preview({"C3:0005":5000})
+        self.assertEqual(self.client.calls,[])
 
     def test_sensor_change_blank_memory_has_exact_bounds(self):
         self.setup(blank=True)
