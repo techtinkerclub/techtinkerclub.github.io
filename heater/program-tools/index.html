@@ -30,20 +30,23 @@ permalink: /heater/program-tools/
 </style></head><body><div class="wrap">
 <header><div><div class="kicker">Heating Rate Controller · E5CC-T</div><h1>Programme Studio</h1><div class="muted">Build a heating programme, then practise entering it using a virtual Omron front panel.</div></div><a href="../" class="btn">← Operator manual</a></header>
 <div class="warn"><strong>Pre-commissioning training software, not a real controller.</strong> These graphs show the commanded setpoint, not measured PV or heater behaviour. This simulator intentionally models only the documented common settings; protection, alarms, PID, wait/hold, and several special functions are not reproduced. Check actual controller screens and complete the independent electrical safety commissioning before live use.</div>
-<div class="note"><strong>Real Omron test, 13 October 2026:</strong> Programme 1 was saved on the physical controller (ramp to 50 °C at 2 °C/min; 15-minute soak). Its values and <code>prg = 1</code> persisted after power removal, and <code>r-r = rst</code> appeared on reconnection. Subsequently, <code>DOWN</code> from <code>r-r = rst</code> selected <code>run</code> using USB power alone; we then observed <code>prgt</code> advancing and commanded SV rising. That verifies internal execution timing only; no control output can operate under USB setup power. Full <a href="../omron-programming/#bench">button-by-button guide</a>. No physical RUN or output tested.</div><div class="tabs noprint"><button id="bt" class="on">1 · Programme builder</button><button id="st">2 · Button simulator</button></div>
+<div class="note"><strong>Real Omron test, 13 October 2026:</strong> Programme 1 was saved on the physical controller (ramp to 50 °C at 2 °C/min; 15-minute soak). Its values and <code>prg = 1</code> persisted after power removal, and <code>r-r = rst</code> appeared on reconnection. Subsequently, <code>DOWN</code> from <code>r-r = rst</code> selected <code>run</code> using USB power alone; we then observed <code>prgt</code> advancing and commanded SV rising. That verifies internal execution timing only; no control output can operate under USB setup power. Full <a href="../omron-programming/#bench">button-by-button guide</a>. No mains-powered RUN or external heater-output behaviour has been tested.</div><div class="tabs noprint"><button id="bt" class="on">1 · Programme builder</button><button id="st">2 · Button simulator</button></div>
 <section id="builder"><div class="columns"><div>
 <div class="card"><div class="row spread"><h2>Programme</h2><span class="badge">Rate-of-rise method</span></div><div class="grid">
 <div class="field"><label for="slot">Programme memory</label><select id="slot"></select></div>
 <div class="field"><label for="name">Local description</label><input id="name" maxlength="80"></div>
-<div class="field"><label for="start">Starting PV, °C (assumed)</label><input id="start" type="number" min="-20" max="500" step=".1"></div>
+<div class="field"><label for="start">Assumed starting value (for graph only)</label><input id="start" type="number" min="-1999" max="9999" step=".001"></div>
+<div class="field"><label for="sensor">Planned input (global <code>in-t</code>)</label><select id="sensor"></select></div>
+<div class="field" id="analogueFields" style="display:none"><label>Analogue engineering scale (codes 25–29)</label><div class="row"><label for="analow">Lower <input id="analow" type="number" step=".001" value="0" style="width:85px"></label><label for="anahi">Upper <input id="anahi" type="number" step=".001" value="100" style="width:85px"></label><label for="anadp">Decimals <select id="anadp"><option>0</option><option selected>1</option><option>2</option><option>3</option></select></label></div></div>
 <div class="field"><label for="finish">End behaviour (controller-wide setting)</label><select id="finish"><option value="rst">RESET — stop regulating</option><option value="cont">CONT — hold final SP</option></select></div></div>
-<div class="note">Only <strong>rate-of-rise mode</strong> is implemented in v1 (<code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>). The separate step-time programming method requires a different parameter model. The starting PV is assumed for the graph and cannot be forced by a leading ramp.</div></div>
+<div id="sensorStatus" class="note" role="status" aria-live="polite"></div>
+<div class="note">This is a <strong>planning choice</strong>, not a controller connection. The physical probe, current C3 configuration and setpoint limits must be verified independently. Only <strong>rate-of-rise mode</strong> is implemented in v1 (<code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>). The separate step-time programming method requires a different parameter model. The starting PV is assumed for the graph and cannot be forced by a leading ramp.</div></div>
 <div class="card"><div class="row spread"><h2>Segments</h2><span id="count" class="badge">2 / 32</span></div><div id="segments"></div><div class="row noprint"><button class="btn primary" id="addRamp">+ Ramp</button><button class="btn" id="addSoak">+ Soak</button><button class="btn" id="addStep">+ Step</button><button class="btn" id="benchExample">Use verified 50 °C example</button><button class="btn danger" id="clear">Clear all</button></div>
-<p class="tiny muted">Ramp = SP + whole-number slope (°C/min). Soak = hold existing SP for a duration. Step = immediate setpoint jump (zero programmed time). To wait for the actual temperature before the next segment, verify controller-wide <code>wt-b</code> is enabled in Adjustment Level. It affects all segments/programmes; this website cannot change it.</p></div>
-</div><div><div class="card"><h2>Temperature setpoint profile</h2><div id="chart" class="plot"></div><div id="summary"></div><div id="errors"></div></div>
-<div class="card"><h2>Omron entry sheet</h2><div class="scroll" id="sheet"></div><div class="row noprint" style="margin-top:13px"><button class="btn" id="print">Print</button><button class="btn" id="json">Export JSON</button><button class="btn primary" id="practice">Practise this programme →</button></div><p class="tiny muted">Builder values live only in this browser. The entry sheet includes the separate <code>prg</code> RUN selection; no browser action writes to the physical Omron.</p></div></div></div></section>
+<p class="tiny muted">Ramp = SP + whole-number slope (profile units/min). Soak = hold existing SP for a duration. Step = immediate setpoint jump (zero programmed time). To wait for the actual temperature before the next segment, verify controller-wide <code>wt-b</code> is enabled in Adjustment Level. It affects all segments/programmes; this website cannot change it.</p></div>
+</div><div><div class="card"><h2>Commanded setpoint profile</h2><div id="chart" class="plot"></div><div id="summary"></div><div id="errors"></div></div>
+<div class="card"><h2>Omron entry sheet</h2><div class="scroll" id="sheet"></div><div class="row noprint" style="margin-top:13px"><button class="btn" id="print">Print</button><button class="btn" id="json">Export JSON</button><button class="btn primary" id="practice">Practise this programme →</button></div><p class="tiny muted">Builder values live only in this browser. The entry sheet includes the planned <code>in-t</code> and the separate <code>prg</code> RUN selection; no browser action writes to the physical Omron.</p></div></div></div></section>
 <section id="simulator" class="hidden"><div class="columns"><div>
-<div class="card"><div class="row spread"><h2>Virtual Omron E5CC-T</h2><span class="badge">Training subset</span></div><p class="tiny muted">Buttons match the symbol positions on your actual panel. Choose HOLD for a long press; otherwise a tap is short.</p>
+<div class="card"><div class="row spread"><h2>Virtual Omron E5CC-T</h2><span class="badge">Training subset</span></div><p id="virtualSensorNotice" class="note">The virtual keypad is a Type K input-6 training subset; it cannot emulate all sensor and option hardware.</p><p class="tiny muted">Buttons match the symbol positions on your actual panel. Choose HOLD for a long press; otherwise a tap is short.</p>
 <div class="device"><div class="brand"><span>OMRON</span><span>E5CC-T</span></div><div class="lcd"><div class="lcdrow"><span id="labA">PV</span><div id="screenA" class="digits">20.0</div></div><hr style="border:0;border-top:1px solid #394b53"><div class="lcdrow"><span id="labB">SV</span><div id="screenB" class="digits green">rst</div></div></div>
 <div class="keys"><button data-key="level" aria-label="LEVEL rectangle"><svg viewBox="0 0 36 24"><rect x="6" y="8" width="24" height="8" rx="2"/></svg><small>LEVEL</small></button><button data-key="mode" aria-label="MODE looped arrow"><svg viewBox="0 0 36 24"><path d="M26 17C20 21 9 18 9 12C9 5 24 5 26 11L23 15M23 11L26 15L30 12"/></svg><small>MODE</small></button><button data-key="pf" aria-label="PF shift"><strong>≪PF</strong><small>SHIFT</small></button><button data-key="down" aria-label="Down chevrons"><svg viewBox="0 0 36 24"><path d="M6 5L18 13L30 5 M6 12L18 20L30 12"/></svg><small>DOWN</small></button><button data-key="up" aria-label="Up chevrons"><svg viewBox="0 0 36 24"><path d="M6 19L18 11L30 19 M6 12L18 4L30 12"/></svg><small>UP</small></button></div>
 <div class="row" style="justify-content:center;gap:18px;font-size:11px;letter-spacing:.6px"><span id="simrst" title="Virtual reset-status indicator; real Omron RST indicator is lit in RESET">RST ●</span><span style="color:#71838d" title="Control output indicator cannot be validated with USB setup power; intentionally not modelled">OUT1 —</span><span style="color:#71838d" title="Control output indicator cannot be validated with USB setup power; intentionally not modelled">OUT2 —</span></div><div id="state" class="devicefoot">Operation · RESET</div></div>
@@ -58,31 +61,70 @@ permalink: /heater/program-tools/
 <script>
 (()=>{"use strict";
 const $=x=>document.getElementById(x),K="e5cct-program-studio-v1",VMKEY="e5cct-virtual-omron-v2",MAX=32,esc=x=>String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),fmt=x=>Number.isFinite(x)?(Math.round(x*100)/100).toString():"?",num=x=>x!==""&&x!==undefined&&x!==null&&Number.isFinite(Number(x));
+// H185 universal-input choices; selected code is GLOBAL to the physical controller.
+const INPUTS={
+ 0:["Pt100 −200…850 °C",-200,850,1],1:["Pt100 −199.9…500.0 °C",-199.9,500,.1],
+ 2:["Pt100 0.0…100.0 °C",0,100,.1],3:["JPt100 −199.9…500.0 °C",-199.9,500,.1],
+ 4:["JPt100 0.0…100.0 °C",0,100,.1],5:["Type K −200…1300 °C",-200,1300,1],
+ 6:["Type K −20.0…500.0 °C",-20,500,.1],7:["Type J −100…850 °C",-100,850,1],
+ 8:["Type J −20.0…400.0 °C",-20,400,.1],9:["Type T −200…400 °C",-200,400,1],
+ 10:["Type T −199.9…400.0 °C",-199.9,400,.1],11:["Type E −200…600 °C",-200,600,1],
+ 12:["Type L −100…850 °C",-100,850,1],13:["Type U −200…400 °C",-200,400,1],
+ 14:["Type U −199.9…400.0 °C",-199.9,400,.1],15:["Type N −200…1300 °C",-200,1300,1],
+ 16:["Type R 0…1700 °C",0,1700,1],17:["Type S 0…1700 °C",0,1700,1],
+ 18:["Type B 100…1800 °C",100,1800,1],19:["Type W 0…2300 °C",0,2300,1],
+ 20:["PLII 0…1300 °C",0,1300,1],
+ 21:["IR input 60 °C",0,90,1],22:["IR input 120 °C",0,120,1],
+ 23:["IR input 140 °C",0,165,1],24:["IR input 220 °C",0,260,1],
+ 25:["4–20 mA",null,null,null],26:["0–20 mA",null,null,null],
+ 27:["1–5 V",null,null,null],28:["0–5 V",null,null,null],
+ 29:["0–10 V",null,null,null]
+};
+let sensorPlan={code:6,analogLower:0,analogUpper:100,analogDp:1};
+function selectedInput(){
+ const c=sensorPlan.code,x=INPUTS[c]||INPUTS[6],analog=c>=25,
+ dp=Number(sensorPlan.analogDp),lo=Number(sensorPlan.analogLower),hi=Number(sensorPlan.analogUpper);
+ if(analog)return {code:c,name:x[0],lo,hi,step:1/Math.pow(10,dp),unit:"EU",
+     valid:Number.isFinite(lo)&&Number.isFinite(hi)&&lo<hi&&lo>=-1999&&hi<=9999&&Number.isInteger(dp)&&dp>=0&&dp<=3};
+ return {code:c,name:x[0],lo:x[1],hi:x[2],step:x[3],unit:"°C",valid:true};
+}
 const blank=t=>t==="soak"?{type:t,minutes:15}:t==="step"?{type:t,sp:120}:{type:"ramp",sp:120,rate:2};
 const initial=()=>Array.from({length:8},(_,i)=>({name:i===0?"20 to 120°C example":i===1?"Verified 50°C bench example":"Programme "+i,start:20,finish:"rst",steps:i===0?[{type:"ramp",sp:120,rate:2},{type:"soak",minutes:15}]:i===1?[{type:"ramp",sp:50,rate:2},{type:"soak",minutes:15}]:[{type:"ramp",sp:80,rate:2}]}));
 let bank=initial(),slot=0;
-try{let x=JSON.parse(localStorage.getItem(K)||"null");if(x&&Array.isArray(x.bank)&&x.bank.length===8){bank=x.bank.map((v,i)=>({name:String(v.name||"Programme "+i).slice(0,80),start:v.start,finish:v.finish==="cont"?"cont":"rst",steps:Array.isArray(v.steps)?v.steps.slice(0,MAX).filter(t=>["ramp","soak","step"].includes(t.type)):[]}));slot=Math.max(0,Math.min(7,Number(x.slot)||0));}}catch(_){}
-const save=()=>{try{localStorage.setItem(K,JSON.stringify({bank,slot}));}catch(_){}},cur=()=>bank[slot];
-function evaluate(b){
- let err=[],notes=[],start=Number(b.start),temp=Number.isFinite(start)?start:20,t=0,pts=[[0,temp]],list=[];
- if(!num(b.start)||start< -20||start>500)err.push("Starting PV must be -20 to 500°C, matching the example Type K input range.");
+try{let x=JSON.parse(localStorage.getItem(K)||"null");if(x&&Array.isArray(x.bank)&&x.bank.length===8){bank=x.bank.map((v,i)=>({name:String(v.name||"Programme "+i).slice(0,80),start:v.start,finish:v.finish==="cont"?"cont":"rst",steps:Array.isArray(v.steps)?v.steps.slice(0,MAX).filter(t=>["ramp","soak","step"].includes(t.type)):[]}));slot=Math.max(0,Math.min(7,Number(x.slot)||0));if(x.sensorPlan&&Number.isInteger(x.sensorPlan.code)&&INPUTS[x.sensorPlan.code])sensorPlan={...sensorPlan,...x.sensorPlan};}}catch(_){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify({bank,slot,sensorPlan}));}catch(_){}},cur=()=>bank[slot];
+function evaluate(b,simulateK6=false){
+ let err=[],notes=[],warnings=[],start=Number(b.start),temp=Number.isFinite(start)?start:20,t=0,pts=[[0,temp]],list=[];
+ const sel=simulateK6?{code:6,name:INPUTS[6][0],lo:-20,hi:500,step:.1,unit:"°C",valid:true}:selectedInput();
+ if(!num(b.start)||start<-1999||start>9999)err.push("Starting PV must be a finite value between −1999 and 9999.");
+ if(!sel.valid)warnings.push("Analogue input scaling is missing or invalid. Set engineering lower/upper and decimal position before any controller transfer.");
+ const inRange=v=>sel.valid&&v>=sel.lo&&v<=sel.hi;
+ const precise=v=>sel.valid&&Math.abs(v/sel.step-Math.round(v/sel.step))<1e-6;
+ if(num(b.start)&&!inRange(start))warnings.push("Assumed starting value "+fmt(start)+" is outside selected input range "+sel.lo+"…"+sel.hi+" "+sel.unit+".");
  if(!b.steps.length||b.steps.length>MAX)err.push("A programme needs between 1 and 32 segments.");
  b.steps.forEach((s,i)=>{let kind=s.type,old=temp,d=0;
- if(kind==="ramp"){if(!num(s.sp)||Number(s.sp)< -20||Number(s.sp)>500){err.push("Segment "+i+": target outside -20 to 500°C.");return}
- if(!num(s.rate)||!Number.isInteger(Number(s.rate))||Number(s.rate)<1||Number(s.rate)>9999){err.push("Segment "+i+": slope must be a whole number 1–9999°C/min.");return}
- temp=Number(s.sp);d=Math.abs(temp-old)/Number(s.rate);t+=d;pts.push([t,temp]);list.push({type:kind,sp:temp,rate:Number(s.rate),minutes:d});if(d===0)notes.push("Segment "+i+" has zero ramp duration.");
- }else if(kind==="soak"){if(!num(s.minutes)||!Number.isInteger(Number(s.minutes))||Number(s.minutes)<0||Number(s.minutes)>5999){err.push("Segment "+i+": hold duration must be 0–5999 whole minutes.");return}
- d=Number(s.minutes);t+=d;pts.push([t,temp]);list.push({type:kind,minutes:d,sp:temp});
- }else if(kind==="step"){if(!num(s.sp)||Number(s.sp)< -20||Number(s.sp)>500){err.push("Segment "+i+": target outside -20 to 500°C.");return}
- temp=Number(s.sp);pts.push([t,temp]);list.push({type:kind,sp:temp,minutes:0});}
+  if(kind==="ramp"||kind==="step"){
+   if(!num(s.sp)||Number(s.sp)<-1999||Number(s.sp)>9999){err.push("Segment "+(i+1)+": invalid target value outside −1999…9999.");return;}
+   const sp=Number(s.sp);
+   if(!inRange(sp))warnings.push("Segment "+(i+1)+": target "+fmt(sp)+" outside "+sel.name+" ("+sel.lo+"…"+sel.hi+" "+sel.unit+").");
+   else if(!precise(sp))warnings.push("Segment "+(i+1)+": "+fmt(sp)+" is not a "+sel.step+" "+sel.unit+" increment.");
+   if(kind==="ramp"){
+    if(!num(s.rate)||!Number.isInteger(Number(s.rate))||Number(s.rate)<1||Number(s.rate)>9999){err.push("Segment "+(i+1)+": slope must be an integer from 1 to 9999.");return;}
+    d=Math.abs(sp-old)/Number(s.rate);t+=d;temp=sp;pts.push([t,temp]);list.push({type:kind,sp:temp,rate:Number(s.rate),minutes:d});if(d===0)notes.push("Segment "+(i+1)+" has zero ramp duration.");
+   }else{temp=sp;pts.push([t,temp]);list.push({type:kind,sp:temp,minutes:0});}
+  }else if(kind==="soak"){
+   if(!num(s.minutes)||!Number.isInteger(Number(s.minutes))||Number(s.minutes)<0||Number(s.minutes)>5999){err.push("Segment "+(i+1)+": hold duration must be 0–5999 whole minutes.");return;}
+   d=Number(s.minutes);t+=d;pts.push([t,temp]);list.push({type:kind,minutes:d,sp:temp});
+  }else err.push("Segment "+(i+1)+": unknown segment type.");
  });
- if(b.finish==="cont")notes.push("CONT continues controlling the final SP indefinitely, not just through the programmed soak.");
- return {err,notes,pts,list,time:t,final:temp};
+ if(b.finish==="cont")notes.push("CONT is a GLOBAL controller setting, not stored in the individual programme.");
+ if(sel.code>=25)warnings.push("Analogue setpoints use engineering units, not necessarily °C. Confirm physical transducer scaling, applicable ramp units and live C3:0001–0003 readback.");
+ return {err,notes,warnings,pts,list,time:t,final:temp};
 }
-function graph(pts){
+function graph(pts,unit=selectedInput().unit){
  let ys=pts.map(a=>a[1]),tt=Math.max(1,...pts.map(a=>a[0])),lo=Math.min(...ys),hi=Math.max(...ys);if(lo===hi){lo-=5;hi+=5}let pad=(hi-lo)*.1;hi+=pad;lo-=pad;
  const X=t=>60+650*t/tt,Y=y=>195-155*(y-lo)/(hi-lo);
- let grid="";for(let i=0;i<4;i++){let y=40+155*i/3,v=hi-(hi-lo)*i/3;grid+='<path d="M60 '+y+'H710" stroke="#d9e6ef" fill="none"/><text x="53" y="'+(y+4)+'" font-size="11" text-anchor="end" fill="#57748e">'+fmt(v)+'°</text>'}
+ let grid="";for(let i=0;i<4;i++){let y=40+155*i/3,v=hi-(hi-lo)*i/3;grid+='<path d="M60 '+y+'H710" stroke="#d9e6ef" fill="none"/><text x="53" y="'+(y+4)+'" font-size="11" text-anchor="end" fill="#57748e">'+fmt(v)+' '+esc(unit)+'</text>'}
  let path=pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(2)+" "+Y(p[1]).toFixed(2)).join(" ");
  return '<svg viewBox="0 0 750 240" role="img" aria-label="Setpoint against elapsed time, not measured temperature"><rect width="750" height="240" fill="#fff"/>'+grid+'<path d="M60 30V195H710" fill="none" stroke="#a8bdce"/><path d="'+path+'" fill="none" stroke="#197eb7" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><text x="60" y="214" font-size="11" fill="#57748e">0</text><text x="710" y="214" text-anchor="end" font-size="11" fill="#57748e">'+fmt(tt)+' min</text><text x="380" y="236" text-anchor="middle" font-size="12" fill="#57748e">Elapsed time (minutes)</text></svg>';
 }
@@ -94,8 +136,8 @@ function segmentNumber(i,key,label,value,step,min,max){
 }
 function entry(s,i){
  const fields=['<div class="field"><label>Segment type</label><select data-i="'+i+'" data-p="type">'+["ramp","soak","step"].map(x=>'<option value="'+x+'" '+(x===s.type?"selected":"")+'>'+x.toUpperCase()+'</option>').join("")+'</select></div>'];
- if(s.type!=="soak")fields.push(segmentNumber(i,"sp","Target (°C)",s.sp,"0.1",-20,500));
- if(s.type==="ramp")fields.push(segmentNumber(i,"rate","Rate (°C/min)",s.rate,1,1,9999));
+ if(s.type!=="soak")fields.push(segmentNumber(i,"sp","Target ("+selectedInput().unit+")",s.sp,"0.001",-1999,9999));
+ if(s.type==="ramp")fields.push(segmentNumber(i,"rate","Rate ("+selectedInput().unit+"/min)",s.rate,1,1,9999));
  if(s.type==="soak")fields.push(segmentNumber(i,"minutes","Hold (minutes)",s.minutes,1,0,5999));
  const meaning=s.type==="ramp"?"Ramp · target and heating/cooling setpoint rate":
    s.type==="soak"?"Soak · hold the previous setpoint for a duration":
@@ -107,23 +149,46 @@ function entry(s,i){
  '<div class="grid" style="--seg-columns:'+fields.length+'">'+fields.join("")+'</div></div>';
 }
 function update(){
- const b=cur(),a=evaluate(b);$("count").textContent=b.steps.length+" / 32";$("chart").innerHTML=graph(a.pts);$("summary").innerHTML='<p class="muted tiny"><strong>'+fmt(a.time)+' minutes</strong> programmed (excludes any Wait delays) · final SP '+fmt(a.final)+' °C · '+b.steps.length+' segments</p>';
- $("errors").innerHTML=a.err.length?'<div class="warn"><strong>Correct before using:</strong><ul>'+a.err.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>':'<p class="good">✓ Supported parameter limits passed. Not a hardware safety approval.</p>';
- if(a.notes.length)$("errors").innerHTML+='<p class="note">'+a.notes.map(esc).join("<br>")+'</p>';
+ const b=cur(),a=evaluate(b),sel=selectedInput();
+ $("count").textContent=b.steps.length+" / 32";$("chart").innerHTML=graph(a.pts);
+ $("summary").innerHTML='<p class="muted tiny"><strong>'+fmt(a.time)+' minutes</strong> nominal (excludes any Wait delays) · final SP '+fmt(a.final)+' '+esc(sel.unit)+' · '+b.steps.length+' segments</p>';
+ $("sensorStatus").innerHTML='<strong>Planned input '+sel.code+': '+esc(sel.name)+'</strong> · '+
+   (sel.valid?'configured envelope '+fmt(sel.lo)+'…'+fmt(sel.hi)+' '+esc(sel.unit)+', '+sel.step+' increments.':'analogue scaling incomplete.')+
+   ' <strong>This is not a reading from hardware.</strong> Choosing a code will not change the controller or physical sensor.';
+ $("analogueFields").style.display=sel.code>=25?"block":"none";
+ let markup=a.err.length?'<div class="warn"><strong>Correct these programme-data errors before use:</strong><ul>'+a.err.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>':'<p class="good">Programme structure valid for OFFLINE planning only; not a controller compatibility or safety approval.</p>';
+ if(a.warnings.length)markup+='<div class="warn"><strong>Input / range compatibility warnings — programme remains editable:</strong><ul>'+a.warnings.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul><p>Review your sensor range or configuration. Before USB transfer, use the Windows app to propose C3 changes, verify the actual physical probe, apply global configuration separately, reset/return, read a new backup, then transfer the programme.</p></div>';
+ if(a.notes.length)markup+='<p class="note">'+a.notes.map(esc).join("<br>")+'</p>';
  const hasStep=b.steps.some(s=>s.type==="step");
- if(hasStep)$("errors").innerHTML+='<p class="warn"><strong>Step requires a verified Wait Band:</strong> On the physical Omron, check <code>wt-b</code> in Adjustment Level (LEVEL twice briefly, MODE to <code>wt-b</code>). Set an APPROVED nonzero ±°C tolerance if waiting for measured temperature is intended. A value of OFF advances immediately. Wait is GLOBAL to all programmes and can also affect Ramp/Soak boundaries; a wired event input can disable it. The plotted duration excludes unknown waiting time. This website does not program that setting.</p>';
- let rows=[["d.prg",slot],["s-no",b.steps.length]];
- if(hasStep)rows.unshift(["wt-b (Adjustment, GLOBAL)","Verify NONZERO on controller; ±°C selected for experiment"]);
- b.steps.forEach((s,i)=>{rows.push(["d.seg",i],["styp",s.type]);if(s.type!=="soak")rows.push(["sp",s.sp+" °C"]);if(s.type==="ramp")rows.push(["pr",s.rate+" °C/min"]);if(s.type==="soak"){let n=Number(s.minutes);rows.push(["time",num(s.minutes)&&Number.isInteger(n)?Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0"):"INVALID"]);}});
- rows.push(["d.seg (programme-wide)","end"],["pid (programme-wide)",1],["rpt",0],["link","end"],["eset (initial)",b.finish],["prg (Operation — select to RUN)",slot]);
- $("sheet").innerHTML='<p class="tiny muted">Initial settings: <code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>, <code>rtsm = stop</code>, <code>spmd = psp</code>. Keep <code>p-on = rst</code> and verify output at reset. <a href="../omron-programming/#initial">Initial configuration guide ↗</a></p><table><tr><th>Omron display</th><th>Set value</th></tr>'+rows.map(x=>'<tr><td><code>'+esc(x[0])+'</code></td><td>'+esc(x[1])+'</td></tr>').join("")+'</table><p class="note"><strong>Editing vs running:</strong> <code>d.prg</code> selects the stored profile to edit. Once the profile has been entered and verified, return to Operation Level and set <code>prg</code> to the same programme number to RUN it. <code>pgsg</code> is a monitor, not a selector. Normal front-panel edits have no separate Save button; check values after a complete power cycle before use. LEVEL enters Program Setting Level; MODE moves; UP/DOWN edits; PF selects a digit where enabled.</p>';
+ if(hasStep)markup+='<p class="warn"><strong>Step requires a verified Wait Band:</strong> On the physical Omron, check <code>wt-b</code> in Adjustment Level (LEVEL twice briefly, MODE to <code>wt-b</code>). Check its approved nonzero tolerance when waiting for a measured PV is needed. OFF advances immediately. Wait is GLOBAL to all programmes and can affect Ramp/Soak boundaries. This builder does not write it.</p>';
+ $("errors").innerHTML=markup;
+ let rows=[["in-t (Initial — GLOBAL)",sel.code+" — "+sel.name],["d.prg",slot],["s-no",b.steps.length]];
+ if(sel.code>=25)rows.unshift(["in-h / C3:0001 (GLOBAL)",sel.hi],["in-l / C3:0002 (GLOBAL)",sel.lo],["dp / C3:0003 (GLOBAL)",sensorPlan.analogDp]);
+ if(hasStep)rows.unshift(["wt-b (Adjustment — GLOBAL)","Verify actual value on controller"]);
+ b.steps.forEach((s,i)=>{rows.push(["d.seg",i],["styp",s.type]);if(s.type!=="soak")rows.push(["sp",s.sp+" "+sel.unit]);if(s.type==="ramp")rows.push(["pr",s.rate+" "+sel.unit+"/min"]);if(s.type==="soak"){let n=Number(s.minutes);rows.push(["time",num(s.minutes)&&Number.isInteger(n)?Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0"):"INVALID"]);}});
+ rows.push(["d.seg (programme-wide)","end"],["pid (programme-wide)",1],["rpt",0],["link","end"],["eset (Initial — GLOBAL)",b.finish],["prg (Operation — select to RUN)",slot]);
+ $("sheet").innerHTML='<p class="tiny muted"><strong>PLANNED, not read from controller.</strong> Check sensor hardware, upper/lower setpoint limits <code>sl-h/sl-l</code> and input resolution. Initial setup: <code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>, <code>rtsm = stop</code>, <code>spmd = psp</code>. Keep <code>p-on = rst</code>; verify reset output independently. <a href="../omron-programming/#hardware-matrix">Configuration/USB guide ↗</a></p><table><tr><th>Omron display / register</th><th>Plan value / check</th></tr>'+rows.map(x=>'<tr><td><code>'+esc(x[0])+'</code></td><td>'+esc(x[1])+'</td></tr>').join("")+'</table><p class="note"><strong>Configure first:</strong> the input choice is global and may reinterpret ALL eight programme memories. A Windows USB transfer cannot automatically rescale existing memories. Apply any global input change separately, return to normal, then re-read all settings/DA backup and verify displayed SP before uploading a programme. <strong>Editing vs running:</strong> <code>d.prg</code> selects a stored profile to edit; <code>prg</code> selects a programme to RUN.</p>';
 }
-function render(){let b=cur();$("slot").value=slot;$("name").value=b.name;$("start").value=b.start;$("finish").value=b.finish;$("segments").innerHTML=b.steps.map(entry).join("")||'<p class="muted">No segments yet.</p>';["addRamp","addSoak","addStep"].forEach(x=>$(x).disabled=b.steps.length>=MAX);update()}
+
+$("sensor").innerHTML=Object.entries(INPUTS).map(([code,data])=>'<option value="'+code+'">'+code+' · '+esc(data[0])+'</option>').join("");
+function render(){let b=cur();$("sensor").value=String(sensorPlan.code);
+ $("analow").value=sensorPlan.analogLower;$("anahi").value=sensorPlan.analogUpper;$("anadp").value=String(sensorPlan.analogDp);
+ $("virtualSensorNotice").textContent=(sensorPlan.code===6
+     ?"Virtual keypad simulates only Type K input 6, −20.0…500.0 °C (0.1 °C). All optional hardware and alternative sensors are excluded."
+     :"Selected builder input "+sensorPlan.code+" is NOT represented by the Type K-6 virtual keypad. You may practise the keys, but its setpoints and settings do not represent this planned sensor.");
+ $("slot").value=slot;$("name").value=b.name;$("start").value=b.start;$("finish").value=b.finish;$("segments").innerHTML=b.steps.map(entry).join("")||'<p class="muted">No segments yet.</p>';["addRamp","addSoak","addStep"].forEach(x=>$(x).disabled=b.steps.length>=MAX);update()}
 $("slot").innerHTML=Array.from({length:8},(_,i)=>'<option value="'+i+'">Programme '+i+'</option>').join("");
 $("slot").onchange=()=>{slot=Number($("slot").value);save();render();goal()};
 $("name").oninput=()=>{cur().name=$("name").value;save()};
 $("start").oninput=()=>{cur().start=$("start").value===""?"":Number($("start").value);save();update()};
 $("finish").onchange=()=>{cur().finish=$("finish").value;save();update()};
+$("sensor").onchange=()=>{sensorPlan.code=Number($("sensor").value);save();render();goal()};
+function scalingChanged(){
+ sensorPlan.analogLower=$("analow").value; sensorPlan.analogUpper=$("anahi").value;
+ sensorPlan.analogDp=Number($("anadp").value);
+ save();update();
+}
+["analow","anahi","anadp"].forEach(id=>$(id).addEventListener("input",scalingChanged));
 $("segments").addEventListener("input",ev=>{let x=ev.target,i=Number(x.dataset.i),p=x.dataset.p;if(!p||!cur().steps[i])return;if(p==="type"){cur().steps[i]=blank(x.value);save();render()}else{cur().steps[i][p]=x.value===""?"":Number(x.value);save();update()}});
 $("segments").addEventListener("click",ev=>{
  let spin=ev.target.closest("[data-spin]");
@@ -136,8 +201,11 @@ function add(type){let arr=cur().steps;if(arr.length>=MAX)return;arr.push(blank(
 $("addRamp").onclick=()=>add("ramp");$("addSoak").onclick=()=>add("soak");$("addStep").onclick=()=>add("step");
 $("clear").onclick=()=>{if(confirm("Clear all programme segments?")){cur().steps=[];save();render()}};
 $("print").onclick=()=>window.print();
-$("json").onclick=()=>{let str=JSON.stringify({version:1,method:"rate",programmeNumber:slot,programme:cur()},null,2),blob=new Blob([str],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="E5CC-T-programme-"+slot+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-function tab(sim){$("builder").classList.toggle("hidden",sim);$("simulator").classList.toggle("hidden",!sim);$("bt").classList.toggle("on",!sim);$("st").classList.toggle("on",sim);if(sim)goal();location.hash=sim?"simulator":"builder"}
+$("json").onclick=()=>{let str=JSON.stringify({version:2,method:"rate",programmeNumber:slot,planned_input_type:sensorPlan.code,planned_analogue_scaling:sensorPlan.code>=25?{low:sensorPlan.analogLower,high:sensorPlan.analogUpper,decimals:sensorPlan.analogDp}:null,programme:cur(),note:"Planned input is global; must be confirmed against connected hardware before transfer."},null,2),blob=new Blob([str],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="E5CC-T-programme-"+slot+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+function tab(sim){$("virtualSensorNotice").textContent=(sensorPlan.code===6
+ ?"Type K-6 keypad practice (limited subset). No real USB/hardware connection."
+ :"WARNING: the virtual keypad supports only input 6. Selected builder input "+sensorPlan.code+" is NOT simulated; do not treat its display as this programme.");
+ $("builder").classList.toggle("hidden",sim);$("simulator").classList.toggle("hidden",!sim);$("bt").classList.toggle("on",!sim);$("st").classList.toggle("on",sim);if(sim)goal();location.hash=sim?"simulator":"builder"}
 $("bt").onclick=()=>tab(false);$("st").onclick=()=>tab(true);$("practice").onclick=()=>tab(true);
 /* Simulator subset: real-menu navigation measured on one physical E5CC-T.
    Operation Level: a-m -> pgsg observed directly on real controller.
@@ -262,8 +330,8 @@ function showVM(){
  $("elapsed").textContent=fmt(vm.time)+" min · "+vm.status.toUpperCase();
  $("simrst").textContent=vm.status==="rst"?"RST ●":"RST ○";
  $("simrst").style.color=vm.status==="rst"?"#8cdb90":"#71838d";
- let a=evaluate({start:vm.pv,steps:runprog().segments.slice(0,runprog().n),finish:vm.settings.eset});
- $("simchart").innerHTML=!simReady()?'<p class="warn">This virtual configuration is outside the supported profile (rate-of-rise, hours.minutes, rate per minute, reset stops control, programmed SP, no repetitions or links). Restore those settings to preview.</p>':a.err.length?'<p class="tiny muted">Complete the segment values to preview this virtual programme.</p>':graph(a.pts);
+ let a=evaluate({start:vm.pv,steps:runprog().segments.slice(0,runprog().n),finish:vm.settings.eset},true);
+ $("simchart").innerHTML=!simReady()?'<p class="warn">This virtual configuration is outside the supported profile (rate-of-rise, hours.minutes, rate per minute, reset stops control, programmed SP, no repetitions or links). Restore those settings to preview.</p>':a.err.length?'<p class="tiny muted">Complete the segment values to preview this virtual programme.</p>':graph(a.pts,"°C");
  $("history").innerHTML=vm.history.slice(-14).map(esc).join("<br>")||"No keys pressed yet.";saveVM();goal();
 }
 function goal(){
@@ -322,11 +390,13 @@ $("benchExample").onclick=()=>{
 $("powercycle").onclick=powerCycleVM;
 document.querySelectorAll("[data-key]").forEach(x=>x.addEventListener("click",()=>{push(x.dataset.key,$("holdmode").value==="long");$("holdmode").value="short"}));
 $("combo").onclick=()=>{vm.status=vm.status==="run"?"rst":"run";vm.time=0;history("MODE+DOWN → "+vm.status);showVM()};
-function advance(n){if(vm.status!=="run"){history("Not running");showVM();return}if(!simReady()){history("Unsupported simulation configuration; time not advanced");showVM();return}let p=runprog(),a=evaluate({start:vm.pv,steps:p.segments.slice(0,p.n),finish:vm.settings.eset});if(a.err.length){history("Programme invalid");showVM();return}
+function advance(n){if(vm.status!=="run"){history("Not running");showVM();return}if(!simReady()){history("Unsupported simulation configuration; time not advanced");showVM();return}let p=runprog(),a=evaluate({start:vm.pv,steps:p.segments.slice(0,p.n),finish:vm.settings.eset},true);if(a.err.length){history("Programme invalid");showVM();return}
  vm.time+=n;if(vm.time>=a.time&&vm.settings.eset==="rst"&&p.rpt===0&&p.link==="end"){vm.time=a.time;vm.status="rst";history("PROGRAMME END → RESET")}else history("Advanced "+n+" min (setpoint only)");showVM()}
 $("minute").onclick=()=>advance(1);$("five").onclick=()=>advance(5);$("reset").onclick=()=>{vm.status="rst";vm.time=0;history("RESET");showVM()};
 $("empty").onclick=()=>{if(confirm("Clear all eight virtual programme memories? Builder remains saved."))resetVM(true)};
 $("load").onclick=()=>{let b=cur(),a=evaluate(b);if(a.err.length){alert("Correct builder errors first.");return}
+ if(sensorPlan.code!==6){alert("This virtual keypad is qualified only for Type K input 6. The programme remains saved in the builder and entry sheet; no simulated programme will be loaded for another sensor.");return}
+ if(a.warnings.length){alert("The programme has sensor-range/resolution warnings. Review them in the builder before using virtual practice.");return}
  let p=vm.progs[slot];p.n=b.steps.length;p.segments=Array.from({length:32},(_,i)=>{let s=b.steps[i];return s?{type:s.type,sp:Number(s.sp)||0,rate:Number(s.rate)||0,minutes:Number(s.minutes)||0}:{type:"ramp",sp:0,rate:0,minutes:0}});p.rpt=0;p.link="end";vm.prg=slot;vm.runPrg=slot;vm.seg="end";vm.level="operation";vm.param="pv";vm.pv=Number(b.start);vm.settings.eset=b.finish;vm.status="rst";vm.time=0;history("Loaded generator programme into virtual memory and selected programme "+slot+" for virtual RUN");showVM()};
 render();resetVM();if(location.hash==="#simulator")tab(true);
 })();

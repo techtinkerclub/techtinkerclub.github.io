@@ -25,10 +25,26 @@ ALARM = {
     14:"SP absolute upper", 15:"SP absolute lower",
     16:"MV absolute upper", 17:"MV absolute lower",
 }
+SENSOR_INPUTS = {
+    0:"Pt100 −200…850 °C",1:"Pt100 −199.9…500.0 °C",
+    2:"Pt100 0.0…100.0 °C",3:"JPt100 −199.9…500.0 °C",
+    4:"JPt100 0.0…100.0 °C",
+    5:"Type K −200…1300 °C (1 °C)",6:"Type K −20.0…500.0 °C (0.1 °C)",
+    7:"Type J −100…850 °C",8:"Type J −20.0…400.0 °C",
+    9:"Type T −200…400 °C",10:"Type T −199.9…400.0 °C",
+    11:"Type E −200…600 °C",12:"Type L −100…850 °C",
+    13:"Type U −200…400 °C",14:"Type U −199.9…400.0 °C",
+    15:"Type N −200…1300 °C",16:"Type R 0…1700 °C",
+    17:"Type S 0…1700 °C",18:"Type B 100…1800 °C",
+    19:"Type W 0…2300 °C",20:"PLII 0…1300 °C",
+    21:"IR input 60 °C",22:"IR input 120 °C",23:"IR input 140 °C",
+    24:"IR input 220 °C",25:"4–20 mA",26:"0–20 mA",
+    27:"1–5 V",28:"0–5 V",29:"0–10 V",
+}
 CONFIG = [
     item("C3:0000","Temperature input","Sensor input type","in-t",
-         "The correct thermocouple type and range must match the installed probe. Switching 5/6 changes display resolution and can affect setpoint interpretation.",
-         {5:"Type K, −200 to 1300 °C, 1 °C resolution",6:"Type K, −20.0 to 500.0 °C, 0.1 °C resolution"}),
+         "Choose one of the documented universal input types. Changing input type can reinterpret programme temperatures and reset limits; the app never rescales programme memory.",
+         SENSOR_INPUTS),
     item("C3:0004","Temperature input","Temperature unit","d-u","Display and parameter unit.",{0:"Celsius (°C)",1:"Fahrenheit (°F)"}),
     item("C3:0005","Temperature input","Upper setpoint limit","sl-h","Controller's upper permitted SP. Raw value; display scaling depends on input type."),
     item("C3:0006","Temperature input","Lower setpoint limit","sl-l","Controller's lower permitted SP. Raw value; display scaling depends on input type."),
@@ -71,6 +87,10 @@ def value_text(code, raw):
         return "Invalid raw value"
     value = signed32(raw)
     parameter = BY_CODE[code]
+    if code=="C3:0000" and value in SENSOR_INPUTS:
+        return ({5:"Type K, −200 to 1300 °C, 1 °C resolution",
+                 6:"Type K, −20.0 to 500.0 °C, 0.1 °C resolution"}.get(value)
+                or SENSOR_INPUTS[value])
     if parameter["options"] is not None:
         return parameter["options"].get(value, f"Unknown / unsupported ({value})")
     if code == "C3:000A":

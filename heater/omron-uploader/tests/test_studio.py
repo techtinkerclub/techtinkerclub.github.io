@@ -13,6 +13,8 @@ class FakeDevice:
         self.data={k:0 for k in []}
         self.blocks=[[0]*150 for _ in range(8)]
         self.c3={k:v[0] for k,v in PREFLIGHT.items()}
+        self.c3[0x0005]=1300
+        self.c3[0x0006]=0xffffff38  # −200 °C in signed raw Type K input 5
         self.wait_raw=0
         self.model="E5CC-TQX3A";self.running=False;self.write_allowed=True
         self.operations=[];self.nonvolatile_saves=0
@@ -304,6 +306,46 @@ class TransferTests(unittest.TestCase):
             with self.assertRaisesRegex(PreflightError,"live read"):
                 s.build_plan(0,p)
             self.assertEqual(d.operations,[])
+
+    def test_global_sp_ceiling_blocks_da_preview_and_any_write(self):
+        device=FakeDevice()
+        device.c3[0x0005]=100  # Type K 5, maximum permitted SP 100 °C
+        ses=TransferSession(device)
+        ses.preflight()
+        p=Programme(steps=[Segment("ramp",sp="120",rate="2")])
+        with tempfile.TemporaryDirectory() as folder:
+            ses.backup(folder)
+            with self.assertRaisesRegex(PreflightError,"Segment 1"):
+                ses.build_plan(0,p)
+            with self.assertRaisesRegex(PreflightError,"Segment 1"):
+                ses.stage(0,p)
+            self.assertEqual(device.operations,[])
+            self.assertFalse(ses.ram_touched)
+
+    def test_live_limit_changed_after_preview_blocks_stage(self):
+        device=FakeDevice()
+        ses=TransferSession(device)
+        ses.preflight()
+        p=Programme(steps=[Segment("ramp",sp="120",rate="2")])
+        with tempfile.TemporaryDirectory() as folder:
+            ses.backup(folder)
+            self.assertTrue(ses.build_plan(0,p))
+            device.c3[0x0005]=110 # Changed elsewhere after preview
+            with self.assertRaisesRegex(PreflightError,"Segment 1"):
+                ses.stage(0,p)
+            self.assertEqual(device.operations,[])
+            self.assertFalse(ses.ram_touched)
+
+    def test_live_missing_sp_limit_fails_closed(self):
+        device=FakeDevice()
+        ses=TransferSession(device)
+        ses.preflight()
+        with tempfile.TemporaryDirectory() as folder:
+            ses.backup(folder)
+            device.c3.pop(0x0005)
+            with self.assertRaises(Exception):
+                ses.build_plan(0,Programme())
+            self.assertEqual(device.operations,[])
 
     def test_running_blocks_stage(self):
         d=FakeDevice();s=TransferSession(d);s.preflight()

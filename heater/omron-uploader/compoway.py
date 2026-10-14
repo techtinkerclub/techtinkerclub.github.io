@@ -78,25 +78,62 @@ class SerialClient:
     def write1(self,addr,value):
         self._guard();return self.query(f"0102DA{addr:04X}000001{value&0xffffffff:08X}")
     def write_setting(self,vtype,addr,value):
-        """First permitted parameter-write target: H186 C1:0021 Wait Band.
+        """Write explicitly permitted C1 or C3 registers in an isolated lab.
 
-        No generic arbitrary-address writer is exposed. New register types
-        must be independently qualified and explicitly reviewed before
-        extending this allowlist.
+        Being documented R/W does not grant authorisation: guarded C1/C3
+        transaction classes enforce controller state and required setup area.
         """
         self._guard()
-        if (vtype,addr)!=("C1",0x0021):
+        # Imported at call time to avoid a module-import cycle with ProtocolError.
+        from c1_transfer import check_value, QUALIFIED_C1_CODES
+        from c3_transfer import check_setting, ALLOWED
+        from c5_transfer import check_value as check_c5_value, ALLOWED as ALLOWED_C5
+        if type(addr) is not int or not 0<=addr<=0xffff:
+            raise PermissionError("Invalid parameter write address")
+        code=f"{vtype}:{addr:04X}"
+        if vtype=="C1" and code in QUALIFIED_C1_CODES:
+            validator=check_value
+        elif vtype=="C3" and code in ALLOWED:
+            validator=check_setting
+        elif vtype=="C5" and code in ALLOWED_C5:
+            validator=check_c5_value
+        else:
             raise PermissionError("Parameter-write hardware target not qualified")
-        if type(value) is not int or not 0<=value<=9999:
-            raise ValueError("Invalid Wait Band raw value; expected 0..9999")
-        return self.query(f"0102C1{addr:04X}000001{value:08X}")
+        try:
+            validator(code,value)
+        except ValueError:
+            raise
+        except RuntimeError as exc:
+            raise ValueError(str(exc)) from exc
+        return self.query(f"0102{vtype}{addr:04X}000001{value:08X}")
+
+    def software_reset(self):
+        """Send documented 3005 06 00 WITHOUT waiting for a reply.
+
+        H186 specifies no normal response to software reset. May only be
+        invoked after an explicitly confirmed, finished C3 transfer; the
+        transaction/UI enforce that policy. Do not retry on serial errors:
+        the command might already have restarted the controller.
+        """
+        self._guard()
+        packet=encode_request("30050600",self.node)
+        with self.lock:
+            self.serial.reset_input_buffer()
+            count=self.serial.write(packet)
+            # Short/uncertain writes must be reported without a retry.
+            if count!=len(packet):
+                raise ProtocolError("Software-reset command transmission uncertain")
+            self.serial.flush()
+        # Returning proves serial bytes were sent, not that reset completed.
+        return None
 
     def operation(self,code,data):
         self._guard()
         # H186 §2-3-8: 00/00 disables communications writing (CMW OFF).
         # Expose only to a guarded post-save finishing action, never auto-close
         # an uncertain/uncommitted RAM session.
-        allow={("00","00"),("00","01"),("04","01"),("05","00")}
-        # Intentionally no RUN/RESET, firmware, setup area changes, or auto/manual.
+        allow={("00","00"),("00","01"),("04","01"),("05","00"),("07","00")}
+        # Setup area 1 entry is a dedicated guarded C3 operation only.
+        # No RUN/RESET, software reset, auto/manual or factory reset exposed.
         if (code,data) not in allow:raise PermissionError("Operation command not permitted")
         return self.query("3005"+code+data)

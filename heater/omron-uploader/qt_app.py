@@ -1,16 +1,17 @@
 """Modern, self-contained E5CC-T Studio (PySide6 + PyQtGraph).
 
-This GUI deliberately reuses the tested Omron backend. Hardware writes are
-explicitly isolated-lab only: DA programme memory or the narrowly qualified
-Wait Band register (C1:0021). No other C0/C1/C3/C4/C5/C9 configuration writes
-are allowed. Step 5 has one unified USB transfer workspace; its two operations
-remain independently backed up, verified and saved. Offline work requires no USB.
+This GUI uses the guarded Omron backend. Hardware writes require the
+isolated-lab launcher and exact allowlists for DA programmes, selected C1
+adjustments and selected C3 global settings. Proposed C3 settings never
+rescale DA programmes in the app; only fresh hardware readback informs them.
+Unqualified C3, C4, C5 and C9 writes are forbidden.
 """
 from __future__ import annotations
 
 import argparse
 import copy
 from datetime import datetime,timezone
+from decimal import Decimal,InvalidOperation
 import hashlib
 import json
 from pathlib import Path
@@ -23,7 +24,7 @@ from PySide6.QtWidgets import (
     QApplication,QMainWindow,QWidget,QFrame,QVBoxLayout,QHBoxLayout,QGridLayout,
     QLabel,QPushButton,QLineEdit,QComboBox,QSpinBox,QDoubleSpinBox,QTextEdit,
     QTableWidget,QTableWidgetItem,QAbstractItemView,QHeaderView,QFileDialog,
-    QMessageBox,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar,QScrollArea
+    QMessageBox,QInputDialog,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar,QScrollArea
 )
 from serial.tools import list_ports
 
@@ -32,9 +33,23 @@ from qt_segment_row import SegmentRow,Stepper
 from settings_transfer import WaitBandTransfer,verify_wait_receipt
 from compoway import SerialClient
 from transfer import TransferSession
+from combined_transfer import CombinedTransfer,verify_combined_receipt
+from c1_transfer import C1SettingsTransfer,QUALIFIED_C1_CODES,verify_c1_receipt
+from c3_transfer import C3ConfigurationTransfer,ALLOWED as QUALIFIED_C3_CODES,verify_c3_receipt
+from c5_transfer import C5PIDTransfer,ALLOWED as QUALIFIED_C5_CODES,verify_c5_receipt
+from controller_restart import restart_and_audit
+from hardware_profile import confirm_model,supports,documented_models
+from program_model import planned_writes
+from programme_constraints import effective_limits,programme_issues,check_global_programming,compatible_temperature_inputs,SENSOR_RANGES,ANALOGUE_TYPES
+from transfer_capabilities import transfer_plan
+from parameter_write_plan import create_write_plan,requirements
+from settings_presentation import VIEWS,visible_in_view,scope_for,view_for
+from setting_dependencies import dependency_for
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
-from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
+from backup_compare import compare_saved_backups,comparison_text
+from programme_audit import interpreted_temperature_changes
+from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot,SENSOR_INPUTS
 from controller_inventory import (
     CATALOG,group_names,offline_inventory,read_inventory,validate_inventory,readable_rows,
     human_value,add_proposal,proposal_report,report_inventory
@@ -70,16 +85,28 @@ class Studio(QMainWindow):
         self.offline_inspect_saved=False
         self.client=None
         self.session=None
+        self.hardware_profile=None
         self.setting_transfer=None
+        self.c1_transfer=None
+        self.c5_transfer=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
+        self.c1_receipt_match=None
+        self.c5_receipt_match=None
+        self.combined_transfer=None
+        self.include_programme_with_settings=False
         self.wait_receipt_match=None
         self.programme_receipt_match=None
         self.port=None
         self.backup=None
+        self.backup_comparison=None
         self.snapshot=None
         self.inventory=offline_inventory()
         self.inventory_current_session=False
+        self._editor_last_verified_limits=None
         self.draft={}
         self.programmes=[blank_programme() for _ in range(8)]
+        self.planned_sensor_by_slot=[None]*8  # local project metadata, not DA memory
         self.slot=0
         self.preview_stamp=None
         self.preview_changes=[]
@@ -149,7 +176,10 @@ class Studio(QMainWindow):
         self.device_state=QLabel("●  Not connected")
         self.device_state.setObjectName("warning")
         self.side_lay.addWidget(self.device_state)
-        self.side_lay.addWidget(text("The real hardware identity is limited to the model prefix. The full suffix must be checked on the nameplate.",True))
+        self.side_lay.addWidget(text(
+            "USB provides only the model prefix. Confirm the complete nameplate "
+            "suffix for fitted-option controls; never assume it.",True))
+        self.side_lay.addWidget(button("Confirm full model…",self.confirm_hardware_model))
         self.side_lay.addSpacing(12)
         self.side_lay.addWidget(button("Reconnect / Read",lambda:self.show_step(1)))
         self.side_lay.addWidget(button("Open backup…",self.open_backup))
@@ -247,6 +277,29 @@ class Studio(QMainWindow):
         tabs.addTab(self.initial_text,"Initial configuration")
         self.inventory_text=QTextEdit();self.inventory_text.setReadOnly(True)
         tabs.addTab(self.inventory_text,"Extended inventory")
+        comparison_page=QWidget()
+        comparison_layout=QVBoxLayout(comparison_page)
+        comparison_layout.addWidget(text(
+            "Read-only comparison of two complete saved programme backups. "
+            "Shows raw DA differences separately from sensor-scale temperature "
+            "interpretations; no USB connection or writes are needed.",True))
+        compare_actions=QHBoxLayout()
+        compare_actions.addWidget(button(
+            "Compare two saved backups…",self.compare_saved_backups))
+        self.export_comparison_button=button(
+            "Export comparison JSON…",self.export_backup_comparison)
+        self.export_comparison_button.setEnabled(False)
+        compare_actions.addWidget(self.export_comparison_button)
+        compare_actions.addStretch()
+        comparison_layout.addLayout(compare_actions)
+        self.comparison_text=QTextEdit()
+        self.comparison_text.setReadOnly(True)
+        self.comparison_text.setPlainText(
+            "Choose an original E5CC-T programme backup, then a later backup. "
+            "Sensor range changes are reported even when the 1,200 raw "
+            "programme words are identical.")
+        comparison_layout.addWidget(self.comparison_text,1)
+        tabs.addTab(comparison_page,"Compare backups")
         self.audit_text=QTextEdit();self.audit_text.setReadOnly(True)
         tabs.addTab(self.audit_text,"Activity log")
         lay.addWidget(tabs,1)
@@ -311,9 +364,51 @@ class Studio(QMainWindow):
         self.offline_inspect_saved=False
         self.show_step(1)
 
+    def confirm_hardware_model(self):
+        """Operator confirms the physical suffix; USB 0503 never returns it."""
+        if not self.session or not self.session.info:
+            self.message("Connect first","Read the USB model identity before confirming a nameplate.",True)
+            return
+        prefix=self.session.info["model10"]
+        candidates=documented_models(prefix)
+        if not candidates:
+            self.message("Unsupported USB identity",
+                         "No documented E5CC-T 5M model matches "+prefix+". "
+                         "Do not guess the output or option hardware.",True)
+            return
+        options=[model+"  ·  "+description for model,description in candidates]
+        current=next((i for i,(model,_) in enumerate(candidates)
+                      if self.hardware_profile and model==self.hardware_profile.full_model),0)
+        selection,ok=QInputDialog.getItem(
+            self,"Confirm the Omron nameplate",
+            "USB reports "+prefix+" only; it does NOT report 5M or -NNN.\n"
+            "Select the EXACT full order code printed on the physical label.\n"
+            "Do not select a suffix by guessing from available settings:",
+            options,current,False)
+        if not ok:return
+        entry=candidates[options.index(selection)][0]
+        try: profile=confirm_model(entry,prefix)
+        except ValueError as exc:
+            self.hardware_profile=None
+            self.device_detail.setText("Model suffix unconfirmed — optional hardware settings hidden")
+            self.refresh_settings()
+            self.message("Model not confirmed",str(exc),True)
+            return
+        self.hardware_profile=profile
+        self.device_model.setText(profile.full_model)
+        self.device_detail.setText(
+            f"Confirmed from nameplate · {profile.auxiliary_count} AUX, "
+            f"{profile.event_inputs} event inputs, {profile.ct_inputs} CT inputs, "
+            +("RS-485" if profile.rs485 else "no RS-485"))
+        self.refresh_settings()
+        self.log_event("Operator confirmed full model "+profile.full_model+
+                       " for THIS connection; model suffix not supplied by USB.")
+
     def _new_offline_programme(self):
         if self._editing_locked():return
         self.programmes[self.slot]=blank_programme()
+        self.planned_sensor_by_slot[self.slot]=None
+        self.editor_sensor.setCurrentIndex(0)
         self._render_programme()
         self.preview_stamp=None
         self.show_step(2)
@@ -349,6 +444,7 @@ class Studio(QMainWindow):
         self.slot_combo.addItems([f"Programme {i}" for i in range(8)])
         self.slot_combo.currentIndexChanged.connect(self._slot_changed)
         top.addWidget(self.slot_combo)
+        top.addWidget(button("Import website JSON…",self.import_website_programme))
         v.addLayout(top)
 
         meta=QHBoxLayout()
@@ -357,7 +453,7 @@ class Studio(QMainWindow):
         self.programme_name.setMinimumHeight(38)
         meta.addWidget(form_field("Description",self.programme_name),1)
         self.start_pv=QDoubleSpinBox()
-        self.start_pv.setRange(-20,500);self.start_pv.setDecimals(1)
+        self.start_pv.setRange(-1999,9999);self.start_pv.setDecimals(3)
         self.start_pv.setSingleStep(0.1)
         self.start_pv.setSuffix(" °C")
         self.start_pv_editor=Stepper("Starting PV (assumed)",self.start_pv)
@@ -367,9 +463,31 @@ class Studio(QMainWindow):
         self.finish_mode.addItem("RESET (stop)", "rst")
         self.finish_mode.addItem("CONTINUE", "cont")
         self.finish_mode.setMinimumWidth(150)
-        meta.addWidget(form_field("At programme end",self.finish_mode))
+        self.finish_mode.setToolTip(
+            "GLOBAL controller setting C3:00BE. This changes the end behaviour "
+            "for every programme, not just this memory. This editor does NOT "
+            "write that system setting as part of the programme upload.")
+        meta.addWidget(form_field("Controller-wide end behaviour",self.finish_mode))
         v.addLayout(meta)
-
+        sensor_line=QHBoxLayout()
+        self.editor_sensor=StudioCombo()
+        self.editor_sensor.addItem("Controller as read / Type K provisional offline",None)
+        for code,name in SENSOR_INPUTS.items():
+            self.editor_sensor.addItem(f"{code:02d}  {name}",code)
+        self.editor_sensor.currentIndexChanged.connect(self._editor_sensor_changed)
+        sensor_line.addWidget(form_field("Sensor / range for planning (no hardware change)",
+                                         self.editor_sensor),1)
+        self.sensor_change_button=button("Propose on controller…",self.propose_editor_sensor)
+        sensor_line.addWidget(self.sensor_change_button)
+        v.addLayout(sensor_line)
+        self.temperature_limits_hint=QLabel("")
+        self.temperature_limits_hint.setWordWrap(True)
+        v.addWidget(self.temperature_limits_hint)
+        v.addWidget(text(
+            "Programme-end RESET/CONTINUE is a GLOBAL controller configuration "
+            "(eset), not stored per programme. This field describes the intended "
+            "behaviour; it is NOT uploaded as part of a programme.",True))
+        
         split=QSplitter(Qt.Orientation.Vertical)
         split.setChildrenCollapsible(False)
         split.setHandleWidth(7)
@@ -442,7 +560,25 @@ class Studio(QMainWindow):
     def _settings_page(self):
         page=QWidget();v=QVBoxLayout(page);v.setSpacing(8)
         v.addWidget(heading("Controller settings",
-           "Browse, edit and propose controller settings here. Review and apply in Step 5."))
+           "Find what you need without knowing Omron register codes. "
+           "All parameters remain available; USB writing is limited to qualified settings."))
+        shortcuts=QHBoxLayout()
+        shortcuts.addWidget(text("SHOW:",True))
+        self.settings_view=StudioCombo()
+        self.settings_view.addItems(list(VIEWS))
+        self.settings_view.setToolTip(
+            "A browsing shortcut, not a permission level. "
+            "All users can view all documented settings.")
+        shortcuts.addWidget(self.settings_view,1)
+        shortcuts.addWidget(text("Search always covers every parameter.",True),2)
+        self.show_setting_technical=QCheckBox("Show register / technical details")
+        self.show_setting_technical.setChecked(False)
+        shortcuts.addWidget(self.show_setting_technical)
+        v.addLayout(shortcuts)
+        v.addWidget(text(
+            "Everyday essentials affect tests; Control & tuning alters responses; "
+            "Equipment & system affects the physical controller and all its programmes. "
+            "Critical changes still require specific safeguards.",True))
         controls=QHBoxLayout()
         self.group=StudioCombo()
         self.group.addItems(["All groups"]+group_names())
@@ -457,7 +593,7 @@ class Studio(QMainWindow):
         list_card,lc=card(10)
         self.setting_table=QTableWidget(0,4)
         self.setting_table.setHorizontalHeaderLabels(
-            ["Parameter","Read from controller","Proposed value","Group"])
+            ["Setting","Current value","Proposed value","Purpose"])
         self._table_defaults(self.setting_table)
         self.setting_table.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeMode.Stretch)
         self.setting_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -465,7 +601,7 @@ class Studio(QMainWindow):
         lc.addWidget(self.setting_table)
         split.addWidget(list_card)
         detail,dl=card(16)
-        dl.addWidget(QLabel("SETTING EXPLANATION"))
+        dl.addWidget(QLabel("WHAT THIS SETTING DOES"))
         self.parameter_detail=QTextEdit()
         self.parameter_detail.setReadOnly(True)
         self.parameter_detail.setMinimumWidth(235)
@@ -476,9 +612,26 @@ class Studio(QMainWindow):
         self.parameter_choices=StudioCombo()
         dl.addWidget(self.parameter_choices)
         dl.addWidget(button("Add to change review",self.propose_setting,True))
-        dl.addWidget(text("General settings remain proposals. USB WRITING IS ENABLED ONLY for "
-                          "Wait Band (wt-b, C1:0021) in isolated lab mode. Other registers are "
-                          "review-only until independently qualified.",True))
+        self.revert_setting_button=button("Revert to previous value",self.revert_setting)
+        self.revert_setting_button.setEnabled(False)
+        self.revert_setting_button.setToolTip(
+            "Discard this parameter's local proposal or unfinished edit and restore "
+            "the last value read from the controller. No USB write is sent.")
+        dl.addWidget(self.revert_setting_button)
+        self.setting_dependency_note=QLabel("")
+        self.setting_dependency_note.setWordWrap(True)
+        dl.addWidget(self.setting_dependency_note)
+        self.open_dependency_button=button(
+            "Open required controller setting →",self.open_required_setting)
+        self.open_dependency_button.setVisible(False)
+        self.open_dependency_button.setToolTip(
+            "Go to the global setting controlling whether this parameter applies. "
+            "This does not automatically change the controller.")
+        dl.addWidget(self.open_dependency_button)
+        dl.addWidget(text(
+            "Anyone can plan changes here. Only qualified parameters can currently "
+            "be uploaded. The controller must meet the required state and safety checks; "
+            "other changes remain local or require manual setup.",True))
         split.addWidget(detail)
         split.setSizes([750,310])
         v.addWidget(split,1)
@@ -490,6 +643,10 @@ class Studio(QMainWindow):
         self.pages.addWidget(page)
         self.group.currentTextChanged.connect(self.refresh_settings)
         self.search.textChanged.connect(self.refresh_settings)
+        self.settings_view.currentTextChanged.connect(self.refresh_settings)
+        self.show_setting_technical.toggled.connect(self.refresh_settings)
+        self.parameter_editor.textChanged.connect(self._refresh_revert_setting)
+        self.parameter_choices.currentIndexChanged.connect(self._refresh_revert_setting)
         self.refresh_settings()
 
     def _apply_page(self):
@@ -607,8 +764,9 @@ class Studio(QMainWindow):
         self.usb_next_action.setStyleSheet("color:#a8610f;font-weight:600")
         uv.addWidget(self.usb_next_action)
         uv.addWidget(text("This tab transfers DA programme memory only. "
-            "The qualified Wait Band writer is available through the unified controls. "
-            "All other configuration writes remain disabled. Keep the heater isolated.",True))
+            "Documented C1 and C3 settings use separate guarded workflows; "
+            "C4/C9 and link-changing settings remain subject to further qualification. "
+            "Keep the heater isolated.",True))
         uv.addWidget(text("Before writing: confirm the model nameplate, stopped controller, "
             "fresh backup and physically isolated heater supplies. The first RAM write "
             "requires a specific confirmation.",True))
@@ -616,14 +774,14 @@ class Studio(QMainWindow):
         cv=QVBoxLayout(config)
         cv.setSpacing(10)
         cv.addWidget(heading("Controller setting transfer",
-            "Only Wait Band (wt-b / C1:0021) has been enabled for USB writing."))
+            "The available USB edits depend on the documented register, current hardware and safety checks."))
         self.config_review=QTextEdit()
         self.config_review.setReadOnly(True)
         self.config_review.setMinimumHeight(92)
         self.config_review.setMaximumHeight(180)
         cv.addWidget(self.config_review)
         wt_card,wt=card(11)
-        wt.addWidget(text("USB PARAMETER COMMISSIONING   ·   ONE ALLOWLISTED REGISTER: wt-b (C1:0021)",True))
+        wt.addWidget(text("WAIT BAND   ·   GLOBAL SETTING C1:0021",True))
         self.wt_status=QLabel("Read the controller, then propose a single Wait Band change.")
         self.wt_status.setWordWrap(True)
         wt.addWidget(self.wt_status)
@@ -651,8 +809,9 @@ class Studio(QMainWindow):
         transfer_layout=QVBoxLayout(transfer)
         transfer_layout.setSpacing(9)
         transfer_layout.addWidget(heading("Pending controller changes",
-            "Programme memory and supported controller settings share this review. "
-            "Only Wait Band is currently qualified for settings USB writing."))
+            "Programme and controller settings share one review. USB writes are "
+            "experimental for selected C1 and C3 registers; use the matching "
+            "setting-area procedure. Heater power must remain isolated."))
         self.transfer_summary=QLabel("")
         self.transfer_summary.setWordWrap(True)
         self.transfer_summary.setObjectName("transferSummary")
@@ -662,16 +821,41 @@ class Studio(QMainWindow):
         transfer_layout.addWidget(self.transfer_summary)
         self.apply_details.setMinimumHeight(160)
         transfer_layout.addWidget(self.apply_details,1)
+        self.include_programme_button=button(
+            "Include selected programme with Wait Band: OFF",
+            self.toggle_programme_inclusion)
+        self.include_programme_button.setToolTip(
+            "Explicitly select the current programme for one guarded DA + wt-b transfer. "
+            "Without this, a Wait Band proposal writes ONLY Wait Band.")
+        transfer_layout.addWidget(self.include_programme_button)
         unified_actions=QHBoxLayout()
         self.unified_preview=button("1  Read + Preview",self.unified_preview_action,True)
         self.unified_stage=button("2  Write RAM + Verify",self.unified_stage_action)
         self.unified_save=button("3  Save + Finish (CMW OFF)",self.unified_save_action)
-        self.unified_verify=button("Verify saved receipt",self.unified_verify_action)
+        self.unified_verify=button("4  Verify saved receipt",self.unified_verify_action)
+        self.restart_c3_button=button(
+            "Return to normal (fallback for earlier C3 session)",self.restart_verify_c3)
+        self.restart_c3_button.setToolTip(
+            "After verified C3 finish and CMW OFF: send one documented reset, "
+            "reconnect read-only and read back controller settings and programmes. "
+            "All heater output supplies must be physically isolated.")
+        self.unified_verify.setToolTip(
+            "READ ONLY: After the controller genuinely loses power and you reconnect, "
+            "compare each saved register in the receipt JSON with live values. "
+            "This read-only action does not itself restart the controller. "
+            "For C3, use the separate guarded Software restart + audit first.")
         for control in (self.unified_preview,self.unified_stage,
                         self.unified_save,self.unified_verify):
             unified_actions.addWidget(control)
         unified_actions.addStretch()
         transfer_layout.addLayout(unified_actions)
+        self.restart_c3_button.setVisible(False)
+        self.restart_c3_button.setEnabled(False)
+        transfer_layout.addWidget(self.restart_c3_button)
+        transfer_layout.addWidget(text(
+            "Verify saved receipt (read-only): AFTER unplugging USB until the "
+            "controller turns off, reconnect and compare the saved register values "
+            "with the receipt JSON. This does not power-cycle the controller for you.",True))
         self.usb_next_action.setWordWrap(True) if hasattr(self.usb_next_action,"setWordWrap") else None
         transfer_layout.addWidget(self.usb_next_action)
         transfer_layout.addWidget(text(
@@ -711,35 +895,592 @@ class Studio(QMainWindow):
             self.refresh_settings()
         self.show_step(1)
 
+    def toggle_programme_inclusion(self):
+        if (not self.client or not self.session or self.busy
+                or self._combined_ram_pending() or self.combined_transfer is not None):
+            return
+        self.include_programme_with_settings=not self.include_programme_with_settings
+        self.preview_stamp=None
+        self.refresh_review()
+
+    def _combined_ram_pending(self):
+        tx=self.combined_transfer
+        return bool(tx and tx.ram_touched and not tx.saved)
+
+    def _programme_pending(self):
+        """Compare exact planned DA register values against the fresh backup."""
+        ses=self.session
+        if not ses or not ses.backup_data or not ses.settings or not self.inventory_current_session:
+            return False
+        try:
+            existing=ses.backup_data["programmes"][str(self.slot)]
+            limits,error=self._effective_programme_limits()
+            if limits is None or error:return False
+            for address,new in planned_writes(
+                    self.slot,self.programmes[self.slot],
+                    input_type=ses.settings["C3:0000"],limits=limits):
+                if int(existing[address&255],16)!=(new&0xffffffff):
+                    return True
+        except (KeyError, ValueError, IndexError, TypeError):
+            return False
+        return False
+
     def _active_transfer_kind(self):
-        """Settings proposals take precedence; do not silently upload a programme."""
+        if self.c3_transfer:
+            return "c3"
+        if self.combined_transfer:
+            return "combined"
+        if self.c1_transfer:
+            return "c1"
+        if self.c5_transfer:
+            return "c5"
+        if self.draft and self.include_programme_with_settings:
+            return "combined"
+        if self.draft and any(k.startswith("C3:") for k in self.draft):
+            return "c3"
+        if self.draft and any(k.startswith("C5:") for k in self.draft):
+            return "c5"
+        if self.draft and set(self.draft)!={"C1:0021"}:
+            return "c1"
         return "settings" if self.draft or self.setting_transfer else "programme"
 
     def unified_preview_action(self):
-        if self._active_transfer_kind()=="settings":
+        if self._active_transfer_kind()=="c3":
+            self.preview_c3()
+        elif self._active_transfer_kind()=="combined":
+            self.preview_combined()
+        elif self._active_transfer_kind()=="c1":
+            self.preview_c1()
+        elif self._active_transfer_kind()=="c5":
+            self.preview_c5()
+        elif self._active_transfer_kind()=="settings":
             self.preview_wait()
         else:
             self.preview()
 
     def unified_stage_action(self):
-        if self._active_transfer_kind()=="settings":
+        if self._active_transfer_kind()=="c3":
+            self.stage_c3()
+        elif self._active_transfer_kind()=="combined":
+            self.stage_combined()
+        elif self._active_transfer_kind()=="c1":
+            self.stage_c1()
+        elif self._active_transfer_kind()=="c5":
+            self.stage_c5()
+        elif self._active_transfer_kind()=="settings":
             self.stage_wait()
         else:
             self.stage()
 
     def unified_save_action(self):
-        if self._active_transfer_kind()=="settings":
+        if self._active_transfer_kind()=="c3":
+            self.finish_and_return_c3()
+        elif self._active_transfer_kind()=="combined":
+            self.save_and_finish_combined()
+        elif self._active_transfer_kind()=="c1":
+            self.save_and_finish_c1()
+        elif self._active_transfer_kind()=="c5":
+            self.save_and_finish_c5()
+        elif self._active_transfer_kind()=="settings":
             self.save_and_finish_wait()
         else:
             self.save_and_finish_programme()
 
     def unified_verify_action(self):
-        if self._active_transfer_kind()=="settings":
-            self.verify_wait()
-        else:
-            self.message("Programme receipt verification",
-                "Reconnect after a genuine controller power cycle, then use the "
-                "saved programme receipt verification in the controller backup workflow.")
+        """Use the receipt's schema, not the current draft, to choose verification."""
+        if not self.client or not self.session or self.busy:
+            self.message("Reconnect first",
+                "Power-cycle the controller, reconnect and take a fresh read before verification.",True)
+            return
+        path,_=QFileDialog.getOpenFileName(
+            self,"Select original controller save receipt",self.folder.text(),"JSON (*.json)")
+        if not path:return
+        try:
+            schema=json.loads(Path(path).read_text(encoding="utf-8")).get("schema")
+        except (OSError,ValueError) as exc:
+            self.message("Invalid receipt",str(exc),True);return
+        allowed={"e5cct-combined-upload-receipt-1",
+                 "e5cct-waitband-receipt-1","e5cct-upload-receipt-1",
+                 "e5cct-c1-settings-receipt-1",
+                 "e5cct-c5-pid-receipt-1",
+                 "e5cct-c3-configuration-receipt-1"}
+        if schema not in allowed:
+            self.message("Unsupported receipt","This is not a recognised saved-transfer receipt.",True)
+            return
+        def action(progress):
+            if schema=="e5cct-c3-configuration-receipt-1":
+                return verify_c3_receipt(self.client,path,self.session.info["model10"])
+            if schema=="e5cct-c5-pid-receipt-1":
+                return verify_c5_receipt(self.client,path,self.session.info["model10"])
+            if schema=="e5cct-c1-settings-receipt-1":
+                return verify_c1_receipt(self.client,path,self.session.info["model10"])
+            if schema=="e5cct-combined-upload-receipt-1":
+                return verify_combined_receipt(self.client,path,self.session.info["model10"])
+            if schema=="e5cct-waitband-receipt-1":
+                return verify_wait_receipt(self.client,path,self.session.info["model10"])
+            return self.session.verify_persistence(path)
+        def done(value):
+            if schema=="e5cct-c3-configuration-receipt-1":
+                self.c3_receipt_match={"path":path,"count":value}
+            elif schema=="e5cct-c1-settings-receipt-1":
+                self.c1_receipt_match={"path":path,"count":value}
+            elif schema=="e5cct-c5-pid-receipt-1":
+                self.c5_receipt_match={"path":path,"count":value}
+            elif schema=="e5cct-combined-upload-receipt-1":
+                self.programme_receipt_match={"path":path,"combined":True}
+                self.wait_receipt_match={"path":path,"combined":True,
+                    "raw":json.loads(Path(path).read_text(encoding="utf-8"))["wait_band"]["new"]}
+            elif schema=="e5cct-waitband-receipt-1":
+                self.wait_receipt_match={"path":path,"raw":value}
+            else:
+                self.programme_receipt_match={"path":path}
+            self.refresh_review()
+            self.message("Receipt values match",
+                "All registers in the selected receipt matched the current controller. "
+                "Nonvolatile retention is established only if power was physically "
+                "removed before this verification.")
+        self._work("Read-only saved receipt verification",action,done)
+
+    def _c3_draft_matches_preview(self):
+        tx=self.c3_transfer
+        return bool(tx and tx.preview_data and self.draft=={
+            row["register"]:row["new_raw"] for row in tx.preview_data["changes"]})
+
+    def preview_c3(self):
+        if (not self.client or not self.session or not self.lab or self.busy
+                or self.fail_latched or self.c3_transfer is not None
+                or self.c1_transfer is not None or self.c5_transfer is not None
+                or self.combined_transfer is not None or self.setting_transfer is not None or
+                not self.draft or not set(self.draft).issubset(QUALIFIED_C3_CODES)
+                or self.include_programme_with_settings or self.session.ram_touched):
+            self.message("Global configuration preview unavailable",
+                "Only the supported C3 setup-area-1 settings can be written together. "
+                "Split C1 and C3 proposals into separate transfers.",True)
+            return
+        tx=C3ConfigurationTransfer(self.client,self.session,self.folder.text(),
+                                   emit=self.log_event,hardware=self.hardware_profile)
+        def action(progress):return tx.preview(dict(self.draft))
+        def done(data):
+            self.c3_transfer=tx
+            self.refresh_review()
+            lines=[f"{r['register']}: {human_value(r['register'],r['old_raw'])}"
+                   f" → {human_value(r['register'],r['new_raw'])}"
+                   for r in data["changes"]]
+            if data["sensor_change"]:
+                lines.extend([
+                    "",
+                    "The app will send ONLY the selected sensor input register; "
+                    "no DA programme memory will be rewritten or scaled.",
+                    "The Omron controls any internal limit/parameter updates. "
+                    "Read the controller again afterward to display the "
+                    "resulting sensor limits and programme interpretation.",
+                ])
+            self.message("Read-only initial configuration preview",
+                "\n".join(lines)+"\n\nNOT WRITTEN. Apply enters setup area 1 "
+                "and can affect the controller immediately. No automatic rollback "
+                "or restart; heater must remain physically isolated.")
+        self._work("Read-only C3 configuration preview",action,done)
+
+    def stage_c3(self):
+        tx=self.c3_transfer
+        if (not tx or not tx.preview_data or tx.area_entered or self.busy
+                or self.fail_latched or not self._c3_draft_matches_preview()):
+            self.message("C3 write unavailable",
+                "Review the exact unchanged initial configuration first.",True)
+            return
+        if QMessageBox.warning(self,"Apply GLOBAL controller configuration",
+                "EXPERIMENTAL C3 HARDWARE WRITING. This enters setup area 1, "
+                "which stops control. Initial configuration may be stored as "
+                "soon as it is written; this is NOT an ordinary RAM-only preview "
+                "and cannot automatically be undone. Existing programme "
+                "interpretation and heater response can change. Confirm the "
+                "heater's DC supply and mains outputs are physically isolated, "
+                "that you have a full backup and are prepared to physically "
+                "power-cycle the controller afterward. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.stage()
+        def done(count):
+            self.refresh_review()
+            self.message("C3 global values written and read back",
+                f"{count} C3 register(s) matched in setup area 1. "
+                "This is NOT a persistence check. Select Finish & Return "
+                "to normal to complete the C3 procedure and issue the "
+                "separately authorised reset. "
+                "Do not energise the heater before reconfiguration is verified.")
+        self._work("Apply and verify C3 in setting area 1",action,done,True)
+
+    def finish_and_return_c3(self):
+        """One deliberate final action: receipt/CMW OFF, then exit C3 area 1.
+
+        This replaces the previous confusing two-button C3 Finish + Return
+        workflow. A reset is an explicitly confirmed step and is NEVER
+        repeated if transmission or reconnection is uncertain.
+        """
+        tx=self.c3_transfer
+        if (not tx or not tx.staged or tx.finished or self.busy or self.fail_latched
+                or not self._c3_draft_matches_preview() or not self.port):
+            self.message("Cannot finish C3 configuration",
+                "A successful area-1 write/readback with an unchanged proposal "
+                "is required. No controller restart was attempted.",True)
+            return
+        if QMessageBox.warning(
+                self,"Finish settings and return to normal display",
+                "Finish the selected C3 settings, read them back, record a "
+                "receipt and turn CMW OFF. The app will then re-enable "
+                "communications writing with acknowledgement and send ONE "
+                "Omron software-reset command to return from the in-t / "
+                "initial-settings screen to normal operation. "
+                "The reset has no response and must not be retried blindly. "
+                "The USB connection will reopen READ ONLY and check the "
+                "resulting settings and all eight programme memories. "
+                "The controller's power-up behaviour may change outputs: "
+                "confirm ALL external heater, mains and output circuits are "
+                "physically disconnected. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        port=self.port
+        directory=self.folder.text()
+        def action(progress):
+            progress("Verifying final C3 settings and ending writing access…")
+            receipt=tx.finish()
+            progress("Returning to normal operation: sending ONE software reset…")
+            client,report=restart_and_audit(tx,port,SerialClient,directory)
+            return receipt,client,report
+        def done(result):
+            receipt,client,report=result
+            self._complete_c3_return(client,report,receipt)
+        self._work("Finish C3 and return to operation level",action,done,True)
+
+    def finish_c3(self):
+        """Compatibility entry point for the unified Finish & Return action."""
+        return self.finish_and_return_c3()
+
+    def _complete_c3_return(self,new_client,report,receipt):
+        """Accept the postreset read-only controller and invalidate old state."""
+        self.client=new_client
+        self.session=None  # the original preflight and DA backup are now stale
+        self.inventory=offline_inventory()
+        self.inventory_current_session=False
+        self.c3_receipt_match={
+            "path":str(receipt),
+            "count":report.get("configuration_registers_checked",0),
+            "audit":report}
+        self.c3_transfer.restart_audit=report
+        self.backup=None
+        self.preview_stamp=None
+        self.draft={}
+        self.link_status.setText(
+            "●  USB reconnected read-only · check operation-level display")
+        self.link_status.setStyleSheet("color:#a8610f;font-weight:600")
+        self.refresh_settings()
+        self.refresh_review()
+        changed=report["changes_total"]
+        other=report.get("configuration_side_effects",0)
+        self.message(
+            "Global settings finished — return-to-normal command sent",
+            "C3 values written and read back. The one-shot software-reset "
+            "command was transmitted without an acknowledgement, as Omron "
+            "specifies; USB read-only reconnection succeeded.\n\n"
+            "Check the physical controller: it should now show the normal "
+            "PV/SP operating screen instead of in-t. That display change "
+            "cannot be confirmed by the communications status alone.\n\n"
+            f"C3 receipt matched: {report['configuration_verified']}\n"
+            f"Raw programme register differences: {changed}\n"
+            f"Other controller-managed C3 changes: {other}\n"
+            f"Audit: {report['audit_file']}\n\n"
+            "No DA programme values were written. Use Step 2 to read all "
+            "current settings before the next transfer. If the controller "
+            "still displays in-t, hold the front-panel Level key for at "
+            "least one second; do NOT repeat the software reset blindly.",
+            bool(not report["configuration_verified"] or
+                 report.get("requires_manual_review")))
+
+    def restart_verify_c3(self):
+        tx=self.c3_transfer
+        if (not tx or not tx.finished or not tx.cmw_off
+                or getattr(tx,"reset_attempted",False) or self.busy
+                or self.fail_latched or not self.lab or not self.port
+                or not self.client or self.client is not tx.client):
+            self.message("Cannot restart controller",
+                "Finish and verify C3 and CMW OFF first. An uncertain reset "
+                "cannot be attempted again automatically.",True)
+            return
+        if QMessageBox.warning(
+                self,"Restart controller and audit stored programmes",
+                "This sends a SOFTWARE RESET. Controller power-up behaviour "
+                "and output states may change. Confirm the heater PSU, load "
+                "and output circuits are PHYSICALLY DISCONNECTED. "
+                "The app will first re-enable Communications Writing (CMW ON) "
+                "and require Omron's acknowledgement; otherwise no reset "
+                "command will be sent. This no-response reset command will "
+                "NEVER be retried. Afterward the app reconnects read-only "
+                "and compares all eight stored "
+                "programmes against the original backup. Any differences "
+                "require review before heater use. Reset now?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        port=self.port
+        receipt=tx.receipt_file
+        def action(progress):
+            progress("Sending software reset once; no reply expected…")
+            return restart_and_audit(tx,port,SerialClient,self.folder.text())
+        def done(result):
+            client,report=result
+            self._complete_c3_return(client,report,receipt)
+        self._work("Software restart and full DA/C3 verification",action,done,True)
+
+    def _c5_draft_matches_preview(self):
+        tx=self.c5_transfer
+        return bool(tx and tx.preview_data and self.draft=={
+            row["register"]:row["new_raw"] for row in tx.preview_data["changes"]})
+
+    def preview_c5(self):
+        if (not self.client or not self.session or not self.lab or self.busy
+                or self.fail_latched or self.c5_transfer
+                or self.c1_transfer or self.c3_transfer or self.combined_transfer
+                or self.setting_transfer or not self.draft
+                or not set(self.draft).issubset(QUALIFIED_C5_CODES)
+                or self.include_programme_with_settings or self.session.ram_touched):
+            self.message("PID-bank preview blocked",
+                "Select only fixed PID-bank C5 settings; transfer other banks separately.",True)
+            return
+        tx=C5PIDTransfer(self.client,self.session,self.folder.text(),
+                         emit=self.log_event,hardware=self.hardware_profile)
+        def action(progress):return tx.preview(dict(self.draft))
+        def done(data):
+            self.c5_transfer=tx
+            self.refresh_review()
+            self.message("PID-bank preview (NO WRITES)",
+                "\\n".join(f"{r['register']}: {r['old_raw']} → {r['new_raw']}"
+                           for r in data["changes"])+
+                "\\nOnly selected fixed C5 registers will be written; no DA changes.")
+        self._work("Preview fixed C5 PID registers",action,done)
+
+    def stage_c5(self):
+        tx=self.c5_transfer
+        if (not tx or self.busy or self.fail_latched or tx.ram_touched
+                or not self._c5_draft_matches_preview()):
+            self.message("PID write blocked","Obtain a fresh matching C5 preview first.",True)
+            return
+        if QMessageBox.warning(self,"Confirm fixed PID-bank RAM write",
+                "Write only the selected fixed PID register(s)? The controller "
+                "must be STOPPED and its heater isolated. A partial failure "
+                "can leave controller RAM changed. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.stage()
+        def done(count):
+            self.refresh_review()
+            self.message("Fixed PID RAM readback passed",
+                f"{count} selected PID registers written and read back. "
+                "SAVE RAM DATA still required.")
+        self._work("Stage fixed PID-bank registers",action,done,True)
+
+    def save_and_finish_c5(self):
+        tx=self.c5_transfer
+        if (not tx or not tx.staged or tx.saved or self.busy or self.fail_latched
+                or not self._c5_draft_matches_preview()):
+            self.message("PID SAVE blocked","Verified unchanged C5 RAM stage required.",True)
+            return
+        if QMessageBox.warning(self,"Save fixed PID-bank changes",
+                "SAVE RAM DATA may also persist unrelated pending controller RAM. "
+                "Confirm isolated heater, then save, verify and disable CMW?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.save_finish()
+        def done(receipt):
+            for row in tx.preview_data["changes"]:
+                key=row["register"]
+                self.inventory["fields"][key]=row["new_raw"]
+                self.draft.pop(key,None)
+            self.refresh_settings();self.refresh_review()
+            self.message("PID-bank SAVE acknowledged",
+                "Selected fixed PID registers saved and reread. Power-cycle "
+                "verification remains necessary. Receipt: "+str(receipt))
+        self._work("Save fixed PID bank and finish CMW",action,done,True)
+
+    def _c1_draft_matches_preview(self):
+        tx=self.c1_transfer
+        if not tx or not tx.preview_data:return False
+        return self.draft=={
+            row["register"]:row["new_raw"] for row in tx.preview_data["changes"]}
+
+    def preview_c1(self):
+        if (not self.client or not self.session or not self.lab or self.busy
+                or self.fail_latched or self.combined_transfer
+                or self.setting_transfer or self.c1_transfer or self.c5_transfer
+                or not self.draft or not set(self.draft).issubset(QUALIFIED_C1_CODES)
+                or self.include_programme_with_settings or self.session.ram_touched):
+            self.message("Settings preview blocked",
+                "Only the listed experimental C1 adjustment settings may be sent together. "
+                "Other draft settings remain review-only. Programme memory is not included.",True)
+            return
+        proposed=dict(self.draft)
+        tx=C1SettingsTransfer(self.client,self.session,self.folder.text(),
+                             emit=self.log_event,hardware=self.hardware_profile)
+        def action(progress):return tx.preview(proposed)
+        def done(data):
+            self.c1_transfer=tx
+            self.refresh_review()
+            lines=[
+                f"{r['register']} — {CATALOG[r['register']].name}: "
+                f"{human_value(r['register'],r['old_raw'])} → "
+                f"{human_value(r['register'],r['new_raw'])}"
+                for r in data["changes"]]
+            self.message("C1 settings preview (NO WRITES)",
+                "\n".join(lines)+"\n\nNo programme data included. "
+                "One guarded SAVE will apply these controller-wide / PID-set adjustments.")
+        self._work("Preview C1 adjustment differences (read only)",action,done)
+
+    def stage_c1(self):
+        tx=self.c1_transfer
+        if (not tx or self.busy or self.fail_latched or tx.ram_touched
+                or not self._c1_draft_matches_preview()):
+            self.message("Settings write unavailable","Preview the unchanged C1 settings first.",True)
+            return
+        if QMessageBox.warning(
+                self,"Experimental C1 settings RAM write",
+                f"Write {len(tx.preview_data['changes'])} C1 adjustment register(s) to RAM? "
+                "PID values affect the selected PID set; heating hysteresis applies "
+                "to ON/OFF mode. The controller must be stopped and heater supply "
+                "physically isolated. A partial failure can leave RAM changed. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.stage()
+        def done(_):
+            self.refresh_review()
+            self.message("C1 settings RAM verified",
+                "All reviewed C1 settings were written and read back in RAM. "
+                "Nonvolatile SAVE is still required.")
+        self._work("Stage experimental C1 adjustment settings",action,done,True)
+
+    def save_and_finish_c1(self):
+        tx=self.c1_transfer
+        if (not tx or not tx.staged or tx.saved or self.busy or self.fail_latched
+                or not self._c1_draft_matches_preview()):
+            self.message("Settings SAVE unavailable",
+                "A verified and unchanged C1 RAM stage is required.",True)
+            return
+        if QMessageBox.warning(
+                self,"Save C1 settings and finish",
+                "ONE SAVE RAM DATA will persist the reviewed C1 settings and may "
+                "also persist unrelated unsaved controller RAM. Confirm the "
+                "heater remains isolated and no unrelated changes are pending. "
+                "After verified readback, CMW OFF is sent automatically. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.save_finish()
+        def done(receipt):
+            for row in tx.preview_data["changes"]:
+                key=row["register"]
+                self.inventory["fields"][key]=row["new_raw"]
+                self.draft.pop(key,None)
+            self.refresh_settings()
+            self.refresh_review()
+            self.message("C1 settings saved",f"All reviewed settings saved and read back. "
+                f"CMW OFF acknowledged. Actual power-cycle retention still needs verification.\n{receipt}")
+        self._work("SAVE C1 settings and disable CMW",action,done,True)
+
+    def preview_combined(self):
+        if (not self.lab or not self.session or not self.client or self.busy
+                or self.fail_latched or self.combined_transfer is not None
+                or self.setting_transfer is not None or set(self.draft)!={"C1:0021"}
+                or not self.include_programme_with_settings or not self._programme_pending()):
+            self.message("Combined transfer unavailable",
+                "Select the programme explicitly and propose ONLY a supported Wait Band "
+                "change. A changed programme and fresh verified backup are required.",True)
+            return
+        self.update_programme()
+        programme=copy.deepcopy(self.programmes[self.slot])
+        tx=CombinedTransfer(self.client,self.session,self.folder.text(),emit=self.log_event)
+        def action(progress):
+            return tx.preview(self.slot,programme,self.draft["C1:0021"])
+        def done(data):
+            self.combined_transfer=tx
+            self.combined_programme_stamp=self._programme_fingerprint()
+            self.refresh_review()
+            self.message("Read-only combined preview",
+                f"Wait Band: {data['wait_band']['old']/10:g} → "
+                f"{data['wait_band']['new']/10:g} °C\n"
+                f"Programme {data['programme_slot']}: "
+                f"{len(data['programme_changes'])} changed DA registers.\n"
+                "NOT WRITTEN. Both will be verified before one SAVE.")
+        self._work("Preview one C1 + DA combined transfer",action,done)
+
+    def stage_combined(self):
+        tx=self.combined_transfer
+        if (not tx or not tx.preview_data or tx.ram_touched or self.busy
+                or self.fail_latched or self._programme_fingerprint()!=
+                getattr(self,"combined_programme_stamp",None)
+                or self.draft!={"C1:0021":tx.preview_data["wait_band"]["new"]}):
+            self.message("Combined RAM write unavailable",
+                "Review the unchanged programme and proposed Wait Band again.",True)
+            return
+        if QMessageBox.warning(self,"Combined C1 + DA RAM write",
+                "This stages BOTH Wait Band and the selected programme. "
+                "The controller must be RESET, the heater supplies physically isolated, "
+                "and no unrelated RAM changes pending. A communication failure "
+                "can leave partial RAM changes. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        def action(progress):return tx.stage()
+        def done(_):
+            self.refresh_review()
+            self.message("Combined RAM verified",
+                "Both Wait Band and programme registers were written and read back. "
+                "SAVE is still required.")
+        self._work("Stage and verify combined C1 + DA RAM",action,done,True)
+
+    def save_and_finish_combined(self):
+        tx=self.combined_transfer
+        if (not tx or not tx.staged or tx.saved or self.busy or self.fail_latched
+                or self._programme_fingerprint()!=getattr(self,"combined_programme_stamp",None)
+                or self.draft!={"C1:0021":tx.preview_data["wait_band"]["new"]}):
+            self.message("Combined SAVE unavailable","A verified, unchanged RAM stage is required.",True)
+            return
+        if QMessageBox.warning(self,"One SAVE for Wait Band + programme",
+                "Save verified C1 and DA RAM changes with one SAVE RAM DATA command, "
+                "then automatically disable CMW. The SAVE may also persist unrelated "
+                "RAM changes. Confirm physical heater isolation and no unrelated edits. "
+                "Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.save_finish()
+        def done(receipt):
+            self.inventory["fields"]["C1:0021"]=tx.preview_data["wait_band"]["new"]
+            self.draft.pop("C1:0021",None)
+            self.include_programme_with_settings=False
+            self.refresh_settings()
+            self.refresh_review()
+            self.message("Combined transfer saved",
+                "Wait Band + programme saved, read back and CMW OFF acknowledged. "
+                "The result is NOT verified across a power cycle. "
+                "Keep heater isolated and verify using the saved receipt:\n"+str(receipt))
+        self._work("Combined SAVE and CMW OFF",action,done,True)
+
+    def verify_combined(self):
+        if not self.client or not self.session or self.busy:
+            self.message("Reconnect first","Reconnect after a real controller USB power cycle.",True)
+            return
+        receipt,_=QFileDialog.getOpenFileName(
+            self,"Select combined transfer receipt",self.folder.text(),"JSON (*.json)")
+        if not receipt:return
+        def action(progress):
+            return verify_combined_receipt(
+                self.client,receipt,self.session.info["model10"])
+        def done(count):
+            self.programme_receipt_match={"receipt":receipt,"combined":True}
+            self.wait_receipt_match={"receipt":receipt,"combined":True}
+            self.refresh_review()
+            self.message("Combined receipt matches",
+                f"{count} saved DA/C1 registers match the receipt. "
+                "Retention is demonstrated only if the controller really lost power "
+                "before this read.")
+        self._work("Verify combined receipt after power cycle",action,done)
 
     def save_and_finish_wait(self):
         tx=self.setting_transfer
@@ -764,7 +1505,7 @@ class Studio(QMainWindow):
             self.refresh_review()
             self.message("Settings transfer complete",
                 "Save, post-save readback and CMW OFF acknowledged. "
-                "Check the CMW lamp, then power-cycle and verify the receipt:\\n"+str(receipt))
+                "Check the CMW lamp, then power-cycle and verify the receipt:\n"+str(receipt))
         self._work("Save Wait Band and disable CMW",action,done,True)
 
     def save_and_finish_programme(self):
@@ -788,7 +1529,7 @@ class Studio(QMainWindow):
             self.refresh_review()
             self.message("Programme transfer complete",
                 "Save, post-save readback and CMW OFF acknowledged. "
-                "Check the CMW lamp, then power-cycle and verify the receipt:\\n"+str(receipt))
+                "Check the CMW lamp, then power-cycle and verify the receipt:\n"+str(receipt))
         self._work("Save programme and disable CMW",action,done,True)
 
     def _refresh_transfer_summary(self):
@@ -796,6 +1537,66 @@ class Studio(QMainWindow):
         if not hasattr(self,"transfer_summary"):return
         ses=self.session
         tx=self.setting_transfer
+        c1=self.c1_transfer
+        c5=self.c5_transfer
+        combo=self.combined_transfer
+        if c5 is not None:
+            if c5.cmw_off:state="SAVE acknowledged, CMW OFF; power-cycle check needed"
+            elif c5.saved:state="SAVE acknowledged; CMW OFF not confirmed"
+            elif c5.staged:state="C5 RAM readback matched; SAVE REQUIRED"
+            elif c5.ram_touched:state="C5 RAM uncertain — stop and inspect"
+            else:state="C5 read-only preview; nothing written"
+            self.transfer_summary.setText(
+                f"FIXED PID 1–8 BANKS · {state}\\n"
+                "Only explicitly selected PID registers; programme memory unchanged.")
+            return
+        if self.c3_transfer is not None:
+            tx3=self.c3_transfer
+            if getattr(tx3,"restart_audit",None):
+                report=tx3.restart_audit
+                state=(f"RESET COMMAND SENT (restart not independently confirmed): "
+                       f"{report['changes_total']} raw DA word(s) changed; "
+                       f"{report.get('possible_interpretation_change_count',0)} "
+                       f"possible programme target temperature changes; "
+                       "MANUAL REVIEW REQUIRED")
+            elif tx3.finished:
+                state="Area-1 C3 read back; CMW OFF; restart + audit required"
+            elif tx3.staged:state="C3 writes read back, finish CMW OFF required"
+            elif tx3.area_entered:state="C3 setup area entered; state UNCERTAIN"
+            else:state="C3 read-only preview complete; no writes yet"
+            self.transfer_summary.setText(
+                f"GLOBAL C3 CONFIGURATION · {state}\n"
+                "Reset transmission has no Omron acknowledgement: an audit is NOT "
+                "proof a reboot occurred. Keep the heater isolated. Validate "
+                "programme temperatures on the front panel before use.")
+            return
+        if c1 is not None:
+            if c1.cmw_off:state="SAVE verified; CMW OFF acknowledged"
+            elif c1.saved:state="SAVE may have succeeded; CMW OFF not confirmed"
+            elif c1.staged:state="All C1 RAM changes verified; SAVE REQUIRED"
+            elif c1.ram_touched:state="C1 RAM uncertain — STOP and inspect"
+            else:state="C1 read-only preview ready; no writes yet"
+            self.transfer_summary.setText(
+                f"CONTROLLER C1 ADJUSTMENTS  ·  {state}\n"
+                f"{len(c1.preview_data['changes'])} parameter(s) reviewed. "
+                "The programme has NOT been transferred. "
+                "Power-cycle receipt verification is still required.")
+            return
+        if combo is not None:
+            if combo.cmw_off:
+                state="Both C1 and DA SAVED and read back; CMW OFF acknowledged"
+            elif combo.saved:
+                state="SAVE acknowledged but CMW OFF is NOT confirmed; inspect before retry"
+            elif combo.staged:
+                state="C1 + DA verified in RAM; SAVE still required"
+            elif combo.ram_touched:
+                state="C1 + DA RAM may be partially changed; stop and inspect"
+            else:
+                state="Combined C1 + DA preview ready; nothing written"
+            self.transfer_summary.setText(
+                f"PROGRAMME {combo.preview_data['programme_slot']} + WAIT BAND  ·  {state}\n"
+                "Power-cycle retention remains unverified. Other settings are not included.")
+            return
         if self.programme_receipt_match:
             programme_status=("Receipt matched the controller's new read-back; "
                               "confirm the USB power cycle actually occurred")
@@ -836,15 +1637,22 @@ class Studio(QMainWindow):
             else:
                 wt_status="No completed Wait Band operation"
         elif self.draft:
-            eligible=(set(self.draft)=={"C1:0021"})
+            eligible=set(self.draft).issubset(QUALIFIED_C1_CODES)
             wt_status=(f"{len(self.draft)} proposed setting change(s), NOT written"
-                       + ("; wt-b transfer available" if eligible else
-                          "; only wt-b is currently USB-writable"))
+                       + ("; isolated-lab C1 transfer available" if eligible
+                          else "; contains parameters not yet USB-writable"))
         elif self.inventory_current_session and self.inventory["fields"].get("C1:0021") is not None:
             raw=self.inventory["fields"]["C1:0021"]
             wt_status=f"No pending changes; wt-b read from controller: {raw/10:g} °C"
         else:
             wt_status="No settings transfer in this connection"
+        if self.c3_receipt_match:
+            wt_status=(f"{self.c3_receipt_match['count']} C3 global settings matched "
+                       "after reconnect. Operator must confirm a real power cycle.")
+        if self.c1_receipt_match:
+            wt_status=(f"{self.c1_receipt_match['count']} C1 register(s) matched the saved "
+                       "receipt on reconnect. Retention is proven only after a genuine "
+                       "controller power cycle.")
         self.transfer_summary.setText(
             f"PROGRAMME {self.slot}  ·  {programme_status}\n"
             f"CONTROLLER SETTINGS  ·  {wt_status}\n"
@@ -966,9 +1774,17 @@ class Studio(QMainWindow):
         def completed(result):
             self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file,inventory_error=result
             self.setting_transfer=None
+            self.hardware_profile=None
+            self.c1_transfer=None
+            self.c5_transfer=None
+            self.c5_receipt_match=None
+            self.c1_receipt_match=None
+            self.combined_transfer=None
+            self.include_programme_with_settings=False
             self.wait_receipt_match=None
             self.programme_receipt_match=None
             self.inventory_current_session=(inventory_error is None)
+            self._editor_last_verified_limits=None
             self.port=port
             self.backup=self.session.backup_data
             self.draft={}
@@ -1012,7 +1828,19 @@ class Studio(QMainWindow):
         if self.client:
             try:self.client.close()
             except Exception:pass
-        self.client=None;self.session=None;self.setting_transfer=None;self.port=None;self.preview_stamp=None
+        self.client=None;self.session=None;self.hardware_profile=None
+        self.setting_transfer=None;self.c5_transfer=None
+        self.port=None;self.preview_stamp=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
+        self.c1_transfer=None
+        self.c5_transfer=None
+        self.c5_receipt_match=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
+        self.c1_receipt_match=None
+        self.combined_transfer=None
+        self.include_programme_with_settings=False
         self.wait_receipt_match=None
         self.programme_receipt_match=None
         self.inventory_current_session=False
@@ -1045,7 +1873,16 @@ class Studio(QMainWindow):
     def _mark_link_lost(self,reason):
         staged=bool((self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending())
         previous=self.client
-        self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.client=None;self.session=None;self.hardware_profile=None
+        self.port=None;self.preview_stamp=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
+        self.c1_transfer=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
+        self.c1_receipt_match=None
+        self.combined_transfer=None
+        self.include_programme_with_settings=False
         self.wait_receipt_match=None
         self.programme_receipt_match=None
         self.inventory_current_session=False
@@ -1094,7 +1931,7 @@ class Studio(QMainWindow):
     def save_project(self):
         self.update_programme()
         try:
-            for p in self.programmes:p.validate()
+            for p in self.programmes:p.validate(strict_range=False)
         except Exception as exc:
             self.message("Project contains an invalid programme",str(exc),True);return
         path,_=QFileDialog.getSaveFileName(self,"Save local studio project",
@@ -1103,6 +1940,7 @@ class Studio(QMainWindow):
         document={"schema":"e5cct-modern-studio-project-1",
                   "programmes":[p.as_json() for p in self.programmes],
                   "selected_slot":self.slot,
+                   "planned_sensor_by_slot":self.planned_sensor_by_slot,
                   "configuration_changes":[{"address":k,"value":v} for k,v in sorted(self.draft.items())],
                   "note":"Local offline workspace; not a controller register backup."}
         try:
@@ -1118,6 +1956,54 @@ class Studio(QMainWindow):
         except Exception as exc:
             self.message("Cannot save local project",str(exc),True);return
         self.feedback.setText("Local offline project saved to "+str(path))
+
+    def import_website_programme(self):
+        """Load website v1/v2 programme export into one LOCAL slot, no USB writes."""
+        if self._editing_locked():return
+        path,_=QFileDialog.getOpenFileName(
+            self,"Import website Programme Studio JSON","","Programme JSON (*.json)")
+        if not path:return
+        try:
+            if Path(path).stat().st_size>1_000_000:
+                raise ValueError("Programme JSON is unexpectedly large")
+            obj=json.loads(Path(path).read_text(encoding="utf-8"))
+            if (not isinstance(obj,dict) or obj.get("version") not in (1,2)
+                    or obj.get("method")!="rate" or not isinstance(obj.get("programme"),dict)):
+                raise ValueError("Expected version 1/2 website rate-programme export")
+            target=obj.get("programmeNumber")
+            if type(target) is not int or target not in range(8):
+                raise ValueError("Website programme memory must be 0–7")
+            programme=Programme.from_json(obj)
+            planned=obj.get("planned_input_type")
+            if planned is not None and (type(planned) is not int or planned not in SENSOR_INPUTS):
+                raise ValueError("Invalid planned sensor selection")
+        except (OSError,ValueError,KeyError,TypeError,IndexError) as exc:
+            self.message("Cannot import website programme",str(exc),True)
+            return
+        if QMessageBox.question(
+            self,"Import one local programme",
+            f"Import '{programme.name}' to LOCAL Programme {target}, replacing its "
+            "currently edited local segments? This never writes an Omron. "
+            "Any website analogue engineering scale is NOT an active hardware "
+            "configuration; check C3:0001–0003 separately before USB transfer.",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        self.update_programme()
+        self.programmes[target]=programme
+        self.planned_sensor_by_slot[target]=planned
+        self.slot=target
+        self.slot_combo.blockSignals(True)
+        self.slot_combo.setCurrentIndex(target)
+        self.slot_combo.blockSignals(False)
+        self.editor_sensor.blockSignals(True)
+        index=self.editor_sensor.findData(planned)
+        self.editor_sensor.setCurrentIndex(index if index>=0 else 0)
+        self.editor_sensor.blockSignals(False)
+        self._render_programme()
+        self.preview_stamp=None
+        self.refresh_review()
+        self.feedback.setText(
+            f"Website programme imported to local memory {target}; hardware unchanged.")
 
     def open_project(self):
         if self._editing_locked():return
@@ -1137,11 +2023,21 @@ class Studio(QMainWindow):
                 draft[key]=value
             slot=obj.get("selected_slot",0)
             if type(slot) is not int or slot not in range(8):raise ValueError("Invalid memory slot")
+            selected=obj.get("planned_sensor_by_slot",[None]*8)
+            if (not isinstance(selected,list) or len(selected)!=8
+                    or any(x is not None and (type(x) is not int or x not in SENSOR_INPUTS)
+                           for x in selected)):
+                raise ValueError("Invalid planned input selections")
         except Exception as exc:
             self.message("Cannot open local project",str(exc),True);return
         self.programmes=programs
+        self.planned_sensor_by_slot=selected
         self.draft=draft
         self.slot=slot
+        self.editor_sensor.blockSignals(True)
+        index=self.editor_sensor.findData(selected[slot])
+        self.editor_sensor.setCurrentIndex(index if index>=0 else 0)
+        self.editor_sensor.blockSignals(False)
         self.slot_combo.blockSignals(True)
         self.slot_combo.setCurrentIndex(slot)
         self.slot_combo.blockSignals(False)
@@ -1190,6 +2086,58 @@ class Studio(QMainWindow):
         self.log_event("Opened saved extended parameter inventory "+file)
         if self.mode=="offline":self.offline_inspect_saved=True
         self.show_step(1);self.read_tabs.setCurrentIndex(2)
+
+    def compare_saved_backups(self):
+        """Compare stored backups without contacting the Omron controller."""
+        starting=self.folder.text().strip()
+        first,_=QFileDialog.getOpenFileName(
+            self,"Select BEFORE programme backup",starting,
+            "E5CC-T programme backups (*.json)")
+        if not first:return
+        second,_=QFileDialog.getOpenFileName(
+            self,"Select AFTER programme backup",str(Path(first).parent),
+            "E5CC-T programme backups (*.json)")
+        if not second:return
+        try:
+            report=compare_saved_backups(first,second)
+            summary=comparison_text(report)
+        except Exception as exc:
+            self.message("Cannot compare saved backups",str(exc),True)
+            return
+        self.backup_comparison=report
+        self.comparison_text.setPlainText(summary)
+        self.export_comparison_button.setEnabled(True)
+        if self.mode=="offline":
+            self.offline_inspect_saved=True
+        self.show_step(1)
+        self.read_tabs.setCurrentIndex(3)
+        self.log_event("Compared original and later DA backups (READ ONLY)")
+        self.feedback.setText(
+            f"Comparison: {report['changed_raw_words']} DA words changed, "
+            f"{len(report['interpreted_target_changes'])} target temperatures "
+            "may differ. No USB actions performed.")
+
+    def export_backup_comparison(self):
+        if not self.backup_comparison:return
+        path,_=QFileDialog.getSaveFileName(
+            self,"Save read-only comparison report",
+            str(Path(self.folder.text().strip())/"E5CC-T-backup-comparison.json"),
+            "JSON (*.json)")
+        if not path:return
+        try:
+            # A native Qt save dialog asks before replacing an existing file.
+            from PySide6.QtCore import QSaveFile,QIODevice
+            data=json.dumps(self.backup_comparison,indent=2,ensure_ascii=False)
+            save=QSaveFile(path)
+            if not save.open(QIODevice.OpenModeFlag.WriteOnly):
+                raise OSError(save.errorString())
+            encoded=data.encode("utf-8")
+            if save.write(encoded)!=len(encoded) or not save.commit():
+                raise OSError(save.errorString())
+        except Exception as exc:
+            self.message("Comparison export failed",str(exc),True)
+            return
+        self.feedback.setText("Read-only backup comparison exported: "+str(path))
 
     def export_stored_profile(self):
         if not self.backup:
@@ -1256,7 +2204,14 @@ class Studio(QMainWindow):
 
     def _settings_ram_pending(self):
         tx=self.setting_transfer
-        return bool(tx and tx.ram_touched and not tx.saved)
+        c1=self.c1_transfer
+        c5=self.c5_transfer
+        tx3=self.c3_transfer
+        return (bool(tx and tx.ram_touched and not tx.saved)
+                or bool(c5 and c5.ram_touched and not c5.saved)
+                or bool(c1 and c1.ram_touched and not c1.saved)
+                or bool(tx3 and tx3.area_entered and not tx3.finished)
+                or self._combined_ram_pending())
 
     def _can_begin_wait(self):
         ses=self.session
@@ -1266,7 +2221,7 @@ class Studio(QMainWindow):
             and not ses.mismatches and not ses.ram_touched
             and not self.fail_latched and not self.busy
             and self.draft.keys()=={"C1:0021"}
-            and self.setting_transfer is None
+            and self.setting_transfer is None and self.c5_transfer is None
         )
 
     def _wait_status_text(self):
@@ -1465,19 +2420,165 @@ class Studio(QMainWindow):
         if slot<0:return
         self.update_programme()
         self.slot=slot
+        self.editor_sensor.blockSignals(True)
+        idx=self.editor_sensor.findData(self.planned_sensor_by_slot[slot])
+        self.editor_sensor.setCurrentIndex(idx if idx>=0 else 0)
+        self.editor_sensor.blockSignals(False)
         self._render_programme()
         self.preview_stamp=None;self.refresh_review()
+
+    def _effective_programme_limits(self):
+        """Only the ACTUALLY READ controller configuration governs the editor.
+
+        A draft change is not active on hardware. Never reinterpret an existing
+        programme's graph from a proposed sensor change, and never use stale
+        values after writing initial/global configuration.
+        """
+        if self.mode=="connected" and self.client and not self.inventory_current_session:
+            return self._editor_last_verified_limits,(
+                "Controller settings are stale after a global change. "
+                "The editor still shows the BEFORE-change programme values. "
+                "Read everything again in Step 2 before another upload.")
+        fields=self.inventory.get("fields",{})
+        try:
+            limits=effective_limits(fields,require_readback=bool(
+                self.mode=="connected" and self.inventory_current_session))
+            if self.inventory_current_session and limits.verified:
+                self._editor_last_verified_limits=limits
+            return limits,None
+        except ValueError as exc:
+            return None,str(exc)
+
+    def _editor_sensor_changed(self,*unused):
+        if not hasattr(self,"segment_table") or self._rendering:return
+        self.planned_sensor_by_slot[self.slot]=self.editor_sensor.currentData()
+        self._render_programme()
+
+    def propose_editor_sensor(self):
+        """Stage a proposal, never an automatic C3 or DA write."""
+        code=self.editor_sensor.currentData()
+        if code is None or self._editing_locked():
+            return
+        if not self.client or not self.inventory_current_session:
+            self.message("Read controller first",
+                         "Input selection is a local programme reference. "
+                         "Connect and read controller settings before proposing a write.",True)
+            return
+        current=self.inventory["fields"].get("C3:0000")
+        if current==code:
+            self.message("Already selected",
+                         "The controller already reports this input code. "
+                         "Check its SP limits before programme transfer.")
+            return
+        msg=(f"CURRENT sensor input code: {current}\n"
+             f"PROPOSED GLOBAL input: {code} — {SENSOR_INPUTS[code]}\n\n"
+             "Only choose a range compatible with the sensor PHYSICALLY CONNECTED. "
+             "Changing a controller code cannot convert a thermocouple into "
+             "another sensor family. The change applies to ALL programmes.\n\n"
+             "This only creates a LOCAL C3 proposal; nothing is transmitted. "
+             "A separate C3 apply/reset and fresh Step 2 readback are required "
+             "before transferring any DA programme.\n\n"
+             "Add this input change to the review?")
+        if QMessageBox.question(self,"Review controller input change",msg,
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        try:
+            self.draft=add_proposal(self.inventory,self.draft,"C3:0000",str(code))
+        except ValueError as exc:
+            self.message("Cannot propose input",str(exc),True)
+            return
+        self.preview_stamp=None
+        self.refresh_settings()
+        self.refresh_review()
+        self.feedback.setText("Sensor input change added to LOCAL DRAFT; nothing written.")
+        self.show_step(3)
+
+    def _offer_compatible_input_after_failure(self,why):
+        """Offer, but never silently apply, compatible sensor configurations."""
+        if not self.inventory_current_session or self.draft or self.busy:
+            return False
+        # A failed COM connection, STOP check or backup verification is NOT
+        # evidence of a sensor incompatibility and must keep its own error.
+        reason=str(why).lower()
+        if not any(fragment in reason for fragment in (
+                "temperature restrictions","outside permitted","outside sensor range",
+                "input resolution","valid increment","unverified thermocouple",
+                "sensor range","input type")):
+            return False
+        candidates=compatible_temperature_inputs(self.programmes[self.slot])
+        current=self.inventory.get("fields",{}).get("C3:0000")
+        if not candidates or current in candidates:
+            return False
+        if QMessageBox.question(
+            self,"Programme outside controller input range",
+            str(why)+"\n\nThe programme remains editable. "
+            "Would you like to select a documented alternative input range? "
+            "This creates a separate settings proposal, not a hardware write.",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.Yes)!=QMessageBox.StandardButton.Yes:
+            return True
+        names=[f"{code:02d} — {SENSOR_INPUTS[code]}"+
+               (" (same K thermocouple)" if current in (5,6) and code in (5,6) else "")
+               for code in candidates]
+        chosen,ok=QInputDialog.getItem(
+            self,"Select a range for the PHYSICAL sensor",
+            "Choose only a range supported by the sensor actually wired:",
+            names,0,False)
+        if ok:
+            choice=candidates[names.index(chosen)]
+            idx=self.editor_sensor.findData(choice)
+            if idx>=0:
+                self.editor_sensor.setCurrentIndex(idx)
+                self.propose_editor_sensor()
+        return True
+
+    def _pending_compatibility_issues(self):
+        """Warn about proposed global settings WITHOUT applying them to graphs.
+
+        Local proposals have no effect on the connected hardware until written.
+        This check is advisory for global C3 writing; DA upload still requires
+        a fresh current hardware read and its own strict compatibility guard.
+        """
+        if not self.draft or not self.inventory_current_session:
+            return []
+        if not any(code in self.draft for code in
+                   ("C3:0000","C3:0005","C3:0006")):
+            return []
+        try:
+            proposed=effective_limits(self.inventory["fields"],self.draft,
+                                      require_readback=True)
+            return programme_issues(self.programmes[self.slot],proposed)
+        except ValueError as exc:
+            return ["Proposed sensor/SP settings need review: "+str(exc)]
+
+    def _programming_conflicts(self):
+        # Never invent unknown configuration in offline mode.
+        if self.inventory.get("mode")=="offline" or not self.inventory_current_session:
+            return []
+        return check_global_programming(self.inventory["fields"],self.draft)
 
     def _render_programme(self):
         self._rendering=True
         p=self.programmes[self.slot]
         self.programme_name.setText(p.name)
-        self.start_pv.setValue(float(p.start))
+        limits,_=self._effective_programme_limits()
+        chosen=self.editor_sensor.currentData()
+        input_code=chosen if chosen is not None else (limits.input_type if limits else 6)
+        display_unit="EU" if input_code in ANALOGUE_TYPES else "°C"
+        self.start_pv_editor.set_unit(display_unit)
+        self.chart.setLabel("left","Commanded setpoint",display_unit)
+        # Offline editing is independent of configured hardware limits.
+        original_pv=float(p.start)
+        self.start_pv.setRange(min(-1999.0,original_pv),max(9999.0,original_pv))
+        self.start_pv.setValue(original_pv)
         self.finish_mode.setCurrentIndex(0 if p.finish=="rst" else 1)
         self.segment_table.setRowCount(0)
         self.segment_table.setRowCount(len(p.steps))
         for index,segment in enumerate(p.steps):
-            row=SegmentRow(index,segment)
+            row=SegmentRow(index,segment,
+                           temperature_min=-1999.0,
+                           temperature_max=9999.0,display_unit=display_unit)
             row.changed.connect(self.update_programme)
             row.move_up.connect(lambda i=index:self._segment_action(i,"up"))
             row.move_down.connect(lambda i=index:self._segment_action(i,"down"))
@@ -1514,19 +2615,66 @@ class Studio(QMainWindow):
         self.refresh_actions()
 
     def _graph_current(self):
+        p=self.programmes[self.slot]
+        limits,error=self._effective_programme_limits()
+        conflicts=self._programming_conflicts()
+        pending_issues=self._pending_compatibility_issues()
+        if limits is not None:
+            prefix=("BEFORE-change reference (fresh read required)"
+                    if error else "Controller readback limits" if limits.verified
+                    else "Provisional sensor limits")
+            note=prefix+" · "+limits.description()
+        else:
+            note="Controller temperature limits NOT VERIFIED: "+(error or "unknown")
         try:
-            p=self.programmes[self.slot]
-            metrics=p.validate()
+            # Offline editor can still draw a provisional default graph.
+            # Actual USB preview is separately blocked on missing/invalid live limits.
+            metrics=p.validate(limits=limits,strict_range=False)
             self.chart.show_points(metrics["points"])
+            selected_sensor=self.editor_sensor.currentData()
+            if selected_sensor is not None:
+                try:
+                    reference=effective_limits({"C3:0000":selected_sensor},
+                                               require_readback=False)
+                    note+=("\nEDITOR REFERENCE ONLY: "+reference.description()+
+                           "; hardware has not been changed.")
+                    planning_issues=programme_issues(p,reference)
+                    if planning_issues:
+                        note+=("\nWARNING — SELECTED INPUT / PROGRAMME MISMATCH: "+
+                               "; ".join(planning_issues[:3]))
+                except ValueError as exc:
+                    note+="\nPlanning input needs scaling: "+str(exc)
+            if limits is not None:
+                mismatches=programme_issues(p,limits)
+                if mismatches:
+                    note+="\nWARNING — PROGRAMME / CURRENT INPUT MISMATCH: "+"; ".join(mismatches[:3])
+                    note+="\nProgramme preserved. Propose a suitable input setting, then re-read before USB transfer."
             has_step=any(seg.type=="step" for seg in p.steps)
+            input_code=(self.editor_sensor.currentData()
+                        if self.editor_sensor.currentData() is not None
+                        else (limits.input_type if limits else 6))
+            shown_unit="EU" if input_code in ANALOGUE_TYPES else "°C"
             self.programme_info.setText(
                 f"{len(p.steps)} segments   ·   {metrics['minutes']:.1f} min programmed "
                 f"(excludes Wait delays){' — total time cannot be predicted' if has_step else ''}   ·   "
-                f"Final SP {metrics['final_sp']:g} °C")
+                f"Final SP {metrics['final_sp']:g} {shown_unit}")
+            if conflicts:note+="\nGlobal configuration conflicts: "+"; ".join(conflicts[:3])
+            if pending_issues:
+                note+=("\nPENDING GLOBAL SETTING (not active yet): "
+                       +"; ".join(pending_issues[:3]))
+            if error:note+="\n"+error
+            self.temperature_limits_hint.setText(note)
+            self.temperature_limits_hint.setStyleSheet(
+                "color:"+("#a8610f" if error or conflicts or pending_issues or
+                                   not limits or not limits.verified or
+                                   "WARNING" in note else "#157952")
+                +";font-weight:600")
             self._refresh_wait_hint()
         except Exception as exc:
             self.chart.show_points([])
             self.programme_info.setText("Needs correction: "+str(exc))
+            self.temperature_limits_hint.setText(note+"\nPROGRAMME NOT COMPATIBLE: "+str(exc))
+            self.temperature_limits_hint.setStyleSheet("color:#ab3e35;font-weight:700")
 
 
     def _refresh_wait_hint(self):
@@ -1610,11 +2758,23 @@ class Studio(QMainWindow):
         if not hasattr(self,"setting_table"):return
         category=self.group.currentText()
         query=self.search.text().casefold()
+        view=self.settings_view.currentText()
         selected=self._selected_setting_code()
         self._rendering=True
         rows=[]
         for code,p in CATALOG.items():
-            if category!="All groups" and category!=p.group:continue
+            if self.mode=="connected" and self.session:
+                if supports(self.hardware_profile,code) is not True:
+                    continue
+                # A register that the controller did not accept on READ is
+                # not a selectable feature. Its error remains in Step 2's
+                # full diagnostic inventory.
+                if (self.inventory_current_session and
+                        self.inventory["fields"].get(code) is None):
+                    continue
+            if not visible_in_view(code,p.group,view,query):continue
+            # Search is global regardless of the view/group shortcuts.
+            if not query and category!="All groups" and category!=p.group:continue
             if query and query not in (code+" "+p.name+" "+p.group+" "+p.meaning).casefold():continue
             rows.append((code,p))
         self.setting_table.setRowCount(len(rows))
@@ -1623,14 +2783,18 @@ class Studio(QMainWindow):
             self.setting_keys.append(code)
             raw=self.inventory["fields"].get(code)
             current=human_value(code,raw,self.inventory["fields"].get("C3:0000"))
-            proposed=(human_value(code,self.draft[code],self.inventory["fields"].get("C3:0000"))
+            proposed=(human_value(code,self.draft[code],
+                                  self.draft.get("C3:0000",self.inventory["fields"].get("C3:0000")))
                       if code in self.draft else "—")
-            for col,txt in enumerate((p.name+" · "+code,current,proposed,p.group)):
+            label=p.name+(" · "+code if self.show_setting_technical.isChecked() else "")
+            for col,txt in enumerate((label,current,proposed,view_for(code,p.group))):
                 self._cell(self.setting_table,index,col,txt)
         self._rendering=False
         self.draft_count.setText(f"{len(self.draft)} proposed changes · {len(rows)} visible")
         self._refresh_config_review()
         if hasattr(self,"wait_hint"):self._refresh_wait_hint()
+        if hasattr(self,"temperature_limits_hint") and not self._rendering:
+            self._graph_current()
         if selected in self.setting_keys:
             self.setting_table.selectRow(self.setting_keys.index(selected))
         elif rows:
@@ -1639,6 +2803,9 @@ class Studio(QMainWindow):
             self.parameter_detail.clear()
             self.parameter_editor.clear()
             self.parameter_choices.clear()
+            self.setting_dependency_note.clear()
+            self.open_dependency_button.setVisible(False)
+            self.revert_setting_button.setEnabled(False)
         # A filter rebuild can replace row 0 while leaving Qt's selected row
         # number unchanged. No selectionChanged event is emitted in that case.
         # Explicitly refresh the detail/editor for the newly mapped register.
@@ -1654,19 +2821,46 @@ class Studio(QMainWindow):
         if self._rendering:return
         code=self._selected_setting_code()
         if not code:return
+        self._setting_loading=True
         p=CATALOG[code]
         raw=self.inventory["fields"].get(code)
         display=human_value(code,raw,self.inventory["fields"].get("C3:0000"))
-        self.parameter_detail.setPlainText(
-            f"{p.name}\n{code} · H186 {p.manual_page}\n\n"
-            f"{p.meaning}\n\nCurrent: {display}\n"
-            f"Raw: {raw:08X}\n" if raw is not None else
-            f"{p.name}\n{code}\n\n{p.meaning}\n\nCurrent: UNKNOWN / unavailable")
-        self.parameter_detail.append("\nAccess: "+p.access+
-                                     ("\nContext: "+p.context if p.context else ""))
+        req=requirements(code)
+        editable_status=("Qualified USB writing (isolated-lab safeguards)"
+                         if req.allowed_in_current_app else
+                         "Available to review and plan; USB write not yet qualified")
+        friendly=[
+            p.name,
+            "",
+            p.meaning,
+            "",
+            "WHERE IT APPLIES",
+            scope_for(code),
+            "",
+            "CURRENT CONTROLLER VALUE",
+            display,
+            "",
+            "CAN I CHANGE IT HERE?",
+            editable_status,
+        ]
+        if p.context:
+            friendly.extend(["","ADDITIONAL CONTEXT",p.context])
+        if self.show_setting_technical.isChecked():
+            friendly.extend([
+                "", "TECHNICAL DETAILS",f"Omron register: {code}",
+                f"H186 manual reference: {p.manual_page}",
+                f"Raw value: {raw:08X}" if raw is not None else "Raw value: unavailable",
+                "Documented access: "+p.access,
+                "Setting area: "+req.area,
+                "Persistence: "+req.persistence,
+                "Qualification: "+req.qualification,
+                "Conditions: "+req.note])
+        self.parameter_detail.setPlainText("\n".join(friendly))
         draft=self.draft.get(code,raw)
         is_known=raw is not None or self.inventory.get("mode")=="offline"
-        can_edit=is_known and not code.startswith(("C0:","C4:")) and code!="C1:0029"
+        can_edit=(is_known and not code.startswith(("C0:","C4:")) and
+                  code!="C1:0029" and (self.mode!="connected" or
+                  supports(self.hardware_profile,code) is True))
         self.parameter_editor.clear()
         self.parameter_choices.clear()
         if p.options:
@@ -1683,10 +2877,88 @@ class Studio(QMainWindow):
             self.parameter_editor.show();self.parameter_choices.hide()
             if draft is not None:
                 signed=draft-(1<<32) if draft>=(1<<31) else draft
-                scale=(10 if self.inventory["fields"].get("C3:0000")==6 and
+                scale=(10 if self.draft.get("C3:0000",self.inventory["fields"].get("C3:0000"))==6 and
                          code in ("C3:0005","C3:0006","C1:0012") else p.scale)
                 self.parameter_editor.setText(f"{signed/scale:g}")
             self.parameter_editor.setEnabled(can_edit)
+        dependency=dependency_for(code,self.inventory["fields"],self.draft)
+        if dependency is None:
+            self.setting_dependency_note.clear()
+            self.open_dependency_button.setVisible(False)
+        else:
+            self.setting_dependency_note.setText(dependency.explanation)
+            self.setting_dependency_note.setStyleSheet(
+                "color:"+("#157952" if dependency.matches_controller
+                           and not dependency.proposed_conflict else "#a8610f")
+                +";font-weight:600")
+            self.open_dependency_button.setText(
+                "View control algorithm →  (C3:0007)")
+            self.open_dependency_button.setVisible(True)
+        self._setting_loading=False
+        self._refresh_revert_setting()
+
+    def _refresh_revert_setting(self,*unused):
+        if not hasattr(self,"revert_setting_button") or getattr(self,"_setting_loading",False):
+            return
+        code=self._selected_setting_code()
+        raw=self.inventory["fields"].get(code) if code else None
+        if code is None or self._editing_locked_for_settings():
+            self.revert_setting_button.setEnabled(False)
+            return
+        draft_exists=code in self.draft
+        if raw is None:
+            # Offline/no live evidence: a draft may be discarded, but no
+            # original value can be reconstructed from an empty inventory.
+            enabled=draft_exists
+        elif CATALOG[code].options:
+            new=self.parameter_choices.currentData()
+            unsigned=(new & 0xffffffff) if type(new) is int else None
+            enabled=draft_exists or unsigned!=raw
+        else:
+            txt=self.parameter_editor.text().strip()
+            scale=(10 if self.inventory["fields"].get("C3:0000")==6 and
+                   code in ("C3:0005","C3:0006","C1:0012")
+                   else CATALOG[code].scale)
+            signed=raw-(1<<32) if raw>=1<<31 else raw
+            try: unchanged=Decimal(txt)==Decimal(signed)/Decimal(scale)
+            except (InvalidOperation,ValueError):unchanged=False
+            enabled=draft_exists or not unchanged
+        self.revert_setting_button.setEnabled(bool(enabled))
+        self.revert_setting_button.setText(
+            "Revert to previous value" if raw is not None
+            else "Discard proposed change")
+
+    def _editing_locked_for_settings(self):
+        if self.busy or self._settings_ram_pending():return True
+        if self.session and self.session.staged is not None and not self.session.committed:
+            return True
+        return False
+
+    def revert_setting(self):
+        """Restore selected controller value, discarding only its draft/edit."""
+        if self._editing_locked():return
+        code=self._selected_setting_code()
+        if code is None:return
+        raw=self.inventory["fields"].get(code)
+        if raw is None and code not in self.draft:return
+        self.draft.pop(code,None)
+        self.preview_stamp=None
+        self.refresh_settings()
+        self.refresh_review()
+        self.feedback.setText(
+            f"{CATALOG[code].name}: local edit discarded. "
+            +("Restored last read controller value." if raw is not None
+              else "Controller value is unknown; proposal cleared."))
+
+    def open_required_setting(self):
+        code=self._selected_setting_code()
+        dep=dependency_for(code,self.inventory["fields"],self.draft) if code else None
+        if dep is None:return
+        self.group.setCurrentText("All groups")
+        self.search.setText(dep.register)
+        if dep.register in self.setting_keys:
+            self.setting_table.selectRow(self.setting_keys.index(dep.register))
+            self._setting_selected()
 
     def propose_setting(self):
         if self._editing_locked():return
@@ -1721,7 +2993,10 @@ class Studio(QMainWindow):
         self.update_programme()
         p=self.programmes[self.slot]
         try:
-            m=p.validate()
+            limits,error=self._effective_programme_limits()
+            if error and self.inventory_current_session:
+                raise ValidationError("Cannot verify controller SP limits: "+error)
+            m=p.validate(limits=limits)
             self.apply_overview.setText(
                 f"Programme {self.slot}  ·  {len(p.steps)} segments  ·  {m['minutes']:.1f} minutes "
                 f"nominal  ·  Final SP {m['final_sp']:g} °C  ·  {len(self.draft)} proposed configuration changes")
@@ -1733,20 +3008,72 @@ class Studio(QMainWindow):
             else:desc=f"Instant setpoint change to {s.sp} °C"
             lines.append(f"{i}. {desc}")
         if self.draft:
+            issues=self._pending_compatibility_issues()
+            if issues:
+                lines.append("\nPENDING GLOBAL SETTINGS — CHECK PROGRAMME COMPATIBILITY")
+                lines.extend("  "+issue for issue in issues)
+                lines.append("These proposed settings are NOT active. "
+                             "The editor has not altered any programme values.")
             lines.append("\nCONFIGURATION CHANGE LIST (NOT WRITTEN TO CONTROLLER)")
             for code,value in sorted(self.draft.items()):
                 old=self.inventory["fields"].get(code)
-                lines.append(f"{CATALOG[code].name}: {human_value(code,old)}"
-                             f"  →  {human_value(code,value)}   [{code}]")
-            if set(self.draft)=={"C1:0021"}:
-                lines.append("Wait Band C1:0021 can be transferred using the shared controls below. "
-                             "DA programme staging remains locked while it is proposed.")
+                lines.append(
+                    f"{CATALOG[code].name}: "
+                    f"{human_value(code,old,self.inventory['fields'].get('C3:0000'))}"
+                    f"  →  {human_value(code,value,self.draft.get('C3:0000',self.inventory['fields'].get('C3:0000')))}"
+                    f"   [{code}]")
+            capabilities=transfer_plan(self.draft)
+            write_plan=create_write_plan(
+                self.inventory,self.draft,
+                programme_changed=self._programme_pending(),
+                include_programme=self.include_programme_with_settings)
+            if write_plan["setting_area_1"]:
+                lines.append("\nINITIAL CONFIGURATION — SETTING AREA 1")
+                lines.append( "C3 pilot: Control algorithm, all 30 input choices, SP limits "
+                             "and heating control period only. A special write procedure "
+                             "is required; SAVE RAM DATA is NOT used to claim C3 persistence.")
+                lines.append("C3 writes address only the selected setting registers; "
+                             "the app never converts or rewrites DA programmes "
+                             "as a side effect. Omron handles dependent values; "
+                             "re-read its configuration after returning to area 0.")
+            if write_plan["setting_area_0"] and write_plan["setting_area_1"]:
+                lines.append("Changes span different setting areas: one ordinary SAVE cannot "
+                             "safely apply the complete draft.")
+            for entry in write_plan["parameters"]:
+                if not entry["usb_writable"]:
+                    lines.append(f"  [{entry['register']}] {entry['family']} — "
+                                 f"{entry['persistence']}. {entry['reason']}")
+            for entry in capabilities["blocked"]:
+                lines.append(f"  NOT USB-WRITABLE: {entry['register']} — {entry['reason']}")
+            if capabilities["settings_eligible"] and capabilities["blocked"]:
+                lines.append("One qualified setting is pending, but other proposed settings block "
+                             "transfer until reviewed or removed. Nothing will be silently skipped.")
+            if self.draft and set(self.draft).issubset(QUALIFIED_C3_CODES):
+                lines.append("Restricted C3 global-setting transfer: write the "
+                             "selected parameters, verify readback, then return "
+                             "to setting area 0 and read fresh settings. "
+                             "No programme memory will be uploaded.")
+            elif (set(self.draft).issubset(QUALIFIED_C1_CODES) and
+                    set(self.draft)!={"C1:0021"}):
+                lines.append("Selected setup-area-0 C1 adjustment settings can now be "
+                             "written together as an isolated-lab pilot. PID changes "
+                             "require PID mode; hysteresis requires ON/OFF mode. "
+                             "No programme writes are included.")
+            elif set(self.draft)=={"C1:0021"}:
+                if self.include_programme_with_settings:
+                    lines.append("Programme explicitly INCLUDED with Wait Band for one guarded "
+                                 "C1 + DA transaction. Both will be verified before one SAVE.")
+                else:
+                    lines.append("Wait Band-only transfer selected. The local programme will NOT "
+                                 "be uploaded. Use 'Include selected programme' if both are intended.")
             else:
-                lines.append("Other configuration changes are review-only. "
-                             "Only the qualified Wait Band C1:0021 has a USB setting writer. "
-                             "DA programme staging is locked while settings proposals remain.")
+                lines.append("Other settings are review-only until their writing procedures "
+                             "have been qualified. The DA programme is NOT included.")
         elif not self.session:
-            lines.append("\nNo live connected controller; offline manual export is available.")
+            lines.append("\nNo verified connection snapshot for writes. "
+                         "A read-only connection after reset may still be active, "
+                         "but Step 2 must reread the controller before uploading. "
+                         "Do NOT use programmes until sensor-related temperatures are checked.")
         elif self.session.staged and not self.session.committed:
             lines.append("\nRAM staging was read back and verified; nonvolatile save is still pending.")
         elif self.session.committed:
@@ -1767,9 +3094,12 @@ class Studio(QMainWindow):
             current=self.inventory["fields"].get(code)
             t=self.inventory["fields"].get("C3:0000")
             before=human_value(code,current,t) if current is not None else "Unknown (requires live read)"
-            after=human_value(code,value,t)
+            after=human_value(code,value,self.draft.get("C3:0000",t))
             title=CATALOG[code].name if code in CATALOG else code
-            eligibility=("USB pilot available" if code=="C1:0021" else
+            eligibility=("Isolated-lab C1 USB pilot available"
+                         if code in QUALIFIED_C1_CODES else
+                         "Experimental C3 area-1 pilot (power cycle mandatory)"
+                         if code in QUALIFIED_C3_CODES else
                          "Review only; USB writing not qualified")
             lines.append(f"{title} [{code}]: {before} → {after}. {eligibility}.")
         if not lines:lines.append("No pending configuration proposals.")
@@ -1793,6 +3123,19 @@ class Studio(QMainWindow):
                 lines.append(f"Wait Band read-only preview: "
                              f"{tx.preview_data['old_raw']/10:g} °C → "
                              f"{tx.preview_data['new_raw']/10:g} °C. No write yet.")
+        if self.c1_transfer:
+            c1=self.c1_transfer
+            if c1.cmw_off:
+                lines.append("C1 adjustment settings SAVE and CMW OFF acknowledged. "
+                             "Power-cycle verification still required.")
+            elif c1.saved:
+                lines.append("C1 settings SAVE acknowledged; CMW OFF NOT confirmed.")
+            elif c1.staged:
+                lines.append("All reviewed C1 settings verified in RAM, NOT yet SAVED.")
+            elif c1.ram_touched:
+                lines.append("C1 adjustment RAM state UNCERTAIN; STOP and inspect.")
+            else:
+                lines.append("C1 settings read-only preview complete; nothing written.")
         lines.append("Wait Band applies globally to all programmes. "
                      "SAVE RAM DATA can persist unrelated pending RAM edits.")
         self.config_review.setPlainText("\n".join(lines))
@@ -1803,7 +3146,8 @@ class Studio(QMainWindow):
         connected=bool(session and self.client and self.mode=="connected")
         can_preview=(connected and session.backup_data is not None and not self.busy
                      and not self.draft and session.staged is None
-                     and self.setting_transfer is None)
+                     and self.setting_transfer is None and self.c1_transfer is None
+                     and self.c3_transfer is None)
         can_stage=(can_preview and self.lab and not self.fail_latched and not session.mismatches
             and session.staged is None and self.preview_stamp==self._programme_fingerprint()
             and bool(self.preview_changes))
@@ -1813,12 +3157,13 @@ class Studio(QMainWindow):
         self.stage_button.setEnabled(bool(can_stage))
         self.save_button.setEnabled(bool(can_save))
         can_cmw_off=(connected and self.lab and not self.busy and not self.fail_latched
-                     and self.setting_transfer is None and session.committed
+                     and self.setting_transfer is None and self.c1_transfer is None and session.committed
                      and session.receipt_file is not None
                      and not session.communications_write_disabled)
         self.cmw_off_button.setEnabled(bool(can_cmw_off))
         staged=bool(session and session.staged is not None and not session.committed)
-        editing_locked=staged or self._settings_ram_pending() or self.busy
+        editing_locked=staged or self._settings_ram_pending() or self.busy or bool(
+            self.c3_transfer and self.c3_transfer.area_entered)
         wt=self.setting_transfer
         if hasattr(self,"wt_preview"):
             self.wt_preview.setEnabled(self._can_begin_wait())
@@ -1841,6 +3186,9 @@ class Studio(QMainWindow):
         self.programme_name.setEnabled(not editing_locked)
         self.start_pv.setEnabled(not editing_locked)
         self.finish_mode.setEnabled(not editing_locked)
+        self.editor_sensor.setEnabled(not editing_locked)
+        self.sensor_change_button.setEnabled(bool(not editing_locked and connected and
+            self.inventory_current_session and self.editor_sensor.currentData() is not None))
         self.btn_read.setEnabled(not self.busy and self.mode=="connected")
         self.btn_disconnect.setEnabled(not self.busy and bool(self.client))
         self.next_button.setEnabled(not self.busy)
@@ -1854,9 +3202,13 @@ class Studio(QMainWindow):
         if connected:
             if not self.lab:reasons.append("Hardware writes disabled: use the isolated-lab launcher.")
             if session.mismatches:reasons.append("Preflight values differ from the tested bench configuration.")
-            if self.draft:reasons.append(f"{len(self.draft)} settings proposals are pending; DA upload is locked.")
-            if self.setting_transfer is not None:
-                reasons.append("Wait Band USB transfer is active/finished in this connection; reconnect before DA upload.")
+            if self.draft and self._active_transfer_kind()!="combined":
+                reasons.append(f"{len(self.draft)} settings proposals are pending; separate DA upload is locked.")
+            elif self._active_transfer_kind()=="combined":
+                reasons.append("Combined programme + Wait Band selected; one verified save required.")
+            if (self.setting_transfer is not None or self.c1_transfer is not None
+                    or self.c3_transfer is not None):
+                reasons.append("Settings transfer started; reconnect before a different USB write.")
             if self.programmes[self.slot].finish!="rst":
                 reasons.append("Programme end CONTINUE requires manual setup; DA upload only supports RESET.")
             if self.fail_latched:reasons.append("A write failed: stop and inspect; do not retry blindly.")
@@ -1872,19 +3224,195 @@ class Studio(QMainWindow):
                 reasons.append("Preview the exact differences before any RAM write.")
             elif can_stage:
                 reasons.append("Ready for guarded RAM staging (heater power must remain isolated).")
+        if self._active_transfer_kind()=="c3":
+            tx3=self.c3_transfer
+            if tx3 and getattr(tx3,"restart_audit",None):
+                report=tx3.restart_audit
+                reasons=[
+                    f"Reset command sent; physical restart unconfirmed. "
+                    f"{report['changes_total']} raw DA words changed, "
+                    f"{report.get('possible_interpretation_change_count',0)} interpreted "
+                    "temperature changes detected. STOP: inspect segment SP on front "
+                    "panel and original backup before operating the heater."]
+            elif tx3 and tx3.finished:
+                reasons=["C3 CMW OFF acknowledged; returning to normal was not "
+                         "completed. Use Return to normal once, or the physical Level "
+                         "key for at least one second."]
+            elif tx3 and tx3.staged:
+                reasons=["C3 readback matched in initial-settings area. Use "
+                         "Finish + Return to normal (one software reset, then readback)."]
+            elif tx3 and tx3.area_entered:
+                reasons=["Controller may remain in area 1 with partial changes. "
+                         "Stop and inspect; NO blind retry."]
+            elif tx3:
+                reasons=["C3 preview ready. Enter setup area 1 only with heater supplies isolated."]
+            elif not self.draft or not set(self.draft).issubset(QUALIFIED_C3_CODES):
+                reasons=["C3 draft includes unsupported or mixed setting areas. "
+                         "Separate the proposals before uploading."]
+            else:
+                reasons=["Global initial-configuration changes: Read + Preview. "
+                         "No programme memory will be uploaded."]
+        if self._active_transfer_kind()=="c1":
+            c1=self.c1_transfer
+            if c1 and c1.cmw_off:
+                reasons=["C1 adjustment settings SAVED, CMW OFF. Power-cycle and verify receipt."]
+            elif c1 and c1.saved:
+                reasons=["C1 SAVE acknowledged, but CMW OFF uncertain. Stop and inspect."]
+            elif c1 and c1.staged:
+                reasons=["C1 settings verified in RAM. Confirm SAVE + Finish."]
+            elif c1 and c1.ram_touched:
+                reasons=["C1 RAM uncertain. Stop and inspect before considering a retry."]
+            elif c1:
+                reasons=["C1 settings preview ready. Verify isolation before RAM write."]
+            elif not self.draft or not set(self.draft).issubset(QUALIFIED_C1_CODES):
+                reasons=["One or more settings are NOT qualified for writing. Review or remove them."]
+            else:
+                reasons=["Qualified C1 adjustment proposal(s): start Read + Preview. "
+                         "No DA programme will be uploaded."]
+        if self._active_transfer_kind()=="combined":
+            combo=self.combined_transfer
+            if combo and combo.cmw_off:
+                reasons=["Both Wait Band and programme saved; CMW OFF acknowledged. "
+                         "Power-cycle and verify the combined receipt."]
+            elif combo and combo.saved:
+                reasons=["SAVE acknowledged, but CMW OFF NOT verified. "
+                         "Keep heater isolated and inspect before another write."]
+            elif combo and combo.staged:
+                reasons=["Both C1 and DA registers verified in RAM. "
+                         "Use Save + Finish once to persist both."]
+            elif combo and combo.ram_touched:
+                reasons=["RAM write uncertain. Stop and inspect; do not retry or save blindly."]
+            elif combo and combo.preview_data:
+                reasons=["Read-only combined preview ready: confirm isolation, then Write RAM + Verify."]
+            elif set(self.draft)!={"C1:0021"}:
+                reasons=["Unqualified settings in draft. Nothing will be silently omitted; "
+                         "remove those proposals before combined upload."]
+            elif not self._programme_pending():
+                reasons=["No programme register differences found for combined upload. "
+                         "Turn programme inclusion OFF for Wait Band-only transfer."]
+            else:
+                reasons=["Programme explicitly included alongside Wait Band. "
+                         "Read + Preview both before writing."]
         self.usb_next_action.setText("NEXT ACTION  ·  "+"  ·  ".join(reasons))
         self.usb_next_action.setStyleSheet("color:"+("#157952" if can_stage else "#a8610f")+";font-weight:600")
         self._refresh_transfer_summary()
         if hasattr(self,"unified_preview"):
             kind=self._active_transfer_kind()
-            source=(self.wt_preview,self.wt_stage,self.wt_save) if kind=="settings" else (
-                self.preview_button,self.stage_button,self.save_button)
-            for target,original in zip(
-                    (self.unified_preview,self.unified_stage,self.unified_save),source):
-                target.setEnabled(original.isEnabled())
+            self.include_programme_button.setText(
+                "Programme included in transfer: ON" if self.include_programme_with_settings
+                else "Include selected programme with Wait Band: OFF")
+            self.include_programme_button.setEnabled(bool(
+                connected and not self.busy and not self.fail_latched
+                and (self.include_programme_with_settings or
+                     (set(self.draft)=={"C1:0021"} and self._programme_pending()))
+                and self.combined_transfer is None and not session.ram_touched
+                and self.setting_transfer is None and self.c1_transfer is None
+                and self.c5_transfer is None))
+            if kind=="c3":
+                tx3=self.c3_transfer
+                eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C3_CODES))
+                available=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and not session.ram_touched
+                    and not session.staged and not session.committed
+                    and self.c1_transfer is None and self.c5_transfer is None
+                    and self.combined_transfer is None and self.setting_transfer is None and not self.include_programme_with_settings)
+                can_start=bool(available and eligible and tx3 is None)
+                can_stage_c3=bool(available and tx3 and tx3.preview_data
+                    and not tx3.area_entered and self._c3_draft_matches_preview())
+                can_finish_c3=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and tx3 and tx3.staged and not tx3.finished
+                    and self._c3_draft_matches_preview())
+                for control,enabled in [
+                    (self.unified_preview,can_start),
+                    (self.unified_stage,can_stage_c3),
+                    (self.unified_save,can_finish_c3)]:
+                    control.setEnabled(bool(enabled))
+            elif kind=="c5":
+                c5=self.c5_transfer
+                eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C5_CODES))
+                available=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and not session.ram_touched
+                    and not session.staged and not session.committed
+                    and not session.mismatches
+                    and not self.c1_transfer and not self.c3_transfer
+                    and not self.combined_transfer and not self.setting_transfer
+                    and not self.include_programme_with_settings)
+                can_start=bool(available and eligible and c5 is None)
+                can_stage_c5=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and c5 and c5.preview_data
+                    and not c5.ram_touched and self._c5_draft_matches_preview())
+                can_save_c5=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and c5 and c5.staged and not c5.saved
+                    and self._c5_draft_matches_preview())
+                for control,enabled in [
+                    (self.unified_preview,can_start),
+                    (self.unified_stage,can_stage_c5),
+                    (self.unified_save,can_save_c5)]:
+                    control.setEnabled(bool(enabled))
+            elif kind=="c1":
+                c1=self.c1_transfer
+                eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C1_CODES))
+                can_start=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and not session.mismatches
+                    and not session.ram_touched and not self.combined_transfer
+                    and not self.setting_transfer and not self.c5_transfer
+                    and eligible and not c1
+                    and not self.include_programme_with_settings)
+                can_stage_c1=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and c1 and c1.preview_data
+                    and not c1.ram_touched and self._c1_draft_matches_preview())
+                can_save_c1=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and c1 and c1.staged and not c1.saved
+                    and self._c1_draft_matches_preview())
+                for control,enabled in [
+                    (self.unified_preview,can_start),
+                    (self.unified_stage,can_stage_c1),
+                    (self.unified_save,can_save_c1)]:
+                    control.setEnabled(bool(enabled))
+            elif kind=="combined":
+                combo=self.combined_transfer
+                can_preview_combined=bool(
+                    connected and self.lab and not self.busy and not self.fail_latched
+                    and set(self.draft)=={"C1:0021"} and self.include_programme_with_settings
+                    and self._programme_pending() and combo is None
+                    and not session.ram_touched and not session.mismatches
+                    and self.setting_transfer is None)
+                can_stage_combined=bool(
+                    connected and self.lab and not self.busy and not self.fail_latched
+                    and combo and combo.preview_data and not combo.ram_touched
+                    and self._programme_fingerprint()==getattr(self,"combined_programme_stamp",None)
+                    and self.draft=={"C1:0021":combo.preview_data["wait_band"]["new"]})
+                can_save_combined=bool(
+                    connected and self.lab and not self.busy and not self.fail_latched
+                    and combo and combo.staged and not combo.saved
+                    and self._programme_fingerprint()==getattr(self,"combined_programme_stamp",None)
+                    and self.draft=={"C1:0021":combo.preview_data["wait_band"]["new"]})
+                for control,enabled in [
+                        (self.unified_preview,can_preview_combined),
+                        (self.unified_stage,can_stage_combined),
+                        (self.unified_save,can_save_combined)]:
+                    control.setEnabled(bool(enabled))
+            else:
+                source=(self.wt_preview,self.wt_stage,self.wt_save) if kind=="settings" else (
+                    self.preview_button,self.stage_button,self.save_button)
+                for target,original in zip(
+                        (self.unified_preview,self.unified_stage,self.unified_save),source):
+                    target.setEnabled(original.isEnabled())
+            self.restart_c3_button.setVisible(bool(kind=="c3"))
+            self.restart_c3_button.setEnabled(bool(
+                kind=="c3" and self.client and self.lab and not self.busy
+                and not self.fail_latched and self.c3_transfer
+                and self.c3_transfer.finished and self.c3_transfer.cmw_off
+                and not getattr(self.c3_transfer,"reset_attempted",False)))
             self.unified_verify.setEnabled(bool(
-                kind=="settings" and self.wt_verify.isEnabled()))
-            self.unified_save.setText("3  Save + Finish (CMW OFF)")
+                connected and not self.busy and not self._settings_ram_pending()
+                and not (self.session and self.session.ram_touched and not self.session.committed)))
+            self.unified_stage.setText(
+                "2  Apply C3 in area 1 + Verify" if kind=="c3"
+                else "2  Write RAM + Verify")
+            self.unified_save.setText(
+                "3  Finish + Return to normal" if kind=="c3"
+                else "3  Save + Finish (CMW OFF)")
 
     def _controls(self):
         if hasattr(self,"stage_button"):self.refresh_actions()
@@ -1895,7 +3423,11 @@ class Studio(QMainWindow):
             self.update_programme()
             selected=copy.deepcopy(self.programmes[self.slot])
             changes=self.session.build_plan(self.slot,selected)
-        except Exception as exc:self.message("Cannot prepare upload",str(exc),True);return
+        except Exception as exc:
+            if self._offer_compatible_input_after_failure(exc):
+                return
+            self.message("Cannot prepare upload",str(exc),True)
+            return
         self.preview_changes=changes
         self.log_event(f"Previewed Programme {self.slot}: {len(changes)} differences, no writes")
         self.preview_stamp=self._programme_fingerprint() if changes else None
@@ -1987,12 +3519,21 @@ class Studio(QMainWindow):
                 "Power-cycle USB later and verify persistence against the saved receipt.")
         self._work("Disable communications writing after save",job,completed,True)
 
+    def _manual_configuration(self):
+        """Local planned input informs worksheets but never silently queues C3."""
+        values=dict(self.draft)
+        planned=self.planned_sensor_by_slot[self.slot]
+        if planned is not None and "C3:0000" not in values:
+            if self.inventory.get("fields",{}).get("C3:0000")!=planned:
+                values["C3:0000"]=planned
+        return values
+
     def refresh_manual(self):
         """Same complete parameter plan drives the guided UI and printed guide."""
         if not hasattr(self,"entry_table"):return
         try:
             plan=make_entry_plan(self.programmes[self.slot],self.slot,
-                                 self.inventory["fields"],self.draft)
+                                 self.inventory["fields"],self._manual_configuration())
         except Exception as exc:
             self._manual_plan=None
             self._manual_all_rows=[]
@@ -2117,7 +3658,7 @@ class Studio(QMainWindow):
         path,_=QFileDialog.getSaveFileName(self,"Save manual keypad sheet",
                     f"E5CC-T-manual-programme-{self.slot}.html","HTML (*.html)")
         if not path:return
-        try:save_manual(path,p,self.slot,self.inventory["fields"],self.draft)
+        try:save_manual(path,p,self.slot,self.inventory["fields"],self._manual_configuration())
         except Exception as exc:self.message("Manual export error",str(exc),True);return
         self.feedback.setText("Offline manual programming guide saved: "+path)
         self.message("Guide saved","The standalone front-panel guide was saved:\n"+path)

@@ -93,6 +93,19 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(human_value("C3:0005",5000,6),"500 °C")
         self.assertEqual(validate_proposal(snap,"C3:0005","400.5"),4005)
         with self.assertRaises(ValueError):validate_proposal(snap,"C3:0005","400.55")
+    def test_type_k_resolution_change_preserves_reinterpreted_identical_sp_limit(self):
+        snap=offline_inventory()
+        snap["fields"].update({"C3:0000":5,"C3:0005":1300,
+                               "C3:0006":0xffffff38})
+        draft=add_proposal(snap,{},"C3:0000","6")
+        draft=add_proposal(snap,draft,"C3:0006","-20.0")
+        # K5 -200 °C and K6 -20.0 °C share raw FFFFFF38,
+        # but the user must still be able to confirm this limit.
+        self.assertIn("C3:0006",draft)
+        self.assertEqual(draft["C3:0006"],0xffffff38)
+        draft=add_proposal(snap,draft,"C3:0005","500.0")
+        self.assertEqual(draft["C3:0005"],5000)
+
     def test_draft_report_never_writes(self):
         fake=ReadOnlyFake()
         snap=read_inventory(fake,{"model10":"E5CC-TQX3A"})

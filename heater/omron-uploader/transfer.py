@@ -7,11 +7,12 @@ from datetime import datetime,timezone
 from pathlib import Path
 import hashlib,json
 from program_model import Programme,planned_writes,signed,decode_time
+from programme_constraints import effective_limits,check_global_programming
 from compoway import ProtocolError
 
 # Omron H186 C3 initial setting addresses, read-only preflight.
 PREFLIGHT={
-  0x0000:(5,"Type K, -200 to 1300°C, whole degrees (observed COM7 bench policy)"),
+  0x0000:(5,"Omron documented universal input type (0–29)"),
   0x0004:(0,"Temperature unit °C"),
   0x00B9:(0,"Programme time hours.minutes"),
   0x00BA:(1,"Rate-of-rise programming"),
@@ -21,6 +22,10 @@ PREFLIGHT={
   0x00BE:(0,"End-of-programme enters RESET"),
   0x00BF:(0,"SP Start (observed COM7 bench policy)"),
 }
+SUPPORTED_CONTROLLER_INPUTS=frozenset(range(30))
+def matches_preflight(address,actual,expected):
+    """All H185 inputs recognised; existing rate-of-rise safety policy stays fixed."""
+    return actual in SUPPORTED_CONTROLLER_INPUTS if address==0x0000 else actual==expected
 class PreflightError(RuntimeError):pass
 
 class TransferSession:
@@ -38,10 +43,17 @@ class TransferSession:
             raise PreflightError(f"Expected E5CC-T but reported model prefix {model!r}")
         self.status=self.client.status()
         self.settings={f"C3:{addr:04X}":self.client.read1("C3",addr) for addr in PREFLIGHT}
+        if self.settings["C3:0000"] in range(25,30):
+            # Live analogue scale/decimal position must be retained in backup.
+            for addr in (0x0001,0x0002,0x0003):
+                self.settings[f"C3:{addr:04X}"]=self.client.read1("C3",addr)
         mismatches=[]
         for addr,(expected,description) in PREFLIGHT.items():
             got=self.settings[f"C3:{addr:04X}"]
-            if got!=expected:mismatches.append(f"{description}: expected {expected}, controller returned {signed(got)}")
+            if addr==0x0004 and self.settings["C3:0000"] in range(25,30):
+                continue # no °C/°F display-unit requirement for scaled analogue signals
+            if not matches_preflight(addr,got,expected):
+                mismatches.append(f"{description}: expected {expected}, controller returned {signed(got)}")
         self.log("Identified model: "+model+" (10-character ID; verify full suffix on nameplate)")
         self.log("Controller status (raw 0601): "+str(self.status))
         self.mismatches=mismatches
@@ -95,7 +107,7 @@ class TransferSession:
         self.log("PASS: 8/8 programmes, 1200 DA registers and 9 selected C3 values saved and checked on disk.")
         self.log("Saved read-only controller programme backup: "+str(filepath))
         return filepath
-    def build_plan(self,slot,prog):
+    def build_plan(self,slot,prog,planned_wait_band=None):
         if self.backup_data is None:raise PreflightError("Mandatory backup has not completed")
         if not self.info or not self.settings:raise PreflightError("Preflight incomplete")
         if self.mismatches:raise PreflightError("Controller settings do not match required isolated rate-mode configuration:\n"+"\n".join(self.mismatches))
@@ -106,7 +118,7 @@ class TransferSession:
         # E5C-T H185 §5-15-4: Step consumes no programmed time.
         # For a meaningful target-arrival Step, the controller-wide Wait Band
         # (Adjustment Level wt-b; H186 C1:0021) must be active. A local draft
-        # cannot satisfy this: it must already be true on the actual hardware.
+        # can only satisfy this when it is verified as part of a guarded combined transaction.
         if any(seg.type=="step" for seg in prog.steps):
             try:
                 wait_raw=self.client.read1("C1",0x0021)
@@ -115,15 +127,41 @@ class TransferSession:
                     "Step upload requires a live read of the controller's "
                     "wt-b Wait Band (C1:0021). Read failed; no write attempted."
                 ) from exc
-            if not isinstance(wait_raw,int) or not 1<=wait_raw<=9999:
+            effective_wait = wait_raw if planned_wait_band is None else planned_wait_band
+            if (planned_wait_band is not None and
+                    (type(planned_wait_band) is not int or not 1<=planned_wait_band<=9999)):
+                raise PreflightError("Combined Step programme requires nonzero proposed Wait Band")
+            if not isinstance(wait_raw,int) or not 0<=wait_raw<=9999 or not 1<=effective_wait<=9999:
                 raise PreflightError(
                     "Step programme requires the controller-wide Wait Band wt-b "
                     "to be enabled before upload. C1:0021 currently reads OFF/invalid. "
                     "Set it using the approved front-panel Adjustment Level procedure, "
                     "then reconnect and read it back. This app cannot write C1 settings."
                 )
-            self.log(f"Step safety check: live Wait Band C1:0021={wait_raw} ({wait_raw/10:g} °C).")
-        pairs=planned_writes(slot,prog,input_type=self.settings["C3:0000"])
+            self.log(f"Step safety check: live Wait Band={wait_raw/10:g} °C; programme will use {effective_wait/10:g} °C.")
+        # Mandatory FRESH read of actual controller-wide limits on every DA
+        # preview/staging. We never substitute an offline draft or an old backup.
+        live={
+            f"C3:{addr:04X}":self.client.read1("C3",addr)
+            for addr in ((0x0000,0x0004,0x0005,0x0006,0x0001,0x0002,0x0003)
+                         if self.settings["C3:0000"] in range(25,30)
+                         else (0x0000,0x0004,0x0005,0x0006))
+        }
+        if live["C3:0000"]!=self.settings["C3:0000"] or live["C3:0004"]!=self.settings["C3:0004"]:
+            raise PreflightError("Controller input type/unit changed since backup")
+        if self.settings["C3:0000"] in range(25,30):
+            if any(live[f"C3:{addr:04X}"]!=self.settings[f"C3:{addr:04X}"] for addr in (1,2,3)):
+                raise PreflightError("Controller analogue engineering scaling changed since backup")
+        try:
+            limits=effective_limits(live,require_readback=True)
+        except ValueError as exc:
+            raise PreflightError("Cannot establish safe controller SP limits: "+str(exc)) from exc
+        self.last_limits=limits
+        try:
+            pairs=planned_writes(slot,prog,input_type=limits.input_type,limits=limits)
+        except ValueError as exc:
+            raise PreflightError("Programme violates global temperature restrictions: "+str(exc)) from exc
+        self.log("Programme restrictions verified against fresh controller read: "+limits.description())
         existing=self.backup_data["programmes"][str(slot)]
         changes=[]
         for a,v in pairs:
@@ -152,7 +190,8 @@ class TransferSession:
         if not current_status.startswith("01"):raise PreflightError("Controller not confirmed stopped at transfer time")
         for addr,(expected,description) in PREFLIGHT.items():
             actual=self.client.read1("C3",addr)
-            if actual!=expected:raise PreflightError(f"Controller configuration changed since backup: {description} now {actual}")
+            if not matches_preflight(addr,actual,expected):raise PreflightError(f"Controller configuration changed since backup: {description} now {actual}")
+            if actual!=self.settings[f"C3:{addr:04X}"]:raise PreflightError(f"Controller configuration changed after backup at C3:{addr:04X}")
         self.client.operation("00","01")  # enable communications writing
         self.client.operation("04","01")  # RAM mode, not flash on each change
         self.ram_touched=True  # latch caution even if an intermediate write fails

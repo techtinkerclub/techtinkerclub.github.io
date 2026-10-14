@@ -1,0 +1,79 @@
+"""Read-only transfer eligibility and controller parameter capability planning.
+
+This module NEVER writes to a controller. H186's documented read access is not
+proof of write availability on the connected hardware variant.
+"""
+from __future__ import annotations
+from dataclasses import dataclass
+from controller_inventory import CATALOG
+from c1_transfer import QUALIFIED_C1_CODES
+from c3_transfer import ALLOWED as QUALIFIED_C3_CODES
+from c5_transfer import ALLOWED as QUALIFIED_C5_CODES
+
+QUALIFIED_WRITES = QUALIFIED_C1_CODES | QUALIFIED_C3_CODES | QUALIFIED_C5_CODES
+READ_ONLY_BANKS = frozenset({"C0"})
+CONTEXT_DEPENDENT_BANKS = frozenset({"C4", "C5", "C9"})
+
+@dataclass(frozen=True)
+class ChangeCapability:
+    register: str
+    status: str
+    reason: str
+    hardware_writable: bool
+
+def capability(register: str) -> ChangeCapability:
+    if register not in CATALOG:
+        raise ValueError(f"Unknown parameter register: {register}")
+    p = CATALOG[register]
+    bank = register.split(":", 1)[0]
+    if register in QUALIFIED_WRITES:
+        return ChangeCapability(register, "qualified", "Guarded setting-area-specific C1/C3 writer; C3 requires physical power cycle", True)
+    if bank in READ_ONLY_BANKS or p.access == "read-only by Omron":
+        return ChangeCapability(register, "read-only", "Omron operating monitor; never write", False)
+    if register == "C1:0029":
+        return ChangeCapability(register, "restricted", "Masked password; cannot verify original value by readback", False)
+    if bank == "C3":
+        return ChangeCapability(register, "qualification-required",
+            "Initial-setting area 1 and persistence/side effects require separate hardware qualification", False)
+    if bank in CONTEXT_DEPENDENT_BANKS:
+        return ChangeCapability(register, "qualification-required",
+            "Selected context, option applicability and persistence need qualification", False)
+    return ChangeCapability(register, "qualification-required",
+        "Documented parameter but register-specific write, range and state not yet hardware-qualified", False)
+
+def transfer_plan(draft: dict, *, programme_changed: bool = False, include_programme: bool = False) -> dict:
+    """Conservative, complete plan: no hidden omissions or implied atomicity."""
+    if not isinstance(draft, dict):
+        raise TypeError("draft must be a mapping")
+    rows = []
+    for register, value in sorted(draft.items()):
+        cap = capability(register)
+        if type(value) is not int or not 0 <= value <= 0xffffffff:
+            raise ValueError(f"Invalid proposed raw value for {register}")
+        rows.append(dict(register=register, proposed_raw=value, status=cap.status,
+                         reason=cap.reason, hardware_writable=cap.hardware_writable))
+    blocked = [row for row in rows if not row["hardware_writable"]]
+    settings = [row for row in rows if row["hardware_writable"]]
+    # Only an EXPLICITLY selected programme and exactly one qualified wt-b
+    # can use the new combined pilot. All other combinations are blocked.
+    combined=bool(programme_changed and include_programme)
+    eligible_combined=(combined and not blocked and len(rows)==1
+                       and rows[0]["register"]=="C1:0021")
+    if include_programme and not programme_changed:
+        raise ValueError("Cannot include unchanged programme")
+    mixed_areas=(any(row["register"].startswith("C1:") for row in rows) and
+                 any(row["register"].startswith("C3:") for row in rows))
+    can_write=not blocked and not mixed_areas and (
+        not programme_changed or not rows or eligible_combined)
+    return dict(settings=rows, programme_changed=bool(programme_changed),
+                blocked=blocked, settings_eligible=settings,
+                simultaneous_transfer_qualified=bool(eligible_combined),
+                can_write_all=can_write, mixed_setting_areas=mixed_areas,
+                reason=("Explicit C1 Wait Band + DA pilot; live hardware preflight required"
+                        if eligible_combined else
+                        "Mixed DA and these configuration changes not qualified for one save"
+                        if combined else
+                        "C1 and C3 require SEPARATE setting-area transfers"
+                        if mixed_areas else
+                        "Unqualified parameters need separate verified writing support"
+                        if blocked else "Eligible under current separate-bank safeguards"))

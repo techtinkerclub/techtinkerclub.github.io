@@ -5,6 +5,8 @@ fields used by the programme writer. Unknown/reserved bytes remain untouched.
 No CompoWay/F commands or controller writes are available in this module.
 """
 from __future__ import annotations
+from controller_setup import SENSOR_INPUTS
+from programme_constraints import SENSOR_RANGES,ANALOGUE_TYPES
 import json
 import math
 from pathlib import Path
@@ -37,10 +39,10 @@ def load_backup(path):
 def config_explanation(backup):
     fields = backup.get("preflight", {})
     known = [
-        ("C3:0000", "Thermocouple input range", {
-            5: "Type K, −200 to 1300 °C; whole-degree display",
-            6: "Type K, −20.0 to 500.0 °C; tenth-degree display",
-        }),
+        ("C3:0000", "Temperature/analogue input selection",
+         {**SENSOR_INPUTS,
+          5:"Type K, −200 to 1300 °C; whole-degree display",
+          6:"Type K, −20.0 to 500.0 °C; tenth-degree display"}),
         ("C3:0004", "Temperature units", {0: "Celsius (°C)", 1: "Fahrenheit (°F)"}),
         ("C3:00B9", "Programme time format", {0: "hours.minutes (0.15 = 15 minutes)"}),
         ("C3:00BA", "Programme method", {0: "time-based", 1: "rate-of-rise (°C per chosen slope unit)"}),
@@ -69,10 +71,22 @@ def decode_slot(backup, slot):
     slope_min = cfg.get("C3:00BB") == 0
     hour_min = cfg.get("C3:00B9") == 0
     warnings = []
-    decimal_factor = {5: 1, 6: 10}.get(input_kind)
-    if decimal_factor is None:
-        warnings.append("Input type is not known Type K 5 or 6; temperatures cannot be decoded safely")
-    if not cel: warnings.append("Temperature units are not confirmed as °C")
+    if input_kind in SENSOR_RANGES:
+        decimal_factor=int(1/SENSOR_RANGES[input_kind][2])
+        unit_label="°C"
+    elif input_kind in ANALOGUE_TYPES:
+        point=cfg.get("C3:0003")
+        decimal_factor=10**point if type(point) is int and 0<=point<=3 else None
+        unit_label="scaled units"
+        if not all(type(cfg.get(f"C3:{addr:04X}")) is int for addr in (1,2,3)):
+            decimal_factor=None
+            warnings.append("Analogue input engineering scaling missing from backup; cannot decode safely")
+    else:
+        decimal_factor=None
+        unit_label="unconfirmed"
+        warnings.append("Unknown input code; cannot decode setpoint engineering units")
+    if input_kind in SENSOR_RANGES and not cel:
+        warnings.append("Temperature units are not confirmed as °C")
     if not mode: warnings.append("Controller not confirmed in rate-of-rise programme mode; segment decoding may differ")
     if not slope_min: warnings.append("Slope not confirmed per minute; graph duration not available")
     if not hour_min: warnings.append("Time format is not confirmed as hours.minutes; soak duration unavailable")
@@ -90,7 +104,7 @@ def decode_slot(backup, slot):
         if kind is None:
             warnings.append(f"Segment {i}: styp={signed(kind_raw)} is not validated; raw fields shown only")
             kind = "unknown"
-        sp = (signed(sp_raw) / decimal_factor) if decimal_factor and cel and mode and kind in ("ramp", "step") else None
+        sp = (signed(sp_raw) / decimal_factor) if decimal_factor and (cel or input_kind in ANALOGUE_TYPES) and mode and kind in ("ramp", "step") else None
         rate = signed(rate_raw) if mode and kind == "ramp" else None
         if kind == "ramp" and rate is not None and rate < 0:
             warnings.append(f"Segment {i}: negative rate {rate} — verify actual programme")
@@ -123,7 +137,7 @@ def decode_slot(backup, slot):
         "repeat": rpt, "repeat_text": "No repetition" if rpt == 0 else f"Repeat setting = {rpt}; interpretation requires confirmation",
         "link": link, "link_text": "No chaining" if link == -1 else f"Link destination = {link} (verify before use)",
         "warnings": warnings, "model": backup.get("controller",{}).get("model10","unknown"),
-        "scale": input_kind, "unit": "°C" if cel else "unconfirmed",
+        "scale": input_kind, "unit": unit_label if (cel or input_kind in ANALOGUE_TYPES) else "unconfirmed",
         "start_mode": cfg.get("C3:00BF"), "method": cfg.get("C3:00BA"),
         "duration_unit": cfg.get("C3:00B9"), "slope_unit": cfg.get("C3:00BB"),
         "raw_header": {f"DA:{off:02X}":f"{regs[off]:08X}" for off in [0,0x0e,0x0f]},
@@ -134,15 +148,17 @@ def profile_points(summary, initial_pv=20.0):
     """Commanded *illustrative* SP trajectory, never measured PV or actual timing."""
     try:
         initial = float(initial_pv)
-        if not math.isfinite(initial) or not -200 <= initial <= 1300: raise ValueError
+        if not math.isfinite(initial) or not -1999 <= initial <= 9999: raise ValueError
     except (ValueError, TypeError):
-        raise DecodeError("Starting temperature must be a finite value between −200 and 1300 °C")
+        raise DecodeError("Initial planning value must be finite between −1999 and 9999")
     if not math.isfinite(initial):
         raise DecodeError("Starting temperature must be finite")
     if summary["warnings"]:
         # Do not claim trustworthy graph timing for uncertain programme method/units.
         return None
-    if summary["scale"] not in (5, 6) or summary["unit"] != "°C":
+    if summary["scale"] not in SENSOR_RANGES and summary["scale"] not in ANALOGUE_TYPES:
+        return None
+    if summary["unit"] not in ("°C","scaled units"):
         return None
     x, y = 0.0, initial
     points = [(x, y)]
@@ -183,7 +199,7 @@ def summary_as_plaintext(summary, assumed_start=20):
     else:
         lines.append("Nominal curve unavailable: unsupported or uncertain values")
     lines.append("SV curve is a prediction from stored settings, NOT measured PV or heater performance.")
-    lines.append("Type K raw SP scaling, including type 5, must be checked against the real panel before replacing a programme.")
+    lines.append("Decoded SP scale depends on sensor type / analogue scaling; confirm actual displayed values before replacing a programme.")
     if summary["warnings"]:
         lines.append("WARNINGS / VALUES TO VERIFY:")
         lines.extend(" • " + v for v in summary["warnings"])

@@ -29,6 +29,66 @@ class ModernStudioTests(unittest.TestCase):
         self.win.message=lambda *args,**kw:None
     def tearDown(self):
         self.win.close()
+    def test_read_only_backup_comparison_from_offline_workspace(self):
+        import json
+        with tempfile.TemporaryDirectory() as folder:
+            a={"schema":"e5cct-backup-1",
+               "controller":{"model10":"E5CC-TQX3A"},
+               "preflight":{"C3:0000":5},
+               "programmes":{str(i):["00000000"]*150 for i in range(8)}}
+            for block in a["programmes"].values():
+                block[0]="00000001"
+                block[0x16]="00000000"
+                block[0x17]="00000078"
+            before=Path(folder)/"before.json"
+            after=Path(folder)/"after.json"
+            before.write_text(json.dumps(a),encoding="utf-8")
+            a["preflight"]["C3:0000"]=6
+            after.write_text(json.dumps(a),encoding="utf-8")
+            self.win.choose_mode("offline")
+            with patch("qt_app.QFileDialog.getOpenFileName",
+                       side_effect=[(str(before),"JSON (*.json)"),
+                                    (str(after),"JSON (*.json)")]):
+                self.win.compare_saved_backups()
+            self.assertIsNone(self.win.client)
+            self.assertEqual(self.win._current_step,1)
+            self.assertEqual(self.win.read_host.currentIndex(),0)
+            self.assertEqual(self.win.read_tabs.currentIndex(),3)
+            self.assertTrue(self.win.export_comparison_button.isEnabled())
+            self.assertEqual(self.win.backup_comparison["changed_raw_words"],0)
+            self.assertEqual(len(self.win.backup_comparison["interpreted_target_changes"]),8)
+            text=self.win.comparison_text.toPlainText()
+            self.assertIn("120 °C -> 12 °C",text)
+            self.assertIn("No USB operations",text)
+
+    def test_website_sensor_programme_import_and_project_roundtrip(self):
+        import json
+        from PySide6.QtWidgets import QMessageBox
+        self.win.choose_mode("offline")
+        with tempfile.TemporaryDirectory() as folder:
+            incoming=Path(folder)/"web.json"
+            incoming.write_text(json.dumps({
+                "version":2,"method":"rate","programmeNumber":3,
+                "planned_input_type":5,
+                "programme":{"name":"600C profile","start":20,"finish":"rst",
+                             "steps":[{"type":"ramp","sp":600,"rate":5},
+                                      {"type":"soak","minutes":10}]} }),encoding="utf-8")
+            with patch("qt_app.QFileDialog.getOpenFileName",
+                       return_value=(str(incoming),"Programme JSON (*.json)")),\
+                 patch("qt_app.QMessageBox.question",
+                       return_value=QMessageBox.StandardButton.Yes):
+                self.win.import_website_programme()
+            self.assertEqual(self.win.slot,3)
+            self.assertEqual(self.win.planned_sensor_by_slot[3],5)
+            self.assertEqual(float(self.win.programmes[3].steps[0].sp),600)
+            outgoing=Path(folder)/"project.json"
+            with patch("qt_app.QFileDialog.getSaveFileName",
+                       return_value=(str(outgoing),"Studio projects (*.json)")):
+                self.win.save_project()
+            data=json.loads(outgoing.read_text(encoding="utf-8"))
+            self.assertEqual(data["planned_sensor_by_slot"][3],5)
+            self.assertEqual(float(data["programmes"][3]["steps"][0]["sp"]),600)
+
     def test_five_steps_and_offline_mode(self):
         self.assertEqual(self.win.pages.count(),5)
         self.assertEqual(len(self.win.navbuttons),5)
@@ -46,6 +106,33 @@ class ModernStudioTests(unittest.TestCase):
         self.assertFalse(self.win.preview_button.isEnabled())
         self.assertFalse(self.win.stage_button.isEnabled())
         self.assertFalse(self.win.save_button.isEnabled())
+    def test_settings_are_understandable_without_omron_register_knowledge(self):
+        self.win.show_step(3)
+        self.assertEqual(self.win.settings_view.currentText(),"Everyday essentials")
+        self.assertIn("C1:0021",self.win.setting_keys)
+        self.assertNotIn("C3:0000",self.win.setting_keys)
+        self.assertFalse(self.win.show_setting_technical.isChecked())
+        self.win.setting_table.selectRow(self.win.setting_keys.index("C1:0021"))
+        self.win._setting_selected()
+        self.assertIn("all eight programmes",self.win.parameter_detail.toPlainText())
+        self.assertNotIn("Omron register:",self.win.parameter_detail.toPlainText())
+        self.win.search.setText("C3:0000")
+        self.assertIn("C3:0000",self.win.setting_keys)
+        self.win.setting_table.selectRow(self.win.setting_keys.index("C3:0000"))
+        self.win._setting_selected()
+        self.assertIn("SYSTEM-WIDE",self.win.parameter_detail.toPlainText())
+        self.win.show_setting_technical.setChecked(True)
+        self.assertIn("Omron register: C3:0000",self.win.parameter_detail.toPlainText())
+        self.win.search.clear()
+        self.win.settings_view.setCurrentText("All parameters")
+        self.assertEqual(len(self.win.setting_keys),len(CATALOG))
+
+    def test_programme_end_is_explained_as_global_not_per_memory(self):
+        self.win.show_step(2)
+        self.assertIn("GLOBAL",self.win.finish_mode.toolTip())
+        self.assertIn("every programme",self.win.finish_mode.toolTip())
+        self.assertEqual(self.win.finish_mode.count(),2)
+
     def test_programme_segments_and_nominal_duration(self):
         self.win.programmes[0]=EXAMPLE
         self.win._render_programme()
@@ -92,7 +179,7 @@ class ModernStudioTests(unittest.TestCase):
         # not the clipped internal editor of a nested QSpinBox.
         self.assertTrue(row.target.editor.isVisibleTo(row))
         self.assertFalse(row.target.spin.isVisible())
-        self.assertEqual(row.target.editor.text(),"120.0")
+        self.assertEqual(row.target.editor.text(),"120.000")
         self.assertIn("QLineEdit#numericEntry",self.win.styleSheet())
         self.assertIn("color:#18334a",self.win.styleSheet())
         self.assertEqual(row.rate.editor.text(),"2")
@@ -103,11 +190,11 @@ class ModernStudioTests(unittest.TestCase):
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),125.0)
         self.assertEqual(row.target.editor.text(),"125.0")
         row.target.down.click()
-        self.assertEqual(row.target.editor.text(),"124.9")
+        self.assertEqual(row.target.editor.text(),"124.900")
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),124.9)
-        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.0")
+        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.000")
         self.win.start_pv_editor.up.click()
-        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.1")
+        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.100")
         self.assertAlmostEqual(float(self.win.programmes[0].start),20.1)
         # All four row actions use actual QIcons, not missing font glyphs.
         for control in row.findChildren(__import__(
@@ -125,7 +212,28 @@ class ModernStudioTests(unittest.TestCase):
         row.target._typed_value("not a number")
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
         row.target._typed_value("501")
-        self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
+        self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),501)
+        # Even if the active sensor range is unknown in offline mode,
+        # the target remains stored rather than being clamped or rejected.
+        self.assertIn("501",str(self.win.programmes[0].steps[0].sp))
+        self.assertIn("NOT VERIFIED",self.win.temperature_limits_hint.text())
+
+    def test_all_sensor_choices_allow_offline_drafting_without_clamping(self):
+        import copy
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win._render_programme()
+        self.assertEqual(self.win.editor_sensor.count(),31)
+        row=self.win.segment_table.cellWidget(0,0)
+        row.target._typed_value("1800")
+        self.assertEqual(float(self.win.programmes[0].steps[0].sp),1800)
+        # The editor is offline, so there is not yet an active sensor readback.
+        idx_small=self.win.editor_sensor.findData(23)
+        self.win.editor_sensor.setCurrentIndex(idx_small)
+        self.assertIn("WARNING",self.win.temperature_limits_hint.text())
+        idx=self.win.editor_sensor.findData(19)
+        self.win.editor_sensor.setCurrentIndex(idx)
+        self.assertIn("W",self.win.temperature_limits_hint.text())
+        self.assertEqual(float(self.win.programmes[0].steps[0].sp),1800)
 
     def test_uniform_controls_across_programme_and_other_steps(self):
         from PySide6.QtWidgets import QComboBox,QToolButton
@@ -222,7 +330,10 @@ class ModernStudioTests(unittest.TestCase):
         self.win.choose_mode("offline")
         self.win.inventory["fields"]["C1:0021"]=20
         self.win.inventory["fields"]["C1:0026"]=500
+        self.win.settings_view.setCurrentText("All parameters")
         self.win.refresh_settings()
+        self.win.setting_table.selectRow(0)  # Start from a different row-zero register.
+        self.win._setting_selected()
         first=self.win._selected_setting_code()
         self.assertNotEqual(first,"C1:0021")
         self.win.search.setText("C1:0021")
@@ -243,6 +354,56 @@ class ModernStudioTests(unittest.TestCase):
         self.assertIn("Wait band",self.win.parameter_detail.toPlainText())
         self.assertEqual(self.win.parameter_editor.text(),"1")
         self.assertEqual(self.win._selected_setting_code(),"C1:0021")
+
+    def test_revert_edit_and_just_one_proposal_without_retyping_original(self):
+        self.win.choose_mode("offline")
+        self.win.inventory["fields"]["C1:0021"]=20
+        self.win.inventory["fields"]["C1:0015"]=120
+        self.win.search.setText("C1:0021")
+        self.assertEqual(self.win.parameter_editor.text(),"2")
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+        # A typed but not-yet-proposed value should be reversible as well.
+        self.win.parameter_editor.setText("3.5")
+        self.assertTrue(self.win.revert_setting_button.isEnabled())
+        self.win.revert_setting()
+        self.assertEqual(self.win.parameter_editor.text(),"2")
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+        # Changing one setting must not erase an unrelated pending proposal.
+        self.win.parameter_editor.setText("1.5")
+        self.win.propose_setting()
+        self.assertEqual(self.win.draft["C1:0021"],15)
+        self.win.search.setText("C1:0015")
+        self.win.parameter_editor.setText("13.5")
+        self.win.propose_setting()
+        self.assertEqual(self.win.draft["C1:0015"],135)
+        self.win.search.setText("C1:0021")
+        self.assertTrue(self.win.revert_setting_button.isEnabled())
+        self.win.revert_setting()
+        self.assertNotIn("C1:0021",self.win.draft)
+        self.assertEqual(self.win.draft["C1:0015"],135)
+        self.assertEqual(self.win.parameter_editor.text(),"2")
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+
+    def test_control_algorithm_dependency_navigable_and_dropdown_revert(self):
+        self.win.choose_mode("offline")
+        self.win.inventory["fields"]["C1:0015"]=120
+        self.win.inventory["fields"]["C3:0007"]=0
+        self.win.search.setText("C1:0015")
+        self.assertIn("REQUIRES: Control algorithm = PID",self.win.setting_dependency_note.text())
+        self.assertIn("ON/OFF",self.win.setting_dependency_note.text())
+        self.assertTrue(self.win.open_dependency_button.isVisibleTo(self.win.pages.widget(3)))
+        self.win.open_required_setting()
+        self.assertEqual(self.win._selected_setting_code(),"C3:0007")
+        self.assertIn("Control algorithm",self.win.parameter_detail.toPlainText())
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
+        self.win.parameter_choices.setCurrentIndex(self.win.parameter_choices.findData(1))
+        self.assertTrue(self.win.revert_setting_button.isEnabled())
+        self.win.propose_setting()
+        self.assertEqual(self.win.draft["C3:0007"],1)
+        self.win.revert_setting()
+        self.assertNotIn("C3:0007",self.win.draft)
+        self.assertEqual(self.win.parameter_choices.currentData(),0)
+        self.assertFalse(self.win.revert_setting_button.isEnabled())
 
     def test_offline_configuration_proposal_blocks_upload(self):
         self.win.choose_mode("offline")

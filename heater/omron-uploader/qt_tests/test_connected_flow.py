@@ -21,9 +21,13 @@ class FakeOmron:
         self.port=port
         self.write_allowed=write_allowed
         self.closed=False
+        self.area=0
         self.calls=[]
         self.c3={addr:expected for addr,(expected,_) in PREFLIGHT.items()}
-        self.c1={0x0021:0}
+        self.c3[0x0005]=1300
+        self.c3[0x0006]=0xffffff38
+        self.c1={0x0015:120,0x0016:100,0x0017:40,0x001B:20,0x0021:0}
+        self.c5={16:100,19:1000,20:0}
         self.da=[[0]*150 for _ in range(8)]
         for block in self.da:
             block[0]=1
@@ -46,6 +50,10 @@ class FakeOmron:
             return [self.c3.get(addr+i,0) for i in range(count)]
         if bank=="C1":
             return [self.c1.get(addr+i,0) for i in range(count)]
+        if bank=="C0" and addr==0x000D:return [1]
+        if bank=="C5":
+            return [self.c1.get({0:0x0015,1:0x0016,2:0x0017}.get(addr+i,-1),0)
+                    if addr+i in (0,1,2) else self.c5.get(addr+i,0) for i in range(count)]
         return [0 for _ in range(count)]
     def read1(self,bank,addr):return self.read(bank,addr,1)[0]
     def write1(self,addr,value):
@@ -54,15 +62,36 @@ class FakeOmron:
         self.da[addr>>8][addr&255]=value&0xffffffff
     def write_setting(self,bank,addr,value):
         assert self.write_allowed
-        assert (bank,addr)==("C1",0x0021)
-        assert 0<=value<=9999
+        from c1_transfer import check_value
+        if bank=="C3":
+            from c3_transfer import check_setting
+            assert self.area==1
+            check_setting(f"C3:{addr:04X}",value)
+            self.c3[addr]=value
+        elif bank=="C5":
+            from c5_transfer import check_value as c5_check_value
+            c5_check_value(f"C5:{addr:04X}",value)
+            self.c5[addr]=value
+        else:
+            assert bank=="C1"
+            check_value(f"C1:{addr:04X}",value)
+            self.c1[addr]=value
         self.calls.append(("setting-write",bank,addr,value))
-        self.c1[addr]=value
     def operation(self,code,data):
         assert self.write_allowed
-        assert (code,data) in {("00","01"),("00","00"),("04","01"),("05","00")}
+        assert (code,data) in {("00","01"),("00","00"),("04","01"),("05","00"),("07","00")}
+        if (code,data)==("07","00"):self.area=1
         self.calls.append(("operation",code,data))
         return ""
+    def software_reset(self):
+        assert self.write_allowed
+        self.calls.append(("software_reset",))
+        self.area=0
+        # Simulated controller internal setpoint-range adjustment on sensor
+        # change; programme memory is deliberately retained unchanged.
+        if self.c3.get(0)==6:
+            self.c3[0x0005]=5000
+        return None
     def close(self):self.closed=True
 
 class QtConnectedTests(unittest.TestCase):
@@ -82,7 +111,10 @@ class QtConnectedTests(unittest.TestCase):
         self.win.mode="connected"
         self.win._work=self.immediate_job
     def tearDown(self):
-        self.win.close()
+        # Automated tests must acknowledge the real UI safety guard for
+        # simulated uncommitted RAM. Production confirmation is unchanged.
+        with patch.object(QMessageBox,"question",return_value=QMessageBox.StandardButton.Yes):
+            self.win.close()
         self.oldserial.stop()
         self.dir.cleanup()
     def immediate_job(self,title,work,success,is_write=False,quiet=False):
@@ -94,7 +126,7 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(self.win.session.info["model10"],"E5CC-TQX3A")
         self.assertEqual(self.win.session.settings["C3:0000"],5)
         self.assertEqual(len(self.win.backup["programmes"]),8)
-        self.assertEqual(self.win.inventory["fields"]["C5:0000"],0)
+        self.assertEqual(self.win.inventory["fields"]["C5:0000"],120)
         self.assertTrue(list(Path(self.dir.name).glob("*programme-backup*.json")))
         self.assertTrue(list(Path(self.dir.name).glob("*initial-settings*.json")))
         self.assertTrue(list(Path(self.dir.name).glob("*full-inventory*.json")))
@@ -266,10 +298,29 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(sum(c==("operation","05","00") for c in fake.calls),1)
         self.assertEqual(sum(c==("operation","00","00") for c in fake.calls),1)
 
+    def test_fixed_pid_bank_two_is_written_without_active_pid_switch(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        fake.c3[0x0007]=1
+        self.win.draft={"C5:0010":140}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c5")
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.win.unified_preview_action()
+        self.assertTrue(self.win.unified_stage.isEnabled())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(self.win.c5_transfer.staged)
+            self.win.unified_save_action()
+        self.assertEqual(fake.c5[16],140)
+        self.assertTrue(self.win.c5_transfer.cmw_off)
+        self.assertEqual(fake.calls.count(("operation","05","00")),1)
+        self.assertFalse(any(c[0]=="write" and c[1]=="DA" for c in fake.calls))
+
     def test_unified_controls_never_write_unqualified_configuration(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
-        self.win.draft={"C3:0000":6}
+        self.win.draft={"C3:0011":4}  # serial baud needs dedicated reconnection logic
         self.win.show_step(4)
         self.assertFalse(self.win.unified_preview.isEnabled())
         self.assertFalse(self.win.unified_stage.isEnabled())
@@ -278,6 +329,292 @@ class QtConnectedTests(unittest.TestCase):
         self.win.unified_stage_action()
         self.win.unified_save_action()
         self.assertFalse(any(c[0] in ("write","setting-write") for c in fake.calls))
+
+    def test_combined_wait_and_programme_one_save_and_cmw_off(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.draft={"C1:0021":20}
+        self.win.show_step(4)
+        self.assertTrue(self.win.include_programme_button.isEnabled())
+        self.assertIn("OFF",self.win.include_programme_button.text())
+        self.win.toggle_programme_inclusion()
+        self.assertIn("ON",self.win.include_programme_button.text())
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        messages=[]
+        self.win.message=lambda title,body,*unused: messages.append((title,body))
+        self.win.unified_preview_action()
+        self.assertIn("°C\nProgramme",messages[-1][1])
+        self.assertNotIn(r"\n",messages[-1][1])
+        tx=self.win.combined_transfer
+        self.assertEqual(tx.preview_data["wait_band"]["new"],20)
+        self.assertEqual(len(tx.preview_data["programme_changes"]),9)
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(tx.staged)
+            self.assertTrue(self.win.unified_save.isEnabled())
+            self.win.unified_save_action()
+        self.assertTrue(tx.saved)
+        self.assertTrue(tx.cmw_off)
+        self.assertTrue(tx.receipt_file.exists())
+        self.assertEqual(fake.c1[0x0021],20)
+        self.assertEqual(sum(c[0]=="write" for c in fake.calls),9)
+        self.assertEqual(
+            [c for c in fake.calls if c[0]=="operation"],
+            [("operation","00","01"),("operation","04","01"),
+             ("operation","05","00"),("operation","00","00")])
+        self.assertEqual(self.win.draft,{})
+        self.assertIn("SAVED",self.win.transfer_summary.text())
+
+    def test_combined_partial_write_never_saves_or_disables_cmw(self):
+        from combined_transfer import CombinedTransfer
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        tx=CombinedTransfer(fake,self.win.session,self.dir.name)
+        tx.preview(0,EXAMPLE,20)
+        with patch.object(fake,"write1",side_effect=RuntimeError("Injected DA failure")):
+            with self.assertRaisesRegex(RuntimeError,"Injected DA failure"):
+                tx.stage()
+        self.assertTrue(tx.ram_touched)
+        self.assertTrue(self.win.session.ram_touched)
+        self.assertFalse(tx.staged)
+        self.assertFalse(tx.saved)
+        self.assertNotIn(("operation","05","00"),fake.calls)
+        self.assertNotIn(("operation","00","00"),fake.calls)
+        with self.assertRaises(Exception):
+            tx.save_finish()
+
+    def test_combined_failed_cmw_after_save_does_not_issue_second_save(self):
+        from combined_transfer import CombinedTransfer
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        tx=CombinedTransfer(fake,self.win.session,self.dir.name)
+        tx.preview(0,EXAMPLE,20)
+        tx.stage()
+        original=fake.operation
+        def failing_operation(code,data):
+            if (code,data)==("00","00"):
+                raise RuntimeError("Injected CMW OFF failure")
+            return original(code,data)
+        with patch.object(fake,"operation",side_effect=failing_operation):
+            with self.assertRaisesRegex(RuntimeError,"Injected CMW OFF failure"):
+                tx.save_finish()
+        self.assertTrue(tx.saved)
+        self.assertFalse(tx.cmw_off)
+        self.assertTrue(tx.receipt_file.exists())
+        self.assertEqual(sum(c==("operation","05","00") for c in fake.calls),1)
+        with self.assertRaises(Exception):
+            tx.save_finish()
+        self.assertEqual(sum(c==("operation","05","00") for c in fake.calls),1)
+
+    def test_combined_requires_explicit_programme_selection(self):
+        self.win.connect_read()
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.draft={"C1:0021":20}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"settings")
+        self.win.toggle_programme_inclusion()
+        self.assertEqual(self.win._active_transfer_kind(),"combined")
+        self.win.draft["C3:0000"]=6
+        self.win.refresh_actions()
+        self.assertFalse(self.win.unified_preview.isEnabled())
+        self.assertFalse(self.win.unified_stage.isEnabled())
+        self.assertFalse(self.win.unified_save.isEnabled())
+
+    def test_global_c3_control_algorithm_usb_transfer_and_receipt(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C3:0007":1}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c3")
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.win.unified_preview_action()
+        tx=self.win.c3_transfer
+        self.assertEqual(tx.preview_data["changes"][0]["register"],"C3:0007")
+        self.assertTrue(self.win.unified_stage.isEnabled())
+        self.assertIn("area 1",self.win.unified_stage.text())
+        def reopen(port,write_allowed=False):
+            self.assertEqual(port,"COM7")
+            self.assertFalse(write_allowed)
+            fake.closed=False
+            return fake
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(tx.staged)
+            self.assertTrue(self.win.unified_save.isEnabled())
+            self.assertIn("Return to normal",self.win.unified_save.text())
+            with patch("qt_app.SerialClient",side_effect=reopen):
+                self.win.unified_save_action()
+        self.assertTrue(tx.finished)
+        self.assertTrue(tx.cmw_off)
+        self.assertTrue(tx.receipt_file.is_file())
+        self.assertEqual(fake.c3[7],1)
+        self.assertNotIn(("operation","05","00"),fake.calls)
+        self.assertEqual(fake.calls.count(("software_reset",)),1)
+        self.assertEqual(fake.area,0)
+        self.assertEqual(self.win.draft,{})
+        self.assertIsNone(self.win.session) # fresh read required before next write
+        self.assertIsNotNone(tx.restart_audit)
+        self.assertTrue(tx.restart_audit["configuration_verified"])
+        self.assertFalse(self.win.restart_c3_button.isEnabled())
+
+    def test_sensor_change_with_populated_memories_previews_with_complete_backup(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C3:0000":6}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c3")
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        seen=[]
+        self.win.message=lambda title,detail,*unused:seen.append((title,detail))
+        self.win.unified_preview_action()
+        self.assertTrue(seen)
+        self.assertIn("ONLY the selected sensor input register",seen[-1][1])
+        self.assertIn("no DA programme memory",seen[-1][1])
+        self.assertNotIn("50 °C → 5 °C",seen[-1][1])
+        self.assertTrue(self.win.c3_transfer.preview_data["sensor_change"])
+        self.assertEqual(len(self.win.c3_transfer.session.backup_data["programmes"]),8)
+        self.assertEqual(fake.area,0)
+        self.assertFalse(any(c[0]=="setting-write" for c in fake.calls))
+
+    def test_global_sensor_proposal_does_not_reinterpret_editor_or_upload_DA(self):
+        import copy
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win._render_programme()
+        previous=tuple((seg.type,float(seg.sp)) for seg in
+                       self.win.programmes[0].steps if seg.type!="soak")
+        limits,before_error=self.win._effective_programme_limits()
+        self.assertIsNone(before_error)
+        self.assertEqual(limits.input_type,5)
+        self.win.draft={"C3:0000":6}
+        self.win.refresh_review()
+        now,error=self.win._effective_programme_limits()
+        self.assertIsNone(error)
+        self.assertEqual(now.input_type,5) # proposal is NOT active hardware
+        self.assertEqual(
+            tuple((seg.type,float(seg.sp)) for seg in
+                  self.win.programmes[0].steps if seg.type!="soak"),
+            previous)
+        self.win.unified_preview_action()
+        def reopen(port,write_allowed=False):
+            self.assertEqual(port,"COM7")
+            self.assertFalse(write_allowed)
+            fake.closed=False
+            return fake
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            with patch("qt_app.SerialClient",side_effect=reopen):
+                self.win.finish_c3()
+        self.assertEqual(fake.calls.count(("software_reset",)),1)
+        self.assertEqual(
+            tuple((seg.type,float(seg.sp)) for seg in
+                  self.win.programmes[0].steps if seg.type!="soak"),
+            previous)
+        self.assertFalse(self.win.inventory_current_session)
+        held,stale=self.win._effective_programme_limits()
+        self.assertEqual(held.input_type,5)
+        self.assertIn("stale",stale)
+        self.assertEqual([call for call in fake.calls if call[0]=="write"],[])
+        self.assertEqual([call for call in fake.calls if call[0]=="setting-write"],
+                         [("setting-write","C3",0,6)])
+
+    def test_pending_sensor_setting_warns_without_changing_graph_or_local_target(self):
+        import copy
+        self.win.connect_read()
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win.programmes[0].steps[0].sp="800"
+        self.win._render_programme()
+        before=tuple((seg.type,float(seg.sp)) for seg in
+                     self.win.programmes[0].steps if seg.type!="soak")
+        self.win.draft={"C3:0000":6}
+        self.win.refresh_review()
+        lim,error=self.win._effective_programme_limits()
+        self.assertIsNone(error)
+        self.assertEqual(lim.input_type,5)
+        self.assertEqual(
+            tuple((seg.type,float(seg.sp)) for seg in
+                  self.win.programmes[0].steps if seg.type!="soak"),
+            before)
+        self.assertIn("PENDING GLOBAL SETTINGS",self.win.apply_details.toPlainText())
+        self.assertIn("800",self.win.apply_details.toPlainText())
+        self.win._graph_current()
+        self.assertIn("PENDING GLOBAL SETTING",self.win.temperature_limits_hint.text())
+        self.assertIn("800",self.win.temperature_limits_hint.text())
+
+    def test_c3_software_restart_reconnects_and_audits_all_memories(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C3:0000":6}
+        self.win.show_step(4)
+        self.win.unified_preview_action()
+        tx=self.win.c3_transfer
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            tx.finish()  # emulate an already-finished transfer from an older build
+            self.win.refresh_actions()  # fallback return-to-normal remains available
+        self.assertTrue(tx.finished)
+        self.assertTrue(self.win.restart_c3_button.isEnabled())
+        # The test reuses one simulated controller: its settings/memories
+        # persist across serial connection close and read-only reconnect.
+        def reopen(port,write_allowed=False):
+            self.assertFalse(write_allowed)
+            self.assertEqual(port,"COM7")
+            fake.closed=False
+            return fake
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            with patch("qt_app.SerialClient",side_effect=reopen):
+                self.win.restart_verify_c3()
+        self.assertEqual(fake.calls.count(("software_reset",)),1)
+        audit=tx.restart_audit
+        self.assertEqual(audit["memory_words_compared"],1200)
+        self.assertEqual(audit["changes_total"],0)
+        self.assertTrue(audit["configuration_verified"])
+        self.assertTrue(audit["requires_manual_review"]) # precision changed
+        self.assertTrue(Path(audit["audit_file"]).is_file())
+        self.assertIsNone(self.win.session)  # mandatory fresh normal read
+        self.assertFalse(self.win.restart_c3_button.isEnabled())
+        self.win.restart_verify_c3()
+        self.assertEqual(fake.calls.count(("software_reset",)),1)
+
+    def test_unified_c1_pid_and_wait_transfer_one_save(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        fake.c3[0x0007]=1    # PID mode
+        self.win.inventory["fields"]["C3:0007"]=1
+        self.win.draft={"C1:0015":140,"C1:0021":30}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c1")
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.win.unified_preview_action()
+        tx=self.win.c1_transfer
+        self.assertEqual(len(tx.preview_data["changes"]),2)
+        self.assertTrue(self.win.unified_stage.isEnabled())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(tx.staged)
+            self.assertTrue(self.win.unified_save.isEnabled())
+            self.win.unified_save_action()
+        self.assertTrue(tx.cmw_off)
+        self.assertTrue(tx.receipt_file.is_file())
+        self.assertEqual(fake.c1[0x0015],140)
+        self.assertEqual(fake.c1[0x0021],30)
+        self.assertEqual(fake.calls.count(("operation","05","00")),1)
+        self.assertEqual(self.win.draft,{})
+        self.assertIn("SAVE verified",self.win.transfer_summary.text())
+
+    def test_unqualified_c3_parameter_blocks_all_c1_writes(self):
+        self.win.connect_read()
+        self.win.draft={"C1:0015":140,"C3:0000":6}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c3")
+        self.assertFalse(self.win.unified_preview.isEnabled())
+        self.assertFalse(self.win.unified_stage.isEnabled())
+        self.assertFalse(self.win.unified_save.isEnabled())
+        self.assertIsNone(self.win.c1_transfer)
 
     def test_qt_settings_cannot_stage_two_unrelated_drafts(self):
         self.win.connect_read()
