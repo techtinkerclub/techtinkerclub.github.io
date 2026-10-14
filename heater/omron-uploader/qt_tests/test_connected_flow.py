@@ -199,9 +199,7 @@ class QtConnectedTests(unittest.TestCase):
                          self.win.apply_details.toPlainText())
         self.win.preview_wait()
         self.assertEqual(self.win.apply_tabs.currentIndex(),2)
-        self.assertIn("Read-only wt-b preview",self.win._wait_status_text()
-                      if "Read-only wt-b preview" in self.win._wait_status_text()
-                      else self.win.config_review.toPlainText())
+        self.assertIn("read-only preview",self.win.config_review.toPlainText().lower())
 
     def test_qt_settings_cannot_stage_two_unrelated_drafts(self):
         self.win.connect_read()
