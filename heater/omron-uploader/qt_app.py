@@ -32,6 +32,8 @@ from qt_segment_row import SegmentRow,Stepper
 from settings_transfer import WaitBandTransfer,verify_wait_receipt
 from compoway import SerialClient
 from transfer import TransferSession
+from combined_transfer import CombinedTransfer,verify_combined_receipt
+from program_model import planned_writes
 from transfer_capabilities import transfer_plan
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
@@ -72,6 +74,8 @@ class Studio(QMainWindow):
         self.client=None
         self.session=None
         self.setting_transfer=None
+        self.combined_transfer=None
+        self.include_programme_with_settings=False
         self.wait_receipt_match=None
         self.programme_receipt_match=None
         self.port=None
@@ -663,6 +667,13 @@ class Studio(QMainWindow):
         transfer_layout.addWidget(self.transfer_summary)
         self.apply_details.setMinimumHeight(160)
         transfer_layout.addWidget(self.apply_details,1)
+        self.include_programme_button=button(
+            "Include selected programme with Wait Band: OFF",
+            self.toggle_programme_inclusion)
+        self.include_programme_button.setToolTip(
+            "Explicitly select the current programme for one guarded DA + wt-b transfer. "
+            "Without this, a Wait Band proposal writes ONLY Wait Band.")
+        transfer_layout.addWidget(self.include_programme_button)
         unified_actions=QHBoxLayout()
         self.unified_preview=button("1  Read + Preview",self.unified_preview_action,True)
         self.unified_stage=button("2  Write RAM + Verify",self.unified_stage_action)
@@ -712,35 +723,172 @@ class Studio(QMainWindow):
             self.refresh_settings()
         self.show_step(1)
 
+    def toggle_programme_inclusion(self):
+        if (not self.client or not self.session or self.busy
+                or self._combined_ram_pending() or self.combined_transfer is not None):
+            return
+        self.include_programme_with_settings=not self.include_programme_with_settings
+        self.preview_stamp=None
+        self.refresh_review()
+
+    def _combined_ram_pending(self):
+        tx=self.combined_transfer
+        return bool(tx and tx.ram_touched and not tx.saved)
+
+    def _programme_pending(self):
+        """Compare exact planned DA register values against the fresh backup."""
+        ses=self.session
+        if not ses or not ses.backup_data or not ses.settings:
+            return False
+        try:
+            existing=ses.backup_data["programmes"][str(self.slot)]
+            for address,new in planned_writes(
+                    self.slot,self.programmes[self.slot],
+                    input_type=ses.settings["C3:0000"]):
+                if int(existing[address&255],16)!=(new&0xffffffff):
+                    return True
+        except (KeyError, ValueError, IndexError, TypeError):
+            return False
+        return False
+
     def _active_transfer_kind(self):
-        """Settings proposals take precedence; do not silently upload a programme."""
+        if self.combined_transfer:
+            return "combined"
+        if self.draft and self.include_programme_with_settings:
+            return "combined"
         return "settings" if self.draft or self.setting_transfer else "programme"
 
     def unified_preview_action(self):
-        if self._active_transfer_kind()=="settings":
+        if self._active_transfer_kind()=="combined":
+            self.preview_combined()
+        elif self._active_transfer_kind()=="settings":
             self.preview_wait()
         else:
             self.preview()
 
     def unified_stage_action(self):
-        if self._active_transfer_kind()=="settings":
+        if self._active_transfer_kind()=="combined":
+            self.stage_combined()
+        elif self._active_transfer_kind()=="settings":
             self.stage_wait()
         else:
             self.stage()
 
     def unified_save_action(self):
-        if self._active_transfer_kind()=="settings":
+        if self._active_transfer_kind()=="combined":
+            self.save_and_finish_combined()
+        elif self._active_transfer_kind()=="settings":
             self.save_and_finish_wait()
         else:
             self.save_and_finish_programme()
 
     def unified_verify_action(self):
-        if self._active_transfer_kind()=="settings":
+        if self._active_transfer_kind()=="combined":
+            self.verify_combined()
+        elif self._active_transfer_kind()=="settings":
             self.verify_wait()
         else:
             self.message("Programme receipt verification",
                 "Reconnect after a genuine controller power cycle, then use the "
                 "saved programme receipt verification in the controller backup workflow.")
+
+    def preview_combined(self):
+        if (not self.lab or not self.session or not self.client or self.busy
+                or self.fail_latched or self.combined_transfer is not None
+                or self.setting_transfer is not None or set(self.draft)!={"C1:0021"}
+                or not self.include_programme_with_settings or not self._programme_pending()):
+            self.message("Combined transfer unavailable",
+                "Select the programme explicitly and propose ONLY a supported Wait Band "
+                "change. A changed programme and fresh verified backup are required.",True)
+            return
+        self.update_programme()
+        programme=copy.deepcopy(self.programmes[self.slot])
+        tx=CombinedTransfer(self.client,self.session,self.folder.text(),emit=self.log_event)
+        def action(progress):
+            return tx.preview(self.slot,programme,self.draft["C1:0021"])
+        def done(data):
+            self.combined_transfer=tx
+            self.combined_programme_stamp=self._programme_fingerprint()
+            self.refresh_review()
+            self.message("Read-only combined preview",
+                f"Wait Band: {data['wait_band']['old']/10:g} → "
+                f"{data['wait_band']['new']/10:g} °C\\n"
+                f"Programme {data['programme_slot']}: "
+                f"{len(data['programme_changes'])} changed DA registers.\\n"
+                "NOT WRITTEN. Both will be verified before one SAVE.")
+        self._work("Preview one C1 + DA combined transfer",action,done)
+
+    def stage_combined(self):
+        tx=self.combined_transfer
+        if (not tx or not tx.preview_data or tx.ram_touched or self.busy
+                or self.fail_latched or self._programme_fingerprint()!=
+                getattr(self,"combined_programme_stamp",None)
+                or self.draft!={"C1:0021":tx.preview_data["wait_band"]["new"]}):
+            self.message("Combined RAM write unavailable",
+                "Review the unchanged programme and proposed Wait Band again.",True)
+            return
+        if QMessageBox.warning(self,"Combined C1 + DA RAM write",
+                "This stages BOTH Wait Band and the selected programme. "
+                "The controller must be RESET, the heater supplies physically isolated, "
+                "and no unrelated RAM changes pending. A communication failure "
+                "can leave partial RAM changes. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        def action(progress):return tx.stage()
+        def done(_):
+            self.refresh_review()
+            self.message("Combined RAM verified",
+                "Both Wait Band and programme registers were written and read back. "
+                "SAVE is still required.")
+        self._work("Stage and verify combined C1 + DA RAM",action,done,True)
+
+    def save_and_finish_combined(self):
+        tx=self.combined_transfer
+        if (not tx or not tx.staged or tx.saved or self.busy or self.fail_latched
+                or self._programme_fingerprint()!=getattr(self,"combined_programme_stamp",None)
+                or self.draft!={"C1:0021":tx.preview_data["wait_band"]["new"]}):
+            self.message("Combined SAVE unavailable","A verified, unchanged RAM stage is required.",True)
+            return
+        if QMessageBox.warning(self,"One SAVE for Wait Band + programme",
+                "Save verified C1 and DA RAM changes with one SAVE RAM DATA command, "
+                "then automatically disable CMW. The SAVE may also persist unrelated "
+                "RAM changes. Confirm physical heater isolation and no unrelated edits. "
+                "Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.save_finish()
+        def done(receipt):
+            self.inventory["fields"]["C1:0021"]=tx.preview_data["wait_band"]["new"]
+            self.draft.pop("C1:0021",None)
+            self.include_programme_with_settings=False
+            self.refresh_settings()
+            self.refresh_review()
+            self.message("Combined transfer saved",
+                "Wait Band + programme saved, read back and CMW OFF acknowledged. "
+                "The result is NOT verified across a power cycle. "
+                "Keep heater isolated and verify using the saved receipt:\\n"+str(receipt))
+        self._work("Combined SAVE and CMW OFF",action,done,True)
+
+    def verify_combined(self):
+        if not self.client or not self.session or self.busy:
+            self.message("Reconnect first","Reconnect after a real controller USB power cycle.",True)
+            return
+        receipt,_=QFileDialog.getOpenFileName(
+            self,"Select combined transfer receipt",self.folder.text(),"JSON (*.json)")
+        if not receipt:return
+        def action(progress):
+            return verify_combined_receipt(
+                self.client,receipt,self.session.info["model10"])
+        def done(count):
+            self.programme_receipt_match={"receipt":receipt,"combined":True}
+            self.wait_receipt_match={"receipt":receipt,"combined":True}
+            self.refresh_review()
+            self.message("Combined receipt matches",
+                f"{count} saved DA/C1 registers match the receipt. "
+                "Retention is demonstrated only if the controller really lost power "
+                "before this read.")
+        self._work("Verify combined receipt after power cycle",action,done)
 
     def save_and_finish_wait(self):
         tx=self.setting_transfer
