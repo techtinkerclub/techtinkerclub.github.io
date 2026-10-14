@@ -82,8 +82,43 @@ class ConstraintsTests(unittest.TestCase):
             effective_limits(setup(5,200,100))
         with self.assertRaisesRegex(ValueError,"exceed"):
             effective_limits(setup(5,-201,1300))
-        with self.assertRaisesRegex(ValueError,"Unsupported"):
+        with self.assertRaisesRegex(ValueError,"scaling was not read"):
             effective_limits({"C3:0000":29,"C3:0005":100,"C3:0006":0})
+        with self.assertRaisesRegex(ValueError,"Unsupported"):
+            effective_limits({"C3:0000":30,"C3:0005":100,"C3:0006":0})
+
+    def test_all_temperature_input_ranges_have_defined_resolution(self):
+        from programme_constraints import SENSOR_RANGES
+        self.assertEqual(set(SENSOR_RANGES),set(range(25)))
+        for kind,(low,high,step,name) in SENSOR_RANGES.items():
+            lim=effective_limits({"C3:0000":kind},require_readback=False)
+            self.assertEqual((lim.sensor_min,lim.sensor_max,lim.resolution),
+                             (low,high,step),name)
+
+    def test_other_temperature_inputs_encode_setpoints_at_their_resolution(self):
+        for kind,low,high,target,raw in ((0,-200,850,"200",200),
+                                         (1,-199.9,500,"200.1",2001),
+                                         (19,0,2300,"1800",1800),
+                                         (23,0,165,"100",100)):
+            scale=int(1/effective_limits({"C3:0000":kind},require_readback=False).resolution)
+            fields=setup(kind,low,high)
+            fields["C3:0005"]=(high*scale)&0xffffffff
+            fields["C3:0006"]=(int(low*scale))&0xffffffff
+            limits=effective_limits(fields)
+            p=Programme(start=str(max(low,0)),steps=[Segment("ramp",sp=target)])
+            self.assertEqual(dict(planned_writes(0,p,input_type=kind,limits=limits))[0x17],raw)
+
+    def test_analogue_engineering_scale_is_required_and_not_assumed_to_be_celsius(self):
+        fields=setup(25,0,100)
+        fields.update({"C3:0001":1000,"C3:0002":0,"C3:0003":1})
+        limits=effective_limits(fields)
+        self.assertEqual((limits.minimum,limits.maximum,limits.resolution),
+                         (Decimal("0"),Decimal("100"),Decimal("0.1")))
+        self.assertIn("scaled units",limits.description())
+        p=Programme(steps=[Segment("ramp",sp="50.5")])
+        self.assertEqual(dict(planned_writes(0,p,input_type=25,limits=limits))[0x17],505)
+        with self.assertRaisesRegex(ValueError,"scaling was not read"):
+            effective_limits(setup(25,0,100))
 
     def test_global_programming_mode_is_checked_as_well(self):
         fields=setup()
