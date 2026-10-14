@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import datetime,timezone
 from pathlib import Path
 import json
-from transfer import PreflightError, PREFLIGHT
+from transfer import PreflightError
 from compoway import ProtocolError
 from settings_transfer import _write_checked_json
 from programme_constraints import effective_limits
@@ -47,8 +47,8 @@ def validate_draft(draft,live,backup_data):
     effective=dict(live,**draft)
     sensor_change=("C3:0000" in draft and draft["C3:0000"]!=live["C3:0000"])
     if sensor_change:
-        # Omron can update input type with populated DA memories. Preserve
-        # all 1200 words and audit *every* word after controller restart.
+        # No DA programme writes or local scaling: only selected C3 values
+        # are sent. Preserve the raw programme backup for optional diagnostics.
         blocks=backup_data.get("programmes",{}) if isinstance(backup_data,dict) else {}
         if (set(blocks)!={str(i) for i in range(8)} or
                 any(len(blocks[str(i)])!=150 for i in range(8))):
@@ -62,8 +62,8 @@ def validate_draft(draft,live,backup_data):
         try:effective_limits(live,draft,require_readback=True)
         except ValueError as exc:
             raise PreflightError("Proposed SP limits are invalid: "+str(exc)) from exc
-    # The controller may clamp/reset stored programme setpoints internally.
-    # That is not predictable from this draft; read and compare after reset.
+    # The controller handles any internal defaults/limit changes. We only
+    # validate the supplied C3 values, never recalculate DA programmes.
     return sensor_change
 
 def verify_c3_receipt(client,path,model10):
@@ -104,12 +104,17 @@ class C3ConfigurationTransfer:
             raise PreflightError("Controller backup file has changed")
         if not str(self.client.status()).startswith("01"):
             raise PreflightError("Controller must be RESET/stopped")
-        # Existing programme safety policy must hold apart from the setting(s)
-        # this dedicated configuration transfer explicitly intends to change.
-        for address,(expected,_) in PREFLIGHT.items():
-            if address in (0x0000,): continue
-            if self.client.read1("C3",address)!=expected:
-                raise PreflightError(f"Controller safety preflight C3:{address:04X} mismatched")
+        # This is a GLOBAL setting editor, not the DA programme uploader.
+        # Do not impose unrelated programme-method defaults (time units,
+        # slope units, end action, etc.) on otherwise valid C3 changes.
+        # Confirm only the relevant display/RESET safety assumptions.
+        conditions={0x0004:0,0x00BC:0,0x00BD:1}
+        for address,expected in conditions.items():
+            actual=self.client.read1("C3",address)
+            if actual!=expected:
+                raise PreflightError(
+                    f"Global configuration not qualified with C3:{address:04X}"
+                    f"={signed32(actual)}; expected {expected}")
         raw={f"C3:{i:04X}":self.client.read1("C3",i)
              for i in (0,4,5,6,7,0x0a)}
         if raw["C3:0000"] not in (5,6):
@@ -138,8 +143,9 @@ class C3ConfigurationTransfer:
           "changes":changes,"sensor_change":sensor_change,
           "original_settings":live,
           "backup_file":str(self.session.backup_file),
-          "programme_audit_required":True,
+          "programme_audit_available":True,
           "setting_defaults_may_change":bool(sensor_change),
+          "write_scope":"Exactly the changed C3 registers; never DA programme memory",
           "warning":("Area 1 stops control. C3 changes may be persisted immediately. "
                      "Do not assume RAM-only staging or automatic rollback. "
                      "Power-cycle required to return to area 0.")
@@ -188,7 +194,8 @@ class C3ConfigurationTransfer:
                      original_programmes=self.session.backup_data["programmes"],
                      original_settings=self.preview_data["original_settings"],
                      sensor_change=self.preview_data["sensor_change"],
-                     programme_audit_required=True,
+                     programme_audit_available=True,
+                     write_scope="C3-only, no DA register writes",
                      status=("C3 written/read back in area 1; hardware persistence "
                              "NOT established. Software reset or power-cycle and complete programme audit required"))
         self.receipt_file=_write_checked_json(self.folder,"c3-config-receipt",receipt)
