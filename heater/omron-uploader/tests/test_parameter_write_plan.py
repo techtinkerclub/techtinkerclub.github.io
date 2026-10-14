@@ -30,7 +30,7 @@ class WritePlanTests(unittest.TestCase):
         self.assertFalse(plan["combined_qualified"])
         self.assertFalse(plan["all_changes_usb_writable"])
         self.assertEqual(plan["setting_area_1"],["C3:0000"])
-        self.assertIn("Type K",plan["parameters"][1]["reason"])
+        self.assertIn("Controller-wide",plan["parameters"][1]["reason"])
 
     def test_changed_programme_not_selected_remains_excluded(self):
         plan=create_write_plan(self.inv,{"C1:0021":20},programme_changed=True,
