@@ -2393,7 +2393,10 @@ class Studio(QMainWindow):
         self.update_programme()
         p=self.programmes[self.slot]
         try:
-            m=p.validate()
+            limits,error=self._effective_programme_limits()
+            if error and self.inventory_current_session:
+                raise ValidationError("Cannot verify controller SP limits: "+error)
+            m=p.validate(limits=limits)
             self.apply_overview.setText(
                 f"Programme {self.slot}  ·  {len(p.steps)} segments  ·  {m['minutes']:.1f} minutes "
                 f"nominal  ·  Final SP {m['final_sp']:g} °C  ·  {len(self.draft)} proposed configuration changes")
