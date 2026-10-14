@@ -2557,6 +2557,10 @@ class Studio(QMainWindow):
                                                require_readback=False)
                     note+=("\nEDITOR REFERENCE ONLY: "+reference.description()+
                            "; hardware has not been changed.")
+                    planning_issues=programme_issues(p,reference)
+                    if planning_issues:
+                        note+=("\nWARNING — SELECTED INPUT / PROGRAMME MISMATCH: "+
+                               "; ".join(planning_issues[:3]))
                 except ValueError as exc:
                     note+="\nPlanning input needs scaling: "+str(exc)
             if limits is not None:
@@ -2577,7 +2581,8 @@ class Studio(QMainWindow):
             self.temperature_limits_hint.setText(note)
             self.temperature_limits_hint.setStyleSheet(
                 "color:"+("#a8610f" if error or conflicts or pending_issues or
-                                   not limits or not limits.verified else "#157952")
+                                   not limits or not limits.verified or
+                                   "WARNING" in note else "#157952")
                 +";font-weight:600")
             self._refresh_wait_hint()
         except Exception as exc:
