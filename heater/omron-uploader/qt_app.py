@@ -36,6 +36,7 @@ from transfer import TransferSession
 from combined_transfer import CombinedTransfer,verify_combined_receipt
 from c1_transfer import C1SettingsTransfer,QUALIFIED_C1_CODES,verify_c1_receipt
 from c3_transfer import C3ConfigurationTransfer,ALLOWED as QUALIFIED_C3_CODES,verify_c3_receipt
+from c5_transfer import C5PIDTransfer,ALLOWED as QUALIFIED_C5_CODES,verify_c5_receipt
 from controller_restart import restart_and_audit
 from hardware_profile import confirm_model,supports
 from program_model import planned_writes
@@ -87,6 +88,7 @@ class Studio(QMainWindow):
         self.hardware_profile=None
         self.setting_transfer=None
         self.c1_transfer=None
+        self.c5_transfer=None
         self.c3_transfer=None
         self.c3_receipt_match=None
         self.c1_receipt_match=None
@@ -902,10 +904,14 @@ class Studio(QMainWindow):
             return "combined"
         if self.c1_transfer:
             return "c1"
+        if self.c5_transfer:
+            return "c5"
         if self.draft and self.include_programme_with_settings:
             return "combined"
         if self.draft and any(k.startswith("C3:") for k in self.draft):
             return "c3"
+        if self.draft and any(k.startswith("C5:") for k in self.draft):
+            return "c5"
         if self.draft and set(self.draft)!={"C1:0021"}:
             return "c1"
         return "settings" if self.draft or self.setting_transfer else "programme"
@@ -917,6 +923,8 @@ class Studio(QMainWindow):
             self.preview_combined()
         elif self._active_transfer_kind()=="c1":
             self.preview_c1()
+        elif self._active_transfer_kind()=="c5":
+            self.preview_c5()
         elif self._active_transfer_kind()=="settings":
             self.preview_wait()
         else:
@@ -929,6 +937,8 @@ class Studio(QMainWindow):
             self.stage_combined()
         elif self._active_transfer_kind()=="c1":
             self.stage_c1()
+        elif self._active_transfer_kind()=="c5":
+            self.stage_c5()
         elif self._active_transfer_kind()=="settings":
             self.stage_wait()
         else:
@@ -941,6 +951,8 @@ class Studio(QMainWindow):
             self.save_and_finish_combined()
         elif self._active_transfer_kind()=="c1":
             self.save_and_finish_c1()
+        elif self._active_transfer_kind()=="c5":
+            self.save_and_finish_c5()
         elif self._active_transfer_kind()=="settings":
             self.save_and_finish_wait()
         else:
@@ -962,6 +974,7 @@ class Studio(QMainWindow):
         allowed={"e5cct-combined-upload-receipt-1",
                  "e5cct-waitband-receipt-1","e5cct-upload-receipt-1",
                  "e5cct-c1-settings-receipt-1",
+                 "e5cct-c5-pid-receipt-1",
                  "e5cct-c3-configuration-receipt-1"}
         if schema not in allowed:
             self.message("Unsupported receipt","This is not a recognised saved-transfer receipt.",True)
@@ -969,6 +982,8 @@ class Studio(QMainWindow):
         def action(progress):
             if schema=="e5cct-c3-configuration-receipt-1":
                 return verify_c3_receipt(self.client,path,self.session.info["model10"])
+            if schema=="e5cct-c5-pid-receipt-1":
+                return verify_c5_receipt(self.client,path,self.session.info["model10"])
             if schema=="e5cct-c1-settings-receipt-1":
                 return verify_c1_receipt(self.client,path,self.session.info["model10"])
             if schema=="e5cct-combined-upload-receipt-1":
@@ -981,6 +996,8 @@ class Studio(QMainWindow):
                 self.c3_receipt_match={"path":path,"count":value}
             elif schema=="e5cct-c1-settings-receipt-1":
                 self.c1_receipt_match={"path":path,"count":value}
+            elif schema=="e5cct-c5-pid-receipt-1":
+                self.c5_receipt_match={"path":path,"count":value}
             elif schema=="e5cct-combined-upload-receipt-1":
                 self.programme_receipt_match={"path":path,"combined":True}
                 self.wait_receipt_match={"path":path,"combined":True,
@@ -1186,6 +1203,76 @@ class Studio(QMainWindow):
             client,report=result
             self._complete_c3_return(client,report,receipt)
         self._work("Software restart and full DA/C3 verification",action,done,True)
+
+    def _c5_draft_matches_preview(self):
+        tx=self.c5_transfer
+        return bool(tx and tx.preview_data and self.draft=={
+            row["register"]:row["new_raw"] for row in tx.preview_data["changes"]})
+
+    def preview_c5(self):
+        if (not self.client or not self.session or not self.lab or self.busy
+                or self.fail_latched or self.c5_transfer
+                or self.c1_transfer or self.c3_transfer or self.combined_transfer
+                or self.setting_transfer or not self.draft
+                or not set(self.draft).issubset(QUALIFIED_C5_CODES)
+                or self.include_programme_with_settings or self.session.ram_touched):
+            self.message("PID-bank preview blocked",
+                "Select only fixed PID-bank C5 settings; transfer other banks separately.",True)
+            return
+        tx=C5PIDTransfer(self.client,self.session,self.folder.text(),
+                         emit=self.log_event,hardware=self.hardware_profile)
+        def action(progress):return tx.preview(dict(self.draft))
+        def done(data):
+            self.c5_transfer=tx
+            self.refresh_review()
+            self.message("PID-bank preview (NO WRITES)",
+                "\\n".join(f"{r['register']}: {r['old_raw']} → {r['new_raw']}"
+                           for r in data["changes"])+
+                "\\nOnly selected fixed C5 registers will be written; no DA changes.")
+        self._work("Preview fixed C5 PID registers",action,done)
+
+    def stage_c5(self):
+        tx=self.c5_transfer
+        if (not tx or self.busy or self.fail_latched or tx.ram_touched
+                or not self._c5_draft_matches_preview()):
+            self.message("PID write blocked","Obtain a fresh matching C5 preview first.",True)
+            return
+        if QMessageBox.warning(self,"Confirm fixed PID-bank RAM write",
+                "Write only the selected fixed PID register(s)? The controller "
+                "must be STOPPED and its heater isolated. A partial failure "
+                "can leave controller RAM changed. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.stage()
+        def done(count):
+            self.refresh_review()
+            self.message("Fixed PID RAM readback passed",
+                f"{count} selected PID registers written and read back. "
+                "SAVE RAM DATA still required.")
+        self._work("Stage fixed PID-bank registers",action,done,True)
+
+    def save_and_finish_c5(self):
+        tx=self.c5_transfer
+        if (not tx or not tx.staged or tx.saved or self.busy or self.fail_latched
+                or not self._c5_draft_matches_preview()):
+            self.message("PID SAVE blocked","Verified unchanged C5 RAM stage required.",True)
+            return
+        if QMessageBox.warning(self,"Save fixed PID-bank changes",
+                "SAVE RAM DATA may also persist unrelated pending controller RAM. "
+                "Confirm isolated heater, then save, verify and disable CMW?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.save_finish()
+        def done(receipt):
+            for row in tx.preview_data["changes"]:
+                key=row["register"]
+                self.inventory["fields"][key]=row["new_raw"]
+                self.draft.pop(key,None)
+            self.refresh_settings();self.refresh_review()
+            self.message("PID-bank SAVE acknowledged",
+                "Selected fixed PID registers saved and reread. Power-cycle "
+                "verification remains necessary. Receipt: "+str(receipt))
+        self._work("Save fixed PID bank and finish CMW",action,done,True)
 
     def _c1_draft_matches_preview(self):
         tx=self.c1_transfer
