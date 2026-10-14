@@ -296,7 +296,7 @@ class QtConnectedTests(unittest.TestCase):
     def test_unified_controls_never_write_unqualified_configuration(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
-        self.win.draft={"C3:000D":0}
+        self.win.draft={"C3:0011":4}  # serial baud needs dedicated reconnection logic
         self.win.show_step(4)
         self.assertFalse(self.win.unified_preview.isEnabled())
         self.assertFalse(self.win.unified_stage.isEnabled())
