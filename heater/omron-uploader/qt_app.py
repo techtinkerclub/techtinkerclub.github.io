@@ -1191,6 +1191,10 @@ class Studio(QMainWindow):
             wt_status=f"No pending changes; wt-b read from controller: {raw/10:g} °C"
         else:
             wt_status="No settings transfer in this connection"
+        if self.c1_receipt_match:
+            wt_status=(f"{self.c1_receipt_match['count']} C1 register(s) matched the saved "
+                       "receipt on reconnect. Retention is proven only after a genuine "
+                       "controller power cycle.")
         self.transfer_summary.setText(
             f"PROGRAMME {self.slot}  ·  {programme_status}\n"
             f"CONTROLLER SETTINGS  ·  {wt_status}\n"
@@ -2189,7 +2193,8 @@ class Studio(QMainWindow):
             before=human_value(code,current,t) if current is not None else "Unknown (requires live read)"
             after=human_value(code,value,t)
             title=CATALOG[code].name if code in CATALOG else code
-            eligibility=("USB pilot available" if code=="C1:0021" else
+            eligibility=("Isolated-lab C1 USB pilot available"
+                         if code in QUALIFIED_C1_CODES else
                          "Review only; USB writing not qualified")
             lines.append(f"{title} [{code}]: {before} → {after}. {eligibility}.")
         if not lines:lines.append("No pending configuration proposals.")
@@ -2213,6 +2218,19 @@ class Studio(QMainWindow):
                 lines.append(f"Wait Band read-only preview: "
                              f"{tx.preview_data['old_raw']/10:g} °C → "
                              f"{tx.preview_data['new_raw']/10:g} °C. No write yet.")
+        if self.c1_transfer:
+            c1=self.c1_transfer
+            if c1.cmw_off:
+                lines.append("C1 adjustment settings SAVE and CMW OFF acknowledged. "
+                             "Power-cycle verification still required.")
+            elif c1.saved:
+                lines.append("C1 settings SAVE acknowledged; CMW OFF NOT confirmed.")
+            elif c1.staged:
+                lines.append("All reviewed C1 settings verified in RAM, NOT yet SAVED.")
+            elif c1.ram_touched:
+                lines.append("C1 adjustment RAM state UNCERTAIN; STOP and inspect.")
+            else:
+                lines.append("C1 settings read-only preview complete; nothing written.")
         lines.append("Wait Band applies globally to all programmes. "
                      "SAVE RAM DATA can persist unrelated pending RAM edits.")
         self.config_review.setPlainText("\n".join(lines))
