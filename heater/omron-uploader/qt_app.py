@@ -33,6 +33,7 @@ from settings_transfer import WaitBandTransfer,verify_wait_receipt
 from compoway import SerialClient
 from transfer import TransferSession
 from combined_transfer import CombinedTransfer,verify_combined_receipt
+from c1_transfer import C1SettingsTransfer,QUALIFIED_C1_CODES,verify_c1_receipt
 from program_model import planned_writes
 from transfer_capabilities import transfer_plan
 from parameter_write_plan import create_write_plan,requirements
@@ -76,6 +77,7 @@ class Studio(QMainWindow):
         self.client=None
         self.session=None
         self.setting_transfer=None
+        self.c1_transfer=None
         self.combined_transfer=None
         self.include_programme_with_settings=False
         self.wait_receipt_match=None
@@ -793,13 +795,19 @@ class Studio(QMainWindow):
     def _active_transfer_kind(self):
         if self.combined_transfer:
             return "combined"
+        if self.c1_transfer:
+            return "c1"
         if self.draft and self.include_programme_with_settings:
             return "combined"
+        if self.draft and set(self.draft)!={"C1:0021"}:
+            return "c1"
         return "settings" if self.draft or self.setting_transfer else "programme"
 
     def unified_preview_action(self):
         if self._active_transfer_kind()=="combined":
             self.preview_combined()
+        elif self._active_transfer_kind()=="c1":
+            self.preview_c1()
         elif self._active_transfer_kind()=="settings":
             self.preview_wait()
         else:
@@ -808,6 +816,8 @@ class Studio(QMainWindow):
     def unified_stage_action(self):
         if self._active_transfer_kind()=="combined":
             self.stage_combined()
+        elif self._active_transfer_kind()=="c1":
+            self.stage_c1()
         elif self._active_transfer_kind()=="settings":
             self.stage_wait()
         else:
@@ -816,6 +826,8 @@ class Studio(QMainWindow):
     def unified_save_action(self):
         if self._active_transfer_kind()=="combined":
             self.save_and_finish_combined()
+        elif self._active_transfer_kind()=="c1":
+            self.save_and_finish_c1()
         elif self._active_transfer_kind()=="settings":
             self.save_and_finish_wait()
         else:
@@ -835,18 +847,23 @@ class Studio(QMainWindow):
         except (OSError,ValueError) as exc:
             self.message("Invalid receipt",str(exc),True);return
         allowed={"e5cct-combined-upload-receipt-1",
-                 "e5cct-waitband-receipt-1","e5cct-upload-receipt-1"}
+                 "e5cct-waitband-receipt-1","e5cct-upload-receipt-1",
+                 "e5cct-c1-settings-receipt-1"}
         if schema not in allowed:
             self.message("Unsupported receipt","This is not a recognised saved-transfer receipt.",True)
             return
         def action(progress):
+            if schema=="e5cct-c1-settings-receipt-1":
+                return verify_c1_receipt(self.client,path,self.session.info["model10"])
             if schema=="e5cct-combined-upload-receipt-1":
                 return verify_combined_receipt(self.client,path,self.session.info["model10"])
             if schema=="e5cct-waitband-receipt-1":
                 return verify_wait_receipt(self.client,path,self.session.info["model10"])
             return self.session.verify_persistence(path)
         def done(value):
-            if schema=="e5cct-combined-upload-receipt-1":
+            if schema=="e5cct-c1-settings-receipt-1":
+                self.c1_receipt_match={"path":path,"count":value}
+            elif schema=="e5cct-combined-upload-receipt-1":
                 self.programme_receipt_match={"path":path,"combined":True}
                 self.wait_receipt_match={"path":path,"combined":True,
                     "raw":json.loads(Path(path).read_text(encoding="utf-8"))["wait_band"]["new"]}
@@ -860,6 +877,87 @@ class Studio(QMainWindow):
                 "Nonvolatile retention is established only if power was physically "
                 "removed before this verification.")
         self._work("Read-only saved receipt verification",action,done)
+
+    def _c1_draft_matches_preview(self):
+        tx=self.c1_transfer
+        if not tx or not tx.preview_data:return False
+        return self.draft=={
+            row["register"]:row["new_raw"] for row in tx.preview_data["changes"]}
+
+    def preview_c1(self):
+        if (not self.client or not self.session or not self.lab or self.busy
+                or self.fail_latched or self.combined_transfer
+                or self.setting_transfer or self.c1_transfer
+                or not self.draft or not set(self.draft).issubset(QUALIFIED_C1_CODES)
+                or self.include_programme_with_settings or self.session.ram_touched):
+            self.message("Settings preview blocked",
+                "Only the listed experimental C1 adjustment settings may be sent together. "
+                "Other draft settings remain review-only. Programme memory is not included.",True)
+            return
+        proposed=dict(self.draft)
+        tx=C1SettingsTransfer(self.client,self.session,self.folder.text(),emit=self.log_event)
+        def action(progress):return tx.preview(proposed)
+        def done(data):
+            self.c1_transfer=tx
+            self.refresh_review()
+            lines=[
+                f"{r['register']} — {CATALOG[r['register']].name}: "
+                f"{human_value(r['register'],r['old_raw'])} → "
+                f"{human_value(r['register'],r['new_raw'])}"
+                for r in data["changes"]]
+            self.message("C1 settings preview (NO WRITES)",
+                "\n".join(lines)+"\n\nNo programme data included. "
+                "One guarded SAVE will apply these controller-wide / PID-set adjustments.")
+        self._work("Preview C1 adjustment differences (read only)",action,done)
+
+    def stage_c1(self):
+        tx=self.c1_transfer
+        if (not tx or self.busy or self.fail_latched or tx.ram_touched
+                or not self._c1_draft_matches_preview()):
+            self.message("Settings write unavailable","Preview the unchanged C1 settings first.",True)
+            return
+        if QMessageBox.warning(
+                self,"Experimental C1 settings RAM write",
+                f"Write {len(tx.preview_data['changes'])} C1 adjustment register(s) to RAM? "
+                "PID values affect the selected PID set; heating hysteresis applies "
+                "to ON/OFF mode. The controller must be stopped and heater supply "
+                "physically isolated. A partial failure can leave RAM changed. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.stage()
+        def done(_):
+            self.refresh_review()
+            self.message("C1 settings RAM verified",
+                "All reviewed C1 settings were written and read back in RAM. "
+                "Nonvolatile SAVE is still required.")
+        self._work("Stage experimental C1 adjustment settings",action,done,True)
+
+    def save_and_finish_c1(self):
+        tx=self.c1_transfer
+        if (not tx or not tx.staged or tx.saved or self.busy or self.fail_latched
+                or not self._c1_draft_matches_preview()):
+            self.message("Settings SAVE unavailable",
+                "A verified and unchanged C1 RAM stage is required.",True)
+            return
+        if QMessageBox.warning(
+                self,"Save C1 settings and finish",
+                "ONE SAVE RAM DATA will persist the reviewed C1 settings and may "
+                "also persist unrelated unsaved controller RAM. Confirm the "
+                "heater remains isolated and no unrelated changes are pending. "
+                "After verified readback, CMW OFF is sent automatically. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.save_finish()
+        def done(receipt):
+            for row in tx.preview_data["changes"]:
+                key=row["register"]
+                self.inventory["fields"][key]=row["new_raw"]
+                self.draft.pop(key,None)
+            self.refresh_settings()
+            self.refresh_review()
+            self.message("C1 settings saved",f"All reviewed settings saved and read back. "
+                f"CMW OFF acknowledged. Actual power-cycle retention still needs verification.\n{receipt}")
+        self._work("SAVE C1 settings and disable CMW",action,done,True)
 
     def preview_combined(self):
         if (not self.lab or not self.session or not self.client or self.busy
