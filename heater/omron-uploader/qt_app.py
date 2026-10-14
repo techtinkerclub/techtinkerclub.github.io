@@ -1,10 +1,10 @@
 """Modern, self-contained E5CC-T Studio (PySide6 + PyQtGraph).
 
-This GUI reuses the guarded Omron backend. Hardware writes require isolated
-lab mode and an exact register allowlist: DA programme memory and selected C1
-adjustments (including Wait Band and PID/hysteresis settings). C3/C4/C5/C9
-writes remain disabled. Step 5 reviews and verifies changes; offline work
-does not require USB.
+This GUI uses the guarded Omron backend. Hardware writes require the
+isolated-lab launcher and exact allowlists for DA programmes, selected C1
+adjustments and selected C3 global settings. Proposed C3 settings never
+rescale DA programmes in the app; only fresh hardware readback informs them.
+Unqualified C3, C4, C5 and C9 writes are forbidden.
 """
 from __future__ import annotations
 
@@ -770,10 +770,10 @@ class Studio(QMainWindow):
         self.unified_save=button("3  Save + Finish (CMW OFF)",self.unified_save_action)
         self.unified_verify=button("4  Verify saved receipt",self.unified_verify_action)
         self.restart_c3_button=button(
-            "4  Software restart + audit all 8 programmes",self.restart_verify_c3)
+            "4  Return to normal (reset + read back)",self.restart_verify_c3)
         self.restart_c3_button.setToolTip(
-            "After verified C3 finish and CMW OFF: reset once, reconnect "
-            "read-only and compare all 1,200 DA words and C3 receipt. "
+            "After verified C3 finish and CMW OFF: send one documented reset, "
+            "reconnect read-only and read back controller settings and programmes. "
             "All heater output supplies must be physically isolated.")
         self.unified_verify.setToolTip(
             "READ ONLY: After the controller genuinely loses power and you reconnect, "
