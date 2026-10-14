@@ -186,11 +186,13 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(self.win.navbuttons[3].text(),"4   Controller Settings")
         self.assertTrue(hasattr(self.win,"wt_preview"))
         self.win.show_step(4)
-        self.assertEqual(self.win.apply_tabs.count(),3)
+        self.assertEqual(self.win.apply_tabs.count(),2)
         self.assertEqual(self.win.apply_tabs.tabText(0),"Offline / manual entry")
-        self.assertEqual(self.win.apply_tabs.tabText(1),"Programme USB transfer")
-        self.assertEqual(self.win.apply_tabs.tabText(2),"Settings USB transfer")
-        self.assertEqual(self.win.apply_tabs.currentIndex(),2)
+        self.assertEqual(self.win.apply_tabs.tabText(1),"USB transfer")
+        self.assertEqual(self.win.apply_tabs.currentIndex(),1)
+        self.assertEqual(self.win.transfer_operation.currentData(),"settings")
+        self.assertEqual(self.win.transfer_stack.currentIndex(),1)
+        self.assertIn("NOT written",self.win.transfer_summary.text())
         self.assertIn("Wait band",self.win.config_review.toPlainText())
         self.assertIn("USB pilot available",self.win.config_review.toPlainText())
         self.assertFalse(self.win.preview_button.isEnabled())
@@ -198,8 +200,40 @@ class QtConnectedTests(unittest.TestCase):
         self.assertNotIn("USB configuration writes are not enabled",
                          self.win.apply_details.toPlainText())
         self.win.preview_wait()
-        self.assertEqual(self.win.apply_tabs.currentIndex(),2)
+        self.assertEqual(self.win.apply_tabs.currentIndex(),1)
+        self.assertEqual(self.win.transfer_stack.currentIndex(),1)
         self.assertIn("read-only preview",self.win.config_review.toPlainText().lower())
+
+    def test_saved_wt_b_is_visible_in_unified_review_and_not_confused_with_da(self):
+        self.win.connect_read()
+        self.win.draft={"C1:0021":20}
+        self.win.show_step(4)
+        self.assertEqual(self.win.apply_tabs.count(),2)
+        self.win.preview_wait()
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.stage_wait()
+            self.win.save_wait()
+        self.assertEqual(self.win.draft,{})
+        self.assertEqual(self.win.transfer_stack.currentIndex(),1)
+        self.assertIn("wt-b 0 → 2 °C: SAVE acknowledged",self.win.transfer_summary.text())
+        self.assertIn("power-cycle verification still required",
+                      self.win.transfer_summary.text())
+        self.assertIn("no programme write in this connection",
+                      self.win.transfer_summary.text())
+        self.assertFalse(self.win.preview_button.isEnabled())
+        self.win.transfer_operation.setCurrentIndex(0)
+        self.assertEqual(self.win.transfer_stack.currentIndex(),0)
+        self.assertIn("SAVE acknowledged",self.win.transfer_summary.text())
+        self.win.transfer_operation.setCurrentIndex(1)
+        self.assertEqual(self.win.transfer_stack.currentIndex(),1)
+        self.assertTrue(self.win.wt_cmw_off.isEnabled())
+        # A later proposed value must remain explicitly NOT WRITTEN,
+        # even though a previous change was saved during this connection.
+        self.win.draft={"C1:0021":10}
+        self.win._refresh_transfer_summary()
+        self.assertIn("SAVE acknowledged",self.win.transfer_summary.text())
+        self.assertIn("proposed",self.win.transfer_summary.text().lower())
+        self.assertIn("NOT written",self.win.transfer_summary.text())
 
     def test_qt_settings_cannot_stage_two_unrelated_drafts(self):
         self.win.connect_read()
