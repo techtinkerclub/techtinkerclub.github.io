@@ -46,6 +46,33 @@ class ModernStudioTests(unittest.TestCase):
         self.assertFalse(self.win.preview_button.isEnabled())
         self.assertFalse(self.win.stage_button.isEnabled())
         self.assertFalse(self.win.save_button.isEnabled())
+    def test_settings_are_understandable_without_omron_register_knowledge(self):
+        self.win.show_step(3)
+        self.assertEqual(self.win.settings_view.currentText(),"Everyday essentials")
+        self.assertIn("C1:0021",self.win.setting_keys)
+        self.assertNotIn("C3:0000",self.win.setting_keys)
+        self.assertFalse(self.win.show_setting_technical.isChecked())
+        self.win.setting_table.selectRow(self.win.setting_keys.index("C1:0021"))
+        self.win._setting_selected()
+        self.assertIn("all eight programmes",self.win.parameter_detail.toPlainText())
+        self.assertNotIn("Omron register:",self.win.parameter_detail.toPlainText())
+        self.win.search.setText("C3:0000")
+        self.assertIn("C3:0000",self.win.setting_keys)
+        self.win.setting_table.selectRow(self.win.setting_keys.index("C3:0000"))
+        self.win._setting_selected()
+        self.assertIn("SYSTEM-WIDE",self.win.parameter_detail.toPlainText())
+        self.win.show_setting_technical.setChecked(True)
+        self.assertIn("Omron register: C3:0000",self.win.parameter_detail.toPlainText())
+        self.win.search.clear()
+        self.win.settings_view.setCurrentText("All parameters")
+        self.assertEqual(len(self.win.setting_keys),len(CATALOG))
+
+    def test_programme_end_is_explained_as_global_not_per_memory(self):
+        self.win.show_step(2)
+        self.assertIn("GLOBAL",self.win.finish_mode.toolTip())
+        self.assertIn("every programme",self.win.finish_mode.toolTip())
+        self.assertEqual(self.win.finish_mode.count(),2)
+
     def test_programme_segments_and_nominal_duration(self):
         self.win.programmes[0]=EXAMPLE
         self.win._render_programme()
