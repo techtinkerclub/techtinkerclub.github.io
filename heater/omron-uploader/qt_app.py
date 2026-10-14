@@ -444,6 +444,7 @@ class Studio(QMainWindow):
         self.slot_combo.addItems([f"Programme {i}" for i in range(8)])
         self.slot_combo.currentIndexChanged.connect(self._slot_changed)
         top.addWidget(self.slot_combo)
+        top.addWidget(button("Import website JSON…",self.import_website_programme))
         v.addLayout(top)
 
         meta=QHBoxLayout()
@@ -1955,6 +1956,54 @@ class Studio(QMainWindow):
         except Exception as exc:
             self.message("Cannot save local project",str(exc),True);return
         self.feedback.setText("Local offline project saved to "+str(path))
+
+    def import_website_programme(self):
+        """Load website v1/v2 programme export into one LOCAL slot, no USB writes."""
+        if self._editing_locked():return
+        path,_=QFileDialog.getOpenFileName(
+            self,"Import website Programme Studio JSON","","Programme JSON (*.json)")
+        if not path:return
+        try:
+            if Path(path).stat().st_size>1_000_000:
+                raise ValueError("Programme JSON is unexpectedly large")
+            obj=json.loads(Path(path).read_text(encoding="utf-8"))
+            if (not isinstance(obj,dict) or obj.get("version") not in (1,2)
+                    or obj.get("method")!="rate" or not isinstance(obj.get("programme"),dict)):
+                raise ValueError("Expected version 1/2 website rate-programme export")
+            target=obj.get("programmeNumber")
+            if type(target) is not int or target not in range(8):
+                raise ValueError("Website programme memory must be 0–7")
+            programme=Programme.from_json(obj)
+            planned=obj.get("planned_input_type")
+            if planned is not None and (type(planned) is not int or planned not in SENSOR_INPUTS):
+                raise ValueError("Invalid planned sensor selection")
+        except (OSError,ValueError,KeyError,TypeError,IndexError) as exc:
+            self.message("Cannot import website programme",str(exc),True)
+            return
+        if QMessageBox.question(
+            self,"Import one local programme",
+            f"Import '{programme.name}' to LOCAL Programme {target}, replacing its "
+            "currently edited local segments? This never writes an Omron. "
+            "Any website analogue engineering scale is NOT an active hardware "
+            "configuration; check C3:0001–0003 separately before USB transfer.",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        self.update_programme()
+        self.programmes[target]=programme
+        self.planned_sensor_by_slot[target]=planned
+        self.slot=target
+        self.slot_combo.blockSignals(True)
+        self.slot_combo.setCurrentIndex(target)
+        self.slot_combo.blockSignals(False)
+        self.editor_sensor.blockSignals(True)
+        index=self.editor_sensor.findData(planned)
+        self.editor_sensor.setCurrentIndex(index if index>=0 else 0)
+        self.editor_sensor.blockSignals(False)
+        self._render_programme()
+        self.preview_stamp=None
+        self.refresh_review()
+        self.feedback.setText(
+            f"Website programme imported to local memory {target}; hardware unchanged.")
 
     def open_project(self):
         if self._editing_locked():return
