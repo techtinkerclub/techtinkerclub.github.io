@@ -27,6 +27,7 @@ class FakeOmron:
         self.c3[0x0005]=1300
         self.c3[0x0006]=0xffffff38
         self.c1={0x0015:120,0x0016:100,0x0017:40,0x001B:20,0x0021:0}
+        self.c5={16:100,19:1000,20:0}
         self.da=[[0]*150 for _ in range(8)]
         for block in self.da:
             block[0]=1
@@ -52,7 +53,7 @@ class FakeOmron:
         if bank=="C0" and addr==0x000D:return [1]
         if bank=="C5":
             return [self.c1.get({0:0x0015,1:0x0016,2:0x0017}.get(addr+i,-1),0)
-                    if addr+i in (0,1,2) else 0 for i in range(count)]
+                    if addr+i in (0,1,2) else self.c5.get(addr+i,0) for i in range(count)]
         return [0 for _ in range(count)]
     def read1(self,bank,addr):return self.read(bank,addr,1)[0]
     def write1(self,addr,value):
@@ -67,6 +68,10 @@ class FakeOmron:
             assert self.area==1
             check_setting(f"C3:{addr:04X}",value)
             self.c3[addr]=value
+        elif bank=="C5":
+            from c5_transfer import check_value as c5_check_value
+            c5_check_value(f"C5:{addr:04X}",value)
+            self.c5[addr]=value
         else:
             assert bank=="C1"
             check_value(f"C1:{addr:04X}",value)
@@ -292,6 +297,25 @@ class QtConnectedTests(unittest.TestCase):
         self.assertTrue(self.win.session.receipt_file.exists())
         self.assertEqual(sum(c==("operation","05","00") for c in fake.calls),1)
         self.assertEqual(sum(c==("operation","00","00") for c in fake.calls),1)
+
+    def test_fixed_pid_bank_two_is_written_without_active_pid_switch(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        fake.c3[0x0007]=1
+        self.win.draft={"C5:0010":140}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c5")
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.win.unified_preview_action()
+        self.assertTrue(self.win.unified_stage.isEnabled())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(self.win.c5_transfer.staged)
+            self.win.unified_save_action()
+        self.assertEqual(fake.c5[16],140)
+        self.assertTrue(self.win.c5_transfer.cmw_off)
+        self.assertEqual(fake.calls.count(("operation","05","00")),1)
+        self.assertFalse(any(c[0]=="write" and c[1]=="DA" for c in fake.calls))
 
     def test_unified_controls_never_write_unqualified_configuration(self):
         self.win.connect_read()
