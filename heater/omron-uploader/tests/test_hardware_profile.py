@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys, unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from hardware_profile import confirm_model,required_feature,supports,permitted
+from hardware_profile import confirm_model,required_feature,supports,permitted,documented_models
 from controller_inventory import SENSOR_INPUTS
 from c3_transfer import check_setting,PreflightError
 
@@ -47,6 +47,23 @@ class ModelCapabilitiesTests(unittest.TestCase):
         self.assertFalse(permitted(self.basic,"C3:0016",1))
         self.assertFalse(permitted(self.rs485,"C3:0010",None))
         self.assertTrue(permitted(self.rs485,"C3:0010",3))
+
+    def test_nameplate_dropdown_contains_only_valid_e5cc_t_orders(self):
+        options=dict(documented_models(self.prefix))
+        self.assertEqual(set(options),{
+            self.prefix+"5M-"+v for v in ("000","001","003","005","006")
+        })
+        self.assertIn("RS-485",options[self.prefix+"5M-003"])
+        self.assertFalse(documented_models("E5EC-TQX3A"))
+        with self.assertRaises(ValueError):
+            confirm_model(self.prefix+"5M-007",self.prefix)
+
+    def test_option_004_has_event_inputs_three_and_four_not_one_and_two(self):
+        cx=confirm_model("E5CC-TCX3A5M-004","E5CC-TCX3A")
+        self.assertEqual(cx.event_numbers,(3,4))
+        self.assertFalse(supports(cx,"C3:0016"))
+        self.assertTrue(supports(cx,"C3:0018"))
+        self.assertTrue(supports(cx,"C3:0019"))
 
     def test_all_thirty_documented_sensor_codes_encode_without_da(self):
         self.assertEqual(set(SENSOR_INPUTS),set(range(30)))
