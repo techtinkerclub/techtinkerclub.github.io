@@ -106,6 +106,7 @@ class Studio(QMainWindow):
         self._editor_last_verified_limits=None
         self.draft={}
         self.programmes=[blank_programme() for _ in range(8)]
+        self.planned_sensor_by_slot=[None]*8  # local project metadata, not DA memory
         self.slot=0
         self.preview_stamp=None
         self.preview_changes=[]
@@ -406,6 +407,8 @@ class Studio(QMainWindow):
     def _new_offline_programme(self):
         if self._editing_locked():return
         self.programmes[self.slot]=blank_programme()
+        self.planned_sensor_by_slot[self.slot]=None
+        self.editor_sensor.setCurrentIndex(0)
         self._render_programme()
         self.preview_stamp=None
         self.show_step(2)
@@ -1927,7 +1930,7 @@ class Studio(QMainWindow):
     def save_project(self):
         self.update_programme()
         try:
-            for p in self.programmes:p.validate()
+            for p in self.programmes:p.validate(strict_range=False)
         except Exception as exc:
             self.message("Project contains an invalid programme",str(exc),True);return
         path,_=QFileDialog.getSaveFileName(self,"Save local studio project",
@@ -1936,6 +1939,7 @@ class Studio(QMainWindow):
         document={"schema":"e5cct-modern-studio-project-1",
                   "programmes":[p.as_json() for p in self.programmes],
                   "selected_slot":self.slot,
+                   "planned_sensor_by_slot":self.planned_sensor_by_slot,
                   "configuration_changes":[{"address":k,"value":v} for k,v in sorted(self.draft.items())],
                   "note":"Local offline workspace; not a controller register backup."}
         try:
@@ -1970,11 +1974,21 @@ class Studio(QMainWindow):
                 draft[key]=value
             slot=obj.get("selected_slot",0)
             if type(slot) is not int or slot not in range(8):raise ValueError("Invalid memory slot")
+            selected=obj.get("planned_sensor_by_slot",[None]*8)
+            if (not isinstance(selected,list) or len(selected)!=8
+                    or any(x is not None and (type(x) is not int or x not in SENSOR_INPUTS)
+                           for x in selected)):
+                raise ValueError("Invalid planned input selections")
         except Exception as exc:
             self.message("Cannot open local project",str(exc),True);return
         self.programmes=programs
+        self.planned_sensor_by_slot=selected
         self.draft=draft
         self.slot=slot
+        self.editor_sensor.blockSignals(True)
+        index=self.editor_sensor.findData(selected[slot])
+        self.editor_sensor.setCurrentIndex(index if index>=0 else 0)
+        self.editor_sensor.blockSignals(False)
         self.slot_combo.blockSignals(True)
         self.slot_combo.setCurrentIndex(slot)
         self.slot_combo.blockSignals(False)
@@ -2357,6 +2371,10 @@ class Studio(QMainWindow):
         if slot<0:return
         self.update_programme()
         self.slot=slot
+        self.editor_sensor.blockSignals(True)
+        idx=self.editor_sensor.findData(self.planned_sensor_by_slot[slot])
+        self.editor_sensor.setCurrentIndex(idx if idx>=0 else 0)
+        self.editor_sensor.blockSignals(False)
         self._render_programme()
         self.preview_stamp=None;self.refresh_review()
 
@@ -2383,8 +2401,9 @@ class Studio(QMainWindow):
             return None,str(exc)
 
     def _editor_sensor_changed(self,*unused):
-        if hasattr(self,"segment_table") and not self._rendering:
-            self._render_programme()
+        if not hasattr(self,"segment_table") or self._rendering:return
+        self.planned_sensor_by_slot[self.slot]=self.editor_sensor.currentData()
+        self._render_programme()
 
     def propose_editor_sensor(self):
         """Stage a proposal, never an automatic C3 or DA write."""
