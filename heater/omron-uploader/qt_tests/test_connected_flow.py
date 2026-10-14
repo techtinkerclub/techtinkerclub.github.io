@@ -102,7 +102,7 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(self.win.session.info["model10"],"E5CC-TQX3A")
         self.assertEqual(self.win.session.settings["C3:0000"],5)
         self.assertEqual(len(self.win.backup["programmes"]),8)
-        self.assertEqual(self.win.inventory["fields"]["C5:0000"],0)
+        self.assertEqual(self.win.inventory["fields"]["C5:0000"],120)
         self.assertTrue(list(Path(self.dir.name).glob("*programme-backup*.json")))
         self.assertTrue(list(Path(self.dir.name).glob("*initial-settings*.json")))
         self.assertTrue(list(Path(self.dir.name).glob("*full-inventory*.json")))
