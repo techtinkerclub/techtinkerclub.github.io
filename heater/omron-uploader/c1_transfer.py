@@ -158,8 +158,10 @@ class C1SettingsTransfer:
         validate_set({row["register"]:row["new_raw"] for row in data["changes"]},mode)
         if mode!=data["control_mode"]:
             raise PreflightError("Controller control mode changed since preview")
-        if self._pid_context([r["register"] for r in data["changes"]])!=data["pid_set"]:
+        if data["pid_set"] is not None and self.client.read1("C0",0x000D)!=data["pid_set"]:
             raise PreflightError("Active PID set changed; refusing to write a different set")
+        if self._pid_context([r["register"] for r in data["changes"]])!=data["pid_set"]:
+            raise PreflightError("Selected PID context changed; refusing another PID set")
 
     def preview(self,draft):
         if self.preview_data is not None or self.ram_touched:
