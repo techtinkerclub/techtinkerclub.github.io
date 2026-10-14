@@ -60,14 +60,19 @@ def transfer_plan(draft: dict, *, programme_changed: bool = False, include_progr
                        and rows[0]["register"]=="C1:0021")
     if include_programme and not programme_changed:
         raise ValueError("Cannot include unchanged programme")
-    can_write=not blocked and (not programme_changed or not rows or eligible_combined)
+    mixed_areas=(any(row["register"].startswith("C1:") for row in rows) and
+                 any(row["register"].startswith("C3:") for row in rows))
+    can_write=not blocked and not mixed_areas and (
+        not programme_changed or not rows or eligible_combined)
     return dict(settings=rows, programme_changed=bool(programme_changed),
                 blocked=blocked, settings_eligible=settings,
                 simultaneous_transfer_qualified=bool(eligible_combined),
-                can_write_all=can_write,
+                can_write_all=can_write, mixed_setting_areas=mixed_areas,
                 reason=("Explicit C1 Wait Band + DA pilot; live hardware preflight required"
                         if eligible_combined else
                         "Mixed DA and these configuration changes not qualified for one save"
                         if combined else
+                        "C1 and C3 require SEPARATE setting-area transfers"
+                        if mixed_areas else
                         "Unqualified parameters need separate verified writing support"
                         if blocked else "Eligible under current separate-bank safeguards"))
