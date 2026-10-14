@@ -74,6 +74,10 @@ function testAtlas(){
  assert.ok(!d.getElementById("searchResults").hidden);
  assert.ok(d.getElementById("searchResults").textContent.includes("wt-b"));
  // Every item has a full map browse affordance.
+ assert.ok(d.querySelectorAll("#levelTopology [data-top-level]").length>=10);
+ click(dom.window,d.querySelector('#levelTopology [data-top-level="advanced"]'));
+ assert.equal(d.getElementById("levelHeading").textContent,"Advanced function setting level");
+ assert.ok(d.getElementById("modePath").textContent.includes("MODE"));
  assert.ok(d.querySelectorAll("#allMap .mapGroup").length===10);
  assert.ok(d.querySelectorAll("#allMap [data-map-level]").length>0);
  // Semantics: website makes no USB write claims.
