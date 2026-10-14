@@ -61,26 +61,65 @@ permalink: /heater/program-tools/
 <script>
 (()=>{"use strict";
 const $=x=>document.getElementById(x),K="e5cct-program-studio-v1",VMKEY="e5cct-virtual-omron-v2",MAX=32,esc=x=>String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),fmt=x=>Number.isFinite(x)?(Math.round(x*100)/100).toString():"?",num=x=>x!==""&&x!==undefined&&x!==null&&Number.isFinite(Number(x));
-const blank=t=>t==="soak"?{type:t,minutes:15}:t==="step"?{type:t,sp:120}:{type:"ramp",sp:120,rate:2};
+// H185 universal-input choices; selected code is GLOBAL to the physical controller.
+const INPUTS={
+ 0:["Pt100 −200…850 °C",-200,850,1],1:["Pt100 −199.9…500.0 °C",-199.9,500,.1],
+ 2:["Pt100 0.0…100.0 °C",0,100,.1],3:["JPt100 −199.9…500.0 °C",-199.9,500,.1],
+ 4:["JPt100 0.0…100.0 °C",0,100,.1],5:["Type K −200…1300 °C",-200,1300,1],
+ 6:["Type K −20.0…500.0 °C",-20,500,.1],7:["Type J −100…850 °C",-100,850,1],
+ 8:["Type J −20.0…400.0 °C",-20,400,.1],9:["Type T −200…400 °C",-200,400,1],
+ 10:["Type T −199.9…400.0 °C",-199.9,400,.1],11:["Type E −200…600 °C",-200,600,1],
+ 12:["Type L −100…850 °C",-100,850,1],13:["Type U −200…400 °C",-200,400,1],
+ 14:["Type U −199.9…400.0 °C",-199.9,400,.1],15:["Type N −200…1300 °C",-200,1300,1],
+ 16:["Type R 0…1700 °C",0,1700,1],17:["Type S 0…1700 °C",0,1700,1],
+ 18:["Type B 100…1800 °C",100,1800,1],19:["Type W 0…2300 °C",0,2300,1],
+ 20:["PLII 0…1300 °C",0,1300,1],
+ 21:["IR input 60 °C",0,90,1],22:["IR input 120 °C",0,120,1],
+ 23:["IR input 140 °C",0,165,1],24:["IR input 220 °C",0,260,1],
+ 25:["4–20 mA",null,null,null],26:["0–20 mA",null,null,null],
+ 27:["1–5 V",null,null,null],28:["0–5 V",null,null,null],
+ 29:["0–10 V",null,null,null]
+};
+let sensorPlan={code:6,analogLower:0,analogUpper:100,analogDp:1};
+function selectedInput(){
+ const c=sensorPlan.code,x=INPUTS[c]||INPUTS[6],analog=c>=25,
+ dp=Number(sensorPlan.analogDp),lo=Number(sensorPlan.analogLower),hi=Number(sensorPlan.analogUpper);
+ if(analog)return {code:c,name:x[0],lo,hi,step:1/Math.pow(10,dp),unit:"EU",
+     valid:Number.isFinite(lo)&&Number.isFinite(hi)&&lo<hi&&lo>=-1999&&hi<=9999&&Number.isInteger(dp)&&dp>=0&&dp<=3};
+ return {code:c,name:x[0],lo:x[1],hi:x[2],step:x[3],unit:"°C",valid:true};
+}
+const const blank=t=>t==="soak"?{type:t,minutes:15}:t==="step"?{type:t,sp:120}:{type:"ramp",sp:120,rate:2};
 const initial=()=>Array.from({length:8},(_,i)=>({name:i===0?"20 to 120°C example":i===1?"Verified 50°C bench example":"Programme "+i,start:20,finish:"rst",steps:i===0?[{type:"ramp",sp:120,rate:2},{type:"soak",minutes:15}]:i===1?[{type:"ramp",sp:50,rate:2},{type:"soak",minutes:15}]:[{type:"ramp",sp:80,rate:2}]}));
 let bank=initial(),slot=0;
-try{let x=JSON.parse(localStorage.getItem(K)||"null");if(x&&Array.isArray(x.bank)&&x.bank.length===8){bank=x.bank.map((v,i)=>({name:String(v.name||"Programme "+i).slice(0,80),start:v.start,finish:v.finish==="cont"?"cont":"rst",steps:Array.isArray(v.steps)?v.steps.slice(0,MAX).filter(t=>["ramp","soak","step"].includes(t.type)):[]}));slot=Math.max(0,Math.min(7,Number(x.slot)||0));}}catch(_){}
-const save=()=>{try{localStorage.setItem(K,JSON.stringify({bank,slot}));}catch(_){}},cur=()=>bank[slot];
+try{let x=JSON.parse(localStorage.getItem(K)||"null");if(x&&Array.isArray(x.bank)&&x.bank.length===8){bank=x.bank.map((v,i)=>({name:String(v.name||"Programme "+i).slice(0,80),start:v.start,finish:v.finish==="cont"?"cont":"rst",steps:Array.isArray(v.steps)?v.steps.slice(0,MAX).filter(t=>["ramp","soak","step"].includes(t.type)):[]}));slot=Math.max(0,Math.min(7,Number(x.slot)||0));if(x.sensorPlan&&Number.isInteger(x.sensorPlan.code)&&INPUTS[x.sensorPlan.code])sensorPlan={...sensorPlan,...x.sensorPlan};}}catch(_){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify({bank,slot,sensorPlan}));}catch(_){}},cur=()=>bank[slot];
 function evaluate(b){
- let err=[],notes=[],start=Number(b.start),temp=Number.isFinite(start)?start:20,t=0,pts=[[0,temp]],list=[];
- if(!num(b.start)||start< -20||start>500)err.push("Starting PV must be -20 to 500°C, matching the example Type K input range.");
+ let err=[],notes=[],warnings=[],start=Number(b.start),temp=Number.isFinite(start)?start:20,t=0,pts=[[0,temp]],list=[];
+ const sel=selectedInput();
+ if(!num(b.start)||start<-1999||start>9999)err.push("Starting PV must be a finite value between −1999 and 9999.");
+ if(!sel.valid)warnings.push("Analogue input scaling is missing or invalid. Set engineering lower/upper and decimal position before any controller transfer.");
+ const inRange=v=>sel.valid&&v>=sel.lo&&v<=sel.hi;
+ const precise=v=>sel.valid&&Math.abs(v/sel.step-Math.round(v/sel.step))<1e-6;
+ if(num(b.start)&&!inRange(start))warnings.push("Assumed starting value "+fmt(start)+" is outside selected input range "+sel.lo+"…"+sel.hi+" "+sel.unit+".");
  if(!b.steps.length||b.steps.length>MAX)err.push("A programme needs between 1 and 32 segments.");
  b.steps.forEach((s,i)=>{let kind=s.type,old=temp,d=0;
- if(kind==="ramp"){if(!num(s.sp)||Number(s.sp)< -20||Number(s.sp)>500){err.push("Segment "+i+": target outside -20 to 500°C.");return}
- if(!num(s.rate)||!Number.isInteger(Number(s.rate))||Number(s.rate)<1||Number(s.rate)>9999){err.push("Segment "+i+": slope must be a whole number 1–9999°C/min.");return}
- temp=Number(s.sp);d=Math.abs(temp-old)/Number(s.rate);t+=d;pts.push([t,temp]);list.push({type:kind,sp:temp,rate:Number(s.rate),minutes:d});if(d===0)notes.push("Segment "+i+" has zero ramp duration.");
- }else if(kind==="soak"){if(!num(s.minutes)||!Number.isInteger(Number(s.minutes))||Number(s.minutes)<0||Number(s.minutes)>5999){err.push("Segment "+i+": hold duration must be 0–5999 whole minutes.");return}
- d=Number(s.minutes);t+=d;pts.push([t,temp]);list.push({type:kind,minutes:d,sp:temp});
- }else if(kind==="step"){if(!num(s.sp)||Number(s.sp)< -20||Number(s.sp)>500){err.push("Segment "+i+": target outside -20 to 500°C.");return}
- temp=Number(s.sp);pts.push([t,temp]);list.push({type:kind,sp:temp,minutes:0});}
+  if(kind==="ramp"||kind==="step"){
+   if(!num(s.sp)||Number(s.sp)<-1999||Number(s.sp)>9999){err.push("Segment "+(i+1)+": invalid target value outside −1999…9999.");return;}
+   const sp=Number(s.sp);
+   if(!inRange(sp))warnings.push("Segment "+(i+1)+": target "+fmt(sp)+" outside "+sel.name+" ("+sel.lo+"…"+sel.hi+" "+sel.unit+").");
+   else if(!precise(sp))warnings.push("Segment "+(i+1)+": "+fmt(sp)+" is not a "+sel.step+" "+sel.unit+" increment.");
+   if(kind==="ramp"){
+    if(!num(s.rate)||!Number.isInteger(Number(s.rate))||Number(s.rate)<1||Number(s.rate)>9999){err.push("Segment "+(i+1)+": slope must be an integer from 1 to 9999.");return;}
+    d=Math.abs(sp-old)/Number(s.rate);t+=d;temp=sp;pts.push([t,temp]);list.push({type:kind,sp:temp,rate:Number(s.rate),minutes:d});if(d===0)notes.push("Segment "+(i+1)+" has zero ramp duration.");
+   }else{temp=sp;pts.push([t,temp]);list.push({type:kind,sp:temp,minutes:0});}
+  }else if(kind==="soak"){
+   if(!num(s.minutes)||!Number.isInteger(Number(s.minutes))||Number(s.minutes)<0||Number(s.minutes)>5999){err.push("Segment "+(i+1)+": hold duration must be 0–5999 whole minutes.");return;}
+   d=Number(s.minutes);t+=d;pts.push([t,temp]);list.push({type:kind,minutes:d,sp:temp});
+  }else err.push("Segment "+(i+1)+": unknown segment type.");
  });
- if(b.finish==="cont")notes.push("CONT continues controlling the final SP indefinitely, not just through the programmed soak.");
- return {err,notes,pts,list,time:t,final:temp};
+ if(b.finish==="cont")notes.push("CONT is a GLOBAL controller setting, not stored in the individual programme.");
+ if(sel.code>=25)warnings.push("Analogue setpoints use engineering units, not necessarily °C. Confirm physical transducer scaling, applicable ramp units and live C3:0001–0003 readback.");
+ return {err,notes,warnings,pts,list,time:t,final:temp};
 }
 function graph(pts){
  let ys=pts.map(a=>a[1]),tt=Math.max(1,...pts.map(a=>a[0])),lo=Math.min(...ys),hi=Math.max(...ys);if(lo===hi){lo-=5;hi+=5}let pad=(hi-lo)*.1;hi+=pad;lo-=pad;
