@@ -197,3 +197,21 @@ Regression: python -m unittest discover -s qt_tests -v. Windows CI compiles all 
 5. Implement C1/C3/C5 writes as separate controlled engineering work after verifying allowed parameter states, dependencies and persistence.
 
 The sidebar intentionally does not invent a controller serial number or firmware version: these were not established by the existing 0503 identity command.
+
+
+## Combined USB transfer pilot (14 October 2026; hardware not yet qualified)
+
+The USB transfer workspace has a single visible review and a single set of actions.
+
+For a combined transfer on the verified E5CC-T bench configuration:
+1. Back up the controller first, with its heater electrically isolated and the controller stopped.
+2. Modify the selected programme in Step 3 and propose a Wait Band change (`C1:0021`) in Step 4.
+3. In Step 5 select **Include selected programme with Wait Band: ON**. This is explicit to prevent writing unintended local programme differences.
+4. **Read + Preview** compares both the C1 value and the exact DA programme register differences against fresh controller reads. No write occurs.
+5. **Write RAM + Verify** enables communications writing, enters RAM mode, writes the qualified C1 register and selected DA registers, and reads back both.
+6. **Save + Finish** issues one SAVE RAM DATA, verifies readback, writes a durable receipt, then issues CMW OFF. If any stage fails, the application does not attempt a blind retry or automatically send CMW OFF.
+7. After a genuine controller power cycle, reconnect and use **Verify saved receipt**. A same-session readback alone does not prove persistence.
+
+**Important:** The combined C1/DA transaction has passed simulated Windows and backend tests but is not yet confirmed against physical hardware. Treat it as isolated laboratory commissioning only; leave the heater supplies disconnected.
+
+Changing thermocouple/input type (`C3:0000`), alarms, PID sets, output parameters, and other configuration is **not** yet supported by hardware writes. These parameters can be reviewed as local drafts; their register-specific setting area, applicable hardware features, and persistence rules must be qualified before enabling writing. Unsupported draft parameters block transfer, rather than being silently ignored. E58-CIFQ2 model identification supplies only a truncated prefix, so do not assume different Omron models are interchangeable.
