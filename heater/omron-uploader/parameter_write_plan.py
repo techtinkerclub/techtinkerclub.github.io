@@ -10,9 +10,10 @@ The existence of an H186 R/W address never grants runtime write permission.
 from __future__ import annotations
 from dataclasses import dataclass
 from controller_inventory import CATALOG, validate_inventory, human_value
+from c1_transfer import QUALIFIED_C1_CODES
 
 SOURCE="Omron H186-E1-06 sections 2-2-3, 2-3-8 and 3-1"
-APPROVED_SETTING_REGISTERS=frozenset({"C1:0021"})
+APPROVED_SETTING_REGISTERS=QUALIFIED_C1_CODES
 
 @dataclass(frozen=True)
 class WriteRequirements:
@@ -35,9 +36,15 @@ def requirements(key):
         return WriteRequirements(key,"0","protection secret","not verifiable","excluded",
                                  "Password reads as zero; readback and rollback cannot verify the original.")
     if key in APPROVED_SETTING_REGISTERS:
-        return WriteRequirements(key,"0","adjustment","SAVE RAM DATA","bench-pilot",
-                                 "Global Wait Band: affects progression of all eight programmes.",
-                                 True)
+        if key=="C1:0021":
+            note="Global Wait Band: affects progression of all eight programmes."
+        elif key=="C1:001B":
+            note="Heating hysteresis applies to ON/OFF control. Not available in PID mode."
+        else:
+            note=("Applies to the currently selected PID set. The active set must "
+                  "remain unchanged during preview, write and SAVE.")
+        return WriteRequirements(key,"0","adjustment / tuning","SAVE RAM DATA",
+                                 "isolated-lab experimental",note,True)
     if bank=="C1":
         return WriteRequirements(key,"0","adjustment / operation / protection",
                                  "SAVE RAM DATA if applicable","requires-hardware-qualification",
@@ -99,7 +106,7 @@ def create_write_plan(snapshot,draft,*,programme_changed=False,include_programme
     elif combined_eligible:
         status="combined C1 Wait Band + DA pilot eligible subject to live preflight"
     elif qualified and programme_changed and not include_programme:
-        status="Wait Band-only selected; changed local programme is NOT included"
+        status="Settings-only selected; changed local programme is NOT included"
     elif qualified:
         status="qualified setting-only pilot eligible subject to live preflight"
     elif programme_changed:
