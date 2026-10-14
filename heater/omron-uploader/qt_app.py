@@ -1,16 +1,17 @@
 """Modern, self-contained E5CC-T Studio (PySide6 + PyQtGraph).
 
-This GUI deliberately reuses the tested Omron backend. Hardware writes are
-explicitly isolated-lab only: DA programme memory or the narrowly qualified
-Wait Band register (C1:0021). No other C0/C1/C3/C4/C5/C9 configuration writes
-are allowed. Step 5 has one unified USB transfer workspace; its two operations
-remain independently backed up, verified and saved. Offline work requires no USB.
+This GUI reuses the guarded Omron backend. Hardware writes require isolated
+lab mode and an exact register allowlist: DA programme memory and selected C1
+adjustments (including Wait Band and PID/hysteresis settings). C3/C4/C5/C9
+writes remain disabled. Step 5 reviews and verifies changes; offline work
+does not require USB.
 """
 from __future__ import annotations
 
 import argparse
 import copy
 from datetime import datetime,timezone
+from decimal import Decimal,InvalidOperation
 import hashlib
 import json
 from pathlib import Path
@@ -39,6 +40,7 @@ from programme_constraints import effective_limits,programme_issues,check_global
 from transfer_capabilities import transfer_plan
 from parameter_write_plan import create_write_plan,requirements
 from settings_presentation import VIEWS,visible_in_view,scope_for,view_for
+from setting_dependencies import dependency_for
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
 from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
@@ -516,6 +518,22 @@ class Studio(QMainWindow):
         self.parameter_choices=StudioCombo()
         dl.addWidget(self.parameter_choices)
         dl.addWidget(button("Add to change review",self.propose_setting,True))
+        self.revert_setting_button=button("Revert to previous value",self.revert_setting)
+        self.revert_setting_button.setEnabled(False)
+        self.revert_setting_button.setToolTip(
+            "Discard this parameter's local proposal or unfinished edit and restore "
+            "the last value read from the controller. No USB write is sent.")
+        dl.addWidget(self.revert_setting_button)
+        self.setting_dependency_note=QLabel("")
+        self.setting_dependency_note.setWordWrap(True)
+        dl.addWidget(self.setting_dependency_note)
+        self.open_dependency_button=button(
+            "Open required controller setting →",self.open_required_setting)
+        self.open_dependency_button.setVisible(False)
+        self.open_dependency_button.setToolTip(
+            "Go to the global setting controlling whether this parameter applies. "
+            "This does not automatically change the controller.")
+        dl.addWidget(self.open_dependency_button)
         dl.addWidget(text(
             "Anyone can plan changes here. Only qualified parameters can currently "
             "be uploaded. The controller must meet the required state and safety checks; "
@@ -533,6 +551,8 @@ class Studio(QMainWindow):
         self.search.textChanged.connect(self.refresh_settings)
         self.settings_view.currentTextChanged.connect(self.refresh_settings)
         self.show_setting_technical.toggled.connect(self.refresh_settings)
+        self.parameter_editor.textChanged.connect(self._refresh_revert_setting)
+        self.parameter_choices.currentIndexChanged.connect(self._refresh_revert_setting)
         self.refresh_settings()
 
     def _apply_page(self):
@@ -2054,6 +2074,9 @@ class Studio(QMainWindow):
             self.parameter_detail.clear()
             self.parameter_editor.clear()
             self.parameter_choices.clear()
+            self.setting_dependency_note.clear()
+            self.open_dependency_button.setVisible(False)
+            self.revert_setting_button.setEnabled(False)
         # A filter rebuild can replace row 0 while leaving Qt's selected row
         # number unchanged. No selectionChanged event is emitted in that case.
         # Explicitly refresh the detail/editor for the newly mapped register.
@@ -2069,6 +2092,7 @@ class Studio(QMainWindow):
         if self._rendering:return
         code=self._selected_setting_code()
         if not code:return
+        self._setting_loading=True
         p=CATALOG[code]
         raw=self.inventory["fields"].get(code)
         display=human_value(code,raw,self.inventory["fields"].get("C3:0000"))
@@ -2126,6 +2150,84 @@ class Studio(QMainWindow):
                          code in ("C3:0005","C3:0006","C1:0012") else p.scale)
                 self.parameter_editor.setText(f"{signed/scale:g}")
             self.parameter_editor.setEnabled(can_edit)
+        dependency=dependency_for(code,self.inventory["fields"],self.draft)
+        if dependency is None:
+            self.setting_dependency_note.clear()
+            self.open_dependency_button.setVisible(False)
+        else:
+            self.setting_dependency_note.setText(dependency.explanation)
+            self.setting_dependency_note.setStyleSheet(
+                "color:"+("#157952" if dependency.matches_controller
+                           and not dependency.proposed_conflict else "#a8610f")
+                +";font-weight:600")
+            self.open_dependency_button.setText(
+                "View control algorithm →  (C3:0007)")
+            self.open_dependency_button.setVisible(True)
+        self._setting_loading=False
+        self._refresh_revert_setting()
+
+    def _refresh_revert_setting(self,*unused):
+        if not hasattr(self,"revert_setting_button") or getattr(self,"_setting_loading",False):
+            return
+        code=self._selected_setting_code()
+        raw=self.inventory["fields"].get(code) if code else None
+        if code is None or self._editing_locked_for_settings():
+            self.revert_setting_button.setEnabled(False)
+            return
+        draft_exists=code in self.draft
+        if raw is None:
+            # Offline/no live evidence: a draft may be discarded, but no
+            # original value can be reconstructed from an empty inventory.
+            enabled=draft_exists
+        elif CATALOG[code].options:
+            new=self.parameter_choices.currentData()
+            unsigned=(new & 0xffffffff) if type(new) is int else None
+            enabled=draft_exists or unsigned!=raw
+        else:
+            txt=self.parameter_editor.text().strip()
+            scale=(10 if self.inventory["fields"].get("C3:0000")==6 and
+                   code in ("C3:0005","C3:0006","C1:0012")
+                   else CATALOG[code].scale)
+            signed=raw-(1<<32) if raw>=1<<31 else raw
+            try: unchanged=Decimal(txt)==Decimal(signed)/Decimal(scale)
+            except (InvalidOperation,ValueError):unchanged=False
+            enabled=draft_exists or not unchanged
+        self.revert_setting_button.setEnabled(bool(enabled))
+        self.revert_setting_button.setText(
+            "Revert to previous value" if raw is not None
+            else "Discard proposed change")
+
+    def _editing_locked_for_settings(self):
+        if self.busy or self._settings_ram_pending():return True
+        if self.session and self.session.staged is not None and not self.session.committed:
+            return True
+        return False
+
+    def revert_setting(self):
+        """Restore selected controller value, discarding only its draft/edit."""
+        if self._editing_locked():return
+        code=self._selected_setting_code()
+        if code is None:return
+        raw=self.inventory["fields"].get(code)
+        if raw is None and code not in self.draft:return
+        self.draft.pop(code,None)
+        self.preview_stamp=None
+        self.refresh_settings()
+        self.refresh_review()
+        self.feedback.setText(
+            f"{CATALOG[code].name}: local edit discarded. "
+            +("Restored last read controller value." if raw is not None
+              else "Controller value is unknown; proposal cleared."))
+
+    def open_required_setting(self):
+        code=self._selected_setting_code()
+        dep=dependency_for(code,self.inventory["fields"],self.draft) if code else None
+        if dep is None:return
+        self.group.setCurrentText("All groups")
+        self.search.setText(dep.register)
+        if dep.register in self.setting_keys:
+            self.setting_table.selectRow(self.setting_keys.index(dep.register))
+            self._setting_selected()
 
     def propose_setting(self):
         if self._editing_locked():return
