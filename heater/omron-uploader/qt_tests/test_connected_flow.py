@@ -105,7 +105,6 @@ class QtConnectedTests(unittest.TestCase):
         self.win.show_step(4)
         self.win.preview()
         self.assertEqual(len(self.win.preview_changes),9)
-        for check in self.win.safety:check.setChecked(True)
         self.win.refresh_actions()
         self.assertTrue(self.win.stage_button.isEnabled())
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
@@ -190,8 +189,8 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(self.win.apply_tabs.tabText(0),"Offline / manual entry")
         self.assertEqual(self.win.apply_tabs.tabText(1),"USB transfer")
         self.assertEqual(self.win.apply_tabs.currentIndex(),1)
-        self.assertEqual(self.win.transfer_operation.currentData(),"settings")
-        self.assertEqual(self.win.transfer_stack.currentIndex(),1)
+        self.assertTrue(self.win.preview_button.isVisible())
+        self.assertTrue(self.win.wt_preview.isVisible())
         self.assertIn("NOT written",self.win.transfer_summary.text())
         self.assertIn("Wait band",self.win.config_review.toPlainText())
         self.assertIn("USB pilot available",self.win.config_review.toPlainText())
@@ -201,7 +200,6 @@ class QtConnectedTests(unittest.TestCase):
                          self.win.apply_details.toPlainText())
         self.win.preview_wait()
         self.assertEqual(self.win.apply_tabs.currentIndex(),1)
-        self.assertEqual(self.win.transfer_stack.currentIndex(),1)
         self.assertIn("read-only preview",self.win.config_review.toPlainText().lower())
 
     def test_saved_wt_b_is_visible_in_unified_review_and_not_confused_with_da(self):
@@ -214,18 +212,13 @@ class QtConnectedTests(unittest.TestCase):
             self.win.stage_wait()
             self.win.save_wait()
         self.assertEqual(self.win.draft,{})
-        self.assertEqual(self.win.transfer_stack.currentIndex(),1)
         self.assertIn("wt-b 0 → 2 °C: SAVE acknowledged",self.win.transfer_summary.text())
         self.assertIn("power-cycle verification still required",
                       self.win.transfer_summary.text().lower())
         self.assertIn("no programme write in this connection",
                       self.win.transfer_summary.text())
         self.assertFalse(self.win.preview_button.isEnabled())
-        self.win.transfer_operation.setCurrentIndex(0)
-        self.assertEqual(self.win.transfer_stack.currentIndex(),0)
         self.assertIn("SAVE acknowledged",self.win.transfer_summary.text())
-        self.win.transfer_operation.setCurrentIndex(1)
-        self.assertEqual(self.win.transfer_stack.currentIndex(),1)
         self.assertTrue(self.win.wt_cmw_off.isEnabled())
         # A later proposed value must remain explicitly NOT WRITTEN,
         # even though a previous change was saved during this connection.
