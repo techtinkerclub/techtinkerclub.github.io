@@ -17,16 +17,35 @@ from transfer import PreflightError
 from compoway import ProtocolError
 from settings_transfer import _write_checked_json
 from programme_constraints import effective_limits
+from controller_inventory import CATALOG
+from hardware_profile import supports
 
 SCHEMA="e5cct-c3-configuration-receipt-1"
 # Model-specific narrow whitelist. No alarm disabling/output polarity/baud.
 SPECS={
-    "C3:0000": ("Type K input range/resolution", {5,6}),
+    "C3:0000": ("Documented sensor/analogue input selection", set(range(30))),
     "C3:0007": ("Control algorithm (0=ON/OFF, 1=PID)", {0,1}),
     "C3:0005": ("SP upper limit", None),
     "C3:0006": ("SP lower limit", None),
     "C3:000A": ("Heating output control period", {-2,-1,0,*range(1,100)}),
 }
+# Hardware-supported, documented area-1 values may be edited as front-panel
+# parameters. Keep self-disconnecting serial settings and changed RESET
+# semantics in a dedicated path with explicit recovery handling.
+_DEDICATED=frozenset({
+    "C3:0010","C3:0011","C3:0012","C3:0013","C3:0014",
+    "C3:004C","C3:004D","C3:0096","C3:0097","C3:0098",
+    "C3:0099","C3:009A","C3:009B",
+    "C3:00BC","C3:00BD",
+})
+for _code,_p in CATALOG.items():
+    if (not _code.startswith("C3:") or _code in SPECS or
+        _code in _DEDICATED or not _p.access.startswith("documented R/W")):
+        continue
+    if _p.options is not None:
+        SPECS[_code]=(_p.name,frozenset(_p.options))
+    elif _p.minimum is not None and _p.maximum is not None and _p.maximum<=0x7fffffff:
+        SPECS[_code]=(_p.name,(_p.minimum,_p.maximum))
 ALLOWED=frozenset(SPECS)
 
 def signed32(raw):
@@ -37,7 +56,10 @@ def check_setting(key,value):
         raise PreflightError("Unqualified C3 write address or raw value: "+str(key))
     signed=signed32(value)
     allowed=SPECS[key][1]
-    if allowed is not None and signed not in allowed:
+    if isinstance(allowed,tuple):
+        if not allowed[0]<=signed<=allowed[1]:
+            raise PreflightError(f"{key}: outside documented raw range {allowed}")
+    elif allowed is not None and signed not in allowed:
         raise PreflightError(f"{key}: unsupported parameter encoding ({signed})")
     return value
 
@@ -85,14 +107,15 @@ def verify_c3_receipt(client,path,model10):
     return len(rows)
 
 class C3ConfigurationTransfer:
-    def __init__(self,client,session,folder,emit=None):
+    def __init__(self,client,session,folder,emit=None,hardware=None):
         self.client=client;self.session=session;self.folder=Path(folder)
+        self.hardware=hardware
         self.log=emit or (lambda message:None)
         self.preview_data=None;self.baseline_file=None;self.receipt_file=None
         self.area_entered=False;self.write_attempted=False
         self.staged=False;self.finished=False;self.cmw_off=False
 
-    def _preflight(self):
+    def _preflight(self, extra=()):
         ses=self.session
         if not getattr(self.client,"write_allowed",False):
             raise PreflightError("Read-only serial connection")
@@ -116,16 +139,21 @@ class C3ConfigurationTransfer:
                 raise PreflightError(
                     f"Global configuration not qualified with C3:{address:04X}"
                     f"={signed32(actual)}; expected {expected}")
+        addresses={0,4,5,6,7,0x0a} | {
+            int(k.split(":",1)[1],16) for k in extra
+        }
         raw={f"C3:{i:04X}":self.client.read1("C3",i)
-             for i in (0,4,5,6,7,0x0a)}
-        if raw["C3:0000"] not in (5,6):
-            raise PreflightError("Initial configuration is only qualified for Type K input 5 or 6")
+             for i in sorted(addresses)}
         return raw
 
     def preview(self,draft):
         if self.preview_data or self.area_entered or self.write_attempted:
             raise PreflightError("Another C3 attempt exists in this session")
-        live=self._preflight()
+        for key in draft:
+            if supports(self.hardware,key) is not True:
+                raise PreflightError(
+                    f"{key}: confirm full nameplate model and fitted option")
+        live=self._preflight(draft)
         sensor_change=validate_draft(draft,live,self.session.backup_data)
         changes=[]
         for key,val in sorted(draft.items()):
@@ -161,7 +189,7 @@ class C3ConfigurationTransfer:
             raise PreflightError("A fresh read-only preview is required; no retries")
         if json.loads(self.baseline_file.read_text(encoding="utf-8"))!=data:
             raise PreflightError("C3 backup evidence changed")
-        live=self._preflight()
+        live=self._preflight(r["register"] for r in data["changes"])
         plan={r["register"]:r["new_raw"] for r in data["changes"]}
         validate_draft(plan,live,self.session.backup_data)
         for row in data["changes"]:
