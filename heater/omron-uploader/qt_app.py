@@ -2553,7 +2553,10 @@ class Studio(QMainWindow):
                 lines.append("Other settings are review-only until their writing procedures "
                              "have been qualified. The DA programme is NOT included.")
         elif not self.session:
-            lines.append("\nNo live connected controller; offline manual export is available.")
+            lines.append("\nNo verified connection snapshot for writes. "
+                         "A read-only connection after reset may still be active, "
+                         "but Step 2 must reread the controller before uploading. "
+                         "Do NOT use programmes until sensor-related temperatures are checked.")
         elif self.session.staged and not self.session.committed:
             lines.append("\nRAM staging was read back and verified; nonvolatile save is still pending.")
         elif self.session.committed:
