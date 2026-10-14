@@ -279,6 +279,95 @@ class QtConnectedTests(unittest.TestCase):
         self.win.unified_save_action()
         self.assertFalse(any(c[0] in ("write","setting-write") for c in fake.calls))
 
+    def test_combined_wait_and_programme_one_save_and_cmw_off(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.draft={"C1:0021":20}
+        self.win.show_step(4)
+        self.assertTrue(self.win.include_programme_button.isEnabled())
+        self.assertIn("OFF",self.win.include_programme_button.text())
+        self.win.toggle_programme_inclusion()
+        self.assertIn("ON",self.win.include_programme_button.text())
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.win.unified_preview_action()
+        tx=self.win.combined_transfer
+        self.assertEqual(tx.preview_data["wait_band"]["new"],20)
+        self.assertEqual(len(tx.preview_data["programme_changes"]),9)
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(tx.staged)
+            self.assertTrue(self.win.unified_save.isEnabled())
+            self.win.unified_save_action()
+        self.assertTrue(tx.saved)
+        self.assertTrue(tx.cmw_off)
+        self.assertTrue(tx.receipt_file.exists())
+        self.assertEqual(fake.c1[0x0021],20)
+        self.assertEqual(sum(c[0]=="write" for c in fake.calls),9)
+        self.assertEqual(
+            [c for c in fake.calls if c[0]=="operation"],
+            [("operation","00","01"),("operation","04","01"),
+             ("operation","05","00"),("operation","00","00")])
+        self.assertEqual(self.win.draft,{})
+        self.assertIn("SAVED",self.win.transfer_summary.text())
+
+    def test_combined_partial_write_never_saves_or_disables_cmw(self):
+        from combined_transfer import CombinedTransfer
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        tx=CombinedTransfer(fake,self.win.session,self.dir.name)
+        tx.preview(0,EXAMPLE,20)
+        with patch.object(fake,"write1",side_effect=RuntimeError("Injected DA failure")):
+            with self.assertRaisesRegex(RuntimeError,"Injected DA failure"):
+                tx.stage()
+        self.assertTrue(tx.ram_touched)
+        self.assertTrue(self.win.session.ram_touched)
+        self.assertFalse(tx.staged)
+        self.assertFalse(tx.saved)
+        self.assertNotIn(("operation","05","00"),fake.calls)
+        self.assertNotIn(("operation","00","00"),fake.calls)
+        with self.assertRaises(Exception):
+            tx.save_finish()
+
+    def test_combined_failed_cmw_after_save_does_not_issue_second_save(self):
+        from combined_transfer import CombinedTransfer
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        tx=CombinedTransfer(fake,self.win.session,self.dir.name)
+        tx.preview(0,EXAMPLE,20)
+        tx.stage()
+        original=fake.operation
+        def failing_operation(code,data):
+            if (code,data)==("00","00"):
+                raise RuntimeError("Injected CMW OFF failure")
+            return original(code,data)
+        with patch.object(fake,"operation",side_effect=failing_operation):
+            with self.assertRaisesRegex(RuntimeError,"Injected CMW OFF failure"):
+                tx.save_finish()
+        self.assertTrue(tx.saved)
+        self.assertFalse(tx.cmw_off)
+        self.assertTrue(tx.receipt_file.exists())
+        self.assertEqual(sum(c==("operation","05","00") for c in fake.calls),1)
+        with self.assertRaises(Exception):
+            tx.save_finish()
+        self.assertEqual(sum(c==("operation","05","00") for c in fake.calls),1)
+
+    def test_combined_requires_explicit_programme_selection(self):
+        self.win.connect_read()
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.draft={"C1:0021":20}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"settings")
+        self.win.toggle_programme_inclusion()
+        self.assertEqual(self.win._active_transfer_kind(),"combined")
+        self.win.draft["C3:0000"]=6
+        self.win.refresh_actions()
+        self.assertFalse(self.win.unified_preview.isEnabled())
+        self.assertFalse(self.win.unified_stage.isEnabled())
+        self.assertFalse(self.win.unified_save.isEnabled())
+
     def test_qt_settings_cannot_stage_two_unrelated_drafts(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
