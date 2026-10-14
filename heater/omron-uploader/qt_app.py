@@ -986,29 +986,14 @@ class Studio(QMainWindow):
                    f" → {human_value(r['register'],r['new_raw'])}"
                    for r in data["changes"]]
             if data["sensor_change"]:
-                old_sensor=self.session.settings["C3:0000"]
-                new_sensor=next(r["new_raw"] for r in data["changes"]
-                                if r["register"]=="C3:0000")
-                estimate,warnings=interpreted_temperature_changes(
-                    self.session.backup_data["programmes"],
-                    self.session.backup_data["programmes"],
-                    old_sensor,new_sensor)
-                lines+=["",f"SENSOR CHANGE CONSEQUENCE: {len(estimate)} existing "
-                        "ramp/step targets may be displayed differently IF their "
-                        "raw memory words remain unchanged."]
-                for row in estimate[:8]:
-                    lines.append(
-                        f"  Programme {row['programme']}, segment {row['segment']}: "
-                        f"{row['old_interpretation_c']:g} °C → "
-                        f"{row['new_interpretation_c']:g} °C")
-                if len(estimate)>8:
-                    lines.append(f"  ... and {len(estimate)-8} more.")
-                lines+=warnings
-                lines.append(
-                    "These are estimates from our decoder, NOT verified Omron "
-                    "post-change temperatures. Omron may clamp/reset or "
-                    "otherwise adjust programmes internally. Inspect the full "
-                    "read-only audit after the configuration change.")
+                lines.extend([
+                    "",
+                    "The app will send ONLY the selected sensor input register; "
+                    "no DA programme memory will be rewritten or scaled.",
+                    "The Omron controls any internal limit/parameter updates. "
+                    "Read the controller again afterward to display the "
+                    "resulting sensor limits and programme interpretation.",
+                ])
             self.message("Read-only initial configuration preview",
                 "\n".join(lines)+"\n\nNOT WRITTEN. Apply enters setup area 1 "
                 "and can affect the controller immediately. No automatic rollback "
@@ -1063,15 +1048,20 @@ class Studio(QMainWindow):
         def done(receipt):
             for row in tx.preview_data["changes"]:
                 code=row["register"]
-                self.inventory["fields"][code]=row["new_raw"]
+                # Do NOT substitute our requested value for a fresh controller
+                # read: Omron may automatically initialise related settings.
                 self.draft.pop(code,None)
+            self.inventory_current_session=False
+            self.preview_stamp=None
             self.refresh_settings()
             self.refresh_review()
             self.message("Area-1 configuration session finished",
                 "C3 values were read back and CMW OFF was acknowledged. "
-                "Persistence is UNVERIFIED. Next use Software restart + audit all "
-                "8 programmes, or physically power-cycle and re-read manually. "
-                "Do not upload other settings in this connection. Receipt:\n"+str(receipt))
+                "Initial/global settings were written exactly as proposed. "
+                "No DA programme registers were written by the app. Return to "
+                "normal controller operation with the documented reset/power-cycle "
+                "procedure, then read the controller again to learn any "
+                "Omron-managed dependent changes. Receipt:\n"+str(receipt))
         self._work("Finish C3: record receipt and CMW OFF",action,done,True)
 
     def restart_verify_c3(self):
@@ -2191,10 +2181,18 @@ class Studio(QMainWindow):
         self.preview_stamp=None;self.refresh_review()
 
     def _effective_programme_limits(self):
-        """Resolve live and pending global constraints without claiming offline verification."""
+        """Only the ACTUALLY READ controller configuration governs the editor.
+
+        A draft change is not active on hardware. Never reinterpret an existing
+        programme's graph from a proposed sensor change, and never use stale
+        values after writing initial/global configuration.
+        """
+        if self.mode=="connected" and self.client and not self.inventory_current_session:
+            return None,("Controller settings are stale after a global change. "
+                         "Read everything again in Step 2.")
         fields=self.inventory.get("fields",{})
         try:
-            limits=effective_limits(fields,self.draft,require_readback=bool(
+            limits=effective_limits(fields,require_readback=bool(
                 self.mode=="connected" and self.inventory_current_session))
             return limits,None
         except ValueError as exc:
@@ -2627,10 +2625,10 @@ class Studio(QMainWindow):
                 lines.append("C3 pilot: Control algorithm, Type K sensor 5/6, SP limits "
                              "and heating control period only. A special write procedure "
                              "is required; SAVE RAM DATA is NOT used to claim C3 persistence.")
-                lines.append("A sensor-range change can change how existing programme "
-                             "setpoints are interpreted. A complete original DA backup "
-                             "and post-restart comparison are mandatory. No automatic "
-                             "scaling or editing of your programmes is performed.")
+                lines.append("C3 writes address only the selected setting registers; "
+                             "the app never converts or rewrites DA programmes "
+                             "as a side effect. Omron handles dependent values; "
+                             "re-read its configuration after returning to area 0.")
             if write_plan["setting_area_0"] and write_plan["setting_area_1"]:
                 lines.append("Changes span different setting areas: one ordinary SAVE cannot "
                              "safely apply the complete draft.")
@@ -2644,9 +2642,10 @@ class Studio(QMainWindow):
                 lines.append("One qualified setting is pending, but other proposed settings block "
                              "transfer until reviewed or removed. Nothing will be silently skipped.")
             if self.draft and set(self.draft).issubset(QUALIFIED_C3_CODES):
-                lines.append("Restricted C3 initial configuration USB pilot. "
-                             "Hardware changes may be persisted immediately. "
-                             "Power-cycle required. No C1 or DA writes included.")
+                lines.append("Restricted C3 global-setting transfer: write the "
+                             "selected parameters, verify readback, then return "
+                             "to setting area 0 and read fresh settings. "
+                             "No programme memory will be uploaded.")
             elif (set(self.draft).issubset(QUALIFIED_C1_CODES) and
                     set(self.draft)!={"C1:0021"}):
                 lines.append("Selected setup-area-0 C1 adjustment settings can now be "
