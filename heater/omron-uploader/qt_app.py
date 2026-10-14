@@ -327,8 +327,6 @@ class Studio(QMainWindow):
         self.show_step(4)
         if self.mode=="connected":
             self.apply_tabs.setCurrentIndex(1)
-            self.transfer_operation.setCurrentIndex(1)
-            self._transfer_operation_changed()
 
     def _programme_page(self):
         page=QWidget()
@@ -611,22 +609,9 @@ class Studio(QMainWindow):
         uv.addWidget(text("This tab transfers DA programme memory only. "
             "The qualified Wait Band writer is in Settings USB transfer. "
             "All other configuration writes remain disabled. Keep the heater isolated.",True))
-        self.safety=[]
-        checks=[
-            "Controller normal mains supply and external heater DC are physically isolated",
-            "Full E5CC-TQX3A5M-000 suffix confirmed on the physical nameplate",
-            "Controller is stopped/RESET; no live heater operation",
-            "Fresh backup of all eight programme memories has completed",
-            "Understand RAM stage is temporary; SAVE RAM DATA is separate",
-            "This is isolated commissioning, not permission to energise the heater",
-        ]
-        checks_card,checks_layout=card(10)
-        for caption in checks:
-            check=QCheckBox(caption)
-            check.toggled.connect(self.refresh_actions)
-            checks_layout.addWidget(check)
-            self.safety.append(check)
-        uv.addWidget(checks_card)
+        uv.addWidget(text("Before writing: confirm the model nameplate, stopped controller, "
+            "fresh backup and physically isolated heater supplies. The first RAM write "
+            "requires a specific confirmation.",True))
         config=QWidget()
         cv=QVBoxLayout(config)
         cv.setSpacing(10)
@@ -667,21 +652,26 @@ class Studio(QMainWindow):
             "QLabel#transferSummary {background:#eff6fc;border:1px solid #d8e6f2;"
             "border-radius:8px;padding:12px;color:#214965;}")
         transfer_layout.addWidget(self.transfer_summary)
-        operation=QHBoxLayout()
-        operation.addWidget(text("TRANSFER OPERATION:",True))
-        self.transfer_operation=StudioCombo()
-        self.transfer_operation.addItem("Programme memory (DA)", "programme")
-        self.transfer_operation.addItem("Controller settings (wt-b)", "settings")
-        self.transfer_operation.setMinimumWidth(240)
-        operation.addWidget(self.transfer_operation)
-        operation.addWidget(text("Each transfer has its own preview, RAM verification, "
-                                 "SAVE and receipt; they cannot be mixed in one session.",True),1)
-        transfer_layout.addLayout(operation)
-        self.transfer_stack=QStackedWidget()
-        self.transfer_stack.addWidget(usb)
-        self.transfer_stack.addWidget(config)
-        transfer_layout.addWidget(self.transfer_stack,1)
-        self.transfer_operation.currentIndexChanged.connect(self._transfer_operation_changed)
+        transfer_layout.addWidget(text(
+            "Both transfer types are visible below. They share a status summary, but "
+            "their guarded RAM and SAVE sequences remain separate. Never mix "
+            "unsaved settings and programme writes in the same connection.",True))
+        transfer_scroll=QScrollArea()
+        transfer_scroll.setWidgetResizable(True)
+        transfer_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        transfer_body=QWidget()
+        transfer_sections=QVBoxLayout(transfer_body)
+        transfer_sections.setSpacing(12)
+        transfer_sections.addWidget(heading("Programme memory (DA)",
+            "Preview and transfer the selected programme memory."))
+        self.apply_details.setMinimumHeight(170)
+        transfer_sections.addWidget(usb)
+        transfer_sections.addWidget(heading("Controller settings (wt-b)",
+            "Only the qualified Wait Band register can be written over USB."))
+        transfer_sections.addWidget(config)
+        transfer_sections.addStretch(1)
+        transfer_scroll.setWidget(transfer_body)
+        transfer_layout.addWidget(transfer_scroll,1)
         self.apply_tabs.addTab(transfer,"USB transfer")
         v.addWidget(self.apply_tabs,1)
         self.pages.addWidget(page)
@@ -714,12 +704,6 @@ class Studio(QMainWindow):
             self.draft={}
             self.refresh_settings()
         self.show_step(1)
-
-    def _transfer_operation_changed(self,*unused):
-        if not hasattr(self,"transfer_stack"):return
-        choice=self.transfer_operation.currentData()
-        self.transfer_stack.setCurrentIndex(1 if choice=="settings" else 0)
-        self._refresh_transfer_summary()
 
     def _refresh_transfer_summary(self):
         """One accurate summary for programme and settings transfers."""
@@ -794,9 +778,6 @@ class Studio(QMainWindow):
             self.offline_return.setVisible(self.mode=="offline" and self.offline_inspect_saved)
         if self._current_step==4:
             self.apply_tabs.setCurrentIndex(0 if self.mode=="offline" else 1)
-            preferred=1 if (self.draft or self.setting_transfer) else 0
-            self.transfer_operation.setCurrentIndex(preferred)
-            self._transfer_operation_changed()
             self.refresh_review()
         if self._current_step==3:self.refresh_settings()
         self._controls()
@@ -1739,7 +1720,7 @@ class Studio(QMainWindow):
                      and self.setting_transfer is None)
         can_stage=(can_preview and self.lab and not self.fail_latched and not session.mismatches
             and session.staged is None and self.preview_stamp==self._programme_fingerprint()
-            and bool(self.preview_changes) and all(x.isChecked() for x in self.safety))
+            and bool(self.preview_changes))
         can_save=(connected and self.lab and not self.busy and not self.draft and
                   not self.fail_latched and session.staged is not None and not session.committed)
         self.preview_button.setEnabled(can_preview)
@@ -1803,8 +1784,6 @@ class Studio(QMainWindow):
                     reasons.append("Save acknowledged: finish programming (CMW OFF), then power-cycle and verify receipt.")
             elif not self.preview_stamp:
                 reasons.append("Preview the exact differences before any RAM write.")
-            elif not all(c.isChecked() for c in self.safety):
-                reasons.append("Complete all six safety confirmations.")
             elif can_stage:
                 reasons.append("Ready for guarded RAM staging (heater power must remain isolated).")
         self.usb_next_action.setText("NEXT ACTION  ·  "+"  ·  ".join(reasons))
@@ -1837,8 +1816,8 @@ class Studio(QMainWindow):
     def stage(self):
         if self.busy or not self.session:return
         if not (self.lab and self.preview_stamp==self._programme_fingerprint()
-                and not self.draft and all(x.isChecked() for x in self.safety)):
-            self.message("Cannot write","Complete all safety checks and preview again.",True);return
+                and not self.draft):
+            self.message("Cannot write","Review the exact changes again before writing.",True);return
         if QMessageBox.warning(self,"First RAM write confirmation",
            "This will WRITE the reviewed programme registers into controller RAM.\n"
            "Both the normal controller mains and external heater DC supplies must remain isolated.\n"
