@@ -88,7 +88,9 @@ def value_text(code, raw):
     value = signed32(raw)
     parameter = BY_CODE[code]
     if code=="C3:0000" and value in SENSOR_INPUTS:
-        return SENSOR_INPUTS[value]
+        return ({5:"Type K, −200 to 1300 °C, 1 °C resolution",
+                 6:"Type K, −20.0 to 500.0 °C, 0.1 °C resolution"}.get(value)
+                or SENSOR_INPUTS[value])
     if parameter["options"] is not None:
         return parameter["options"].get(value, f"Unknown / unsupported ({value})")
     if code == "C3:000A":
