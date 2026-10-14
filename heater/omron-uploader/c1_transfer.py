@@ -73,6 +73,11 @@ def _validated_receipt(path,model10):
 def verify_c1_receipt(client,path,model10):
     """No writes. User must actually power-cycle before claiming persistence."""
     data=_validated_receipt(path,model10)
+    if client.read1("C3",0x0007)!=data.get("control_mode"):
+        raise PreflightError("Control algorithm changed since the original SAVE")
+    if data.get("pid_set") is not None:
+        if client.read1("C0",0x000D)!=data["pid_set"]:
+            raise PreflightError("Active PID set differs from the saved receipt; cannot compare")
     for row in data["changes"]:
         key=row["register"];expected=row["written_raw"]
         if client.read1("C1",int(key[3:],16))!=expected:
@@ -122,7 +127,7 @@ class C1SettingsTransfer:
     def _pid_context(self,keys):
         if any(k in PID_CODES for k in keys):
             pid=self.client.read1("C0",0x000D)
-            if type(pid) is not int or not 0<=pid<=7:
+            if type(pid) is not int or not 1<=pid<=8:
                 raise PreflightError("Selected PID-set monitor is unreadable or invalid")
             return pid
         return None
