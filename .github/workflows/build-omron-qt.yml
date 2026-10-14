@@ -8,6 +8,8 @@ on:
       - 'heater/omron-programming/index.html'
       - 'heater/omron-uploader/program_model.py'
       - 'heater/omron-uploader/transfer.py'
+      - 'heater/omron-uploader/settings_transfer.py'
+      - 'heater/omron-uploader/tests/**'
       - 'heater/omron-uploader/compoway.py'
       - 'heater/omron-uploader/controller_*.py'
       - 'heater/omron-uploader/config_change_review.py'
