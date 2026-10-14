@@ -67,7 +67,12 @@ def effective_limits(fields, draft=None, *, require_readback=True):
     changing_type=("C3:0000" in draft and
                    fields.get("C3:0000") not in (None,sensor))
     if changing_type and not {"C3:0005","C3:0006"}.issubset(draft):
-        raise ValueError("Changing input range requires explicitly reviewing BOTH upper and lower SP limits")
+        # Omron resets upper/lower SP limits to defaults for a new input type.
+        # The pre-restart raw limits cannot be treated as new limit values.
+        # Mark this provisional; no DA upload is permitted until fresh read.
+        if {"C3:0005","C3:0006"} & set(draft):
+            raise ValueError("When overriding sensor defaults, propose BOTH SP limits")
+        return TemperatureLimits(sensor,low,high,low,high,resolution,name,False)
     current_raw=[selected.get("C3:0006"),selected.get("C3:0005")]
     if any(x is None for x in current_raw):
         if require_readback:
