@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from controller_inventory import CATALOG, validate_inventory, human_value
 from c1_transfer import QUALIFIED_C1_CODES
+from c3_transfer import ALLOWED as QUALIFIED_C3_CODES
 
 SOURCE="Omron H186-E1-06 sections 2-2-3, 2-3-8 and 3-1"
 APPROVED_SETTING_REGISTERS=QUALIFIED_C1_CODES
@@ -57,6 +58,14 @@ def requirements(key):
         return WriteRequirements(key,"0","current programme selection",
                                  "SAVE RAM DATA","use-DA-programme-editor",
                                  "C4 addresses depend on selected programme/segment; use the qualified DA editor.")
+    if key in QUALIFIED_C3_CODES:
+        return WriteRequirements(
+            key,"1","initial / global configuration",
+            "C3 area-1 write and readback; mandatory physical power cycle",
+            "isolated-lab experimental",
+            "Controller-wide; may reset or reinterpret dependent programme/SP/PID values. "
+            "Only restricted Type K inputs 5/6 and validated C3 targets are allowed.",
+            True)
     if bank=="C3":
         if key=="C3:0000":
             detail=("Sensor input type/range affects decimal resolution, limits, "
