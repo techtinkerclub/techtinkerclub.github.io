@@ -770,7 +770,7 @@ class Studio(QMainWindow):
         self.unified_save=button("3  Save + Finish (CMW OFF)",self.unified_save_action)
         self.unified_verify=button("4  Verify saved receipt",self.unified_verify_action)
         self.restart_c3_button=button(
-            "4  Return to normal (reset + read back)",self.restart_verify_c3)
+            "Return to normal (fallback for earlier C3 session)",self.restart_verify_c3)
         self.restart_c3_button.setToolTip(
             "After verified C3 finish and CMW OFF: send one documented reset, "
             "reconnect read-only and read back controller settings and programmes. "
@@ -1074,44 +1074,8 @@ class Studio(QMainWindow):
         self._work("Finish C3 and return to operation level",action,done,True)
 
     def finish_c3(self):
-        """Finish the selected C3 settings, then return from setup area 1.
-
-        Software reset is user-confirmed, issued ONCE without an acknowledgement,
-        and followed by a read-only reconnect. No DA register is written.
-        """
-        tx=self.c3_transfer
-        if (not tx or not tx.staged or tx.finished or self.busy
-                or self.fail_latched or not self._c3_draft_matches_preview()):
-            self.message("Cannot finish C3 configuration",
-                "All C3 values must match readback and the proposal must remain unchanged.",True)
-            return
-        if QMessageBox.warning(
-                self,"Finish global settings and return to operation level",
-                "Finish will read back the selected C3 settings, record a "
-                "receipt, and send one documented SOFTWARE RESET to return "
-                "from communications setup area 1 to normal operation. "
-                "Omron sends no acknowledgement for a reset. The app will "
-                "reconnect read-only and verify the current C3 settings and "
-                "all eight programme memories. NO programme values will "
-                "be written or rescaled.\n\n"
-                "A reset can restore configured power-up output behaviour. "
-                "Confirm heater, mains and external PSU/load supplies are "
-                "PHYSICALLY DISCONNECTED. Proceed?",
-                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
-            return
-        port=self.port
-        folder=self.folder.text().strip()
-        def action(progress):
-            progress("Checking C3 readbacks, closing write phase and recording receipt…")
-            receipt=tx.finish()
-            progress("Returning to operation level: CMW ON acknowledgement then one reset…")
-            client,report=restart_and_audit(tx,port,SerialClient,folder)
-            return receipt,client,report
-        def done(result):
-            receipt,client,report=result
-            self._complete_c3_return(client,report,receipt)
-        self._work("Finish C3 and return to operation level",action,done,True)
+        """Compatibility entry point for the unified Finish & Return action."""
+        return self.finish_and_return_c3()
 
     def _complete_c3_return(self,new_client,report,receipt):
         """Accept the postreset read-only controller and invalidate old state."""
