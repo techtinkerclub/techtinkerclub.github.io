@@ -2455,9 +2455,15 @@ class Studio(QMainWindow):
         self._rendering=True
         rows=[]
         for code,p in CATALOG.items():
-            if (self.mode=="connected" and self.session and
-                    supports(self.hardware_profile,code) is not True):
-                continue
+            if self.mode=="connected" and self.session:
+                if supports(self.hardware_profile,code) is not True:
+                    continue
+                # A register that the controller did not accept on READ is
+                # not a selectable feature. Its error remains in Step 2's
+                # full diagnostic inventory.
+                if (self.inventory_current_session and
+                        self.inventory["fields"].get(code) is None):
+                    continue
             if not visible_in_view(code,p.group,view,query):continue
             # Search is global regardless of the view/group shortcuts.
             if not query and category!="All groups" and category!=p.group:continue
