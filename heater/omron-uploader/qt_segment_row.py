@@ -143,7 +143,7 @@ class SegmentRow(QFrame):
     duplicate=Signal()
     remove=Signal()
 
-    def __init__(self,index:int,segment:Segment,parent=None):
+    def __init__(self,index:int,segment:Segment,parent=None,temperature_min=-20,temperature_max=500):
         super().__init__(parent)
         self.setObjectName("segmentRow")
         self.setMinimumHeight(84)
@@ -172,7 +172,11 @@ class SegmentRow(QFrame):
         outer.addWidget(typebox)
 
         target=QDoubleSpinBox()
-        target.setRange(-20,500)
+        # Preserve an existing out-of-range target for explicit correction;
+        # never silently clamp/change the stored programme on settings updates.
+        original_target=float(segment.sp)
+        target.setRange(min(float(temperature_min),original_target),
+                        max(float(temperature_max),original_target))
         target.setDecimals(1)
         target.setSingleStep(0.1)
         target.setSuffix(" °C")
