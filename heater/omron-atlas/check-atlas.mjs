@@ -52,6 +52,11 @@ function testAtlas(){
  assert.equal(d.getElementById("mapDetails").open,false);
  assert.equal(d.getElementById("extraConfig").open,false);
  assert.equal(d.getElementById("levelSelect").options.length,10);
+ // The most common settings are one tap away without browsing 10 menus.
+ assert.equal(d.querySelectorAll(".quickFind button").length,5);
+ click(dom.window,d.querySelector('[data-quick-code="wt-b"]'));
+ assert.equal(d.getElementById("lcd").textContent,"wt-b");
+ assert.equal(d.getElementById("showSkipped").checked,false);
  // MODE navigation has a true deterministic next item.
  click(dom.window,d.querySelector('[data-level="program"]'));
  assert.equal(d.getElementById("lcd").textContent,"d.prg");
@@ -59,25 +64,25 @@ function testAtlas(){
  assert.equal(d.getElementById("lcd").textContent,"s-no");
  // Numbered segment vs programme-wide branch stays explicit.
  change(dom.window,d.getElementById("programBranch"),"end");
- assert.equal(d.querySelector('[data-entry="program-4"]'),null,"conditional segment SP hidden by default");
+ assert.equal(d.querySelector('#sequence [data-entry="program-4"]'),null,"conditional segment SP hidden by default");
  change(dom.window,d.getElementById("showSkipped"),true);
- click(dom.window,d.querySelector('[data-entry="program-4"]'));
+ click(dom.window,d.querySelector('#sequence [data-entry="program-4"]'));
  assert.equal(d.getElementById("status").textContent,"May be hidden"); // segment SP excluded in END
- click(dom.window,d.querySelector('[data-entry="program-7"]'));
+ click(dom.window,d.querySelector('#sequence [data-entry="program-7"]'));
  assert.equal(d.getElementById("status").textContent,"Likely visible"); // pid when END
  // Known hardware absences must not masquerade as active.
  click(dom.window,d.querySelector('[data-level="operation"]'));
- click(dom.window,d.querySelector('[data-entry="operation-10"]'));
+ click(dom.window,d.querySelector('#sequence [data-entry="operation-10"]'));
  assert.equal(d.getElementById("status").textContent,"Not fitted / unavailable");
  change(dom.window,d.getElementById("showSkipped"),false);
- assert.ok(d.querySelector('[data-entry="operation-10"]'),"selected hidden item remains inspectable");
+ assert.ok(d.querySelector('#sequence [data-entry="operation-10"]'),"selected hidden item remains inspectable");
  click(dom.window,d.getElementById("showAll"));
  assert.equal(d.getElementById("sequenceDetails").open,true);
  // Per-parameter documented input choices (all 30) are visible.
  change(dom.window,d.getElementById("levelSelect"),"initial");
  assert.equal(d.getElementById("lcd").textContent,"in-t");
  const inT=cat.levels.initial.entries.find(x=>x.code==="in-t");
- click(dom.window,d.querySelector('[data-entry="'+inT.id+'"]'));
+ click(dom.window,d.querySelector('#sequence [data-entry="'+inT.id+'"]'));
  assert.equal(d.querySelectorAll("#choiceBox .choice").length,30);
  click(dom.window,d.querySelector('#choiceBox [data-choice="25"]'));
  assert.ok(d.querySelector('#choiceBox [data-choice="25"]').classList.contains("selected"));
