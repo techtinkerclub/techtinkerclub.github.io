@@ -1167,7 +1167,7 @@ class Studio(QMainWindow):
             label+=("  ·  Local draft "+("OFF" if proposal==0 else f"±{proposal/10:g} °C")
                     +" (NOT APPLIED)")
         self.wait_hint.setText(
-            "STEP / WAIT   ·   "+label+
+            "STEP / GLOBAL WAIT   ·   "+label+
             ". Applies at every segment boundary in all 8 programmes. "
             "An event input may disable waiting; reaching the band once is not a stability test.")
         self.wait_hint.setStyleSheet("color:"+("#137952" if live and raw and not self.draft else "#98631b")+";font-weight:600")
