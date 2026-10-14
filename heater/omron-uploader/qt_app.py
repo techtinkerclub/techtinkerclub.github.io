@@ -1069,9 +1069,15 @@ class Studio(QMainWindow):
             self.link_status.setStyleSheet("color:#a8610f;font-weight:600")
             self.refresh_settings()
             self.refresh_review()
+            changed_slots=", ".join(
+                f"Programme {number}: {count}" for number,count in
+                report["changes_by_programme"].items() if count)
             self.message("Controller restarted — full programme audit",
                 f"{report['memory_words_compared']} DA memory words checked.\n"
                 f"Changed raw words: {report['changes_total']}.\n"
+                f"{changed_slots if changed_slots else 'No programme raw words changed.'}\n"
+                f"Unrequested global C3 changes: "
+                f"{report['configuration_side_effects']}.\n"
                 f"Global C3 receipt matched: {report['configuration_verified']}.\n"
                 f"{report['assessment']}\n\n"
                 f"Audit file: {report['audit_file']}\n\n"
