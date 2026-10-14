@@ -171,4 +171,37 @@ class C3Tests(unittest.TestCase):
             self.tx.preview({"C3:0007":1,"C1:0021":20})
         self.assertEqual(self.client.calls,[])
 
+    def test_full_sensor_range_direct_write_no_da_mutation(self):
+        self.setup(blank=True)
+        before=[list(x) for x in self.client.da]
+        self.tx.preview({"C3:0000":29})
+        self.tx.stage()
+        self.tx.finish()
+        self.assertEqual(self.client.c3[0],29)
+        self.assertEqual(self.client.da,before)
+        self.assertEqual([x for x in self.client.calls if x[0]=="write"],
+                         [("write","C3",0,29)])
+
+    def test_model_options_guard_write_even_if_register_responds(self):
+        from hardware_profile import confirm_model
+        self.setup(blank=True)
+        basic=confirm_model("E5CC-TQX3A5M-000","E5CC-TQX3A")
+        self.tx.hardware=basic
+        with self.assertRaisesRegex(PreflightError,"fitted option"):
+            self.tx.preview({"C3:0016":1})
+        self.assertEqual(self.client.calls,[])
+        event=confirm_model("E5CC-TQX3A5M-001","E5CC-TQX3A")
+        self.tx.hardware=event
+        self.tx.preview({"C3:0016":1})
+        self.tx.stage()
+        self.assertEqual(self.client.c3[0x0016],1)
+
+    def test_common_alarm_type_write_is_read_back_without_programme_writes(self):
+        self.setup(blank=True)
+        self.tx.preview({"C3:000D":2})
+        self.tx.stage()
+        self.tx.finish()
+        self.assertEqual(self.client.c3[0x000D],2)
+        self.assertFalse(any(c[0]=="write" and c[1]=="DA" for c in self.client.calls))
+
 if __name__=="__main__":unittest.main()
