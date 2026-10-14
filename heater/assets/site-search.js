@@ -65,6 +65,7 @@ function initialize(){
  const params=new URLSearchParams(location.search);
  if(params.has("q"))input.value=(params.get("q")||"").slice(0,90);
  render();
+ if(params.has("search")){input.focus();root.scrollIntoView({behavior:"auto",block:"start"})}
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initialize);else initialize();
 window.HRCManualSearch={rank};
