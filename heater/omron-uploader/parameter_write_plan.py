@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from controller_inventory import CATALOG, validate_inventory, human_value
 from c1_transfer import QUALIFIED_C1_CODES
 from c3_transfer import ALLOWED as QUALIFIED_C3_CODES
+from c5_transfer import ALLOWED as QUALIFIED_C5_CODES
 
 SOURCE="Omron H186-E1-06 sections 2-2-3, 2-3-8 and 3-1"
 APPROVED_SETTING_REGISTERS=QUALIFIED_C1_CODES
@@ -51,9 +52,12 @@ def requirements(key):
                                  "SAVE RAM DATA if applicable","requires-hardware-qualification",
                                  "Check protection, operating level, modes, range and output effects.")
     if bank=="C5":
-        return WriteRequirements(key,"0","PID selected-set context","SAVE RAM DATA",
-                                 "requires-hardware-qualification",
-                                 "Correct PID set selection, resolution and readback must be verified.")
+        return WriteRequirements(key,"0","Fixed PID 1–8 register","SAVE RAM DATA",
+                                 "isolated-lab experimental" if key in QUALIFIED_C5_CODES
+                                 else "requires-hardware-qualification",
+                                 "Fixed C5 bank addresses avoid changing active PID context. "
+                                 "Only documented numeric offsets and valid PID control are permitted.",
+                                 key in QUALIFIED_C5_CODES)
     if bank=="C4":
         return WriteRequirements(key,"0","current programme selection",
                                  "SAVE RAM DATA","use-DA-programme-editor",
