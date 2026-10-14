@@ -3102,15 +3102,16 @@ class Studio(QMainWindow):
                 and (self.include_programme_with_settings or
                      (set(self.draft)=={"C1:0021"} and self._programme_pending()))
                 and self.combined_transfer is None and not session.ram_touched
-                and self.setting_transfer is None and self.c1_transfer is None))
+                and self.setting_transfer is None and self.c1_transfer is None
+                and self.c5_transfer is None))
             if kind=="c3":
                 tx3=self.c3_transfer
                 eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C3_CODES))
                 available=bool(connected and self.lab and not self.busy
                     and not self.fail_latched and not session.ram_touched
                     and not session.staged and not session.committed
-                    and self.c1_transfer is None and self.combined_transfer is None
-                    and self.setting_transfer is None and not self.include_programme_with_settings)
+                    and self.c1_transfer is None and self.c5_transfer is None
+                    and self.combined_transfer is None and self.setting_transfer is None and not self.include_programme_with_settings)
                 can_start=bool(available and eligible and tx3 is None)
                 can_stage_c3=bool(available and tx3 and tx3.preview_data
                     and not tx3.area_entered and self._c3_draft_matches_preview())
@@ -3122,13 +3123,36 @@ class Studio(QMainWindow):
                     (self.unified_stage,can_stage_c3),
                     (self.unified_save,can_finish_c3)]:
                     control.setEnabled(bool(enabled))
+            elif kind=="c5":
+                c5=self.c5_transfer
+                eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C5_CODES))
+                available=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and not session.ram_touched
+                    and not session.staged and not session.committed
+                    and not session.mismatches
+                    and not self.c1_transfer and not self.c3_transfer
+                    and not self.combined_transfer and not self.setting_transfer
+                    and not self.include_programme_with_settings)
+                can_start=bool(available and eligible and c5 is None)
+                can_stage_c5=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and c5 and c5.preview_data
+                    and not c5.ram_touched and self._c5_draft_matches_preview())
+                can_save_c5=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and c5 and c5.staged and not c5.saved
+                    and self._c5_draft_matches_preview())
+                for control,enabled in [
+                    (self.unified_preview,can_start),
+                    (self.unified_stage,can_stage_c5),
+                    (self.unified_save,can_save_c5)]:
+                    control.setEnabled(bool(enabled))
             elif kind=="c1":
                 c1=self.c1_transfer
                 eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C1_CODES))
                 can_start=bool(connected and self.lab and not self.busy
                     and not self.fail_latched and not session.mismatches
                     and not session.ram_touched and not self.combined_transfer
-                    and not self.setting_transfer and eligible and not c1
+                    and not self.setting_transfer and not self.c5_transfer
+                    and eligible and not c1
                     and not self.include_programme_with_settings)
                 can_stage_c1=bool(connected and self.lab and not self.busy
                     and not self.fail_latched and c1 and c1.preview_data
