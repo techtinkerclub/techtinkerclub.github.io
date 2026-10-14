@@ -1246,6 +1246,18 @@ class Studio(QMainWindow):
         tx=self.setting_transfer
         c1=self.c1_transfer
         combo=self.combined_transfer
+        if self.c3_transfer is not None:
+            tx3=self.c3_transfer
+            if tx3.finished:
+                state="Area-1 C3 writes read back; CMW OFF; POWER CYCLE REQUIRED"
+            elif tx3.staged:state="C3 writes read back, finish CMW OFF required"
+            elif tx3.area_entered:state="C3 setup area entered; state UNCERTAIN"
+            else:state="C3 read-only preview complete; no writes yet"
+            self.transfer_summary.setText(
+                f"GLOBAL C3 CONFIGURATION · {state}\n"
+                "Do not upload programmes or energise the heater until physical "
+                "power cycle, reconnect and receipt verification.")
+            return
         if c1 is not None:
             if c1.cmw_off:state="SAVE verified; CMW OFF acknowledged"
             elif c1.saved:state="SAVE may have succeeded; CMW OFF not confirmed"
@@ -1322,6 +1334,9 @@ class Studio(QMainWindow):
             wt_status=f"No pending changes; wt-b read from controller: {raw/10:g} °C"
         else:
             wt_status="No settings transfer in this connection"
+        if self.c3_receipt_match:
+            wt_status=(f"{self.c3_receipt_match['count']} C3 global settings matched "
+                       "after reconnect. Operator must confirm a real power cycle.")
         if self.c1_receipt_match:
             wt_status=(f"{self.c1_receipt_match['count']} C1 register(s) matched the saved "
                        "receipt on reconnect. Retention is proven only after a genuine "
@@ -1498,7 +1513,11 @@ class Studio(QMainWindow):
             try:self.client.close()
             except Exception:pass
         self.client=None;self.session=None;self.setting_transfer=None;self.port=None;self.preview_stamp=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
         self.c1_transfer=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
         self.c1_receipt_match=None
         self.combined_transfer=None
         self.include_programme_with_settings=False
@@ -1535,7 +1554,11 @@ class Studio(QMainWindow):
         staged=bool((self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending())
         previous=self.client
         self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
         self.c1_transfer=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
         self.c1_receipt_match=None
         self.combined_transfer=None
         self.include_programme_with_settings=False
@@ -2390,10 +2413,13 @@ class Studio(QMainWindow):
                 programme_changed=self._programme_pending(),
                 include_programme=self.include_programme_with_settings)
             if write_plan["setting_area_1"]:
-                lines.append("\nINITIAL/ADVANCED CONFIGURATION — REQUIRES SETTING AREA 1")
-                lines.append("These changes are NOT part of a C1/DA SAVE RAM DATA operation.")
-                lines.append("Area 1 entry, separate persistence, controller restart and a fresh "
-                             "programme compatibility check must be qualified first.")
+                lines.append("\nINITIAL CONFIGURATION — SETTING AREA 1")
+                lines.append("C3 pilot: Control algorithm, Type K sensor 5/6, SP limits "
+                             "and heating control period only. A special write procedure "
+                             "is required; SAVE RAM DATA is NOT used to claim C3 persistence.")
+                lines.append("After writing, physically power-cycle, reconnect and "
+                             "verify receipt. DA programmes are not included; sensor "
+                             "resolution changes require empty stored programmes.")
             if write_plan["setting_area_0"] and write_plan["setting_area_1"]:
                 lines.append("Changes span different setting areas: one ordinary SAVE cannot "
                              "safely apply the complete draft.")
@@ -2406,7 +2432,11 @@ class Studio(QMainWindow):
             if capabilities["settings_eligible"] and capabilities["blocked"]:
                 lines.append("One qualified setting is pending, but other proposed settings block "
                              "transfer until reviewed or removed. Nothing will be silently skipped.")
-            if (set(self.draft).issubset(QUALIFIED_C1_CODES) and
+            if self.draft and set(self.draft).issubset(QUALIFIED_C3_CODES):
+                lines.append("Restricted C3 initial configuration USB pilot. "
+                             "Hardware changes may be persisted immediately. "
+                             "Power-cycle required. No C1 or DA writes included.")
+            elif (set(self.draft).issubset(QUALIFIED_C1_CODES) and
                     set(self.draft)!={"C1:0021"}):
                 lines.append("Selected setup-area-0 C1 adjustment settings can now be "
                              "written together as an isolated-lab pilot. PID changes "
@@ -2448,6 +2478,8 @@ class Studio(QMainWindow):
             title=CATALOG[code].name if code in CATALOG else code
             eligibility=("Isolated-lab C1 USB pilot available"
                          if code in QUALIFIED_C1_CODES else
+                         "Experimental C3 area-1 pilot (power cycle mandatory)"
+                         if code in QUALIFIED_C3_CODES else
                          "Review only; USB writing not qualified")
             lines.append(f"{title} [{code}]: {before} → {after}. {eligibility}.")
         if not lines:lines.append("No pending configuration proposals.")
@@ -2494,7 +2526,8 @@ class Studio(QMainWindow):
         connected=bool(session and self.client and self.mode=="connected")
         can_preview=(connected and session.backup_data is not None and not self.busy
                      and not self.draft and session.staged is None
-                     and self.setting_transfer is None and self.c1_transfer is None)
+                     and self.setting_transfer is None and self.c1_transfer is None
+                     and self.c3_transfer is None)
         can_stage=(can_preview and self.lab and not self.fail_latched and not session.mismatches
             and session.staged is None and self.preview_stamp==self._programme_fingerprint()
             and bool(self.preview_changes))
@@ -2509,7 +2542,8 @@ class Studio(QMainWindow):
                      and not session.communications_write_disabled)
         self.cmw_off_button.setEnabled(bool(can_cmw_off))
         staged=bool(session and session.staged is not None and not session.committed)
-        editing_locked=staged or self._settings_ram_pending() or self.busy
+        editing_locked=staged or self._settings_ram_pending() or self.busy or bool(
+            self.c3_transfer and self.c3_transfer.area_entered)
         wt=self.setting_transfer
         if hasattr(self,"wt_preview"):
             self.wt_preview.setEnabled(self._can_begin_wait())
@@ -2549,8 +2583,9 @@ class Studio(QMainWindow):
                 reasons.append(f"{len(self.draft)} settings proposals are pending; separate DA upload is locked.")
             elif self._active_transfer_kind()=="combined":
                 reasons.append("Combined programme + Wait Band selected; one verified save required.")
-            if self.setting_transfer is not None or self.c1_transfer is not None:
-                reasons.append("Settings USB transfer has been started in this connection; reconnect before DA upload.")
+            if (self.setting_transfer is not None or self.c1_transfer is not None
+                    or self.c3_transfer is not None):
+                reasons.append("Settings transfer started; reconnect before a different USB write.")
             if self.programmes[self.slot].finish!="rst":
                 reasons.append("Programme end CONTINUE requires manual setup; DA upload only supports RESET.")
             if self.fail_latched:reasons.append("A write failed: stop and inspect; do not retry blindly.")
@@ -2566,6 +2601,25 @@ class Studio(QMainWindow):
                 reasons.append("Preview the exact differences before any RAM write.")
             elif can_stage:
                 reasons.append("Ready for guarded RAM staging (heater power must remain isolated).")
+        if self._active_transfer_kind()=="c3":
+            tx3=self.c3_transfer
+            if tx3 and tx3.finished:
+                reasons=["Area-1 configuration completed; physically power-cycle and reconnect "
+                         "before another write or normal operation."]
+            elif tx3 and tx3.staged:
+                reasons=["C3 changed in area 1, verified by readback. Finish CMW OFF. "
+                         "Persistence remains unverified."]
+            elif tx3 and tx3.area_entered:
+                reasons=["Controller may remain in area 1 with partial changes. "
+                         "Stop and inspect; NO blind retry."]
+            elif tx3:
+                reasons=["C3 preview ready. Enter setup area 1 only with heater supplies isolated."]
+            elif not self.draft or not set(self.draft).issubset(QUALIFIED_C3_CODES):
+                reasons=["C3 draft includes unsupported or mixed setting areas. "
+                         "Separate the proposals before uploading."]
+            else:
+                reasons=["Global initial-configuration changes: Read + Preview. "
+                         "No programme memory will be uploaded."]
         if self._active_transfer_kind()=="c1":
             c1=self.c1_transfer
             if c1 and c1.cmw_off:
@@ -2621,7 +2675,26 @@ class Studio(QMainWindow):
                      (set(self.draft)=={"C1:0021"} and self._programme_pending()))
                 and self.combined_transfer is None and not session.ram_touched
                 and self.setting_transfer is None and self.c1_transfer is None))
-            if kind=="c1":
+            if kind=="c3":
+                tx3=self.c3_transfer
+                eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C3_CODES))
+                available=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and not session.ram_touched
+                    and not session.staged and not session.committed
+                    and self.c1_transfer is None and self.combined_transfer is None
+                    and self.setting_transfer is None and not self.include_programme_with_settings)
+                can_start=bool(available and eligible and tx3 is None)
+                can_stage_c3=bool(available and tx3 and tx3.preview_data
+                    and not tx3.area_entered and self._c3_draft_matches_preview())
+                can_finish_c3=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and tx3 and tx3.staged and not tx3.finished
+                    and self._c3_draft_matches_preview())
+                for control,enabled in [
+                    (self.unified_preview,can_start),
+                    (self.unified_stage,can_stage_c3),
+                    (self.unified_save,can_finish_c3)]:
+                    control.setEnabled(bool(enabled))
+            elif kind=="c1":
                 c1=self.c1_transfer
                 eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C1_CODES))
                 can_start=bool(connected and self.lab and not self.busy
@@ -2672,7 +2745,12 @@ class Studio(QMainWindow):
             self.unified_verify.setEnabled(bool(
                 connected and not self.busy and not self._settings_ram_pending()
                 and not (self.session and self.session.ram_touched and not self.session.committed)))
-            self.unified_save.setText("3  Save + Finish (CMW OFF)")
+            self.unified_stage.setText(
+                "2  Apply C3 in area 1 + Verify" if kind=="c3"
+                else "2  Write RAM + Verify")
+            self.unified_save.setText(
+                "3  Finish C3 (CMW OFF, power-cycle)" if kind=="c3"
+                else "3  Save + Finish (CMW OFF)")
 
     def _controls(self):
         if hasattr(self,"stage_button"):self.refresh_actions()
