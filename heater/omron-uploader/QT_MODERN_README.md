@@ -405,3 +405,40 @@ transfer or run the suspect programmes. Retain original programme
 backup, C3 change receipt, restart audit, and a current read-only backup.
 The operator should inspect the programme segment SP on the controller,
 without changing it, to establish the actual temperature interpretation.
+
+
+## Read-only before/after programme backup comparison (October 2026)
+
+The application now includes **Step 2 → Compare backups**. This requires
+**NO connected controller**, no serial permissions and no writing:
+1. Select a saved `e5cct-backup-1` programme backup from BEFORE the
+   configuration change.
+2. Select a complete programme backup from AFTER (or after restoring
+   `in-t=5` and running Step 2 → Read everything).
+3. The viewer compares all **eight slots / 1,200 raw DA words**, common
+   global preflight settings, and programme ramp/step setpoints interpreted
+   under the sensor range recorded IN EACH backup. It highlights when raw
+   words match but the interpreted °C values differ.
+4. Optionally export the comparison to JSON for future troubleshooting.
+
+These are comparisons of *stored data and our decoded interpretation*, not
+independent evidence of Omron's internal programme conversion. The controller
+model prefix is not a unique serial number; operators must confirm the
+backups came from the intended device. Check actual controller segment SP
+on the front panel before heating.
+
+The **C3 change preview** also warns of likely temperature reinterpretations
+in the eight stored programmes, using the current complete raw backup with
+both the old and proposed Type K display scales. This warning happens
+BEFORE any USB writes; it does NOT assume the Omron firmware will preserve
+or convert these temperatures after configuration.
+
+### Recovery path after reverting a sensor change
+
+If the controller is now back at its original sensor type and programmes
+look normal, do not rewrite programme memory to 'fix' the graphs. With the
+heater isolated, take one new read-only Step 2 backup, then compare it
+against the original backup using Step 2 → Compare backups. If input type
+matches again and no programme raw words changed, report that finding,
+not a blanket claim of hardware safety. Verification on the controller
+display is still required before RUN.
