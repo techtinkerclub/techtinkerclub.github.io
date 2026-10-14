@@ -111,6 +111,26 @@ class OfflineManualTests(unittest.TestCase):
         self.assertTrue(uri.startswith("file:"))
         self.assertTrue(uri.endswith("/program-tools/index.html"))
         w.close()
+    def test_step_manual_requires_global_wait_check_in_worksheet(self):
+        program=Programme("Step arrival","20","rst",[
+            Segment("step",sp="180"),Segment("soak",minutes="15")])
+        plan=make_entry_plan(program,0,baseline={"C1:0021":0})
+        wait=[r for r in plan["entry_rows"] if r["code"]=="wt-b"]
+        self.assertEqual(len(wait),1)
+        self.assertIn("OFF",wait[0]["value"])
+        self.assertIn("GLOBAL",wait[0]["purpose"])
+        self.assertIn("LEVEL",wait[0]["instruction"])
+        self.assertTrue(any(r["code"]=="WAIT VERIFICATION" for r in plan["entry_rows"]))
+        planned=make_entry_plan(program,0,baseline={"C1:0021":0},
+                                changes={"C1:0021":30})
+        self.assertIn("PROPOSED ONLY",next(r for r in planned["entry_rows"]
+                           if r["code"]=="wt-b")["value"])
+        self.assertIn("wt-b",make_manual(program,0))
+        live=make_entry_plan(program,0,baseline={"C1:0021":30})
+        self.assertIn("±3 °C",next(r for r in live["entry_rows"]
+                      if r["code"]=="wt-b")["value"])
+        self.assertFalse(any(r["code"]=="WAIT VERIFICATION" for r in live["entry_rows"]))
+
     def test_qt_offline_shows_full_entry_table(self):
         window=Studio(enable_lab_writes=False)
         window.connection_timer.stop()
