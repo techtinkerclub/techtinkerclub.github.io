@@ -7,7 +7,7 @@ Source: Omron E5_C/E5_C-T datasheet, model-number legend/option matrix.
 from dataclasses import dataclass
 import re
 
-_PATTERN=re.compile(r"^(E5CC-T(?:RX|QX|CX|QQ|CQ)[23][AD]5M)-(000|001|003|004|005|006|007)$")
+_PATTERN=re.compile(r"^(E5CC-T(?:RX|QX|CX|QQ|CQ)[23][AD]5M)-(000|001|003|004|005|006)$")
 # Suffix: number of event inputs, CT input channels, RS485, transfer, remote SP.
 _OPTIONS={
     "000":(0,0,False,False,False),
@@ -16,7 +16,6 @@ _OPTIONS={
     "004":(2,0,True,False,False),
     "005":(4,0,False,False,False),
     "006":(2,0,False,True,False),
-    "007":(2,0,False,False,True),
 }
 @dataclass(frozen=True)
 class HardwareProfile:
@@ -30,6 +29,7 @@ class HardwareProfile:
     rs485: bool
     transfer_output: bool
     remote_sp: bool
+    event_numbers: tuple[int, ...] = ()
 
 def confirm_model(model, usb_prefix):
     """Fail closed unless operator supplied the exact supported model syntax."""
@@ -53,7 +53,8 @@ def confirm_model(model, usb_prefix):
              "QQ":"voltage pulse","CQ":"linear current"}[ctl]
     output2={"QQ":"voltage pulse","CQ":"voltage pulse"}.get(ctl)
     return HardwareProfile(name,name[:10],output1,output2,auxiliary,
-                           events,cts,rs485,transfer,remote)
+                           events,cts,rs485,transfer,remote,
+                           (3,4) if suffix=='004' else tuple(range(1,events+1)))
 
 def required_feature(register):
     """Return hardware feature(s) required, if not a common controller setting."""
@@ -91,7 +92,7 @@ def supports(profile,register):
     needed=required_feature(register)
     if needed is None:return True
     if profile is None:return None
-    if needed.startswith("event"):return int(needed[5:])<=profile.event_inputs
+    if needed.startswith("event"):return int(needed[5:]) in profile.event_numbers
     if needed.startswith("aux"):return int(needed[3:])<=profile.auxiliary_count
     if needed=="ct1":return profile.ct_inputs>=1
     if needed=="ct2":return profile.ct_inputs>=2
@@ -103,3 +104,28 @@ def supports(profile,register):
 def permitted(profile,register,read_value):
     """Eligible for editing only with confirmed hardware and successful read."""
     return profile is not None and supports(profile,register) and read_value is not None
+
+
+def documented_models(usb_prefix):
+    """Candidate full order codes; operator must confirm the NAMEPLATE.
+
+    The USB 0503 reply contains ten characters, not 5M or -NNN.
+    E5CC-T uses 5 (covered screw terminals) and M (universal input).
+    Option 002 requires a different terminal construction and 007 is not an
+    E5CC-T option in Omron H185/H187; neither is selectable here.
+    """
+    if not isinstance(usb_prefix,str) or not re.fullmatch(r"E5CC-T(?:RX|QX|CX|QQ|CQ)3[AD]",usb_prefix.upper()):
+        return []
+    models=[]
+    for suffix in _OPTIONS:
+        full=usb_prefix.upper()+"5M-"+suffix
+        try:profile=confirm_model(full,usb_prefix)
+        except ValueError:continue
+        features=[]
+        if profile.ct_inputs:features.append(f"{profile.ct_inputs} CT")
+        if profile.event_numbers:features.append("events "+", ".join(map(str,profile.event_numbers)))
+        if profile.rs485:features.append("RS-485")
+        if profile.transfer_output:features.append("transfer output")
+        if not features:features.append("no optional inputs/comms")
+        models.append((full," · ".join(features)))
+    return models
