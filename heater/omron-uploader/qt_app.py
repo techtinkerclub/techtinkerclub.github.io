@@ -809,7 +809,8 @@ class Studio(QMainWindow):
         def done(value):
             if schema=="e5cct-combined-upload-receipt-1":
                 self.programme_receipt_match={"path":path,"combined":True}
-                self.wait_receipt_match={"path":path,"combined":True}
+                self.wait_receipt_match={"path":path,"combined":True,
+                    "raw":json.loads(Path(path).read_text(encoding="utf-8"))["wait_band"]["new"]}
             elif schema=="e5cct-waitband-receipt-1":
                 self.wait_receipt_match={"path":path,"raw":value}
             else:
