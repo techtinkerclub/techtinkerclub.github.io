@@ -13,7 +13,7 @@ from datetime import datetime,timezone
 import json
 from pathlib import Path
 from compoway import ProtocolError
-from transfer import PreflightError,PREFLIGHT
+from transfer import PreflightError,PREFLIGHT,matches_preflight
 from settings_transfer import _write_checked_json
 
 SCHEMA="e5cct-c1-settings-receipt-1"
@@ -127,7 +127,7 @@ class C1SettingsTransfer:
         if not str(self.client.status()).startswith("01"):
             raise PreflightError("Controller is not confirmed RESET/stopped")
         for address,(expected,meaning) in PREFLIGHT.items():
-            if self.client.read1("C3",address)!=expected:
+            if not matches_preflight(address,self.client.read1("C3",address),expected):
                 raise PreflightError(f"Controller setup changed at C3:{address:04X} ({meaning})")
         mode=self.client.read1("C3",0x0007)
         if mode not in (0,1):
