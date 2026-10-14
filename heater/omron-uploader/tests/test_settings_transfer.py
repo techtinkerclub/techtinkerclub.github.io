@@ -112,6 +112,15 @@ class SettingsTests(unittest.TestCase):
         tx.stage()
         with self.assertRaises(PreflightError):tx.stage()
 
+    def test_configuration_change_between_preview_and_ram_write_blocks_all_operations(self):
+        fake,_,tx,_=self.prep()
+        tx.preview(30)
+        fake.c3[0x00BB]=1
+        with self.assertRaisesRegex(PreflightError,"configuration changed"):
+            tx.stage()
+        self.assertEqual(fake.actions,[])
+        self.assertFalse(tx.ram_touched)
+
     def test_partial_write_latches_uncertainty_and_no_save(self):
         fake,_,tx,_=self.prep()
         tx.preview(30)
