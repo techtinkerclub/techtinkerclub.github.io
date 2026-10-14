@@ -78,6 +78,7 @@ class Studio(QMainWindow):
         self.session=None
         self.setting_transfer=None
         self.c1_transfer=None
+        self.c1_receipt_match=None
         self.combined_transfer=None
         self.include_programme_with_settings=False
         self.wait_receipt_match=None
@@ -1112,7 +1113,20 @@ class Studio(QMainWindow):
         if not hasattr(self,"transfer_summary"):return
         ses=self.session
         tx=self.setting_transfer
+        c1=self.c1_transfer
         combo=self.combined_transfer
+        if c1 is not None:
+            if c1.cmw_off:state="SAVE verified; CMW OFF acknowledged"
+            elif c1.saved:state="SAVE may have succeeded; CMW OFF not confirmed"
+            elif c1.staged:state="All C1 RAM changes verified; SAVE REQUIRED"
+            elif c1.ram_touched:state="C1 RAM uncertain — STOP and inspect"
+            else:state="C1 read-only preview ready; no writes yet"
+            self.transfer_summary.setText(
+                f"CONTROLLER C1 ADJUSTMENTS  ·  {state}\n"
+                f"{len(c1.preview_data['changes'])} parameter(s) reviewed. "
+                "The programme has NOT been transferred. "
+                "Power-cycle receipt verification is still required.")
+            return
         if combo is not None:
             if combo.cmw_off:
                 state="Both C1 and DA SAVED and read back; CMW OFF acknowledged"
@@ -1168,10 +1182,10 @@ class Studio(QMainWindow):
             else:
                 wt_status="No completed Wait Band operation"
         elif self.draft:
-            eligible=(set(self.draft)=={"C1:0021"})
+            eligible=set(self.draft).issubset(QUALIFIED_C1_CODES)
             wt_status=(f"{len(self.draft)} proposed setting change(s), NOT written"
-                       + ("; wt-b transfer available" if eligible else
-                          "; only wt-b is currently USB-writable"))
+                       + ("; isolated-lab C1 transfer available" if eligible
+                          else "; contains parameters not yet USB-writable"))
         elif self.inventory_current_session and self.inventory["fields"].get("C1:0021") is not None:
             raw=self.inventory["fields"]["C1:0021"]
             wt_status=f"No pending changes; wt-b read from controller: {raw/10:g} °C"
@@ -1298,6 +1312,8 @@ class Studio(QMainWindow):
         def completed(result):
             self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file,inventory_error=result
             self.setting_transfer=None
+            self.c1_transfer=None
+            self.c1_receipt_match=None
             self.combined_transfer=None
             self.include_programme_with_settings=False
             self.wait_receipt_match=None
@@ -1347,6 +1363,8 @@ class Studio(QMainWindow):
             try:self.client.close()
             except Exception:pass
         self.client=None;self.session=None;self.setting_transfer=None;self.port=None;self.preview_stamp=None
+        self.c1_transfer=None
+        self.c1_receipt_match=None
         self.combined_transfer=None
         self.include_programme_with_settings=False
         self.wait_receipt_match=None
@@ -1382,6 +1400,8 @@ class Studio(QMainWindow):
         staged=bool((self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending())
         previous=self.client
         self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.c1_transfer=None
+        self.c1_receipt_match=None
         self.combined_transfer=None
         self.include_programme_with_settings=False
         self.wait_receipt_match=None
@@ -1594,7 +1614,10 @@ class Studio(QMainWindow):
 
     def _settings_ram_pending(self):
         tx=self.setting_transfer
-        return bool(tx and tx.ram_touched and not tx.saved) or self._combined_ram_pending()
+        c1=self.c1_transfer
+        return (bool(tx and tx.ram_touched and not tx.saved)
+                or bool(c1 and c1.ram_touched and not c1.saved)
+                or self._combined_ram_pending())
 
     def _can_begin_wait(self):
         ses=self.session
@@ -2126,7 +2149,13 @@ class Studio(QMainWindow):
             if capabilities["settings_eligible"] and capabilities["blocked"]:
                 lines.append("One qualified setting is pending, but other proposed settings block "
                              "transfer until reviewed or removed. Nothing will be silently skipped.")
-            if set(self.draft)=={"C1:0021"}:
+            if (set(self.draft).issubset(QUALIFIED_C1_CODES) and
+                    set(self.draft)!={"C1:0021"}):
+                lines.append("Selected setup-area-0 C1 adjustment settings can now be "
+                             "written together as an isolated-lab pilot. PID changes "
+                             "require PID mode; hysteresis requires ON/OFF mode. "
+                             "No programme writes are included.")
+            elif set(self.draft)=={"C1:0021"}:
                 if self.include_programme_with_settings:
                     lines.append("Programme explicitly INCLUDED with Wait Band for one guarded "
                                  "C1 + DA transaction. Both will be verified before one SAVE.")
@@ -2134,9 +2163,8 @@ class Studio(QMainWindow):
                     lines.append("Wait Band-only transfer selected. The local programme will NOT "
                                  "be uploaded. Use 'Include selected programme' if both are intended.")
             else:
-                lines.append("Other configuration changes are review-only. "
-                             "Only the qualified Wait Band C1:0021 has a USB setting writer. "
-                             "DA programme staging is locked while settings proposals remain.")
+                lines.append("Other settings are review-only until their writing procedures "
+                             "have been qualified. The DA programme is NOT included.")
         elif not self.session:
             lines.append("\nNo live connected controller; offline manual export is available.")
         elif self.session.staged and not self.session.committed:
@@ -2195,7 +2223,7 @@ class Studio(QMainWindow):
         connected=bool(session and self.client and self.mode=="connected")
         can_preview=(connected and session.backup_data is not None and not self.busy
                      and not self.draft and session.staged is None
-                     and self.setting_transfer is None)
+                     and self.setting_transfer is None and self.c1_transfer is None)
         can_stage=(can_preview and self.lab and not self.fail_latched and not session.mismatches
             and session.staged is None and self.preview_stamp==self._programme_fingerprint()
             and bool(self.preview_changes))
@@ -2205,7 +2233,7 @@ class Studio(QMainWindow):
         self.stage_button.setEnabled(bool(can_stage))
         self.save_button.setEnabled(bool(can_save))
         can_cmw_off=(connected and self.lab and not self.busy and not self.fail_latched
-                     and self.setting_transfer is None and session.committed
+                     and self.setting_transfer is None and self.c1_transfer is None and session.committed
                      and session.receipt_file is not None
                      and not session.communications_write_disabled)
         self.cmw_off_button.setEnabled(bool(can_cmw_off))
@@ -2250,8 +2278,8 @@ class Studio(QMainWindow):
                 reasons.append(f"{len(self.draft)} settings proposals are pending; separate DA upload is locked.")
             elif self._active_transfer_kind()=="combined":
                 reasons.append("Combined programme + Wait Band selected; one verified save required.")
-            if self.setting_transfer is not None:
-                reasons.append("Wait Band USB transfer is active/finished in this connection; reconnect before DA upload.")
+            if self.setting_transfer is not None or self.c1_transfer is not None:
+                reasons.append("Settings USB transfer has been started in this connection; reconnect before DA upload.")
             if self.programmes[self.slot].finish!="rst":
                 reasons.append("Programme end CONTINUE requires manual setup; DA upload only supports RESET.")
             if self.fail_latched:reasons.append("A write failed: stop and inspect; do not retry blindly.")
@@ -2267,6 +2295,23 @@ class Studio(QMainWindow):
                 reasons.append("Preview the exact differences before any RAM write.")
             elif can_stage:
                 reasons.append("Ready for guarded RAM staging (heater power must remain isolated).")
+        if self._active_transfer_kind()=="c1":
+            c1=self.c1_transfer
+            if c1 and c1.cmw_off:
+                reasons=["C1 adjustment settings SAVED, CMW OFF. Power-cycle and verify receipt."]
+            elif c1 and c1.saved:
+                reasons=["C1 SAVE acknowledged, but CMW OFF uncertain. Stop and inspect."]
+            elif c1 and c1.staged:
+                reasons=["C1 settings verified in RAM. Confirm SAVE + Finish."]
+            elif c1 and c1.ram_touched:
+                reasons=["C1 RAM uncertain. Stop and inspect before considering a retry."]
+            elif c1:
+                reasons=["C1 settings preview ready. Verify isolation before RAM write."]
+            elif not self.draft or not set(self.draft).issubset(QUALIFIED_C1_CODES):
+                reasons=["One or more settings are NOT qualified for writing. Review or remove them."]
+            else:
+                reasons=["Qualified C1 adjustment proposal(s): start Read + Preview. "
+                         "No DA programme will be uploaded."]
         if self._active_transfer_kind()=="combined":
             combo=self.combined_transfer
             if combo and combo.cmw_off:
@@ -2304,8 +2349,27 @@ class Studio(QMainWindow):
                 and (self.include_programme_with_settings or
                      (set(self.draft)=={"C1:0021"} and self._programme_pending()))
                 and self.combined_transfer is None and not session.ram_touched
-                and self.setting_transfer is None))
-            if kind=="combined":
+                and self.setting_transfer is None and self.c1_transfer is None))
+            if kind=="c1":
+                c1=self.c1_transfer
+                eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C1_CODES))
+                can_start=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and not session.mismatches
+                    and not session.ram_touched and not self.combined_transfer
+                    and not self.setting_transfer and eligible and not c1
+                    and not self.include_programme_with_settings)
+                can_stage_c1=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and c1 and c1.preview_data
+                    and not c1.ram_touched and self._c1_draft_matches_preview())
+                can_save_c1=bool(connected and self.lab and not self.busy
+                    and not self.fail_latched and c1 and c1.staged and not c1.saved
+                    and self._c1_draft_matches_preview())
+                for control,enabled in [
+                    (self.unified_preview,can_start),
+                    (self.unified_stage,can_stage_c1),
+                    (self.unified_save,can_save_c1)]:
+                    control.setEnabled(bool(enabled))
+            elif kind=="combined":
                 combo=self.combined_transfer
                 can_preview_combined=bool(
                     connected and self.lab and not self.busy and not self.fail_latched
