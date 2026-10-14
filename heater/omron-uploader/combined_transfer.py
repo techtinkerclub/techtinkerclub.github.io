@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from compoway import ProtocolError
 from settings_transfer import _write_checked_json, MIN_RAW, MAX_RAW
-from transfer import PreflightError, PREFLIGHT
+from transfer import PreflightError, PREFLIGHT, matches_preflight
 
 SCHEMA = "e5cct-combined-upload-receipt-1"
 
@@ -48,7 +48,7 @@ class CombinedTransfer:
             raise PreflightError("Controller must be RESET/stopped for combined transfer")
         for address, (expected, label) in PREFLIGHT.items():
             actual = self.client.read1("C3", address)
-            if actual != expected:
+            if not matches_preflight(address,actual,expected):
                 raise PreflightError(f"Changed controller preflight C3:{address:04X} ({label})")
         if ses.ram_touched and not self.ram_touched:
             raise PreflightError("Another RAM write already occurred in this USB connection")
