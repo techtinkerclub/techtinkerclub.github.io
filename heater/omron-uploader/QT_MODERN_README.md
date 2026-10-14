@@ -59,6 +59,42 @@ one of these assumptions, the programme-entry guide refuses to present
 incompatible instructions. It marks known initial-level keypad routes separately
 from advanced parameters whose exact front-panel navigation is unverified.
 
+## Communications Writing indicator (CMW) and readable dropdowns
+
+**CMW is NOT a heating/programme mode.** The illuminated CMW indicator
+means that communications writes are enabled. The experimental DA transfer
+previously sent H186 operation `3005 00 01` to enable CMW but never sent
+the corresponding `3005 00 00` to turn it off. Closing the COM port or
+power-cycling USB must not be treated as proof that communications writing
+has been disabled.
+
+After a successfully staged **and saved** programme with a persisted
+receipt, Step 5 now offers a **separate, confirm-before-using**
+`Finish programming · CMW OFF` action, which sends `3005 00 00`.
+It is disabled during an unfinished RAM transfer, after errors, in read-only
+mode or without a valid saved receipt. The operator must verify that the
+physical CMW indicator goes out; a protocol acknowledgement alone is not
+an optical confirmation. Because CMW/write-mode transitions can also
+persist pending RAM changes, NEVER use this function to recover an
+unknown/incomplete write session.
+
+For a controller left in CMW from a *previous* USB connection, use the
+documented physical keypad instead: From Operation Level, press LEVEL
+**twice briefly** to enter Adjustment Level; press MODE until `cmwt`
+appears, set `off` with the UP/DOWN keys, then return to Operation
+Level using **two brief** LEVEL presses. Check the CMW indicator turns
+off. If `cmwt` is not present, check protection and event-input
+assignments. Keep the external heater physically isolated throughout.
+
+The modern `StudioCombo` also now measures the complete text of each
+option and reserves arrow/padding space. Values such as `Programme 0`
+and `RESET (stop)` fit without clipping. Long catalogue values use
+a max-width field with full-text hover and a wider choice popup.
+Regression tests exercise the real Qt field geometry and selection.
+
+**References:** Omron H185 §4-1-3 (Adjustment Level), §6-5
+(`cmwt`), H186 §2-3-8 (Communications Writing operation command).
+
 ## Boundaries
 
 - This is development code. The Qt build has not yet been verified with the physical controller. Keep the known-good Tkinter ZIP and original programme backup/receipt.
