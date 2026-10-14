@@ -29,6 +29,38 @@ class ModernStudioTests(unittest.TestCase):
         self.win.message=lambda *args,**kw:None
     def tearDown(self):
         self.win.close()
+    def test_read_only_backup_comparison_from_offline_workspace(self):
+        import json
+        with tempfile.TemporaryDirectory() as folder:
+            a={"schema":"e5cct-backup-1",
+               "controller":{"model10":"E5CC-TQX3A"},
+               "preflight":{"C3:0000":5},
+               "programmes":{str(i):["00000000"]*150 for i in range(8)}}
+            for block in a["programmes"].values():
+                block[0]="00000001"
+                block[0x16]="00000000"
+                block[0x17]="00000078"
+            before=Path(folder)/"before.json"
+            after=Path(folder)/"after.json"
+            before.write_text(json.dumps(a),encoding="utf-8")
+            a["preflight"]["C3:0000"]=6
+            after.write_text(json.dumps(a),encoding="utf-8")
+            self.win.choose_mode("offline")
+            with patch("qt_app.QFileDialog.getOpenFileName",
+                       side_effect=[(str(before),"JSON (*.json)"),
+                                    (str(after),"JSON (*.json)")]):
+                self.win.compare_saved_backups()
+            self.assertIsNone(self.win.client)
+            self.assertEqual(self.win._current_step,1)
+            self.assertEqual(self.win.read_host.currentIndex(),0)
+            self.assertEqual(self.win.read_tabs.currentIndex(),3)
+            self.assertTrue(self.win.export_comparison_button.isEnabled())
+            self.assertEqual(self.win.backup_comparison["changed_raw_words"],0)
+            self.assertEqual(len(self.win.backup_comparison["interpreted_target_changes"]),8)
+            text=self.win.comparison_text.toPlainText()
+            self.assertIn("120 °C -> 12 °C",text)
+            self.assertIn("No USB operations",text)
+
     def test_five_steps_and_offline_mode(self):
         self.assertEqual(self.win.pages.count(),5)
         self.assertEqual(len(self.win.navbuttons),5)
