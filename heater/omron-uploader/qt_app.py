@@ -979,6 +979,9 @@ class Studio(QMainWindow):
         staged=bool((self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending())
         previous=self.client
         self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.wait_receipt_match=None
+        self.programme_receipt_match=None
+        self.inventory_current_session=False
         self.fail_latched=staged
         if previous:
             try:previous.close()
