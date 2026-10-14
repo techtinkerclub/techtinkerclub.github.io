@@ -200,6 +200,14 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
             "change. The DA USB programme writer does not set this parameter. "
             "Verify the external emergency cut-off and control behaviour before any heater use.","check")
 
+    if sensor_warnings:
+        add("Final checks","INPUT / SETPOINT REVIEW",
+            "WARNING — RANGE / RESOLUTION NOT VERIFIED",
+            "Resolve incompatibilities before entering this profile on the physical controller",
+            "This local programme is preserved. Check these issues: "
+            +"; ".join(sensor_warnings)+
+            ". Changing in-t is GLOBAL to all eight programmes and is not automatically written.",
+            "check")
     proposals=[]
     for code,raw in sorted(changes.items()):
         if code not in CATALOG:raise ValueError("Unrecognised draft register "+code)
@@ -238,10 +246,12 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
                 "not proof of stable temperature.", "check"))
     return dict(slot=slot,name=programme.name,
                 nominal_minutes=float(met["minutes"]),final_sp=float(met["final_sp"]),
-                assumed_start_pv=str(programme.start),
+                assumed_start_pv=str(programme.start),input_unit=unit,
                 entry_rows=[e.to_dict() for e in entries],
                 setup_proposals=proposals,
-                warnings=[
+                warnings=[*sensor_warnings,
+                    "Input type is GLOBAL. Confirm physical sensor, in-t, sl-h/sl-l, units and resolution before using the physical controller.",
+                    "Analogue current/voltage inputs use scaled engineering units, not necessarily Celsius.",
                     "Never energise the heater while learning these controls.",
                     "The commanded SP curve does not guarantee actual PV follows a cooling ramp.",
                     "A parameter absent from the screen may be protected, masked or model-dependent.",
@@ -254,7 +264,7 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
 def plain_instructions(plan):
     lines=[f"PROGRAMME {plan['slot']} — {plan['name']}",
            f"{len([r for r in plan['entry_rows'] if r['code']=='styp'])} segments",
-           f"Nominal {plan['nominal_minutes']:g} minutes; final SP {plan['final_sp']:g} °C",""]
+           f"Nominal {plan['nominal_minutes']:g} minutes; final SP {plan['final_sp']:g} {plan['input_unit']}",""]
     section=None
     for row in plan["entry_rows"]:
         if row["section"]!=section:
