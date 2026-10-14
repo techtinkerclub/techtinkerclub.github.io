@@ -71,6 +71,8 @@ class Studio(QMainWindow):
         self.client=None
         self.session=None
         self.setting_transfer=None
+        self.wait_receipt_match=None
+        self.programme_receipt_match=None
         self.port=None
         self.backup=None
         self.snapshot=None
@@ -724,7 +726,10 @@ class Studio(QMainWindow):
         if not hasattr(self,"transfer_summary"):return
         ses=self.session
         tx=self.setting_transfer
-        if ses and ses.committed:
+        if self.programme_receipt_match:
+            programme_status=("Receipt matched the controller's new read-back; "
+                              "confirm the USB power cycle actually occurred")
+        elif ses and ses.committed:
             programme_status="SAVE acknowledged; power-cycle verification still required"
         elif ses and ses.staged is not None:
             programme_status="RAM verified; SAVE still required"
@@ -732,7 +737,13 @@ class Studio(QMainWindow):
             programme_status="RAM touched; state requires inspection"
         else:
             programme_status="Local editor only; no programme write in this connection"
-        if tx:
+        if self.wait_receipt_match and not tx:
+            value=self.wait_receipt_match["raw"]
+            wt_status=(f"wt-b {value/10:g} °C: receipt matched the connected controller. "
+                       "Retention is proven only if USB/controller power was actually cycled.")
+            if self.draft:
+                wt_status+=(f"  ·  {len(self.draft)} NEW proposed settings change(s) NOT written.")
+        elif tx:
             if tx.saved:
                 if tx.receipt_file:
                     wt_status=(f"wt-b {tx.preview_data['old_raw']/10:g} → "
@@ -888,6 +899,8 @@ class Studio(QMainWindow):
         def completed(result):
             self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file,inventory_error=result
             self.setting_transfer=None
+            self.wait_receipt_match=None
+            self.programme_receipt_match=None
             self.inventory_current_session=(inventory_error is None)
             self.port=port
             self.backup=self.session.backup_data
@@ -933,6 +946,8 @@ class Studio(QMainWindow):
             try:self.client.close()
             except Exception:pass
         self.client=None;self.session=None;self.setting_transfer=None;self.port=None;self.preview_stamp=None
+        self.wait_receipt_match=None
+        self.programme_receipt_match=None
         self.inventory_current_session=False
         self.link_status.setText("●  Offline / disconnected")
         self.link_status.setStyleSheet("color:#627a90;font-weight:600")
@@ -997,6 +1012,8 @@ class Studio(QMainWindow):
         def job(progress):
             return self.session.verify_persistence(path)
         def done(out):
+            self.programme_receipt_match={"path":path}
+            self._refresh_transfer_summary()
             self.feedback.setText("Saved programme receipt compared with current controller memory.")
             self.message("Post-power-cycle comparison",
                 "The controller's registers matched the saved receipt. "
@@ -1314,6 +1331,8 @@ class Studio(QMainWindow):
         def job(progress):return verify_wait_receipt(
             self.client,file,self.session.info["model10"])
         def done(actual):
+            self.wait_receipt_match={"path":file,"raw":actual}
+            self._refresh_transfer_summary()
             self.message("Wait Band memory matches saved receipt",
                 f"C1:0021 reads {actual/10:g} °C, matching the receipt.\n"
                 "This confirms power-cycle retention only if the USB/controller "
