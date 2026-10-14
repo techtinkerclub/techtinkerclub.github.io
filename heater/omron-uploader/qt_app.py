@@ -750,7 +750,8 @@ class Studio(QMainWindow):
         self.unified_verify.setToolTip(
             "READ ONLY: After the controller genuinely loses power and you reconnect, "
             "compare each saved register in the receipt JSON with live values. "
-            "No writes, reset or power-cycle commands are sent.")
+            "This read-only action does not itself restart the controller. "
+            "For C3, use the separate guarded Software restart + audit first.")
         for control in (self.unified_preview,self.unified_stage,
                         self.unified_save,self.unified_verify):
             unified_actions.addWidget(control)
@@ -987,7 +988,8 @@ class Studio(QMainWindow):
             self.message("C3 global values written and read back",
                 f"{count} C3 register(s) matched in setup area 1. "
                 "This is NOT a persistence check. Select Finish (CMW OFF), "
-                "then physically power-cycle, reconnect and verify the receipt. "
+                "then use the guarded Software restart + audit action, or physically "
+                "power-cycle and verify the receipt. "
                 "Do not energise the heater before reconfiguration is verified.")
         self._work("Apply and verify C3 in setting area 1",action,done,True)
 
@@ -1001,8 +1003,9 @@ class Studio(QMainWindow):
         if QMessageBox.warning(self,"Finish area-1 configuration",
                 "This checks C3 again, records a receipt and disables "
                 "communications writing. It does NOT issue SAVE RAM DATA "
-                "or restart the controller. You MUST physically power-cycle "
-                "before using the controller or uploading programmes. Continue?",
+                "or restart the controller. A separate guarded Software restart "
+                "+ audit action will become available after finishing. The "
+                "heater must remain isolated until verified. Continue?",
                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
         def action(progress):return tx.finish()
@@ -1015,9 +1018,9 @@ class Studio(QMainWindow):
             self.refresh_review()
             self.message("Area-1 configuration session finished",
                 "C3 values were read back and CMW OFF was acknowledged. "
-                "Persistence is UNVERIFIED until a real controller power-cycle "
-                "and new receipt comparison. Do not upload programmes in this "
-                "same connection. Receipt:\n"+str(receipt))
+                "Persistence is UNVERIFIED. Next use Software restart + audit all "
+                "8 programmes, or physically power-cycle and re-read manually. "
+                "Do not upload other settings in this connection. Receipt:\n"+str(receipt))
         self._work("Finish C3: record receipt and CMW OFF",action,done,True)
 
     def restart_verify_c3(self):
@@ -2841,7 +2844,7 @@ class Studio(QMainWindow):
                 "2  Apply C3 in area 1 + Verify" if kind=="c3"
                 else "2  Write RAM + Verify")
             self.unified_save.setText(
-                "3  Finish C3 (CMW OFF, power-cycle)" if kind=="c3"
+                "3  Finish C3 (CMW OFF)" if kind=="c3"
                 else "3  Save + Finish (CMW OFF)")
 
     def _controls(self):
