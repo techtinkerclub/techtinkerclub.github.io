@@ -104,6 +104,26 @@ class SerialClient:
             raise ValueError(str(exc)) from exc
         return self.query(f"0102{vtype}{addr:04X}000001{value:08X}")
 
+    def software_reset(self):
+        """Send documented 3005 06 00 WITHOUT waiting for a reply.
+
+        H186 specifies no normal response to software reset. May only be
+        invoked after an explicitly confirmed, finished C3 transfer; the
+        transaction/UI enforce that policy. Do not retry on serial errors:
+        the command might already have restarted the controller.
+        """
+        self._guard()
+        packet=encode_request("30050600",self.node)
+        with self.lock:
+            self.serial.reset_input_buffer()
+            count=self.serial.write(packet)
+            # Short/uncertain writes must be reported without a retry.
+            if count!=len(packet):
+                raise ProtocolError("Software-reset command transmission uncertain")
+            self.serial.flush()
+        # Returning proves serial bytes were sent, not that reset completed.
+        return None
+
     def operation(self,code,data):
         self._guard()
         # H186 §2-3-8: 00/00 disables communications writing (CMW OFF).
