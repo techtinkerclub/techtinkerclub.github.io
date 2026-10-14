@@ -147,7 +147,10 @@ class C3ConfigurationTransfer:
         for key,val in sorted(draft.items()):
             current=live.get(key)
             if current is None:raise PreflightError("Missing controller C3 baseline: "+key)
-            if current!=val:
+            # Switching K display resolution reinterprets old raw SP limit
+            # words even when the integer bits do not change. Explicitly
+            # reapply BOTH bounds after writing input type.
+            if current!=val or (sensor_change and key in ("C3:0005","C3:0006")):
                 changes.append(dict(register=key,old_raw=current,new_raw=val))
         if not changes:raise PreflightError("No changed C3 parameters")
         data={
