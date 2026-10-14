@@ -2183,7 +2183,8 @@ class Studio(QMainWindow):
             self.setting_keys.append(code)
             raw=self.inventory["fields"].get(code)
             current=human_value(code,raw,self.inventory["fields"].get("C3:0000"))
-            proposed=(human_value(code,self.draft[code],self.inventory["fields"].get("C3:0000"))
+            proposed=(human_value(code,self.draft[code],
+                                  self.draft.get("C3:0000",self.inventory["fields"].get("C3:0000")))
                       if code in self.draft else "—")
             label=p.name+(" · "+code if self.show_setting_technical.isChecked() else "")
             for col,txt in enumerate((label,current,proposed,view_for(code,p.group))):
@@ -2274,7 +2275,7 @@ class Studio(QMainWindow):
             self.parameter_editor.show();self.parameter_choices.hide()
             if draft is not None:
                 signed=draft-(1<<32) if draft>=(1<<31) else draft
-                scale=(10 if self.inventory["fields"].get("C3:0000")==6 and
+                scale=(10 if self.draft.get("C3:0000",self.inventory["fields"].get("C3:0000"))==6 and
                          code in ("C3:0005","C3:0006","C1:0012") else p.scale)
                 self.parameter_editor.setText(f"{signed/scale:g}")
             self.parameter_editor.setEnabled(can_edit)
@@ -2405,8 +2406,11 @@ class Studio(QMainWindow):
             lines.append("\nCONFIGURATION CHANGE LIST (NOT WRITTEN TO CONTROLLER)")
             for code,value in sorted(self.draft.items()):
                 old=self.inventory["fields"].get(code)
-                lines.append(f"{CATALOG[code].name}: {human_value(code,old)}"
-                             f"  →  {human_value(code,value)}   [{code}]")
+                lines.append(
+                    f"{CATALOG[code].name}: "
+                    f"{human_value(code,old,self.inventory['fields'].get('C3:0000'))}"
+                    f"  →  {human_value(code,value,self.draft.get('C3:0000',self.inventory['fields'].get('C3:0000')))}"
+                    f"   [{code}]")
             capabilities=transfer_plan(self.draft)
             write_plan=create_write_plan(
                 self.inventory,self.draft,
@@ -2474,7 +2478,7 @@ class Studio(QMainWindow):
             current=self.inventory["fields"].get(code)
             t=self.inventory["fields"].get("C3:0000")
             before=human_value(code,current,t) if current is not None else "Unknown (requires live read)"
-            after=human_value(code,value,t)
+            after=human_value(code,value,self.draft.get("C3:0000",t))
             title=CATALOG[code].name if code in CATALOG else code
             eligibility=("Isolated-lab C1 USB pilot available"
                          if code in QUALIFIED_C1_CODES else
