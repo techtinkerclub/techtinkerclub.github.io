@@ -54,10 +54,10 @@ class Stepper(QWidget):
         line.addWidget(self.editor,1)
 
         units=spin.suffix().strip()
-        if units:
-            suffix=QLabel(units)
-            suffix.setObjectName("numericUnit")
-            line.addWidget(suffix,0)
+        self.suffix_label=QLabel(units)
+        self.suffix_label.setObjectName("numericUnit")
+        self.suffix_label.setVisible(bool(units))
+        line.addWidget(self.suffix_label,0)
 
         arrows=QWidget()
         vert=QVBoxLayout(arrows)
@@ -130,6 +130,12 @@ class Stepper(QWidget):
         self._value_updated()
         self._invalid=False
 
+    def set_unit(self,unit):
+        """Update the painted unit label (not just the hidden spinbox)."""
+        self.spin.setSuffix(" "+unit if unit else "")
+        self.suffix_label.setText(unit)
+        self.suffix_label.setVisible(bool(unit))
+
     def is_valid_display(self):
         return (not self._invalid and
                 bool(self.editor.text().strip()) and
@@ -143,7 +149,7 @@ class SegmentRow(QFrame):
     duplicate=Signal()
     remove=Signal()
 
-    def __init__(self,index:int,segment:Segment,parent=None,temperature_min=-20,temperature_max=500):
+    def __init__(self,index:int,segment:Segment,parent=None,temperature_min=-20,temperature_max=500,display_unit="°C"):
         super().__init__(parent)
         self.setObjectName("segmentRow")
         self.setMinimumHeight(84)
@@ -179,15 +185,15 @@ class SegmentRow(QFrame):
                         max(float(temperature_max),original_target))
         target.setDecimals(3)
         target.setSingleStep(0.1)
-        target.setSuffix(" °C")
+        target.setSuffix(" "+display_unit)
         target.setValue(float(segment.sp))
-        self.target=Stepper("TARGET TEMPERATURE",target)
+        self.target=Stepper("TARGET TEMPERATURE" if display_unit=="°C" else "TARGET VALUE",target)
         outer.addWidget(self.target)
 
         rate=QSpinBox()
         rate.setRange(1,9999)
         rate.setSingleStep(1)
-        rate.setSuffix(" °C/min")
+        rate.setSuffix(" "+display_unit+"/min")
         rate.setValue(max(1,int(float(segment.rate))))
         self.rate=Stepper("RAMP RATE",rate)
         outer.addWidget(self.rate)
