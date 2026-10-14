@@ -51,7 +51,7 @@ class FakeOmron:
         self.da[addr>>8][addr&255]=value&0xffffffff
     def operation(self,code,data):
         assert self.write_allowed
-        assert (code,data) in {("00","01"),("04","01"),("05","00")}
+        assert (code,data) in {("00","01"),("00","00"),("04","01"),("05","00")}
         self.calls.append(("operation",code,data))
         return ""
     def close(self):self.closed=True
@@ -113,6 +113,28 @@ class QtConnectedTests(unittest.TestCase):
         self.assertTrue(any(c[0]=="write" for c in fake.calls))
         self.assertEqual(sum(c[0]=="write" for c in fake.calls),9)
         self.assertTrue(self.win.slot_combo.isEnabled())
+        self.assertTrue(self.win.cmw_off_button.isEnabled())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.disable_cmw()
+        self.assertTrue(self.win.session.communications_write_disabled)
+        self.assertFalse(self.win.cmw_off_button.isEnabled())
+        self.assertIn(("operation","00","00"),fake.calls)
+        self.assertEqual([c for c in fake.calls if c==("operation","00","00")],
+                         [("operation","00","00")])
+        self.assertEqual(sum(c[0]=="write" for c in fake.calls),9)
+    def test_cmw_off_requires_successful_nonvolatile_save(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.show_step(4)
+        self.assertFalse(self.win.cmw_off_button.isEnabled())
+        with self.assertRaises(Exception):
+            self.win.session.disable_communications_writing()
+        self.assertNotIn(("operation","00","00"),fake.calls)
+        self.win.session.committed=True
+        with self.assertRaises(Exception):
+            self.win.session.disable_communications_writing()
+        self.assertNotIn(("operation","00","00"),fake.calls)
+
     def test_configuration_draft_disables_da_programme_write(self):
         self.win.connect_read()
         self.win.draft={"C3:0000":6}
