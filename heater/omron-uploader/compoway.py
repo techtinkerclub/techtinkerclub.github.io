@@ -87,6 +87,7 @@ class SerialClient:
         # Imported at call time to avoid a module-import cycle with ProtocolError.
         from c1_transfer import check_value, QUALIFIED_C1_CODES
         from c3_transfer import check_setting, ALLOWED
+        from c5_transfer import check_value as check_c5_value, ALLOWED as ALLOWED_C5
         if type(addr) is not int or not 0<=addr<=0xffff:
             raise PermissionError("Invalid parameter write address")
         code=f"{vtype}:{addr:04X}"
@@ -94,6 +95,8 @@ class SerialClient:
             validator=check_value
         elif vtype=="C3" and code in ALLOWED:
             validator=check_setting
+        elif vtype=="C5" and code in ALLOWED_C5:
+            validator=check_c5_value
         else:
             raise PermissionError("Parameter-write hardware target not qualified")
         try:
