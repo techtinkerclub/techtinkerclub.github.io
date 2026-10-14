@@ -35,6 +35,7 @@ from transfer import TransferSession
 from combined_transfer import CombinedTransfer,verify_combined_receipt
 from program_model import planned_writes
 from transfer_capabilities import transfer_plan
+from parameter_write_plan import create_write_plan,requirements
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
 from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
@@ -1871,8 +1872,17 @@ class Studio(QMainWindow):
             f"{p.meaning}\n\nCurrent: {display}\n"
             f"Raw: {raw:08X}\n" if raw is not None else
             f"{p.name}\n{code}\n\n{p.meaning}\n\nCurrent: UNKNOWN / unavailable")
-        self.parameter_detail.append("\nAccess: "+p.access+
-                                     ("\nContext: "+p.context if p.context else ""))
+        req=requirements(code)
+        self.parameter_detail.append(
+            "\nAccess: "+p.access+
+            ("\nContext: "+p.context if p.context else "")+
+            "\n\nUSB writing: "+("Qualified isolated-lab pilot"
+                 if req.allowed_in_current_app else
+                 "NOT YET QUALIFIED — planning and manual entry only")+
+            "\nController setting area: "+req.area+
+            "\nPersistence: "+req.persistence+
+            "\nQualification: "+req.qualification+
+            "\nImportant: "+req.note)
         draft=self.draft.get(code,raw)
         is_known=raw is not None or self.inventory.get("mode")=="offline"
         can_edit=is_known and not code.startswith(("C0:","C4:")) and code!="C1:0029"
@@ -1948,6 +1958,22 @@ class Studio(QMainWindow):
                 lines.append(f"{CATALOG[code].name}: {human_value(code,old)}"
                              f"  →  {human_value(code,value)}   [{code}]")
             capabilities=transfer_plan(self.draft)
+            write_plan=create_write_plan(
+                self.inventory,self.draft,
+                programme_changed=self._programme_pending(),
+                include_programme=self.include_programme_with_settings)
+            if write_plan["setting_area_1"]:
+                lines.append("\nINITIAL/ADVANCED CONFIGURATION — REQUIRES SETTING AREA 1")
+                lines.append("These changes are NOT part of a C1/DA SAVE RAM DATA operation.")
+                lines.append("Area 1 entry, separate persistence, controller restart and a fresh "
+                             "programme compatibility check must be qualified first.")
+            if write_plan["setting_area_0"] and write_plan["setting_area_1"]:
+                lines.append("Changes span different setting areas: one ordinary SAVE cannot "
+                             "safely apply the complete draft.")
+            for entry in write_plan["parameters"]:
+                if not entry["usb_writable"]:
+                    lines.append(f"  [{entry['register']}] {entry['family']} — "
+                                 f"{entry['persistence']}. {entry['reason']}")
             for entry in capabilities["blocked"]:
                 lines.append(f"  NOT USB-WRITABLE: {entry['register']} — {entry['reason']}")
             if capabilities["settings_eligible"] and capabilities["blocked"]:
