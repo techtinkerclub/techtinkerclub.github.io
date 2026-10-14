@@ -117,5 +117,39 @@ function testProgrammingAndElectricalLinks(){
  assert.ok(electrical.includes("../omron-atlas/"));
  assert.ok(electrical.includes("../#wiring"));
 }
-const total=testAtlas();testOperator();testProgrammingAndElectricalLinks();
+function testEditorialSeparation(){
+ const operator=readFileSync(path.join(root,"index.html"),"utf8");
+ const programming=readFileSync(path.join(root,"omron-programming","index.html"),"utf8");
+ const studio=readFileSync(path.join(root,"program-tools","index.html"),"utf8");
+ const electrical=readFileSync(path.join(root,"electrical","index.html"),"utf8");
+ const statusHtml=readFileSync(path.join(root,"development","index.html"),"utf8");
+ const statusDom=page(path.join(root,"development","index.html"),"https://techtinker.club/heater/development/");
+ const docs=[operator,programming,studio,electrical];
+ for(const [i,d] of docs.entries()){
+  assert.ok(!d.includes("The user then observed"),"development diary leaked into user page "+i);
+  assert.ok(!d.includes("Omron hardware validation status · 13 October"),"bench status box still in manual "+i);
+  assert.ok(!d.includes("Development status · 14 October"),"date-specific development banner still in docs "+i);
+ }
+ assert.ok(!operator.includes("The user then observed"));
+ assert.ok(!programming.includes("Controller menus and PID settings we have actually read"));
+ assert.ok(!studio.includes("Real Omron test, 13 October"));
+ assert.ok(!electrical.includes("Omron E2 variant</td>"),"D12 issue register was not moved");
+ assert.ok(operator.includes('href="./development/#open"'));
+ assert.ok(programming.includes("../development/#evidence"));
+ assert.ok(electrical.includes("../development/#open"));
+ assert.ok(studio.includes("../development/#evidence"));
+ assert.ok(statusDom.document.getElementById("open"),"Outstanding checks are accessible");
+ assert.ok(statusDom.document.getElementById("software"),"Development status is accessible");
+ assert.ok(statusDom.document.querySelectorAll("details.record").length>=5,"Original records not preserved");
+ for(const snippet of ["The controller then showed","Omron E2 variant","13 October 2026","D12 electrical design-review issue register","USB-only programme execution"]){
+   assert.ok(statusHtml.includes(snippet),"Missing migrated engineering evidence: "+snippet);
+ }
+ // Safe operator instructions still explicitly require commissioning.
+ assert.ok(operator.includes("NOT COMMISSIONED"));
+ assert.ok(programming.includes("do not"));
+ const inner=statusDom.document.querySelector('details.record');
+ assert.ok(inner&&inner.querySelector('summary')&&inner.querySelector('.recordbody'));
+ statusDom.dom.window.close();
+}
+const total=testAtlas();testOperator();testProgrammingAndElectricalLinks();testEditorialSeparation();
 console.log("PASS: "+total+" Omron atlas entries, model filters, MODE navigation, input choices, search, electrical tabs, deep links, and cross-page references.");

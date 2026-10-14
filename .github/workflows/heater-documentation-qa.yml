@@ -5,6 +5,8 @@ on:
       - 'heater/index.html'
       - 'heater/electrical/index.html'
       - 'heater/omron-programming/index.html'
+      - 'heater/program-tools/index.html'
+      - 'heater/development/**'
       - 'heater/omron-atlas/**'
       - '.github/workflows/heater-documentation-qa.yml'
   pull_request:
@@ -12,6 +14,8 @@ on:
       - 'heater/index.html'
       - 'heater/electrical/index.html'
       - 'heater/omron-programming/index.html'
+      - 'heater/program-tools/index.html'
+      - 'heater/development/**'
       - 'heater/omron-atlas/**'
       - '.github/workflows/heater-documentation-qa.yml'
 jobs:
