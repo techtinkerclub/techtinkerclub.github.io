@@ -1773,8 +1773,10 @@ class Studio(QMainWindow):
     def _settings_ram_pending(self):
         tx=self.setting_transfer
         c1=self.c1_transfer
+        tx3=self.c3_transfer
         return (bool(tx and tx.ram_touched and not tx.saved)
                 or bool(c1 and c1.ram_touched and not c1.saved)
+                or bool(tx3 and tx3.area_entered and not tx3.finished)
                 or self._combined_ram_pending())
 
     def _can_begin_wait(self):
