@@ -164,9 +164,9 @@ class ModernStudioTests(unittest.TestCase):
         row.target.down.click()
         self.assertEqual(row.target.editor.text(),"124.900")
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),124.9)
-        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.0")
+        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.000")
         self.win.start_pv_editor.up.click()
-        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.1")
+        self.assertEqual(self.win.start_pv_editor.editor.text(),"20.100")
         self.assertAlmostEqual(float(self.win.programmes[0].start),20.1)
         # All four row actions use actual QIcons, not missing font glyphs.
         for control in row.findChildren(__import__(
