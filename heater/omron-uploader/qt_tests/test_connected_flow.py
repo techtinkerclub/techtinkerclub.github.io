@@ -46,6 +46,7 @@ class FakeOmron:
             return [self.c3.get(addr+i,0) for i in range(count)]
         if bank=="C1":
             return [self.c1.get(addr+i,0) for i in range(count)]
+        if bank=="C0" and addr==0x000D:return [1]
         return [0 for _ in range(count)]
     def read1(self,bank,addr):return self.read(bank,addr,1)[0]
     def write1(self,addr,value):
