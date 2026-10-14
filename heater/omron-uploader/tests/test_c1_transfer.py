@@ -148,7 +148,7 @@ class C1WriterTests(unittest.TestCase):
             "0102C1001600000100000078",
             "0102C1001B00000100000019"])
         with self.assertRaises(PermissionError):
-            client.write_setting("C3",0x0000,6)
+            client.write_setting("C3",0x000D,1)
         with self.assertRaises(PermissionError):
             client.write_setting("C1",0x0022,25)
         with self.assertRaises(ValueError):
