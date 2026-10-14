@@ -45,6 +45,7 @@ from settings_presentation import VIEWS,visible_in_view,scope_for,view_for
 from setting_dependencies import dependency_for
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
+from backup_compare import compare_saved_backups,comparison_text
 from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
 from controller_inventory import (
     CATALOG,group_names,offline_inventory,read_inventory,validate_inventory,readable_rows,
@@ -92,6 +93,7 @@ class Studio(QMainWindow):
         self.programme_receipt_match=None
         self.port=None
         self.backup=None
+        self.backup_comparison=None
         self.snapshot=None
         self.inventory=offline_inventory()
         self.inventory_current_session=False
@@ -264,6 +266,29 @@ class Studio(QMainWindow):
         tabs.addTab(self.initial_text,"Initial configuration")
         self.inventory_text=QTextEdit();self.inventory_text.setReadOnly(True)
         tabs.addTab(self.inventory_text,"Extended inventory")
+        comparison_page=QWidget()
+        comparison_layout=QVBoxLayout(comparison_page)
+        comparison_layout.addWidget(text(
+            "Read-only comparison of two complete saved programme backups. "
+            "Shows raw DA differences separately from sensor-scale temperature "
+            "interpretations; no USB connection or writes are needed.",True))
+        compare_actions=QHBoxLayout()
+        compare_actions.addWidget(button(
+            "Compare two saved backups…",self.compare_saved_backups))
+        self.export_comparison_button=button(
+            "Export comparison JSON…",self.export_backup_comparison)
+        self.export_comparison_button.setEnabled(False)
+        compare_actions.addWidget(self.export_comparison_button)
+        compare_actions.addStretch()
+        comparison_layout.addLayout(compare_actions)
+        self.comparison_text=QTextEdit()
+        self.comparison_text.setReadOnly(True)
+        self.comparison_text.setPlainText(
+            "Choose an original E5CC-T programme backup, then a later backup. "
+            "Sensor range changes are reported even when the 1,200 raw "
+            "programme words are identical.")
+        comparison_layout.addWidget(self.comparison_text,1)
+        tabs.addTab(comparison_page,"Compare backups")
         self.audit_text=QTextEdit();self.audit_text.setReadOnly(True)
         tabs.addTab(self.audit_text,"Activity log")
         lay.addWidget(tabs,1)
@@ -1805,6 +1830,56 @@ class Studio(QMainWindow):
         self.log_event("Opened saved extended parameter inventory "+file)
         if self.mode=="offline":self.offline_inspect_saved=True
         self.show_step(1);self.read_tabs.setCurrentIndex(2)
+
+    def compare_saved_backups(self):
+        """Compare stored backups without contacting the Omron controller."""
+        starting=self.folder.text().strip()
+        first,_=QFileDialog.getOpenFileName(
+            self,"Select BEFORE programme backup",starting,
+            "E5CC-T programme backups (*.json)")
+        if not first:return
+        second,_=QFileDialog.getOpenFileName(
+            self,"Select AFTER programme backup",str(Path(first).parent),
+            "E5CC-T programme backups (*.json)")
+        if not second:return
+        try:
+            report=compare_saved_backups(first,second)
+            summary=comparison_text(report)
+        except Exception as exc:
+            self.message("Cannot compare saved backups",str(exc),True)
+            return
+        self.backup_comparison=report
+        self.comparison_text.setPlainText(summary)
+        self.export_comparison_button.setEnabled(True)
+        self.show_step(1)
+        self.read_tabs.setCurrentIndex(3)
+        self.log_event("Compared original and later DA backups (READ ONLY)")
+        self.feedback.setText(
+            f"Comparison: {report['changed_raw_words']} DA words changed, "
+            f"{len(report['interpreted_target_changes'])} target temperatures "
+            "may differ. No USB actions performed.")
+
+    def export_backup_comparison(self):
+        if not self.backup_comparison:return
+        path,_=QFileDialog.getSaveFileName(
+            self,"Save read-only comparison report",
+            str(Path(self.folder.text().strip())/"E5CC-T-backup-comparison.json"),
+            "JSON (*.json)")
+        if not path:return
+        try:
+            # A native Qt save dialog asks before replacing an existing file.
+            from PySide6.QtCore import QSaveFile,QIODevice
+            data=json.dumps(self.backup_comparison,indent=2,ensure_ascii=False)
+            save=QSaveFile(path)
+            if not save.open(QIODevice.OpenModeFlag.WriteOnly):
+                raise OSError(save.errorString())
+            encoded=data.encode("utf-8")
+            if save.write(encoded)!=len(encoded) or not save.commit():
+                raise OSError(save.errorString())
+        except Exception as exc:
+            self.message("Comparison export failed",str(exc),True)
+            return
+        self.feedback.setText("Read-only backup comparison exported: "+str(path))
 
     def export_stored_profile(self):
         if not self.backup:
