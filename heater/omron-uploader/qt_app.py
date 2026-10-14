@@ -902,7 +902,7 @@ class Studio(QMainWindow):
 
     def unified_save_action(self):
         if self._active_transfer_kind()=="c3":
-            self.finish_c3()
+            self.finish_and_return_c3()
         elif self._active_transfer_kind()=="combined":
             self.save_and_finish_combined()
         elif self._active_transfer_kind()=="c1":
@@ -1024,11 +1024,54 @@ class Studio(QMainWindow):
             self.refresh_review()
             self.message("C3 global values written and read back",
                 f"{count} C3 register(s) matched in setup area 1. "
-                "This is NOT a persistence check. Select Finish (CMW OFF), "
-                "then use the guarded Software restart + audit action, or physically "
-                "power-cycle and verify the receipt. "
+                "This is NOT a persistence check. Select Finish & Return "
+                "to normal to complete the C3 procedure and issue the "
+                "separately authorised reset. "
                 "Do not energise the heater before reconfiguration is verified.")
         self._work("Apply and verify C3 in setting area 1",action,done,True)
+
+    def finish_and_return_c3(self):
+        """One deliberate final action: receipt/CMW OFF, then exit C3 area 1.
+
+        This replaces the previous confusing two-button C3 Finish + Return
+        workflow. A reset is an explicitly confirmed step and is NEVER
+        repeated if transmission or reconnection is uncertain.
+        """
+        tx=self.c3_transfer
+        if (not tx or not tx.staged or tx.finished or self.busy or self.fail_latched
+                or not self._c3_draft_matches_preview() or not self.port):
+            self.message("Cannot finish C3 configuration",
+                "A successful area-1 write/readback with an unchanged proposal "
+                "is required. No controller restart was attempted.",True)
+            return
+        if QMessageBox.warning(
+                self,"Finish settings and return to normal display",
+                "Finish the selected C3 settings, read them back, record a "
+                "receipt and turn CMW OFF. The app will then re-enable "
+                "communications writing with acknowledgement and send ONE "
+                "Omron software-reset command to return from the in-t / "
+                "initial-settings screen to normal operation. "
+                "The reset has no response and must not be retried blindly. "
+                "The USB connection will reopen READ ONLY and check the "
+                "resulting settings and all eight programme memories. "
+                "The controller's power-up behaviour may change outputs: "
+                "confirm ALL external heater, mains and output circuits are "
+                "physically disconnected. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        port=self.port
+        directory=self.folder.text()
+        def action(progress):
+            progress("Verifying final C3 settings and ending writing access…")
+            receipt=tx.finish()
+            progress("Returning to normal operation: sending ONE software reset…")
+            client,report=restart_and_audit(tx,port,SerialClient,directory)
+            return receipt,client,report
+        def done(result):
+            receipt,client,report=result
+            self._complete_c3_return(client,report,receipt)
+        self._work("Finish C3 and return to operation level",action,done,True)
 
     def finish_c3(self):
         tx=self.c3_transfer
@@ -1065,6 +1108,46 @@ class Studio(QMainWindow):
                 "Omron-managed dependent changes. Receipt:\n"+str(receipt))
         self._work("Finish C3: record receipt and CMW OFF",action,done,True)
 
+    def _complete_c3_return(self,new_client,report,receipt):
+        """Accept the postreset read-only controller and invalidate old state."""
+        self.client=new_client
+        self.session=None  # the original preflight and DA backup are now stale
+        self.inventory=offline_inventory()
+        self.inventory_current_session=False
+        self.c3_receipt_match={
+            "path":str(receipt),
+            "count":report.get("configuration_registers_checked",0),
+            "audit":report}
+        self.c3_transfer.restart_audit=report
+        self.backup=None
+        self.preview_stamp=None
+        self.draft={}
+        self.link_status.setText(
+            "●  USB reconnected read-only · check operation-level display")
+        self.link_status.setStyleSheet("color:#a8610f;font-weight:600")
+        self.refresh_settings()
+        self.refresh_review()
+        changed=report["changes_total"]
+        other=report.get("configuration_side_effects",0)
+        self.message(
+            "Global settings finished — return-to-normal command sent",
+            "C3 values written and read back. The one-shot software-reset "
+            "command was transmitted without an acknowledgement, as Omron "
+            "specifies; USB read-only reconnection succeeded.\n\n"
+            "Check the physical controller: it should now show the normal "
+            "PV/SP operating screen instead of in-t. That display change "
+            "cannot be confirmed by the communications status alone.\n\n"
+            f"C3 receipt matched: {report['configuration_verified']}\n"
+            f"Raw programme register differences: {changed}\n"
+            f"Other controller-managed C3 changes: {other}\n"
+            f"Audit: {report['audit_file']}\n\n"
+            "No DA programme values were written. Use Step 2 to read all "
+            "current settings before the next transfer. If the controller "
+            "still displays in-t, hold the front-panel Level key for at "
+            "least one second; do NOT repeat the software reset blindly.",
+            bool(not report["configuration_verified"] or
+                 report.get("requires_manual_review")))
+
     def restart_verify_c3(self):
         tx=self.c3_transfer
         if (not tx or not tx.finished or not tx.cmw_off
@@ -1096,50 +1179,8 @@ class Studio(QMainWindow):
             progress("Sending software reset once; no reply expected…")
             return restart_and_audit(tx,port,SerialClient,self.folder.text())
         def done(result):
-            new_client,report=result
-            self.client=new_client
-            # Original configuration inventory/preflight is stale after RESET.
-            self.session=None
-            self.inventory=offline_inventory()
-            self.inventory_current_session=False
-            self.c3_receipt_match={
-                "path":str(receipt),
-                "count":report.get("configuration_registers_checked",0),
-                "audit":report}
-            tx.restart_audit=report
-            self.backup=None
-            self.preview_stamp=None
-            self.draft={}
-            self.link_status.setText("●  Read-only reconnect · reset not independently confirmed")
-            self.link_status.setStyleSheet("color:#a8610f;font-weight:600")
-            self.refresh_settings()
-            self.refresh_review()
-            changed_slots=", ".join(
-                f"Programme {number}: {count}" for number,count in
-                report["changes_by_programme"].items() if count)
-            self.message("Reset command sent — full programme audit",
-                "Software reset has no acknowledgement; actual restart was "
-                "NOT independently confirmed.\n"
-                f"{report['memory_words_compared']} DA memory words checked.\n"
-                f"Changed raw words: {report['changes_total']}.\n"
-                f"Possible interpreted target changes: "
-                f"{report.get('possible_interpretation_change_count',0)}.\n"
-                +("\n".join(
-                    f"  Programme {row['programme']} segment {row['segment']}: "
-                    f"{row['old_interpretation_c']:g} °C → "
-                    f"{row['new_interpretation_c']:g} °C (our decoder only)"
-                    for row in report.get("possible_temperature_interpretation_changes",[])[:8])
-                  +("\n" if report.get("possible_interpretation_change_count") else ""))
-                +f"{changed_slots if changed_slots else 'No programme raw words changed.'}\n"
-                f"Unrequested global C3 changes: "
-                f"{report['configuration_side_effects']}.\n"
-                f"Global C3 receipt matched: {report['configuration_verified']}.\n"
-                f"{report['assessment']}\n\n"
-                f"Audit file: {report['audit_file']}\n\n"
-                "Keep the heater isolated. Review the audit, then use "
-                "Step 2 · Read everything before programming again.",
-                bool(report["requires_manual_review"] or
-                     not report["configuration_verified"]))
+            client,report=result
+            self._complete_c3_return(client,report,receipt)
         self._work("Software restart and full DA/C3 verification",action,done,True)
 
     def _c1_draft_matches_preview(self):
@@ -2865,11 +2906,12 @@ class Studio(QMainWindow):
                     "temperature changes detected. STOP: inspect segment SP on front "
                     "panel and original backup before operating the heater."]
             elif tx3 and tx3.finished:
-                reasons=["C3 completed, CMW OFF. Use guarded Software restart + audit "
-                         "or physically power-cycle and verify manually."]
+                reasons=["C3 CMW OFF acknowledged; returning to normal was not "
+                         "completed. Use Return to normal once, or the physical Level "
+                         "key for at least one second."]
             elif tx3 and tx3.staged:
-                reasons=["C3 changed in area 1, verified by readback. Finish CMW OFF. "
-                         "Persistence remains unverified."]
+                reasons=["C3 readback matched in initial-settings area. Use "
+                         "Finish + Return to normal (one software reset, then readback)."]
             elif tx3 and tx3.area_entered:
                 reasons=["Controller may remain in area 1 with partial changes. "
                          "Stop and inspect; NO blind retry."]
@@ -3016,7 +3058,7 @@ class Studio(QMainWindow):
                 "2  Apply C3 in area 1 + Verify" if kind=="c3"
                 else "2  Write RAM + Verify")
             self.unified_save.setText(
-                "3  Finish C3 (CMW OFF)" if kind=="c3"
+                "3  Finish + Return to normal" if kind=="c3"
                 else "3  Save + Finish (CMW OFF)")
 
     def _controls(self):
