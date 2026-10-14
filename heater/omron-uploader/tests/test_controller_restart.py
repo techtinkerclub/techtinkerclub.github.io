@@ -60,6 +60,9 @@ class TestRestartAndAudit(unittest.TestCase):
                                      retry_delay=0,timeout_seconds=1)
         self.assertIs(new,self.client)
         self.assertEqual(self.client.resets,1)
+        self.assertTrue(self.tx.restart_cmw_on_acknowledged)
+        self.assertTrue(self.tx.reset_command_transmitted)
+        self.assertEqual(self.client.calls[-1],("operation","00","01"))
         self.assertEqual(report["memory_words_compared"],1200)
         self.assertEqual(report["changes_total"],1)
         self.assertEqual(report["changes_by_programme"]["2"],1)
@@ -99,6 +102,20 @@ class TestRestartAndAudit(unittest.TestCase):
         self.assertIn("STILL",report["assessment"])
         self.assertGreater(report["possible_interpretation_change_count"],0)
         self.assertFalse(report["interpretation_is_verified_on_hardware"])
+
+    def test_cmw_on_rejected_means_no_reset_command_transmitted(self):
+        self.client.fail=("op","00","01")
+        with self.assertRaisesRegex(RuntimeError,"Injected operation"):
+            restart_and_audit(
+                self.tx,"COM7",lambda p,write_allowed=False:self.client,
+                self.tmp.name,timeout_seconds=1)
+        self.assertEqual(self.client.resets,0)
+        self.assertFalse(getattr(self.tx,"reset_command_transmitted",False))
+        self.assertTrue(self.tx.reset_attempted)
+        with self.assertRaises(PreflightError):
+            restart_and_audit(
+                self.tx,"COM7",lambda p,write_allowed=False:self.client,
+                self.tmp.name,timeout_seconds=1)
 
     def test_reset_refused_before_cmw_off(self):
         self.tx.cmw_off=False
