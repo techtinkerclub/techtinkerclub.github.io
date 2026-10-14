@@ -95,7 +95,7 @@ class TransferSession:
         self.log("PASS: 8/8 programmes, 1200 DA registers and 9 selected C3 values saved and checked on disk.")
         self.log("Saved read-only controller programme backup: "+str(filepath))
         return filepath
-    def build_plan(self,slot,prog):
+    def build_plan(self,slot,prog,planned_wait_band=None):
         if self.backup_data is None:raise PreflightError("Mandatory backup has not completed")
         if not self.info or not self.settings:raise PreflightError("Preflight incomplete")
         if self.mismatches:raise PreflightError("Controller settings do not match required isolated rate-mode configuration:\n"+"\n".join(self.mismatches))
@@ -106,7 +106,7 @@ class TransferSession:
         # E5C-T H185 §5-15-4: Step consumes no programmed time.
         # For a meaningful target-arrival Step, the controller-wide Wait Band
         # (Adjustment Level wt-b; H186 C1:0021) must be active. A local draft
-        # cannot satisfy this: it must already be true on the actual hardware.
+        # can only satisfy this when it is verified as part of a guarded combined transaction.
         if any(seg.type=="step" for seg in prog.steps):
             try:
                 wait_raw=self.client.read1("C1",0x0021)
@@ -115,14 +115,18 @@ class TransferSession:
                     "Step upload requires a live read of the controller's "
                     "wt-b Wait Band (C1:0021). Read failed; no write attempted."
                 ) from exc
-            if not isinstance(wait_raw,int) or not 1<=wait_raw<=9999:
+            effective_wait = wait_raw if planned_wait_band is None else planned_wait_band
+            if (planned_wait_band is not None and
+                    (type(planned_wait_band) is not int or not 1<=planned_wait_band<=9999)):
+                raise PreflightError("Combined Step programme requires nonzero proposed Wait Band")
+            if not isinstance(wait_raw,int) or not 0<=wait_raw<=9999 or not 1<=effective_wait<=9999:
                 raise PreflightError(
                     "Step programme requires the controller-wide Wait Band wt-b "
                     "to be enabled before upload. C1:0021 currently reads OFF/invalid. "
                     "Set it using the approved front-panel Adjustment Level procedure, "
                     "then reconnect and read it back. This app cannot write C1 settings."
                 )
-            self.log(f"Step safety check: live Wait Band C1:0021={wait_raw} ({wait_raw/10:g} °C).")
+            self.log(f"Step safety check: live Wait Band={wait_raw/10:g} °C; programme will use {effective_wait/10:g} °C.")
         pairs=planned_writes(slot,prog,input_type=self.settings["C3:0000"])
         existing=self.backup_data["programmes"][str(slot)]
         changes=[]
