@@ -1851,6 +1851,8 @@ class Studio(QMainWindow):
         self.backup_comparison=report
         self.comparison_text.setPlainText(summary)
         self.export_comparison_button.setEnabled(True)
+        if self.mode=="offline":
+            self.offline_inspect_saved=True
         self.show_step(1)
         self.read_tabs.setCurrentIndex(3)
         self.log_event("Compared original and later DA backups (READ ONLY)")
