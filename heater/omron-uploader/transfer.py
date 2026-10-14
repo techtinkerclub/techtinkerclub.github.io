@@ -12,7 +12,7 @@ from compoway import ProtocolError
 
 # Omron H186 C3 initial setting addresses, read-only preflight.
 PREFLIGHT={
-  0x0000:(5,"Type K, -200 to 1300°C, whole degrees (observed COM7 bench policy)"),
+  0x0000:(5,"Omron documented universal input type (0–29)"),
   0x0004:(0,"Temperature unit °C"),
   0x00B9:(0,"Programme time hours.minutes"),
   0x00BA:(1,"Rate-of-rise programming"),
@@ -22,10 +22,10 @@ PREFLIGHT={
   0x00BE:(0,"End-of-programme enters RESET"),
   0x00BF:(0,"SP Start (observed COM7 bench policy)"),
 }
-SUPPORTED_TYPE_K_INPUTS=frozenset({5,6})
+SUPPORTED_CONTROLLER_INPUTS=frozenset(range(30))
 def matches_preflight(address,actual,expected):
-    """Both Type K display resolutions are supported; other policy stays fixed."""
-    return actual in SUPPORTED_TYPE_K_INPUTS if address==0x0000 else actual==expected
+    """All H185 inputs recognised; existing rate-of-rise safety policy stays fixed."""
+    return actual in SUPPORTED_CONTROLLER_INPUTS if address==0x0000 else actual==expected
 class PreflightError(RuntimeError):pass
 
 class TransferSession:
@@ -43,10 +43,17 @@ class TransferSession:
             raise PreflightError(f"Expected E5CC-T but reported model prefix {model!r}")
         self.status=self.client.status()
         self.settings={f"C3:{addr:04X}":self.client.read1("C3",addr) for addr in PREFLIGHT}
+        if self.settings["C3:0000"] in range(25,30):
+            # Live analogue scale/decimal position must be retained in backup.
+            for addr in (0x0001,0x0002,0x0003):
+                self.settings[f"C3:{addr:04X}"]=self.client.read1("C3",addr)
         mismatches=[]
         for addr,(expected,description) in PREFLIGHT.items():
             got=self.settings[f"C3:{addr:04X}"]
-            if not matches_preflight(addr,got,expected):mismatches.append(f"{description}: expected {expected}, controller returned {signed(got)}")
+            if addr==0x0004 and self.settings["C3:0000"] in range(25,30):
+                continue # no °C/°F display-unit requirement for scaled analogue signals
+            if not matches_preflight(addr,got,expected):
+                mismatches.append(f"{description}: expected {expected}, controller returned {signed(got)}")
         self.log("Identified model: "+model+" (10-character ID; verify full suffix on nameplate)")
         self.log("Controller status (raw 0601): "+str(self.status))
         self.mismatches=mismatches
@@ -136,10 +143,15 @@ class TransferSession:
         # preview/staging. We never substitute an offline draft or an old backup.
         live={
             f"C3:{addr:04X}":self.client.read1("C3",addr)
-            for addr in (0x0000,0x0004,0x0005,0x0006)
+            for addr in ((0x0000,0x0004,0x0005,0x0006,0x0001,0x0002,0x0003)
+                         if self.settings["C3:0000"] in range(25,30)
+                         else (0x0000,0x0004,0x0005,0x0006))
         }
         if live["C3:0000"]!=self.settings["C3:0000"] or live["C3:0004"]!=self.settings["C3:0004"]:
-            raise PreflightError("Controller sensor type/temperature unit changed since backup")
+            raise PreflightError("Controller input type/unit changed since backup")
+        if self.settings["C3:0000"] in range(25,30):
+            if any(live[f"C3:{addr:04X}"]!=self.settings[f"C3:{addr:04X}"] for addr in (1,2,3)):
+                raise PreflightError("Controller analogue engineering scaling changed since backup")
         try:
             limits=effective_limits(live,require_readback=True)
         except ValueError as exc:
