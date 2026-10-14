@@ -718,8 +718,9 @@ class Studio(QMainWindow):
         transfer_layout=QVBoxLayout(transfer)
         transfer_layout.setSpacing(9)
         transfer_layout.addWidget(heading("Pending controller changes",
-            "Programme memory and supported controller settings share this review. "
-            "Only Wait Band is currently qualified for settings USB writing."))
+            "Programme and controller settings share one review. USB writes are "
+            "experimental for selected C1 and C3 registers; use the matching "
+            "setting-area procedure. Heater power must remain isolated."))
         self.transfer_summary=QLabel("")
         self.transfer_summary.setWordWrap(True)
         self.transfer_summary.setObjectName("transferSummary")
@@ -1065,16 +1066,20 @@ class Studio(QMainWindow):
             self.backup=None
             self.preview_stamp=None
             self.draft={}
-            self.link_status.setText("●  Reconnected · full programme audit complete")
+            self.link_status.setText("●  Read-only reconnect · reset not independently confirmed")
             self.link_status.setStyleSheet("color:#a8610f;font-weight:600")
             self.refresh_settings()
             self.refresh_review()
             changed_slots=", ".join(
                 f"Programme {number}: {count}" for number,count in
                 report["changes_by_programme"].items() if count)
-            self.message("Controller restarted — full programme audit",
+            self.message("Reset command sent — full programme audit",
+                "Software reset has no acknowledgement; actual restart was "
+                "NOT independently confirmed.\n"
                 f"{report['memory_words_compared']} DA memory words checked.\n"
                 f"Changed raw words: {report['changes_total']}.\n"
+                f"Possible interpreted target changes: "
+                f"{report.get('possible_interpretation_change_count',0)}.\n"
                 f"{changed_slots if changed_slots else 'No programme raw words changed.'}\n"
                 f"Unrequested global C3 changes: "
                 f"{report['configuration_side_effects']}.\n"
@@ -1327,9 +1332,11 @@ class Studio(QMainWindow):
             tx3=self.c3_transfer
             if getattr(tx3,"restart_audit",None):
                 report=tx3.restart_audit
-                state=(f"SOFTWARE RESTART AUDIT: {report['changes_total']} DA word(s) changed; "
-                       f"C3 receipt matched: {report['configuration_verified']}; "
-                       "MANUAL REVIEW REQUIRED before heater use")
+                state=(f"RESET COMMAND SENT (restart not independently confirmed): "
+                       f"{report['changes_total']} raw DA word(s) changed; "
+                       f"{report.get('possible_interpretation_change_count',0)} "
+                       f"possible programme target temperature changes; "
+                       "MANUAL REVIEW REQUIRED")
             elif tx3.finished:
                 state="Area-1 C3 read back; CMW OFF; restart + audit required"
             elif tx3.staged:state="C3 writes read back, finish CMW OFF required"
@@ -1337,8 +1344,9 @@ class Studio(QMainWindow):
             else:state="C3 read-only preview complete; no writes yet"
             self.transfer_summary.setText(
                 f"GLOBAL C3 CONFIGURATION · {state}\n"
-                "Do not upload programmes or energise the heater until physical "
-                "power cycle, reconnect and receipt verification.")
+                "Reset transmission has no Omron acknowledgement: an audit is NOT "
+                "proof a reboot occurred. Keep the heater isolated. Validate "
+                "programme temperatures on the front panel before use.")
             return
         if c1 is not None:
             if c1.cmw_off:state="SAVE verified; CMW OFF acknowledged"
@@ -2508,9 +2516,10 @@ class Studio(QMainWindow):
                 lines.append("C3 pilot: Control algorithm, Type K sensor 5/6, SP limits "
                              "and heating control period only. A special write procedure "
                              "is required; SAVE RAM DATA is NOT used to claim C3 persistence.")
-                lines.append("After writing, physically power-cycle, reconnect and "
-                             "verify receipt. DA programmes are not included; sensor "
-                             "resolution changes require empty stored programmes.")
+                lines.append("A sensor-range change can change how existing programme "
+                             "setpoints are interpreted. A complete original DA backup "
+                             "and post-restart comparison are mandatory. No automatic "
+                             "scaling or editing of your programmes is performed.")
             if write_plan["setting_area_0"] and write_plan["setting_area_1"]:
                 lines.append("Changes span different setting areas: one ordinary SAVE cannot "
                              "safely apply the complete draft.")
