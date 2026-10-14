@@ -380,7 +380,14 @@ class Studio(QMainWindow):
             actionbar.addWidget(button(title,lambda checked=False,k=kind:self.add_segment(k)))
         tlay.addLayout(actionbar)
         tlay.addWidget(text("Ramp = target + rate   ·   Soak = hold time only   ·   "
-                           "Step = immediate target. Use the controls on each segment to reorder, duplicate or remove it.",True))
+                           "Step = immediate setpoint jump; progression requires the controller's GLOBAL Wait Band.",True))
+        wait_row=QHBoxLayout()
+        self.wait_hint=QLabel("")
+        self.wait_hint.setWordWrap(True)
+        wait_row.addWidget(self.wait_hint,1)
+        self.wait_configure=button("View / set Wait Band (wt-b)",self.goto_wait_setting)
+        wait_row.addWidget(self.wait_configure)
+        tlay.addLayout(wait_row)
 
         # Each row is a compact self-contained, type-aware editor. The
         # table itself is just a vertical, scrollable host; there are no
@@ -1122,13 +1129,53 @@ class Studio(QMainWindow):
             p=self.programmes[self.slot]
             metrics=p.validate()
             self.chart.show_points(metrics["points"])
+            has_step=any(seg.type=="step" for seg in p.steps)
             self.programme_info.setText(
-                f"{len(p.steps)} segments   ·   {metrics['minutes']:.1f} min nominal   ·   "
-                f"Final SP {metrics['final_sp']:g} °C   ·   Constraints passed")
+                f"{len(p.steps)} segments   ·   {metrics['minutes']:.1f} min programmed "
+                f"(excludes Wait delays){' — total time cannot be predicted' if has_step else ''}   ·   "
+                f"Final SP {metrics['final_sp']:g} °C")
+            self._refresh_wait_hint()
         except Exception as exc:
             self.chart.show_points([])
             self.programme_info.setText("Needs correction: "+str(exc))
 
+
+    def _refresh_wait_hint(self):
+        """Represent the real Omron global Wait Band, never a per-Step toggle."""
+        if not hasattr(self,"wait_hint"):return
+        if not any(s.type=="step" for s in self.programmes[self.slot].steps):
+            self.wait_hint.setText("Wait Band is a controller-wide setting affecting segment ends, not a per-segment option.")
+            self.wait_hint.setStyleSheet("color:#627a90;")
+            self.wait_configure.setVisible(False)
+            return
+        raw=self.inventory.get("fields",{}).get("C1:0021")
+        proposal=self.draft.get("C1:0021")
+        live=(self.session is not None and self.client is not None and
+              self.inventory.get("mode")!="offline")
+        if raw is None or not live:
+            label="NOT VERIFIED on connected hardware"
+        elif raw==0:
+            label="OFF on controller — Step will NOT wait"
+        else:
+            label=f"ACTIVE: ±{raw/10:g} °C, as read from controller"
+        if proposal is not None:
+            label+=("  ·  Local draft "+("OFF" if proposal==0 else f"±{proposal/10:g} °C")
+                    +" (NOT APPLIED)")
+        self.wait_hint.setText(
+            "STEP / WAIT   ·   "+label+
+            ". Applies at every segment boundary in all 8 programmes. "
+            "An event input may disable waiting; reaching the band once is not a stability test.")
+        self.wait_hint.setStyleSheet("color:"+("#137952" if live and raw and not self.draft else "#98631b")+";font-weight:600")
+        self.wait_configure.setVisible(True)
+
+    def goto_wait_setting(self):
+        """Jump to Adjustment Level wt-b in the searchable settings catalogue."""
+        self.show_step(3)
+        self.group.setCurrentText("All groups")
+        self.search.setText("C1:0021")
+        if "C1:0021" in getattr(self,"setting_keys",[]):
+            self.setting_table.selectRow(self.setting_keys.index("C1:0021"))
+            self._setting_selected()
 
     def add_segment(self,kind):
         if self._editing_locked():return
@@ -1193,6 +1240,7 @@ class Studio(QMainWindow):
                 self._cell(self.setting_table,index,col,txt)
         self._rendering=False
         self.draft_count.setText(f"{len(self.draft)} proposed changes · {len(rows)} visible")
+        if hasattr(self,"wait_hint"):self._refresh_wait_hint()
         if selected in self.setting_keys:self.setting_table.selectRow(self.setting_keys.index(selected))
         elif rows:self.setting_table.selectRow(0)
         else:self.parameter_detail.clear()
