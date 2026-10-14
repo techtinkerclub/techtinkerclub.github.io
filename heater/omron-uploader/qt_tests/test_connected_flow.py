@@ -476,9 +476,16 @@ class QtConnectedTests(unittest.TestCase):
                   self.win.programmes[0].steps if seg.type!="soak"),
             previous)
         self.win.unified_preview_action()
+        def reopen(port,write_allowed=False):
+            self.assertEqual(port,"COM7")
+            self.assertFalse(write_allowed)
+            fake.closed=False
+            return fake
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
-            self.win.finish_c3()  # legacy manual finishing remains available
+            with patch("qt_app.SerialClient",side_effect=reopen):
+                self.win.finish_c3()
+        self.assertEqual(fake.calls.count(("software_reset",)),1)
         self.assertEqual(
             tuple((seg.type,float(seg.sp)) for seg in
                   self.win.programmes[0].steps if seg.type!="soak"),
@@ -523,7 +530,8 @@ class QtConnectedTests(unittest.TestCase):
         tx=self.win.c3_transfer
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
-            self.win.finish_c3()  # exercise recovery route for existing two-step session
+            tx.finish()  # emulate an already-finished transfer from an older build
+            self.win.refresh_actions()  # fallback return-to-normal remains available
         self.assertTrue(tx.finished)
         self.assertTrue(self.win.restart_c3_button.isEnabled())
         # The test reuses one simulated controller: its settings/memories
