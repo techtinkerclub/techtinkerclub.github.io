@@ -1039,8 +1039,11 @@ class Studio(QMainWindow):
                 "This sends a SOFTWARE RESET. Controller power-up behaviour "
                 "and output states may change. Confirm the heater PSU, load "
                 "and output circuits are PHYSICALLY DISCONNECTED. "
-                "This no-response command will NEVER be retried. "
-                "The app will reconnect read-only and compare all eight stored "
+                "The app will first re-enable Communications Writing (CMW ON) "
+                "and require Omron's acknowledgement; otherwise no reset "
+                "command will be sent. This no-response reset command will "
+                "NEVER be retried. Afterward the app reconnects read-only "
+                "and compares all eight stored "
                 "programmes against the original backup. Any differences "
                 "require review before heater use. Reset now?",
                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
