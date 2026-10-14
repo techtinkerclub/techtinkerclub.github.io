@@ -170,6 +170,9 @@ def check_global_programming(fields,draft=None):
     problems=[]
     for key,(expected,reason) in GLOBAL_PROGRAMME_VALUES.items():
         value=effective.get(key)
-        if key=="C3:0004" and effective.get("C3:0000") in ANALOGUE_TYPES:\n            continue # temperature units have no meaning for scaled analogue input\n        if value!=expected:\n            problems.append(f"{key}: {reason} (expected {expected}, "
+        if key=="C3:0004" and effective.get("C3:0000") in ANALOGUE_TYPES:
+            continue # temperature units have no meaning for scaled analogue input
+        if value!=expected:
+            problems.append(f"{key}: {reason} (expected {expected}, "
                             f"read/proposed {value if value is not None else 'UNKNOWN'})")
     return problems
