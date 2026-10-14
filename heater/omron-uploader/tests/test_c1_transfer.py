@@ -19,6 +19,7 @@ class Fake:
         self.da=[[0]*150 for _ in range(8)]
         self.calls=[]
         self.fail_on=None
+        self.c5_mismatch=False
     def identify(self):return {"model10":"E5CC-TQX3A","buffer_bytes":217}
     def status(self):return "0100"
     def read(self,bank,address,count=1):
@@ -27,7 +28,7 @@ class Fake:
         if bank=="C1":return [self.c1.get(address+i,0) for i in range(count)]
         if bank=="C0" and address==0x000D:return [self.pid]
         if bank=="C5":
-            return [self.c1[{0:0x0015,1:0x0016,2:0x0017}[address+i]]
+            return [self.c1[{0:0x0015,1:0x0016,2:0x0017}[address+i]]+(1 if self.c5_mismatch else 0)
                     if (address+i)//0x10==self.pid-1 and (address+i)%0x10 in (0,1,2)
                     else 0 for i in range(count)]
         raise AssertionError(f"Unsupported read {bank} {address:04X}")
@@ -91,6 +92,13 @@ class C1WriterTests(unittest.TestCase):
         self.client.pid=2
         with self.assertRaisesRegex(PreflightError,"PID set changed"):
             self.tx.stage()
+        self.assertFalse(self.tx.ram_touched)
+        self.assertFalse(self.client.calls)
+
+    def test_pid_c1_and_fixed_c5_mismatch_blocks_before_write(self):
+        self.client.c5_mismatch=True
+        with self.assertRaisesRegex(PreflightError,"fixed C5"):
+            self.tx.preview({"C1:0015":130})
         self.assertFalse(self.tx.ram_touched)
         self.assertFalse(self.client.calls)
 
