@@ -38,6 +38,12 @@ class CombinedTransfer:
                 or not ses.backup_file.is_file() or ses.mismatches
                 or ses.staged is not None or ses.committed):
             raise PreflightError("Fresh compatible eight-memory backup and verified preflight required")
+        try:
+            with ses.backup_file.open(encoding="utf-8") as evidence:
+                if json.load(evidence) != ses.backup_data:
+                    raise PreflightError("Controller backup evidence changed on disk")
+        except (OSError, ValueError) as exc:
+            raise PreflightError("Cannot validate controller backup evidence") from exc
         if not self.client.status().startswith("01"):
             raise PreflightError("Controller must be RESET/stopped for combined transfer")
         for address, (expected, label) in PREFLIGHT.items():
