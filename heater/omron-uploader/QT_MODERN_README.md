@@ -280,3 +280,29 @@ controller's power-cycle persistence or PID-set semantics have been verified.
 C3 input range/sensor type, alarms, system behaviour and communications
 configuration remain review/manual only pending an independently verified
 setting-area-1 entry/exit and persistence procedure.
+
+
+## Programme compatibility, dependencies and one-click revert (October 2026)
+
+Step 3 programme validation now considers the supported installed Type K input
+range, decimal precision and the controller-wide upper/lower setpoint limits.
+A connected DA preview reads those values live again and refuses invalid
+programme targets before any communications-write operation. A pending
+controller-wide input/limit proposal is reflected in the local programme
+preview, but unsupported input-type/limit writes are **not** silently included.
+An existing out-of-range target is **not automatically clamped** to a different
+temperature: the operator must deliberately correct the programme.
+
+Step 4 can explain control-mode prerequisites for P/I/D (PID control required)
+and heating hysteresis (ON/OFF control required), with a one-click jump to the
+global Control algorithm setting `C3:0007`. The **Revert to previous value**
+button below Add to change review discards only the selected proposed setting
+and/or unfinished edit and restores its last read controller value. It is
+disabled when nothing is changed. If the original value is unknown (offline),
+the app can only discard its draft rather than claim it restored a real
+controller value. Revert does **not** write anything over USB.
+
+Changing `C3:0007` is still local proposal/manual configuration only until
+the setup-area-1 hardware writer is independently qualified. Merely proposing
+PID mode never satisfies a C1 PID-writing preflight: the connected controller
+must **actually read as PID mode** after a fresh connection.
