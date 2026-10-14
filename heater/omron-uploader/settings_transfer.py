@@ -14,7 +14,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 import json,hashlib
 from compoway import ProtocolError
-from transfer import PreflightError
+from transfer import PreflightError,PREFLIGHT
 
 REGISTER="C1:0021"
 BANK="C1"
@@ -76,6 +76,12 @@ class WaitBandTransfer:
             raise PreflightError("DA programme transfer already touched RAM; do not mix transfers in this session")
         if not str(self.client.status()).startswith("01"):
             raise PreflightError("Controller is not confirmed RESET/stopped. Refusing all settings writes")
+        for addr,(expected,meaning) in PREFLIGHT.items():
+            actual=self.client.read1("C3",addr)
+            if actual!=expected:
+                raise PreflightError(
+                    f"Bench configuration changed at C3:{addr:04X} ({meaning}): "
+                    f"expected {expected}, read {actual}. No Wait Band write allowed.")
 
     def preview(self,new_raw):
         if self.staged or self.ram_touched or self.saved:
