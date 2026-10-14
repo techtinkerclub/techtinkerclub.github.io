@@ -249,6 +249,7 @@ class ModernStudioTests(unittest.TestCase):
         self.win.choose_mode("offline")
         self.win.inventory["fields"]["C1:0021"]=20
         self.win.inventory["fields"]["C1:0026"]=500
+        self.win.settings_view.setCurrentText("All parameters")
         self.win.refresh_settings()
         first=self.win._selected_setting_code()
         self.assertNotEqual(first,"C1:0021")
