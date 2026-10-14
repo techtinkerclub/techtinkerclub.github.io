@@ -306,3 +306,45 @@ Changing `C3:0007` is still local proposal/manual configuration only until
 the setup-area-1 hardware writer is independently qualified. Merely proposing
 PID mode never satisfies a C1 PID-writing preflight: the connected controller
 must **actually read as PID mode** after a fresh connection.
+
+
+## Experimental area-1 USB configuration pilot (14 October 2026; supersedes earlier C3 review-only notes)
+
+The isolated-lab `C3ConfigurationTransfer` now permits only these **five
+specific initial/global settings**, subject to live preflight and readback:
+
+- `C3:0007` Control algorithm: 0=ON/OFF or 1=2-PID.
+- `C3:0000` Type K input ranges **5 or 6 only** (same thermocouple type, different range/resolution).
+- `C3:0005` Upper setpoint limit.
+- `C3:0006` Lower setpoint limit.
+- `C3:000A` Heating output control period (documented encoding −2…99).
+
+Settings-area-1 writes are **not** treated as ordinary staged RAM writes.
+Step 5 performs a read-only preview, requires explicit heater isolation,
+issues **CMW ON → Move to Setup Area 1 (3005 07 00) → C3 writes with
+per-register readback → receipt → CMW OFF**, and **never** issues automatic
+RUN, software reset, factory initialization or SAVE RAM DATA for C3 values.
+These C3 values may affect controller operation immediately and persistence is
+not established by same-session readback. After the write, the operator MUST
+physically power-cycle and reconnect to verify the receipt before using the heater.
+
+**Sensor type safety:** raw DA programme temperatures are interpreted at the
+sensor's chosen decimal resolution. Switching between Type K input 5 and 6 is
+allowed only after a complete eight-memory backup confirms that ALL 8 stored
+programmes are empty. Both SP limits must also be explicitly included in that
+change, even if an integer word remains identical but means a different
+temperature. The application refuses to silently migrate existing DA segments;
+this must be a separate migration feature. Tightening SP limits with populated
+programmes is likewise refused.
+
+**Different setting areas cannot be merged into one CMW/SAVE transaction.**
+Apply eligible C3 changes by themselves, physically power-cycle and verify,
+then make C1 or DA changes after a new read and backup. Initial configuration
+is hardware-experimental and has not yet been observed on the actual -000 unit.
+No alarms, output assignments, polarity, communications parameters or arbitrary
+C3 registers have been enabled.
+
+Omron source: H186-E1-06 §§2-2-3, 2-3-2, 2-3-8 and 3-1.
+The ordinary C1 Proportional/Integral/Derivative values are the **active PID
+set** view; the C5 PID 1–8 values are the eight stored sets, not additional
+unrelated integral-time variables.
