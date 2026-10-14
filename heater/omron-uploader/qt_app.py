@@ -1678,7 +1678,6 @@ class Studio(QMainWindow):
                 ("Extended inventory failed: "+inventory_error+"\nOnly offline unknown-value planning is available."
                  if inventory_error else report_inventory(self.inventory)))
             self._populate_memories()
-            self.confirm_hardware_model()
             self.refresh_settings()
             self.refresh_review()
             self.feedback.setText("Backups saved: "+str(self.session.backup_file))
@@ -1691,7 +1690,6 @@ class Studio(QMainWindow):
         self._work("Read everything",job,completed)
 
     def disconnect(self):
-        self.hardware_profile=None
         if self.busy:
             self.message("USB busy","Wait for the serial operation to finish.",True);return
         if (self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending():
@@ -1701,7 +1699,8 @@ class Studio(QMainWindow):
         if self.client:
             try:self.client.close()
             except Exception:pass
-        self.client=None;self.session=None;self.setting_transfer=None;self.port=None;self.preview_stamp=None
+        self.client=None;self.session=None;self.hardware_profile=None
+        self.setting_transfer=None;self.port=None;self.preview_stamp=None
         self.c3_transfer=None
         self.c3_receipt_match=None
         self.c1_transfer=None
@@ -1742,7 +1741,8 @@ class Studio(QMainWindow):
     def _mark_link_lost(self,reason):
         staged=bool((self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending())
         previous=self.client
-        self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.client=None;self.session=None;self.hardware_profile=None
+        self.port=None;self.preview_stamp=None
         self.c3_transfer=None
         self.c3_receipt_match=None
         self.c1_transfer=None
