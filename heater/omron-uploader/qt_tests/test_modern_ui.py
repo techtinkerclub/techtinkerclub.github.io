@@ -251,6 +251,8 @@ class ModernStudioTests(unittest.TestCase):
         self.win.inventory["fields"]["C1:0026"]=500
         self.win.settings_view.setCurrentText("All parameters")
         self.win.refresh_settings()
+        self.win.setting_table.selectRow(0)  # Start from a different row-zero register.
+        self.win._setting_selected()
         first=self.win._selected_setting_code()
         self.assertNotEqual(first,"C1:0021")
         self.win.search.setText("C1:0021")
