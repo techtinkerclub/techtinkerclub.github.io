@@ -2,9 +2,10 @@
 
 H186-E1-06 2-3-8: 3005 07 00 enters setting area 1, which stops
 control; returning to area 0 REQUIRES reset or power cycle. SAVE RAM DATA
-does NOT document persistence of initial C3 settings, so this implementation
-NEVER issues 3005 05 00 for them, NEVER automates reset or RUN, and verifies
-persistence only after an operator-confirmed physical power cycle.
+does NOT document persistence of initial C3 settings. This transfer sends
+only the C3 values deliberately selected by the user, then reads them back
+and disables CMW. A SEPARATE explicit reset workflow can return to area 0;
+no C3 edit automatically writes, converts or rescales DA programmes.
 
 Physical heaters must be ISOLATED. Hardware qualification pending.
 """
