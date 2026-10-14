@@ -13,7 +13,8 @@ from dataclasses import dataclass
 from decimal import Decimal
 from program_model import Programme
 from controller_inventory import CATALOG,human_value
-from controller_setup import BY_CODE
+from controller_setup import BY_CODE,SENSOR_INPUTS
+from programme_constraints import effective_limits,programme_issues,SENSOR_RANGES,ANALOGUE_TYPES
 
 @dataclass(frozen=True)
 class Entry:
@@ -35,9 +36,9 @@ def _min_to_hm(raw):
     n=int(mins)
     return f"{n//60}.{n%60:02d}"
 
-def _target(raw):
+def _target(raw,unit="°C"):
     d=Decimal(str(raw))
-    return f"{d.normalize():f} °C"
+    return f"{d.normalize():f} {unit}"
 
 def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
     """Return ordered keypad worksheet model for one valid native programme.
@@ -47,7 +48,7 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
     """
     if type(slot) is not int or not 0<=slot<=7:
         raise ValueError("Expected programme 0–7")
-    met=programme.validate()
+    met=programme.validate(strict_range=False)
     baseline=baseline or {}
     changes=changes or {}
     # This worksheet is explicitly a rate-of-rise, degrees/minute, hours.minutes
@@ -62,14 +63,19 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
                              "this keypad worksheet. Do not enter the programme until "
                              "the programming method and time encoding are redesigned.")
     input_type=changes.get("C3:0000",baseline.get("C3:0000"))
-    if input_type==5:
-        for idx,segment in enumerate(programme.steps):
-            if segment.type in ("ramp","step"):
-                raw=Decimal(str(segment.sp))
-                if raw!=raw.to_integral_value():
-                    raise ValueError(f"Segment {idx}: this Type K input 5 controller "
-                                     "uses whole-degree setpoints. Choose whole degrees "
-                                     "or explicitly plan/validate a different input range.")
+    unit="EU" if input_type in ANALOGUE_TYPES else "°C"
+    sensor_warnings=[]
+    if input_type in SENSOR_RANGES:
+        lim=effective_limits({"C3:0000":input_type},require_readback=False)
+        sensor_warnings=programme_issues(programme,lim)
+    elif input_type in ANALOGUE_TYPES:
+        try:
+            lim=effective_limits(baseline,changes,require_readback=True)
+            sensor_warnings=programme_issues(programme,lim)
+        except ValueError as exc:
+            sensor_warnings=["Analogue engineering scaling must be read and verified: "+str(exc)]
+    else:
+        sensor_warnings=["The controller input is not known. Confirm physical probe, in-t, SP limits and resolution before manual entry."]
     entries=[]
     add=lambda section,code,value,purpose,instruction,kind="set":entries.append(
         Entry(section,code,str(value),purpose,instruction,kind))
@@ -95,14 +101,16 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
         "From PV/SP in Operation Level, press MODE briefly until r-r is displayed. "
         "Confirm rst. Do not run during programming.","check")
     sensor_label=({5:"5 — Type K, whole °C",6:"6 — Type K, 0.1 °C"}
-                  .get(input_type,"UNKNOWN — check sensor type and SP resolution"))
+                  .get(input_type,f"{input_type} — {SENSOR_INPUTS[input_type]}"
+                       if input_type in SENSOR_INPUTS else
+                       "UNKNOWN — check sensor type and SP resolution"))
     add("Preparation","in-t",sensor_label+" — VERIFY",
-        "Thermocouple input range and temperature resolution",
+        "Global input type, physical sensor and display resolution",
         "From PV/SP, hold LEVEL ≥3 s for Initial Setting Level; press MODE until in-t. "
         "Compare the actual value with the sensor wiring. Do not change it casually.","check")
     for code,value,purpose in [
         ("t-pr","pr","Programme ramp method (rate)"),
-        ("pru","m","Ramp-rate unit: degrees per minute"),
+        ("pru","m","Ramp-rate unit: setpoint engineering units per minute"),
         ("t-u","h-m","Segment time unit: hours.minutes"),
         ("rtsm","stop","Program restarts stop at intended stage"),
         ("p-on","rst","Restore controller in RESET on power-up"),
@@ -133,10 +141,10 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
             f"Press MODE until styp. Choose {seg.type} with UP/DOWN and "
             "press MODE to confirm.")
         if seg.type=="ramp":
-            add(sec,"sp",_target(seg.sp),"Target commanded setpoint",
+            add(sec,"sp",_target(seg.sp,unit),"Target commanded setpoint",
                 f"Press MODE until sp; set {_target(seg.sp)} with UP/DOWN "
                 "(PF can select the digit where supported); press MODE to store.")
-            add(sec,"pr",f"{Decimal(str(seg.rate)):g} °C/min","Ramp rate",
+            add(sec,"pr",f"{Decimal(str(seg.rate)):g} {unit}/min","Ramp rate",
                 "Press MODE until pr; set the specified degrees per minute. "
                 "This is the setpoint rate, not a measured heating-rate guarantee.")
         elif seg.type=="step":
