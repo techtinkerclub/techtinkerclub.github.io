@@ -78,6 +78,15 @@ class FakeOmron:
         if (code,data)==("07","00"):self.area=1
         self.calls.append(("operation",code,data))
         return ""
+    def software_reset(self):
+        assert self.write_allowed
+        self.calls.append(("software_reset",))
+        self.area=0
+        # Simulated controller internal setpoint-range adjustment on sensor
+        # change; programme memory is deliberately retained unchanged.
+        if self.c3.get(0)==6:
+            self.c3[0x0005]=5000
+        return None
     def close(self):self.closed=True
 
 class QtConnectedTests(unittest.TestCase):
@@ -431,6 +440,40 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(len(self.win.c3_transfer.session.backup_data["programmes"]),8)
         self.assertEqual(fake.area,0)
         self.assertFalse(any(c[0]=="setting-write" for c in fake.calls))
+
+    def test_c3_software_restart_reconnects_and_audits_all_memories(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C3:0000":6}
+        self.win.show_step(4)
+        self.win.unified_preview_action()
+        tx=self.win.c3_transfer
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.win.unified_save_action()
+        self.assertTrue(tx.finished)
+        self.assertTrue(self.win.restart_c3_button.isEnabled())
+        # The test reuses one simulated controller: its settings/memories
+        # persist across serial connection close and read-only reconnect.
+        def reopen(port,write_allowed=False):
+            self.assertFalse(write_allowed)
+            self.assertEqual(port,"COM7")
+            fake.closed=False
+            return fake
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            with patch("qt_app.SerialClient",side_effect=reopen):
+                self.win.restart_verify_c3()
+        self.assertEqual(fake.calls.count(("software_reset",)),1)
+        audit=tx.restart_audit
+        self.assertEqual(audit["memory_words_compared"],1200)
+        self.assertEqual(audit["changes_total"],0)
+        self.assertTrue(audit["configuration_verified"])
+        self.assertTrue(audit["requires_manual_review"]) # precision changed
+        self.assertTrue(Path(audit["audit_file"]).is_file())
+        self.assertIsNone(self.win.session)  # mandatory fresh normal read
+        self.assertFalse(self.win.restart_c3_button.isEnabled())
+        self.win.restart_verify_c3()
+        self.assertEqual(fake.calls.count(("software_reset",)),1)
 
     def test_unified_c1_pid_and_wait_transfer_one_save(self):
         self.win.connect_read()
