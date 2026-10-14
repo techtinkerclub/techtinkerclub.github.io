@@ -32,6 +32,7 @@ from qt_segment_row import SegmentRow,Stepper
 from settings_transfer import WaitBandTransfer,verify_wait_receipt
 from compoway import SerialClient
 from transfer import TransferSession
+from transfer_capabilities import transfer_plan
 from program_model import Programme,Segment,blank_programme,ValidationError
 from backup_explorer import load_backup,decode_slot,profile_points,summary_as_plaintext
 from controller_setup import read_snapshot,report as setup_report,write_new_json,validate_snapshot
@@ -1738,6 +1739,12 @@ class Studio(QMainWindow):
                 old=self.inventory["fields"].get(code)
                 lines.append(f"{CATALOG[code].name}: {human_value(code,old)}"
                              f"  →  {human_value(code,value)}   [{code}]")
+            capabilities=transfer_plan(self.draft)
+            for entry in capabilities["blocked"]:
+                lines.append(f"  NOT USB-WRITABLE: {entry['register']} — {entry['reason']}")
+            if capabilities["settings_eligible"] and capabilities["blocked"]:
+                lines.append("One qualified setting is pending, but other proposed settings block "
+                             "transfer until reviewed or removed. Nothing will be silently skipped.")
             if set(self.draft)=={"C1:0021"}:
                 lines.append("Wait Band C1:0021 can be transferred using the shared controls below. "
                              "DA programme staging remains locked while it is proposed.")
