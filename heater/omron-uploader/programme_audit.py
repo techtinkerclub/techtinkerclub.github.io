@@ -78,6 +78,24 @@ def audit_after_restart(client,receipt_path,model10,folder):
     current=read_programmes(client)
     result=compare_programmes(originals,current,
                               sensor_changed=receipt.get("sensor_change",False))
+    old_settings=receipt.get("original_settings",{})
+    if not isinstance(old_settings,dict):
+        raise PreflightError("Malformed original C3 setup snapshot")
+    after_settings={}
+    setting_differences=[]
+    for key,old in sorted(old_settings.items()):
+        if not key.startswith("C3:"):continue
+        new=client.read1("C3",int(key[3:],16))
+        after_settings[key]=new
+        if old!=new:
+            setting_differences.append({"register":key,"before_raw":old,"after_raw":new})
+    result["initial_configuration_changes"]=setting_differences
+    result["current_global_settings"]=after_settings
+    result["configuration_side_effects"]=len(setting_differences)
+    # Comparing the original input resolution with the new one is essential
+    # even if all DA words still match bit-for-bit.
+    if setting_differences:
+        result["requires_manual_review"]=True
     try:
         verified=verify_c3_receipt(client,receipt_path,model10)
     except (ProtocolError,PreflightError) as exc:
