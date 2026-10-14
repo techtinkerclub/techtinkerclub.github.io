@@ -13,6 +13,8 @@ class FakeDevice:
         self.data={k:0 for k in []}
         self.blocks=[[0]*150 for _ in range(8)]
         self.c3={k:v[0] for k,v in PREFLIGHT.items()}
+        self.c3[0x0005]=1300
+        self.c3[0x0006]=0xffffff38  # −200 °C in signed raw Type K input 5
         self.wait_raw=0
         self.model="E5CC-TQX3A";self.running=False;self.write_allowed=True
         self.operations=[];self.nonvolatile_saves=0
