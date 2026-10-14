@@ -30,7 +30,7 @@ class WritePlanTests(unittest.TestCase):
         self.assertFalse(plan["combined_qualified"])
         self.assertFalse(plan["all_changes_usb_writable"])
         self.assertEqual(plan["setting_area_1"],["C3:0000"])
-        self.assertIn("Sensor input",plan["parameters"][1]["reason"])
+        self.assertIn("Type K",plan["parameters"][1]["reason"])
 
     def test_changed_programme_not_selected_remains_excluded(self):
         plan=create_write_plan(self.inv,{"C1:0021":20},programme_changed=True,
@@ -39,10 +39,13 @@ class WritePlanTests(unittest.TestCase):
         self.assertFalse(plan["all_changes_usb_writable"])
         self.assertIn("NOT included",plan["status"])
 
-    def test_initial_setup_alone_stays_unqualified(self):
+    def test_initial_setup_subset_now_experimental_only(self):
         plan=create_write_plan(self.inv,{"C3:0000":6})
-        self.assertEqual(len(plan["blocked"]),1)
-        self.assertEqual(plan["blocked"][0]["setting_area"],"1")
+        self.assertEqual(len(plan["blocked"]),0)
+        self.assertEqual(plan["qualified"][0]["setting_area"],"1")
+        self.assertTrue(plan["all_changes_usb_writable"])
+        mixed=create_write_plan(self.inv,{"C3:0007":1,"C1:0021":20})
+        self.assertFalse(mixed["all_changes_usb_writable"])
 
     def test_read_only_and_protection_password_never_eligible(self):
         for key in ("C0:0000","C1:0029"):
