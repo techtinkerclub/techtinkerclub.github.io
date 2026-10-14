@@ -737,6 +737,10 @@ class Studio(QMainWindow):
                            f"{tx.preview_data['new_raw']/10:g} °C: SAVE acknowledged "
                            "and read back. Power-cycle verification still required.")
                 if tx.cmw_off:wt_status+=" CMW OFF acknowledged."
+                if self.draft:
+                    wt_status+=(f"  ·  {len(self.draft)} NEW settings proposal(s) "
+                                "NOT written. Reconnect and take a fresh backup "
+                                "before any further setting write.")
             elif tx.staged:
                 wt_status="wt-b written to RAM and verified; NOT yet saved"
             elif tx.ram_touched:
@@ -1678,7 +1682,11 @@ class Studio(QMainWindow):
         tx=self.setting_transfer
         if tx:
             if tx.saved:
-                lines.append("Wait Band SAVE acknowledged; inspect receipt, then CMW OFF and power-cycle.")
+                lines.append("Wait Band SAVE acknowledged; receipt exists. "
+                             "Power-cycle verification still required.")
+                if self.draft:
+                    lines.append("Additional settings proposals are NEW and NOT applied; "
+                                 "reconnect and take a fresh backup before another USB write.")
             elif tx.staged:
                 lines.append("Wait Band verified in RAM but NOT YET SAVED.")
             elif tx.ram_touched:
