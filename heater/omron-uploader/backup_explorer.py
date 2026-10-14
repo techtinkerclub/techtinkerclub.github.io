@@ -5,6 +5,7 @@ fields used by the programme writer. Unknown/reserved bytes remain untouched.
 No CompoWay/F commands or controller writes are available in this module.
 """
 from __future__ import annotations
+from controller_setup import SENSOR_INPUTS
 import json
 import math
 from pathlib import Path
@@ -37,10 +38,7 @@ def load_backup(path):
 def config_explanation(backup):
     fields = backup.get("preflight", {})
     known = [
-        ("C3:0000", "Thermocouple input range", {
-            5: "Type K, −200 to 1300 °C; whole-degree display",
-            6: "Type K, −20.0 to 500.0 °C; tenth-degree display",
-        }),
+        ("C3:0000", "Temperature/analogue input selection", SENSOR_INPUTS),
         ("C3:0004", "Temperature units", {0: "Celsius (°C)", 1: "Fahrenheit (°F)"}),
         ("C3:00B9", "Programme time format", {0: "hours.minutes (0.15 = 15 minutes)"}),
         ("C3:00BA", "Programme method", {0: "time-based", 1: "rate-of-rise (°C per chosen slope unit)"}),
