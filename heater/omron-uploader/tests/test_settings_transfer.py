@@ -171,7 +171,7 @@ class SettingsTests(unittest.TestCase):
         client.query=lambda command:commands.append(command) or ""
         client.write_setting("C1",0x0021,30)
         self.assertEqual(commands,["0102C100210000010000001E"])
-        for bank,addr in [("C3",0x0021),("C1",0x0022),("DA",0x0021)]:
+        for bank,addr in [("C3",0x0011),("C1",0x0022),("DA",0x0021)]:
             with self.assertRaises(PermissionError):client.write_setting(bank,addr,30)
         for wrong in (-1,10000,None,3.5):
             with self.assertRaises(ValueError):client.write_setting("C1",0x21,wrong)
