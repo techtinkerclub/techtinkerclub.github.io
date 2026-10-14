@@ -15,6 +15,8 @@ from pathlib import Path
 from compoway import ProtocolError
 from transfer import PreflightError,PREFLIGHT,matches_preflight
 from settings_transfer import _write_checked_json
+from controller_inventory import CATALOG
+from hardware_profile import supports
 
 SCHEMA="e5cct-c1-settings-receipt-1"
 # Bounds are raw Omron signed integer values; not engineering/display units.
@@ -26,6 +28,23 @@ C1_SPECS={
     "C1:001B":(1,9999,0,"Heating hysteresis in ON/OFF mode"),
     "C1:0021":(0,9999,None,"Global Wait Band"),
 }
+# Documented adjustment values may be changed like the front panel, provided
+# their numerical encoding is explicit. Direct-output commands, masked
+# secrets, protection lockouts and sensor-dependent program SPs need their
+# own dedicated state/recovery workflow and are not generic writes.
+_DEDICATED_C1={
+    "C1:0024","C1:0028","C1:0029","C1:002A","C1:002B",
+    "C1:004E","C1:004F","C1:0050","C1:0051",
+    "C1:0012","C1:0019",
+}
+for _code,_p in CATALOG.items():
+    if (not _code.startswith("C1:") or _code in C1_SPECS or
+            _code in _DEDICATED_C1 or not _p.access.startswith("documented R/W")):
+        continue
+    if _p.minimum is not None and _p.maximum is not None:
+        C1_SPECS[_code]=(_p.minimum,_p.maximum,None,_p.name)
+    elif _p.options is not None:
+        C1_SPECS[_code]=(min(_p.options),max(_p.options),None,_p.name)
 PID_CODES=frozenset({"C1:0015","C1:0016","C1:0017"})
 PID_C5_OFFSETS={"C1:0015":0,"C1:0016":1,"C1:0017":2}
 
@@ -95,8 +114,9 @@ def verify_c1_receipt(client,path,model10):
     return len(data["changes"])
 
 class C1SettingsTransfer:
-    def __init__(self,client,programme_session,folder,emit=None):
+    def __init__(self,client,programme_session,folder,emit=None,hardware=None):
         self.client=client
+        self.hardware=hardware
         self.session=programme_session
         self.folder=Path(folder)
         self.log=emit or (lambda _:None)
@@ -166,6 +186,9 @@ class C1SettingsTransfer:
     def preview(self,draft):
         if self.preview_data is not None or self.ram_touched:
             raise PreflightError("Preview already exists; reconnect before new attempt")
+        for key in draft:
+            if supports(self.hardware,key) is not True:
+                raise PreflightError(f"{key}: confirm full nameplate model and fitted option")
         mode=self._preflight()
         validate_set(draft,mode)
         pid_set=self._pid_context(draft)
