@@ -468,7 +468,13 @@ def add_proposal(snapshot,draft,key,new_value):
     if before is None and snapshot.get("mode")!="offline":
         raise ValueError("Cannot propose changes against an unread parameter on a connected unit")
     next_draft=dict(draft)
-    if before==unsigned:next_draft.pop(key,None)
+    # Sensor type changes the display scaling of the SP bounds.
+    # A limit that has unchanged raw bits may still represent a DIFFERENT
+    # physical temperature. Preserve explicitly confirmed bounds in draft.
+    reinterpreted=(key in ("C3:0005","C3:0006") and
+                   "C3:0000" in draft and
+                   draft["C3:0000"]!=snapshot["fields"].get("C3:0000"))
+    if before==unsigned and not reinterpreted:next_draft.pop(key,None)
     else:next_draft[key]=unsigned
     return next_draft
 
