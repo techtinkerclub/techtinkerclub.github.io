@@ -435,7 +435,13 @@ class QtConnectedTests(unittest.TestCase):
         self.win.show_step(4)
         self.assertEqual(self.win._active_transfer_kind(),"c3")
         self.assertTrue(self.win.unified_preview.isEnabled())
+        seen=[]
+        self.win.message=lambda title,detail,*unused:seen.append((title,detail))
         self.win.unified_preview_action()
+        self.assertTrue(seen)
+        self.assertIn("SENSOR CHANGE CONSEQUENCE",seen[-1][1])
+        self.assertIn("50 °C → 5 °C",seen[-1][1])
+        self.assertIn("NOT verified Omron",seen[-1][1])
         self.assertTrue(self.win.c3_transfer.preview_data["sensor_change"])
         self.assertEqual(len(self.win.c3_transfer.session.backup_data["programmes"]),8)
         self.assertEqual(fake.area,0)
