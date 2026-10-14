@@ -1086,7 +1086,7 @@ class Studio(QMainWindow):
                     f"{row['new_interpretation_c']:g} °C (our decoder only)"
                     for row in report.get("possible_temperature_interpretation_changes",[])[:8])
                   +("\n" if report.get("possible_interpretation_change_count") else ""))
-                f"{changed_slots if changed_slots else 'No programme raw words changed.'}\n"
+                +f"{changed_slots if changed_slots else 'No programme raw words changed.'}\n"
                 f"Unrequested global C3 changes: "
                 f"{report['configuration_side_effects']}.\n"
                 f"Global C3 receipt matched: {report['configuration_verified']}.\n"
