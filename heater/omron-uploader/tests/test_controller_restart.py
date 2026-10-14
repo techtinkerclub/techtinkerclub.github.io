@@ -75,6 +75,20 @@ class TestRestartAndAudit(unittest.TestCase):
             restart_and_audit(self.tx,"COM7",factory,self.tmp.name)
         self.assertEqual(self.client.resets,1)
 
+    def test_unchanged_raw_temperature_is_reinterpreted_tenfold(self):
+        from programme_audit import interpreted_temperature_changes
+        before={str(i):["00000000"]*150 for i in range(8)}
+        after={str(i):["00000000"]*150 for i in range(8)}
+        before["0"][0]=after["0"][0]="00000001"
+        before["0"][0x16]=after["0"][0x16]="00000000"  # ramp
+        before["0"][0x17]=after["0"][0x17]="00000078"  # 120 in raw
+        differences,issues=interpreted_temperature_changes(before,after,5,6)
+        self.assertFalse(issues)
+        self.assertEqual(len(differences),1)
+        self.assertEqual(differences[0]["old_interpretation_c"],120)
+        self.assertEqual(differences[0]["new_interpretation_c"],12)
+        self.assertEqual(differences[0]["raw_before"],differences[0]["raw_after"])
+
     def test_no_raw_da_changes_still_flags_sensor_interpretation(self):
         self.client.reboot_changes=[]
         _,report=restart_and_audit(
@@ -83,6 +97,8 @@ class TestRestartAndAudit(unittest.TestCase):
         self.assertEqual(report["changes_total"],0)
         self.assertTrue(report["requires_manual_review"])
         self.assertIn("STILL",report["assessment"])
+        self.assertGreater(report["possible_interpretation_change_count"],0)
+        self.assertFalse(report["interpretation_is_verified_on_hardware"])
 
     def test_reset_refused_before_cmw_off(self):
         self.tx.cmw_off=False
