@@ -8,6 +8,7 @@ on:
       - 'heater/program-tools/index.html'
       - 'heater/programming-assistant/**'
       - 'heater/assets/site-search*.js'
+      - 'heater/assets/build-search.mjs'
       - 'heater/development/**'
       - 'heater/omron-atlas/**'
       - '.github/workflows/heater-documentation-qa.yml'
@@ -19,6 +20,7 @@ on:
       - 'heater/program-tools/index.html'
       - 'heater/programming-assistant/**'
       - 'heater/assets/site-search*.js'
+      - 'heater/assets/build-search.mjs'
       - 'heater/development/**'
       - 'heater/omron-atlas/**'
       - '.github/workflows/heater-documentation-qa.yml'
@@ -32,5 +34,7 @@ jobs:
           node-version: '22'
       - name: Install lightweight DOM test environment
         run: npm install --no-save --ignore-scripts jsdom@26
+      - name: Check the offline search catalogue is current
+        run: node heater/assets/build-search.mjs --check
       - name: Test parameter atlas and website navigation
         run: node heater/omron-atlas/check-atlas.mjs
