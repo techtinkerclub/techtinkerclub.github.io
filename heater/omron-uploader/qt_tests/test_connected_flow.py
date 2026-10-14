@@ -439,13 +439,42 @@ class QtConnectedTests(unittest.TestCase):
         self.win.message=lambda title,detail,*unused:seen.append((title,detail))
         self.win.unified_preview_action()
         self.assertTrue(seen)
-        self.assertIn("SENSOR CHANGE CONSEQUENCE",seen[-1][1])
-        self.assertIn("50 °C → 5 °C",seen[-1][1])
-        self.assertIn("NOT verified Omron",seen[-1][1])
+        self.assertIn("ONLY the selected sensor input register",seen[-1][1])
+        self.assertIn("no DA programme memory",seen[-1][1])
+        self.assertNotIn("50 °C → 5 °C",seen[-1][1])
         self.assertTrue(self.win.c3_transfer.preview_data["sensor_change"])
         self.assertEqual(len(self.win.c3_transfer.session.backup_data["programmes"]),8)
         self.assertEqual(fake.area,0)
         self.assertFalse(any(c[0]=="setting-write" for c in fake.calls))
+
+    def test_global_sensor_proposal_does_not_reinterpret_editor_or_upload_DA(self):
+        import copy
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win._render_programme()
+        previous=self.win.programmes[0].as_json()
+        limits,before_error=self.win._effective_programme_limits()
+        self.assertIsNone(before_error)
+        self.assertEqual(limits.input_type,5)
+        self.win.draft={"C3:0000":6}
+        self.win.refresh_review()
+        now,error=self.win._effective_programme_limits()
+        self.assertIsNone(error)
+        self.assertEqual(now.input_type,5) # proposal is NOT active hardware
+        self.assertEqual(self.win.programmes[0].as_json(),previous)
+        self.win.unified_preview_action()
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.win.unified_save_action()
+        self.assertEqual(self.win.programmes[0].as_json(),previous)
+        self.assertFalse(self.win.inventory_current_session)
+        held,stale=self.win._effective_programme_limits()
+        self.assertEqual(held.input_type,5)
+        self.assertIn("stale",stale)
+        self.assertEqual([call for call in fake.calls if call[0]=="write"],[])
+        self.assertEqual([call for call in fake.calls if call[0]=="setting-write"],
+                         [("setting-write","C3",0,6)])
 
     def test_c3_software_restart_reconnects_and_audits_all_memories(self):
         self.win.connect_read()
