@@ -23,7 +23,7 @@ class FakeOmron:
         self.closed=False
         self.calls=[]
         self.c3={addr:expected for addr,(expected,_) in PREFLIGHT.items()}
-        self.c1={0x0021:0}
+        self.c1={0x0015:120,0x0016:100,0x0017:40,0x001B:20,0x0021:0}
         self.da=[[0]*150 for _ in range(8)]
         for block in self.da:
             block[0]=1
@@ -54,8 +54,9 @@ class FakeOmron:
         self.da[addr>>8][addr&255]=value&0xffffffff
     def write_setting(self,bank,addr,value):
         assert self.write_allowed
-        assert (bank,addr)==("C1",0x0021)
-        assert 0<=value<=9999
+        from c1_transfer import check_value
+        assert bank=="C1"
+        check_value(f"C1:{addr:04X}",value)
         self.calls.append(("setting-write",bank,addr,value))
         self.c1[addr]=value
     def operation(self,code,data):
@@ -374,6 +375,42 @@ class QtConnectedTests(unittest.TestCase):
         self.assertFalse(self.win.unified_preview.isEnabled())
         self.assertFalse(self.win.unified_stage.isEnabled())
         self.assertFalse(self.win.unified_save.isEnabled())
+
+    def test_unified_c1_pid_and_wait_transfer_one_save(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        fake.c3[0x0007]=1    # PID mode
+        self.win.inventory["fields"]["C3:0007"]=1
+        self.win.draft={"C1:0015":140,"C1:0021":30}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c1")
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.win.unified_preview_action()
+        tx=self.win.c1_transfer
+        self.assertEqual(len(tx.preview_data["changes"]),2)
+        self.assertTrue(self.win.unified_stage.isEnabled())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(tx.staged)
+            self.assertTrue(self.win.unified_save.isEnabled())
+            self.win.unified_save_action()
+        self.assertTrue(tx.cmw_off)
+        self.assertTrue(tx.receipt_file.is_file())
+        self.assertEqual(fake.c1[0x0015],140)
+        self.assertEqual(fake.c1[0x0021],30)
+        self.assertEqual(fake.calls.count(("operation","05","00")),1)
+        self.assertEqual(self.win.draft,{})
+        self.assertIn("SAVE verified",self.win.transfer_summary.text())
+
+    def test_unqualified_c3_parameter_blocks_all_c1_writes(self):
+        self.win.connect_read()
+        self.win.draft={"C1:0015":140,"C3:0000":6}
+        self.win.show_step(4)
+        self.assertEqual(self.win._active_transfer_kind(),"c1")
+        self.assertFalse(self.win.unified_preview.isEnabled())
+        self.assertFalse(self.win.unified_stage.isEnabled())
+        self.assertFalse(self.win.unified_save.isEnabled())
+        self.assertIsNone(self.win.c1_transfer)
 
     def test_qt_settings_cannot_stage_two_unrelated_drafts(self):
         self.win.connect_read()
