@@ -6,7 +6,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from compoway import SerialClient,encode_request,ProtocolError
 from controller_restart import restart_and_audit
 from transfer import TransferSession,PreflightError
-from tests.test_c3_transfer import Fake
+from test_c3_transfer import Fake
 from programme_audit import compare_programmes
 
 class Wire:
