@@ -6,8 +6,9 @@ proof of write availability on the connected hardware variant.
 from __future__ import annotations
 from dataclasses import dataclass
 from controller_inventory import CATALOG
+from c1_transfer import QUALIFIED_C1_CODES
 
-QUALIFIED_WRITES = frozenset({"C1:0021"})
+QUALIFIED_WRITES = QUALIFIED_C1_CODES
 READ_ONLY_BANKS = frozenset({"C0"})
 CONTEXT_DEPENDENT_BANKS = frozenset({"C4", "C5", "C9"})
 
@@ -24,7 +25,7 @@ def capability(register: str) -> ChangeCapability:
     p = CATALOG[register]
     bank = register.split(":", 1)[0]
     if register in QUALIFIED_WRITES:
-        return ChangeCapability(register, "qualified", "Validated isolated-lab Wait Band writer", True)
+        return ChangeCapability(register, "qualified", "Guarded setup-area-0 C1 RAM writer (additional P/I/D/hysteresis are experimental)", True)
     if bank in READ_ONLY_BANKS or p.access == "read-only by Omron":
         return ChangeCapability(register, "read-only", "Omron operating monitor; never write", False)
     if register == "C1:0029":
