@@ -87,25 +87,30 @@ class SerialClient:
         self._guard()
         # Imported at call time to avoid a module-import cycle with ProtocolError.
         from c1_transfer import check_value, QUALIFIED_C1_CODES
-        if vtype!="C1" or type(addr) is not int or not 0<=addr<=0xffff:
-            raise PermissionError("Only selected C1 adjustment registers are supported")
-        code=f"C1:{addr:04X}"
-        if code not in QUALIFIED_C1_CODES:
+        from c3_transfer import check_setting, ALLOWED
+        if type(addr) is not int or not 0<=addr<=0xffff:
+            raise PermissionError("Invalid parameter write address")
+        code=f"{vtype}:{addr:04X}"
+        if vtype=="C1" and code in QUALIFIED_C1_CODES:
+            validator=check_value
+        elif vtype=="C3" and code in ALLOWED:
+            validator=check_setting
+        else:
             raise PermissionError("Parameter-write hardware target not qualified")
         try:
-            check_value(code,value)
+            validator(code,value)
         except ValueError:
             raise
         except RuntimeError as exc:
             raise ValueError(str(exc)) from exc
-        return self.query(f"0102C1{addr:04X}000001{value:08X}")
+        return self.query(f"0102{vtype}{addr:04X}000001{value:08X}")
 
     def operation(self,code,data):
         self._guard()
         # H186 §2-3-8: 00/00 disables communications writing (CMW OFF).
         # Expose only to a guarded post-save finishing action, never auto-close
         # an uncertain/uncommitted RAM session.
-        allow={("00","00"),("00","01"),("04","01"),("05","00")}
+        allow={("00","00"),("00","01"),("04","01"),("05","00"),("07","00")}
         # Intentionally no RUN/RESET, firmware, setup area changes, or auto/manual.
         if (code,data) not in allow:raise PermissionError("Operation command not permitted")
         return self.query("3005"+code+data)
