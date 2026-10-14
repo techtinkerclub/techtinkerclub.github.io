@@ -738,7 +738,7 @@ class Studio(QMainWindow):
         uv.addWidget(self.usb_next_action)
         uv.addWidget(text("This tab transfers DA programme memory only. "
             "Documented C1 and C3 settings use separate guarded workflows; "
-            "C4/C5/C9 and link-changing settings remain subject to further qualification. "
+            "C4/C9 and link-changing settings remain subject to further qualification. "
             "Keep the heater isolated.",True))
         uv.addWidget(text("Before writing: confirm the model nameplate, stopped controller, "
             "fresh backup and physically isolated heater supplies. The first RAM write "
