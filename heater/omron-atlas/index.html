@@ -81,7 +81,7 @@ permalink: /heater/omron-atlas/
 (function(){
  "use strict";
  const A=window.OMRON_ATLAS,L=A.levels,$=id=>document.getElementById(id),IDS=Object.keys(L);
- const state={input:6,level:"operation",id:"operation-0",model:"E5CC-TQX3A5M-000",algorithm:"pid",heatcool:"standard",method:"rate",programBranch:"segment",segmentType:"ramp",pidBank:1,showSkipped:true};
+ const state={input:6,level:"operation",id:"operation-0",model:"E5CC-TQX3A5M-000",algorithm:"pid",heatcool:"standard",method:"rate",programBranch:"segment",segmentType:"ramp",pidBank:1,showSkipped:false};
  const MODEL={};
  const prefixes=["RX","QX","CX","QQ","CQ"];
  const suffixes=["000","001","003","004","005","006"];
@@ -99,6 +99,8 @@ permalink: /heater/omron-atlas/
  $("model").innerHTML=modelCodes.map(x=>'<option value="'+x+'">'+x+'</option>').join("")+
      '<option value="other">Other E5□C-T — catalogue reference only</option>';
  $("model").value="E5CC-TQX3A5M-000";
+ $("levelSelect").innerHTML=IDS.map(id=>'<option value="'+id+'">'+L[id].title+'</option>').join("");
+ $("showSkipped").checked=false;
  const SENSORS=[
  "Pt100 −200…850 °C","Pt100 −199.9…500.0 °C","Pt100 0.0…100.0 °C",
  "JPt100 −199.9…500.0 °C","JPt100 0.0…100.0 °C","K −200…1300 °C",
@@ -212,11 +214,20 @@ permalink: /heater/omron-atlas/
   const unavailable=reasons.some(x=>/not fitted|No CT fitted|Requires a second CT|not selected E5CC|No RS-485|No transfer-output|Requires current-output/.test(x));
   return {kind:unavailable?"unavailable":reasons.length?"conditional":"normal",reasons};
  }
- function entries(level=state.level){return L[level].entries.filter(e=>state.showSkipped||availability(e).kind==="normal")}
+ function entries(level=state.level){return L[level].entries.filter(e=>state.showSkipped||availability(e).kind==="normal"||(level===state.level&&e.id===state.id))}
+ function likelyEntries(level=state.level){return L[level].entries.filter(e=>availability(e).kind==="normal")}
  function navigation(){return L[state.level].entries.filter(e=>availability(e).kind!=="unavailable"&&(!availability(e).reasons.length||state.showSkipped===false?availability(e).kind==="normal":false))}
  function label(e){return state.level==="pid"&&e.code.startsWith("1.")?String(state.pidBank)+e.code.slice(1):e.code}
  function go(level,id,scroll=false){
-  if(!L[level])return;state.level=level;let e=L[level].entries.find(x=>x.id===id)||L[level].entries[0];state.id=e.id;render();history.replaceState(null,"","#"+level+"/"+encodeURIComponent(e.code));if(scroll)$("levelHeading").scrollIntoView({behavior:"smooth",block:"start"});
+  if(!L[level])return;
+  state.level=level;
+  const all=L[level].entries;
+  const chosen=id?all.find(x=>x.id===id):null;
+  const e=chosen||all.find(x=>availability(x).kind==="normal")||all[0];
+  state.id=e.id;
+  render();
+  history.replaceState(null,"","#"+level+"/"+encodeURIComponent(e.code));
+  if(scroll)$("levelHeading").scrollIntoView({behavior:"smooth",block:"start"});
  }
  function resultSearch(){
   const q=$("search").value.trim().toLowerCase(),wrap=$("searchResults");
