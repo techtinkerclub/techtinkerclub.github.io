@@ -179,6 +179,30 @@ class QtConnectedTests(unittest.TestCase):
             self.win.verify_wait()
         self.assertFalse(self.win.stage_button.isEnabled())
 
+    def test_step4_edits_and_step5_routes_settings_transfer(self):
+        self.win.connect_read()
+        self.win.draft={"C1:0021":20}
+        self.win.show_step(3)
+        self.assertEqual(self.win.navbuttons[3].text(),"4   Controller Settings")
+        self.assertTrue(hasattr(self.win,"wt_preview"))
+        self.win.show_step(4)
+        self.assertEqual(self.win.apply_tabs.count(),3)
+        self.assertEqual(self.win.apply_tabs.tabText(0),"Offline / manual entry")
+        self.assertEqual(self.win.apply_tabs.tabText(1),"Programme USB transfer")
+        self.assertEqual(self.win.apply_tabs.tabText(2),"Settings USB transfer")
+        self.assertEqual(self.win.apply_tabs.currentIndex(),2)
+        self.assertIn("Wait band",self.win.config_review.toPlainText())
+        self.assertIn("USB pilot available",self.win.config_review.toPlainText())
+        self.assertFalse(self.win.preview_button.isEnabled())
+        self.assertTrue(self.win.wt_preview.isEnabled())
+        self.assertNotIn("USB configuration writes are not enabled",
+                         self.win.apply_details.toPlainText())
+        self.win.preview_wait()
+        self.assertEqual(self.win.apply_tabs.currentIndex(),2)
+        self.assertIn("Read-only wt-b preview",self.win._wait_status_text()
+                      if "Read-only wt-b preview" in self.win._wait_status_text()
+                      else self.win.config_review.toPlainText())
+
     def test_qt_settings_cannot_stage_two_unrelated_drafts(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
