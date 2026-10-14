@@ -77,6 +77,20 @@ class SerialClient:
         if not self.write_allowed:raise PermissionError("Writes not enabled for this serial session")
     def write1(self,addr,value):
         self._guard();return self.query(f"0102DA{addr:04X}000001{value&0xffffffff:08X}")
+    def write_setting(self,vtype,addr,value):
+        """First permitted parameter-write target: H186 C1:0021 Wait Band.
+
+        No generic arbitrary-address writer is exposed. New register types
+        must be independently qualified and explicitly reviewed before
+        extending this allowlist.
+        """
+        self._guard()
+        if (vtype,addr)!=("C1",0x0021):
+            raise PermissionError("Parameter-write hardware target not qualified")
+        if type(value) is not int or not 0<=value<=9999:
+            raise ValueError("Invalid Wait Band raw value; expected 0..9999")
+        return self.query(f"0102C1{addr:04X}000001{value:08X}")
+
     def operation(self,code,data):
         self._guard()
         # H186 §2-3-8: 00/00 disables communications writing (CMW OFF).
