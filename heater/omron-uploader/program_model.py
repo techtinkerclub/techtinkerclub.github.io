@@ -39,7 +39,7 @@ class Programme:
     finish: str = "rst"  # controller-wide setting; NOT transferred
     steps: list[Segment] = field(default_factory=lambda:[Segment("ramp"),Segment("soak")])
 
-    def validate(self,limits=None):
+    def validate(self,limits=None,*,strict_range=True):
         # Default is only a provisional Type K input-6 planning envelope.
         # Connected USB transfers supply fresh live sensor + setpoint limits.
         if limits is None:
@@ -47,7 +47,7 @@ class Programme:
             limits=effective_limits({"C3:0000":6},require_readback=False)
         if len(self.steps)<1 or len(self.steps)>SEGMENT_LIMIT: raise ValidationError("Must have 1..32 segments")
         start=decimal(self.start)
-        if not limits.sensor_min<=start<=limits.sensor_max:
+        if strict_range and not limits.sensor_min<=start<=limits.sensor_max:
             raise ValidationError(f"Assumed starting PV {start:g} °C outside sensor range "
                                   f"{limits.sensor_min:g}…{limits.sensor_max:g} °C")
         if self.finish not in ("rst","cont"):raise ValidationError("Invalid finish mode")
@@ -56,12 +56,12 @@ class Programme:
             if s.type not in KIND_CODE:raise ValidationError(f"Segment {i}: unsupported type")
             if s.type in ("ramp","step"):
                 sp=decimal(s.sp)
-                if not limits.minimum<=sp<=limits.maximum:
+                if strict_range and not limits.minimum<=sp<=limits.maximum:
                     raise ValidationError(f"Segment {i+1}: {sp:g} °C outside permitted "
                                           f"{limits.minimum:g}…{limits.maximum:g} °C "
                                           "(sensor range and controller setpoint limits)")
                 units=sp/limits.resolution
-                if units!=units.to_integral_value():
+                if strict_range and units!=units.to_integral_value():
                     raise ValidationError(f"Segment {i+1}: target must use {limits.resolution:g} °C increments")
             if s.type=="ramp":
                 r=decimal(s.rate)
@@ -86,7 +86,7 @@ class Programme:
             if not isinstance(s,dict) or s.get("type") not in allowed:raise ValidationError(f"Invalid segment {i}")
             steps.append(Segment(type=s["type"],sp=str(s.get("sp","120.0")),rate=str(s.get("rate","2")),minutes=str(s.get("minutes","15"))))
         p=cls(str(obj.get("name","Programme"))[:100],str(obj.get("start","20")),str(obj.get("finish",obj.get("endmode","rst"))),steps)
-        p.validate();return p
+        # Loading an offline draft must not discard targets simply because\n        # the local default sensor range differs from the intended one.\n        p.validate(strict_range=False);return p
 
     def as_json(self):return asdict(self)
 
@@ -118,20 +118,19 @@ def planned_writes(slot,p:Programme,input_type=6,limits=None):
 
     Order: disable repeats/link, segment fields, segment count LAST.
     """
-    if input_type not in (5,6):
-        raise ValidationError("Unverified thermocouple display resolution")
+    from programme_constraints import SENSOR_RANGES,ANALOGUE_TYPES\n    if input_type not in SENSOR_RANGES and input_type not in ANALOGUE_TYPES:\n        raise ValidationError("Unknown Omron input selection")
     if limits is None:
         from programme_constraints import effective_limits
         limits=effective_limits({"C3:0000":input_type},require_readback=False)
     if limits.input_type!=input_type:
         raise ValidationError("Programme input resolution changed since limits were calculated")
     p.validate(limits=limits)
-    # H186 programme SP values are encoded without a display decimal point.
-    scale = 1 if input_type == 5 else 10
-    if input_type == 5:
-        for i,seg in enumerate(p.steps):
-            if seg.type in ("ramp","step") and decimal(seg.sp) != decimal(seg.sp).to_integral_value():
-                raise ValidationError(f"Segment {i+1}: input type 5 needs whole-degree targets")
+    # H186 programme SP is stored as digits without the display decimal.
+    # Resolution must be established from the exact sensor/analogue input.
+    # Never guess analogue units or limits from a previous Type K programme.
+    if input_type in ANALOGUE_TYPES and not limits.verified:
+        raise ValidationError("Analogue DA encoding needs fresh input-scale and SP-limit readback")
+    scale = Decimal(1) / limits.resolution
     out=[(address(slot,0x0e),0),(address(slot,0x0f),0xffffffff)]
     for i,s in enumerate(p.steps):
         base=0x16+4*i
