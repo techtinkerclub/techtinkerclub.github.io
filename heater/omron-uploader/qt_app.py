@@ -35,6 +35,7 @@ from transfer import TransferSession
 from combined_transfer import CombinedTransfer,verify_combined_receipt
 from c1_transfer import C1SettingsTransfer,QUALIFIED_C1_CODES,verify_c1_receipt
 from program_model import planned_writes
+from programme_constraints import effective_limits,programme_issues,check_global_programming
 from transfer_capabilities import transfer_plan
 from parameter_write_plan import create_write_plan,requirements
 from settings_presentation import VIEWS,visible_in_view,scope_for,view_for
@@ -383,6 +384,9 @@ class Studio(QMainWindow):
             "write that system setting as part of the programme upload.")
         meta.addWidget(form_field("Controller-wide end behaviour",self.finish_mode))
         v.addLayout(meta)
+        self.temperature_limits_hint=QLabel("")
+        self.temperature_limits_hint.setWordWrap(True)
+        v.addWidget(self.temperature_limits_hint)
         v.addWidget(text(
             "Programme-end RESET/CONTINUE is a GLOBAL controller configuration "
             "(eset), not stored per programme. This field describes the intended "
@@ -784,9 +788,11 @@ class Studio(QMainWindow):
             return False
         try:
             existing=ses.backup_data["programmes"][str(self.slot)]
+            limits,error=self._effective_programme_limits()
+            if limits is None or error:return False
             for address,new in planned_writes(
                     self.slot,self.programmes[self.slot],
-                    input_type=ses.settings["C3:0000"]):
+                    input_type=ses.settings["C3:0000"],limits=limits):
                 if int(existing[address&255],16)!=(new&0xffffffff):
                     return True
         except (KeyError, ValueError, IndexError, TypeError):
@@ -1833,16 +1839,39 @@ class Studio(QMainWindow):
         self._render_programme()
         self.preview_stamp=None;self.refresh_review()
 
+    def _effective_programme_limits(self):
+        """Resolve live and pending global constraints without claiming offline verification."""
+        fields=self.inventory.get("fields",{})
+        try:
+            limits=effective_limits(fields,self.draft,require_readback=bool(
+                self.mode=="connected" and self.inventory_current_session))
+            return limits,None
+        except ValueError as exc:
+            return None,str(exc)
+
+    def _programming_conflicts(self):
+        # Never invent unknown configuration in offline mode.
+        if self.inventory.get("mode")=="offline" or not self.inventory_current_session:
+            return []
+        return check_global_programming(self.inventory["fields"],self.draft)
+
     def _render_programme(self):
         self._rendering=True
         p=self.programmes[self.slot]
         self.programme_name.setText(p.name)
-        self.start_pv.setValue(float(p.start))
+        limits,_=self._effective_programme_limits()
+        sensor_min=float(limits.sensor_min) if limits else -20.0
+        sensor_max=float(limits.sensor_max) if limits else 500.0
+        original_pv=float(p.start)
+        self.start_pv.setRange(min(sensor_min,original_pv),max(sensor_max,original_pv))
+        self.start_pv.setValue(original_pv)
         self.finish_mode.setCurrentIndex(0 if p.finish=="rst" else 1)
         self.segment_table.setRowCount(0)
         self.segment_table.setRowCount(len(p.steps))
         for index,segment in enumerate(p.steps):
-            row=SegmentRow(index,segment)
+            row=SegmentRow(index,segment,
+                           temperature_min=(float(limits.minimum) if limits else -20.0),
+                           temperature_max=(float(limits.maximum) if limits else 500.0))
             row.changed.connect(self.update_programme)
             row.move_up.connect(lambda i=index:self._segment_action(i,"up"))
             row.move_down.connect(lambda i=index:self._segment_action(i,"down"))
@@ -1879,19 +1908,34 @@ class Studio(QMainWindow):
         self.refresh_actions()
 
     def _graph_current(self):
+        p=self.programmes[self.slot]
+        limits,error=self._effective_programme_limits()
+        conflicts=self._programming_conflicts()
+        if limits is not None:
+            prefix="Live + proposed limits" if limits.verified else "Provisional sensor limits"
+            note=prefix+" · "+limits.description()
+        else:
+            note="Controller temperature limits NOT VERIFIED: "+(error or "unknown")
         try:
-            p=self.programmes[self.slot]
-            metrics=p.validate()
+            # Offline editor can still draw a provisional default graph.
+            # Actual USB preview is separately blocked on missing/invalid live limits.
+            metrics=p.validate(limits=limits)
             self.chart.show_points(metrics["points"])
             has_step=any(seg.type=="step" for seg in p.steps)
             self.programme_info.setText(
                 f"{len(p.steps)} segments   ·   {metrics['minutes']:.1f} min programmed "
                 f"(excludes Wait delays){' — total time cannot be predicted' if has_step else ''}   ·   "
                 f"Final SP {metrics['final_sp']:g} °C")
+            if conflicts:note+="\nGlobal configuration conflicts: "+"; ".join(conflicts[:3])
+            self.temperature_limits_hint.setText(note)
+            self.temperature_limits_hint.setStyleSheet(
+                "color:"+("#a8610f" if error or conflicts or not limits or not limits.verified else "#157952")+";font-weight:600")
             self._refresh_wait_hint()
         except Exception as exc:
             self.chart.show_points([])
             self.programme_info.setText("Needs correction: "+str(exc))
+            self.temperature_limits_hint.setText(note+"\nPROGRAMME NOT COMPATIBLE: "+str(exc))
+            self.temperature_limits_hint.setStyleSheet("color:#ab3e35;font-weight:700")
 
 
     def _refresh_wait_hint(self):
@@ -2000,6 +2044,8 @@ class Studio(QMainWindow):
         self.draft_count.setText(f"{len(self.draft)} proposed changes · {len(rows)} visible")
         self._refresh_config_review()
         if hasattr(self,"wait_hint"):self._refresh_wait_hint()
+        if hasattr(self,"temperature_limits_hint") and not self._rendering:
+            self._graph_current()
         if selected in self.setting_keys:
             self.setting_table.selectRow(self.setting_keys.index(selected))
         elif rows:
