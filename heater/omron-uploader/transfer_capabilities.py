@@ -38,7 +38,7 @@ def capability(register: str) -> ChangeCapability:
     return ChangeCapability(register, "qualification-required",
         "Documented parameter but register-specific write, range and state not yet hardware-qualified", False)
 
-def transfer_plan(draft: dict, *, programme_changed: bool = False) -> dict:
+def transfer_plan(draft: dict, *, programme_changed: bool = False, include_programme: bool = False) -> dict:
     """Conservative, complete plan: no hidden omissions or implied atomicity."""
     if not isinstance(draft, dict):
         raise TypeError("draft must be a mapping")
@@ -51,14 +51,21 @@ def transfer_plan(draft: dict, *, programme_changed: bool = False) -> dict:
                          reason=cap.reason, hardware_writable=cap.hardware_writable))
     blocked = [row for row in rows if not row["hardware_writable"]]
     settings = [row for row in rows if row["hardware_writable"]]
-    # E5CC current protocol has two separately qualified write state machines.
-    # Both can be represented but must NOT yet be staged in one RAM transaction.
-    combined = programme_changed and bool(settings)
+    # Only an EXPLICITLY selected programme and exactly one qualified wt-b
+    # can use the new combined pilot. All other combinations are blocked.
+    combined=bool(programme_changed and include_programme)
+    eligible_combined=(combined and not blocked and len(rows)==1
+                       and rows[0]["register"]=="C1:0021")
+    if include_programme and not programme_changed:
+        raise ValueError("Cannot include unchanged programme")
+    can_write=not blocked and (not combined or eligible_combined)
     return dict(settings=rows, programme_changed=bool(programme_changed),
                 blocked=blocked, settings_eligible=settings,
-                simultaneous_transfer_qualified=not combined and not blocked,
-                can_write_all=not combined and not blocked,
-                reason=("Mixed DA + C1 staging is not yet qualified for one save"
+                simultaneous_transfer_qualified=eligible_combined if combined else not blocked,
+                can_write_all=can_write,
+                reason=("Explicit C1 Wait Band + DA pilot; live hardware preflight required"
+                        if eligible_combined else
+                        "Mixed DA and these configuration changes not qualified for one save"
                         if combined else
-                        "Unqualified parameters need a separately validated writer"
-                        if blocked else "Eligible under existing per-bank safeguards"))
+                        "Unqualified parameters need separate verified writing support"
+                        if blocked else "Eligible under current separate-bank safeguards"))
