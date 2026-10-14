@@ -1,0 +1,207 @@
+---
+layout: null
+sitemap: false
+permalink: /heater/omron-atlas/
+---
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<title>Omron E5C-T · Interactive Programming Atlas</title>
+<style>
+:root{--navy:#182d43;--slate:#52677b;--muted:#72869a;--aqua:#137d89;--aqua-light:#e3f5f5;--blue:#226d9d;--line:#dce5ec;--paper:#f3f7fa;--white:#fff;--amber:#94651f;--amber-light:#fff5e6;--violet:#6257a8;font:14px/1.55 Inter,"Segoe UI",Arial,sans-serif;color:var(--navy);background:var(--paper)}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}a{color:#176d9d}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #3294b5;outline-offset:3px}
+.shell{max-width:1660px;margin:0 auto;padding:0 28px 72px}.top{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);flex-wrap:wrap}.brand{font-size:15px;font-weight:850;letter-spacing:-.3px}.brand span{color:var(--aqua)}.toplinks{display:flex;gap:20px;flex-wrap:wrap;font-size:12px}.toplinks a{text-decoration:none;color:#506b7e;font-weight:700}.eyebrow{text-transform:uppercase;letter-spacing:2px;color:var(--aqua);font-size:11px;font-weight:850}.hero{padding:42px 0 30px;display:flex;justify-content:space-between;gap:30px;align-items:end}.hero h1{font-size:clamp(30px,3.5vw,49px);line-height:1.08;letter-spacing:-1.7px;margin:9px 0 13px}.hero p{color:var(--slate);max-width:770px;font-size:15px;margin:0}.heroStats{display:flex;gap:13px}.stat{min-width:115px;padding:15px 18px;border:1px solid var(--line);background:#fff;border-radius:13px}.stat strong{display:block;font-size:25px;line-height:1.2;font-variant-numeric:tabular-nums}.stat span{font-size:11px;color:var(--muted);white-space:nowrap}
+.notice{padding:13px 17px;border:1px solid #dfcfa9;background:#fffaf0;border-radius:11px;color:#775c34;font-size:12px}.notice strong{color:#694b22}
+.toolbar{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:20px 0}.field{flex:1;min-width:170px}.field.model{flex:1.35;min-width:265px}.field label{display:block;font-size:11px;font-weight:800;color:#596f83;letter-spacing:.3px;margin:0 0 5px}.field select,.field input{width:100%;height:43px;background:#fff;border:1px solid #cbd8e2;color:var(--navy);padding:0 11px;border-radius:9px}.checkline{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);padding:11px 13px;border-radius:9px;color:#587185;font-size:12px;white-space:nowrap}.checkline input{accent-color:var(--aqua)}
+.layout{display:grid;grid-template-columns:245px minmax(0,1fr) 305px;gap:17px;align-items:start}.box{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 5px 17px #1a43570c}.left{padding:15px;position:sticky;top:14px}.sectionTitle{font-size:11px;font-weight:850;letter-spacing:1.3px;color:var(--muted);text-transform:uppercase;padding:4px 8px 9px}.levelButton{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;border:1px solid transparent;background:none;border-radius:8px;padding:11px 10px;color:#4b6379;font-weight:680;font-size:12px}.levelButton small{font-weight:650;font-size:10px;color:#8294a4}.levelButton:hover{background:#f1f7fa}.levelButton.active{background:#e8f5f5;color:#116875;border-color:#b7dfdf}.levelButton.active small{color:#116875}.navGuide{margin:13px 4px 0;padding:12px;background:#f5f9fc;border-radius:10px;color:#5d7488;font-size:11px}.navGuide strong{display:block;color:#284b64;margin-bottom:4px}
+.work{min-width:0;display:grid;gap:15px}.workHead{padding:21px 22px 16px}.crumb{color:#7790a3;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}.workHead h2{font-size:24px;line-height:1.2;letter-spacing:-.6px;margin:9px 0 7px}.workHead p{font-size:12px;color:#61788d;margin:0}.branchPanel{margin-top:17px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.branchPanel label{font-weight:740;font-size:11px;color:#587184}.branchPanel select{background:#f6f9fb;padding:7px 9px;border:1px solid var(--line);border-radius:7px;min-width:110px;font-size:12px}
+.sequence{padding:17px}.pathHeading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:1px 2px 12px}.pathHeading strong{font-size:13px}.pathHeading small{font-size:11px;color:#70869a}.list{display:grid;gap:0}.node{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:9px;align-items:center;background:transparent;border:1px solid transparent;border-radius:9px;text-align:left;padding:9px 10px;width:100%;color:var(--navy)}.node:hover{border-color:#d6e7ed;background:#f6fafc}.node:before{content:"";position:absolute;left:27px;top:-8px;height:8px;width:1px;background:#a7c8ce}.node:first-child:before{display:none}.node.current{border-color:#70b8bd;background:#e8f6f5}.node.skip{opacity:.52}.index{display:inline-grid;place-items:center;width:29px;height:29px;background:#edf3f7;border:1px solid #dbe5eb;border-radius:8px;font-size:10px;color:#668397;font-weight:800;font-variant-numeric:tabular-nums}.node.current .index{background:#117989;border-color:#117989;color:#fff}.nodeCode{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:820;color:#234b68;font-size:14px}.nodeLabel{display:block;font-size:11px;color:#6a8193;line-height:1.4}.node .mark{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;border-radius:6px;padding:4px 6px;background:#eef2f7;color:#66798a}.node.current .mark{background:#cfe9e9;color:#1c6b76}.node.skip .mark{background:#fbefd9;color:#94621c}
+.viewer{padding:20px}.viewerTop{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.kicker{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#678196;font-weight:850}.pill{font-size:10px;padding:5px 9px;border-radius:20px;background:#e9f4f7;color:#226c7d;font-weight:800}.pill.warn{background:#fff0d4;color:#856017}.display{display:flex;gap:14px;align-items:center;padding:20px;background:#182b3c;border:5px solid #324859;border-radius:16px;margin:18px 0 19px;min-height:98px;box-shadow:inset 0 0 0 1px #607484}.lcdCode{font-family:ui-monospace,Consolas,monospace;color:#fb704d;font-size:clamp(31px,3vw,40px);font-weight:850;letter-spacing:1.2px;line-height:1;min-width:110px}.lcdText{color:#a8c8d7;font-size:12px;border-left:1px solid #62798a;padding-left:15px}.viewer h3{font-size:23px;letter-spacing:-.5px;margin:0 0 6px}.viewer p{color:#587085;line-height:1.65;font-size:13px}.detailTags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.tag{font-size:10px;background:#f0f6fa;border:1px solid #dce8ef;color:#4c7190;border-radius:7px;padding:5px 8px}.keyrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:19px}.action{flex:1;min-width:100px;border:1px solid #bdd1dd;background:#f4f8fb;border-radius:9px;color:#2e5b75;padding:11px 10px;font-weight:790}.action.primary{background:#137a89;color:#fff;border-color:#137a89}.action:hover{filter:brightness(.97)}.action:disabled{opacity:.35;cursor:not-allowed}.keytip{margin-top:12px;font-size:11px;color:#8395a4}.warnings{padding:12px 13px;background:#fff9ee;border:1px solid #efdfc6;border-radius:9px;color:#845e2d;font-size:11px}.right{position:sticky;top:14px;display:grid;gap:15px}.right .box{padding:17px}.right h3{font-size:13px;margin:0 0 10px}.diagram{display:grid;gap:8px}.route{display:grid;grid-template-columns:45px minmax(0,1fr);gap:10px;align-items:start}.routeIcon{padding:7px 3px;background:#e6f2f5;border:1px solid #c9e3e9;border-radius:7px;color:#116879;font-weight:850;text-align:center;font-size:11px}.route strong{display:block;font-size:11px}.route p{margin:1px 0 0;font-size:11px;color:#647e92}.modeltext{font-size:11px;color:#667c90;line-height:1.65}.jumpLinks a{display:block;padding:9px 0;text-decoration:none;border-bottom:1px solid #e8eef3;font-size:12px;font-weight:700}
+.overview{margin-top:23px}.overviewHead{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.overviewHead h2{margin:0 0 4px;font-size:23px}.overviewHead p{margin:0;color:#658096;font-size:12px}.allGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:14px}.mapGroup{padding:15px;min-width:0}.mapGroup h3{font-size:14px;margin:0 0 4px}.mapGroup p{font-size:11px;color:#7990a1;margin:0 0 10px}.mapNode{width:100%;display:grid;grid-template-columns:70px minmax(0,1fr);align-items:start;text-align:left;padding:7px 6px;border:0;border-bottom:1px solid #edf1f4;background:#fff;color:#486074;gap:6px;font-size:11px}.mapNode code{font-size:11px;font-weight:820;color:#21516c;overflow-wrap:anywhere}.mapNode:hover{background:#eef8f8}.mapNode.hiddenHardware{opacity:.42}.source{font-size:12px;color:#697e91;padding:20px 0}.source a{font-weight:700}.empty{font-size:12px;color:#637c8f;padding:15px}.searchResults{margin:0 0 14px;background:#fff;border:1px solid #c7dfe7;border-radius:12px;padding:12px 14px}.searchResults strong{font-size:12px}.results{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.results button{border:1px solid #c5dce4;border-radius:6px;background:#f4fbfd;color:#315f75;font-size:11px;padding:6px 9px}.results button:hover{background:#dfedf3}.printNote{display:none}
+@media(max-width:1270px){.layout{grid-template-columns:195px minmax(0,1fr)}.right{position:static;grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr))}.allGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:780px){.shell{padding:0 15px 35px}.top{padding:13px 0}.hero{display:block;padding-top:29px}.heroStats{margin-top:20px}.layout{display:block}.left{position:static;margin-bottom:12px;padding:10px}.levelList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.right{display:grid;grid-template-columns:1fr;margin-top:13px}.workHead,.viewer{padding:17px}.allGrid{grid-template-columns:1fr}.field,.field.model{min-width:140px}.hero h1{letter-spacing:-1px}}
+@media print{.toplinks,.toolbar,.left,.keyrow,.branchPanel,.right,.searchResults,.overviewHead button,.notice{display:none!important}.shell{max-width:100%;padding:0}.layout{display:block}.viewer{break-inside:avoid}.sequence{break-inside:avoid}.allGrid{display:grid;grid-template-columns:repeat(2,1fr)}.mapGroup{break-inside:avoid}.printNote{display:block}.hero{padding:12px 0}}
+</style></head><body><div class="shell">
+<header class="top"><div class="brand">HEATING RATE CONTROLLER <span>/ KNOWLEDGE ATLAS</span></div><nav class="toplinks" aria-label="Site navigation"><a href="../">Operator manual ↗</a><a href="../electrical/">Electrical drawings ↗</a><a href="../program-tools/">Programme builder ↗</a><a href="../omron-programming/">Button guide ↗</a></nav></header>
+<section class="hero"><div><div class="eyebrow">Omron E5C-T · Interactive control map</div><h1>Every level.<br>Every meaningful press.</h1><p>Follow the controller from its normal PV/SP display through programme editing, PID, initial settings, protection and advanced functions. Discover what each parameter does, when it appears and where MODE takes you next.</p></div><div class="heroStats"><div class="stat"><strong id="total">—</strong><span>documented entries</span></div><div class="stat"><strong id="levelTotal">10</strong><span>navigation levels</span></div></div></section>
+<div class="notice"><strong>Navigation atlas, not a live controller.</strong> Sequences are derived from the Omron H185 printed parameter-flow chart, not inferred from CompoWay register address order. MODE skips screens hidden by hardware, protection or settings; the exact omissions depend on the actual controller. Some E5EC/E5AC features are shown as reference-only. No control or write operation is performed here.</div>
+<div class="toolbar" role="group" aria-label="Configuration filters">
+<div class="field model"><label for="model">Model from physical nameplate</label><select id="model">
+<option value="QX-000">E5CC-TQX3A5M-000 · standard voltage pulse</option>
+<option value="QX-001">E5CC-TQX3A5M-001 · 2 events / 1 CT</option>
+<option value="QX-003">E5CC-TQX3A5M-003 · RS-485 / 2 CT</option>
+<option value="QX-005">E5CC-TQX3A5M-005 · 4 events</option>
+<option value="QX-006">E5CC-TQX3A5M-006 · events / transfer</option>
+<option value="CX-000">E5CC-TCX3A5M-000 · current-output variant</option>
+<option value="CX-004">E5CC-TCX3A5M-004 · RS-485 / events 3–4</option>
+<option value="CX-005">E5CC-TCX3A5M-005 · 4 events</option>
+<option value="other">Other E5□C-T · full manual / features unconfirmed</option>
+</select></div>
+<div class="field"><label for="algorithm">Control method</label><select id="algorithm"><option value="pid">PID</option><option value="onoff">ON/OFF</option></select></div>
+<div class="field"><label for="heatcool">Control output arrangement</label><select id="heatcool"><option value="standard">Standard / heating only</option><option value="heatcool">Heating + cooling</option></select></div>
+<div class="field"><label for="method">Programme method</label><select id="method"><option value="rate">Rate-of-rise</option><option value="time">Step time</option></select></div>
+<div class="field"><label for="search">Find a code or purpose</label><input id="search" type="search" placeholder="e.g. wt-b, relay, alarm…" autocomplete="off"></div>
+<label class="checkline"><input type="checkbox" id="showSkipped" checked> Show hidden / conditional</label>
+</div>
+<div id="searchResults" class="searchResults" hidden role="region" aria-label="Parameter search results"></div>
+<div class="layout">
+<aside class="box left"><div class="sectionTitle">Controller setting levels</div><nav id="levelList" class="levelList" aria-label="Controller setting levels"></nav>
+<div class="navGuide"><strong>Read the buttons correctly</strong>LEVEL changes setting levels. MODE advances to the next available parameter in the current level. UP/DOWN change a displayed value or selection. Protection and configured output functions can hide steps.</div></aside>
+<main class="work">
+<section class="box workHead"><div class="crumb" id="breadcrumb">Power ON / Operation level</div><h2 id="levelHeading">Operation level</h2><p id="levelDescription"></p>
+<div class="branchPanel" id="branches" hidden>
+<label for="programBranch">Programme cursor</label><select id="programBranch"><option value="segment">Editing segment (d.seg = 0…31)</option><option value="end">Programme-wide (d.seg = END)</option></select>
+<label for="segmentType" id="segmentLabel">Segment format</label><select id="segmentType"><option value="ramp">RAMP</option><option value="soak">SOAK</option><option value="step">STEP</option></select>
+<label for="pidBank" id="pidLabel" hidden>PID bank</label><select id="pidBank" hidden><option value="1">PID 1</option><option value="2">PID 2</option><option value="3">PID 3</option><option value="4">PID 4</option><option value="5">PID 5</option><option value="6">PID 6</option><option value="7">PID 7</option><option value="8">PID 8</option></select>
+</div></section>
+<section class="box viewer" aria-live="polite"><div class="viewerTop"><span id="stepCount" class="kicker">STEP 01</span><span id="status" class="pill">Documented</span></div>
+<div class="display"><div class="lcdCode" id="lcd">PV/SP</div><div class="lcdText">No.1 display · parameter mnemonic<br>No.2 display · current value (varies by controller)</div></div>
+<h3 id="name"></h3><p id="description"></p><div id="detailTags" class="detailTags"></div><div id="warning" class="warnings" hidden></div>
+<div class="keyrow"><button class="action" id="prev" title="Previous displayed parameter (simulated navigation)">← Previous</button><button class="action primary" id="modeNext" title="MODE to next displayed parameter">MODE → Next</button><button class="action" id="showAll" title="Show this level in full map">Full level map ↓</button></div>
+<div class="keytip">Click another row to jump directly. Use ← / → keyboard arrows when not typing. This describes the route; it cannot send button presses to hardware.</div></section>
+<section class="box sequence"><div class="pathHeading"><strong>MODE sequence · <span id="levelMini"></span></strong><small id="pathCount"></small></div><div id="sequence" class="list" aria-label="MODE-ordered parameters"></div></section>
+</main>
+<aside class="right">
+<div class="box"><h3>How you reach this level</h3><div id="route" class="diagram"></div><div class="warnings" style="margin-top:12px"><strong>Do not memorise press counts.</strong> Hidden or disabled parameters are skipped by real firmware; follow the displayed mnemonic instead.</div></div>
+<div class="box"><h3>Hardware filter</h3><div id="modelDescription" class="modeltext"></div></div>
+<div class="box"><h3>Explore further</h3><div class="jumpLinks"><a href="../omron-programming/#bench">Worked 50 °C programme</a><a href="../program-tools/">Programme builder and Type K simulator</a><a href="../electrical/">Schematic, terminals and maintenance</a><a href="https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf" target="_blank" rel="noopener noreferrer">Omron H185 (A-9 flow)</a><a href="https://files.omron.eu/downloads/latest/manual/en/h186_e5_c-t_digital_temperature_controllers_communications_manual_en.pdf" target="_blank" rel="noopener noreferrer">Omron H186 communications</a></div></div>
+</aside></div>
+<section id="entire" class="overview"><div class="overviewHead"><div><div class="eyebrow">The complete system</div><h2>All setting levels, one navigable map</h2><p>Select a node to inspect it above; conditional items remain visible for engineering reference.</p></div><button class="action" style="flex:0" onclick="window.print()">Print / save map</button></div><div id="allMap" class="allGrid"></div><p class="printNote">Printed source: H185-E1-08 Appendix A-9. Parameter visibility depends on firmware, protection and hardware.</p></section>
+<footer class="source"><strong>Reference provenance:</strong> Omron H185-E1-08, A-9 Parameter Flow (printed A-38–A-40), A-6 Parameter Operation Lists (A-18–A-33), and H186 communications reference. The E5CC-T model filter is a documentary interpretation of nameplate option codes; it cannot identify a connected controller or prove an option is physically fitted. This atlas is an educational/manual entry companion, not the Omron manufacturer's control software. <a href="../">Return to the operator manual.</a></footer>
+</div><script src="./atlas-data.js"></script><script>
+(function(){
+ "use strict";
+ const A=window.OMRON_ATLAS,L=A.levels,$=id=>document.getElementById(id),IDS=Object.keys(L);
+ const state={level:"operation",id:"operation-0",model:"QX-000",algorithm:"pid",heatcool:"standard",method:"rate",programBranch:"segment",segmentType:"ramp",pidBank:1,showSkipped:true};
+ const MODEL={
+ "QX-000":{aux:3,event:[],ct:0,serial:false,transfer:false,output2:false,current1:false},
+ "QX-001":{aux:3,event:[1,2],ct:1,serial:false,transfer:false,output2:false,current1:false},
+ "QX-003":{aux:3,event:[],ct:2,serial:true,transfer:false,output2:false,current1:false},
+ "QX-005":{aux:3,event:[1,2,3,4],ct:0,serial:false,transfer:false,output2:false,current1:false},
+ "QX-006":{aux:3,event:[1,2],ct:0,serial:false,transfer:true,output2:false,current1:false},
+ "CX-000":{aux:3,event:[],ct:0,serial:false,transfer:false,output2:false,current1:true},
+ "CX-004":{aux:3,event:[3,4],ct:0,serial:true,transfer:false,output2:false,current1:true},
+ "CX-005":{aux:3,event:[1,2,3,4],ct:0,serial:false,transfer:false,output2:false,current1:true}
+ };
+ const entryMap=new Map;IDS.forEach(k=>L[k].entries.forEach(e=>entryMap.set(e.id,{...e,level:k})));
+ const routes={
+ operation:[["POWER","Power ON → Operation level"],["MODE","Cycle normal screens"],["LEVEL","Short → Programme level"]],
+ program:[["POWER","Power ON → Operation level"],["LEVEL","Brief once → Programme setting"],["MODE","d.prg → s-no → d.seg → segment or END fields"]],
+ adjustment:[["POWER","Operation level"],["LEVEL","Briefly twice → Adjustment level"],["MODE","Cycle available adjustments"]],
+ pid:[["POWER","Operation level"],["LEVEL","Three short presses via Programme and Adjustment"],["MODE","d.pid selects bank; cycle bank values"]],
+ initial:[["POWER","Operation level"],["LEVEL","Hold ≥3 s → Initial setting; control stops"],["MODE","in-t → … → amov"]],
+ protect:[["POWER","Operation level"],["L+M","Hold LEVEL + MODE ≥3 s (protect access dependent)"],["MODE","Cycle protection items; password/protection may apply"]],
+ communications:[["POWER","Operation level"],["LEVEL","Hold ≥3 s → Initial setting"],["LEVEL","Short → Communications, only if fitted"],["MODE","Cycle serial settings; reset required after changes"]],
+ advanced:[["POWER","Operation level"],["L+M","Open Protect; initial/communications protect must permit access"],["LEVEL","Hold ≥3 s → Initial setting"],["MODE","At amov enter documented −169"],["MODE","Cycle advanced settings"]],
+ manual:[["POWER","Operation level"],["MODE","Find a-m; manual selection must be enabled"],["LEVEL","Hold ≥3 s while a-m is displayed (configuration dependent)"]],
+ monitor:[["POWER","Operation level"],["PF","PF must be configured to monitor item display"],["PF","Cycle configured quick-view items"]]
+ };
+ function getModel(){return MODEL[state.model]||null}
+ function availability(e){
+  const flags=e.flags,m=getModel();
+  const reasons=[];
+  if(flags.includes("segment")&&state.programBranch!=="segment")reasons.push("Only when d.seg selects a numbered segment");
+  if(flags.includes("end")&&state.programBranch!=="end")reasons.push("Only when d.seg = END");
+  if(flags.includes("ramp")&&state.segmentType!=="ramp")reasons.push("Only on a RAMP segment");
+  if(flags.includes("soak")&&state.segmentType!=="soak"&&state.method!=="time")reasons.push("Only on a SOAK segment or step-time programming");
+  if(flags.includes("setpoint")&&state.segmentType==="soak"&&state.method==="rate")reasons.push("SOAK holds the previous target; no independent SP");
+  if(flags.includes("rate")&&state.method!=="rate")reasons.push("Only for rate-of-rise programming");
+  if(flags.includes("pid")&&state.algorithm!=="pid")reasons.push("PID control must be selected");
+  if(flags.includes("onoff")&&state.algorithm!=="onoff")reasons.push("Only in ON/OFF control");
+  if(flags.includes("heatcool")&&state.heatcool!=="heatcool")reasons.push("Requires heating/cooling configuration");
+  if(flags.includes("analog"))reasons.push("Only when the physical input is an analogue mA/V type (in-t 25–29)");
+  if(flags.includes("temperature"))reasons.push("Only for a temperature-type input (not mA/V)");
+  if(flags.includes("alarm"))reasons.push("Alarm type/assignments and protection can hide this item");
+  if(flags.includes("signals"))reasons.push("Time-signal assignment and programme mode can hide this item");
+  if(flags.includes("protected"))reasons.push("Protection or specialist password applies");
+  if(flags.includes("manual"))reasons.push("Manual mode must be enabled and safe to enter");
+  if(m){
+   if(flags.includes("ct1")&&m.ct<1)reasons.push("No CT fitted to selected model");
+   if(flags.includes("ct2")&&m.ct<2)reasons.push("Requires a second CT input");
+   if(flags.includes("serial")&&!m.serial)reasons.push("No RS-485 hardware fitted");
+   if(flags.includes("transfer")&&!m.transfer)reasons.push("No transfer-output hardware fitted");
+   if(flags.includes("current1")&&!m.current1)reasons.push("Requires current-output hardware");
+   if(flags.includes("current2"))reasons.push("Requires a matching linear current output 2");
+   if(flags.includes("output2")&&!m.output2)reasons.push("Requires control output 2");
+   if(flags.includes("aux4")&&m.aux<4)reasons.push("Fourth auxiliary output not fitted");
+   for(let i=1;i<=6;i++)if(flags.includes("event"+i)&&!m.event.includes(i))reasons.push("Event input "+i+" not fitted");
+   if(flags.includes("motor"))reasons.push("Requires position-proportional motor model, not selected E5CC-T");
+  } else reasons.push("Full hardware option code unconfirmed; compare the physical nameplate");
+  const unavailable=reasons.some(x=>/not fitted|Requires a second CT|not selected E5CC|No RS-485|No transfer-output|Requires current-output/.test(x));
+  return {kind:unavailable?"unavailable":reasons.length?"conditional":"normal",reasons};
+ }
+ function entries(level=state.level){return L[level].entries.filter(e=>state.showSkipped||availability(e).kind==="normal")}
+ function navigation(){return L[state.level].entries.filter(e=>availability(e).kind!=="unavailable"&&(!availability(e).reasons.length||state.showSkipped===false?availability(e).kind==="normal":false))}
+ function label(e){return state.level==="pid"&&e.code.startsWith("1.")?String(state.pidBank)+e.code.slice(1):e.code}
+ function go(level,id,scroll=false){
+  if(!L[level])return;state.level=level;let e=L[level].entries.find(x=>x.id===id)||L[level].entries[0];state.id=e.id;render();history.replaceState(null,"","#"+level+"/"+encodeURIComponent(e.code));if(scroll)$("levelHeading").scrollIntoView({behavior:"smooth",block:"start"});
+ }
+ function resultSearch(){
+  const q=$("search").value.trim().toLowerCase(),wrap=$("searchResults");
+  if(!q){wrap.hidden=true;wrap.innerHTML="";return}
+  const hits=[...entryMap.values()].filter(x=>(x.code+" "+x.name+" "+x.why+" "+x.level).toLowerCase().includes(q)).slice(0,50);
+  wrap.hidden=false;wrap.innerHTML="<strong>"+hits.length+(hits.length===50?"+":"")+" matching entries</strong><div class='results'>"+hits.map(x=>"<button type='button' data-hit='"+x.id+"'>"+esc(x.code)+" · "+esc(x.name)+"</button>").join("")+"</div>";
+ }
+ function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+ function render(){
+  const lev=L[state.level],cur=lev.entries.find(x=>x.id===state.id)||lev.entries[0],all=lev.entries,avail=availability(cur),visible=entries(),pos=all.indexOf(cur);
+  $("total").textContent=entryMap.size;$("levelTotal").textContent=IDS.length;
+  $("levelList").innerHTML=IDS.map(k=>"<button class='levelButton "+(state.level===k?"active":"")+"' data-level='"+k+"'>"+esc(L[k].title)+"<small>"+L[k].entries.length+"</small></button>").join("");
+  $("breadcrumb").textContent="Power ON / "+lev.title+" / "+(pos+1)+" of "+all.length;
+  $("levelHeading").textContent=lev.title;$("levelDescription").textContent=lev.help;$("levelMini").textContent=lev.title;
+  $("branches").hidden=state.level!=="program"&&state.level!=="pid";
+  $("programBranch").hidden=state.level!=="program";document.querySelector("label[for=programBranch]").hidden=state.level!=="program";
+  $("segmentType").hidden=state.level!=="program"||state.programBranch!=="segment";
+  $("segmentLabel").hidden=state.level!=="program"||state.programBranch!=="segment";
+  $("pidBank").hidden=state.level!=="pid";$("pidLabel").hidden=state.level!=="pid";
+  $("stepCount").textContent="PARAMETER "+String(pos+1).padStart(2,"0")+" / "+String(all.length).padStart(2,"0");
+  $("status").textContent=avail.kind==="normal"?"In documented path":avail.kind==="conditional"?"Conditional display":"Hardware unavailable";
+  $("status").className="pill"+(avail.kind==="normal"?"":" warn");
+  $("lcd").textContent=label(cur);$("name").textContent=cur.name;$("description").textContent=cur.why;
+  $("detailTags").innerHTML="<span class='tag'>H185 · Appendix A-9</span><span class='tag'>"+esc(lev.title)+"</span>"+cur.flags.map(f=>"<span class='tag'>"+esc(f)+"</span>").join("");
+  $("warning").hidden=avail.kind==="normal";$("warning").textContent=avail.reasons.join(" · ")+(avail.kind!=="normal"?" · Actual firmware may skip this screen.":"");
+  const shown=entries(),active=shown.findIndex(x=>x.id===cur.id);
+  $("pathCount").textContent=shown.length+" displayed / "+all.length+" documented";
+  $("sequence").innerHTML=shown.map((e,i)=>{const a=availability(e),active=e.id===cur.id;return "<button class='node "+(active?"current ":"")+(a.kind==="normal"?"":"skip")+"' data-entry='"+e.id+"' aria-current='"+(active?"step":"false")+"'><span class='index'>"+String(i+1).padStart(2,"0")+"</span><span><span class='nodeCode'>"+esc(state.level==="pid"&&e.code.startsWith("1.")?String(state.pidBank)+e.code.slice(1):e.code)+"</span><span class='nodeLabel'>"+esc(e.name)+"</span></span><span class='mark'>"+(a.kind==="normal"?"MODE":a.kind==="conditional"?"conditional":"not fitted")+"</span></button>"}).join("")||"<div class='empty'>No visible parameters with these filters. Enable 'Show hidden / conditional' to inspect the full reference.</div>";
+  const next=all.slice(pos+1).find(x=>availability(x).kind==="normal")||all.find(x=>availability(x).kind==="normal");
+  const prev=all.slice(0,pos).reverse().find(x=>availability(x).kind==="normal")||[...all].reverse().find(x=>availability(x).kind==="normal");
+  $("modeNext").disabled=!next||next.id===cur.id;$("prev").disabled=!prev||prev.id===cur.id;
+  $("modeNext").title=next?"Simulated MODE: "+next.code:"No next known screen";$("prev").title=prev?"Previous available: "+prev.code:"";
+  $("route").innerHTML=routes[state.level].map(([button,desc])=>"<div class='route'><div class='routeIcon'>"+esc(button)+"</div><div><strong>"+esc(desc.split("→")[0])+"</strong><p>"+esc(desc)+"</p></div></div>").join("");
+  modelInfo();allMap();resultSearch();
+ }
+ function modelInfo(){
+  const m=getModel(),out=$("modelDescription"),name=$("model").selectedOptions[0].text;
+  out.innerHTML="<strong>"+esc(name)+"</strong><br>"+(m?"Option-derived: "+(m.event.length?m.event.length+" event input(s) ["+m.event.join(", ")+"]":"no event input")+", "+m.ct+" CT channel(s), "+(m.serial?"RS-485":"no RS-485")+", "+(m.transfer?"transfer output":"no transfer output")+".":"Other E5□C-T family: model-specific hardware unknown; parameter visibility NOT qualified.")+"<br><br><strong>Reminder:</strong> This is a manually selected model reference. USB 0503 cannot reveal the 5M−NNN suffix; check the physical nameplate and firmware before applying settings.";
+ }
+ function allMap(){
+  const q=$("search").value.trim().toLowerCase();
+  $("allMap").innerHTML=IDS.map(k=>{
+   const lev=L[k],row=lev.entries.filter(e=>!q||(e.code+" "+e.name+" "+e.why).toLowerCase().includes(q));
+   return "<section class='box mapGroup'><h3>"+esc(lev.title)+" <span class='pill'>"+row.length+"</span></h3><p>"+esc(lev.help)+"</p>"+(row.length?row.map(e=>"<button type='button' class='mapNode "+(availability(e).kind!=="normal"?"hiddenHardware":"")+"' data-entry='"+e.id+"' data-map-level='"+k+"'><code>"+esc(e.code)+"</code><span>"+esc(e.name)+"</span></button>").join(""):"<span class='empty'>No matches</span>")+"</section>";
+  }).join("");
+ }
+ function cycle(d){
+  const arr=L[state.level].entries,from=arr.findIndex(x=>x.id===state.id);
+  for(let j=1;j<=arr.length;j++){let idx=(from+d*j+arr.length*10)%arr.length;if(availability(arr[idx]).kind==="normal"){go(state.level,arr[idx].id);return}}
+ }
+ $("levelList").addEventListener("click",e=>{let b=e.target.closest("[data-level]");if(b)go(b.dataset.level,null)});
+ $("sequence").addEventListener("click",e=>{let b=e.target.closest("[data-entry]");if(b)go(state.level,b.dataset.entry)});
+ $("allMap").addEventListener("click",e=>{let b=e.target.closest("[data-map-level]");if(b)go(b.dataset.mapLevel,b.dataset.entry,true)});
+ $("searchResults").addEventListener("click",e=>{let b=e.target.closest("[data-hit]");if(b){let entry=entryMap.get(b.dataset.hit);go(entry.level,entry.id,true)}});
+ $("modeNext").addEventListener("click",()=>cycle(1));$("prev").addEventListener("click",()=>cycle(-1));$("showAll").onclick=()=>$("entire").scrollIntoView({behavior:"smooth"});
+ ["model","algorithm","heatcool","method","programBranch","segmentType","pidBank","showSkipped"].forEach(k=>{
+  const el=$(k);el.addEventListener("change",()=>{state[k]=k==="showSkipped"?el.checked:k==="pidBank"?Number(el.value):el.value;render()});
+ });
+ $("search").addEventListener("input",render);
+ document.addEventListener("keydown",e=>{const tag=document.activeElement?.tagName;
+  if(tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA"||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==="ArrowRight"){e.preventDefault();cycle(1)}
+  if(e.key==="ArrowLeft"){e.preventDefault();cycle(-1)}
+  if(e.key==="/"){e.preventDefault();$("search").focus()}
+ });
+ function fromHash(){const m=location.hash.match(/^#([a-z]+)\/(.+)$/);if(m&&L[m[1]]){const key=decodeURIComponent(m[2]);const e=L[m[1]].entries.find(x=>x.code===key);if(e){state.level=m[1];state.id=e.id}}}
+ window.addEventListener("hashchange",()=>{fromHash();render()});
+ fromHash();render();
+})();
+</script></body></html>
