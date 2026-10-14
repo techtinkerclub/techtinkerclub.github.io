@@ -1,6 +1,7 @@
 """Programme constraints are shared across planning, GUI and USB transfer."""
 import unittest
 import sys
+from decimal import Decimal
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from programme_constraints import effective_limits,programme_issues,check_global_programming
@@ -25,7 +26,7 @@ class ConstraintsTests(unittest.TestCase):
 
     def test_sensor_range_type6_enforced(self):
         lim=effective_limits(setup(6,-20,500))
-        self.assertEqual((lim.minimum,lim.maximum,lim.resolution),(-20,500,0.1))
+        self.assertEqual((lim.minimum,lim.maximum,lim.resolution),(-20,500,Decimal('0.1')))
         p=Programme(steps=[Segment("ramp",sp="500.1")])
         self.assertIn("Segment 1",programme_issues(p,lim)[0])
         with self.assertRaisesRegex(ValidationError,"permitted"):
