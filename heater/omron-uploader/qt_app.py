@@ -490,7 +490,7 @@ class Studio(QMainWindow):
         list_card,lc=card(10)
         self.setting_table=QTableWidget(0,4)
         self.setting_table.setHorizontalHeaderLabels(
-            ["Parameter","Read from controller","Proposed value","Group"])
+            ["Setting","Current value","Proposed value","Purpose"])
         self._table_defaults(self.setting_table)
         self.setting_table.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeMode.Stretch)
         self.setting_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -1931,7 +1931,7 @@ class Studio(QMainWindow):
                 "Persistence: "+req.persistence,
                 "Qualification: "+req.qualification,
                 "Conditions: "+req.note])
-        self.parameter_detail.setPlainText("\\n".join(friendly))
+        self.parameter_detail.setPlainText("\n".join(friendly))
         draft=self.draft.get(code,raw)
         is_known=raw is not None or self.inventory.get("mode")=="offline"
         can_edit=is_known and not code.startswith(("C0:","C4:")) and code!="C1:0029"
