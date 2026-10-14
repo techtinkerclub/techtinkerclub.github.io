@@ -151,7 +151,7 @@ class ModernStudioTests(unittest.TestCase):
         # not the clipped internal editor of a nested QSpinBox.
         self.assertTrue(row.target.editor.isVisibleTo(row))
         self.assertFalse(row.target.spin.isVisible())
-        self.assertEqual(row.target.editor.text(),"120.0")
+        self.assertEqual(row.target.editor.text(),"120.000")
         self.assertIn("QLineEdit#numericEntry",self.win.styleSheet())
         self.assertIn("color:#18334a",self.win.styleSheet())
         self.assertEqual(row.rate.editor.text(),"2")
@@ -184,7 +184,23 @@ class ModernStudioTests(unittest.TestCase):
         row.target._typed_value("not a number")
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
         row.target._typed_value("501")
-        self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),before)
+        self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),501)
+        self.assertIn("501",self.win.programme_info.text())
+        self.assertIn("WARNING",self.win.temperature_limits_hint.text())
+
+    def test_all_sensor_choices_allow_offline_drafting_without_clamping(self):
+        import copy
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win._render_programme()
+        self.assertEqual(self.win.editor_sensor.count(),31)
+        row=self.win.segment_table.cellWidget(0,0)
+        row.target._typed_value("1800")
+        self.assertEqual(float(self.win.programmes[0].steps[0].sp),1800)
+        self.assertIn("WARNING",self.win.temperature_limits_hint.text())
+        idx=self.win.editor_sensor.findData(19)
+        self.win.editor_sensor.setCurrentIndex(idx)
+        self.assertIn("W",self.win.temperature_limits_hint.text())
+        self.assertEqual(float(self.win.programmes[0].steps[0].sp),1800)
 
     def test_uniform_controls_across_programme_and_other_steps(self):
         from PySide6.QtWidgets import QComboBox,QToolButton
