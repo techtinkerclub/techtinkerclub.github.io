@@ -23,6 +23,12 @@ class CapabilityTests(unittest.TestCase):
     def test_programme_with_wait_band_not_falsely_atomic(self):
         p=transfer_plan({"C1:0021":20},programme_changed=True)
         self.assertFalse(p["simultaneous_transfer_qualified"])
+    def test_explicit_wait_and_programme_can_share_qualified_pilot(self):
+        p=transfer_plan({"C1:0021":20},programme_changed=True,
+                        include_programme=True)
+        self.assertTrue(p["simultaneous_transfer_qualified"])
+        self.assertTrue(p["can_write_all"])
+
     def test_unknown_address_rejected(self):
         with self.assertRaises(ValueError):
             transfer_plan({"C3:FFFF":1})
