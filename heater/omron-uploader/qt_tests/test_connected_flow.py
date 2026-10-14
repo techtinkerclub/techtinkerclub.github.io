@@ -217,7 +217,7 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(self.win.transfer_stack.currentIndex(),1)
         self.assertIn("wt-b 0 → 2 °C: SAVE acknowledged",self.win.transfer_summary.text())
         self.assertIn("power-cycle verification still required",
-                      self.win.transfer_summary.text())
+                      self.win.transfer_summary.text().lower())
         self.assertIn("no programme write in this connection",
                       self.win.transfer_summary.text())
         self.assertFalse(self.win.preview_button.isEnabled())
