@@ -228,6 +228,57 @@ class QtConnectedTests(unittest.TestCase):
         self.assertIn("proposed",self.win.transfer_summary.text().lower())
         self.assertIn("NOT written",self.win.transfer_summary.text())
 
+    def test_unified_wait_transfer_auto_finishes_cmw(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C1:0021":20}
+        self.win.show_step(4)
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.assertFalse(self.win.unified_stage.isEnabled())
+        self.win.unified_preview_action()
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.assertTrue(self.win.unified_save.isEnabled())
+            self.win.unified_save_action()
+        tx=self.win.setting_transfer
+        self.assertTrue(tx.saved)
+        self.assertTrue(tx.cmw_off)
+        self.assertEqual(self.win.draft,{})
+        self.assertEqual(
+            [c for c in fake.calls if c[0]=="operation"],
+            [("operation","00","01"),("operation","04","01"),
+             ("operation","05","00"),("operation","00","00")])
+
+    def test_unified_programme_transfer_auto_finishes_cmw(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.show_step(4)
+        self.win.unified_preview_action()
+        self.assertTrue(self.win.unified_stage.isEnabled())
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.win.unified_save_action()
+        self.assertTrue(self.win.session.committed)
+        self.assertTrue(self.win.session.communications_write_disabled)
+        self.assertTrue(self.win.session.receipt_file.exists())
+        self.assertEqual(sum(c==("operation","05","00") for c in fake.calls),1)
+        self.assertEqual(sum(c==("operation","00","00") for c in fake.calls),1)
+
+    def test_unified_controls_never_write_unqualified_configuration(self):
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.draft={"C3:0000":6}
+        self.win.show_step(4)
+        self.assertFalse(self.win.unified_preview.isEnabled())
+        self.assertFalse(self.win.unified_stage.isEnabled())
+        self.assertFalse(self.win.unified_save.isEnabled())
+        self.win.unified_preview_action()
+        self.win.unified_stage_action()
+        self.win.unified_save_action()
+        self.assertFalse(any(c[0] in ("write","setting-write") for c in fake.calls))
+
     def test_qt_settings_cannot_stage_two_unrelated_drafts(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]

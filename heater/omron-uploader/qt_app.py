@@ -607,7 +607,7 @@ class Studio(QMainWindow):
         self.usb_next_action.setStyleSheet("color:#a8610f;font-weight:600")
         uv.addWidget(self.usb_next_action)
         uv.addWidget(text("This tab transfers DA programme memory only. "
-            "The qualified Wait Band writer is in Settings USB transfer. "
+            "The qualified Wait Band writer is available through the unified controls. "
             "All other configuration writes remain disabled. Keep the heater isolated.",True))
         uv.addWidget(text("Before writing: confirm the model nameplate, stopped controller, "
             "fresh backup and physically isolated heater supplies. The first RAM write "
@@ -642,36 +642,42 @@ class Studio(QMainWindow):
                           "A SAVE may also persist other outstanding controller RAM changes.",True))
         cv.addWidget(wt_card)
         cv.addStretch(1)
+        # Retain Qt ownership of the legacy button hosts. Their enablement
+        # state remains the proven source for unified action availability.
+        self._transfer_legacy_hosts=(usb,config)
+        # One visible review and one action row. Legacy per-bank controls stay
+        # instantiated for their proven backend guards, but are not shown.
         transfer=QWidget()
         transfer_layout=QVBoxLayout(transfer)
         transfer_layout.setSpacing(9)
+        transfer_layout.addWidget(heading("Pending controller changes",
+            "Programme memory and supported controller settings share this review. "
+            "Only Wait Band is currently qualified for settings USB writing."))
         self.transfer_summary=QLabel("")
         self.transfer_summary.setWordWrap(True)
         self.transfer_summary.setObjectName("transferSummary")
         self.transfer_summary.setStyleSheet(
             "QLabel#transferSummary {background:#eff6fc;border:1px solid #d8e6f2;"
-            "border-radius:8px;padding:12px;color:#214965;}")
+            "border-radius:8px;padding:10px;color:#214965;}")
         transfer_layout.addWidget(self.transfer_summary)
+        self.apply_details.setMinimumHeight(160)
+        transfer_layout.addWidget(self.apply_details,1)
+        unified_actions=QHBoxLayout()
+        self.unified_preview=button("1  Read + Preview",self.unified_preview_action,True)
+        self.unified_stage=button("2  Write RAM + Verify",self.unified_stage_action)
+        self.unified_save=button("3  Save + Finish (CMW OFF)",self.unified_save_action)
+        self.unified_verify=button("Verify saved receipt",self.unified_verify_action)
+        for control in (self.unified_preview,self.unified_stage,
+                        self.unified_save,self.unified_verify):
+            unified_actions.addWidget(control)
+        unified_actions.addStretch()
+        transfer_layout.addLayout(unified_actions)
+        self.usb_next_action.setWordWrap(True) if hasattr(self.usb_next_action,"setWordWrap") else None
+        transfer_layout.addWidget(self.usb_next_action)
         transfer_layout.addWidget(text(
-            "Both transfer types are visible below. They share a status summary, but "
-            "their guarded RAM and SAVE sequences remain separate. Never mix "
-            "unsaved settings and programme writes in the same connection.",True))
-        transfer_scroll=QScrollArea()
-        transfer_scroll.setWidgetResizable(True)
-        transfer_scroll.setFrameShape(QFrame.Shape.NoFrame)
-        transfer_body=QWidget()
-        transfer_sections=QVBoxLayout(transfer_body)
-        transfer_sections.setSpacing(12)
-        transfer_sections.addWidget(heading("Programme memory (DA)",
-            "Preview and transfer the selected programme memory."))
-        self.apply_details.setMinimumHeight(170)
-        transfer_sections.addWidget(usb)
-        transfer_sections.addWidget(heading("Controller settings (wt-b)",
-            "Only the qualified Wait Band register can be written over USB."))
-        transfer_sections.addWidget(config)
-        transfer_sections.addStretch(1)
-        transfer_scroll.setWidget(transfer_body)
-        transfer_layout.addWidget(transfer_scroll,1)
+            "CMW ON happens at RAM staging; CMW OFF follows a verified SAVE. "
+            "After any uncertain write or save, finishing is blocked, not retried. "
+            "The heater must remain physically isolated.",True))
         self.apply_tabs.addTab(transfer,"USB transfer")
         v.addWidget(self.apply_tabs,1)
         self.pages.addWidget(page)
@@ -704,6 +710,86 @@ class Studio(QMainWindow):
             self.draft={}
             self.refresh_settings()
         self.show_step(1)
+
+    def _active_transfer_kind(self):
+        """Settings proposals take precedence; do not silently upload a programme."""
+        return "settings" if self.draft or self.setting_transfer else "programme"
+
+    def unified_preview_action(self):
+        if self._active_transfer_kind()=="settings":
+            self.preview_wait()
+        else:
+            self.preview()
+
+    def unified_stage_action(self):
+        if self._active_transfer_kind()=="settings":
+            self.stage_wait()
+        else:
+            self.stage()
+
+    def unified_save_action(self):
+        if self._active_transfer_kind()=="settings":
+            self.save_and_finish_wait()
+        else:
+            self.save_and_finish_programme()
+
+    def unified_verify_action(self):
+        if self._active_transfer_kind()=="settings":
+            self.verify_wait()
+        else:
+            self.message("Programme receipt verification",
+                "Reconnect after a genuine controller power cycle, then use the "
+                "saved programme receipt verification in the controller backup workflow.")
+
+    def save_and_finish_wait(self):
+        tx=self.setting_transfer
+        if (not tx or not tx.staged or tx.saved or self.busy or not self.lab
+                or self.fail_latched or self.draft!={"C1:0021":tx.preview_data["new_raw"]}):
+            self.message("SAVE unavailable","A verified Wait Band RAM stage is required.",True)
+            return
+        if QMessageBox.warning(self,"Save and finish settings transfer",
+                "SAVE RAM DATA can persist OTHER unsaved controller changes. "
+                "Confirm the heater is isolated and no unrelated RAM edits exist. "
+                "After a verified save, CMW OFF will be issued automatically. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):
+            receipt=tx.save()
+            tx.disable_cmw()
+            return receipt
+        def done(receipt):
+            self.inventory["fields"]["C1:0021"]=tx.preview_data["new_raw"]
+            self.draft.pop("C1:0021",None)
+            self.refresh_settings()
+            self.refresh_review()
+            self.message("Settings transfer complete",
+                "Save, post-save readback and CMW OFF acknowledged. "
+                "Check the CMW lamp, then power-cycle and verify the receipt:\\n"+str(receipt))
+        self._work("Save Wait Band and disable CMW",action,done,True)
+
+    def save_and_finish_programme(self):
+        ses=self.session
+        if not ses or not ses.staged or self.busy or self.draft or self.fail_latched:return
+        if (ses.staged["slot"]!=self.slot or
+                ses.staged["programme"]!=self.programmes[self.slot].as_json()):
+            self.message("Programme changed","Verified RAM no longer matches the editor.",True)
+            return
+        if QMessageBox.warning(self,"Save and finish programme transfer",
+                "SAVE RAM DATA can persist unrelated unsaved RAM changes. "
+                "Confirm the heater is isolated and no unrelated RAM edits exist. "
+                "After successful save/readback, CMW OFF will be issued automatically. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):
+            receipt=ses.commit()
+            ses.disable_communications_writing()
+            return receipt
+        def done(receipt):
+            self.refresh_review()
+            self.message("Programme transfer complete",
+                "Save, post-save readback and CMW OFF acknowledged. "
+                "Check the CMW lamp, then power-cycle and verify the receipt:\\n"+str(receipt))
+        self._work("Save programme and disable CMW",action,done,True)
 
     def _refresh_transfer_summary(self):
         """One accurate summary for programme and settings transfers."""
@@ -1653,7 +1739,7 @@ class Studio(QMainWindow):
                 lines.append(f"{CATALOG[code].name}: {human_value(code,old)}"
                              f"  →  {human_value(code,value)}   [{code}]")
             if set(self.draft)=={"C1:0021"}:
-                lines.append("Wait Band C1:0021 can be transferred in the Settings USB tab. "
+                lines.append("Wait Band C1:0021 can be transferred using the shared controls below. "
                              "DA programme staging remains locked while it is proposed.")
             else:
                 lines.append("Other configuration changes are review-only. "
@@ -1789,6 +1875,16 @@ class Studio(QMainWindow):
         self.usb_next_action.setText("NEXT ACTION  ·  "+"  ·  ".join(reasons))
         self.usb_next_action.setStyleSheet("color:"+("#157952" if can_stage else "#a8610f")+";font-weight:600")
         self._refresh_transfer_summary()
+        if hasattr(self,"unified_preview"):
+            kind=self._active_transfer_kind()
+            source=(self.wt_preview,self.wt_stage,self.wt_save) if kind=="settings" else (
+                self.preview_button,self.stage_button,self.save_button)
+            for target,original in zip(
+                    (self.unified_preview,self.unified_stage,self.unified_save),source):
+                target.setEnabled(original.isEnabled())
+            self.unified_verify.setEnabled(bool(
+                kind=="settings" and self.wt_verify.isEnabled()))
+            self.unified_save.setText("3  Save + Finish (CMW OFF)")
 
     def _controls(self):
         if hasattr(self,"stage_button"):self.refresh_actions()
