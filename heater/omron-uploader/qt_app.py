@@ -3470,12 +3470,21 @@ class Studio(QMainWindow):
                 "Power-cycle USB later and verify persistence against the saved receipt.")
         self._work("Disable communications writing after save",job,completed,True)
 
+    def _manual_configuration(self):
+        """Local planned input informs worksheets but never silently queues C3."""
+        values=dict(self.draft)
+        planned=self.planned_sensor_by_slot[self.slot]
+        if planned is not None and "C3:0000" not in values:
+            if self.inventory.get("fields",{}).get("C3:0000")!=planned:
+                values["C3:0000"]=planned
+        return values
+
     def refresh_manual(self):
         """Same complete parameter plan drives the guided UI and printed guide."""
         if not hasattr(self,"entry_table"):return
         try:
             plan=make_entry_plan(self.programmes[self.slot],self.slot,
-                                 self.inventory["fields"],self.draft)
+                                 self.inventory["fields"],self._manual_configuration())
         except Exception as exc:
             self._manual_plan=None
             self._manual_all_rows=[]
@@ -3600,7 +3609,7 @@ class Studio(QMainWindow):
         path,_=QFileDialog.getSaveFileName(self,"Save manual keypad sheet",
                     f"E5CC-T-manual-programme-{self.slot}.html","HTML (*.html)")
         if not path:return
-        try:save_manual(path,p,self.slot,self.inventory["fields"],self.draft)
+        try:save_manual(path,p,self.slot,self.inventory["fields"],self._manual_configuration())
         except Exception as exc:self.message("Manual export error",str(exc),True);return
         self.feedback.setText("Offline manual programming guide saved: "+path)
         self.message("Guide saved","The standalone front-panel guide was saved:\n"+path)
