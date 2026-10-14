@@ -28,7 +28,7 @@ class FakeController:
     def identify(self):return {"model10":"E5CC-TQX3A","buffer_bytes":217}
     def status(self):return "0000" if self.running else "0100"
     def read(self,bank,addr,count=1):
-        if bank=="DA":return self.da[addr>>8][addr&255:addr&255+count]
+        if bank=="DA":return self.da[addr>>8][(addr&255):(addr&255)+count]
         if bank=="C3":return [self.c3[addr+i] for i in range(count)]
         if bank=="C1":return [self.ram.get("C1:%04X"%(addr+i),0) for i in range(count)]
         raise AssertionError("Unexpected read bank")
