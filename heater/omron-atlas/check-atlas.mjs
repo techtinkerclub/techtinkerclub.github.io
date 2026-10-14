@@ -141,7 +141,7 @@ function testEditorialSeparation(){
  assert.ok(statusDom.document.getElementById("open"),"Outstanding checks are accessible");
  assert.ok(statusDom.document.getElementById("software"),"Development status is accessible");
  assert.ok(statusDom.document.querySelectorAll("details.record").length>=5,"Original records not preserved");
- for(const snippet of ["The user then observed","Omron E2 variant","13 October 2026","D12 electrical design-review issue register","USB-only programme execution"]){
+ for(const snippet of ["The controller then showed","Omron E2 variant","13 October 2026","D12 electrical design-review issue register","USB-only programme execution"]){
    assert.ok(statusHtml.includes(snippet),"Missing migrated engineering evidence: "+snippet);
  }
  // Safe operator instructions still explicitly require commissioning.
