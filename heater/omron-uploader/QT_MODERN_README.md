@@ -95,6 +95,18 @@ Regression tests exercise the real Qt field geometry and selection.
 **References:** Omron H185 §4-1-3 (Adjustment Level), §6-5
 (`cmwt`), H186 §2-3-8 (Communications Writing operation command).
 
+## Editing versus applying changes
+
+- **Step 3 — Programme:** design/edit DA programme segments.
+- **Step 4 — Controller Settings:** view and propose changes, including global wt-b.
+  No hardware writes are issued simply by proposing a change.
+- **Step 5 — Apply / Manual:** three distinct tabs: Offline/manual keypad guide,
+  Programme USB transfer (DA memory), and Settings USB transfer (qualified
+  C1:0021 only). A pending settings proposal automatically selects Settings
+  USB transfer so the user doesn't see disabled DA controls by mistake.
+  The programme writer stays locked while setting changes are pending.
+  General USB settings writing is NOT enabled beyond wt-b.
+
 ## First USB configuration-write trial: Wait Band
 
 **Modern Qt isolated-lab launcher only.** The first supported target is the
@@ -106,7 +118,9 @@ Procedure, with controller mains and external heater DC physically isolated:
 1. Connect and take a full eight-programme backup in Step 2.
 2. In Step 4, search C1:0021, enter 3.0 °C and add a LOCAL change proposal.
    No other proposed settings can be present.
-3. Click Read + preview wt-b. The app reads the live controller setting and
+3. Continue to **Step 5 — Apply / Manual**, and choose **Settings USB transfer**
+   (automatically selected if wt-b is proposed). Click Read + preview wt-b.
+   The app reads the live controller setting and
    writes a separate checked backup of the ORIGINAL parameter.
 4. Click Write RAM + verify, confirming hardware isolation and the exact
    old/new value. This sends C1:0021 write variable command 0102 and
@@ -117,7 +131,8 @@ Procedure, with controller mains and external heater DC physically isolated:
 6. Click CMW OFF, check that the CMW lamp extinguishes.
 7. Actually power-cycle the USB cable (heater isolated) until the controller
    display turns off, reconnect and take another fresh backup.
-8. Select Verify saved receipt in Step 4, choose the original receipt, and
+8. In Step 5 → Settings USB transfer, select Verify saved receipt,
+   choose the original receipt, and
    compare the newly read C1 value. Merely reconnecting without removing
    controller power does not establish persistence.
 
