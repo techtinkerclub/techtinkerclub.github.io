@@ -125,7 +125,7 @@ class C3Tests(unittest.TestCase):
 
     def test_unsupported_sensor_or_register_never_written(self):
         self.setup()
-        for props in ({"C3:0000":30},{"C3:000D":1},{"C3:000A":0xfffffffd}):
+        for props in ({"C3:0000":30},{"C3:0011":1},{"C3:000A":0xfffffffd}):
             with self.assertRaises(PreflightError):self.tx.preview(props)
         self.assertEqual(self.client.calls,[])
         client=SerialClient.__new__(SerialClient)
@@ -138,7 +138,7 @@ class C3Tests(unittest.TestCase):
             "0102C3000700000100000001",
             "0102C3000A000001FFFFFFFE"])
         with self.assertRaises(PermissionError):
-            client.write_setting("C3",0x000D,1)
+            client.write_setting("C3",0x0011,1)
         with self.assertRaises(ValueError):
             client.write_setting("C3",0,30)
 
