@@ -36,6 +36,7 @@ from transfer import TransferSession
 from combined_transfer import CombinedTransfer,verify_combined_receipt
 from c1_transfer import C1SettingsTransfer,QUALIFIED_C1_CODES,verify_c1_receipt
 from c3_transfer import C3ConfigurationTransfer,ALLOWED as QUALIFIED_C3_CODES,verify_c3_receipt
+from controller_restart import restart_and_audit
 from program_model import planned_writes
 from programme_constraints import effective_limits,programme_issues,check_global_programming
 from transfer_capabilities import transfer_plan
@@ -740,6 +741,12 @@ class Studio(QMainWindow):
         self.unified_stage=button("2  Write RAM + Verify",self.unified_stage_action)
         self.unified_save=button("3  Save + Finish (CMW OFF)",self.unified_save_action)
         self.unified_verify=button("4  Verify saved receipt",self.unified_verify_action)
+        self.restart_c3_button=button(
+            "4  Software restart + audit all 8 programmes",self.restart_verify_c3)
+        self.restart_c3_button.setToolTip(
+            "After verified C3 finish and CMW OFF: reset once, reconnect "
+            "read-only and compare all 1,200 DA words and C3 receipt. "
+            "All heater output supplies must be physically isolated.")
         self.unified_verify.setToolTip(
             "READ ONLY: After the controller genuinely loses power and you reconnect, "
             "compare each saved register in the receipt JSON with live values. "
@@ -749,6 +756,9 @@ class Studio(QMainWindow):
             unified_actions.addWidget(control)
         unified_actions.addStretch()
         transfer_layout.addLayout(unified_actions)
+        self.restart_c3_button.setVisible(False)
+        self.restart_c3_button.setEnabled(False)
+        transfer_layout.addWidget(self.restart_c3_button)
         transfer_layout.addWidget(text(
             "Verify saved receipt (read-only): AFTER unplugging USB until the "
             "controller turns off, reconnect and compare the saved register values "
@@ -1010,6 +1020,64 @@ class Studio(QMainWindow):
                 "same connection. Receipt:\n"+str(receipt))
         self._work("Finish C3: record receipt and CMW OFF",action,done,True)
 
+    def restart_verify_c3(self):
+        tx=self.c3_transfer
+        if (not tx or not tx.finished or not tx.cmw_off
+                or getattr(tx,"reset_attempted",False) or self.busy
+                or self.fail_latched or not self.lab or not self.port
+                or not self.client or self.client is not tx.client):
+            self.message("Cannot restart controller",
+                "Finish and verify C3 and CMW OFF first. An uncertain reset "
+                "cannot be attempted again automatically.",True)
+            return
+        if QMessageBox.warning(
+                self,"Restart controller and audit stored programmes",
+                "This sends a SOFTWARE RESET. Controller power-up behaviour "
+                "and output states may change. Confirm the heater PSU, load "
+                "and output circuits are PHYSICALLY DISCONNECTED. "
+                "This no-response command will NEVER be retried. "
+                "The app will reconnect read-only and compare all eight stored "
+                "programmes against the original backup. Any differences "
+                "require review before heater use. Reset now?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        port=self.port
+        receipt=tx.receipt_file
+        def action(progress):
+            progress("Sending software reset once; no reply expected…")
+            return restart_and_audit(tx,port,SerialClient,self.folder.text())
+        def done(result):
+            new_client,report=result
+            self.client=new_client
+            # Original configuration inventory/preflight is stale after RESET.
+            self.session=None
+            self.inventory=offline_inventory()
+            self.inventory_current_session=False
+            self.c3_receipt_match={
+                "path":str(receipt),
+                "count":report.get("configuration_registers_checked",0),
+                "audit":report}
+            tx.restart_audit=report
+            self.backup=None
+            self.preview_stamp=None
+            self.draft={}
+            self.link_status.setText("●  Reconnected · full programme audit complete")
+            self.link_status.setStyleSheet("color:#a8610f;font-weight:600")
+            self.refresh_settings()
+            self.refresh_review()
+            self.message("Controller restarted — full programme audit",
+                f"{report['memory_words_compared']} DA memory words checked.\n"
+                f"Changed raw words: {report['changes_total']}.\n"
+                f"Global C3 receipt matched: {report['configuration_verified']}.\n"
+                f"{report['assessment']}\n\n"
+                f"Audit file: {report['audit_file']}\n\n"
+                "Keep the heater isolated. Review the audit, then use "
+                "Step 2 · Read everything before programming again.",
+                bool(report["requires_manual_review"] or
+                     not report["configuration_verified"]))
+        self._work("Software restart and full DA/C3 verification",action,done,True)
+
     def _c1_draft_matches_preview(self):
         tx=self.c1_transfer
         if not tx or not tx.preview_data:return False
@@ -1248,8 +1316,13 @@ class Studio(QMainWindow):
         combo=self.combined_transfer
         if self.c3_transfer is not None:
             tx3=self.c3_transfer
-            if tx3.finished:
-                state="Area-1 C3 writes read back; CMW OFF; POWER CYCLE REQUIRED"
+            if getattr(tx3,"restart_audit",None):
+                report=tx3.restart_audit
+                state=(f"SOFTWARE RESTART AUDIT: {report['changes_total']} DA word(s) changed; "
+                       f"C3 receipt matched: {report['configuration_verified']}; "
+                       "MANUAL REVIEW REQUIRED before heater use")
+            elif tx3.finished:
+                state="Area-1 C3 read back; CMW OFF; restart + audit required"
             elif tx3.staged:state="C3 writes read back, finish CMW OFF required"
             elif tx3.area_entered:state="C3 setup area entered; state UNCERTAIN"
             else:state="C3 read-only preview complete; no writes yet"
@@ -2612,9 +2685,13 @@ class Studio(QMainWindow):
                 reasons.append("Ready for guarded RAM staging (heater power must remain isolated).")
         if self._active_transfer_kind()=="c3":
             tx3=self.c3_transfer
-            if tx3 and tx3.finished:
-                reasons=["Area-1 configuration completed; physically power-cycle and reconnect "
-                         "before another write or normal operation."]
+            if tx3 and getattr(tx3,"restart_audit",None):
+                report=tx3.restart_audit
+                reasons=[f"Software restart audit: {report['changes_total']} changed DA words. "
+                         "Review audit and run Step 2 · Read everything before heater use."]
+            elif tx3 and tx3.finished:
+                reasons=["C3 completed, CMW OFF. Use guarded Software restart + audit "
+                         "or physically power-cycle and verify manually."]
             elif tx3 and tx3.staged:
                 reasons=["C3 changed in area 1, verified by readback. Finish CMW OFF. "
                          "Persistence remains unverified."]
@@ -2751,6 +2828,12 @@ class Studio(QMainWindow):
                 for target,original in zip(
                         (self.unified_preview,self.unified_stage,self.unified_save),source):
                     target.setEnabled(original.isEnabled())
+            self.restart_c3_button.setVisible(bool(kind=="c3"))
+            self.restart_c3_button.setEnabled(bool(
+                kind=="c3" and self.client and self.lab and not self.busy
+                and not self.fail_latched and self.c3_transfer
+                and self.c3_transfer.finished and self.c3_transfer.cmw_off
+                and not getattr(self.c3_transfer,"reset_attempted",False)))
             self.unified_verify.setEnabled(bool(
                 connected and not self.busy and not self._settings_ram_pending()
                 and not (self.session and self.session.ram_touched and not self.session.committed)))
