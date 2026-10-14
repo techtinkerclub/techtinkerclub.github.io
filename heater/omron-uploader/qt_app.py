@@ -565,6 +565,16 @@ class Studio(QMainWindow):
             actions.addWidget(item)
         actions.addStretch()
         uv.addLayout(actions)
+        completion=QHBoxLayout()
+        self.cmw_off_button=button("4   Finish programming · CMW OFF",self.disable_cmw)
+        self.cmw_off_button.setToolTip(
+            "Only available after the SAVE RAM DATA command and receipt; "
+            "sends H186 Communications Writing OFF. Does not stop the heater.")
+        completion.addWidget(self.cmw_off_button)
+        completion.addWidget(text(
+            "CMW indicates that USB/serial parameter writes are enabled; "
+            "it is not the controller's RUN mode.",True),1)
+        uv.addLayout(completion)
         self.usb_next_action=text("Connect and take a full backup before writing.")
         self.usb_next_action.setStyleSheet("color:#a8610f;font-weight:600")
         uv.addWidget(self.usb_next_action)
@@ -1308,6 +1318,10 @@ class Studio(QMainWindow):
         self.preview_button.setEnabled(can_preview)
         self.stage_button.setEnabled(bool(can_stage))
         self.save_button.setEnabled(bool(can_save))
+        can_cmw_off=(connected and self.lab and not self.busy and not self.fail_latched
+                     and session.committed and session.receipt_file is not None
+                     and not session.communications_write_disabled)
+        self.cmw_off_button.setEnabled(bool(can_cmw_off))
         staged=bool(session and session.staged is not None and not session.committed)
         editing_locked=staged or self.busy
         self.slot_combo.setEnabled(not editing_locked)
@@ -1336,7 +1350,10 @@ class Studio(QMainWindow):
             if session.staged is not None and not session.committed:
                 reasons.append("RAM verified: review and use SAVE TO CONTROLLER.")
             elif session.committed:
-                reasons.append("Save acknowledged: power-cycle USB and verify the receipt in Step 2.")
+                if session.communications_write_disabled:
+                    reasons.append("CMW OFF acknowledged: confirm lamp goes out, then power-cycle and verify receipt.")
+                else:
+                    reasons.append("Save acknowledged: finish programming (CMW OFF), then power-cycle and verify receipt.")
             elif not self.preview_stamp:
                 reasons.append("Preview the exact differences before any RAM write.")
             elif not all(c.isChecked() for c in self.safety):
@@ -1414,6 +1431,38 @@ class Studio(QMainWindow):
                 "Unplug USB until the controller turns off, reconnect, back up again "
                 "and verify the saved receipt before trusting persistence.\n"+str(path))
         self._work("Save verified RAM data",job,done,True)
+
+    def disable_cmw(self):
+        """Explicit and isolated post-SAVE action, never an automatic disconnect."""
+        ses=self.session
+        if (not ses or not self.client or self.busy or not self.lab or
+                self.fail_latched or not ses.committed or not ses.receipt_file or
+                ses.communications_write_disabled):
+            self.message("Cannot disable CMW here",
+                "Finish and verify the nonvolatile SAVE before ending communications write access. "
+                "If this is a previous USB session, use the front-panel cmwt setting instead.",True)
+            return
+        if QMessageBox.warning(self,"Finish USB programming — CMW OFF",
+            "CMW means Communications Writing Enabled. This sends Omron 3005 00 00 "
+            "to disable parameter writing. It DOES NOT issue RUN/RESET.\n\n"
+            "Some write-mode transitions can persist pending RAM changes. "
+            "This function is available ONLY because SAVE RAM DATA has already "
+            "been acknowledged and the receipt was saved.\n\n"
+            "Confirm the heater supply remains physically isolated and no other "
+            "unsaved controller changes are pending. Then visually check that the "
+            "CMW indicator extinguishes. Continue?",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def job(progress):return ses.disable_communications_writing()
+        def completed(result):
+            self.feedback.setText("CMW OFF command acknowledged. Visually check the CMW indicator.")
+            self.refresh_review()
+            self.message("CMW OFF command acknowledged",
+                "Omron accepted Communications Writing OFF. Confirm the physical "
+                "CMW indicator is no longer illuminated. The controller remains in "
+                "RESET if previously stopped; this command did not start it.\n"
+                "Power-cycle USB later and verify persistence against the saved receipt.")
+        self._work("Disable communications writing after save",job,completed,True)
 
     def refresh_manual(self):
         """Same complete parameter plan drives the guided UI and printed guide."""
