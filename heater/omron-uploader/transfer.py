@@ -28,6 +28,7 @@ class TransferSession:
         self.client=client;self.emit=emit or (lambda message:None)
         self.info=None;self.settings=None;self.status=None;self.mismatches=[];self.ram_touched=False;self.backup_data=None
         self.backup_file=None;self.staged=None;self.committed=False;self.receipt_file=None
+        self.communications_write_disabled=False
     def log(self,m):self.emit(m)
     def preflight(self):
         """READ ONLY. Fail closed on any unknown/mismatched value."""
@@ -172,6 +173,30 @@ class TransferSession:
         self.log("Post-save read-back passed. Receipt: "+str(receipt_path))
         self.log("IMPORTANT: Later power-cycle persistence check still required.")
         return receipt_path
+
+    def disable_communications_writing(self):
+        """Guarded CMW OFF after a confirmed SAVE RAM DATA; never implicit.
+
+        H186 section 2-3-8 documents 3005 00 00. This is not a RUN/RESET
+        command. The controller may persist remaining RAM data when write
+        access is disabled, which is why it must NOT be used to 'recover'
+        an uncertain or incomplete staged upload.
+        """
+        if not self.client.write_allowed:
+            raise PreflightError("Write access is not authorised for this USB session")
+        if self.communications_write_disabled:
+            raise PreflightError("CMW was already switched OFF by this session")
+        if not self.committed or self.staged is None or self.receipt_file is None:
+            raise PreflightError("CMW OFF requires an acknowledged nonvolatile SAVE and an upload receipt")
+        if not self.receipt_file.exists():
+            raise PreflightError("Save receipt is missing: do not modify controller write mode")
+        if not str(self.client.status()).startswith("01"):
+            raise PreflightError("Controller not confirmed stopped; CMW OFF blocked")
+        self.client.operation("00","00")
+        self.communications_write_disabled=True
+        self.log("Omron acknowledged Communications Writing OFF (CMW indicator should extinguish).")
+        self.log("Check the controller's physical CMW indicator; this is an ACK, not an optical verification.")
+        return True
 
     def verify_persistence(self,receipt_path):
         """READ ONLY. Operator must power-cycle via setup-cable disconnect/reconnect.
