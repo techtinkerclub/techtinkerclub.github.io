@@ -2086,6 +2086,30 @@ class Studio(QMainWindow):
                 reasons.append("Preview the exact differences before any RAM write.")
             elif can_stage:
                 reasons.append("Ready for guarded RAM staging (heater power must remain isolated).")
+        if self._active_transfer_kind()=="combined":
+            combo=self.combined_transfer
+            if combo and combo.cmw_off:
+                reasons=["Both Wait Band and programme saved; CMW OFF acknowledged. "
+                         "Power-cycle and verify the combined receipt."]
+            elif combo and combo.saved:
+                reasons=["SAVE acknowledged, but CMW OFF NOT verified. "
+                         "Keep heater isolated and inspect before another write."]
+            elif combo and combo.staged:
+                reasons=["Both C1 and DA registers verified in RAM. "
+                         "Use Save + Finish once to persist both."]
+            elif combo and combo.ram_touched:
+                reasons=["RAM write uncertain. Stop and inspect; do not retry or save blindly."]
+            elif combo and combo.preview_data:
+                reasons=["Read-only combined preview ready: confirm isolation, then Write RAM + Verify."]
+            elif set(self.draft)!={"C1:0021"}:
+                reasons=["Unqualified settings in draft. Nothing will be silently omitted; "
+                         "remove those proposals before combined upload."]
+            elif not self._programme_pending():
+                reasons=["No programme register differences found for combined upload. "
+                         "Turn programme inclusion OFF for Wait Band-only transfer."]
+            else:
+                reasons=["Programme explicitly included alongside Wait Band. "
+                         "Read + Preview both before writing."]
         self.usb_next_action.setText("NEXT ACTION  ·  "+"  ·  ".join(reasons))
         self.usb_next_action.setStyleSheet("color:"+("#157952" if can_stage else "#a8610f")+";font-weight:600")
         self._refresh_transfer_summary()
@@ -2096,7 +2120,8 @@ class Studio(QMainWindow):
                 else "Include selected programme with Wait Band: OFF")
             self.include_programme_button.setEnabled(bool(
                 connected and not self.busy and not self.fail_latched
-                and set(self.draft)=={"C1:0021"} and self._programme_pending()
+                and (self.include_programme_with_settings or
+                     (set(self.draft)=={"C1:0021"} and self._programme_pending()))
                 and self.combined_transfer is None and not session.ram_touched
                 and self.setting_transfer is None))
             if kind=="combined":
