@@ -24,12 +24,12 @@ finish/return-to-operation procedure.
   types. An absent fitted option is hidden, and a failed read is not
   selectable. Read errors remain available in Step 2's diagnostic inventory.
   Unknown/unconfirmed optional hardware settings remain unavailable.
-- Documented C1 adjustment and C3 initial settings with explicit encodings
+- Documented C1 adjustment, C3 initial and fixed C5 PID-set settings with explicit encodings
   have been added to the guarded writer; **only expressly selected settings
   are transmitted**. Different setting areas cannot share an unsafe save.
   Sensor changes never transmit DA words.
 - **Not yet generic USB writes:** C4 selected-programme context (use DA editor),
-  C5 fixed PID banks, C9 programless communications, serial-link changes,
+  C9 programless communications, serial-link changes,
   protection/password and direct output-on-RESET/fault values. These require
   distinct context, reconnection or safety handling rather than blindly
   opening all raw registers.
@@ -87,7 +87,7 @@ not a limited visual prototype.
 | Automatic USB disconnect detection and heartbeat | Implemented |
 | Clear reason when upload is disabled | Implemented |
 | Session activity log, saved-profile export | Implemented |
-| Configuration C1/C3/C5/C9 writes | C1/C3 experimental subset; C4/C5/C9 and link-changing settings blocked pending dedicated qualification |
+| Configuration C1/C3/C5/C9 writes | C1/C3/C5 experimental subset; C4/C9 and link-changing settings blocked pending dedicated qualification |
 
 The main Qt GUI requires **no online website**. For optional keypad practice,
 the original simulator and its detailed programming guide are supplied inside
