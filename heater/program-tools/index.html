@@ -93,9 +93,9 @@ const initial=()=>Array.from({length:8},(_,i)=>({name:i===0?"20 to 120°C exampl
 let bank=initial(),slot=0;
 try{let x=JSON.parse(localStorage.getItem(K)||"null");if(x&&Array.isArray(x.bank)&&x.bank.length===8){bank=x.bank.map((v,i)=>({name:String(v.name||"Programme "+i).slice(0,80),start:v.start,finish:v.finish==="cont"?"cont":"rst",steps:Array.isArray(v.steps)?v.steps.slice(0,MAX).filter(t=>["ramp","soak","step"].includes(t.type)):[]}));slot=Math.max(0,Math.min(7,Number(x.slot)||0));if(x.sensorPlan&&Number.isInteger(x.sensorPlan.code)&&INPUTS[x.sensorPlan.code])sensorPlan={...sensorPlan,...x.sensorPlan};}}catch(_){}
 const save=()=>{try{localStorage.setItem(K,JSON.stringify({bank,slot,sensorPlan}));}catch(_){}},cur=()=>bank[slot];
-function evaluate(b){
+function evaluate(b,simulateK6=false){
  let err=[],notes=[],warnings=[],start=Number(b.start),temp=Number.isFinite(start)?start:20,t=0,pts=[[0,temp]],list=[];
- const sel=selectedInput();
+ const sel=simulateK6?{code:6,name:INPUTS[6][0],lo:-20,hi:500,step:.1,unit:"°C",valid:true}:selectedInput();
  if(!num(b.start)||start<-1999||start>9999)err.push("Starting PV must be a finite value between −1999 and 9999.");
  if(!sel.valid)warnings.push("Analogue input scaling is missing or invalid. Set engineering lower/upper and decimal position before any controller transfer.");
  const inRange=v=>sel.valid&&v>=sel.lo&&v<=sel.hi;
@@ -330,8 +330,8 @@ function showVM(){
  $("elapsed").textContent=fmt(vm.time)+" min · "+vm.status.toUpperCase();
  $("simrst").textContent=vm.status==="rst"?"RST ●":"RST ○";
  $("simrst").style.color=vm.status==="rst"?"#8cdb90":"#71838d";
- let a=evaluate({start:vm.pv,steps:runprog().segments.slice(0,runprog().n),finish:vm.settings.eset});
- $("simchart").innerHTML=!simReady()?'<p class="warn">This virtual configuration is outside the supported profile (rate-of-rise, hours.minutes, rate per minute, reset stops control, programmed SP, no repetitions or links). Restore those settings to preview.</p>':a.err.length?'<p class="tiny muted">Complete the segment values to preview this virtual programme.</p>':graph(a.pts);
+ let a=evaluate({start:vm.pv,steps:runprog().segments.slice(0,runprog().n),finish:vm.settings.eset},true);
+ $("simchart").innerHTML=!simReady()?'<p class="warn">This virtual configuration is outside the supported profile (rate-of-rise, hours.minutes, rate per minute, reset stops control, programmed SP, no repetitions or links). Restore those settings to preview.</p>':a.err.length?'<p class="tiny muted">Complete the segment values to preview this virtual programme.</p>':graph(a.pts,"°C");
  $("history").innerHTML=vm.history.slice(-14).map(esc).join("<br>")||"No keys pressed yet.";saveVM();goal();
 }
 function goal(){
@@ -390,7 +390,7 @@ $("benchExample").onclick=()=>{
 $("powercycle").onclick=powerCycleVM;
 document.querySelectorAll("[data-key]").forEach(x=>x.addEventListener("click",()=>{push(x.dataset.key,$("holdmode").value==="long");$("holdmode").value="short"}));
 $("combo").onclick=()=>{vm.status=vm.status==="run"?"rst":"run";vm.time=0;history("MODE+DOWN → "+vm.status);showVM()};
-function advance(n){if(vm.status!=="run"){history("Not running");showVM();return}if(!simReady()){history("Unsupported simulation configuration; time not advanced");showVM();return}let p=runprog(),a=evaluate({start:vm.pv,steps:p.segments.slice(0,p.n),finish:vm.settings.eset});if(a.err.length){history("Programme invalid");showVM();return}
+function advance(n){if(vm.status!=="run"){history("Not running");showVM();return}if(!simReady()){history("Unsupported simulation configuration; time not advanced");showVM();return}let p=runprog(),a=evaluate({start:vm.pv,steps:p.segments.slice(0,p.n),finish:vm.settings.eset},true);if(a.err.length){history("Programme invalid");showVM();return}
  vm.time+=n;if(vm.time>=a.time&&vm.settings.eset==="rst"&&p.rpt===0&&p.link==="end"){vm.time=a.time;vm.status="rst";history("PROGRAMME END → RESET")}else history("Advanced "+n+" min (setpoint only)");showVM()}
 $("minute").onclick=()=>advance(1);$("five").onclick=()=>advance(5);$("reset").onclick=()=>{vm.status="rst";vm.time=0;history("RESET");showVM()};
 $("empty").onclick=()=>{if(confirm("Clear all eight virtual programme memories? Builder remains saved."))resetVM(true)};
