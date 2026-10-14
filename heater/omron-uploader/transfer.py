@@ -7,6 +7,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 import hashlib,json
 from program_model import Programme,planned_writes,signed,decode_time
+from programme_constraints import effective_limits,check_global_programming
 from compoway import ProtocolError
 
 # Omron H186 C3 initial setting addresses, read-only preflight.
@@ -127,7 +128,24 @@ class TransferSession:
                     "then reconnect and read it back. This app cannot write C1 settings."
                 )
             self.log(f"Step safety check: live Wait Band={wait_raw/10:g} °C; programme will use {effective_wait/10:g} °C.")
-        pairs=planned_writes(slot,prog,input_type=self.settings["C3:0000"])
+        # Mandatory FRESH read of actual controller-wide limits on every DA
+        # preview/staging. We never substitute an offline draft or an old backup.
+        live={
+            f"C3:{addr:04X}":self.client.read1("C3",addr)
+            for addr in (0x0000,0x0004,0x0005,0x0006)
+        }
+        if live["C3:0000"]!=self.settings["C3:0000"] or live["C3:0004"]!=self.settings["C3:0004"]:
+            raise PreflightError("Controller sensor type/temperature unit changed since backup")
+        try:
+            limits=effective_limits(live,require_readback=True)
+        except ValueError as exc:
+            raise PreflightError("Cannot establish safe controller SP limits: "+str(exc)) from exc
+        self.last_limits=limits
+        try:
+            pairs=planned_writes(slot,prog,input_type=limits.input_type,limits=limits)
+        except ValueError as exc:
+            raise PreflightError("Programme violates global temperature restrictions: "+str(exc)) from exc
+        self.log("Programme restrictions verified against fresh controller read: "+limits.description())
         existing=self.backup_data["programmes"][str(slot)]
         changes=[]
         for a,v in pairs:
