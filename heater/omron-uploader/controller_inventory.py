@@ -120,7 +120,7 @@ extra_c1=[
 (0x001D,"Heater burnout detection 2","Second heater-break threshold, if equipped.",0,500,10,"A"),
 (0x001E,"Heater short alarm 1","Heater short alarm threshold, if equipped.",0,500,10,"A"),
 (0x001F,"Heater short alarm 2","Second heater short alarm threshold.",0,500,10,"A"),
-(0x0021,"Wait band","Band that pauses programme time until PV reaches commanded SP.",0,9999,10,"°C"),
+(0x0021,"Wait band","GLOBAL setting for ALL 8 programmes: when enabled, pauses segment progression at the end of any segment until PV enters SP ± band. 0 means OFF. Not a per-Step parameter. Event input can disable waiting.",0,9999,10,"°C"),
 (0x0024,"Manual manipulated variable","Manual output value; can directly change controller output.",-1050,1050,10,"%"),
 (0x0026,"MV upper limit","Maximum controller output, depends on heating/cooling mode.",0,1050,10,"%"),
 (0x0027,"MV lower limit","Minimum controller output, depends on heating/cooling mode.",-1050,0,10,"%"),
@@ -585,6 +585,7 @@ def human_value(key,raw,input_type=None):
     param=CATALOG[key]
     signed=signed32(raw)
     if key=="C1:0029":return "Protected password (hidden; read value is not actual password)"
+    if key=="C1:0021" and signed==0:return "OFF (waiting disabled)"
     if input_type==6 and key in ("C3:0005","C3:0006","C1:0012"):
         return f"{signed/10:g} °C"
     if key in ("C3:000A","C3:000B"):
