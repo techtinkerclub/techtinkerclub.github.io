@@ -7,8 +7,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from controller_inventory import CATALOG
 from c1_transfer import QUALIFIED_C1_CODES
+from c3_transfer import ALLOWED as QUALIFIED_C3_CODES
 
-QUALIFIED_WRITES = QUALIFIED_C1_CODES
+QUALIFIED_WRITES = QUALIFIED_C1_CODES | QUALIFIED_C3_CODES
 READ_ONLY_BANKS = frozenset({"C0"})
 CONTEXT_DEPENDENT_BANKS = frozenset({"C4", "C5", "C9"})
 
@@ -25,7 +26,7 @@ def capability(register: str) -> ChangeCapability:
     p = CATALOG[register]
     bank = register.split(":", 1)[0]
     if register in QUALIFIED_WRITES:
-        return ChangeCapability(register, "qualified", "Guarded setup-area-0 C1 RAM writer (additional P/I/D/hysteresis are experimental)", True)
+        return ChangeCapability(register, "qualified", "Guarded setting-area-specific C1/C3 writer; C3 requires physical power cycle", True)
     if bank in READ_ONLY_BANKS or p.access == "read-only by Omron":
         return ChangeCapability(register, "read-only", "Omron operating monitor; never write", False)
     if register == "C1:0029":
