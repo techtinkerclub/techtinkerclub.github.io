@@ -2382,6 +2382,81 @@ class Studio(QMainWindow):
         except ValueError as exc:
             return None,str(exc)
 
+    def _editor_sensor_changed(self,*unused):
+        if hasattr(self,"segment_table") and not self._rendering:
+            self._render_programme()
+
+    def propose_editor_sensor(self):
+        """Stage a proposal, never an automatic C3 or DA write."""
+        code=self.editor_sensor.currentData()
+        if code is None or self._editing_locked():
+            return
+        if not self.client or not self.inventory_current_session:
+            self.message("Read controller first",
+                         "Input selection is a local programme reference. "
+                         "Connect and read controller settings before proposing a write.",True)
+            return
+        current=self.inventory["fields"].get("C3:0000")
+        if current==code:
+            self.message("Already selected",
+                         "The controller already reports this input code. "
+                         "Check its SP limits before programme transfer.")
+            return
+        msg=(f"CURRENT sensor input code: {current}\n"
+             f"PROPOSED GLOBAL input: {code} — {SENSOR_INPUTS[code]}\n\n"
+             "Only choose a range compatible with the sensor PHYSICALLY CONNECTED. "
+             "Changing a controller code cannot convert a thermocouple into "
+             "another sensor family. The change applies to ALL programmes.\n\n"
+             "This only creates a LOCAL C3 proposal; nothing is transmitted. "
+             "A separate C3 apply/reset and fresh Step 2 readback are required "
+             "before transferring any DA programme.\n\n"
+             "Add this input change to the review?")
+        if QMessageBox.question(self,"Review controller input change",msg,
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        try:
+            self.draft=add_proposal(self.inventory,self.draft,"C3:0000",str(code))
+        except ValueError as exc:
+            self.message("Cannot propose input",str(exc),True)
+            return
+        self.preview_stamp=None
+        self.refresh_settings()
+        self.refresh_review()
+        self.feedback.setText("Sensor input change added to LOCAL DRAFT; nothing written.")
+        self.show_step(3)
+
+    def _offer_compatible_input_after_failure(self,why):
+        """Offer, but never silently apply, compatible sensor configurations."""
+        if not self.inventory_current_session or self.draft or self.busy:
+            return False
+        candidates=compatible_temperature_inputs(self.programmes[self.slot])
+        current=self.inventory.get("fields",{}).get("C3:0000")
+        if not candidates or current in candidates:
+            return False
+        if QMessageBox.question(
+            self,"Programme outside controller input range",
+            str(why)+"\n\nThe programme remains editable. "
+            "Would you like to select a documented alternative input range? "
+            "This creates a separate settings proposal, not a hardware write.",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.Yes)!=QMessageBox.StandardButton.Yes:
+            return True
+        names=[f"{code:02d} — {SENSOR_INPUTS[code]}"+
+               (" (same K thermocouple)" if current in (5,6) and code in (5,6) else "")
+               for code in candidates]
+        chosen,ok=QInputDialog.getItem(
+            self,"Select a range for the PHYSICAL sensor",
+            "Choose only a range supported by the sensor actually wired:",
+            names,0,False)
+        if ok:
+            choice=candidates[names.index(chosen)]
+            idx=self.editor_sensor.findData(choice)
+            if idx>=0:
+                self.editor_sensor.setCurrentIndex(idx)
+                self.propose_editor_sensor()
+        return True
+
     def _pending_compatibility_issues(self):
         """Warn about proposed global settings WITHOUT applying them to graphs.
 
@@ -3258,7 +3333,11 @@ class Studio(QMainWindow):
             self.update_programme()
             selected=copy.deepcopy(self.programmes[self.slot])
             changes=self.session.build_plan(self.slot,selected)
-        except Exception as exc:self.message("Cannot prepare upload",str(exc),True);return
+        except Exception as exc:
+            if self._offer_compatible_input_after_failure(exc):
+                return
+            self.message("Cannot prepare upload",str(exc),True)
+            return
         self.preview_changes=changes
         self.log_event(f"Previewed Programme {self.slot}: {len(changes)} differences, no writes")
         self.preview_stamp=self._programme_fingerprint() if changes else None
