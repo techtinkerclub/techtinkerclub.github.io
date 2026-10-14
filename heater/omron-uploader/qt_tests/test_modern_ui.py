@@ -162,7 +162,7 @@ class ModernStudioTests(unittest.TestCase):
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),125.0)
         self.assertEqual(row.target.editor.text(),"125.0")
         row.target.down.click()
-        self.assertEqual(row.target.editor.text(),"124.9")
+        self.assertEqual(row.target.editor.text(),"124.900")
         self.assertAlmostEqual(float(self.win.programmes[0].steps[0].sp),124.9)
         self.assertEqual(self.win.start_pv_editor.editor.text(),"20.0")
         self.win.start_pv_editor.up.click()
