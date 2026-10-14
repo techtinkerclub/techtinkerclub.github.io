@@ -65,6 +65,44 @@ def compare_programmes(before,after,*,sensor_changed=False):
         ),
     }
 
+def interpreted_temperature_changes(before,after,old_type,new_type):
+    """Illustrate what our DA reader would plot; NOT confirmed panel readings.
+
+    Omron internal representation on input-type changes must be checked on
+    hardware; preserve the raw values and avoid automatic scaling writes.
+    """
+    from program_model import signed
+    if old_type not in (5,6) or new_type not in (5,6):
+        return [],["Unrecognised input scale: programme SP interpretation unavailable"]
+    changes=[]
+    warnings=[]
+    before_scale=1 if old_type==5 else 10
+    after_scale=1 if new_type==5 else 10
+    for slot in range(SLOTS):
+        old=[int(x,16) for x in before[str(slot)]]
+        new=[int(x,16) for x in after[str(slot)]]
+        count=signed(new[0])
+        if count<0 or count>32:
+            warnings.append(f"Programme {slot}: invalid segment count {count}; cannot compare temperatures")
+            continue
+        for seg in range(count):
+            base=0x16+4*seg
+            kind=signed(new[base])
+            if kind not in (0,2):continue  # Only ramp and step carry SP.
+            old_c=signed(old[base+1])/before_scale
+            new_c=signed(new[base+1])/after_scale
+            if old_c!=new_c:
+                changes.append({
+                  "programme":slot,"segment":seg+1,
+                  "register":f"DA:{(slot<<8)|base+1:04X}",
+                  "raw_before":before[str(slot)][base+1],
+                  "raw_after":after[str(slot)][base+1],
+                  "old_interpretation_c":old_c,
+                  "new_interpretation_c":new_c,
+                  "warning":"Tentative interpretation from our DA decoder; check front-panel SP"
+                })
+    return changes,warnings
+
 def audit_after_restart(client,receipt_path,model10,folder):
     """Read-only. Persist report even on C3 mismatch, if all DA reads succeed."""
     from c3_transfer import SCHEMA,verify_c3_receipt
@@ -92,6 +130,15 @@ def audit_after_restart(client,receipt_path,model10,folder):
     intended={row["register"]:row["new_raw"] for row in receipt["changes"]}
     unrequested=[row for row in setting_differences
                  if row["register"] not in intended]
+    estimated,interpretation_warnings=interpreted_temperature_changes(
+        originals,current,old_settings.get("C3:0000"),
+        after_settings.get("C3:0000"))
+    result["possible_temperature_interpretation_changes"]=estimated
+    result["possible_interpretation_change_count"]=len(estimated)
+    result["interpretation_warnings"]=interpretation_warnings
+    result["interpretation_is_verified_on_hardware"]=False
+    if estimated or interpretation_warnings:
+        result["requires_manual_review"]=True
     result["initial_configuration_changes"]=setting_differences
     result["unrequested_global_changes"]=unrequested
     result["current_global_settings"]=after_settings
