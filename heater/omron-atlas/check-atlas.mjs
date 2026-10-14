@@ -107,7 +107,7 @@ function testAtlas(){
  assert.equal(hidden.checked,false);
  assert.ok(d.getElementById("lcd").textContent.length>0);
  // Semantics: website makes no USB write claims.
- assert.ok(html.includes("No control or write operation"));
+ assert.ok(html.includes("This map does not connect to or change the Omron"));
  dom.window.close();
  return total;
 }
