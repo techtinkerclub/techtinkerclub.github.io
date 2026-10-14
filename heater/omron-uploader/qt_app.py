@@ -1058,6 +1058,154 @@ class Studio(QMainWindow):
         tx=self.setting_transfer
         return bool(tx and tx.ram_touched and not tx.saved)
 
+    def _can_begin_wait(self):
+        ses=self.session
+        return bool(
+            self.lab and self.mode=="connected" and self.client and ses
+            and ses.backup_data is not None and ses.backup_file is not None
+            and not ses.mismatches and not ses.ram_touched
+            and not self.fail_latched and not self.busy
+            and self.draft.keys()=={"C1:0021"}
+            and self.setting_transfer is None
+        )
+
+    def _wait_status_text(self):
+        tx=self.setting_transfer
+        if not self.lab:return "READ-ONLY MODE. Use START_ISOLATED_LAB.cmd for hardware writes."
+        if not self.client or not self.session:return "First connect and back up in Step 2."
+        if self.session.ram_touched:
+            return "A programme write already touched RAM. Finish it and reconnect before setting writes."
+        if tx is None:
+            if not self.draft:return "Find wt-b (C1:0021), enter a value, and Add to change review."
+            if self.draft.keys()!={"C1:0021"}:
+                return "Only one wt-b proposal may be present. Other settings must be reviewed separately."
+            return "Ready to READ live wt-b and preview. Nothing has been written."
+        if tx.saved:
+            return ("SAVE RAM DATA acknowledged; receipt: "+str(tx.receipt_file) if tx.receipt_file
+                    else "SAVE acknowledged but receipt missing. Inspect controller, do not repeat SAVE.")
+        if tx.staged:return "RAM read-back PASSED. NEXT: explicit SAVE RAM DATA; do not disconnect."
+        if tx.ram_touched:return "WRITE STATE UNKNOWN after a failed RAM operation. Stop and inspect."
+        if tx.preview_data:
+            return (f"Current wt-b: {tx.preview_data['old_raw']/10:g} °C  →  "
+                    f"requested: {tx.preview_data['new_raw']/10:g} °C. "
+                    "Confirm isolation and write to RAM.")
+        return "Connect and read wt-b first."
+
+    def preview_wait(self):
+        if not self._can_begin_wait():
+            self.message("Wait Band USB preview unavailable",
+                "Requires isolated lab mode, a fresh complete controller backup, "
+                "no pending programme transfer and exactly one proposal: C1:0021.",True)
+            return
+        proposal=self.draft["C1:0021"]
+        tx=WaitBandTransfer(self.client,self.session,self.folder.text(),emit=self.log_event)
+        def read(progress):return tx.preview(proposal)
+        def done(data):
+            self.setting_transfer=tx
+            self.wt_status.setText(self._wait_status_text())
+            self.log_event(f"Wait Band PREVIEW (NO WRITES): {data['old_raw']} -> {data['new_raw']}.")
+            self.message("Read-only Wait Band preview",
+                f"Actual controller wt-b: {data['old_raw']/10:g} °C "
+                f"(C1:0021 = {data['old_raw']:08X})\n"
+                f"Requested: {data['new_raw']/10:g} °C "
+                f"(C1:0021 = {data['new_raw']:08X})\n"
+                f"Baseline backup:\n{tx.baseline_file}\n\n"
+                "GLOBAL to all 8 programmes and potentially delays ramps/soaks as well.")
+        self._work("Read/preview actual Wait Band",read,done)
+
+    def stage_wait(self):
+        tx=self.setting_transfer
+        if (not tx or not tx.preview_data or tx.ram_touched or not self.lab or
+                self.busy or self.fail_latched or self.draft!={"C1:0021":tx.preview_data["new_raw"]}):
+            self.message("Wait Band RAM write blocked",
+                "Preview the same proposed value against the live controller first.",True)
+            return
+        if QMessageBox.warning(
+            self,"Experimental single-parameter RAM write",
+            f"ONLY C1:0021 (global wt-b) will be written.\n\n"
+            f"Actual BEFORE: {tx.preview_data['old_raw']/10:g} °C.\n"
+            f"AFTER in RAM: {tx.preview_data['new_raw']/10:g} °C.\n\n"
+            "This setting affects EVERY programme and segment end.\n"
+            "Confirm the controller mains and external heater DC supplies are ISOLATED, "
+            "the controller is RESET, and no unrelated RAM settings are pending.\n\n"
+            "If the cable fails, RAM state may be uncertain. Continue?",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:
+            return
+        def action(progress):return tx.stage()
+        def done(value):
+            self.wt_status.setText(self._wait_status_text())
+            self.message("Wait Band RAM readback passed",
+                f"Controller C1:0021 now reads {value/10:g} °C in RAM.\n"
+                "Not yet saved to nonvolatile memory. Do not power-cycle or disconnect yet.")
+        self._work("Write + read back Wait Band RAM",action,done,True)
+
+    def save_wait(self):
+        tx=self.setting_transfer
+        if (not tx or not tx.staged or tx.saved or self.busy or not self.lab
+                or self.fail_latched or self.draft!={"C1:0021":tx.preview_data["new_raw"]}):
+            self.message("Wait Band SAVE blocked","A verified RAM stage is required first.",True)
+            return
+        if QMessageBox.warning(
+            self,"Confirm SAVE RAM DATA",
+            "C1:0021 has been read back and verified in RAM.\n\n"
+            "SAVE RAM DATA also saves any OTHER unsaved controller adjustment, PID "
+            "or programme changes.\n\n"
+            "Confirm no other RAM edits are pending and all heater supplies are isolated. "
+            "Issue the nonvolatile SAVE?",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.save()
+        def done(receipt):
+            actual=tx.preview_data["new_raw"]
+            # Update the already-read value and remove only the written proposal.
+            self.inventory["fields"]["C1:0021"]=actual
+            self.draft.pop("C1:0021",None)
+            self.refresh_settings()
+            self.wt_status.setText(self._wait_status_text())
+            self.message("Wait Band save acknowledged",
+                f"wt-b = {actual/10:g} °C. Post-save readback passed.\n"
+                f"Receipt:\n{receipt}\n\n"
+                "Finish with CMW OFF, then fully power-cycle USB and verify the receipt.")
+        self._work("Save Wait Band nonvolatile",action,done,True)
+
+    def finish_wait(self):
+        tx=self.setting_transfer
+        if not tx or not tx.saved or not tx.receipt_file or tx.cmw_off or self.busy or self.fail_latched:
+            self.message("Cannot disable CMW","Complete the Wait Band save with an on-disk receipt.",True)
+            return
+        if QMessageBox.warning(self,"Finish Wait Band USB session",
+            "This sends documented CMW OFF (3005 00 00). It does not RUN or RESET the controller. "
+            "It can also persist other pending RAM adjustments.\n\n"
+            "Confirm no other unsaved changes and that the heater supply is isolated. Continue?",
+            QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def job(progress):return tx.disable_cmw()
+        def done(ok):
+            self.wt_status.setText("CMW OFF acknowledged. Visually check the CMW lamp. "
+                "Power-cycle USB next and verify retention in Step 4.")
+            self.message("CMW OFF acknowledged",
+                "Check the physical CMW lamp went out. Only then power-cycle the USB setup "
+                "cable and reconnect to verify nonvolatile retention.")
+        self._work("Disable CMW after Wait Band save",job,done,True)
+
+    def verify_wait(self):
+        if not self.client or not self.session or self.busy:
+            self.message("Connect first","After a real USB power cycle, reconnect and back up the controller.",True)
+            return
+        file,_=QFileDialog.getOpenFileName(
+            self,"Select ORIGINAL wt-b save receipt",
+            self.folder.text(),"Wait Band receipts (*.json)")
+        if not file:return
+        def job(progress):return verify_wait_receipt(
+            self.client,file,self.session.info["model10"])
+        def done(actual):
+            self.message("Wait Band memory matches saved receipt",
+                f"C1:0021 reads {actual/10:g} °C, matching the receipt.\n"
+                "This confirms power-cycle retention only if the USB/controller "
+                "really lost power between SAVE and this read.")
+        self._work("Verify saved Wait Band after USB power cycle (READ ONLY)",job,done)
+
     def _editing_locked(self):
         if self._settings_ram_pending():
             self.message("Wait Band RAM pending SAVE",
