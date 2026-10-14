@@ -1080,6 +1080,12 @@ class Studio(QMainWindow):
                 f"Changed raw words: {report['changes_total']}.\n"
                 f"Possible interpreted target changes: "
                 f"{report.get('possible_interpretation_change_count',0)}.\n"
+                +("\n".join(
+                    f"  Programme {row['programme']} segment {row['segment']}: "
+                    f"{row['old_interpretation_c']:g} °C → "
+                    f"{row['new_interpretation_c']:g} °C (our decoder only)"
+                    for row in report.get("possible_temperature_interpretation_changes",[])[:8])
+                  +("\n" if report.get("possible_interpretation_change_count") else ""))
                 f"{changed_slots if changed_slots else 'No programme raw words changed.'}\n"
                 f"Unrequested global C3 changes: "
                 f"{report['configuration_side_effects']}.\n"
@@ -2708,8 +2714,12 @@ class Studio(QMainWindow):
             tx3=self.c3_transfer
             if tx3 and getattr(tx3,"restart_audit",None):
                 report=tx3.restart_audit
-                reasons=[f"Software restart audit: {report['changes_total']} changed DA words. "
-                         "Review audit and run Step 2 · Read everything before heater use."]
+                reasons=[
+                    f"Reset command sent; physical restart unconfirmed. "
+                    f"{report['changes_total']} raw DA words changed, "
+                    f"{report.get('possible_interpretation_change_count',0)} interpreted "
+                    "temperature changes detected. STOP: inspect segment SP on front "
+                    "panel and original backup before operating the heater."]
             elif tx3 and tx3.finished:
                 reasons=["C3 completed, CMW OFF. Use guarded Software restart + audit "
                          "or physically power-cycle and verify manually."]
