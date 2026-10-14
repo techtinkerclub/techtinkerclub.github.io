@@ -22,6 +22,10 @@ PREFLIGHT={
   0x00BE:(0,"End-of-programme enters RESET"),
   0x00BF:(0,"SP Start (observed COM7 bench policy)"),
 }
+SUPPORTED_TYPE_K_INPUTS=frozenset({5,6})
+def matches_preflight(address,actual,expected):
+    """Both Type K display resolutions are supported; other policy stays fixed."""
+    return actual in SUPPORTED_TYPE_K_INPUTS if address==0x0000 else actual==expected
 class PreflightError(RuntimeError):pass
 
 class TransferSession:
@@ -42,7 +46,7 @@ class TransferSession:
         mismatches=[]
         for addr,(expected,description) in PREFLIGHT.items():
             got=self.settings[f"C3:{addr:04X}"]
-            if got!=expected:mismatches.append(f"{description}: expected {expected}, controller returned {signed(got)}")
+            if not matches_preflight(addr,got,expected):mismatches.append(f"{description}: expected {expected}, controller returned {signed(got)}")
         self.log("Identified model: "+model+" (10-character ID; verify full suffix on nameplate)")
         self.log("Controller status (raw 0601): "+str(self.status))
         self.mismatches=mismatches
@@ -174,7 +178,8 @@ class TransferSession:
         if not current_status.startswith("01"):raise PreflightError("Controller not confirmed stopped at transfer time")
         for addr,(expected,description) in PREFLIGHT.items():
             actual=self.client.read1("C3",addr)
-            if actual!=expected:raise PreflightError(f"Controller configuration changed since backup: {description} now {actual}")
+            if not matches_preflight(addr,actual,expected):raise PreflightError(f"Controller configuration changed since backup: {description} now {actual}")
+            if actual!=self.settings[f"C3:{addr:04X}"]:raise PreflightError(f"Controller configuration changed after backup at C3:{addr:04X}")
         self.client.operation("00","01")  # enable communications writing
         self.client.operation("04","01")  # RAM mode, not flash on each change
         self.ram_touched=True  # latch caution even if an intermediate write fails
