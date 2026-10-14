@@ -476,6 +476,25 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual([call for call in fake.calls if call[0]=="setting-write"],
                          [("setting-write","C3",0,6)])
 
+    def test_pending_sensor_setting_warns_without_changing_graph_or_local_target(self):
+        import copy
+        self.win.connect_read()
+        self.win.programmes[0]=copy.deepcopy(EXAMPLE)
+        self.win.programmes[0].steps[0].sp="800"
+        self.win._render_programme()
+        before=self.win.programmes[0].as_json()
+        self.win.draft={"C3:0000":6}
+        self.win.refresh_review()
+        lim,error=self.win._effective_programme_limits()
+        self.assertIsNone(error)
+        self.assertEqual(lim.input_type,5)
+        self.assertEqual(self.win.programmes[0].as_json(),before)
+        self.assertIn("PENDING GLOBAL SETTINGS",self.win.apply_details.toPlainText())
+        self.assertIn("800",self.win.apply_details.toPlainText())
+        self.win._graph_current()
+        self.assertIn("PENDING GLOBAL SETTING",self.win.temperature_limits_hint.text())
+        self.assertIn("800",self.win.temperature_limits_hint.text())
+
     def test_c3_software_restart_reconnects_and_audits_all_memories(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
