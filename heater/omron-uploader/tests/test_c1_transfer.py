@@ -134,6 +134,27 @@ class C1WriterTests(unittest.TestCase):
             self.tx.save_finish()
         self.assertEqual(self.client.calls.count(("operation","05","00")),1)
 
+    def test_compo_way_0102_c1_allowlist_and_exact_encoding(self):
+        from compoway import SerialClient
+        client=SerialClient.__new__(SerialClient)
+        client.write_allowed=True
+        commands=[]
+        client.query=lambda payload:commands.append(payload) or ""
+        client.write_setting("C1",0x0015,135)
+        client.write_setting("C1",0x0016,120)
+        client.write_setting("C1",0x001B,25)
+        self.assertEqual(commands,[
+            "0102C1001500000100000087",
+            "0102C1001600000100000078",
+            "0102C1001B00000100000019"])
+        with self.assertRaises(PermissionError):
+            client.write_setting("C3",0x0000,6)
+        with self.assertRaises(PermissionError):
+            client.write_setting("C1",0x0022,25)
+        with self.assertRaises(ValueError):
+            client.write_setting("C1",0x0015,0)
+        self.assertEqual(len(commands),3)
+
     def test_unsupported_and_out_of_range_fails_closed(self):
         for key,value in [("C3:0000",5),("C1:0022",500),("C1:0015",0),
                           ("C1:0015",10000),("C1:0015",-1)]:
