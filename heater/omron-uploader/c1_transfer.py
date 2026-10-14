@@ -27,6 +27,13 @@ C1_SPECS={
     "C1:0021":(0,9999,None,"Global Wait Band"),
 }
 PID_CODES=frozenset({"C1:0015","C1:0016","C1:0017"})
+PID_C5_OFFSETS={"C1:0015":0,"C1:0016":1,"C1:0017":2}
+
+def fixed_pid_address(key,pid):
+    if key not in PID_C5_OFFSETS or type(pid) is not int or not 1<=pid<=8:
+        raise PreflightError("Invalid fixed PID register target")
+    return (pid-1)*0x10+PID_C5_OFFSETS[key]
+
 QUALIFIED_C1_CODES=frozenset(C1_SPECS)
 
 def signed(raw):
@@ -82,6 +89,9 @@ def verify_c1_receipt(client,path,model10):
         key=row["register"];expected=row["written_raw"]
         if client.read1("C1",int(key[3:],16))!=expected:
             raise ProtocolError(f"{key}: saved receipt does not match live controller")
+        if key in PID_CODES:
+            if client.read1("C5",fixed_pid_address(key,data["pid_set"]))!=expected:
+                raise ProtocolError(f"{key}: fixed PID-set C5 register differs from receipt")
     return len(data["changes"])
 
 class C1SettingsTransfer:
@@ -129,6 +139,16 @@ class C1SettingsTransfer:
             pid=self.client.read1("C0",0x000D)
             if type(pid) is not int or not 1<=pid<=8:
                 raise PreflightError("Selected PID-set monitor is unreadable or invalid")
+            # C1 P/I/D address selection is context-dependent; C5 is fixed
+            # per PID set. Refuse unless both banks refer to the same values.
+            for key in keys:
+                if key in PID_CODES:
+                    c1=self.client.read1("C1",int(key[3:],16))
+                    c5=self.client.read1("C5",fixed_pid_address(key,pid))
+                    if c1!=c5:
+                        raise PreflightError(
+                            f"PID {pid} {key}: C1 current context differs from "
+                            "fixed C5 PID-set value. No write permitted.")
             return pid
         return None
 
@@ -173,6 +193,11 @@ class C1SettingsTransfer:
             key=row["register"]
             if self.client.read1("C1",int(key[3:],16))!=row[field]:
                 raise ProtocolError(f"{key} live value differs from {field}")
+            if key in PID_CODES:
+                pid=self.preview_data["pid_set"]
+                if self.client.read1("C5",fixed_pid_address(key,pid))!=row[field]:
+                    raise ProtocolError(
+                        f"PID set {pid}, {key}: fixed C5 value differs from {field}")
 
     def stage(self):
         if not self.preview_data or self.staged or self.ram_touched or self.saved:
