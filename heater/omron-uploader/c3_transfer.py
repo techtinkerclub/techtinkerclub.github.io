@@ -47,45 +47,23 @@ def validate_draft(draft,live,backup_data):
     effective=dict(live,**draft)
     sensor_change=("C3:0000" in draft and draft["C3:0000"]!=live["C3:0000"])
     if sensor_change:
-        if not {"C3:0005","C3:0006"}.issubset(draft):
-            raise PreflightError(
-                "Changing sensor range/resolution requires BOTH SP limits "
-                "to be set explicitly in the same proposal")
-        # Critically, DA SP words would be reinterpreted when input decimal
-        # position changes. Do not claim automatic conversion of programmes.
+        # Omron can update input type with populated DA memories. Preserve
+        # all 1200 words and audit *every* word after controller restart.
         blocks=backup_data.get("programmes",{}) if isinstance(backup_data,dict) else {}
         if (set(blocks)!={str(i) for i in range(8)} or
                 any(len(blocks[str(i)])!=150 for i in range(8))):
-            raise PreflightError("Eight complete programme backups required for sensor change")
-        nonempty=[]
-        for slot in range(8):
-            try:count=int(blocks[str(slot)][0],16)
-            except (TypeError,ValueError):
-                raise PreflightError(f"Programme {slot} cannot be decoded")
-            if count!=0:nonempty.append(slot)
-        if nonempty:
-            raise PreflightError(
-                "Sensor resolution changes would reinterpret existing DA temperatures. "
-                "For this pilot, all eight stored programmes must be empty before "
-                "changing sensor type. Populated programmes: "+", ".join(map(str,nonempty))
-                +". Back up and migrate them before attempting this change.")
-    if {"C3:0005","C3:0006","C3:0000"} & set(draft):
+            raise PreflightError("Complete eight-programme backup required for sensor change")
+        # Omron resets SP limits to defaults after input type changes. If the
+        # operator overrides them, require both bounds in the same proposal.
+        if ({"C3:0005","C3:0006"} & set(draft) and
+                not {"C3:0005","C3:0006"}.issubset(draft)):
+            raise PreflightError("To override sensor defaults, specify BOTH SP limits")
+    if {"C3:0005","C3:0006"} & set(draft):
         try:effective_limits(live,draft,require_readback=True)
         except ValueError as exc:
-            raise PreflightError("Proposed setpoint bounds are invalid: "+str(exc)) from exc
-        # Narrowed limits could invalidate any existing DA programme. Until
-        # we have a complete checked DA decode for all 8, do not tighten
-        # controller bounds with stored programmes present.
-        if any(key in draft for key in ("C3:0005","C3:0006")):
-            old_limits=effective_limits(live,require_readback=True)
-            new_limits=effective_limits(live,draft,require_readback=True)
-            tightening=(new_limits.minimum>old_limits.minimum or
-                        new_limits.maximum<old_limits.maximum)
-            if tightening and not sensor_change:
-                blocks=backup_data.get("programmes",{})
-                if any(int(blocks[str(i)][0],16)!=0 for i in range(8)):
-                    raise PreflightError("Cannot tighten SP limits while saved programmes "
-                                         "exist: inspect/reconcile all eight programmes first")
+            raise PreflightError("Proposed SP limits are invalid: "+str(exc)) from exc
+    # The controller may clamp/reset stored programme setpoints internally.
+    # That is not predictable from this draft; read and compare after reset.
     return sensor_change
 
 def verify_c3_receipt(client,path,model10):
@@ -159,6 +137,8 @@ class C3ConfigurationTransfer:
           "read_utc":datetime.now(timezone.utc).isoformat(),
           "changes":changes,"sensor_change":sensor_change,
           "backup_file":str(self.session.backup_file),
+          "programme_audit_required":True,
+          "setting_defaults_may_change":bool(sensor_change),
           "warning":("Area 1 stops control. C3 changes may be persisted immediately. "
                      "Do not assume RAM-only staging or automatic rollback. "
                      "Power-cycle required to return to area 0.")
@@ -204,11 +184,14 @@ class C3ConfigurationTransfer:
                      changes=self.preview_data["changes"],
                      saved_utc=datetime.now(timezone.utc).isoformat(),
                      baseline_file=str(self.baseline_file),
+                     original_programmes=self.session.backup_data["programmes"],
+                     sensor_change=self.preview_data["sensor_change"],
+                     programme_audit_required=True,
                      status=("C3 written/read back in area 1; hardware persistence "
-                             "NOT established. Operator power-cycle and receipt verification required"))
+                             "NOT established. Software reset or power-cycle and complete programme audit required"))
         self.receipt_file=_write_checked_json(self.folder,"c3-config-receipt",receipt)
         self.client.operation("00","00")
         self.cmw_off=True
         self.finished=True
-        self.log("CMW OFF; power-cycle controller before another operation; do not assume automatic reset.")
+        self.log("CMW OFF; restart and verify full programme memory before another operation.")
         return self.receipt_file
