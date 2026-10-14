@@ -86,7 +86,9 @@ class Programme:
             if not isinstance(s,dict) or s.get("type") not in allowed:raise ValidationError(f"Invalid segment {i}")
             steps.append(Segment(type=s["type"],sp=str(s.get("sp","120.0")),rate=str(s.get("rate","2")),minutes=str(s.get("minutes","15"))))
         p=cls(str(obj.get("name","Programme"))[:100],str(obj.get("start","20")),str(obj.get("finish",obj.get("endmode","rst"))),steps)
-        # Loading an offline draft must not discard targets simply because\n        # the local default sensor range differs from the intended one.\n        p.validate(strict_range=False);return p
+        # Loading an offline draft must not discard targets simply because
+        # the local default sensor range differs from the intended one.
+        p.validate(strict_range=False);return p
 
     def as_json(self):return asdict(self)
 
@@ -118,7 +120,9 @@ def planned_writes(slot,p:Programme,input_type=6,limits=None):
 
     Order: disable repeats/link, segment fields, segment count LAST.
     """
-    from programme_constraints import SENSOR_RANGES,ANALOGUE_TYPES\n    if input_type not in SENSOR_RANGES and input_type not in ANALOGUE_TYPES:\n        raise ValidationError("Unknown Omron input selection")
+    from programme_constraints import SENSOR_RANGES,ANALOGUE_TYPES
+    if input_type not in SENSOR_RANGES and input_type not in ANALOGUE_TYPES:
+        raise ValidationError("Unknown Omron input selection")
     if limits is None:
         from programme_constraints import effective_limits
         limits=effective_limits({"C3:0000":input_type},require_readback=False)
