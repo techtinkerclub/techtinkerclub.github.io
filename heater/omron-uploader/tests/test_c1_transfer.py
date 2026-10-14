@@ -150,13 +150,13 @@ class C1WriterTests(unittest.TestCase):
         with self.assertRaises(PermissionError):
             client.write_setting("C3",0x000D,1)
         with self.assertRaises(PermissionError):
-            client.write_setting("C1",0x0022,25)
+            client.write_setting("C1",0x0024,25)
         with self.assertRaises(ValueError):
             client.write_setting("C1",0x0015,0)
         self.assertEqual(len(commands),3)
 
     def test_unsupported_and_out_of_range_fails_closed(self):
-        for key,value in [("C3:0000",5),("C1:0022",500),("C1:0015",0),
+        for key,value in [("C3:0000",5),("C1:0024",500),("C1:0015",0),
                           ("C1:0015",10000),("C1:0015",-1)]:
             with self.assertRaises(PreflightError):
                 check_value(key,value)
