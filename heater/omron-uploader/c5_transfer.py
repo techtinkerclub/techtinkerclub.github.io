@@ -66,7 +66,8 @@ class C5PIDTransfer:
             raise PreflightError("Read-only USB session")
         if (not ses or not ses.info or not ses.info["model10"].startswith("E5CC-T")
             or not ses.backup_data or not ses.backup_file or
-            not ses.backup_file.is_file() or ses.ram_touched or
+            not ses.backup_file.is_file() or
+            (ses.ram_touched and not self.ram_touched) or
             ses.staged is not None or ses.committed):
             raise PreflightError("Fresh verified backup and exclusive write session required")
         if json.loads(ses.backup_file.read_text(encoding="utf-8"))!=ses.backup_data:
@@ -140,7 +141,10 @@ class C5PIDTransfer:
         self.client.operation("04","01")
         for row in self.preview_data["changes"]:
             self.client.write_setting("C5",int(row["register"][3:],16),row["new_raw"])
-            self._verify("new_raw")
+            key=row["register"]
+            if self.client.read1("C5",int(key[3:],16))!=row["new_raw"]:
+                raise ProtocolError("C5 write/readback mismatch at "+key)
+        self._verify("new_raw")
         self.staged=True
         return len(self.preview_data["changes"])
 
