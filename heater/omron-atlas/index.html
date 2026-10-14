@@ -239,7 +239,10 @@ permalink: /heater/omron-atlas/
  function render(){
   const lev=L[state.level],cur=lev.entries.find(x=>x.id===state.id)||lev.entries[0],all=lev.entries,avail=availability(cur),visible=entries(),pos=all.indexOf(cur);
   $("total").textContent=entryMap.size;$("levelTotal").textContent=IDS.length;
-  $("levelList").innerHTML=IDS.map(k=>"<button class='levelButton "+(state.level===k?"active":"")+"' data-level='"+k+"'>"+esc(L[k].title)+"<small>"+L[k].entries.length+"</small></button>").join("");
+  $("levelList").innerHTML=IDS.map(k=>"<button class='levelButton "+(state.level===k?"active":"")+"' data-level='"+k+"'>"+esc(L[k].title)+"<small>"+likelyEntries(k).length+" / "+L[k].entries.length+"</small></button>").join("");
+  $("levelSelect").value=state.level;
+  $("configSummary").textContent=(state.algorithm==="pid"?"PID":"ON/OFF")+" · "+(state.heatcool==="standard"?"heating":"heating + cooling")+" · "+(state.method==="rate"?"rate-of-rise":"step time");
+
   $("breadcrumb").textContent="Power ON / "+lev.title+" / "+(pos+1)+" of "+all.length;
   $("levelHeading").textContent=lev.title;$("levelDescription").textContent=lev.help;$("levelMini").textContent=lev.title;
   $("branches").hidden=state.level!=="program"&&state.level!=="pid";
@@ -247,14 +250,15 @@ permalink: /heater/omron-atlas/
   $("segmentType").hidden=state.level!=="program"||state.programBranch!=="segment";
   $("segmentLabel").hidden=state.level!=="program"||state.programBranch!=="segment";
   $("pidBank").hidden=state.level!=="pid";$("pidLabel").hidden=state.level!=="pid";
-  $("stepCount").textContent="PARAMETER "+String(pos+1).padStart(2,"0")+" / "+String(all.length).padStart(2,"0");
-  $("status").textContent=avail.kind==="normal"?"In documented path":avail.kind==="conditional"?"Conditional display":"Hardware unavailable";
+  const likely=likelyEntries(),likelyPos=likely.findIndex(x=>x.id===cur.id);
+  $("stepCount").textContent=likelyPos>=0?"LIKELY ITEM "+String(likelyPos+1)+" / "+likely.length:"REFERENCE ITEM "+String(pos+1)+" / "+all.length;
+  $("status").textContent=avail.kind==="normal"?"Likely visible":avail.kind==="conditional"?"May be hidden":"Not fitted / unavailable";
   $("status").className="pill"+(avail.kind==="normal"?"":" warn");
   $("lcd").textContent=label(cur);$("name").textContent=cur.name;$("description").textContent=cur.why;drawChoices(cur);
   $("detailTags").innerHTML="<span class='tag'>H185 · Appendix A-9</span><span class='tag'>"+esc(lev.title)+"</span>"+cur.flags.map(f=>"<span class='tag'>"+esc(f)+"</span>").join("");
-  $("warning").hidden=avail.kind==="normal";$("warning").textContent=avail.reasons.join(" · ")+(avail.kind!=="normal"?" · Actual firmware may skip this screen.":"");
+  $("warning").hidden=avail.kind==="normal";$("warning").textContent=avail.reasons.join(" · ")+(avail.kind!=="normal"?" · This is included for reference; firmware may skip it.":"");
   const shown=entries(),active=shown.findIndex(x=>x.id===cur.id);
-  $("pathCount").textContent=shown.length+" displayed / "+all.length+" documented";
+  $("pathCount").textContent=state.showSkipped?shown.length+" documented · "+likely.length+" likely":likely.length+" likely"+(shown.length>likely.length?" + selected reference":"");
   $("sequence").innerHTML=shown.map((e,i)=>{const a=availability(e),active=e.id===cur.id;return "<button class='node "+(active?"current ":"")+(a.kind==="normal"?"":"skip")+"' data-entry='"+e.id+"' aria-current='"+(active?"step":"false")+"'><span class='index'>"+String(i+1).padStart(2,"0")+"</span><span><span class='nodeCode'>"+esc(state.level==="pid"&&e.code.startsWith("1.")?String(state.pidBank)+e.code.slice(1):e.code)+"</span><span class='nodeLabel'>"+esc(e.name)+"</span></span><span class='mark'>"+(a.kind==="normal"?"MODE":a.kind==="conditional"?"conditional":"not fitted")+"</span></button>"}).join("")||"<div class='empty'>No visible parameters with these filters. Enable 'Show hidden / conditional' to inspect the full reference.</div>";
   const next=all.slice(pos+1).find(x=>availability(x).kind==="normal")||all.find(x=>availability(x).kind==="normal");
   const prev=all.slice(0,pos).reverse().find(x=>availability(x).kind==="normal")||[...all].reverse().find(x=>availability(x).kind==="normal");
@@ -266,7 +270,10 @@ permalink: /heater/omron-atlas/
     "MODE → "+(state.level==="pid"&&next.code.startsWith("1.")?String(state.pidBank)+next.code.slice(1):next.code)+
     " · "+next.name+(hiddenBetween?" · "+hiddenBetween+" intervening entries skipped by selected conditions":""):
     "No next known available parameter under the selected conditions.";
-  $("modeNext").title=next?"Simulated MODE: "+next.code:"No next known screen";$("prev").title=prev?"Previous available: "+prev.code:"";
+  $("modeNext").title=next?"Reference MODE: "+next.code:"No next likely screen";
+  $("prev").title=prev?"Previous likely: "+prev.code:"";
+  $("modeNext").textContent=next?"MODE → "+label(next):"No next screen";
+  $("prev").textContent=prev?"← "+label(prev):"← Previous";
   $("route").innerHTML=routes[state.level].map(([button,desc])=>"<div class='route'><div class='routeIcon'>"+esc(button)+"</div><div><strong>"+esc(desc.split("→")[0])+"</strong><p>"+esc(desc)+"</p></div></div>").join("");
   modelInfo();allMap();resultSearch();
  }
@@ -299,10 +306,11 @@ permalink: /heater/omron-atlas/
  });
  $("levelTopology").addEventListener("click",e=>{const b=e.target.closest("[data-top-level]");if(b)go(b.dataset.topLevel,null,true)});
  $("levelList").addEventListener("click",e=>{let b=e.target.closest("[data-level]");if(b)go(b.dataset.level,null)});
+ $("levelSelect").addEventListener("change",e=>go(e.target.value,null));
  $("sequence").addEventListener("click",e=>{let b=e.target.closest("[data-entry]");if(b)go(state.level,b.dataset.entry)});
  $("allMap").addEventListener("click",e=>{let b=e.target.closest("[data-map-level]");if(b)go(b.dataset.mapLevel,b.dataset.entry,true)});
  $("searchResults").addEventListener("click",e=>{let b=e.target.closest("[data-hit]");if(b){let entry=entryMap.get(b.dataset.hit);go(entry.level,entry.id,true)}});
- $("modeNext").addEventListener("click",()=>cycle(1));$("prev").addEventListener("click",()=>cycle(-1));$("showAll").onclick=()=>$("entire").scrollIntoView({behavior:"smooth"});
+ $("modeNext").addEventListener("click",()=>cycle(1));$("prev").addEventListener("click",()=>cycle(-1));$("showAll").onclick=()=>{$("sequenceDetails").open=true;$("sequenceDetails").scrollIntoView({behavior:"smooth",block:"start"})};
  ["model","algorithm","heatcool","method","programBranch","segmentType","pidBank","showSkipped"].forEach(k=>{
   const el=$(k);el.addEventListener("change",()=>{state[k]=k==="showSkipped"?el.checked:k==="pidBank"?Number(el.value):el.value;render()});
  });
