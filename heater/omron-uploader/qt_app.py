@@ -35,6 +35,7 @@ from compoway import SerialClient
 from transfer import TransferSession
 from combined_transfer import CombinedTransfer,verify_combined_receipt
 from c1_transfer import C1SettingsTransfer,QUALIFIED_C1_CODES,verify_c1_receipt
+from c3_transfer import C3ConfigurationTransfer,ALLOWED as QUALIFIED_C3_CODES,verify_c3_receipt
 from program_model import planned_writes
 from programme_constraints import effective_limits,programme_issues,check_global_programming
 from transfer_capabilities import transfer_plan
@@ -81,6 +82,8 @@ class Studio(QMainWindow):
         self.session=None
         self.setting_transfer=None
         self.c1_transfer=None
+        self.c3_transfer=None
+        self.c3_receipt_match=None
         self.c1_receipt_match=None
         self.combined_transfer=None
         self.include_programme_with_settings=False
@@ -820,18 +823,24 @@ class Studio(QMainWindow):
         return False
 
     def _active_transfer_kind(self):
+        if self.c3_transfer:
+            return "c3"
         if self.combined_transfer:
             return "combined"
         if self.c1_transfer:
             return "c1"
         if self.draft and self.include_programme_with_settings:
             return "combined"
+        if self.draft and any(k.startswith("C3:") for k in self.draft):
+            return "c3"
         if self.draft and set(self.draft)!={"C1:0021"}:
             return "c1"
         return "settings" if self.draft or self.setting_transfer else "programme"
 
     def unified_preview_action(self):
-        if self._active_transfer_kind()=="combined":
+        if self._active_transfer_kind()=="c3":
+            self.preview_c3()
+        elif self._active_transfer_kind()=="combined":
             self.preview_combined()
         elif self._active_transfer_kind()=="c1":
             self.preview_c1()
@@ -841,7 +850,9 @@ class Studio(QMainWindow):
             self.preview()
 
     def unified_stage_action(self):
-        if self._active_transfer_kind()=="combined":
+        if self._active_transfer_kind()=="c3":
+            self.stage_c3()
+        elif self._active_transfer_kind()=="combined":
             self.stage_combined()
         elif self._active_transfer_kind()=="c1":
             self.stage_c1()
@@ -851,7 +862,9 @@ class Studio(QMainWindow):
             self.stage()
 
     def unified_save_action(self):
-        if self._active_transfer_kind()=="combined":
+        if self._active_transfer_kind()=="c3":
+            self.finish_c3()
+        elif self._active_transfer_kind()=="combined":
             self.save_and_finish_combined()
         elif self._active_transfer_kind()=="c1":
             self.save_and_finish_c1()
@@ -875,11 +888,14 @@ class Studio(QMainWindow):
             self.message("Invalid receipt",str(exc),True);return
         allowed={"e5cct-combined-upload-receipt-1",
                  "e5cct-waitband-receipt-1","e5cct-upload-receipt-1",
-                 "e5cct-c1-settings-receipt-1"}
+                 "e5cct-c1-settings-receipt-1",
+                 "e5cct-c3-configuration-receipt-1"}
         if schema not in allowed:
             self.message("Unsupported receipt","This is not a recognised saved-transfer receipt.",True)
             return
         def action(progress):
+            if schema=="e5cct-c3-configuration-receipt-1":
+                return verify_c3_receipt(self.client,path,self.session.info["model10"])
             if schema=="e5cct-c1-settings-receipt-1":
                 return verify_c1_receipt(self.client,path,self.session.info["model10"])
             if schema=="e5cct-combined-upload-receipt-1":
@@ -888,7 +904,9 @@ class Studio(QMainWindow):
                 return verify_wait_receipt(self.client,path,self.session.info["model10"])
             return self.session.verify_persistence(path)
         def done(value):
-            if schema=="e5cct-c1-settings-receipt-1":
+            if schema=="e5cct-c3-configuration-receipt-1":
+                self.c3_receipt_match={"path":path,"count":value}
+            elif schema=="e5cct-c1-settings-receipt-1":
                 self.c1_receipt_match={"path":path,"count":value}
             elif schema=="e5cct-combined-upload-receipt-1":
                 self.programme_receipt_match={"path":path,"combined":True}
@@ -904,6 +922,93 @@ class Studio(QMainWindow):
                 "Nonvolatile retention is established only if power was physically "
                 "removed before this verification.")
         self._work("Read-only saved receipt verification",action,done)
+
+    def _c3_draft_matches_preview(self):
+        tx=self.c3_transfer
+        return bool(tx and tx.preview_data and self.draft=={
+            row["register"]:row["new_raw"] for row in tx.preview_data["changes"]})
+
+    def preview_c3(self):
+        if (not self.client or not self.session or not self.lab or self.busy
+                or self.fail_latched or self.c3_transfer is not None
+                or self.c1_transfer is not None or self.combined_transfer is not None
+                or self.setting_transfer is not None or
+                not self.draft or not set(self.draft).issubset(QUALIFIED_C3_CODES)
+                or self.include_programme_with_settings or self.session.ram_touched):
+            self.message("Global configuration preview unavailable",
+                "Only the supported C3 setup-area-1 settings can be written together. "
+                "Split C1 and C3 proposals into separate transfers.",True)
+            return
+        tx=C3ConfigurationTransfer(self.client,self.session,self.folder.text(),emit=self.log_event)
+        def action(progress):return tx.preview(dict(self.draft))
+        def done(data):
+            self.c3_transfer=tx
+            self.refresh_review()
+            lines=[f"{r['register']}: {human_value(r['register'],r['old_raw'])}"
+                   f" → {human_value(r['register'],r['new_raw'])}"
+                   for r in data["changes"]]
+            self.message("Read-only initial configuration preview",
+                "\n".join(lines)+"\n\nNOT WRITTEN. Apply enters setup area 1 "
+                "and can affect the controller immediately. No automatic rollback "
+                "or restart; heater must remain physically isolated.")
+        self._work("Read-only C3 configuration preview",action,done)
+
+    def stage_c3(self):
+        tx=self.c3_transfer
+        if (not tx or not tx.preview_data or tx.area_entered or self.busy
+                or self.fail_latched or not self._c3_draft_matches_preview()):
+            self.message("C3 write unavailable",
+                "Review the exact unchanged initial configuration first.",True)
+            return
+        if QMessageBox.warning(self,"Apply GLOBAL controller configuration",
+                "EXPERIMENTAL C3 HARDWARE WRITING. This enters setup area 1, "
+                "which stops control. Initial configuration may be stored as "
+                "soon as it is written; this is NOT an ordinary RAM-only preview "
+                "and cannot automatically be undone. Existing programme "
+                "interpretation and heater response can change. Confirm the "
+                "heater's DC supply and mains outputs are physically isolated, "
+                "that you have a full backup and are prepared to physically "
+                "power-cycle the controller afterward. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.stage()
+        def done(count):
+            self.refresh_review()
+            self.message("C3 global values written and read back",
+                f"{count} C3 register(s) matched in setup area 1. "
+                "This is NOT a persistence check. Select Finish (CMW OFF), "
+                "then physically power-cycle, reconnect and verify the receipt. "
+                "Do not energise the heater before reconfiguration is verified.")
+        self._work("Apply and verify C3 in setting area 1",action,done,True)
+
+    def finish_c3(self):
+        tx=self.c3_transfer
+        if (not tx or not tx.staged or tx.finished or self.busy
+                or self.fail_latched or not self._c3_draft_matches_preview()):
+            self.message("Cannot finish C3 configuration",
+                "All C3 writes must have been read back, with no draft changes.",True)
+            return
+        if QMessageBox.warning(self,"Finish area-1 configuration",
+                "This checks C3 again, records a receipt and disables "
+                "communications writing. It does NOT issue SAVE RAM DATA "
+                "or restart the controller. You MUST physically power-cycle "
+                "before using the controller or uploading programmes. Continue?",
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
+        def action(progress):return tx.finish()
+        def done(receipt):
+            for row in tx.preview_data["changes"]:
+                code=row["register"]
+                self.inventory["fields"][code]=row["new_raw"]
+                self.draft.pop(code,None)
+            self.refresh_settings()
+            self.refresh_review()
+            self.message("Area-1 configuration session finished",
+                "C3 values were read back and CMW OFF was acknowledged. "
+                "Persistence is UNVERIFIED until a real controller power-cycle "
+                "and new receipt comparison. Do not upload programmes in this "
+                "same connection. Receipt:\n"+str(receipt))
+        self._work("Finish C3: record receipt and CMW OFF",action,done,True)
 
     def _c1_draft_matches_preview(self):
         tx=self.c1_transfer
