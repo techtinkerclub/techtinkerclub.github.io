@@ -17,7 +17,7 @@ function page(file,url){
 }
 function click(w,el){assert.ok(el,"Clickable element exists");el.dispatchEvent(new w.MouseEvent("click",{bubbles:true}))}
 function change(w,el,value){
- assert.ok(el);el.value=value;el.dispatchEvent(new w.Event("change",{bubbles:true}));
+ assert.ok(el);if(el.type==="checkbox")el.checked=Boolean(value);else el.value=value;el.dispatchEvent(new w.Event("change",{bubbles:true}));
 }
 function testAtlas(){
  const {dom,document:d,html}=page(path.join(here,"index.html"),"https://techtinker.club/heater/omron-atlas/");
