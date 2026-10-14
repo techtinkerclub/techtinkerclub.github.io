@@ -319,6 +319,12 @@ class Studio(QMainWindow):
         if self.open_project():
             self.show_step(2)
 
+    def _show_setting_apply(self):
+        """Step 4 explicitly opens the Settings USB/Manual review of Step 5."""
+        self.show_step(4)
+        if self.mode=="connected":
+            self.apply_tabs.setCurrentIndex(2)
+
     def _programme_page(self):
         page=QWidget()
         outer=QVBoxLayout(page)
@@ -477,7 +483,7 @@ class Studio(QMainWindow):
         nextrow=QHBoxLayout()
         nextrow.addWidget(text("Changes remain local until confirmed in Step 5.",True),1)
         nextrow.addWidget(button("Review / apply settings →",
-                                 lambda:self.show_step(4),True))
+                                 self._show_setting_apply,True))
         v.addLayout(nextrow)
         self.pages.addWidget(page)
         self.group.currentTextChanged.connect(self.refresh_settings)
@@ -1634,6 +1640,7 @@ class Studio(QMainWindow):
                 and not self.busy and not self.fail_latched))
             self.wt_verify.setEnabled(bool(connected and not self.busy))
             self.wt_status.setText(self._wait_status_text())
+            self._refresh_config_review()
         self.slot_combo.setEnabled(not editing_locked)
         self.segment_table.setEnabled(not editing_locked)
         self.programme_name.setEnabled(not editing_locked)
