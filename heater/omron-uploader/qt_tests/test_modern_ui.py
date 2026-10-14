@@ -87,7 +87,7 @@ class ModernStudioTests(unittest.TestCase):
                 self.win.save_project()
             data=json.loads(outgoing.read_text(encoding="utf-8"))
             self.assertEqual(data["planned_sensor_by_slot"][3],5)
-            self.assertEqual(data["programmes"][3]["steps"][0]["sp"],"600")
+            self.assertEqual(float(data["programmes"][3]["steps"][0]["sp"]),600)
 
     def test_five_steps_and_offline_mode(self):
         self.assertEqual(self.win.pages.count(),5)
