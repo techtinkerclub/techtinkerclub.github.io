@@ -679,7 +679,7 @@ class Studio(QMainWindow):
         self.unified_preview=button("1  Read + Preview",self.unified_preview_action,True)
         self.unified_stage=button("2  Write RAM + Verify",self.unified_stage_action)
         self.unified_save=button("3  Save + Finish (CMW OFF)",self.unified_save_action)
-        self.unified_verify=button("Verify saved receipt",self.unified_verify_action)
+        self.unified_verify=button("4  Verify saved receipt",self.unified_verify_action)
         self.unified_verify.setToolTip(
             "READ ONLY: After the controller genuinely loses power and you reconnect, "
             "compare each saved register in the receipt JSON with live values. "
