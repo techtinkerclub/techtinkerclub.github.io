@@ -40,6 +40,10 @@ def visible_in_view(code,group,view,query=""):
     return view==VIEWS[3] or view_for(code,group)==view
 
 def scope_for(code):
+    if code in ("C1:0015","C1:0016","C1:0017"):
+        return ("ACTIVE PID SET — this is the P/I/D value for the currently "
+                "selected PID set. PID 1–8 in the C5 bank are the same eight "
+                "stored sets, not extra integral or derivative times.")
     if code=="C1:0021":
         return ("GLOBAL — affects segment progression in all eight programmes. "
                 "It is not saved separately in each programme.")
