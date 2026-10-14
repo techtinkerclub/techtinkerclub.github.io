@@ -1906,7 +1906,7 @@ class Studio(QMainWindow):
                          if req.allowed_in_current_app else
                          "Available to review and plan; USB write not yet qualified")
         friendly=[
-            p.name.upper(),
+            p.name,
             "",
             p.meaning,
             "",
