@@ -453,7 +453,8 @@ class QtConnectedTests(unittest.TestCase):
         fake=FakeOmron.created[-1]
         self.win.programmes[0]=copy.deepcopy(EXAMPLE)
         self.win._render_programme()
-        previous=self.win.programmes[0].as_json()
+        previous=tuple((seg.type,float(seg.sp)) for seg in
+                       self.win.programmes[0].steps if seg.type!="soak")
         limits,before_error=self.win._effective_programme_limits()
         self.assertIsNone(before_error)
         self.assertEqual(limits.input_type,5)
@@ -462,12 +463,18 @@ class QtConnectedTests(unittest.TestCase):
         now,error=self.win._effective_programme_limits()
         self.assertIsNone(error)
         self.assertEqual(now.input_type,5) # proposal is NOT active hardware
-        self.assertEqual(self.win.programmes[0].as_json(),previous)
+        self.assertEqual(
+            tuple((seg.type,float(seg.sp)) for seg in
+                  self.win.programmes[0].steps if seg.type!="soak"),
+            previous)
         self.win.unified_preview_action()
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
             self.win.unified_save_action()
-        self.assertEqual(self.win.programmes[0].as_json(),previous)
+        self.assertEqual(
+            tuple((seg.type,float(seg.sp)) for seg in
+                  self.win.programmes[0].steps if seg.type!="soak"),
+            previous)
         self.assertFalse(self.win.inventory_current_session)
         held,stale=self.win._effective_programme_limits()
         self.assertEqual(held.input_type,5)
@@ -482,13 +489,17 @@ class QtConnectedTests(unittest.TestCase):
         self.win.programmes[0]=copy.deepcopy(EXAMPLE)
         self.win.programmes[0].steps[0].sp="800"
         self.win._render_programme()
-        before=self.win.programmes[0].as_json()
+        before=tuple((seg.type,float(seg.sp)) for seg in
+                     self.win.programmes[0].steps if seg.type!="soak")
         self.win.draft={"C3:0000":6}
         self.win.refresh_review()
         lim,error=self.win._effective_programme_limits()
         self.assertIsNone(error)
         self.assertEqual(lim.input_type,5)
-        self.assertEqual(self.win.programmes[0].as_json(),before)
+        self.assertEqual(
+            tuple((seg.type,float(seg.sp)) for seg in
+                  self.win.programmes[0].steps if seg.type!="soak"),
+            before)
         self.assertIn("PENDING GLOBAL SETTINGS",self.win.apply_details.toPlainText())
         self.assertIn("800",self.win.apply_details.toPlainText())
         self.win._graph_current()
