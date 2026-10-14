@@ -115,10 +115,11 @@ class WaitBandTransfer:
         old=self.client.read1(BANK,ADDRESS)
         if old!=self.preview_data["old_raw"]:
             raise PreflightError("Live Wait Band changed since preview. Start over; NO write performed.")
+        # From here onward ANY serial failure leaves the controller state
+        # uncertain, even if the operation command itself times out.
+        self.ram_touched=True
         self.client.operation("00","01")  # CMW ON
         self.client.operation("04","01")  # RAM MODE, no EEPROM yet
-        # CMW and/or RAM mode may have changed even if the next command fails.
-        self.ram_touched=True
         self.client.write_setting(BANK,ADDRESS,self.preview_data["new_raw"])
         actual=self.client.read1(BANK,ADDRESS)
         if actual!=self.preview_data["new_raw"]:
