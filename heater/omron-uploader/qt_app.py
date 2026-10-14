@@ -642,6 +642,9 @@ class Studio(QMainWindow):
                           "A SAVE may also persist other outstanding controller RAM changes.",True))
         cv.addWidget(wt_card)
         cv.addStretch(1)
+        # Retain Qt ownership of the legacy button hosts. Their enablement
+        # state remains the proven source for unified action availability.
+        self._transfer_legacy_hosts=(usb,config)
         # One visible review and one action row. Legacy per-bank controls stay
         # instantiated for their proven backend guards, but are not shown.
         transfer=QWidget()
