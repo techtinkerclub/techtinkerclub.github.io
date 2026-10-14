@@ -32,6 +32,13 @@ class WritePlanTests(unittest.TestCase):
         self.assertEqual(plan["setting_area_1"],["C3:0000"])
         self.assertIn("Sensor input",plan["parameters"][1]["reason"])
 
+    def test_changed_programme_not_selected_remains_excluded(self):
+        plan=create_write_plan(self.inv,{"C1:0021":20},programme_changed=True,
+                               include_programme=False)
+        self.assertFalse(plan["combined_qualified"])
+        self.assertFalse(plan["all_changes_usb_writable"])
+        self.assertIn("NOT included",plan["status"])
+
     def test_initial_setup_alone_stays_unqualified(self):
         plan=create_write_plan(self.inv,{"C3:0000":6})
         self.assertEqual(len(plan["blocked"]),1)
