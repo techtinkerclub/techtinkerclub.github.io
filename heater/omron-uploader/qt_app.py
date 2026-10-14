@@ -783,14 +783,43 @@ class Studio(QMainWindow):
             self.save_and_finish_programme()
 
     def unified_verify_action(self):
-        if self._active_transfer_kind()=="combined":
-            self.verify_combined()
-        elif self._active_transfer_kind()=="settings":
-            self.verify_wait()
-        else:
-            self.message("Programme receipt verification",
-                "Reconnect after a genuine controller power cycle, then use the "
-                "saved programme receipt verification in the controller backup workflow.")
+        """Use the receipt's schema, not the current draft, to choose verification."""
+        if not self.client or not self.session or self.busy:
+            self.message("Reconnect first",
+                "Power-cycle the controller, reconnect and take a fresh read before verification.",True)
+            return
+        path,_=QFileDialog.getOpenFileName(
+            self,"Select original controller save receipt",self.folder.text(),"JSON (*.json)")
+        if not path:return
+        try:
+            schema=json.loads(Path(path).read_text(encoding="utf-8")).get("schema")
+        except (OSError,ValueError) as exc:
+            self.message("Invalid receipt",str(exc),True);return
+        allowed={"e5cct-combined-upload-receipt-1",
+                 "e5cct-waitband-receipt-1","e5cct-upload-receipt-1"}
+        if schema not in allowed:
+            self.message("Unsupported receipt","This is not a recognised saved-transfer receipt.",True)
+            return
+        def action(progress):
+            if schema=="e5cct-combined-upload-receipt-1":
+                return verify_combined_receipt(self.client,path,self.session.info["model10"])
+            if schema=="e5cct-waitband-receipt-1":
+                return verify_wait_receipt(self.client,path,self.session.info["model10"])
+            return self.session.verify_persistence(path)
+        def done(value):
+            if schema=="e5cct-combined-upload-receipt-1":
+                self.programme_receipt_match={"path":path,"combined":True}
+                self.wait_receipt_match={"path":path,"combined":True}
+            elif schema=="e5cct-waitband-receipt-1":
+                self.wait_receipt_match={"path":path,"raw":value}
+            else:
+                self.programme_receipt_match={"path":path}
+            self.refresh_review()
+            self.message("Receipt values match",
+                "All registers in the selected receipt matched the current controller. "
+                "Nonvolatile retention is established only if power was physically "
+                "removed before this verification.")
+        self._work("Read-only saved receipt verification",action,done)
 
     def preview_combined(self):
         if (not self.lab or not self.session or not self.client or self.busy
@@ -945,6 +974,22 @@ class Studio(QMainWindow):
         if not hasattr(self,"transfer_summary"):return
         ses=self.session
         tx=self.setting_transfer
+        combo=self.combined_transfer
+        if combo is not None:
+            if combo.cmw_off:
+                state="Both C1 and DA SAVED and read back; CMW OFF acknowledged"
+            elif combo.saved:
+                state="SAVE acknowledged but CMW OFF is NOT confirmed; inspect before retry"
+            elif combo.staged:
+                state="C1 + DA verified in RAM; SAVE still required"
+            elif combo.ram_touched:
+                state="C1 + DA RAM may be partially changed; stop and inspect"
+            else:
+                state="Combined C1 + DA preview ready; nothing written"
+            self.transfer_summary.setText(
+                f"PROGRAMME {combo.preview_data['programme_slot']} + WAIT BAND  ·  {state}\\n"
+                "Power-cycle retention remains unverified. Other settings are not included.")
+            return
         if self.programme_receipt_match:
             programme_status=("Receipt matched the controller's new read-back; "
                               "confirm the USB power cycle actually occurred")
@@ -1115,6 +1160,8 @@ class Studio(QMainWindow):
         def completed(result):
             self.client,self.session,self.snapshot,self.inventory,setup_file,inventory_file,inventory_error=result
             self.setting_transfer=None
+            self.combined_transfer=None
+            self.include_programme_with_settings=False
             self.wait_receipt_match=None
             self.programme_receipt_match=None
             self.inventory_current_session=(inventory_error is None)
@@ -1162,6 +1209,8 @@ class Studio(QMainWindow):
             try:self.client.close()
             except Exception:pass
         self.client=None;self.session=None;self.setting_transfer=None;self.port=None;self.preview_stamp=None
+        self.combined_transfer=None
+        self.include_programme_with_settings=False
         self.wait_receipt_match=None
         self.programme_receipt_match=None
         self.inventory_current_session=False
@@ -1195,6 +1244,8 @@ class Studio(QMainWindow):
         staged=bool((self.session and self.session.ram_touched and not self.session.committed) or self._settings_ram_pending())
         previous=self.client
         self.client=None;self.session=None;self.port=None;self.preview_stamp=None
+        self.combined_transfer=None
+        self.include_programme_with_settings=False
         self.wait_receipt_match=None
         self.programme_receipt_match=None
         self.inventory_current_session=False
@@ -1405,7 +1456,7 @@ class Studio(QMainWindow):
 
     def _settings_ram_pending(self):
         tx=self.setting_transfer
-        return bool(tx and tx.ram_touched and not tx.saved)
+        return bool(tx and tx.ram_touched and not tx.saved) or self._combined_ram_pending()
 
     def _can_begin_wait(self):
         ses=self.session
@@ -1894,8 +1945,12 @@ class Studio(QMainWindow):
                 lines.append("One qualified setting is pending, but other proposed settings block "
                              "transfer until reviewed or removed. Nothing will be silently skipped.")
             if set(self.draft)=={"C1:0021"}:
-                lines.append("Wait Band C1:0021 can be transferred using the shared controls below. "
-                             "DA programme staging remains locked while it is proposed.")
+                if self.include_programme_with_settings:
+                    lines.append("Programme explicitly INCLUDED with Wait Band for one guarded "
+                                 "C1 + DA transaction. Both will be verified before one SAVE.")
+                else:
+                    lines.append("Wait Band-only transfer selected. The local programme will NOT "
+                                 "be uploaded. Use 'Include selected programme' if both are intended.")
             else:
                 lines.append("Other configuration changes are review-only. "
                              "Only the qualified Wait Band C1:0021 has a USB setting writer. "
