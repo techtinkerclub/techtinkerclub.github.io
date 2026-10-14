@@ -1203,7 +1203,8 @@ class Studio(QMainWindow):
                 "Other draft settings remain review-only. Programme memory is not included.",True)
             return
         proposed=dict(self.draft)
-        tx=C1SettingsTransfer(self.client,self.session,self.folder.text(),emit=self.log_event)
+        tx=C1SettingsTransfer(self.client,self.session,self.folder.text(),
+                             emit=self.log_event,hardware=self.hardware_profile)
         def action(progress):return tx.preview(proposed)
         def done(data):
             self.c1_transfer=tx
