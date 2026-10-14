@@ -13,6 +13,7 @@ class FakeDevice:
         self.data={k:0 for k in []}
         self.blocks=[[0]*150 for _ in range(8)]
         self.c3={k:v[0] for k,v in PREFLIGHT.items()}
+        self.wait_raw=0
         self.model="E5CC-TQX3A";self.running=False;self.write_allowed=True
         self.operations=[];self.nonvolatile_saves=0
         self.inject_fault=None
@@ -20,6 +21,7 @@ class FakeDevice:
     def status(self):return "0000" if self.running else "0100"
     def read(self,kind,addr,count=1):
         if kind=="C3":return [self.c3[addr+i] for i in range(count)]
+        if kind=="C1":return [self.wait_raw if addr+i==0x0021 else 0 for i in range(count)]
         if kind!="DA":raise AssertionError("unexpected read type")
         return [self.blocks[addr>>8][(addr&255)+i] for i in range(count)]
     def read1(self,kind,addr):return self.read(kind,addr,1)[0]
@@ -275,6 +277,34 @@ class TransferTests(unittest.TestCase):
     def test_model_mismatch_refuses(self):
         d=FakeDevice();d.model="E5AC-TCX4A";s=TransferSession(d)
         self.assertRaises(PreflightError,s.preflight)
+    def test_step_preview_and_stage_require_live_global_wait(self):
+        d=FakeDevice();s=TransferSession(d);s.preflight()
+        p=Programme(steps=[Segment("step",sp="120"),Segment("soak",minutes="15")])
+        with tempfile.TemporaryDirectory() as folder:
+            s.backup(folder)
+            with self.assertRaisesRegex(PreflightError,"Wait Band"):
+                s.build_plan(0,p)
+            self.assertEqual(d.operations,[])
+            d.wait_raw=30
+            self.assertTrue(s.build_plan(0,p))
+            staged=s.stage(0,p)
+            self.assertEqual(staged["slot"],0)
+            self.assertEqual(d.nonvolatile_saves,0)
+            self.assertIn(("04","01"),d.operations)
+    def test_step_fails_closed_if_wait_cannot_be_read(self):
+        d=FakeDevice();s=TransferSession(d);s.preflight()
+        p=Programme(steps=[Segment("step",sp="120")])
+        with tempfile.TemporaryDirectory() as folder:
+            s.backup(folder)
+            old=d.read1
+            def fail(bank,addr):
+                if bank=="C1" and addr==0x0021:raise OSError("simulated USB timeout")
+                return old(bank,addr)
+            d.read1=fail
+            with self.assertRaisesRegex(PreflightError,"live read"):
+                s.build_plan(0,p)
+            self.assertEqual(d.operations,[])
+
     def test_running_blocks_stage(self):
         d=FakeDevice();s=TransferSession(d);s.preflight()
         with tempfile.TemporaryDirectory() as dir:s.backup(dir)
