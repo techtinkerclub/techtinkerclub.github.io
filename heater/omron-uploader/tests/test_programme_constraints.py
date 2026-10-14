@@ -101,7 +101,7 @@ class ConstraintsTests(unittest.TestCase):
                                          (19,0,2300,"1800",1800),
                                          (23,0,165,"100",100)):
             scale=int(1/effective_limits({"C3:0000":kind},require_readback=False).resolution)
-            fields=setup(kind,low,high)
+            fields=setup(kind,int(low),int(high))
             fields["C3:0005"]=(high*scale)&0xffffffff
             fields["C3:0006"]=(int(low*scale))&0xffffffff
             limits=effective_limits(fields)
