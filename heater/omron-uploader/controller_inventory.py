@@ -11,7 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict
 from datetime import datetime,timezone
 import json
-from controller_setup import CONFIG, signed32
+from controller_setup import CONFIG, signed32, SENSOR_INPUTS
 
 SCHEMA="e5cct-extended-inventory-1"
 MANUAL="Omron H186-E1-06, section 3-1"
@@ -370,21 +370,6 @@ for i in range(43):
 # Actual hardware may not support every selectable input: this is NOT an
 # instruction to fit a different sensor or change the controller's wiring.
 from dataclasses import replace as dataclass_replace
-SENSOR_INPUTS={
- 0:"Pt100 −200…850 °C",1:"Pt100 −199.9…500.0 °C",2:"Pt100 0.0…100.0 °C",
- 3:"JPt100 −199.9…500.0 °C",4:"JPt100 0.0…100.0 °C",
- 5:"Type K −200…1300 °C (1 °C)",6:"Type K −20.0…500.0 °C (0.1 °C)",
- 7:"Type J −100…850 °C",8:"Type J −20.0…400.0 °C",
- 9:"Type T −200…400 °C",10:"Type T −199.9…400.0 °C",
- 11:"Type E −200…600 °C",12:"Type L −100…850 °C",
- 13:"Type U −200…400 °C",14:"Type U −199.9…400.0 °C",
- 15:"Type N −200…1300 °C",16:"Type R 0…1700 °C",
- 17:"Type S 0…1700 °C",18:"Type B 100…1800 °C",
- 19:"Type W 0…2300 °C",20:"PLII 0…1300 °C",
- 21:"IR input 60 °C",22:"IR input 120 °C",23:"IR input 140 °C",
- 24:"IR input 220 °C",25:"4–20 mA",26:"0–20 mA",
- 27:"1–5 V",28:"0–5 V",29:"0–10 V"
-}
 # C1 tuning values reflect the active PID set, not a ninth independent set.
 for _addr,_name in (("C1:0015","Proportional band — active PID set"),
                     ("C1:0016","Integral time — active PID set"),
