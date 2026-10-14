@@ -114,7 +114,7 @@ def documented_models(usb_prefix):
     Option 002 requires a different terminal construction and 007 is not an
     E5CC-T option in Omron H185/H187; neither is selectable here.
     """
-    if not isinstance(usb_prefix,str) or not re.fullmatch(r"E5CC-T(?:RX|QX|CX|QQ|CQ)3[AD]",usb_prefix.upper()):
+    if not isinstance(usb_prefix,str) or not re.fullmatch(r"E5CC-T(?:RX|QX|CX|QQ|CQ)[23][AD]",usb_prefix.upper()):
         return []
     models=[]
     for suffix in _OPTIONS:
