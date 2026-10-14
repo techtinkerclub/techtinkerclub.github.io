@@ -415,18 +415,20 @@ class QtConnectedTests(unittest.TestCase):
         self.assertNotIn(("operation","06","00"),fake.calls)
         self.assertEqual(fake.area,1)
         self.assertEqual(self.win.draft,{})
-        self.assertIn("POWER CYCLE",self.win.transfer_summary.text())
+        self.assertIn("restart",self.win.transfer_summary.text().lower())
+        self.assertTrue(self.win.restart_c3_button.isEnabled())
         self.assertFalse(self.win.preview_button.isEnabled())
 
-    def test_initial_type_range_change_blocks_populated_programmes(self):
+    def test_sensor_change_with_populated_memories_previews_with_complete_backup(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
-        self.win.draft={"C3:0000":6,"C3:0005":5000,"C3:0006":0xffffff38}
+        self.win.draft={"C3:0000":6}
         self.win.show_step(4)
         self.assertEqual(self.win._active_transfer_kind(),"c3")
         self.assertTrue(self.win.unified_preview.isEnabled())
-        with self.assertRaisesRegex(Exception,"all eight"):
-            self.win.unified_preview_action()
+        self.win.unified_preview_action()
+        self.assertTrue(self.win.c3_transfer.preview_data["sensor_change"])
+        self.assertEqual(len(self.win.c3_transfer.session.backup_data["programmes"]),8)
         self.assertEqual(fake.area,0)
         self.assertFalse(any(c[0]=="setting-write" for c in fake.calls))
 
