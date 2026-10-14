@@ -39,7 +39,7 @@ permalink: /heater/program-tools/
 <div class="field"><label for="finish">End behaviour (controller-wide setting)</label><select id="finish"><option value="rst">RESET — stop regulating</option><option value="cont">CONT — hold final SP</option></select></div></div>
 <div class="note">Only <strong>rate-of-rise mode</strong> is implemented in v1 (<code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>). The separate step-time programming method requires a different parameter model. The starting PV is assumed for the graph and cannot be forced by a leading ramp.</div></div>
 <div class="card"><div class="row spread"><h2>Segments</h2><span id="count" class="badge">2 / 32</span></div><div id="segments"></div><div class="row noprint"><button class="btn primary" id="addRamp">+ Ramp</button><button class="btn" id="addSoak">+ Soak</button><button class="btn" id="addStep">+ Step</button><button class="btn" id="benchExample">Use verified 50 °C example</button><button class="btn danger" id="clear">Clear all</button></div>
-<p class="tiny muted">Ramp = SP + whole-number slope (°C/min). Soak = hold existing SP for a duration. Step = immediate setpoint change (zero time). You can move and delete segments independently.</p></div>
+<p class="tiny muted">Ramp = SP + whole-number slope (°C/min). Soak = hold existing SP for a duration. Step = immediate setpoint jump (zero programmed time). To wait for the actual temperature before the next segment, verify controller-wide <code>wt-b</code> is enabled in Adjustment Level. It affects all segments/programmes; this website cannot change it.</p></div>
 </div><div><div class="card"><h2>Temperature setpoint profile</h2><div id="chart" class="plot"></div><div id="summary"></div><div id="errors"></div></div>
 <div class="card"><h2>Omron entry sheet</h2><div class="scroll" id="sheet"></div><div class="row noprint" style="margin-top:13px"><button class="btn" id="print">Print</button><button class="btn" id="json">Export JSON</button><button class="btn primary" id="practice">Practise this programme →</button></div><p class="tiny muted">Builder values live only in this browser. The entry sheet includes the separate <code>prg</code> RUN selection; no browser action writes to the physical Omron.</p></div></div></div></section>
 <section id="simulator" class="hidden"><div class="columns"><div>
@@ -99,7 +99,7 @@ function entry(s,i){
  if(s.type==="soak")fields.push(segmentNumber(i,"minutes","Hold (minutes)",s.minutes,1,0,5999));
  const meaning=s.type==="ramp"?"Ramp · target and heating/cooling setpoint rate":
    s.type==="soak"?"Soak · hold the previous setpoint for a duration":
-   "Step · change the commanded setpoint immediately";
+   "Step · jump SP now; wait for actual PV only if global wt-b is active";
  return '<div class="segment"><div class="row"><div><strong>Segment '+(i+1)+'</strong><span class="seg-context"> · '+meaning+'</span></div>'+
  '<div class="row noprint"><button class="btn mini" data-do="up" data-i="'+i+'" '+(i?"":"disabled")+' title="Move segment earlier">↑</button>'+
  '<button class="btn mini" data-do="down" data-i="'+i+'" '+(i<cur().steps.length-1?"":"disabled")+' title="Move segment later">↓</button>'+
@@ -107,10 +107,13 @@ function entry(s,i){
  '<div class="grid" style="--seg-columns:'+fields.length+'">'+fields.join("")+'</div></div>';
 }
 function update(){
- const b=cur(),a=evaluate(b);$("count").textContent=b.steps.length+" / 32";$("chart").innerHTML=graph(a.pts);$("summary").innerHTML='<p class="muted tiny"><strong>'+fmt(a.time)+' minutes</strong> total · final SP '+fmt(a.final)+' °C · '+b.steps.length+' segments</p>';
+ const b=cur(),a=evaluate(b);$("count").textContent=b.steps.length+" / 32";$("chart").innerHTML=graph(a.pts);$("summary").innerHTML='<p class="muted tiny"><strong>'+fmt(a.time)+' minutes</strong> programmed (excludes any Wait delays) · final SP '+fmt(a.final)+' °C · '+b.steps.length+' segments</p>';
  $("errors").innerHTML=a.err.length?'<div class="warn"><strong>Correct before using:</strong><ul>'+a.err.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>':'<p class="good">✓ Supported parameter limits passed. Not a hardware safety approval.</p>';
  if(a.notes.length)$("errors").innerHTML+='<p class="note">'+a.notes.map(esc).join("<br>")+'</p>';
+ const hasStep=b.steps.some(s=>s.type==="step");
+ if(hasStep)$("errors").innerHTML+='<p class="warn"><strong>Step requires a verified Wait Band:</strong> On the physical Omron, check <code>wt-b</code> in Adjustment Level (LEVEL twice briefly, MODE to <code>wt-b</code>). Set an APPROVED nonzero ±°C tolerance if waiting for measured temperature is intended. A value of OFF advances immediately. Wait is GLOBAL to all programmes and can also affect Ramp/Soak boundaries; a wired event input can disable it. The plotted duration excludes unknown waiting time. This website does not program that setting.</p>';
  let rows=[["d.prg",slot],["s-no",b.steps.length]];
+ if(hasStep)rows.unshift(["wt-b (Adjustment, GLOBAL)","Verify NONZERO on controller; ±°C selected for experiment"]);
  b.steps.forEach((s,i)=>{rows.push(["d.seg",i],["styp",s.type]);if(s.type!=="soak")rows.push(["sp",s.sp+" °C"]);if(s.type==="ramp")rows.push(["pr",s.rate+" °C/min"]);if(s.type==="soak"){let n=Number(s.minutes);rows.push(["time",num(s.minutes)&&Number.isInteger(n)?Math.floor(n/60)+"."+(n%60).toString().padStart(2,"0"):"INVALID"]);}});
  rows.push(["d.seg (programme-wide)","end"],["pid (programme-wide)",1],["rpt",0],["link","end"],["eset (initial)",b.finish],["prg (Operation — select to RUN)",slot]);
  $("sheet").innerHTML='<p class="tiny muted">Initial settings: <code>t-pr = pr</code>, <code>pru = m</code>, <code>t-u = h-m</code>, <code>rtsm = stop</code>, <code>spmd = psp</code>. Keep <code>p-on = rst</code> and verify output at reset. <a href="../omron-programming/#initial">Initial configuration guide ↗</a></p><table><tr><th>Omron display</th><th>Set value</th></tr>'+rows.map(x=>'<tr><td><code>'+esc(x[0])+'</code></td><td>'+esc(x[1])+'</td></tr>').join("")+'</table><p class="note"><strong>Editing vs running:</strong> <code>d.prg</code> selects the stored profile to edit. Once the profile has been entered and verified, return to Operation Level and set <code>prg</code> to the same programme number to RUN it. <code>pgsg</code> is a monitor, not a selector. Normal front-panel edits have no separate Save button; check values after a complete power cycle before use. LEVEL enters Program Setting Level; MODE moves; UP/DOWN edits; PF selects a digit where enabled.</p>';
