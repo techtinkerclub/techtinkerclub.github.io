@@ -2,6 +2,48 @@
 
 This is the NEW PARALLEL Windows app, not a replacement for the working Tkinter app.py. Its working START_*.cmd launchers are left intact.
 
+## Hardware-aware USB front-panel mode (14 October 2026, development branch)
+
+The controller is authoritative. A global parameter change sends **only**
+the selected controller register(s), never silently rewrites any DA programme
+data or rescales stored segment temperatures. A fresh read establishes the
+resulting settings. C3 initial settings use a separate setting-area-1
+finish/return-to-operation procedure.
+
+- **30 documented universal sensor input codes (0–29)** are offered in the
+  setup catalogue and the C3 writer. The stored-programme graph decoder and
+  DA uploader are deliberately limited to verified K input codes 5 and 6.
+  Choosing another input does **not** imply that DA temperatures can safely
+  be edited or graphed as degrees Celsius in this release.
+- USB command `0503` identifies only the **ten-character model prefix**.
+  It cannot identify a `-000` versus `-003` option suffix. The connected
+  settings sidebar has **Confirm full model…** for a one-time manual nameplate
+  confirmation **per connection**. The app never invents or caches a suffix.
+- The hardware profile uses the documented suffix matrix for fitted event
+  inputs, CTs, RS-485, transfer output, auxiliary outputs and control output
+  types. An absent fitted option is hidden, and a failed read is not
+  selectable. Read errors remain available in Step 2's diagnostic inventory.
+  Unknown/unconfirmed optional hardware settings remain unavailable.
+- Documented C1 adjustment and C3 initial settings with explicit encodings
+  have been added to the guarded writer; **only expressly selected settings
+  are transmitted**. Different setting areas cannot share an unsafe save.
+  Sensor changes never transmit DA words.
+- **Not yet generic USB writes:** C4 selected-programme context (use DA editor),
+  C5 fixed PID banks, C9 programless communications, serial-link changes,
+  protection/password and direct output-on-RESET/fault values. These require
+  distinct context, reconnection or safety handling rather than blindly
+  opening all raw registers.
+- Read-only snapshots, checks on stopped status, current register values,
+  register range, model/option applicability, explicit operator confirmation,
+  post-write readback and receipts remain in place. Supported values are
+  still hardware-**experimental** until tested with the specific controller.
+- Model suffix capabilities are based on Omron E5_C/E5_C-T datasheet model
+  legend and UK product specifications. An operator-provided label is a
+  hardware description, **not** independently verifiable from USB.
+
+The stable application is unchanged. Do not treat successful unit tests as
+validation of live heater behaviour or EEPROM persistence.
+
 ## Functional five-step workflow
 
 1. Mode — Connected or completely offline/manual, no website required.
@@ -45,7 +87,7 @@ not a limited visual prototype.
 | Automatic USB disconnect detection and heartbeat | Implemented |
 | Clear reason when upload is disabled | Implemented |
 | Session activity log, saved-profile export | Implemented |
-| Configuration C1/C3/C5/C9 writes | **Not hardware-validated in either app** |
+| Configuration C1/C3/C5/C9 writes | C1/C3 experimental subset; C4/C5/C9 and link-changing settings blocked pending dedicated qualification |
 
 The main Qt GUI requires **no online website**. For optional keypad practice,
 the original simulator and its detailed programming guide are supplied inside
@@ -116,8 +158,10 @@ Regression tests exercise the real Qt field geometry and selection.
   **power-cycle verification pending** until actually checked. A second
   local settings proposal remains **NOT written**, even if an earlier value
   was saved in that USB session.
-- Other settings outside wt-b remain review-only; we have NOT enabled bulk
-  USB register writes.
+- Additional documented C1 and C3 settings can now be staged through
+  separate area-specific guarded workflows. Hardware-dependent settings
+  require a confirmed full model suffix; C4/C5/C9 and communications remain
+  restricted. This historical section describes the original Wait Band pilot.
 
 ## First USB configuration-write trial: Wait Band
 
