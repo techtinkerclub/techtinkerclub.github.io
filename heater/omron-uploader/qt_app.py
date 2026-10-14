@@ -1,9 +1,10 @@
 """Modern, self-contained E5CC-T Studio (PySide6 + PyQtGraph).
 
-This GUI deliberately reuses the already-tested backend modules. It does not
-write any C0/C1/C3/C4/C5/C9 configuration register. The only hardware write
-route is the existing safety-gated DA transfer, and only when explicitly
-launched with --enable-lab-writes. Run in offline mode without a controller.
+This GUI deliberately reuses the tested Omron backend. Hardware writes are
+explicitly isolated-lab only: DA programme memory or the narrowly qualified
+Wait Band register (C1:0021). No other C0/C1/C3/C4/C5/C9 configuration writes
+are allowed. Step 5 has one unified USB transfer workspace; its two operations
+remain independently backed up, verified and saved. Offline work requires no USB.
 """
 from __future__ import annotations
 
