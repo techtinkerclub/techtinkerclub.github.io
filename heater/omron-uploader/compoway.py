@@ -78,11 +78,10 @@ class SerialClient:
     def write1(self,addr,value):
         self._guard();return self.query(f"0102DA{addr:04X}000001{value&0xffffffff:08X}")
     def write_setting(self,vtype,addr,value):
-        """Write only explicitly validated C1 targets in isolated-lab sessions.
+        """Write explicitly permitted C1 or C3 registers in an isolated lab.
 
-        A C1 address's presence in H186 is NOT authorisation to write it.
-        Runtime state, control-mode and PID-set checks are performed by
-        C1SettingsTransfer before calling this protocol-level guard.
+        Being documented R/W does not grant authorisation: guarded C1/C3
+        transaction classes enforce controller state and required setup area.
         """
         self._guard()
         # Imported at call time to avoid a module-import cycle with ProtocolError.
@@ -111,6 +110,7 @@ class SerialClient:
         # Expose only to a guarded post-save finishing action, never auto-close
         # an uncertain/uncommitted RAM session.
         allow={("00","00"),("00","01"),("04","01"),("05","00"),("07","00")}
-        # Intentionally no RUN/RESET, firmware, setup area changes, or auto/manual.
+        # Setup area 1 entry is a dedicated guarded C3 operation only.
+        # No RUN/RESET, software reset, auto/manual or factory reset exposed.
         if (code,data) not in allow:raise PermissionError("Operation command not permitted")
         return self.query("3005"+code+data)
