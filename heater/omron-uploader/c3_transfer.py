@@ -136,6 +136,7 @@ class C3ConfigurationTransfer:
           "model10":self.session.info["model10"],
           "read_utc":datetime.now(timezone.utc).isoformat(),
           "changes":changes,"sensor_change":sensor_change,
+          "original_settings":live,
           "backup_file":str(self.session.backup_file),
           "programme_audit_required":True,
           "setting_defaults_may_change":bool(sensor_change),
@@ -185,6 +186,7 @@ class C3ConfigurationTransfer:
                      saved_utc=datetime.now(timezone.utc).isoformat(),
                      baseline_file=str(self.baseline_file),
                      original_programmes=self.session.backup_data["programmes"],
+                     original_settings=self.preview_data["original_settings"],
                      sensor_change=self.preview_data["sensor_change"],
                      programme_audit_required=True,
                      status=("C3 written/read back in area 1; hardware persistence "
