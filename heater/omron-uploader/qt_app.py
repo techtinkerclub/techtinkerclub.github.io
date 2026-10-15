@@ -65,6 +65,11 @@ EXAMPLE=Programme(
     steps=[Segment("ramp",sp="120",rate="2"),Segment("soak",minutes="15"),
            Segment("ramp",sp="50",rate="2"),Segment("soak",minutes="15")])
 
+def empty_workspace_programme():
+    """Untouched editor slots must never be interpreted as upload requests."""
+    return Programme(name="",start="20.0",finish="rst",steps=[])
+
+
 def save_json_fresh(folder,tag,payload):
     path=Path(folder)
     path.mkdir(parents=True,exist_ok=True)
@@ -105,7 +110,7 @@ class Studio(QMainWindow):
         self.inventory_current_session=False
         self._editor_last_verified_limits=None
         self.draft={}
-        self.programmes=[blank_programme() for _ in range(8)]
+        self.programmes=[empty_workspace_programme() for _ in range(8)]
         self.planned_sensor_by_slot=[None]*8  # local project metadata, not DA memory
         self.slot=0
         self.preview_stamp=None
@@ -406,7 +411,7 @@ class Studio(QMainWindow):
 
     def _new_offline_programme(self):
         if self._editing_locked():return
-        self.programmes[self.slot]=blank_programme()
+        self.programmes[self.slot]=empty_workspace_programme()
         self.planned_sensor_by_slot[self.slot]=None
         self.editor_sensor.setCurrentIndex(0)
         self._render_programme()
@@ -535,10 +540,10 @@ class Studio(QMainWindow):
         tlay.addWidget(self.segment_table,1)
 
         foot=QHBoxLayout()
-        self.programme_info=text("Set the target and segment rate or hold duration.",True)
+        self.programme_info=text("No local programme. Add a segment, import JSON or copy a stored programme.",True)
         foot.addWidget(self.programme_info,1)
         for caption,callback in [
-            ("Load 120 → 50 °C example",self.load_example),
+            ("Load example (optional)",self.load_example),
             ("Copy stored programme",self.copy_stored),
             ("Save project",self.save_project),
             ("Open project",self.open_project)]:
@@ -914,7 +919,7 @@ class Studio(QMainWindow):
     def _programme_pending(self):
         """Compare exact planned DA register values against the fresh backup."""
         ses=self.session
-        if not ses or not ses.backup_data or not ses.settings or not self.inventory_current_session:
+        if not ses or not ses.backup_data or not ses.settings or not self.inventory_current_session or not self.programmes[self.slot].steps:
             return False
         try:
             existing=ses.backup_data["programmes"][str(self.slot)]
@@ -1981,7 +1986,8 @@ class Studio(QMainWindow):
     def save_project(self):
         self.update_programme()
         try:
-            for p in self.programmes:p.validate(strict_range=False)
+            for p in self.programmes:
+                if p.steps:p.validate(strict_range=False)
         except Exception as exc:
             self.message("Project contains an invalid programme",str(exc),True);return
         path,_=QFileDialog.getSaveFileName(self,"Save local studio project",
@@ -2064,7 +2070,11 @@ class Studio(QMainWindow):
             obj=json.loads(Path(path).read_text(encoding="utf-8"))
             if obj.get("schema")!="e5cct-modern-studio-project-1" or len(obj["programmes"])!=8:
                 raise ValueError("Invalid or incomplete eight-programme project")
-            programs=[Programme.from_json(p) for p in obj["programmes"]]
+            programs=[
+                empty_workspace_programme() if isinstance(p,dict) and p.get("steps")==[]
+                else Programme.from_json(p)
+                for p in obj["programmes"]
+            ]
             draft={}
             for item in obj.get("configuration_changes",[]):
                 key,value=item["address"],item["value"]
@@ -2651,7 +2661,7 @@ class Studio(QMainWindow):
     def update_programme(self,*unused):
         if self._rendering or not hasattr(self,"segment_table"):return
         p=self.programmes[self.slot]
-        p.name=self.programme_name.text().strip()[:100] or "Unnamed programme"
+        p.name=(self.programme_name.text().strip()[:100] or "Unnamed programme") if self.segment_table.rowCount() else ""
         p.start=str(self.start_pv.value())
         p.finish=self.finish_mode.currentData()
         rows=[]
@@ -2666,6 +2676,17 @@ class Studio(QMainWindow):
 
     def _graph_current(self):
         p=self.programmes[self.slot]
+        if not p.steps:
+            self.chart.show_points([])
+            self.programme_info.setText(
+                "Empty local workspace · No programme created or selected for transfer.")
+            self.temperature_limits_hint.setText(
+                "The stored programmes are available under Read & Backup. "
+                "Add a segment to start a new programme, or explicitly copy "
+                "a stored programme into this editor.")
+            self.temperature_limits_hint.setStyleSheet("color:#627a90;")
+            self._refresh_wait_hint()
+            return
         limits,error=self._effective_programme_limits()
         conflicts=self._programming_conflicts()
         pending_issues=self._pending_compatibility_issues()
@@ -3043,6 +3064,13 @@ class Studio(QMainWindow):
         self.update_programme()
         p=self.programmes[self.slot]
         try:
+            if not p.steps:
+                self.apply_overview.setText(
+                    f"Programme {self.slot}  ·  Empty local workspace  ·  "
+                    f"{len(self.draft)} proposed configuration changes")
+                raise ValidationError(
+                    "No programme prepared. Reading the controller did not "
+                    "create or queue a local programme for uploading.")
             limits,error=self._effective_programme_limits()
             if error and self.inventory_current_session:
                 raise ValidationError("Cannot verify controller SP limits: "+error)
@@ -3050,8 +3078,15 @@ class Studio(QMainWindow):
             self.apply_overview.setText(
                 f"Programme {self.slot}  ·  {len(p.steps)} segments  ·  {m['minutes']:.1f} minutes "
                 f"nominal  ·  Final SP {m['final_sp']:g} °C  ·  {len(self.draft)} proposed configuration changes")
+        except ValidationError as exc:
+            if p.steps:self.apply_overview.setText("Invalid programme: "+str(exc))
         except Exception as exc:self.apply_overview.setText("Invalid programme: "+str(exc))
         lines=[]
+        if not p.steps:
+            lines.append("No local programme has been created. The controller's "
+                         "stored memories are backed up, NOT selected for writing. "
+                         "To edit, use Step 3: add a segment, import a programme "
+                         "or explicitly copy a stored memory.")
         for i,s in enumerate(p.steps,1):
             if s.type=="ramp":desc=f"Ramp to {s.sp} °C at {s.rate} °C/min"
             elif s.type=="soak":desc=f"Soak for {s.minutes} minutes"
@@ -3194,7 +3229,7 @@ class Studio(QMainWindow):
         if not hasattr(self,"stage_button"):return
         session=self.session
         connected=bool(session and self.client and self.mode=="connected")
-        can_preview=(connected and session.backup_data is not None and not self.busy
+        can_preview=(connected and bool(self.programmes[self.slot].steps) and session.backup_data is not None and not self.busy
                      and not self.draft and session.staged is None
                      and self.setting_transfer is None and self.c1_transfer is None
                      and self.c3_transfer is None)
@@ -3270,6 +3305,10 @@ class Studio(QMainWindow):
                     reasons.append("CMW OFF acknowledged: confirm lamp goes out, then power-cycle and verify receipt.")
                 else:
                     reasons.append("Save acknowledged: finish programming (CMW OFF), then power-cycle and verify receipt.")
+            elif not self.programmes[self.slot].steps:
+                reasons.append(
+                    "READ ONLY: No local programme. Nothing to transfer; use "
+                    "Step 3 only if you want to create, import or copy a programme.")
             elif not self.preview_stamp:
                 reasons.append("Preview the exact differences before any RAM write.")
             elif can_stage:
@@ -3469,6 +3508,12 @@ class Studio(QMainWindow):
 
     def preview(self):
         if not self.session or self.busy or self.draft:return
+        if not self.programmes[self.slot].steps:
+            self.message("Nothing to transfer",
+                "No local programme exists in this memory. Reading the "
+                "controller creates a backup, not an upload request. "
+                "Explicitly add, copy or import a programme first.")
+            return
         try:
             self.update_programme()
             selected=copy.deepcopy(self.programmes[self.slot])
@@ -3581,6 +3626,16 @@ class Studio(QMainWindow):
     def refresh_manual(self):
         """Same complete parameter plan drives the guided UI and printed guide."""
         if not hasattr(self,"entry_table"):return
+        if not self.programmes[self.slot].steps:
+            self._manual_plan=None
+            self._manual_all_rows=[]
+            self.entry_table.setRowCount(0)
+            self.entry_summary.setText("No local programme to enter manually.")
+            self.manual_instructions.setPlainText(
+                "Add a programme segment, import a project or explicitly "
+                "copy a controller memory into the editor first. "
+                "A read-only backup does not constitute a manual entry plan.")
+            return
         try:
             plan=make_entry_plan(self.programmes[self.slot],self.slot,
                                  self.inventory["fields"],self._manual_configuration())
