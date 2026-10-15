@@ -89,6 +89,35 @@ class ModernStudioTests(unittest.TestCase):
             self.assertEqual(data["planned_sensor_by_slot"][3],5)
             self.assertEqual(float(data["programmes"][3]["steps"][0]["sp"]),600)
 
+    def test_read_only_transfer_tab_does_not_claim_pending_changes(self):
+        from types import SimpleNamespace
+        self.win.show_step(4)
+        self.assertIn("NO TRANSFER REQUESTED",self.win.transfer_request_status.text())
+        self.win.session=SimpleNamespace(ram_touched=False,committed=False,staged=None)
+        self.win.client=object()
+        self.win.draft={}
+        self.win.preview_changes=[]
+        self.win.preview_stamp=None
+        self.win._refresh_transfer_summary()
+        self.assertIn("READ COMPLETE",self.win.transfer_request_status.text())
+        self.assertIn("No controller modifications requested",
+                      self.win.transfer_request_status.text())
+        self.assertIn("separate workspace",self.win.transfer_request_status.text())
+        self.win.preview_changes=[(0x100,0,1)]
+        self.win.preview_stamp=("selected-programme",)
+        self.win._refresh_transfer_summary()
+        self.assertIn("PREVIEW ONLY",self.win.transfer_request_status.text())
+        self.win.preview_stamp=None
+        self.win.preview_changes=[]
+        self.win.draft={"C1:0021":10}
+        self.win._refresh_transfer_summary()
+        self.assertIn("LOCAL PROPOSALS",self.win.transfer_request_status.text())
+        self.win.draft={}
+        self.win.session=None
+        self.win.client=None
+        self.win._refresh_transfer_summary()
+        self.assertIn("NO TRANSFER REQUESTED",self.win.transfer_request_status.text())
+
     def test_five_steps_and_offline_mode(self):
         self.assertEqual(self.win.pages.count(),5)
         self.assertEqual(len(self.win.navbuttons),5)
