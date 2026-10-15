@@ -1801,8 +1801,12 @@ class Studio(QMainWindow):
         if not quiet:
             self.progress.show()
             self.feedback.setText("Working: "+title)
-        self.log_event("START "+title+(" [hardware write]" if is_write else " [read only/local]"))
-        self._controls()
+        # The periodic read-only heartbeat uses the serial/busy guard but
+        # must not mutate foreground UI state. Recalculating controls here
+        # used to flicker blue buttons and transiently change NEXT ACTION.
+        if not quiet:
+            self.log_event("START "+title+(" [hardware write]" if is_write else " [read only/local]"))
+            self._controls()
         worker=Task(action);self.workers.add(worker)
         worker.signals.progress.connect(lambda value:self.feedback.setText(str(value)) if not quiet else None)
         def delivered(value):
@@ -1819,7 +1823,10 @@ class Studio(QMainWindow):
             self.busy=False
             if not quiet:self.progress.hide()
             self.workers.discard(worker)
-            self._controls()
+            # No normal repaint after a healthy heartbeat. A real USB loss,
+            # however, must redraw disabled controls once after busy clears.
+            if not quiet or self.client is None:
+                self._controls()
         worker.signals.finished.connect(cleanup)
         self.pool.start(worker)
 
@@ -2078,7 +2085,11 @@ class Studio(QMainWindow):
         def probe(progress):
             return self.client.status()
         def ok(status):
-            if not status: self._lost_link("Controller returned empty status")
+            if not status:
+                # This callback runs while the heartbeat owns self.busy.
+                # _lost_link() deliberately ignores busy sessions; use the
+                # actual disconnect handler for an empty response.
+                self._mark_link_lost("Controller returned empty status")
         # Health is a read-only transaction and skipped during any other work.
         self._work("Read-only USB health check",probe,ok,quiet=True)
     def _mark_link_lost(self,reason):

@@ -349,6 +349,56 @@ class QtConnectedTests(unittest.TestCase):
         self.assertTrue(self.win.unified_preview.isEnabled())
         self.assertFalse(self.win.transfer_block_reason.isVisible())
 
+    def test_healthy_heartbeat_is_silent_without_button_or_message_flicker(self):
+        """Use the actual Qt worker/signal path, not the test's normal _work stub."""
+        self.win.connect_read()
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.show_step(4)
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.assertTrue(self.win.btn_read.isEnabled())
+        initial=(self.win.unified_preview.isEnabled(),
+                 self.win.btn_read.isEnabled(),
+                 self.win.usb_next_action.text(),
+                 self.win.transfer_request_status.text())
+        log_count=len(self.win.audit_entries)
+        self.win._work=Studio._work.__get__(self.win,Studio)
+        class InlinePool:
+            def start(self,task):
+                task.run()
+        self.win.pool=InlinePool()
+        with patch("qt_app.serial_ports",return_value=["COM7"]):
+            with patch.object(self.win,"_controls",wraps=self.win._controls) as updates:
+                for _ in range(4):
+                    self.win._monitor_connection()
+                self.assertEqual(updates.call_count,0)
+        self.assertFalse(self.win.busy)
+        self.assertEqual(len(self.win.audit_entries),log_count)
+        self.assertEqual(initial,(self.win.unified_preview.isEnabled(),
+                                  self.win.btn_read.isEnabled(),
+                                  self.win.usb_next_action.text(),
+                                  self.win.transfer_request_status.text()))
+
+    def test_heartbeat_empty_response_still_disconnects(self):
+        self.win.connect_read()
+        self.win.show_step(4)
+        self.win._work=Studio._work.__get__(self.win,Studio)
+        class InlinePool:
+            def start(self,task):
+                task.run()
+        self.win.pool=InlinePool()
+        client=self.win.client
+        with patch("qt_app.serial_ports",return_value=["COM7"]):
+            with patch.object(client,"status",return_value=""):
+                for _ in range(4):
+                    self.win._monitor_connection()
+        self.assertIsNone(self.win.client)
+        self.assertIsNone(self.win.session)
+        self.assertFalse(self.win.busy)
+        self.assertIn("USB disconnected",self.win.link_status.text())
+        self.assertFalse(self.win.unified_preview.isEnabled())
+        self.assertFalse(self.win.btn_disconnect.isEnabled())
+
     def test_unified_programme_transfer_auto_finishes_cmw(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
