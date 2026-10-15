@@ -2242,20 +2242,30 @@ class Studio(QMainWindow):
 
     def _populate_memories(self):
         if not self.backup:return
-        self.memory_table.setRowCount(8)
-        for i in range(8):
-            try:
-                data=decode_slot(self.backup,i)
-                desc=data["segments"][0]["description"] if data["segments"] else "Unknown"
-                if data["warnings"]:desc="Unverified interpretation · "+desc
-                self._cell(self.memory_table,i,0,i)
-                self._cell(self.memory_table,i,1,data["count"])
-                self._cell(self.memory_table,i,2,desc)
-            except Exception as exc:
-                self._cell(self.memory_table,i,0,i)
-                self._cell(self.memory_table,i,1,"—")
-                self._cell(self.memory_table,i,2,"Unavailable: "+str(exc))
-        self.memory_table.selectRow(0)
+        # Rebuild the table and details from ONE backup snapshot. Qt does not
+        # emit itemSelectionChanged when an already-selected row remains row 0;
+        # previously the table used new raw data while its graph/info stayed
+        # on the old input type (potentially a tenfold SP error for K 5/6).
+        original_signals_blocked=self.memory_table.blockSignals(True)
+        try:
+            self.memory_table.setRowCount(8)
+            for i in range(8):
+                try:
+                    data=decode_slot(self.backup,i)
+                    desc=data["segments"][0]["description"] if data["segments"] else "Unknown"
+                    if data["warnings"]:desc="Unverified interpretation · "+desc
+                    self._cell(self.memory_table,i,0,i)
+                    self._cell(self.memory_table,i,1,data["count"])
+                    self._cell(self.memory_table,i,2,desc)
+                except Exception as exc:
+                    self._cell(self.memory_table,i,0,i)
+                    self._cell(self.memory_table,i,1,"—")
+                    self._cell(self.memory_table,i,2,"Unavailable: "+str(exc))
+            self.memory_table.selectRow(0)
+        finally:
+            self.memory_table.blockSignals(original_signals_blocked)
+        # Do not rely on the selection-change signal: it can be absent on re-read.
+        self._memory_selected()
 
     def _memory_selected(self):
         if not self.backup:return

@@ -163,6 +163,48 @@ class ModernStudioTests(unittest.TestCase):
             self.assertEqual(self.win.segment_table.rowCount(),0)
             self.assertTrue(all(not p.steps for p in self.win.programmes))
 
+    def test_reread_refreshes_selected_stored_graph_across_sensor_scale_change(self):
+        # A second read used to update the table but leave the description and
+        # graph on the old 1°C input when row 0 was still selected.
+        def snapshot(input_code):
+            programmes={str(i):["00000000"]*150 for i in range(8)}
+            for words in programmes.values():
+                words[0]="00000002"
+                words[0x0e]="00000000"
+                words[0x0f]="FFFFFFFF"
+                words[0x16]="00000000"  # ramp
+                words[0x17]="000000C8"  # 200 raw
+                words[0x18]="00000002"
+                words[0x1a]="00000001"  # soak
+                words[0x1d]="00000007"  # 7 min
+            return {"schema":"e5cct-backup-1",
+                    "controller":{"model10":"E5CC-TQX3A"},
+                    "preflight":{"C3:0000":input_code,"C3:0004":0,
+                                 "C3:00BA":1,"C3:00BB":0,"C3:00B9":0,
+                                 "C3:00BF":0},
+                    "programmes":programmes}
+
+        self.win.backup=snapshot(5)
+        self.win._populate_memories()
+        self.assertEqual(self.win.memory_table.currentRow(),0)
+        self.assertIn("Ramp to 200 °C",self.win.memory_table.item(0,2).text())
+        self.assertIn("Ramp to 200 °C",self.win.explorer_info.toPlainText())
+        self.assertIn("C3:0000 = 5",self.win.explorer_info.toPlainText())
+        self.assertIn("DA:0017 = 000000C8",self.win.explorer_info.toPlainText())
+
+        # Same selection and same DA memory, only input interpretation changes.
+        self.win.backup=snapshot(6)
+        self.win._populate_memories()
+        self.assertEqual(self.win.memory_table.currentRow(),0)
+        self.assertIn("Ramp to 20 °C",self.win.memory_table.item(0,2).text())
+        self.assertIn("Ramp to 20 °C",self.win.explorer_info.toPlainText())
+        self.assertNotIn("Ramp to 200 °C",self.win.explorer_info.toPlainText())
+        self.assertIn("C3:0000 = 6",self.win.explorer_info.toPlainText())
+        self.assertIn("DA:0017 = 000000C8",self.win.explorer_info.toPlainText())
+        from backup_explorer import decode_slot,profile_points
+        profile=profile_points(decode_slot(self.win.backup,0),20)
+        self.assertEqual(profile[-1],(7.0,20.0))
+
     def test_five_steps_and_offline_mode(self):
         self.assertEqual(self.win.pages.count(),5)
         self.assertEqual(len(self.win.navbuttons),5)

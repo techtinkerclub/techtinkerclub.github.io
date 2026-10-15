@@ -183,8 +183,17 @@ def profile_points(summary, initial_pv=20.0):
 
 def summary_as_plaintext(summary, assumed_start=20):
     """Printable concise report. Explicitly states any unverified interpretation."""
+    input_code=summary["scale"]
+    input_description=SENSOR_INPUTS.get(input_code,"Unrecognised input type")
+    resolution=(
+        f"{SENSOR_RANGES[input_code][2]:g} °C per raw count"
+        if input_code in SENSOR_RANGES else
+        "analogue/unknown: review input scaling"
+    )
     lines = [f"PROGRAMME {summary['slot']} — READ-ONLY CONTROLLER MEMORY",
              f"Controller prefix: {summary['model']}",
+             f"Input at BACKUP read: C3:0000 = {input_code} ({input_description})",
+             f"DA setpoint decoding: {resolution}; NOT a live reread.",
              f"Active segments: {summary['count']}",
              f"Start mode: {'SP Start' if summary['start_mode']==0 else 'PV Start' if summary['start_mode']==1 else 'unverified'}",
              ""]
@@ -192,6 +201,10 @@ def summary_as_plaintext(summary, assumed_start=20):
         lines.append("No interpretable active segments.")
     for segment in summary["segments"]:
         lines.append(f"{segment['index'] + 1}. {segment['description']}")
+        if segment["type"] in ("ramp","step"):
+            raw_target=segment["raw"][1]
+            address=0x16 + 4*segment["index"] + 1
+            lines.append(f"   Stored target DA:{(summary['slot']<<8)|address:04X} = {raw_target} (hex; unscaled)")
     lines.extend(["", summary["repeat_text"], summary["link_text"]])
     curve = profile_points(summary, assumed_start)
     if curve is not None:
