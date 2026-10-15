@@ -648,6 +648,54 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(fake.area,0)
         self.assertFalse(any(c[0]=="setting-write" for c in fake.calls))
 
+    def test_clamped_target_can_be_copied_repaired_and_only_then_uploaded(self):
+        """Input 5: after sensor switch, 2000 raw was clamped to 1300 raw.
+        The local copy must never validate against fallback input-6 limits.
+        """
+        import json
+        from program_model import planned_writes,ValidationError
+        from programme_constraints import effective_limits
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        # Populate controller memory with the exact photographed profile.
+        fake.da[0][0]=2
+        fake.da[0][0x16]=0   # ramp
+        fake.da[0][0x17]=1300
+        fake.da[0][0x18]=20
+        fake.da[0][0x1a]=1   # soak
+        fake.da[0][0x1d]=8   # 8 minutes
+        self.win.session.backup_data["programmes"]["0"]=[
+            f"{raw:08X}" for raw in fake.da[0]]
+        self.win.backup=self.win.session.backup_data
+        self.win.session.backup_file.write_text(
+            json.dumps(self.win.backup,indent=2),encoding="utf-8")
+        self.win._populate_memories()
+        self.assertIn("1300",self.win.memory_table.item(0,2).text())
+        self.win.show_step(1)
+        with patch.object(QMessageBox,"question",return_value=QMessageBox.StandardButton.Yes):
+            self.win.copy_stored()
+        self.assertEqual(self.win._current_step,2)
+        self.assertEqual(self.win.programmes[0].steps[0].sp,"1300.0")
+        self.assertEqual(float(self.win.programmes[0].steps[0].rate),20.0)
+        self.assertEqual(self.win.programmes[0].steps[1].minutes,"8")
+        self.assertEqual(self.win.segment_table.cellWidget(0,0).target.spin.value(),1300)
+        self.assertIsNone(self.win.planned_sensor_by_slot[0])
+        self.assertIsNone(self.win.editor_sensor.currentData())
+        self.assertFalse(any(c[0]=="write" for c in fake.calls))
+        self.assertFalse(any(c[0]=="setting-write" for c in fake.calls))
+
+        # A lower *actual* SP upper limit must not prevent editing the copy,
+        # but MUST prevent encoding it for USB transfer.
+        limited=dict(self.win.inventory["fields"])
+        limited["C3:0005"]=500
+        limits=effective_limits(limited,require_readback=True)
+        with self.assertRaisesRegex(ValidationError,"outside permitted"):
+            planned_writes(0,self.win.programmes[0],input_type=5,limits=limits)
+        self.win.programmes[0].steps[0].sp="200"
+        self.assertIn(
+            200,dict(planned_writes(
+                0,self.win.programmes[0],input_type=5,limits=limits)).values())
+
     def test_global_sensor_proposal_does_not_reinterpret_editor_or_upload_DA(self):
         import copy
         self.win.connect_read()

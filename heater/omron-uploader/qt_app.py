@@ -2642,16 +2642,48 @@ class Studio(QMainWindow):
                     else:steps.append(Segment("ramp",sp=str(entry["sp"]),rate=str(entry["rate"])))
                 else:raise ValueError("Unknown segment type")
             loaded=Programme("Copy of stored programme "+str(selected),"20","rst",steps)
-            loaded.validate()
+            # Read-only snapshots can contain out-of-range targets after a
+            # sensor-input change. Do not reject or silently clamp those
+            # targets: the operator must be able to open and REPAIR the copy.
+            # Structural/numeric checks remain active, but current controller
+            # range and resolution are enforced by the separate upload path.
+            loaded.validate(strict_range=False)
         except Exception as exc:
             self.message("Cannot safely edit stored programme",str(exc),True);return
-        if QMessageBox.question(self,"Edit stored programme",
-            f"Copy stored memory {selected} into local editor? This does NOT write the Omron.")!=QMessageBox.StandardButton.Yes:return
+        limits,limits_error=self._effective_programme_limits()
+        if limits_error:
+            repair_note="Controller limits are not currently verified; read the controller before any upload."
+        elif limits is None:
+            repair_note="Controller limits unavailable; read the controller before any upload."
+        else:
+            issues=programme_issues(loaded,limits)
+            repair_note=(
+                "The stored programme needs correction for the current controller "
+                "settings before an upload:\n• "+"\n• ".join(issues[:5])
+                if issues else
+                "The stored programme is compatible with the currently read "
+                "temperature/setpoint limits, subject to the usual upload checks."
+            )
+        if QMessageBox.question(self,"Copy stored programme into editor",
+            f"Open stored memory {selected} as an editable local copy?\n\n"
+            +repair_note+"\n\n"
+            "This will NOT write to the Omron. The original controller backup "
+            "is preserved. No programme will be uploaded without an explicit "
+            "preview and the normal live validation.")!=QMessageBox.StandardButton.Yes:return
         self.programmes[selected]=loaded
+        # The actual stored programme was decoded from the backup's sensor
+        # selection. Discard any unrelated stale local sensor-plan metadata.
+        self.planned_sensor_by_slot[selected]=None
         self.slot_combo.setCurrentIndex(selected)
+        self.editor_sensor.blockSignals(True)
+        self.editor_sensor.setCurrentIndex(0)  # 'Controller as read'
+        self.editor_sensor.blockSignals(False)
         self._render_programme()
         self.preview_stamp=None
         self.show_step(2)
+        self.feedback.setText(
+            f"Stored programme {selected} copied locally for editing. "
+            "Controller memory unchanged; upload requires a separate preview.")
 
     def _slot_changed(self,slot):
         if slot<0:return
