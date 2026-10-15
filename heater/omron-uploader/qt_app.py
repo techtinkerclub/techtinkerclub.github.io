@@ -1749,10 +1749,16 @@ class Studio(QMainWindow):
             else:
                 wt_status="No completed Wait Band operation"
         elif self.draft:
-            eligible=set(self.draft).issubset(QUALIFIED_C1_CODES)
-            wt_status=(f"{len(self.draft)} proposed setting change(s), NOT written"
-                       + ("; isolated-lab C1 transfer available" if eligible
-                          else "; contains parameters not yet USB-writable"))
+            proposed=set(self.draft)
+            if proposed.issubset(QUALIFIED_C3_CODES):
+                scope="C3 initial settings (separate setting-area-1 transfer)"
+            elif proposed.issubset(QUALIFIED_C1_CODES):
+                scope="C1 adjustment settings (isolated-lab transfer)"
+            elif proposed.issubset(QUALIFIED_C5_CODES):
+                scope="C5 fixed PID settings (isolated-lab transfer)"
+            else:
+                scope="mixed or unsupported settings; review each proposal"
+            wt_status=(f"{len(self.draft)} proposed setting change(s), NOT written; "+scope)
         elif self.inventory_current_session and self.inventory["fields"].get("C1:0021") is not None:
             raw=self.inventory["fields"]["C1:0021"]
             wt_status=f"No pending changes; wt-b read from controller: {raw/10:g} °C"
