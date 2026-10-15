@@ -102,6 +102,7 @@ class Studio(QMainWindow):
         self.include_programme_with_settings=False
         self.wait_receipt_match=None
         self.programme_receipt_match=None
+        self.last_completed_transfer=None  # same-power-session readback, not retention proof
         self.port=None
         self.backup=None
         self.backup_comparison=None
@@ -1851,6 +1852,135 @@ class Studio(QMainWindow):
             ("\n\nWRITE STATE UNCERTAIN. Keep the heater isolated and inspect the controller before retrying."
              if is_write else ""),True)
 
+    def _read_fresh_baseline(self,client,folder,progress,expected_model=None):
+        """Read and back up the live controller; NEVER write or restart it.
+
+        Called after CMW OFF inside the already-confirmed SAVE worker, and
+        during ordinary connection. This is NOT a power-cycle retention test.
+        """
+        previous_permission=client.write_allowed
+        client.write_allowed=False
+        try:
+            ses=TransferSession(client)
+            progress("Reading controller identity and initial settings…")
+            ses.preflight()
+            if expected_model is not None and ses.info["model10"]!=expected_model:
+                raise RuntimeError("Controller identity changed after SAVE; refusing new session")
+            progress("Backing up all eight programmes (read only)…")
+            ses.backup(folder,progress=lambda done,total:
+                       progress(f"Backing up programme {done}/{total}…"))
+            progress("Reading initial configuration…")
+            setup=read_snapshot(client,ses.info,ses.settings)
+            setup_path=save_json_fresh(folder,"initial-settings",setup)
+            progress("Reading extended documented inventory (read only)…")
+            inventory_error=None
+            try:
+                inv=read_inventory(client,ses.info,progress=lambda done,total:
+                    progress(f"Extended register inventory: {done}/{total}…"))
+                inv_path=save_json_fresh(folder,"full-inventory",inv)
+            except Exception as exc:
+                inv=offline_inventory()
+                inv_path=None
+                inventory_error=str(exc)
+            return ses,setup,inv,setup_path,inv_path,inventory_error
+        finally:
+            # No write command is issued during this refresh. A subsequent
+            # write still needs a new proposal, preview and user confirmation.
+            client.write_allowed=previous_permission
+
+    def _check_same_session_receipt(self,receipt,kind,client,backup):
+        """Assert current registers match the saved receipt, without claiming
+        they survived physical power loss or creating a false retention receipt."""
+        if kind=="programme":
+            data=json.loads(Path(receipt).read_text(encoding="utf-8"))
+            if data.get("schema")!="e5cct-upload-receipt-1":
+                raise RuntimeError("Incorrect programme receipt after SAVE")
+            if data["controller_model10"]!=backup["controller"]["model10"]:
+                raise RuntimeError("Programme receipt controller does not match fresh read")
+            slot=data["programme_slot"]
+            if not isinstance(slot,int) or not 0<=slot<8:
+                raise RuntimeError("Bad programme slot in SAVE receipt")
+            raw=backup["programmes"][str(slot)]
+            for row in data["changes"]:
+                address=int(row["address"],16)
+                if address>>8!=slot or (address&255)>=len(raw):
+                    raise RuntimeError("Unexpected programme address in receipt")
+                if int(raw[address&255],16)!=int(row["written"],16):
+                    raise RuntimeError(f"Saved DA:{address:04X} differs in fresh backup")
+        elif kind=="wait":
+            verify_wait_receipt(client,receipt,backup["controller"]["model10"])
+        elif kind=="c1":
+            verify_c1_receipt(client,receipt,backup["controller"]["model10"])
+        elif kind=="c5":
+            verify_c5_receipt(client,receipt,backup["controller"]["model10"])
+        elif kind=="combined":
+            verify_combined_receipt(client,receipt,backup["controller"]["model10"])
+        else:
+            raise RuntimeError("Unsupported post-SAVE refresh scope")
+
+    def _save_then_refresh(self,save_action,kind,progress):
+        """SAVE + verified CMW OFF are completed by save_action BEFORE reading."""
+        old=self.session
+        if not self.client or not old or not old.info:
+            raise RuntimeError("Missing original controller identity")
+        receipt=save_action()
+        # The callback only returns on a fully verified SAVE and CMW OFF.
+        progress("SAVE + CMW OFF acknowledged. Refreshing read-only baseline…")
+        data=self._read_fresh_baseline(
+            self.client,self.folder.text(),progress,old.info["model10"])
+        self._check_same_session_receipt(receipt,kind,self.client,data[0].backup_data)
+        return receipt,data
+
+    def _accept_post_save_refresh(self,result,kind):
+        """Release old transfer locks only after successful fresh readback."""
+        receipt,data=result
+        ses,setup,inv,setup_file,inv_file,inventory_error=data
+        self.session=ses
+        self.backup=ses.backup_data
+        self.snapshot=setup
+        self.inventory=inv
+        self.inventory_current_session=inventory_error is None
+        self.setting_transfer=None
+        self.c1_transfer=None
+        self.c5_transfer=None
+        self.combined_transfer=None
+        self.c3_transfer=None
+        self.include_programme_with_settings=False
+        self.draft={}
+        self.preview_stamp=None
+        self.preview_changes=[]
+        self.c1_receipt_match=None
+        self.c5_receipt_match=None
+        self.wait_receipt_match=None
+        self.programme_receipt_match=None
+        self._editor_last_verified_limits=None
+        self.last_completed_transfer={"kind":kind,"receipt":str(receipt)}
+        self.initial_text.setPlainText(setup_report(setup))
+        self.inventory_text.setPlainText(
+            ("Extended inventory failed: "+inventory_error+
+             "\nFull settings inventory is required before another settings transfer."
+             if inventory_error else report_inventory(inv)))
+        self._populate_memories()
+        self.refresh_settings()
+        self.refresh_review()
+        self.feedback.setText(
+            "SAVE complete · Fresh readback matches · Ready for another edit. "
+            "Power-loss retention not tested.")
+        self.read_message.setText(
+            "Fresh post-SAVE controller backup complete; "
+            +("extended inventory unavailable: "+inventory_error if inventory_error
+              else "all eight memories and extended settings read."))
+        self.log_event(
+            "SAVE + CMW OFF confirmed; fresh same-power-session backup passed; "
+            "not a physical power-cycle retention test. Receipt: "+str(receipt))
+        self.message("Saved and ready for another change",
+            "The controller acknowledged SAVE and CMW OFF. A new read-only "
+            "baseline and programme backup matched the saved values. "
+            "You can now propose another change without unplugging USB.\n\n"
+            "This does NOT prove the values survive removing controller power. "
+            "For that optional check, physically power-cycle and verify the "
+            "saved receipt later.\n\nReceipt: "+str(receipt))
+
     def connect_read(self):
         if self.busy:return
         port=self.port_combo.currentText().strip()
@@ -1864,28 +1994,8 @@ class Studio(QMainWindow):
         def job(progress):
             client=SerialClient(port,write_allowed=self.lab)
             try:
-                ses=TransferSession(client)
-                progress("Reading controller identity and nine preflight settings…")
-                ses.preflight()
-                progress("Backing up eight programme memories (read only)…")
-                ses.backup(folder,progress=lambda done,total:
-                           progress(f"Backing up programme {done}/{total}…"))
-                progress("Reading initial configuration…")
-                setup=read_snapshot(client,ses.info,ses.settings)
-                setup_path=save_json_fresh(folder,"initial-settings",setup)
-                progress("Reading extended documented inventory (read only)…")
-                inventory_error=None
-                try:
-                    inv=read_inventory(client,ses.info,progress=lambda done,total:
-                       progress(f"Extended register inventory: {done}/{total}…"))
-                    inv_path=save_json_fresh(folder,"full-inventory",inv)
-                except Exception as exc:
-                    # A missing optional register or interrupted extended survey
-                    # must not discard the successfully verified DA backup.
-                    inv=offline_inventory()
-                    inv_path=None
-                    inventory_error=str(exc)
-                return client,ses,setup,inv,setup_path,inv_path,inventory_error
+                data=self._read_fresh_baseline(client,folder,progress)
+                return (client,*data)
             except BaseException:
                 client.close()
                 raise
@@ -1901,6 +2011,7 @@ class Studio(QMainWindow):
             self.include_programme_with_settings=False
             self.wait_receipt_match=None
             self.programme_receipt_match=None
+            self.last_completed_transfer=None
             self.inventory_current_session=(inventory_error is None)
             self._editor_last_verified_limits=None
             self.port=port
