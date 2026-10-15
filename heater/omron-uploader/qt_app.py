@@ -836,7 +836,11 @@ class Studio(QMainWindow):
         self.include_programme_button.setToolTip(
             "Explicitly select the current programme for one guarded DA + wt-b transfer. "
             "Without this, a Wait Band proposal writes ONLY Wait Band.")
-        transfer_layout.addWidget(self.include_programme_button)
+        # Show this optional action only when a genuine combined transfer is possible.
+        # Keep it compact rather than leaving a full-width disabled grey bar.
+        self.include_programme_button.setVisible(False)
+        transfer_layout.addWidget(
+            self.include_programme_button,0,Qt.AlignmentFlag.AlignLeft)
         unified_actions=QHBoxLayout()
         self.unified_preview=button("1  Read + Preview",self.unified_preview_action,True)
         self.unified_stage=button("2  Write RAM + Verify",self.unified_stage_action)
@@ -905,8 +909,11 @@ class Studio(QMainWindow):
         self.show_step(1)
 
     def toggle_programme_inclusion(self):
-        if (not self.client or not self.session or self.busy
+        if (not self.lab or not self.client or not self.session or self.busy
                 or self._combined_ram_pending() or self.combined_transfer is not None):
+            return
+        if (not self.include_programme_with_settings
+                and (set(self.draft)!={"C1:0021"} or not self._programme_pending())):
             return
         self.include_programme_with_settings=not self.include_programme_with_settings
         self.preview_stamp=None
@@ -3387,13 +3394,20 @@ class Studio(QMainWindow):
         self._refresh_transfer_summary()
         if hasattr(self,"unified_preview"):
             kind=self._active_transfer_kind()
+            # Do not display a disabled combined-transfer control during normal
+            # programme editing, read-only inspection or C3/C5/C1 transfers.
+            combined_candidate=bool(
+                connected and self.lab and set(self.draft)=={"C1:0021"}
+                and self._programme_pending())
+            self.include_programme_button.setVisible(bool(
+                combined_candidate or self.include_programme_with_settings
+                or self.combined_transfer is not None))
             self.include_programme_button.setText(
                 "Programme included in transfer: ON" if self.include_programme_with_settings
                 else "Include selected programme with Wait Band: OFF")
             self.include_programme_button.setEnabled(bool(
-                connected and not self.busy and not self.fail_latched
-                and (self.include_programme_with_settings or
-                     (set(self.draft)=={"C1:0021"} and self._programme_pending()))
+                connected and self.lab and not self.busy and not self.fail_latched
+                and (self.include_programme_with_settings or combined_candidate)
                 and self.combined_transfer is None and not session.ram_touched
                 and self.setting_transfer is None and self.c1_transfer is None
                 and self.c5_transfer is None))

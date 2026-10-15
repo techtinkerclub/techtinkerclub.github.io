@@ -330,6 +330,47 @@ class QtConnectedTests(unittest.TestCase):
         self.win.unified_save_action()
         self.assertFalse(any(c[0] in ("write","setting-write") for c in fake.calls))
 
+    def test_combined_option_hidden_except_when_both_transfers_are_proposed(self):
+        # Reading alone must not display a giant disabled combined-transfer control.
+        self.win.show_step(4)
+        self.assertTrue(self.win.include_programme_button.isHidden())
+        self.win.connect_read()
+        self.win.show_step(4)
+        self.assertTrue(self.win.include_programme_button.isHidden())
+
+        # A Wait Band proposal alone is not a combined programme transfer.
+        self.win.draft={"C1:0021":20}
+        self.win.refresh_actions()
+        self.assertTrue(self.win.include_programme_button.isHidden())
+
+        # A local programme without a Wait Band proposal also does not need it.
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.draft={}
+        self.win.refresh_actions()
+        self.assertTrue(self.win.include_programme_button.isHidden())
+
+        # C3 configuration changes must never advertise DA+Wait Band inclusion.
+        self.win.draft={"C3:0000":6}
+        self.win.refresh_actions()
+        self.assertTrue(self.win.include_programme_button.isHidden())
+
+        # It becomes available only for a changed programme plus Wait Band.
+        self.win.draft={"C1:0021":20}
+        self.win.refresh_actions()
+        self.assertFalse(self.win.include_programme_button.isHidden())
+        self.assertTrue(self.win.include_programme_button.isEnabled())
+        self.win.toggle_programme_inclusion()
+        self.assertIn("ON",self.win.include_programme_button.text())
+
+        # Preserve a previously selected inclusion visibly if the draft changes
+        # to an invalid combination, so the operator can turn it back OFF.
+        self.win.draft={"C3:0000":6}
+        self.win.refresh_actions()
+        self.assertFalse(self.win.include_programme_button.isHidden())
+        self.win.toggle_programme_inclusion()
+        self.assertTrue(self.win.include_programme_button.isHidden())
+
     def test_combined_wait_and_programme_one_save_and_cmw_off(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
