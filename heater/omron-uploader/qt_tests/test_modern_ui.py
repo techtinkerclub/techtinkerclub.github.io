@@ -118,6 +118,50 @@ class ModernStudioTests(unittest.TestCase):
         self.win._refresh_transfer_summary()
         self.assertIn("NO TRANSFER REQUESTED",self.win.transfer_request_status.text())
 
+    def test_new_session_has_no_implicit_programme_or_write_candidate(self):
+        from types import SimpleNamespace
+        # The controller's stored data is a backup, NOT automatically a draft.
+        self.assertTrue(all(len(p.steps)==0 for p in self.win.programmes))
+        self.win.show_step(2)
+        self.assertEqual(self.win.segment_table.rowCount(),0)
+        self.assertIn("Empty local workspace",self.win.programme_info.text())
+        self.win.show_step(4)
+        self.assertIn("Empty local workspace",self.win.apply_overview.text())
+        self.assertIn("No local programme",self.win.apply_details.toPlainText())
+        self.win.session=SimpleNamespace(
+            ram_touched=False,committed=False,staged=None,
+            backup_data={"programmes":{"0":["00000000"]*150}},
+            settings={"C3:0000":6})
+        self.win.client=object()
+        self.win.inventory_current_session=True
+        self.assertFalse(self.win._programme_pending())
+        self.win.refresh_actions()
+        self.assertFalse(self.win.preview_button.isEnabled())
+        self.assertFalse(self.win.unified_preview.isEnabled())
+        self.win.preview()
+        self.assertEqual(self.win.preview_changes,[])
+        self.assertIsNone(self.win.preview_stamp)
+        self.assertTrue(all(len(p.steps)==0 for p in self.win.programmes))
+        self.win.session=None
+        self.win.client=None
+
+    def test_empty_slots_survive_offline_project_roundtrip(self):
+        import json
+        with tempfile.TemporaryDirectory() as folder:
+            self.win.choose_mode("offline")
+            fn=Path(folder)/"empty-project.json"
+            with patch("qt_app.QFileDialog.getSaveFileName",
+                       return_value=(str(fn),"Studio projects (*.json)")):
+                self.win.save_project()
+            content=json.loads(fn.read_text(encoding="utf-8"))
+            self.assertEqual(len(content["programmes"]),8)
+            self.assertTrue(all(p["steps"]==[] for p in content["programmes"]))
+            with patch("qt_app.QFileDialog.getOpenFileName",
+                       return_value=(str(fn),"Studio projects (*.json)")):
+                self.assertTrue(self.win.open_project())
+            self.assertEqual(self.win.segment_table.rowCount(),0)
+            self.assertTrue(all(not p.steps for p in self.win.programmes))
+
     def test_five_steps_and_offline_mode(self):
         self.assertEqual(self.win.pages.count(),5)
         self.assertEqual(len(self.win.navbuttons),5)
@@ -478,6 +522,7 @@ class ModernStudioTests(unittest.TestCase):
             self.assertIsNone(self.win.session)
     def test_manual_continue_end_mode_is_local_and_not_uploadable(self):
         self.win.choose_mode("offline")
+        self.win.add_segment("ramp")  # only an explicit user-created segment generates instructions
         self.win.finish_mode.setCurrentIndex(1)
         self.win.show_step(4)
         self.assertEqual(self.win.programmes[0].finish,"cont")
