@@ -65,6 +65,43 @@ def compare_programmes(before,after,*,sensor_changed=False):
         ),
     }
 
+def interpreted_slope_changes(before,after,old_type,new_type):
+    """Read-only estimates: segment slope is engineering units per rate-time unit."""
+    from program_model import signed
+    if old_type not in (5,6) or new_type not in (5,6):
+        return [],["Unrecognised input scale: programme slope interpretation unavailable"]
+    old_scale=1 if old_type==5 else 10
+    new_scale=1 if new_type==5 else 10
+    changed=[]
+    warnings=[]
+    for slot in range(SLOTS):
+        old=[int(x,16) for x in before[str(slot)]]
+        new=[int(x,16) for x in after[str(slot)]]
+        count=signed(new[0])
+        if not 0<=count<=32:
+            warnings.append(f"Programme {slot}: invalid segment count {count}; cannot compare slopes")
+            continue
+        for segment in range(count):
+            base=0x16+4*segment
+            if signed(new[base])!=0:
+                continue
+            before_raw=signed(old[base+2])
+            after_raw=signed(new[base+2])
+            previous=before_raw/old_scale
+            current=after_raw/new_scale
+            if previous!=current:
+                changed.append({
+                    "programme":slot,"segment":segment+1,
+                    "register":f"DA:{(slot<<8)|base+2:04X}",
+                    "raw_before":before[str(slot)][base+2],
+                    "raw_after":after[str(slot)][base+2],
+                    "old_interpretation_rate":previous,
+                    "new_interpretation_rate":current,
+                    "warning":"EU/time interpretation only; confirm slope on Omron front panel"
+                })
+    return changed,warnings
+
+
 def interpreted_temperature_changes(before,after,old_type,new_type):
     """Illustrate what our DA reader would plot; NOT confirmed panel readings.
 
@@ -133,11 +170,17 @@ def audit_after_restart(client,receipt_path,model10,folder):
     estimated,interpretation_warnings=interpreted_temperature_changes(
         originals,current,old_settings.get("C3:0000"),
         after_settings.get("C3:0000"))
+    slope_estimates,slope_warnings=interpreted_slope_changes(
+        originals,current,old_settings.get("C3:0000"),
+        after_settings.get("C3:0000"))
+    interpretation_warnings.extend(slope_warnings)
+    result["possible_slope_interpretation_changes"]=slope_estimates
+    result["possible_slope_interpretation_count"]=len(slope_estimates)
     result["possible_temperature_interpretation_changes"]=estimated
     result["possible_interpretation_change_count"]=len(estimated)
     result["interpretation_warnings"]=interpretation_warnings
     result["interpretation_is_verified_on_hardware"]=False
-    if estimated or interpretation_warnings:
+    if estimated or slope_estimates or interpretation_warnings:
         result["requires_manual_review"]=True
     result["initial_configuration_changes"]=setting_differences
     result["unrequested_global_changes"]=unrequested

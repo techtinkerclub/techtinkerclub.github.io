@@ -6,7 +6,7 @@ Never connects to or modifies the controller and never scales DA words.
 from __future__ import annotations
 from pathlib import Path
 from backup_explorer import load_backup
-from programme_audit import compare_programmes,interpreted_temperature_changes
+from programme_audit import compare_programmes,interpreted_temperature_changes,interpreted_slope_changes
 
 def compare_saved_backups(before_path,after_path):
     before=load_backup(before_path)
@@ -21,6 +21,9 @@ def compare_saved_backups(before_path,after_path):
                                    sensor_changed=(old_type!=new_type))
     estimates,warnings=interpreted_temperature_changes(
         before["programmes"],after["programmes"],old_type,new_type)
+    slope_estimates,slope_warnings=interpreted_slope_changes(
+        before["programmes"],after["programmes"],old_type,new_type)
+    warnings.extend(slope_warnings)
     old_global=before.get("preflight",{})
     new_global=after.get("preflight",{})
     comparable=set(old_global) & set(new_global)
@@ -43,10 +46,11 @@ def compare_saved_backups(before_path,after_path):
         "global_settings_changes":settings_changes,
         "global_settings_not_comparable":unavailable,
         "interpreted_target_changes":estimates,
+        "interpreted_slope_changes":slope_estimates,
         "interpretation_warnings":warnings,
         "requires_review":bool(
             old_type!=new_type or comparison["changes_total"] or settings_changes
-            or unavailable or warnings or estimates),
+            or unavailable or warnings or estimates or slope_estimates),
         "warning":(
             "An unchanged raw DA word is NOT evidence of an unchanged temperature "
             "when sensor resolution changes. Interpretations are estimates from "
@@ -71,6 +75,8 @@ def comparison_text(result,max_targets=80,max_raw=40):
         f"{result['changed_raw_words']} different.",
         f"INTERPRETED TEMPERATURES: {len(result['interpreted_target_changes'])} "
         "ramp/step targets may differ.",
+        f"INTERPRETED SLOPES: {len(result['interpreted_slope_changes'])} "
+        "ramp rates may differ.",
         "",
     ]
     if result["before_input_type"]!=result["after_input_type"]:
@@ -97,6 +103,15 @@ def comparison_text(result,max_targets=80,max_raw=40):
             f"[{row['register']}, raw {row['raw_before']} -> {row['raw_after']}]")
     remaining=len(result["interpreted_target_changes"])-max_targets
     if remaining>0:lines.append(f"... and {remaining} more; consult the JSON audit")
+    lines+=["","POSSIBLE RAMP RATE CHANGES (our decoder, NOT panel-verified)"]
+    if not result["interpreted_slope_changes"]:
+        lines.append("No changed slopes identified.")
+    for row in result["interpreted_slope_changes"][:max_targets]:
+        lines.append(
+            f"Programme {row['programme']}, segment {row['segment']}: "
+            f"{row['old_interpretation_rate']:g} -> "
+            f"{row['new_interpretation_rate']:g} EU/time "
+            f"[{row['register']}, raw {row['raw_before']} -> {row['raw_after']}]")
     if result["interpretation_warnings"]:
         lines+=["","DECODING UNCERTAINTIES"]
         lines.extend("• "+s for s in result["interpretation_warnings"])

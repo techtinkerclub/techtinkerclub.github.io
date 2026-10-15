@@ -44,7 +44,7 @@ class ExplorerTests(unittest.TestCase):
         regs[0x0F]=0xFFFFFFFF
         regs[0x16]=0
         regs[0x17]=50 if input_type==5 else 500
-        regs[0x18]=2
+        regs[0x18]=2 if input_type==5 else 20  # 2 °C/min at either resolution
         regs[0x1A]=1
         regs[0x1D]=0x15
         bank = {str(i):["00000000"]*150 for i in range(8)}
@@ -75,7 +75,14 @@ class ExplorerTests(unittest.TestCase):
     def test_type6_scales_temperature_tenths(self):
         program=decode_slot(self.example(6),1)
         self.assertEqual(program["segments"][0]["sp"],50.0)
+        self.assertEqual(program["segments"][0]["rate"],2.0)
         self.assertEqual(profile_points(program,20)[-1],(30.0,50.0))
+        obj=self.example(6)
+        obj["programmes"]["1"][0x18]="00000002"
+        tenths=decode_slot(obj,1)
+        self.assertEqual(tenths["segments"][0]["rate"],0.2)
+        self.assertIn("0.2 °C/min",tenths["segments"][0]["description"])
+        self.assertEqual(profile_points(tenths,20)[-1],(165.0,50.0))
     def test_step_segment_from_device(self):
         obj=self.example(5)
         obj["programmes"]["1"][0x1A]="00000002"
@@ -123,7 +130,7 @@ class ProgramTests(unittest.TestCase):
         p=Programme(steps=[Segment("soak",minutes="1")]*32);self.assertEqual(p.validate()["segments"],32)
         p.steps.append(Segment("soak"));self.assertRaises(ValidationError,p.validate)
     def test_wrong_rate_range(self):
-        for rate in ["0","2.5","-1","10000","nan"]:
+        for rate in ["0","2.55","-1","10000","nan"]:
             p=Programme(steps=[Segment("ramp",rate=rate)]);self.assertRaises(ValidationError,p.validate)
     def test_time_encoding_hhmm(self):
         cases={0:0,15:0x0015,65:0x0105,90:0x0130,5999:0x9959}
@@ -139,7 +146,7 @@ class ProgramTests(unittest.TestCase):
         self.assertEqual(pairs[0x000F],0xFFFFFFFF)
         self.assertEqual(pairs[0x0016],0)  # ramp
         self.assertEqual(pairs[0x0017],1200) # 120.0 °C
-        self.assertEqual(pairs[0x0018],2)    # °C/min
+        self.assertEqual(pairs[0x0018],20)   # 2°C/min = 20 tenths °C/min for input 6
         self.assertEqual(pairs[0x001A],1) # soak
         self.assertEqual(pairs[0x001D],0x15) # 0 h,15 min
         second=dict(planned_writes(7,Programme()))
@@ -150,9 +157,17 @@ class ProgramTests(unittest.TestCase):
         self.assertEqual(vals[0x0117],50)
         self.assertEqual(vals[0x011A],1)
         self.assertEqual(vals[0x011E],2)
+        self.assertEqual(vals[0x0118],2)   # input 5: slope in whole degrees
         self.assertEqual(vals[0x011F],40)
         self.assertEqual(vals[0x0100],3)
         self.assertEqual(dict(planned_writes(1,p,input_type=6))[0x0117],500)
+        self.assertEqual(dict(planned_writes(1,p,input_type=6))[0x0118],20)
+        slow=Programme(steps=[Segment("ramp",sp="20",rate="0.2")])
+        self.assertEqual(dict(planned_writes(0,slow,input_type=6))[0x0018],2)
+        with self.assertRaisesRegex(ValidationError,"ramp rate"):
+            planned_writes(0,slow,input_type=5)
+        with self.assertRaisesRegex(ValidationError,"ramp rate"):
+            planned_writes(0,Programme(steps=[Segment("ramp",sp="20",rate="0.25")]),input_type=6)
         with self.assertRaises(ValidationError):
             planned_writes(1,Programme(steps=[Segment("ramp",sp="50.5")]),input_type=5)
     def test_site_json_import(self):

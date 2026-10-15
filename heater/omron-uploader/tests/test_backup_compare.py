@@ -13,6 +13,7 @@ def make_backup(input_type=5,target=120,model="E5CC-TQX3A"):
         programmes[str(slot)][0]="00000001"
         programmes[str(slot)][0x16]="00000000"  # ramp
         programmes[str(slot)][0x17]=f"{target:08X}"
+        programmes[str(slot)][0x18]="00000002"
     return {
        "schema":"e5cct-backup-1",
        "controller":{"model10":model},
@@ -37,6 +38,9 @@ class TestBackupCompare(unittest.TestCase):
         self.assertEqual(data["changed_raw_words"],0)
         self.assertEqual(data["raw_words_compared"],1200)
         self.assertEqual(len(data["interpreted_target_changes"]),8)
+        self.assertEqual(len(data["interpreted_slope_changes"]),8)
+        self.assertEqual((data["interpreted_slope_changes"][0]["old_interpretation_rate"],
+                          data["interpreted_slope_changes"][0]["new_interpretation_rate"]),(2,0.2))
         self.assertEqual(data["global_settings_changes"],[
             {"register":"C3:0000","before_raw":5,"after_raw":6}])
         row=data["interpreted_target_changes"][0]

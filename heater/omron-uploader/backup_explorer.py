@@ -105,7 +105,9 @@ def decode_slot(backup, slot):
             warnings.append(f"Segment {i}: styp={signed(kind_raw)} is not validated; raw fields shown only")
             kind = "unknown"
         sp = (signed(sp_raw) / decimal_factor) if decimal_factor and (cel or input_kind in ANALOGUE_TYPES) and mode and kind in ("ramp", "step") else None
-        rate = signed(rate_raw) if mode and kind == "ramp" else None
+        # H185: segment slope is EU per slope-time unit, not always °C/min.
+        # Input 6: raw 2 means 0.2°C/min, not 2°C/min.
+        rate = (signed(rate_raw) / decimal_factor) if mode and kind == "ramp" and decimal_factor else None
         if kind == "ramp" and rate is not None and rate < 0:
             warnings.append(f"Segment {i}: negative rate {rate} — verify actual programme")
         minutes = None

@@ -201,9 +201,34 @@ class ModernStudioTests(unittest.TestCase):
         self.assertNotIn("Ramp to 200 °C",self.win.explorer_info.toPlainText())
         self.assertIn("C3:0000 = 6",self.win.explorer_info.toPlainText())
         self.assertIn("DA:0017 = 000000C8",self.win.explorer_info.toPlainText())
+        self.assertIn("0.2 °C/min",self.win.explorer_info.toPlainText())
         from backup_explorer import decode_slot,profile_points
         profile=profile_points(decode_slot(self.win.backup,0),20)
         self.assertEqual(profile[-1],(7.0,20.0))
+
+    def test_fractional_stored_ramp_survives_copy_to_editor(self):
+        from PySide6.QtWidgets import QMessageBox
+        from program_model import planned_writes
+        programmes={str(i):["00000000"]*150 for i in range(8)}
+        block=programmes["0"]
+        block[0]="00000001"
+        block[0x0e]="00000000"
+        block[0x0f]="FFFFFFFF"
+        block[0x16]="00000000"
+        block[0x17]="000000C8"  # 20.0 °C under input 6
+        block[0x18]="00000002"  # 0.2 °C/min
+        self.win.backup={"schema":"e5cct-backup-1",
+                         "controller":{"model10":"E5CC-TQX3A"},
+                         "preflight":{"C3:0000":6,"C3:0004":0,
+                                      "C3:00BA":1,"C3:00BB":0,"C3:00B9":0},
+                         "programmes":programmes}
+        self.win._populate_memories()
+        with patch.object(QMessageBox,"question",return_value=QMessageBox.StandardButton.Yes):
+            self.win.copy_stored()
+        self.assertEqual(float(self.win.programmes[0].steps[0].rate),0.2)
+        self.assertEqual(self.win.segment_table.cellWidget(0,0).rate.spin.value(),0.2)
+        self.assertEqual(dict(planned_writes(
+            0,self.win.programmes[0],input_type=6))[0x0018],2)
 
     def test_five_steps_and_offline_mode(self):
         self.assertEqual(self.win.pages.count(),5)
@@ -298,7 +323,7 @@ class ModernStudioTests(unittest.TestCase):
         self.assertEqual(row.target.editor.text(),"120.000")
         self.assertIn("QLineEdit#numericEntry",self.win.styleSheet())
         self.assertIn("color:#18334a",self.win.styleSheet())
-        self.assertEqual(row.rate.editor.text(),"2")
+        self.assertEqual(row.rate.editor.text(),"2.000")
         self.assertEqual(self.win.segment_table.cellWidget(1,0).hold.editor.text(),"15")
         row.target.editor.setFocus()
         row.target.editor.selectAll()

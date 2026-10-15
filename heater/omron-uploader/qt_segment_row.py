@@ -190,11 +190,13 @@ class SegmentRow(QFrame):
         self.target=Stepper("TARGET TEMPERATURE" if display_unit=="°C" else "TARGET VALUE",target)
         outer.addWidget(self.target)
 
-        rate=QSpinBox()
-        rate.setRange(1,9999)
-        rate.setSingleStep(1)
+        rate=QDoubleSpinBox()
+        # A K input-6 slope of 0.2°C/min must never be rounded to 0 or 1.
+        rate.setDecimals(3)
+        rate.setRange(0.001,9999.0)
+        rate.setSingleStep(0.1)
         rate.setSuffix(" "+display_unit+"/min")
-        rate.setValue(max(1,int(float(segment.rate))))
+        rate.setValue(float(segment.rate))
         self.rate=Stepper("RAMP RATE",rate)
         outer.addWidget(self.rate)
 

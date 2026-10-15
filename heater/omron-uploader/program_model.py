@@ -29,7 +29,7 @@ def decimal(v):
 class Segment:
     type: str
     sp: str = "120.0"   # degrees Celsius for ramp/step
-    rate: str = "2"     # whole deg C per minute for ramp
+    rate: str = "2"     # engineering units per minute (sensor-dependent DA encoding)
     minutes: str = "15" # integer minutes for soak
 
 @dataclass
@@ -65,7 +65,14 @@ class Programme:
                     raise ValidationError(f"Segment {i+1}: target must use {limits.resolution:g} °C increments")
             if s.type=="ramp":
                 r=decimal(s.rate)
-                if r!=r.to_integral_value() or not 1<=r<=9999:raise ValidationError(f"Segment {i}: slope must be an integer from 1 to 9999")
+                if not 0<r<=9999:
+                    raise ValidationError(f"Segment {i+1}: ramp rate must be positive and no more than 9999 {limits.unit}/min")
+                raw_rate=r/limits.resolution
+                if strict_range and (raw_rate!=raw_rate.to_integral_value() or not 1<=raw_rate<=9999):
+                    raise ValidationError(
+                        f"Segment {i+1}: ramp rate {r:g} {limits.unit}/min cannot be "
+                        f"represented in {limits.resolution:g} {limits.unit} increments "
+                        "within Omron's 1..9999 raw slope limit")
                 t+=abs(sp-pv)/r; pv=sp
             elif s.type=="soak":
                 minutes=decimal(s.minutes)
@@ -141,7 +148,13 @@ def planned_writes(slot,p:Programme,input_type=6,limits=None):
         out.append((address(slot,base),KIND_CODE[s.type]))
         if s.type in ("ramp","step"):
             out.append((address(slot,base+1),uint32(decimal(s.sp)*scale)))
-        if s.type=="ramp":out.append((address(slot,base+2),int(decimal(s.rate))))
+        if s.type=="ramp":
+            # H185: a slope is engineering units per slope-time interval,
+            # just like an SP its raw DA word follows the input resolution.
+            slope_raw=decimal(s.rate)*scale
+            if slope_raw!=slope_raw.to_integral_value() or not 1<=slope_raw<=9999:
+                raise ValidationError("Ramp slope cannot be encoded at this input resolution")
+            out.append((address(slot,base+2),int(slope_raw)))
         if s.type=="soak":out.append((address(slot,base+3),encode_time(s.minutes)))
     out.append((address(slot,0),len(p.steps)))
     return out
