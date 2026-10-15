@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (
     QApplication,QMainWindow,QWidget,QFrame,QVBoxLayout,QHBoxLayout,QGridLayout,
     QLabel,QPushButton,QLineEdit,QComboBox,QSpinBox,QDoubleSpinBox,QTextEdit,
     QTableWidget,QTableWidgetItem,QAbstractItemView,QHeaderView,QFileDialog,
-    QMessageBox,QInputDialog,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar,QScrollArea
+    QMessageBox,QInputDialog,QSplitter,QTabWidget,QCheckBox,QStackedWidget,QProgressBar,QScrollArea,QLayout
 )
 from serial.tools import list_ports
 
@@ -813,6 +813,9 @@ class Studio(QMainWindow):
         transfer=QWidget()
         transfer_layout=QVBoxLayout(transfer)
         transfer_layout.setSpacing(9)
+        # Transfer reports can be longer than the available window height.
+        # Let the page scroll instead of squeezing its review and buttons together.
+        transfer_layout.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
         transfer_layout.addWidget(heading("Review and transfer",
             "The controller backup is READ ONLY. The local programme editor is "
             "independent; programme register differences are not requested writes. "
@@ -821,6 +824,15 @@ class Studio(QMainWindow):
         self.transfer_request_status.setWordWrap(True)
         self.transfer_request_status.setObjectName("transferRequestStatus")
         transfer_layout.addWidget(self.transfer_request_status)
+        self.transfer_block_reason=QLabel("")
+        self.transfer_block_reason.setObjectName("transferBlockReason")
+        self.transfer_block_reason.setWordWrap(True)
+        self.transfer_block_reason.setStyleSheet(
+            "QLabel#transferBlockReason {background:#fff7e8;"
+            "border:1px solid #efd6ac;border-radius:8px;"
+            "padding:10px;color:#835112;font-weight:600;}")
+        self.transfer_block_reason.hide()
+        transfer_layout.addWidget(self.transfer_block_reason)
         self.transfer_summary=QLabel("")
         self.transfer_summary.setWordWrap(True)
         self.transfer_summary.setObjectName("transferSummary")
@@ -828,8 +840,10 @@ class Studio(QMainWindow):
             "QLabel#transferSummary {background:#eff6fc;border:1px solid #d8e6f2;"
             "border-radius:8px;padding:10px;color:#214965;}")
         transfer_layout.addWidget(self.transfer_summary)
-        self.apply_details.setMinimumHeight(160)
-        transfer_layout.addWidget(self.apply_details,1)
+        self.apply_details.setMinimumHeight(260)
+        # Report scrolls inside this text area, and the whole transfer tab can
+        # scroll when the viewport is short. The buttons remain below the text.
+        transfer_layout.addWidget(self.apply_details,0)
         self.include_programme_button=button(
             "Include selected programme with Wait Band: OFF",
             self.toggle_programme_inclusion)
@@ -875,7 +889,11 @@ class Studio(QMainWindow):
             "CMW ON happens at RAM staging; CMW OFF follows a verified SAVE. "
             "After any uncertain write or save, finishing is blocked, not retried. "
             "The heater must remain physically isolated.",True))
-        self.apply_tabs.addTab(transfer,"USB transfer")
+        self.transfer_scroll=QScrollArea()
+        self.transfer_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.transfer_scroll.setWidgetResizable(True)
+        self.transfer_scroll.setWidget(transfer)
+        self.apply_tabs.addTab(self.transfer_scroll,"USB transfer")
         v.addWidget(self.apply_tabs,1)
         self.pages.addWidget(page)
 
@@ -1056,6 +1074,40 @@ class Studio(QMainWindow):
                 "Nonvolatile retention is established only if power was physically "
                 "removed before this verification.")
         self._work("Read-only saved receipt verification",action,done)
+
+    def _c3_preview_blocker(self):
+        """Explain the actual C3 start guard instead of advising an impossible click."""
+        ses=self.session
+        if not self.client or not ses or self.mode!="connected":
+            return "Connect and read the controller in Step 2 first."
+        if not self.lab:
+            return "Open with the isolated-lab launcher; this session is read-only."
+        if self.busy:
+            return "Wait for the current controller operation to finish."
+        if self.fail_latched:
+            return "A previous write is uncertain. Stop and inspect; do not retry."
+        if ses.staged is not None and not ses.committed:
+            return "An earlier programme RAM upload is not saved. Finish or safely resolve it before starting a settings change."
+        if ses.ram_touched and not ses.committed:
+            return "A previous programme RAM write may be incomplete. Stop and inspect before a new settings transfer."
+        if ses.committed:
+            return (
+                "The previous programme SAVE is still the active transfer. "
+                "First verify its saved receipt after a real controller power cycle, "
+                "then Disconnect and Connect + Read Everything in Step 2. "
+                "Re-select the input change afterward; this draft is not retained by a fresh read."
+            )
+        if not self.inventory_current_session or not ses.backup_data:
+            return "Read and back up all settings and programmes again before starting C3."
+        if self.c1_transfer or self.c5_transfer or self.combined_transfer or self.setting_transfer:
+            return "Another settings transfer is still active. Finish and reconnect before changing input type."
+        if self.include_programme_with_settings:
+            return "Turn off combined programme inclusion; C3 and programme memory cannot be transferred together."
+        if not self.draft or not set(self.draft).issubset(QUALIFIED_C3_CODES):
+            return "The draft contains unsupported or mixed settings. Remove or separate them in Step 4."
+        if self.c3_transfer:
+            return "A C3 transfer has already been previewed. Finish it or reconnect before another preview."
+        return None
 
     def _c3_draft_matches_preview(self):
         tx=self.c3_transfer
@@ -3424,6 +3476,18 @@ class Studio(QMainWindow):
             if kind=="c3":
                 tx3=self.c3_transfer
                 eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C3_CODES))
+                blocker=self._c3_preview_blocker() if tx3 is None else None
+                self.transfer_block_reason.setText(
+                    "WHY READ + PREVIEW IS DISABLED  ·  "+blocker if blocker else "")
+                self.transfer_block_reason.setVisible(bool(blocker))
+                self.unified_preview.setToolTip(blocker or "Preview the exact input-setting changes; no controller writes.")
+            else:
+                self.transfer_block_reason.hide()
+                self.transfer_block_reason.clear()
+                self.unified_preview.setToolTip("")
+            if kind=="c3":
+                tx3=self.c3_transfer
+                eligible=bool(self.draft and set(self.draft).issubset(QUALIFIED_C3_CODES))
                 available=bool(connected and self.lab and not self.busy
                     and not self.fail_latched and not session.ram_touched
                     and not session.staged and not session.committed
@@ -3526,6 +3590,10 @@ class Studio(QMainWindow):
             self.unified_save.setText(
                 "3  Finish + Return to normal" if kind=="c3"
                 else "3  Save + Finish (CMW OFF)")
+            # A disabled control is never actionable; the next-step label must
+            # describe the block, not instruct users to click it anyway.
+            if kind=="c3" and self.transfer_block_reason.isVisible():
+                self.usb_next_action.setText("NEXT ACTION  ·  "+self._c3_preview_blocker())
 
     def _controls(self):
         if hasattr(self,"stage_button"):self.refresh_actions()

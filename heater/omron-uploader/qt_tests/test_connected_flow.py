@@ -281,6 +281,28 @@ class QtConnectedTests(unittest.TestCase):
             [("operation","00","01"),("operation","04","01"),
              ("operation","05","00"),("operation","00","00")])
 
+    def test_prior_programme_save_explains_disabled_c3_preview(self):
+        from PySide6.QtWidgets import QScrollArea
+        self.win.connect_read()
+        self.win.show_step(4)
+        self.win.show()
+        QApplication.processEvents()
+        self.assertIsInstance(self.win.apply_tabs.widget(1),QScrollArea)
+        self.assertIs(self.win.transfer_scroll.widget(),self.win.unified_preview.parentWidget())
+        self.win.draft={"C3:0000":6}
+        self.win.session.committed=True
+        self.win.refresh_actions()
+        self.assertFalse(self.win.unified_preview.isEnabled())
+        self.assertIn("previous programme SAVE",self.win.transfer_block_reason.text())
+        self.assertIn("power cycle",self.win.transfer_block_reason.text())
+        self.assertIn("Connect + Read Everything",self.win.usb_next_action.text())
+        self.assertIn("previous programme SAVE",self.win.unified_preview.toolTip())
+        # A fresh transfer state is now eligible; no write or USB calls here.
+        self.win.session.committed=False
+        self.win.refresh_actions()
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.assertFalse(self.win.transfer_block_reason.isVisible())
+
     def test_unified_programme_transfer_auto_finishes_cmw(self):
         self.win.connect_read()
         fake=FakeOmron.created[-1]
