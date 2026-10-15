@@ -808,10 +808,14 @@ class Studio(QMainWindow):
         transfer=QWidget()
         transfer_layout=QVBoxLayout(transfer)
         transfer_layout.setSpacing(9)
-        transfer_layout.addWidget(heading("Pending controller changes",
-            "Programme and controller settings share one review. USB writes are "
-            "experimental for selected C1 and C3 registers; use the matching "
-            "setting-area procedure. Heater power must remain isolated."))
+        transfer_layout.addWidget(heading("Review and transfer",
+            "The controller backup is READ ONLY. The local programme editor is "
+            "independent; programme register differences are not requested writes. "
+            "Only explicit change proposals and reviewed previews prepare a transfer."))
+        self.transfer_request_status=QLabel("READ ONLY · No transfer requested")
+        self.transfer_request_status.setWordWrap(True)
+        self.transfer_request_status.setObjectName("transferRequestStatus")
+        transfer_layout.addWidget(self.transfer_request_status)
         self.transfer_summary=QLabel("")
         self.transfer_summary.setWordWrap(True)
         self.transfer_summary.setObjectName("transferSummary")
@@ -1532,9 +1536,53 @@ class Studio(QMainWindow):
                 "Check the CMW lamp, then power-cycle and verify the receipt:\n"+str(receipt))
         self._work("Save programme and disable CMW",action,done,True)
 
+    def _refresh_transfer_request_status(self):
+        """Distinguish a read-only backup from a user-requested modification.
+
+        Local programme drafts may differ from the controller's eight memories
+        without any hardware edit. Only a proposal or explicit preview is a
+        requested transfer; a preview itself remains read only.
+        """
+        if not hasattr(self,"transfer_request_status"):
+            return
+        pending_ram=bool(
+            (self.session and self.session.ram_touched and not self.session.committed)
+            or self._settings_ram_pending())
+        active=any(tx is not None for tx in (
+            self.setting_transfer,self.c1_transfer,self.c3_transfer,
+            self.c5_transfer,self.combined_transfer))
+        if pending_ram:
+            label="CAUTION · Controller RAM has been touched; verify the save/finish state before disconnecting."
+            color="#a04332"
+        elif active:
+            label="TRANSFER IN PROGRESS · Follow the reviewed procedure and its readback/finish instructions."
+            color="#a8610f"
+        elif self.draft:
+            label=(f"LOCAL PROPOSALS · {len(self.draft)} controller setting change(s) "
+                   "have been deliberately added. No write performed.")
+            color="#a8610f"
+        elif self.preview_stamp and self.preview_changes:
+            label=(f"PREVIEW ONLY · {len(self.preview_changes)} programme register "
+                   "difference(s) reviewed. No write performed.")
+            color="#a8610f"
+        elif self.session and self.client:
+            label=("READ COMPLETE · No controller modifications requested. "
+                   "Stored memories are backed up; the local programme editor "
+                   "is a separate workspace, not a pending write.")
+            color="#157952"
+        else:
+            label=("NO TRANSFER REQUESTED · Local programmes are for planning. "
+                   "Connect and read the controller before any hardware transfer.")
+            color="#526e82"
+        self.transfer_request_status.setText(label)
+        self.transfer_request_status.setStyleSheet(
+            "QLabel#transferRequestStatus {background:#f7fafb;border:1px solid #d8e6ed;"
+            "border-radius:8px;padding:10px;color:"+color+";font-weight:700;}")
+
     def _refresh_transfer_summary(self):
         """One accurate summary for programme and settings transfers."""
         if not hasattr(self,"transfer_summary"):return
+        self._refresh_transfer_request_status()
         ses=self.session
         tx=self.setting_transfer
         c1=self.c1_transfer
@@ -1788,6 +1836,7 @@ class Studio(QMainWindow):
             self.port=port
             self.backup=self.session.backup_data
             self.draft={}
+            self.preview_changes=[]  # a fresh read cannot inherit an old preview
             self.fail_latched=False
             self.link_status.setText("●  "+port+" · Connected")
             self.link_status.setStyleSheet("color:#157952;font-weight:600")
@@ -1831,6 +1880,7 @@ class Studio(QMainWindow):
         self.client=None;self.session=None;self.hardware_profile=None
         self.setting_transfer=None;self.c5_transfer=None
         self.port=None;self.preview_stamp=None
+        self.preview_changes=[]
         self.c3_transfer=None
         self.c3_receipt_match=None
         self.c1_transfer=None
