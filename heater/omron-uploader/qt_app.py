@@ -1359,17 +1359,10 @@ class Studio(QMainWindow):
                 "Confirm isolated heater, then save, verify and disable CMW?",
                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
-        def action(progress):return tx.save_finish()
-        def done(receipt):
-            for row in tx.preview_data["changes"]:
-                key=row["register"]
-                self.inventory["fields"][key]=row["new_raw"]
-                self.draft.pop(key,None)
-            self.refresh_settings();self.refresh_review()
-            self.message("PID-bank SAVE acknowledged",
-                "Selected fixed PID registers saved and reread. Power-cycle "
-                "verification remains necessary. Receipt: "+str(receipt))
-        self._work("Save fixed PID bank and finish CMW",action,done,True)
+        def action(progress):
+            return self._save_then_refresh(tx.save_finish,"c5",progress)
+        def done(result):self._accept_post_save_refresh(result,"c5")
+        self._work("Save fixed PID bank, CMW OFF, then refresh",action,done,True)
 
     def _c1_draft_matches_preview(self):
         tx=self.c1_transfer
@@ -1441,17 +1434,10 @@ class Studio(QMainWindow):
                 "After verified readback, CMW OFF is sent automatically. Continue?",
                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
-        def action(progress):return tx.save_finish()
-        def done(receipt):
-            for row in tx.preview_data["changes"]:
-                key=row["register"]
-                self.inventory["fields"][key]=row["new_raw"]
-                self.draft.pop(key,None)
-            self.refresh_settings()
-            self.refresh_review()
-            self.message("C1 settings saved",f"All reviewed settings saved and read back. "
-                f"CMW OFF acknowledged. Actual power-cycle retention still needs verification.\n{receipt}")
-        self._work("SAVE C1 settings and disable CMW",action,done,True)
+        def action(progress):
+            return self._save_then_refresh(tx.save_finish,"c1",progress)
+        def done(result):self._accept_post_save_refresh(result,"c1")
+        self._work("SAVE C1, CMW OFF, then refresh",action,done,True)
 
     def preview_combined(self):
         if (not self.lab or not self.session or not self.client or self.busy
@@ -1518,18 +1504,10 @@ class Studio(QMainWindow):
                 "Continue?",
                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
-        def action(progress):return tx.save_finish()
-        def done(receipt):
-            self.inventory["fields"]["C1:0021"]=tx.preview_data["wait_band"]["new"]
-            self.draft.pop("C1:0021",None)
-            self.include_programme_with_settings=False
-            self.refresh_settings()
-            self.refresh_review()
-            self.message("Combined transfer saved",
-                "Wait Band + programme saved, read back and CMW OFF acknowledged. "
-                "The result is NOT verified across a power cycle. "
-                "Keep heater isolated and verify using the saved receipt:\n"+str(receipt))
-        self._work("Combined SAVE and CMW OFF",action,done,True)
+        def action(progress):
+            return self._save_then_refresh(tx.save_finish,"combined",progress)
+        def done(result):self._accept_post_save_refresh(result,"combined")
+        self._work("Combined SAVE, CMW OFF, then refresh",action,done,True)
 
     def verify_combined(self):
         if not self.client or not self.session or self.busy:
@@ -1563,19 +1541,14 @@ class Studio(QMainWindow):
                 "After a verified save, CMW OFF will be issued automatically. Continue?",
                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
-        def action(progress):
+        def saved_wait():
             receipt=tx.save()
             tx.disable_cmw()
             return receipt
-        def done(receipt):
-            self.inventory["fields"]["C1:0021"]=tx.preview_data["new_raw"]
-            self.draft.pop("C1:0021",None)
-            self.refresh_settings()
-            self.refresh_review()
-            self.message("Settings transfer complete",
-                "Save, post-save readback and CMW OFF acknowledged. "
-                "Check the CMW lamp, then power-cycle and verify the receipt:\n"+str(receipt))
-        self._work("Save Wait Band and disable CMW",action,done,True)
+        def action(progress):
+            return self._save_then_refresh(saved_wait,"wait",progress)
+        def done(result):self._accept_post_save_refresh(result,"wait")
+        self._work("SAVE Wait Band, CMW OFF, then refresh",action,done,True)
 
     def save_and_finish_programme(self):
         ses=self.session
@@ -1590,16 +1563,14 @@ class Studio(QMainWindow):
                 "After successful save/readback, CMW OFF will be issued automatically. Continue?",
                 QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
-        def action(progress):
+        def saved_programme():
             receipt=ses.commit()
             ses.disable_communications_writing()
             return receipt
-        def done(receipt):
-            self.refresh_review()
-            self.message("Programme transfer complete",
-                "Save, post-save readback and CMW OFF acknowledged. "
-                "Check the CMW lamp, then power-cycle and verify the receipt:\n"+str(receipt))
-        self._work("Save programme and disable CMW",action,done,True)
+        def action(progress):
+            return self._save_then_refresh(saved_programme,"programme",progress)
+        def done(result):self._accept_post_save_refresh(result,"programme")
+        self._work("SAVE programme, CMW OFF, then refresh",action,done,True)
 
     def _refresh_transfer_request_status(self):
         """Distinguish a read-only backup from a user-requested modification.
@@ -1630,6 +1601,11 @@ class Studio(QMainWindow):
             label=(f"PREVIEW ONLY · {len(self.preview_changes)} programme register "
                    "difference(s) reviewed. No write performed.")
             color="#a8610f"
+        elif self.session and self.client and self.last_completed_transfer:
+            label=("SAVE + CMW OFF CONFIRMED · Fresh controller backup verified. "
+                   "Ready for another change. Physical power-loss retention "
+                   "is not yet tested; receipt remains available.")
+            color="#157952"
         elif self.session and self.client:
             label=("READ COMPLETE · No controller modifications requested. "
                    "Stored memories are backed up; the local programme editor "
@@ -2074,6 +2050,7 @@ class Studio(QMainWindow):
         self.include_programme_with_settings=False
         self.wait_receipt_match=None
         self.programme_receipt_match=None
+        self.last_completed_transfer=None
         self.inventory_current_session=False
         self.link_status.setText("●  Offline / disconnected")
         self.link_status.setStyleSheet("color:#627a90;font-weight:600")
