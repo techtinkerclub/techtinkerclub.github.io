@@ -131,7 +131,8 @@ class ModernStudioTests(unittest.TestCase):
         self.win.session=SimpleNamespace(
             ram_touched=False,committed=False,staged=None,
             backup_data={"programmes":{"0":["00000000"]*150}},
-            settings={"C3:0000":6})
+            settings={"C3:0000":6},mismatches=[],receipt_file=None,
+            communications_write_disabled=False,backup_file=None)
         self.win.client=object()
         self.win.inventory_current_session=True
         self.assertFalse(self.win._programme_pending())
