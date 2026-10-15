@@ -260,7 +260,7 @@ class SegmentRow(QFrame):
         kind=self.kind.currentText()
         if kind=="ramp":
             return Segment("ramp",sp=str(self.target.spin.value()),
-                           rate=str(self.rate.spin.value()))
+                           rate=f"{self.rate.spin.value():g}")
         if kind=="soak":
             return Segment("soak",minutes=str(self.hold.spin.value()))
         return Segment("step",sp=str(self.target.spin.value()))

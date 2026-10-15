@@ -144,7 +144,7 @@ def make_entry_plan(programme:Programme,slot:int,baseline=None,changes=None):
             add(sec,"sp",_target(seg.sp,unit),"Target commanded setpoint",
                 f"Press MODE until sp; set {_target(seg.sp)} with UP/DOWN "
                 "(PF can select the digit where supported); press MODE to store.")
-            add(sec,"pr",f"{Decimal(str(seg.rate)):g} {unit}/min","Ramp rate",
+            add(sec,"pr",f"{Decimal(str(seg.rate)).normalize():g} {unit}/min","Ramp rate",
                 "Press MODE until pr; set the specified degrees per minute. "
                 "This is the setpoint rate, not a measured heating-rate guarantee.")
         elif seg.type=="step":
