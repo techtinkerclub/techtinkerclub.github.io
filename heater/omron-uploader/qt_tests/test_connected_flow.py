@@ -271,15 +271,61 @@ class QtConnectedTests(unittest.TestCase):
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
             self.assertTrue(self.win.unified_save.isEnabled())
+            tx=self.win.setting_transfer
+            original=self.win.session
             self.win.unified_save_action()
-        tx=self.win.setting_transfer
         self.assertTrue(tx.saved)
         self.assertTrue(tx.cmw_off)
+        self.assertIsNone(self.win.setting_transfer)
+        self.assertIsNot(original,self.win.session)
+        self.assertFalse(self.win.session.committed)
+        self.assertEqual(self.win.last_completed_transfer["kind"],"wait")
         self.assertEqual(self.win.draft,{})
         self.assertEqual(
             [c for c in fake.calls if c[0]=="operation"],
             [("operation","00","01"),("operation","04","01"),
              ("operation","05","00"),("operation","00","00")])
+
+    def test_programme_save_allows_next_c3_preview_without_cycle(self):
+        from hardware_profile import confirm_model
+        self.win.connect_read()
+        fake=FakeOmron.created[-1]
+        self.win.hardware_profile=confirm_model("E5CC-TQX3A5M-000","E5CC-TQX3A")
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.show_step(4)
+        self.win.unified_preview_action()
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            self.win.unified_save_action()
+        self.assertEqual(fake.calls.count(("software_reset",)),0)
+        self.assertEqual(self.win.session.settings["C3:0000"],5)
+        self.win.draft={"C3:0000":6}
+        self.win.refresh_actions()
+        self.assertTrue(self.win.unified_preview.isEnabled())
+        self.win.unified_preview_action()
+        self.assertIsNotNone(self.win.c3_transfer)
+        self.assertEqual(self.win.c3_transfer.preview_data["changes"][0]["register"],"C3:0000")
+        self.assertEqual(fake.calls.count(("software_reset",)),0)
+
+    def test_failed_post_save_readback_keeps_original_session_locked(self):
+        self.win.connect_read()
+        self.win.programmes[0]=EXAMPLE
+        self.win._render_programme()
+        self.win.show_step(4)
+        self.win.unified_preview_action()
+        with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
+            self.win.unified_stage_action()
+            old=self.win.session
+            with patch.object(self.win,"_read_fresh_baseline",
+                              side_effect=RuntimeError("Synthetic readback interruption")):
+                with self.assertRaisesRegex(RuntimeError,"Synthetic readback interruption"):
+                    self.win.unified_save_action()
+        self.assertTrue(old.committed)
+        self.assertTrue(old.communications_write_disabled)
+        self.assertIs(self.win.session,old)
+        self.assertIsNone(self.win.last_completed_transfer)
+        self.assertEqual(len(list(Path(self.dir.name).glob("*upload-receipt*"))),1)
 
     def test_prior_programme_save_explains_disabled_c3_preview(self):
         from PySide6.QtWidgets import QScrollArea
@@ -294,7 +340,7 @@ class QtConnectedTests(unittest.TestCase):
         self.win.refresh_actions()
         self.assertFalse(self.win.unified_preview.isEnabled())
         self.assertIn("previous programme SAVE",self.win.transfer_block_reason.text())
-        self.assertIn("power cycle",self.win.transfer_block_reason.text())
+        self.assertIn("power-cycle",self.win.transfer_block_reason.text())
         self.assertIn("Connect + Read Everything",self.win.usb_next_action.text())
         self.assertIn("previous programme SAVE",self.win.unified_preview.toolTip())
         # A fresh transfer state is now eligible; no write or USB calls here.
@@ -313,10 +359,16 @@ class QtConnectedTests(unittest.TestCase):
         self.assertTrue(self.win.unified_stage.isEnabled())
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
+            original=self.win.session
             self.win.unified_save_action()
-        self.assertTrue(self.win.session.committed)
-        self.assertTrue(self.win.session.communications_write_disabled)
-        self.assertTrue(self.win.session.receipt_file.exists())
+        self.assertTrue(original.committed)
+        self.assertTrue(original.communications_write_disabled)
+        self.assertTrue(original.receipt_file.exists())
+        self.assertIsNot(self.win.session,original)
+        self.assertFalse(self.win.session.committed)
+        self.assertEqual(self.win.last_completed_transfer["kind"],"programme")
+        self.assertTrue(self.win.session.backup_file.exists())
+        self.assertNotEqual(self.win.session.backup_file,original.backup_file)
         self.assertEqual(sum(c==("operation","05","00") for c in fake.calls),1)
         self.assertEqual(sum(c==("operation","00","00") for c in fake.calls),1)
 
@@ -333,9 +385,12 @@ class QtConnectedTests(unittest.TestCase):
         with patch.object(QMessageBox,"warning",return_value=QMessageBox.StandardButton.Yes):
             self.win.unified_stage_action()
             self.assertTrue(self.win.c5_transfer.staged)
+            tx=self.win.c5_transfer
             self.win.unified_save_action()
         self.assertEqual(fake.c5[16],140)
-        self.assertTrue(self.win.c5_transfer.cmw_off)
+        self.assertTrue(tx.cmw_off)
+        self.assertIsNone(self.win.c5_transfer)
+        self.assertEqual(self.win.last_completed_transfer["kind"],"c5")
         self.assertEqual(fake.calls.count(("operation","05","00")),1)
         self.assertFalse(any(c[0]=="write" and c[1]=="DA" for c in fake.calls))
 
@@ -428,7 +483,8 @@ class QtConnectedTests(unittest.TestCase):
             [("operation","00","01"),("operation","04","01"),
              ("operation","05","00"),("operation","00","00")])
         self.assertEqual(self.win.draft,{})
-        self.assertIn("SAVED",self.win.transfer_summary.text())
+        self.assertEqual(self.win.last_completed_transfer["kind"],"combined")
+        self.assertIn("SAVE + CMW OFF",self.win.transfer_request_status.text())
 
     def test_combined_partial_write_never_saves_or_disables_cmw(self):
         from combined_transfer import CombinedTransfer
@@ -667,7 +723,9 @@ class QtConnectedTests(unittest.TestCase):
         self.assertEqual(fake.c1[0x0021],30)
         self.assertEqual(fake.calls.count(("operation","05","00")),1)
         self.assertEqual(self.win.draft,{})
-        self.assertIn("SAVE verified",self.win.transfer_summary.text())
+        self.assertIsNone(self.win.c1_transfer)
+        self.assertEqual(self.win.last_completed_transfer["kind"],"c1")
+        self.assertIn("SAVE + CMW OFF",self.win.transfer_request_status.text())
 
     def test_unqualified_c3_parameter_blocks_all_c1_writes(self):
         self.win.connect_read()

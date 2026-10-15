@@ -85,7 +85,9 @@ class TransferSession:
             data[str(slot)]=[f"{x:08X}" for x in vals]
             self.log(f"Read programme {slot}: 150 registers")
             if progress is not None:progress(slot+1,8)
-        timestamp=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        # A same-second post-SAVE backup can contain identical DA memory.
+        # Microsecond names avoid colliding with the preserved original backup.
+        timestamp=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         result={"schema":"e5cct-backup-1","read_utc":timestamp,
             "controller":self.info,"status":self.status,"preflight":self.settings,
             "register_type":"DA","programmes":data,

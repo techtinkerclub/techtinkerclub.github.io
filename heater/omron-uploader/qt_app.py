@@ -1093,10 +1093,12 @@ class Studio(QMainWindow):
             return "A previous programme RAM write may be incomplete. Stop and inspect before a new settings transfer."
         if ses.committed:
             return (
-                "The previous programme SAVE is still the active transfer. "
-                "First verify its saved receipt after a real controller power cycle, "
-                "then Disconnect and Connect + Read Everything in Step 2. "
-                "Re-select the input change afterward; this draft is not retained by a fresh read."
+                "The previous programme SAVE is still active because automatic "
+                "post-SAVE readback did not release this session. If SAVE and CMW OFF "
+                "both succeeded, Disconnect and Connect + Read Everything to "
+                "obtain a fresh backup. The optional physical power-cycle test is "
+                "NOT required just to prepare another change. If SAVE or CMW OFF "
+                "was uncertain, stop and inspect rather than retrying."
             )
         if not self.inventory_current_session or not ses.backup_data:
             return "Read and back up all settings and programmes again before starting C3."
@@ -1751,8 +1753,9 @@ class Studio(QMainWindow):
         self.transfer_summary.setText(
             f"PROGRAMME {self.slot}  ·  {programme_status}\n"
             f"CONTROLLER SETTINGS  ·  {wt_status}\n"
-            "Each SAVE is separate. A new DA upload after a settings write requires "
-            "reconnection and a fresh backup.")
+            "Each SAVE is separate. After a verified SAVE and CMW OFF, the "
+            "app automatically reads a new baseline; a power-loss retention "
+            "test remains optional and separate.")
 
     def show_step(self,index):
         self._current_step=max(0,min(4,index))
