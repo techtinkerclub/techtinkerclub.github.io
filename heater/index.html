@@ -17,9 +17,15 @@ permalink: /heater/
 /* Numbered markers have been moved off the component bodies. */
 .panelphoto{max-width:600px}
 .panelphoto .leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
-.panelphoto .point{z-index:2;width:25px;height:25px;font-size:12px;box-shadow:0 1px 5px #18314d4d;border:2px solid #fff}
-.panelphoto.photo-mode .point,.panelphoto.photo-mode .leaders{display:none}
-.panelphoto.photo-mode{max-width:440px}
+.panelphoto .point{z-index:2;width:30px;height:30px;font-size:13px;box-shadow:0 1px 5px #18314d4d;border:2px solid #fff}
+.panelphoto.guide-photo{max-width:480px}
+.panelphoto.clean-photo{max-width:480px}
+.panelphoto.guide-photo .point{left:var(--photo-x);top:var(--photo-y)}
+.panelphoto.guide-diagram .point{left:var(--diagram-x);top:var(--diagram-y)}
+.panelphoto.clean-photo .point,.panelphoto.clean-photo .leaders{display:none}
+.panelphoto.guide-photo .diagram-leaders,.panelphoto.guide-diagram .photo-leaders,.panelphoto.clean-photo .photo-leaders,.panelphoto.clean-photo .diagram-leaders{display:none}
+.panelphoto .point:focus-visible{outline:3px solid #f4b44f;outline-offset:3px}
+.panelphoto .point.on{background:#f4b44f;color:#1d3343}
 .panel-mode-choices{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 14px}
 .panel-mode-choices button{background:#fff;border:1px solid #cddde9;color:#355b7b;border-radius:9px;padding:8px 13px;font-size:13px;font-weight:650}
 .panel-mode-choices button.sel{background:#1e639c;color:#fff}
@@ -83,24 +89,31 @@ permalink: /heater/
 <div class="card callout"><h3>More ways to explore</h3><div class="tagrow"><button class="btn jump" data-v="front">Front-panel controls</button><button class="btn jump" data-v="sop">Operating procedure</button><button class="btn jump" data-v="software">Windows USB Studio</button><a class="btn" href="./omron-atlas/">Omron setting map ↗</a><button class="btn jump" data-v="datasheets">Component documentation</button></div></div></section>
 
 <section id="front" class="view">
-<h2 class="heading">Front-panel controls and connections</h2><p class="intro">The two-channel cabinet door is now physically cut out and populated. Start with the cleaned presentation view of the actual fitted layout, or switch to the numbered functional diagram to identify components. Installation does not by itself confirm wiring or commissioning.</p>
+<h2 class="heading">Front-panel controls and connections</h2><p class="intro">Explore the actual fitted two-channel panel. Select a numbered marker beside a component to see its function and proposed marking. Switch to a clean photograph or simplified illustration if needed. Installation does not itself confirm wiring or commissioning.</p>
 <div class="split"><article class="card">
 <div class="panel-mode-choices" role="group" aria-label="Choose front-panel view">
-<button type="button" id="showPanelPhoto" class="sel" aria-pressed="true">Fitted panel · photo</button>
-<button type="button" id="showPanelDiagram" aria-pressed="false">Numbered component guide</button></div>
-<div class="panelphoto photo-mode" id="panelViewer">
-<img id="panelImage" alt="Retouched presentation photograph of the fitted beige cabinet door with two Omron E5CC controllers, paired indicators, selectors, voltmeters, thermocouple and red/black DC sockets; equipment unpowered" src="./assets/front-panel-cleaned-20261016.webp" loading="eager">
-<svg class="leaders" viewBox="0 0 620 840" aria-hidden="true"><g fill="none" stroke="#3477a3" stroke-width="1.7" stroke-linecap="round"><path d="M32 141 H49"/><path d="M32 226 H62"/><path d="M145 257 V243"/><path d="M146 319 H166"/><path d="M142 487 H159"/><path d="M45 613 H59"/><path d="M282 613 H259"/><path d="M282 697 H259"/><path d="M565 360 H549"/></g></svg>
-<button class="point on" data-part="sb" title="Heater enable" aria-label="1: Heater enable" style="left:5.16%;top:16.79%">1</button>
-<button class="point" data-part="hl" title="Amber heat active indicator" aria-label="2: Amber heat active indicator" style="left:5.16%;top:26.90%">2</button>
-<button class="point" data-part="om" title="Temperature controller" aria-label="3: Temperature controller" style="left:23.39%;top:30.60%">3</button>
-<button class="point" data-part="sel" title="Channel control selector" aria-label="4: Channel selector" style="left:23.55%;top:37.98%">4</button>
-<button class="point" data-part="vol" title="DC voltage display" aria-label="5: DC voltmeter" style="left:22.90%;top:57.98%">5</button>
-<button class="point" data-part="tc" title="Thermocouple input" aria-label="6: Thermocouple input" style="left:7.26%;top:72.98%">6</button>
-<button class="point" data-part="psu" title="External PSU input" aria-label="7: PSU input" style="left:45.48%;top:72.98%">7</button>
-<button class="point" data-part="heater" title="Heater output" aria-label="8: Heater output" style="left:45.48%;top:82.98%">8</button>
-<button class="point" data-part="ch2" title="Second channel" aria-label="9: Channel 2" style="left:91.13%;top:42.86%">9</button>
-</div><p class="note"><strong>Photo:</strong> retouched presentation view for readability; minor visual details may differ from the as-fitted hardware. <a href="./assets/front-panel-original-20261016.jpeg" target="_blank" rel="noopener">View the unedited installation photograph</a> for factual inspection. <strong>Numbered guide:</strong> functional illustration, not a dimensional/manufacturing drawing or confirmation of the final wiring. Use as-built engineering evidence and actual component markings for servicing.</p></article>
+<button type="button" id="showPanelGuide" class="sel" aria-pressed="true">Numbered fitted panel</button>
+<button type="button" id="showPanelPhoto" aria-pressed="false">Clean photo</button>
+<button type="button" id="showPanelDiagram" aria-pressed="false">Simplified diagram</button></div>
+<div class="panelphoto guide-photo" id="panelViewer">
+<img id="panelImage" alt="Cleaned presentation photo of the fitted two-channel heating controller, with clickable numbered markers beside the real components" src="./assets/front-panel-cleaned-20261016.webp" loading="eager">
+<svg class="leaders photo-leaders" viewBox="0 0 960 1280" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#256b91" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M110 210 H157"/><path d="M105 330 H156"/>
+<path d="M230 280 H254"/><path d="M250 500 H288"/><path d="M235 745 H271"/>
+<path d="M109 915 H127"/><path d="M485 914 H407"/><path d="M485 1038 H407"/>
+<path d="M829 500 H677"/>
+</g></svg>
+<svg class="leaders diagram-leaders" viewBox="0 0 620 840" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#3477a3" stroke-width="1.7" stroke-linecap="round"><path d="M32 141 H49"/><path d="M32 226 H62"/><path d="M145 257 V243"/><path d="M146 319 H166"/><path d="M142 487 H159"/><path d="M45 613 H59"/><path d="M282 613 H259"/><path d="M282 697 H259"/><path d="M565 360 H549"/></g></svg>
+<button class="point on" data-part="sb" title="1 · Heater enable pushbutton" aria-label="1: Heater enable pushbutton" aria-pressed="true" style="--photo-x:11.46%;--photo-y:16.41%;--diagram-x:5.16%;--diagram-y:16.79%">1</button>
+<button class="point" data-part="hl" title="2 · Indicator lens (verify fitted function)" aria-label="2: Indicator lens, verify function" aria-pressed="false" style="--photo-x:10.94%;--photo-y:25.78%;--diagram-x:5.16%;--diagram-y:26.90%">2</button>
+<button class="point" data-part="om" title="3 · Omron temperature controller" aria-label="3: Temperature controller" aria-pressed="false" style="--photo-x:23.96%;--photo-y:21.88%;--diagram-x:23.39%;--diagram-y:30.60%">3</button>
+<button class="point" data-part="sel" title="4 · Channel selector" aria-label="4: Channel control selector" aria-pressed="false" style="--photo-x:26.04%;--photo-y:39.06%;--diagram-x:23.55%;--diagram-y:37.98%">4</button>
+<button class="point" data-part="vol" title="5 · DC voltmeter" aria-label="5: DC voltmeter" aria-pressed="false" style="--photo-x:24.48%;--photo-y:58.20%;--diagram-x:22.90%;--diagram-y:57.98%">5</button>
+<button class="point" data-part="tc" title="6 · Thermocouple input" aria-label="6: Thermocouple input" aria-pressed="false" style="--photo-x:11.35%;--photo-y:71.48%;--diagram-x:7.26%;--diagram-y:72.98%">6</button>
+<button class="point" data-part="psu" title="7 · Upper PSU input connector pair" aria-label="7: Upper external DC supply input pair" aria-pressed="false" style="--photo-x:50.52%;--photo-y:71.41%;--diagram-x:45.48%;--diagram-y:72.98%">7</button>
+<button class="point" data-part="heater" title="8 · Lower heater output connector pair" aria-label="8: Lower heater output pair" aria-pressed="false" style="--photo-x:50.52%;--photo-y:81.09%;--diagram-x:45.48%;--diagram-y:82.98%">8</button>
+<button class="point" data-part="ch2" title="9 · Mirrored Channel 2 controls" aria-label="9: Channel 2 mirrored controls" aria-pressed="false" style="--photo-x:86.35%;--photo-y:39.06%;--diagram-x:91.13%;--diagram-y:42.86%">9</button>
+</div><p class="note"><strong>Numbered fitted panel:</strong> marker positions are illustrative identification aids beside components on the retouched photograph; not dimensional cutout or wiring evidence. <strong>For inspection:</strong> <a href="./assets/front-panel-original-20261016.jpeg" target="_blank" rel="noopener">view the unedited installation photograph</a>. Indicator roles, selector versions and permanent labels must be confirmed against the actual fitted hardware and approved wiring.</p></article>
 <article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Panel marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Further notes</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
 </section>
 
@@ -124,7 +137,7 @@ permalink: /heater/
 </section>
 
 <section id="labels" class="view">
-<h2 class="heading">Panel markings</h2><p class="intro">Use these short labels to identify the controls and connectors for each channel. The same markings are shown directly on the panel illustration. Confirm available label space before applying permanent lettering.</p>
+<h2 class="heading">Panel markings</h2><p class="intro">Use these short labels to identify the controls and connectors for each channel. These markings are proposed, not proof of labels already fitted to the cabinet. Check the installed hardware and available space before applying permanent lettering.</p>
 <article class="card"><div class="two"><div><h3>Channel 1</h3><table class="table"><tr><th>Reference</th><th>Panel label</th></tr>
 <tr><td>SB1</td><td>ENABLE</td></tr><tr><td>HL1</td><td>ACTIVE</td></tr><tr><td>E1</td><td>TEMP CTRL</td></tr><tr><td>S1</td><td>CONTROL</td></tr><tr><td>PV1</td><td>DC VOLTS</td></tr><tr><td>JTC1</td><td>TC INPUT</td></tr><tr><td>JP1 · upper pair</td><td>PSU IN (+ / −)</td></tr><tr><td>JP2 · lower pair</td><td>HEATER OUT (+ / −)</td></tr></table></div>
 <div><h3>Channel 2</h3><table class="table"><tr><th>Reference</th><th>Panel label</th></tr><tr><td>SB2</td><td>ENABLE</td></tr><tr><td>HL2</td><td>ACTIVE</td></tr><tr><td>E2</td><td>TEMP CTRL</td></tr><tr><td>S2</td><td>CONTROL</td></tr><tr><td>PV2</td><td>DC VOLTS</td></tr><tr><td>JTC2</td><td>TC INPUT</td></tr><tr><td>JP3 · upper pair</td><td>PSU IN (+ / −)</td></tr><tr><td>JP4 · lower pair</td><td>HEATER OUT (+ / −)</td></tr></table></div></div>
@@ -275,7 +288,7 @@ permalink: /heater/
   }));
   const parts={
     sb:["01 · SB1 / SB2","Heater enable pushbutton","Illuminated EAO momentary switch, commanding the relevant channel's heater-enable circuit.","HEATER ENABLE",["24 V illuminated ring is intended to indicate heater enable.","The enable indicator is not a substitute for electrical isolation."]],
-    hl:["02 · HL1 / HL2","Yellow ACTIVE indicator (RS 130-1086)","A yellow/amber pilot lamp at the outer side of each Omron controller, below the ENABLE button.","HEAT ACTIVE",["Intended to show the heater control-command/demand signal, not independently measured heater current.","Specified RS PRO 130-1086 yellow lens, 24 V DC, 20 mA max; 14 mm panel cutout, lead wires. Confirm fitted part and wiring.","Confirm pilot-lamp polarity and supply against the electrical schedule."]],
+    hl:["02 · HL1 / HL2","Indicator lens (function to confirm)","The fitted photograph shows a dark green indicator lens below the stainless-ring button on each channel. The earlier specification proposed an amber HEAT ACTIVE indicator.","HEAT ACTIVE · PROPOSED",["Do not infer an electrical indication from lens colour; the actual fitted part, circuit and signal remain to be verified.","If wired as the proposed HEAT ACTIVE lamp, this indicates a demand command, not independently measured heater current.","Confirm model, voltage, polarity, wiring and final panel marking before commissioning."]],
     om:["03 · E1 / E2","Omron E5CC temperature controller","Process-value and setpoint display, controller configuration, and heater-demand output.","CH1 TEMP / CH2 TEMP",["Displays process value and programme setpoint for the selected channel.","Read PV/SP and controller status before operation."]],
     sel:["04 · S1 / S2","Maintained channel selector","Channel-specific ON/OFF control, distinct from the heater enable command.","CH1 CONTROL / CH2 CONTROL",["Keep channel CONTROL separate from HEATER ENABLE.","Refer to the fitted switch terminal markings and approved electrical schematic when servicing."]],
     vol:["05 · PV1 / PV2","DC voltmeter","Round panel DC voltmeter.","CH1 DC VOLTS / CH2 DC VOLTS",["Indicates voltage, not heater power or current.","Display can remain off even when mains/control is available."]],
@@ -286,25 +299,44 @@ permalink: /heater/
   };
   const panelViewer=document.getElementById("panelViewer");
   const panelImage=document.getElementById("panelImage");
-  const photoButton=document.getElementById("showPanelPhoto");
-  const diagramButton=document.getElementById("showPanelDiagram");
-  function showPanelMode(guide){
-    panelViewer.classList.toggle("photo-mode",!guide);
-    panelImage.src=guide?"./assets/front-panel.svg?v=amber-clearance-20261013":"./assets/front-panel-cleaned-20261016.webp";
-    panelImage.alt=guide
-      ?"Illustrated dual-channel controller with numbered clickable component callouts"
-      :"Retouched presentation view of the physically fitted, unpowered two-channel controller cabinet door";
-    for(const [btn,on] of [[photoButton,!guide],[diagramButton,guide]]){
-      btn.classList.toggle("sel",on);
-      btn.setAttribute("aria-pressed",on?"true":"false");
+  const modeButtons={
+    "guide-photo":document.getElementById("showPanelGuide"),
+    "clean-photo":document.getElementById("showPanelPhoto"),
+    "guide-diagram":document.getElementById("showPanelDiagram")
+  };
+  function showPanelMode(mode){
+    panelViewer.classList.remove("guide-photo","clean-photo","guide-diagram");
+    panelViewer.classList.add(mode);
+    const diagram=mode==="guide-diagram";
+    panelImage.src=diagram?"./assets/front-panel.svg?v=amber-clearance-20261013":"./assets/front-panel-cleaned-20261016.webp";
+    panelImage.alt=diagram
+      ?"Simplified dual-channel heating controller illustration with numbered component markers"
+      :mode==="clean-photo"
+        ?"Clean presentation photograph of the installed two-channel heating controller"
+        :"Retouched fitted-panel photograph with numbered interactive component callouts";
+    for(const [key,button] of Object.entries(modeButtons)){
+      const selected=key===mode;
+      button.classList.toggle("sel",selected);
+      button.setAttribute("aria-pressed",selected?"true":"false");
     }
   }
-  photoButton.addEventListener("click",()=>showPanelMode(false));
-  diagramButton.addEventListener("click",()=>showPanelMode(true));
+  for(const [mode,button] of Object.entries(modeButtons)){
+    button.addEventListener("click",()=>showPanelMode(mode));
+  }
   document.querySelectorAll(".point").forEach(b=>b.addEventListener("click",()=>{
-    document.querySelectorAll(".point").forEach(x=>x.classList.remove("on"));b.classList.add("on");const a=parts[b.dataset.part];
-    document.getElementById("partRef").textContent=a[0];document.getElementById("partTitle").textContent=a[1];document.getElementById("partText").textContent=a[2];
-    document.getElementById("partMark").textContent=a[3];document.getElementById("partNotes").innerHTML=a[4].map(x=>"<li>"+x+"</li>").join("");
+    document.querySelectorAll(".point").forEach(x=>{
+      const active=x===b;
+      x.classList.toggle("on",active);
+      x.setAttribute("aria-pressed",active?"true":"false");
+    });
+    const a=parts[b.dataset.part];
+    document.getElementById("partRef").textContent=a[0];
+    document.getElementById("partTitle").textContent=a[1];
+    document.getElementById("partText").textContent=a[2];
+    document.getElementById("partMark").textContent=a[3];
+    document.getElementById("partNotes").replaceChildren(
+      ...a[4].map(item=>{const li=document.createElement("li");li.textContent=item;return li;})
+    );
   }));
   document.querySelector('.point[data-part="sb"]').click();
   const s=document.getElementById("search");
