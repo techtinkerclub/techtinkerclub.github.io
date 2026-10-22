@@ -21,7 +21,7 @@
       "slide": 1,
       "shape_index": 23,
       "before": "Logical bus · terminals TBD",
-      "after": "3 outgoing L/N/PE; terminals TBD"
+      "after": "Bus / jumpers TBD"
     },
     {
       "slide": 1,
@@ -33,7 +33,7 @@
       "slide": 1,
       "shape_index": 111,
       "before": "HEATING RATE CONTROLLER   /   D12 SOCKET + ACTIVITY LED   /   EDITABLE POWERPOINT",
-      "after": "HEATING RATE CONTROLLER   /   D13 SOCKET + ACTIVITY LED   /   EDITABLE POWERPOINT"
+      "after": "HEATING RATE CONTROLLER / D13 BLOCK + PORT SCHEMATICS / EDITABLE POWERPOINT"
     },
     {
       "slide": 1,
