@@ -33,6 +33,20 @@ const routes=[
     "keywords": "relay supply wiring power"
   },
   {
+    "title": "Current point-to-point wiring register · 22 October 2026",
+    "summary": "Individual mains, 24 V, Finder, EAO, Crydom and Weidmüller connections; builder reports versus unverified work",
+    "href": "/heater/electrical/wiring-reconciliation/",
+    "group": "Electrical",
+    "keywords": "D13 revised wiring as built 3 Live 3 Neutral three +24 0V Finder 13.61 A1 A2 EAO COM EN1 Crydom A1 A2 Weidmueller 13 14 ACTIVE wiring worksheets"
+  },
+  {
+    "title": "Printable D13 draft wiring PDF",
+    "summary": "Four-page A4 landscape draft connection register, 12 mains/PE and 17 control paths per channel",
+    "href": "/heater/electrical/wiring-reconciliation/Heating_Controller_D13_Field_Wiring_Reconciliation_DRAFT.pdf",
+    "group": "Electrical",
+    "keywords": "wiring PDF print workbench sheet 2026 revised D13 control AC mains neutral positive ground"
+  },
+  {
     "title": "Panel labels and connections",
     "summary": "What the markings and connectors mean on each channel",
     "href": "/heater/#labels",
