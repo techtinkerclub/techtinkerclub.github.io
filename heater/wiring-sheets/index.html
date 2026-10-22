@@ -80,7 +80,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
 }
 </style></head><body><main class="app">
 <header class="topbar"><div><div class="eyebrow">Heating Rate Controller · Workshop documents</div><h1>Printable wiring worksheets</h1><p class="sub">Eight A4 sheets · D12 circuit references · 39 design nets · designed for use beside the cabinet.</p></div><a class="back" href="../electrical/">← Electrical reference</a></header>
-<div class="warning"><b>Design review, not released as-built wiring.</b> Match each proposed connection to the D12 schematic and the stamped terminal on the actual fitted component before termination. X1–X4 are logical net names, not verified physical block positions. Multi-destination rows can require several separate wires. Both AC and external heater DC supplies must be isolated during installation and inspection.</div>
+<div class="warning"><b>Design review, not released as-built wiring.</b> Match each proposed connection to the D12 schematic and the stamped terminal on the actual fitted component before termination. X1–X4 are logical net names, not verified physical block positions. Multi-destination rows can require several separate wires. Both AC and external heater DC supplies must be isolated during installation and inspection. <strong>Finder 13.61 correction (22 Oct 2026):</strong> the original D12 PDF's L/+ and N/− are rail labels, not physical K1/K2 terminal markings. On type 13.61.0.024.0000, confirm A1 (+24 V), A2 (0 V), 3, ON, OFF and contact numbers 11/12/14 against the <a href="https://cdn.findernet.com/app/uploads/IB136124VEN.pdf" target="_blank" rel="noopener">Finder diagram</a>. Verify the exact fitted variant before connecting.</div>
 <div class="toolbar"><label for="sheetSelect">Worksheet
 <select id="sheetSelect"><option value="01">01 · Mains and controller feeds</option>
 <option value="02">02 · Shared 24 V distribution</option>
@@ -262,7 +262,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
 <td data-label="Inspected" class="tick"><span class="square" aria-label="Blank inspected checkbox"></span></td>
 <td data-label="D12 net" class="net"><strong>EN1-01</strong><span class="multi">NET / GROUP</span></td>
 <td data-label="FROM" class="terminal">X3 +24</td>
-<td data-label="TO" class="terminal">SB1 C; K1 L/+; K1 11</td>
+<td data-label="TO" class="terminal">SB1 C; K1 A1 (+24 V); K1 11</td>
 <td data-label="As-fitted terminals / wire ID" class="record"><span class="blankline"></span><span class="blankline"></span></td>
 <td data-label="Purpose / D12 note" class="remarks"><b>CH1 enable source</b><span>Multiple destinations on same net</span></td>
 </tr>
@@ -289,12 +289,12 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
 <td data-label="Inspected" class="tick"><span class="square" aria-label="Blank inspected checkbox"></span></td>
 <td data-label="D12 net" class="net"><strong>EN1-04</strong><span class="multi">NET / GROUP</span></td>
 <td data-label="FROM" class="terminal">X3 0 V</td>
-<td data-label="TO" class="terminal">K1 N/−; SK3 coil A2; SB1 LED−</td>
+<td data-label="TO" class="terminal">K1 A2 (0 V); SK3 coil A2; SB1 LED−</td>
 <td data-label="As-fitted terminals / wire ID" class="record"><span class="blankline"></span><span class="blankline"></span></td>
 <td data-label="Purpose / D12 note" class="remarks"><b>Coil and LED return</b><span>Socket A1/A2 provisional until model confirmed</span></td>
 </tr></tbody>
   </table>
-  <div class="holds"><h3>Before accepting this circuit</h3><ol><li>Confirm fitted Finder 13.61 type, terminals and operating settings before assembly.</li><li>Identify Finder 62.31 socket coil A1/A2, EAO momentary contact and lamp polarity.</li><li>Restore-to-OFF after control-power loss is a compulsory commissioning test, not proved by completion of the wiring.</li></ol></div>
+  <div class="holds"><h3>Before accepting this circuit</h3><ol><li>Confirm the exact fitted Finder 13.61 variant and stamped A1/A2/3/ON/OFF/11/12/14 terminals. Original D12 PDF has older supply-rail notation.</li><li>Identify Finder 62.31 socket coil A1/A2, EAO momentary contact and lamp polarity.</li><li>Restore-to-OFF after control-power loss is a compulsory commissioning test, not proved by completion of the wiring.</li></ol></div>
   <div class="recordfooter">
    <span>Installed by: <i></i></span><span>Dead-checked by: <i></i></span><span>Checked date: <i></i></span><span>Revision / exceptions recorded: <i></i></span>
   </div>
@@ -315,7 +315,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
 <td data-label="Inspected" class="tick"><span class="square" aria-label="Blank inspected checkbox"></span></td>
 <td data-label="D12 net" class="net"><strong>EN2-01</strong><span class="multi">NET / GROUP</span></td>
 <td data-label="FROM" class="terminal">X4 +24</td>
-<td data-label="TO" class="terminal">SB2 C; K2 L/+; K2 11</td>
+<td data-label="TO" class="terminal">SB2 C; K2 A1 (+24 V); K2 11</td>
 <td data-label="As-fitted terminals / wire ID" class="record"><span class="blankline"></span><span class="blankline"></span></td>
 <td data-label="Purpose / D12 note" class="remarks"><b>CH2 enable source</b><span>Corresponds to CH1</span></td>
 </tr>
@@ -342,12 +342,12 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
 <td data-label="Inspected" class="tick"><span class="square" aria-label="Blank inspected checkbox"></span></td>
 <td data-label="D12 net" class="net"><strong>EN2-04</strong><span class="multi">NET / GROUP</span></td>
 <td data-label="FROM" class="terminal">X4 0 V</td>
-<td data-label="TO" class="terminal">K2 N/−; SK4 coil A2; SB2 LED−</td>
+<td data-label="TO" class="terminal">K2 A2 (0 V); SK4 coil A2; SB2 LED−</td>
 <td data-label="As-fitted terminals / wire ID" class="record"><span class="blankline"></span><span class="blankline"></span></td>
 <td data-label="Purpose / D12 note" class="remarks"><b>Coil/LED return</b><span>Corresponds to CH1</span></td>
 </tr></tbody>
   </table>
-  <div class="holds"><h3>Before accepting this circuit</h3><ol><li>Confirm fitted Finder 13.61 type, terminals and operating settings before assembly.</li><li>Identify Finder 62.31 socket coil A1/A2, EAO momentary contact and lamp polarity.</li><li>Check that control-power restoration cannot re-enable either heater without a deliberate action.</li></ol></div>
+  <div class="holds"><h3>Before accepting this circuit</h3><ol><li>Confirm the exact fitted Finder 13.61 variant and stamped A1/A2/3/ON/OFF/11/12/14 terminals. Original D12 PDF has older supply-rail notation.</li><li>Identify Finder 62.31 socket coil A1/A2, EAO momentary contact and lamp polarity.</li><li>Check that control-power restoration cannot re-enable either heater without a deliberate action.</li></ol></div>
   <div class="recordfooter">
    <span>Installed by: <i></i></span><span>Dead-checked by: <i></i></span><span>Checked date: <i></i></span><span>Revision / exceptions recorded: <i></i></span>
   </div>
