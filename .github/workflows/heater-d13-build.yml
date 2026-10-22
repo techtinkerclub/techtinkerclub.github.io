@@ -1,0 +1,48 @@
+name: Build revised D13 from original D12 PowerPoint
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'heater/electrical/d13/build_d13.py'
+      - '.github/workflows/heater-d13-build.yml'
+permissions:
+  contents: write
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PPTX tools
+        run: python -m pip install python-pptx lxml PyMuPDF
+      - name: Prepare LibreOffice
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libreoffice-impress >/dev/null
+      - name: Reissue original D12 PowerPoint as revised D13
+        run: python heater/electrical/d13/build_d13.py
+      - name: Confirm generated files
+        run: |
+          test -s heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pptx
+          test -s heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pdf
+          python - <<'PY'
+          from pptx import Presentation
+          p=Presentation('heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pptx')
+          assert len(p.slides)==11, len(p.slides)
+          print('PASS: 11 original slides retained')
+          PY
+      - name: Publish D13 review files and slide inventory
+        run: |
+          git config user.name "heating-controller-docs"
+          git config user.email "docs@users.noreply.github.com"
+          git add heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pptx heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pdf heater/electrical/d13/slide_inventory.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish D13 revised original PowerPoint and matching PDF"
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: D13-Original-Style-Drawing-Pack
+          path: |
+            heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pptx
+            heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pdf
