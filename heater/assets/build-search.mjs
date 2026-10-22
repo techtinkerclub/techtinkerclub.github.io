@@ -187,6 +187,13 @@ const routes=[
     "keywords": "24v mean well xdr source"
   },
   {
+    "title": "Finder 13.61 mode selector and timer setup",
+    "summary": "Set proposed RI step mode, understand the white function selector, orange 0.5-20 minute timer and power-restoration tests",
+    "href": "/heater/electrical/#finder-setup",
+    "group": "Electrical",
+    "keywords": "Finder 13.61 RI IT RM Light ON selector screwdriver trimmer T timer 0.5 20 minutes programmed setting enable relay blink status restart"
+  },
+  {
     "title": "Finder heater relay and enable",
     "summary": "Momentary EAO enable and Finder relay logic",
     "href": "/heater/electrical/#sheet-03-04",
