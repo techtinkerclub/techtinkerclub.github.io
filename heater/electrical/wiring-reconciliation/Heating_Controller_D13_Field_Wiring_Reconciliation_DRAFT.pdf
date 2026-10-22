@@ -1,0 +1,955 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 8450 >>
+stream
+.08 .21 .31 rg 0 570 842 25 re f
+1 1 1 rg
+BT /F2 11 Tf 1 0 0 1 42 579 Tm (HEATING RATE CONTROLLER  |  D13 FIELD RECONCILIATION  |  DRAFT / NOT AS-BUILT) Tj ET
+.08 .21 .31 rg 0 564 842 6 re f
+0 0 0 rg
+BT /F2 16 Tf 1 0 0 1 42 547 Tm (MAINS AND PROTECTIVE EARTH) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 42 532 Tm (22 October 2026  |  Manufacturer terminal labels are checked; physical build NOT electrically verified.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 42 518 Tm (Each row is an individual proposed path. Tick only after insulated, dead testing and inspection.) Tj ET
+.81 .87 .91 rg 42 480 749 22 re f
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 46 488 Tm () Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 70 488 Tm (Wire ID) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 151 488 Tm (FROM terminal) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 330 488 Tm (TO terminal) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 509 488 Tm (Purpose / inspection note) Tj ET
+.33 .46 .55 RG 0.9 w 42 479 m 791 479 l S
+.76 .81 .86 RG 0.6 w 42 457 m 791 457 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 465 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 479 m 66 457 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 467 Tm (AC-IN-L) Tj ET
+.80 .85 .87 RG 0.35 w 147 479 m 147 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 467 Tm (J1 switched/fused L) Tj ET
+.80 .85 .87 RG 0.35 w 326 479 m 326 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 467 Tm (X1 Live bus) Tj ET
+.80 .85 .87 RG 0.35 w 505 479 m 505 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 467 Tm (Incoming feed | Proposed; J1 rear terminal mapping unverified) Tj ET
+.76 .81 .86 RG 0.6 w 42 435 m 791 435 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 443 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 457 m 66 435 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 445 Tm (AC-IN-N) Tj ET
+.80 .85 .87 RG 0.35 w 147 457 m 147 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 445 Tm (J1 switched Neutral) Tj ET
+.80 .85 .87 RG 0.35 w 326 457 m 326 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 445 Tm (X1 Neutral bus) Tj ET
+.80 .85 .87 RG 0.35 w 505 457 m 505 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 445 Tm (Incoming return | Proposed; J1 pole mapping unverified) Tj ET
+.76 .81 .86 RG 0.6 w 42 413 m 791 413 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 421 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 435 m 66 413 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 423 Tm (AC-PS-L) Tj ET
+.80 .85 .87 RG 0.35 w 147 435 m 147 413 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 423 Tm (X1 Live bus) Tj ET
+.80 .85 .87 RG 0.35 w 326 435 m 326 413 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 423 Tm (PS1 mains L \(C1\)*) Tj ET
+.80 .85 .87 RG 0.35 w 505 435 m 505 413 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 423 Tm (1 of 3 L take-offs | Physical PSU designation to be read on label) Tj ET
+.76 .81 .86 RG 0.6 w 42 391 m 791 391 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 399 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 413 m 66 391 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 401 Tm (AC-S1-L) Tj ET
+.80 .85 .87 RG 0.35 w 147 413 m 147 391 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 401 Tm (X1 Live bus) Tj ET
+.80 .85 .87 RG 0.35 w 326 413 m 326 391 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 401 Tm (S1 mains NO contact input*) Tj ET
+.80 .85 .87 RG 0.35 w 505 413 m 505 391 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 401 Tm (2 of 3 L take-offs | Exact selector contact markings to check) Tj ET
+.76 .81 .86 RG 0.6 w 42 369 m 791 369 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 377 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 391 m 66 369 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 379 Tm (AC-S2-L) Tj ET
+.80 .85 .87 RG 0.35 w 147 391 m 147 369 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 379 Tm (X1 Live bus) Tj ET
+.80 .85 .87 RG 0.35 w 326 391 m 326 369 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 379 Tm (S2 mains NO contact input*) Tj ET
+.80 .85 .87 RG 0.35 w 505 391 m 505 369 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 379 Tm (3 of 3 L take-offs | Exact selector contact markings to check) Tj ET
+.76 .81 .86 RG 0.6 w 42 347 m 791 347 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 355 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 369 m 66 347 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 357 Tm (AC-PS-N) Tj ET
+.80 .85 .87 RG 0.35 w 147 369 m 147 347 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 357 Tm (X1 Neutral bus) Tj ET
+.80 .85 .87 RG 0.35 w 326 369 m 326 347 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 357 Tm (PS1 mains N \(C2\)*) Tj ET
+.80 .85 .87 RG 0.35 w 505 369 m 505 347 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 357 Tm (1 of 3 N take-offs | Physical PSU designation to be read on label) Tj ET
+.76 .81 .86 RG 0.6 w 42 325 m 791 325 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 333 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 347 m 66 325 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 335 Tm (AC-E1-N) Tj ET
+.80 .85 .87 RG 0.35 w 147 347 m 147 325 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 335 Tm (X1 Neutral bus) Tj ET
+.80 .85 .87 RG 0.35 w 326 347 m 326 325 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 335 Tm (E1 Omron terminal 12 \(N\)*) Tj ET
+.80 .85 .87 RG 0.35 w 505 347 m 505 325 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 335 Tm (2 of 3 N take-offs | Confirm E1 fitted variant and legend) Tj ET
+.76 .81 .86 RG 0.6 w 42 303 m 791 303 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 311 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 325 m 66 303 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 313 Tm (AC-E2-N) Tj ET
+.80 .85 .87 RG 0.35 w 147 325 m 147 303 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 313 Tm (X1 Neutral bus) Tj ET
+.80 .85 .87 RG 0.35 w 326 325 m 326 303 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 313 Tm (E2 Omron terminal 12 \(N\)*) Tj ET
+.80 .85 .87 RG 0.35 w 505 325 m 505 303 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 313 Tm (3 of 3 N take-offs | Confirm E2 fitted variant and legend) Tj ET
+.76 .81 .86 RG 0.6 w 42 281 m 791 281 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 289 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 303 m 66 281 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 291 Tm (AC-E1-L) Tj ET
+.80 .85 .87 RG 0.35 w 147 303 m 147 281 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 291 Tm (S1 mains NO contact output*) Tj ET
+.80 .85 .87 RG 0.35 w 326 303 m 326 281 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 291 Tm (E1 Omron terminal 11 \(L\)*) Tj ET
+.80 .85 .87 RG 0.35 w 505 303 m 505 281 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 291 Tm (Additional switched Live wire | This is NOT another X1 Live take-off) Tj ET
+.76 .81 .86 RG 0.6 w 42 259 m 791 259 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 267 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 281 m 66 259 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 269 Tm (AC-E2-L) Tj ET
+.80 .85 .87 RG 0.35 w 147 281 m 147 259 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 269 Tm (S2 mains NO contact output*) Tj ET
+.80 .85 .87 RG 0.35 w 326 281 m 326 259 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 269 Tm (E2 Omron terminal 11 \(L\)*) Tj ET
+.80 .85 .87 RG 0.35 w 505 281 m 505 259 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 269 Tm (Additional switched Live wire | This is NOT another X1 Live take-off) Tj ET
+.76 .81 .86 RG 0.6 w 42 237 m 791 237 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 245 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 259 m 66 237 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 247 Tm (AC-PE-1) Tj ET
+.80 .85 .87 RG 0.35 w 147 259 m 147 237 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 247 Tm (J1 PE) Tj ET
+.80 .85 .87 RG 0.35 w 326 259 m 326 237 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 247 Tm (PE distribution) Tj ET
+.80 .85 .87 RG 0.35 w 505 259 m 505 237 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 247 Tm (Protective earthing | Separate from N and 24 V 0 V; safety-critical) Tj ET
+.76 .81 .86 RG 0.6 w 42 211 m 791 211 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 223 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 237 m 66 211 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 225 Tm (AC-PE-2) Tj ET
+.80 .85 .87 RG 0.35 w 147 237 m 147 211 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 225 Tm (PE distribution) Tj ET
+.80 .85 .87 RG 0.35 w 326 237 m 326 211 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 225 Tm (PS1 FG/PE, enclosure, door and required) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 215.50 Tm (bonds) Tj ET
+.80 .85 .87 RG 0.35 w 505 237 m 505 211 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 225 Tm (Multiple PE conductors | Use individual labelled, tested protective) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 215.50 Tm (bonds; verify terminals) Tj ET
+0 0 0 rg
+BT /F1 8.60 Tf 1 0 0 1 42 193 Tm (As-fitted cable/ferrule labels __________________    Installed by __________________    Checked by __________________) Tj ET
+0 0 0 rg
+BT /F1 8 Tf 1 0 0 1 42 21 Tm (Draft design-review schedule | See engineering verification register before energising.) Tj ET
+0 0 0 rg
+BT /F1 8 Tf 1 0 0 1 730 21 Tm (Page 1) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 11869 >>
+stream
+.08 .21 .31 rg 0 570 842 25 re f
+1 1 1 rg
+BT /F2 11 Tf 1 0 0 1 42 579 Tm (HEATING RATE CONTROLLER  |  D13 FIELD RECONCILIATION  |  DRAFT / NOT AS-BUILT) Tj ET
+.08 .21 .31 rg 0 564 842 6 re f
+0 0 0 rg
+BT /F2 16 Tf 1 0 0 1 42 547 Tm (CHANNEL 1 CONTROL) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 42 532 Tm (22 October 2026  |  Manufacturer terminal labels are checked; physical build NOT electrically verified.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 42 518 Tm (Each row is an individual proposed path. Tick only after insulated, dead testing and inspection.) Tj ET
+.81 .87 .91 rg 42 480 749 22 re f
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 46 488 Tm () Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 70 488 Tm (Wire ID) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 151 488 Tm (FROM terminal) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 330 488 Tm (TO terminal) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 509 488 Tm (Purpose / inspection note) Tj ET
+.33 .46 .55 RG 0.9 w 42 479 m 791 479 l S
+.76 .81 .86 RG 0.6 w 42 457 m 791 457 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 465 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 479 m 66 457 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 467 Tm (C1-DC-01) Tj ET
+.80 .85 .87 RG 0.35 w 147 479 m 147 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 467 Tm (X2 shared +24 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 479 m 326 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 467 Tm (S1 24 V selector B input*) Tj ET
+.80 .85 .87 RG 0.35 w 505 479 m 505 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 467 Tm (Permanent +24 V in | Contact terminal stamps unknown) Tj ET
+.76 .81 .86 RG 0.6 w 42 435 m 791 435 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 443 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 457 m 66 435 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 445 Tm (C1-DC-02) Tj ET
+.80 .85 .87 RG 0.35 w 147 457 m 147 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 445 Tm (S1 24 V selector B output*) Tj ET
+.80 .85 .87 RG 0.35 w 326 457 m 326 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 445 Tm (X3 channel +24 V rail) Tj ET
+.80 .85 .87 RG 0.35 w 505 457 m 505 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 445 Tm (Gated +24 V | Not the same as EN1 relay-enabled net) Tj ET
+.76 .81 .86 RG 0.6 w 42 409 m 791 409 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 421 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 435 m 66 409 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 423 Tm (C1-P1) Tj ET
+.80 .85 .87 RG 0.35 w 147 435 m 147 409 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 423 Tm (X3 gated +24 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 435 m 326 409 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 423 Tm (K1 Finder 13.61 A1) Tj ET
+.80 .85 .87 RG 0.35 w 505 435 m 505 409 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 423 Tm (Switched +24 V destination | 13.61 L/+ in original D12 was NOT a) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 413.50 Tm (device terminal) Tj ET
+.76 .81 .86 RG 0.6 w 42 387 m 791 387 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 395 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 409 m 66 387 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 397 Tm (C1-P2) Tj ET
+.80 .85 .87 RG 0.35 w 147 409 m 147 387 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 397 Tm (X3 gated +24 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 409 m 326 387 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 397 Tm (K1 Finder 13.61 11) Tj ET
+.80 .85 .87 RG 0.35 w 505 409 m 505 387 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 397 Tm (Switched +24 V destination | Contact common 11) Tj ET
+.76 .81 .86 RG 0.6 w 42 361 m 791 361 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 373 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 387 m 66 361 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 375 Tm (C1-P3) Tj ET
+.80 .85 .87 RG 0.35 w 147 387 m 147 361 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 375 Tm (X3 gated +24 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 387 m 326 361 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 375 Tm (SB1 EAO momentary COM*) Tj ET
+.80 .85 .87 RG 0.35 w 505 387 m 505 361 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 375 Tm (Switched +24 V destination | User describes a central contact pin;) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 365.50 Tm (physical stamp not yet confirmed) Tj ET
+.76 .81 .86 RG 0.6 w 42 335 m 791 335 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 347 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 361 m 66 335 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 349 Tm (C1-P4) Tj ET
+.80 .85 .87 RG 0.35 w 147 361 m 147 335 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 349 Tm (SB1 COM / same verified switched +24 V) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 339.50 Tm (junction) Tj ET
+.80 .85 .87 RG 0.35 w 326 361 m 326 335 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 349 Tm (SSR1 Crydom +3/A1) Tj ET
+.80 .85 .87 RG 0.35 w 505 361 m 505 335 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 349 Tm (Crydom control positive | USER-REPORTED shared positive at button) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 339.50 Tm (contact; verify both channels) Tj ET
+.76 .81 .86 RG 0.6 w 42 313 m 791 313 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 321 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 335 m 66 313 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 323 Tm (C1-P5) Tj ET
+.80 .85 .87 RG 0.35 w 147 335 m 147 313 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 323 Tm (X3 gated +24 V / Crydom +3 junction) Tj ET
+.80 .85 .87 RG 0.35 w 326 335 m 326 313 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 323 Tm (HL1 ACTIVE indicator +) Tj ET
+.80 .85 .87 RG 0.35 w 505 335 m 505 313 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 323 Tm (ACTIVE positive | INTENDED connection; installation not confirmed) Tj ET
+.76 .81 .86 RG 0.6 w 42 291 m 791 291 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 299 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 313 m 66 291 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 301 Tm (C1-N1) Tj ET
+.80 .85 .87 RG 0.35 w 147 313 m 147 291 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 301 Tm (X3 0 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 313 m 326 291 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 301 Tm (K1 Finder 13.61 A2) Tj ET
+.80 .85 .87 RG 0.35 w 505 313 m 505 291 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 301 Tm (Common control 0 V | 13.61 N/- in D12 was NOT a device terminal) Tj ET
+.76 .81 .86 RG 0.6 w 42 269 m 791 269 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 277 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 291 m 66 269 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 279 Tm (C1-N2) Tj ET
+.80 .85 .87 RG 0.35 w 147 291 m 147 269 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 279 Tm (X3 0 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 291 m 326 269 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 279 Tm (K3 Finder 62.31 coil A2*) Tj ET
+.80 .85 .87 RG 0.35 w 505 291 m 505 269 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 279 Tm (Common 0 V | Socket and suppression mapping unverified) Tj ET
+.76 .81 .86 RG 0.6 w 42 247 m 791 247 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 255 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 269 m 66 247 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 257 Tm (C1-N3) Tj ET
+.80 .85 .87 RG 0.35 w 147 269 m 147 247 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 257 Tm (X3 0 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 269 m 326 247 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 257 Tm (SB1 EAO ENABLE indicator LED-) Tj ET
+.80 .85 .87 RG 0.35 w 505 269 m 505 247 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 257 Tm (Common 0 V | Not the ACTIVE indicator negative) Tj ET
+.76 .81 .86 RG 0.6 w 42 221 m 791 221 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 233 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 247 m 66 221 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 235 Tm (C1-N4) Tj ET
+.80 .85 .87 RG 0.35 w 147 247 m 147 221 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 235 Tm (X3 0 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 247 m 326 221 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 235 Tm (W1 Weidm?ller output 14) Tj ET
+.80 .85 .87 RG 0.35 w 505 247 m 505 221 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 235 Tm (Common 0 V | Output 14 is the low/negative side per manufacturer) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 225.50 Tm (drawing) Tj ET
+.76 .81 .86 RG 0.6 w 42 199 m 791 199 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 207 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 221 m 66 199 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 209 Tm (C1-E1) Tj ET
+.80 .85 .87 RG 0.35 w 147 221 m 147 199 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 209 Tm (SB1 momentary NO*) Tj ET
+.80 .85 .87 RG 0.35 w 326 221 m 326 199 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 209 Tm (K1 Finder 13.61 terminal 3) Tj ET
+.80 .85 .87 RG 0.35 w 505 221 m 505 199 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 209 Tm (Pulse command | Actual EAO stamp to check) Tj ET
+.76 .81 .86 RG 0.6 w 42 173 m 791 173 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 185 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 199 m 66 173 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 187 Tm (C1-E2) Tj ET
+.80 .85 .87 RG 0.35 w 147 199 m 147 173 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 187 Tm (K1 Finder 13.61 output 14) Tj ET
+.80 .85 .87 RG 0.35 w 326 199 m 326 173 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 187 Tm (K3 Finder 62.31 coil A1*) Tj ET
+.80 .85 .87 RG 0.35 w 505 199 m 505 173 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 187 Tm (Enabled net EN1 | Finder 13.61 NO output; socket terminal mapping to) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 177.50 Tm (verify) Tj ET
+.76 .81 .86 RG 0.6 w 42 147 m 791 147 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 159 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 173 m 66 147 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 161 Tm (C1-E3) Tj ET
+.80 .85 .87 RG 0.35 w 147 173 m 147 147 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 161 Tm (K1 Finder 13.61 output 14) Tj ET
+.80 .85 .87 RG 0.35 w 326 173 m 326 147 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 161 Tm (SB1 ENABLE indicator LED+) Tj ET
+.80 .85 .87 RG 0.35 w 505 173 m 505 147 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 161 Tm (Enabled net EN1 | Three-way logical net with K3 A1; junction method) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 151.50 Tm (unverified) Tj ET
+.76 .81 .86 RG 0.6 w 42 121 m 791 121 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 133 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 147 m 66 121 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 135 Tm (C1-S1) Tj ET
+.80 .85 .87 RG 0.35 w 147 147 m 147 121 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 135 Tm (SSR1 Crydom -4/A2) Tj ET
+.80 .85 .87 RG 0.35 w 326 147 m 326 121 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 135 Tm (W1 Weidm?ller output 13) Tj ET
+.80 .85 .87 RG 0.35 w 505 147 m 505 121 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 135 Tm (SSR switched return | USER-REPORTED; verify actual W module) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 125.50 Tm (identification) Tj ET
+.76 .81 .86 RG 0.6 w 42 95 m 791 95 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 107 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 121 m 66 95 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 109 Tm (C1-S2) Tj ET
+.80 .85 .87 RG 0.35 w 147 121 m 147 95 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 109 Tm (HL1 ACTIVE indicator -) Tj ET
+.80 .85 .87 RG 0.35 w 326 121 m 326 95 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 109 Tm (W1 Weidm?ller output 13 / SSR1 -4 junction) Tj ET
+.80 .85 .87 RG 0.35 w 505 121 m 505 95 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 109 Tm (ACTIVE switched return | USER-REPORTED; confirm both channels and lamp) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 99.50 Tm (identity) Tj ET
+.76 .81 .86 RG 0.6 w 42 69 m 791 69 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 81 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 95 m 66 69 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 83 Tm (C1-O1) Tj ET
+.80 .85 .87 RG 0.35 w 147 95 m 147 69 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 83 Tm (E1 Omron control-output 1\(+\) / 2\(-\)*) Tj ET
+.80 .85 .87 RG 0.35 w 326 95 m 326 69 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 83 Tm (W1 input A1\(+\) / A2\(-\)) Tj ET
+.80 .85 .87 RG 0.35 w 505 95 m 505 69 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 83 Tm (12 V command input | Controller hardware-dependent outputs must be) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 73.50 Tm (verified) Tj ET
+0 0 0 rg
+BT /F1 8.60 Tf 1 0 0 1 42 51 Tm (As-fitted cable/ferrule labels __________________    Installed by __________________    Checked by __________________) Tj ET
+0 0 0 rg
+BT /F1 8 Tf 1 0 0 1 42 21 Tm (Draft design-review schedule | See engineering verification register before energising.) Tj ET
+0 0 0 rg
+BT /F1 8 Tf 1 0 0 1 730 21 Tm (Page 2) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 10 0 R >>
+endobj
+10 0 obj
+<< /Length 11869 >>
+stream
+.08 .21 .31 rg 0 570 842 25 re f
+1 1 1 rg
+BT /F2 11 Tf 1 0 0 1 42 579 Tm (HEATING RATE CONTROLLER  |  D13 FIELD RECONCILIATION  |  DRAFT / NOT AS-BUILT) Tj ET
+.08 .21 .31 rg 0 564 842 6 re f
+0 0 0 rg
+BT /F2 16 Tf 1 0 0 1 42 547 Tm (CHANNEL 2 CONTROL) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 42 532 Tm (22 October 2026  |  Manufacturer terminal labels are checked; physical build NOT electrically verified.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 42 518 Tm (Each row is an individual proposed path. Tick only after insulated, dead testing and inspection.) Tj ET
+.81 .87 .91 rg 42 480 749 22 re f
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 46 488 Tm () Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 70 488 Tm (Wire ID) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 151 488 Tm (FROM terminal) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 330 488 Tm (TO terminal) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 509 488 Tm (Purpose / inspection note) Tj ET
+.33 .46 .55 RG 0.9 w 42 479 m 791 479 l S
+.76 .81 .86 RG 0.6 w 42 457 m 791 457 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 465 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 479 m 66 457 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 467 Tm (C2-DC-01) Tj ET
+.80 .85 .87 RG 0.35 w 147 479 m 147 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 467 Tm (X2 shared +24 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 479 m 326 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 467 Tm (S2 24 V selector B input*) Tj ET
+.80 .85 .87 RG 0.35 w 505 479 m 505 457 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 467 Tm (Permanent +24 V in | Contact terminal stamps unknown) Tj ET
+.76 .81 .86 RG 0.6 w 42 435 m 791 435 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 443 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 457 m 66 435 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 445 Tm (C2-DC-02) Tj ET
+.80 .85 .87 RG 0.35 w 147 457 m 147 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 445 Tm (S2 24 V selector B output*) Tj ET
+.80 .85 .87 RG 0.35 w 326 457 m 326 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 445 Tm (X4 channel +24 V rail) Tj ET
+.80 .85 .87 RG 0.35 w 505 457 m 505 435 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 445 Tm (Gated +24 V | Not the same as EN2 relay-enabled net) Tj ET
+.76 .81 .86 RG 0.6 w 42 409 m 791 409 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 421 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 435 m 66 409 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 423 Tm (C2-P1) Tj ET
+.80 .85 .87 RG 0.35 w 147 435 m 147 409 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 423 Tm (X4 gated +24 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 435 m 326 409 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 423 Tm (K2 Finder 13.61 A1) Tj ET
+.80 .85 .87 RG 0.35 w 505 435 m 505 409 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 423 Tm (Switched +24 V destination | 13.61 L/+ in original D12 was NOT a) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 413.50 Tm (device terminal) Tj ET
+.76 .81 .86 RG 0.6 w 42 387 m 791 387 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 395 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 409 m 66 387 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 397 Tm (C2-P2) Tj ET
+.80 .85 .87 RG 0.35 w 147 409 m 147 387 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 397 Tm (X4 gated +24 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 409 m 326 387 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 397 Tm (K2 Finder 13.61 11) Tj ET
+.80 .85 .87 RG 0.35 w 505 409 m 505 387 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 397 Tm (Switched +24 V destination | Contact common 11) Tj ET
+.76 .81 .86 RG 0.6 w 42 361 m 791 361 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 373 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 387 m 66 361 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 375 Tm (C2-P3) Tj ET
+.80 .85 .87 RG 0.35 w 147 387 m 147 361 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 375 Tm (X4 gated +24 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 387 m 326 361 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 375 Tm (SB2 EAO momentary COM*) Tj ET
+.80 .85 .87 RG 0.35 w 505 387 m 505 361 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 375 Tm (Switched +24 V destination | User describes a central contact pin;) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 365.50 Tm (physical stamp not yet confirmed) Tj ET
+.76 .81 .86 RG 0.6 w 42 335 m 791 335 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 347 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 361 m 66 335 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 349 Tm (C2-P4) Tj ET
+.80 .85 .87 RG 0.35 w 147 361 m 147 335 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 349 Tm (SB2 COM / same verified switched +24 V) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 339.50 Tm (junction) Tj ET
+.80 .85 .87 RG 0.35 w 326 361 m 326 335 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 349 Tm (SSR2 Crydom +3/A1) Tj ET
+.80 .85 .87 RG 0.35 w 505 361 m 505 335 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 349 Tm (Crydom control positive | USER-REPORTED shared positive at button) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 339.50 Tm (contact; verify both channels) Tj ET
+.76 .81 .86 RG 0.6 w 42 313 m 791 313 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 321 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 335 m 66 313 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 323 Tm (C2-P5) Tj ET
+.80 .85 .87 RG 0.35 w 147 335 m 147 313 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 323 Tm (X4 gated +24 V / Crydom +3 junction) Tj ET
+.80 .85 .87 RG 0.35 w 326 335 m 326 313 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 323 Tm (HL2 ACTIVE indicator +) Tj ET
+.80 .85 .87 RG 0.35 w 505 335 m 505 313 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 323 Tm (ACTIVE positive | INTENDED connection; installation not confirmed) Tj ET
+.76 .81 .86 RG 0.6 w 42 291 m 791 291 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 299 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 313 m 66 291 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 301 Tm (C2-N1) Tj ET
+.80 .85 .87 RG 0.35 w 147 313 m 147 291 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 301 Tm (X4 0 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 313 m 326 291 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 301 Tm (K2 Finder 13.61 A2) Tj ET
+.80 .85 .87 RG 0.35 w 505 313 m 505 291 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 301 Tm (Common control 0 V | 13.61 N/- in D12 was NOT a device terminal) Tj ET
+.76 .81 .86 RG 0.6 w 42 269 m 791 269 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 277 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 291 m 66 269 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 279 Tm (C2-N2) Tj ET
+.80 .85 .87 RG 0.35 w 147 291 m 147 269 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 279 Tm (X4 0 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 291 m 326 269 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 279 Tm (K4 Finder 62.31 coil A2*) Tj ET
+.80 .85 .87 RG 0.35 w 505 291 m 505 269 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 279 Tm (Common 0 V | Socket and suppression mapping unverified) Tj ET
+.76 .81 .86 RG 0.6 w 42 247 m 791 247 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 255 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 269 m 66 247 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 257 Tm (C2-N3) Tj ET
+.80 .85 .87 RG 0.35 w 147 269 m 147 247 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 257 Tm (X4 0 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 269 m 326 247 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 257 Tm (SB2 EAO ENABLE indicator LED-) Tj ET
+.80 .85 .87 RG 0.35 w 505 269 m 505 247 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 257 Tm (Common 0 V | Not the ACTIVE indicator negative) Tj ET
+.76 .81 .86 RG 0.6 w 42 221 m 791 221 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 233 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 247 m 66 221 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 235 Tm (C2-N4) Tj ET
+.80 .85 .87 RG 0.35 w 147 247 m 147 221 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 235 Tm (X4 0 V) Tj ET
+.80 .85 .87 RG 0.35 w 326 247 m 326 221 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 235 Tm (W2 Weidm?ller output 14) Tj ET
+.80 .85 .87 RG 0.35 w 505 247 m 505 221 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 235 Tm (Common 0 V | Output 14 is the low/negative side per manufacturer) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 225.50 Tm (drawing) Tj ET
+.76 .81 .86 RG 0.6 w 42 199 m 791 199 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 207 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 221 m 66 199 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 209 Tm (C2-E1) Tj ET
+.80 .85 .87 RG 0.35 w 147 221 m 147 199 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 209 Tm (SB2 momentary NO*) Tj ET
+.80 .85 .87 RG 0.35 w 326 221 m 326 199 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 209 Tm (K2 Finder 13.61 terminal 3) Tj ET
+.80 .85 .87 RG 0.35 w 505 221 m 505 199 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 209 Tm (Pulse command | Actual EAO stamp to check) Tj ET
+.76 .81 .86 RG 0.6 w 42 173 m 791 173 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 185 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 199 m 66 173 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 187 Tm (C2-E2) Tj ET
+.80 .85 .87 RG 0.35 w 147 199 m 147 173 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 187 Tm (K2 Finder 13.61 output 14) Tj ET
+.80 .85 .87 RG 0.35 w 326 199 m 326 173 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 187 Tm (K4 Finder 62.31 coil A1*) Tj ET
+.80 .85 .87 RG 0.35 w 505 199 m 505 173 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 187 Tm (Enabled net EN2 | Finder 13.61 NO output; socket terminal mapping to) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 177.50 Tm (verify) Tj ET
+.76 .81 .86 RG 0.6 w 42 147 m 791 147 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 159 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 173 m 66 147 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 161 Tm (C2-E3) Tj ET
+.80 .85 .87 RG 0.35 w 147 173 m 147 147 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 161 Tm (K2 Finder 13.61 output 14) Tj ET
+.80 .85 .87 RG 0.35 w 326 173 m 326 147 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 161 Tm (SB2 ENABLE indicator LED+) Tj ET
+.80 .85 .87 RG 0.35 w 505 173 m 505 147 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 161 Tm (Enabled net EN2 | Three-way logical net with K4 A1; junction method) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 151.50 Tm (unverified) Tj ET
+.76 .81 .86 RG 0.6 w 42 121 m 791 121 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 133 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 147 m 66 121 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 135 Tm (C2-S1) Tj ET
+.80 .85 .87 RG 0.35 w 147 147 m 147 121 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 135 Tm (SSR2 Crydom -4/A2) Tj ET
+.80 .85 .87 RG 0.35 w 326 147 m 326 121 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 135 Tm (W2 Weidm?ller output 13) Tj ET
+.80 .85 .87 RG 0.35 w 505 147 m 505 121 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 135 Tm (SSR switched return | USER-REPORTED; verify actual W module) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 125.50 Tm (identification) Tj ET
+.76 .81 .86 RG 0.6 w 42 95 m 791 95 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 107 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 121 m 66 95 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 109 Tm (C2-S2) Tj ET
+.80 .85 .87 RG 0.35 w 147 121 m 147 95 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 109 Tm (HL2 ACTIVE indicator -) Tj ET
+.80 .85 .87 RG 0.35 w 326 121 m 326 95 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 109 Tm (W2 Weidm?ller output 13 / SSR2 -4 junction) Tj ET
+.80 .85 .87 RG 0.35 w 505 121 m 505 95 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 109 Tm (ACTIVE switched return | USER-REPORTED; confirm both channels and lamp) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 99.50 Tm (identity) Tj ET
+.76 .81 .86 RG 0.6 w 42 69 m 791 69 l S
+0 0 0 rg
+BT /F1 12 Tf 1 0 0 1 49 81 Tm ([ ]) Tj ET
+.80 .85 .87 RG 0.35 w 66 95 m 66 69 l S
+0 0 0 rg
+BT /F2 7.70 Tf 1 0 0 1 70 83 Tm (C2-O1) Tj ET
+.80 .85 .87 RG 0.35 w 147 95 m 147 69 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 151 83 Tm (E2 Omron control-output 1\(+\) / 2\(-\)*) Tj ET
+.80 .85 .87 RG 0.35 w 326 95 m 326 69 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 330 83 Tm (W2 input A1\(+\) / A2\(-\)) Tj ET
+.80 .85 .87 RG 0.35 w 505 95 m 505 69 l S
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 83 Tm (12 V command input | Controller hardware-dependent outputs must be) Tj ET
+0 0 0 rg
+BT /F1 7.50 Tf 1 0 0 1 509 73.50 Tm (verified) Tj ET
+0 0 0 rg
+BT /F1 8.60 Tf 1 0 0 1 42 51 Tm (As-fitted cable/ferrule labels __________________    Installed by __________________    Checked by __________________) Tj ET
+0 0 0 rg
+BT /F1 8 Tf 1 0 0 1 42 21 Tm (Draft design-review schedule | See engineering verification register before energising.) Tj ET
+0 0 0 rg
+BT /F1 8 Tf 1 0 0 1 730 21 Tm (Page 3) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 12 0 R >>
+endobj
+12 0 obj
+<< /Length 4088 >>
+stream
+.08 .21 .31 rg 0 570 842 25 re f
+1 1 1 rg
+BT /F2 11 Tf 1 0 0 1 42 579 Tm (HEATING RATE CONTROLLER  |  D13 FIELD RECONCILIATION  |  DRAFT / NOT AS-BUILT) Tj ET
+.08 .21 .31 rg 0 564 842 6 re f
+0 0 0 rg
+BT /F2 16 Tf 1 0 0 1 42 547 Tm (RECONCILIATION NOTES / RELEASE HOLDS) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 42 532 Tm (22 October 2026  |  Manufacturer terminal labels are checked; physical build NOT electrically verified.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 42 518 Tm (Each row is an individual proposed path. Tick only after insulated, dead testing and inspection.) Tj ET
+.81 .87 .91 rg 42 480 749 22 re f
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 46 488 Tm () Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 70 488 Tm (Wire ID) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 151 488 Tm (FROM terminal) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 330 488 Tm (TO terminal) Tj ET
+0 0 0 rg
+BT /F2 8.20 Tf 1 0 0 1 509 488 Tm (Purpose / inspection note) Tj ET
+.33 .46 .55 RG 0.9 w 42 479 m 791 479 l S
+0 0 0 rg
+BT /F2 12 Tf 1 0 0 1 42 463 Tm (MAINS DISTRIBUTION - ENTIRE TWO-CHANNEL CABINET) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 443 Tm (X1 Live: 3 outgoing take-offs -> Mean Well PS1, S1 selector input, S2 selector input.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 427 Tm (X1 Neutral: 3 outgoing take-offs -> PS1, Omron E1, Omron E2.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 411 Tm (ADDITIONAL wires: incoming J1 L/N, each selector NO to Omron Live, and protective earth bonds.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 395 Tm (Three Live and three Neutral outgoing positions are NOT the total wire count.) Tj ET
+0 0 0 rg
+BT /F2 9.80 Tf 1 0 0 1 46 379 Tm (24 V PER CHANNEL - PHYSICAL CAPACITY REPORTED, NOT INSPECTED:) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 362 Tm (Three gated +24 V distribution positions and three common 0 V positions per channel.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 346 Tm (Crydom +3/A1 shares switched +24 V with the EAO ENABLE centre contact \(USER-REPORTED\).) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 330 Tm (Crydom -4/A2 and ACTIVE lamp negative share Weidmuller output 13 \(USER-REPORTED\).) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 314 Tm (Weidmuller output 14 returns to control 0 V; 13 is collector \(+\), 14 emitter \(-\).) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 298 Tm (ACTIVE indicator positive shares gated +24 V with Crydom +3; install status unconfirmed.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 282 Tm (EAO ENABLE LED+ is instead on the relay ENABLED net EN1/EN2 from Finder 13.61 contact 14.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 266 Tm (EN1/EN2 also supply the corresponding Finder 62.31 power-relay coil A1.) Tj ET
+0 0 0 rg
+BT /F2 9.80 Tf 1 0 0 1 46 250 Tm (FINDER 13.61 manufacturer terminals for specified 13.61.0.024.0000:) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 233 Tm (Power supply A1 \(+24 V\), A2 \(0 V\); impulse input 3; ON and OFF commands.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 217 Tm (Changeover: 11 common, 14 NO, 12 NC. Legacy L/+ and N/- are EXTERNAL rails.) Tj ET
+0 0 0 rg
+BT /F2 9.80 Tf 1 0 0 1 46 201 Tm (MANDATORY BEFORE POWER-UP:) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 184 Tm (Verify installed exact device variants, EAO COM pins, terminal capacities and all branches.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 168 Tm (Check inlet/fuse/selector/protective earth, rated conductors, branch protection and fault paths.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 152 Tm (Test SSR interface, indicator polarity, and prevent automatic heater enable after power restoration.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 136 Tm (Obtain competent independent inspection, as-built revision and safe commissioning approval.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 120 Tm (Sources: Finder 13.61 instructions; Weidmuller 8950770000 datasheet; Crydom DR22 datasheet.) Tj ET
+0 0 0 rg
+BT /F1 8.50 Tf 1 0 0 1 46 104 Tm (Original D12 PDF/PPTX remain historical and have not been edited. Read revised online register.) Tj ET
+0 0 0 rg
+BT /F1 8 Tf 1 0 0 1 42 21 Tm (DRAFT - NOT APPROVED AS-BUILT) Tj ET
+0 0 0 rg
+BT /F1 8 Tf 1 0 0 1 730 21 Tm (Page 4) Tj ET
+endstream
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000134 00000 n 
+0000000204 00000 n 
+0000000279 00000 n 
+0000000415 00000 n 
+0000008916 00000 n 
+0000009052 00000 n 
+0000020973 00000 n 
+0000021110 00000 n 
+0000033032 00000 n 
+0000033170 00000 n 
+trailer
+<< /Size 13 /Root 1 0 R >>
+startxref
+37310
+%%EOF
