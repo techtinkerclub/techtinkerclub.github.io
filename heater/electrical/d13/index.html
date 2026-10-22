@@ -1,0 +1,40 @@
+---
+layout: null
+sitemap: false
+permalink: /heater/electrical/d13/
+---
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>D13 revised original electrical drawings · Heating Rate Controller</title><style>
+:root{font:15px/1.55 "Segoe UI",Arial,sans-serif;color:#16334c;background:#edf3f7}*{box-sizing:border-box}body{margin:0}a{color:#14638d}
+main{width:min(1200px,calc(100% - 32px));margin:24px auto 50px}.bar,.sheet,.hero{border:1px solid #d3e0ea;border-radius:12px;background:#fff;padding:20px 25px;margin-bottom:16px}
+.kicker{text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:#426b88;font-weight:750}h1{font-size:28px;margin:5px 0 12px}h2{font-size:20px;margin:5px 0 12px}p{margin:7px 0 12px}
+.notice{background:#fff1dd;border-left:5px solid #bb7e30;padding:13px 17px;border-radius:7px;margin:14px 0}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.buttons a{border-radius:9px;padding:12px 14px;border:1px solid #abc1d4;text-decoration:none;font-weight:700;background:#eff7fc}.buttons a.primary{background:#175d85;border-color:#175d85;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.tile{border:1px solid #d2dfeb;border-radius:11px;overflow:hidden;background:white}.tile img{width:100%;height:auto;display:block;background:#fff}.tile a{color:inherit;text-decoration:none}.tile p{font-size:12px;padding:1px 12px 11px;margin:0;color:#4e6375}.tile b{font-size:13px;padding:10px 12px 3px;display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid #dce6ee;vertical-align:top}th{background:#eaf2f8}ul{padding-left:22px}li{margin:7px 0}
+footer{color:#6a8293;font-size:12px;margin-top:18px}@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:500px){.grid{grid-template-columns:1fr}main{width:calc(100% - 16px)}.bar,.sheet,.hero{padding:14px}}@media print{.buttons,.grid{display:none}}
+</style></head><body><main><header class="hero">
+<div class="kicker">Heating Rate Controller · Electrical drawing issue · 22 October 2026</div><h1>D13 · Revised original PowerPoint diagrams</h1>
+<p>Eleven-sheet drawing set made by <strong>editing the original D12 PowerPoint drawings</strong>, not replacing them with newly styled block diagrams. Original shapes, line routing, colours, sheet sequence, manufacturer links and overall layout are retained. Corrected terminals and connection annotations are incorporated in their original schematic positions.</p>
+<div class="notice"><strong>Inspection draft — not released as-built.</strong> Physical terminal markings, distribution block capacities and any unfinished channel wiring must be independently verified before commissioning. D13 incorporates confirmed manufacturer terminal definitions and builder-reported observations, but a report of a completed connection is not an inspection result.</div>
+<div class="buttons"><a class="primary" href="./Heating_Rate_Controller_D13_Styled_DRAFT.pdf" download>Download D13 PDF · 11 sheets</a><a href="./Heating_Rate_Controller_D13_Styled_DRAFT.pptx" download>Download editable D13 PowerPoint</a><a href="../wiring-reconciliation/">Print independent connection-check register</a></div>
+</header><section class="sheet"><h2>What changed from D12?</h2><table><thead><tr><th>Original sheets</th><th>D13 amendments</th></tr></thead><tbody>
+<tr><td>01 · Mains</td><td>Three Live outgoing destinations and three Neutral outgoing destinations for the whole cabinet, plus separate incoming feed, controller switched-Live leads and protective earth.</td></tr>
+<tr><td>02 · Shared 24 V</td><td>Three reported +24 V and three 0 V available distribution take-off positions per channel. Exact block allocation and approved junction methods remain to check.</td></tr>
+<tr><td>03–04 · Finder enable</td><td>Replace incorrect Finder 13.61 terminal markings L/+ and N/− with actual A1 and A2; distinguish EAO pushbutton COM from its illuminated LED+; propose RI mode and require restart tests.</td></tr>
+<tr><td>05–06 · SSR drive</td><td>Label Crydom control +3 as sharing the gated +24 V / EAO COM, ACTIVE+ on that same rail; Crydom −4 and ACTIVE− join Weidmüller 13, while Weidmüller 14 returns to 0 V. Channel 2 remains individually unverified.</td></tr>
+<tr><td>07–08 · Heater load</td><td>Keep original high-current power path drawings and emphasize Finder 62.31 34(+)→14(−) and Crydom +1→−2 are the switched POSITIVE load path, not DC 0 V.</td></tr>
+<tr><td>09–11 · Schedules</td><td>Revise mains, controls, topology notes, unresolved configuration settings and inspection priorities.</td></tr>
+</tbody></table></section>
+<section class="sheet"><h2>Selected pages from the exact revised PowerPoint</h2><p>Preview images rendered from D13, not a different concept drawing. The downloadable PDF and PowerPoint contain all eleven sheets.</p>
+<div class="grid">
+<div class="tile"><a href="./Heating_Rate_Controller_D13_Styled_DRAFT.pdf"><img loading="lazy" src="./previews/slide-01.jpg" alt="D13 sheet 01 original-style mains distribution"><b>01 · Mains / distribution</b></a><p>Original layout and wiring preserved</p></div>
+<div class="tile"><a href="./Heating_Rate_Controller_D13_Styled_DRAFT.pdf"><img loading="lazy" src="./previews/slide-03.jpg" alt="D13 sheet 03 Finder A1 A2 and enable"><b>03 · Finder enable, channel 1</b></a><p>Actual Finder supply terminal labels</p></div>
+<div class="tile"><a href="./Heating_Rate_Controller_D13_Styled_DRAFT.pdf"><img loading="lazy" src="./previews/slide-05.jpg" alt="D13 sheet 05 Crydom Weidmuller output"><b>05 · Crydom and ACTIVE LED</b></a><p>Control wiring annotated</p></div>
+<div class="tile"><a href="./Heating_Rate_Controller_D13_Styled_DRAFT.pdf"><img loading="lazy" src="./previews/slide-09.jpg" alt="D13 sheet 09 connections"><b>09 · AC / 24 V schedule</b></a><p>Cabinet distribution counts and terminals</p></div>
+<div class="tile"><a href="./Heating_Rate_Controller_D13_Styled_DRAFT.pdf"><img loading="lazy" src="./previews/slide-10.jpg" alt="D13 sheet 10 control connections"><b>10 · Control schedule</b></a><p>Updated relay and SSR paths</p></div>
+<div class="tile"><a href="./Heating_Rate_Controller_D13_Styled_DRAFT.pdf"><img loading="lazy" src="./previews/slide-11.jpg" alt="D13 sheet 11 inspection hold points"><b>11 · Release checks</b></a><p>Commissioning and inspection hold points</p></div>
+</div></section>
+<section class="sheet"><h2>Independent inspection</h2><p>Use the <a href="../wiring-reconciliation/">wire-by-wire reconciliation register</a> alongside these drawings. The checker must compare actual terminal stamps and conductor terminations with the diagram; record deviations, uninspected points, tests and signatures. Do not infer approval from the document revision number.</p>
+<p><strong>Original D12 files remain available as historical design sources:</strong> <a href="../Heating_Rate_Controller_D12_Reviewed_Styled.pptx">D12 editable PowerPoint</a> and <a href="../Heating_Rate_Controller_D12_Reviewed_Styled.pdf">D12 PDF</a>. They have not been overwritten.</p></section>
+<footer>Engineering documentation · D13 draft (same original D12 component-port style) · Not commissioned · <a href="../">Electrical overview</a> · <a href="../../">Operator manual</a></footer>
+</main></body></html>

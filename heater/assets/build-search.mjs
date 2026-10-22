@@ -33,6 +33,20 @@ const routes=[
     "keywords": "relay supply wiring power"
   },
   {
+    "title": "D13 revised original eleven-sheet electrical drawings",
+    "summary": "Updated original D12 editable PowerPoint, same component-port wiring schematic style and all 11 sheets",
+    "href": "/heater/electrical/d13/",
+    "group": "Electrical",
+    "keywords": "D13 schematic diagram revised original PowerPoint pptx PDF Finder terminal A1 A2 Crydom EAO wiring independent inspection original style"
+  },
+  {
+    "title": "Download revised D13 11-sheet schematic PDF",
+    "summary": "Original-style mains, 24 V, both Finder enable channels, Crydom SSR, DC heater power, schedules, release checks",
+    "href": "/heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pdf",
+    "group": "Electrical",
+    "keywords": "D13 download print PDF original electrical diagram full eleven pages inspection"
+  },
+  {
     "title": "Current point-to-point wiring register · 22 October 2026",
     "summary": "Individual mains, 24 V, Finder, EAO, Crydom and Weidmüller connections; builder reports versus unverified work",
     "href": "/heater/electrical/wiring-reconciliation/",
