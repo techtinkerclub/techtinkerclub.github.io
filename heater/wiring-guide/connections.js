@@ -1,6 +1,12 @@
 /* Interactive photo connection map for the Heating Rate Controller.
    D12 design-review indication only. No drawing indicates a physical cable route.
-   The connector names are not installation authority until verified as built. */
+   The connector names are not installation authority until verified as built.
+   22 October 2026: physical wire routes now live in /heater/electrical/wiring-reconciliation/.
+   Important D12 logical counts: X1 has 3 outgoing L and 3 outgoing N DESTINATIONS
+   for the entire cabinet (plus incoming, switched-L selector outputs and PE).
+   Per channel only 3 gated +24 V and 3 0 V distribution take-offs were reported.
+   Crydom +3 / EAO momentary COM and Crydom -4 / ACTIVE- / Weidmuller 13
+   were described as wired by user, without individual channel validation. */
 (() => {
   'use strict';
   if (typeof parts === 'undefined' || typeof cdata === 'undefined' ||
@@ -11,6 +17,10 @@
   const netTable = document.getElementById('netRows');
   if (!photo || !photoPanel || !netTable) return;
 
+  const note = document.createElement('p');
+  note.style.cssText = 'margin:6px 0 11px;padding:10px;border:1px solid #537a79;border-radius:8px;background:#18393c;color:#d9f8ee;font-size:11px;line-height:1.6';
+  note.innerHTML = 'The illustrated paths below follow legacy D12 <strong>functional nets</strong>, not individual installed conductors. <a href="../electrical/wiring-reconciliation/" style="color:#a4f4d9">Open the updated wire-by-wire printable register (22 Oct 2026)</a>. Weidmüller 8950770000 output 13 = high (+), 14 = low (−); ACTIVE LED+ is not EAO ENABLE LED+.';
+  photoPanel.querySelector('.panelHead')?.appendChild(note);
   const styles = document.createElement('style');
   styles.textContent = `
     .wireToolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 1px 12px;padding:11px 12px;border:1px solid #42617a;background:#112a40;border-radius:11px}

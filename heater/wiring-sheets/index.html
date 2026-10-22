@@ -79,8 +79,9 @@ body.print-all .sheet + .sheet{break-before:page;page-break-before:always}
 tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
 }
 </style></head><body><main class="app">
-<header class="topbar"><div><div class="eyebrow">Heating Rate Controller · Workshop documents</div><h1>Printable wiring worksheets</h1><p class="sub">Eight A4 sheets · D12 circuit references · 39 design nets · designed for use beside the cabinet.</p></div><a class="back" href="../electrical/">← Electrical reference</a></header>
+<header class="topbar"><div><div class="eyebrow">Heating Rate Controller · Historical D12 worksheets (not as-built)</div><h1>Printable wiring worksheets</h1><p class="sub">Eight A4 sheets · 39 original D12 design nets · retained as legacy reference. Current individual conductor register: 22 October 2026.</p></div><a class="back" href="../electrical/">← Electrical reference</a></header>
 <div class="warning"><b>Design review, not released as-built wiring.</b> Match each proposed connection to the D12 schematic and the stamped terminal on the actual fitted component before termination. X1–X4 are logical net names, not verified physical block positions. Multi-destination rows can require several separate wires. Both AC and external heater DC supplies must be isolated during installation and inspection. <strong>Finder 13.61 correction (22 Oct 2026):</strong> the original D12 PDF's L/+ and N/− are rail labels, not physical K1/K2 terminal markings. On type 13.61.0.024.0000, confirm A1 (+24 V), A2 (0 V), 3, ON, OFF and contact numbers 11/12/14 against the <a href="https://cdn.findernet.com/app/uploads/IB136124VEN.pdf" target="_blank" rel="noopener">Finder diagram</a>. Verify the exact fitted variant before connecting.</div>
+<div class="warning" style="background:#e6f5f0;border-color:#8dbba6"><b>Current wiring update — use the revised register first.</b> The original 39 grouped D12 entries below have <em>not</em> been converted into individually verified as-built wires. A <a href="../electrical/wiring-reconciliation/"><strong>new printable 22 October 2026 point-to-point register</strong></a> now includes the three L and three N outgoing mains distribution destinations <em>for the whole cabinet</em>, separate selector-to-Omron Live leads, three reported +24 V and three 0 V take-off positions per channel, Finder A1/A2, the distinct EAO COM versus EAO LED+, and the shared Crydom/ACTIVE indicator junctions. Do not tick a historical net row as a completed physical wire without checking the revised individual-wire schedule.</div>
 <div class="toolbar"><label for="sheetSelect">Worksheet
 <select id="sheetSelect"><option value="01">01 · Mains and controller feeds</option>
 <option value="02">02 · Shared 24 V distribution</option>
@@ -93,7 +94,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
 <button type="button" id="previous" aria-label="Previous worksheet">← Previous</button>
 <button type="button" id="next" aria-label="Next worksheet">Next →</button>
 <button class="primary" type="button" id="printOne">Print this sheet</button>
-<button type="button" id="printAll">Print all 8 sheets</button>
+<button type="button" id="printAll">Print all 8 legacy sheets</button><a href="../electrical/wiring-reconciliation/">Print current wire-by-wire worksheets →</a>
 <a href="../electrical/Heating_Rate_Controller_D12_Reviewed_Styled.pdf" target="_blank" rel="noopener">Open D12 schematic PDF ↗</a></div>
 <p class="hint">Use your browser’s print dialog to print on <b>A4 landscape</b>, or choose <b>Save as PDF</b>. Each worksheet is a separate print page. The boxes and recording lines are intentionally left blank for handwritten installation and inspection notes.</p>
 <section class="sheet current" id="sheet-01" data-sheet="01" aria-label="Worksheet 01: Mains and controller feeds">
@@ -103,6 +104,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
   </div>
   <div class="workmeta"><span>Cabinet / asset: <i></i></span><span>Work date: <i></i></span><span>Drawing revision checked: <i>D12 / <em>_______</em></i></span><span>Sheet: <b>01 / 08</b></span></div>
   <p class="sheetinstruction"><b>How to use:</b> compare this row with the original D12 drawing and the <b>stamped physical terminals</b>. Record actual wire/ferrule and terminal details. Tick <b>Installed</b> after termination; tick <b>Inspected</b> only after an independent de-energised check. <b>NET / GROUP</b> may contain several physical conductors.</p>
+  <p class="sheetinstruction" style="border-left:4px solid #ab7a38"><b>AC mains count correction:</b> three outgoing L destinations = PSU, CH1 selector input, CH2 selector input; three outgoing N destinations = PSU, Omron 1, Omron 2. <b>Additional physical wires:</b> incoming L/N, selector outputs to both Omron L inputs, and protective-earth bonds. These 8 D12 rows are <em>nets/groups</em>, not the complete physical cable list. <a href="../electrical/wiring-reconciliation/#mains">Print individual AC wires →</a></p>
   <table class="routes">
     <colgroup><col class="c-tick"><col class="c-tick"><col class="c-net"><col class="c-from"><col class="c-to"><col class="c-record"><col class="c-notes"></colgroup>
     <thead><tr><th>Inst.</th><th>Chk.</th><th>D12 ID</th><th>FROM — proposed</th><th>TO — proposed</th><th>As-fitted terminal / wire ID</th><th>Purpose / verify</th></tr></thead>
@@ -192,6 +194,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
   </div>
   <div class="workmeta"><span>Cabinet / asset: <i></i></span><span>Work date: <i></i></span><span>Drawing revision checked: <i>D12 / <em>_______</em></i></span><span>Sheet: <b>02 / 08</b></span></div>
   <p class="sheetinstruction"><b>How to use:</b> compare this row with the original D12 drawing and the <b>stamped physical terminals</b>. Record actual wire/ferrule and terminal details. Tick <b>Installed</b> after termination; tick <b>Inspected</b> only after an independent de-energised check. <b>NET / GROUP</b> may contain several physical conductors.</p>
+  <p class="sheetinstruction" style="border-left:4px solid #ab7a38"><b>24 V distribution:</b> builder reports only three +24 V and three 0 V connection positions <em>per channel</em>, not three supply conductors in total. X2/X3/X4 are logical names; check physical feed/jumper positions and approved branching. <a href="../electrical/wiring-reconciliation/#ch1">CH1</a> / <a href="../electrical/wiring-reconciliation/#ch2">CH2</a> physical wires.</p>
   <table class="routes">
     <colgroup><col class="c-tick"><col class="c-tick"><col class="c-net"><col class="c-from"><col class="c-to"><col class="c-record"><col class="c-notes"></colgroup>
     <thead><tr><th>Inst.</th><th>Chk.</th><th>D12 ID</th><th>FROM — proposed</th><th>TO — proposed</th><th>As-fitted terminal / wire ID</th><th>Purpose / verify</th></tr></thead>
@@ -254,6 +257,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
   </div>
   <div class="workmeta"><span>Cabinet / asset: <i></i></span><span>Work date: <i></i></span><span>Drawing revision checked: <i>D12 / <em>_______</em></i></span><span>Sheet: <b>03 / 08</b></span></div>
   <p class="sheetinstruction"><b>How to use:</b> compare this row with the original D12 drawing and the <b>stamped physical terminals</b>. Record actual wire/ferrule and terminal details. Tick <b>Installed</b> after termination; tick <b>Inspected</b> only after an independent de-energised check. <b>NET / GROUP</b> may contain several physical conductors.</p>
+  <p class="sheetinstruction" style="border-left:4px solid #ab7a38"><b>EN1 is a junction, not a terminal:</b> Finder 13.61 K1 terminal 14 feeds K3 coil A1 <em>and</em> SB1 ENABLE LED+. SB1 central COM is a different, gated +24 V node. Confirm K1 A1/A2 physical stamps and rated branch hardware. <a href="../electrical/wiring-reconciliation/#ch1">Current CH1 individual-wire register →</a></p>
   <table class="routes">
     <colgroup><col class="c-tick"><col class="c-tick"><col class="c-net"><col class="c-from"><col class="c-to"><col class="c-record"><col class="c-notes"></colgroup>
     <thead><tr><th>Inst.</th><th>Chk.</th><th>D12 ID</th><th>FROM — proposed</th><th>TO — proposed</th><th>As-fitted terminal / wire ID</th><th>Purpose / verify</th></tr></thead>
@@ -307,6 +311,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
   </div>
   <div class="workmeta"><span>Cabinet / asset: <i></i></span><span>Work date: <i></i></span><span>Drawing revision checked: <i>D12 / <em>_______</em></i></span><span>Sheet: <b>04 / 08</b></span></div>
   <p class="sheetinstruction"><b>How to use:</b> compare this row with the original D12 drawing and the <b>stamped physical terminals</b>. Record actual wire/ferrule and terminal details. Tick <b>Installed</b> after termination; tick <b>Inspected</b> only after an independent de-energised check. <b>NET / GROUP</b> may contain several physical conductors.</p>
+  <p class="sheetinstruction" style="border-left:4px solid #ab7a38"><b>EN2 is a junction, not a terminal:</b> Finder 13.61 K2 terminal 14 feeds K4 coil A1 <em>and</em> SB2 ENABLE LED+. SB2 central COM is a different, gated +24 V node. Confirm K2 A1/A2 physical stamps and rated branch hardware. <a href="../electrical/wiring-reconciliation/#ch2">Current CH2 individual-wire register →</a></p>
   <table class="routes">
     <colgroup><col class="c-tick"><col class="c-tick"><col class="c-net"><col class="c-from"><col class="c-to"><col class="c-record"><col class="c-notes"></colgroup>
     <thead><tr><th>Inst.</th><th>Chk.</th><th>D12 ID</th><th>FROM — proposed</th><th>TO — proposed</th><th>As-fitted terminal / wire ID</th><th>Purpose / verify</th></tr></thead>
@@ -360,6 +365,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
   </div>
   <div class="workmeta"><span>Cabinet / asset: <i></i></span><span>Work date: <i></i></span><span>Drawing revision checked: <i>D12 / <em>_______</em></i></span><span>Sheet: <b>05 / 08</b></span></div>
   <p class="sheetinstruction"><b>How to use:</b> compare this row with the original D12 drawing and the <b>stamped physical terminals</b>. Record actual wire/ferrule and terminal details. Tick <b>Installed</b> after termination; tick <b>Inspected</b> only after an independent de-energised check. <b>NET / GROUP</b> may contain several physical conductors.</p>
+  <p class="sheetinstruction" style="border-left:4px solid #ab7a38"><b>Builder-reported:</b> Crydom SSR1 +3/A1 shared with EAO SB1 central +24 V contact; Crydom SSR1 −4/A2 and ACTIVE indicator − shared with W1 output 13. W1 output 14 goes to 0 V. ACTIVE indicator + is intended to share gated +24 V, <em>not</em> SB1 ENABLE LED+ (EN1). Verify which fittings have actually been made. <a href="../electrical/wiring-reconciliation/#ch1">Individual wires →</a></p>
   <table class="routes">
     <colgroup><col class="c-tick"><col class="c-tick"><col class="c-net"><col class="c-from"><col class="c-to"><col class="c-record"><col class="c-notes"></colgroup>
     <thead><tr><th>Inst.</th><th>Chk.</th><th>D12 ID</th><th>FROM — proposed</th><th>TO — proposed</th><th>As-fitted terminal / wire ID</th><th>Purpose / verify</th></tr></thead>
@@ -413,6 +419,7 @@ tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}
   </div>
   <div class="workmeta"><span>Cabinet / asset: <i></i></span><span>Work date: <i></i></span><span>Drawing revision checked: <i>D12 / <em>_______</em></i></span><span>Sheet: <b>06 / 08</b></span></div>
   <p class="sheetinstruction"><b>How to use:</b> compare this row with the original D12 drawing and the <b>stamped physical terminals</b>. Record actual wire/ferrule and terminal details. Tick <b>Installed</b> after termination; tick <b>Inspected</b> only after an independent de-energised check. <b>NET / GROUP</b> may contain several physical conductors.</p>
+  <p class="sheetinstruction" style="border-left:4px solid #ab7a38"><b>Reported wiring principle, CH2 to verify individually:</b> Crydom +3/A1 shares the SB2 central gated +24 V node; Crydom −4/A2 and ACTIVE− connect to Weidmüller 13; Weidmüller 14 returns to 0 V. ACTIVE+ is on gated +24 V, not EN2. <a href="../electrical/wiring-reconciliation/#ch2">Individual wires →</a></p>
   <table class="routes">
     <colgroup><col class="c-tick"><col class="c-tick"><col class="c-net"><col class="c-from"><col class="c-to"><col class="c-record"><col class="c-notes"></colgroup>
     <thead><tr><th>Inst.</th><th>Chk.</th><th>D12 ID</th><th>FROM — proposed</th><th>TO — proposed</th><th>As-fitted terminal / wire ID</th><th>Purpose / verify</th></tr></thead>
