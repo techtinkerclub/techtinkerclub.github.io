@@ -75,7 +75,7 @@ permalink: /heater/
 <a class="taskCard" href="./program-tools/"><span class="taskIcon" aria-hidden="true">⌁</span><span class="taskText"><strong>Create a heating profile</strong><small>Plan a ramp, soak or step without a cable</small></span><span class="taskArrow" aria-hidden="true">→</span></a>
 <a class="taskCard" href="./omron-atlas/"><span class="taskIcon" aria-hidden="true">☷</span><span class="taskText"><strong>Find an Omron setting</strong><small>Search 228 parameter entries and MODE paths</small></span><span class="taskArrow" aria-hidden="true">→</span></a>
 <button class="taskCard" type="button" data-v="wiring"><span class="taskIcon" aria-hidden="true">⏚</span><span class="taskText"><strong>Understand the electrical system</strong><small>Control, enable and separate DC heater circuits</small></span><span class="taskArrow" aria-hidden="true">→</span></button>
-<button class="taskCard" type="button" data-v="sop"><span class="taskIcon" aria-hidden="true">✓</span><span class="taskText"><strong>Operating procedure</strong><small>Connections, checks and safe shutdown sequence</small></span><span class="taskArrow" aria-hidden="true">→</span></button>
+<button class="taskCard" type="button" data-v="sop"><span class="taskIcon" aria-hidden="true">✓</span><span class="taskText"><strong>Operating procedure</strong><small>23-step checklist, indications and fault actions</small></span><span class="taskArrow" aria-hidden="true">→</span></button>
 </div>
 <div id="siteSearch" class="searchPanel" role="search" aria-label="Search the heating controller documentation">
 <div class="searchHeading"><div><strong>Find anything in the documentation</strong><p>Try <code>wt-b</code>, <code>sensor</code>, <code>Finder</code>, <code>RESET</code> or <code>RS-485</code>.</p></div><span class="searchOffline">Searches on this device</span></div>
@@ -147,20 +147,20 @@ permalink: /heater/
 </article></section>
 
 <section id="sop" class="view">
-<h2 class="heading">Standard operating procedure</h2><p class="intro">Use the approved site operating procedure for live heater tests. Verify wiring, protection and safe isolation before operation.</p>
-<div class="card warn"><strong>Before operating a heater</strong><p>Check the external DC supply, protective devices, temperature input and the required safe-isolation procedure. Follow the site electrical inspection and operating requirements.</p></div>
-<div class="two callout">
-<article class="card"><h3>01 · Before switching on</h3>
-<div class="step"><span class="num">1</span><div><strong>Inspect the test arrangement</strong><p>Check heater and cable condition, protective covers, cooling/clearance and the approved test configuration.</p></div></div>
-<div class="step"><span class="num">2</span><div><strong>Check channel connections</strong><p>Match the green TC INPUT connector to the correct channel. The upper red/black pair is PSU IN; the lowest pair is HEATER OUT. Verify polarity and that power is isolated while connecting leads.</p></div></div>
-<div class="step"><span class="num">3</span><div><strong>Check the power source and setpoint</strong><p>Confirm the external supply voltage/current limits and the Omron's sensor type, programme/setpoint and approved control parameters.</p></div></div>
-</article>
-<article class="card"><h3>02 · Begin a controlled run</h3>
-<div class="step"><span class="num">4</span><div><strong>Apply control power</strong><p>Use the approved mains/control energising sequence. Check the Omron display for a credible temperature reading and absence of fault indications.</p></div></div>
-<div class="step"><span class="num">5</span><div><strong>Select the required channel</strong><p>Turn the relevant CONTROL selector ON and verify the heater remains disabled until the separate enable command is given.</p></div></div>
-<div class="step"><span class="num">6</span><div><strong>Enable and monitor heating</strong><p>Following the approved procedure, use ENABLE and the Omron programme or setpoint to initiate heating. Monitor the displayed temperature, voltage and demand indication throughout.</p></div></div>
-</article></div>
-<div class="card callout"><h3>03 · End a run</h3><p>Remove heating demand and disable the channel by the approved shutdown sequence. Isolate the external heater supply, confirm the output is de-energised and allow the heater to cool before handling it. Use the separate site emergency-stop and fault-response instructions if abnormal behaviour occurs.</p><p class="note">Do not move, disconnect or reconnect the DC heater or thermocouple leads while their circuit is energised. Record the test configuration, parameters and any abnormal events.</p></div></section>
+<h2 class="heading">Standard operating procedure</h2><p class="intro">From experiment setup, heater and thermocouple connections and programming through DC supply activation, heating, monitoring, cooling and shutdown. Use the full illustrated checklist for the correct sequence and expected indications.</p>
+<div class="card" style="border-left:5px solid #1a6c9c">
+<h3>Full operating checklist · 23 steps</h3><p>The procedure is arranged into four stages, with expected Omron screens, enable-button LED, amber ACTIVE indicator, Murata DC voltage display, warnings and emergency actions.</p>
+<div class="tagrow"><a class="btn" href="./sop/">Open complete SOP →</a><a class="btn" href="./sop/?print=1">Print SOP →</a><a class="btn" href="./risk-assessment/">Equipment risk assessment →</a></div></div>
+<div class="two callout"><article class="card"><h3>Normal test sequence</h3><ol class="compactlist">
+<li>With all power isolated, fit the heater and sample; connect the correct Type K sensor and match PSU IN and HEATER OUT pairs.</li>
+<li>Turn on enclosure mains and the selected CONTROL selector. Confirm credible PV and <code>r-r = rst</code>; select the correct <code>prg</code>.</li>
+<li>Set external PSU voltage/current limits with OUTPUT OFF. Confirm RESET actually removes the SSR demand (requires tested configuration).</li>
+<li>Energise external DC output with channel disabled; check meter and no heating. Press the EAO button to ENABLE the channel.</li>
+<li>Only after checking ENABLE ON and ACTIVE OFF in RESET, set Omron <code>r-r = run</code> to start. Watch PV/SP, programme progress and actual supply current.</li>
+</ol><p class="note">The EAO and Omron RUN are independent commands: the EAO does not start, stop or pause the programme automatically.</p></article>
+<article class="card"><h3>Normal stop and faults</h3><ol class="compactlist"><li>For a normal finish, command Omron <code>r-r = rst</code>, then disable the EAO enable latch.</li><li>Turn external DC PSU output OFF; isolate and verify before disconnecting any DC leads.</li><li>Wait for a measured safe temperature before handling the heater or specimen; log the test.</li></ol><p><strong>If heating is uncontrolled:</strong> use the approved external DC emergency isolation method immediately if safe; do not wait for a menu response.</p><div class="tagrow"><a class="btn" href="./sop/#abnormal">Fault-response table →</a><a class="btn" href="./risk-assessment/#hazards">Hazards and controls →</a></div></article></div>
+<div class="card warn callout"><h3>Pre-use safeguards</h3><p>Both channels have been reported functionally operational, but the safe use of external 0–60 V DC heater supplies depends on inspection, correct DC protection, SSR and relay ratings, safe power restoration, output-off behaviour in Omron RESET and the experiment-specific assessment. EAO ENABLE is not a safety-rated emergency stop.</p></div>
+</section>
 
 <section id="sequence" class="view">
 <h2 class="heading">Controller states and indications</h2>
@@ -170,10 +170,10 @@ permalink: /heater/
 <tr><td><strong>r-r = rst</strong></td><td>Controller programme in RESET.</td><td>Does not replace the physical isolation circuit or verify zero SSR leakage.</td></tr>
 <tr><td><strong>r-r = run</strong></td><td>The Omron is executing a programme (subject to mode).</td><td>Does not guarantee the external 0–60 V PSU is energised.</td></tr>
 <tr><td><strong>ENABLE / Finder</strong></td><td>Independent channel enable circuit.</td><td>Never assume RESET guarantees isolation.</td></tr>
-<tr><td><strong>Amber ACTIVE</strong></td><td>Control/SSR switching demand signal is asserted.</td><td>Does not prove contact closure, heater current or wattage.</td></tr>
-<tr><td><strong>DC VOLTS display</strong></td><td>Voltage at its eventual fitted measurement point.</td><td>Voltage alone is not heater power.</td></tr></table></div>
-<div class="card warn callout"><strong>Power interruption</strong><p>The heater enable circuit must remain OFF after control power is restored. Confirm correct behaviour as part of commissioning; do not rely on controller RESET alone.</p></div>
-<div class="tagrow"><button class="btn jump" data-v="sop">Go to safe operating sequence →</button><a class="btn" href="./electrical/#channels">How these states are wired →</a><a class="btn" href="./omron-atlas/#operation/r-r">Find r-r in the interactive Omron map →</a></div>
+<tr><td><strong>Amber ACTIVE</strong></td><td>On Reference Wiring R1, shows <b>heater ENABLE ON + Omron demand</b>; may pulse during time-proportional control. The existing cabinet needs its LED positive moved to Finder 13.61 terminal 14 if it is still fed from selector-switched +24 V.</td><td>Does not prove actual heater current, and the unmodified lamp can show demand while heater is disabled.</td></tr>
+<tr><td><strong>DC VOLTS display</strong></td><td>Murata PV1/PV2 display external DC input voltage above approximately 6 V.</td><td>Does not prove a live heater output or zero voltage when the meter is blank.</td></tr></table></div>
+<div class="card warn callout"><strong>Power interruption</strong><p>After a power interruption, treat the test as aborted. Independently verify heater ENABLE remains OFF, the Omron is in RESET and external DC heating power is isolated before starting a new test.</p></div>
+<div class="tagrow"><a class="btn" href="./sop/">Full operating checklist →</a><a class="btn" href="./risk-assessment/">Risk assessment →</a><button class="btn jump" data-v="sop">Operating summary →</button><a class="btn" href="./electrical/#channels">How these states are wired →</a><a class="btn" href="./omron-atlas/#operation/r-r">Find r-r in the interactive Omron map →</a></div>
 </section>
 
 <section id="omron" class="view"><h2 class="heading">Omron controller and programming</h2><p class="intro">Set up the controller, create and select programmes, and find the correct menu on the front panel. The worked examples are learning aids; verify settings against the fitted Omron model and the intended test.</p>
