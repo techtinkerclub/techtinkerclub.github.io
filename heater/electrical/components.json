@@ -211,22 +211,41 @@
   },
   {
     "ref": "PV1 / PV2",
-    "mfr": "Manufacturer not confirmed",
-    "model": "Panel DC voltmeter · model to confirm",
-    "role": "Panel voltage meter; polarity/measurement taps not specified",
-    "url": null,
+    "mfr": "Murata Power Solutions",
+    "model": "DMR20-10-DCM-R-C",
+    "role": "Self-powered round DC input voltmeter, 6–75 V DC. Two-wire TB1 (+/−) measurement across the external channel DC supply INPUT.",
+    "url": "https://www.mouser.com/datasheet/3/76/2/dmr20_10_dcm.pdf",
     "qty": 2,
     "cat": "indicator",
-    "note": "Exact model and wire connections require confirmation."
+    "note": "Murata specifies separate external 0.25 A / 300 V time-delay fusing of meter supply wiring; this branch protection was omitted from the original R1 connection sheets and must be included in a revised wiring issue. Display is blank below approx. 6 V; fitted meter notation also appears as V1/V2 in older drawings.",
+    "rsStock": "810-3321",
+    "rsUrl": "https://uk.rs-online.com/web/p/voltmeters/8103321",
+    "unitCostExVatGBP": 55.52
   },
   {
-    "ref": "JP1-IN / JP1-OUT; JP2-IN / JP2-OUT",
-    "mfr": "Manufacturer not confirmed",
-    "model": "Red/black panel power sockets · model to confirm",
-    "role": "External supply input and heater output; these are R1 functional designations",
-    "url": null,
-    "qty": 8,
+    "ref": "JP1 / JP2 / JP3 / JP4: RED (+)",
+    "mfr": "Electro PJP",
+    "model": "3266-I-R",
+    "role": "Red 4 mm female safety banana panel socket, tab termination. External PSU IN (+) and HEATER OUT (+), one of each per channel; rated 36 A / 1 kV by manufacturer.",
+    "url": "https://electro-pjp.com/wp-content/uploads/catalogue_ELECTROPJP.pdf",
+    "qty": 4,
     "cat": "connector",
-    "note": "Verify physical socket identity, 15 A DC rating and assignment."
+    "rsStock": "268-9422",
+    "rsUrl": "https://uk.rs-online.com/web/p/banana-connectors/2689422",
+    "unitCostExVatGBP": 1.15,
+    "note": "Existing front-panel labels: JP1/JP3 PSU IN; JP2/JP4 HEATER OUT. R1 drawings use JP1-IN/OUT and JP2-IN/OUT by channel; reconcile the aliases when reissuing drawings."
+  },
+  {
+    "ref": "JP1 / JP2 / JP3 / JP4: BLACK (−)",
+    "mfr": "Electro PJP",
+    "model": "3266-I-N",
+    "role": "Black 4 mm female safety banana panel socket, tab termination. External PSU IN (−) and HEATER OUT (−), one of each per channel; rated 36 A / 1 kV by manufacturer.",
+    "url": "https://electro-pjp.com/wp-content/uploads/catalogue_ELECTROPJP.pdf",
+    "qty": 4,
+    "cat": "connector",
+    "rsStock": "268-9421",
+    "rsUrl": "https://uk.rs-online.com/web/p/banana-connectors/2689421",
+    "unitCostExVatGBP": 1.15,
+    "note": "Power socket ratings do not establish the rating of the connected banana plugs, leads or whole circuit. Check these separately."
   }
 ]
