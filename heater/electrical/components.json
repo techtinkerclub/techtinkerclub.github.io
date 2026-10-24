@@ -201,13 +201,16 @@
   },
   {
     "ref": "JTC1 / JTC2",
-    "mfr": "Manufacturer not confirmed",
-    "model": "Type K panel connector · model to confirm",
-    "role": "Thermocouple bulkhead socket",
-    "url": null,
+    "mfr": "RS PRO",
+    "model": "455-9742 · IEC Type K miniature panel-mount socket",
+    "role": "Two IEC-colour-coded Type K miniature panel sockets (panel-to-Omron temperature input). Use Type K extension cable and maintain correct polarity.",
+    "url": "https://assets.rs-online.com/image/upload/v1675701131/MKT/LP/Suppliers/rspro/pdf/RS_PRO_-_Thermocouple_Connectors_Selection_Guide.pdf",
     "qty": 2,
     "cat": "connector",
-    "note": "Use the part number on the fitted connector for the correct datasheet."
+    "note": "Historical two-channel component audit identifies this exact RS item. Verify fitted socket if components were substituted.",
+    "rsStock": "455-9742",
+    "rsUrl": "https://uk.rs-online.com/web/p/sensor-accessories/4559742",
+    "unitCostExVatGBP": 5.11
   },
   {
     "ref": "PV1 / PV2",
