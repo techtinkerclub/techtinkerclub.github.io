@@ -1,0 +1,232 @@
+[
+  {
+    "ref": "J1",
+    "mfr": "SCHURTER",
+    "model": "DD11.0111.1110",
+    "role": "IEC C14 inlet, switch and fuseholder",
+    "url": "https://www.schurter.com/en/datasheet/typ_dd11.pdf",
+    "qty": 1,
+    "cat": "mains",
+    "note": ""
+  },
+  {
+    "ref": "PS1",
+    "mfr": "MEAN WELL",
+    "model": "XDR-120E-24",
+    "role": "24 V, 5 A common control supply",
+    "url": "https://www.meanwell.co.uk/assets/pdf/XDR-120E.pdf",
+    "qty": 1,
+    "cat": "mains",
+    "note": ""
+  },
+  {
+    "ref": "E1",
+    "mfr": "Omron",
+    "model": "E5CC-TQX3A5M-000",
+    "role": "Channel 1 programmable temperature controller",
+    "url": "https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf",
+    "qty": 1,
+    "cat": "control",
+    "note": ""
+  },
+  {
+    "ref": "E2",
+    "mfr": "Omron",
+    "model": "E5CC-TQX3A5M-003",
+    "role": "Channel 2 programmable temperature controller",
+    "url": "https://files.omron.eu/downloads/latest/manual/en/h185_e5_c-t_users_manual_en.pdf",
+    "qty": 1,
+    "cat": "control",
+    "note": ""
+  },
+  {
+    "ref": "S1 / S2",
+    "mfr": "Schneider Electric",
+    "model": "Harmony XB5AD23",
+    "role": "Two-position maintained selector, two NO contacts",
+    "url": "https://www.se.com/uk/en/product/XB5AD23/harmony-xb5-selector-switch-plastic-black-%C3%B822-2-positions-stay-put-2-no/",
+    "qty": 2,
+    "cat": "control",
+    "note": ""
+  },
+  {
+    "ref": "SB1 / SB2",
+    "mfr": "EAO",
+    "model": "82-4151.1134",
+    "role": "Momentary ENABLE button, 24 V LED ring",
+    "url": "https://www.eao.com/product/82-4151.1134/pushbutton/en/illuminated-push-button-series-82-18-mm-flush-silver-ip65-ip67-pluginterminal-28-x-05-mm",
+    "qty": 2,
+    "cat": "control",
+    "note": ""
+  },
+  {
+    "ref": "K1 / K2",
+    "mfr": "Finder",
+    "model": "13.61.0.024.0000",
+    "role": "24 V step relay; RI mode",
+    "url": "https://cdn.findernet.com/app/uploads/S13EN.pdf",
+    "qty": 2,
+    "cat": "control",
+    "note": "Check complete relay code on installed unit."
+  },
+  {
+    "ref": "K3 / K4",
+    "mfr": "Finder",
+    "model": "62.31.9.024.4800",
+    "role": "Polarised DC heater power contact relay",
+    "url": "https://cdn.findernet.com/app/uploads/S62EN.pdf",
+    "qty": 2,
+    "cat": "heater",
+    "note": ""
+  },
+  {
+    "ref": "SK3 / SK4",
+    "mfr": "Finder",
+    "model": "92.03 / 92.03SMA",
+    "role": "DIN socket for Series 62 relay",
+    "url": "https://cdn.findernet.com/app/uploads/S62EN.pdf",
+    "qty": 2,
+    "cat": "heater",
+    "note": "Confirm fitted socket suffix and contact markings."
+  },
+  {
+    "ref": "W1 / W2",
+    "mfr": "Weidmüller",
+    "model": "8950770000 · TOP 12VDC/48VDC 0.1A",
+    "role": "12 V demand-input to 24 V DC switch interface",
+    "url": "https://datasheet.weidmueller.com/pdf/en/8950770000/scope/2/",
+    "qty": 2,
+    "cat": "control",
+    "note": ""
+  },
+  {
+    "ref": "SSR1 / SSR2",
+    "mfr": "Sensata / Crydom",
+    "model": "DR2220D30U",
+    "role": "DC-output solid-state power relay",
+    "url": "https://www.sensata.com/sites/default/files/a/sensata-dr22-series-dc-output-din-rail-mount-datasheet.pdf?cb=a0877568",
+    "qty": 2,
+    "cat": "heater",
+    "note": ""
+  },
+  {
+    "ref": "QF1 / QF2",
+    "mfr": "Lovato Electric",
+    "model": "P1MB1PC16",
+    "role": "16 A / 80 V DC single-pole miniature breaker",
+    "url": "https://datasheet.lovatoelectric.com/Miniature_and_residual_circuit_breakers/ENG/P1MB1PC16.pdf",
+    "qty": 2,
+    "cat": "heater",
+    "note": ""
+  },
+  {
+    "ref": "HL1 / HL2",
+    "mfr": "RS PRO",
+    "model": "130-1086",
+    "role": "Amber ACTIVE indicator, 24 V DC, 20 mA maximum",
+    "url": "https://docs.rs-online.com/9e66/0900766b8159e8d3.pdf",
+    "qty": 2,
+    "cat": "indicator",
+    "note": ""
+  },
+  {
+    "ref": "X1-L",
+    "mfr": "Phoenix Contact",
+    "model": "PTFIX 6X2,5-NS35 BN · 3273010",
+    "role": "6-way live (brown) distribution",
+    "url": "https://www.phoenixcontact.com/en-pc/products/distribution-block-ptfix-6x25-ns35-bn-3273010",
+    "qty": 1,
+    "cat": "distribution",
+    "note": ""
+  },
+  {
+    "ref": "X1-N",
+    "mfr": "Phoenix Contact",
+    "model": "PTFIX 6X2,5-NS35 BU · 3273002",
+    "role": "6-way neutral (blue) distribution",
+    "url": "https://www.phoenixcontact.com/en-gb/products/distributor-terminal-block-ptfix-6x25-ns35-bu-3273002",
+    "qty": 1,
+    "cat": "distribution",
+    "note": ""
+  },
+  {
+    "ref": "X1-PE",
+    "mfr": "WAGO",
+    "model": "2002-1407",
+    "role": "4-conductor protective-earth DIN terminal",
+    "url": "https://www.wago.com/gb/rail-mount-terminal-blocks/4-conductor-ground-terminal-block/p/2002-1407",
+    "qty": 1,
+    "cat": "distribution",
+    "note": ""
+  },
+  {
+    "ref": "X2-24 / X3-24G / X4-24G",
+    "mfr": "Phoenix Contact",
+    "model": "PTFIX 6X2,5-NS35 RD · 3273004",
+    "role": "Red six-way common and gated +24 V groups",
+    "url": "https://www.phoenixcontact.com/en-sk/products/distribution-block-ptfix-6x25-ns35-rd-3273004",
+    "qty": 3,
+    "cat": "distribution",
+    "note": ""
+  },
+  {
+    "ref": "X2-0V",
+    "mfr": "Phoenix Contact",
+    "model": "PTFIX 12X2,5-NS35 GY · 3273022",
+    "role": "12-way common 0 V (grey) distribution",
+    "url": "https://www.phoenixcontact.com/en-pc/products/distribution-block-ptfix-12x25-ns35-gy-3273022",
+    "qty": 1,
+    "cat": "distribution",
+    "note": ""
+  },
+  {
+    "ref": "X3-EN1 / X4-EN2",
+    "mfr": "Phoenix Contact",
+    "model": "PTFIX 6X2,5-NS35 OG · 3273018",
+    "role": "Orange six-way +24 V enable outputs",
+    "url": "https://www.phoenixcontact.com/en-sk/products/distributor-terminal-block-ptfix-6x25-ns35-og-3273018",
+    "qty": 2,
+    "cat": "distribution",
+    "note": ""
+  },
+  {
+    "ref": "X3-DRV1 / X4-DRV2",
+    "mfr": "Phoenix Contact",
+    "model": "PTFIX 6X2,5-NS35 VT · 3273016",
+    "role": "Violet six-way switched SSR/LED returns",
+    "url": "https://www.phoenixcontact.com/en-lt/products/distributor-terminal-block-ptfix-6x25-ns35-vt-3273016",
+    "qty": 2,
+    "cat": "distribution",
+    "note": ""
+  },
+  {
+    "ref": "JTC1 / JTC2",
+    "mfr": "Manufacturer not confirmed",
+    "model": "Type K panel connector · model to confirm",
+    "role": "Thermocouple bulkhead socket",
+    "url": null,
+    "qty": 2,
+    "cat": "connector",
+    "note": "Use the part number on the fitted connector for the correct datasheet."
+  },
+  {
+    "ref": "PV1 / PV2",
+    "mfr": "Manufacturer not confirmed",
+    "model": "Panel DC voltmeter · model to confirm",
+    "role": "Panel voltage meter; polarity/measurement taps not specified",
+    "url": null,
+    "qty": 2,
+    "cat": "indicator",
+    "note": "Exact model and wire connections require confirmation."
+  },
+  {
+    "ref": "JP1-IN / JP1-OUT; JP2-IN / JP2-OUT",
+    "mfr": "Manufacturer not confirmed",
+    "model": "Red/black panel power sockets · model to confirm",
+    "role": "External supply input and heater output; these are R1 functional designations",
+    "url": null,
+    "qty": 8,
+    "cat": "connector",
+    "note": "Verify physical socket identity, 15 A DC rating and assignment."
+  }
+]
