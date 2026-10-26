@@ -24,20 +24,27 @@ h1{font-size:28px;margin:4px 0 9px}h2{font-size:21px;margin:0 0 12px}h3{font-siz
 .legend b{color:#285b7f}.legend span{border-left:3px solid #4e8fb7;padding-left:6px}
 .warn{border-left:3px solid #af752a;padding:11px 13px;background:#fff9f1;border-radius:3px;color:#76552b;font-size:13px}
 .loading{text-align:center;padding:30px;color:#607a8e}
+.pdf-viewer{height:min(76vh,900px);min-height:480px;border:1px solid #cbdbe6;border-radius:9px;overflow:hidden;background:#f5f8fa}
+.pdf-viewer iframe{height:100%;width:100%;border:0}
 footer{font-size:12px;text-align:center;color:#70869a;padding:18px}
 @media(max-width:850px){.overview-grid{grid-template-columns:1fr}.wrap{padding:0 8px;margin:9px auto}.panel,header{padding:15px}}
-@media print{@page{size:A3 landscape;margin:10mm}body{background:white}.wrap{max-width:none;padding:0;margin:0}.buttons,.nav,.noprint{display:none!important}header,.panel{border:none;padding:5mm 0}.overview-card{break-inside:avoid}.wire-sheet{page-break-inside:avoid;break-inside:avoid;page-break-after:always;border:0;margin:0}.wire-svg{width:100%}.overview-card svg{max-height:80mm}.panel:first-of-type{break-after:page}.wire-head{background:white}.legend{font-size:9pt}}
+@media print{@page{size:A3 landscape;margin:10mm}body{background:white}.wrap{max-width:none;padding:0;margin:0}.buttons,.nav,.noprint,.pdf-viewer{display:none!important}header,.panel{border:none;padding:5mm 0}.overview-card{break-inside:avoid}.wire-sheet{page-break-inside:avoid;break-inside:avoid;page-break-after:always;border:0;margin:0}.wire-svg{width:100%}.overview-card svg{max-height:80mm}.panel:first-of-type{break-after:page}.wire-head{background:white}.legend{font-size:9pt}}
 </style></head><body><main class="wrap">
 <header class="top"><div><div class="eyebrow">Heating Rate Controller · Electrical reference R1.2</div><h1>Electrical diagrams</h1><p class="sub">Shared control power · Channel enable · Omron demand · External DC heater circuits</p></div>
 <div class="buttons"><a class="btn" href="../">← Electrical system</a><a class="btn" href="../../wiring-sheets/">Connection tables</a><button class="btn" onclick="window.print()">Print / Save PDF</button></div></header>
-<section class="panel" id="drawing-sets"><h2>R1.2 — current electrical drawings</h2>
-<div class="overview-grid">
-<div class="overview-card"><h3>Current electrical diagrams · R1.2</h3><p>Four system circuits and eight numbered wiring diagrams. These are the current on-site drawing references.</p>
-<div class="buttons"><a class="btn" href="#schematics">View diagrams below →</a><a class="btn" href="#connections">View all wiring sheets →</a><button class="btn" onclick="window.print()">Save current diagrams as PDF</button></div></div>
-<div class="overview-card"><h3>R1.2 PDF and PowerPoint</h3><p>The editable 14-slide R1.2 PowerPoint and matching 14-sheet PDF are the latest packaged engineering drawing revision. They are not yet hosted as website files. Use the current viewable diagrams below and the printable connection schedules on this site.</p><p><a href="../../wiring-sheets/">Full connection schedule →</a></p></div></div>
+<section class="panel" id="drawing-sets">
+<h2>R1.2 — electrical drawing files</h2>
+<p><strong>Current issue: R1.2 · 14 sheets.</strong> View the complete PDF below, download it, or download the editable PowerPoint. These are the current files, not the superseded D13 set.</p>
+<div class="buttons">
+<a class="btn" href="./Heating_Rate_Controller_R1_2_Electrical_Drawings.pdf" target="_blank" rel="noopener">Open full PDF · 14 sheets</a>
+<a class="btn" href="./Heating_Rate_Controller_R1_2_Electrical_Drawings.pdf" download>Download R1.2 PDF</a>
+<a class="btn" href="./Heating_Rate_Controller_R1_2_Electrical_Drawings.pptx" download>Download editable R1.2 PowerPoint</a>
+</div>
+<div class="pdf-viewer" id="pdf-viewer"><iframe title="R1.2 complete 14-sheet electrical drawings" src="./Heating_Rate_Controller_R1_2_Electrical_Drawings.pdf#toolbar=1&amp;navpanes=1" loading="lazy"></iframe></div>
+<p class="quiet">If your browser doesn't display embedded PDF files, use <a href="./Heating_Rate_Controller_R1_2_Electrical_Drawings.pdf">Open full PDF</a> above. The PowerPoint is intended for editing the drawings.</p>
 </section>
-<nav class="nav" aria-label="Diagrams"><a href="#schematics">Circuit overview</a><a href="#connections">Numbered connection diagrams</a><a href="../distribution/#terminals">Terminal positions</a><a href="../../components/">Parts and datasheets</a></nav>
-<section class="panel" id="schematics"><h2>Four electrical circuits</h2><p>Each circuit is shown separately so the control supply, heating command and external DC power cannot be mistaken for the same electrical path. Device references correspond to the numbered connection diagrams below.</p><div class="overview-grid" id="overview"></div>
+<nav class="nav" aria-label="Diagrams"><a href="#drawing-sets">14-sheet drawing PDF</a><a href="#schematics">Circuit overview</a><a href="#connections">Numbered connection diagrams</a><a href="../distribution/#terminals">Terminal positions</a><a href="../../components/">Parts and datasheets</a></nav>
+<section class="panel" id="schematics"><h2>Additional circuit overviews</h2><p>Each circuit is shown separately so the control supply, heating command and external DC power cannot be mistaken for the same electrical path. Device references correspond to the numbered connection diagrams below.</p><div class="overview-grid" id="overview"></div>
 <p class="warn">The external heater DC supply is independent of the 24 V controller supply. Finder 62.31 terminal 14 (−) and Crydom load terminal −2 are on the <strong>switched positive heater path</strong>, not on the DC negative return.</p>
 </section>
 <section class="panel" id="connections"><h2>Connection diagrams · all 70 routes</h2><p>Each line maps one FROM → VIA → TO route. A shared distribution-net label is an electrical junction, not an extra conductor. Select a title to jump to the matching table.</p>
