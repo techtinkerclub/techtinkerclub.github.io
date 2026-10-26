@@ -26,7 +26,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text
 <div class="choice"><h3>Build or rewire</h3><p>Follow the numbered connections, choose PTFIX terminals and identify exact components.</p><a href="#build">Build references →</a></div>
 <div class="choice"><h3>Diagnose or repair</h3><p>Find the relevant circuit and component from an observed fault or indication.</p><a href="#diagnose">Fault-finding guide →</a></div>
 </div></div>
-<nav aria-label="Electrical sections"><a href="#understand">How it works</a><a href="#build">Build and rewire</a><a href="#diagnose">Fault finding</a></nav>
+<nav aria-label="Electrical sections"><a href="#understand">How it works</a><a href="#build">Build and rewire</a><a href="#diagnose">Fault finding</a><a href="#drawings">Drawings &amp; printouts</a></nav>
 <span id="architecture"></span><span id="channels"></span><section class="panel" id="understand">
 <h2>Understand the electrical system</h2><p>These three paths serve different purposes and must be kept separate.</p>
 <div class="circuit"><strong>1 · 230 V AC supply</strong><p>Schurter inlet J1 feeds the Mean Well 24 V supply PS1 and the two Omron controllers through their respective CONTROL selectors. Protective earth bonds the enclosure, door and relevant equipment.</p></div>
@@ -56,6 +56,15 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text
 </tbody></table></div>
 <p class="small">For replacement work, match the exact manufacturer part number and verify conductor assignments, protective bonding and functional tests before restarting.</p>
 <div class="linkgroup"><a class="btn" href="../components/">Find a component →</a><a class="btn" href="../wiring-sheets/">Find a wire or terminal →</a><a class="btn" href="../sop/#abnormal">Fault and emergency actions →</a></div>
+</section>
+<section class="panel" id="drawings"><h2>Drawings and printouts</h2>
+<p>For a printed electrical reference, use these current R1.2 web documents and select <strong>Print / Save PDF</strong> in each page. The individual CSV schedules can be downloaded directly.</p>
+<div class="cards">
+<div class="choice"><h3>Circuit reference</h3><p>Four circuit paths: mains, enable, Omron demand and DC heater power.</p><a href="./reference-wiring/?print=1">Open printable circuit reference →</a></div>
+<div class="choice"><h3>Connection sheets</h3><p>All 70 numbered From–Via–To routes, with channel filtering on screen.</p><a href="../wiring-sheets/?print=1">Open printable connection sheets →</a></div>
+<div class="choice"><h3>PTFIX assembly</h3><p>Block selection, mounting, all 48 port assignments and a blank deviations record.</p><a href="./distribution/">Open printable assembly schedule →</a></div>
+</div>
+<div class="linkgroup"><a class="btn" href="../wiring-sheets/Reference_Wiring_R1_2_From_Via_To.csv" download>Connection routes · CSV</a><a class="btn" href="./distribution/PTFIX_R1_2_Terminal_Allocation.csv" download>48 terminal positions · CSV</a><a class="btn" href="./distribution/PTFIX_R1_2_Block_List.csv" download>Distribution block list · CSV</a></div>
 </section>
 <footer>Heating Rate Controller · Electrical documentation R1.2 · <a href="../">Operator manual</a></footer>
 </main></body></html>
