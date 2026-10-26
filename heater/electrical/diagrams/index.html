@@ -30,6 +30,13 @@ footer{font-size:12px;text-align:center;color:#70869a;padding:18px}
 </style></head><body><main class="wrap">
 <header class="top"><div><div class="eyebrow">Heating Rate Controller · Electrical reference R1.2</div><h1>Electrical diagrams</h1><p class="sub">Shared control power · Channel enable · Omron demand · External DC heater circuits</p></div>
 <div class="buttons"><a class="btn" href="../">← Electrical system</a><a class="btn" href="../../wiring-sheets/">Connection tables</a><button class="btn" onclick="window.print()">Print / Save PDF</button></div></header>
+<section class="panel" id="drawing-sets"><h2>View or download drawing sheets</h2>
+<div class="overview-grid">
+<div class="overview-card"><h3>Current electrical diagrams · R1.2</h3><p>Four system circuits and eight numbered wiring diagrams. These are the current on-site drawing references.</p>
+<div class="buttons"><a class="btn" href="#schematics">View diagrams below →</a><a class="btn" href="#connections">View all wiring sheets →</a><button class="btn" onclick="window.print()">Save current diagrams as PDF</button></div></div>
+<div class="overview-card"><h3>Original engineering drawings · D13</h3><p>Browse the original 11-sheet document on the website, see individual sheet previews, or download the existing PDF and editable PowerPoint. D13 is an earlier issue and does not incorporate all R1.2 changes.</p>
+<div class="buttons"><a class="btn" href="../d13/#viewer">View original sheets →</a><a class="btn" href="../d13/Heating_Rate_Controller_D13_Styled_DRAFT.pdf" download>D13 PDF</a><a class="btn" href="../d13/Heating_Rate_Controller_D13_Styled_DRAFT.pptx" download>D13 PowerPoint</a></div></div></div>
+</section>
 <nav class="nav" aria-label="Diagrams"><a href="#schematics">Circuit overview</a><a href="#connections">Numbered connection diagrams</a><a href="../distribution/#terminals">Terminal positions</a><a href="../../components/">Parts and datasheets</a></nav>
 <section class="panel" id="schematics"><h2>Four electrical circuits</h2><p>Each circuit is shown separately so the control supply, heating command and external DC power cannot be mistaken for the same electrical path. Device references correspond to the numbered connection diagrams below.</p><div class="overview-grid" id="overview"></div>
 <p class="warn">The external heater DC supply is independent of the 24 V controller supply. Finder 62.31 terminal 14 (−) and Crydom load terminal −2 are on the <strong>switched positive heater path</strong>, not on the DC negative return.</p>
