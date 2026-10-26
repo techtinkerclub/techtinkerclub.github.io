@@ -1,4 +1,4 @@
-"Group","Function","Connections used","Block positions","Manufacturer part / type","Installed quantity"
+"Group","Function","Connections used","Block positions","Manufacturer part / type","Reference design quantity"
 "X1-L","Mains live L","4","6","Phoenix PTFIX 6X2,5 NS35 BN · 3273010","1"
 "X1-N","Mains neutral N","4","6","Phoenix PTFIX 6X2,5 NS35 BU · 3273002","1"
 "X1-PE","Protective earth","4","4","WAGO 2002-1407 PE","1"
