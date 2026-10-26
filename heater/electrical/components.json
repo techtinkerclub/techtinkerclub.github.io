@@ -220,7 +220,7 @@
     "url": "https://www.mouser.com/datasheet/3/76/2/dmr20_10_dcm.pdf",
     "qty": 2,
     "cat": "indicator",
-    "note": "Each meter input requires external user-supplied 0.25 A / 300 V time-delay protection in accordance with Murata instructions. Verify DC fault-interruption rating, correctly rated fuseholder, supply take-off points and wiring. A blank meter does not establish a zero-volt state.",
+    "note": "Murata meter has an internal self-resetting fuse. External input-wire fuses are not fitted in the reported installation; manufacturer additionally specifies external 0.25 A / 300 V time-delay supply-wire fusing. Meter display does not prove heater power or zero-voltage isolation.",
     "rsStock": "810-3321",
     "rsUrl": "https://uk.rs-online.com/web/p/voltmeters/8103321",
     "unitCostExVatGBP": 55.52
