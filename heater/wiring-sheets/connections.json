@@ -1,5 +1,5 @@
 {
-  "revision": "Reference Electrical Wiring R1.1",
+  "revision": "Reference Electrical Wiring R1.2",
   "generated": "2026-10-26",
   "source": "Original 14-sheet Reference Electrical Wiring R1; browser allocation map",
   "scope": "Intended reconstruction standard, not a record of as-wired cable lengths",
@@ -364,7 +364,7 @@
       "via": "X3-EN1:5",
       "to": "HL1+",
       "net": "X3-EN1",
-      "note": "ACTIVE LED+ should come from Finder K1/K2:14 via its EN distribution block. Operator reports moving this connection on unspecified channel(s); verify both.",
+      "note": "HL1+ source = Finder 13.61 K1:14 = EN1. Standard via X3-EN1:5. NOT selector S1-B:24 (24G).",
       "kind": "distribution"
     },
     {
@@ -496,7 +496,7 @@
       "via": "X4-EN2:5",
       "to": "HL2+",
       "net": "X4-EN2",
-      "note": "ACTIVE LED+ should come from Finder K1/K2:14 via its EN distribution block. Operator reports moving this connection on unspecified channel(s); verify both.",
+      "note": "HL2+ source = Finder 13.61 K2:14 = EN2. Standard via X4-EN2:5. NOT selector S2-B:24 (24G).",
       "kind": "distribution"
     },
     {
@@ -775,5 +775,5 @@
       "kind": "direct"
     }
   ],
-  "change_notice": "26 Oct 2026 operator reports ACTIVE LED+ moved from selector-switched +24 V to Finder 13.61 terminal 14 (EN). R1 electrical design already specified this, so wire routes do not change. Confirm which channel(s) were actually rewired."
+  "change_notice": "Terminology clarified 26 Oct 2026: Finder 13.61 K1:14 IS the EN1 switched +24 V net; Finder K2:14 IS EN2. HL1+/HL2+ use those nets via X3-EN1/X4-EN2. This replaces incorrect selector S1/S2-B:24 supply to LED+. The reported physical change has not been assigned to a specific channel."
 }
