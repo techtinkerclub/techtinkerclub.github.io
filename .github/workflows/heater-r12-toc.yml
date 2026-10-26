@@ -1,0 +1,36 @@
+name: Add real table of contents to R1.2 electrical PDF
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - 'heater/electrical/diagrams/add_pdf_toc.py'
+      - '.github/workflows/heater-r12-toc.yml'
+permissions:
+  contents: write
+jobs:
+  pdf-bookmarks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PyMuPDF
+        run: python -m pip install "PyMuPDF>=1.24,<2"
+      - name: Add and verify named PDF bookmarks
+        run: python heater/electrical/diagrams/add_pdf_toc.py
+      - name: Publish the updated R1.2 PDF
+        run: |
+          git config user.name "heater-documentation-bot"
+          git config user.email "heater-docs@users.noreply.github.com"
+          git add heater/electrical/diagrams/Heating_Rate_Controller_R1_2_Electrical_Drawings.pdf
+          if ! git diff --cached --quiet; then
+            git commit -m "Add named section and sheet bookmarks to R1.2 PDF"
+            git push
+          else
+            echo "No PDF changes needed"
+          fi
