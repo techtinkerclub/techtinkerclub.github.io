@@ -90,7 +90,7 @@ permalink: /heater/
 <div class="card callout"><h3>More ways to explore</h3><div class="tagrow"><button class="btn jump" data-v="front">Front-panel controls</button><button class="btn jump" data-v="sop">Operating procedure</button><button class="btn jump" data-v="software">Windows USB Studio</button><a class="btn" href="./omron-atlas/">Omron setting map ↗</a><button class="btn jump" data-v="datasheets">Component documentation</button></div></div></section>
 
 <section id="front" class="view">
-<h2 class="heading">Front-panel controls and connections</h2><p class="intro">Explore the actual fitted two-channel panel. Select a numbered marker beside a component to see its function and proposed marking. Switch to a clean photograph or simplified illustration if needed. For exact terminal connections and rebuild distribution blocks, see Reference Wiring R1.2</p>
+<h2 class="heading">Front-panel controls and connections</h2><p class="intro">Explore the actual fitted two-channel panel. Select a numbered marker beside a component to see its function and panel identification. Use the unedited installation photograph for mechanical inspection. For exact terminal connections and rebuild distribution blocks, see Reference Wiring R1.2</p>
 <div class="split"><article class="card">
 <div class="panel-mode-choices" role="group" aria-label="Choose front-panel view">
 <button type="button" id="showPanelGuide" class="sel" aria-pressed="true">Numbered fitted panel</button>
@@ -168,7 +168,7 @@ permalink: /heater/
 <p>Both channels are <strong>specified</strong> as Omron E5CC-TQX3A5M-000 (CH1 and CH2). Confirm each unit's complete physical nameplate; USB reads only the first 10 characters. The step-by-step guide includes the physically verified creation, memory-retention and selection of Programme 1 (50 °C at 2 °C/min and 15-minute soak), exact LEVEL/MODE steps, which settings are global, programme-wide and segment-specific, Operation Level monitors, and how to find and inspect the assigned PID parameters.</p>
 <div class="tagrow"><a class="btn" href="./omron-programming/">Open step-by-step programming guide →</a></div>
 <p class="note">Start with the <a href="./omron-programming/#bench">50 °C worked example</a>, then use the fixed 80 °C example, 120 °C ramp example and ramp calculator as further exercises. The <code>prg</code> selection must be checked separately from <code>d.prg</code> before RUN.</p></div>
-<h2 class="heading">Omron E5CC-T — setup and autotune</h2><p class="intro">Use this section when setting up a channel or checking its performance. Both channels are specified with the Omron E5CC-TQX3A5M-000. Parameter visibility and approved values still depend on the configured operating mode, protections and firmware.</p>
+<h2 class="heading">Omron E5CC-T — setup and autotune</h2><p class="intro">Use this section when setting up a channel or checking its performance. The reference component register identifies E1 as E5CC-TQX3A5M-000 and E2 as E5CC-TQX3A5M-003. Check the actual model suffix and firmware before programming; available parameters vary by configuration.</p>
 <div class="two"><div class="card"><h3>Controller setup</h3>
 <ol class="compactlist"><li>Identify the fitted E5CC part number and confirm which channel is being configured.</li><li>Verify that the current input <code>in-t</code> matches the <em>actual physical sensor</em>, its permitted range/resolution, the units and the global upper/lower SP limits. The Windows app can plan other documented sensors, but cannot identify the external probe by USB.</li><li>Check that the displayed process value is plausible and that sensor errors are handled correctly.</li><li>Confirm the control method, heating direction and output assignment for the installed SSR drive circuit.</li><li>Check the control period, required limits and any configured alarms.</li><li>Enter and read back the approved programme using <code>d.prg</code> and segment fields. Then, in Operation Level RESET, select the intended RUN programme using <code>prg</code> and verify <code>pgsg</code>.</li><li>Record the final configuration and confirm it independently for the other channel.</li></ol>
 <p class="note">For full button-by-button instructions, open the linked E5CC-T programming guide. Verify the settings on each physical controller during commissioning.</p></div>
@@ -217,7 +217,7 @@ permalink: /heater/
 <div class="tagrow"><a class="btn" href="./components/">Component datasheets →</a><a class="btn" href="./omron-programming/">Omron programming instructions →</a></div>
 </section>
 
-<section id="review" class="view"><h2 class="heading">Safety and maintenance</h2><p class="intro">Both channels are reported functional. The controls, heater connections and external supplies still require the normal checks for each installation and test.</p>
+<section id="review" class="view"><h2 class="heading">Safety and maintenance</h2><p class="intro">Safe operation depends on verified controls, heater connections, independent external supply isolation and protection for each installation and test.</p>
 <div class="card"><h3>Before service or a new installation</h3><p>Isolate and prove dead on both the mains inlet and the separate 0–60 V DC heater supplies. Maintain cabinet and door protective-earth bonding, verify the specified component ratings, and ensure the heater-off state and power restoration are tested.</p><div class="tagrow"><a class="btn" href="./electrical/reference-wiring/">Reference Wiring R1 →</a><a class="btn" href="./electrical/#service">Service and inspection essentials →</a></div></div>
 <div class="card callout"><h3>Operating instructions</h3><p>Use the <button class="btn jump" data-v="sop">standard operating procedure</button> for routine tests and the Omron guidance for programming. ACTIVE indicates a switching command, not confirmed heater current.</p></div></section>
 </main></div><footer class="fot">Heating Rate Controller · Operator and maintenance instructions · 2026 · <a href="./electrical/reference-wiring/">Electrical reference</a></footer></div>
@@ -264,7 +264,7 @@ permalink: /heater/
   }));
   const parts={
     sb:["01 · SB1 / SB2","Heater enable pushbutton","Illuminated EAO momentary switch, commanding the relevant channel's heater-enable circuit.","HEATER ENABLE",["24 V illuminated ring is intended to indicate heater enable.","The enable indicator is not a substitute for electrical isolation."]],
-    hl:["02 · HL1 / HL2","Indicator lens (function to confirm)","The fitted photograph shows a dark green indicator lens below the stainless-ring button on each channel. The earlier specification proposed an amber HEAT ACTIVE indicator.","HEAT ACTIVE",["Do not infer an electrical indication from lens colour; the actual fitted part, circuit and signal remain to be verified.","If wired as the proposed HEAT ACTIVE lamp, this indicates a demand command, not independently measured heater current.","Confirm model, voltage, polarity, wiring and final panel marking before commissioning."]],
+    hl:["02 · HL1 / HL2","Indicator lens (function to confirm)","The fitted photograph shows a dark green indicator lens below the stainless-ring button on each channel. The ACTIVE indicator follows the corresponding enable-and-demand circuit.","HEAT ACTIVE",["Do not infer an electrical indication from lens colour; the actual fitted part, circuit and signal remain to be verified.","The ACTIVE lamp represents a demand command when the channel is enabled, not independently measured heater current.","Confirm model, voltage, polarity, wiring and final panel marking before commissioning."]],
     om:["03 · E1 / E2","Omron E5CC temperature controller","Process-value and setpoint display, controller configuration, and heater-demand output.","CH1 TEMP / CH2 TEMP",["Displays process value and programme setpoint for the selected channel.","Read PV/SP and controller status before operation."]],
     sel:["04 · S1 / S2","Maintained channel selector","Channel-specific ON/OFF control, distinct from the heater enable command.","CH1 CONTROL / CH2 CONTROL",["Keep channel CONTROL separate from HEATER ENABLE.","Refer to the fitted switch terminal markings and approved electrical schematic when servicing."]],
     vol:["05 · PV1 / PV2","DC voltmeter","Round panel DC voltmeter.","CH1 DC VOLTS / CH2 DC VOLTS",["Indicates voltage, not heater power or current.","Display can remain off even when mains/control is available."]],
@@ -315,8 +315,7 @@ permalink: /heater/
     );
   }));
   document.querySelector('.point[data-part="sb"]').click();
-  const s=document.getElementById("search");
-  s.addEventListener("input",()=>document.querySelectorAll(".comp").forEach(c=>c.classList.toggle("hide",!c.textContent.toLowerCase().includes(s.value.toLowerCase()))));
+  // Component search is provided by the dedicated component register.
 })();
 </script>
 
