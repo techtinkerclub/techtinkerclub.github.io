@@ -4,55 +4,58 @@ sitemap: false
 permalink: /heater/electrical/
 ---
 <!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
-<title>Electrical Overview | Heating Rate Controller</title>
+<meta name="robots" content="noindex,nofollow"><title>Electrical system | Heating Rate Controller</title>
 <style>
-:root{font:15px/1.55 Inter,"Segoe UI",Arial,sans-serif;color:#203950;background:#eef3f8}
-*{box-sizing:border-box}body{margin:0}a{color:#155f93}button{font:inherit;cursor:pointer}
-.wrap{width:min(1200px,calc(100% - 32px));margin:25px auto 50px}
-.header,.card{background:white;border:1px solid #d8e3ec;border-radius:14px;padding:22px 26px;margin-bottom:15px}
-.header{display:flex;justify-content:space-between;align-items:start;gap:15px;flex-wrap:wrap}
-.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:#63819a}
-h1{font-size:27px;line-height:1.25;margin:4px 0 8px}h2{font-size:19px;margin:0 0 9px}h3{font-size:15px;margin:0 0 8px}
-.sub{color:#607b92;font-size:13px}.card p{line-height:1.6}.btn{display:inline-block;background:#e7f2fb;border:1px solid #b9d2e7;border-radius:9px;padding:9px 13px;color:#185680;font-size:13px;font-weight:750;text-decoration:none}.btn:hover{background:#d9e9f6}
-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:15px}nav a{background:#fff;border:1px solid #d0dee9;padding:8px 12px;border-radius:9px;font-size:13px;text-decoration:none}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{border-radius:11px;border:1px solid #dce7f0;padding:17px;background:#f4f8fc}.tile h3{color:#205c83}.tile p{font-size:13px;margin:0;color:#537086}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:17px 0}.metric{background:#f3f8fb;border-radius:10px;padding:12px}.metric strong{display:block;font-size:23px;color:#1c5986}.metric span{font-size:12px;color:#59758e}
-.flow{display:flex;gap:9px;align-items:stretch;margin:13px 0;overflow-x:auto}.node{flex:1;min-width:150px;border:1px solid #cee0ec;background:#f2f8fc;border-radius:9px;padding:14px}.node b{display:block;font-size:13px;color:#225e86}.node small{display:block;color:#58768c;line-height:1.5;margin-top:5px}.arrow{align-self:center;font-size:22px;color:#7699b2}
-.tbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tbar button{border:1px solid #bed4e6;border-radius:9px;padding:8px 14px;color:#225f86;background:white}.tbar button.sel{color:white;background:#226a9c;border-color:#226a9c}
-.info{font-size:13px;background:#f2f8fc;border-left:3px solid #327fae;padding:13px 16px;line-height:1.6}
-details{border-top:1px solid #e1e9f0;padding:12px 0}details summary{cursor:pointer;font-weight:700;color:#38617f}details p{font-size:13px;color:#57738c}
-ul{padding-left:22px;line-height:1.8}footer{text-align:center;font-size:12px;color:#69849a;padding:15px}
-@media(max-width:760px){.wrap{width:calc(100% - 18px);margin:10px auto}.header,.card{padding:16px}.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.flow{flex-direction:column}.arrow{display:none}h1{font-size:23px}}
-@media print{nav,.btn,.tbar{display:none}.wrap{width:100%;margin:0}.card{break-inside:avoid;box-shadow:none}@page{size:A4;margin:13mm}}
-</style></head>
-<body><div class="wrap">
-<header class="header"><div><div class="eyebrow">Heating Rate Controller · Maintenance manual</div><h1>Electrical overview</h1><p class="sub">Shared mains and 24 V supply · Two independent heater channels · Reference Wiring R1.2</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="../#wiring">← Manual</a><a class="btn" href="../wiring-sheets/">Connection sheets →</a><a class="btn" href="../sop/">Operating procedure →</a><a class="btn" href="../risk-assessment/">Risk assessment →</a><a class="btn" href="../components/">Components &amp; datasheets →</a></div></header>
-<nav aria-label="Electrical chapters"><a href="#architecture">Architecture</a><a href="../sop/">Standard operating procedure</a><a href="../risk-assessment/">Equipment risk assessment</a><a href="../wiring-sheets/">From → Via → To sheets</a><a href="../components/">Components &amp; datasheets</a><a href="#distribution">PTFIX distribution</a><a href="#channels">Channel circuits</a><a href="#documentation">Documents</a><a href="#service">Service</a></nav>
-<section class="card" id="architecture"><h2>How the electrical system is arranged</h2><p>One AC inlet supplies the shared 24 V control power supply and the two Omron controllers. Each channel has its own ENABLE button, Finder switching relays, Crydom SSR, activity indicator, thermocouple and external 0–60 V DC heater circuit.</p><div class="grid">
-<div class="tile"><h3>1 · Shared control power</h3><p>230 V AC inlet → separate L/N branches → Mean Well 24 V PSU and the two independently selected Omron AC feeds.</p></div>
-<div class="tile"><h3>2 · Channel enable and demand</h3><p>Selector → EAO momentary enable → Finder 13.61 → Finder 62.31. Omron demand drives the Weidmüller interface, Crydom SSR and ACTIVE lamp.</p></div>
-<div class="tile"><h3>3 · External heater power</h3><p>DC+ passes through protection, the correctly oriented Finder power contact, the Crydom SSR and the heater. The external DC− returns directly.</p></div></div></section>
-<section class="card" id="distribution"><h2>PTFIX distribution assembly</h2><p><strong>Reference system:</strong> Phoenix Contact PTFIX …-NS35 blocks on 35 mm DIN rail, plus WAGO 2002-1407 for protective earth. <a href="./distribution/">Mounting, complete block schedule, allocation and installation checks →</a></p><p>The specified control distribution provides a separate termination for every allocated conductor. These are <b>block positions</b>, not independent power supplies.</p><div class="metrics">
-<div class="metric"><strong>3 + 3</strong><span>Outgoing mains L and N branches</span></div><div class="metric"><strong>9</strong><span>Common 0 V positions used (including PSU)</span></div><div class="metric"><strong>48</strong><span>Occupied connections</span></div><div class="metric"><strong>22</strong><span>Spare positions</span></div></div>
-<p class="sub"><b>Common +24 V:</b> 3 positions (PSU + two selectors). <b>Per channel:</b> gated +24 V ×4, enabled +24 V ×5, switched SSR return ×3. <b>Mains:</b> one inlet plus three outgoing L and N branches. <b>PE:</b> four connections including a flexible door-to-cabinet bond.</p>
-<p><a class="btn" href="./distribution/">PTFIX selection and mounting →</a> <a class="btn" href="./reference-wiring/#capacity">Block capacities →</a> <a class="btn" href="./reference-wiring/#terminals">Open terminal allocations →</a> <a class="btn" href="../wiring-sheets/">Open printable connection sheets →</a></p></section>
-<section class="card" id="channels"><h2>Follow an individual channel</h2><p class="sub">The two circuits are identical in function and isolated in their enable/SSR drive connections. Select a channel to display its device references.</p>
-<div class="tbar" role="group" aria-label="Choose channel"><button type="button" id="ch1" class="sel" aria-pressed="true" onclick="showChannel(1)">Channel 1</button><button type="button" id="ch2" aria-pressed="false" onclick="showChannel(2)">Channel 2</button></div>
-<div id="channelFlow" class="flow" aria-live="polite"></div>
-<div class="info"><strong>Three connections must not be confused:</strong> X2-0V is permanent control return; X3-DRV1/X4-DRV2 are demand-switched returns via Weidmüller 13→14; external heater DC− is a separate power return. Finder 62.31 contact 14 (−) and Crydom load −2 are both on the switched <strong>positive</strong> DC path.</div>
-<p><a class="btn" href="./reference-wiring/#operation">Complete control and heater-power circuits →</a></p></section>
-<section class="card" id="documentation"><h2>Current electrical documentation</h2><p><strong>Reference Electrical Wiring R1.2 · 26 October 2026</strong> is the standard intended rebuild configuration. This web edition provides the distribution quantities, terminal assignments, principal circuit paths and component references.</p>
-<p><a class="btn" href="./reference-wiring/">Open R1 web reference →</a> <a class="btn" href="./reference-wiring/#terminals">Find a terminal →</a> <a class="btn" href="./reference-wiring/Reference_Wiring_R1_Terminal_Allocation.csv" download>Download terminal list (CSV) ↓</a> <a class="btn" href="../wiring-sheets/?print=1" target="_blank" rel="noopener">Printable From–Via–To →</a></p>
+:root{font:15px/1.58 Inter,"Segoe UI",Arial,sans-serif;color:#223b50;background:#edf3f8}*{box-sizing:border-box}body{margin:0}a{color:#155e90}a:hover{text-decoration:underline}.wrap{max-width:1120px;margin:24px auto 48px;padding:0 16px}
+header,.panel{background:#fff;border:1px solid #d7e4ec;border-radius:13px;padding:23px 28px;margin-bottom:15px}header{display:flex;gap:24px;justify-content:space-between;align-items:start;flex-wrap:wrap}
+.eyebrow{font-size:11px;letter-spacing:.13em;font-weight:800;color:#62809a;text-transform:uppercase}
+h1{font-size:29px;line-height:1.2;margin:5px 0 8px}h2{font-size:22px;margin:0 0 11px}h3{font-size:16px;margin:0 0 8px;color:#254e6c}p{margin:8px 0 14px}.sub{color:#60788d;margin:4px 0 0}
+.links{display:flex;gap:8px;flex-wrap:wrap}.btn{display:inline-block;background:#e9f3fa;border:1px solid #c1d8e8;border-radius:8px;padding:8px 12px;color:#195c88;font-size:13px;font-weight:700;text-decoration:none}.btn:hover{background:#dcecf8;text-decoration:none}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}nav a{background:#fff;border:1px solid #d4e2ec;border-radius:8px;padding:9px 13px;text-decoration:none;font-weight:700;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.choice{border:1px solid #dbe6ef;border-radius:10px;padding:17px;background:#f6fafc}.choice p{font-size:13px;color:#577085}.choice a{font-size:13px;font-weight:750}
+.circuit{display:grid;grid-template-columns:180px 1fr;gap:13px;border-bottom:1px solid #e2eaf0;padding:12px 0}.circuit:last-child{border:0}.circuit strong{color:#225879}.circuit p{margin:0}.steps{padding-left:23px;line-height:1.8}.steps li{margin:10px 0}.steps li strong{color:#244f70}.linkgroup{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text-align:left;vertical-align:top;border-bottom:1px solid #dbe6ed}thead th{background:#ebf4fa;color:#245a7f}tbody tr:nth-child(even){background:#f7fafc}
+.notice{margin:16px 0;padding:12px 15px;border-left:3px solid #327ea9;background:#f2f8fc;font-size:13px}.notice strong{color:#174f78}
+.small{font-size:13px;color:#55738a}.path-note{font-size:12px;color:#6a8194}footer{text-align:center;color:#728a9c;font-size:12px;padding:12px}
+@media(max-width:740px){.wrap{margin:8px auto;padding:0 8px}header,.panel{padding:17px}.cards{grid-template-columns:1fr}.circuit{grid-template-columns:1fr;gap:2px}h1{font-size:25px}}
+@media print{@page{size:A4;margin:13mm}body{background:#fff}.wrap{max-width:none;margin:0}nav,.btn{display:none!important}.panel,header{border:none;padding:0}.panel{break-before:page}table{font-size:10pt}}
+</style></head><body><main class="wrap">
+<header><div><div class="eyebrow">Heating Rate Controller · Maintenance and electrical reference</div><h1>Electrical system</h1><p class="sub">Two independent heater channels with shared mains and 24 V control supply</p></div><div class="links"><a class="btn" href="../#wiring">← Manual</a><a class="btn" href="../sop/">Operating SOP</a></div></header>
+<div class="panel"><h2>What do you need to do?</h2><div class="cards">
+<div class="choice"><h3>Understand the system</h3><p>Find the mains, 24 V enable, temperature demand and external heater DC paths.</p><a href="#understand">How it works →</a></div>
+<div class="choice"><h3>Build or rewire</h3><p>Follow the numbered connections, choose PTFIX terminals and identify exact components.</p><a href="#build">Build references →</a></div>
+<div class="choice"><h3>Diagnose or repair</h3><p>Find the relevant circuit and component from an observed fault or indication.</p><a href="#diagnose">Fault-finding guide →</a></div>
+</div></div>
+<nav aria-label="Electrical sections"><a href="#understand">How it works</a><a href="#build">Build and rewire</a><a href="#diagnose">Fault finding</a></nav>
+<span id="architecture"></span><span id="channels"></span><section class="panel" id="understand">
+<h2>Understand the electrical system</h2><p>These three paths serve different purposes and must be kept separate.</p>
+<div class="circuit"><strong>1 · 230 V AC supply</strong><p>Schurter inlet J1 feeds the Mean Well 24 V supply PS1 and the two Omron controllers through their respective CONTROL selectors. Protective earth bonds the enclosure, door and relevant equipment.</p></div>
+<div class="circuit"><strong>2 · 24 V enable and demand</strong><p>Each Schneider CONTROL selector powers its Finder 13.61 enable circuit. The EAO momentary button toggles that channel's ENABLE. The Omron heat-demand output drives the Weidmüller interface, which controls the Crydom input. ACTIVE indication requires ENABLE and demand together.</p></div>
+<div class="circuit"><strong>3 · External heater DC</strong><p>Each external DC positive path passes through the Lovato protection device, Finder 62.31 directional contact (terminal 34 to 14), Crydom DC SSR and heater. Heater DC negative returns to its corresponding external supply, separately from the 24 V controls.</p></div>
+<div class="linkgroup"><a class="btn" href="./reference-wiring/#operation">Terminal-referenced circuit paths →</a><a class="btn" href="../#sequence">Switches and indication states →</a></div>
 </section>
-<section class="card" id="service"><h2>Maintenance essentials</h2><ul><li>Isolate and prove dead on both the AC inlet and the separate external DC heater supply before opening or changing the cabinet.</li><li>Match exact component model, voltage, terminal position, conductor rating and polarity before replacement.</li><li>Bond the door, cabinet body and PSU protective earth; verify continuity of the protective-earth path.</li><li>Preserve the independently switched channel enables and the directional 62.31 contact polarity: supply DC+ → 34 (+), outgoing DC+ → 14 (−).</li><li>After a wiring change, independently check protection, switching, emergency isolation, insulation, PE continuity, heater-off state and restart behaviour.</li></ul>
-<p class="sub">The system has been reported functioning on both channels. This does not replace electrical inspection or authorise bypassing any protective device.</p></section>
-<footer>Heating Rate Controller · Electrical overview · R1.2 · <a href="../">Operator manual</a></footer></div>
-<script>
-function showChannel(n){const a=n===1?['S1','SB1','K1','SK3','E1','W1','SSR1','HL1','X3-24G','X3-EN1','X3-DRV1']:['S2','SB2','K2','SK4','E2','W2','SSR2','HL2','X4-24G','X4-EN2','X4-DRV2'];
-const nodes=[[a[0]+' + '+a[1],'Selector + momentary ENABLE · '+a[8]],[a[2]+' + '+a[3],'Step relay → heater contact · '+a[9]],[a[4]+' → '+a[5],'Omron demand → interface output'],[a[6]+' + '+a[7],'SSR demand and amber indication · '+a[10]]];
-document.getElementById('channelFlow').innerHTML=nodes.map((v,i)=>(i?'<span class="arrow" aria-hidden="true">→</span>':'')+'<div class="node"><b>'+v[0]+'</b><small>'+v[1]+'</small></div>').join('');
-for(const k of [1,2]){const b=document.getElementById('ch'+k);b.classList.toggle('sel',k===n);b.setAttribute('aria-pressed',String(k===n));}}
-function printReference(event){event.preventDefault();window.open('./reference-wiring/?print=1','_blank','noopener');return false;}
-showChannel(1);
-</script></body></html>
+<span id="distribution"></span><span id="documentation"></span><section class="panel" id="build"><h2>Build or rewire the controller</h2><p>Use these documents in sequence. Each has one distinct purpose.</p>
+<ol class="steps">
+<li><strong>Understand the wiring architecture.</strong> Read the <a href="./reference-wiring/#operation">four circuit paths</a> for mains, enable, demand and external heater power.</li>
+<li><strong>Identify the parts.</strong> The <a href="../components/">component register</a> is the definitive source of reference designations, manufacturer models and datasheet links.</li>
+<li><strong>Select and install the distribution.</strong> The <a href="./distribution/">PTFIX distribution specification</a> has all 11 groups, physical DIN-rail mounting, 48 assigned conductor positions and a blank as-built record.</li>
+<li><strong>Connect and inspect.</strong> Use the <a href="../wiring-sheets/">searchable From → Via → To schedule</a> (70 listed routes), then complete the inspection and commissioning requirements in the <a href="./distribution/#checks">distribution guide</a> and <a href="../risk-assessment/">risk assessment</a>.</li>
+</ol>
+<div class="notice"><strong>Additional electrical detail required:</strong> the published 70-route table does not yet include the separately fused input-sensing branches for the two Murata voltmeters. Their manufacturer-specified 0.25 A / 300 V time-delay input protection and appropriately rated DC fuseholders must be specified and verified before calling the full circuit schedule complete. <a href="./distribution/#circuits">Meter requirements →</a></div>
+</section>
+<span id="service"></span><section class="panel" id="diagnose"><h2>Diagnose or repair</h2>
+<p>Start with what the controller is doing. Select the relevant documentation instead of searching through several duplicated explanations.</p>
+<div class="notice"><strong>Before electrical maintenance:</strong> switch off, isolate and prove dead on both the AC supply and each external DC heater source. Allow for residual energy and hot equipment. Unexpected or uncontrolled heating requires the site's approved independent DC isolation procedure, not merely an Omron menu command.</div>
+<div style="overflow-x:auto"><table><thead><tr><th>Observed symptom</th><th>Relevant checks and references</th></tr></thead><tbody>
+<tr><td>Omron controller has no display</td><td>Check the upstream supply, CONTROL selector and respective AC branch using the <a href="../wiring-sheets/#mains">mains wiring schedule</a> and <a href="../components/">device references</a>.</td></tr>
+<tr><td>ENABLE button does not latch the channel</td><td>See EAO SB1/SB2, Finder 13.61 K1/K2, the gated 24 V net and enabled output in the <a href="../wiring-sheets/#enable">ENABLE circuit schedule</a>.</td></tr>
+<tr><td>ACTIVE is off despite requested heat</td><td>Confirm intended Omron state, enable state and demand path. Use <a href="../wiring-sheets/#demand">Weidmüller / SSR demand routes</a> and <a href="../#sequence">indicator meanings</a>.</td></tr>
+<tr><td>ACTIVE lights but the heater does not heat</td><td>The lamp does not prove heater current. Refer to external PSU state, DC protection, Finder 62.31 and Crydom path in the <a href="../wiring-sheets/#heater-dc">DC heater wiring schedule</a>. Do not bypass protective devices.</td></tr>
+<tr><td>Temperature reading is wrong or missing</td><td>Check the Type K sensor, connector polarity, Omron error display and approved sensor settings. See <a href="../components/">Type K parts</a> and <a href="../omron-programming/">Omron guidance</a>.</td></tr>
+<tr><td>Unexpected output or restart after power returns</td><td>Keep heater DC isolated and use the <a href="../sop/#abnormal">SOP fault procedure</a>. Investigate Omron RESET and Finder enable power-restoration behavior before returning to service.</td></tr>
+</tbody></table></div>
+<p class="small">For replacement work, match the exact manufacturer part number and verify conductor assignments, protective bonding and functional tests before restarting.</p>
+<div class="linkgroup"><a class="btn" href="../components/">Find a component →</a><a class="btn" href="../wiring-sheets/">Find a wire or terminal →</a><a class="btn" href="../sop/#abnormal">Fault and emergency actions →</a></div>
+</section>
+<footer>Heating Rate Controller · Electrical documentation R1.2 · <a href="../">Operator manual</a></footer>
+</main></body></html>
