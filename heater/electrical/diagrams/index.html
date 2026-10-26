@@ -1,0 +1,80 @@
+---
+layout: null
+sitemap: false
+permalink: /heater/electrical/diagrams/
+---
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Electrical diagrams | Heating Rate Controller</title>
+<style>
+:root{font:14px/1.52 Inter,"Segoe UI",Arial,sans-serif;color:#243b51;background:#edf3f7}*{box-sizing:border-box}
+body{margin:0}a{color:#155a8c}.wrap{max-width:1260px;margin:22px auto 55px;padding:0 16px}
+header,.panel{border:1px solid #d4e1eb;border-radius:12px;background:white;padding:22px 26px;margin:0 0 15px}
+h1{font-size:28px;margin:4px 0 9px}h2{font-size:21px;margin:0 0 12px}h3{font-size:15px;margin:12px 0 8px}p{margin:9px 0 13px}
+.top{display:flex;justify-content:space-between;align-items:start;gap:16px;flex-wrap:wrap}.eyebrow{letter-spacing:.14em;font-size:11px;text-transform:uppercase;font-weight:800;color:#567a95}.sub,.quiet{color:#627e93}
+.buttons{display:flex;gap:9px;flex-wrap:wrap}.btn{display:inline-block;padding:9px 13px;border:1px solid #c3d8e8;background:#eaf3fa;color:#195e87;border-radius:8px;font-weight:700;text-decoration:none;cursor:pointer;font:700 13px Inter,"Segoe UI",Arial,sans-serif}
+.btn:hover{background:#d9eafa}.nav{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.nav a{padding:8px 12px;background:white;border:1px solid #d0deea;border-radius:8px;text-decoration:none}
+.subtitle{font-size:12px;color:#61798c}.overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.overview-card{border:1px solid #dbe6ee;border-radius:9px;padding:14px;break-inside:avoid}.overview-card h3{margin:0 0 8px;color:#245b82}
+.overview-card svg{width:100%;height:auto;display:block}.overview-card p{font-size:12px;color:#587188;margin:8px 0 0}
+.wire-sheet{border:1px solid #d7e2ec;background:white;border-radius:12px;margin-bottom:15px;overflow:hidden;break-inside:avoid}
+.wire-head{padding:14px 22px;border-bottom:1px solid #dce8f0;background:#f4f8fb;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.wire-head h3{margin:0;font-size:16px;color:#245579}.wire-head span{font-size:12px;color:#6d8192}
+.wire-svg{display:block;width:100%;height:auto;background:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:17px;font-size:12px;color:#5f7689}
+.legend b{color:#285b7f}.legend span{border-left:3px solid #4e8fb7;padding-left:6px}
+.warn{border-left:3px solid #af752a;padding:11px 13px;background:#fff9f1;border-radius:3px;color:#76552b;font-size:13px}
+.loading{text-align:center;padding:30px;color:#607a8e}
+footer{font-size:12px;text-align:center;color:#70869a;padding:18px}
+@media(max-width:850px){.overview-grid{grid-template-columns:1fr}.wrap{padding:0 8px;margin:9px auto}.panel,header{padding:15px}}
+@media print{@page{size:A3 landscape;margin:10mm}body{background:white}.wrap{max-width:none;padding:0;margin:0}.buttons,.nav,.noprint{display:none!important}header,.panel{border:none;padding:5mm 0}.overview-card{break-inside:avoid}.wire-sheet{page-break-inside:avoid;break-inside:avoid;page-break-after:always;border:0;margin:0}.wire-svg{width:100%}.overview-card svg{max-height:80mm}.panel:first-of-type{break-after:page}.wire-head{background:white}.legend{font-size:9pt}}
+</style></head><body><main class="wrap">
+<header class="top"><div><div class="eyebrow">Heating Rate Controller · Electrical reference R1.2</div><h1>Electrical diagrams</h1><p class="sub">Shared control power · Channel enable · Omron demand · External DC heater circuits</p></div>
+<div class="buttons"><a class="btn" href="../">← Electrical system</a><a class="btn" href="../../wiring-sheets/">Connection tables</a><button class="btn" onclick="window.print()">Print / Save PDF</button></div></header>
+<nav class="nav" aria-label="Diagrams"><a href="#schematics">Circuit overview</a><a href="#connections">Numbered connection diagrams</a><a href="../distribution/#terminals">Terminal positions</a><a href="../../components/">Parts and datasheets</a></nav>
+<section class="panel" id="schematics"><h2>Four electrical circuits</h2><p>Each circuit is shown separately so the control supply, heating command and external DC power cannot be mistaken for the same electrical path. Device references correspond to the numbered connection diagrams below.</p><div class="overview-grid" id="overview"></div>
+<p class="warn">The external heater DC supply is independent of the 24 V controller supply. Finder 62.31 terminal 14 (−) and Crydom load terminal −2 are on the <strong>switched positive heater path</strong>, not on the DC negative return.</p>
+</section>
+<section class="panel" id="connections"><h2>Connection diagrams · all 70 routes</h2><p>Each line maps one FROM → VIA → TO route. A shared distribution-net label is an electrical junction, not an extra conductor. Select a title to jump to the matching table.</p>
+<div class="legend"><span><b>FROM</b> source</span><span><b>VIA</b> terminal, connector or wire path</span><span><b>TO</b> destination</span></div>
+<p class="quiet">Connection groups are based on the R1.2 electrical schedule. The two Murata input-voltmeter connections are not included in the 70 numbered routes. See the <a href="../distribution/#circuits">voltmeter reference</a> for their actual arrangement and outstanding protection requirement.</p>
+</section>
+<div id="diagrams"><div class="loading">Loading numbered connection diagrams…</div></div>
+<footer>Heating Rate Controller · R1.2 electrical drawings · <a href="../">Electrical system</a></footer></main>
+<script>
+const NS="http://www.w3.org/2000/svg";
+function sv(tag,attrs={},txt){const a=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))a.setAttribute(k,v);if(txt!==undefined)a.textContent=txt;return a}
+function txt(svg,x,y,t,opt={}){svg.appendChild(sv("text",{x,y,fill:opt.color||"#24455f","font-family":"Arial,Helvetica,sans-serif","font-size":opt.size||16,"font-weight":opt.weight||500,"text-anchor":opt.anchor||"middle"},t))}
+function wrapText(text,max=26){const words=String(text).split(/\s+/),lines=[];let line="";for(const w of words){if((line+" "+w).trim().length>max&&line){lines.push(line);line=w}else line=(line+" "+w).trim()}if(line)lines.push(line);return lines.slice(0,3)}
+function block(svg,x,y,w,h,text,fill="#eef6fb"){svg.appendChild(sv("rect",{x,y,width:w,height:h,rx:8,fill,stroke:"#bcd4e5","stroke-width":1.5}));const lines=wrapText(text,23);lines.forEach((l,i)=>txt(svg,x+w/2,y+h/2+5+(i-(lines.length-1)/2)*19,l,{size:15,weight:650}))}
+function line(svg,x1,y1,x2,y2,stroke="#397da7"){svg.appendChild(sv("path",{d:"M "+x1+" "+y1+" L "+x2+" "+y2,stroke,fill:"none","stroke-width":2.6,"stroke-linecap":"round"}))}
+function flowCard({heading,summary,nodes,note,extra}){const host=document.createElement("article");host.className="overview-card";const h=document.createElement("h3");h.textContent=heading;host.appendChild(h);
+const svg=sv("svg",{viewBox:"0 0 810 190",role:"img","aria-label":heading+": "+nodes.join(" then ")});const gap=10,margin=12;const bw=(810-margin*2-gap*(nodes.length-1))/nodes.length,nY=35,bh=96;
+nodes.forEach((v,i)=>{const x=margin+i*(bw+gap);block(svg,x,nY,bw,bh,v);if(i){line(svg,x-gap,nY+bh/2,x,nY+bh/2);svg.appendChild(sv("polygon",{points:(x-7)+","+(nY+bh/2-6)+" "+(x-7)+","+(nY+bh/2+6)+" "+x+","+(nY+bh/2),fill:"#397da7"}))}});
+txt(svg,405,165,summary,{size:14,weight:600,color:"#52728a"});host.appendChild(svg);const p=document.createElement("p");p.textContent=note||"";host.appendChild(p);return host}
+const set=[
+{heading:"A · Mains and 24 V control",nodes:["Schurter J1 230 V AC","L / N distribution","Mean Well PS1 24 V","Two channel selectors"],summary:"Mains L / N / PE are separate",note:"Omron mains supply is branched separately to each channel; protective earth is bonded independently."},
+{heading:"B · Heater ENABLE (both channels)",nodes:["Schneider S1/S2","EAO SB1/SB2 momentary","Finder 13.61 K1/K2","EN1 / EN2 · terminal 14"],summary:"EN = switched +24 V",note:"The EN node supplies the power relay coil, illuminated EAO ring, Crydom control input and ACTIVE LED positive."},
+{heading:"C · Temperature demand",nodes:["Type K sensor","Omron E1/E2 pulse output","Weidmüller W1/W2","Crydom control return + ACTIVE−"],summary:"Demand is separate from ENABLE",note:"ACTIVE illuminates only when ENABLE is asserted and the Omron requests heat; it is not measured heater current."},
+{heading:"D · External heater DC (per channel)",nodes:["External DC+ / breaker","Finder 62.31 34(+) → 14(−)","Crydom +1 → −2","Heater+ / direct DC− return"],summary:"0–60 V DC · up to 15 A design limit",note:"All switching is on the positive DC leg. The negative heater return bypasses Finder and Crydom."}
+];for(const r of set)document.getElementById("overview").appendChild(flowCard(r));
+const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+function routePage(area,channel,rows,index){const W=1500,top=68,header=62,rh=39,footer=23,h=top+header+rows.length*rh+footer;const host=document.createElement("section");host.className="wire-sheet";const title=document.createElement("div");title.className="wire-head";title.innerHTML="<h3>"+esc(String(index).padStart(2,"0"))+" · "+esc(area)+(channel?" · "+esc(channel):"")+"</h3><span>"+rows.length+" numbered connections</span>";host.appendChild(title);
+const svg=sv("svg",{viewBox:"0 0 "+W+" "+h,role:"img","aria-label":area+" "+channel+" from via to circuit wiring diagram"});svg.appendChild(sv("rect",{x:5,y:5,width:W-10,height:h-10,rx:8,fill:"white",stroke:"#d9e4ee"}));
+for(const [x,heading] of [[205,"FROM"],[747,"VIA"],[1260,"TO"]){txt(svg,x,39,heading,{weight:750,size:16,color:"#316b91"})}
+svg.appendChild(sv("path",{d:"M 20 53 H 1480",stroke:"#cbdce8","stroke-width":2}));
+for(let i=0;i<rows.length;i++){const r=rows[i],cy=top+i*rh+rh/2;
+if(i%2===0)svg.appendChild(sv("rect",{x:12,y:top+i*rh,width:1475,height:rh,fill:"#f4f9fc"}));
+txt(svg,31,cy+5,r.id,{size:14,anchor:"start",color:"#50768e"});
+for(const [cx,text,max] of [[207,r.from,34],[752,r.via,36],[1265,r.to,34]]){const arr=wrapText(String(text),max);if(arr.length===1)txt(svg,cx,cy+5,arr[0],{size:14.5,weight:550});else arr.forEach((v,j)=>txt(svg,cx,cy-3+j*15,v,{size:12.5,weight:550}))}
+line(svg,417,cy,521,cy,"#5b93b5");svg.appendChild(sv("polygon",{points:"521,"+(cy-5)+" 530,"+cy+" 521,"+(cy+5),fill:"#5b93b5"}));
+line(svg,973,cy,1053,cy,"#5b93b5");svg.appendChild(sv("polygon",{points:"1053,"+(cy-5)+" 1062,"+cy+" 1053,"+(cy+5),fill:"#5b93b5"}));
+}
+host.appendChild(svg);return host}
+fetch("../../wiring-sheets/connections.json",{cache:"no-cache"}).then(x=>{if(!x.ok)throw new Error("Unable to load connections");return x.json()}).then(data=>{
+const host=document.getElementById("diagrams");host.innerHTML="";
+const order=[["Mains & PE","Shared"],["24 V shared","Shared"],["Heater enable","CH1"],["Heater enable","CH2"],["SSR demand","CH1"],["SSR demand","CH2"],["DC heater","CH1"],["DC heater","CH2"]];
+let i=1;
+for(const [area,channel] of order){const rows=data.rows.filter(r=>r.area===area&&r.channel===channel);if(rows.length)host.appendChild(routePage(area,channel,rows,i++))}
+const total=data.rows.length;const count=host.querySelectorAll(".wire-sheet").length;const hint=document.createElement("p");hint.className="quiet noprint";hint.textContent=total+" numbered routes shown in "+count+" diagram sheets.";host.prepend(hint);
+}).catch(e=>{document.getElementById("diagrams").innerHTML='<p class="warn">Connection diagrams could not be loaded. Open the <a href="../../wiring-sheets/">connection schedule</a> instead.</p>'});
+</script></body></html>
