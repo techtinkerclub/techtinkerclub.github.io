@@ -72,9 +72,9 @@ line(svg,973,cy,1053,cy,"#5b93b5");svg.appendChild(sv("polygon",{points:"1053,"+
 host.appendChild(svg);return host}
 fetch("../../wiring-sheets/connections.json",{cache:"no-cache"}).then(x=>{if(!x.ok)throw new Error("Unable to load connections");return x.json()}).then(data=>{
 const host=document.getElementById("diagrams");host.innerHTML="";
-const order=[["Mains & PE","Shared"],["24 V shared","Shared"],["Heater enable","CH1"],["Heater enable","CH2"],["SSR demand","CH1"],["SSR demand","CH2"],["DC heater","CH1"],["DC heater","CH2"]];
+const order=[["Mains & PE","all"],["24 V shared","Shared"],["Heater enable","CH1"],["Heater enable","CH2"],["SSR demand","CH1"],["SSR demand","CH2"],["DC heater","CH1"],["DC heater","CH2"]];
 let i=1;
-for(const [area,channel] of order){const rows=data.rows.filter(r=>r.area===area&&r.channel===channel);if(rows.length)host.appendChild(routePage(area,channel,rows,i++))}
-const total=data.rows.length;const count=host.querySelectorAll(".wire-sheet").length;const hint=document.createElement("p");hint.className="quiet noprint";hint.textContent=total+" numbered routes shown in "+count+" diagram sheets.";host.prepend(hint);
+for(const [area,channel] of order){const rows=data.rows.filter(r=>r.area===area&&(channel==="all"||r.channel===channel));if(rows.length)host.appendChild(routePage(area,channel==="all"?"":channel,rows,i++))}
+const total=data.rows.length;const rendered=[...host.querySelectorAll(".wire-head span")].reduce((sum,el)=>sum+(parseInt(el.textContent,10)||0),0);const count=host.querySelectorAll(".wire-sheet").length;if(rendered!==total)throw new Error("Diagram route count mismatch: "+rendered+" of "+total);const hint=document.createElement("p");hint.className="quiet noprint";hint.textContent=total+" numbered routes shown in "+count+" diagram sheets.";host.prepend(hint);
 }).catch(e=>{document.getElementById("diagrams").innerHTML='<p class="warn">Connection diagrams could not be loaded. Open the <a href="../../wiring-sheets/">connection schedule</a> instead.</p>'});
 </script></body></html>
