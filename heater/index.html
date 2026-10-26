@@ -90,21 +90,17 @@ permalink: /heater/
 <div class="card callout"><h3>More ways to explore</h3><div class="tagrow"><button class="btn jump" data-v="front">Front-panel controls</button><button class="btn jump" data-v="sop">Operating procedure</button><button class="btn jump" data-v="software">Windows USB Studio</button><a class="btn" href="./omron-atlas/">Omron setting map ↗</a><button class="btn jump" data-v="datasheets">Component documentation</button></div></div></section>
 
 <section id="front" class="view">
-<h2 class="heading">Front-panel controls and connections</h2><p class="intro">Explore the actual fitted two-channel panel. Select a numbered marker beside a component to see its function and panel identification. Use the unedited installation photograph for mechanical inspection. For exact terminal connections and rebuild distribution blocks, see Reference Wiring R1.2</p>
+<h2 class="heading">Front-panel controls and connections</h2><p class="intro">Explore the actual fitted two-channel panel. Select a numbered marker on the front panel to identify its function, indication and panel label. For terminal connections use the electrical reference.</p>
 <div class="split"><article class="card">
-<div class="panel-mode-choices" role="group" aria-label="Choose front-panel view">
-<button type="button" id="showPanelGuide" class="sel" aria-pressed="true">Numbered fitted panel</button>
-<button type="button" id="showPanelPhoto" aria-pressed="false">Clean photo</button>
-<button type="button" id="showPanelDiagram" aria-pressed="false">Simplified diagram</button></div>
 <div class="panelphoto guide-photo" id="panelViewer">
-<img id="panelImage" alt="Cleaned presentation photo of the fitted two-channel heating controller, with clickable numbered markers beside the real components" src="./assets/front-panel-cleaned-20261016.webp" loading="eager">
+<img id="panelImage" alt="Annotated front-panel reference showing the two-channel heating controller and numbered component identification markers" src="./assets/front-panel-cleaned-20261016.webp" loading="eager">
 <svg class="leaders photo-leaders" viewBox="0 0 960 1280" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#256b91" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 <path d="M104 210 H140"/><path d="M104 325 H142"/>
 <path d="M450 218 H445"/><path d="M450 500 H406"/><path d="M450 748 H428"/>
 <path d="M103 914 H125"/><path d="M450 914 H413"/><path d="M450 1038 H413"/>
 <path d="M825 500 H675"/>
 </g></svg>
-<svg class="leaders diagram-leaders" viewBox="0 0 620 840" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#3477a3" stroke-width="1.7" stroke-linecap="round"><path d="M32 141 H49"/><path d="M32 226 H62"/><path d="M145 257 V243"/><path d="M146 319 H166"/><path d="M142 487 H159"/><path d="M45 613 H59"/><path d="M282 613 H259"/><path d="M282 697 H259"/><path d="M565 360 H549"/></g></svg>
+
 <button class="point on" data-part="sb" title="1 · Heater enable pushbutton" aria-label="1: Heater enable pushbutton" aria-pressed="true" style="--photo-x:8.333%;--photo-y:16.406%;--diagram-x:5.16%;--diagram-y:16.79%">1</button>
 <button class="point" data-part="hl" title="2 · Indicator lens (verify fitted function)" aria-label="2: Indicator lens, verify function" aria-pressed="false" style="--photo-x:8.333%;--photo-y:25.391%;--diagram-x:5.16%;--diagram-y:26.90%">2</button>
 <button class="point" data-part="om" title="3 · Omron temperature controller" aria-label="3: Temperature controller" aria-pressed="false" style="--photo-x:49.479%;--photo-y:17.031%;--diagram-x:23.39%;--diagram-y:30.60%">3</button>
@@ -114,8 +110,8 @@ permalink: /heater/
 <button class="point" data-part="psu" title="7 · Upper PSU input connector pair" aria-label="7: Upper external DC supply input pair" aria-pressed="false" style="--photo-x:49.479%;--photo-y:71.406%;--diagram-x:45.48%;--diagram-y:72.98%">7</button>
 <button class="point" data-part="heater" title="8 · Lower heater output connector pair" aria-label="8: Lower heater output pair" aria-pressed="false" style="--photo-x:49.479%;--photo-y:81.094%;--diagram-x:45.48%;--diagram-y:82.98%">8</button>
 <button class="point" data-part="ch2" title="9 · Mirrored Channel 2 controls" aria-label="9: Channel 2 mirrored controls" aria-pressed="false" style="--photo-x:88.646%;--photo-y:39.063%;--diagram-x:91.13%;--diagram-y:42.86%">9</button>
-</div><p class="note"><strong>Numbered fitted panel:</strong> marker positions are illustrative identification aids beside components on the retouched photograph; not dimensional cutout or wiring evidence. <strong>For inspection:</strong> <a href="./assets/front-panel-original-20261016.jpeg" target="_blank" rel="noopener">view the unedited installation photograph</a>. Indicator roles, selector versions and permanent labels must be confirmed against the actual fitted hardware and approved wiring.</p></article>
-<article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Panel marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Further notes</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
+</div><p class="note">Select a numbered marker to identify the control or connector. <a href="./electrical/">Electrical connections and maintenance →</a></p></article>
+<article class="card detail"><div class="partlabel" id="partRef">01 · channel control</div><h3 id="partTitle">Heater enable pushbutton</h3><p id="partText"></p><div class="line"></div><div class="partlabel">Panel marking</div><p><span class="tag" id="partMark">HEATER ENABLE</span></p><div class="partlabel">Function and checks</div><ul id="partNotes"></ul><button class="btn jump" data-v="labels">View all panel labels</button></article></div>
 </section>
 
 <section id="wiring" class="view">
@@ -273,32 +269,6 @@ permalink: /heater/
     heater:["08 · JP2 / JP4","Heater output","The LOWEST red-and-black connector pair is the outgoing connection to the resistive heater.","HEATER + / −",["The heater is connected to the lowest pair.","Observe independent positive switch path and negative return."]],
     ch2:["09 · mirrored panel","Channel 2 completed layout","The finished arrangement contains the same controls and connectors on both channels.","CHANNEL 2",["Controls and connectors are duplicated for the two independently controlled channels.","Check actual panel labels before connecting the external heater supply."]]
   };
-  const panelViewer=document.getElementById("panelViewer");
-  const panelImage=document.getElementById("panelImage");
-  const modeButtons={
-    "guide-photo":document.getElementById("showPanelGuide"),
-    "clean-photo":document.getElementById("showPanelPhoto"),
-    "guide-diagram":document.getElementById("showPanelDiagram")
-  };
-  function showPanelMode(mode){
-    panelViewer.classList.remove("guide-photo","clean-photo","guide-diagram");
-    panelViewer.classList.add(mode);
-    const diagram=mode==="guide-diagram";
-    panelImage.src=diagram?"./assets/front-panel.svg?v=amber-clearance-20261013":"./assets/front-panel-cleaned-20261016.webp";
-    panelImage.alt=diagram
-      ?"Simplified dual-channel heating controller illustration with numbered component markers"
-      :mode==="clean-photo"
-        ?"Clean presentation photograph of the installed two-channel heating controller"
-        :"Retouched fitted-panel photograph with numbered interactive component callouts";
-    for(const [key,button] of Object.entries(modeButtons)){
-      const selected=key===mode;
-      button.classList.toggle("sel",selected);
-      button.setAttribute("aria-pressed",selected?"true":"false");
-    }
-  }
-  for(const [mode,button] of Object.entries(modeButtons)){
-    button.addEventListener("click",()=>showPanelMode(mode));
-  }
   document.querySelectorAll(".point").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll(".point").forEach(x=>{
       const active=x===b;
