@@ -20,10 +20,10 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text
 @media(max-width:740px){.wrap{margin:8px auto;padding:0 8px}header,.panel{padding:17px}.cards{grid-template-columns:1fr}.circuit{grid-template-columns:1fr;gap:2px}h1{font-size:25px}}
 @media print{@page{size:A4;margin:13mm}body{background:#fff}.wrap{max-width:none;margin:0}nav,.btn{display:none!important}.panel,header{border:none;padding:0}.panel{break-before:page}table{font-size:10pt}}
 </style></head><body><main class="wrap">
-<header><div><div class="eyebrow">Heating Rate Controller · Maintenance and electrical reference</div><h1>Electrical system</h1><p class="sub">Two independent heater channels with shared mains and 24 V control supply</p></div><div class="links"><a class="btn" href="../#wiring">← Manual</a><a class="btn" href="../sop/">Operating SOP</a></div></header>
+<header><div><div class="eyebrow">Heating Rate Controller · Maintenance and electrical reference</div><h1>Electrical system</h1><p class="sub">Two independent heater channels with shared mains and 24 V control supply</p></div><div class="links"><a class="btn" href="../#wiring">← Manual</a><a class="btn" href="./diagrams/">Electrical diagrams →</a><a class="btn" href="../sop/">Operating SOP</a></div></header>
 <div class="panel"><h2>What do you need to do?</h2><div class="cards">
 <div class="choice"><h3>Understand the system</h3><p>Find the mains, 24 V enable, temperature demand and external heater DC paths.</p><a href="#understand">How it works →</a></div>
-<div class="choice"><h3>Build or rewire</h3><p>Follow the numbered connections, choose PTFIX terminals and identify exact components.</p><a href="#build">Build references →</a></div>
+<div class="choice"><h3>Build or rewire</h3><p>Open the electrical diagrams, follow numbered wire connections and identify the correct components.</p><a href="#build">Build references →</a></div>
 <div class="choice"><h3>Diagnose or repair</h3><p>Find the relevant circuit and component from an observed fault or indication.</p><a href="#diagnose">Fault-finding guide →</a></div>
 </div></div>
 <nav aria-label="Electrical sections"><a href="#understand">How it works</a><a href="#build">Build and rewire</a><a href="#diagnose">Fault finding</a><a href="#drawings">Drawings &amp; printouts</a></nav>
@@ -36,9 +36,9 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text
 </section>
 <span id="distribution"></span><span id="documentation"></span><section class="panel" id="build"><h2>Build or rewire the controller</h2><p>Use these documents in sequence. Each has one distinct purpose.</p>
 <ol class="steps">
-<li><strong>Understand the wiring architecture.</strong> Read the <a href="./reference-wiring/#operation">four circuit paths</a> for mains, enable, demand and external heater power.</li>
+<li><strong>Start with the drawings.</strong> <a href="./diagrams/">Open the circuit diagrams</a> for mains, enable, demand and external heater power.</li>
 <li><strong>Identify the parts.</strong> The <a href="../components/">component register</a> is the definitive source of reference designations, manufacturer models and datasheet links.</li>
-<li><strong>Select and install the distribution.</strong> The <a href="./distribution/">PTFIX distribution specification</a> has all 11 groups, physical DIN-rail mounting, 48 assigned conductor positions and a blank as-built record.</li>
+<li><strong>Identify terminal connections.</strong> The <a href="./distribution/">terminal allocation appendix</a> gives the reference arrangement, conductor positions and installation notes.</li>
 <li><strong>Connect and inspect.</strong> Use the <a href="../wiring-sheets/">searchable From → Via → To schedule</a> (70 listed routes), then complete the inspection and commissioning requirements in the <a href="./distribution/#checks">distribution guide</a> and <a href="../risk-assessment/">risk assessment</a>.</li>
 </ol>
 <div class="notice"><strong>Additional electrical detail required:</strong> the existing 70-route table does not include the Murata input-meter wiring. The meters have internal self-resetting fuses, but no external meter-input fuses are fitted; Murata specifies external 0.25 A / 300 V time-delay supply-wire fusing. Record this protection gap and assess it before electrical approval. <a href="./distribution/#circuits">Meter requirements →</a></div>
@@ -58,13 +58,13 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text
 <div class="linkgroup"><a class="btn" href="../components/">Find a component →</a><a class="btn" href="../wiring-sheets/">Find a wire or terminal →</a><a class="btn" href="../sop/#abnormal">Fault and emergency actions →</a></div>
 </section>
 <section class="panel" id="drawings"><h2>Drawings and printouts</h2>
-<p>For a printed electrical reference, use these current R1.2 web documents and select <strong>Print / Save PDF</strong> in each page. The individual CSV schedules can be downloaded directly.</p>
+<p>Start with the <a href="./diagrams/"><strong>electrical diagrams</strong></a>. The drawings can be viewed online or printed to PDF. Numbered connection and terminal schedules are also available below.</p>
 <div class="cards">
-<div class="choice"><h3>Circuit reference</h3><p>Four circuit paths: mains, enable, Omron demand and DC heater power.</p><a href="./reference-wiring/?print=1">Open printable circuit reference →</a></div>
+<div class="choice"><h3>Electrical diagrams</h3><p>Four circuit overviews and the full 70-route vector connection diagrams.</p><a href="./diagrams/">View and print diagrams →</a></div>
 <div class="choice"><h3>Connection sheets</h3><p>All 70 numbered From–Via–To routes, with channel filtering on screen.</p><a href="../wiring-sheets/?print=1">Open printable connection sheets →</a></div>
-<div class="choice"><h3>PTFIX assembly</h3><p>Block selection, mounting, all 48 port assignments and a blank deviations record.</p><a href="./distribution/">Open printable assembly schedule →</a></div>
+<div class="choice"><h3>Terminal schedule</h3><p>Reference connection blocks, terminal positions and installation requirements.</p><a href="./distribution/">Open terminal schedule →</a></div>
 </div>
-<div class="linkgroup"><a class="btn" href="../wiring-sheets/Reference_Wiring_R1_2_From_Via_To.csv" download>Connection routes · CSV</a><a class="btn" href="./distribution/PTFIX_R1_2_Terminal_Allocation.csv" download>48 terminal positions · CSV</a><a class="btn" href="./distribution/PTFIX_R1_2_Block_List.csv" download>Distribution block list · CSV</a></div>
+<div class="linkgroup"><a class="btn" href="../wiring-sheets/Reference_Wiring_R1_2_From_Via_To.csv" download>Connection routes · CSV</a><a class="btn" href="./distribution/PTFIX_R1_2_Terminal_Allocation.csv" download>Terminal positions · CSV</a><a class="btn" href="./distribution/PTFIX_R1_2_Block_List.csv" download>Distribution block list · CSV</a></div>
 </section>
 <footer>Heating Rate Controller · Electrical documentation R1.2 · <a href="../">Operator manual</a></footer>
 </main></body></html>
