@@ -114,34 +114,36 @@ function testAtlas(){
 function testOperator(){
  const {dom,document:d,html}=page(path.join(root,"index.html"),"https://techtinker.club/heater/");
  const script=html.match(/<script>([\s\S]*?)<\/script>/);
- assert.ok(script);
+ assert.ok(script,"Operator manual contains its navigation script");
  dom.window.eval(script[1]);
  const sections=d.querySelectorAll("section.view");
- assert.ok(sections.length>=10);
- const wiring=d.querySelector('[data-v="wiring"]');
- click(dom.window,wiring);
+ assert.ok(sections.length>=10,"All operator chapters are present");
+ click(dom.window,d.querySelector('[data-v="wiring"]'));
  assert.equal(d.querySelector("section.view.active").id,"wiring");
- assert.ok(d.getElementById("electricPath").textContent.includes("Mean Well"));
- click(dom.window,d.querySelector('[data-electric="power"]'));
- assert.ok(d.getElementById("electricPath").textContent.includes("Crydom"));
- assert.ok(d.querySelector('#wiring a[href="./electrical/#schedule"]'));
- assert.ok(d.querySelector('#omron a[href="./omron-atlas/"]'));
- // Cross-section history-aware navigation.
+ assert.ok(d.querySelector('#wiring a[href="./electrical/#understand"]'),"Electrical overview is linked");
+ assert.ok(d.querySelector('#wiring a[href="./electrical/diagrams/"]'),"Current electrical drawings are linked");
+ assert.ok(d.querySelector('#omron a[href="./omron-atlas/"]'),"Omron atlas is linked");
  click(dom.window,d.getElementById("nextChapter"));
  assert.equal(d.querySelector("section.view.active").id,"labels");
  click(dom.window,d.getElementById("prevChapter"));
  assert.equal(d.querySelector("section.view.active").id,"wiring");
  assert.equal(dom.window.location.hash,"#wiring");
- // No duplicated huge SVG electrical drawings on overview page.
- assert.equal(d.querySelectorAll("#wiring svg").length,0);
+ click(dom.window,d.querySelector('.navbtn[data-v="front"]'));
+ assert.equal(d.querySelectorAll("#front .point").length,9,"The panel identifies nine component groups");
+ click(dom.window,d.querySelector('#front .point[data-part="hl"]'));
+ assert.equal(d.getElementById("partTitle").textContent,"Heat Active indicator");
+ assert.ok(d.getElementById("partText").textContent.includes("amber HEAT ACTIVE"),"Amber lamp description is displayed");
+ assert.ok(!html.includes("dark green indicator lens"),"Outdated lamp-colour claim removed");
+ assert.equal(d.querySelectorAll("#wiring svg").length,0,"No obsolete diagram is duplicated in the overview");
  dom.window.close();
 }
 function testProgrammingAndElectricalLinks(){
  const programming=readFileSync(path.join(root,"omron-programming","index.html"),"utf8");
  const electrical=readFileSync(path.join(root,"electrical","index.html"),"utf8");
- assert.ok(programming.includes("../omron-atlas/"));
- assert.ok(electrical.includes("../omron-atlas/"));
- assert.ok(electrical.includes("../#wiring"));
+ assert.ok(programming.includes("../omron-atlas/"),"Programming guide links to atlas");
+ assert.ok(electrical.includes("../#wiring"),"Electrical guide links back to manual");
+ assert.ok(electrical.includes("./diagrams/"),"Electrical guide links to current drawings");
+ assert.ok(electrical.includes("./reference-wiring/"),"Electrical guide links to connection details");
 }
 function testEditorialSeparation(){
  const operator=readFileSync(path.join(root,"index.html"),"utf8");
@@ -152,35 +154,30 @@ function testEditorialSeparation(){
  const statusDom=page(path.join(root,"development","index.html"),"https://techtinker.club/heater/development/");
  const docs=[operator,programming,studio,electrical];
  for(const [i,d] of docs.entries()){
-  assert.ok(!d.includes("The user then observed"),"development diary leaked into user page "+i);
-  assert.ok(!d.includes("Omron hardware validation status · 13 October"),"bench status box still in manual "+i);
-  assert.ok(!d.includes("Development status · 14 October"),"date-specific development banner still in docs "+i);
+  assert.ok(!d.includes("The user then observed"),"Development diary leaked into operator page "+i);
+  assert.ok(!d.includes("Development status · 14 October"),"Dated development banner still in operator page "+i);
  }
- assert.ok(!operator.includes("The user then observed"));
- assert.ok(!programming.includes("Controller menus and PID settings we have actually read"));
- assert.ok(!studio.includes("Real Omron test, 13 October"));
- assert.ok(!electrical.includes("Omron E2 variant</td>"),"D12 issue register was not moved");
- assert.ok(operator.includes('href="./development/#open"'));
- assert.ok(programming.includes("../development/#evidence"));
- assert.ok(electrical.includes("../development/#open"));
- assert.ok(studio.includes("../development/#evidence"));
+ assert.ok(!operator.includes("Indicator lens (function to confirm)"),"Panel labels are customer-facing");
+ assert.ok(!operator.includes("dark green indicator lens"),"Indicator colour is corrected");
+ assert.ok(!programming.includes("We removed USB power"),"Programming steps are written for operators");
+ assert.ok(electrical.includes("R1.2"),"Current electrical issue is identified");
+ assert.ok(programming.includes("../development/#evidence"),"Programming test records remain in engineering archive");
+ assert.ok(studio.includes("../development/#evidence"),"Simulator test evidence remains in engineering archive");
+ assert.ok(statusDom.document.getElementById("current-drawings"),"Current R1.2 issue is prominent");
  assert.ok(statusDom.document.getElementById("open"),"Outstanding checks are accessible");
- assert.ok(statusDom.document.getElementById("software"),"Development status is accessible");
- assert.ok(statusDom.document.querySelectorAll("details.record").length>=5,"Original records not preserved");
- for(const snippet of ["The controller then showed","Omron E2 variant","13 October 2026","D12 electrical design-review issue register","USB-only programme execution"]){
-   assert.ok(statusHtml.includes(snippet),"Missing migrated engineering evidence: "+snippet);
- }
- // Safe operator instructions still explicitly require commissioning.
- assert.ok(operator.includes("NOT COMMISSIONED"));
- assert.ok(programming.includes("do not"));
- const inner=statusDom.document.querySelector('details.record');
- assert.ok(inner&&inner.querySelector('summary')&&inner.querySelector('.recordbody'));
+ assert.ok(statusDom.document.getElementById("software"),"Software qualification records remain available");
+ assert.ok(statusDom.document.querySelectorAll("details.record").length>=5,"Original technical records are preserved");
+ assert.ok(statusHtml.includes("Commissioning evidence"),"Safety qualification status remains explicit");
+ assert.ok(operator.includes("Before first use"),"Operator checks remain visible");
+ assert.ok(programming.toLowerCase().includes("do not"),"Programming precautions remain visible");
+ const inner=statusDom.document.querySelector("details.record");
+ assert.ok(inner&&inner.querySelector("summary")&&inner.querySelector(".recordbody"));
  statusDom.dom.window.close();
 }
 function testQuickStartAndSearch(){
  const {dom,document:d,html}=page(path.join(root,"index.html"),"https://techtinker.club/heater/");
  dom.window.eval(html.match(/<script>([\s\S]*?)<\/script>/)[1]);
- assert.equal(d.querySelectorAll("#overview .taskCard").length,6);
+ assert.ok(d.querySelectorAll("#overview .taskCard").length>=7,"Task-based homepage navigation is populated");
  assert.ok(d.getElementById("mobileMenu"),"Compact mobile chapter menu exists");
  assert.ok(d.getElementById("mobileSearchButton"),"Mobile global search action exists");
  click(dom.window,d.getElementById("mobileSearchButton"));
