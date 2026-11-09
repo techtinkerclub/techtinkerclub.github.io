@@ -26,39 +26,88 @@ const routes=[
     "keywords": "physical front panel switch enable lamps"
   },
   {
-    "title": "Electrical architecture",
-    "summary": "Simple three-layer overview of control, enable and DC heating power",
-    "href": "/heater/#wiring",
+    "title": "Electrical overview",
+    "summary": "Start here to understand the controller, build or rewire it, or diagnose a problem",
+    "href": "/heater/electrical/",
     "group": "Electrical",
-    "keywords": "relay supply wiring power"
+    "keywords": "electrical overview power relay control SSR schematic supply mains voltage"
   },
   {
-    "title": "D13 revised original eleven-sheet electrical drawings",
-    "summary": "Updated original D12 editable PowerPoint, same component-port wiring schematic style and all 11 sheets",
-    "href": "/heater/electrical/d13/",
+    "title": "Electrical diagrams and circuit drawings",
+    "summary": "Current 14-sheet R1.2 electrical drawings and 70 numbered From–Via–To routes",
+    "href": "/heater/electrical/diagrams/",
     "group": "Electrical",
-    "keywords": "D13 schematic diagram revised original PowerPoint pptx PDF Finder terminal A1 A2 Crydom EAO wiring independent inspection original style"
+    "keywords": "electrical diagram drawing schematic pdf print pptx power supply 24V mains heater enable active finder crydom connection"
   },
   {
-    "title": "Download revised D13 11-sheet schematic PDF",
-    "summary": "Original-style mains, 24 V, both Finder enable channels, Crydom SSR, DC heater power, schedules, release checks",
-    "href": "/heater/electrical/d13/Heating_Rate_Controller_D13_Styled_DRAFT.pdf",
+    "title": "Terminal distribution and connections",
+    "summary": "Reference conductor allocation, block sizes, mounting and service checks",
+    "href": "/heater/electrical/distribution/",
     "group": "Electrical",
-    "keywords": "D13 download print PDF original electrical diagram full eleven pages inspection"
+    "keywords": "PTFIX phoenix contact NS35 DIN rail WAGO PE mounting 6 way 12 way ferrule wiring diagram deviations terminal block purchase list"
   },
   {
-    "title": "Current point-to-point wiring register · 22 October 2026",
-    "summary": "Individual mains, 24 V, Finder, EAO, Crydom and Weidmüller connections; builder reports versus unverified work",
-    "href": "/heater/electrical/wiring-reconciliation/",
+    "title": "Reference Electrical Wiring R1.2",
+    "summary": "Electrical circuit paths: mains, Finder enable relay, Omron demand and directional DC heater switching",
+    "href": "/heater/electrical/reference-wiring/",
     "group": "Electrical",
-    "keywords": "D13 revised wiring as built 3 Live 3 Neutral three +24 0V Finder 13.61 A1 A2 EAO COM EN1 Crydom A1 A2 Weidmueller 13 14 ACTIVE wiring worksheets"
+    "keywords": "R1 current wiring schematic reference PDF print rebuilt 14 sheets Phoenix WAGO distribution connector terminal"
   },
   {
-    "title": "Printable D13 draft wiring PDF",
-    "summary": "Four-page A4 landscape draft connection register, 12 mains/PE and 17 control paths per channel",
-    "href": "/heater/electrical/wiring-reconciliation/Heating_Controller_D13_Field_Wiring_Reconciliation_DRAFT.pdf",
+    "title": "Full SOP — 23-step experiment and heating sequence",
+    "summary": "Pre-test preparation, Omron RUN/RESET, external DC supply, ENABLE and ACTIVE indication, fault response and cooling",
+    "href": "/heater/sop/",
+    "group": "Operation",
+    "keywords": "sop safety standard operating procedure run reset start heater sample thermocouple experiment procedure stop led murata supply"
+  },
+  {
+    "title": "Heater controller equipment risk assessment",
+    "summary": "18 hazards, preventive controls, electrical isolation and protection, specimen-specific risks, release checks and sign-off",
+    "href": "/heater/risk-assessment/",
+    "group": "Safety",
+    "keywords": "risk assessment RA hazards protection thermal burn runaway emergency PE fire shock DC review"
+  },
+  {
+    "title": "Distribution capacity and terminal blocks",
+    "summary": "Reference terminal groups, quantities and mounting",
+    "href": "/heater/electrical/distribution/#selection",
     "group": "Electrical",
-    "keywords": "wiring PDF print workbench sheet 2026 revised D13 control AC mains neutral positive ground"
+    "keywords": "mains 3 neutral 3 24v 0v 48 positions 70 spare terminal DIN Phoenix PTFIX"
+  },
+  {
+    "title": "Terminal-by-terminal allocation",
+    "summary": "All 48 allocated conductor ports, grouped by electrical potential",
+    "href": "/heater/electrical/distribution/#terminals",
+    "group": "Electrical",
+    "keywords": "find connection wire Finder EAO Crydom Weidmuller K1 K2 13 14"
+  },
+  {
+    "title": "Relay enable and heater-power circuits",
+    "summary": "Finder 13.61 RI, 62.31 directional DC contact 34→14, Crydom SSR control and load paths",
+    "href": "/heater/electrical/reference-wiring/#operation",
+    "group": "Electrical",
+    "keywords": "Finder 13.61 62.31 EAO momentary button 34 14 DC SSR polarity 15A"
+  },
+  {
+    "title": "Printable From–Via–To wiring sheets",
+    "summary": "70 numbered connection routes, component legend, per-circuit print pages and CSV download",
+    "href": "/heater/wiring-sheets/",
+    "group": "Electrical",
+    "keywords": "wire wiring connections pdf print from via to K1 K2 X3 EN1 X4 terminal 70"
+  },
+  {
+    "title": "Component register and manufacturer datasheets",
+    "summary": "Searchable component register with manufacturers, models and datasheet links",
+    "href": "/heater/components/",
+    "group": "Reference",
+    "keywords": "component EAO SCHURTER Omron Finder Crydom phoenix WAGO datasheet model reference hardware"
+  },
+  {
+    "title": "Electrical maintenance",
+    "summary": "Isolation, protective-earth bonding, component verification and independent inspection",
+    "href": "/heater/electrical/#service",
+    "group": "Maintenance",
+    "keywords": "earth ground PE door bonding servicing safe isolate"
   },
   {
     "title": "Panel labels and connections",
@@ -66,13 +115,6 @@ const routes=[
     "href": "/heater/#labels",
     "group": "Manual",
     "keywords": "connector terminal marking red black green thermocouple"
-  },
-  {
-    "title": "Operating procedure",
-    "summary": "Pre-use checks, controller start and post-test shutdown on a commissioned system",
-    "href": "/heater/#sop",
-    "group": "Operation",
-    "keywords": "operating checklist start shut down heater run"
   },
   {
     "title": "Indications and states",
@@ -98,23 +140,9 @@ const routes=[
   {
     "title": "Components and part numbers",
     "summary": "Main controller, relays, PSU, SSR, switches and connectors",
-    "href": "/heater/#components",
+    "href": "/heater/components/",
     "group": "Maintenance",
     "keywords": "bom hardware spare replacement parts"
-  },
-  {
-    "title": "Manufacturer datasheets",
-    "summary": "Manufacturer manuals and reference links",
-    "href": "/heater/#datasheets",
-    "group": "Reference",
-    "keywords": "datasheet h185 h186 Omron Finder Crydom"
-  },
-  {
-    "title": "Safety and commissioning",
-    "summary": "Not-commissioned status, release constraints and approved tests",
-    "href": "/heater/#review",
-    "group": "Safety",
-    "keywords": "inspection checklist not commissioned heater"
   },
   {
     "title": "Programme Studio",
@@ -187,74 +215,11 @@ const routes=[
     "keywords": "calc minutes rate delta temperature"
   },
   {
-    "title": "Electrical schematics · D12",
-    "summary": "Complete eleven-sheet diagram pack and technical overview",
-    "href": "/heater/electrical/#d12-original",
-    "group": "Electrical",
-    "keywords": "schematic drawing electrical power circuit"
-  },
-  {
-    "title": "24 V distribution",
-    "summary": "Control supply and independently gated enable branches",
-    "href": "/heater/electrical/#sheet-02",
-    "group": "Electrical",
-    "keywords": "24v mean well xdr source"
-  },
-  {
-    "title": "Finder 13.61 mode selector and timer setup",
-    "summary": "Set proposed RI step mode, understand the white function selector, orange 0.5-20 minute timer and power-restoration tests",
-    "href": "/heater/electrical/#finder-setup",
-    "group": "Electrical",
-    "keywords": "Finder 13.61 RI IT RM Light ON selector screwdriver trimmer T timer 0.5 20 minutes programmed setting enable relay blink status restart"
-  },
-  {
-    "title": "Finder heater relay and enable",
-    "summary": "Momentary EAO enable and Finder relay logic",
-    "href": "/heater/electrical/#sheet-03-04",
-    "group": "Electrical",
-    "keywords": "13.61 62.31 latch reset switch"
-  },
-  {
-    "title": "SSR heater demand",
-    "summary": "Omron output, Weidmüller interface, Crydom SSR and ACTIVE lamp",
-    "href": "/heater/electrical/#sheet-05-06",
-    "group": "Electrical",
-    "keywords": "heat active led ssr solid state relay"
-  },
-  {
-    "title": "DC heater supply and polarity",
-    "summary": "External 0–60 V supply, switched positive contact and heater return",
-    "href": "/heater/electrical/#sheet-07-08",
-    "group": "Electrical",
-    "keywords": "15 amp finder 34 14 dc power polarity"
-  },
-  {
-    "title": "Terminal connection schedule",
-    "summary": "Circuit nodes, physical points and reference labels",
-    "href": "/heater/electrical/#schedule",
-    "group": "Electrical",
-    "keywords": "wire wiring terminal connectors x1 x2"
-  },
-  {
-    "title": "Service and replacement",
-    "summary": "Disconnect, inspect, check polarities and replace components",
-    "href": "/heater/electrical/#service",
-    "group": "Maintenance",
-    "keywords": "service maintain repair relay connector"
-  },
-  {
-    "title": "Development and verification",
-    "summary": "Test history, commissioned status and remaining validation work",
-    "href": "/heater/development/",
-    "group": "Engineering",
-    "keywords": "progress roadmap bench trials not verified"
-  },
-  {
-    "title": "Outstanding engineering checks",
-    "summary": "Open electrical, hardware and software qualification tests",
-    "href": "/heater/development/#open",
-    "group": "Engineering",
-    "keywords": "todo remaining tests qualification checks"
+    "title": "D13 drawing archive (superseded by R1.2)",
+    "summary": "Earlier 11-sheet electrical drawing PDF and editable PowerPoint, retained for historical reference; use current R1.2 drawings",
+    "href": "/heater/electrical/d13/",
+    "group": "Archive",
+    "keywords": "original electrical schematic D13 PDF download PowerPoint PPTX 11 sheets drawing archive previews"
   }
 ];
 const sandbox={window:{}};
