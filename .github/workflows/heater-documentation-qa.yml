@@ -3,6 +3,14 @@ on:
   push:
     paths:
       - 'heater/index.html'
+      - 'heater/wiring-sheets/**'
+      - 'heater/components/**'
+      - 'heater/electrical/**'
+      - 'heater/risk-assessment/**'
+      - 'heater/sop/**'
+      - 'heater/assets/customer-style.css'
+      - 'heater/documents/**'
+      - 'heater/guide/**'
       - 'heater/electrical/index.html'
       - 'heater/omron-programming/index.html'
       - 'heater/program-tools/index.html'
@@ -15,6 +23,14 @@ on:
   pull_request:
     paths:
       - 'heater/index.html'
+      - 'heater/wiring-sheets/**'
+      - 'heater/components/**'
+      - 'heater/electrical/**'
+      - 'heater/risk-assessment/**'
+      - 'heater/sop/**'
+      - 'heater/assets/customer-style.css'
+      - 'heater/documents/**'
+      - 'heater/guide/**'
       - 'heater/electrical/index.html'
       - 'heater/omron-programming/index.html'
       - 'heater/program-tools/index.html'

@@ -243,5 +243,31 @@ function testGuidedKeypad(){
  assert.ok(!/press down .*run now/i.test(progSteps),"Never silently start heating");
  dom.window.close();
 }
-const total=testAtlas();testOperator();testProgrammingAndElectricalLinks();testEditorialSeparation();testQuickStartAndSearch();testGuidedKeypad();
+function testCustomerPresentation(){
+ const equipment=page(path.join(root,"guide","index.html"),"https://techtinker.club/heater/guide/");
+ const documents=page(path.join(root,"documents","index.html"),"https://techtinker.club/heater/documents/");
+ const main=page(path.join(root,"index.html"),"https://techtinker.club/heater/");
+ assert.equal(equipment.document.querySelectorAll(".facts .fact").length,4,"Equipment design specification summary is present");
+ assert.equal(equipment.document.querySelectorAll(".stepGrid .step").length,4,"Visitor workflow has four steps");
+ assert.ok(equipment.document.querySelector("h1").textContent.includes("Controlled heating"),"Equipment overview has a clear introduction");
+ assert.ok(equipment.document.querySelector(".note").textContent.includes("external input-wire fuses")||equipment.html.includes("external input-wire fuses"),"Release hold is disclosed");
+ assert.ok(equipment.document.querySelector('a[href="../program-tools/"]'),"Profile creator linked from overview");
+ assert.ok(equipment.document.querySelector('a[href="../documents/"]'),"Documents entry point linked from overview");
+ assert.ok(documents.document.querySelector('a[href$="Heating_Rate_Controller_R1_2_Electrical_Drawings.pdf"]'),"14-sheet drawing PDF linked");
+ assert.ok(documents.document.querySelector('a[href$="Heating_Rate_Controller_R1_2_Electrical_Drawings.pptx"]'),"Editable drawings linked");
+ assert.ok(documents.document.querySelector('a[href="../electrical/meter-protection/"]'),"Open meter protection issue linked");
+ assert.ok(documents.document.body.textContent.includes("RA-R1.1"),"Draft assessment revision is shown");
+ assert.ok(documents.document.body.textContent.includes("SOP-R1.2"),"Controlled SOP revision is shown");
+ assert.ok(main.document.querySelector(".equipmentHero"),"Homepage has introductory equipment overview");
+ assert.ok(main.document.querySelector('a[href="./guide/"]'),"Homepage links to customer overview");
+ assert.ok(main.document.querySelector('a[href="./documents/"]'),"Homepage links to downloads");
+ for(const d of [main,equipment,documents]){
+  assert.ok(d.document.querySelector(".documentStrip"),"Shared documentation navigation present");
+  d.dom.window.close();
+ }
+ const guide=readFileSync(path.join(root,"omron-programming","index.html"),"utf8");
+ assert.ok(!guide.includes("the specified model for both channels"),"Obsolete model suffix claim removed");
+ assert.ok(guide.includes("E5CC-TQX3A5M-003"),"Second channel reference model recorded");
+}
+const total=testAtlas();testOperator();testProgrammingAndElectricalLinks();testEditorialSeparation();testQuickStartAndSearch();testGuidedKeypad();testCustomerPresentation();
 console.log("PASS: "+total+" Omron atlas entries, model filters, MODE navigation, input choices, search, electrical tabs, deep links, and cross-page references.");
