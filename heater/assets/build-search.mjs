@@ -220,6 +220,13 @@ const routes=[
     "href": "/heater/electrical/d13/",
     "group": "Archive",
     "keywords": "original electrical schematic D13 PDF download PowerPoint PPTX 11 sheets drawing archive previews"
+  },
+  {
+    "title": "Engineering documentation audit and issue register",
+    "summary": "Cross-reference of R1.2 drawings, 70 routes, 48 terminals, components and outstanding technical inspections",
+    "href": "/heater/development/document-audit/",
+    "group": "Engineering",
+    "keywords": "as-built audit documentation discrepancy register meter fuse connector alias revision technical inspection"
   }
 ];
 const sandbox={window:{}};

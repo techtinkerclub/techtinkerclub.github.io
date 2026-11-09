@@ -364,7 +364,7 @@
       "via": "X3-EN1:5",
       "to": "HL1+",
       "net": "X3-EN1",
-      "note": "HL1+ fed by Finder 13.61 K1 terminal 14 via X3-EN1:5 (enabled +24 V).",
+      "note": "HL1+ source = Finder 13.61 K1:14 = EN1. Standard via X3-EN1:5. NOT selector S1-B:24 (24G).",
       "kind": "distribution"
     },
     {
@@ -397,7 +397,7 @@
       "via": "X3-DRV1:3",
       "to": "HL1−",
       "net": "X3-DRV1",
-      "note": "ACTIVE LED negative returns via corresponding Weidmüller demand-switched interface.",
+      "note": "ACTIVE LED negative unchanged; retain Weidmüller-controlled return.",
       "kind": "distribution"
     },
     {
@@ -496,7 +496,7 @@
       "via": "X4-EN2:5",
       "to": "HL2+",
       "net": "X4-EN2",
-      "note": "HL2+ fed by Finder 13.61 K2 terminal 14 via X4-EN2:5 (enabled +24 V).",
+      "note": "HL2+ source = Finder 13.61 K2:14 = EN2. Standard via X4-EN2:5. NOT selector S2-B:24 (24G).",
       "kind": "distribution"
     },
     {
@@ -529,7 +529,7 @@
       "via": "X4-DRV2:3",
       "to": "HL2−",
       "net": "X4-DRV2",
-      "note": "ACTIVE LED negative returns via corresponding Weidmüller demand-switched interface.",
+      "note": "ACTIVE LED negative unchanged; retain Weidmüller-controlled return.",
       "kind": "distribution"
     },
     {
