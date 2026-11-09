@@ -68,6 +68,13 @@ const routes=[
     "keywords": "risk assessment RA hazards protection thermal burn runaway emergency PE fire shock DC review"
   },
   {
+    "title": "Voltmeter input fuse protection · PV-FUSE-01",
+    "summary": "Confirmed missing external 0.25 A / 300 V time-delay fusing on both Murata meter inputs; manufacturer requirement and engineering acceptance checks",
+    "href": "/heater/electrical/meter-protection/",
+    "group": "Safety",
+    "keywords": "Murata DMR20 fuse 250 mA 0.25 A 300 V time delay TB1 input PV1 PV2 wiring protection missing not fitted corrective action"
+  },
+  {
     "title": "Distribution capacity and terminal blocks",
     "summary": "Reference terminal groups, quantities and mounting",
     "href": "/heater/electrical/distribution/#selection",
