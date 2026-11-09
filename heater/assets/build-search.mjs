@@ -19,6 +19,20 @@ const routes=[
     "keywords": "about start two channels control"
   },
   {
+    "title": "Equipment overview · Two-channel Heating Rate Controller",
+    "summary": "Shareable product-oriented equipment overview, features, connections, operating workflow and design limits",
+    "href": "/heater/guide/",
+    "group": "Manual",
+    "keywords": "customer colleague equipment guide introduction two channel 60 volt 15 amp print pdf"
+  },
+  {
+    "title": "Documentation centre · Manuals and downloads",
+    "summary": "Find printable operating documents, Omron tools, 14-sheet R1.2 PDF and editable PowerPoint, wiring reference and safety notices",
+    "href": "/heater/documents/",
+    "group": "Manual",
+    "keywords": "all manuals user guide pdf power point download document library revision control"
+  },
+  {
     "title": "Front-panel controls",
     "summary": "Identify buttons, sockets, meters, selectors and lamps",
     "href": "/heater/#front",
