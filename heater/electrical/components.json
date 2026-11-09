@@ -220,7 +220,7 @@
     "url": "https://www.mouser.com/datasheet/3/76/2/dmr20_10_dcm.pdf",
     "qty": 2,
     "cat": "indicator",
-    "note": "Murata meter has an internal self-resetting fuse. Equipment owner confirms no external fuse is fitted on either meter input; manufacturer specifies external 0.25 A / 300 V time-delay supply-wire fusing in addition to the internal self-resetting fuse. Meter display does not prove heater power or zero-voltage isolation.",
+    "note": "Murata meter has an internal self-resetting fuse. Equipment owner confirms external input-wire fuses are not fitted on PV1 or PV2 (open corrective action PV-FUSE-01). Murata specifies 0.25 A / 300 V time-delay protection of supply wires at meter TB1 (+) and TB1 (-), in addition to the internal self-resetting fuse; suitable DC-rated components and configuration must be selected/approved before installation. Meter display does not prove heater power or zero-voltage isolation.",
     "rsStock": "810-3321",
     "rsUrl": "https://uk.rs-online.com/web/p/voltmeters/8103321",
     "unitCostExVatGBP": 55.52
