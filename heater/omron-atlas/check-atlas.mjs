@@ -168,7 +168,12 @@ function testEditorialSeparation(){
  assert.ok(statusDom.document.getElementById("software"),"Software qualification records remain available");
  assert.ok(statusDom.document.querySelectorAll("details.record").length>=5,"Original technical records are preserved");
  assert.ok(statusHtml.includes("Commissioning evidence"),"Safety qualification status remains explicit");
- assert.ok(operator.includes("Before first use"),"Operator checks remain visible");
+ assert.ok(operator.includes("Before use — open electrical protection item"),"Murata input protection hold point remains visible");
+ assert.ok(operator.includes("./electrical/meter-protection/"),"Operator manual links to the current corrective-action notice");
+ const meterNotice=readFileSync(path.join(root,"electrical","meter-protection","index.html"),"utf8");
+ assert.ok(meterNotice.includes("PV1 nor PV2 has an external fuse"),"Both channel inputs are marked unprotected");
+ assert.ok(meterNotice.includes("0.25 A / 300 V time-delay"),"Murata fuse specification is recorded");
+ assert.ok(meterNotice.includes("OPEN until all required evidence"),"Notice is not falsely marked complete");
  assert.ok(programming.toLowerCase().includes("do not"),"Programming precautions remain visible");
  const inner=statusDom.document.querySelector("details.record");
  assert.ok(inner&&inner.querySelector("summary")&&inner.querySelector(".recordbody"));
