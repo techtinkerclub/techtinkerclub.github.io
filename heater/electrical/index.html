@@ -24,7 +24,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text
 <div class="panel"><h2>What do you need to do?</h2><div class="cards">
 <div class="choice"><h3>Understand the system</h3><p>Find the mains, 24 V enable, temperature demand and external heater DC paths.</p><a href="#understand">How it works →</a></div>
 <div class="choice"><h3>Build or rewire</h3><p>Open the electrical diagrams, follow numbered wire connections and identify the correct components.</p><a href="#build">Build references →</a></div>
-<div class="choice"><h3>Diagnose or repair</h3><p>Find the relevant circuit and component from an observed fault or indication.</p><a href="#diagnose">Fault-finding guide →</a></div>
+<div class="choice"><h3>Diagnose or repair</h3><p>Identify the relevant circuit and component from a reported fault or indicator state.</p><a href="#diagnose">Fault-finding guide →</a></div>
 </div></div>
 <nav aria-label="Electrical sections"><a href="#understand">How it works</a><a href="#build">Build and rewire</a><a href="#diagnose">Fault finding</a><a href="#drawings">Drawings &amp; printouts</a></nav>
 <span id="architecture"></span><span id="channels"></span><section class="panel" id="understand">
@@ -41,7 +41,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text
 <li><strong>Identify terminal connections.</strong> The <a href="./distribution/">terminal allocation appendix</a> gives the reference arrangement, conductor positions and installation notes.</li>
 <li><strong>Connect and inspect.</strong> Use the <a href="../wiring-sheets/">searchable From → Via → To schedule</a> (70 listed routes), then complete the inspection and commissioning requirements in the <a href="./distribution/#checks">distribution guide</a> and <a href="../risk-assessment/">risk assessment</a>.</li>
 </ol>
-<div class="notice"><strong>Additional electrical detail required:</strong> the existing 70-route table does not include the Murata input-meter wiring. The meters have internal self-resetting fuses, but no external meter-input fuses are fitted; Murata specifies external 0.25 A / 300 V time-delay supply-wire fusing. Record this protection gap and assess it before electrical approval. <a href="./distribution/#circuits">Meter requirements →</a></div>
+<div class="notice"><strong>Voltmeter input wiring and protection:</strong> the existing 70-route table does not include the Murata input-meter wiring. The Murata meters include internal self-resetting fuses, but their specified external 0.25 A / 300 V time-delay input-wire protection is not documented as fitted. This requires review before live use. Record this protection gap and assess it before electrical approval. <a href="./distribution/#circuits">Meter requirements →</a></div>
 </section>
 <span id="service"></span><section class="panel" id="diagnose"><h2>Diagnose or repair</h2>
 <p>Start with what the controller is doing. Select the relevant documentation instead of searching through several duplicated explanations.</p>
@@ -69,7 +69,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px;text
 <div class="choice"><h3>Connection sheets</h3><p>All 70 numbered From–Via–To routes, with channel filtering on screen.</p><a href="../wiring-sheets/?print=1">Open printable connection sheets →</a></div>
 <div class="choice"><h3>Terminal schedule</h3><p>Reference connection blocks, terminal positions and installation requirements.</p><a href="./distribution/">Open terminal schedule →</a></div>
 </div>
-<details class="notice" style="margin:14px 0"><summary><strong>Archived drawings — D13 (superseded)</strong></summary><p>The previous D13 issue has 11 sheets and predates R1.2 wiring changes. It is retained for historical comparison, <strong>not for new builds or repairs</strong>. <a href="./d13/#viewer">View archive</a> · <a href="./d13/Heating_Rate_Controller_D13_Styled_DRAFT.pdf">D13 PDF</a> · <a href="./d13/Heating_Rate_Controller_D13_Styled_DRAFT.pptx">D13 PowerPoint</a>.</p></details>
+<details class="notice" style="margin:14px 0"><summary><strong>Earlier drawings — D13 (archive)</strong></summary><p>The previous D13 issue has 11 sheets and predates R1.2 wiring changes. It is retained for historical comparison, <strong>not for new builds or repairs</strong>. <a href="./d13/#viewer">View archive</a> · <a href="./d13/Heating_Rate_Controller_D13_Styled_DRAFT.pdf">D13 PDF</a> · <a href="./d13/Heating_Rate_Controller_D13_Styled_DRAFT.pptx">D13 PowerPoint</a>.</p></details>
 <div class="linkgroup"><a class="btn" href="../wiring-sheets/Reference_Wiring_R1_2_From_Via_To.csv" download>Connection routes · CSV</a><a class="btn" href="./distribution/PTFIX_R1_2_Terminal_Allocation.csv" download>Terminal positions · CSV</a><a class="btn" href="./distribution/PTFIX_R1_2_Block_List.csv" download>Distribution block list · CSV</a></div>
 </section>
 <footer>Heating Rate Controller · Electrical documentation R1.2 · <a href="../">Operator manual</a></footer>
