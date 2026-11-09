@@ -3,7 +3,7 @@
  *    node heater/omron-atlas/check-atlas.mjs
  */
 import assert from "node:assert/strict";
-import {readFileSync} from "node:fs";
+import {readFileSync,existsSync} from "node:fs";
 import {JSDOM} from "jsdom";
 import {fileURLToPath} from "node:url";
 import path from "node:path";
@@ -243,6 +243,28 @@ function testGuidedKeypad(){
  assert.ok(!/press down .*run now/i.test(progSteps),"Never silently start heating");
  dom.window.close();
 }
+function testLocalLinks(){
+ const pages=["index.html","guide/index.html","documents/index.html","sop/index.html",
+ "risk-assessment/index.html","omron-programming/index.html","omron-atlas/index.html",
+ "program-tools/index.html","programming-assistant/index.html","components/index.html",
+ "electrical/index.html","electrical/diagrams/index.html","electrical/distribution/index.html",
+ "electrical/reference-wiring/index.html","wiring-sheets/index.html",
+ "electrical/meter-protection/index.html","development/index.html"];
+ for(const relative of pages){
+  const html=readFileSync(path.join(root,relative),"utf8");
+  const doc=new JSDOM(html,{url:"https://techtinker.club/heater/"+relative.replace(/index\\.html$/,"")}).window.document;
+  for(const el of doc.querySelectorAll("a[href],img[src],iframe[src],link[href]")){
+   const value=el.getAttribute("href")||el.getAttribute("src");
+   if(!value||/^(?:#|mailto:|tel:|javascript:|data:|https?:\/\/)/i.test(value))continue;
+   const url=new URL(value,"https://techtinker.club/heater/"+relative.replace(/index\\.html$/,""));
+   if(url.origin!=="https://techtinker.club"||!url.pathname.startsWith("/heater/"))continue;
+   let target=url.pathname.slice("/heater/".length);
+   if(target.endsWith("/"))target+="index.html";
+   const found=existsSync(path.join(root,target))||existsSync(path.join(root,target+".html"));
+   assert.ok(found,"Broken local document or asset in "+relative+": "+value+" -> "+target);
+  }
+ }
+}
 function testCustomerPresentation(){
  const equipment=page(path.join(root,"guide","index.html"),"https://techtinker.club/heater/guide/");
  const documents=page(path.join(root,"documents","index.html"),"https://techtinker.club/heater/documents/");
@@ -269,5 +291,5 @@ function testCustomerPresentation(){
  assert.ok(!guide.includes("the specified model for both channels"),"Obsolete model suffix claim removed");
  assert.ok(guide.includes("E5CC-TQX3A5M-003"),"Second channel reference model recorded");
 }
-const total=testAtlas();testOperator();testProgrammingAndElectricalLinks();testEditorialSeparation();testQuickStartAndSearch();testGuidedKeypad();testCustomerPresentation();
+const total=testAtlas();testOperator();testProgrammingAndElectricalLinks();testEditorialSeparation();testQuickStartAndSearch();testGuidedKeypad();testCustomerPresentation();testLocalLinks();
 console.log("PASS: "+total+" Omron atlas entries, model filters, MODE navigation, input choices, search, electrical tabs, deep links, and cross-page references.");
