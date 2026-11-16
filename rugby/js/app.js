@@ -4,8 +4,8 @@ import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,d
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.4.9';
 import { pitchGeometry, trainingField } from './pitch.js?v=0.9.0';
-import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.9.0';
-import {normaliseAge,setupValues,setupAge,prepareSetup} from './setup.js?v=0.9.1';
+import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.4';
+import {normaliseAge,setupValues,setupAge,prepareSetup} from './setup.js?v=0.12.4';
 import { placePoint, gridStep, loadGridPrefs, saveGridPrefs } from './grid.js?v=0.4.2';
 import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './rotation.js?v=0.3.3';
 import { removeObject, isEditingKeyTarget } from './object-edit.js?v=0.3.3';
@@ -101,10 +101,10 @@ function updateResizeHelp(l,w){
  const help=$('resizeModeHelp'),fit=$('fitArrangement'),physical=$('resizeMode').value==='physical';
  fit.hidden=true;help.style.color='';
  if(!physical){help.textContent='Fits all positions and movement paths proportionally to the new pitch. Player and equipment sizes stay the same.';return}
- help.textContent='Keeps real-world distances, centred on the pitch. Objects and paths must fit inside the new boundary.';
+ help.textContent='Keeps real-world positions measured from the top-left corner. If needed, slides the whole arrangement together to fit without changing distances.';
  if(!Number.isFinite(l)||!Number.isFinite(w)||l<5||l>100||w<5||w>70||l===drill.length&&w===drill.width)return;
  const result=resizeDrill(drill,l,w,'physical');
- if(!result.ok){help.textContent=result.message;help.style.color='#ffc28d';fit.hidden=false}
+ if(!result.ok){help.textContent=result.message;help.style.color='#ffc28d';fit.hidden=false}else if(result.translation&&Math.hypot(result.translation.x,result.translation.y)>1e-6){help.textContent='All distances preserved. The whole arrangement will shift '+Math.abs(result.translation.x).toFixed(2)+' m '+(result.translation.x<0?'left':'right')+' and '+Math.abs(result.translation.y).toFixed(2)+' m '+(result.translation.y<0?'up':'down')+' to fit.'}
 }
 $('fitArrangement').onclick=()=>{$('resizeMode').value='relative';setupChanged();$('applyPitchSettings').focus();note('Scale arrangement selected. Apply settings to fit the drill to the new pitch.')};
 function previewSetup(){
@@ -137,7 +137,7 @@ $('setupForm').onsubmit=e=>{
  const out=prepareSetup(drill,readSetup(),uid);
  if(!out.ok){setupStatus(out.message,'error');updateResizeHelp(Number($('length').value),Number($('width').value));note(out.message);return}
  drill=out.drill;pendingInsert=null;setupPending=false;changed();refresh();
- const msg='Applied to '+drill.frames.length+' steps.'+(out.added||out.removed?' Generated marker instances: +'+out.added+' / −'+out.removed+'.':'')+' Undo restores previous settings.';
+ const msg='Applied to '+drill.frames.length+' steps.'+(out.translation?(Math.hypot(out.translation.x,out.translation.y)>1e-6?' All distances preserved; arrangement shifted together to fit.':' Original metre positions preserved.'):'')+(out.added||out.removed?' Generated marker instances: +'+out.added+' / −'+out.removed+'.':'')+' Undo restores previous settings.';
  setupStatus(msg);note(msg);
 };
 $('revertSetup').onclick=()=>{syncSetup();note('Unapplied settings discarded.')};
