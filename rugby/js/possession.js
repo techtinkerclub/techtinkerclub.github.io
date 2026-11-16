@@ -93,7 +93,7 @@ export function ballMovement(old,next,ball,g,events=null){
  const t=next.timing?.[ball.id]||{start:0,end:100};
  const start=from?carriedPose(a,objectPose(old,next,from.id,t.start/100,g,events),g):a;
  const end=to?carriedPose(ball,objectPose(old,next,to.id,t.end/100,g,events),g):ball;
- return {start,end,pass:!!(from&&to)&&ball.transferKind!=='turnover',turnover:!!to&&ball.transferKind==='turnover',presentation:ball.transferKind==='presentation'&&!to,from,to,timing:t};
+ return {start,end,pass:!!(from&&to)&&!['turnover','set','handover','throw'].includes(ball.transferKind),turnover:!!to&&ball.transferKind==='turnover',instant:['set','handover'].includes(ball.transferKind),presentation:ball.transferKind==='presentation'&&!to,from,to,timing:t};
 }
 export function movementFor(old,next,o,g){
  if(!old)return null;
@@ -110,7 +110,7 @@ export function ballPose(old,next,ball,p,g,events=null){
   return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g,lateral(a)+(lateral(ball)-lateral(a))*eased);
  }
  const m=ballMovement(old,next,ball,g,events),t=m.timing;
- if(m.turnover){if(p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g);return from?carriedPose(a,objectPose(old,next,from.id,p,g,events),g):{...a}}
+ if(m.turnover||m.instant){if(p*100>=t.end)return to?carriedPose(ball,objectPose(old,next,to.id,p,g,events),g):{...ball};return from?carriedPose(a,objectPose(old,next,from.id,p,g,events),g):{...a}}
  if(from&&p*100<=t.start)return carriedPose(a,objectPose(old,next,from.id,p,g,events),g);
  if(to&&p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g);
  const q=clamp((p*100-t.start)/Math.max(1,t.end-t.start),0,1);
@@ -147,13 +147,13 @@ export function transitionObjects(old,next,p,g){
 export function contactTarget(frame,moving,position,g,radius=32){
  if(!moving)return null;
  const isBall=moving.type==='ball';
- if(isBall&&(carrier(frame,moving)||moving.groundState==='presented'))return null;
+ if(isBall&&(carrier(frame,moving)||['presented','grounded'].includes(moving.groundState)))return null;
  if(!isBall&&(!canCarry(moving)||frame.objects.some(o=>o.type==='ball'&&o.ownerId===moving.id)))return null;
  const p=g.toView(position.x,position.y);
  let best=null,distance=radius;
  for(const o of frame.objects){
   if(o.id===moving.id)continue;
-  if(isBall?(!canCarry(o)||frame.objects.some(b=>b.type==='ball'&&b.ownerId===o.id)):(o.type!=='ball'||!!carrier(frame,o)||o.groundState==='presented'))continue;
+  if(isBall?(!canCarry(o)||frame.objects.some(b=>b.type==='ball'&&b.ownerId===o.id)):(o.type!=='ball'||!!carrier(frame,o)||['presented','grounded'].includes(o.groundState)))continue;
   const v=g.toView(o.x,o.y),d=Math.hypot(p.x-v.x,p.y-v.y);
   if(d<distance){distance=d;best=isBall?{ballId:moving.id,playerId:o.id}:{ballId:o.id,playerId:moving.id}}
  }

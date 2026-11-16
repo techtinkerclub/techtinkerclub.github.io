@@ -8140,6 +8140,4769 @@
           "notes": "D2 hands the shield to D3 for the next repetition."
         }
       ]
+    },
+    {
+      "version": 1,
+      "id": "seed-059",
+      "title": "U10 · Scrum",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Set piece",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of scrum and the roles involved.",
+      "safety": "Schematic walk-through only. Coach/referee controls engagement. Use trained players; no simulated force, collapse or live technique instruction. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Coach/referee controls engagement. Use trained players; no simulated force, collapse or live technique instruction.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/19-scrum/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 460,
+              "y": 250,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 430,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 545,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 660,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 200,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 430,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "d10",
+              "type": "defender",
+              "label": "D10",
+              "x": 660,
+              "y": 210,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Set packs",
+          "seconds": 1.1,
+          "notes": "Select the nearest eligible players for the packs. Other players remain behind their required offside lines. 3 per side · no push; feeding hooker only strikes; scrum-half passes away.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 330.10612244897953,
+              "y": 250,
+              "rot": 90
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 406.044081632653,
+              "y": 275.96285714285716,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 459.99999999999994,
+              "y": 275.96285714285716,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 513.9559183673468,
+              "y": 275.96285714285716,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 406.044081632653,
+              "y": 224.03714285714287,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 459.99999999999994,
+              "y": 224.03714285714287,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 513.9559183673468,
+              "y": 224.03714285714287,
+              "rot": 180
+            },
+            {
+              "id": "d10",
+              "type": "defender",
+              "label": "D10",
+              "x": 565.9134693877552,
+              "y": 206.06285714285718,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 354.08653061224487,
+              "y": 257.3228571428572,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 85,
+              "end": 90
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-scrum",
+            "kind": "scrum",
+            "age": 10,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "otherHalf": "d10",
+              "own": [
+                "a3",
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        },
+        {
+          "name": "Crouch · bind · set",
+          "seconds": 1.6,
+          "notes": "Schematic referee-controlled engagement; no pushing in U10–U12. Stop if unsafe.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 330.10612244897953,
+              "y": 250,
+              "rot": 90
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 406.044081632653,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 459.99999999999994,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 513.9559183673468,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 406.044081632653,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 459.99999999999994,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 513.9559183673468,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d10",
+              "type": "defender",
+              "label": "D10",
+              "x": 565.9134693877552,
+              "y": 222.04000000000002,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 354.08653061224487,
+              "y": 257.3228571428572,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "guide-scrum-formation",
+              "type": "scrum",
+              "label": "Crouch · bind · set",
+              "x": 459.99999999999994,
+              "y": 250,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a3",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "a4",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "a5",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d1",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d2",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d3",
+                  "pose": "crouched"
+                }
+              ]
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "guide": {
+            "id": "guide-scrum",
+            "kind": "scrum",
+            "age": 10,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "otherHalf": "d10",
+              "own": [
+                "a3",
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        },
+        {
+          "name": "Feed into tunnel",
+          "seconds": 1.6,
+          "notes": "Feeding scrum-half introduces the ball into the tunnel. U10: only feeding hooker strikes.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 330.10612244897953,
+              "y": 250,
+              "rot": 90
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 406.044081632653,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 459.99999999999994,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 513.9559183673468,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 406.044081632653,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 459.99999999999994,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 513.9559183673468,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d10",
+              "type": "defender",
+              "label": "D10",
+              "x": 565.9134693877552,
+              "y": 222.04000000000002,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 459.99999999999994,
+              "y": 250,
+              "rot": 0,
+              "transferKind": "feed"
+            },
+            {
+              "id": "guide-scrum-formation",
+              "type": "scrum",
+              "label": "Feed into tunnel",
+              "x": 459.99999999999994,
+              "y": 250,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a3",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "a4",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "a5",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d1",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d2",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d3",
+                  "pose": "crouched"
+                }
+              ]
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-scrum",
+            "kind": "scrum",
+            "age": 10,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "otherHalf": "d10",
+              "own": [
+                "a3",
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        },
+        {
+          "name": "Ball available",
+          "seconds": 1.6,
+          "notes": "Ball reaches the rear; designated scrum-half is ready to play it.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 424.029387755102,
+              "y": 289.9428571428572,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 406.044081632653,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 459.99999999999994,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 513.9559183673468,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 406.044081632653,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 459.99999999999994,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 513.9559183673468,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d10",
+              "type": "defender",
+              "label": "D10",
+              "x": 565.9134693877552,
+              "y": 222.04000000000002,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 459.99999999999994,
+              "y": 281.95428571428573,
+              "rot": 0,
+              "transferKind": "feed"
+            },
+            {
+              "id": "guide-scrum-formation",
+              "type": "scrum",
+              "label": "Ball available",
+              "x": 459.99999999999994,
+              "y": 250,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a3",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "a4",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "a5",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d1",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d2",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d3",
+                  "pose": "crouched"
+                }
+              ]
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 20,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-scrum",
+            "kind": "scrum",
+            "age": 10,
+            "side": "A",
+            "stage": 3,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "otherHalf": "d10",
+              "own": [
+                "a3",
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        },
+        {
+          "name": "Scrum-half collects",
+          "seconds": 1.6,
+          "notes": "Scrum-half gathers the available ball.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 424.029387755102,
+              "y": 289.9428571428572,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 406.044081632653,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 459.99999999999994,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 513.9559183673468,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 406.044081632653,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 459.99999999999994,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 513.9559183673468,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d10",
+              "type": "defender",
+              "label": "D10",
+              "x": 565.9134693877552,
+              "y": 222.04000000000002,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 446.0114285714285,
+              "y": 281.95428571428573,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            },
+            {
+              "id": "guide-scrum-formation",
+              "type": "scrum",
+              "label": "Scrum-half collects",
+              "x": 459.99999999999994,
+              "y": 250,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a3",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "a4",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "a5",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d1",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d2",
+                  "pose": "crouched"
+                },
+                {
+                  "id": "d3",
+                  "pose": "crouched"
+                }
+              ]
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 60
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-scrum",
+            "kind": "scrum",
+            "age": 10,
+            "side": "A",
+            "stage": 4,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "otherHalf": "d10",
+              "own": [
+                "a3",
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        },
+        {
+          "name": "Scrum-half distributes",
+          "seconds": 1.6,
+          "notes": "Scrum-half passes away. This preset never depicts a No. 8 pick or an illegal push.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 424.029387755102,
+              "y": 289.9428571428572,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 406.044081632653,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 459.99999999999994,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 513.9559183673468,
+              "y": 259.9857142857143,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 406.044081632653,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 459.99999999999994,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 513.9559183673468,
+              "y": 240.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "d10",
+              "type": "defender",
+              "label": "D10",
+              "x": 565.9134693877552,
+              "y": 222.04000000000002,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 671.9820408163266,
+              "y": 462.0114285714286,
+              "rot": 0,
+              "ownerId": "a2",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-scrum",
+            "kind": "scrum",
+            "age": 10,
+            "side": "A",
+            "stage": 5,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "otherHalf": "d10",
+              "own": [
+                "a3",
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-060",
+      "title": "U10 · Maul",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Contact",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of maul and the roles involved.",
+      "safety": "Schematic walk-through only. All remain on feet and bound; never collapse or pull players out. U10 max two per side; play away if forward movement stops. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "All remain on feet and bound; never collapse or pull players out. U10 max two per side; play away if forward movement stops.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/16-maul/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 460,
+              "y": 250,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 430,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 200,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Carrier held upright",
+          "seconds": 1.1,
+          "notes": "Carrier is held upright; this is not yet a maul. Maximum two players per side; if forward movement stops, play away.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 459.99999999999994,
+              "y": 257.9885714285714,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 430,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 459.99999999999994,
+              "y": 240.68,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 481.98204081632656,
+              "y": 249.99999999999994,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-maul",
+            "kind": "maul",
+            "age": 10,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "support": "a3",
+              "opponent": "d1",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        },
+        {
+          "name": "Support binds · maul formed",
+          "seconds": 1.6,
+          "notes": "A teammate binds, making a maul with an opponent and the carrier. Stay on feet.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 459.99999999999994,
+              "y": 258.6542857142857,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 459.99999999999994,
+              "y": 276.62857142857143,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 459.99999999999994,
+              "y": 241.3457142857143,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 481.98204081632656,
+              "y": 250.6657142857143,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "guide-maul-formation",
+              "type": "maul",
+              "label": "Support binds · maul formed",
+              "x": 459.99999999999994,
+              "y": 250,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a1",
+                  "pose": "bound"
+                },
+                {
+                  "id": "a3",
+                  "pose": "bound"
+                },
+                {
+                  "id": "d1",
+                  "pose": "bound"
+                }
+              ]
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "guide": {
+            "id": "guide-maul",
+            "kind": "maul",
+            "age": 10,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "support": "a3",
+              "opponent": "d1",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        },
+        {
+          "name": "Ball moved to support",
+          "seconds": 1.6,
+          "notes": "Transfer to bound support without a long-arm transfer. No automatic driving or collapse.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 459.99999999999994,
+              "y": 258.6542857142857,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 459.99999999999994,
+              "y": 276.62857142857143,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 459.99999999999994,
+              "y": 241.3457142857143,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 481.98204081632656,
+              "y": 268.64,
+              "rot": 0,
+              "ownerId": "a3",
+              "transferKind": "handover"
+            },
+            {
+              "id": "guide-maul-formation",
+              "type": "maul",
+              "label": "Ball moved to support",
+              "x": 459.99999999999994,
+              "y": 250,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a1",
+                  "pose": "bound"
+                },
+                {
+                  "id": "a3",
+                  "pose": "bound"
+                },
+                {
+                  "id": "d1",
+                  "pose": "bound"
+                }
+              ]
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 55,
+              "end": 60
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-maul",
+            "kind": "maul",
+            "age": 10,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "support": "a3",
+              "opponent": "d1",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        },
+        {
+          "name": "Use it · pass away",
+          "seconds": 1.6,
+          "notes": "Use the ball promptly and play away.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 459.99999999999994,
+              "y": 258.6542857142857,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 459.99999999999994,
+              "y": 276.62857142857143,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 459.99999999999994,
+              "y": 241.3457142857143,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 671.9820408163266,
+              "y": 462.0114285714286,
+              "rot": 0,
+              "ownerId": "a2",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-maul",
+            "kind": "maul",
+            "age": 10,
+            "side": "A",
+            "stage": 3,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "support": "a3",
+              "opponent": "d1",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 460,
+              "y": 250
+            },
+            "target": {
+              "x": 650,
+              "y": 470
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-061",
+      "title": "U14 · Lineout · throw and catch",
+      "age": "U14",
+      "ageMin": 14,
+      "ageMax": 14,
+      "category": "Set piece",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of lineout · throw and catch and the roles involved.",
+      "safety": "Schematic walk-through only. No lifting or opposition contest is animated in this preset. U14 uncontested/no lift; U15 uncontested; U16+ may contest. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "No lifting or opposition contest is animated in this preset. U14 uncontested/no lift; U15 uncontested; U16+ may contest.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/18-touch-quick-throw-and-lineout/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 430,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 545,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 660,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 200,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 430,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Form two lines",
+          "seconds": 1.1,
+          "notes": "Two lines from 5 m to 15 m from touch; other players retire to their applicable offside line. Thrower on touch. Uncontested, no lifting.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 42,
+              "y": 330,
+              "rot": 90
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 251.82857142857145,
+              "y": 349.4166666666667,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 170.22857142857143,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 275.1428571428571,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 380.0571428571428,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 170.22857142857143,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 275.1428571428571,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 380.0571428571428,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 65.98040816326531,
+              "y": 337.3228571428572,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 80,
+              "end": 85
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-lineout",
+            "kind": "lineout",
+            "age": 14,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "support": "a3",
+              "own": [
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 330
+            }
+          }
+        },
+        {
+          "name": "Throw in · catch",
+          "seconds": 1.6,
+          "notes": "Throw to the named catcher. Uncontested and unlifted practice; no early jumping.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 42,
+              "y": 330,
+              "rot": 90
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 251.82857142857145,
+              "y": 349.4166666666667,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 170.22857142857143,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 275.1428571428571,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 380.0571428571428,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 170.22857142857143,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 275.1428571428571,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 380.0571428571428,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 192.21061224489796,
+              "y": 325.89476190476194,
+              "rot": 0,
+              "ownerId": "a3",
+              "transferKind": "throw"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 20,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-lineout",
+            "kind": "lineout",
+            "age": 14,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "support": "a3",
+              "own": [
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 330
+            }
+          }
+        },
+        {
+          "name": "Secure ball on feet",
+          "seconds": 1.6,
+          "notes": "Catcher is on feet and balanced; no airborne contact.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 42,
+              "y": 330,
+              "rot": 90
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 251.82857142857145,
+              "y": 349.4166666666667,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 170.22857142857143,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 275.1428571428571,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 380.0571428571428,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 170.22857142857143,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 275.1428571428571,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 380.0571428571428,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 192.21061224489796,
+              "y": 325.89476190476194,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "guide": {
+            "id": "guide-lineout",
+            "kind": "lineout",
+            "age": 14,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "support": "a3",
+              "own": [
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 330
+            }
+          }
+        },
+        {
+          "name": "Distribute",
+          "seconds": 1.6,
+          "notes": "Distribute to the nominated receiver.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 42,
+              "y": 330,
+              "rot": 90
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 251.82857142857145,
+              "y": 349.4166666666667,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 170.22857142857143,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 275.1428571428571,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 380.0571428571428,
+              "y": 333.8833333333333,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 170.22857142857143,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 275.1428571428571,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 380.0571428571428,
+              "y": 326.11666666666673,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 273.810612244898,
+              "y": 341.42809523809524,
+              "rot": 0,
+              "ownerId": "a2",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-lineout",
+            "kind": "lineout",
+            "age": 14,
+            "side": "A",
+            "stage": 3,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "support": "a3",
+              "own": [
+                "a4",
+                "a5"
+              ],
+              "opp": [
+                "d1",
+                "d2",
+                "d3"
+              ]
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 330
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-062",
+      "title": "U10 · Offload to support",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Attack",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of offload to support and the roles involved.",
+      "safety": "Schematic walk-through only. Pass before grounding in this example. Do not use a forward throw; support stays behind the carrier. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Pass before grounding in this example. Do not use a forward throw; support stays behind the carrier.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/14-tackle/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Carrier approaches support",
+          "seconds": 1.1,
+          "notes": "Pass before grounding in this example. Do not use a forward throw; support stays behind the carrier. Pass before grounding in this example. Do not use a forward throw; support stays behind the carrier.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-offload",
+            "kind": "offload",
+            "age": 10,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 420
+            }
+          }
+        },
+        {
+          "name": "Offload to teammate",
+          "seconds": 1.6,
+          "notes": "Offload backwards before going to ground.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 336.9820408163265,
+              "y": 412.0114285714286,
+              "rot": 0,
+              "ownerId": "a2",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-offload",
+            "kind": "offload",
+            "age": 10,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 420
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-063",
+      "title": "U10 · Free pass restart",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Set piece",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of free pass restart and the roles involved.",
+      "safety": "Schematic walk-through only. Age-grade free pass: pass first, then run; retreat distance and touch mark depend on age. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Age-grade free pass: pass first, then run; retreat distance and touch mark depend on age.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/20-penalty-and-free-kick/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Set restart mark",
+          "seconds": 1.1,
+          "notes": "Defenders 7 m back; pass before running. For touch, start 5 m in. Defenders 7 m back; pass before running. For touch, start 5 m in.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 85,
+              "end": 90
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-freepass",
+            "kind": "freepass",
+            "age": 10,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 420
+            }
+          }
+        },
+        {
+          "name": "Pass away",
+          "seconds": 1.6,
+          "notes": "Pass first; then continue open play.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 336.9820408163265,
+              "y": 412.0114285714286,
+              "rot": 0,
+              "ownerId": "a2",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-freepass",
+            "kind": "freepass",
+            "age": 10,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 420
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-064",
+      "title": "U12 · Tap restart · free kick / penalty",
+      "age": "U12",
+      "ageMin": 12,
+      "ageMax": 12,
+      "category": "Set piece",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of tap restart · free kick / penalty and the roles involved.",
+      "safety": "Schematic walk-through only. Retire required distance. Free kick and penalty options differ; use a free kick only where penalties are not introduced. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Retire required distance. Free kick and penalty options differ; use a free kick only where penalties are not introduced.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/20-penalty-and-free-kick/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Set mark",
+          "seconds": 1.1,
+          "notes": "Use age-grade restart variations; verify retreat/receiving options. Use age-grade restart variations; verify retreat/receiving options.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 85,
+              "end": 90
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-tap",
+            "kind": "tap",
+            "age": 12,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 420
+            }
+          }
+        },
+        {
+          "name": "Visible tap",
+          "seconds": 1.6,
+          "notes": "Visible tap represented schematically; ball leaves the hands.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "transferKind": "tap"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 15,
+              "end": 40
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-tap",
+            "kind": "tap",
+            "age": 12,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 420
+            }
+          }
+        },
+        {
+          "name": "Recover ball",
+          "seconds": 1.6,
+          "notes": "Taker recovers the ball after the visible tap.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 60
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-tap",
+            "kind": "tap",
+            "age": 12,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 420
+            }
+          }
+        },
+        {
+          "name": "Pass away",
+          "seconds": 1.6,
+          "notes": "Pass first; then continue open play.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 336.9820408163265,
+              "y": 412.0114285714286,
+              "rot": 0,
+              "ownerId": "a2",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 75
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-tap",
+            "kind": "tap",
+            "age": 12,
+            "side": "A",
+            "stage": 3,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 420
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-065",
+      "title": "U12 · Punt · kick and receive",
+      "age": "U12",
+      "ageMin": 12,
+      "ageMax": 12,
+      "category": "Handling",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of punt · kick and receive and the roles involved.",
+      "safety": "Schematic walk-through only. A schematic kick from hand. Chasers start onside; no contact with airborne receivers. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "A schematic kick from hand. Chasers start onside; no contact with airborne receivers.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/10-offside-and-onside-in-open-play/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Kicker ready",
+          "seconds": 1.1,
+          "notes": "Confirm onside starting positions, kick type and safe receiving space. A schematic kick from hand. Chasers start onside; no contact with airborne receivers.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-punt",
+            "kind": "punt",
+            "age": 12,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Kick in flight",
+          "seconds": 1.6,
+          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 315,
+              "y": 130,
+              "rot": 0,
+              "transferKind": "kick"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 20,
+              "end": 85
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-punt",
+            "kind": "punt",
+            "age": 12,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Receive / collect",
+          "seconds": 1.6,
+          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 293.0179591836735,
+              "y": 137.98857142857142,
+              "rot": 0,
+              "ownerId": "d2",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 40
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-punt",
+            "kind": "punt",
+            "age": 12,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-066",
+      "title": "U12 · Grubber · kick and collect",
+      "age": "U12",
+      "ageMin": 12,
+      "ageMax": 12,
+      "category": "Handling",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of grubber · kick and collect and the roles involved.",
+      "safety": "Schematic walk-through only. Kick from hand; not fly hacking a loose ball. No simulated bounce physics. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Kick from hand; not fly hacking a loose ball. No simulated bounce physics.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/10-offside-and-onside-in-open-play/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Kicker ready",
+          "seconds": 1.1,
+          "notes": "Confirm onside starting positions, kick type and safe receiving space. Kick from hand; not fly hacking a loose ball. No simulated bounce physics.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-grubber",
+            "kind": "grubber",
+            "age": 12,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Low kick along ground",
+          "seconds": 1.6,
+          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 315,
+              "y": 130,
+              "rot": 0,
+              "transferKind": "kick"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 20,
+              "end": 85
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-grubber",
+            "kind": "grubber",
+            "age": 12,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Collect",
+          "seconds": 1.6,
+          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 293.0179591836735,
+              "y": 137.98857142857142,
+              "rot": 0,
+              "ownerId": "d2",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 40
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-grubber",
+            "kind": "grubber",
+            "age": 12,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-067",
+      "title": "U12 · Chip · kick and collect",
+      "age": "U12",
+      "ageMin": 12,
+      "ageMax": 12,
+      "category": "Handling",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of chip · kick and collect and the roles involved.",
+      "safety": "Schematic walk-through only. Kick from hand; keep chasers onside and protect the receiver. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Kick from hand; keep chasers onside and protect the receiver.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/10-offside-and-onside-in-open-play/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Kicker ready",
+          "seconds": 1.1,
+          "notes": "Confirm onside starting positions, kick type and safe receiving space. Kick from hand; keep chasers onside and protect the receiver.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-chip",
+            "kind": "chip",
+            "age": 12,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Chip over defence",
+          "seconds": 1.6,
+          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 315,
+              "y": 130,
+              "rot": 0,
+              "transferKind": "kick"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 20,
+              "end": 85
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-chip",
+            "kind": "chip",
+            "age": 12,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Collect",
+          "seconds": 1.6,
+          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 293.0179591836735,
+              "y": 137.98857142857142,
+              "rot": 0,
+              "ownerId": "d2",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 40
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-chip",
+            "kind": "chip",
+            "age": 12,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-068",
+      "title": "U12 · Cross-field kick",
+      "age": "U12",
+      "ageMin": 12,
+      "ageMax": 12,
+      "category": "Handling",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of cross-field kick and the roles involved.",
+      "safety": "Schematic walk-through only. Schematic flight; coach checks kicking and chasing offside. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Schematic flight; coach checks kicking and chasing offside.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/10-offside-and-onside-in-open-play/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Kicker ready",
+          "seconds": 1.1,
+          "notes": "Confirm onside starting positions, kick type and safe receiving space. Schematic flight; coach checks kicking and chasing offside.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-crosskick",
+            "kind": "crosskick",
+            "age": 12,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Cross-field kick",
+          "seconds": 1.6,
+          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 315,
+              "y": 130,
+              "rot": 0,
+              "transferKind": "kick"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 20,
+              "end": 85
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-crosskick",
+            "kind": "crosskick",
+            "age": 12,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Receive / collect",
+          "seconds": 1.6,
+          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 293.0179591836735,
+              "y": 137.98857142857142,
+              "rot": 0,
+              "ownerId": "d2",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 40
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-crosskick",
+            "kind": "crosskick",
+            "age": 12,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-069",
+      "title": "U14 · Box kick · from hand",
+      "age": "U14",
+      "ageMin": 14,
+      "ageMax": 14,
+      "category": "Handling",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of box kick · from hand and the roles involved.",
+      "safety": "Schematic walk-through only. Schematic kick from hand, not a full breakdown or aerial contest simulation. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Schematic kick from hand, not a full breakdown or aerial contest simulation.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/10-offside-and-onside-in-open-play/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Kicker ready",
+          "seconds": 1.1,
+          "notes": "Confirm onside starting positions, kick type and safe receiving space. Schematic kick from hand, not a full breakdown or aerial contest simulation.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 322.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-boxkick",
+            "kind": "boxkick",
+            "age": 14,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Box kick",
+          "seconds": 1.6,
+          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 315,
+              "y": 130,
+              "rot": 0,
+              "transferKind": "kick"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 20,
+              "end": 85
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-boxkick",
+            "kind": "boxkick",
+            "age": 14,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Receive / collect",
+          "seconds": 1.6,
+          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 293.0179591836735,
+              "y": 137.98857142857142,
+              "rot": 0,
+              "ownerId": "d2",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 40
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-boxkick",
+            "kind": "boxkick",
+            "age": 14,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-070",
+      "title": "U12 · Kick-off / restart kick",
+      "age": "U12",
+      "ageMin": 12,
+      "ageMax": 12,
+      "category": "Set piece",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of kick-off / restart kick and the roles involved.",
+      "safety": "Schematic walk-through only. Use the centre line for kick-off; kicking teammates remain behind the ball. Distance/receiving options vary by age. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "Use the centre line for kick-off; kicking teammates remain behind the ball. Distance/receiving options vary by age.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/12-kick-off-and-restart-kicks/",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Set restart positions",
+          "seconds": 1.1,
+          "notes": "Confirm onside starting positions, kick type and safe receiving space. Use age-grade restart variations; verify retreat/receiving options.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 471.98204081632645,
+              "y": 262.0114285714286,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 85,
+              "end": 90
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-kickoff",
+            "kind": "kickoff",
+            "age": 12,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Drop kick",
+          "seconds": 1.6,
+          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 315,
+              "y": 130,
+              "rot": 0,
+              "transferKind": "kick"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 20,
+              "end": 85
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-kickoff",
+            "kind": "kickoff",
+            "age": 12,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        },
+        {
+          "name": "Receiving team collects",
+          "seconds": 1.6,
+          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 315,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 293.0179591836735,
+              "y": 137.98857142857142,
+              "rot": 0,
+              "ownerId": "d2",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 40
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-kickoff",
+            "kind": "kickoff",
+            "age": 12,
+            "side": "A",
+            "stage": 2,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "d2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 130
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-071",
+      "title": "U10 · Try · ground the ball",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Attack",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of try · ground the ball and the roles involved.",
+      "safety": "Schematic walk-through only. The end boundary is treated as the designated try line for this diagram; no automatic scoring judgement. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "The end boundary is treated as the designated try line for this diagram; no automatic scoring judgement.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/8-scoring",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Approach designated try line",
+          "seconds": 1.1,
+          "notes": "The end boundary is the designated try line for this coaching diagram. The end boundary is treated as the designated try line for this diagram; no automatic scoring judgement.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 60.3,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 221.98204081632656,
+              "y": 52.31142857142857,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-try",
+            "kind": "try",
+            "age": 10,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 330
+            }
+          }
+        },
+        {
+          "name": "Ground the ball",
+          "seconds": 1.6,
+          "notes": "Ground the ball on the line; coach/referee judges the score. No conversion is implied.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 37,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 37,
+              "rot": 0,
+              "transferKind": "presentation",
+              "groundState": "grounded"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 65,
+              "end": 90
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-try",
+            "kind": "try",
+            "age": 10,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 330
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-072",
+      "title": "U14 · Goal kick · attempt",
+      "age": "U14",
+      "ageMin": 14,
+      "ageMax": 14,
+      "category": "Set piece",
+      "length": 60,
+      "width": 35,
+      "objective": "Recognise the stages of goal kick · attempt and the roles involved.",
+      "safety": "Schematic walk-through only. A top-down attempt only; no crossbar, height, points or success judgement. Position the target in line with the intended posts. Qualified age-grade coaching and current regulations required.",
+      "minutes": 8,
+      "players": "Select the required roles; extra players may practise positioning.",
+      "equipment": "Rugby ball, cones",
+      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
+      "coaching": "A top-down attempt only; no crossbar, height, points or success judgement. Position the target in line with the intended posts.",
+      "regression": "Walk through without opposition pressure.",
+      "progression": "Coach-approved conditioned game appropriate to the age grade.",
+      "questions": "Who has the ball? Where should support be? When is this phase over?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby law",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/8-scoring",
+          "kind": "Law"
+        },
+        {
+          "label": "RFU age-grade rules",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law"
+        },
+        {
+          "label": "2026–27 age-grade summary",
+          "url": "https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original schematic demonstration · research-informed",
+      "review": "Draft · qualified coach review required",
+      "frames": [
+        {
+          "name": "Setup",
+          "seconds": 0,
+          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Set place kick",
+          "seconds": 1.1,
+          "notes": "Set up an age-appropriate place kick on the chosen mark. A top-down attempt only; no crossbar, height, points or success judgement. Position the target in line with the intended posts.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 200,
+              "y": 330,
+              "rot": 0,
+              "transferKind": "set"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 85,
+              "end": 90
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-goal",
+            "kind": "goal",
+            "age": 14,
+            "side": "A",
+            "stage": 0,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 330
+            }
+          }
+        },
+        {
+          "name": "Kick towards goal",
+          "seconds": 1.6,
+          "notes": "Goal attempt only: the diagram cannot show clearance of the crossbar or award points.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 315,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 450,
+              "y": 37,
+              "rot": 0,
+              "transferKind": "kick"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 15,
+              "end": 85
+            }
+          },
+          "paths": {},
+          "guide": {
+            "id": "guide-goal",
+            "kind": "goal",
+            "age": 14,
+            "side": "A",
+            "stage": 1,
+            "roles": {
+              "ball": "b",
+              "actor": "a1",
+              "receiver": "a2",
+              "own": [],
+              "opp": []
+            },
+            "anchor": {
+              "x": 200,
+              "y": 330
+            },
+            "target": {
+              "x": 315,
+              "y": 330
+            }
+          }
+        }
+      ]
     }
   ]
 }

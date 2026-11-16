@@ -1,10 +1,11 @@
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.5.3';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.6.0';
-import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.5.3';
+import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.7.0';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
 import {contactType,contactLabels,posesFor,posedShape,cleanContacts} from './contact.js?v=0.6.0';
 import {cleanBreakdowns} from './breakdown.js?v=0.5.3';
+import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.7.0';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
@@ -17,13 +18,13 @@ export function playbackData(d){
   const objects=f.objects.map(o=>{
    if(!o||!Object.hasOwn(types,o.type)||typeof o.id!=='string'||o.id.length>200||['__proto__','prototype','constructor'].includes(o.id)||ids.has(o.id)||!Number.isFinite(o.x)||!Number.isFinite(o.y))throw Error('Invalid object.');
    ids.add(o.id);const q={id:o.id,type:o.type,label:str(o.label,160),x:num(o.x,0,900,450),y:num(o.y,0,540,270),rot:num(o.rot,-360,360,0)};
-   if(o.type==='ball'||isShield(o)){if(typeof o.ownerId==='string')q.ownerId=o.ownerId;if(o.type==='ball'){if(['left','right'].includes(o.carrySide))q.carrySide=o.carrySide;if(['turnover','presentation'].includes(o.transferKind))q.transferKind=o.transferKind;if(['presented','secured'].includes(o.groundState))q.groundState=o.groundState}}
+   if(o.type==='ball'||isShield(o)){if(typeof o.ownerId==='string')q.ownerId=o.ownerId;if(o.type==='ball'){if(['left','right'].includes(o.carrySide))q.carrySide=o.carrySide;if(['turnover','presentation','set','handover','throw','feed','kick','pass','tap'].includes(o.transferKind))q.transferKind=o.transferKind;if(['presented','secured','grounded'].includes(o.groundState))q.groundState=o.groundState}}
    if(contactType(o.type)&&Array.isArray(o.members))q.members=o.members.slice(0,17).filter(m=>m&&typeof m.id==='string').map(m=>({id:m.id,pose:m.pose}));
    if(contactType(o.type)&&o.breakdown&&typeof o.breakdown==='object'){const b=o.breakdown;q.breakdown={phase:b.phase,arrivalSide:b.arrivalSide,carrierId:b.carrierId,tacklerId:b.tacklerId,ballId:b.ballId}}
    const t=f.timing?.[o.id];if(t&&Object.hasOwn(f.timing,o.id)){const start=num(t.start,0,99,0);timing[o.id]={start,end:num(t.end,start+1,100,100)}}
    if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return q;
   });
-  return {name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths};
+  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};cleanGuide(result);return result;
  });
  cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
  return out;
@@ -38,14 +39,16 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  if(old)for(const o of fr.objects){
   const m=movementFor(old,fr,o,g),route=fr.paths?.[o.id];
   if(o.type==='ball'&&m?.turnover){if(p*100>=(fr.timing?.[o.id]?.end??100))changes.push('Turnover');continue}
-  if(o.type==='ball'&&m?.presentation){changes.push('Ball presentation');continue}
+  if(m?.instant)continue;
+  if(o.type==='ball'&&m?.presentation){if(!fr.guide)changes.push('Ball presentation');continue}
   if(!m||(o.type==='ball'?!passes:!runs)||(!Math.hypot(m.start.x-m.end.x,m.start.y-m.end.y)&&!route?.points?.length))continue;
   const ball=o.type==='ball',color=ink?(ball?'#8b5c00':o.type==='defender'?'#a6520e':'#155a91'):(ball?'#ffe994':types[o.type][1]),d=routeSVG(routeSamples(m.start,m.end,route,g));
-  arrows+='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(ink?3.4:3)+'" '+(ball?'stroke-dasharray="7 6" ':'')+'marker-end="url(#arr)" opacity=".95"/>';
+  arrows+='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(ink?3.4:3)+'" '+(ball?(o.transferKind==='kick'?'stroke-dasharray="13 4 3 4" ':'stroke-dasharray="7 6" '):'')+'marker-end="url(#arr)" opacity=".95"/>';
   if(ghosts&&canCarry(o)){const q=g.toView(m.start.x,m.start.y);starts+='<circle cx="'+q.x+'" cy="'+q.y+'" r="13" fill="none" stroke="'+color+'" stroke-width="2" stroke-dasharray="4 3"/>'}
  }
  const order=[...objects.filter(o=>contactType(o.type)),...objects.filter(o=>!contactType(o.type)&&o.type!=='ball'&&!isShield(o)),...objects.filter(isShield),...objects.filter(o=>o.type==='ball')];
- let body=field+arrows+starts+order.map(o=>svgObj(o,g,poses,ink)).join('')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
+ if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
+ let body=field+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.map(o=>svgObj(o,g,poses,ink)).join('')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+g.viewWidth+' '+g.viewHeight+'" width="'+g.viewWidth+'" height="'+g.viewHeight+'" font-family="Arial,sans-serif">'+body+'</svg>',g,index:i,frame:fr};
 }

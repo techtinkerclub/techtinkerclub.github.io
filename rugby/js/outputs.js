@@ -1,5 +1,5 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.6.0';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.7.0';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.6.1';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
@@ -43,7 +43,7 @@ export async function recordDrill(d,opts={},progress=()=>{}){
   ctx.drawImage(im,Math.round((W-w)/2),Math.round(top+(H-top-bottom-h)/2),w,h);
   ctx.font=font(24,true);ctx.fillStyle='#c9f07c';ctx.fillText(fitText(ctx,(scene.index+1)+'. '+scene.frame.name,W-2*pad),pad,H-Math.round(77*unit));
   ctx.fillStyle='#d6e4d6';ctx.font=font(20);
-  const legend=segment.kind==='replay'?'Solid arrows: runs · Dashed arrows: ball movement':segment.runs||segment.passes?'Follow movement and ball position':'Watch the movement without paths';
+  const legend=segment.kind==='replay'?'Solid arrows: runs · Dashed: pass / ball movement · Dash-dot: kick':segment.runs||segment.passes?'Follow movement and ball position':'Watch the movement without paths';
   ctx.fillText(fitText(ctx,scene.frame.notes||legend,W-2*pad),pad,H-Math.round(43*unit));
   const trackY=H-Math.round(17*unit),trackH=Math.max(2,Math.round(5*unit));
   ctx.fillStyle='#526b59';ctx.fillRect(pad,trackY,W-2*pad,trackH);ctx.fillStyle='#c9f07c';ctx.fillRect(pad,trackY,(W-2*pad)*moment.progress,trackH);
@@ -80,7 +80,7 @@ export function printMarkup(raw,opts={}){
  for(let i=0;i<d.frames.length;i+=2){
   const cards=d.frames.slice(i,i+2).map((fr,j)=>{const k=i+j,scene=renderScene(d,{...o,index:k,ink:true,ghosts:true,runs:true,passes:true,labels:true,prefix:'p'+k});
    return '<article class="print-step"><h3>'+String(k+1).padStart(2,'0')+' · '+esc(fr.name)+' <small>'+(k?fr.seconds.toFixed(1)+' s':'Setup')+'</small></h3><div class="print-step-body"><div class="print-diagram">'+scene.svg+'</div><div><h4>What to do</h4><p>'+esc(excerpt(fr.notes,650)||'Follow the positions and movement arrows in the diagram.')+'</p><h4>Coach notes</h4><div class="print-notelines"></div></div></div></article>'}).join('');
-  pages.push('<section class="print-page"><header><div><small>RUGBY COACHING STUDIO · '+age+'</small><h1>'+esc(d.title)+'</h1></div><p>'+d.length+' × '+d.width+' m<br>Page '+(i/2+1)+' / '+Math.ceil(d.frames.length/2)+'</p></header>'+(i===0?'<div class="print-summary"><b>Objective:</b> '+esc(excerpt(d.objective,330)||'See sequence.')+'<br><b>Equipment:</b> '+esc(excerpt(d.equipment,210)||'See setup.')+'<br><b>Safety:</b> '+esc(excerpt(d.safety,330)||'Follow club and age-grade guidance.')+'</div>':'')+'<div class="print-legend"><span> ───➤ Run / movement</span><span> – – ➤ Ball movement</span><span> ◌ Starting position</span></div>'+cards+'<footer>Coach-created diagram · check age-grade rules and safe practice before delivery.</footer></section>');
+  pages.push('<section class="print-page"><header><div><small>RUGBY COACHING STUDIO · '+age+'</small><h1>'+esc(d.title)+'</h1></div><p>'+d.length+' × '+d.width+' m<br>Page '+(i/2+1)+' / '+Math.ceil(d.frames.length/2)+'</p></header>'+(i===0?'<div class="print-summary"><b>Objective:</b> '+esc(excerpt(d.objective,330)||'See sequence.')+'<br><b>Equipment:</b> '+esc(excerpt(d.equipment,210)||'See setup.')+'<br><b>Safety:</b> '+esc(excerpt(d.safety,330)||'Follow club and age-grade guidance.')+'</div>':'')+'<div class="print-legend"><span> ───➤ Run / movement</span><span> – – ➤ Ball movement · – · – Kick</span><span> ◌ Starting position</span></div>'+cards+'<footer>Coach-created diagram · check age-grade rules and safe practice before delivery.</footer></section>');
  }return pages.join('');
 }
 export function printDrill(d,opts={}){document.getElementById('printPack')?.remove();const div=document.createElement('div');div.id='printPack';div.innerHTML=printMarkup(d,opts);document.body.append(div);window.print()}
