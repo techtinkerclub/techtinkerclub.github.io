@@ -1,0 +1,25 @@
+/* Compact setup panel; a single commit footer stays visible when scrolling. */
+.setup-form{display:grid;gap:12px;min-width:0}
+.setup-heading{display:flex;align-items:baseline;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.setup-heading h2{font-size:15px}
+.setup-heading small{font-size:10px}
+.setup-section{display:grid;gap:8px;padding-bottom:11px;border-bottom:1px solid var(--line)}
+.setup-form h3{margin:0;font-size:10px;letter-spacing:1px;color:var(--accent)}
+.setup-form label{display:grid;gap:4px;font-size:11px;color:var(--muted);min-width:0}
+.setup-form input,.setup-form select{width:100%;min-width:0;min-height:32px}
+.setup-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.setup-preview{background:#203b2b;border:1px solid var(--line);border-radius:7px;display:grid;place-items:center;min-height:88px;padding:5px}
+.setup-preview svg{display:block;width:100%;height:104px}
+.setup-advanced{border:1px solid var(--line);border-radius:7px;padding:9px}
+.setup-advanced summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--muted)}
+.setup-advanced[open] summary{margin-bottom:9px}
+.setup-advanced label{margin-top:7px}
+.setup-advanced small,.setup-coaching small{font-size:11px;line-height:1.4;display:block;margin-top:4px}
+.setup-coaching{border:0;padding-bottom:0}
+.setup-actions{position:sticky;bottom:-10px;background:var(--panel);box-shadow:0 -6px 14px #11191660;padding:9px 0 5px;border-top:1px solid var(--line);display:grid;gap:6px;z-index:2}
+.setup-actions .setup-pair{grid-template-columns:1.5fr 1fr;gap:5px}
+.setup-actions button{font-size:12px;padding:7px 4px;white-space:normal}
+#pitchSettingsStatus{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+#pitchSettingsStatus[data-state=pending]{color:var(--accent)}
+#pitchSettingsStatus[data-state=error]{color:var(--orange)}
+#cardEditSetup{margin-left:8px;padding:5px 9px}
