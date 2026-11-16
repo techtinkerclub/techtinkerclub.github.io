@@ -1,0 +1,79 @@
+/* Workflow Edition: editor-only hierarchy, with existing control IDs and interaction model. */
+@media screen {
+.head-actions .command-group,.board-actions .command-group{display:flex;align-items:center;gap:4px;flex:0 0 auto;min-width:0}
+.head-actions .command-group+.command-group,.board-actions .command-group+.command-group{border-left:1px solid var(--line);padding-left:7px}
+.head-actions .command-group:last-of-type{border:0;padding-left:2px}
+.brand small{letter-spacing:.55px}
+.board-actions .command-group .insert-scope{margin:0;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.board-actions #moveScope{max-width:148px;width:auto;min-width:0;padding:5px}
+.board-actions{flex:0 1 auto}
+.stage-heading{flex:1 1 180px}
+.toolbar{position:relative;z-index:4;align-items:center}
+.board-view-menu{position:relative;flex:none;align-self:center}
+.board-view-menu>summary{border:1px solid var(--line);background:var(--panel2);border-radius:7px;cursor:pointer;padding:7px 9px;font-size:12px;white-space:nowrap;color:var(--text);min-height:32px}
+.board-view-menu[open]>summary{border-color:var(--accent);color:var(--accent)}
+.view-menu-panel{position:absolute;right:0;top:calc(100% + 5px);width:min(240px,80vw);max-height:45dvh;overflow:auto;z-index:12;background:var(--panel);border:1px solid #526e59;border-radius:9px;padding:11px;box-shadow:0 8px 24px #0009;display:grid;gap:8px}
+.view-menu-panel h3{margin:4px 0 0;color:var(--muted);font-size:10px;letter-spacing:.7px}
+.view-toggle-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.view-menu-panel .grid-controls{display:flex;flex-wrap:wrap}
+.view-menu-panel #resetLayout{width:100%;text-align:left}
+.tool-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#45574b transparent}
+.tool-section{display:grid;gap:6px;padding:10px 8px;border-bottom:1px solid var(--line)}
+.tool-section>h3{font-size:10px;letter-spacing:.9px;color:var(--accent);margin:0}
+.tool-section .action-grid:empty{display:none}
+.tool-section .action-grid:not(:has(button:not([hidden]))){display:none}
+.tool-section .action-status{white-space:normal;overflow-wrap:anywhere;line-height:1.35;font-size:11px;margin:0}
+.tool-section select{font-size:12px;padding:5px;margin:0}
+.tool-section select[hidden]{display:none!important}
+.tool-section .insert-scope{margin:0}
+#palette{margin:2px 0 0}
+#palette>.group{margin:0 0 9px}
+#palette>.group:last-child{margin-bottom:0}
+#palette h4{font-size:11px;margin:0 0 5px;font-weight:550;color:var(--muted)}
+.sidebar .palette button,.tool-section .action-grid button{font-size:11px;min-height:43px}
+.tool-section>small,.legacy-hint{font-size:10px;line-height:1.45}
+.tool-details>summary{font-size:11px;font-weight:600;color:var(--muted);cursor:pointer}
+.tool-details[open]>summary{margin-bottom:7px}
+.tool-details .auto-attach{margin:4px 0;white-space:normal}
+#legacyPalette{margin-top:6px}
+.legacy-hint{grid-column:1/-1}
+.phase-launch{grid-template-columns:1fr}
+#rugbyPalette{grid-template-columns:1fr}
+#paneStep #breakdownDock,#paneStep #gameDock{max-height:none;overflow:visible;border:1px solid var(--line);border-radius:8px;margin:0 0 12px;padding:10px}
+#paneStep #breakdownDock #arrivalList{max-height:160px}
+#paneStep #breakdownDock .breakdown-heading button{white-space:normal;max-width:100px}
+#gameNav[hidden],body.presentation-mode #gameNav{display:none!important}
+.sequence-group{border-left:1px solid var(--line);padding-left:9px}
+#deleteStep{color:#e8ac9f}
+#paneObject #shieldTools{margin:12px 0 0;background:transparent;border:0;border-top:1px solid var(--line);border-radius:0;padding:12px 0 0}
+#paneObject #extendTools{margin:12px 0 0}
+#paneObject #contactMembers{max-height:none}
+#paneObject #contactMembers label:has(select){display:grid;align-items:start}
+#paneObject #contactMembers select{width:100%}
+#shareDialog .output-heading{margin:15px 0 6px;color:var(--accent);font-size:11px}
+#shareDialog .share-actions{margin:7px 0;gap:7px}
+#shareDialog .share-actions>button{text-align:left}
+#shareDialog .output-movie{border:1px solid var(--line);border-radius:7px;padding:8px}
+#shareDialog .output-movie summary{cursor:pointer;color:var(--muted);font-size:12px}
+#shareDialog .output-movie[open] summary{margin-bottom:8px}
+#shareDialog .share-options{margin:8px 0}
+body.presentation-mode .sequence-group{display:none}
+}
+@media screen and (max-width:1100px){
+.board-actions .command-group+.command-group{padding-left:4px}
+.board-actions .command-group .insert-scope{font-size:10px}
+.board-actions #moveScope{max-width:130px}
+}
+@media screen and (max-width:760px){
+.head-actions .command-group{flex-shrink:0}
+.head-actions .command-group+.command-group{padding-left:5px}
+.head-actions button{font-size:11px}
+.board-actions{width:100%;justify-content:flex-start}
+.board-actions .command-group{flex-wrap:wrap}
+.board-actions .command-group .insert-scope{max-width:100%}
+.board-view-menu{margin-left:auto}
+.view-menu-panel{max-height:45dvh}
+.tool-section .action-grid button,.sidebar .palette button{min-height:46px}
+.sequence-group{border-left:0;padding-left:0}
+.timeline-top .flex{flex-wrap:wrap}
+}
