@@ -628,7 +628,7 @@
       "players": "Any",
       "equipment": "Cones, optional balls",
       "instructions": "In personal spaces, stand on one leg briefly, reach or receive a gentle pass, then switch. Keep movements comfortable.",
-      "coaching": "Soft knee; steady trunk; eyes up.",
+      "coaching": "Soft knee; steady trunk; eyes up. When practising directional rugby, keep receivers behind the ball and pass sideways or backwards.",
       "regression": "Use both feet.",
       "progression": "Add a small reach or gentle catch.",
       "questions": "What helps you stay steady? Can you catch without putting your other foot down?",
@@ -5767,7 +5767,7 @@
       "players": "8–14",
       "equipment": "4 cones, 1 ball, bibs",
       "instructions": "Play touch in a wide rectangular area. Restart with a free pass after agreed touches. Reward tries created by using unoccupied space.",
-      "coaching": "Spread when appropriate; straighten runs; keep support.",
+      "coaching": "Spread when appropriate; straighten runs; keep support. When practising directional rugby, keep receivers behind the ball and pass sideways or backwards.",
       "regression": "Give attack a player advantage.",
       "progression": "Change width between rounds.",
       "questions": "Where is the widest usable space? Who supports the carrier once they get there?",
@@ -6140,7 +6140,7 @@
         {
           "name": "Scan and shift",
           "seconds": 1.5,
-          "notes": "D1 tracks the ball but keeps a position between the gates.",
+          "notes": "D1 tracks the ball but keeps a position between the gates. The alternative pass targets A2's deeper support position at the decision.",
           "objects": [
             {
               "id": "a1",
@@ -6218,7 +6218,7 @@
                 "playerId": "a1",
                 "anchor": 0.45,
                 "question": "Which gate is less defended?",
-                "cue": "Keep the defender guessing.",
+                "cue": "Keep A2 behind the ball; look at the receiving position when A1 makes the decision.",
                 "options": [
                   {
                     "id": "option-1",
@@ -6234,8 +6234,8 @@
                     "mode": "smooth",
                     "points": [
                       {
-                        "x": 662.16,
-                        "y": 339.90000000000003
+                        "x": 657.672,
+                        "y": 406.538
                       }
                     ]
                   }
@@ -8490,7 +8490,7 @@
         {
           "name": "Close the support gap",
           "seconds": 1.7,
-          "notes": "Support runners adjust depth and remain available.",
+          "notes": "Support runners adjust depth and remain available. The gold alternatives illustrate support behind the carrier at the decision.",
           "objects": [
             {
               "id": "a1",
@@ -8576,7 +8576,7 @@
                 "playerId": "a1",
                 "anchor": 0.45,
                 "question": "Where is support?",
-                "cue": "Do not run ahead of the ball.",
+                "cue": "Stay behind the carrier. The gold arrows show available support at the decision, not where a runner ends the step.",
                 "options": [
                   {
                     "id": "option-1",
@@ -8592,8 +8592,8 @@
                     "mode": "smooth",
                     "points": [
                       {
-                        "x": 327.6,
-                        "y": 307.28000000000003
+                        "x": 269.25600000000003,
+                        "y": 391.85900000000004
                       }
                     ]
                   },
@@ -9174,7 +9174,7 @@
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
       "instructions": "Use touch and a controlled presentation at each stop. Pass away from the mark and rebuild support on either side. No contested contact.",
-      "coaching": "First support acts; others find space; communicate next phase.",
+      "coaching": "First support acts; others find space; communicate next phase. When practising directional rugby, keep receivers behind the ball and pass sideways or backwards.",
       "regression": "Walk through one restart.",
       "progression": "Limit restart time without compromising control.",
       "questions": "Where is the next phase likely to be? Who is collecting and who is getting into position?",
@@ -9219,7 +9219,7 @@
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
       "instructions": "In touch, carrier may pass immediately on agreed light touch if safely balanced; otherwise stop for a free-pass restart. No holding or wrestling.",
-      "coaching": "Support close enough to receive; use two hands; don't force an offload.",
+      "coaching": "Support close enough to receive; use two hands; don't force an offload. When practising directional rugby, keep receivers behind the ball and pass sideways or backwards.",
       "regression": "Allow a pause before touch.",
       "progression": "Add a recovering defender.",
       "questions": "Is the carrier still balanced? Has the receiver called? What if the pass is not available?",
