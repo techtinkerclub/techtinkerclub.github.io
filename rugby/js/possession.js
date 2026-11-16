@@ -65,16 +65,24 @@ function destinationPose(old,next,id){
 // Clean inherited standalone poses in imported/editor data, without changing coordinates,
 // timings, active formations or a pose explicitly selected by the coach.
 export function normaliseRecoveryPoses(frames){
- let count=0;for(let i=1;i<frames.length;i++)for(const player of frames[i].objects){
-  if(!canCarry(player)||formationPose(frames[i],player.id))continue;
-  const pose=destinationPose(frames[i-1],frames[i],player.id);
-  if(player.playerPose&&player.playerPose!==pose){player.playerPose=pose;delete player.posePinned;count++}
+ let count=0;const inherited=new Map();
+ for(let i=1;i<frames.length;i++){
+  const old=frames[i-1],next=frames[i];
+  for(const id of inherited.keys())if(!findObject(next,id))inherited.delete(id);
+  for(const player of next.objects){
+   if(!canCarry(player))continue;
+   if(formationPose(next,player.id)||player.posePinned===true){inherited.delete(player.id);continue}
+   const copied=inherited.get(player.id),raw=player.playerPose;
+   let pose=destinationPose(old,next,player.id);
+   if(copied&&raw===copied)pose='standing';else if(copied)inherited.delete(player.id);
+   if(raw&&raw!==pose){inherited.set(player.id,raw);player.playerPose=pose;delete player.posePinned;count++}
+  }
  }return count;
 }
 function recoveryPlan(old,next,id){
  const a=findObject(old,id),b=findObject(next,id);if(!canCarry(a)||!canCarry(b))return null;
  const prior=authoredPose(old,id),target=destinationPose(old,next,id),moving=travels(a,b,next);
- if(!LOW_POSES.has(prior)||LOW_POSES.has(target)&&target!=='recovering')return null;
+ if(!LOW_POSES.has(prior)||LOW_POSES.has(target)&&target!=='recovering'||b.posePinned===true&&LOW_POSES.has(target))return null;
  // Keep intentional stationary recovery poses. Explicitly pinned floor poses remain authored.
  const t=next.timing?.[id]||{start:0,end:100},start=clamp(t.start/100,0,.99),end=clamp(t.end/100,start+.01,1);
  const pause=Math.min((end-start)*.3,.24/Math.max(.5,Number(next.seconds)||2));
@@ -196,7 +204,7 @@ export function transitionObjects(old,next,p,g){
   return pose;
  }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>!findObject(next,o.id)):[]);
  // Old markers are kept for visual continuity, but may never control a player who has left.
- return result.map(o=>{if(!o.members?.length)return o;const members=o.members.filter(m=>{const recovery=recoveries.get(m.id);return !recovery||p<=recovery.start});return members.length===o.members.length?o:{...o,members}});
+ return result.map(o=>{if(!o.members?.length)return o;const members=o.members.filter(m=>{const recovery=recoveries.get(m.id);return !recovery||p<=recovery.start||m.pose===recovery.target&&formationPose(next,m.id)===m.pose});return members.length===o.members.length?o:{...o,members}});
 }
 
 // Magnetic pickup is an editor gesture, never an inferred turnover in playback.
