@@ -1692,7 +1692,7 @@
         }
       ],
       "attackDirection": "up",
-      "showAttack": true
+      "showAttack": false
     },
     {
       "version": 1,
@@ -1714,7 +1714,7 @@
       "regression": "Increase space between stations.",
       "progression": "Vary distance and timing of feeds.",
       "questions": "",
-      "notes": "",
+      "notes": "One runner uses three independent balls and returns each to its feeder. This is a handling exercise; no match-direction passing is implied.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -1726,13 +1726,699 @@
       "review": "Draft · coach review",
       "frames": [
         {
-          "name": "Set up",
+          "name": "Passing stations",
           "seconds": 0,
-          "notes": "Place feeders at successive stations. Runners travel along a channel, collect and return passes in turn; rotate feeders often.",
-          "objects": [],
-          "timing": {}
+          "notes": "One runner starts behind the first station. Feeders F1–F3 each have a ball and stay outside the running channel.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433.68,
+              "y": 456.40000000000003,
+              "rot": 0
+            },
+            {
+              "id": "f1",
+              "type": "neutral",
+              "label": "F1",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 270
+            },
+            {
+              "id": "b1",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 0,
+              "ownerId": "f1"
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "f2",
+              "type": "neutral",
+              "label": "F2",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 90
+            },
+            {
+              "id": "b2",
+              "type": "ball",
+              "label": "",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 0,
+              "ownerId": "f2"
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 368.4,
+              "y": 237.38,
+              "rot": 0
+            },
+            {
+              "id": "f3",
+              "type": "neutral",
+              "label": "F3",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 270
+            },
+            {
+              "id": "b3",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 0,
+              "ownerId": "f3"
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 116.22,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Receive at station 1",
+          "seconds": 1.5,
+          "notes": "Feeder 1 passes as A1 reaches the station. Runner shows hands and catches without stopping.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433.68,
+              "y": 381.84000000000003,
+              "rot": 0
+            },
+            {
+              "id": "f1",
+              "type": "neutral",
+              "label": "F1",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 270
+            },
+            {
+              "id": "b1",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "pass"
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "f2",
+              "type": "neutral",
+              "label": "F2",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 90
+            },
+            {
+              "id": "b2",
+              "type": "ball",
+              "label": "",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 0,
+              "ownerId": "f2"
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 368.4,
+              "y": 237.38,
+              "rot": 0
+            },
+            {
+              "id": "f3",
+              "type": "neutral",
+              "label": "F3",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 270
+            },
+            {
+              "id": "b3",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 0,
+              "ownerId": "f3"
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 116.22,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "b1": {
+              "start": 48,
+              "end": 84
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Return and continue 1",
+          "seconds": 1.2,
+          "notes": "A1 returns the ball to the same feeder, then advances towards the next station.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433.68,
+              "y": 339.90000000000003,
+              "rot": 0
+            },
+            {
+              "id": "f1",
+              "type": "neutral",
+              "label": "F1",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 270
+            },
+            {
+              "id": "b1",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 0,
+              "ownerId": "f1",
+              "transferKind": "pass"
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "f2",
+              "type": "neutral",
+              "label": "F2",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 90
+            },
+            {
+              "id": "b2",
+              "type": "ball",
+              "label": "",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 0,
+              "ownerId": "f2"
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 368.4,
+              "y": 237.38,
+              "rot": 0
+            },
+            {
+              "id": "f3",
+              "type": "neutral",
+              "label": "F3",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 270
+            },
+            {
+              "id": "b3",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 0,
+              "ownerId": "f3"
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 116.22,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "b1": {
+              "start": 5,
+              "end": 48
+            },
+            "a1": {
+              "start": 45,
+              "end": 100
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Receive at station 2",
+          "seconds": 1.5,
+          "notes": "Feeder 2 passes as A1 reaches the station. Runner shows hands and catches without stopping.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433.68,
+              "y": 256.02,
+              "rot": 0
+            },
+            {
+              "id": "f1",
+              "type": "neutral",
+              "label": "F1",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 270
+            },
+            {
+              "id": "b1",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 0,
+              "ownerId": "f1"
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "f2",
+              "type": "neutral",
+              "label": "F2",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 90
+            },
+            {
+              "id": "b2",
+              "type": "ball",
+              "label": "",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "pass"
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 368.4,
+              "y": 237.38,
+              "rot": 0
+            },
+            {
+              "id": "f3",
+              "type": "neutral",
+              "label": "F3",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 270
+            },
+            {
+              "id": "b3",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 0,
+              "ownerId": "f3"
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 116.22,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "b2": {
+              "start": 48,
+              "end": 84
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Return and continue 2",
+          "seconds": 1.2,
+          "notes": "A1 returns the ball to the same feeder, then advances towards the next station.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433.68,
+              "y": 214.08,
+              "rot": 0
+            },
+            {
+              "id": "f1",
+              "type": "neutral",
+              "label": "F1",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 270
+            },
+            {
+              "id": "b1",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 0,
+              "ownerId": "f1"
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "f2",
+              "type": "neutral",
+              "label": "F2",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 90
+            },
+            {
+              "id": "b2",
+              "type": "ball",
+              "label": "",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 0,
+              "ownerId": "f2",
+              "transferKind": "pass"
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 368.4,
+              "y": 237.38,
+              "rot": 0
+            },
+            {
+              "id": "f3",
+              "type": "neutral",
+              "label": "F3",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 270
+            },
+            {
+              "id": "b3",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 0,
+              "ownerId": "f3"
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 116.22,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "b2": {
+              "start": 5,
+              "end": 48
+            },
+            "a1": {
+              "start": 45,
+              "end": 100
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Receive at station 3",
+          "seconds": 1.5,
+          "notes": "Feeder 3 passes as A1 reaches the station. Runner shows hands and catches without stopping.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433.68,
+              "y": 134.86,
+              "rot": 0
+            },
+            {
+              "id": "f1",
+              "type": "neutral",
+              "label": "F1",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 270
+            },
+            {
+              "id": "b1",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 0,
+              "ownerId": "f1"
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "f2",
+              "type": "neutral",
+              "label": "F2",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 90
+            },
+            {
+              "id": "b2",
+              "type": "ball",
+              "label": "",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 0,
+              "ownerId": "f2"
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 368.4,
+              "y": 237.38,
+              "rot": 0
+            },
+            {
+              "id": "f3",
+              "type": "neutral",
+              "label": "F3",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 270
+            },
+            {
+              "id": "b3",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 0,
+              "ownerId": "a1",
+              "transferKind": "pass"
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 116.22,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "b3": {
+              "start": 48,
+              "end": 84
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Return and continue 3",
+          "seconds": 1.2,
+          "notes": "A1 returns the ball to the same feeder, then advances towards the next station.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433.68,
+              "y": 92.92,
+              "rot": 0
+            },
+            {
+              "id": "f1",
+              "type": "neutral",
+              "label": "F1",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 270
+            },
+            {
+              "id": "b1",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 363.2,
+              "rot": 0,
+              "ownerId": "f1"
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "f2",
+              "type": "neutral",
+              "label": "F2",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 90
+            },
+            {
+              "id": "b2",
+              "type": "ball",
+              "label": "",
+              "x": 229.68,
+              "y": 237.38,
+              "rot": 0,
+              "ownerId": "f2"
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 368.4,
+              "y": 237.38,
+              "rot": 0
+            },
+            {
+              "id": "f3",
+              "type": "neutral",
+              "label": "F3",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 270
+            },
+            {
+              "id": "b3",
+              "type": "ball",
+              "label": "",
+              "x": 629.52,
+              "y": 116.22,
+              "rot": 0,
+              "ownerId": "f3",
+              "transferKind": "pass"
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 515.28,
+              "y": 116.22,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "b3": {
+              "start": 5,
+              "end": 48
+            },
+            "a1": {
+              "start": 45,
+              "end": 100
+            }
+          },
+          "paths": {}
         }
-      ]
+      ],
+      "showAttack": false
     },
     {
       "version": 1,
@@ -1817,8 +2503,8 @@
         },
         {
           "name": "Pass A1 → A2",
-          "seconds": 1.5,
-          "notes": "Receiver shows hands, then passer follows into the vacated space. This is a stationary-direction handling exercise, not an advancing match pass.",
+          "seconds": 1.8,
+          "notes": "Receiver moves a little towards the centre to catch; only after release does the passer follow into the receiver’s vacated position. Maintain spacing; reset after this sequence.",
           "objects": [
             {
               "id": "a1",
@@ -1832,7 +2518,7 @@
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 580.5600000000001,
+              "x": 632.784,
               "y": 270,
               "rot": 0
             },
@@ -1856,40 +2542,33 @@
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 593.3828571428571,
-              "y": 262.0114285714286,
+              "x": 462.8228571428571,
+              "y": 411.13142857142856,
               "rot": 0,
               "ownerId": "a2",
               "transferKind": "pass"
             }
           ],
           "timing": {
-            "b": {
-              "start": 5,
+            "a1": {
+              "start": 55,
+              "end": 100
+            },
+            "a2": {
+              "start": 0,
               "end": 45
             },
-            "a1": {
-              "start": 45,
-              "end": 100
+            "b": {
+              "start": 15,
+              "end": 50
             }
           },
-          "paths": {
-            "a1": {
-              "mode": "smooth",
-              "points": [
-                {
-                  "x": 572.4,
-                  "y": 409.8
-                }
-              ],
-              "follow": true
-            }
-          }
+          "paths": {}
         },
         {
           "name": "Pass A2 → A3",
-          "seconds": 1.5,
-          "notes": "Receiver shows hands, then passer follows into the vacated space. This is a stationary-direction handling exercise, not an advancing match pass.",
+          "seconds": 1.8,
+          "notes": "Receiver moves a little towards the centre to catch; only after release does the passer follow into the receiver’s vacated position. Maintain spacing; reset after this sequence.",
           "objects": [
             {
               "id": "a1",
@@ -1912,7 +2591,7 @@
               "type": "attacker",
               "label": "A3",
               "x": 450,
-              "y": 195.44,
+              "y": 165.61599999999999,
               "rot": 0
             },
             {
@@ -1928,39 +2607,32 @@
               "type": "ball",
               "label": "",
               "x": 462.8228571428571,
-              "y": 187.45142857142855,
+              "y": 411.13142857142856,
               "rot": 0,
               "ownerId": "a3",
               "transferKind": "pass"
             }
           ],
           "timing": {
-            "b": {
-              "start": 5,
+            "a2": {
+              "start": 55,
+              "end": 100
+            },
+            "a3": {
+              "start": 0,
               "end": 45
             },
-            "a2": {
-              "start": 45,
-              "end": 100
+            "b": {
+              "start": 15,
+              "end": 50
             }
           },
-          "paths": {
-            "a2": {
-              "mode": "smooth",
-              "points": [
-                {
-                  "x": 711.12,
-                  "y": 200.1
-                }
-              ],
-              "follow": true
-            }
-          }
+          "paths": {}
         },
         {
           "name": "Pass A3 → A4",
-          "seconds": 1.5,
-          "notes": "Receiver shows hands, then passer follows into the vacated space. This is a stationary-direction handling exercise, not an advancing match pass.",
+          "seconds": 1.8,
+          "notes": "Receiver moves a little towards the centre to catch; only after release does the passer follow into the receiver’s vacated position. Maintain spacing; reset after this sequence.",
           "objects": [
             {
               "id": "a1",
@@ -1990,7 +2662,7 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 319.44,
+              "x": 267.216,
               "y": 270,
               "rot": 0
             },
@@ -1998,47 +2670,40 @@
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 332.2628571428571,
-              "y": 262.0114285714286,
+              "x": 462.8228571428571,
+              "y": 411.13142857142856,
               "rot": 0,
               "ownerId": "a4",
               "transferKind": "pass"
             }
           ],
           "timing": {
-            "b": {
-              "start": 5,
+            "a3": {
+              "start": 55,
+              "end": 100
+            },
+            "a4": {
+              "start": 0,
               "end": 45
             },
-            "a3": {
-              "start": 45,
-              "end": 100
+            "b": {
+              "start": 15,
+              "end": 50
             }
           },
-          "paths": {
-            "a3": {
-              "mode": "smooth",
-              "points": [
-                {
-                  "x": 327.6,
-                  "y": 139.52
-                }
-              ],
-              "follow": true
-            }
-          }
+          "paths": {}
         },
         {
           "name": "Pass A4 → A1",
-          "seconds": 1.5,
-          "notes": "Receiver shows hands, then passer follows into the vacated space. This is a stationary-direction handling exercise, not an advancing match pass.",
+          "seconds": 1.8,
+          "notes": "Receiver moves a little towards the centre to catch; only after release does the passer follow into the receiver’s vacated position. Maintain spacing; reset after this sequence.",
           "objects": [
             {
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 450,
-              "y": 344.56,
+              "x": 632.784,
+              "y": 270,
               "rot": 0
             },
             {
@@ -2070,38 +2735,31 @@
               "type": "ball",
               "label": "",
               "x": 462.8228571428571,
-              "y": 336.5714285714286,
+              "y": 411.13142857142856,
               "rot": 0,
               "ownerId": "a1",
               "transferKind": "pass"
             }
           ],
           "timing": {
-            "b": {
-              "start": 5,
+            "a4": {
+              "start": 55,
+              "end": 100
+            },
+            "a1": {
+              "start": 0,
               "end": 45
             },
-            "a4": {
-              "start": 45,
-              "end": 100
+            "b": {
+              "start": 15,
+              "end": 50
             }
           },
-          "paths": {
-            "a4": {
-              "mode": "smooth",
-              "points": [
-                {
-                  "x": 205.2,
-                  "y": 339.90000000000003
-                }
-              ],
-              "follow": true
-            }
-          }
+          "paths": {}
         }
       ],
       "attackDirection": "up",
-      "showAttack": true
+      "showAttack": false
     },
     {
       "version": 1,
@@ -18091,7 +18749,7 @@
       "regression": "Walk through positions without contact.",
       "progression": "Use a coach-approved age-grade contact progression.",
       "questions": "Where is the space? Is support available for a safe backwards offload? When should the carrier secure the ball instead?",
-      "notes": "Purple diamonds and dotted alternatives are discussion annotations, not alternative animated outcomes. The main sequence demonstrates a tackle and recycle; do not force an offload.",
+      "notes": "Gold decision diamonds and alternative routes are discussion annotations, not alternative animated outcomes. The main sequence demonstrates a tackle and recycle; do not force an offload.",
       "links": [
         {
           "label": "World Rugby Law 14 – Tackle",
@@ -19329,22 +19987,10 @@
                 "options": [
                   {
                     "id": "option-1",
-                    "label": "Demonstrated route",
+                    "label": "Continue to the demonstrated inside pass",
                     "kind": "main",
                     "mode": "smooth",
                     "points": []
-                  },
-                  {
-                    "id": "option-2",
-                    "label": "Inside A2",
-                    "kind": "pass",
-                    "mode": "smooth",
-                    "points": [
-                      {
-                        "x": 327.6,
-                        "y": 330.58
-                      }
-                    ]
                   },
                   {
                     "id": "option-3",
@@ -23556,7 +24202,7 @@
         {
           "name": "Compare entry routes",
           "seconds": 1.6,
-          "notes": "D2 approaches from own side; the dotted comparison is not a permitted route. Do not rehearse side entry physically.",
+          "notes": "D2 approaches from own side; the gold alternative is not a permitted route. Do not rehearse side entry physically.",
           "objects": [
             {
               "id": "a1",
