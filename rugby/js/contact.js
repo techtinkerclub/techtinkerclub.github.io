@@ -67,6 +67,6 @@ export function posedShape(o,pose,normal,color){
 export function contactLabels(objects,g,escape,extra=[]){
  const labels=[...objects.filter(o=>contactType(o.type)).map(o=>({text:String(o.label||'').replace(/ marker$/i,'').trim()||CONTACTS[o.type].title,color:CONTACTS[o.type].color})),...extra.map(text=>({text,color:'#ffe994'}))];
  if(!labels.length)return '';
- const max=Math.max(7,Math.floor((g.viewWidth-18)/6.3)),full=labels.map(x=>x.text).join(' · '),text=full.length>max?full.slice(0,max-1)+'…':full,w=Math.min(g.viewWidth-10,Math.max(66,text.length*6.1+18));
- return '<g pointer-events="none" class="contact-caption"><rect x="'+((g.viewWidth-w)/2)+'" y="3" width="'+w+'" height="17" rx="4" fill="#172820" stroke="'+labels[0].color+'" stroke-width=".9"/><text x="'+(g.viewWidth/2)+'" y="15" text-anchor="middle" font-size="10.5" font-weight="700" fill="'+labels[0].color+'">'+escape(text)+'</text></g>';
+ const max=Math.max(7,Math.floor((g.viewWidth-24)/8.8)),full=labels.map(x=>x.text).join(' · '),text=full.length>max?full.slice(0,max-1)+'…':full,w=Math.min(g.viewWidth-10,Math.max(84,text.length*8.8+26));
+ return '<g pointer-events="none" class="contact-caption"><rect x="'+((g.viewWidth-w)/2)+'" y="3" width="'+w+'" height="24" rx="5" fill="#172820" stroke="'+labels[0].color+'" stroke-width=".9"/><text x="'+(g.viewWidth/2)+'" y="20" text-anchor="middle" font-size="15" font-weight="700" fill="'+labels[0].color+'">'+escape(text)+'</text></g>';
 }
