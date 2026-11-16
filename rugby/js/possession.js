@@ -49,10 +49,59 @@ export function syncPossession(frames,g){
 export function frameObjects(frame,g){
  return frame.objects.map(o=>o.type==='ball'?carriedPose(o,carrier(frame,o),g):isShield(o)?shieldPose(o,carrier(frame,o),g):o);
 }
+// Resolve authored formations before standalone player poses. A departing player must
+// regain their feet before translating; do not let the retired marker override that pose.
+const LOW_POSES=new Set(['grounded','tackling','kneeling','recovering','crouched','bound']);
+const formationPose=(frame,id)=>{for(const marker of frame?.objects||[]){const m=marker.members?.find(m=>m.id===id);if(m)return m.pose;if(marker.type==='donut'&&['impact','down'].includes(marker.donutState)&&marker.donutTacklerId===id)return 'tackling'}return null};
+const authoredPose=(frame,id)=>formationPose(frame,id)||findObject(frame,id)?.playerPose||'standing';
+const travels=(a,b,next)=>!!a&&!!b&&(Math.hypot(b.x-a.x,b.y-a.y)>1e-5||!!next.paths?.[b.id]?.points?.length);
+function destinationPose(old,next,id){
+ const a=findObject(old,id),b=findObject(next,id),formed=formationPose(next,id);
+ if(formed)return formed;
+ const current=b?.playerPose||'standing',prior=authoredPose(old,id);
+ if(b?.posePinned!==true&&travels(a,b,next)&&LOW_POSES.has(prior)&&(current===prior||current==='recovering'))return 'standing';
+ return current;
+}
+// Clean inherited standalone poses in imported/editor data, without changing coordinates,
+// timings, active formations or a pose explicitly selected by the coach.
+export function normaliseRecoveryPoses(frames){
+ let count=0;for(let i=1;i<frames.length;i++)for(const player of frames[i].objects){
+  if(!canCarry(player)||formationPose(frames[i],player.id))continue;
+  const pose=destinationPose(frames[i-1],frames[i],player.id);
+  if(player.playerPose&&player.playerPose!==pose){player.playerPose=pose;delete player.posePinned;count++}
+ }return count;
+}
+function recoveryPlan(old,next,id){
+ const a=findObject(old,id),b=findObject(next,id);if(!canCarry(a)||!canCarry(b))return null;
+ const prior=authoredPose(old,id),target=destinationPose(old,next,id),moving=travels(a,b,next);
+ if(!LOW_POSES.has(prior)||LOW_POSES.has(target)&&target!=='recovering')return null;
+ // Keep intentional stationary recovery poses. Explicitly pinned floor poses remain authored.
+ const t=next.timing?.[id]||{start:0,end:100},start=clamp(t.start/100,0,.99),end=clamp(t.end/100,start+.01,1);
+ const pause=Math.min((end-start)*.3,.24/Math.max(.5,Number(next.seconds)||2));
+ return {prior,target,start,ready:start+pause,end,moving};
+}
+// If a coach drags a player out of a copied formation in a later step, detach
+// only that player. Moving a whole formation or editing an initial layout is not a release.
+export function releaseMovedPlayer(old,next,id,g){
+ const a=findObject(old,id),b=findObject(next,id);if(!canCarry(a)||!canCarry(b)||!travels(a,b,next))return false;
+ const A=g.toView(a.x,a.y),B=g.toView(b.x,b.y);let released=false;
+ for(const m of next.objects){
+  if(!Array.isArray(m.members))continue;
+  const prev=findObject(old,m.id),member=m.members.find(q=>q.id===id);
+  if(!member||!LOW_POSES.has(member.pose)||!prev?.members?.some(q=>q.id===id&&q.pose===member.pose)||prev.type!==m.type||prev.breakdown?.phase!==m.breakdown?.phase)continue;
+  const P=g.toView(prev.x,prev.y),M=g.toView(m.x,m.y);
+  if(Math.hypot(P.x-M.x,P.y-M.y)>2||Math.hypot(A.x-B.x,A.y-B.y)<32||Math.hypot(B.x-M.x,B.y-M.y)<45)continue;
+  m.members=m.members.filter(q=>q.id!==id);b.playerPose='standing';delete b.posePinned;released=true;
+  // A manually edited formation is no longer an intact guided phase.
+  if(m.breakdown)delete m.breakdown;if(next.guide&&m.id===next.guide.id+'-formation')delete next.guide;
+ }
+ if(!formationPose(next,id)&&!b.posePinned&&LOW_POSES.has(authoredPose(old,id))&&LOW_POSES.has(b.playerPose)){b.playerPose='standing';released=true}
+ return released;
+}
 function rawObjectPose(old,next,id,p,g){
  const a=findObject(old,id),b=findObject(next,id);
  if(!a)return b?{...b}:null;if(!b)return {...a};
- const t=next.timing?.[id]||{start:0,end:100},q=clamp((p*100-t.start)/Math.max(1,t.end-t.start),0,1);
+ const t=next.timing?.[id]||{start:0,end:100},recovery=recoveryPlan(old,next,id),q=recovery?.moving?clamp((p-recovery.ready)/Math.max(.0001,recovery.end-recovery.ready),0,1):clamp((p*100-t.start)/Math.max(1,t.end-t.start),0,1);
  const route=next.paths?.[id],s=sampleRoute(routeSamples(a,b,route,g),q),pos=g.fromView(s.point.x,s.point.y);
  return {...b,...pos,rot:route?.follow&&s.angle!==null&&p*100>=t.start?wrapAngle(s.angle-g.rotation):a.rot+shortestTurn(a.rot,b.rot)*q};
 }
@@ -128,8 +177,9 @@ export function shieldTransition(old,next,item,p,g,events=null){
  return from?shieldPose(a,objectPose(old,next,from.id,p,g,events),g):{...a};
 }
 export function transitionObjects(old,next,p,g){
- const events=tackleImpacts(old,next,g);
- return next.objects.map(o=>{
+ const events=tackleImpacts(old,next,g),recoveries=new Map();
+ for(const o of next.objects){const plan=recoveryPlan(old,next,o.id);if(plan)recoveries.set(o.id,plan)}
+ const result=next.objects.map(o=>{
   const prior=findObject(old,o.id),impact=events.find(e=>e.marker===o.id);
   const switchAt=impact?impact.time:o.breakdown?.phase==='release'?.15:.65;
   if(!prior&&p<1&&!(Array.isArray(o.members)&&p>=(impact?switchAt:.78)))return null;
@@ -137,6 +187,7 @@ export function transitionObjects(old,next,p,g){
   if(isShield(o))return shieldTransition(old,next,o,p,g,events);
   const pose=objectPose(old,next,o.id,p,g,events);
   if(prior&&p<(next.timing?.[o.id]?.end??100)/100){if(prior.playerPose)pose.playerPose=prior.playerPose;else delete pose.playerPose;}
+  const recovery=recoveries.get(o.id);if(recovery)pose.playerPose=p<=recovery.start?recovery.prior:p<recovery.ready?(recovery.prior==='bound'?'standing':'recovering'):recovery.moving?'standing':recovery.target;
   if(Array.isArray(o.members)||Array.isArray(prior?.members)){
    pose.members=p>=switchAt?o.members:prior?.members;
    if(o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')){const arrived=events.filter(e=>e.marker===o.id&&p>=e.time);if(arrived.length||prior?.members?.length){const ready=new Set([...(prior?.members||[]).map(m=>m.id),...arrived.flatMap(e=>e.players)]);pose.members=(o.members||[]).filter(m=>ready.has(m.id)||!events.some(e=>e.marker===o.id&&e.tackler===m.id)&&p>=switchAt);}}
@@ -144,6 +195,8 @@ export function transitionObjects(old,next,p,g){
   }
   return pose;
  }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>!findObject(next,o.id)):[]);
+ // Old markers are kept for visual continuity, but may never control a player who has left.
+ return result.map(o=>{if(!o.members?.length)return o;const members=o.members.filter(m=>{const recovery=recoveries.get(m.id);return !recovery||p<=recovery.start});return members.length===o.members.length?o:{...o,members}});
 }
 
 // Magnetic pickup is an editor gesture, never an inferred turnover in playback.
