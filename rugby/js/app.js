@@ -7,7 +7,7 @@ import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './
 import { removeObject, isEditingKeyTarget } from './object-edit.js?v=0.3.3';
 import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypointOverlay, routeInsertion, insertionHandles } from './routes.js?v=0.4.3';
 import { createHistory } from './history.js?v=0.4.0';
-import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects } from './possession.js?v=0.4.4';
+import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession } from './possession.js?v=0.4.6';
 initWorkspace();
 const SEEDS = await fetch(new URL('../data/drills.json?v=0.4.1', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -20,6 +20,7 @@ const SEEDS = await fetch(new URL('../data/drills.json?v=0.4.1', import.meta.url
 });
 const MAIN_SAMPLE=SEEDS.find(x=>x.title==='2 vs 1 · Draw and pass');MAIN_SAMPLE.frames=sample().frames;MAIN_SAMPLE.frames.forEach((fr,i)=>{fr.objects.find(o=>o.id==='b1').ownerId=i<2?'a1':'a2'});const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game'];const fields=['players','equipment','instructions','coaching','regression','progression','questions','notes'];function enrich(d){d.ageMin=Number.isInteger(d.ageMin)?clamp(d.ageMin,6,16):d.age==='U9'?9:d.age==='U10'?10:d.age==='U11–U12'?11:d.age==='U13–U14'?13:d.age==='U15–U16'?15:6;d.ageMax=Number.isInteger(d.ageMax)?clamp(d.ageMax,d.ageMin,16):d.age==='U6–U8'?8:d.age==='U9'?9:d.age==='U10'?10:d.age==='U11–U12'?12:d.age==='U13–U14'?14:16;d.minutes=clamp(Number(d.minutes)||8,1,120);for(let k of fields)d[k]=String(d[k]??'');d.links=Array.isArray(d.links)?d.links.filter(x=>x&&safeURL(x.url)).slice(0,100).map(x=>({label:String(x.label||x.url).slice(0,200),url:safeURL(x.url),kind:String(x.kind||'Reference').slice(0,80)})):[];d.provenance=String(d.provenance||'Coach-created / imported drill');d.review=String(d.review||'Coach review required');return d}function safeURL(u){try{let v=new URL(u);return ['https:','http:'].includes(v.protocol)?v.href:null}catch{return null}}function freshSeed(s){let d=clone(s);d.id=uid();d.age='Custom range';return enrich(d)}
 const history=createHistory();let routeDrawing=false,routeClickCount=0,ballPicking=null,ballChoiceId=null,showPasses=true;
+let autoAttach=true;try{autoAttach=localStorage.getItem('rugby-auto-attach')!=='off'}catch{}
 const gridPrefs=loadGridPrefs();
 let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,showPaths=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drill.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0),at=i=>drill.frames.slice(1,i+1).reduce((a,x)=>a+x.seconds,0);function note(s){$('status').textContent=s}function changed(record=true){syncPossession(drill.frames,geometry());dirty=true;$('save').textContent='Save drill •';if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){let acc=0;for(let i=1;i<drill.frames.length;i++){const end=acc+drill.frames[i].seconds;if(t<end)return {i,p:(t-acc)/(end-acc)};acc=end}return {i:drill.frames.length-1,p:1}}function tween(t){const g=geometry();if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?transitionObjects(drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
 const geometry=()=>pitchGeometry(drill.length,drill.width,orientation);
@@ -46,11 +47,13 @@ function render(){
  const active=preview===null?objects.find(o=>o.id===selected):null;
  const raw=active&&f().objects.find(o=>o.id===active.id),move=raw&&movementFor(drill.frames[idx-1],f(),raw,g),route=active&&f().paths?.[active.id];
  const pathVisible=active?.type==='ball'?showPasses:showPaths;
+ const magnet=preview===null&&drag?.contact?objects.find(o=>o.id===drag.contact.playerId):null;
+ const magnetOverlay=magnet?(()=>{const p=g.toView(magnet.x,magnet.y);return `<g data-editor-only="true" pointer-events="none"><circle cx="${p.x}" cy="${p.y}" r="32" stroke="#d6f77b" stroke-width="3" stroke-dasharray="5 3" fill="#d6f77b" fill-opacity=".12"/><text x="${p.x}" y="${p.y-40}" fill="#e6ffac" font-size="13" text-anchor="middle" paint-order="stroke" stroke="#20372b" stroke-width="3">Release to attach</text></g>`})():'';
  const handles=pathVisible&&!routeDrawing&&move&&hasMovement(move.start,move.end,route)?insertionHandles(move.start,move.end,route,g):'';
  pitch.innerHTML=trainingField(g,showGrid,gridPrefs.step)+lines+pathHits+[...objects.filter(o=>o.type!=='ball'),...objects.filter(o=>o.type==='ball')].map(o=>{
   const sel=selected===o.id&&preview===null,p=g.toView(o.x,o.y);
   return `<g class="obj" data-id="${esc(o.id)}" transform="translate(${p.x} ${p.y})"><circle r="${o.type==='ball'?14:24}" fill="transparent"/>${sel?'<circle data-editor-only="true" r="25" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 3" fill="none" pointer-events="none"/>':''}<g transform="rotate(${o.rot+g.rotation})">${shape(o.type)}</g>${o.label?`<text y="${o.type==='label'?22:34}" text-anchor="middle" fill="#fff" paint-order="stroke" stroke="#234f38" stroke-width="3" font-size="13" font-weight="600">${esc(o.label)}</text>`:''}</g>`;
- }).join('')+(active&&!routeDrawing&&!ballPicking&&!(active.type==='ball'&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&move&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'');
+ }).join('')+(active&&!routeDrawing&&!ballPicking&&!(active.type==='ball'&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&move&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay;
  updateSelectionTools(active);updateRouteTools();updateBallTools();$('editCurrent').hidden=preview===null;
  $('sceneLabel').textContent=preview===null?`Step ${idx+1} of ${drill.frames.length} · ${f().name}`:drill.frames[locate(preview).i].name;$('narration').textContent=preview===null?f().notes:(drill.frames[locate(preview).i]?.notes||'');$('timeLabel').textContent=`${(preview??at(idx)).toFixed(1)} / ${duration().toFixed(1)} s`;$('scrub').max=Math.max(.01,duration());$('scrub').value=preview??at(idx)}
 function inspector(){let o=f().objects.find(x=>x.id===selected);let disabled=preview!==null?'disabled':'';if(!o){$('objectPanel').innerHTML='<small>Select an object on the pitch to edit its label, rotation and timing.</small>';return}let t=f().timing?.[o.id]||{start:0,end:100};$('objectPanel').innerHTML=`<div class="field"><label>Object: ${esc(types[o.type][0])}</label><input id="objLabel" value="${esc(o.label)}" ${disabled}></div><div class="field"><label>Rotation (degrees)</label><input id="objRot" type="number" min="-360" max="360" value="${o.rot}" ${disabled}><div class="facing-buttons" aria-label="Quick facing directions">${[["↑",0,"up"],["→",90,"right"],["↓",180,"down"],["←",270,"left"]].map(([symbol,a,word])=>`<button type="button" data-facing="${a}" title="Face ${word} on screen" aria-label="Face ${word} on screen" ${disabled}>${symbol}</button>`).join("")}</div><small>Drag the green handle on the pitch to rotate. Hold Shift for 15° steps. Degrees are relative to the pitch.</small></div>${idx>0?`<div class="pair"><div class="field"><label>Start (%)</label><input id="start" type="number" min="0" max="99" value="${t.start}" ${disabled}></div><div class="field"><label>End (%)</label><input id="end" type="number" min="1" max="100" value="${t.end}" ${disabled}></div></div><small>Timing is relative to the transition into this step.</small>`:''}<div class="flex" style="margin-top:9px"><button id="copyObj" ${disabled}>Duplicate</button><button id="delObj" class="danger-action" ${disabled}>Delete object</button></div>`;$('objLabel').oninput=e=>{o.label=e.target.value;changed();render()};$('objRot').onchange=e=>{o.rot=clamp(Number(e.target.value)||0,-360,360);$('objRot').value=o.rot;changed();render();tracks()};for(const button of $('objectPanel').querySelectorAll('[data-facing]'))button.onclick=()=>{o.rot=wrapAngle(Number(button.dataset.facing)-geometry().rotation);$('objRot').value=o.rot;changed();render();tracks()};if(idx>0){function timing(){let s=clamp(Number($('start').value)||0,0,99),e=clamp(Number($('end').value)||1,s+1,100);f().timing[o.id]={start:s,end:e};changed();render();inspector();tracks()}$('start').onchange=timing;$('end').onchange=timing}$('copyObj').onclick=duplicateSelected;$('delObj').onclick=()=>deleteObject('here')}function tracks(){if(!idx){$('tracks').innerHTML='<div style="padding:10px" class="muted">Select a later step to configure independent movement tracks.</div>';return}let old=drill.frames[idx-1];let moving=f().objects.filter(o=>{let a=old.objects.find(x=>x.id===o.id);const m=movementFor(old,f(),o,geometry());return m&&(hasMovement(m.start,m.end,f().paths?.[o.id])||a.rot!==o.rot||a.ownerId!==o.ownerId)});$('tracks').innerHTML=moving.length?moving.map(o=>{let t=f().timing[o.id]||{start:0,end:100};return `<div class="track"><button class="track-name" data-track="${esc(o.id)}" title="Edit movement timing">${esc(o.type==='ball'&&carrier(old,old.objects.find(x=>x.id===o.id))&&carrier(f(),o)&&old.objects.find(x=>x.id===o.id)?.ownerId!==o.ownerId?'Pass → '+(carrier(f(),o).label||'receiver'):o.label||types[o.type][0])}</button><div class="trackbar"><div class="span" style="left:${t.start}%;width:${t.end-t.start}%;background:${types[o.type][1]}">${t.start}–${t.end}%</div></div></div>`}).join(''):'<div style="padding:10px" class="muted">No movement from the previous step. Drag an existing object to a new position.</div>'}$('tracks').addEventListener('click',e=>{const b=e.target.closest('[data-track]');if(!b)return;editMode();selected=b.dataset.track;render();inspector();openInspector('Object')});function refresh(){closeObjectMenu();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);for(let k of ['title','age','category','length','width','objective','safety'])$(k).value=drill[k];$('stepName').value=fr.name;$('stepTime').value=idx?fr.seconds:0;$('stepTime').disabled=!idx;$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;$('save').textContent=dirty?'Save drill •':'Save drill';render();inspector();tracks()}function choose(i){stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){editMode();ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','cone','flag','bag','sausage','ladder'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));f().objects.push(n);selected=n.id;changed();refresh();openInspector('Object')};let groups=[['Players',['attacker','defender','neutral','coach','shield','bagplayer']],['Equipment',['ball','cone','flag','bag','sausage','ladder']],['Contact & markers',['tackle','ruck','maul','scrum','label']]];$('palette').innerHTML=groups.map(([name,ts])=>`<div class="group"><h3>${name}</h3><div class="palette">${ts.map(t=>`<button data-type="${t}"><svg viewBox="-32 -32 64 64" aria-hidden="true">${shape(t)}</svg>${esc(types[t][0])}</button>`).join('')}</div></div>`).join('');$('palette').onclick=e=>{let b=e.target.closest('[data-type]');if(b)add(b.dataset.type)};
@@ -206,7 +209,8 @@ function updateBallTools(){
  if($('ballChoice').innerHTML!==options)$('ballChoice').innerHTML=options;
  $('ballChoice').value=b?.id||'';$('ballChoice').disabled=!enabled||!b||!!ballPicking;$('ballChoice').hidden=balls.length<2;
  $('ballTools').hidden=!(enabled&&b&&(active?.type==='ball'||canCarry(active)||ballPicking));
- const text=ballPicking?'Click the receiving player (Esc to cancel).':owner?'Carried by '+(owner.label||types[owner.type][0]):b?'Ball is free':'Add a rugby ball to begin.';
+ $('autoAttach').checked=autoAttach;$('autoAttach').disabled=!enabled||!!ballPicking;
+ const text=ballPicking?'Click the receiving player (Esc to cancel).':owner?'Carried by '+(owner.label||types[owner.type][0]):b?autoAttach?'Free ball · drop onto a player':'Ball is free':'Add a rugby ball to begin.';
  $('ballStatus').textContent=$('ballSideStatus').textContent=text;
  $('attachBall').disabled=!enabled||!b;$('attachBall').textContent=ballPicking?'Cancel':owner?'Pass to player':'Attach to player';
  $('attachBallSide').disabled=!enabled||!b||!!owner;$('passBallSide').disabled=!enabled||!b||!owner;
@@ -216,6 +220,7 @@ function updateBallTools(){
  $('selectBallSide').disabled=!enabled||!!ballPicking;$('selectBallSideLabel').textContent=b?'Select ball':'Add ball';
  pitch.classList.toggle('picking-ball',!!ballPicking);
 }
+$('autoAttach').onchange=()=>{autoAttach=$('autoAttach').checked;try{localStorage.setItem('rugby-auto-attach',autoAttach?'on':'off')}catch{}render()};
 $('ballChoice').onchange=()=>{ballPicking=null;ballChoiceId=$('ballChoice').value;selected=ballChoiceId;render();inspector();openInspector('Object',false)};
 $('selectBallSide').onclick=()=>{if(!canEditObjects())return;const b=chosenBall();if(!b){add('ball');return}selected=ballChoiceId=b.id;render();inspector();openInspector('Object',false);focusPitch()};
 function beginBallPick(){
@@ -234,14 +239,14 @@ function finishBallPick(targetId){
   if(drill.frames.length>=150){render();note('Maximum of 150 steps reached.');return}
   const n=clone(f());n.name='Pass to '+(target.label||'player');n.seconds=2;n.notes='';n.timing={};n.paths={};drill.frames.splice(idx+1,0,n);idx++;ball=n.objects.find(o=>o.id===b.id);sanitizeRoutes(drill.frames);
  }
- ball.ownerId=targetId;selected=ballChoiceId=ball.id;
+ assignPossession(drill.frames,idx,ball.id,targetId,geometry());selected=ballChoiceId=ball.id;
  if(idx&&from){f().timing[ball.id]={start:35,end:70};if(f().paths)delete f().paths[ball.id]}
  showPasses=true;$('passTrails').classList.add('selected');$('passTrails').setAttribute('aria-pressed','true');
  changed();refresh();focusPitch();note(from?'Pass created. Adjust the ball timing in Object and bend its dashed path.':'Ball attached. It will follow this player when you add a step.');
 }
 function releaseBall(){
  if(!canEditObjects())return;const b=chosenBall(),p=carrier(f(),b);if(!p)return;
- Object.assign(b,carriedPose(b,p,geometry()));delete b.ownerId;
+ assignPossession(drill.frames,idx,b.id,null,geometry());
  if(idx&&drill.frames[idx-1].objects.some(o=>o.id===b.id&&o.ownerId)){f().timing[b.id]={start:99,end:100};if(f().paths)delete f().paths[b.id]}
  selected=ballChoiceId=b.id;changed();refresh();focusPitch();note('Ball released at its current position. You can move it independently.');
 }
@@ -279,9 +284,10 @@ pitch.addEventListener('pointerdown',e=>{
  selected=g.dataset.id;
  const o=f().objects.find(x=>x.id===selected);if(!o)return;
  render();inspector();openInspector('Object');
- if(o.type==='ball'&&o.ownerId){note('Ball attached to its carrier. Release it before moving independently.');e.preventDefault();return}
- const p=point(e);
- drag={id:o.id,kind:'move',pointerId:e.pointerId,dx:o.x-p.x,dy:o.y-p.y,moved:false};
+ // Clicking a carried ball still selects it for passing; dragging it moves its carrier.
+ const owner=o.type==='ball'?carrier(f(),o):null,moving=owner||o,p=point(e);
+ drag={id:moving.id,kind:'move',pointerId:e.pointerId,dx:moving.x-p.x,dy:moving.y-p.y,moved:false,contact:null,origin:viewPoint(e)};
+ if(owner)note('Ball attached to '+(owner.label||'player')+' · drag to move both.');
  pitch.setPointerCapture(e.pointerId);
  e.preventDefault();
 });
@@ -297,8 +303,15 @@ pitch.addEventListener('pointermove',e=>{
   o.rot=angle;
   const box=$('objRot');if(box)box.value=o.rot;
  }else{
-  const p=point(e),{x,y}=placement({x:p.x+drag.dx,y:p.y+drag.dy},e.shiftKey);
-  if(Math.abs(x-o.x)<1e-8&&Math.abs(y-o.y)<1e-8)return;
+  const p=point(e),raw={x:p.x+drag.dx,y:p.y+drag.dy},v=viewPoint(e);
+  if(!drag.moved&&Math.hypot(v.x-drag.origin.x,v.y-drag.origin.y)<3)return;
+  const {x,y}=placement(raw,e.shiftKey);
+  const before=drag.contact;
+  drag.contact=autoAttach&&!e.altKey?(contactTarget(f(),o,raw,geometry())||contactTarget(f(),o,{x,y},geometry())):null;
+  if(Math.abs(x-o.x)<1e-8&&Math.abs(y-o.y)<1e-8){
+   if(JSON.stringify(before)!==JSON.stringify(drag.contact))render();
+   return
+  }
   o.x=x;o.y=y;
  }
  if(!drag.moved)changed(false);
@@ -306,8 +319,26 @@ pitch.addEventListener('pointermove',e=>{
 });
 function finishDrag(e){
  if(!drag||e.pointerId!==drag.pointerId)return;
- const moved=drag.moved;drag=null;
- if(moved){changed();tracks()}
+ const gesture=drag;drag=null;
+ let attached=false;
+ if(e.type==='pointerup'&&gesture.kind==='move'&&gesture.contact&&autoAttach&&!e.altKey){
+  const {ballId,playerId}=gesture.contact,b=f().objects.find(o=>o.id===ballId),player=f().objects.find(o=>o.id===playerId);
+  if(b&&!carrier(f(),b)&&canCarry(player)){
+   // Moving a player to a free ball is a pickup, not a pass.
+   const pickup=gesture.id===playerId;
+   if(idx&&f().paths)delete f().paths[ballId];
+   const n=assignPossession(drill.frames,idx,ballId,playerId,geometry());
+   if(n){
+    if(idx&&drill.frames[idx-1].objects.some(o=>o.id===ballId&&!o.ownerId)){
+     f().timing[ballId]=pickup?{start:99,end:100}:{start:0,end:100};
+    }
+    selected=playerId;ballChoiceId=ballId;attached=true;
+    note('Ball attached to '+(player.label||'player')+' · move either to move both.');
+   }
+  }
+ }
+ if(gesture.moved||attached){changed();render();inspector();tracks()}
+ else if(gesture.contact)render();
 }
 pitch.addEventListener('pointerup',finishDrag);
 pitch.addEventListener('pointercancel',finishDrag);
