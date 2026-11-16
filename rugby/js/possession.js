@@ -4,11 +4,25 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const canCarry=o=>!!o&&['attacker','defender','neutral','coach','shield','bagplayer'].includes(o.type);
 export const findObject=(frame,id)=>frame?.objects.find(o=>o.id===id);
 export const carrier=(frame,ball)=>{const o=ball?.ownerId&&findObject(frame,ball.ownerId);return canCarry(o)?o:null};
-export function carriedPose(ball,player,g){
+export const carrySide=ball=>ball?.carrySide==='left'?'left':'right';
+const lateral=ball=>carrySide(ball)==='left'?-11:11;
+export function carriedPose(ball,player,g,sideOffset=lateral(ball)){
  if(!player)return {...ball};
- // Ball follows the carrier's translation and facing direction.
+ // Relative to the player's facing direction, not the screen. The ball overlaps the front shoulder.
  const p=g.toView(player.x,player.y),a=((Number(player.rot)||0)+g.rotation)*Math.PI/180;
- return {...ball,...g.fromView(p.x+24*Math.cos(a)+16*Math.sin(a),p.y+24*Math.sin(a)-16*Math.cos(a))};
+ return {...ball,...g.fromView(p.x+sideOffset*Math.cos(a)+12*Math.sin(a),p.y+sideOffset*Math.sin(a)-12*Math.cos(a))};
+}
+export function setCarrySide(frames,index,ballId,side,g){
+ const ball=findObject(frames[index],ballId),owner=carrier(frames[index],ball);
+ if(!owner||!['left','right'].includes(side))return 0;
+ const prior=carrySide(ball);if(prior===side)return 0;
+ let count=0;
+ for(let i=index;i<frames.length;i++){
+  const fr=frames[i],b=findObject(fr,ballId),p=carrier(fr,b);
+  if(!p||p.id!==owner.id||carrySide(b)!==prior)break;
+  b.carrySide=side;Object.assign(b,carriedPose(b,p,g));count++;
+ }
+ return count;
 }
 export function syncPossession(frames,g){
  for(const frame of frames)for(const o of frame.objects){
@@ -45,7 +59,11 @@ export function movementFor(old,next,o,g){
 export function ballPose(old,next,ball,p,g){
  const a=findObject(old,ball.id);if(!a)return p>=1?carriedPose(ball,carrier(next,ball),g):null;
  const from=carrier(old,a),to=carrier(next,ball);
- if(from&&to&&from.id===to.id)return carriedPose(ball,objectPose(old,next,to.id,p,g),g);
+ if(from&&to&&from.id===to.id){
+  // A change of hand stays attached, and creates no pass trajectory.
+  const s=clamp(p,0,1),eased=s*s*(3-2*s);
+  return carriedPose(ball,objectPose(old,next,to.id,p,g),g,lateral(a)+(lateral(ball)-lateral(a))*eased);
+ }
  const m=ballMovement(old,next,ball,g),t=m.timing;
  if(from&&p*100<=t.start)return carriedPose(a,objectPose(old,next,from.id,p,g),g);
  if(to&&p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g),g);
