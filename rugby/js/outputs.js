@@ -1,5 +1,6 @@
 import {esc} from './model.js?v=0.5.3';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.6.0';
+import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.6.1';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
 const decode64=s=>{if(!/^[A-Za-z0-9_-]+$/.test(s))throw Error('Invalid share code.');return Uint8Array.from(atob(s.replaceAll('-','+').replaceAll('_','/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0))};
@@ -22,29 +23,56 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
 function svgImage(svg){return new Promise((resolve,reject)=>{const uri=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'})),im=new Image();im.onload=()=>{URL.revokeObjectURL(uri);resolve(im)};im.onerror=()=>{URL.revokeObjectURL(uri);reject(Error('Could not render the video frame.'))};im.src=uri})}
 function fitText(ctx,text,max){let s=String(text||'');while(s.length>1&&ctx.measureText(s).width>max)s=s.slice(0,-2)+'…';return s}
 export async function recordDrill(d,opts={},progress=()=>{}){
- const drill=playbackData(d),options=outputOptions(opts),seconds=drillDuration(drill);
- if(seconds<=0)throw Error('Add at least one movement step before exporting a movie.');
- if(seconds>180)throw Error('Movie export currently supports drills up to three minutes. Use the presentation link for longer drills.');
+ const drill=playbackData(d),options=outputOptions(opts),seconds=drillDuration(drill),plan=moviePlan(seconds,opts);
+ if(plan.total>360)throw Error('The complete movie exceeds six minutes. Choose normal speed only or a faster replay.');
  if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Edge or Chrome.');
- const canvas=document.createElement('canvas');canvas.width=1280;canvas.height=720;if(!canvas.captureStream)throw Error('Canvas video recording is unavailable in this browser.');
- const ctx=canvas.getContext('2d');if(!ctx)throw Error('Canvas is unavailable.');
- const draw=async t=>{
-  const scene=renderScene(drill,{...options,time:t}),im=await svgImage(scene.svg);ctx.fillStyle='#111c17';ctx.fillRect(0,0,1280,720);ctx.fillStyle='#eef5ec';ctx.font='bold 24px Arial';ctx.fillText(fitText(ctx,drill.title,1190),40,38);
-  const scale=Math.min(1190/im.width,552/im.height),w=im.width*scale,h=im.height*scale;ctx.drawImage(im,(1280-w)/2,57+(552-h)/2,w,h);
-  ctx.font='bold 18px Arial';ctx.fillStyle='#c9f07c';ctx.fillText(fitText(ctx,(scene.index+1)+'. '+scene.frame.name,1050),40,642);
-  ctx.fillStyle='#d6e4d6';ctx.font='15px Arial';ctx.fillText(fitText(ctx,scene.frame.notes||'Solid arrows: runs · Dashed arrows: ball movement',1200),40,670);
-  ctx.fillStyle='#81988a';ctx.fillRect(40,690,1200,4);ctx.fillStyle='#c9f07c';ctx.fillRect(40,690,1200*(t/seconds),4);
+ const {width:W,height:H,bitrate,fps}=plan.quality,canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+ if(!canvas.captureStream)throw Error('Canvas video recording is unavailable in this browser.');
+ const ctx=canvas.getContext('2d',{alpha:false});if(!ctx)throw Error('Canvas is unavailable.');
+ // Layout in a 1920 × 1080 design space, rasterise vectors directly at actual output pixels.
+ const unit=W/1920,pad=Math.round(38*unit),top=Math.round(92*unit),bottom=Math.round(112*unit);
+ const font=(size,bold=false)=>(bold?'bold ':'')+Math.round(size*unit)+'px Arial';
+ const draw=async elapsed=>{
+  const moment=movieMoment(plan,elapsed),{segment,time}=moment,scene=renderScene(drill,{...options,runs:segment.runs,passes:segment.passes,time});
+  const {width:w,height:h}=movieRaster(scene.g,W-2*pad,H-top-bottom);
+  const im=await svgImage(rasterSVG(scene.svg,w,h));
+  ctx.fillStyle='#111c17';ctx.fillRect(0,0,W,H);ctx.fillStyle='#eef5ec';ctx.font=font(32,true);
+  ctx.fillText(fitText(ctx,drill.title,W-2*pad),pad,Math.round(39*unit));
+  ctx.fillStyle='#c9f07c';ctx.font=font(22,true);ctx.fillText(segment.title,pad,Math.round(72*unit));
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage(im,Math.round((W-w)/2),Math.round(top+(H-top-bottom-h)/2),w,h);
+  ctx.font=font(24,true);ctx.fillStyle='#c9f07c';ctx.fillText(fitText(ctx,(scene.index+1)+'. '+scene.frame.name,W-2*pad),pad,H-Math.round(77*unit));
+  ctx.fillStyle='#d6e4d6';ctx.font=font(20);
+  const legend=segment.kind==='replay'?'Solid arrows: runs · Dashed arrows: ball movement':segment.runs||segment.passes?'Follow movement and ball position':'Watch the movement without paths';
+  ctx.fillText(fitText(ctx,scene.frame.notes||legend,W-2*pad),pad,H-Math.round(43*unit));
+  const trackY=H-Math.round(17*unit),trackH=Math.max(2,Math.round(5*unit));
+  ctx.fillStyle='#526b59';ctx.fillRect(pad,trackY,W-2*pad,trackH);ctx.fillStyle='#c9f07c';ctx.fillRect(pad,trackY,(W-2*pad)*moment.progress,trackH);
+  // Mark the boundary between normal-speed and coaching replay.
+  if(plan.segments.length>1){ctx.fillStyle='#f4f7ee';ctx.fillRect(pad+(W-2*pad)*plan.segments[0].end/plan.total-1,trackY-2,Math.max(2,Math.round(3*unit)),trackH+4)}
  };
- await draw(0);const stream=canvas.captureStream(25);
+ await draw(0);const stream=canvas.captureStream(fps);
  let recorder,recorded;
  try{
-  const types=['video/mp4;codecs=avc1.42001E','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];const mime=types.find(v=>MediaRecorder.isTypeSupported?.(v));
-  recorder=new MediaRecorder(stream,{...(mime?{mimeType:mime}:{}),videoBitsPerSecond:3500000});const chunks=[];
-  recorded=new Promise((res,rej)=>{recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onstop=()=>res(new Blob(chunks,{type:recorder.mimeType||mime||'video/webm'}));recorder.onerror=e=>rej(e.error||Error('Video encoder failed.'))});
-  recorder.start(250);progress(0);await delay(350);const start=performance.now();let t=0;
-  while(t<seconds){const begin=performance.now();t=Math.min(seconds,(begin-start)/1000);await draw(t);progress(t/seconds);await delay(Math.max(0,40-(performance.now()-begin)))}
-  await delay(450);recorder.stop();const blob=await recorded;if(!blob.size)throw Error('No video data was produced.');return {blob,extension:blob.type.includes('mp4')?'mp4':'webm'};
- }catch(e){if(recorder?.state==='recording')recorder.stop();if(recorded)recorded.catch(()=>{});throw e}finally{for(const track of stream.getTracks())track.stop()}
+  // Avoid a restrictive fixed H.264 profile/level, especially for Full HD and 4K.
+  const types=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+  const candidates=types.filter(v=>MediaRecorder.isTypeSupported?.(v));candidates.push('');
+  let lastError;for(const mime of candidates){try{recorder=new MediaRecorder(stream,{...(mime?{mimeType:mime}:{}),videoBitsPerSecond:bitrate});break}catch(e){lastError=e}}
+  if(!recorder)throw lastError||Error('The chosen resolution cannot be encoded in this browser.');
+  const chunks=[];let encoderError=null;
+  recorded=new Promise((res,rej)=>{recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onstop=()=>res(new Blob(chunks,{type:recorder.mimeType||chunks[0]?.type||'video/webm'}));recorder.onerror=e=>{encoderError=e.error||Error('Video encoder failed.');rej(encoderError)}});
+  recorded.catch(()=>{});
+  recorder.start(250);progress(0);const start=performance.now();let elapsed=0;
+  // Record in real time. Holds introduce each pass and make the reset intentional.
+  while(elapsed<plan.total){
+   if(encoderError)throw encoderError;if(recorder.state==='inactive')throw Error('Recording ended unexpectedly.');
+   if(document.hidden)throw Error('The tab was hidden during recording. Export again with this tab visible.');
+   const begin=performance.now();elapsed=Math.min(plan.total,(begin-start)/1000);await draw(elapsed);
+   const m=movieMoment(plan,elapsed);progress(elapsed/plan.total,m.segment.title);
+   await delay(Math.max(0,1000/fps-(performance.now()-begin)));
+  }
+  await delay(120);recorder.stop();const blob=await recorded;if(!blob.size)throw Error('No video data was produced.');
+  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:plan.total};
+ }catch(e){if(recorder?.state==='recording')recorder.stop();throw e}finally{for(const track of stream.getTracks())track.stop()}
 }
 function excerpt(s,n){const v=String(s||'').trim();return v.length>n?v.slice(0,n-1)+'…':v}
 export function printMarkup(raw,opts={}){
