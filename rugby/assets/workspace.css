@@ -176,3 +176,22 @@ body.hide-equipment > .main > .sidebar,body.presentation-mode > .main > .sidebar
 
 /* Magnetic possession preference, independent of grid snapping. */
 .auto-attach{display:flex;align-items:center;gap:5px;margin-top:7px;font-size:10px;line-height:1.25;color:var(--muted);cursor:pointer}.auto-attach input{width:auto;margin:0;accent-color:var(--accent)}
+
+/* Stable canvas: controls belong to side panels, never below the drawing. */
+.stage{grid-template-rows:auto minmax(0,1fr) 24px}
+.compact-footer{display:flex;align-items:center;gap:10px;height:24px;min-height:24px;max-height:24px;overflow:hidden;white-space:nowrap;padding:0 2px;border-top:1px solid var(--line)}
+.compact-footer > *{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;line-height:20px}
+.compact-footer .footer-selection{flex:0 1 auto;max-width:24%;color:var(--accent)}
+.compact-footer .status{flex:1 1 0}
+.compact-footer .footer-narration{flex:0 1 auto;max-width:44%;color:var(--muted)}
+.compact-footer .footer-narration:empty{display:none}
+.inspector-route{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:8px}
+.inspector-route h3{margin:0}
+.inspector-route label{display:grid;gap:5px;font-size:12px;color:var(--muted)}
+.inspector-route label:has(input[type=checkbox]){display:flex;align-items:center;gap:6px}
+.inspector-route input[type=checkbox]{width:auto;accent-color:var(--accent)}
+.inspector-route button{font-size:12px;padding:6px;text-align:left}
+.inspector-route small{font-size:11px;line-height:1.4}
+.inspector-route[hidden]{display:none!important}
+body.presentation-mode .compact-footer .footer-selection{display:none}
+body.presentation-mode .compact-footer .footer-narration{max-width:100%;flex:1;text-align:center}
