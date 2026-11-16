@@ -4,7 +4,7 @@ import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,d
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.4.9';
 import { pitchGeometry, trainingField } from './pitch.js?v=0.9.0';
-import {pitchSettings,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.9.0';
+import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.9.0';
 import {normaliseAge,setupValues,setupAge,prepareSetup} from './setup.js?v=0.9.1';
 import { placePoint, gridStep, loadGridPrefs, saveGridPrefs } from './grid.js?v=0.4.2';
 import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './rotation.js?v=0.3.3';
@@ -97,9 +97,20 @@ for(const id of ['palette','rugbyPalette','legacyPalette'])$(id).onclick=e=>{con
 $('pitchPreset').innerHTML='<option value="">Current / custom size</option>'+PRESETS.map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('');
 const setupFields={title:'title',age:'age',ageMin:'ageMin',ageMax:'ageMax',category:'category',minutes:'minutes',length:'length',width:'width',attackDirection:'attackDirection',boundary:'boundaryStyle',preset:'pitchPreset',markers:'presetMarkers',resizeMode:'resizeMode'};
 function setupStatus(message,state=''){const status=$('pitchSettingsStatus');status.textContent=message;status.dataset.state=state;$('applyPitchSettings').disabled=!setupPending;$('revertSetup').disabled=!setupPending;$('tabDrill').textContent=setupPending?'Drill •':'Drill'}
+function updateResizeHelp(l,w){
+ const help=$('resizeModeHelp'),fit=$('fitArrangement'),physical=$('resizeMode').value==='physical';
+ fit.hidden=true;help.style.color='';
+ if(!physical){help.textContent='Fits all positions and movement paths proportionally to the new pitch. Player and equipment sizes stay the same.';return}
+ help.textContent='Keeps real-world distances, centred on the pitch. Objects and paths must fit inside the new boundary.';
+ if(!Number.isFinite(l)||!Number.isFinite(w)||l<5||l>100||w<5||w>70||l===drill.length&&w===drill.width)return;
+ const result=resizeDrill(drill,l,w,'physical');
+ if(!result.ok){help.textContent=result.message;help.style.color='#ffc28d';fit.hidden=false}
+}
+$('fitArrangement').onclick=()=>{$('resizeMode').value='relative';setupChanged();$('applyPitchSettings').focus();note('Scale arrangement selected. Apply settings to fit the drill to the new pitch.')};
 function previewSetup(){
  $('customAge').hidden=$('age').value!=='Custom range';
  const l=Number($('length').value),w=Number($('width').value),container=$('setupPreview');
+ updateResizeHelp(l,w);
  if(!Number.isFinite(l)||!Number.isFinite(w)||l<5||l>100||w<5||w>70){container.textContent='Enter valid dimensions';return}
  const dir=$('attackDirection').value,g=pitchGeometry(l,w,'up'),body=trainingField(g,false,.5,{attackDirection:dir,showAttack:dir!=='hidden',boundary:$('boundaryStyle').value}).replaceAll('id="arr"','id="setup-arr"').replaceAll('url(#arr)','url(#setup-arr)').replaceAll('id="gridpat"','id="setup-grid"').replaceAll('url(#gridpat)','url(#setup-grid)');
  container.innerHTML='<svg viewBox="0 0 '+g.viewWidth+' '+g.viewHeight+'" preserveAspectRatio="xMidYMid meet">'+body+'</svg>';
@@ -124,7 +135,7 @@ $('setupForm').onsubmit=e=>{
  e.preventDefault();if(!setupPending)return;
  if(!canEditObjects()){setupStatus('Stop playback or select a step before applying.','error');return}
  const out=prepareSetup(drill,readSetup(),uid);
- if(!out.ok){setupStatus(out.message,'error');note(out.message);return}
+ if(!out.ok){setupStatus(out.message,'error');updateResizeHelp(Number($('length').value),Number($('width').value));note(out.message);return}
  drill=out.drill;pendingInsert=null;setupPending=false;changed();refresh();
  const msg='Applied to '+drill.frames.length+' steps.'+(out.added||out.removed?' Generated marker instances: +'+out.added+' / −'+out.removed+'.':'')+' Undo restores previous settings.';
  setupStatus(msg);note(msg);
