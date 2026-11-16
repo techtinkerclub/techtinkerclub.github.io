@@ -131,3 +131,8 @@ body.presentation-mode .route-tools{display:none}
 .selection-actions{flex-wrap:wrap;justify-content:flex-end}
 #editCurrent[hidden]{display:none}
 @media(max-width:600px){.selection-tools{flex-wrap:wrap}.selection-tools>span{max-width:none;flex-basis:100%}.selection-actions{flex:1}}
+
+/* Independent fine grid visibility and magnetic alignment controls. */
+.grid-controls{display:inline-flex;align-items:center;gap:3px;padding:2px;border:1px solid var(--line);border-radius:6px;flex-shrink:0}
+.grid-controls select{width:auto;min-height:30px;padding:4px 5px;font-size:12px;border-color:transparent;background:var(--panel2)}
+.grid-controls button{white-space:nowrap}
