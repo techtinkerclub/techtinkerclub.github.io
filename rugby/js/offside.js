@@ -1,3 +1,4 @@
+import {symbolFactors} from './symbol-scale.js?v=0.12.0';
 // Shared approximate offside guide, using diagram icon footprints rather than actual feet.
 const team=o=>['attacker','shield'].includes(o?.type)?1:['defender','bagplayer'].includes(o?.type)?-1:0;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -13,7 +14,7 @@ const onFeet=p=>!['grounded','kneeling','recovering','tackling'].includes(p);
 function extent(o,pose,g,v){
  // Icon footprints, NOT a measured anatomical back foot. Keep the guide deliberately approximate.
  const a=((o.rot||0)+g.rotation)*Math.PI/180,h={x:Math.sin(a),y:-Math.cos(a)},along=pose==='grounded'?23:pose==='bound'||pose==='crouched'?12:14,across=pose==='bound'||pose==='crouched'?20:12;
- return Math.hypot(along*dot(h,v),across*dot({x:h.y,y:-h.x},v));
+ const [sx,sy]=symbolFactors(o,{...g,displayMode:'realistic'},pose);return Math.hypot(along*sy*dot(h,v),across*sx*dot({x:h.y,y:-h.x},v));
 }
 export function offsideBands(objects,d,g,mode='auto'){
  const v=attackVector(d,g,mode);if(!v)return [];
