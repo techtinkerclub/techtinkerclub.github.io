@@ -1,6 +1,7 @@
+import {physicalUnit} from './symbol-scale.js?v=0.12.0';
 // Schematic formation presets, not coaching technique or an age-grade law validator.
-import {canCarry,carrier} from './possession.js?v=0.8.4';
-import {team,roles,setParticipants} from './breakdown.js?v=0.8.4';
+import {canCarry,carrier} from './possession.js?v=0.12.0';
+import {team,roles,setParticipants} from './breakdown.js?v=0.12.0';
 const CONTACTS={tackle:{title:'Tackle',min:2,max:3,color:'#fa9e91'},ruck:{title:'Ruck',min:2,max:16,color:'#f7d27a'},maul:{title:'Maul',min:3,max:16,color:'#c8b0f5'},scrum:{title:'Scrum',min:4,max:16,color:'#91dbce'}};
 export const contactType=t=>Object.hasOwn(CONTACTS,t);
 export const contactTitle=t=>CONTACTS[t]?.title||'Contact';
@@ -46,10 +47,10 @@ export function arrangeContact(frame,marker,g,previous=null,explicit=null,u10=fa
  else {const teamA=players.filter(o=>o.type===lead.type),teamB=players.filter(o=>o.type!==lead.type);const balanced=teamA.length>=2&&teamB.length>=2;if(balanced)players.splice(0,players.length,...teamA,...teamB);const split=balanced?teamA.length:Math.ceil(players.length/2);offsets=players.map((_,i)=>{const top=i>=split,j=top?i-split:i,count=top?players.length-split:split;return {x:(j-(count-1)/2)*27,y:top?-20:20,r:top?180:0,pose:'crouched'}})}
  const heading=marker.members?.length?Number(marker.rot)||0:Number(lead.rot)||0;
  const a=(heading+g.rotation)*Math.PI/180,c=Math.cos(a),s=Math.sin(a);const p=g.toView(marker.x,marker.y);
- const placements=offsets.map(v=>({...v,dx:v.x*c-v.y*s,dy:v.x*s+v.y*c}));
+ const unit=physicalUnit(g),placements=offsets.map(v=>({...v,dx:unit*(v.x*c-v.y*s),dy:unit*(v.x*s+v.y*c)}));
  const minX=Math.min(...placements.map(v=>v.dx)),maxX=Math.max(...placements.map(v=>v.dx)),minY=Math.min(...placements.map(v=>v.dy)),maxY=Math.max(...placements.map(v=>v.dy));
  const clampCenter=(v,lo,hi)=>lo<=hi?Math.max(lo,Math.min(hi,v)):(lo+hi)/2;
- const cx=clampCenter(p.x,g.margin+16-minX,g.margin+g.fw-16-maxX),cy=clampCenter(p.y,g.margin+16-minY,g.margin+g.fh-16-maxY);
+ const cx=clampCenter(p.x,g.margin+16*unit-minX,g.margin+g.fw-16*unit-maxX),cy=clampCenter(p.y,g.margin+16*unit-minY,g.margin+g.fh-16*unit-maxY);
  Object.assign(marker,g.fromView(cx,cy),{rot:heading});marker.members=[];
  // Remove selected players from other formations in this step.
  const chosen=new Set(players.map(o=>o.id));for(const o of frame.objects)if(o!==marker&&Array.isArray(o.members))o.members=o.members.filter(m=>!chosen.has(m.id));
