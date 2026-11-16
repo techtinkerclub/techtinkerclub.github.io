@@ -47,8 +47,8 @@
 .read-only-player header{align-items:flex-start;gap:8px;padding:11px max(10px,env(safe-area-inset-right)) 10px max(10px,env(safe-area-inset-left));flex-wrap:wrap}
 .read-only-player header small{font-size:9px;letter-spacing:.6px}
 .read-only-player h1{font-size:clamp(18px,5vw,22px);line-height:1.2;margin:4px 0}
-.read-only-player .player-heading{flex:1 1 230px}
-.read-only-player header #objective{font-size:13px;line-height:1.4}
+.read-only-player .player-heading{flex:1 1 0}
+.read-only-player header #objective{display:none}
 .read-only-player .file-label{padding:8px 10px;font-size:13px}
 .read-only-player main{gap:7px;padding:8px max(8px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
 .read-only-player #board{width:100%;max-width:calc(62svh * var(--pitch-ratio,.8));aspect-ratio:var(--pitch-ratio,.8);height:auto;align-self:center}
@@ -72,6 +72,8 @@
 .read-only-player #board svg{height:100%;width:100%}
 }
 @media screen and (max-width:350px){
+.read-only-player header small{font-size:8px;letter-spacing:.2px}
+.read-only-player .file-label{padding:7px;font-size:12px}
 .read-only-player .player-transport{grid-template-columns:repeat(3,minmax(0,1fr))}
 .read-only-player .player-transport #play{grid-column:auto}
 .read-only-player .player-transport select{grid-column:span 2}
