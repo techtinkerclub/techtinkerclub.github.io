@@ -90,3 +90,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 /* The SVG fits the available viewport while preserving its dimensioned viewBox. */
 .field-wrap { position:relative; display:block; }
 .field-wrap > .pitch { position:absolute;inset:0;width:100%;height:100%; }
+
+/* On-canvas rotation gizmo and quick directions. */
+.rotation-handle { cursor:grab; }
+.rotation-handle:active { cursor:grabbing; }
+.rotation-handle:hover circle:nth-of-type(2) { fill:#efffba; }
+.facing-buttons { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px; }
+.facing-buttons button { padding:4px 3px;font-size:18px;line-height:1.3;min-height:32px; }
+body.presentation-mode .pitch [data-editor-only] { display:none; }
