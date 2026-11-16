@@ -1,0 +1,1472 @@
+{
+  "version": 1,
+  "id": "u10-tackle-secure-go-again-v081",
+  "title": "U10 | Tackle, secure and go again",
+  "age": "U10",
+  "category": "Attack",
+  "length": 20,
+  "width": 15,
+  "objective": "Retain possession after a tackle: present the ball, recognise the first defender at the breakdown, support from the correct side and move the ball into space for a second phase.",
+  "safety": "Coach-led, age-appropriate progression only. First rehearse at walking pace with touch or no-contact representation; progress to controlled contact only when qualified coaching and player readiness allow. Check surface, space, equipment, club guidance and consent/readiness. Use the shield as a passive visual or controlled-contact aid only if permitted by the club’s age-grade and safeguarding guidance; never charge into it or through a grounded player. Stop immediately for unsafe head/neck position, loss of balance or pain. No diving, squeeze ball, neck rolls, lifting or hand-offs. U10: original carrier/tackler plus one arriving player per side at the breakdown; when the ball is secured, use it within five seconds of the referee’s call. No hands in a formed ruck for the arriving player in this scenario. After the second tackle, release and present before reset.",
+  "frames": [
+    {
+      "name": "Set up · two queues",
+      "seconds": 0,
+      "notes": "A1 carries the ball at the head of the blue queue. D1 faces A1; D2 holds the passive shield behind D1, with D3 waiting. Show the seven cones and the route around the central line. Check spacing, roles and readiness. Allow clear space between the queues, wider start/contact gates and the central cone line. The blue group initially moves down the page.",
+      "objects": [
+        {
+          "id": "mwj8e2r2oxyqlk",
+          "type": "attacker",
+          "label": "A1",
+          "x": 450,
+          "y": 137,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e34mdkmz60",
+          "type": "attacker",
+          "label": "A2",
+          "x": 450,
+          "y": 92,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e3k6cepl43",
+          "type": "attacker",
+          "label": "A3",
+          "x": 450,
+          "y": 53,
+          "rot": 180
+        },
+        {
+          "id": "mwj8fey6jkwvcd",
+          "type": "cone",
+          "label": "",
+          "x": 395.6,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ffvqjhooc5",
+          "type": "cone",
+          "label": "",
+          "x": 450,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fg0e9ahygc",
+          "type": "cone",
+          "label": "",
+          "x": 504.4,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftsmevmydz",
+          "type": "defender",
+          "label": "D1",
+          "x": 450,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftzhp158ce",
+          "type": "defender",
+          "label": "D2",
+          "x": 450,
+          "y": 385,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fu6ddgwgdi",
+          "type": "defender",
+          "label": "D3",
+          "x": 450,
+          "y": 437,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7b2cqyjej",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7hy307vnk",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7x2vjfugd",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g83qp3mae5",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8h553khg2gb",
+          "type": "ball",
+          "label": "",
+          "x": 467.09714,
+          "y": 144.98857,
+          "rot": 0,
+          "ownerId": "mwj8e2r2oxyqlk",
+          "carrySide": "left"
+        },
+        {
+          "id": "mwj8l1i048ptc4",
+          "type": "shieldItem",
+          "label": "",
+          "x": 450,
+          "y": 374.34857,
+          "rot": 0,
+          "ownerId": "mwj8ftzhp158ce"
+        }
+      ],
+      "timing": {},
+      "paths": {}
+    },
+    {
+      "name": "Carry around cones · first tackle",
+      "seconds": 2,
+      "notes": "A1 curves around the central cones and meets D1. A2/A3 advance in support. Cue: scan, balance, two hands; D1 tracks and wraps below the sternum. Rehearse slowly before any controlled contact. Decision: scan before the cones, and choose left or right. If a safe legal pass is on, use it; the animated example carries into controlled contact.",
+      "objects": [
+        {
+          "id": "mwj8e2r2oxyqlk",
+          "type": "attacker",
+          "label": "A1",
+          "x": 547.14961,
+          "y": 250.4051908015723,
+          "rot": 276
+        },
+        {
+          "id": "mwj8e34mdkmz60",
+          "type": "attacker",
+          "label": "A2",
+          "x": 450,
+          "y": 147.675,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e3k6cepl43",
+          "type": "attacker",
+          "label": "A3",
+          "x": 450,
+          "y": 106.9,
+          "rot": 180
+        },
+        {
+          "id": "mwj8fey6jkwvcd",
+          "type": "cone",
+          "label": "",
+          "x": 395.6,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ffvqjhooc5",
+          "type": "cone",
+          "label": "",
+          "x": 450,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fg0e9ahygc",
+          "type": "cone",
+          "label": "",
+          "x": 504.4,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftsmevmydz",
+          "type": "defender",
+          "label": "D1",
+          "x": 543.25039,
+          "y": 266.29480919842774,
+          "rot": 6
+        },
+        {
+          "id": "mwj8ftzhp158ce",
+          "type": "defender",
+          "label": "D2",
+          "x": 450,
+          "y": 322.425,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fu6ddgwgdi",
+          "type": "defender",
+          "label": "D3",
+          "x": 450,
+          "y": 357.375,
+          "rot": 2
+        },
+        {
+          "id": "mwj8g7b2cqyjej",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7hy307vnk",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7x2vjfugd",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g83qp3mae5",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8h553khg2gb",
+          "type": "ball",
+          "label": "",
+          "x": 526.81321,
+          "y": 256.85289947166524,
+          "rot": 0,
+          "ownerId": "mwj8e2r2oxyqlk",
+          "carrySide": "left"
+        },
+        {
+          "id": "mwj8l1i048ptc4",
+          "type": "shieldItem",
+          "label": "",
+          "x": 450,
+          "y": 311.7735714285715,
+          "rot": 0,
+          "ownerId": "mwj8ftzhp158ce"
+        },
+        {
+          "id": "mwj8ldmgzz1gti",
+          "type": "tackle",
+          "label": "Tackle marker",
+          "x": 545.2,
+          "y": 258.35,
+          "rot": 180,
+          "members": [
+            {
+              "id": "mwj8e2r2oxyqlk",
+              "pose": "grounded"
+            },
+            {
+              "id": "mwj8ftsmevmydz",
+              "pose": "tackling"
+            }
+          ],
+          "breakdown": {
+            "phase": "tackle",
+            "carrierId": "mwj8e2r2oxyqlk",
+            "tacklerId": "mwj8ftsmevmydz",
+            "ballId": "mwj8h553khg2gb"
+          }
+        },
+        {
+          "id": "u10-dp1",
+          "type": "decision",
+          "label": "Read space",
+          "x": 450,
+          "y": 187,
+          "rot": 0,
+          "decision": {
+            "playerId": "mwj8e2r2oxyqlk",
+            "anchor": 0.36,
+            "question": "Which side of the cones offers space?",
+            "cue": "Look up, vary the angle and accelerate into space. Either side can be valid.",
+            "options": [
+              {
+                "label": "Right route (demonstrated)",
+                "kind": "main",
+                "points": []
+              },
+              {
+                "label": "Left route",
+                "kind": "run",
+                "mode": "smooth",
+                "points": [
+                  {
+                    "x": 365,
+                    "y": 207
+                  },
+                  {
+                    "x": 354,
+                    "y": 238
+                  },
+                  {
+                    "x": 395,
+                    "y": 257
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "u10-dp2",
+          "type": "decision",
+          "label": "Carry or pass",
+          "x": 542,
+          "y": 223,
+          "rot": 0,
+          "decision": {
+            "playerId": "mwj8e2r2oxyqlk",
+            "anchor": 0.76,
+            "question": "Is there a legal pass to support, or should I carry?",
+            "cue": "If support is available behind or level, consider the pass; otherwise carry safely. The animation demonstrates contact.",
+            "options": [
+              {
+                "label": "Carry into controlled tackle",
+                "kind": "main",
+                "points": []
+              },
+              {
+                "label": "Pass to available support",
+                "kind": "note",
+                "points": []
+              }
+            ]
+          }
+        }
+      ],
+      "timing": {},
+      "paths": {
+        "mwj8e2r2oxyqlk": {
+          "mode": "smooth",
+          "points": [
+            {
+              "x": 450,
+              "y": 188.45000000000002
+            },
+            {
+              "x": 545.2,
+              "y": 217.57500000000002
+            }
+          ],
+          "follow": false
+        },
+        "mwj8ftsmevmydz": {
+          "mode": "smooth",
+          "points": [
+            {
+              "x": 450,
+              "y": 293.3
+            }
+          ],
+          "follow": false
+        }
+      }
+    },
+    {
+      "name": "Release and present",
+      "seconds": 0.8,
+      "notes": "D1 releases immediately and moves clear to the side. A1 makes the ball available towards the blue queue. Cue: release, present and move clear when safe; never trap the ball under the body.",
+      "objects": [
+        {
+          "id": "mwj8e2r2oxyqlk",
+          "type": "attacker",
+          "label": "A1",
+          "x": 563.85143,
+          "y": 264.3414285714286,
+          "rot": 0
+        },
+        {
+          "id": "mwj8e34mdkmz60",
+          "type": "attacker",
+          "label": "A2",
+          "x": 450,
+          "y": 147.675,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e3k6cepl43",
+          "type": "attacker",
+          "label": "A3",
+          "x": 450,
+          "y": 106.9,
+          "rot": 180
+        },
+        {
+          "id": "mwj8fey6jkwvcd",
+          "type": "cone",
+          "label": "",
+          "x": 395.6,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ffvqjhooc5",
+          "type": "cone",
+          "label": "",
+          "x": 450,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fg0e9ahygc",
+          "type": "cone",
+          "label": "",
+          "x": 504.4,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftsmevmydz",
+          "type": "defender",
+          "label": "D1",
+          "x": 444.17143,
+          "y": 268.3357142857143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftzhp158ce",
+          "type": "defender",
+          "label": "D2",
+          "x": 450,
+          "y": 322.425,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fu6ddgwgdi",
+          "type": "defender",
+          "label": "D3",
+          "x": 450,
+          "y": 357.375,
+          "rot": 2
+        },
+        {
+          "id": "mwj8g7b2cqyjej",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7hy307vnk",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7x2vjfugd",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g83qp3mae5",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8h553khg2gb",
+          "type": "ball",
+          "label": "",
+          "x": 545.2,
+          "y": 241.70714285714286,
+          "rot": 180,
+          "carrySide": "left",
+          "groundState": "presented",
+          "transferKind": "presentation"
+        },
+        {
+          "id": "mwj8l1i048ptc4",
+          "type": "shieldItem",
+          "label": "",
+          "x": 450,
+          "y": 311.7735714285715,
+          "rot": 0,
+          "ownerId": "mwj8ftzhp158ce"
+        },
+        {
+          "id": "mwj8ldmgzz1gti",
+          "type": "tackle",
+          "label": "Release and present",
+          "x": 545.2,
+          "y": 258.35,
+          "rot": 180,
+          "members": [
+            {
+              "id": "mwj8e2r2oxyqlk",
+              "pose": "grounded"
+            }
+          ],
+          "breakdown": {
+            "phase": "release",
+            "arrivalSide": "defence",
+            "carrierId": "mwj8e2r2oxyqlk",
+            "tacklerId": "mwj8ftsmevmydz",
+            "ballId": "mwj8h553khg2gb"
+          }
+        }
+      ],
+      "timing": {
+        "mwj8h553khg2gb": {
+          "start": 0,
+          "end": 45
+        }
+      },
+      "paths": {}
+    },
+    {
+      "name": "Defending support arrives",
+      "seconds": 1.5,
+      "notes": "D2 approaches first with the shield from the defending side. A2 curves in from the blue queue; A3 stays behind. Shield is passive; coach checks a controlled approach, own-side entry and safe posture.",
+      "objects": [
+        {
+          "id": "mwj8e2r2oxyqlk",
+          "type": "attacker",
+          "label": "A1",
+          "x": 563.85143,
+          "y": 264.3414285714286,
+          "rot": 0
+        },
+        {
+          "id": "mwj8e34mdkmz60",
+          "type": "attacker",
+          "label": "A2",
+          "x": 518,
+          "y": 188.45000000000002,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e3k6cepl43",
+          "type": "attacker",
+          "label": "A3",
+          "x": 450,
+          "y": 141.85000000000002,
+          "rot": 180
+        },
+        {
+          "id": "mwj8fey6jkwvcd",
+          "type": "cone",
+          "label": "",
+          "x": 395.6,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ffvqjhooc5",
+          "type": "cone",
+          "label": "",
+          "x": 450,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fg0e9ahygc",
+          "type": "cone",
+          "label": "",
+          "x": 504.4,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftsmevmydz",
+          "type": "defender",
+          "label": "D1",
+          "x": 444.17143,
+          "y": 268.3357142857143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftzhp158ce",
+          "type": "defender",
+          "label": "D2",
+          "x": 545.2,
+          "y": 268.3357142857143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fu6ddgwgdi",
+          "type": "defender",
+          "label": "D3",
+          "x": 450,
+          "y": 322.425,
+          "rot": 2
+        },
+        {
+          "id": "mwj8g7b2cqyjej",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7hy307vnk",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7x2vjfugd",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g83qp3mae5",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8h553khg2gb",
+          "type": "ball",
+          "label": "",
+          "x": 545.2,
+          "y": 241.70714285714286,
+          "rot": 180,
+          "carrySide": "left",
+          "groundState": "presented",
+          "transferKind": "presentation"
+        },
+        {
+          "id": "mwj8l1i048ptc4",
+          "type": "shieldItem",
+          "label": "",
+          "x": 545.2,
+          "y": 257.6842857142857,
+          "rot": 0,
+          "ownerId": "mwj8ftzhp158ce"
+        },
+        {
+          "id": "mwj8ldmgzz1gti",
+          "type": "tackle",
+          "label": "Defending support arrives",
+          "x": 545.2,
+          "y": 258.35,
+          "rot": 180,
+          "members": [
+            {
+              "id": "mwj8e2r2oxyqlk",
+              "pose": "grounded"
+            },
+            {
+              "id": "mwj8ftzhp158ce",
+              "pose": "standing"
+            }
+          ],
+          "breakdown": {
+            "phase": "support",
+            "arrivalSide": "defence",
+            "carrierId": "mwj8e2r2oxyqlk",
+            "tacklerId": "mwj8ftsmevmydz",
+            "ballId": "mwj8h553khg2gb"
+          }
+        }
+      ],
+      "timing": {},
+      "paths": {
+        "mwj8e34mdkmz60": {
+          "mode": "smooth",
+          "points": [
+            {
+              "x": 463.6,
+              "y": 170.975
+            }
+          ],
+          "follow": false
+        }
+      }
+    },
+    {
+      "name": "Clearout · ruck formed",
+      "seconds": 1.5,
+      "notes": "A2 meets the shield position from the attacking side. Rehearse stable feet, head and shoulders above hips and a controlled bind in live play. One arriving player per side; no charging, diving or contact through A1.",
+      "objects": [
+        {
+          "id": "mwj8e2r2oxyqlk",
+          "type": "attacker",
+          "label": "A1",
+          "x": 563.85143,
+          "y": 264.3414285714286,
+          "rot": 0
+        },
+        {
+          "id": "mwj8e34mdkmz60",
+          "type": "attacker",
+          "label": "A2",
+          "x": 545.2,
+          "y": 228.39285714285714,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e3k6cepl43",
+          "type": "attacker",
+          "label": "A3",
+          "x": 450,
+          "y": 141.85000000000002,
+          "rot": 180
+        },
+        {
+          "id": "mwj8fey6jkwvcd",
+          "type": "cone",
+          "label": "",
+          "x": 395.6,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ffvqjhooc5",
+          "type": "cone",
+          "label": "",
+          "x": 450,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fg0e9ahygc",
+          "type": "cone",
+          "label": "",
+          "x": 504.4,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftsmevmydz",
+          "type": "defender",
+          "label": "D1",
+          "x": 444.17143,
+          "y": 268.3357142857143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftzhp158ce",
+          "type": "defender",
+          "label": "D2",
+          "x": 545.2,
+          "y": 255.02142857142857,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fu6ddgwgdi",
+          "type": "defender",
+          "label": "D3",
+          "x": 450,
+          "y": 322.425,
+          "rot": 2
+        },
+        {
+          "id": "mwj8g7b2cqyjej",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7hy307vnk",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7x2vjfugd",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g83qp3mae5",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8h553khg2gb",
+          "type": "ball",
+          "label": "",
+          "x": 545.2,
+          "y": 241.70714285714286,
+          "rot": 180,
+          "carrySide": "left",
+          "groundState": "presented",
+          "transferKind": "presentation"
+        },
+        {
+          "id": "mwj8l1i048ptc4",
+          "type": "shieldItem",
+          "label": "",
+          "x": 545.2,
+          "y": 244.37,
+          "rot": 0,
+          "ownerId": "mwj8ftzhp158ce"
+        },
+        {
+          "id": "mwj8ldmgzz1gti",
+          "type": "ruck",
+          "label": "Clearout · ruck formed",
+          "x": 545.2,
+          "y": 258.35,
+          "rot": 180,
+          "members": [
+            {
+              "id": "mwj8e2r2oxyqlk",
+              "pose": "grounded"
+            },
+            {
+              "id": "mwj8ftzhp158ce",
+              "pose": "bound"
+            },
+            {
+              "id": "mwj8e34mdkmz60",
+              "pose": "bound"
+            }
+          ],
+          "breakdown": {
+            "phase": "ruck",
+            "arrivalSide": "defence",
+            "carrierId": "mwj8e2r2oxyqlk",
+            "tacklerId": "mwj8ftsmevmydz",
+            "ballId": "mwj8h553khg2gb"
+          }
+        }
+      ],
+      "timing": {},
+      "paths": {}
+    },
+    {
+      "name": "Contest for possession",
+      "seconds": 1.5,
+      "notes": "Pause to recognise the ruck: A2 and D2 represent opposing players on feet over the ball. No extra arrivals or hands in this formed ruck. Shield stage is a controlled representation, not a collision contest.",
+      "objects": [
+        {
+          "id": "mwj8e2r2oxyqlk",
+          "type": "attacker",
+          "label": "A1",
+          "x": 563.85143,
+          "y": 264.3414285714286,
+          "rot": 0
+        },
+        {
+          "id": "mwj8e34mdkmz60",
+          "type": "attacker",
+          "label": "A2",
+          "x": 545.2,
+          "y": 228.39285714285714,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e3k6cepl43",
+          "type": "attacker",
+          "label": "A3",
+          "x": 450,
+          "y": 141.85000000000002,
+          "rot": 180
+        },
+        {
+          "id": "mwj8fey6jkwvcd",
+          "type": "cone",
+          "label": "",
+          "x": 395.6,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ffvqjhooc5",
+          "type": "cone",
+          "label": "",
+          "x": 450,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fg0e9ahygc",
+          "type": "cone",
+          "label": "",
+          "x": 504.4,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftsmevmydz",
+          "type": "defender",
+          "label": "D1",
+          "x": 444.17143,
+          "y": 268.3357142857143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftzhp158ce",
+          "type": "defender",
+          "label": "D2",
+          "x": 545.2,
+          "y": 255.02142857142857,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fu6ddgwgdi",
+          "type": "defender",
+          "label": "D3",
+          "x": 450,
+          "y": 322.425,
+          "rot": 2
+        },
+        {
+          "id": "mwj8g7b2cqyjej",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7hy307vnk",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7x2vjfugd",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g83qp3mae5",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8h553khg2gb",
+          "type": "ball",
+          "label": "",
+          "x": 545.2,
+          "y": 241.70714285714286,
+          "rot": 180,
+          "carrySide": "left",
+          "groundState": "presented",
+          "transferKind": "presentation"
+        },
+        {
+          "id": "mwj8l1i048ptc4",
+          "type": "shieldItem",
+          "label": "",
+          "x": 545.2,
+          "y": 244.37,
+          "rot": 0,
+          "ownerId": "mwj8ftzhp158ce"
+        },
+        {
+          "id": "mwj8ldmgzz1gti",
+          "type": "ruck",
+          "label": "Contest for possession",
+          "x": 545.2,
+          "y": 258.35,
+          "rot": 180,
+          "members": [
+            {
+              "id": "mwj8e2r2oxyqlk",
+              "pose": "grounded"
+            },
+            {
+              "id": "mwj8ftzhp158ce",
+              "pose": "bound"
+            },
+            {
+              "id": "mwj8e34mdkmz60",
+              "pose": "bound"
+            }
+          ],
+          "breakdown": {
+            "phase": "contest",
+            "arrivalSide": "defence",
+            "carrierId": "mwj8e2r2oxyqlk",
+            "tacklerId": "mwj8ftsmevmydz",
+            "ballId": "mwj8h553khg2gb"
+          }
+        }
+      ],
+      "timing": {},
+      "paths": {}
+    },
+    {
+      "name": "Ball secured · A3 collects",
+      "seconds": 1.5,
+      "notes": "A2 clears the ball’s access; A3 approaches from the blue side and collects only when the ball is available. D2 retreats. Cue: use it promptly; A3 stays balanced and on feet, A1 recovers when safe.",
+      "objects": [
+        {
+          "id": "mwj8e2r2oxyqlk",
+          "type": "attacker",
+          "label": "A1",
+          "x": 563.85143,
+          "y": 264.3414285714286,
+          "rot": 0
+        },
+        {
+          "id": "mwj8e34mdkmz60",
+          "type": "attacker",
+          "label": "A2",
+          "x": 545.2,
+          "y": 261.0128571428571,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e3k6cepl43",
+          "type": "attacker",
+          "label": "A3",
+          "x": 545.2,
+          "y": 235.05,
+          "rot": 180
+        },
+        {
+          "id": "mwj8fey6jkwvcd",
+          "type": "cone",
+          "label": "",
+          "x": 395.6,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ffvqjhooc5",
+          "type": "cone",
+          "label": "",
+          "x": 450,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fg0e9ahygc",
+          "type": "cone",
+          "label": "",
+          "x": 504.4,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftsmevmydz",
+          "type": "defender",
+          "label": "D1",
+          "x": 286.8,
+          "y": 270,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftzhp158ce",
+          "type": "defender",
+          "label": "D2",
+          "x": 545.2,
+          "y": 287.64142857142855,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fu6ddgwgdi",
+          "type": "defender",
+          "label": "D3",
+          "x": 450,
+          "y": 322.425,
+          "rot": 2
+        },
+        {
+          "id": "mwj8g7b2cqyjej",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7hy307vnk",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7x2vjfugd",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g83qp3mae5",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8h553khg2gb",
+          "type": "ball",
+          "label": "",
+          "x": 562.29714,
+          "y": 243.03857142857146,
+          "rot": 180,
+          "carrySide": "left",
+          "ownerId": "mwj8e3k6cepl43"
+        },
+        {
+          "id": "mwj8l1i048ptc4",
+          "type": "shieldItem",
+          "label": "",
+          "x": 545.2,
+          "y": 276.98999999999995,
+          "rot": 0,
+          "ownerId": "mwj8ftzhp158ce"
+        },
+        {
+          "id": "mwj8ldmgzz1gti",
+          "type": "ruck",
+          "label": "Ball secured · use it",
+          "x": 545.2,
+          "y": 258.35,
+          "rot": 180,
+          "members": [
+            {
+              "id": "mwj8e2r2oxyqlk",
+              "pose": "grounded"
+            },
+            {
+              "id": "mwj8ftzhp158ce",
+              "pose": "bound"
+            },
+            {
+              "id": "mwj8e34mdkmz60",
+              "pose": "bound"
+            }
+          ],
+          "breakdown": {
+            "phase": "secured",
+            "arrivalSide": "defence",
+            "carrierId": "mwj8e2r2oxyqlk",
+            "tacklerId": "mwj8ftsmevmydz",
+            "ballId": "mwj8h553khg2gb"
+          }
+        }
+      ],
+      "timing": {
+        "mwj8h553khg2gb": {
+          "start": 99,
+          "end": 100
+        }
+      },
+      "paths": {}
+    },
+    {
+      "name": "Play away · second tackle",
+      "seconds": 1,
+      "notes": "A3 carries left into the next channel and meets D3. D3 tracks and wraps at the correct height. Stop after this second tackle; release and present before reset. Original ruck is over once the ball leaves; A1/A2/D2 recover safely. Decision: scan and use the space; the animated example carries into a second controlled tackle.",
+      "objects": [
+        {
+          "id": "mwj8e2r2oxyqlk",
+          "type": "attacker",
+          "label": "A1",
+          "x": 563.85143,
+          "y": 264.3414285714286,
+          "rot": 0
+        },
+        {
+          "id": "mwj8e34mdkmz60",
+          "type": "attacker",
+          "label": "A2",
+          "x": 545.2,
+          "y": 261.0128571428571,
+          "rot": 180
+        },
+        {
+          "id": "mwj8e3k6cepl43",
+          "type": "attacker",
+          "label": "A3",
+          "x": 450,
+          "y": 262.0114285714286,
+          "rot": 270
+        },
+        {
+          "id": "mwj8fey6jkwvcd",
+          "type": "cone",
+          "label": "",
+          "x": 395.6,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ffvqjhooc5",
+          "type": "cone",
+          "label": "",
+          "x": 450,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fg0e9ahygc",
+          "type": "cone",
+          "label": "",
+          "x": 504.4,
+          "y": 223.4,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftsmevmydz",
+          "type": "defender",
+          "label": "D1",
+          "x": 286.8,
+          "y": 270,
+          "rot": 0
+        },
+        {
+          "id": "mwj8ftzhp158ce",
+          "type": "defender",
+          "label": "D2",
+          "x": 545.2,
+          "y": 287.64142857142855,
+          "rot": 0
+        },
+        {
+          "id": "mwj8fu6ddgwgdi",
+          "type": "defender",
+          "label": "D3",
+          "x": 450,
+          "y": 277.9885714285714,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7b2cqyjej",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7hy307vnk",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g7x2vjfugd",
+          "type": "cone",
+          "label": "",
+          "x": 526,
+          "y": 333,
+          "rot": 0
+        },
+        {
+          "id": "mwj8g83qp3mae5",
+          "type": "cone",
+          "label": "",
+          "x": 374,
+          "y": 143,
+          "rot": 0
+        },
+        {
+          "id": "mwj8h553khg2gb",
+          "type": "ball",
+          "label": "",
+          "x": 431.34857,
+          "y": 269.3342857142858,
+          "rot": 180,
+          "carrySide": "left",
+          "ownerId": "mwj8e3k6cepl43"
+        },
+        {
+          "id": "mwj8l1i048ptc4",
+          "type": "shieldItem",
+          "label": "",
+          "x": 545.2,
+          "y": 276.98999999999995,
+          "rot": 0,
+          "ownerId": "mwj8ftzhp158ce"
+        },
+        {
+          "id": "mwj8ldmgzz1gti",
+          "type": "ruck",
+          "label": "Ball secured · use it",
+          "x": 545.2,
+          "y": 258.35,
+          "rot": 180,
+          "members": [
+            {
+              "id": "mwj8e2r2oxyqlk",
+              "pose": "grounded"
+            },
+            {
+              "id": "mwj8ftzhp158ce",
+              "pose": "bound"
+            },
+            {
+              "id": "mwj8e34mdkmz60",
+              "pose": "bound"
+            }
+          ],
+          "breakdown": {
+            "phase": "secured",
+            "arrivalSide": "defence",
+            "carrierId": "mwj8e2r2oxyqlk",
+            "tacklerId": "mwj8ftsmevmydz",
+            "ballId": "mwj8h553khg2gb"
+          }
+        },
+        {
+          "id": "mwj8qrfncjggvq",
+          "type": "tackle",
+          "label": "Tackle marker",
+          "x": 450,
+          "y": 270,
+          "rot": 180,
+          "members": [
+            {
+              "id": "mwj8e3k6cepl43",
+              "pose": "grounded"
+            },
+            {
+              "id": "mwj8fu6ddgwgdi",
+              "pose": "tackling"
+            }
+          ],
+          "breakdown": {
+            "phase": "tackle",
+            "carrierId": "mwj8e3k6cepl43",
+            "tacklerId": "mwj8fu6ddgwgdi",
+            "ballId": "mwj8h553khg2gb"
+          }
+        },
+        {
+          "id": "u10-dp3",
+          "type": "decision",
+          "label": "Use the ball",
+          "x": 532,
+          "y": 236,
+          "rot": 0,
+          "decision": {
+            "playerId": "mwj8e3k6cepl43",
+            "anchor": 0.23,
+            "question": "Where is the space for the next phase?",
+            "cue": "Look before collecting; run into space or pass to a legally positioned teammate if available.",
+            "options": [
+              {
+                "label": "Carry towards D3",
+                "kind": "main",
+                "points": []
+              },
+              {
+                "label": "Pass if support is available",
+                "kind": "note",
+                "points": []
+              }
+            ]
+          }
+        }
+      ],
+      "timing": {},
+      "paths": {
+        "mwj8e3k6cepl43": {
+          "mode": "smooth",
+          "points": [
+            {
+              "x": 477.2,
+              "y": 240.875
+            }
+          ],
+          "follow": false
+        }
+      }
+    }
+  ],
+  "ageMin": 10,
+  "ageMax": 10,
+  "minutes": 8,
+  "players": "6 players: A1 (first carrier), A2 (first attacking support), A3 (next carrier); D1 (first tackler), D2 (passive shield holder), D3 (second defender). One supervising coach; rotate all six roles after each repetition.",
+  "equipment": "1 size 4 rugby ball, 1 suitable contact shield, 7 marker cones as shown. Optional spare ball and extra boundary cones. Use a clear 20 m × 15 m practice area with runoff.",
+  "instructions": "Set two queues facing each other as shown, with blue attacking towards the bottom of the original diagram. Keep the seven cones in their shown arrangement. A1 runs around the central cone line and meets D1. D1 releases and clears the area; A1 presents the ball towards blue support. D2 approaches first with the passive shield; A2 arrives from the attacking side and rehearses a controlled clearout. A3 stays available, collects the exposed ball when it is playable, moves left and meets D3. Stop after the second tackle and practise release/presentation before resetting. Suggested 8 min: 2 min walkthrough, 4 min coached repetitions, 2 min review/rotation. Animation seconds are illustrative, not contact targets.",
+  "coaching": "A1: carry securely in two hands, scan the defender, remain balanced, keep head out of the opponent’s headspace and present promptly towards support. D1/D3: track, lower under control, wrap arms and release immediately; use a tackle height below the base of the sternum. A2: arrive from own side, eyes up, stable feet, head and shoulders above hips; in live play bind before or as contact occurs. D2: hold the shield passively and follow the coach’s instructions; no collision contest. A3: stay onside, communicate, wait for a playable ball, collect with two hands and accelerate into space only when clear. Reward ball availability, safe posture, timing and decision-making rather than force.",
+  "regression": "Walk through with D1/D3 giving a two-hand touch; A1 lowers to the ground independently under coach instruction. D2 marks the defender position without contact; A2 demonstrates approach and stance, then A3 collects an exposed stationary ball. Increase space or pause each phase.",
+  "progression": "Once safe technique is established, vary the side of the first tackle and the timing of the passive defender. Ask A2 to decide whether support is needed and A3 to choose an available channel. Use controlled age-appropriate opposition only with qualified supervision; keep the same U10 participation limits. Rotate attacker/defender roles between repetitions.",
+  "questions": "Where should A1 put the ball? What must D1 do immediately after the tackle? Which side must A2 and D2 approach from? When is A3 allowed to pick up the ball? Where is the space for the next carry?",
+  "notes": "This is a six-player practice, not a match formation. D2 arrives first by design, not because defenders are required to arrive first. The shield models opposition; shield contact is not a literal live ruck bind. A1 and the first ruck marker persist in the supplied final diagram: in practice the original players must recover safely and the ruck ends when the ball leaves. The studio’s default ATTACK arrow points up; your blue line actually attacks down initially, then A3 moves left. The setup has been re-centred, gates widened and queue spacing opened. The original eight-step sequence and contact arrangements are retained; decision alternatives are visual, not executable branches. Confirm current RFU Appendix 4 and club policy before delivery; the 2026–27 referee summary was accessible but the direct official appendix returned 403.",
+  "links": [
+    {
+      "label": "RFU age-grade Rules of Play (official directory)",
+      "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+      "kind": "Age-grade law directory"
+    },
+    {
+      "label": "U10 summary, 2026–27 (RugbyReferee.net; secondary source)",
+      "url": "https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf",
+      "kind": "Age-grade reference"
+    },
+    {
+      "label": "World Rugby Law 14 – Tackle",
+      "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/14-tackle/",
+      "kind": "General law"
+    },
+    {
+      "label": "World Rugby Law 15 – Ruck",
+      "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/15-ruck/",
+      "kind": "General law"
+    },
+    {
+      "label": "World Rugby Rugby Ready – The ruck",
+      "url": "https://passport.world.rugby/injury-prevention-and-risk-management/rugby-ready/the-ruck/",
+      "kind": "Coaching guidance"
+    }
+  ],
+  "provenance": "Coach-authored animation; coaching card and step notes added 16 November 2026. · Layout and visual decision revision 0.8.1",
+  "review": "Draft for qualified coach review; not a safety sign-off."
+}
