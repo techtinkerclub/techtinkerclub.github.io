@@ -1,5 +1,5 @@
 // A single transactional setup operation, shared by the editor and tests.
-import {pitchSettings,resizeDrill} from './drill-edit.js?v=0.9.0';
+import {pitchSettings,resizeDrill} from './drill-edit.js?v=0.12.4';
 import {PRESETS,presetPositions} from './presets.js?v=0.6.0';
 const ages={'U6–U8':[6,8],'U9':[9,9],'U10':[10,10],'U11–U12':[11,12],'U13–U14':[13,14],'U15–U16':[15,16],'All ages':[6,16]};
 const categories=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game'];
@@ -43,5 +43,5 @@ export function prepareSetup(d,v,makeId){
   if(next.frames.some(f=>f.objects.length+points.filter(q=>missing(f,q)).length>200))return fail('This layout would exceed the 200-object limit per step.');
   for(const q of points){const id=makeId();for(const f of next.frames){if(!missing(f,q))continue;f.objects.push({id,type:v.markers,label:'',...q,layoutMarker:true});added++}}
  }
- return {ok:true,drill:next,added,removed};
+ return {ok:true,drill:next,added,removed,translation:resized.translation};
 }
