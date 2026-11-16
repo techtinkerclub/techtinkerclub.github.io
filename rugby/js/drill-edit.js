@@ -12,18 +12,28 @@ export function resizeDrill(d,length,width,mode='relative'){
  if(!Number.isFinite(length)||!Number.isFinite(width)||length<5||length>100||width<5||width>70)return {ok:false,message:'Choose a length of 5–100 m and a width of 5–70 m.'};
  const next=copy(d);next.length=length;next.width=width;
  if(mode!=='physical'||length===d.length&&width===d.width)return {ok:true,drill:next};
- const fit=p=>({x:450+(p.x-450)*d.width/width,y:270+(p.y-270)*d.length/length});
+ // Preserve world distances from the top-left pitch corner wherever possible.
+ // If that crop does not fit, find one common translation for ALL steps and paths.
+ // Never scale individual objects, clamp individual points, or alter relative spacing.
+ const world=p=>({x:(p.x-42)*d.width/816,y:(p.y-37)*d.length/466});
+ const rows=[];
+ let minX=-Infinity,maxX=Infinity,minY=-Infinity,maxY=Infinity;
  for(let i=0;i<next.frames.length;i++){
-  const f=next.frames[i],orig=d.frames[i];
-  // Managed preset markers retain their proportional layout; carried objects are re-synced by the engine.
-  const points=pointList(f).filter(p=>!p.layoutMarker),before=pointList(orig).filter(p=>!p.layoutMarker);
+  const points=pointList(next.frames[i]).filter(p=>!p.layoutMarker),before=pointList(d.frames[i]).filter(p=>!p.layoutMarker);
   for(let j=0;j<points.length;j++){
-   const q=fit(points[j]);
-   if(!(inField(before[j])?inField(q):inEditor(q)))return {ok:false,message:'Preserving metres would move an object or route beyond the playing area in step '+(i+1)+'. Enlarge the pitch or choose Scale arrangement.'};
-   Object.assign(points[j],q);
+   const p=before[j],q=world(p),inside=inField(p);
+   const loX=inside?0:(24-42)*width/816,hiX=inside?width:(876-42)*width/816;
+   const loY=inside?0:(25-37)*length/466,hiY=inside?length:(515-37)*length/466;
+   minX=Math.max(minX,loX-q.x);maxX=Math.min(maxX,hiX-q.x);
+   minY=Math.max(minY,loY-q.y);maxY=Math.min(maxY,hiY-q.y);
+   if(minX>maxX+1e-7||minY>maxY+1e-7)return {ok:false,message:'The existing objects and movement paths cannot all fit this pitch without changing distances (step '+(i+1)+'). Increase the pitch or choose Scale arrangement.'};
+   rows.push({p:points[j],q});
   }
  }
- return {ok:true,drill:next};
+ const nearestZero=(lo,hi)=>lo>0?lo:hi<0?hi:0;
+ const dx=nearestZero(minX,maxX),dy=nearestZero(minY,maxY);
+ for(const {p,q} of rows)Object.assign(p,{x:42+(q.x+dx)*816/width,y:37+(q.y+dy)*466/length});
+ return {ok:true,drill:next,translation:{x:dx,y:dy}};
 }
 const contactTypes=new Set(['tackle','ruck','maul','scrum']);
 const staticTypes=new Set(['cone','flag','bag','sausage','ladder','label']);
