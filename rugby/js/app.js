@@ -1,6 +1,6 @@
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset} from './symbol-scale.js?v=0.12.0';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.8.0';
-import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.0';
+import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.2';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.4.9';
 import { pitchGeometry, trainingField } from './pitch.js?v=0.9.0';
@@ -26,7 +26,7 @@ import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.0';
 initWorkspace();
-const SEEDS = await fetch(new URL('../data/drills.json?v=0.11.0', import.meta.url)).then(r => {
+const SEEDS = await fetch(new URL('../data/drills.json?v=0.12.2', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }).then(data => {
