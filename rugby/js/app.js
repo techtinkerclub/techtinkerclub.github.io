@@ -237,17 +237,29 @@ $('endContact').onclick=()=>deleteObject('here');
 function activeBreakdown(){const o=activeObject(),b=chosenBall();if(o?.breakdown)return o;return f().objects.find(m=>m.breakdown&&roles(f(),m).ballId===b?.id)}
 let arrivalSignature='';
 function updateBreakdownTools(o){
- const phase=o.breakdown?.phase,next=nextPhase(phase);$('breakdownTools').hidden=!validPhase(phase);if(!validPhase(phase)){arrivalSignature='';return}
- $('breakdownPhase').textContent=o.label||PHASES[phase];$('arrivalOrderWrap').hidden=phase!=='release';const order=$('arrivalOrder');if(phase==='release'&&order.dataset.marker!==o.id+':'+idx){order.dataset.marker=o.id+':'+idx;order.value=o.breakdown?.arrivalSide||'defence'}const side=phase==='release'?order.value:o.breakdown?.arrivalSide||'attack';$('advanceBreakdown').textContent=next?'Next: '+(next==='support'?supportTitle(side):next==='ruck'&&side==='defence'?'Clearout · ruck formed':PHASES[next]):'Sequence complete';
+ const phase=o.breakdown?.phase,next=nextPhase(phase);$('breakdownTools').hidden=!validPhase(phase);
+ if(!validPhase(phase)){arrivalSignature='';$('arrivalChoices').hidden=true;return}
+ $('breakdownPhase').textContent=phase==='tackle'?PHASES.tackle:o.label||PHASES[phase];
+ $('arrivalOrderWrap').hidden=phase!=='release';
+ const order=$('arrivalOrder');
+ if(phase==='release'&&order.dataset.marker!==o.id+':'+idx){order.dataset.marker=o.id+':'+idx;order.value=o.breakdown?.arrivalSide||'defence'}
+ const side=phase==='release'?order.value:o.breakdown?.arrivalSide||'attack';
+ $('advanceBreakdown').textContent=next?'Next: '+(next==='support'?supportTitle(side):next==='ruck'&&side==='defence'?'Clearout · ruck formed':PHASES[next]):'Sequence complete';
  $('advanceBreakdown').disabled=!next||routeDrawing||!!ballPicking;
- const eligible=[...candidates(f(),o,'attack'),...candidates(f(),o,'defence')],members=new Set((o.members||[]).map(m=>m.id)),sig=JSON.stringify([o.id,idx,phase,eligible.map(p=>[p.id,p.label]),[...members]]);
+ // Only ask for participants when the upcoming stage actually needs them.
+ const ask=!!next&&next!=='release';
+ $('arrivalChoices').hidden=!ask;
+ if(!ask){arrivalSignature='';$('arrivalList').innerHTML='';return}
+ $('arrivalPrompt').textContent=next==='support'?(side==='defence'?'Choose arriving defender(s)':'Choose arriving attacker(s)'):next==='ruck'?'Choose players forming the ruck':'Participants for the next stage';
+ const eligible=next==='support'?candidates(f(),o,side):[...candidates(f(),o,'attack'),...candidates(f(),o,'defence')];
+ const members=new Set((o.members||[]).map(m=>m.id)),sig=JSON.stringify([o.id,idx,phase,side,eligible.map(p=>[p.id,p.label]),[...members]]);
  if(sig!==arrivalSignature){arrivalSignature=sig;$('arrivalList').innerHTML=eligible.map(p=>'<label><input type="checkbox" data-arrival="'+esc(p.id)+'" '+(members.has(p.id)?'checked':'')+'> '+esc(objectName(p))+'</label>').join('')}
 }
 function nextBreakdownStep(marker){
  if(!canEditObjects()||!marker?.breakdown)return;
  const phase=nextPhase(marker.breakdown.phase);if(!phase||drill.frames.length>=150)return;
  const frame=clone(f());frame.name=PHASES[phase];frame.seconds=phase==='release'?.8:1.5;frame.notes='';frame.timing={};frame.paths={};
- const m=frame.objects.find(o=>o.id===marker.id);let ids=[...$('arrivalList').querySelectorAll('input:checked')].map(x=>x.dataset.arrival);
+ const m=frame.objects.find(o=>o.id===marker.id);let ids=phase==='release'?[]:[...$('arrivalList').querySelectorAll('input:checked')].map(x=>x.dataset.arrival);
  const side=phase==='support'?$('arrivalOrder').value:phase==='release'?'defence':m.breakdown.arrivalSide||'attack';
  if(phase==='support')ids=ids.filter(id=>candidates(frame,m,side).some(o=>o.id===id));
  const res=advance(frame,m,geometry(),phase,ids,drill.ageMin===10&&drill.ageMax===10,side);
