@@ -8239,7 +8239,6 @@
               "y": 345,
               "rot": 0,
               "transferKind": "set",
-              "groundState": "presented",
               "ownerId": "o1"
             },
             {
