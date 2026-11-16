@@ -1,15 +1,16 @@
+import {normalScaleMode,symbolTransform,labelOffset,symbolFactors} from './symbol-scale.js?v=0.12.0';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.8.0';
-import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.10.2';
+import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.0';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.9.0';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.9.0';
-import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.10.2';
+import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.12.0';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
-import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts} from './contact.js?v=0.8.4';
-import {cleanBreakdowns} from './breakdown.js?v=0.8.4';
-import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.7.0';
+import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts} from './contact.js?v=0.12.0';
+import {cleanBreakdowns} from './breakdown.js?v=0.12.0';
+import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.7.1';
-import {offsideOverlay} from './offside.js?v=0.11.1';
+import {offsideOverlay} from './offside.js?v=0.12.0';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
@@ -35,9 +36,9 @@ export function playbackData(d){
 }
 export function drillDuration(d){return d.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0)}
 export function timeLocation(d,t){if(t<=0||d.frames.length<2)return {i:0,p:1};let acc=0;for(let i=1;i<d.frames.length;i++){const end=acc+d.frames[i].seconds;if(t<=end)return {i,p:clamp((t-acc)/d.frames[i].seconds,0,1)};acc=end}return {i:d.frames.length-1,p:1}}
-const svgObj=(o,g,poses,ink=false)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+')">'+posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type))),color)+'</g>'+(o.label&&!contactType(o.type)?'<text y="'+(o.type==='label'?4:34)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
-export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,ghosts=false,ink=false,prefix='scene'}={}){
- const g=pitchGeometry(d.length,d.width,orientation),loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),poses=trainingPoses(objects,posesFor(objects));
+const svgObj=(o,g,poses,ink=false)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+') '+symbolTransform(o,g,poses.get(o.id))+'">'+posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type))),color)+'</g>'+(o.label&&!contactType(o.type)?'<text y="'+labelOffset(o,g,poses.get(o.id))+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
+export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,scaleMode='realistic',ghosts=false,ink=false,prefix='scene'}={}){
+ const g={...pitchGeometry(d.length,d.width,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),poses=trainingPoses(objects,posesFor(objects));
  let field=trainingField(g,false,.5,pitchSettings(d)),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
  if(old)for(const o of fr.objects){
@@ -49,7 +50,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
   if(!m||(o.type==='ball'?!passes:!runs)||(!Math.hypot(m.start.x-m.end.x,m.start.y-m.end.y)&&!route?.points?.length))continue;
   const ball=o.type==='ball',color=ink?(ball?'#8b5c00':o.type==='defender'?'#a6520e':'#155a91'):(ball?'#ffe994':types[o.type][1]),d=routeSVG(routeSamples(m.start,m.end,route,g));
   arrows+='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(ink?3.4:3)+'" '+(ball?(o.transferKind==='kick'?'stroke-dasharray="13 4 3 4" ':'stroke-dasharray="7 6" '):'')+'marker-end="url(#arr)" opacity=".95"/>';
-  if(ghosts&&canCarry(o)){const q=g.toView(m.start.x,m.start.y);starts+='<circle cx="'+q.x+'" cy="'+q.y+'" r="13" fill="none" stroke="'+color+'" stroke-width="2" stroke-dasharray="4 3"/>'}
+  if(ghosts&&canCarry(o)){const q=g.toView(m.start.x,m.start.y);starts+='<circle cx="'+q.x+'" cy="'+q.y+'" r="'+Math.max(3,15*symbolFactors(o,g)[0])+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-dasharray="4 3"/>'}
  }
  const order=[...objects.filter(o=>contactType(o.type)),...objects.filter(o=>!contactType(o.type)&&o.type!=='ball'&&!isShield(o)),...objects.filter(isShield),...objects.filter(o=>o.type==='ball')];
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
