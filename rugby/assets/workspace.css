@@ -153,3 +153,23 @@ body.presentation-mode .path-hit,body.presentation-mode .path-insert{display:non
 #ballTools span{flex:1;flex-basis:auto;min-width:80px}
 .pitch.picking-ball,.pitch.picking-ball .obj{cursor:crosshair}
 body.presentation-mode #ballTools{display:none}
+
+/* Primary rugby actions are pinned above independently scrollable equipment. */
+body > .main > .sidebar { display:flex;flex-direction:column;overflow:hidden;padding:0; }
+.action-panel { flex:0 0 auto;padding:10px 8px 8px;border-bottom:1px solid var(--line);background:var(--panel); }
+.action-panel h3 { margin:0 0 7px;color:var(--accent);font-size:11px; }
+.action-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px; }
+.action-grid button { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:42px;padding:4px 2px;font-size:10px;line-height:1.15;text-align:center;white-space:normal; }
+.action-grid button:disabled { opacity:.55; }
+.action-grid button:not(:disabled) .tool-icon { color:var(--accent); }
+.action-grid .tool-icon { font-size:19px;line-height:19px;font-weight:600;color:var(--muted); }
+.action-grid .pass-icon { color:#ffe994!important; }
+.action-grid .ball-icon { color:#fff7dd!important;transform:rotate(-24deg); }
+.action-panel select { font-size:11px;padding:4px 5px;margin-top:6px; }
+.action-panel select[hidden] { display:none!important; }
+.action-status { display:block;font-size:10px;line-height:1.35;margin-top:5px;overflow-wrap:anywhere; }
+.object-palette-scroll { flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:9px 8px; }
+.object-palette-scroll > h3 { margin:0 0 5px; }
+.object-palette-scroll > small { font-size:11px; }
+body.hide-equipment > .main > .sidebar,body.presentation-mode > .main > .sidebar { display:none; }
+@media(max-height:570px) { body > .main > .sidebar { overflow:auto; } .object-palette-scroll { flex:0 0 auto;overflow:visible; } .action-grid button { min-height:34px; } }
