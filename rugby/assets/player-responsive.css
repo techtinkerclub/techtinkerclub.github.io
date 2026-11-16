@@ -1,0 +1,78 @@
+/* Read-only presentation only. The editor and print package retain their styles. */
+@media screen{
+.read-only-player{--player-border:#435849;--player-accent:#c9f07c}
+.read-only-player header{padding:14px max(16px,env(safe-area-inset-right)) 14px max(16px,env(safe-area-inset-left))}
+.read-only-player .player-heading{min-width:0;overflow-wrap:anywhere}
+.read-only-player .file-label{position:relative;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;min-height:44px;white-space:nowrap}
+.read-only-player .file-label input{position:absolute;inset:0;width:100%;height:100%;opacity:0;max-width:none;margin:0;cursor:pointer}
+.read-only-player .file-label:focus-within{outline:2px solid var(--player-accent);outline-offset:2px}
+.read-only-player main{width:100%;max-width:1240px;margin:0 auto;padding-bottom:max(16px,env(safe-area-inset-bottom));min-width:0}
+.read-only-player #board{width:100%;height:min(63dvh,620px);min-width:0}
+.read-only-player #board svg{display:block;max-width:100%;max-height:100%}
+.read-only-player #controls{min-width:0;display:grid;gap:10px}
+.read-only-player #controls[hidden]{display:none}
+.read-only-player .player-status{align-items:baseline;min-width:0}
+.read-only-player #phase{overflow-wrap:anywhere;min-width:0;flex:1;font-size:15px}
+.read-only-player #time{white-space:nowrap;font-size:12px;font-variant-numeric:tabular-nums;color:#bacbbe}
+.read-only-player #seek{display:block;margin:0;width:100%;min-height:32px;cursor:pointer}
+.read-only-player .player-transport{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(90px,1.6fr) minmax(0,1fr) minmax(60px,.8fr);gap:7px;align-items:stretch}
+.read-only-player .player-transport button,.read-only-player .player-transport select{min-width:0;min-height:44px;padding:8px 6px}
+.read-only-player .player-transport button:disabled{opacity:.4;cursor:default}
+.read-only-player .player-transport #play{grid-column:3}
+.read-only-player .player-options{min-width:0;border-top:1px solid var(--player-border);padding-top:8px}
+.read-only-player .player-options>summary,.read-only-player .player-movie>summary{color:var(--player-accent);cursor:pointer;min-height:36px;padding:8px 0;font-weight:600;font-size:14px}
+.read-only-player .view-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:6px 10px;align-items:center;padding-top:4px}
+.read-only-player .view-options label{display:flex;align-items:center;gap:8px;min-height:42px;font-size:14px}
+.read-only-player .view-options input{width:20px;height:20px;accent-color:var(--player-accent);flex-shrink:0}
+.read-only-player .view-options select{min-width:0;min-height:44px;width:100%}
+.read-only-player .export-actions{display:flex;flex-wrap:wrap;gap:8px;padding-top:5px}
+.read-only-player .export-actions button,.read-only-player #downloadDrill{min-height:44px}
+.read-only-player .step-reading{min-width:0;background:#1c2d23;border:1px solid var(--player-border);border-radius:8px;padding:12px}
+.read-only-player .step-reading[hidden]{display:none}
+.read-only-player .step-reading h2{margin:0 0 7px;color:var(--player-accent);font-size:13px}
+.read-only-player .step-reading p{line-height:1.5;margin:0}
+.read-only-player #decisionNow .decision-note{margin-bottom:0}
+.read-only-player #message:empty{display:none}
+.read-only-player #coachResources{min-width:0}
+.read-only-player .coach-resource{min-width:0;margin:8px 0;padding:13px}
+.read-only-player .coach-resource>summary{min-height:32px;line-height:1.5}
+.read-only-player .coach-field,.read-only-player .coach-sequence-row{min-width:0}
+.read-only-player .coach-field p,.read-only-player .coach-sequence-row p{line-height:1.5}
+.read-only-player button:focus-visible,.read-only-player select:focus-visible,.read-only-player input:focus-visible,.read-only-player summary:focus-visible{outline:2px solid var(--player-accent);outline-offset:2px}
+.read-only-player .coach-sequence-row button{min-height:44px;font-size:14px}
+.read-only-player .coach-links p{line-height:1.5}
+}
+@media screen and (max-width:760px){
+.read-only-player{font-size:15px}
+.read-only-player header{align-items:flex-start;gap:8px;padding:11px max(10px,env(safe-area-inset-right)) 10px max(10px,env(safe-area-inset-left));flex-wrap:wrap}
+.read-only-player header small{font-size:9px;letter-spacing:.6px}
+.read-only-player h1{font-size:clamp(18px,5vw,22px);line-height:1.2;margin:4px 0}
+.read-only-player .player-heading{flex:1 1 230px}
+.read-only-player header #objective{font-size:13px;line-height:1.4}
+.read-only-player .file-label{padding:8px 10px;font-size:13px}
+.read-only-player main{gap:7px;padding:8px max(8px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+.read-only-player #board{width:100%;max-width:calc(62svh * var(--pitch-ratio,.8));aspect-ratio:var(--pitch-ratio,.8);height:auto;align-self:center}
+.read-only-player #board svg{width:100%;height:auto}
+.read-only-player #controls{padding:9px;gap:5px}
+.read-only-player #phase{font-size:14px}
+.read-only-player .player-transport{grid-template-columns:repeat(2,minmax(0,.85fr)) minmax(70px,1.5fr) minmax(62px,1fr) minmax(50px,.85fr);gap:5px}
+.read-only-player .player-transport button,.read-only-player .player-transport select{font-size:13px;padding:7px 3px}
+.read-only-player .player-options>summary{min-height:40px}
+.read-only-player .view-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.read-only-player .view-options select{grid-column:1/-1}
+.read-only-player .coach-fields{grid-template-columns:minmax(0,1fr)}
+.read-only-player .coach-field{padding:10px}
+.read-only-player .coach-field h3,.read-only-player .coach-sequence-row h3{font-size:15px}
+.read-only-player .coach-field p,.read-only-player .coach-sequence-row p{font-size:14px}
+.read-only-player .player-movie .movie-settings{grid-template-columns:minmax(0,1fr)}
+.read-only-player #downloadDrill{width:100%;white-space:normal}
+}
+@media screen and (max-height:540px) and (orientation:landscape){
+.read-only-player #board{height:60svh;width:100%;max-width:none;aspect-ratio:auto}
+.read-only-player #board svg{height:100%;width:100%}
+}
+@media screen and (max-width:350px){
+.read-only-player .player-transport{grid-template-columns:repeat(3,minmax(0,1fr))}
+.read-only-player .player-transport #play{grid-column:auto}
+.read-only-player .player-transport select{grid-column:span 2}
+}
