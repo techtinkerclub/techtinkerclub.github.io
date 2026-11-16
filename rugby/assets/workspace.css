@@ -146,3 +146,10 @@ body.presentation-mode .route-tools{display:none}
 .path-insert{cursor:move}
 .path-insert:hover circle:nth-of-type(2){fill:#4b7447;stroke:white}
 body.presentation-mode .path-hit,body.presentation-mode .path-insert{display:none}
+
+/* Ball ownership controls and receiver selection. */
+.ball-palette select{width:100%;padding:5px;font-size:11px}
+#ballTools{align-items:center}
+#ballTools span{flex:1;flex-basis:auto;min-width:80px}
+.pitch.picking-ball,.pitch.picking-ball .obj{cursor:crosshair}
+body.presentation-mode #ballTools{display:none}
