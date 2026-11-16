@@ -49,7 +49,7 @@ export function ballMovement(old,next,ball,g){
  const t=next.timing?.[ball.id]||{start:0,end:100};
  const start=from?carriedPose(a,objectPose(old,next,from.id,t.start/100,g),g):a;
  const end=to?carriedPose(ball,objectPose(old,next,to.id,t.end/100,g),g):ball;
- return {start,end,pass:!!(from&&to),from,to,timing:t};
+ return {start,end,pass:!!(from&&to)&&ball.transferKind!=='turnover',turnover:!!to&&ball.transferKind==='turnover',from,to,timing:t};
 }
 export function movementFor(old,next,o,g){
  if(!old)return null;
@@ -65,6 +65,7 @@ export function ballPose(old,next,ball,p,g){
   return carriedPose(ball,objectPose(old,next,to.id,p,g),g,lateral(a)+(lateral(ball)-lateral(a))*eased);
  }
  const m=ballMovement(old,next,ball,g),t=m.timing;
+ if(m.turnover){if(p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g),g);return from?carriedPose(a,objectPose(old,next,from.id,p,g),g):{...a}}
  if(from&&p*100<=t.start)return carriedPose(a,objectPose(old,next,from.id,p,g),g);
  if(to&&p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g),g);
  const q=clamp((p*100-t.start)/Math.max(1,t.end-t.start),0,1);
@@ -73,8 +74,11 @@ export function ballPose(old,next,ball,p,g){
 }
 export function transitionObjects(old,next,p,g){
  return next.objects.map(o=>{
-  if(!findObject(old,o.id)&&p<1)return null;
-  return o.type==='ball'?ballPose(old,next,o,p,g):objectPose(old,next,o.id,p,g);
+  if(!findObject(old,o.id)&&p<1&&!(Array.isArray(o.members)&&p>=.78))return null;
+  if(o.type==='ball')return ballPose(old,next,o,p,g);
+  const prior=findObject(old,o.id),pose=objectPose(old,next,o.id,p,g);
+  if(Array.isArray(o.members)||Array.isArray(prior?.members))pose.members=p>=.78?o.members:prior?.members;
+  return pose;
  }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>!findObject(next,o.id)):[]);
 }
 
@@ -110,7 +114,7 @@ export function assignPossession(frames,index,ballId,ownerId,g,originalPosition=
   previous=i===index&&originalPosition?originalPosition:{x:b.x,y:b.y};
   if(ownerId){b.ownerId=ownerId;Object.assign(b,carriedPose(b,findObject(fr,ownerId),g))}
   else{delete b.ownerId;Object.assign(b,{x:releasePosition.x,y:releasePosition.y})}
-  if(i>index){if(fr.timing)delete fr.timing[ballId];if(fr.paths)delete fr.paths[ballId]}
+  if(i>index){delete b.transferKind;if(fr.timing)delete fr.timing[ballId];if(fr.paths)delete fr.paths[ballId]}
   count++;
  }
  return count;
