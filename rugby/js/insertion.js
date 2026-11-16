@@ -1,11 +1,11 @@
 // Scoped insertion only fills missing identities. Existing authored snapshots are never overwritten.
 import {canCarry,carrier,isShield,shieldPose,carriedPose,findObject} from './possession.js?v=0.5.3';
-export const insertable=o=>!!o&&!['tackle','ruck','maul','scrum'].includes(o.type);
+export const insertable=o=>!!o&&!['tackle','ruck','maul','scrum','decision'].includes(o.type);
 export function scopeIndices(frames,index,scope){return frames.map((_,i)=>i).filter(i=>scope==='all'||(scope==='onward'?i>=index:i===index))}
 export function candidateCopy(frame,source,g){
  if(!insertable(source)||findObject(frame,source.id))return null;
  const copy=JSON.parse(JSON.stringify(source));
- delete copy.transferKind;delete copy.members;delete copy.breakdown;
+ delete copy.donutTacklerId;if(copy.type==='donut')copy.donutState='ready';delete copy.transferKind;delete copy.members;delete copy.breakdown;
  if(copy.type==='ball'||isShield(copy)){
   if(copy.ownerId){const p=carrier(frame,copy);
    if(!canCarry(p)||frame.objects.some(o=>o.type===copy.type&&o.ownerId===p.id))return null;

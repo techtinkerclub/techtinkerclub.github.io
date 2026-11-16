@@ -1,0 +1,7 @@
+# Decision annotations and training equipment — v0.8.0
+
+Decision points are current-step objects: select a player, add Decision point, drag the diamond, edit question and options. Choose Draw preview and click waypoints; Finish preview ends drawing. A demonstrated choice has no duplicate line; alternative runs are dotted, alternative passes dash-dot. They never alter possession, timings, or playback. Decisions toggle affects diagram/export; the slow replay displays them by default. Printed coaching sheets and read-only presentations include written options. The saved object has structured options for future branching; no automatic branch playback or pause is implemented.
+
+Tackle donut: add from Equipment, position at start, select optional intercepting player and stop percentage, Choose rolling target and click on pitch. The generated step uses a straight roll and a planned stop, followed by a down-pad step. The player approaches the selected stop position and changes to a schematic tackle pose at contact. Reset upright to clear the pose. This is not collision detection, simulated impact physics or a live-player tackle. Qualified coach controls equipment and age-appropriate progression.
+
+The default palette includes four player types, equipment, Tackle, Decision point and Text marker. Game phases provides guided set pieces. Manual ruck, maul, scrum and legacy bag-player shortcuts remain in Advanced for standalone phases and older drill compatibility.

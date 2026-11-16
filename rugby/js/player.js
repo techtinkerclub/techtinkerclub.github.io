@@ -1,15 +1,15 @@
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.7.1';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.7.3';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.8.0';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.8.0';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
-import {coachingMarkup,sequenceMarkup} from './coaching-output.js?v=0.7.1';
+import {coachingMarkup,sequenceMarkup,decisionMarkup} from './coaching-output.js?v=0.8.0';
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0;
 function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
-function render(){if(!d)return;const s=renderScene(d,{...opts,time:t});$('board').innerHTML=s.svg;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t}
-function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);t=0;$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('orientation').value=opts.orientation;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
+function render(){if(!d)return;const s=renderScene(d,{...opts,time:t});$('board').innerHTML=s.svg;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?decisionMarkup(s.frame):'';$('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t}
+function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);t=0;$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('orientation').value=opts.orientation;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
 $('play').onclick=()=>{if(!d)return;if(playing){stop();return}if(t>=drillDuration(d))t=0;playing=true;$('play').textContent='Pause';last=performance.now();function tick(now){if(!playing)return;t=Math.min(drillDuration(d),t+(now-last)/1000*Number($('speed').value));last=now;render();if(t>=drillDuration(d))stop();else raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick)};
 $('restart').onclick=()=>{stop();t=0;render()};$('seek').oninput=()=>{stop();t=Number($('seek').value);render()};
-for(const k of ['runs','passes','labels','orientation'])$(k).onchange=()=>{opts[k]=k==='orientation'?$(k).value:$(k).checked;render()};
+for(const k of ['runs','passes','labels','decisions','orientation'])$(k).onchange=()=>{opts[k]=k==='orientation'?$(k).value:$(k).checked;render()};
 $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>3000000)throw Error('File is too large.');open(JSON.parse(await file.text()),opts)}catch(err){$('message').textContent=err.message}};
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();const i=Number(b.dataset.jumpStep);t=d.frames.slice(0,i+1).reduce((sum,f,k)=>sum+(k?f.seconds:0),0);render();$('board').scrollIntoView({block:'nearest'})};
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};

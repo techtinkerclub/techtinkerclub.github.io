@@ -1,5 +1,6 @@
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
-import {esc,types,shape,clamp} from './model.js?v=0.5.3';
+import {esc,types,shape,clamp} from './model.js?v=0.8.0';
+import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.0';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.6.0';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.7.0';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
@@ -23,21 +24,22 @@ export function playbackData(d){
    if(contactType(o.type)&&Array.isArray(o.members))q.members=o.members.slice(0,17).filter(m=>m&&typeof m.id==='string').map(m=>({id:m.id,pose:m.pose}));
    if(contactType(o.type)&&o.breakdown&&typeof o.breakdown==='object'){const b=o.breakdown;q.breakdown={phase:b.phase,arrivalSide:b.arrivalSide,carrierId:b.carrierId,tacklerId:b.tacklerId,ballId:b.ballId}}
    const t=f.timing?.[o.id];if(t&&Object.hasOwn(f.timing,o.id)){const start=num(t.start,0,99,0);timing[o.id]={start,end:num(t.end,start+1,100,100)}}
-   if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return q;
+   if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return copyTraining(o,q);
   });
-  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};cleanGuide(result);return result;
+  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};cleanGuide(result);cleanTraining(result);return result;
  });
  cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
  return out;
 }
 export function drillDuration(d){return d.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0)}
 export function timeLocation(d,t){if(t<=0||d.frames.length<2)return {i:0,p:1};let acc=0;for(let i=1;i<d.frames.length;i++){const end=acc+d.frames[i].seconds;if(t<=end)return {i,p:clamp((t-acc)/d.frames[i].seconds,0,1)};acc=end}return {i:d.frames.length-1,p:1}}
-const svgObj=(o,g,poses,ink=false)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+')">'+posedShape(o,poses.get(o.id),shape(o.type),color)+'</g>'+(o.label&&!contactType(o.type)?'<text y="'+(o.type==='label'?22:34)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
-export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,ghosts=false,ink=false,prefix='scene'}={}){
- const g=pitchGeometry(d.length,d.width,orientation),loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?transitionObjects(old,fr,p,g):frameObjects(fr,g),poses=posesFor(objects);
+const svgObj=(o,g,poses,ink=false)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+')">'+posedShape(o,poses.get(o.id),donutShape(o,shape(o.type)),color)+'</g>'+(o.label&&!contactType(o.type)?'<text y="'+(o.type==='label'?22:34)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
+export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,ghosts=false,ink=false,prefix='scene'}={}){
+ const g=pitchGeometry(d.length,d.width,orientation),loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),poses=trainingPoses(objects,posesFor(objects));
  let field=trainingField(g,false),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
  if(old)for(const o of fr.objects){
+  if(o.type==='decision')continue;
   const m=movementFor(old,fr,o,g),route=fr.paths?.[o.id];
   if(o.type==='ball'&&m?.turnover){if(p*100>=(fr.timing?.[o.id]?.end??100))changes.push('Turnover');continue}
   if(m?.instant)continue;
@@ -49,7 +51,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  }
  const order=[...objects.filter(o=>contactType(o.type)),...objects.filter(o=>!contactType(o.type)&&o.type!=='ball'&&!isShield(o)),...objects.filter(isShield),...objects.filter(o=>o.type==='ball')];
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
- let body=field+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.map(o=>svgObj(o,g,poses,ink)).join('')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
+ let body=field+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision').map(o=>svgObj(o,g,poses,ink)).join('')+(decisions?decisionOverlay(fr,g,esc,'',ink):'')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+g.viewWidth+' '+g.viewHeight+'" width="'+g.viewWidth+'" height="'+g.viewHeight+'" font-family="Arial,sans-serif">'+body+'</svg>',g,index:i,frame:fr};
 }
