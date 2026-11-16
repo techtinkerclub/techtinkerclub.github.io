@@ -1,3 +1,4 @@
+import {visualUnit} from './symbol-scale.js?v=0.12.0';
 import { routeSamples, sampleRoute } from './routes.js?v=0.4.3';
 import { wrapAngle, shortestTurn } from './rotation.js?v=0.3.3';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -5,7 +6,7 @@ export const canCarry=o=>!!o&&['attacker','defender','neutral','coach','shield',
 export const findObject=(frame,id)=>frame?.objects.find(o=>o.id===id);
 export const carrier=(frame,ball)=>{const o=ball?.ownerId&&findObject(frame,ball.ownerId);return canCarry(o)?o:null};
 export const isShield=o=>o?.type==='shieldItem';
-export function shieldPose(item,player,g){if(!player)return {...item};const p=g.toView(player.x,player.y),a=((Number(player.rot)||0)+g.rotation)*Math.PI/180;return {...item,...g.fromView(p.x+16*Math.sin(a),p.y-16*Math.cos(a)),rot:player.rot}}
+export function shieldPose(item,player,g){if(!player)return {...item};const p=g.toView(player.x,player.y),a=((Number(player.rot)||0)+g.rotation)*Math.PI/180;return {...item,...g.fromView(p.x+16*visualUnit(g)*Math.sin(a),p.y-16*visualUnit(g)*Math.cos(a)),rot:player.rot}}
 export function assignShield(frames,index,id,ownerId,g,originalPosition=null){
  const item=findObject(frames[index],id);if(!isShield(item))return 0;const old=item.ownerId||null;
  if(old===(ownerId||null))return 0;if(ownerId&&!canCarry(findObject(frames[index],ownerId)))return 0;
@@ -24,7 +25,7 @@ export function carriedPose(ball,player,g,sideOffset=lateral(ball)){
  if(!player)return {...ball};
  // Relative to the player's facing direction, not the screen. The ball overlaps the front shoulder.
  const p=g.toView(player.x,player.y),a=((Number(player.rot)||0)+g.rotation)*Math.PI/180;
- return {...ball,...g.fromView(p.x+sideOffset*Math.cos(a)+12*Math.sin(a),p.y+sideOffset*Math.sin(a)-12*Math.cos(a))};
+ return {...ball,...g.fromView(p.x+visualUnit(g)*(sideOffset*Math.cos(a)+12*Math.sin(a)),p.y+visualUnit(g)*(sideOffset*Math.sin(a)-12*Math.cos(a)))};
 }
 export function setCarrySide(frames,index,ballId,side,g){
  const ball=findObject(frames[index],ballId),owner=carrier(frames[index],ball);
