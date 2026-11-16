@@ -25,7 +25,7 @@ import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.7.0';
 import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.11.0';
 initWorkspace();
-const SEEDS = await fetch(new URL('../data/drills.json?v=0.10.3', import.meta.url)).then(r => {
+const SEEDS = await fetch(new URL('../data/drills.json?v=0.11.0', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }).then(data => {
@@ -216,7 +216,7 @@ document.addEventListener('keydown',e=>{
 function historyButtons(){
  $('undoEdit').disabled=!history.canUndo;$('redoEdit').disabled=!history.canRedo;
 }
-function resetHistory(){validationHighlight.clear();validationResult=null;setupPending=false;trainingPick=null;drill.frames.forEach(cleanTraining);groupIds.clear();groupMode=false;breakdownPreferred=null;breakdownView=null;arrivalSignature='';cleanContacts(drill.frames);cleanBreakdowns(drill.frames);sanitizeRoutes(drill.frames);syncPossession(drill.frames,geometry());history.reset(drill);historyButtons()}
+function resetHistory(){validationHighlight.clear();validationResult=null;guideDirection='auto';setupPending=false;trainingPick=null;drill.frames.forEach(cleanTraining);groupIds.clear();groupMode=false;breakdownPreferred=null;breakdownView=null;arrivalSignature='';cleanContacts(drill.frames);cleanBreakdowns(drill.frames);sanitizeRoutes(drill.frames);syncPossession(drill.frames,geometry());history.reset(drill);historyButtons()}
 function restoreHistory(direction){
  if(drag||document.querySelector('dialog[open]')||document.body.classList.contains('presentation-mode'))return;
  if(!requireAppliedSetup())return;const value=history[direction]();if(!value)return;
