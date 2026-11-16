@@ -75,7 +75,7 @@ export function donutLaneOverlay(pad,g,pointer=null){
  if(!pad||pad.donutState==='down')return '';
  const {a,h,max,end}=donutLane(pad,g);
  if(max<10)return '';
- const start={x:a.x+h.x*24,y:a.y+h.y*24};
+ const offset=Math.min(24,max*.5),start={x:a.x+h.x*offset,y:a.y+h.y*offset};
  const target=pointer?donutTarget(pad,g.fromView(pointer.x,pointer.y),g):null;
  const info=target&&target.distance>=10?'<circle cx="'+target.target.x+'" cy="'+target.target.y+'" r="7" fill="#ffe2a0" stroke="#483b27" stroke-width="1.5"/><text x="'+(target.target.x+12)+'" y="'+(target.target.y-9)+'" font-size="13" fill="#ffe2a0" paint-order="stroke" stroke="#203b2b" stroke-width="3">'+(target.distance/g.scale).toFixed(1)+' m</text>':'';
  return '<g pointer-events="none"><path d="M'+start.x+' '+start.y+'L'+end.x+' '+end.y+'" fill="none" stroke="#f6cf80" stroke-opacity=".7" stroke-width="2.5" marker-end="url(#arr)"/>'+info+'</g>';
