@@ -57,6 +57,12 @@ export function arrangeContact(frame,marker,g,previous=null,explicit=null,u10=fa
  return {ok:true,count:players.length,message:spec.title+' formation arranged · '+players.length+' players.'};
 }
 export function posesFor(objects){const map=new Map();for(const marker of objects)if(contactType(marker.type))for(const m of marker.members||[])map.set(m.id,m.pose);return map}
+// Arranged contact is communicated by player poses and the top caption, not a legacy letter.
+export function contactMarkerShape(o,base){
+ if(!contactType(o.type))return base;
+ if(o.members?.length)return '';
+ return base.replace(/<text\b[^>]*>[\s\S]*?<\/text>/g,'');
+}
 export function posedShape(o,pose,normal,color){
  if(!pose||pose==='standing')return normal;
  if(pose==='grounded')return '<rect x="-12" y="-23" width="24" height="46" rx="11" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-16" r="8" fill="'+color+'" stroke="#102e23" stroke-width="1.5"/><path d="M-9 3H9" stroke="#102e23" stroke-width="1.4"/>';
