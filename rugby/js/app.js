@@ -9,7 +9,7 @@ import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypoi
 import { createHistory } from './history.js?v=0.4.0';
 import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, carrySide, setCarrySide } from './possession.js?v=0.5.0';
 import {createCamera} from './camera.js?v=0.5.0';
-import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactLabels} from './contact.js?v=0.5.0';
+import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactLabels} from './contact.js?v=0.5.0-1';
 initWorkspace();
 const SEEDS = await fetch(new URL('../data/drills.json?v=0.4.1', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -236,7 +236,7 @@ function updateBallTools(){
  const recipients=$('recipientChoice'),rOptions='<option value="">Choose recipient by name…</option>'+f().objects.filter(o=>canCarry(o)&&o.id!==owner?.id).map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');if(recipients.innerHTML!==rOptions)recipients.innerHTML=rOptions;recipients.hidden=!ballPicking;recipients.disabled=!ballPicking;recipients.value='';
  
  $('autoAttach').checked=autoAttach;$('autoAttach').disabled=!enabled||!!ballPicking;
- const text=ballPicking?'Click the receiving player (Esc to cancel).':owner?'Carried by '+(owner.label||types[owner.type][0]):b?autoAttach?'Free ball · drop onto a player':'Ball is free':'Add a rugby ball to begin.';
+ const text=ballPicking?'Click a player or choose by name (Esc cancels).':owner?'Carried by '+(owner.label||types[owner.type][0]):b?autoAttach?'Free ball · drop onto a player':'Ball is free':'Add a rugby ball to begin.';
  $('ballSideStatus').textContent=text;
  
  $('attachBallSide').disabled=!enabled||!b||!!owner||!!ballPicking&&ballPickKind==='turnover';$('passBallSide').disabled=!enabled||!b||!owner||!!ballPicking&&ballPickKind==='turnover';$('turnoverSide').disabled=!enabled||!b||!!ballPicking&&ballPickKind!=='turnover';$('turnoverLabel').textContent=ballPicking&&ballPickKind==='turnover'?'Cancel':'Turnover';$('turnoverSide').classList.toggle('selected',!!ballPicking&&ballPickKind==='turnover');
@@ -266,14 +266,14 @@ function finishBallPick(targetId){
   const n=clone(f());n.name=(ballPickKind==='turnover'?'Turnover to ':'Pass to ')+(target.label||'player');n.seconds=2;n.notes='';n.timing={};n.paths={};drill.frames.splice(idx+1,0,n);idx++;ball=n.objects.find(o=>o.id===b.id);sanitizeRoutes(drill.frames);
  }
  assignPossession(drill.frames,idx,ball.id,targetId,geometry());selected=ballChoiceId=ball.id;
- if(ballPickKind==='turnover'){ball.transferKind='turnover';if(idx){f().timing[ball.id]={start:99,end:100};if(f().paths)delete f().paths[ball.id]}}
+ if(ballPickKind==='turnover'){ball.transferKind='turnover';if(idx){f().timing[ball.id]={start:79,end:80};if(f().paths)delete f().paths[ball.id]}}
  else{delete ball.transferKind;if(idx&&from){f().timing[ball.id]={start:35,end:70};if(f().paths)delete f().paths[ball.id]}}
  showPasses=true;$('passTrails').classList.add('selected');$('passTrails').setAttribute('aria-pressed','true');
  changed();refresh();focusPitch();note(ballPickKind==='turnover'?'Possession changed without a pass.':from?'Pass created. Adjust its timing or path.':'Ball attached. It follows the player.');
 }
 function releaseBall(){
  if(!canEditObjects())return;const b=chosenBall(),p=carrier(f(),b);if(!p)return;
- assignPossession(drill.frames,idx,b.id,null,geometry());
+ assignPossession(drill.frames,idx,b.id,null,geometry());delete b.transferKind;
  if(idx&&drill.frames[idx-1].objects.some(o=>o.id===b.id&&o.ownerId)){f().timing[b.id]={start:99,end:100};if(f().paths)delete f().paths[b.id]}
  selected=ballChoiceId=b.id;changed();refresh();focusPitch();note('Ball released at its current position. You can move it independently.');
 }
@@ -356,6 +356,7 @@ function finishDrag(e){
    if(idx&&f().paths)delete f().paths[ballId];
    const n=assignPossession(drill.frames,idx,ballId,playerId,geometry(),pickup?null:gesture.originalPosition);
    if(n){
+    delete b.transferKind;
     if(idx&&drill.frames[idx-1].objects.some(o=>o.id===ballId&&!o.ownerId)){
      f().timing[ballId]=pickup?{start:99,end:100}:{start:0,end:100};
     }
@@ -364,7 +365,7 @@ function finishDrag(e){
    }
   }
  }
- const marker=f().objects.find(o=>o.id===gesture.id);if(e.type==='pointerup'&&gesture.kind==='move'&&gesture.moved&&autoContact&&!e.altKey&&contactType(marker?.type))arrangeMarker(marker);
+ const marker=f().objects.find(o=>o.id===gesture.id);if(e.type==='pointerup'&&gesture.kind==='move'&&gesture.moved&&autoContact&&!e.altKey&&contactType(marker?.type))arrangeMarker(marker,marker.members?.length?marker.members.map(m=>m.id):null);
  if(gesture.moved||attached){changed();render();inspector();tracks()}
  else if(gesture.contact)render();
 }

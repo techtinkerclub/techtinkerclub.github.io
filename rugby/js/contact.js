@@ -30,15 +30,16 @@ export function arrangeContact(frame,marker,g,previous=null,explicit=null){
  else if(marker.type==='ruck')offsets=[{x:0,y:0,r:90,pose:'grounded'},...players.slice(1).map((_,i)=>({x:(i%2?1:-1)*(i>1?25:15),y:i%2?23:-23,r:i%2?0:180,pose:'bound'}))];
  else if(marker.type==='maul')offsets=players.map((_,i)=>({x:Math.sin(i*2*Math.PI/players.length)*26,y:-Math.cos(i*2*Math.PI/players.length)*26,r:i*360/players.length+180,pose:'bound'}));
  else {const teamA=players.filter(o=>o.type===lead.type),teamB=players.filter(o=>o.type!==lead.type);const balanced=teamA.length>=2&&teamB.length>=2;if(balanced)players.splice(0,players.length,...teamA.slice(0,3),...teamB.slice(0,3));const split=balanced?Math.min(3,teamA.length):Math.ceil(players.length/2);offsets=players.map((_,i)=>{const top=i>=split,j=top?i-split:i,count=top?players.length-split:split;return {x:(j-(count-1)/2)*27,y:top?-20:20,r:top?180:0,pose:'crouched'}})}
- const a=((Number(lead.rot)||0)+g.rotation)*Math.PI/180,c=Math.cos(a),s=Math.sin(a);const p=g.toView(marker.x,marker.y);
+ const heading=marker.members?.length?Number(marker.rot)||0:Number(lead.rot)||0;
+ const a=(heading+g.rotation)*Math.PI/180,c=Math.cos(a),s=Math.sin(a);const p=g.toView(marker.x,marker.y);
  const placements=offsets.map(v=>({...v,dx:v.x*c-v.y*s,dy:v.x*s+v.y*c}));
  const minX=Math.min(...placements.map(v=>v.dx)),maxX=Math.max(...placements.map(v=>v.dx)),minY=Math.min(...placements.map(v=>v.dy)),maxY=Math.max(...placements.map(v=>v.dy));
  const clampCenter=(v,lo,hi)=>lo<=hi?Math.max(lo,Math.min(hi,v)):(lo+hi)/2;
  const cx=clampCenter(p.x,g.margin+16-minX,g.margin+g.fw-16-maxX),cy=clampCenter(p.y,g.margin+16-minY,g.margin+g.fh-16-maxY);
- Object.assign(marker,g.fromView(cx,cy));marker.members=[];
+ Object.assign(marker,g.fromView(cx,cy),{rot:heading});marker.members=[];
  // Remove selected players from other formations in this step.
  const chosen=new Set(players.map(o=>o.id));for(const o of frame.objects)if(o!==marker&&Array.isArray(o.members))o.members=o.members.filter(m=>!chosen.has(m.id));
- players.forEach((o,i)=>{const v=placements[i];Object.assign(o,g.fromView(cx+v.dx,cy+v.dy),{rot:((lead.rot+v.r)%360+360)%360});marker.members.push({id:o.id,pose:v.pose});if(frame.paths?.[o.id])frame.paths[o.id].follow=false});
+ players.forEach((o,i)=>{const v=placements[i];Object.assign(o,g.fromView(cx+v.dx,cy+v.dy),{rot:((heading+v.r)%360+360)%360});marker.members.push({id:o.id,pose:v.pose});if(frame.paths?.[o.id])frame.paths[o.id].follow=false});
  return {ok:true,count:players.length,message:spec.title+' formation arranged · '+players.length+' players.'};
 }
 export function posesFor(objects){const map=new Map();for(const marker of objects)if(contactType(marker.type))for(const m of marker.members||[])map.set(m.id,m.pose);return map}
