@@ -1,5 +1,6 @@
+import {physicalUnit} from './symbol-scale.js?v=0.12.0';
 // Author-controlled schematic breakdown stages; not a technique or law validator.
-import {carrier,findObject} from './possession.js?v=0.8.4';
+import {carrier,findObject} from './possession.js?v=0.12.0';
 export const PHASES={tackle:'Tackle',release:'Release and present',support:'Attacking support arrives',ruck:'Ruck formed',contest:'Contest for possession',secured:'Ball secured · use it'};
 export const validPhase=p=>Object.hasOwn(PHASES,p);
 export function supportTitle(side){return side==='defence'?'Defending support arrives':'Attacking support arrives'}
@@ -20,7 +21,7 @@ export function setParticipants(f,m,g,ids,u10=false){
  if(phase==='support'&&!(first==='defence'?other.length:same.length))return {ok:false,message:'Select a first arriving '+(first==='defence'?'defender.':'attacker.')};
  if(phase==='support'&&(first==='defence'?same.length:other.length))return {ok:false,message:'Add the opposing support at the Ruck formed stage.'};
  const ball=findObject(f,r.ballId),p=g.toView(ball?.x??m.x,ball?.y??m.y),ang=(m.rot+g.rotation)*Math.PI/180,c=Math.cos(ang),s=Math.sin(ang);
- const put=(o,x,y,r)=>{Object.assign(o,g.fromView(p.x+x*c-y*s,p.y+x*s+y*c),{rot:((m.rot+r)%360+360)%360});if(f.paths?.[o.id])delete f.paths[o.id]};
+ const put=(o,x,y,r)=>{Object.assign(o,g.fromView(p.x+physicalUnit(g)*(x*c-y*s),p.y+physicalUnit(g)*(x*s+y*c)),{rot:((m.rot+r)%360+360)%360});if(f.paths?.[o.id])delete f.paths[o.id]};
  // The marker is the ball area. Separate grounded participants from standing ones.
  for(const [group,sign] of [[same,1],[other,-1]])group.forEach((o,i)=>{
   const row=Math.floor(i/3),n=Math.min(3,group.length-row*3),j=i%3;
@@ -35,7 +36,7 @@ export function advance(f,m,g,phase,ids,u10=false,arrivalSide=null){
  const r=roles(f,m),a=findObject(f,r.carrierId),d=findObject(f,r.tacklerId),b=findObject(f,r.ballId);
  if(phase!==nextPhase(r.phase||'tackle')||!a||!d||!b)return {ok:false,message:'An arranged tackle with a ball carrier, tackler and ball is required.'};
  const p=g.toView(m.x,m.y),angle=(m.rot+g.rotation)*Math.PI/180,c=Math.cos(angle),s=Math.sin(angle);
- const put=(o,x,y,rot)=>{Object.assign(o,g.fromView(p.x+x*c-y*s,p.y+x*s+y*c));if(rot!==undefined)o.rot=((m.rot+rot)%360+360)%360;if(f.paths?.[o.id])delete f.paths[o.id]};
+ const put=(o,x,y,rot)=>{Object.assign(o,g.fromView(p.x+physicalUnit(g)*(x*c-y*s),p.y+physicalUnit(g)*(x*s+y*c)));if(rot!==undefined)o.rot=((m.rot+rot)%360+360)%360;if(f.paths?.[o.id])delete f.paths[o.id]};
  const first=arrivalSide||(r.arrivalSide||'attack');m.breakdown={phase,carrierId:a.id,tacklerId:d.id,tacklerIds:r.tacklerIds,ballId:b.id,arrivalSide:first};m.label=phase==='support'?supportTitle(first):phase==='ruck'&&first==='defence'?'Clearout · ruck formed':PHASES[phase];
  if(phase==='release'){
   // Both responsibilities happen immediately; shown as simultaneous rather than a delayed release.
