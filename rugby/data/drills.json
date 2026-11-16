@@ -13,7 +13,7 @@
       "length": 20,
       "width": 15,
       "objective": "Change direction into space.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 6,
       "players": "8–16",
       "equipment": "4 cones, optional balls",
@@ -21,8 +21,8 @@
       "coaching": "Look up; change pace; avoid bunching.",
       "regression": "Widen area or use one shark.",
       "progression": "Carry a ball in two hands.",
-      "questions": "",
-      "notes": "",
+      "questions": "Where was the gap before you started? What changed when the shark moved?",
+      "notes": "Watch whether the quieter runners reach the line as often as the fastest. Give them a wider starting gap if needed.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -262,7 +262,7 @@
       "length": 15,
       "width": 12,
       "objective": "React and accelerate.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 5,
       "players": "6–16",
       "equipment": "8 cones",
@@ -270,8 +270,8 @@
       "coaching": "React to the call; leave room to decelerate.",
       "regression": "Use a visual signal and walking.",
       "progression": "Mix visual and verbal cues.",
-      "questions": "",
-      "notes": "",
+      "questions": "What helped you react to the call? How did you slow down at the end?",
+      "notes": "Call both teams equally. Leave a clear run-off beyond each safety line; switch partners regularly.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -285,7 +285,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Pair players on two parallel lines, each facing their own safety line. Call one team; they run to safety while partners pursue for a light tag. Reset.",
+          "notes": "Set-up: Pair players on two parallel lines, each facing their own safety line. Call one team; they run to safety while partners pursue for a light tag. Reset. Call both teams equally. Leave a clear run-off beyond each safety line; switch partners regularly.",
           "objects": [],
           "timing": {}
         }
@@ -302,7 +302,7 @@
       "length": 15,
       "width": 15,
       "objective": "Scan and change direction.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 6,
       "players": "6–16",
       "equipment": "5 hoops or marked nests, 8 balls, cones",
@@ -310,8 +310,8 @@
       "coaching": "Look up at centre; carry securely.",
       "regression": "Walk with fewer teams.",
       "progression": "Allow taking one unattended ball from another nest.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which nest has the clearest route? Where will you look before picking up the ball?",
+      "notes": "One child runs per team; the rest wait behind their nest. Count balls at the end instead of encouraging children to wrestle for them.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -325,7 +325,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Place balls at centre with teams at corner nests. One runner per team collects one ball each trip; then tag the next teammate. No stealing from hands.",
+          "notes": "Set-up: Place balls at centre with teams at corner nests. One runner per team collects one ball each trip; then tag the next teammate. No stealing from hands. One child runs per team; the rest wait behind their nest. Count balls at the end instead of encouraging children to wrestle for them.",
           "objects": [],
           "timing": {}
         }
@@ -342,7 +342,7 @@
       "length": 15,
       "width": 15,
       "objective": "Develop coordination and balance.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 5,
       "players": "4–12",
       "equipment": "4 cones",
@@ -350,8 +350,8 @@
       "coaching": "Move with control; stop if uncomfortable.",
       "regression": "Shorten the distance.",
       "progression": "Combine two movement patterns.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which movement is easiest to control? Can you keep the same balance when you change direction?",
+      "notes": "Let children choose a comfortable movement. This is coordination practice, not a race or fitness punishment.",
       "links": [
         {
           "label": "Rugby Australia · Lower primary skills and drills 2",
@@ -365,7 +365,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Set short parallel lanes. Children explore bear crawls and other comfortable animal movements, then return walking. Keep bouts short.",
+          "notes": "Set-up: Set short parallel lanes. Children explore bear crawls and other comfortable animal movements, then return walking. Keep bouts short. Let children choose a comfortable movement. This is coordination practice, not a race or fitness punishment.",
           "objects": [],
           "timing": {}
         }
@@ -382,7 +382,7 @@
       "length": 15,
       "width": 15,
       "objective": "React and find an escape route.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 6,
       "players": "6–12",
       "equipment": "4 cones, 1 ball",
@@ -390,8 +390,8 @@
       "coaching": "Approach under control; scan before turning.",
       "regression": "Call one player with no opponent.",
       "progression": "Call two numbers and allow a support pass.",
-      "questions": "",
-      "notes": "",
+      "questions": "Could you collect the ball without running into your opponent? Where was your safest way out?",
+      "notes": "Call one pair at a time initially. If two arrive together, stop and reset rather than letting them dive at the ball.",
       "links": [
         {
           "label": "New Zealand Rugby · U10 session 1",
@@ -405,7 +405,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Number two teams facing a loose central ball. Call a number from each; first to collect the ball tries to return behind their line before a light tag. No diving for the ball.",
+          "notes": "Set-up: Number two teams facing a loose central ball. Call a number from each; first to collect the ball tries to return behind their line before a light tag. No diving for the ball. Call one pair at a time initially. If two arrive together, stop and reset rather than letting them dive at the ball.",
           "objects": [],
           "timing": {}
         }
@@ -422,7 +422,7 @@
       "length": 6,
       "width": 5,
       "objective": "Track direction without crossing feet unnecessarily.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 5,
       "players": "2 per group",
       "equipment": "4 cones per pair",
@@ -430,8 +430,8 @@
       "coaching": "Stay balanced; watch torso and hips.",
       "regression": "Walking pace.",
       "progression": "Add forward and backward movement.",
-      "questions": "",
-      "notes": "",
+      "questions": "What tells you your partner is about to change direction? How can you stay balanced?",
+      "notes": "Keep the partners facing one another and give each pair room. Change leader after a short bout.",
       "links": [
         {
           "label": "World Rugby · Tracking activities and videos",
@@ -623,7 +623,7 @@
       "length": 10,
       "width": 10,
       "objective": "Develop single-leg control.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 5,
       "players": "Any",
       "equipment": "Cones, optional balls",
@@ -631,8 +631,8 @@
       "coaching": "Soft knee; steady trunk; eyes up.",
       "regression": "Use both feet.",
       "progression": "Add a small reach or gentle catch.",
-      "questions": "",
-      "notes": "",
+      "questions": "What helps you stay steady? Can you catch without putting your other foot down?",
+      "notes": "Offer a wall-side or two-foot version if needed. Count quality repetitions rather than how long someone can endure.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -646,7 +646,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "In personal spaces, stand on one leg briefly, reach or receive a gentle pass, then switch. Keep movements comfortable.",
+          "notes": "Set-up: In personal spaces, stand on one leg briefly, reach or receive a gentle pass, then switch. Keep movements comfortable. Offer a wall-side or two-foot version if needed. Count quality repetitions rather than how long someone can endure.",
           "objects": [],
           "timing": {}
         }
@@ -663,7 +663,7 @@
       "length": 10,
       "width": 10,
       "objective": "Land softly with control.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 5,
       "players": "Any",
       "equipment": "Cones",
@@ -671,8 +671,8 @@
       "coaching": "Quiet landing; knees track comfortably; steady balance.",
       "regression": "Step and hold instead of jumping.",
       "progression": "Hop a short distance when ready.",
-      "questions": "",
-      "notes": "",
+      "questions": "What does a quiet landing feel like? Can you hold your landing for two seconds?",
+      "notes": "Use low, short jumps on a suitable surface; a stable landing matters more than distance.",
       "links": [
         {
           "label": "New Zealand Rugby · U10 session 1",
@@ -686,7 +686,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Use separated personal spaces; jump a short distance and hold a stable landing before resetting. Low repetitions and no fatigue challenge.",
+          "notes": "Set-up: Use separated personal spaces; jump a short distance and hold a stable landing before resetting. Low repetitions and no fatigue challenge. Use low, short jumps on a suitable surface; a stable landing matters more than distance.",
           "objects": [],
           "timing": {}
         }
@@ -703,7 +703,7 @@
       "length": 10,
       "width": 10,
       "objective": "Present hands and catch cleanly.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 6,
       "players": "4–8",
       "equipment": "1 ball per group",
@@ -711,8 +711,8 @@
       "coaching": "Hands ready; look at target; follow through.",
       "regression": "Use shorter passes.",
       "progression": "Introduce a second ball if spacing allows.",
-      "questions": "",
-      "notes": "",
+      "questions": "When should your hands be ready? How can you let your teammate know you want the ball?",
+      "notes": "Change direction round the circle and include every child. The circular exercise is ball-handling practice, not a match passing pattern.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -1056,7 +1056,7 @@
       "length": 20,
       "width": 15,
       "objective": "Move into a passing lane.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
@@ -1064,8 +1064,8 @@
       "coaching": "Move after passing; call early; find clear lanes.",
       "regression": "Give attack an extra player.",
       "progression": "Return to directional rugby passing laws.",
-      "questions": "",
-      "notes": "",
+      "questions": "Where can you move so the passer can see you? What should you do after passing?",
+      "notes": "The any-direction pass is a deliberate training rule. Explain the difference from rugby's sideways or backwards passing law.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -1473,7 +1473,7 @@
       "length": 12,
       "width": 10,
       "objective": "Catch while moving and realign.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 7,
       "players": "4–8",
       "equipment": "4 cones, 2 balls",
@@ -1481,8 +1481,8 @@
       "coaching": "Give a target; adjust pace; pass to space.",
       "regression": "Walk the route.",
       "progression": "Add a passive defender at the turn.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "How can A1 prepare to catch before reaching the corner? When should A3 call?",
+      "notes": "Use the turn to teach awareness, not a sharp change of direction at full speed. This isolated handling exercise does not represent match-direction passing.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -1618,7 +1618,7 @@
         {
           "name": "Turn and pass",
           "seconds": 1.8,
-          "notes": "A1 angles across, then passes to A3 in the stationary handling exercise.",
+          "notes": "A1 rounds the corner and passes to A3. This is a handling exercise with a change of direction, not an example of a legal match pass.",
           "objects": [
             {
               "id": "a1",
@@ -1705,16 +1705,16 @@
       "length": 20,
       "width": 12,
       "objective": "Pass accurately while moving.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 8,
-      "players": "6–12",
-      "equipment": "8 cones, 2 balls",
+      "players": "One runner and three feeders per lane; rotate roles.",
+      "equipment": "8 cones, 3 balls (one per feeder)",
       "instructions": "Place feeders at successive stations. Runners travel along a channel, collect and return passes in turn; rotate feeders often.",
       "coaching": "Keep eyes up; turn hands toward ball; avoid rushing.",
       "regression": "Increase space between stations.",
       "progression": "Vary distance and timing of feeds.",
-      "questions": "",
-      "notes": "One runner uses three independent balls and returns each to its feeder. This is a handling exercise; no match-direction passing is implied.",
+      "questions": "When should the feeder release the ball? Can the runner catch without stopping?",
+      "notes": "The animation uses three separate balls, one per feeder. Walk the route first and keep the next runner back until the lane is clear.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -2431,7 +2431,7 @@
       "length": 12,
       "width": 12,
       "objective": "Create useful support angles.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 8,
       "players": "4–8",
       "equipment": "4 cones, 1 ball",
@@ -2439,8 +2439,8 @@
       "coaching": "Call early; move as ball travels; maintain distance.",
       "regression": "Static diamond.",
       "progression": "Add a roaming passive defender.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "When can the passer follow? How much space should the next receiver leave?",
+      "notes": "Start with one group of four. If the diamond shrinks, stop and restore the spacing. Passes around the diamond are a handling exercise.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -2504,7 +2504,7 @@
         {
           "name": "Pass A1 → A2",
           "seconds": 1.8,
-          "notes": "Receiver moves a little towards the centre to catch; only after release does the passer follow into the receiver’s vacated position. Maintain spacing; reset after this sequence.",
+          "notes": "A2 steps in to receive from A1. Once the ball has left A1's hands, A1 follows into A2's old space.",
           "objects": [
             {
               "id": "a1",
@@ -2568,7 +2568,7 @@
         {
           "name": "Pass A2 → A3",
           "seconds": 1.8,
-          "notes": "Receiver moves a little towards the centre to catch; only after release does the passer follow into the receiver’s vacated position. Maintain spacing; reset after this sequence.",
+          "notes": "A3 offers a target. A2 releases the pass before moving into the space A3 has vacated.",
           "objects": [
             {
               "id": "a1",
@@ -2632,7 +2632,7 @@
         {
           "name": "Pass A3 → A4",
           "seconds": 1.8,
-          "notes": "Receiver moves a little towards the centre to catch; only after release does the passer follow into the receiver’s vacated position. Maintain spacing; reset after this sequence.",
+          "notes": "A4 moves towards the centre and receives. A3 follows after the pass; check that the runners have room.",
           "objects": [
             {
               "id": "a1",
@@ -2696,7 +2696,7 @@
         {
           "name": "Pass A4 → A1",
           "seconds": 1.8,
-          "notes": "Receiver moves a little towards the centre to catch; only after release does the passer follow into the receiver’s vacated position. Maintain spacing; reset after this sequence.",
+          "notes": "A1 receives the final pass. A4 follows, then everyone resets the diamond.",
           "objects": [
             {
               "id": "a1",
@@ -2772,7 +2772,7 @@
       "length": 20,
       "width": 15,
       "objective": "Scan more than one passing option.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 2 balls, bibs",
@@ -2780,8 +2780,8 @@
       "coaching": "Scan before receiving; communicate which ball is live.",
       "regression": "Use one ball.",
       "progression": "Add a second scoring zone per end.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which ball are you offering for? How do you avoid two receivers chasing the same pass?",
+      "notes": "Teach the one-ball game first. Only add the second ball when players can communicate and scan reliably.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -2795,7 +2795,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Use two marked scoring zones. Teams score by passing to a teammate inside a zone. Begin with one ball before introducing the second, with clear possession rules.",
+          "notes": "Set-up: Use two marked scoring zones. Teams score by passing to a teammate inside a zone. Begin with one ball before introducing the second, with clear possession rules. Teach the one-ball game first. Only add the second ball when players can communicate and scan reliably.",
           "objects": [],
           "timing": {}
         }
@@ -2812,7 +2812,7 @@
       "length": 20,
       "width": 12,
       "objective": "Receive while advancing.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 7,
       "players": "4–12",
       "equipment": "4 cones, 1 ball per group",
@@ -2820,8 +2820,8 @@
       "coaching": "Keep depth; move onto the pass; avoid drifting together.",
       "regression": "Walk with short passes.",
       "progression": "Add a defender to force a choice.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "How do you stay available while the line advances? What happens if everyone runs level?",
+      "notes": "Four runners are shown. Keep the receiving line staggered, and rotate the first carrier rather than always starting on one side.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -2917,7 +2917,7 @@
         {
           "name": "Pass across the line 1",
           "seconds": 1.6,
-          "notes": "Advance together; the receiver stays behind the ball at release.",
+          "notes": "A1 passes to A2. A3 and A4 keep their depth instead of moving level with the ball.",
           "objects": [
             {
               "id": "a1",
@@ -3005,7 +3005,7 @@
         {
           "name": "Pass across the line 2",
           "seconds": 1.6,
-          "notes": "Advance together; the receiver stays behind the ball at release.",
+          "notes": "A2 passes to A3 while the line continues forward. Keep enough width for A4.",
           "objects": [
             {
               "id": "a1",
@@ -3093,7 +3093,7 @@
         {
           "name": "Pass across the line 3",
           "seconds": 1.6,
-          "notes": "Advance together; the receiver stays behind the ball at release.",
+          "notes": "A3 passes to A4. Everyone follows in support and resets at the end.",
           "objects": [
             {
               "id": "a1",
@@ -3193,7 +3193,7 @@
       "length": 20,
       "width": 15,
       "objective": "Exploit a two-on-one advantage.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "3 per group",
       "equipment": "4 cones, 1 ball",
@@ -3201,8 +3201,8 @@
       "coaching": "Carry in two hands; hold width; pass before the space closes.",
       "regression": "Defender moves sideways only.",
       "progression": "Add a recovering defender.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Has the defender committed to the carrier? Is the pass really needed?",
+      "notes": "Pause at the decision diamond. The gold route is an alternative to discuss, not an automatically played branch. Let the carrier make the choice in practice.",
       "links": [
         {
           "label": "New Zealand Rugby · 2 to Score",
@@ -3569,7 +3569,7 @@
       "length": 20,
       "width": 15,
       "objective": "Find gaps and evade.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 6,
       "players": "8–16",
       "equipment": "4 cones, optional balls",
@@ -3577,8 +3577,8 @@
       "coaching": "Run into free space; change speed; avoid collision.",
       "regression": "One stationary tagger.",
       "progression": "Runners carry rugby balls.",
-      "questions": "",
-      "notes": "",
+      "questions": "Where is the space between taggers? When can you change pace?",
+      "notes": "Tagged children join the middle on the next crossing. Keep enough clear space for the group rather than making a crowded wall of taggers.",
       "links": [
         {
           "label": "Rugby Australia · Middle primary skills and drills",
@@ -3592,7 +3592,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Runners try to cross a grid without light tags from the octopus. Tagged runners join the middle on the next round. Keep movement controlled.",
+          "notes": "Set-up: Runners try to cross a grid without light tags from the octopus. Tagged runners join the middle on the next round. Keep movement controlled. Tagged children join the middle on the next crossing. Keep enough clear space for the group rather than making a crowded wall of taggers.",
           "objects": [],
           "timing": {}
         }
@@ -3609,7 +3609,7 @@
       "length": 12,
       "width": 6,
       "objective": "Beat a defender in a small space.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 7,
       "players": "2 per group",
       "equipment": "4 cones, 1 ball",
@@ -3617,8 +3617,8 @@
       "coaching": "Watch defender; attack a gap; accelerate after changing direction.",
       "regression": "Wider channel or passive defender.",
       "progression": "Narrow slightly or vary start positions.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which side of the defender is open? Can you change direction without losing control?",
+      "notes": "Use short repetitions and rotate the defending role. Reward a good decision even when the tagger catches the runner.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -3898,7 +3898,7 @@
       "length": 12,
       "width": 10,
       "objective": "React to the defender's choice.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 7,
       "players": "2 per group",
       "equipment": "6 cones, 1 ball",
@@ -3906,8 +3906,8 @@
       "coaching": "Scan both gates; stay unpredictable.",
       "regression": "Defender starts further away.",
       "progression": "Allow defender to advance.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which gate is D1 protecting? When is it worth changing your mind?",
+      "notes": "Move the defender's start position between turns. The second gate is a genuine choice, not a prescribed slalom.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -4219,7 +4219,7 @@
       "length": 20,
       "width": 18,
       "objective": "Use width and depth to create options.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "5 per group",
       "equipment": "4 cones, 1 ball",
@@ -4227,8 +4227,8 @@
       "coaching": "Attack space; keep options; don't force the widest pass.",
       "regression": "Start defenders further back.",
       "progression": "Add a recovering defender.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which defender has committed? Is the next pass needed or can you carry?",
+      "notes": "Freeze the picture when the carrier has a choice. Use both sides of the field across the session.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -4692,7 +4692,7 @@
       "length": 25,
       "width": 18,
       "objective": "Recognise an overload repeatedly.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "6–10",
       "equipment": "6 cones, 1 ball, bibs",
@@ -4700,8 +4700,8 @@
       "coaching": "Organise quickly; run straight when useful; support both sides.",
       "regression": "Use 3v1.",
       "progression": "Reduce time or introduce a recovering defender.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Where is the extra attacker? Can two passes be enough rather than always using four?",
+      "notes": "Reset at the far end with fresh defenders as described on the card; the animation shows one attack, not the reset.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -5229,7 +5229,7 @@
       "length": 20,
       "width": 20,
       "objective": "Scan beyond the immediate defender.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "8 cones, 1 ball, bibs",
@@ -5237,8 +5237,8 @@
       "coaching": "Look around before carrying; communicate open gates.",
       "regression": "Allow an extra attacker.",
       "progression": "Restrict repeat scoring at the same gate.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which scoring gate is open? What happens after the defence shifts?",
+      "notes": "Agree how a point is scored and where play restarts. The four-gate format is a modified touch game.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -5694,7 +5694,7 @@
       "length": 25,
       "width": 30,
       "objective": "Use width and reposition after a pass.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 10,
       "players": "8–14",
       "equipment": "4 cones, 1 ball, bibs",
@@ -5702,8 +5702,8 @@
       "coaching": "Spread when appropriate; straighten runs; keep support.",
       "regression": "Give attack a player advantage.",
       "progression": "Change width between rounds.",
-      "questions": "",
-      "notes": "",
+      "questions": "Where is the widest usable space? Who supports the carrier once they get there?",
+      "notes": "Start wide enough to reward spreading out. Stop briefly if both teams bunch around the ball.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -5717,7 +5717,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Play touch in a wide rectangular area. Restart with a free pass after agreed touches. Reward tries created by using unoccupied space.",
+          "notes": "Set-up: Play touch in a wide rectangular area. Restart with a free pass after agreed touches. Reward tries created by using unoccupied space. Start wide enough to reward spreading out. Stop briefly if both teams bunch around the ball.",
           "objects": [],
           "timing": {}
         }
@@ -5734,7 +5734,7 @@
       "length": 12,
       "width": 6,
       "objective": "Track safely and maintain distance.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 6,
       "players": "2 per group",
       "equipment": "4 cones",
@@ -5742,8 +5742,8 @@
       "coaching": "Short steps near attacker; balanced posture; avoid reaching.",
       "regression": "Walk.",
       "progression": "Change start angle or introduce a second gate.",
-      "questions": "",
-      "notes": "",
+      "questions": "Can you follow without closing the safe gap? Which movement gives away the attacker's direction?",
+      "notes": "Keep this a shadowing exercise; there is no need to touch the runner. Swap before either player becomes tired.",
       "links": [
         {
           "label": "World Rugby · Tracking activities and videos",
@@ -5935,7 +5935,7 @@
       "length": 12,
       "width": 6,
       "objective": "Close space without collision.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 7,
       "players": "2 per group",
       "equipment": "4 cones, tags, optional ball",
@@ -5943,8 +5943,8 @@
       "coaching": "Watch movement; close distance under control.",
       "regression": "Widen start distance for defender practice.",
       "progression": "Add a support attacker.",
-      "questions": "",
-      "notes": "",
+      "questions": "What helps you close space without over-running the attacker? Where should the attacker look?",
+      "notes": "Set adjacent lanes with separate run-off areas. Rotate after each attempt and avoid chasing across another group.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -5958,7 +5958,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "An attacker tries to cross a scoring line and defender removes a tag or makes an agreed light touch. Rotate on every attempt.",
+          "notes": "Set-up: An attacker tries to cross a scoring line and defender removes a tag or makes an agreed light touch. Rotate on every attempt. Set adjacent lanes with separate run-off areas. Rotate after each attempt and avoid chasing across another group.",
           "objects": [],
           "timing": {}
         }
@@ -5975,16 +5975,16 @@
       "length": 12,
       "width": 10,
       "objective": "Protect space rather than chase blindly.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 7,
       "players": "3 per group",
-      "equipment": "6 cones",
+      "equipment": "6 cones and 1 rugby ball",
       "instructions": "Two potential scoring gates are defended by one player; two attackers approach with one ball and score by carrying through an open gate. Use touch only.",
       "coaching": "Communicate threat; stay balanced; recover to space.",
       "regression": "Use one attacker.",
       "progression": "Add second defender and coordinate roles.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Can D1 protect both gates for longer by delaying the decision? Which gate becomes available?",
+      "notes": "Show the defender's choices as well as the attackers'. The gold path is for discussion; both gates remain available during practice.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -6347,7 +6347,7 @@
       "length": 10,
       "width": 10,
       "objective": "Build confidence and safe technique under supervision.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "Pairs, matched",
       "equipment": "Cones, approved tackle equipment if used",
@@ -6355,8 +6355,8 @@
       "coaching": "Observe tracking, preparation, safe connection and release; stop unsafe attempts.",
       "regression": "Non-contact tracking and controlled movement.",
       "progression": "Only coach-approved progression after competence is demonstrated.",
-      "questions": "",
-      "notes": "",
+      "questions": "Is each player comfortable and ready for the next stage? Can they stop and reset on command?",
+      "notes": "This card is a reminder for a trained contact coach, not a stand-alone tackle lesson. Use the approved progression and stop when control or confidence drops.",
       "links": [
         {
           "label": "World Rugby · Tackle Ready stages",
@@ -6375,7 +6375,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Qualified coach leads age-appropriate contact preparation, then only advances to low-intensity matched practice when ready. Use the linked programme for exact teaching technique.",
+          "notes": "Set-up: Qualified coach leads age-appropriate contact preparation, then only advances to low-intensity matched practice when ready. Use the linked programme for exact teaching technique. This card is a reminder for a trained contact coach, not a stand-alone tackle lesson. Use the approved progression and stop when control or confidence drops.",
           "objects": [],
           "timing": {}
         }
@@ -6392,7 +6392,7 @@
       "length": 8,
       "width": 6,
       "objective": "Develop safe side-on tackling technique.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "Pairs, matched",
       "equipment": "Cones, approved tackle equipment if used",
@@ -6400,8 +6400,8 @@
       "coaching": "Correct head placement and legal target must be demonstrated in person.",
       "regression": "Non-contact side tracking.",
       "progression": "Coach-approved movement progression only.",
-      "questions": "",
-      "notes": "",
+      "questions": "How does a side approach differ from a head-on approach? When should you stop the repetition?",
+      "notes": "Start by tracking at walking pace. Do not progress to live contact from a picture or verbal explanation alone.",
       "links": [
         {
           "label": "World Rugby · Tackle Ready stages",
@@ -6420,7 +6420,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Use the national-union approved teaching progression with an appropriately trained coach; rehearse movement first. Rotate matched partners with rest.",
+          "notes": "Set-up: Use the national-union approved teaching progression with an appropriately trained coach; rehearse movement first. Rotate matched partners with rest. Start by tracking at walking pace. Do not progress to live contact from a picture or verbal explanation alone.",
           "objects": [],
           "timing": {}
         }
@@ -6437,7 +6437,7 @@
       "length": 8,
       "width": 8,
       "objective": "Recognise safe tackle opportunities.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "Pairs, matched",
       "equipment": "4 cones per grid",
@@ -6445,8 +6445,8 @@
       "coaching": "Stop when technique deteriorates; supervise each active pair.",
       "regression": "Touch only.",
       "progression": "Change approach angle only after competence.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "How can D1 close space while staying in control? Can the pair stop without colliding?",
+      "notes": "The animation deliberately stops short of contact. Run one active pair per grid and only progress with a trained coach.",
       "links": [
         {
           "label": "World Rugby · Tackle Ready stages",
@@ -6686,7 +6686,7 @@
       "length": 25,
       "width": 20,
       "objective": "Move together and communicate.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
@@ -6694,8 +6694,8 @@
       "coaching": "Stay connected; call threats; advance under control.",
       "regression": "Walking attack.",
       "progression": "Vary attacking width or numbers.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Where should the next defender stand? Can the line move without creating a gap?",
+      "notes": "Begin with three defenders across the area. Judge spacing between them, not just who makes the touch.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -7119,7 +7119,7 @@
       "length": 8,
       "width": 8,
       "objective": "Protect and make the ball available.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 6,
       "players": "Pairs",
       "equipment": "1 ball per pair",
@@ -7127,8 +7127,8 @@
       "coaching": "Control the descent; release and place legally; keep heads clear.",
       "regression": "Start stationary at ground level.",
       "progression": "Add a walking support player only.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Can a teammate reach the ball straight away? Where should the carrier move after presenting it?",
+      "notes": "The picture shows where the ball is made available, not the mechanics of falling safely. Coach those separately on an appropriate surface.",
       "links": [
         {
           "label": "World Rugby · Breakdown Ready contact preparation",
@@ -7336,7 +7336,7 @@
       "length": 20,
       "width": 15,
       "objective": "Keep possession available after a simulated tackle.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "6–10",
       "equipment": "4 cones, 1 ball, bibs",
@@ -7344,8 +7344,8 @@
       "coaching": "Arrive from own side; no diving; keep the ball available.",
       "regression": "Rehearse without defenders.",
       "progression": "Add a touch restart time target without rushing the fall.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Who arrives first? Can the support player collect without stepping over the grounded carrier?",
+      "notes": "Defenders step clear at the touch. Ground rehearsal is separate from live contact; do not rush it to meet a countdown.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -7617,7 +7617,7 @@
         {
           "name": "Collect, pass",
           "seconds": 1.6,
-          "notes": "A2 collects on feet and restarts to A3.",
+          "notes": "A2 arrives from behind, stays on their feet and collects the available ball. A3 waits deeper for the next pass.",
           "objects": [
             {
               "id": "a1",
@@ -7807,7 +7807,7 @@
       "length": 20,
       "width": 15,
       "objective": "Recognise nearby support after a simulated tackle.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "6–10",
       "equipment": "4 cones, 1 ball, bibs",
@@ -7815,8 +7815,8 @@
       "coaching": "Support communicates early; transfer immediately and legally.",
       "regression": "Stationary pairs.",
       "progression": "Add directional touch with a recovering defence.",
-      "questions": "",
-      "notes": "",
+      "questions": "Is support close enough for an immediate legal transfer? What should you do if nobody is ready?",
+      "notes": "Use a stationary, non-contested rehearsal. If there is no safe immediate option, make the ball available instead of delaying on the ground.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -7835,7 +7835,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Use touch only. At a touch stop, rehearse a controlled ground-level ball transfer under coach direction, then restart play. Do not simulate a contested live tackle.",
+          "notes": "Set-up: Use touch only. At a touch stop, rehearse a controlled ground-level ball transfer under coach direction, then restart play. Do not simulate a contested live tackle. Use a stationary, non-contested rehearsal. If there is no safe immediate option, make the ball available instead of delaying on the ground.",
           "objects": [],
           "timing": {}
         }
@@ -7852,7 +7852,7 @@
       "length": 20,
       "width": 15,
       "objective": "Understand first support and restart roles.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
@@ -7860,8 +7860,8 @@
       "coaching": "Legal approach; stay on feet; move ball away from congestion.",
       "regression": "Walk-through.",
       "progression": "Vary location and supporting player.",
-      "questions": "",
-      "notes": "",
+      "questions": "Who retrieves the ball? Where should the next receiver wait?",
+      "notes": "This is a touch-based simulation, not a formed ruck. Defenders remain clear while the ball is presented and played.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -8210,7 +8210,7 @@
       "length": 20,
       "width": 15,
       "objective": "Stay available behind the ball.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "6–12",
       "equipment": "4 cones, 1 ball, bibs",
@@ -8218,8 +8218,8 @@
       "coaching": "Communicate early; maintain useful depth; follow breaks.",
       "regression": "Play without defenders.",
       "progression": "Introduce a recovering defender.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Which teammate can the carrier actually pass to? Can you keep up without running ahead?",
+      "notes": "Reward an available support option rather than just the try. Pause at the branch to discuss inside and outside support.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -8555,7 +8555,7 @@
       "length": 20,
       "width": 18,
       "objective": "Create layered support options.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "6–10",
       "equipment": "4 cones, 1 ball",
@@ -8563,8 +8563,8 @@
       "coaching": "Keep depth and width; adjust to defender; avoid rigid lines.",
       "regression": "Walk through unopposed.",
       "progression": "Vary defensive positioning.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Who is the short option? Who is the wide option? How do they change when A3 receives?",
+      "notes": "The pyramid is a starting shape, not a formation to hold rigidly. Encourage players to adjust their depth as the ball moves.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -8994,7 +8994,7 @@
       "length": 25,
       "width": 20,
       "objective": "Reorganise after a simulated breakdown.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
@@ -9002,8 +9002,8 @@
       "coaching": "First support acts; others find space; communicate next phase.",
       "regression": "Walk through one restart.",
       "progression": "Limit restart time without compromising control.",
-      "questions": "",
-      "notes": "",
+      "questions": "Where is the next phase likely to be? Who is collecting and who is getting into position?",
+      "notes": "Keep the touch stoppage and presentation controlled. Re-form the attacking shape rather than asking everyone to gather at the ball.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -9022,7 +9022,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Use touch and a controlled presentation at each stop. Pass away from the mark and rebuild support on either side. No contested contact.",
+          "notes": "Set-up: Use touch and a controlled presentation at each stop. Pass away from the mark and rebuild support on either side. No contested contact. Keep the touch stoppage and presentation controlled. Re-form the attacking shape rather than asking everyone to gather at the ball.",
           "objects": [],
           "timing": {}
         }
@@ -9039,7 +9039,7 @@
       "length": 20,
       "width": 15,
       "objective": "Recognise a support option before a stop.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
@@ -9047,8 +9047,8 @@
       "coaching": "Support close enough to receive; use two hands; don't force an offload.",
       "regression": "Allow a pause before touch.",
       "progression": "Add a recovering defender.",
-      "questions": "",
-      "notes": "",
+      "questions": "Is the carrier still balanced? Has the receiver called? What if the pass is not available?",
+      "notes": "The touch rule allows a quick pass for practice; it is not permission to hold or delay after a real tackle.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -9062,7 +9062,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "In touch, carrier may pass immediately on agreed light touch if safely balanced; otherwise stop for a free-pass restart. No holding or wrestling.",
+          "notes": "Set-up: In touch, carrier may pass immediately on agreed light touch if safely balanced; otherwise stop for a free-pass restart. No holding or wrestling. The touch rule allows a quick pass for practice; it is not permission to hold or delay after a real tackle.",
           "objects": [],
           "timing": {}
         }
@@ -9079,7 +9079,7 @@
       "length": 25,
       "width": 20,
       "objective": "Recognise a temporary defensive gap.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "5 cones, 1 ball, bibs",
@@ -9087,8 +9087,8 @@
       "coaching": "Scan quickly; attack the available space; communicate.",
       "regression": "Move cone further away.",
       "progression": "Vary the defender's return route.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which defender has dropped out? Where is the temporary gap?",
+      "notes": "Make the retreat route clear and keep it outside other players' running lanes. The advantage ends when the defender returns.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -9528,7 +9528,7 @@
       "length": 20,
       "width": 20,
       "objective": "React to changing game information.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 coloured cones, 1 ball, bibs",
@@ -9536,8 +9536,8 @@
       "coaching": "Look and listen; change direction safely; stay connected.",
       "regression": "Call between phases.",
       "progression": "Allow players to nominate the next colour.",
-      "questions": "",
-      "notes": "",
+      "questions": "Which colour is active? Can you change direction and still offer support?",
+      "notes": "Make every target clearly visible. Change the call between phases at first to avoid sudden collisions in a crowded grid.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -9551,7 +9551,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Use coloured scoring zones; coach calls the active colour during touch play. Teams reorganise to attack or defend that zone.",
+          "notes": "Set-up: Use coloured scoring zones; coach calls the active colour during touch play. Teams reorganise to attack or defend that zone. Make every target clearly visible. Change the call between phases at first to avoid sudden collisions in a crowded grid.",
           "objects": [],
           "timing": {}
         }
@@ -9568,7 +9568,7 @@
       "length": 25,
       "width": 20,
       "objective": "Transition from defence to attack.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "6 cones, 1 ball, bibs",
@@ -9576,8 +9576,8 @@
       "coaching": "Switch roles quickly; scan outside the grid.",
       "regression": "Coach signals turnover.",
       "progression": "Change breakout direction.",
-      "questions": "",
-      "notes": "",
+      "questions": "When possession changes, which way should you attack? Who can support the new carrier?",
+      "notes": "Agree which boundary opens on a turnover. Stop the first few changes of possession to help younger players reorganise.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -9591,7 +9591,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Begin in a small marked grid; after a turnover the new attack may break out to the larger scoring area. Reset each try.",
+          "notes": "Set-up: Begin in a small marked grid; after a turnover the new attack may break out to the larger scoring area. Reset each try. Agree which boundary opens on a turnover. Stop the first few changes of possession to help younger players reorganise.",
           "objects": [],
           "timing": {}
         }
@@ -9608,7 +9608,7 @@
       "length": 15,
       "width": 12,
       "objective": "Change direction through a timed support line.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 8,
       "players": "3–6",
       "equipment": "4 cones, 1 ball",
@@ -9616,8 +9616,8 @@
       "coaching": "Receiver stays behind ball; communicate; avoid crossing into each other.",
       "regression": "Walk through.",
       "progression": "Introduce a passive defender.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "When should A2 cross behind A1? What keeps the two running lines from colliding?",
+      "notes": "Walk the switch first. The pass goes behind the carrier; do not use a crossing runner to obstruct a defender.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -9939,7 +9939,7 @@
       "length": 15,
       "width": 12,
       "objective": "Reconnect with play after passing.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 8,
       "players": "3–6",
       "equipment": "4 cones, 1 ball",
@@ -9947,8 +9947,8 @@
       "coaching": "Run behind receiver; maintain separation; time the return pass.",
       "regression": "Walk through.",
       "progression": "Add a touch defender.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Why must A1 loop behind A2? When is the return pass possible?",
+      "notes": "Leave enough space for the loop and keep the receiver deeper until the return pass. Avoid crossing in front of a defender.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -10282,8 +10282,8 @@
       "coaching": "Check safe space; choose controlled distance; watch the ball.",
       "regression": "Use hand throws or stationary kicking.",
       "progression": "Vary scoring zones within safe distances.",
-      "questions": "",
-      "notes": "",
+      "questions": "Can you land the kick in space rather than at a player? How does the receiver prepare?",
+      "notes": "Use separated teams and uncontested retrieval. Only practise kicking where the current age-grade rules and qualified coach permit it.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -10302,7 +10302,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Teams occupy separated areas and send controlled kicks across a marked neutral zone. Opponents collect and return from a safe position. No aerial contests.",
+          "notes": "Set-up: Teams occupy separated areas and send controlled kicks across a marked neutral zone. Opponents collect and return from a safe position. No aerial contests. Use separated teams and uncontested retrieval. Only practise kicking where the current age-grade rules and qualified coach permit it.",
           "objects": [],
           "timing": {}
         }
@@ -10319,7 +10319,7 @@
       "length": 15,
       "width": 12,
       "objective": "Practise accurate throwing and receiving.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "6–10",
       "equipment": "4 cones, 1 ball",
@@ -10327,8 +10327,8 @@
       "coaching": "Accurate throw; ready hands; clear landing space.",
       "regression": "Static receivers.",
       "progression": "Move to a new receiving area before throw.",
-      "questions": "",
-      "notes": "",
+      "questions": "How can the thrower make the catch easier? Where should the receiver stand?",
+      "notes": "This is an uncontested throwing game, not a complete lineout. No lifting, jumping contest or physical pressure.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -10347,7 +10347,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Use two teams, scoring with an uncontested throw to a teammate in a marked receiving area. No lifting or contested jumping in this version.",
+          "notes": "Set-up: Use two teams, scoring with an uncontested throw to a teammate in a marked receiving area. No lifting or contested jumping in this version. This is an uncontested throwing game, not a complete lineout. No lifting, jumping contest or physical pressure.",
           "objects": [],
           "timing": {}
         }
@@ -10364,7 +10364,7 @@
       "length": 15,
       "width": 12,
       "objective": "Understand restart roles.",
-      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card.",
       "minutes": 8,
       "players": "6–12",
       "equipment": "Cones, 1 ball",
@@ -10372,8 +10372,8 @@
       "coaching": "Understand feed and exit; no pressure without approval; stop immediately if unstable.",
       "regression": "Walk through positions only.",
       "progression": "Coach-approved age-grade progression.",
-      "questions": "",
-      "notes": "",
+      "questions": "Who feeds the scrum? Who plays the ball once it is available?",
+      "notes": "Start unbound, and use only the applicable age-grade scrum sequence. The card cannot demonstrate binding or safe body position.",
       "links": [
         {
           "label": "RFU · Age-grade rules of play",
@@ -10877,7 +10877,7 @@
       "length": 30,
       "width": 25,
       "objective": "Exploit disorganisation after regaining possession.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 10,
       "players": "8–14",
       "equipment": "4 cones, 1 ball, bibs",
@@ -10885,8 +10885,8 @@
       "coaching": "Scan first; communicate; attack available space.",
       "regression": "Give a warning before turnover.",
       "progression": "Vary turnover locations.",
-      "questions": "",
-      "notes": "",
+      "questions": "Where is space immediately after a turnover? Who stays behind the new carrier?",
+      "notes": "Call possession changes clearly. Reward a team that reorganises rather than simply the fastest individual runner.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -10900,7 +10900,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Coach gives possession to either team at intervals during touch rugby. New attackers find support and choose the best route to score.",
+          "notes": "Set-up: Coach gives possession to either team at intervals during touch rugby. New attackers find support and choose the best route to score. Call possession changes clearly. Reward a team that reorganises rather than simply the fastest individual runner.",
           "objects": [],
           "timing": {}
         }
@@ -10917,7 +10917,7 @@
       "length": 30,
       "width": 20,
       "objective": "Connect phases and reorganise.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 12,
       "players": "8–14",
       "equipment": "4 cones, 1 ball, bibs",
@@ -10925,8 +10925,8 @@
       "coaching": "First support near ball; others create options; stay organised.",
       "regression": "Pause after each phase.",
       "progression": "Play continuous timed restarts.",
-      "questions": "",
-      "notes": "Animation: one illustrative repetition, not a prescribed technique or alternative animated branch. Pause at the named steps to discuss decisions.",
+      "questions": "Who supports the restart? How does defence reset before the next phase?",
+      "notes": "This game uses agreed touch restart rules. Pause when necessary to restore spacing; do not confuse the training mark with match-law distances.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -11454,7 +11454,7 @@
       "length": 10,
       "width": 10,
       "objective": "Move and communicate to receive in sequence.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
@@ -11462,8 +11462,8 @@
       "coaching": "Next receiver moves into a lane; communicate numbers.",
       "regression": "Remove defenders.",
       "progression": "Introduce a second ball only when ready.",
-      "questions": "",
-      "notes": "",
+      "questions": "Who is next in the order? Can that player move into a clear lane before the pass?",
+      "notes": "Make the numbering clear to both teams. Restart on a drop or interception, not on a disputed physical contest.",
       "links": [
         {
           "label": "New Zealand Rugby · Order Ball",
@@ -11477,7 +11477,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Number teammates; pass through them in order while opponents try to intercept without contact. Switch on a drop or interception.",
+          "notes": "Set-up: Number teammates; pass through them in order while opponents try to intercept without contact. Switch on a drop or interception. Make the numbering clear to both teams. Restart on a drop or interception, not on a disputed physical contest.",
           "objects": [],
           "timing": {}
         }
@@ -11494,7 +11494,7 @@
       "length": 10,
       "width": 10,
       "objective": "Develop ball familiarity and trunk control.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 5,
       "players": "Pairs",
       "equipment": "1 ball per pair",
@@ -11502,8 +11502,8 @@
       "coaching": "Soft hands; controlled movement; don't twist forcefully.",
       "regression": "Stand side by side.",
       "progression": "Vary height within comfortable reach.",
-      "questions": "",
-      "notes": "",
+      "questions": "Can you receive without twisting sharply? How do you make the handover easy?",
+      "notes": "Use comfortable reach and slow handovers. There should be no forceful rotational movement or contact between partners.",
       "links": [
         {
           "label": "Rugby Australia · Lower primary skills and drills 1",
@@ -11517,7 +11517,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Partners stand back to back with comfortable separation, hand the ball around one side and receive on the other. Swap direction.",
+          "notes": "Set-up: Partners stand back to back with comfortable separation, hand the ball around one side and receive on the other. Swap direction. Use comfortable reach and slow handovers. There should be no forceful rotational movement or contact between partners.",
           "objects": [],
           "timing": {}
         }
@@ -11534,7 +11534,7 @@
       "length": 8,
       "width": 8,
       "objective": "Pass with awareness of space.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 6,
       "players": "Pairs",
       "equipment": "4 cones, 1 ball per pair",
@@ -11542,8 +11542,8 @@
       "coaching": "Present hands; look before turning; keep spacing.",
       "regression": "Walk with stationary partner.",
       "progression": "Vary the direction after a call.",
-      "questions": "",
-      "notes": "",
+      "questions": "Where should you look before turning at the corner? How do you keep the pass short?",
+      "notes": "Keep the boundary clear and pairs apart. Slow down before corners rather than rushing the turn.",
       "links": [
         {
           "label": "Rugby Australia · Middle primary skills and drills",
@@ -11557,7 +11557,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Pair players on a marked boundary. Move along the sides at a controlled pace, exchanging passes and changing direction at corners.",
+          "notes": "Set-up: Pair players on a marked boundary. Move along the sides at a controlled pace, exchanging passes and changing direction at corners. Keep the boundary clear and pairs apart. Slow down before corners rather than rushing the turn.",
           "objects": [],
           "timing": {}
         }
@@ -11574,7 +11574,7 @@
       "length": 15,
       "width": 12,
       "objective": "Move to receive in a target zone.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 6,
       "players": "8–12",
       "equipment": "Cones, 1 ball, bibs",
@@ -11582,8 +11582,8 @@
       "coaching": "Move after passing; call and see the receiver.",
       "regression": "Add an extra attacker.",
       "progression": "Make target zone smaller.",
-      "questions": "",
-      "notes": "",
+      "questions": "Where can the target player move to receive? Can teammates create a better passing lane?",
+      "notes": "Use a ground-level end zone, never a bench or raised object. Rotate target players regularly.",
       "links": [
         {
           "label": "New Zealand Rugby · U10 session 1",
@@ -11597,7 +11597,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Teams pass to a teammate stationed in a marked end zone (no raised bench). Score and rotate target players. No contact.",
+          "notes": "Set-up: Teams pass to a teammate stationed in a marked end zone (no raised bench). Score and rotate target players. No contact. Use a ground-level end zone, never a bench or raised object. Rotate target players regularly.",
           "objects": [],
           "timing": {}
         }
@@ -11614,7 +11614,7 @@
       "length": 15,
       "width": 15,
       "objective": "Evade and track with control.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Keep the exercise non-contact. Allow room between groups and adapt the pace to the players.",
       "minutes": 5,
       "players": "Pairs",
       "equipment": "4 cones, tags optional",
@@ -11622,8 +11622,8 @@
       "coaching": "Eyes up; use short changes of direction; no grabbing.",
       "regression": "Walking pace.",
       "progression": "Add a scoring gate.",
-      "questions": "",
-      "notes": "",
+      "questions": "What helped you avoid the tag? Can you track without grabbing or lunging?",
+      "notes": "Keep each pair inside its own lane and use short rounds. Stop a repetition if players enter adjacent lanes.",
       "links": [
         {
           "label": "Rugby Australia · Lower primary skills and drills 1",
@@ -11637,7 +11637,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Pairs stay in their own small lane; one tries to escape a light tag for a short interval and roles swap.",
+          "notes": "Set-up: Pairs stay in their own small lane; one tries to escape a light tag for a short interval and roles swap. Keep each pair inside its own lane and use short rounds. Stop a repetition if players enter adjacent lanes.",
           "objects": [],
           "timing": {}
         }
@@ -11654,7 +11654,7 @@
       "length": 20,
       "width": 7,
       "objective": "Repeat draw-and-pass decisions.",
-      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "safety": "Use agreed light touch or tags only, not tackles. Keep the playing area and run-off clear.",
       "minutes": 8,
       "players": "5–10",
       "equipment": "8 cones, 1 ball per pair",
@@ -11662,8 +11662,8 @@
       "coaching": "Run toward space; keep receiver available; vary decisions.",
       "regression": "One defender.",
       "progression": "Allow a defender to advance.",
-      "questions": "",
-      "notes": "",
+      "questions": "Can the carrier beat this defender without a pass? Is the support player still available at the next gate?",
+      "notes": "Defenders stay in their assigned lateral lanes. Rotate both attackers and defenders so everyone practises the choices.",
       "links": [
         {
           "label": "New Zealand Rugby · 2 to Score",
@@ -11677,7 +11677,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Two attackers progress down a channel against defenders placed at intervals, each limited to lateral movement. Rotate frequently; touch only.",
+          "notes": "Set-up: Two attackers progress down a channel against defenders placed at intervals, each limited to lateral movement. Rotate frequently; touch only. Defenders stay in their assigned lateral lanes. Rotate both attackers and defenders so everyone practises the choices.",
           "objects": [],
           "timing": {}
         }
@@ -11702,8 +11702,8 @@
       "coaching": "Look ahead, keep the ball secure, vary pace and use small controlled steps.",
       "regression": "Walk through the pattern first; increase spacing.",
       "progression": "After the final cone, add a touch defender or a passing option.",
-      "questions": "When should you slow down? When can you accelerate?",
-      "notes": "",
+      "questions": "Where do you need to slow down? When is the lane clear enough to accelerate?",
+      "notes": "The curved route is a guide to the intended running line. Increase cone spacing for children who need more time to turn.",
       "links": [
         {
           "label": "World Rugby – coaching children",
@@ -11880,8 +11880,8 @@
       "coaching": "Scan the space, avoid crossing in front of the carrier, communicate and maintain useful depth.",
       "regression": "Walk the route without a ball.",
       "progression": "Add a moving ball carrier or a passive touch defender; check age-grade offside requirements before using a maul scenario.",
-      "questions": "Where is the free space? How can you stay available for a pass?",
-      "notes": "",
+      "questions": "Where is the free route around the obstacle? Can you still receive a pass?",
+      "notes": "The contact-shaped marker represents occupied space only. Keep this a running-line exercise; do not teach side-entry to a live maul.",
       "links": [
         {
           "label": "World Rugby – coaching children",
@@ -12042,16 +12042,16 @@
       "length": 20,
       "width": 15,
       "objective": "Recognise the sequence from tackle to a ball available to play, with one arriving support player each side.",
-      "safety": "Schematic demonstration only, not a contact technique tutorial. Release and presentation immediately; arrivals stay on their feet and enter from their own side. Follow current RFU age-grade rules and qualified coach guidance.",
+      "safety": "Schematic coach-led demonstration. Contact technique must be taught by a qualified coach following current RFU age-grade rules. Rehearse the sequence without contact first.",
       "minutes": 8,
-      "players": "Small groups; coach review before practice",
+      "players": "3 attackers and 3 defenders; rotate carrier, tackler and support roles.",
       "equipment": "Ball and cones",
-      "instructions": "Use the animation to discuss each phase, then rehearse appropriate non-contact positioning before any supervised contact progression.",
-      "coaching": "Release and present immediately; arrive from own side; stay on feet; next player passes away.",
-      "regression": "Walk through positions without contact.",
-      "progression": "Use a coach-approved age-grade contact progression.",
-      "questions": "Who may arrive? When is the ball available?",
-      "notes": "",
+      "instructions": "Walk through A1's tackle, D1's release and the presentation. A2 arrives first; D2 then joins from the opposite side. Keep A3 and D3 out of the ruck. When the ball is available, A3 collects and passes to A2 after A2 has disengaged.",
+      "coaching": "Release and present without delay. The arriving players enter from their own side and remain on their feet. Once the ball is available, move it away rather than sending in another player.",
+      "regression": "Use a stationary ball and walk to the positions without binding or tackling.",
+      "progression": "Change which side arrives first in a no-contact walk-through; ask players to find the next receiver.",
+      "questions": "Why does A3 wait outside the ruck? When can A2 become a receiver again?",
+      "notes": "Shows a single tackle followed by one additional player from each team. The ruck is a positional diagram, not instruction in clearing out.",
       "links": [
         {
           "label": "World Rugby Law 14 – Tackle",
@@ -12221,7 +12221,7 @@
           "paths": {},
           "name": "Tackle",
           "seconds": 1.8,
-          "notes": "D1 releases immediately; A1 presents immediately."
+          "notes": "D1 completes the depicted tackle on A1. D1 must release immediately and A1 must make the ball available."
         },
         {
           "objects": [
@@ -12845,16 +12845,16 @@
       "length": 20,
       "width": 15,
       "objective": "Demonstrate the sequence of a tackle, ball presentation, defender arriving with a contact shield and attacking support arriving from their own side.",
-      "safety": "Schematic coach-led demonstration. A shield represents a passive defender, not a player to tackle at a ruck. Follow RFU age-grade contact guidance and approved equipment use; no charging, diving or head/neck contact. Rehearse slowly with qualified supervision.",
+      "safety": "Schematic coach-led demonstration. Contact technique must be taught by a qualified coach following current RFU age-grade rules. Use a passive shield as a position marker; do not charge into a shield holder or teach a clearout from the animation.",
       "minutes": 8,
-      "players": "Small groups; coach review before practice",
-      "equipment": "Ball and cones",
-      "instructions": "Walk through the sequence using a passive shield holder. Swap or hand over the shield between repetitions. Coach safe entry, feet and balance; no live clearout until approved by the supervising coach.",
-      "coaching": "Arrive from own side; remain on feet; bind safely where appropriate; drive, do not charge; play the ball promptly.",
-      "regression": "Walk through positions without contact.",
-      "progression": "Use a coach-approved age-grade contact progression.",
-      "questions": "Who may arrive? When is the ball available?",
-      "notes": "",
+      "players": "3 attackers and 3 defenders; D2 holds the passive shield.",
+      "equipment": "Rugby ball, cones and a suitable contact shield.",
+      "instructions": "Start with D1 tracking A1 and A2 supporting. After the simulated tackle and presentation, D2 marks the defending arrival with the shield; A2 takes the attacking-side position. A3 plays the ball away and D2 hands the shield to D3 for the next turn.",
+      "coaching": "Ask A2 to approach from behind the ball and stay balanced. The shield is a marker for the defender's position, not a target to charge into. A3 waits to play the ball away.",
+      "regression": "Replace the shield with a cone and walk through the arrival order.",
+      "progression": "Swap the order of the arrivals without physical contact. Any shield-contact progression belongs to the qualified club coach.",
+      "questions": "Has a ruck formed when only D2 is standing over the ball? Who should play it away?",
+      "notes": "Although the title uses 'clearout', this resource teaches arrival order and position. It does not instruct children to drive into a shield holder at a breakdown.",
       "links": [
         {
           "label": "World Rugby Law 14 – Tackle",
@@ -13047,7 +13047,7 @@
           "paths": {},
           "name": "Tackle",
           "seconds": 1.8,
-          "notes": "D1 releases immediately; A1 presents immediately."
+          "notes": "D1 completes the depicted tackle on A1. D1 must release immediately and A1 must make the ball available."
         },
         {
           "objects": [
@@ -13818,17 +13818,17 @@
       "category": "Set piece",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of scrum and the roles involved.",
-      "safety": "Schematic walk-through only. Coach/referee controls engagement. Use trained players; no simulated force, collapse or live technique instruction. Qualified age-grade coaching and current regulations required.",
+      "objective": "Understand the roles, feed and exit of an uncontested U10 scrum.",
+      "safety": "Use an unbound walk-through. Any engagement or contact must be led by a qualified scrum coach under the relevant age-grade rules.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "Three forwards per side, A1 and D10 as scrum-halves, A2 as first receiver.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Coach/referee controls engagement. Use trained players; no simulated force, collapse or live technique instruction.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Mark the scrum. Position A3–A5 and D1–D3 as the two packs without binding. A1 feeds and later collects; A2 waits in a receiving position. D10 stays behind the defending scrum. Discuss where other backs would stand.",
+      "coaching": "The U10 scrum is uncontested: no pushing, only the feeding hooker strikes, and the feeding scrum-half passes away. Follow the referee's instructions.",
+      "regression": "Use six cones to represent the forwards and one child to move the ball through the positions.",
+      "progression": "Swap feeding and defending roles in the unbound walk-through.",
+      "questions": "Who is allowed to strike for the ball? What must the feeding scrum-half do after collecting?",
+      "notes": "A1 both feeds and collects in the animation. A2 receives the pass. The 2026–27 U10 summary describes the three-player, no-push scrum; check the current RFU appendix before practice.",
       "links": [
         {
           "label": "World Rugby law",
@@ -13852,7 +13852,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 has the ball. Blue and orange each supply three forwards; A2 is the first receiver and D10 is the defending scrum-half.",
           "objects": [
             {
               "id": "a1",
@@ -13942,7 +13942,7 @@
         {
           "name": "Set packs",
           "seconds": 1.1,
-          "notes": "Select the nearest eligible players for the packs. Other players remain behind their required offside lines. 3 per side · no push; feeding hooker only strikes; scrum-half passes away.",
+          "notes": "The two three-player packs take their places. The defending scrum-half remains behind their pack; other backs would retire to the proper line.",
           "objects": [
             {
               "id": "a1",
@@ -14069,7 +14069,7 @@
         {
           "name": "Crouch · bind · set",
           "seconds": 1.6,
-          "notes": "Schematic referee-controlled engagement; no pushing in U10–U12. Stop if unsafe.",
+          "notes": "The engagement is represented as an uncontested scrum. Learn safe engagement and binding only from a qualified coach.",
           "objects": [
             {
               "id": "a1",
@@ -14224,7 +14224,7 @@
         {
           "name": "Feed into tunnel",
           "seconds": 1.6,
-          "notes": "Feeding scrum-half introduces the ball into the tunnel. U10: only feeding hooker strikes.",
+          "notes": "A1 feeds from the middle of the tunnel. Only the feeding hooker is permitted to strike in this U10 example.",
           "objects": [
             {
               "id": "a1",
@@ -14384,7 +14384,7 @@
         {
           "name": "Ball available",
           "seconds": 1.6,
-          "notes": "Ball reaches the rear; designated scrum-half is ready to play it.",
+          "notes": "The ball reaches the blue team's rear. A1 prepares to collect it.",
           "objects": [
             {
               "id": "a1",
@@ -14544,7 +14544,7 @@
         {
           "name": "Scrum-half collects",
           "seconds": 1.6,
-          "notes": "Scrum-half gathers the available ball.",
+          "notes": "A1 gathers the ball from the rear of the scrum.",
           "objects": [
             {
               "id": "a1",
@@ -14705,7 +14705,7 @@
         {
           "name": "Scrum-half distributes",
           "seconds": 1.6,
-          "notes": "Scrum-half passes away. This preset never depicts a No. 8 pick or an illegal push.",
+          "notes": "A1 passes away to A2 rather than running with the ball.",
           "objects": [
             {
               "id": "a1",
@@ -14841,17 +14841,17 @@
       "category": "Contact",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of maul and the roles involved.",
-      "safety": "Schematic walk-through only. All remain on feet and bound; never collapse or pull players out. U10 max two per side; play away if forward movement stops. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise when an upright hold becomes a maul and how the ball leaves it.",
+      "safety": "Walk through positions only. No holding, pulling, collapsing or driving in this demonstration; qualified supervision is required for contact practice.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 carrier, A3 support, D1 opponent and A2 receiver.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "All remain on feet and bound; never collapse or pull players out. U10 max two per side; play away if forward movement stops.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Position A1 and D1 without making contact. Add A3 to explain how a maul forms. Show the ball moving to A3, then being passed to A2. Stop the walk-through before adding any force.",
+      "coaching": "A held carrier alone is not a formed maul. Keep players on their feet; observe U10 participation limits and move the ball away promptly.",
+      "regression": "Represent the three involved roles with cones and move the ball by hand.",
+      "progression": "Change which teammate is the receiver, without adding participants to the maul.",
+      "questions": "At which step does the maul form? Where does A2 wait to receive?",
+      "notes": "The diagram shows two blue players and one orange player in the maul. It does not simulate forward momentum or a legal drive.",
       "links": [
         {
           "label": "World Rugby law",
@@ -14875,7 +14875,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 holds the ball; D1 represents the opponent. A3 will join and A2 waits outside.",
           "objects": [
             {
               "id": "a1",
@@ -14925,7 +14925,7 @@
         {
           "name": "Carrier held upright",
           "seconds": 1.1,
-          "notes": "Carrier is held upright; this is not yet a maul. Maximum two players per side; if forward movement stops, play away.",
+          "notes": "D1 holds the carrier upright in the diagram. With no teammate bound yet, this is not a maul.",
           "objects": [
             {
               "id": "a1",
@@ -15005,7 +15005,7 @@
         {
           "name": "Support binds · maul formed",
           "seconds": 1.6,
-          "notes": "A teammate binds, making a maul with an opponent and the carrier. Stay on feet.",
+          "notes": "A3 joins from their own side. With the carrier, teammate and opponent on their feet and bound, a maul has formed.",
           "objects": [
             {
               "id": "a1",
@@ -15101,7 +15101,7 @@
         {
           "name": "Ball moved to support",
           "seconds": 1.6,
-          "notes": "Transfer to bound support without a long-arm transfer. No automatic driving or collapse.",
+          "notes": "The ball is transferred to A3 within the formed maul. No drive or collapse is shown.",
           "objects": [
             {
               "id": "a1",
@@ -15203,7 +15203,7 @@
         {
           "name": "Use it · pass away",
           "seconds": 1.6,
-          "notes": "Use the ball promptly and play away.",
+          "notes": "A3 passes to A2 outside the contact area.",
           "objects": [
             {
               "id": "a1",
@@ -15292,17 +15292,17 @@
       "category": "Set piece",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of lineout · throw and catch and the roles involved.",
-      "safety": "Schematic walk-through only. No lifting or opposition contest is animated in this preset. U14 uncontested/no lift; U15 uncontested; U16+ may contest. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise the thrower, catcher, two lines and first receiver at an uncontested lineout.",
+      "safety": "Uncontested and unlifted practice only. Keep a clear landing area and follow the current U14 rules before any progression.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 throws, A3 catches, A2 receives; A4–A5 and D1–D3 illustrate the two lines.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "No lifting or opposition contest is animated in this preset. U14 uncontested/no lift; U15 uncontested; U16+ may contest.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Mark touch and the lineout corridor. Walk to the positions, have A1 throw to A3 without a contest, then let A3 settle on their feet before passing to A2.",
+      "coaching": "Give the thrower a clear target; catch with control and pass only when balanced. Players not participating remain at the required offside distance.",
+      "regression": "Short throw to a stationary catcher, with no opposition line.",
+      "progression": "Change the named catcher and the direction of the next pass while keeping the throw uncontested.",
+      "questions": "Who catches? Where should the receiver wait? What changes if the throw is inaccurate?",
+      "notes": "This is an U14 positioning example, not a full-match lineout or a lifting lesson. Check the applicable age-grade conditions.",
       "links": [
         {
           "label": "World Rugby law",
@@ -15326,7 +15326,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 has the ball and will throw. A3 is the catcher; A2 is the receiver.",
           "objects": [
             {
               "id": "a1",
@@ -15408,7 +15408,7 @@
         {
           "name": "Form two lines",
           "seconds": 1.1,
-          "notes": "Two lines from 5 m to 15 m from touch; other players retire to their applicable offside line. Thrower on touch. Uncontested, no lifting.",
+          "notes": "The players take up their two lines. The thrower stays at touch; check the applicable lineout distances and offside positions.",
           "objects": [
             {
               "id": "a1",
@@ -15526,7 +15526,7 @@
         {
           "name": "Throw in · catch",
           "seconds": 1.6,
-          "notes": "Throw to the named catcher. Uncontested and unlifted practice; no early jumping.",
+          "notes": "A1 throws to A3. The reception is uncontested and no lift is shown.",
           "objects": [
             {
               "id": "a1",
@@ -15644,7 +15644,7 @@
         {
           "name": "Secure ball on feet",
           "seconds": 1.6,
-          "notes": "Catcher is on feet and balanced; no airborne contact.",
+          "notes": "A3 secures the ball on their feet before distributing.",
           "objects": [
             {
               "id": "a1",
@@ -15756,7 +15756,7 @@
         {
           "name": "Distribute",
           "seconds": 1.6,
-          "notes": "Distribute to the nominated receiver.",
+          "notes": "A3 passes to A2, who is waiting to receive.",
           "objects": [
             {
               "id": "a1",
@@ -15883,17 +15883,17 @@
       "category": "Attack",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of offload to support and the roles involved.",
-      "safety": "Schematic walk-through only. Pass before grounding in this example. Do not use a forward throw; support stays behind the carrier. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise a safe backward pass to support before a carrier goes to ground.",
+      "safety": "No opponent contact is shown or needed. Any later contact practice requires a qualified coach.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 carrier and A2 support; no opponent in the diagram.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Pass before grounding in this example. Do not use a forward throw; support stays behind the carrier.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Start with two players standing apart. Ask A2 to offer a target from behind A1. A1 passes before any simulated grounding. Repeat from the other side; only add passive touch pressure once the pass is reliable.",
+      "coaching": "Look before passing. Support calls early and stays behind the carrier. If the pass is not available, do not force it.",
+      "regression": "Stationary two-handed pass to a nearby support player.",
+      "progression": "Add a touch defender to give A1 a carry-or-pass decision.",
+      "questions": "Where is A2 relative to the ball? What happens if A2 arrives too late?",
+      "notes": "This shows just the offload pass. It does not teach a pass from the ground or contact technique.",
       "links": [
         {
           "label": "World Rugby law",
@@ -15917,7 +15917,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 carries and A2 offers a support option behind the ball.",
           "objects": [
             {
               "id": "a1",
@@ -15951,7 +15951,7 @@
         {
           "name": "Carrier approaches support",
           "seconds": 1.1,
-          "notes": "Pass before grounding in this example. Do not use a forward throw; support stays behind the carrier. Pass before grounding in this example. Do not use a forward throw; support stays behind the carrier.",
+          "notes": "Pause here: A2 is available and behind A1. The animation represents the choice before grounding, not a tackle.",
           "objects": [
             {
               "id": "a1",
@@ -16013,7 +16013,7 @@
         {
           "name": "Offload to teammate",
           "seconds": 1.6,
-          "notes": "Offload backwards before going to ground.",
+          "notes": "A1 releases a backward pass to A2 while still on their feet.",
           "objects": [
             {
               "id": "a1",
@@ -16084,17 +16084,17 @@
       "category": "Set piece",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of free pass restart and the roles involved.",
-      "safety": "Schematic walk-through only. Age-grade free pass: pass first, then run; retreat distance and touch mark depend on age. Qualified age-grade coaching and current regulations required.",
+      "objective": "Understand the stationary free pass and when players may move in U10.",
+      "safety": "No charging onto the pass or rushing an unready receiver. Walk through the restart initially.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 passer and A2 receiver; add opponents for a supervised walk-through.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Age-grade free pass: pass first, then run; retreat distance and touch mark depend on age.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Place the ball at the referee's restart mark. A2 stands behind A1. Check the defenders have retired the required distance, then A1 passes on the referee's signal. Players move only after the pass.",
+      "coaching": "Two hands, a backward pass, no run-up. Use the referee's mark, not the location of the previous ball by default.",
+      "regression": "Two stationary players and cones to show the retreat line.",
+      "progression": "Add defenders behind the marked line, then continue a touch game after the pass.",
+      "questions": "When may A2 start running? Where do the defenders wait?",
+      "notes": "The 2026–27 U10 summary specifies a 7 m retreat and a restart 5 m in from touch where applicable. The two-player diagram does not draw the defending line.",
       "links": [
         {
           "label": "World Rugby law",
@@ -16118,7 +16118,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 is the free-pass taker and A2 is the receiver.",
           "objects": [
             {
               "id": "a1",
@@ -16152,7 +16152,7 @@
         {
           "name": "Set restart mark",
           "seconds": 1.1,
-          "notes": "Defenders 7 m back; pass before running. For touch, start 5 m in. Defenders 7 m back; pass before running. For touch, start 5 m in.",
+          "notes": "Set the referee's mark. The opposition retires 7 m; all players wait for the pass before running. After touch, the U10 restart is 5 m in from the touchline.",
           "objects": [
             {
               "id": "a1",
@@ -16214,7 +16214,7 @@
         {
           "name": "Pass away",
           "seconds": 1.6,
-          "notes": "Pass first; then continue open play.",
+          "notes": "A1 passes backwards to A2. Open play begins after the pass.",
           "objects": [
             {
               "id": "a1",
@@ -16285,17 +16285,17 @@
       "category": "Set piece",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of tap restart · free kick / penalty and the roles involved.",
-      "safety": "Schematic walk-through only. Retire required distance. Free kick and penalty options differ; use a free kick only where penalties are not introduced. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise a visible tap and the next action at an age-appropriate kick restart.",
+      "safety": "No charging defenders. Only practise restart kicks permitted for the age group by the current rules.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 taker and A2 support.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Retire required distance. Free kick and penalty options differ; use a free kick only where penalties are not introduced.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Mark the restart spot. Explain the award and applicable age-grade options before A1 rehearses a visible tap, regathers the ball and passes to A2. Keep opposition out of the exercise.",
+      "coaching": "The ball must be visibly kicked for a tap. A2 remains available behind the taker. Do not assume the same choices apply to a free kick and a penalty.",
+      "regression": "Walk through the positions and discuss the tap before using the ball.",
+      "progression": "Add a passive defending line at the correct retreat distance once the coach has checked the law.",
+      "questions": "What makes the tap visible? Where can A2 stand?",
+      "notes": "The animation illustrates a tap followed by a pass, not every available restart option.",
       "links": [
         {
           "label": "World Rugby law",
@@ -16319,7 +16319,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 has the ball at the restart; A2 is the support option.",
           "objects": [
             {
               "id": "a1",
@@ -16353,7 +16353,7 @@
         {
           "name": "Set mark",
           "seconds": 1.1,
-          "notes": "Use age-grade restart variations; verify retreat/receiving options. Use age-grade restart variations; verify retreat/receiving options.",
+          "notes": "Set the mark and check which restart is awarded before proceeding.",
           "objects": [
             {
               "id": "a1",
@@ -16415,7 +16415,7 @@
         {
           "name": "Visible tap",
           "seconds": 1.6,
-          "notes": "Visible tap represented schematically; ball leaves the hands.",
+          "notes": "A1's tap is represented by the ball leaving their hands. A real visible tap must be demonstrated by the coach.",
           "objects": [
             {
               "id": "a1",
@@ -16476,7 +16476,7 @@
         {
           "name": "Recover ball",
           "seconds": 1.6,
-          "notes": "Taker recovers the ball after the visible tap.",
+          "notes": "A1 regathers the ball.",
           "objects": [
             {
               "id": "a1",
@@ -16538,7 +16538,7 @@
         {
           "name": "Pass away",
           "seconds": 1.6,
-          "notes": "Pass first; then continue open play.",
+          "notes": "A1 chooses the pass to A2 in this example.",
           "objects": [
             {
               "id": "a1",
@@ -16609,17 +16609,17 @@
       "category": "Handling",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of punt · kick and receive and the roles involved.",
-      "safety": "Schematic walk-through only. A schematic kick from hand. Chasers start onside; no contact with airborne receivers. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise a punt from hand and an uncontested reception.",
+      "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 kicker and D2 receiver, with a clear area between them.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "A schematic kick from hand. Chasers start onside; no contact with airborne receivers.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "A1 drops the ball to kick from hand towards D2. D2 tracks the flight in a separate receiving area, then collects when safe.",
+      "coaching": "Pick a clear receiving area, communicate and adjust to the ball. Chasers must start onside.",
+      "regression": "Use a short controlled punt to a stationary receiver.",
+      "progression": "Change the target distance slightly, staying within safe control.",
+      "questions": "Where is the safe receiving area? What should a chaser check before moving?",
+      "notes": "The path shows the direction of the punt; the height and descent are not simulated.",
       "links": [
         {
           "label": "World Rugby law",
@@ -16643,7 +16643,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 holds the ball for a punt; D2 waits in a clear receiving area.",
           "objects": [
             {
               "id": "a1",
@@ -16677,7 +16677,7 @@
         {
           "name": "Kicker ready",
           "seconds": 1.1,
-          "notes": "Confirm onside starting positions, kick type and safe receiving space. A schematic kick from hand. Chasers start onside; no contact with airborne receivers.",
+          "notes": "A1 checks the lane and prepares to punt from hand.",
           "objects": [
             {
               "id": "a1",
@@ -16739,7 +16739,7 @@
         {
           "name": "Kick in flight",
           "seconds": 1.6,
-          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "notes": "The ball travels towards D2. The diagram shows direction rather than height.",
           "objects": [
             {
               "id": "a1",
@@ -16800,7 +16800,7 @@
         {
           "name": "Receive / collect",
           "seconds": 1.6,
-          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "notes": "D2 collects without a challenge. Reset before the next kick.",
           "objects": [
             {
               "id": "a1",
@@ -16871,17 +16871,17 @@
       "category": "Handling",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of grubber · kick and collect and the roles involved.",
-      "safety": "Schematic walk-through only. Kick from hand; not fly hacking a loose ball. No simulated bounce physics. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise how a low kick from hand can reach space behind a defence.",
+      "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 kicker and D2 receiver, with a clear area between them.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Kick from hand; not fly hacking a loose ball. No simulated bounce physics.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "A1 kicks from hand along a clear lane. D2 waits beyond the target area and collects the ball once it is safe.",
+      "coaching": "Aim for controlled distance and look at the available space. This is a kick from hand, not kicking a loose ball.",
+      "regression": "Roll the ball along the lane first to practise collection.",
+      "progression": "Vary the target distance while keeping the lane clear.",
+      "questions": "Why might a low kick be useful? How does D2 adjust to an uneven bounce?",
+      "notes": "The low path is schematic. Real rugby balls bounce unpredictably.",
       "links": [
         {
           "label": "World Rugby law",
@@ -16905,7 +16905,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 prepares with the ball in hand; D2 waits at the end of the lane.",
           "objects": [
             {
               "id": "a1",
@@ -16939,7 +16939,7 @@
         {
           "name": "Kicker ready",
           "seconds": 1.1,
-          "notes": "Confirm onside starting positions, kick type and safe receiving space. Kick from hand; not fly hacking a loose ball. No simulated bounce physics.",
+          "notes": "A1 checks the clear ground-level target.",
           "objects": [
             {
               "id": "a1",
@@ -17001,7 +17001,7 @@
         {
           "name": "Low kick along ground",
           "seconds": 1.6,
-          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "notes": "The grubber is shown travelling low. Bounces are not calculated.",
           "objects": [
             {
               "id": "a1",
@@ -17062,7 +17062,7 @@
         {
           "name": "Collect",
           "seconds": 1.6,
-          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "notes": "D2 follows the ball and gathers once clear of other players.",
           "objects": [
             {
               "id": "a1",
@@ -17133,17 +17133,17 @@
       "category": "Handling",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of chip · kick and collect and the roles involved.",
-      "safety": "Schematic walk-through only. Kick from hand; keep chasers onside and protect the receiver. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise a short chip into space and a safe, uncontested collection.",
+      "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 kicker and D2 receiver, with a clear area between them.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Kick from hand; keep chasers onside and protect the receiver.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "A1 selects a clear space for a short chip from hand. D2 waits clear of the kicking lane and collects the ball without a contest.",
+      "coaching": "Look for space before choosing a chip. Avoid kicking towards a closely positioned player.",
+      "regression": "Throw gently into a marked space before introducing a kick.",
+      "progression": "Change the target area while keeping the reception uncontested.",
+      "questions": "What makes a chip different from a grubber? Where should the receiver wait?",
+      "notes": "The title describes a chip over defence; no defensive line or flight height is simulated.",
       "links": [
         {
           "label": "World Rugby law",
@@ -17167,7 +17167,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 is the kicker and D2 the receiver. The space between them represents the kicking lane.",
           "objects": [
             {
               "id": "a1",
@@ -17201,7 +17201,7 @@
         {
           "name": "Kicker ready",
           "seconds": 1.1,
-          "notes": "Confirm onside starting positions, kick type and safe receiving space. Kick from hand; keep chasers onside and protect the receiver.",
+          "notes": "A1 checks the target and prepares a short kick from hand.",
           "objects": [
             {
               "id": "a1",
@@ -17263,7 +17263,7 @@
         {
           "name": "Chip over defence",
           "seconds": 1.6,
-          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "notes": "The ball path identifies the target; it cannot show the chip's height.",
           "objects": [
             {
               "id": "a1",
@@ -17324,7 +17324,7 @@
         {
           "name": "Collect",
           "seconds": 1.6,
-          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "notes": "D2 collects in the clear receiving space.",
           "objects": [
             {
               "id": "a1",
@@ -17395,17 +17395,17 @@
       "category": "Handling",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of cross-field kick and the roles involved.",
-      "safety": "Schematic walk-through only. Schematic flight; coach checks kicking and chasing offside. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise space across the field and the direction of a cross-field kick.",
+      "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 kicker and D2 receiver, with a clear area between them.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Schematic flight; coach checks kicking and chasing offside.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "A1 identifies a target towards the opposite side of the area. Kick from hand towards D2, who remains uncontested in a receiving zone.",
+      "coaching": "Scan the width, check the kicking lane and choose a distance the receiver can manage. Chasers must be onside.",
+      "regression": "Use a short diagonal kick or throw to a marked area.",
+      "progression": "Change the target side and vary the receiving position.",
+      "questions": "Why choose a wide target rather than the nearest space? What makes the kick safe to receive?",
+      "notes": "Only kicker and receiver are shown; a full attacking line and chase are not simulated.",
       "links": [
         {
           "label": "World Rugby law",
@@ -17429,7 +17429,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 has the ball. D2 represents the receiving area across the field.",
           "objects": [
             {
               "id": "a1",
@@ -17463,7 +17463,7 @@
         {
           "name": "Kicker ready",
           "seconds": 1.1,
-          "notes": "Confirm onside starting positions, kick type and safe receiving space. Schematic flight; coach checks kicking and chasing offside.",
+          "notes": "A1 looks across the field and checks the kick lane.",
           "objects": [
             {
               "id": "a1",
@@ -17525,7 +17525,7 @@
         {
           "name": "Cross-field kick",
           "seconds": 1.6,
-          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "notes": "The ball travels diagonally towards the target area.",
           "objects": [
             {
               "id": "a1",
@@ -17586,7 +17586,7 @@
         {
           "name": "Receive / collect",
           "seconds": 1.6,
-          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "notes": "D2 collects without opposition or an aerial challenge.",
           "objects": [
             {
               "id": "a1",
@@ -17657,17 +17657,17 @@
       "category": "Handling",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of box kick · from hand and the roles involved.",
-      "safety": "Schematic walk-through only. Schematic kick from hand, not a full breakdown or aerial contest simulation. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise the intended direction of a kick from hand behind a breakdown.",
+      "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 kicker and D2 receiver, with a clear area between them.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Schematic kick from hand, not a full breakdown or aerial contest simulation.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Walk through A1's starting position as the kicker and D2's position as the receiving player. Rehearse a controlled kick from hand into space, without a live breakdown.",
+      "coaching": "Identify the clear target before kicking. The chase must be onside and the receiver must be protected.",
+      "regression": "Use a stationary kick from hand in an empty lane.",
+      "progression": "Vary the receiving mark while leaving the kick uncontested.",
+      "questions": "Why might a scrum-half choose a kick? Where would onside chasers start?",
+      "notes": "Only the kick is shown; there is no actual ruck, defensive pressure or box-kick height model.",
       "links": [
         {
           "label": "World Rugby law",
@@ -17691,7 +17691,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 represents the kicker behind a notional breakdown; D2 represents the receiving player.",
           "objects": [
             {
               "id": "a1",
@@ -17725,7 +17725,7 @@
         {
           "name": "Kicker ready",
           "seconds": 1.1,
-          "notes": "Confirm onside starting positions, kick type and safe receiving space. Schematic kick from hand, not a full breakdown or aerial contest simulation.",
+          "notes": "A1 checks space, with no live opposition in the example.",
           "objects": [
             {
               "id": "a1",
@@ -17787,7 +17787,7 @@
         {
           "name": "Box kick",
           "seconds": 1.6,
-          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "notes": "The line shows the kick's direction; height is not modelled.",
           "objects": [
             {
               "id": "a1",
@@ -17848,7 +17848,7 @@
         {
           "name": "Receive / collect",
           "seconds": 1.6,
-          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "notes": "D2 receives in space. A real kick may not be this accurate.",
           "objects": [
             {
               "id": "a1",
@@ -17919,17 +17919,17 @@
       "category": "Set piece",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of kick-off / restart kick and the roles involved.",
-      "safety": "Schematic walk-through only. Use the centre line for kick-off; kicking teammates remain behind the ball. Distance/receiving options vary by age. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise the kick and receiving roles at a permitted kick-off or restart.",
+      "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 kicker and D2 receiver, with a clear area between them.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "Use the centre line for kick-off; kicking teammates remain behind the ball. Distance/receiving options vary by age.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Mark the centre line. A1 represents the restarting kicker and D2 the receiving team. Walk through the starting positions, then demonstrate the drop kick only where age-grade rules allow it.",
+      "coaching": "Check the correct restart type and distance first. Teammates of the kicker must start onside; receivers have space to collect.",
+      "regression": "Walk through the restart without kicking.",
+      "progression": "Add stationary team positions and explain the receiving options before using a kick.",
+      "questions": "Where does the restart begin? Where must the kicking team stand?",
+      "notes": "The two-player example is not a full kick-off formation and does not certify the required distance.",
       "links": [
         {
           "label": "World Rugby law",
@@ -17953,7 +17953,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 starts with the ball; D2 represents the receiving side.",
           "objects": [
             {
               "id": "a1",
@@ -17987,7 +17987,7 @@
         {
           "name": "Set restart positions",
           "seconds": 1.1,
-          "notes": "Confirm onside starting positions, kick type and safe receiving space. Use age-grade restart variations; verify retreat/receiving options.",
+          "notes": "Place the players at the appropriate starting marks; confirm the applicable restart law.",
           "objects": [
             {
               "id": "a1",
@@ -18049,7 +18049,7 @@
         {
           "name": "Drop kick",
           "seconds": 1.6,
-          "notes": "Illustrative ball trajectory only; height and bounces are not physically simulated.",
+          "notes": "The drop kick is represented by the ball travelling towards the receiving side.",
           "objects": [
             {
               "id": "a1",
@@ -18110,7 +18110,7 @@
         {
           "name": "Receiving team collects",
           "seconds": 1.6,
-          "notes": "Receiver gathers the ball; continue open play only when safe.",
+          "notes": "D2 gathers the ball without a contest. Discuss the next phase.",
           "objects": [
             {
               "id": "a1",
@@ -18181,17 +18181,17 @@
       "category": "Attack",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of try · ground the ball and the roles involved.",
-      "safety": "Schematic walk-through only. The end boundary is treated as the designated try line for this diagram; no automatic scoring judgement. Qualified age-grade coaching and current regulations required.",
+      "objective": "Recognise a try as grounding the ball in the opponents' in-goal area.",
+      "safety": "No diving, chasing into the boundary, or contested grounding. Use a suitable surface and leave space beyond the line.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
+      "players": "A1 carrier and A2 observing or supporting.",
       "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "The end boundary is treated as the designated try line for this diagram; no automatic scoring judgement.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "instructions": "Mark a try line and an in-goal area with clear run-off. A1 approaches at walking pace and grounds the ball under control; A2 follows with space. Repeat from a different angle.",
+      "coaching": "Keep control of the ball and ground it over or on the try line. The referee decides whether a try has been scored.",
+      "regression": "Start stationary at the marked line.",
+      "progression": "Approach from a different angle with passive, non-contact opposition.",
+      "questions": "Where does the ball need to be grounded? Why do we leave room beyond the line?",
+      "notes": "The end boundary represents the try line; in-goal depth and scoring judgement are not simulated.",
       "links": [
         {
           "label": "World Rugby law",
@@ -18215,7 +18215,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 has the ball and A2 stands behind as support.",
           "objects": [
             {
               "id": "a1",
@@ -18249,7 +18249,7 @@
         {
           "name": "Approach designated try line",
           "seconds": 1.1,
-          "notes": "The end boundary is the designated try line for this coaching diagram. The end boundary is treated as the designated try line for this diagram; no automatic scoring judgement.",
+          "notes": "A1 approaches the marked line under control. The end boundary stands in for the try line.",
           "objects": [
             {
               "id": "a1",
@@ -18311,7 +18311,7 @@
         {
           "name": "Ground the ball",
           "seconds": 1.6,
-          "notes": "Ground the ball on the line; coach/referee judges the score. No conversion is implied.",
+          "notes": "A1 grounds the ball on the designated line. The animation does not award a try; the referee judges grounding.",
           "objects": [
             {
               "id": "a1",
@@ -18382,17 +18382,17 @@
       "category": "Set piece",
       "length": 60,
       "width": 35,
-      "objective": "Recognise the stages of goal kick · attempt and the roles involved.",
-      "safety": "Schematic walk-through only. A top-down attempt only; no crossbar, height, points or success judgement. Position the target in line with the intended posts. Qualified age-grade coaching and current regulations required.",
+      "objective": "Identify the place-kicker's starting position and the intended goal line.",
+      "safety": "Use an empty kicking lane and age-appropriate practice only. No one stands in the kick's path.",
       "minutes": 8,
-      "players": "Select the required roles; extra players may practise positioning.",
-      "equipment": "Rugby ball, cones",
-      "instructions": "Play the sequence, pause to discuss roles, then rehearse appropriate non-contact positioning before any coach-approved progression.",
-      "coaching": "A top-down attempt only; no crossbar, height, points or success judgement. Position the target in line with the intended posts.",
-      "regression": "Walk through without opposition pressure.",
-      "progression": "Coach-approved conditioned game appropriate to the age grade.",
-      "questions": "Who has the ball? Where should support be? When is this phase over?",
-      "notes": "",
+      "players": "A1 kicker and A2 observer; no opposition.",
+      "equipment": "Ball, tee and suitable goal or coach-marked target.",
+      "instructions": "Set the ball on a tee at an agreed mark. Give the kicker an unobstructed approach. Aim towards the target; wait until the area is clear before retrieving the ball.",
+      "coaching": "Allow a comfortable preparation routine and a controlled kick. Accuracy comes before distance.",
+      "regression": "Use a short, wide target with no pressure.",
+      "progression": "Change the angle of the target gradually, not the distance and angle together.",
+      "questions": "Where is the intended target? Why does the animation not tell us whether the kick scored?",
+      "notes": "The top-down view cannot show the crossbar, kick height or success. It is a goal attempt, not a scored conversion.",
       "links": [
         {
           "label": "World Rugby law",
@@ -18416,7 +18416,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "Select the named participants. All other players remain available for the next part of the drill.",
+          "notes": "A1 is the goal kicker and A2 stays clear of the approach.",
           "objects": [
             {
               "id": "a1",
@@ -18450,7 +18450,7 @@
         {
           "name": "Set place kick",
           "seconds": 1.1,
-          "notes": "Set up an age-appropriate place kick on the chosen mark. A top-down attempt only; no crossbar, height, points or success judgement. Position the target in line with the intended posts.",
+          "notes": "Place the ball and identify the target direction. No crossbar or actual goal clearance is modelled.",
           "objects": [
             {
               "id": "a1",
@@ -18511,7 +18511,7 @@
         {
           "name": "Kick towards goal",
           "seconds": 1.6,
-          "notes": "Goal attempt only: the diagram cannot show clearance of the crossbar or award points.",
+          "notes": "The ball travels towards the intended goal. The kick's success cannot be judged from this view.",
           "objects": [
             {
               "id": "a1",
@@ -18591,7 +18591,7 @@
       "regression": "Stationary pad, then slow roll.",
       "progression": "Vary approach angle at controlled speed.",
       "questions": "Where will the pad be when you arrive?",
-      "notes": "Schematic stop point; not a collision simulation.",
+      "notes": "The pad's stop is illustrated, not calculated from collision forces. Stand it upright and reset the lane between attempts.",
       "links": [
         {
           "label": "World Rugby Rugby Ready – tackle",
@@ -18605,7 +18605,7 @@
         {
           "name": "Setup",
           "seconds": 0,
-          "notes": "",
+          "notes": "Stand the donut upright in a clear rolling lane. The coach controls the roll; D1 waits at a safe starting point.",
           "objects": [
             {
               "id": "pad",
@@ -18646,7 +18646,7 @@
         {
           "name": "Intercept rolling donut",
           "seconds": 1.9500000000000002,
-          "notes": "Track the moving pad; intercept under coach control.",
+          "notes": "D1 adjusts the approach to meet the moving pad under coach control. The stop point is an illustration, not a collision prediction.",
           "objects": [
             {
               "id": "pad",
@@ -18688,7 +18688,7 @@
         {
           "name": "Donut stopped",
           "seconds": 0.6,
-          "notes": "Release the pad and reset. No player ruck is implied.",
+          "notes": "The pad is down. D1 releases it, moves clear and waits for the coach to reset.",
           "objects": [
             {
               "id": "pad",
@@ -18740,16 +18740,16 @@
       "length": 20,
       "width": 15,
       "objective": "Recognise when to carry into space, keep possession through contact or pass to a teammate in support. Compare demonstrated and alternative actions.",
-      "safety": "Schematic coach-led demonstration. A shield represents a passive defender, not a player to tackle at a ruck. Follow RFU age-grade contact guidance and approved equipment use; no charging, diving or head/neck contact. Rehearse slowly with qualified supervision.",
+      "safety": "Schematic coach-led demonstration. Contact technique must be taught by a qualified coach following current RFU age-grade rules. Use a passive shield as a position marker; do not charge into a shield holder or teach a clearout from the animation.",
       "minutes": 8,
-      "players": "Small groups; coach review before practice",
-      "equipment": "Ball and cones",
-      "instructions": "Walk through the sequence using a passive shield holder. Swap or hand over the shield between repetitions. Coach safe entry, feet and balance; no live clearout until approved by the supervising coach.",
-      "coaching": "Arrive from own side; remain on feet; bind safely where appropriate; drive, do not charge; play the ball promptly. Scan before contact; offload only to available support and only while legally able to pass. If held and grounded, release or make the ball available immediately.",
-      "regression": "Walk through positions without contact.",
-      "progression": "Use a coach-approved age-grade contact progression.",
+      "players": "3 attackers, 3 defenders; D2 marks the defending arrival with a passive shield.",
+      "equipment": "Rugby ball, cones and a contact shield.",
+      "instructions": "Pause the first approach and ask A1 to choose an open carry or an available backward offload. The shown outcome continues to a tackle and presentation, then follows the shield-marked defender-first breakdown. A3 plays away; rotate the shield holder.",
+      "coaching": "Scan before contact. If a safe pass is not available, do not force it. Release and present immediately after grounding; support arrives from its own side and stays on its feet. Keep other players clear.",
+      "regression": "Show the alternatives without contact, using a cone instead of a shield.",
+      "progression": "Vary the support runner's starting position and let the carrier choose during touch practice.",
       "questions": "Where is the space? Is support available for a safe backwards offload? When should the carrier secure the ball instead?",
-      "notes": "Gold decision diamonds and alternative routes are discussion annotations, not alternative animated outcomes. The main sequence demonstrates a tackle and recycle; do not force an offload.",
+      "notes": "The gold diamond and routes are options to discuss; the animated outcome is the tackle and recycle. Do not rehearse a live clearout from this diagram.",
       "links": [
         {
           "label": "World Rugby Law 14 – Tackle",
@@ -18986,7 +18986,7 @@
           "paths": {},
           "name": "Tackle",
           "seconds": 1.8,
-          "notes": "D1 releases immediately; A1 presents immediately. Discuss the alternatives before demonstrating the tackle."
+          "notes": "The illustrated outcome is a tackle by D1 on A1. Discuss the carry and offload options before contact; D1 must release and A1 must present immediately."
         },
         {
           "objects": [
@@ -19764,13 +19764,13 @@
       "objective": "Adjust support depth and angle as the carrier reads the defence.",
       "players": "3 attackers, 2 touch defenders; rotate.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Use touch only. Walk through both support angles, then let the carrier choose.",
-      "coaching": "Keep hands ready, communicate, stay behind the ball and accelerate into space.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Set three attackers against two touch defenders. A1 carries; A2 and A3 offer support inside and outside. Pause before the choice, then replay the shown inside pass. Swap roles and let the next carrier choose.",
+      "coaching": "Call early, keep depth, and move into the space that the defender leaves rather than following a fixed route.",
+      "safety": "Use no contact; leave room for the two support lines to converge without crossing into each other.",
+      "regression": "Remove D2 and walk the two support lines.",
+      "progression": "Move D1 towards one support option so the carrier has to read a different gap.",
       "questions": "Who is available now? What happens if D1 drifts?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "The inside pass is shown. The gold alternative offers the outside pass for discussion; it is not a separate animated outcome.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -20237,13 +20237,13 @@
       "objective": "Reset onside and reconnect after a touch or simulated breakdown.",
       "players": "3 attackers, 3 touch defenders.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Coach marks the retreat line; play touch, reset and move the ball wide.",
-      "coaching": "Retreat first, communicate, keep spacing, advance together.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Set three defenders across from three attackers. On a touch, mark the retreat position; walk D1 and D2 back round the mark while D3 holds the width. Restart with A1 passing to A2, then A3.",
+      "coaching": "Retreat first. The nearest defender calls the threat; the others keep a useful gap and move together.",
+      "safety": "Touch only. Keep the retreat routes clear and do not restart until the defence has space to reset.",
+      "regression": "Walk the fold without attackers moving.",
+      "progression": "Change the touch position and ask a different defender to organise the line.",
       "questions": "Who sets the line? When can we advance?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "The retreat mark is a training reference, not a measured match-law offside line.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -20607,13 +20607,13 @@
       "objective": "Recognise defensive communication and immediate release responsibilities for both tacklers.",
       "players": "1 carrier, 2 defenders, supporting players as observers.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Use the animation as a positional discussion. Start with shadow or touch tracking. Live double-tackle activity only if club and qualified coach approve it.",
-      "coaching": "Communicate; avoid simultaneous uncontrolled impacts; release immediately and clear the ball.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Watch D1 and D2 track A1. Freeze at the completed tackle and again at release. Rehearse the approach without contact; discuss who moves clear before restarting.",
+      "coaching": "Communicate, maintain control and avoid uncontrolled simultaneous impacts. Both tacklers must release and clear the ball; the carrier makes it available.",
+      "safety": "Use this as a positional demonstration, not a live double-tackle drill. Confirm current RFU age-grade rules and club guidance with a qualified coach before any physical progression.",
+      "regression": "Walk the two defensive approach routes with the carrier stopping at a cone.",
+      "progression": "Swap the starting sides and ask defenders to communicate who tracks first; no live contact needed.",
       "questions": "Who must release? Where should the other defenders stand?",
-      "notes": "World Rugby defines tackle by one or more opponents; confirm the current RFU U10 appendix and club guidance before practising live double tackles.",
+      "notes": "This ends at release rather than a ruck. The current U10 contact and participation rules need club review before practising double tackles.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -21225,13 +21225,13 @@
       "objective": "Connect two phases and reorganise behind the ball.",
       "players": "3 attackers, 3 defenders.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Walk through two separate contact areas; use touch first. Reset once the second ball is presented.",
-      "coaching": "Release and present; support from own side; keep extra players out; redistribute promptly.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Follow A1's single tackle, D1's release, then A2 and D2's arrivals. A3 collects the available ball and attacks a new space. At D3's tackle, stop once A3 has presented and D3 has released.",
+      "coaching": "Make the ball available early, keep extra players out of the breakdown and reconnect behind the next carrier. A player who has been involved must disengage legally before supporting again.",
+      "safety": "Coach-led walk-through first; use touch instead of tackles for this rehearsal. Any contact requires qualified supervision and current age-grade approval.",
+      "regression": "Practise just the first presentation and pass away without binding.",
+      "progression": "Repeat from a different first touch location, so A3 has to identify a new lane.",
       "questions": "Where does A2 go after the first phase? Who supports the second carrier?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "The first ruck and the second tackle are separate events. A3's second run starts after the ball is available, not while it is trapped in the ruck. The current sequence shows A3 carrying after collection rather than passing away; treat it as a shape walk-through until the missing pass is added.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -22228,9 +22228,9 @@
           "paths": {}
         },
         {
-          "name": "Pass away from first ruck",
+          "name": "Collect from first ruck",
           "seconds": 1.4,
-          "notes": "A3 collects from behind the available ball and moves into space.",
+          "notes": "A3 collects the available ball from the rear. The next step illustrates a new carry; for U10, a player collecting after a formed ruck must pass away. This sequence needs that pass added before use as a match-law demonstration.",
           "objects": [
             {
               "id": "a1",
@@ -22447,7 +22447,7 @@
         {
           "name": "Second tackle",
           "seconds": 1.1,
-          "notes": "A new contact marker replaces the previous breakdown.",
+          "notes": "D3 completes the tackle on A3 in the second contact area. D3 must release; A3 must make the ball available.",
           "objects": [
             {
               "id": "a1",
@@ -22721,13 +22721,13 @@
       "objective": "Recognise possession change and immediately reorganise.",
       "players": "3 v 3 touch.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Coach calls a turnover and assigns the ball to the other side. Attack reverses direction.",
-      "coaching": "Scan, communicate and provide depth behind the new carrier.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Start with blue attacking. The coach calls a turnover and gives D1 the ball. Orange now attacks towards the opposite end; D2 and D3 offer support while blue reorganises.",
+      "coaching": "First identify the new direction, then find width and depth. New defenders communicate rather than all chasing the carrier.",
+      "safety": "Touch only, with a clear coach signal. Stop if the reversal causes players to run into one another.",
+      "regression": "Freeze after the turnover and let both teams walk to new positions.",
+      "progression": "Vary the turnover mark and allow orange to choose either support player.",
       "questions": "Which way are we attacking now? Who is available?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "The attack arrow is hidden because direction changes during the drill. The turnover is awarded by the coach, not won in a live contest.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -23235,13 +23235,13 @@
       "objective": "Track a moving pad and recognise interception timing from either side.",
       "players": "Coach and one active player.",
       "equipment": "Age-appropriate tackle donut, two cones.",
-      "instructions": "Walk the two approaches, then use a slow coach-controlled roll. Physically reset the pad between repetitions.",
-      "coaching": "Track early and maintain balance. No diving or fast pursuit; use the club-approved technique progression.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Mark a straight rolling lane. The coach rolls the upright donut gently; D1 approaches from one side. After the pad stops, the coach resets it and repeats the approach from the other side.",
+      "coaching": "Watch the moving pad, adjust the route and stay balanced. Let the coach decide the interception point and pace.",
+      "safety": "One active player only. Follow the equipment instructions and club-approved contact progression. No diving, high-speed chasing or standing in the rolling lane.",
+      "regression": "Start with a stationary pad and walk around its position.",
+      "progression": "Move the starting cone to change the approach angle while keeping roll speed low.",
       "questions": "How does the starting position change the interception point?",
-      "notes": "Reset movement in the animation is equipment repositioning, not a second live roll.",
+      "notes": "The pad is physically reset between approaches. The timing and stop point are illustrative, not a target for speed or impact.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -23590,13 +23590,13 @@
       "objective": "Distinguish own-side entry from arriving sideways ahead of the legal entry line.",
       "players": "Coach-led positional demonstration.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Pause at the decision marker and discuss the illustrated alternative. Do not act out the illegal route at contact.",
-      "coaching": "Join from behind your offside line, stay on feet and bind appropriately; observe U10 limits.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Watch the release and A2's arrival from the blue side. Pause at D2's decision marker. Ask which route comes from the defender's own side; the gold side-entry route is shown only to discuss why it is wrong.",
+      "coaching": "Enter from the legal side of the breakdown, remain on feet and respect the age-grade participation limit.",
+      "safety": "Use cones and walking routes without binding or contact. Do not rehearse the illegal route as a live action.",
+      "regression": "Replace the contact area with a ball between two cones.",
+      "progression": "Swap team colours and ask the players to point out their own approach side.",
       "questions": "Why is the side route illegal? What should D2 do instead?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "The animation stops at the entry discussion. It does not show D2 completing a live clearout.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -24402,13 +24402,13 @@
       "objective": "Recognise that players not joining a ruck remain behind their team's offside line.",
       "players": "Coach-led diagram with two teams.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Pause at the formed ruck. Ask the group to identify each rear-most point and the corresponding offside line.",
-      "coaching": "Each team's line is through its hindmost relevant point, parallel to the try line. This animation labels the safe sides rather than drawing precise lines.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Pause when A2 and D2 have joined. Ask the group to identify each team's rearmost relevant point. Move A3 and D3 to the correct side before discussing when the ball is out.",
+      "coaching": "Players outside the ruck stay behind their team's offside line, parallel to the try line, until permitted to advance.",
+      "safety": "Use stationary markers; no binding or live contact is required to explain offside.",
+      "regression": "Use two cones for each team's offside line and place non-participants behind them.",
+      "progression": "Move the ruck position and ask players to identify the new lines.",
       "questions": "Can A3 step around the side before the ball is out? Where must D3 wait?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "The diagram marks the sides where A3 and D3 wait, not precise measured offside lines. Set the actual lines with a coach.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -25570,13 +25570,13 @@
       "objective": "Distinguish the additional support player from the next receiver.",
       "players": "3 v 3, coach-led walk-through.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Pause after each arrival; count participants and identify the receiver. Use the ball promptly once available.",
-      "coaching": "U10 summary limits ruck involvement to two per side including original tackle participants. One extra per side in this single-tackle example. Confirm current regulations.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Count A1 and D1 as the original tackle participants. A2 and D2 are the additional arrivals in this single-tackle example. A3 and D3 wait outside; when the ball is available, A3 collects to play it away.",
+      "coaching": "One extra arrival per side in the illustrated single-tackle U10 breakdown. The next player does not join the ruck; they play the ball away.",
+      "safety": "Walk through with cones in place of bound players. Confirm the current U10 rules with the club before introducing contact.",
+      "regression": "Label the carrier, tackler, two arrivals and next receiver using cones.",
+      "progression": "Switch possession and ask the new attacking side to identify the next receiver.",
       "questions": "Who is already involved? Who should play the ball away?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "The 2026–27 U10 summary describes the restricted ruck numbers and a five-second use-it period when the referee calls it. The diagram stops at collection; the required onward pass is not animated.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -26844,13 +26844,13 @@
       "objective": "Recognise immediate responsibilities of carrier and tackler after grounding.",
       "players": "Coach-led review, carrier and tackler.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Pause on the tackle, then on release. Discuss what both players must do immediately; rehearse only appropriate non-contact positioning.",
-      "coaching": "Release, make the ball available, move away and return to feet. No delay or second movement after momentum stops.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Freeze when D1 completes the tackle. Ask the children what D1 and A1 must do immediately. Continue through the release and presentation, then show A1 recovering clear of the ball.",
+      "coaching": "The tackler releases and moves away; the tackled player makes the ball available immediately and moves clear. Arriving players stay on their feet.",
+      "safety": "Use positional markers and a coached ground rehearsal without opposition. Do not teach the physical tackle from this diagram.",
+      "regression": "Walk to the positions and use a stationary ball to show the release.",
+      "progression": "Change the side of the approach and ask players to identify both responsibilities.",
       "questions": "Which responsibilities happen immediately? Who can play from the ground?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "Release and presentation happen immediately; separate animation steps make them easier to explain, not permission to delay.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -27445,13 +27445,13 @@
       "objective": "Recognise a ball made immediately available, rather than trapped beneath the carrier.",
       "players": "Carrier and one support player, no live contact.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Coach demonstrates safe ground movement separately. Compare the correct example with verbal descriptions of delay or lying on the ball.",
-      "coaching": "Immediate availability, clear the ball, support remains on feet.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Use two players and a ball. Show A1 in the grounded position, making the ball available towards their own team. A1 moves clear while A2 approaches on their feet to collect.",
+      "coaching": "Make the ball available immediately rather than covering it. Keep the support player behind the ball and on their feet.",
+      "safety": "No opponent contact. A qualified coach must demonstrate safe controlled ground movement on a suitable surface.",
+      "regression": "Start with the ball already on the ground and show where A2 waits.",
+      "progression": "Change the orientation of the ball and ask A2 to find the approach from their own side.",
       "questions": "Can support reach the ball? Why must A1 move clear?",
-      "notes": "Demonstrated outcome only; alternate routes are discussion annotations. Animation timing is illustrative, not a contact speed target.",
+      "notes": "The wrong example is described in the notes, not performed. The picture shows ball availability rather than safe falling mechanics.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -27655,13 +27655,13 @@
       "objective": "Recognise the free-pass restart and direction of play after touch.",
       "players": "3 v 3 positional walk-through.",
       "equipment": "Rugby ball and cones",
-      "instructions": "Coach sets the correct restart mark according to current U10 rules, then marks the 7 m defensive retreat. This is a training grid, not an official pitch.",
-      "coaching": "Set mark, give space, use a legal pass rather than a kick.",
-      "safety": "Schematic coach-led walk-through, not a tackle technique lesson. Begin without contact; any contact progression requires a suitably trained coach, matched players, club approval and current RFU age-grade rules. Avoid head/neck contact, charging, diving and wrestling.",
-      "regression": "Walk through at low speed without contact; pause and discuss positions.",
-      "progression": "Change the starting positions and ask players to make their own decisions in a coach-approved activity.",
+      "instructions": "Show A1 reaching touch. Stop play and explain the designated free-pass mark. Give D1 the ball; D2 waits behind D1 and blue retires. On the referee's signal, D1 passes backwards before anyone runs.",
+      "coaching": "Use the restart mark, two hands and a backward pass. The 2026–27 U10 summary puts the touch restart 5 m in and the opposition 7 m back.",
+      "safety": "Use a stationary walk-through and clearly mark the actual distances; no charging onto the pass.",
+      "regression": "Use a passer, receiver and cones for the mark and retreat line.",
+      "progression": "Repeat from the other touchline with teams changing roles.",
       "questions": "Which side restarts? How far must defenders retreat?",
-      "notes": "Restart mark is illustrative; consult the current RFU appendix for exact location and procedure.",
+      "notes": "The mark and retreat positions in the animation are schematic; do not measure the 5 m or 7 m distances from this picture.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -27838,7 +27838,7 @@
         {
           "name": "Set free pass",
           "seconds": 1.8,
-          "notes": "Orange receives the restart at the designated mark; blue retreats 7 m from the mark in the longitudinal direction in this schematic.",
+          "notes": "Orange takes the free-pass mark and blue retires. Mark the actual U10 distances separately; these positions are not to scale.",
           "objects": [
             {
               "id": "a1",
@@ -27926,7 +27926,7 @@
         {
           "name": "Pass to restart",
           "seconds": 1.2,
-          "notes": "D1 passes backwards to D2; defenders remain behind the required mark until play restarts.",
+          "notes": "D1 passes backwards to D2. Both teams wait until the pass is made before running.",
           "objects": [
             {
               "id": "a1",
