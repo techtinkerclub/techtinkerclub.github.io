@@ -2,7 +2,8 @@ import { $, clone, esc, clamp, uid, types, shape, obj, sample, blank } from './m
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.3.1';
 import { pitchGeometry, trainingField } from './pitch.js?v=0.3.1';
-import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './rotation.js?v=0.3.2';
+import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './rotation.js?v=0.3.3';
+import { removeObject, isEditingKeyTarget } from './object-edit.js?v=0.3.3';
 initWorkspace();
 const SEEDS = await fetch(new URL('../data/drills.json', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -30,14 +31,74 @@ function render(){
    }
   }
  }
+ const active=preview===null?objects.find(o=>o.id===selected):null;
  pitch.innerHTML=trainingField(g,showGrid)+lines+objects.map(o=>{
   const sel=selected===o.id&&preview===null,p=g.toView(o.x,o.y);
   return `<g class="obj" data-id="${esc(o.id)}" transform="translate(${p.x} ${p.y})"><circle r="24" fill="transparent"/>${sel?'<circle data-editor-only="true" r="25" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 3" fill="none" pointer-events="none"/>':''}<g transform="rotate(${o.rot+g.rotation})">${shape(o.type)}</g>${o.label?`<text y="${o.type==='label'?22:34}" text-anchor="middle" fill="#fff" paint-order="stroke" stroke="#234f38" stroke-width="3" font-size="13" font-weight="600">${esc(o.label)}</text>`:''}</g>`;
- }).join('');
- const active=preview===null?objects.find(o=>o.id===selected):null;
- if(active)pitch.insertAdjacentHTML('beforeend',rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation));
+ }).join('')+(active?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'');
+ updateSelectionTools(active);
  $('sceneLabel').textContent=preview===null?`Step ${idx+1} of ${drill.frames.length} · ${f().name}`:drill.frames[locate(preview).i].name;$('narration').textContent=preview===null?f().notes:(drill.frames[locate(preview).i]?.notes||'');$('timeLabel').textContent=`${(preview??at(idx)).toFixed(1)} / ${duration().toFixed(1)} s`;$('scrub').max=Math.max(.01,duration());$('scrub').value=preview??at(idx)}
-function inspector(){let o=f().objects.find(x=>x.id===selected);let disabled=preview!==null?'disabled':'';if(!o){$('objectPanel').innerHTML='<small>Select an object on the pitch to edit its label, rotation and timing.</small>';return}let t=f().timing?.[o.id]||{start:0,end:100};$('objectPanel').innerHTML=`<div class="field"><label>Object: ${esc(types[o.type][0])}</label><input id="objLabel" value="${esc(o.label)}" ${disabled}></div><div class="field"><label>Rotation (degrees)</label><input id="objRot" type="number" min="-360" max="360" value="${o.rot}" ${disabled}><div class="facing-buttons" aria-label="Quick facing directions">${[["↑",0,"up"],["→",90,"right"],["↓",180,"down"],["←",270,"left"]].map(([symbol,a,word])=>`<button type="button" data-facing="${a}" title="Face ${word} on screen" aria-label="Face ${word} on screen" ${disabled}>${symbol}</button>`).join("")}</div><small>Drag the green handle on the pitch to rotate. Hold Shift for 15° steps. Degrees are relative to the pitch.</small></div>${idx>0?`<div class="pair"><div class="field"><label>Start (%)</label><input id="start" type="number" min="0" max="99" value="${t.start}" ${disabled}></div><div class="field"><label>End (%)</label><input id="end" type="number" min="1" max="100" value="${t.end}" ${disabled}></div></div><small>Timing is relative to the transition into this step.</small>`:''}<div class="flex" style="margin-top:9px"><button id="copyObj" ${disabled}>Duplicate</button><button id="delObj" ${disabled}>Remove here</button></div>`;$('objLabel').oninput=e=>{o.label=e.target.value;changed();render()};$('objRot').onchange=e=>{o.rot=clamp(Number(e.target.value)||0,-360,360);$('objRot').value=o.rot;changed();render();tracks()};for(const button of $('objectPanel').querySelectorAll('[data-facing]'))button.onclick=()=>{o.rot=wrapAngle(Number(button.dataset.facing)-geometry().rotation);$('objRot').value=o.rot;changed();render();tracks()};if(idx>0){function timing(){let s=clamp(Number($('start').value)||0,0,99),e=clamp(Number($('end').value)||1,s+1,100);f().timing[o.id]={start:s,end:e};changed();inspector();tracks()}$('start').onchange=timing;$('end').onchange=timing}$('copyObj').onclick=()=>{let n={...o,id:uid(),x:clamp(o.x+35,30,870),y:clamp(o.y+35,25,515),label:o.label?o.label+' copy':''};f().objects.push(n);selected=n.id;changed();refresh()};$('delObj').onclick=()=>{f().objects=f().objects.filter(x=>x.id!==o.id);delete f().timing[o.id];selected=null;changed();refresh()}}function tracks(){if(!idx){$('tracks').innerHTML='<div style="padding:10px" class="muted">Select a later step to configure independent movement tracks.</div>';return}let old=drill.frames[idx-1];let moving=f().objects.filter(o=>{let a=old.objects.find(x=>x.id===o.id);return a&&(a.x!==o.x||a.y!==o.y||a.rot!==o.rot)});$('tracks').innerHTML=moving.length?moving.map(o=>{let t=f().timing[o.id]||{start:0,end:100};return `<div class="track"><button class="track-name" data-track="${esc(o.id)}" title="Edit movement timing">${esc(o.label||types[o.type][0])}</button><div class="trackbar"><div class="span" style="left:${t.start}%;width:${t.end-t.start}%;background:${types[o.type][1]}">${t.start}–${t.end}%</div></div></div>`}).join(''):'<div style="padding:10px" class="muted">No movement from the previous step. Drag an existing object to a new position.</div>'}$('tracks').addEventListener('click',e=>{const b=e.target.closest('[data-track]');if(!b)return;editMode();selected=b.dataset.track;render();inspector();openInspector('Object')});function refresh(){const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);for(let k of ['title','age','category','length','width','objective','safety'])$(k).value=drill[k];$('stepName').value=fr.name;$('stepTime').value=idx?fr.seconds:0;$('stepTime').disabled=!idx;$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;$('save').textContent=dirty?'Save drill •':'Save drill';render();inspector();tracks()}function choose(i){stop();preview=null;idx=clamp(i,0,drill.frames.length-1);if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){editMode();const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','cone','flag','bag','sausage','ladder'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);n.y=clamp(n.y,25,515);f().objects.push(n);selected=n.id;changed();refresh();openInspector('Object')};let groups=[['Players',['attacker','defender','neutral','coach','shield','bagplayer']],['Equipment',['ball','cone','flag','bag','sausage','ladder']],['Actions & markers',['tackle','ruck','maul','scrum','label']]];$('palette').innerHTML=groups.map(([name,ts])=>`<div class="group"><h3>${name}</h3><div class="palette">${ts.map(t=>`<button data-type="${t}"><svg viewBox="-32 -32 64 64" aria-hidden="true">${shape(t)}</svg>${esc(types[t][0])}</button>`).join('')}</div></div>`).join('');$('palette').onclick=e=>{let b=e.target.closest('[data-type]');if(b)add(b.dataset.type)};
+function inspector(){let o=f().objects.find(x=>x.id===selected);let disabled=preview!==null?'disabled':'';if(!o){$('objectPanel').innerHTML='<small>Select an object on the pitch to edit its label, rotation and timing.</small>';return}let t=f().timing?.[o.id]||{start:0,end:100};$('objectPanel').innerHTML=`<div class="field"><label>Object: ${esc(types[o.type][0])}</label><input id="objLabel" value="${esc(o.label)}" ${disabled}></div><div class="field"><label>Rotation (degrees)</label><input id="objRot" type="number" min="-360" max="360" value="${o.rot}" ${disabled}><div class="facing-buttons" aria-label="Quick facing directions">${[["↑",0,"up"],["→",90,"right"],["↓",180,"down"],["←",270,"left"]].map(([symbol,a,word])=>`<button type="button" data-facing="${a}" title="Face ${word} on screen" aria-label="Face ${word} on screen" ${disabled}>${symbol}</button>`).join("")}</div><small>Drag the green handle on the pitch to rotate. Hold Shift for 15° steps. Degrees are relative to the pitch.</small></div>${idx>0?`<div class="pair"><div class="field"><label>Start (%)</label><input id="start" type="number" min="0" max="99" value="${t.start}" ${disabled}></div><div class="field"><label>End (%)</label><input id="end" type="number" min="1" max="100" value="${t.end}" ${disabled}></div></div><small>Timing is relative to the transition into this step.</small>`:''}<div class="flex" style="margin-top:9px"><button id="copyObj" ${disabled}>Duplicate</button><button id="delObj" class="danger-action" ${disabled}>Delete object</button></div>`;$('objLabel').oninput=e=>{o.label=e.target.value;changed();render()};$('objRot').onchange=e=>{o.rot=clamp(Number(e.target.value)||0,-360,360);$('objRot').value=o.rot;changed();render();tracks()};for(const button of $('objectPanel').querySelectorAll('[data-facing]'))button.onclick=()=>{o.rot=wrapAngle(Number(button.dataset.facing)-geometry().rotation);$('objRot').value=o.rot;changed();render();tracks()};if(idx>0){function timing(){let s=clamp(Number($('start').value)||0,0,99),e=clamp(Number($('end').value)||1,s+1,100);f().timing[o.id]={start:s,end:e};changed();inspector();tracks()}$('start').onchange=timing;$('end').onchange=timing}$('copyObj').onclick=duplicateSelected;$('delObj').onclick=()=>deleteObject('here')}function tracks(){if(!idx){$('tracks').innerHTML='<div style="padding:10px" class="muted">Select a later step to configure independent movement tracks.</div>';return}let old=drill.frames[idx-1];let moving=f().objects.filter(o=>{let a=old.objects.find(x=>x.id===o.id);return a&&(a.x!==o.x||a.y!==o.y||a.rot!==o.rot)});$('tracks').innerHTML=moving.length?moving.map(o=>{let t=f().timing[o.id]||{start:0,end:100};return `<div class="track"><button class="track-name" data-track="${esc(o.id)}" title="Edit movement timing">${esc(o.label||types[o.type][0])}</button><div class="trackbar"><div class="span" style="left:${t.start}%;width:${t.end-t.start}%;background:${types[o.type][1]}">${t.start}–${t.end}%</div></div></div>`}).join(''):'<div style="padding:10px" class="muted">No movement from the previous step. Drag an existing object to a new position.</div>'}$('tracks').addEventListener('click',e=>{const b=e.target.closest('[data-track]');if(!b)return;editMode();selected=b.dataset.track;render();inspector();openInspector('Object')});function refresh(){closeObjectMenu();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);for(let k of ['title','age','category','length','width','objective','safety'])$(k).value=drill[k];$('stepName').value=fr.name;$('stepTime').value=idx?fr.seconds:0;$('stepTime').disabled=!idx;$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;$('save').textContent=dirty?'Save drill •':'Save drill';render();inspector();tracks()}function choose(i){stop();preview=null;idx=clamp(i,0,drill.frames.length-1);if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){editMode();const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','cone','flag','bag','sausage','ladder'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);n.y=clamp(n.y,25,515);f().objects.push(n);selected=n.id;changed();refresh();openInspector('Object')};let groups=[['Players',['attacker','defender','neutral','coach','shield','bagplayer']],['Equipment',['ball','cone','flag','bag','sausage','ladder']],['Actions & markers',['tackle','ruck','maul','scrum','label']]];$('palette').innerHTML=groups.map(([name,ts])=>`<div class="group"><h3>${name}</h3><div class="palette">${ts.map(t=>`<button data-type="${t}"><svg viewBox="-32 -32 64 64" aria-hidden="true">${shape(t)}</svg>${esc(types[t][0])}</button>`).join('')}</div></div>`).join('');$('palette').onclick=e=>{let b=e.target.closest('[data-type]');if(b)add(b.dataset.type)};
+
+function canEditObjects(){return preview===null&&!playing&&!drag&&!document.body.classList.contains('presentation-mode')&&!document.querySelector('dialog[open]')}
+function activeObject(){return f().objects.find(o=>o.id===selected)}
+function focusPitch(){pitch.focus({preventScroll:true})}
+function updateSelectionTools(o){
+ $('selectionLabel').textContent=o?(o.label||types[o.type][0])+' · drag green handle to rotate':'Select a player or object';
+ for(const id of ['rotateLeft','rotateRight','deleteSelected'])$(id).disabled=!o;
+}
+function rotateSelected(delta){
+ if(!canEditObjects())return;
+ const o=activeObject();if(!o)return;
+ o.rot=wrapAngle(o.rot+delta);changed();render();inspector();tracks();focusPitch();
+}
+function duplicateSelected(){
+ if(!canEditObjects())return;
+ const o=activeObject();if(!o)return;
+ const n={...o,id:uid(),x:clamp(o.x+35,30,870),y:clamp(o.y+35,25,515),label:o.label?o.label+' copy':''};
+ f().objects.push(n);selected=n.id;changed();refresh();openInspector('Object',false);focusPitch();note('Object duplicated in this step.');
+}
+function deleteObject(scope='here'){
+ if(!canEditObjects())return;
+ const o=activeObject();if(!o)return;
+ const name=o.label||types[o.type][0],result=removeObject(drill.frames,o.id,idx,scope);
+ if(!result.removed)return;
+ if(scope!=='here'&&result.removed>1&&!confirm('Delete '+name+' from '+result.removed+' steps?'))return;
+ drill.frames=result.frames;selected=null;changed();refresh();focusPitch();
+ note(name+' deleted from '+(result.removed===1?'one step':result.removed+' steps')+'.');
+}
+function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
+function openObjectMenu(e){
+ if(!canEditObjects())return;
+ const group=e.target.closest('[data-id]'),handle=e.target.closest('[data-rotate]');
+ if(!group&&!handle)return;
+ if(group)selected=group.dataset.id;
+ const o=activeObject();if(!o)return;
+ e.preventDefault();render();inspector();openInspector('Object',false);
+ const menu=$('objectMenu');$('objectMenuLabel').textContent=o.label||types[o.type][0];
+ menu.hidden=false;
+ menu.style.left='0px';menu.style.top='0px';
+ const r=menu.getBoundingClientRect(),pad=8;
+ menu.style.left=Math.max(pad,Math.min(e.clientX,window.innerWidth-r.width-pad))+'px';
+ menu.style.top=Math.max(pad,Math.min(e.clientY,window.innerHeight-r.height-pad))+'px';
+ menu.querySelector('button').focus({preventScroll:true});
+}
+pitch.addEventListener('contextmenu',openObjectMenu);
+$('objectMenu').addEventListener('click',e=>{
+ const b=e.target.closest('[data-object-command]');if(!b)return;
+ const command=b.dataset.objectCommand;closeObjectMenu();focusPitch();
+ if(command==='left')rotateSelected(-15);else if(command==='right')rotateSelected(15);else if(command==='duplicate')duplicateSelected();else deleteObject(command);
+});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#objectMenu'))closeObjectMenu()},{capture:true});
+window.addEventListener('resize',closeObjectMenu);
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&!$('objectMenu').hidden){closeObjectMenu();focusPitch();e.preventDefault();return}
+ if(e.key!=='Delete'||e.repeat||e.ctrlKey||e.metaKey||e.altKey||isEditingKeyTarget(e.target)||!canEditObjects()||!activeObject())return;
+ e.preventDefault();closeObjectMenu();deleteObject('here');
+});
+$('rotateLeft').onclick=()=>rotateSelected(-15);
+$('rotateRight').onclick=()=>rotateSelected(15);
+$('deleteSelected').onclick=()=>deleteObject('here');
 function viewPoint(e){
  const p=pitch.createSVGPoint();p.x=e.clientX;p.y=e.clientY;
  return p.matrixTransform(pitch.getScreenCTM().inverse());
@@ -45,6 +106,7 @@ function viewPoint(e){
 function point(e){const q=viewPoint(e);return geometry().fromView(q.x,q.y)}
 pitch.addEventListener('pointerdown',e=>{
  if(preview!==null||drag||e.button!==0||document.body.classList.contains('presentation-mode'))return;
+ focusPitch();
  if(e.target.closest('[data-rotate]')){
   const o=f().objects.find(x=>x.id===selected);if(!o)return;
   drag={id:o.id,kind:'rotate',pointerId:e.pointerId,moved:false};
