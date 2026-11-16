@@ -1,10 +1,10 @@
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.8.0';
-import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.1';
-import {pitchGeometry,trainingField} from './pitch.js?v=0.6.0';
+import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.2';
+import {pitchGeometry,trainingField} from './pitch.js?v=0.8.2';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.7.0';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
-import {contactType,contactLabels,posesFor,posedShape,cleanContacts} from './contact.js?v=0.6.0';
+import {contactType,contactLabels,posesFor,posedShape,cleanContacts} from './contact.js?v=0.8.2';
 import {cleanBreakdowns} from './breakdown.js?v=0.5.3';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.7.0';
 import {cardLinks} from './coaching-output.js?v=0.7.1';
