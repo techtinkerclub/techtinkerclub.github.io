@@ -1,5 +1,5 @@
 import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.11.1';
-import {playbackData,renderScene} from './scene.js?v=0.10.2';
+import {playbackData,renderScene} from './scene.js?v=0.12.0';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fields={q:'search',age:'age',category:'category',format:'format',sort:'sort'};
 let drills=[],ready=false,limit=18,thumbs=new Map(),messageTimer;
@@ -10,7 +10,7 @@ function write(f){for(const [key,id] of Object.entries(fields))$(id).value=f[key
 function replaceUrl(f){const p=filterParams(f).toString();history.replaceState(null,'',location.pathname+(p?'?'+p:''))}
 function thumb(d){
  if(!isAnimated(d))return '<span class="card-symbol" aria-hidden="true">▤</span><span>Coaching notes</span>';
- if(!thumbs.has(d.id)){try{const safe=playbackData(d);const i=Math.min(1,safe.frames.length-1);let svg=renderScene(safe,{index:i,runs:true,passes:true,labels:true,decisions:true,prefix:'thumb-'+d.id}).svg;
+ if(!thumbs.has(d.id)){try{const safe=playbackData(d);const i=Math.min(1,safe.frames.length-1);let svg=renderScene(safe,{index:i,runs:true,passes:true,labels:true,decisions:true,scaleMode:'coaching',prefix:'thumb-'+d.id}).svg;
  // Each thumbnail has its own SVG paint-server namespace, even when several are displayed.
  const names=[...new Set([...svg.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]))];for(const id of names){const next='t-'+d.id+'-'+id;svg=svg.split('id="'+id+'"').join('id="'+next+'"').split('url(#'+id+')').join('url(#'+next+')').split('href="#'+id+'"').join('href="#'+next+'"')}
  thumbs.set(d.id,svg)}catch{thumbs.set(d.id,'<span>Open drill to view diagram</span>')}}
