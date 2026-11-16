@@ -78,7 +78,7 @@ export function contactTarget(frame,moving,position,g,radius=32){
 }
 // Propagate into unchanged later steps; preserve a different authored possession,
 // missing player/ball, or independently animated free-ball movement.
-export function assignPossession(frames,index,ballId,ownerId,g){
+export function assignPossession(frames,index,ballId,ownerId,g,originalPosition=null){
  const frame=frames[index],ball=findObject(frame,ballId);if(ball?.type!=='ball')return 0;
  if(ownerId&&!canCarry(findObject(frame,ownerId)))return 0;
  const oldOwner=ball.ownerId||null;
@@ -89,7 +89,7 @@ export function assignPossession(frames,index,ballId,ownerId,g){
   const fr=frames[i],b=findObject(fr,ballId);
   if(b?.type!=='ball'||(b.ownerId||null)!==oldOwner||(ownerId&&!canCarry(findObject(fr,ownerId))))break;
   if(i>index&&!oldOwner&&(Math.hypot(b.x-previous.x,b.y-previous.y)>1e-5||fr.paths?.[ballId]?.points?.length||Object.hasOwn(fr.timing||{},ballId)))break;
-  previous={x:b.x,y:b.y};
+  previous=i===index&&originalPosition?originalPosition:{x:b.x,y:b.y};
   if(ownerId){b.ownerId=ownerId;Object.assign(b,carriedPose(b,findObject(fr,ownerId),g))}
   else{delete b.ownerId;Object.assign(b,{x:releasePosition.x,y:releasePosition.y})}
   if(i>index){if(fr.timing)delete fr.timing[ballId];if(fr.paths)delete fr.paths[ballId]}
