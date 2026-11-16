@@ -258,3 +258,16 @@ html{color-scheme:dark}
 #arrivalChoices{display:grid;gap:5px}#arrivalChoices[hidden]{display:none!important}
 
 #currentFormationEdit{font-size:12px}#currentFormationEdit summary{cursor:pointer;color:var(--muted);padding:5px 0}#currentFormationEdit[open] #contactMembers{margin:6px 0}#currentFormationEdit button{width:100%}#retainedArrivals{color:var(--accent);line-height:1.4}#retainedArrivals[hidden]{display:none!important}#breakdownError{color:#ffb3a5;line-height:1.4}#breakdownError:empty{display:none}
+
+/* Breakdown stays accessible across Object, Step and Drill tabs. */
+#breakdownDock{flex:0 1 auto;min-height:0;max-height:52%;overflow:auto;overscroll-behavior:contain;padding:9px;background:#213329;border-bottom:1px solid var(--line);scrollbar-width:thin;scrollbar-color:#45574b transparent}
+#breakdownDock[hidden],#breakdownDock [hidden],#breakdownNav[hidden],body.presentation-mode #breakdownNav{display:none!important}
+#breakdownDock #breakdownTools{border:0;padding:0;gap:6px}
+#breakdownDock .breakdown-heading{display:flex;align-items:center;justify-content:space-between;gap:5px}
+#breakdownDock .breakdown-heading button{font-size:10px;padding:3px 6px}
+#breakdownSource{color:var(--muted);font-size:10px}
+#breakdownDock select{width:100%;font-size:11px}
+#breakdownDock #arrivalList{max-height:120px}
+#breakdownResume{display:grid;gap:6px}
+#breakdownResume h3{margin:0}
+#breakdownNav{color:var(--accent);border-color:#627b4e}
