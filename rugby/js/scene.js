@@ -1,9 +1,9 @@
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.8.0';
-import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.4';
+import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.10.2';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.9.0';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.9.0';
-import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.8.4';
+import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.10.2';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
 import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts} from './contact.js?v=0.8.4';
 import {cleanBreakdowns} from './breakdown.js?v=0.8.4';
@@ -29,7 +29,7 @@ export function playbackData(d){
   });
   const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};cleanGuide(result);cleanTraining(result);return result;
  });
- cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
+ cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);normaliseRecoveryPoses(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
  return out;
 }
 export function drillDuration(d){return d.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0)}
