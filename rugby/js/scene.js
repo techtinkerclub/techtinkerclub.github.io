@@ -1,11 +1,11 @@
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.8.0';
-import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.3';
+import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.4';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.8.2';
-import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.7.0';
+import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.8.4';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
-import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts} from './contact.js?v=0.8.3';
-import {cleanBreakdowns} from './breakdown.js?v=0.5.3';
+import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts} from './contact.js?v=0.8.4';
+import {cleanBreakdowns} from './breakdown.js?v=0.8.4';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.7.0';
 import {cardLinks} from './coaching-output.js?v=0.7.1';
 export function playbackData(d){
@@ -22,7 +22,7 @@ export function playbackData(d){
    ids.add(o.id);const q={id:o.id,type:o.type,label:str(o.label,160),x:num(o.x,0,900,450),y:num(o.y,0,540,270),rot:num(o.rot,-360,360,0)};
    if(o.type==='ball'||isShield(o)){if(typeof o.ownerId==='string')q.ownerId=o.ownerId;if(o.type==='ball'){if(['left','right'].includes(o.carrySide))q.carrySide=o.carrySide;if(['turnover','presentation','set','handover','throw','feed','kick','pass','tap'].includes(o.transferKind))q.transferKind=o.transferKind;if(['presented','secured','grounded'].includes(o.groundState))q.groundState=o.groundState}}
    if(contactType(o.type)&&Array.isArray(o.members))q.members=o.members.slice(0,17).filter(m=>m&&typeof m.id==='string').map(m=>({id:m.id,pose:m.pose}));
-   if(contactType(o.type)&&o.breakdown&&typeof o.breakdown==='object'){const b=o.breakdown;q.breakdown={phase:b.phase,arrivalSide:b.arrivalSide,carrierId:b.carrierId,tacklerId:b.tacklerId,ballId:b.ballId}}
+   if(contactType(o.type)&&o.breakdown&&typeof o.breakdown==='object'){const b=o.breakdown;q.breakdown={phase:b.phase,arrivalSide:b.arrivalSide,carrierId:b.carrierId,tacklerId:b.tacklerId,tacklerIds:Array.isArray(b.tacklerIds)?b.tacklerIds.slice(0,2):undefined,ballId:b.ballId}}
    const t=f.timing?.[o.id];if(t&&Object.hasOwn(f.timing,o.id)){const start=num(t.start,0,99,0);timing[o.id]={start,end:num(t.end,start+1,100,100)}}
    if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return copyTraining(o,q);
   });
