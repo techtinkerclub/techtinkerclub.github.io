@@ -19,14 +19,14 @@ export function pitchGeometry(length,width,orientation='up'){
  };
  return {length:l,width:w,scale,margin,fw,fh,viewWidth,viewHeight,toView,fromView,rotation:right?90:0,orientation:right?'right':'up'};
 }
-export function trainingField(g,grid=false){
+export function trainingField(g,grid=false,gridStep=.5){
  const {margin:m,fw,fh,viewWidth:vw,viewHeight:vh,orientation,scale,length,width}=g;
- const right=orientation==='right',n=8,step=Math.max(length,width)>35?5:Math.max(length,width)>20?2:1,spacing=step*scale;
+ const right=orientation==='right',n=8,step=[.25,.5,1,2,5].includes(Number(gridStep))?Number(gridStep):.5,spacing=step*scale;
  const stripes=Array.from({length:n},(_,i)=>i%2===0?'':right?
   `<rect x="${m+i*fw/n}" y="${m}" width="${fw/n}" height="${fh}" fill="#fff" opacity=".035"/>`:
   `<rect x="${m}" y="${m+i*fh/n}" width="${fw}" height="${fh/n}" fill="#fff" opacity=".035"/>`).join('');
  const gridLines=grid?`<rect x="${m}" y="${m}" width="${fw}" height="${fh}" fill="url(#gridpat)"/>`:'';
- return `<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#f9f4d9"/></marker><pattern id="gridpat" x="${m}" y="${m}" width="${spacing}" height="${spacing}" patternUnits="userSpaceOnUse"><path d="M${spacing} 0H0V${spacing}" fill="none" stroke="#fff" stroke-opacity=".20" stroke-width="1"/></pattern></defs>
+ return `<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#f9f4d9"/></marker><pattern id="gridpat" x="${right?m+fw:m}" y="${m}" width="${spacing}" height="${spacing}" patternUnits="userSpaceOnUse"><path d="M${spacing} 0H0V${spacing}" fill="none" stroke="#fff" stroke-opacity=".24" stroke-width="${Math.min(1,spacing*.09)}"/></pattern></defs>
  <rect width="${vw}" height="${vh}" rx="8" fill="#203b2b"/>
  <rect x="${m}" y="${m}" width="${fw}" height="${fh}" fill="#326844"/>${stripes}${gridLines}
  <rect x="${m}" y="${m}" width="${fw}" height="${fh}" fill="none" stroke="#d4e6c9" stroke-width="2"/>
