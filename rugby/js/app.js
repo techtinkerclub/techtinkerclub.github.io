@@ -229,41 +229,46 @@ function selectObject(id){if(!f().objects.some(o=>o.id===id))return;if(pendingIn
 function updateObjectPicker(){const list=$('objectPicker'),options='<option value="">Select an object…</option>'+f().objects.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');if(list.innerHTML!==options)list.innerHTML=options;list.value=selected||'';list.disabled=preview!==null||!!ballPicking||routeDrawing}
 $('objectPicker').onchange=()=>{if($('objectPicker').value)selectObject($('objectPicker').value);else{selected=null;render();inspector()}};
 let memberSignature='';
-function updateContactTools(){const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);$('contactTools').hidden=!ok;if(!ok){memberSignature='';$('breakdownTools').hidden=true;return}const near=contactCandidates(f(),o,geometry()),ids=new Set((o.members||[]).map(m=>m.id));const players=f().objects.filter(canCarry),sig=JSON.stringify([o.id,idx,players.map(p=>[p.id,p.label]),[...ids],near.map(p=>p.id)]);if(sig!==memberSignature){memberSignature=sig;$('contactMembers').innerHTML=players.map(p=>'<label><input type="checkbox" data-contact-player="'+esc(p.id)+'" '+((ids.size?ids.has(p.id):near.some(x=>x.id===p.id))?'checked':'')+'> '+esc(objectName(p))+'</label>').join('')}
- $('contactInfo').textContent=contactTitle(o.type)+' · '+(o.members?.length||0)+' arranged players';$('arrangeContact').disabled=routeDrawing||!!ballPicking;$('endContact').disabled=routeDrawing||!!ballPicking;updateBreakdownTools(o)}
+function updateContactTools(){const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);$('contactTools').hidden=!ok;if(!ok){memberSignature='';$('breakdownTools').hidden=true;return}const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=!o.breakdown}const breakdown=validPhase(o.breakdown?.phase);const near=contactCandidates(f(),o,geometry()),ids=new Set((o.members||[]).map(m=>m.id));const players=breakdown&&o.breakdown.phase!=='tackle'?[...candidates(f(),o,'attack'),...candidates(f(),o,'defence')]:f().objects.filter(canCarry),sig=JSON.stringify([o.id,idx,players.map(p=>[p.id,p.label]),[...ids],near.map(p=>p.id)]);if(sig!==memberSignature){memberSignature=sig;$('contactMembers').innerHTML=players.map(p=>'<label><input type="checkbox" data-contact-player="'+esc(p.id)+'" '+((ids.size?ids.has(p.id):near.some(x=>x.id===p.id))?'checked':'')+'> '+esc(objectName(p))+'</label>').join('')}
+ $('contactInfo').textContent=(breakdown?o.label||PHASES[o.breakdown.phase]:contactTitle(o.type))+' · '+(o.members?.length||0)+' arranged players';$('arrangeContact').disabled=routeDrawing||!!ballPicking;$('endContact').disabled=routeDrawing||!!ballPicking;updateBreakdownTools(o)}
 function arrangeMarker(o,explicit=null){const result=arrangeContact(f(),o,geometry(),drill.frames[idx-1],explicit,drill.ageMin===10&&drill.ageMax===10);note(result.message);return result.ok}
 $('arrangeContact').onclick=()=>{if(!canEditObjects())return;const o=activeObject();if(!contactType(o?.type))return;const ids=[...$('contactMembers').querySelectorAll('input:checked')].map(x=>x.dataset.contactPlayer);if(arrangeMarker(o,ids)){changed();memberSignature='';refresh()}};
 $('endContact').onclick=()=>deleteObject('here');
 function activeBreakdown(){const o=activeObject(),b=chosenBall();if(o?.breakdown)return o;return f().objects.find(m=>m.breakdown&&roles(f(),m).ballId===b?.id)}
 let arrivalSignature='';
+function existingArrivals(frame,o){const eligible=new Set([...candidates(frame,o,'attack'),...candidates(frame,o,'defence')].map(p=>p.id));return [...new Set((o.members||[]).map(m=>m.id).filter(id=>eligible.has(id)))]}
 function updateBreakdownTools(o){
  const phase=o.breakdown?.phase,next=nextPhase(phase);$('breakdownTools').hidden=!validPhase(phase);
  if(!validPhase(phase)){arrivalSignature='';$('arrivalChoices').hidden=true;return}
  $('breakdownPhase').textContent=phase==='tackle'?PHASES.tackle:o.label||PHASES[phase];
- $('arrivalOrderWrap').hidden=phase!=='release';
- const order=$('arrivalOrder');
+ $('arrivalOrderWrap').hidden=phase!=='release';const order=$('arrivalOrder');
  if(phase==='release'&&order.dataset.marker!==o.id+':'+idx){order.dataset.marker=o.id+':'+idx;order.value=o.breakdown?.arrivalSide||'defence'}
  const side=phase==='release'?order.value:o.breakdown?.arrivalSide||'attack';
  $('advanceBreakdown').textContent=next?'Next: '+(next==='support'?supportTitle(side):next==='ruck'&&side==='defence'?'Clearout · ruck formed':PHASES[next]):'Sequence complete';
  $('advanceBreakdown').disabled=!next||routeDrawing||!!ballPicking;
- // Only ask for participants when the upcoming stage actually needs them.
- const ask=!!next&&next!=='release';
- $('arrivalChoices').hidden=!ask;
- if(!ask){arrivalSignature='';$('arrivalList').innerHTML='';return}
- $('arrivalPrompt').textContent=next==='support'?(side==='defence'?'Choose arriving defender(s)':'Choose arriving attacker(s)'):next==='ruck'?'Choose players forming the ruck':'Participants for the next stage';
- const eligible=next==='support'?candidates(f(),o,side):[...candidates(f(),o,'attack'),...candidates(f(),o,'defence')];
- const members=new Set((o.members||[]).map(m=>m.id)),sig=JSON.stringify([o.id,idx,phase,side,eligible.map(p=>[p.id,p.label]),[...members]]);
- if(sig!==arrivalSignature){arrivalSignature=sig;$('arrivalList').innerHTML=eligible.map(p=>'<label><input type="checkbox" data-arrival="'+esc(p.id)+'" '+(members.has(p.id)?'checked':'')+'> '+esc(objectName(p))+'</label>').join('')}
+ const current=next&&next!=='release'&&next!=='support'?existingArrivals(f(),o):[];
+ const attack=candidates(f(),o,'attack'),defence=candidates(f(),o,'defence'),u10=drill.ageMin===10&&drill.ageMax===10;
+ const eligible=next==='support'?candidates(f(),o,side):next&&next!=='release'?[...attack,...defence].filter(p=>!current.includes(p.id)&&(!u10||!(attack.some(a=>a.id===p.id)?attack:defence).some(a=>current.includes(a.id)))):[];
+ const sig=JSON.stringify([o.id,idx,phase,side,current,eligible.map(p=>[p.id,p.label])]);
+ if(sig!==arrivalSignature){
+  arrivalSignature=sig;$('breakdownError').textContent='';
+  $('arrivalList').innerHTML=eligible.map(p=>'<label><input type="checkbox" data-arrival="'+esc(p.id)+'"> '+esc(objectName(p))+'</label>').join('');
+ }
+ $('retainedArrivals').hidden=!current.length;
+ $('retainedArrivals').textContent=current.length?'Already involved: '+current.map(id=>objectName(f().objects.find(p=>p.id===id))).join(', ')+' · retained automatically.':'';
+ $('arrivalChoices').hidden=!eligible.length;
+ $('arrivalPrompt').textContent=next==='support'?(side==='defence'?'Choose arriving defender(s)':'Choose arriving attacker(s)'):next==='ruck'?'Choose additional players to form the ruck':'Optional additional arrivals';
 }
 function nextBreakdownStep(marker){
  if(!canEditObjects()||!marker?.breakdown)return;
  const phase=nextPhase(marker.breakdown.phase);if(!phase||drill.frames.length>=150)return;
  const frame=clone(f());frame.name=PHASES[phase];frame.seconds=phase==='release'?.8:1.5;frame.notes='';frame.timing={};frame.paths={};
  const m=frame.objects.find(o=>o.id===marker.id);let ids=phase==='release'?[]:[...$('arrivalList').querySelectorAll('input:checked')].map(x=>x.dataset.arrival);
+ if(['ruck','contest','secured'].includes(phase))ids=[...new Set([...existingArrivals(f(),marker),...ids])];
  const side=phase==='support'?$('arrivalOrder').value:phase==='release'?'defence':m.breakdown.arrivalSide||'attack';
  if(phase==='support')ids=ids.filter(id=>candidates(frame,m,side).some(o=>o.id===id));
  const res=advance(frame,m,geometry(),phase,ids,drill.ageMin===10&&drill.ageMax===10,side);
- if(!res.ok){note(res.message);return}
+ if(!res.ok){$('breakdownError').textContent=res.message;note(res.message);return}
  frame.name=res.message;
  drill.frames.splice(idx+1,0,frame);idx++;selected=m.id;sanitizeRoutes(drill.frames);changed();choose(idx);openInspector('Object',true);note(res.message);
 }
