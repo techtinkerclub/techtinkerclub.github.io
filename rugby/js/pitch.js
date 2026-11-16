@@ -30,6 +30,6 @@ export function trainingField(g,grid=false,gridStep=.5){
  <rect width="${vw}" height="${vh}" rx="8" fill="#203b2b"/>
  <rect x="${m}" y="${m}" width="${fw}" height="${fh}" fill="#326844"/>${stripes}${gridLines}
  <rect x="${m}" y="${m}" width="${fw}" height="${fh}" fill="none" stroke="#d4e6c9" stroke-width="2"/>
- <text x="${vw/2}" y="24" fill="#d4e6c9" font-size="14" text-anchor="middle">ATTACK ${right?'→':'↑'}</text>
+ <text x="${vw/2}" y="34" fill="#d4e6c9" font-size="12" text-anchor="middle">ATTACK ${right?'→':'↑'}</text>
  <text x="${vw/2}" y="${vh-17}" fill="#d4e6c9" font-size="13" text-anchor="middle">${length} m long × ${width} m wide${grid?' · '+step+' m grid':''}</text>`;
 }

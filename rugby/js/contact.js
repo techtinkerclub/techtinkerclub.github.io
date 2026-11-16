@@ -63,11 +63,10 @@ export function posedShape(o,pose,normal,color){
  if(pose==='tackling')return '<ellipse rx="12" ry="20" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-10 -8L-17 -15M10 -8L17 -15" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/><path d="M-4 -15L0 -21L4 -15Z" fill="#fff"/>';
  return '<ellipse rx="16" ry="12" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-12 0H-20M12 0H20" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/><path d="M-5 -7L0 -14L5 -7Z" fill="#fff"/>';
 }
-export function contactLabels(objects,g,escape){
- return objects.filter(o=>contactType(o.type)).map(o=>{
-  const spec=CONTACTS[o.type],p=g.toView(o.x,o.y),label=String(o.label||'').replace(/ marker$/i,'').trim()||spec.title;
-  const text=label.slice(0,36).toUpperCase(),w=Math.max(94,text.length*10+24);
-  const x=Math.max(3,Math.min(g.viewWidth-w-3,p.x-w/2)),y=p.y>75?p.y-73:p.y+38;
-  return '<g pointer-events="none" class="contact-caption"><rect x="'+x+'" y="'+y+'" width="'+w+'" height="25" rx="6" fill="#172820" stroke="'+spec.color+'" stroke-width="1.5"/><text x="'+(x+w/2)+'" y="'+(y+17)+'" text-anchor="middle" font-size="14" font-weight="800" fill="'+spec.color+'">'+escape(text)+'</text></g>';
- }).join('');
+// Keep action captions in a narrow band outside the playing area.
+export function contactLabels(objects,g,escape,extra=[]){
+ const labels=[...objects.filter(o=>contactType(o.type)).map(o=>({text:String(o.label||'').replace(/ marker$/i,'').trim()||CONTACTS[o.type].title,color:CONTACTS[o.type].color})),...extra.map(text=>({text,color:'#ffe994'}))];
+ if(!labels.length)return '';
+ const max=Math.max(7,Math.floor((g.viewWidth-18)/6.3)),full=labels.map(x=>x.text).join(' · '),text=full.length>max?full.slice(0,max-1)+'…':full,w=Math.min(g.viewWidth-10,Math.max(66,text.length*6.1+18));
+ return '<g pointer-events="none" class="contact-caption"><rect x="'+((g.viewWidth-w)/2)+'" y="3" width="'+w+'" height="17" rx="4" fill="#172820" stroke="'+labels[0].color+'" stroke-width=".9"/><text x="'+(g.viewWidth/2)+'" y="15" text-anchor="middle" font-size="10.5" font-weight="700" fill="'+labels[0].color+'">'+escape(text)+'</text></g>';
 }
