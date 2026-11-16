@@ -1,9 +1,9 @@
 // Coach's diagram checker, not a referee or contact technique validator.
-import {playbackData} from './scene.js?v=0.10.2';
+import {playbackData} from './scene.js?v=0.12.0';
 import {pitchGeometry} from './pitch.js?v=0.9.0';
-import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.10.2';
-import {posesFor} from './contact.js?v=0.8.4';
-import {decisionLocation,trainingTransition,trainingPoses} from './training.js?v=0.10.2';
+import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.12.0';
+import {posesFor} from './contact.js?v=0.12.0';
+import {decisionLocation,trainingTransition,trainingPoses} from './training.js?v=0.12.0';
 import {routeSamples} from './routes.js?v=0.4.3';
 const team=o=>['attacker','shield'].includes(o?.type)?1:['defender','bagplayer'].includes(o?.type)?-1:0;
 const lookup=(f,id)=>f?.objects.find(o=>o.id===id);
@@ -14,7 +14,7 @@ const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const same=(a,b)=>a&&b&&a.id===b.id;
 export const CHECK_GROUPS={possession:'Ball and possession',passing:'Passing direction',recovery:'Recovery poses',age:'Age-grade actions (U10)',breakdown:'Breakdown and restarts',offside:'Offside and entry',spacing:'Player spacing'};
 // Same guides as the presentation player.
-import {attackVector,offsideBands,offsideOverlay} from './offside.js?v=0.11.1';
+import {attackVector,offsideBands,offsideOverlay} from './offside.js?v=0.12.0';
 export {attackVector,offsideBands,offsideOverlay};
 const dot=(p,v)=>p.x*v.x+p.y*v.y;
 const projected=(o,g,v)=>dot(g.toView(o.x,o.y),v);
@@ -55,10 +55,10 @@ export function checkDrill(raw,{age=Number(raw.ageMin)||10,direction='auto',offs
    if(age===10&&f.guide?.kind==='lineout'&&(!old||old.guide?.id!==f.guide.id)){coverage.age++;add('age',i,[],'U10 match play uses a free pass after touch, not a lineout.')}
   }
   if(offside)for(const b of bands){
-   for(const p of players){const t=team(p);if(!t||b.excluded.includes(p.id))continue;coverage.offside++;const q=projected(p,g,b.v),margin=14; // Position only: not a legal judgement about interference or immediate retreat.
+   for(const p of players){const t=team(p);if(!t||b.excluded.includes(p.id))continue;coverage.offside++;const q=projected(p,g,b.v),margin=.21*g.scale; // Position only: not a legal judgement about interference or immediate retreat.
     if(t===1?q>b.blue+margin:q<b.orange-margin)add('offside',i,[p.id,b.id],name(p)+' is ahead of the approximate '+b.kind.toLowerCase()+' offside line. Check retreat/participation.');
    }
-   if(old){const prev=offsideBands(old.objects,d,g,direction).find(q=>q.id===b.id);if(prev)for(const id of b.members.filter(id=>!prev.members.includes(id))){const p=lookup(old,id),t=team(p);if(!t)continue;coverage.offside++;const q=projected(p,g,b.v);if(t===1?q>prev.blue+14:q<prev.orange-14)add('offside',i,[id,b.id],name(p)+' starts the arrival ahead of the previous offside guide. Check the actual entry route.');}}
+   if(old){const prev=offsideBands(old.objects,d,g,direction).find(q=>q.id===b.id);if(prev)for(const id of b.members.filter(id=>!prev.members.includes(id))){const p=lookup(old,id),t=team(p);if(!t)continue;coverage.offside++;const q=projected(p,g,b.v);if(t===1?q>prev.blue+.21*g.scale:q<prev.orange-.21*g.scale)add('offside',i,[id,b.id],name(p)+' starts the arrival ahead of the previous offside guide. Check the actual entry route.');}}
   }
   if(!old)continue;
   // Authored pass endpoints are evaluated by the same engine used in playback.
@@ -91,7 +91,7 @@ export function checkDrill(raw,{age=Number(raw.ageMin)||10,direction='auto',offs
    const flagged=new Set();for(const q of [.1,.2,.35,.5,.65,.8,.95]){
     const objects=trainingTransition(transitionObjects(old,f,q,g),old,f,q,g),mp=new Map(objects.map(o=>[o.id,o])),ps=trainingPoses(objects,posesFor(objects));samples++;
     for(const p of departing)if(!flagged.has(p.id)&&mp.has(p.id)&&low(ps.get(p.id))&&dist(g.toView(mp.get(p.id).x,mp.get(p.id).y),g.toView(lookup(old,p.id).x,lookup(old,p.id).y))>2){flagged.add(p.id);add('recovery',i,[p.id],name(p)+' moves in a low pose while leaving contact. Check the deliberate pose override.','review',q)}
-    if(spacing){const participants=new Set(objects.flatMap(o=>o.members?.map(x=>x.id)||[])),pp=objects.filter(o=>canCarry(o)&&!participants.has(o.id));for(let u=0;u<pp.length;u++)for(let w=u+1;w<pp.length;w++){const x=pp[u],y=pp[w],key=x.id+'|'+y.id;if(flagged.has(key))continue;const A=g.toView(x.x,x.y),B=g.toView(y.x,y.y);coverage.spacing++;if(dist(A,B)<16&&(!low(ps.get(x.id))&&!low(ps.get(y.id)))){flagged.add(key);add('spacing',i,[x.id,y.id],name(x)+' and '+name(y)+' overlap at a sampled point. Check whether contact is intended.','review',q)}}}
+    if(spacing){const participants=new Set(objects.flatMap(o=>o.members?.map(x=>x.id)||[])),pp=objects.filter(o=>canCarry(o)&&!participants.has(o.id));for(let u=0;u<pp.length;u++)for(let w=u+1;w<pp.length;w++){const x=pp[u],y=pp[w],key=x.id+'|'+y.id;if(flagged.has(key))continue;const A=g.toView(x.x,x.y),B=g.toView(y.x,y.y);coverage.spacing++;if(dist(A,B)<.36*g.scale&&(!low(ps.get(x.id))&&!low(ps.get(y.id)))){flagged.add(key);add('spacing',i,[x.id,y.id],name(x)+' and '+name(y)+' overlap at a sampled point. Check whether contact is intended.','review',q)}}}
    }
   }
  }
