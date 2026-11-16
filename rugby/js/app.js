@@ -7,7 +7,7 @@ import { removeObject, isEditingKeyTarget } from './object-edit.js?v=0.3.3';
 import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypointOverlay } from './routes.js?v=0.4.0';
 import { createHistory } from './history.js?v=0.4.0';
 initWorkspace();
-const SEEDS = await fetch(new URL('../data/drills.json', import.meta.url)).then(r => {
+const SEEDS = await fetch(new URL('../data/drills.json?v=0.4.1', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }).then(data => {
