@@ -136,3 +136,13 @@ body.presentation-mode .route-tools{display:none}
 .grid-controls{display:inline-flex;align-items:center;gap:3px;padding:2px;border:1px solid var(--line);border-radius:6px;flex-shrink:0}
 .grid-controls select{width:auto;min-height:30px;padding:4px 5px;font-size:12px;border-color:transparent;background:var(--panel2)}
 .grid-controls button{white-space:nowrap}
+
+/* Discoverable movement tools and direct spline editing. */
+.path-palette{margin-top:11px;padding:8px;background:#223329;border:1px solid #405a47;border-radius:7px;display:grid;gap:5px}
+.path-palette h3{margin:0;font-size:10px;color:var(--accent)}
+.path-palette button{font-size:11px;text-align:left;padding:5px 6px;min-height:28px}
+.path-palette small{font-size:10px;line-height:1.4}
+.path-hit{cursor:crosshair}
+.path-insert{cursor:move}
+.path-insert:hover circle:nth-of-type(2){fill:#4b7447;stroke:white}
+body.presentation-mode .path-hit,body.presentation-mode .path-insert{display:none}
