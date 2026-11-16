@@ -35,7 +35,7 @@ if(catalogueId!==null){
  document.body.classList.add('catalogue-player');$('backLibrary').hidden=false;$('backLibrary').href=libraryHref(readFilters(params));$('openFileLabel').hidden=true;$('downloadDrill').hidden=true;
  $('empty').innerHTML='<h2>Loading drill…</h2><p>Please use the library link to choose another resource.</p>';
  try{
-  if(!/^seed-\\d{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');
+  if(!/^seed-[0-9]{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');
   const list=await loadCatalogue(),entry=list.find(x=>x.id===catalogueId);if(!entry)throw Error('This drill is not in the published catalogue.');
   open(entry,{});document.title=entry.title+' · Rugby Coaching Library';
   $('catalogueReview').hidden=false;
