@@ -19,17 +19,24 @@ export function pitchGeometry(length,width,orientation='up'){
  };
  return {length:l,width:w,scale,margin,fw,fh,viewWidth,viewHeight,toView,fromView,rotation:right?90:0,orientation:right?'right':'up'};
 }
-export function trainingField(g,grid=false,gridStep=.5){
+export function trainingField(g,grid=false,gridStep=.5,settings={}){
  const {margin:m,fw,fh,viewWidth:vw,viewHeight:vh,orientation,scale,length,width}=g;
  const right=orientation==='right',n=8,step=[.25,.5,1,2,5].includes(Number(gridStep))?Number(gridStep):.5,spacing=step*scale;
  const stripes=Array.from({length:n},(_,i)=>i%2===0?'':right?
   `<rect x="${m+i*fw/n}" y="${m}" width="${fw/n}" height="${fh}" fill="#fff" opacity=".035"/>`:
   `<rect x="${m}" y="${m+i*fh/n}" width="${fw}" height="${fh/n}" fill="#fff" opacity=".035"/>`).join('');
+ const boundary=['line','cones','flags','none'].includes(settings.boundary)?settings.boundary:'line';
+ const border=boundary==='line'?'<rect x="'+m+'" y="'+m+'" width="'+fw+'" height="'+fh+'" fill="none" stroke="#d4e6c9" stroke-width="2"/>':boundary==='none'?'':[[m,m],[m+fw,m],[m,m+fh],[m+fw,m+fh]].map(([x,y])=>'<g transform="translate('+x+' '+y+')">'+(boundary==='cones'?'<path d="M-9 7L0 -11L9 7Z" fill="#ffda78" stroke="#a46d33" stroke-width="1.1"/>':'<path d="M0 10V-15L13 -10L0 -5" fill="#ef8177" stroke="#d4e6c9" stroke-width="1.4" stroke-linejoin="round"/>')+'</g>').join('');
+ const dir=({up:0,right:90,down:180,left:270}[settings.attackDirection]??0)+g.rotation;
+ const angle=((dir%360)+360)%360,vertical=angle%180===0;
+ const sign=angle===0||angle===90?1:-1,span=Math.min(64,(vertical?fh:fw)*.27);
+ const arrow=settings.showAttack===false?'':vertical
+ ?'<g aria-label="Attack direction" pointer-events="none"><path d="M22 '+(m+fh/2+sign*span/2)+'V'+(m+fh/2-sign*span/2)+'" stroke="#d4e6c9" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr)"/><text transform="translate(10 '+(m+fh/2)+') rotate(-90)" font-size="11" font-weight="600" fill="#d4e6c9" text-anchor="middle">ATTACK</text></g>'
+ :'<g aria-label="Attack direction" pointer-events="none"><path d="M'+(m+fw/2-sign*span/2)+' '+(m+fh+16)+'H'+(m+fw/2+sign*span/2)+'" stroke="#d4e6c9" stroke-width="2.2" stroke-linecap="round" marker-end="url(#arr)"/><text x="'+(m+fw/2)+'" y="'+(m+fh+28)+'" font-size="10" fill="#d4e6c9" font-weight="600" text-anchor="middle">ATTACK</text></g>';
  const gridLines=grid?`<rect x="${m}" y="${m}" width="${fw}" height="${fh}" fill="url(#gridpat)"/>`:'';
  return `<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#f9f4d9"/></marker><pattern id="gridpat" x="${right?m+fw:m}" y="${m}" width="${spacing}" height="${spacing}" patternUnits="userSpaceOnUse"><path d="M${spacing} 0H0V${spacing}" fill="none" stroke="#fff" stroke-opacity=".24" stroke-width="${Math.min(1,spacing*.09)}"/></pattern></defs>
  <rect width="${vw}" height="${vh}" rx="8" fill="#203b2b"/>
  <rect x="${m}" y="${m}" width="${fw}" height="${fh}" fill="#326844"/>${stripes}${gridLines}
- <rect x="${m}" y="${m}" width="${fw}" height="${fh}" fill="none" stroke="#d4e6c9" stroke-width="2"/>
- <text x="${vw/2}" y="40" fill="#d4e6c9" font-size="14" font-weight="600" text-anchor="middle">ATTACK ${right?'→':'↑'}</text>
- <text x="${vw/2}" y="${vh-17}" fill="#d4e6c9" font-size="13" text-anchor="middle">${length} m long × ${width} m wide${grid?' · '+step+' m grid':''}</text>`;
+ ${border}${arrow}
+ <text x="${vw/2}" y="${vh-(vertical||settings.showAttack===false?17:5)}" fill="#d4e6c9" font-size="${vertical||settings.showAttack===false?13:11}" text-anchor="middle">${length} m long × ${width} m wide${grid?' · '+step+' m grid':''}</text>`;
 }
