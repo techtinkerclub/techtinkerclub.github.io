@@ -88,7 +88,7 @@ const paletteNames={tackle:'Tackle',ruck:'Ruck',maul:'Maul',scrum:'Scrum',label:
 const paletteTiles=ts=>ts.map(t=>`<button data-type="${t}" title="Add ${esc(types[t][0])}"><svg viewBox="-32 -32 64 64" aria-hidden="true">${shape(t)}</svg>${esc(paletteNames[t]||types[t][0])}</button>`).join('');
 $('palette').innerHTML=groups.map(([name,ts])=>`<div class="group"><h4>${esc(name)}</h4><div class="palette">${paletteTiles(ts)}</div></div>`).join('');
 $('rugbyPalette').innerHTML=paletteTiles(['tackle']);
-$('legacyPalette').innerHTML=paletteTiles(['ruck','maul','scrum','decision','bagplayer'])+'<small class="legacy-hint">For standalone diagrams or older drills. For a route decision, select its path and use Add decision on path in the Object inspector.</small>';
+$('legacyPalette').innerHTML=paletteTiles(['ruck','maul','scrum','decision'])+'<small class="legacy-hint">For standalone diagrams or older drills. For a route decision, select its path and use Add decision on path in the Object inspector.</small>';
 for(const id of ['palette','rugbyPalette','legacyPalette'])$(id).onclick=e=>{const b=e.target.closest('[data-type]');if(b)add(b.dataset.type)};
 $('pitchPreset').innerHTML='<option value="">Current / custom size</option>'+PRESETS.map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('');
 const setupFields={title:'title',age:'age',ageMin:'ageMin',ageMax:'ageMax',category:'category',minutes:'minutes',length:'length',width:'width',attackDirection:'attackDirection',boundary:'boundaryStyle',preset:'pitchPreset',markers:'presetMarkers',resizeMode:'resizeMode'};
