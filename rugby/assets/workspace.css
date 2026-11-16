@@ -173,3 +173,6 @@ body > .main > .sidebar { display:flex;flex-direction:column;overflow:hidden;pad
 .object-palette-scroll > small { font-size:11px; }
 body.hide-equipment > .main > .sidebar,body.presentation-mode > .main > .sidebar { display:none; }
 @media(max-height:570px) { body > .main > .sidebar { overflow:auto; } .object-palette-scroll { flex:0 0 auto;overflow:visible; } .action-grid button { min-height:34px; } }
+
+/* Magnetic possession preference, independent of grid snapping. */
+.auto-attach{display:flex;align-items:center;gap:5px;margin-top:7px;font-size:10px;line-height:1.25;color:var(--muted);cursor:pointer}.auto-attach input{width:auto;margin:0;accent-color:var(--accent)}
