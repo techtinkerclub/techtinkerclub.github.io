@@ -42,21 +42,52 @@ export function decisionOverlay(f,g,esc,selected='',ink=false,old=null){
   return paths+'<g class="obj" data-id="'+esc(o.id)+'" transform="translate('+a.x+' '+a.y+')"><title>'+esc(o.label+' — '+d.question)+'</title><circle r="15" fill="transparent"/>'+(sel?'<circle data-editor-only="true" r="17" stroke="#d6f77b" stroke-width="1.5" fill="none"/>':'')+'<path d="M0 -13L13 0L0 13L-13 0Z" fill="'+bg+'" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round"/><text y="4.5" text-anchor="middle" font-weight="bold" font-size="13" fill="'+col+'" pointer-events="none">?</text>'+(sel?'<text y="-21" text-anchor="middle" font-size="13" fill="'+col+'" paint-order="stroke" stroke="'+bg+'" stroke-width="3">'+esc(o.label||'Decision')+'</text>':'')+'</g>';
  }).join('');
 }
+// An upright tackle wheel is viewed edge-on. Its long axis is its forward rolling direction.
 export function donutShape(o,base){
  if(o.type!=='donut')return base;
- if(o.donutState==='down')return '<path d="M-21 0a21 17 0 1 0 42 0a21 17 0 1 0 -42 0M-10 0a10 8 0 1 0 20 0a10 8 0 1 0 -20 0" fill-rule="evenodd" fill="#e8a75d" stroke="#553a28" stroke-width="2"/>';
- // The upright ring is seen edge-on from above; its axle lies across the rolling direction.
- const phase=Number(o.rollPhase)||0;const stripe=-4+8*((phase%1+1)%1);
- return '<rect x="-23" y="-8" width="46" height="16" rx="7" fill="#e8a75d" stroke="#553a28" stroke-width="2"/><path d="M-15 '+stripe+'H15" stroke="#fff0d6" stroke-width="2" opacity=".85"/>';
+ if(o.donutState==='down')return '<path d="M-23 0a23 23 0 1 0 46 0a23 23 0 1 0 -46 0M-11 0a11 11 0 1 0 22 0a11 11 0 1 0 -22 0" fill-rule="evenodd" fill="#e8a75d" stroke="#553a28" stroke-width="2"/>';
+ const phase=Number(o.rollPhase)||0;
+ const tread=[0,11,22].map(offset=>{const y=-16+((offset+phase*34)%33+33)%33;return '<path d="M-6 '+y+'H6" stroke="#8d552e" opacity=".6" stroke-width="1.3"/>'}).join('');
+ return '<rect x="-10" y="-23" width="20" height="46" rx="8" fill="#e8a75d" stroke="#553a28" stroke-width="2.2"/><path d="M-4 -16V16M4 -16V16" stroke="#ffd7a2" stroke-width="1.5" opacity=".8"/>'+tread;
+}
+// In view coordinates, 0 degrees points up; the orientation transform rotates the heading too.
+export function donutLane(pad,g){
+ const a=g.toView(pad.x,pad.y),angle=((Number(pad.rot)||0)+g.rotation)*Math.PI/180;
+ const h={x:Math.sin(angle),y:-Math.cos(angle)};
+ // Allow for the physical footprint of the wheel at the end of the illustrated lane.
+ const inset=24,loX=g.margin+inset,hiX=g.margin+g.fw-inset,loY=g.margin+inset,hiY=g.margin+g.fh-inset;
+ let max=Infinity;
+ for(const [v,k,lo,hi] of [[a.x,h.x,loX,hiX],[a.y,h.y,loY,hiY]]){
+  if(Math.abs(k)<1e-9){if(v<lo||v>hi)max=0;continue}
+  max=Math.min(max,((k>0?hi:lo)-v)/k);
+ }
+ max=Math.max(0,max);
+ return {a,h,max,end:{x:a.x+h.x*max,y:a.y+h.y*max}};
+}
+export function donutTarget(pad,end,g){
+ if(!end||!Number.isFinite(end.x)||!Number.isFinite(end.y))throw Error('Choose a rolling distance on the pitch.');
+ const lane=donutLane(pad,g),b=g.toView(end.x,end.y),{a,h,max}=lane;
+ const projection=(b.x-a.x)*h.x+(b.y-a.y)*h.y;
+ const distance=clip(projection,0,max);
+ return {...lane,distance,target:{x:a.x+h.x*distance,y:a.y+h.y*distance}};
+}
+export function donutLaneOverlay(pad,g,pointer=null){
+ if(!pad||pad.donutState==='down')return '';
+ const {a,h,max,end}=donutLane(pad,g);
+ if(max<10)return '';
+ const start={x:a.x+h.x*24,y:a.y+h.y*24};
+ const target=pointer?donutTarget(pad,g.fromView(pointer.x,pointer.y),g):null;
+ const info=target&&target.distance>=10?'<circle cx="'+target.target.x+'" cy="'+target.target.y+'" r="7" fill="#ffe2a0" stroke="#483b27" stroke-width="1.5"/><text x="'+(target.target.x+12)+'" y="'+(target.target.y-9)+'" font-size="13" fill="#ffe2a0" paint-order="stroke" stroke="#203b2b" stroke-width="3">'+(target.distance/g.scale).toFixed(1)+' m</text>':'';
+ return '<g pointer-events="none"><path d="M'+start.x+' '+start.y+'L'+end.x+' '+end.y+'" fill="none" stroke="#f6cf80" stroke-opacity=".7" stroke-width="2.5" marker-end="url(#arr)"/>'+info+'</g>';
 }
 export function trainingTransition(objects,old,next,p,g){
  return objects.map(o=>{
  if(o.type!=='donut')return o;const b=next.objects.find(x=>x.id===o.id),a=old?.objects.find(x=>x.id===o.id);if(!a||!b)return o;
  const A=g.toView(a.x,a.y),B=g.toView(b.x,b.y),distance=Math.hypot(B.x-A.x,B.y-A.y),timing=next.timing?.[o.id]||{start:0,end:100},q=clip((p*100-timing.start)/Math.max(1,timing.end-timing.start),0,1);
- if(distance>1e-6&&['rolling','impact'].includes(b.donutState)){o={...o,rot:b.rot,donutState:b.donutState==='impact'&&q>=.999?'impact':'rolling',rollPhase:distance*q/(2*Math.PI*21)};if(o.donutState==='rolling')delete o.donutTacklerId;return o}
+ if(distance>1e-6&&['rolling','impact'].includes(b.donutState)){o={...o,rot:b.rot,donutState:b.donutState==='impact'&&q>=.999?'impact':'rolling',rollPhase:distance*q/(2*Math.PI*23)};if(o.donutState==='rolling')delete o.donutTacklerId;return o}
  if(b.donutState==='down'&&a.donutState==='impact'&&q<.45)return {...o,donutState:'impact',donutTacklerId:a.donutTacklerId,rot:a.rot};
  return o;
  });
 }
 export function trainingPoses(objects,poses){for(const o of objects)if(o.type==='donut'&&['impact','down'].includes(o.donutState)&&o.donutTacklerId&&!poses.has(o.donutTacklerId))poses.set(o.donutTacklerId,'tackling');return poses}
-export function donutSteps(f,id,end,tacklerId,fraction,seconds,g){const pad=f.objects.find(o=>o.id===id&&o.type==='donut'),dest=point(end);if(!pad||!dest)throw Error('Select a donut and target.');const a=g.toView(pad.x,pad.y),b=g.toView(dest.x,dest.y),dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy);if(dist<10)throw Error('Choose a target farther away.');const player=f.objects.find(o=>o.id===tacklerId&&['attacker','defender','neutral','shield','bagplayer'].includes(o.type));if(tacklerId&&!player)throw Error('Select an existing tackler.');if(player&&f.objects.some(o=>o.members?.some(m=>m.id===player.id)||o.type==='ball'&&o.ownerId===player.id))throw Error('Choose a player who is free of the ball and other contact formations.');const q=player?clip(Number(fraction)||.65,.1,.95):1,z={x:a.x+dx*q,y:a.y+dy*q},step=stripDecisions(JSON.parse(JSON.stringify(f)));delete step.guide;step.name=player?'Intercept rolling donut':'Roll tackle donut';step.seconds=Math.max(.5,clip(Number(seconds)||2,.5,30)*q);step.notes=player?'Track the moving pad; intercept under coach control.':'Roll in a straight line; keep the lane clear.';step.paths={};step.timing={};Object.assign(step.objects.find(o=>o.id===id),g.fromView(z.x,z.y),{rot:(Math.atan2(dx,-dy)*180/Math.PI-g.rotation+360)%360,donutState:player?'impact':'rolling'});const rollItem=step.objects.find(o=>o.id===id);delete rollItem.donutTacklerId;if(!player)return [step];rollItem.donutTacklerId=player.id;const v=g.toView(player.x,player.y),len=Math.hypot(v.x-z.x,v.y-z.y),u=len>1?{x:(v.x-z.x)/len,y:(v.y-z.y)/len}:{x:dy/dist,y:-dx/dist},contact={x:z.x+u.x*29,y:z.y+u.y*29};if(contact.x<g.margin||contact.x>g.margin+g.fw||contact.y<g.margin||contact.y>g.margin+g.fh)throw Error('Choose an interception farther from the boundary.');Object.assign(step.objects.find(o=>o.id===player.id),g.fromView(contact.x,contact.y),{rot:(Math.atan2(-u.x,u.y)*180/Math.PI-g.rotation+360)%360});const down=JSON.parse(JSON.stringify(step));down.name='Donut stopped';down.seconds=.6;down.notes='Release the pad and reset. No player ruck is implied.';down.objects.find(o=>o.id===id).donutState='down';return [step,down]}
+export function donutSteps(f,id,end,tacklerId,fraction,seconds,g){const pad=f.objects.find(o=>o.id===id&&o.type==='donut'),dest=end;if(!pad||!dest)throw Error('Select a donut and target.');if(pad.donutState==='down')throw Error('Stand the donut upright before rolling.');const lane=donutTarget(pad,dest,g),a=lane.a,dist=lane.distance,dx=lane.h.x*dist,dy=lane.h.y*dist;if(dist<10)throw Error('Choose a point farther forward along the rolling direction.');const player=f.objects.find(o=>o.id===tacklerId&&['attacker','defender','neutral','shield','bagplayer'].includes(o.type));if(tacklerId&&!player)throw Error('Select an existing tackler.');if(player&&f.objects.some(o=>o.members?.some(m=>m.id===player.id)||o.type==='ball'&&o.ownerId===player.id))throw Error('Choose a player who is free of the ball and other contact formations.');const q=player?clip(Number(fraction)||.65,.1,.95):1,z={x:a.x+dx*q,y:a.y+dy*q},step=stripDecisions(JSON.parse(JSON.stringify(f)));delete step.guide;step.name=player?'Intercept rolling donut':'Roll tackle donut';step.seconds=Math.max(.5,clip(Number(seconds)||2,.5,30)*q);step.notes=player?'Track the moving pad; intercept under coach control.':'Roll in a straight line; keep the lane clear.';step.paths={};step.timing={};Object.assign(step.objects.find(o=>o.id===id),g.fromView(z.x,z.y),{rot:pad.rot,donutState:player?'impact':'rolling'});const rollItem=step.objects.find(o=>o.id===id);delete rollItem.donutTacklerId;if(!player)return [step];rollItem.donutTacklerId=player.id;const v=g.toView(player.x,player.y),len=Math.hypot(v.x-z.x,v.y-z.y),u=len>1?{x:(v.x-z.x)/len,y:(v.y-z.y)/len}:{x:dy/dist,y:-dx/dist},contact={x:z.x+u.x*29,y:z.y+u.y*29};if(contact.x<g.margin||contact.x>g.margin+g.fw||contact.y<g.margin||contact.y>g.margin+g.fh)throw Error('Choose an interception farther from the boundary.');Object.assign(step.objects.find(o=>o.id===player.id),g.fromView(contact.x,contact.y),{rot:(Math.atan2(-u.x,u.y)*180/Math.PI-g.rotation+360)%360});const down=JSON.parse(JSON.stringify(step));down.name='Donut stopped';down.seconds=.6;down.notes='Release the pad and reset. No player ruck is implied.';down.objects.find(o=>o.id===id).donutState='down';return [step,down]}
