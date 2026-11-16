@@ -1,6 +1,6 @@
 // Schematic formation presets, not coaching technique or an age-grade law validator.
-import {canCarry,carrier} from './possession.js?v=0.5.2';
-import {team,roles,setParticipants} from './breakdown.js?v=0.5.2';
+import {canCarry,carrier} from './possession.js?v=0.5.3';
+import {team,roles,setParticipants} from './breakdown.js?v=0.5.3';
 const CONTACTS={tackle:{title:'Tackle',min:2,max:2,color:'#fa9e91'},ruck:{title:'Ruck',min:2,max:16,color:'#f7d27a'},maul:{title:'Maul',min:3,max:16,color:'#c8b0f5'},scrum:{title:'Scrum',min:4,max:16,color:'#91dbce'}};
 export const contactType=t=>Object.hasOwn(CONTACTS,t);
 export const contactTitle=t=>CONTACTS[t]?.title||'Contact';

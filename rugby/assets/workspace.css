@@ -250,3 +250,5 @@ html{color-scheme:dark}
 #contactMembers{max-height:150px;overflow:auto;display:grid;gap:4px;scrollbar-width:thin;scrollbar-color:#45574b transparent}#contactMembers label{display:flex;align-items:center;gap:6px}#contactMembers input{width:auto;accent-color:var(--accent)}
 
 #breakdownTools{display:grid;gap:7px;padding:9px 0;border-top:1px solid var(--line)}#breakdownTools[hidden]{display:none!important}#breakdownTools h3{margin:0}#breakdownTools small{line-height:1.35}#advanceBreakdown{white-space:normal}#arrivalList{display:grid;gap:5px;max-height:150px;overflow:auto;scrollbar-width:thin}#arrivalList label{display:flex;align-items:center;gap:5px}#arrivalList input{width:auto;accent-color:var(--accent)}
+
+#shieldTools{margin:0 0 12px;padding:9px;border:1px solid var(--line);border-radius:7px;background:#213329}#shieldTools select{width:100%}#shieldTools small{line-height:1.35}#arrivalOrderWrap[hidden]{display:none!important}

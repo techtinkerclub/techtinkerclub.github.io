@@ -7166,6 +7166,980 @@
           "notes": "A3 passes backwards to A2, who has disengaged and moved into support."
         }
       ]
+    },
+    {
+      "version": 1,
+      "id": "seed-058",
+      "title": "U10 Shield Clearout · Defender Arrives First",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Breakdown",
+      "length": 20,
+      "width": 15,
+      "objective": "Demonstrate the sequence of a tackle, ball presentation, defender arriving with a contact shield and attacking support arriving from their own side.",
+      "safety": "Schematic coach-led demonstration. A shield represents a passive defender, not a player to tackle at a ruck. Follow RFU age-grade contact guidance and approved equipment use; no charging, diving or head/neck contact. Rehearse slowly with qualified supervision.",
+      "minutes": 8,
+      "players": "Small groups; coach review before practice",
+      "equipment": "Ball and cones",
+      "instructions": "Walk through the sequence using a passive shield holder. Swap or hand over the shield between repetitions. Coach safe entry, feet and balance; no live clearout until approved by the supervising coach.",
+      "coaching": "Arrive from own side; remain on feet; bind safely where appropriate; drive, do not charge; play the ball promptly.",
+      "regression": "Walk through positions without contact.",
+      "progression": "Use a coach-approved age-grade contact progression.",
+      "questions": "Who may arrive? When is the ball available?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby Law 14 – Tackle",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/14-tackle/",
+          "kind": "Law / safety"
+        },
+        {
+          "label": "World Rugby Law 15 – Ruck",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/15-ruck/",
+          "kind": "Law / safety"
+        },
+        {
+          "label": "World Rugby Rugby Ready – tackle and arriving players",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/rugby-ready/the-tackle/",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original schematic shield drill adaptation; coach review required.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Approach",
+          "seconds": 0,
+          "notes": "A1 carries; A2 supports. D1 tackles; D2 is the arriving defender.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 385,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 155,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 440,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 440,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 530,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 467.09714285714284,
+              "y": 377.01142857142855,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 440,
+              "y": 140.65142857142857,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 267.9885714285714,
+              "rot": 90
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 252.01142857142858,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 440,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 440,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 530,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 468.6514285714286,
+              "y": 275.31142857142856,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "m",
+              "type": "tackle",
+              "label": "M",
+              "x": 450,
+              "y": 260,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "d1",
+                  "pose": "tackling"
+                }
+              ],
+              "breakdown": {
+                "phase": "tackle",
+                "carrierId": "a1",
+                "tacklerId": "d1",
+                "ballId": "b"
+              }
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 440,
+              "y": 140.65142857142857,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "name": "Tackle",
+          "seconds": 1.8,
+          "notes": "D1 releases immediately; A1 presents immediately."
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.3485714285714,
+              "y": 254.00857142857143,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 551.0285714285715,
+              "y": 250.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 440,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 440,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 530,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 450,
+              "y": 276.6428571428571,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "m",
+              "type": "tackle",
+              "label": "Release and present",
+              "x": 450,
+              "y": 260,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a1",
+                  "pose": "grounded"
+                }
+              ],
+              "breakdown": {
+                "phase": "release",
+                "carrierId": "a1",
+                "tacklerId": "d1",
+                "ballId": "b",
+                "arrivalSide": "defence"
+              }
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 440,
+              "y": 140.65142857142857,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 0,
+              "end": 45
+            }
+          },
+          "paths": {},
+          "name": "Release and present",
+          "seconds": 0.8,
+          "notes": "The ball is on the ground; D1 moves away."
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.3485714285714,
+              "y": 254.00857142857143,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 551.0285714285715,
+              "y": 250.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 440,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 250.01428571428565,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 530,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 450,
+              "y": 276.6428571428571,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "m",
+              "type": "tackle",
+              "label": "Defending support arrives",
+              "x": 450,
+              "y": 260,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "d2",
+                  "pose": "standing"
+                }
+              ],
+              "breakdown": {
+                "phase": "support",
+                "carrierId": "a1",
+                "tacklerId": "d1",
+                "ballId": "b",
+                "arrivalSide": "defence"
+              }
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450,
+              "y": 260.6657142857142,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "name": "Defending support arrives",
+          "seconds": 1.4,
+          "notes": "D2 arrives from their own side carrying a shield. The ruck has not yet formed."
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.3485714285714,
+              "y": 254.00857142857143,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 551.0285714285715,
+              "y": 250.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 289.9571428571428,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 263.32857142857137,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 530,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 450,
+              "y": 276.6428571428571,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "m",
+              "type": "ruck",
+              "label": "Clearout · ruck formed",
+              "x": 450,
+              "y": 260,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "a2",
+                  "pose": "bound"
+                },
+                {
+                  "id": "d2",
+                  "pose": "bound"
+                }
+              ],
+              "breakdown": {
+                "phase": "ruck",
+                "carrierId": "a1",
+                "tacklerId": "d1",
+                "ballId": "b",
+                "arrivalSide": "defence"
+              }
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450,
+              "y": 273.9799999999999,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "name": "Clearout · ruck formed",
+          "seconds": 1.4,
+          "notes": "A2 arrives from the attacking side; the shield is a passive training target."
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.3485714285714,
+              "y": 254.00857142857143,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 551.0285714285715,
+              "y": 250.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 289.9571428571428,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 263.32857142857137,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 530,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 450,
+              "y": 276.6428571428571,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "m",
+              "type": "ruck",
+              "label": "Contest for possession",
+              "x": 450,
+              "y": 260,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "a2",
+                  "pose": "bound"
+                },
+                {
+                  "id": "d2",
+                  "pose": "bound"
+                }
+              ],
+              "breakdown": {
+                "phase": "contest",
+                "carrierId": "a1",
+                "tacklerId": "d1",
+                "ballId": "b",
+                "arrivalSide": "defence"
+              }
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450,
+              "y": 273.9799999999999,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "name": "Contest for possession",
+          "seconds": 1.4,
+          "notes": "One standing arrival from each side."
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.3485714285714,
+              "y": 254.00857142857143,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 551.0285714285715,
+              "y": 250.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 257.3371428571428,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 230.70857142857136,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 530,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 450,
+              "y": 276.6428571428571,
+              "rot": 0,
+              "groundState": "secured"
+            },
+            {
+              "id": "m",
+              "type": "ruck",
+              "label": "Ball secured · use it",
+              "x": 450,
+              "y": 260,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "a2",
+                  "pose": "bound"
+                },
+                {
+                  "id": "d2",
+                  "pose": "bound"
+                }
+              ],
+              "breakdown": {
+                "phase": "secured",
+                "carrierId": "a1",
+                "tacklerId": "d1",
+                "ballId": "b",
+                "arrivalSide": "defence"
+              }
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450,
+              "y": 241.35999999999993,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "name": "Ball secured · use it",
+          "seconds": 1.4,
+          "notes": "Use it promptly. Next player passes away."
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.3485714285714,
+              "y": 254.00857142857143,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 551.0285714285715,
+              "y": 250.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 257.3371428571428,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 230.70857142857136,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 468.6514285714286,
+              "y": 295.28285714285704,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 485.74857142857144,
+              "y": 287.2942857142856,
+              "rot": 0,
+              "ownerId": "a3"
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450,
+              "y": 241.35999999999993,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 75,
+              "end": 90
+            }
+          },
+          "paths": {},
+          "name": "Play away",
+          "seconds": 1.4,
+          "notes": "A3 approaches from the attacking side and picks up the available ball, ready to pass."
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.3485714285714,
+              "y": 254.00857142857143,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 551.0285714285715,
+              "y": 250.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 600.7657142857144,
+              "y": 318.582857142857,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 230.70857142857136,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 468.6514285714286,
+              "y": 295.28285714285704,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 530,
+              "y": 130,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 617.8628571428571,
+              "y": 310.59428571428555,
+              "rot": 0,
+              "ownerId": "a2"
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450,
+              "y": 241.35999999999993,
+              "rot": 180,
+              "ownerId": "d2"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 25,
+              "end": 70
+            }
+          },
+          "paths": {},
+          "name": "Pass away",
+          "seconds": 1.2,
+          "notes": "A3 passes backwards to A2, who has disengaged and moved into support."
+        },
+        {
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.3485714285714,
+              "y": 254.00857142857143,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 551.0285714285715,
+              "y": 250.01428571428573,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 600.7657142857144,
+              "y": 318.582857142857,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 230.70857142857136,
+              "rot": 180
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 468.6514285714286,
+              "y": 295.28285714285704,
+              "rot": 0
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 504.4,
+              "y": 237.36571428571423,
+              "rot": 270
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "B",
+              "x": 617.8628571428571,
+              "y": 310.59428571428555,
+              "rot": 0,
+              "ownerId": "a2"
+            },
+            {
+              "id": "shield-demo",
+              "type": "shieldItem",
+              "label": "",
+              "x": 479.5314285714286,
+              "y": 237.36571428571423,
+              "rot": 270,
+              "ownerId": "d3"
+            }
+          ],
+          "timing": {
+            "shield-demo": {
+              "start": 79,
+              "end": 80
+            }
+          },
+          "paths": {},
+          "name": "Reset · shield handover",
+          "seconds": 1.5,
+          "notes": "D2 hands the shield to D3 for the next repetition."
+        }
+      ]
     }
   ]
 }
