@@ -48,3 +48,40 @@ export function waypointOverlay(route,g){
   return `<g data-editor-only="true" data-waypoint="${i}" class="waypoint" transform="translate(${q.x} ${q.y})" cursor="move"><title>Drag waypoint ${i+1}; Alt-click to remove</title><circle r="16" fill="transparent"/><circle r="9" fill="#ffe69a" stroke="#26352a" stroke-width="2"/><text y="3" font-size="9" text-anchor="middle" fill="#27382a" pointer-events="none">${i+1}</text></g>`;
  }).join('');
 }
+
+// Project onto the actual displayed route and return the interval between editable nodes.
+// Smooth paths use 20 samples per interval; insertion preserves traversal order.
+export function routeInsertion(start,end,route,g,pointer=null){
+ const samples=routeSamples(start,end,route,g);
+ const subdivisions=route?.mode==='smooth'&&route?.points?.length?20:1;
+ const intervals=(route?.points?.length||0)+1;
+ let best=null,score=Infinity;
+ for(let i=0;i<intervals;i++){
+  const first=i*subdivisions,last=first+subdivisions;
+  if(!pointer){
+   let length=0;for(let j=first;j<last;j++)length+=dist(samples[j],samples[j+1]);
+   if(!best||length>best.length)best={index:i,point:sampleRoute(samples.slice(first,last+1),.5).point,length};
+   continue;
+  }
+  for(let j=first;j<last;j++){
+   const a=samples[j],b=samples[j+1],dx=b.x-a.x,dy=b.y-a.y,len2=dx*dx+dy*dy;
+   if(len2<1e-10)continue;
+   const t=Math.max(0,Math.min(1,((pointer.x-a.x)*dx+(pointer.y-a.y)*dy)/len2));
+   const p=mix(a,b,t),d=dist(pointer,p);
+   if(d<score){score=d;best={index:i,point:p}}
+  }
+ }
+ return best?{index:best.index,point:g.fromView(best.point.x,best.point.y)}:null;
+}
+export function insertionHandles(start,end,route,g){
+ const samples=routeSamples(start,end,route,g),n=(route?.points?.length||0)+1;
+ const subdivisions=route?.mode==='smooth'&&route?.points?.length?20:1;
+ if(n>16)return '';
+ return Array.from({length:n},(_,i)=>{
+  const seg=samples.slice(i*subdivisions,(i+1)*subdivisions+1);
+  let len=0;for(let j=1;j<seg.length;j++)len+=dist(seg[j-1],seg[j]);
+  if(len<68)return '';
+  const p=sampleRoute(seg,.5).point;
+  return `<g data-editor-only="true" data-insert-point="${i}" class="path-insert" transform="translate(${p.x} ${p.y})"><title>Drag to bend this section of the path</title><circle r="16" fill="transparent"/><circle r="10" fill="#193e2d" stroke="#e6f9bf" stroke-width="2"/><path d="M-4 0H4M0 -4V4" stroke="#e6f9bf" stroke-width="2" stroke-linecap="round" pointer-events="none"/></g>`;
+ }).join('');
+}
