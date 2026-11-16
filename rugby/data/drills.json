@@ -712,7 +712,7 @@
       "regression": "Use shorter passes.",
       "progression": "Introduce a second ball if spacing allows.",
       "questions": "When should your hands be ready? How can you let your teammate know you want the ball?",
-      "notes": "Change direction round the circle and include every child. The circular exercise is ball-handling practice, not a match passing pattern.",
+      "notes": "A stationary handling circle has no attacking end. Pass around the group for catching practice, then use a directional drill to practise backward match passes.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -766,7 +766,8 @@
               "label": "",
               "x": 465,
               "y": 110,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -846,7 +847,9 @@
               "label": "",
               "x": 705,
               "y": 255,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o1",
+              "transferKind": "pass"
             },
             {
               "id": "c0",
@@ -926,7 +929,9 @@
               "label": "",
               "x": 465,
               "y": 405,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o2",
+              "transferKind": "pass"
             },
             {
               "id": "c0",
@@ -1006,7 +1011,9 @@
               "label": "",
               "x": 225,
               "y": 255,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o3",
+              "transferKind": "pass"
             },
             {
               "id": "c0",
@@ -1043,7 +1050,8 @@
           ],
           "timing": {}
         }
-      ]
+      ],
+      "showAttack": false
     },
     {
       "version": 1,
@@ -1060,12 +1068,12 @@
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 1 ball, bibs",
-      "instructions": "Two teams compete for five completed passes without contact. Possession changes after a drop or interception. Any-direction passes are allowed in this modified game.",
-      "coaching": "Move after passing; call early; find clear lanes.",
+      "instructions": "Two teams compete for five completed sideways or backward passes without contact. Blue attacks towards the top of the diagram and orange towards the opposite end. Support moves behind the carrier; a drop, interception or forward pass changes possession. Reset the count on a turnover.",
+      "coaching": "Move after passing, call early and stay behind the ball. Do not force a pass to a teammate ahead of the carrier.",
       "regression": "Give attack an extra player.",
       "progression": "Return to directional rugby passing laws.",
       "questions": "Where can you move so the passer can see you? What should you do after passing?",
-      "notes": "The any-direction pass is a deliberate training rule. Explain the difference from rugby's sideways or backwards passing law.",
+      "notes": "This directional version counts legal passes rather than any-direction throws. Reset or reverse the attack when possession changes; the animation shows the first three passes.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -1079,7 +1087,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Two teams compete for five completed passes without contact. Possession changes after a drop or interception. Any-direction passes are allowed in this modified game.",
+          "notes": "Two teams compete for five completed sideways or backward passes without contact. Blue attacks towards the top of the diagram and orange towards the opposite end. Support moves behind the carrier; a drop, interception or forward pass changes possession. Reset the count on a turnover.",
           "objects": [
             {
               "id": "o0",
@@ -1135,7 +1143,8 @@
               "label": "",
               "x": 195,
               "y": 135,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -1175,7 +1184,7 @@
         {
           "name": "Create lane",
           "seconds": 2,
-          "notes": "A3 becomes available.",
+          "notes": "A3 moves behind A1 to offer a clear backward pass.",
           "objects": [
             {
               "id": "o0",
@@ -1190,7 +1199,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 700,
-              "y": 150,
+              "y": 395,
               "rot": 0
             },
             {
@@ -1231,7 +1240,9 @@
               "label": "",
               "x": 185,
               "y": 335,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o2",
+              "transferKind": "pass"
             },
             {
               "id": "c0",
@@ -1266,12 +1277,17 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o6": {
+              "start": 60,
+              "end": 90
+            }
+          }
         },
         {
           "name": "Move again",
           "seconds": 2,
-          "notes": "A2 moves into space.",
+          "notes": "A2 stays deeper than A3 and receives across the area.",
           "objects": [
             {
               "id": "o0",
@@ -1286,7 +1302,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 740,
-              "y": 220,
+              "y": 395,
               "rot": 0
             },
             {
@@ -1302,7 +1318,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 680,
-              "y": 410,
+              "y": 455,
               "rot": 0
             },
             {
@@ -1327,7 +1343,9 @@
               "label": "",
               "x": 755,
               "y": 205,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o1",
+              "transferKind": "pass"
             },
             {
               "id": "c0",
@@ -1362,12 +1380,17 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o6": {
+              "start": 60,
+              "end": 90
+            }
+          }
         },
         {
           "name": "Continue",
           "seconds": 2,
-          "notes": "Find a third passing lane; aim for five in the game.",
+          "notes": "A4 stays behind A2 for the third pass. Keep moving to reach five.",
           "objects": [
             {
               "id": "o0",
@@ -1382,7 +1405,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 740,
-              "y": 220,
+              "y": 395,
               "rot": 0
             },
             {
@@ -1398,7 +1421,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 740,
-              "y": 420,
+              "y": 455,
               "rot": 0
             },
             {
@@ -1423,7 +1446,9 @@
               "label": "",
               "x": 755,
               "y": 405,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o3",
+              "transferKind": "pass"
             },
             {
               "id": "c0",
@@ -1458,9 +1483,16 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o6": {
+              "start": 60,
+              "end": 90
+            }
+          }
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -1482,7 +1514,7 @@
       "regression": "Walk the route.",
       "progression": "Add a passive defender at the turn.",
       "questions": "How can A1 prepare to catch before reaching the corner? When should A3 call?",
-      "notes": "Use the turn to teach awareness, not a sharp change of direction at full speed. This isolated handling exercise does not represent match-direction passing.",
+      "notes": "The running direction changes at the corner. The recipient waits behind the runner's new direction; no single match attack arrow applies.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -1496,7 +1528,7 @@
         {
           "name": "Set up the L",
           "seconds": 0,
-          "notes": "A1 waits below the corner; A2 feeds; A3 waits beyond the turn.",
+          "notes": "A1 waits below the corner; A2 feeds from the side. A3 waits inside and behind the direction of the turn.",
           "objects": [
             {
               "id": "a1",
@@ -1518,8 +1550,8 @@
               "id": "a3",
               "type": "attacker",
               "label": "A3",
-              "x": 694.8,
-              "y": 130.2,
+              "x": 378,
+              "y": 125,
               "rot": 0
             },
             {
@@ -1576,8 +1608,8 @@
               "id": "a3",
               "type": "attacker",
               "label": "A3",
-              "x": 694.8,
-              "y": 130.2,
+              "x": 378,
+              "y": 125,
               "rot": 0
             },
             {
@@ -1618,7 +1650,7 @@
         {
           "name": "Turn and pass",
           "seconds": 1.8,
-          "notes": "A1 rounds the corner and passes to A3. This is a handling exercise with a change of direction, not an example of a legal match pass.",
+          "notes": "A1 rounds the corner to the right and passes back towards A3, who stays behind the new running line.",
           "objects": [
             {
               "id": "a1",
@@ -1640,8 +1672,8 @@
               "id": "a3",
               "type": "attacker",
               "label": "A3",
-              "x": 694.8,
-              "y": 130.2,
+              "x": 378,
+              "y": 125,
               "rot": 0
             },
             {
@@ -1709,12 +1741,12 @@
       "minutes": 8,
       "players": "One runner and three feeders per lane; rotate roles.",
       "equipment": "8 cones, 3 balls (one per feeder)",
-      "instructions": "Place feeders at successive stations. Runners travel along a channel, collect and return passes in turn; rotate feeders often.",
+      "instructions": "Place feeders at successive stations. Runners collect a pass from behind or level with the feeder, move just beyond them and return the ball sideways or backwards. Rotate feeders often.",
       "coaching": "Keep eyes up; turn hands toward ball; avoid rushing.",
       "regression": "Increase space between stations.",
       "progression": "Vary distance and timing of feeds.",
       "questions": "When should the feeder release the ball? Can the runner catch without stopping?",
-      "notes": "The animation uses three separate balls, one per feeder. Walk the route first and keep the next runner back until the lane is clear.",
+      "notes": "Three separate balls are used. The runner moves past each feeder before returning the ball; keep the next runner back until the lane is clear. Feeders are stationary handling partners, not advancing teammates.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -1918,7 +1950,7 @@
         {
           "name": "Return and continue 1",
           "seconds": 1.2,
-          "notes": "A1 returns the ball to the same feeder, then advances towards the next station.",
+          "notes": "A1 moves just beyond the feeder, then returns the ball sideways or backwards. Continue to the next station after the ball has gone.",
           "objects": [
             {
               "id": "a1",
@@ -2007,12 +2039,12 @@
           ],
           "timing": {
             "b1": {
-              "start": 5,
-              "end": 48
+              "start": 60,
+              "end": 95
             },
             "a1": {
-              "start": 45,
-              "end": 100
+              "start": 0,
+              "end": 45
             }
           },
           "paths": {}
@@ -2118,7 +2150,7 @@
         {
           "name": "Return and continue 2",
           "seconds": 1.2,
-          "notes": "A1 returns the ball to the same feeder, then advances towards the next station.",
+          "notes": "A1 moves just beyond the feeder, then returns the ball sideways or backwards. Continue to the next station after the ball has gone.",
           "objects": [
             {
               "id": "a1",
@@ -2207,12 +2239,12 @@
           ],
           "timing": {
             "b2": {
-              "start": 5,
-              "end": 48
+              "start": 60,
+              "end": 95
             },
             "a1": {
-              "start": 45,
-              "end": 100
+              "start": 0,
+              "end": 45
             }
           },
           "paths": {}
@@ -2318,7 +2350,7 @@
         {
           "name": "Return and continue 3",
           "seconds": 1.2,
-          "notes": "A1 returns the ball to the same feeder, then advances towards the next station.",
+          "notes": "A1 moves just beyond the feeder, then returns the ball sideways or backwards. Continue to the next station after the ball has gone.",
           "objects": [
             {
               "id": "a1",
@@ -2407,12 +2439,12 @@
           ],
           "timing": {
             "b3": {
-              "start": 5,
-              "end": 48
+              "start": 60,
+              "end": 95
             },
             "a1": {
-              "start": 45,
-              "end": 100
+              "start": 0,
+              "end": 45
             }
           },
           "paths": {}
@@ -2440,7 +2472,7 @@
       "regression": "Static diamond.",
       "progression": "Add a roaming passive defender.",
       "questions": "When can the passer follow? How much space should the next receiver leave?",
-      "notes": "Start with one group of four. If the diamond shrinks, stop and restore the spacing. Passes around the diamond are a handling exercise.",
+      "notes": "The diamond is a non-directional catch-and-follow pattern with no attacking end. Pass only to a clear target. Use the continuous passing drill next to practise sideways and backward passes towards a fixed try line.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -2781,7 +2813,7 @@
       "regression": "Use one ball.",
       "progression": "Add a second scoring zone per end.",
       "questions": "Which ball are you offering for? How do you avoid two receivers chasing the same pass?",
-      "notes": "Teach the one-ball game first. Only add the second ball when players can communicate and scan reliably.",
+      "notes": "Teach the one-ball game first. Only add the second ball when players can communicate and scan reliably. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -2795,11 +2827,12 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Set-up: Use two marked scoring zones. Teams score by passing to a teammate inside a zone. Begin with one ball before introducing the second, with clear possession rules. Teach the one-ball game first. Only add the second ball when players can communicate and scan reliably.",
+          "notes": "Set-up: Use two marked scoring zones. Teams score by passing to a teammate inside a zone. Begin with one ball before introducing the second, with clear possession rules. Teach the one-ball game first. Only add the second ball when players can communicate and scan reliably. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
           "objects": [],
           "timing": {}
         }
-      ]
+      ],
+      "showAttack": false
     },
     {
       "version": 1,
@@ -2996,8 +3029,8 @@
           ],
           "timing": {
             "b": {
-              "start": 30,
-              "end": 72
+              "start": 40,
+              "end": 65
             }
           },
           "paths": {}
@@ -3084,8 +3117,8 @@
           ],
           "timing": {
             "b": {
-              "start": 30,
-              "end": 72
+              "start": 40,
+              "end": 65
             }
           },
           "paths": {}
@@ -3172,8 +3205,8 @@
           ],
           "timing": {
             "b": {
-              "start": 30,
-              "end": 72
+              "start": 40,
+              "end": 65
             }
           },
           "paths": {}
@@ -3656,7 +3689,8 @@
               "label": "",
               "x": 467,
               "y": 403,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -3720,7 +3754,8 @@
               "label": "",
               "x": 467,
               "y": 303,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -3784,7 +3819,8 @@
               "label": "",
               "x": 217,
               "y": 148,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -3848,7 +3884,8 @@
               "label": "",
               "x": 217,
               "y": 73,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -3885,7 +3922,9 @@
           ],
           "timing": {}
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -3945,7 +3984,8 @@
               "label": "",
               "x": 467,
               "y": 395,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "o3",
@@ -4041,7 +4081,8 @@
               "label": "",
               "x": 477,
               "y": 300,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "o3",
@@ -4137,7 +4178,8 @@
               "label": "",
               "x": 697,
               "y": 85,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "o3",
@@ -4206,7 +4248,9 @@
           ],
           "timing": {}
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -4290,7 +4334,8 @@
               "label": "",
               "x": 235,
               "y": 390,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -4378,7 +4423,8 @@
               "label": "",
               "x": 305,
               "y": 270,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -4418,7 +4464,7 @@
         {
           "name": "Move ball",
           "seconds": 2,
-          "notes": "Use the open support option.",
+          "notes": "A1 draws D1 and passes back to A2, who stays behind the ball.",
           "objects": [
             {
               "id": "o0",
@@ -4466,7 +4512,9 @@
               "label": "",
               "x": 500,
               "y": 265,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o1",
+              "transferKind": "pass"
             },
             {
               "id": "c0",
@@ -4501,12 +4549,17 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o5": {
+              "start": 40,
+              "end": 65
+            }
+          }
         },
         {
           "name": "Exploit gap",
           "seconds": 2,
-          "notes": "A2 can pass to A3 if D2 commits.",
+          "notes": "A2 draws D2 and passes backwards to A3. A3 keeps depth until the catch.",
           "objects": [
             {
               "id": "o0",
@@ -4529,7 +4582,7 @@
               "type": "attacker",
               "label": "A3",
               "x": 750,
-              "y": 220,
+              "y": 275,
               "rot": 0
             },
             {
@@ -4554,7 +4607,9 @@
               "label": "",
               "x": 765,
               "y": 200,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o2",
+              "transferKind": "pass"
             },
             {
               "id": "c0",
@@ -4589,7 +4644,12 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o5": {
+              "start": 45,
+              "end": 65
+            }
+          }
         },
         {
           "name": "Finish",
@@ -4642,7 +4702,8 @@
               "label": "",
               "x": 765,
               "y": 65,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o2"
             },
             {
               "id": "c0",
@@ -4679,7 +4740,9 @@
           ],
           "timing": {}
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -5292,7 +5355,8 @@
               "label": "",
               "x": 265,
               "y": 335,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "o5",
@@ -5436,7 +5500,8 @@
               "label": "",
               "x": 275,
               "y": 260,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "o5",
@@ -5580,7 +5645,8 @@
               "label": "",
               "x": 110,
               "y": 255,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "o5",
@@ -5681,7 +5747,9 @@
           ],
           "timing": {}
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": false
     },
     {
       "version": 1,
@@ -7920,7 +7988,8 @@
               "label": "",
               "x": 435,
               "y": 375,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -8000,7 +8069,8 @@
               "label": "",
               "x": 435,
               "y": 325,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "c0",
@@ -8080,7 +8150,9 @@
               "label": "",
               "x": 420,
               "y": 345,
-              "rot": 0
+              "rot": 0,
+              "transferKind": "presentation",
+              "groundState": "presented"
             },
             {
               "id": "c0",
@@ -8115,12 +8187,17 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o4": {
+              "start": 0,
+              "end": 45
+            }
+          }
         },
         {
-          "name": "Pass away",
-          "seconds": 2,
-          "notes": "Move the ball to an available receiver.",
+          "name": "Collect on feet",
+          "seconds": 1,
+          "notes": "Support approaches from behind and collects the presented ball on their feet. The receiver stays deeper.",
           "objects": [
             {
               "id": "o0",
@@ -8143,7 +8220,7 @@
               "type": "attacker",
               "label": "Receiver",
               "x": 650,
-              "y": 390,
+              "y": 435,
               "rot": 0
             },
             {
@@ -8158,9 +8235,12 @@
               "id": "o4",
               "type": "ball",
               "label": "",
-              "x": 665,
-              "y": 375,
-              "rot": 0
+              "x": 420,
+              "y": 345,
+              "rot": 0,
+              "transferKind": "set",
+              "groundState": "presented",
+              "ownerId": "o1"
             },
             {
               "id": "c0",
@@ -8195,9 +8275,104 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o4": {
+              "start": 65,
+              "end": 90
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Pass away",
+          "seconds": 2,
+          "notes": "Support passes backwards to the receiver. The touch defender stays clear.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Carrier",
+              "x": 420,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "Support",
+              "x": 410,
+              "y": 365,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 650,
+              "y": 430,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "Touch",
+              "x": 420,
+              "y": 170,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 665,
+              "y": 375,
+              "rot": 0,
+              "ownerId": "o2",
+              "transferKind": "pass"
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "o4": {
+              "start": 25,
+              "end": 65
+            }
+          }
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -9158,7 +9333,8 @@
               "label": "",
               "x": 255,
               "y": 385,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "o7",
@@ -9262,7 +9438,8 @@
               "label": "",
               "x": 255,
               "y": 275,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o0"
             },
             {
               "id": "o7",
@@ -9310,7 +9487,7 @@
         {
           "name": "Identify gap",
           "seconds": 2,
-          "notes": "D1 retreats and attack can restart.",
+          "notes": "D1 retreats to the cone. Once the restart is permitted, A1 passes backwards to A2.",
           "objects": [
             {
               "id": "o0",
@@ -9366,7 +9543,9 @@
               "label": "",
               "x": 455,
               "y": 325,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o1",
+              "transferKind": "pass"
             },
             {
               "id": "o7",
@@ -9409,7 +9588,12 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o6": {
+              "start": 55,
+              "end": 85
+            }
+          }
         },
         {
           "name": "Attack space",
@@ -9470,7 +9654,8 @@
               "label": "",
               "x": 385,
               "y": 155,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o1"
             },
             {
               "id": "o7",
@@ -9515,7 +9700,9 @@
           ],
           "timing": {}
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -10459,7 +10646,8 @@
               "label": "",
               "x": 275,
               "y": 275,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o6"
             },
             {
               "id": "o9",
@@ -10579,7 +10767,8 @@
               "label": "",
               "x": 450,
               "y": 260,
-              "rot": 0
+              "rot": 0,
+              "transferKind": "feed"
             },
             {
               "id": "o9",
@@ -10622,7 +10811,12 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o8": {
+              "start": 30,
+              "end": 85
+            }
+          }
         },
         {
           "name": "Ball exit",
@@ -10699,7 +10893,9 @@
               "label": "",
               "x": 465,
               "y": 360,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o6",
+              "transferKind": "set"
             },
             {
               "id": "o9",
@@ -10742,7 +10938,12 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o8": {
+              "start": 75,
+              "end": 95
+            }
+          }
         },
         {
           "name": "Pass away",
@@ -10819,7 +11020,9 @@
               "label": "",
               "x": 705,
               "y": 375,
-              "rot": 0
+              "rot": 0,
+              "ownerId": "o7",
+              "transferKind": "pass"
             },
             {
               "id": "o9",
@@ -10862,9 +11065,16 @@
               "rot": 0
             }
           ],
-          "timing": {}
+          "timing": {
+            "o8": {
+              "start": 25,
+              "end": 75
+            }
+          }
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -11463,7 +11673,7 @@
       "regression": "Remove defenders.",
       "progression": "Introduce a second ball only when ready.",
       "questions": "Who is next in the order? Can that player move into a clear lane before the pass?",
-      "notes": "Make the numbering clear to both teams. Restart on a drop or interception, not on a disputed physical contest.",
+      "notes": "Make the numbering clear to both teams. Restart on a drop or interception, not on a disputed physical contest. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
       "links": [
         {
           "label": "New Zealand Rugby · Order Ball",
@@ -11477,11 +11687,12 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Set-up: Number teammates; pass through them in order while opponents try to intercept without contact. Switch on a drop or interception. Make the numbering clear to both teams. Restart on a drop or interception, not on a disputed physical contest.",
+          "notes": "Set-up: Number teammates; pass through them in order while opponents try to intercept without contact. Switch on a drop or interception. Make the numbering clear to both teams. Restart on a drop or interception, not on a disputed physical contest. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
           "objects": [],
           "timing": {}
         }
-      ]
+      ],
+      "showAttack": false
     },
     {
       "version": 1,
@@ -11503,7 +11714,7 @@
       "regression": "Stand side by side.",
       "progression": "Vary height within comfortable reach.",
       "questions": "Can you receive without twisting sharply? How do you make the handover easy?",
-      "notes": "Use comfortable reach and slow handovers. There should be no forceful rotational movement or contact between partners.",
+      "notes": "Use comfortable reach and slow handovers. There should be no forceful rotational movement or contact between partners. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
       "links": [
         {
           "label": "Rugby Australia · Lower primary skills and drills 1",
@@ -11517,11 +11728,12 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Set-up: Partners stand back to back with comfortable separation, hand the ball around one side and receive on the other. Swap direction. Use comfortable reach and slow handovers. There should be no forceful rotational movement or contact between partners.",
+          "notes": "Set-up: Partners stand back to back with comfortable separation, hand the ball around one side and receive on the other. Swap direction. Use comfortable reach and slow handovers. There should be no forceful rotational movement or contact between partners. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
           "objects": [],
           "timing": {}
         }
-      ]
+      ],
+      "showAttack": false
     },
     {
       "version": 1,
@@ -11543,7 +11755,7 @@
       "regression": "Walk with stationary partner.",
       "progression": "Vary the direction after a call.",
       "questions": "Where should you look before turning at the corner? How do you keep the pass short?",
-      "notes": "Keep the boundary clear and pairs apart. Slow down before corners rather than rushing the turn.",
+      "notes": "Keep the boundary clear and pairs apart. Slow down before corners rather than rushing the turn. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
       "links": [
         {
           "label": "Rugby Australia · Middle primary skills and drills",
@@ -11557,11 +11769,12 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Set-up: Pair players on a marked boundary. Move along the sides at a controlled pace, exchanging passes and changing direction at corners. Keep the boundary clear and pairs apart. Slow down before corners rather than rushing the turn.",
+          "notes": "Set-up: Pair players on a marked boundary. Move along the sides at a controlled pace, exchanging passes and changing direction at corners. Keep the boundary clear and pairs apart. Slow down before corners rather than rushing the turn. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
           "objects": [],
           "timing": {}
         }
-      ]
+      ],
+      "showAttack": false
     },
     {
       "version": 1,
@@ -11583,7 +11796,7 @@
       "regression": "Add an extra attacker.",
       "progression": "Make target zone smaller.",
       "questions": "Where can the target player move to receive? Can teammates create a better passing lane?",
-      "notes": "Use a ground-level end zone, never a bench or raised object. Rotate target players regularly.",
+      "notes": "Use a ground-level end zone, never a bench or raised object. Rotate target players regularly. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
       "links": [
         {
           "label": "New Zealand Rugby · U10 session 1",
@@ -11597,11 +11810,12 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Set-up: Teams pass to a teammate stationed in a marked end zone (no raised bench). Score and rotate target players. No contact. Use a ground-level end zone, never a bench or raised object. Rotate target players regularly.",
+          "notes": "Set-up: Teams pass to a teammate stationed in a marked end zone (no raised bench). Score and rotate target players. No contact. Use a ground-level end zone, never a bench or raised object. Rotate target players regularly. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
           "objects": [],
           "timing": {}
         }
-      ]
+      ],
+      "showAttack": false
     },
     {
       "version": 1,
@@ -12712,8 +12926,8 @@
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 450,
-              "y": 257.3371428571428,
+              "x": 600.7657142857144,
+              "y": 350,
               "rot": 0
             },
             {
@@ -12759,7 +12973,7 @@
           "paths": {},
           "name": "Play away",
           "seconds": 1.4,
-          "notes": "A3 approaches from the attacking side and picks up the available ball, ready to pass."
+          "notes": "A3 collects the available ball from behind; A2 disengages and moves into a deeper receiving position before the pass."
         },
         {
           "objects": [
@@ -12784,7 +12998,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 600.7657142857144,
-              "y": 318.582857142857,
+              "y": 350,
               "rot": 0
             },
             {
@@ -12830,9 +13044,11 @@
           "paths": {},
           "name": "Pass away",
           "seconds": 1.2,
-          "notes": "A3 passes backwards to A2, who has disengaged and moved into support."
+          "notes": "A3 passes backwards to A2, already behind the ball at release."
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -13588,8 +13804,8 @@
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 450,
-              "y": 257.3371428571428,
+              "x": 600.7657142857144,
+              "y": 350,
               "rot": 0
             },
             {
@@ -13644,7 +13860,7 @@
           "paths": {},
           "name": "Play away",
           "seconds": 1.4,
-          "notes": "A3 approaches from the attacking side and picks up the available ball, ready to pass."
+          "notes": "A3 collects the available ball from behind; A2 disengages and moves into a deeper receiving position before the pass."
         },
         {
           "objects": [
@@ -13669,7 +13885,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 600.7657142857144,
-              "y": 318.582857142857,
+              "y": 350,
               "rot": 0
             },
             {
@@ -13724,7 +13940,7 @@
           "paths": {},
           "name": "Pass away",
           "seconds": 1.2,
-          "notes": "A3 passes backwards to A2, who has disengaged and moved into support."
+          "notes": "A3 passes backwards to A2, already behind the ball at release."
         },
         {
           "objects": [
@@ -13749,7 +13965,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 600.7657142857144,
-              "y": 318.582857142857,
+              "y": 350,
               "rot": 0
             },
             {
@@ -13806,7 +14022,9 @@
           "seconds": 1.5,
           "notes": "D2 hands the shield to D3 for the next repetition."
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -19527,8 +19745,8 @@
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 450,
-              "y": 257.3371428571428,
+              "x": 600.7657142857144,
+              "y": 350,
               "rot": 0
             },
             {
@@ -19583,7 +19801,7 @@
           "paths": {},
           "name": "Play away",
           "seconds": 1.4,
-          "notes": "A3 approaches from the attacking side and picks up the available ball, ready to pass."
+          "notes": "A3 collects the available ball from behind; A2 disengages and moves into a deeper receiving position before the pass."
         },
         {
           "objects": [
@@ -19608,7 +19826,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 600.7657142857144,
-              "y": 318.582857142857,
+              "y": 350,
               "rot": 0
             },
             {
@@ -19663,7 +19881,7 @@
           "paths": {},
           "name": "Pass away",
           "seconds": 1.2,
-          "notes": "A3 passes backwards to A2, who has disengaged and moved into support."
+          "notes": "A3 passes backwards to A2, already behind the ball at release."
         },
         {
           "objects": [
@@ -19688,7 +19906,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 600.7657142857144,
-              "y": 318.582857142857,
+              "y": 350,
               "rot": 0
             },
             {
@@ -19745,7 +19963,9 @@
           "seconds": 1.5,
           "notes": "D2 hands the shield to D3 for the next repetition."
         }
-      ]
+      ],
+      "attackDirection": "up",
+      "showAttack": true
     },
     {
       "version": 1,
@@ -20502,7 +20722,7 @@
           ],
           "timing": {
             "b": {
-              "start": 25,
+              "start": 40,
               "end": 65
             }
           },
@@ -20582,7 +20802,7 @@
           ],
           "timing": {
             "b": {
-              "start": 25,
+              "start": 40,
               "end": 65
             }
           },
