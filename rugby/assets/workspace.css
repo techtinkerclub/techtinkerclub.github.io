@@ -248,3 +248,5 @@ html{color-scheme:dark}
 #objectPicker{margin:0 0 10px;width:100%}
 #stackOptions{display:grid;gap:3px;padding:4px;border-bottom:1px solid var(--line)}#stackOptions[hidden]{display:none}#stackOptions small{padding:3px 6px;color:var(--accent)}#stackOptions button{background:#304238}
 #contactMembers{max-height:150px;overflow:auto;display:grid;gap:4px;scrollbar-width:thin;scrollbar-color:#45574b transparent}#contactMembers label{display:flex;align-items:center;gap:6px}#contactMembers input{width:auto;accent-color:var(--accent)}
+
+#breakdownTools{display:grid;gap:7px;padding:9px 0;border-top:1px solid var(--line)}#breakdownTools[hidden]{display:none!important}#breakdownTools h3{margin:0}#breakdownTools small{line-height:1.35}#advanceBreakdown{white-space:normal}#arrivalList{display:grid;gap:5px;max-height:150px;overflow:auto;scrollbar-width:thin}#arrivalList label{display:flex;align-items:center;gap:5px}#arrivalList input{width:auto;accent-color:var(--accent)}

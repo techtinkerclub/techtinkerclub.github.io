@@ -49,7 +49,7 @@ export function ballMovement(old,next,ball,g){
  const t=next.timing?.[ball.id]||{start:0,end:100};
  const start=from?carriedPose(a,objectPose(old,next,from.id,t.start/100,g),g):a;
  const end=to?carriedPose(ball,objectPose(old,next,to.id,t.end/100,g),g):ball;
- return {start,end,pass:!!(from&&to)&&ball.transferKind!=='turnover',turnover:!!to&&ball.transferKind==='turnover',from,to,timing:t};
+ return {start,end,pass:!!(from&&to)&&ball.transferKind!=='turnover',turnover:!!to&&ball.transferKind==='turnover',presentation:ball.transferKind==='presentation'&&!to,from,to,timing:t};
 }
 export function movementFor(old,next,o,g){
  if(!old)return null;
@@ -77,7 +77,7 @@ export function transitionObjects(old,next,p,g){
   if(!findObject(old,o.id)&&p<1&&!(Array.isArray(o.members)&&p>=.78))return null;
   if(o.type==='ball')return ballPose(old,next,o,p,g);
   const prior=findObject(old,o.id),pose=objectPose(old,next,o.id,p,g);
-  if(Array.isArray(o.members)||Array.isArray(prior?.members))pose.members=p>=.78?o.members:prior?.members;
+  if(Array.isArray(o.members)||Array.isArray(prior?.members)){pose.members=p>=.65?o.members:prior?.members;if(prior&&p<.65){pose.type=prior.type;pose.label=prior.label;pose.breakdown=prior.breakdown}}
   return pose;
  }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>!findObject(next,o.id)):[]);
 }
@@ -86,13 +86,13 @@ export function transitionObjects(old,next,p,g){
 export function contactTarget(frame,moving,position,g,radius=32){
  if(!moving)return null;
  const isBall=moving.type==='ball';
- if(isBall&&carrier(frame,moving))return null;
+ if(isBall&&(carrier(frame,moving)||moving.groundState==='presented'))return null;
  if(!isBall&&(!canCarry(moving)||frame.objects.some(o=>o.type==='ball'&&o.ownerId===moving.id)))return null;
  const p=g.toView(position.x,position.y);
  let best=null,distance=radius;
  for(const o of frame.objects){
   if(o.id===moving.id)continue;
-  if(isBall?(!canCarry(o)||frame.objects.some(b=>b.type==='ball'&&b.ownerId===o.id)):(o.type!=='ball'||!!carrier(frame,o)))continue;
+  if(isBall?(!canCarry(o)||frame.objects.some(b=>b.type==='ball'&&b.ownerId===o.id)):(o.type!=='ball'||!!carrier(frame,o)||o.groundState==='presented'))continue;
   const v=g.toView(o.x,o.y),d=Math.hypot(p.x-v.x,p.y-v.y);
   if(d<distance){distance=d;best=isBall?{ballId:moving.id,playerId:o.id}:{ballId:o.id,playerId:moving.id}}
  }
@@ -112,7 +112,7 @@ export function assignPossession(frames,index,ballId,ownerId,g,originalPosition=
   if(b?.type!=='ball'||(b.ownerId||null)!==oldOwner||(ownerId&&!canCarry(findObject(fr,ownerId))))break;
   if(i>index&&!oldOwner&&(Math.hypot(b.x-previous.x,b.y-previous.y)>1e-5||fr.paths?.[ballId]?.points?.length||Object.hasOwn(fr.timing||{},ballId)))break;
   previous=i===index&&originalPosition?originalPosition:{x:b.x,y:b.y};
-  if(ownerId){b.ownerId=ownerId;Object.assign(b,carriedPose(b,findObject(fr,ownerId),g))}
+  if(ownerId){b.ownerId=ownerId;delete b.groundState;Object.assign(b,carriedPose(b,findObject(fr,ownerId),g))}
   else{delete b.ownerId;Object.assign(b,{x:releasePosition.x,y:releasePosition.y})}
   if(i>index){delete b.transferKind;if(fr.timing)delete fr.timing[ballId];if(fr.paths)delete fr.paths[ballId]}
   count++;
