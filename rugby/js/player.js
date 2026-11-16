@@ -39,9 +39,9 @@ if(catalogueId!==null){
   const list=await loadCatalogue(),entry=list.find(x=>x.id===catalogueId);if(!entry)throw Error('This drill is not in the published catalogue.');
   open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082'});document.title=entry.title+' · Rugby Coaching Library';
   $('catalogueReview').hidden=false;
-  const link=new URL(drillHref(entry.id),location.href);if(opts.offside)link.searchParams.set('offside','1');
-  $('copyDrillLink').onclick=()=>reviewCopy(link.href,'Drill link copied.');
-  $('copyReview').onclick=()=>reviewCopy(feedbackText(entry,link.href),'Review questions copied.');
+  const shareLink=()=>{const link=new URL(drillHref(entry.id),location.href);link.searchParams.set('offside',opts.offside?'1':'0');return link.href};
+  $('copyDrillLink').onclick=()=>reviewCopy(shareLink(),'Drill link copied.');
+  $('copyReview').onclick=()=>reviewCopy(feedbackText(entry,shareLink()),'Review questions copied.');
   if(!isAnimated(entry)){
    // A text card is not a missing animation: show its existing coaching content only.
    $('board').hidden=true;$('controls').hidden=true;$('stepReading').hidden=true;
