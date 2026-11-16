@@ -1,5 +1,5 @@
 // Author-controlled schematic breakdown stages; not a technique or law validator.
-import {carrier,findObject} from './possession.js?v=0.5.3';
+import {carrier,findObject} from './possession.js?v=0.8.4';
 export const PHASES={tackle:'Tackle',release:'Release and present',support:'Attacking support arrives',ruck:'Ruck formed',contest:'Contest for possession',secured:'Ball secured · use it'};
 export const validPhase=p=>Object.hasOwn(PHASES,p);
 export function supportTitle(side){return side==='defence'?'Defending support arrives':'Attacking support arrives'}
