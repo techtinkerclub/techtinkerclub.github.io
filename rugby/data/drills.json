@@ -1,0 +1,6020 @@
+{
+  "version": 1,
+  "kind": "rugby-library",
+  "drills": [
+    {
+      "version": 1,
+      "id": "seed-001",
+      "title": "Sharks and Fishes",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 12,
+      "category": "Movement",
+      "length": 20,
+      "width": 15,
+      "objective": "Change direction into space.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 6,
+      "players": "8–16",
+      "equipment": "4 cones, optional balls",
+      "instructions": "Runners cross between end lines; one or two sharks tag them. Tagged runners become sharks next round. Reset until all have crossed.",
+      "coaching": "Look up; change pace; avoid bunching.",
+      "regression": "Widen area or use one shark.",
+      "progression": "Carry a ball in two hands.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Runners cross between end lines; one or two sharks tag them. Tagged runners become sharks next round. Reset until all have crossed.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "F1",
+              "x": 210,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "F2",
+              "x": 450,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "F3",
+              "x": 700,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "Shark",
+              "x": 450,
+              "y": 260,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Find gaps",
+          "seconds": 2,
+          "notes": "Runners look for open space.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "F1",
+              "x": 170,
+              "y": 275,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "F2",
+              "x": 340,
+              "y": 325,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "F3",
+              "x": 700,
+              "y": 280,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "Shark",
+              "x": 410,
+              "y": 300,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Cross",
+          "seconds": 2,
+          "notes": "Continue through the open channels.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "F1",
+              "x": 130,
+              "y": 100,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "F2",
+              "x": 290,
+              "y": 100,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "F3",
+              "x": 740,
+              "y": 100,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "Shark",
+              "x": 355,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-002",
+      "title": "Rats and Rabbits",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 12,
+      "category": "Movement",
+      "length": 15,
+      "width": 12,
+      "objective": "React and accelerate.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 5,
+      "players": "6–16",
+      "equipment": "8 cones",
+      "instructions": "Pair players on two parallel lines, each facing their own safety line. Call one team; they run to safety while partners pursue for a light tag. Reset.",
+      "coaching": "React to the call; leave room to decelerate.",
+      "regression": "Use a visual signal and walking.",
+      "progression": "Mix visual and verbal cues.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Pair players on two parallel lines, each facing their own safety line. Call one team; they run to safety while partners pursue for a light tag. Reset.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-003",
+      "title": "Rob the Nest",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 12,
+      "category": "Movement",
+      "length": 15,
+      "width": 15,
+      "objective": "Scan and change direction.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 6,
+      "players": "6–16",
+      "equipment": "5 hoops or marked nests, 8 balls, cones",
+      "instructions": "Place balls at centre with teams at corner nests. One runner per team collects one ball each trip; then tag the next teammate. No stealing from hands.",
+      "coaching": "Look up at centre; carry securely.",
+      "regression": "Walk with fewer teams.",
+      "progression": "Allow taking one unattended ball from another nest.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Place balls at centre with teams at corner nests. One runner per team collects one ball each trip; then tag the next teammate. No stealing from hands.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-004",
+      "title": "Animal Walks Relay",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 12,
+      "category": "Movement",
+      "length": 15,
+      "width": 15,
+      "objective": "Develop coordination and balance.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 5,
+      "players": "4–12",
+      "equipment": "4 cones",
+      "instructions": "Set short parallel lanes. Children explore bear crawls and other comfortable animal movements, then return walking. Keep bouts short.",
+      "coaching": "Move with control; stop if uncomfortable.",
+      "regression": "Shorten the distance.",
+      "progression": "Combine two movement patterns.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "Rugby Australia · Lower primary skills and drills 2",
+          "url": "https://australia.rugby/participate/get-into-rugby/school-resources/videos/lower-primary/skills-and-drills-module-2",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Set short parallel lanes. Children explore bear crawls and other comfortable animal movements, then return walking. Keep bouts short.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-005",
+      "title": "Dog and Bone",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 12,
+      "category": "Movement",
+      "length": 15,
+      "width": 15,
+      "objective": "React and find an escape route.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 6,
+      "players": "6–12",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Number two teams facing a loose central ball. Call a number from each; first to collect the ball tries to return behind their line before a light tag. No diving for the ball.",
+      "coaching": "Approach under control; scan before turning.",
+      "regression": "Call one player with no opponent.",
+      "progression": "Call two numbers and allow a support pass.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "New Zealand Rugby · U10 session 1",
+          "url": "https://www.rugbytoolbox.co.nz/training/coaching-plans/under-10-rugby-coaching-plan",
+          "kind": "Session plan"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Number two teams facing a loose central ball. Call a number from each; first to collect the ball tries to return behind their line before a light tag. No diving for the ball.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-006",
+      "title": "Mirror Movement",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 16,
+      "category": "Defence",
+      "length": 6,
+      "width": 5,
+      "objective": "Track direction without crossing feet unnecessarily.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 5,
+      "players": "2 per group",
+      "equipment": "4 cones per pair",
+      "instructions": "Partners face each other with a safe gap; leader shuffles and changes direction for 10–15 seconds. Follower mirrors without touching; swap.",
+      "coaching": "Stay balanced; watch torso and hips.",
+      "regression": "Walking pace.",
+      "progression": "Add forward and backward movement.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Tracking activities and videos",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready/the-five-stages-of-tackle-ready/1-tracking/tracking-resources-for-coaches/",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Partners face each other with a safe gap; leader shuffles and changes direction for 10–15 seconds. Follower mirrors without touching; swap.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Leader",
+              "x": 450,
+              "y": 175,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "Mirror",
+              "x": 450,
+              "y": 355,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Move left",
+          "seconds": 2,
+          "notes": "Both mirror the lateral change.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Leader",
+              "x": 280,
+              "y": 175,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "Mirror",
+              "x": 280,
+              "y": 355,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Change direction",
+          "seconds": 2,
+          "notes": "Stay balanced and react.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Leader",
+              "x": 630,
+              "y": 175,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "Mirror",
+              "x": 580,
+              "y": 355,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-007",
+      "title": "Balance Challenge",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 16,
+      "category": "Movement",
+      "length": 10,
+      "width": 10,
+      "objective": "Develop single-leg control.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 5,
+      "players": "Any",
+      "equipment": "Cones, optional balls",
+      "instructions": "In personal spaces, stand on one leg briefly, reach or receive a gentle pass, then switch. Keep movements comfortable.",
+      "coaching": "Soft knee; steady trunk; eyes up.",
+      "regression": "Use both feet.",
+      "progression": "Add a small reach or gentle catch.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "In personal spaces, stand on one leg briefly, reach or receive a gentle pass, then switch. Keep movements comfortable.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-008",
+      "title": "Jump and Land",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 16,
+      "category": "Movement",
+      "length": 10,
+      "width": 10,
+      "objective": "Land softly with control.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 5,
+      "players": "Any",
+      "equipment": "Cones",
+      "instructions": "Use separated personal spaces; jump a short distance and hold a stable landing before resetting. Low repetitions and no fatigue challenge.",
+      "coaching": "Quiet landing; knees track comfortably; steady balance.",
+      "regression": "Step and hold instead of jumping.",
+      "progression": "Hop a short distance when ready.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "New Zealand Rugby · U10 session 1",
+          "url": "https://www.rugbytoolbox.co.nz/training/coaching-plans/under-10-rugby-coaching-plan",
+          "kind": "Session plan"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Use separated personal spaces; jump a short distance and hold a stable landing before resetting. Low repetitions and no fatigue challenge.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-009",
+      "title": "Passing Circle",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 10,
+      "category": "Handling",
+      "length": 10,
+      "width": 10,
+      "objective": "Present hands and catch cleanly.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 6,
+      "players": "4–8",
+      "equipment": "1 ball per group",
+      "instructions": "Space children in a circle. Pass to a teammate who calls and shows hands. Follow with a moving version.",
+      "coaching": "Hands ready; look at target; follow through.",
+      "regression": "Use shorter passes.",
+      "progression": "Introduce a second ball if spacing allows.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Space children in a circle. Pass to a teammate who calls and shows hands. Follow with a moving version.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "1",
+              "x": 450,
+              "y": 125,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "2",
+              "x": 690,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "3",
+              "x": 450,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "attacker",
+              "label": "4",
+              "x": 210,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 465,
+              "y": 110,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Pass",
+          "seconds": 2,
+          "notes": "Receiver shows hands.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "1",
+              "x": 450,
+              "y": 125,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "2",
+              "x": 690,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "3",
+              "x": 450,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "attacker",
+              "label": "4",
+              "x": 210,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 705,
+              "y": 255,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Pass again",
+          "seconds": 2,
+          "notes": "Call and look toward next receiver.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "1",
+              "x": 450,
+              "y": 125,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "2",
+              "x": 690,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "3",
+              "x": 450,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "attacker",
+              "label": "4",
+              "x": 210,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 465,
+              "y": 405,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Continue",
+          "seconds": 2,
+          "notes": "Pass to the next player.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "1",
+              "x": 450,
+              "y": 125,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "2",
+              "x": 690,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "3",
+              "x": 450,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "attacker",
+              "label": "4",
+              "x": 210,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 225,
+              "y": 255,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-010",
+      "title": "Five Pass Game",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 16,
+      "category": "Handling",
+      "length": 20,
+      "width": 15,
+      "objective": "Move into a passing lane.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "Two teams compete for five completed passes without contact. Possession changes after a drop or interception. Any-direction passes are allowed in this modified game.",
+      "coaching": "Move after passing; call early; find clear lanes.",
+      "regression": "Give attack an extra player.",
+      "progression": "Return to directional rugby passing laws.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Two teams compete for five completed passes without contact. Possession changes after a drop or interception. Any-direction passes are allowed in this modified game.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 180,
+              "y": 150,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 700,
+              "y": 150,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 250,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "attacker",
+              "label": "A4",
+              "x": 680,
+              "y": 410,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 140,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "D2",
+              "x": 470,
+              "y": 350,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "ball",
+              "label": "",
+              "x": 195,
+              "y": 135,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Create lane",
+          "seconds": 2,
+          "notes": "A3 becomes available.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 180,
+              "y": 150,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 700,
+              "y": 150,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 170,
+              "y": 350,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "attacker",
+              "label": "A4",
+              "x": 680,
+              "y": 410,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D1",
+              "x": 320,
+              "y": 160,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "D2",
+              "x": 470,
+              "y": 350,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "ball",
+              "label": "",
+              "x": 185,
+              "y": 335,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Move again",
+          "seconds": 2,
+          "notes": "A2 moves into space.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 180,
+              "y": 150,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 740,
+              "y": 220,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 170,
+              "y": 350,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "attacker",
+              "label": "A4",
+              "x": 680,
+              "y": 410,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D1",
+              "x": 320,
+              "y": 160,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "D2",
+              "x": 320,
+              "y": 360,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "ball",
+              "label": "",
+              "x": 755,
+              "y": 205,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Continue",
+          "seconds": 2,
+          "notes": "Find a third passing lane; aim for five in the game.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 180,
+              "y": 150,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 740,
+              "y": 220,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 170,
+              "y": 350,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "attacker",
+              "label": "A4",
+              "x": 740,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D1",
+              "x": 320,
+              "y": 160,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "D2",
+              "x": 320,
+              "y": 360,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "ball",
+              "label": "",
+              "x": 755,
+              "y": 405,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-011",
+      "title": "L-shaped Passing",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 12,
+      "category": "Handling",
+      "length": 12,
+      "width": 10,
+      "objective": "Catch while moving and realign.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 7,
+      "players": "4–8",
+      "equipment": "4 cones, 2 balls",
+      "instructions": "Mark an L-shaped route. A runner receives from a feeder near the turn and passes to a waiting teammate after changing direction. Rotate roles.",
+      "coaching": "Give a target; adjust pace; pass to space.",
+      "regression": "Walk the route.",
+      "progression": "Add a passive defender at the turn.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Mark an L-shaped route. A runner receives from a feeder near the turn and passes to a waiting teammate after changing direction. Rotate roles.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-012",
+      "title": "Passing Gauntlet",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 14,
+      "category": "Handling",
+      "length": 20,
+      "width": 12,
+      "objective": "Pass accurately while moving.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "6–12",
+      "equipment": "8 cones, 2 balls",
+      "instructions": "Place feeders at successive stations. Runners travel along a channel, collect and return passes in turn; rotate feeders often.",
+      "coaching": "Keep eyes up; turn hands toward ball; avoid rushing.",
+      "regression": "Increase space between stations.",
+      "progression": "Vary distance and timing of feeds.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Place feeders at successive stations. Runners travel along a channel, collect and return passes in turn; rotate feeders often.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-013",
+      "title": "Diamond Passing",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Handling",
+      "length": 12,
+      "width": 12,
+      "objective": "Create useful support angles.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "4–8",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Start four players in a diamond; pass to a moving adjacent player and follow into the vacated position. Reset if spacing collapses.",
+      "coaching": "Call early; move as ball travels; maintain distance.",
+      "regression": "Static diamond.",
+      "progression": "Add a roaming passive defender.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Start four players in a diamond; pass to a moving adjacent player and follow into the vacated position. Reset if spacing collapses.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-014",
+      "title": "Two-ball End Ball",
+      "age": "All ages",
+      "ageMin": 10,
+      "ageMax": 16,
+      "category": "Handling",
+      "length": 20,
+      "width": 15,
+      "objective": "Scan more than one passing option.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "4 cones, 2 balls, bibs",
+      "instructions": "Use two marked scoring zones. Teams score by passing to a teammate inside a zone. Begin with one ball before introducing the second, with clear possession rules.",
+      "coaching": "Scan before receiving; communicate which ball is live.",
+      "regression": "Use one ball.",
+      "progression": "Add a second scoring zone per end.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Use two marked scoring zones. Teams score by passing to a teammate inside a zone. Begin with one ball before introducing the second, with clear possession rules.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-015",
+      "title": "Continuous Passing",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 16,
+      "category": "Handling",
+      "length": 20,
+      "width": 12,
+      "objective": "Receive while advancing.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 7,
+      "players": "4–12",
+      "equipment": "4 cones, 1 ball per group",
+      "instructions": "Small lines advance together and pass laterally or backwards; rotate the starter and running direction, then repeat.",
+      "coaching": "Keep depth; move onto the pass; avoid drifting together.",
+      "regression": "Walk with short passes.",
+      "progression": "Add a defender to force a choice.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Small lines advance together and pass laterally or backwards; rotate the starter and running direction, then repeat.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-016",
+      "title": "2 vs 1 · Draw and pass",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 20,
+      "width": 15,
+      "objective": "Exploit a two-on-one advantage.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "3 per group",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Two attackers advance against a touch defender. The carrier chooses to pass or run based on the defender. Swap roles after each short attempt.",
+      "coaching": "Carry in two hands; hold width; pass before the space closes.",
+      "regression": "Defender moves sideways only.",
+      "progression": "Add a recovering defender.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "New Zealand Rugby · 2 to Score",
+          "url": "https://www.rugbytoolbox.co.nz/training/technique/2-to-score",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Two attackers advance against a touch defender. The carrier chooses to pass or run based on the defender. Swap roles after each short attempt.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-017",
+      "title": "Octopus",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 12,
+      "category": "Movement",
+      "length": 20,
+      "width": 15,
+      "objective": "Find gaps and evade.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 6,
+      "players": "8–16",
+      "equipment": "4 cones, optional balls",
+      "instructions": "Runners try to cross a grid without light tags from the octopus. Tagged runners join the middle on the next round. Keep movement controlled.",
+      "coaching": "Run into free space; change speed; avoid collision.",
+      "regression": "One stationary tagger.",
+      "progression": "Runners carry rugby balls.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "Rugby Australia · Middle primary skills and drills",
+          "url": "https://australia.rugby/participate/get-into-rugby/school-resources/videos/middle-primary/skills-and-drills-module-one",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Runners try to cross a grid without light tags from the octopus. Tagged runners join the middle on the next round. Keep movement controlled.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-018",
+      "title": "1v1 Channel",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 12,
+      "width": 6,
+      "objective": "Beat a defender in a small space.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 7,
+      "players": "2 per group",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Attack one end line against a touch defender. Swap attacker and defender each attempt. Use several channels to avoid queues.",
+      "coaching": "Watch defender; attack a gap; accelerate after changing direction.",
+      "regression": "Wider channel or passive defender.",
+      "progression": "Narrow slightly or vary start positions.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Attack one end line against a touch defender. Swap attacker and defender each attempt. Use several channels to avoid queues.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 210,
+              "rot": 180
+            },
+            {
+              "id": "o2",
+              "type": "ball",
+              "label": "",
+              "x": 467,
+              "y": 403,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Approach",
+          "seconds": 2,
+          "notes": "Read the defender.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 320,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "D1",
+              "x": 470,
+              "y": 245,
+              "rot": 180
+            },
+            {
+              "id": "o2",
+              "type": "ball",
+              "label": "",
+              "x": 467,
+              "y": 303,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Evade",
+          "seconds": 2,
+          "notes": "Example: change direction into the open left side.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 165,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "D1",
+              "x": 370,
+              "y": 210,
+              "rot": 180
+            },
+            {
+              "id": "o2",
+              "type": "ball",
+              "label": "",
+              "x": 217,
+              "y": 148,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Score",
+          "seconds": 2,
+          "notes": "Accelerate to the line.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 200,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "D1",
+              "x": 370,
+              "y": 210,
+              "rot": 180
+            },
+            {
+              "id": "o2",
+              "type": "ball",
+              "label": "",
+              "x": 217,
+              "y": 73,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-019",
+      "title": "Two Gates",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 12,
+      "width": 10,
+      "objective": "React to the defender's choice.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 7,
+      "players": "2 per group",
+      "equipment": "6 cones, 1 ball",
+      "instructions": "Mark two gates on the far line. Attacker may score through either while defender attempts a light tag. Swap roles.",
+      "coaching": "Scan both gates; stay unpredictable.",
+      "regression": "Defender starts further away.",
+      "progression": "Allow defender to advance.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Mark two gates on the far line. Attacker may score through either while defender attempts a light tag. Swap roles.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 415,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 235,
+              "rot": 180
+            },
+            {
+              "id": "o2",
+              "type": "ball",
+              "label": "",
+              "x": 467,
+              "y": 395,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "cone",
+              "label": "",
+              "x": 145,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "cone",
+              "label": "",
+              "x": 300,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o5",
+              "type": "cone",
+              "label": "",
+              "x": 600,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o6",
+              "type": "cone",
+              "label": "",
+              "x": 755,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Read defender",
+          "seconds": 2,
+          "notes": "The defender shades one gate.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 460,
+              "y": 320,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "D1",
+              "x": 300,
+              "y": 235,
+              "rot": 180
+            },
+            {
+              "id": "o2",
+              "type": "ball",
+              "label": "",
+              "x": 477,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "cone",
+              "label": "",
+              "x": 145,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "cone",
+              "label": "",
+              "x": 300,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o5",
+              "type": "cone",
+              "label": "",
+              "x": 600,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o6",
+              "type": "cone",
+              "label": "",
+              "x": 755,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Choose open gate",
+          "seconds": 2,
+          "notes": "Accelerate through the other gate.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 680,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 180,
+              "rot": 180
+            },
+            {
+              "id": "o2",
+              "type": "ball",
+              "label": "",
+              "x": 697,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "cone",
+              "label": "",
+              "x": 145,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o4",
+              "type": "cone",
+              "label": "",
+              "x": 300,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o5",
+              "type": "cone",
+              "label": "",
+              "x": 600,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "o6",
+              "type": "cone",
+              "label": "",
+              "x": 755,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-020",
+      "title": "3 vs 2 Overload",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 20,
+      "width": 18,
+      "objective": "Use width and depth to create options.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "5 per group",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Three attackers face two touch defenders and try to reach the far line. Rotate roles and change defender positioning.",
+      "coaching": "Attack space; keep options; don't force the widest pass.",
+      "regression": "Start defenders further back.",
+      "progression": "Add a recovering defender.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Three attackers face two touch defenders and try to reach the far line. Rotate roles and change defender positioning.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 220,
+              "y": 410,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 425,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 710,
+              "y": 440,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 290,
+              "y": 200,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 540,
+              "y": 195,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 235,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Commit",
+          "seconds": 2,
+          "notes": "Carrier advances; support stays available.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 290,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 465,
+              "y": 345,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 720,
+              "y": 355,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 300,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 550,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 305,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Move ball",
+          "seconds": 2,
+          "notes": "Use the open support option.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 310,
+              "y": 250,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 485,
+              "y": 285,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 730,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 316,
+              "y": 246,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 520,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 500,
+              "y": 265,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Exploit gap",
+          "seconds": 2,
+          "notes": "A2 can pass to A3 if D2 commits.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 360,
+              "y": 175,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 510,
+              "y": 190,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 750,
+              "y": 220,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 335,
+              "y": 180,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 550,
+              "y": 180,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 765,
+              "y": 200,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Finish",
+          "seconds": 2,
+          "notes": "Support follows the line break.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 110,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 600,
+              "y": 115,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 750,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 335,
+              "y": 180,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 550,
+              "y": 180,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 765,
+              "y": 65,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-021",
+      "title": "Continuous 4 vs 2",
+      "age": "All ages",
+      "ageMin": 10,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 25,
+      "width": 18,
+      "objective": "Recognise an overload repeatedly.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "6–10",
+      "equipment": "6 cones, 1 ball, bibs",
+      "instructions": "Four attackers play against two touch defenders. After each score or turnover, reset quickly at the other end with fresh defenders.",
+      "coaching": "Organise quickly; run straight when useful; support both sides.",
+      "regression": "Use 3v1.",
+      "progression": "Reduce time or introduce a recovering defender.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Four attackers play against two touch defenders. After each score or turnover, reset quickly at the other end with fresh defenders.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-022",
+      "title": "Four-goal Touch",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 20,
+      "width": 20,
+      "objective": "Scan beyond the immediate defender.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "8 cones, 1 ball, bibs",
+      "instructions": "Four marked gates serve as scoring targets in a multidirectional touch game. Agree turnover rules and reset after a point.",
+      "coaching": "Look around before carrying; communicate open gates.",
+      "regression": "Allow an extra attacker.",
+      "progression": "Restrict repeat scoring at the same gate.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Four marked gates serve as scoring targets in a multidirectional touch game. Agree turnover rules and reset after a point.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 250,
+              "y": 350,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 550,
+              "y": 380,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "defender",
+              "label": "D1",
+              "x": 420,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D2",
+              "x": 630,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 265,
+              "y": 335,
+              "rot": 0
+            },
+            {
+              "id": "o5",
+              "type": "cone",
+              "label": "",
+              "x": 360,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "o6",
+              "type": "cone",
+              "label": "",
+              "x": 540,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "cone",
+              "label": "",
+              "x": 360,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "o8",
+              "type": "cone",
+              "label": "",
+              "x": 540,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "o9",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 200,
+              "rot": 0
+            },
+            {
+              "id": "o10",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "o11",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 200,
+              "rot": 0
+            },
+            {
+              "id": "o12",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Scan",
+          "seconds": 2,
+          "notes": "Defenders close central space.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 260,
+              "y": 275,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 550,
+              "y": 380,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "defender",
+              "label": "D1",
+              "x": 375,
+              "y": 255,
+              "rot": 180
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D2",
+              "x": 630,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 275,
+              "y": 260,
+              "rot": 0
+            },
+            {
+              "id": "o5",
+              "type": "cone",
+              "label": "",
+              "x": 360,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "o6",
+              "type": "cone",
+              "label": "",
+              "x": 540,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "cone",
+              "label": "",
+              "x": 360,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "o8",
+              "type": "cone",
+              "label": "",
+              "x": 540,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "o9",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 200,
+              "rot": 0
+            },
+            {
+              "id": "o10",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "o11",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 200,
+              "rot": 0
+            },
+            {
+              "id": "o12",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Change direction",
+          "seconds": 2,
+          "notes": "Attack the open left gate.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 95,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 330,
+              "y": 350,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "defender",
+              "label": "D1",
+              "x": 250,
+              "y": 260,
+              "rot": 180
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D2",
+              "x": 630,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 110,
+              "y": 255,
+              "rot": 0
+            },
+            {
+              "id": "o5",
+              "type": "cone",
+              "label": "",
+              "x": 360,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "o6",
+              "type": "cone",
+              "label": "",
+              "x": 540,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "cone",
+              "label": "",
+              "x": 360,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "o8",
+              "type": "cone",
+              "label": "",
+              "x": 540,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "o9",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 200,
+              "rot": 0
+            },
+            {
+              "id": "o10",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "o11",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 200,
+              "rot": 0
+            },
+            {
+              "id": "o12",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-023",
+      "title": "Wide Touch",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 25,
+      "width": 30,
+      "objective": "Use width and reposition after a pass.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 10,
+      "players": "8–14",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "Play touch in a wide rectangular area. Restart with a free pass after agreed touches. Reward tries created by using unoccupied space.",
+      "coaching": "Spread when appropriate; straighten runs; keep support.",
+      "regression": "Give attack a player advantage.",
+      "progression": "Change width between rounds.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Play touch in a wide rectangular area. Restart with a free pass after agreed touches. Reward tries created by using unoccupied space.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-024",
+      "title": "Shadow Defence",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 16,
+      "category": "Defence",
+      "length": 12,
+      "width": 6,
+      "objective": "Track safely and maintain distance.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 6,
+      "players": "2 per group",
+      "equipment": "4 cones",
+      "instructions": "Attacker moves through a lane and defender shadows from a set distance without contact. Swap roles.",
+      "coaching": "Short steps near attacker; balanced posture; avoid reaching.",
+      "regression": "Walk.",
+      "progression": "Change start angle or introduce a second gate.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Tracking activities and videos",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready/the-five-stages-of-tackle-ready/1-tracking/tracking-resources-for-coaches/",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Attacker moves through a lane and defender shadows from a set distance without contact. Swap roles.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Leader",
+              "x": 320,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "Tracker",
+              "x": 520,
+              "y": 340,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Move",
+          "seconds": 2,
+          "notes": "Track from a safe distance.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Leader",
+              "x": 230,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "Tracker",
+              "x": 410,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "React",
+          "seconds": 2,
+          "notes": "Follow the change of direction without contact.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Leader",
+              "x": 530,
+              "y": 140,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "defender",
+              "label": "Tracker",
+              "x": 650,
+              "y": 155,
+              "rot": 180
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-025",
+      "title": "Tag Channel",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 16,
+      "category": "Defence",
+      "length": 12,
+      "width": 6,
+      "objective": "Close space without collision.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 7,
+      "players": "2 per group",
+      "equipment": "4 cones, tags, optional ball",
+      "instructions": "An attacker tries to cross a scoring line and defender removes a tag or makes an agreed light touch. Rotate on every attempt.",
+      "coaching": "Watch movement; close distance under control.",
+      "regression": "Widen start distance for defender practice.",
+      "progression": "Add a support attacker.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "An attacker tries to cross a scoring line and defender removes a tag or makes an agreed light touch. Rotate on every attempt.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-026",
+      "title": "Defensive Gates",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 16,
+      "category": "Defence",
+      "length": 12,
+      "width": 10,
+      "objective": "Protect space rather than chase blindly.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 7,
+      "players": "3 per group",
+      "equipment": "6 cones",
+      "instructions": "Two potential scoring gates are defended by one player; two attackers approach with one ball and score by carrying through an open gate. Use touch only.",
+      "coaching": "Communicate threat; stay balanced; recover to space.",
+      "regression": "Use one attacker.",
+      "progression": "Add second defender and coordinate roles.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Two potential scoring gates are defended by one player; two attackers approach with one ball and score by carrying through an open gate. Use touch only.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-027",
+      "title": "Controlled Tackle Progression",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Contact",
+      "length": 10,
+      "width": 10,
+      "objective": "Build confidence and safe technique under supervision.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "Pairs, matched",
+      "equipment": "Cones, approved tackle equipment if used",
+      "instructions": "Qualified coach leads age-appropriate contact preparation, then only advances to low-intensity matched practice when ready. Use the linked programme for exact teaching technique.",
+      "coaching": "Observe tracking, preparation, safe connection and release; stop unsafe attempts.",
+      "regression": "Non-contact tracking and controlled movement.",
+      "progression": "Only coach-approved progression after competence is demonstrated.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Tackle Ready stages",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready/the-five-stages-of-tackle-ready",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Qualified coach leads age-appropriate contact preparation, then only advances to low-intensity matched practice when ready. Use the linked programme for exact teaching technique.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-028",
+      "title": "Side-on Tackle",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Contact",
+      "length": 8,
+      "width": 6,
+      "objective": "Develop safe side-on tackling technique.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "Pairs, matched",
+      "equipment": "Cones, approved tackle equipment if used",
+      "instructions": "Use the national-union approved teaching progression with an appropriately trained coach; rehearse movement first. Rotate matched partners with rest.",
+      "coaching": "Correct head placement and legal target must be demonstrated in person.",
+      "regression": "Non-contact side tracking.",
+      "progression": "Coach-approved movement progression only.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Tackle Ready stages",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready/the-five-stages-of-tackle-ready",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Use the national-union approved teaching progression with an appropriately trained coach; rehearse movement first. Rotate matched partners with rest.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-029",
+      "title": "Grid Tackling",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Contact",
+      "length": 8,
+      "width": 8,
+      "objective": "Recognise safe tackle opportunities.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "Pairs, matched",
+      "equipment": "4 cones per grid",
+      "instructions": "Set separate grids for matched partners. Begin with tracking without contact; a trained coach decides whether to introduce controlled age-appropriate tackles.",
+      "coaching": "Stop when technique deteriorates; supervise each active pair.",
+      "regression": "Touch only.",
+      "progression": "Change approach angle only after competence.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Tackle Ready stages",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready/the-five-stages-of-tackle-ready",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Set separate grids for matched partners. Begin with tracking without contact; a trained coach decides whether to introduce controlled age-appropriate tackles.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-030",
+      "title": "Defensive Line Touch",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Defence",
+      "length": 25,
+      "width": 20,
+      "objective": "Move together and communicate.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "Attack plays directional touch against a line of defenders. Restart after touch and allow defence to reset its spacing.",
+      "coaching": "Stay connected; call threats; advance under control.",
+      "regression": "Walking attack.",
+      "progression": "Vary attacking width or numbers.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Attack plays directional touch against a line of defenders. Restart after touch and allow defence to reset its spacing.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-031",
+      "title": "Fall and Place",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Contact",
+      "length": 8,
+      "width": 8,
+      "objective": "Protect and make the ball available.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 6,
+      "players": "Pairs",
+      "equipment": "1 ball per pair",
+      "instructions": "With no opposition, trained coach demonstrates safe controlled ground movement and ball presentation. Players rehearse individually with room.",
+      "coaching": "Control the descent; release and place legally; keep heads clear.",
+      "regression": "Start stationary at ground level.",
+      "progression": "Add a walking support player only.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Breakdown Ready contact preparation",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/breakdown-ready/preparation-for-contact/",
+          "kind": "Video page"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "With no opposition, trained coach demonstrates safe controlled ground movement and ball presentation. Players rehearse individually with room.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-032",
+      "title": "Ball Presentation Touch",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Breakdown",
+      "length": 20,
+      "width": 15,
+      "objective": "Keep possession available after a simulated tackle.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "6–10",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "After an agreed touch stop, carrier makes a coached controlled presentation on the ground; support arrives and passes. Defenders stand clear until restart.",
+      "coaching": "Arrive from own side; no diving; keep the ball available.",
+      "regression": "Rehearse without defenders.",
+      "progression": "Add a touch restart time target without rushing the fall.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "After an agreed touch stop, carrier makes a coached controlled presentation on the ground; support arrives and passes. Defenders stand clear until restart.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-033",
+      "title": "Pop off the Ground Touch",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Breakdown",
+      "length": 20,
+      "width": 15,
+      "objective": "Recognise nearby support after a simulated tackle.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "6–10",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "Use touch only. At a touch stop, rehearse a controlled ground-level ball transfer under coach direction, then restart play. Do not simulate a contested live tackle.",
+      "coaching": "Support communicates early; transfer immediately and legally.",
+      "regression": "Stationary pairs.",
+      "progression": "Add directional touch with a recovering defence.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Use touch only. At a touch stop, rehearse a controlled ground-level ball transfer under coach direction, then restart play. Do not simulate a contested live tackle.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-034",
+      "title": "Ruck Touch",
+      "age": "All ages",
+      "ageMin": 10,
+      "ageMax": 16,
+      "category": "Breakdown",
+      "length": 20,
+      "width": 15,
+      "objective": "Understand first support and restart roles.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "When touched, stop and rehearse a controlled presentation. Support player retrieves and passes; defenders remain clear of the marked area. No contested ruck.",
+      "coaching": "Legal approach; stay on feet; move ball away from congestion.",
+      "regression": "Walk-through.",
+      "progression": "Vary location and supporting player.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "When touched, stop and rehearse a controlled presentation. Support player retrieves and passes; defenders remain clear of the marked area. No contested ruck.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Carrier",
+              "x": 420,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "Support",
+              "x": 330,
+              "y": 435,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 650,
+              "y": 435,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "Touch",
+              "x": 420,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 435,
+              "y": 375,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Touch stop",
+          "seconds": 2,
+          "notes": "No collision; both players stop. Ground movement is coached separately.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Carrier",
+              "x": 420,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "Support",
+              "x": 330,
+              "y": 435,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 650,
+              "y": 435,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "Touch",
+              "x": 420,
+              "y": 265,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 435,
+              "y": 325,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Present and support",
+          "seconds": 2,
+          "notes": "Support comes from own side; defenders stand clear.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Carrier",
+              "x": 420,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "Support",
+              "x": 410,
+              "y": 365,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 650,
+              "y": 435,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "Touch",
+              "x": 420,
+              "y": 170,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 420,
+              "y": 345,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Pass away",
+          "seconds": 2,
+          "notes": "Move the ball to an available receiver.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "Carrier",
+              "x": 420,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "Support",
+              "x": 410,
+              "y": 365,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 650,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "Touch",
+              "x": 420,
+              "y": 170,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "ball",
+              "label": "",
+              "x": 665,
+              "y": 375,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-035",
+      "title": "Support Runner Challenge",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 20,
+      "width": 15,
+      "objective": "Stay available behind the ball.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "6–12",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "In small touch groups, award a bonus for a clearly available support option at each touch. Restart with a free pass.",
+      "coaching": "Communicate early; maintain useful depth; follow breaks.",
+      "regression": "Play without defenders.",
+      "progression": "Introduce a recovering defender.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "In small touch groups, award a bonus for a clearly available support option at each touch. Restart with a free pass.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-036",
+      "title": "Pyramid Attack",
+      "age": "All ages",
+      "ageMin": 10,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 20,
+      "width": 18,
+      "objective": "Create layered support options.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "6–10",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Start carrier with two nearby support options and a wider runner beyond them. Use touch against two or three defenders, then rotate roles.",
+      "coaching": "Keep depth and width; adjust to defender; avoid rigid lines.",
+      "regression": "Walk through unopposed.",
+      "progression": "Vary defensive positioning.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Start carrier with two nearby support options and a wider runner beyond them. Use touch against two or three defenders, then rotate roles.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-037",
+      "title": "Ruck and Roll",
+      "age": "All ages",
+      "ageMin": 11,
+      "ageMax": 16,
+      "category": "Breakdown",
+      "length": 25,
+      "width": 20,
+      "objective": "Reorganise after a simulated breakdown.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "Use touch and a controlled presentation at each stop. Pass away from the mark and rebuild support on either side. No contested contact.",
+      "coaching": "First support acts; others find space; communicate next phase.",
+      "regression": "Walk through one restart.",
+      "progression": "Limit restart time without compromising control.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Use touch and a controlled presentation at each stop. Pass away from the mark and rebuild support on either side. No contested contact.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-038",
+      "title": "Offload Touch",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 20,
+      "width": 15,
+      "objective": "Recognise a support option before a stop.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "In touch, carrier may pass immediately on agreed light touch if safely balanced; otherwise stop for a free-pass restart. No holding or wrestling.",
+      "coaching": "Support close enough to receive; use two hands; don't force an offload.",
+      "regression": "Allow a pause before touch.",
+      "progression": "Add a recovering defender.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "In touch, carrier may pass immediately on agreed light touch if safely balanced; otherwise stop for a free-pass restart. No holding or wrestling.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-039",
+      "title": "Drop-off Touch",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 25,
+      "width": 20,
+      "objective": "Recognise a temporary defensive gap.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "5 cones, 1 ball, bibs",
+      "instructions": "After making a touch, defender retreats to a designated cone and then rejoins. Attack restarts with a pass and exploits the temporary gap.",
+      "coaching": "Scan quickly; attack the available space; communicate.",
+      "regression": "Move cone further away.",
+      "progression": "Vary the defender's return route.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "After making a touch, defender retreats to a designated cone and then rejoins. Attack restarts with a pass and exploits the temporary gap.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 240,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 470,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 710,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 240,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 460,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "D3",
+              "x": 710,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "ball",
+              "label": "",
+              "x": 255,
+              "y": 385,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "cone",
+              "label": "Return",
+              "x": 780,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Touch",
+          "seconds": 2,
+          "notes": "A1 is touched; D1 drops out temporarily.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 240,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 470,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 710,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 240,
+              "y": 265,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 460,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "D3",
+              "x": 710,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "ball",
+              "label": "",
+              "x": 255,
+              "y": 275,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "cone",
+              "label": "Return",
+              "x": 780,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Identify gap",
+          "seconds": 2,
+          "notes": "D1 retreats and attack can restart.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 240,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 440,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 710,
+              "y": 420,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 780,
+              "y": 90,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "D3",
+              "x": 710,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "ball",
+              "label": "",
+              "x": 455,
+              "y": 325,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "cone",
+              "label": "Return",
+              "x": 780,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Attack space",
+          "seconds": 2,
+          "notes": "Exploit the temporarily open channel.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 210,
+              "y": 150,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 370,
+              "y": 170,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 680,
+              "y": 240,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 720,
+              "y": 145,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "D3",
+              "x": 710,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "ball",
+              "label": "",
+              "x": 385,
+              "y": 155,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "cone",
+              "label": "Return",
+              "x": 780,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-040",
+      "title": "Colour Touch",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 20,
+      "width": 20,
+      "objective": "React to changing game information.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "4 coloured cones, 1 ball, bibs",
+      "instructions": "Use coloured scoring zones; coach calls the active colour during touch play. Teams reorganise to attack or defend that zone.",
+      "coaching": "Look and listen; change direction safely; stay connected.",
+      "regression": "Call between phases.",
+      "progression": "Allow players to nominate the next colour.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Use coloured scoring zones; coach calls the active colour during touch play. Teams reorganise to attack or defend that zone.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-041",
+      "title": "Breakout Touch",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 25,
+      "width": 20,
+      "objective": "Transition from defence to attack.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "6 cones, 1 ball, bibs",
+      "instructions": "Begin in a small marked grid; after a turnover the new attack may break out to the larger scoring area. Reset each try.",
+      "coaching": "Switch roles quickly; scan outside the grid.",
+      "regression": "Coach signals turnover.",
+      "progression": "Change breakout direction.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Begin in a small marked grid; after a turnover the new attack may break out to the larger scoring area. Reset each try.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-042",
+      "title": "Switch Passing",
+      "age": "All ages",
+      "ageMin": 11,
+      "ageMax": 16,
+      "category": "Handling",
+      "length": 15,
+      "width": 12,
+      "objective": "Change direction through a timed support line.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "3–6",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Unopposed, a support runner changes angle behind the carrier and receives a legal pass. Rotate roles and then add touch defence.",
+      "coaching": "Receiver stays behind ball; communicate; avoid crossing into each other.",
+      "regression": "Walk through.",
+      "progression": "Introduce a passive defender.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Unopposed, a support runner changes angle behind the carrier and receives a legal pass. Rotate roles and then add touch defence.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-043",
+      "title": "Loop Passing",
+      "age": "All ages",
+      "ageMin": 11,
+      "ageMax": 16,
+      "category": "Handling",
+      "length": 15,
+      "width": 12,
+      "objective": "Reconnect with play after passing.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "3–6",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Carrier passes to support then loops behind that player into a new passing lane. Use unopposed practice first and rotate.",
+      "coaching": "Run behind receiver; maintain separation; time the return pass.",
+      "regression": "Walk through.",
+      "progression": "Add a touch defender.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Carrier passes to support then loops behind that player into a new passing lane. Use unopposed practice first and rotate.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-044",
+      "title": "Rugby Tennis",
+      "age": "All ages",
+      "ageMin": 11,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 25,
+      "width": 20,
+      "objective": "Explore kicking accuracy and space where permitted.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. Kicking only where age-grade rules permit; no contested catches.",
+      "minutes": 8,
+      "players": "4–8",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Teams occupy separated areas and send controlled kicks across a marked neutral zone. Opponents collect and return from a safe position. No aerial contests.",
+      "coaching": "Check safe space; choose controlled distance; watch the ball.",
+      "regression": "Use hand throws or stationary kicking.",
+      "progression": "Vary scoring zones within safe distances.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Teams occupy separated areas and send controlled kicks across a marked neutral zone. Opponents collect and return from a safe position. No aerial contests.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-045",
+      "title": "Lineout End Ball",
+      "age": "All ages",
+      "ageMin": 12,
+      "ageMax": 16,
+      "category": "Set piece",
+      "length": 15,
+      "width": 12,
+      "objective": "Practise accurate throwing and receiving.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "6–10",
+      "equipment": "4 cones, 1 ball",
+      "instructions": "Use two teams, scoring with an uncontested throw to a teammate in a marked receiving area. No lifting or contested jumping in this version.",
+      "coaching": "Accurate throw; ready hands; clear landing space.",
+      "regression": "Static receivers.",
+      "progression": "Move to a new receiving area before throw.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching activity index",
+          "url": "https://passport.world.rugby/coaching/coaching-children/putting-it-into-practice/main-coaching-activities/",
+          "kind": "Reference"
+        },
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Use two teams, scoring with an uncontested throw to a teammate in a marked receiving area. No lifting or contested jumping in this version.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-046",
+      "title": "Scrum and Play",
+      "age": "All ages",
+      "ageMin": 10,
+      "ageMax": 16,
+      "category": "Set piece",
+      "length": 15,
+      "width": 12,
+      "objective": "Understand restart roles.",
+      "safety": "Coach review required. Check current RFU age-grade rules and club policy; do not introduce live contact or set-piece pressure from this card. ",
+      "minutes": 8,
+      "players": "6–12",
+      "equipment": "Cones, 1 ball",
+      "instructions": "Begin with an unbound walk-through of player positions and ball exit. Any live scrum must follow current age-grade laws and be taught by an appropriately trained coach.",
+      "coaching": "Understand feed and exit; no pressure without approval; stop immediately if unstable.",
+      "regression": "Walk through positions only.",
+      "progression": "Coach-approved age-grade progression.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "RFU · Age-grade rules of play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Law / safety"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Coach review required",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Begin with an unbound walk-through of player positions and ball exit. Any live scrum must follow current age-grade laws and be taught by an appropriately trained coach.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "1",
+              "x": 370,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "2",
+              "x": 450,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "3",
+              "x": 530,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "1",
+              "x": 370,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "2",
+              "x": 450,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "3",
+              "x": 530,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "attacker",
+              "label": "9",
+              "x": 260,
+              "y": 260,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 690,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "o8",
+              "type": "ball",
+              "label": "",
+              "x": 275,
+              "y": 275,
+              "rot": 0
+            },
+            {
+              "id": "o9",
+              "type": "scrum",
+              "label": "Position only",
+              "x": 450,
+              "y": 260,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Walk-through",
+          "seconds": 2,
+          "notes": "Unbound positions only; no engagement or pushing.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "1",
+              "x": 370,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "2",
+              "x": 450,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "3",
+              "x": 530,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "1",
+              "x": 370,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "2",
+              "x": 450,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "3",
+              "x": 530,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "attacker",
+              "label": "9",
+              "x": 300,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 690,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "o8",
+              "type": "ball",
+              "label": "",
+              "x": 450,
+              "y": 260,
+              "rot": 0
+            },
+            {
+              "id": "o9",
+              "type": "scrum",
+              "label": "Position only",
+              "x": 450,
+              "y": 260,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Ball exit",
+          "seconds": 2,
+          "notes": "Illustrative restart roles; follow current RFU rules.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "1",
+              "x": 370,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "2",
+              "x": 450,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "3",
+              "x": 530,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "1",
+              "x": 370,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "2",
+              "x": 450,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "3",
+              "x": 530,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "attacker",
+              "label": "9",
+              "x": 450,
+              "y": 360,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 690,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "o8",
+              "type": "ball",
+              "label": "",
+              "x": 465,
+              "y": 360,
+              "rot": 0
+            },
+            {
+              "id": "o9",
+              "type": "scrum",
+              "label": "Position only",
+              "x": 450,
+              "y": 260,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Pass away",
+          "seconds": 2,
+          "notes": "Receiver stands behind ball.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "1",
+              "x": 370,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "2",
+              "x": 450,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "3",
+              "x": 530,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "1",
+              "x": 370,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "2",
+              "x": 450,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "defender",
+              "label": "3",
+              "x": 530,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "o6",
+              "type": "attacker",
+              "label": "9",
+              "x": 450,
+              "y": 360,
+              "rot": 0
+            },
+            {
+              "id": "o7",
+              "type": "attacker",
+              "label": "Receiver",
+              "x": 690,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "o8",
+              "type": "ball",
+              "label": "",
+              "x": 705,
+              "y": 375,
+              "rot": 0
+            },
+            {
+              "id": "o9",
+              "type": "scrum",
+              "label": "Position only",
+              "x": 450,
+              "y": 260,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-047",
+      "title": "Counter-attack Game",
+      "age": "All ages",
+      "ageMin": 12,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 30,
+      "width": 25,
+      "objective": "Exploit disorganisation after regaining possession.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 10,
+      "players": "8–14",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "Coach gives possession to either team at intervals during touch rugby. New attackers find support and choose the best route to score.",
+      "coaching": "Scan first; communicate; attack available space.",
+      "regression": "Give a warning before turnover.",
+      "progression": "Vary turnover locations.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Coach gives possession to either team at intervals during touch rugby. New attackers find support and choose the best route to score.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-048",
+      "title": "Continuous Phase Game",
+      "age": "All ages",
+      "ageMin": 11,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 30,
+      "width": 20,
+      "objective": "Connect phases and reorganise.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 12,
+      "players": "8–14",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "Directional touch with free-pass restarts after each touch. Attack seeks space over several phases while defence resets from an agreed mark.",
+      "coaching": "First support near ball; others create options; stay organised.",
+      "regression": "Pause after each phase.",
+      "progression": "Play continuous timed restarts.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby · Coaching through games (method reference)",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original club-style adaptation; linked material is a methodology reference.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Directional touch with free-pass restarts after each touch. Attack seeks space over several phases while defence resets from an agreed mark.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-049",
+      "title": "Order Ball",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 14,
+      "category": "Handling",
+      "length": 10,
+      "width": 10,
+      "objective": "Move and communicate to receive in sequence.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "8–12",
+      "equipment": "4 cones, 1 ball, bibs",
+      "instructions": "Number teammates; pass through them in order while opponents try to intercept without contact. Switch on a drop or interception.",
+      "coaching": "Next receiver moves into a lane; communicate numbers.",
+      "regression": "Remove defenders.",
+      "progression": "Introduce a second ball only when ready.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "New Zealand Rugby · Order Ball",
+          "url": "https://www.rugbytoolbox.co.nz/training/technique/order-ball",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Number teammates; pass through them in order while opponents try to intercept without contact. Switch on a drop or interception.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-050",
+      "title": "Back-to-back Passing",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 10,
+      "category": "Handling",
+      "length": 10,
+      "width": 10,
+      "objective": "Develop ball familiarity and trunk control.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 5,
+      "players": "Pairs",
+      "equipment": "1 ball per pair",
+      "instructions": "Partners stand back to back with comfortable separation, hand the ball around one side and receive on the other. Swap direction.",
+      "coaching": "Soft hands; controlled movement; don't twist forcefully.",
+      "regression": "Stand side by side.",
+      "progression": "Vary height within comfortable reach.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "Rugby Australia · Lower primary skills and drills 1",
+          "url": "https://australia.rugby/participate/get-into-rugby/school-resources/videos/lower-primary/skills-and-drills-module-1",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Partners stand back to back with comfortable separation, hand the ball around one side and receive on the other. Swap direction.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-051",
+      "title": "Boundary Pass",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 12,
+      "category": "Handling",
+      "length": 8,
+      "width": 8,
+      "objective": "Pass with awareness of space.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 6,
+      "players": "Pairs",
+      "equipment": "4 cones, 1 ball per pair",
+      "instructions": "Pair players on a marked boundary. Move along the sides at a controlled pace, exchanging passes and changing direction at corners.",
+      "coaching": "Present hands; look before turning; keep spacing.",
+      "regression": "Walk with stationary partner.",
+      "progression": "Vary the direction after a call.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "Rugby Australia · Middle primary skills and drills",
+          "url": "https://australia.rugby/participate/get-into-rugby/school-resources/videos/middle-primary/skills-and-drills-module-one",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Pair players on a marked boundary. Move along the sides at a controlled pace, exchanging passes and changing direction at corners.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-052",
+      "title": "Bench Ball",
+      "age": "All ages",
+      "ageMin": 7,
+      "ageMax": 12,
+      "category": "Game",
+      "length": 15,
+      "width": 12,
+      "objective": "Move to receive in a target zone.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 6,
+      "players": "8–12",
+      "equipment": "Cones, 1 ball, bibs",
+      "instructions": "Teams pass to a teammate stationed in a marked end zone (no raised bench). Score and rotate target players. No contact.",
+      "coaching": "Move after passing; call and see the receiver.",
+      "regression": "Add an extra attacker.",
+      "progression": "Make target zone smaller.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "New Zealand Rugby · U10 session 1",
+          "url": "https://www.rugbytoolbox.co.nz/training/coaching-plans/under-10-rugby-coaching-plan",
+          "kind": "Session plan"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Teams pass to a teammate stationed in a marked end zone (no raised bench). Score and rotate target players. No contact.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-053",
+      "title": "Partner Tag",
+      "age": "All ages",
+      "ageMin": 6,
+      "ageMax": 12,
+      "category": "Movement",
+      "length": 15,
+      "width": 15,
+      "objective": "Evade and track with control.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 5,
+      "players": "Pairs",
+      "equipment": "4 cones, tags optional",
+      "instructions": "Pairs stay in their own small lane; one tries to escape a light tag for a short interval and roles swap.",
+      "coaching": "Eyes up; use short changes of direction; no grabbing.",
+      "regression": "Walking pace.",
+      "progression": "Add a scoring gate.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "Rugby Australia · Lower primary skills and drills 1",
+          "url": "https://australia.rugby/participate/get-into-rugby/school-resources/videos/lower-primary/skills-and-drills-module-1",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Pairs stay in their own small lane; one tries to escape a light tag for a short interval and roles swap.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-054",
+      "title": "2 to Score · Multi-defender channel",
+      "age": "All ages",
+      "ageMin": 9,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 20,
+      "width": 7,
+      "objective": "Repeat draw-and-pass decisions.",
+      "safety": "Non-contact version; use light touch or tags only. Check space, surface and player readiness. ",
+      "minutes": 8,
+      "players": "5–10",
+      "equipment": "8 cones, 1 ball per pair",
+      "instructions": "Two attackers progress down a channel against defenders placed at intervals, each limited to lateral movement. Rotate frequently; touch only.",
+      "coaching": "Run toward space; keep receiver available; vary decisions.",
+      "regression": "One defender.",
+      "progression": "Allow a defender to advance.",
+      "questions": "",
+      "notes": "",
+      "links": [
+        {
+          "label": "New Zealand Rugby · 2 to Score",
+          "url": "https://www.rugbytoolbox.co.nz/training/technique/2-to-score",
+          "kind": "Video page"
+        }
+      ],
+      "provenance": "Original coaching-card adaptation inspired by linked source; not an official reproduction.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Two attackers progress down a channel against defenders placed at intervals, each limited to lateral movement. Rotate frequently; touch only.",
+          "objects": [],
+          "timing": {}
+        }
+      ]
+    }
+  ]
+}
