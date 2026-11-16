@@ -15,8 +15,8 @@ import {insertable,fillMissing,syncInsertedCopies,scopeIndices} from './insertio
 import {breakdownContext} from './breakdown-context.js?v=0.5.7';
 import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
 import {PRESETS,presetPositions} from './presets.js?v=0.6.0';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.7.0';
-import {bindMovieSettings} from './movie.js?v=0.6.1';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.7.1';
+import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.7.0';
 initWorkspace();
 const SEEDS = await fetch(new URL('../data/drills.json?v=0.7.0', import.meta.url)).then(r => {

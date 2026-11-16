@@ -6,12 +6,13 @@ import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
 import {contactType,contactLabels,posesFor,posedShape,cleanContacts} from './contact.js?v=0.6.0';
 import {cleanBreakdowns} from './breakdown.js?v=0.5.3';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.7.0';
+import {cardLinks} from './coaching-output.js?v=0.7.1';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
  const out={version:1,title:str(d.title,160)||'Rugby drill',length:num(d.length,5,100,20),width:num(d.width,5,70,15)};
- for(const k of ['age','objective','safety','instructions','coaching','equipment','players','regression','progression','questions','notes'])out[k]=str(d[k]);
- out.ageMin=num(d.ageMin,6,16,6);out.ageMax=num(d.ageMax,out.ageMin,16,16);
+ for(const k of ['age','objective','safety','instructions','coaching','equipment','players','regression','progression','questions','notes'])out[k]=str(d[k],20000);
+ out.ageMin=num(d.ageMin,6,16,6);out.ageMax=num(d.ageMax,out.ageMin,16,16);out.minutes=num(d.minutes,1,120,8);out.category=str(d.category,80);out.links=cardLinks(d);
  out.frames=d.frames.map((f,i)=>{
   if(!Array.isArray(f?.objects)||f.objects.length>200)throw Error('Invalid objects.');
   const ids=new Set(),timing=Object.create(null),paths=Object.create(null);
