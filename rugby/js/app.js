@@ -39,6 +39,7 @@ const MAIN_SAMPLE=SEEDS.find(x=>x.id==='seed-016')||SEEDS[0];const CATEGORIES=['
 let setupPending=false,validationResult=null,validationHighlight=new Set(),guideDirection='auto';
 const history=createHistory();let routeDrawing=false,routeClickCount=0,ballPicking=null,ballChoiceId=null,showPasses=true;
 let ballPickKind='pass',showActionLabels=true,autoContact=true;try{autoContact=localStorage.getItem('rugby-auto-contact')!=='off'}catch{}
+const donutDrafts=new Map();
 let trainingPick=null,showDecisions=true,pendingInsert=null,breakdownPreferred=null,breakdownView=null,groupIds=new Set(),groupMode=false;
 let autoAttach=true;try{autoAttach=localStorage.getItem('rugby-auto-attach')!=='off'}catch{}
 const gridPrefs=loadGridPrefs();
@@ -647,24 +648,69 @@ function decisionInspector(o){const d=o.decision=decisionData(o.decision),panel=
  for(const b of panel.querySelectorAll('[data-dp-path]'))b.onclick=()=>{const index=Number(b.dataset.dpPath);if(trainingPick?.kind==='option'&&trainingPick.id===o.id&&trainingPick.index===index){trainingPick=null;note('Preview saved.')}else{trainingPick={kind:'option',id:o.id,index,fresh:true};note('Click intermediate points and the final destination, then Finish preview. Drag points to adjust the curve.')}render();inspector()};
  for(const b of panel.querySelectorAll('[data-dp-remove]'))b.onclick=()=>{trainingPick=null;o.decision.options.splice(Number(b.dataset.dpRemove),1);commit();inspector()};$('dpAdd').onclick=()=>{o.decision.options.push({label:'New option',kind:'run',points:[]});commit();inspector()};$('dpDelete').onclick=()=>{trainingPick=null;deleteObject('here')}
 }
+// Keep draft settings independently of the inspector DOM, which is rebuilt on selection or refresh.
+function donutDraft(o){
+ const key=drill.id+':'+o.id,old=donutDrafts.get(key);
+ if(!old){donutDrafts.set(key,{tackler:o.donutTacklerId||'',fraction:65,seconds:2});}
+ const q=donutDrafts.get(key);
+ if(q.tackler&&!f().objects.some(p=>p.id===q.tackler&&canCarry(p)&&p.type!=='coach'))q.tackler='';
+ return q;
+}
+function existingDonutRoll(o){
+ const before=drill.frames[idx-1],prior=before?.objects.find(p=>p.id===o.id&&p.type==='donut');
+ if(o.donutState!=='rolling'||!prior||prior.donutState==='down'||prior.donutState==='impact')return null;
+ const g=geometry(),a=g.toView(prior.x,prior.y),b=g.toView(o.x,o.y);
+ if(Math.hypot(b.x-a.x,b.y-a.y)<1e-6)return null;
+ return {before,prior,heading:wrapAngle(Math.atan2(b.x-a.x,a.y-b.y)*180/Math.PI-g.rotation)};
+}
+function interceptExistingDonut(o,draft,roll){
+ if(!canEditObjects()||!roll||!draft.tackler)return;
+ if(drill.frames.length>=150)throw Error('Maximum of 150 steps reached.');
+ const target=f(),player=target.objects.find(p=>p.id===draft.tackler);
+ if(!player||target.objects.some(p=>p.members?.some(m=>m.id===player.id)||p.type==='ball'&&p.ownerId===player.id))throw Error('Choose a player who is free of the ball and other contact formations.');
+ const source=clone(roll.before),pad=source.objects.find(p=>p.id===o.id);
+ pad.rot=roll.heading;
+ const generated=donutSteps(source,o.id,{x:o.x,y:o.y},draft.tackler,draft.fraction/100,Math.max(.5,target.seconds),geometry());
+ if(generated.length!==2)throw Error('An interception needs a player.');
+ const impact=clone(target),generatedPad=generated[0].objects.find(p=>p.id===o.id),generatedPlayer=generated[0].objects.find(p=>p.id===player.id);
+ Object.assign(impact.objects.find(p=>p.id===o.id),generatedPad);
+ const tackler=impact.objects.find(p=>p.id===player.id);
+ Object.assign(tackler,{x:generatedPlayer.x,y:generatedPlayer.y,rot:generatedPlayer.rot});
+ delete tackler.playerPose;delete tackler.posePinned;
+ impact.name=generated[0].name;impact.seconds=generated[0].seconds;
+ impact.notes=generated[0].notes+(target.notes&&!target.notes.includes('Roll in a straight line')?' '+target.notes:'');
+ for(const id of [o.id,player.id]){if(impact.paths)delete impact.paths[id];if(impact.timing)delete impact.timing[id]}
+ const down=stripDecisions(clone(impact));delete down.guide;down.name=generated[1].name;down.seconds=generated[1].seconds;down.notes=generated[1].notes;down.paths={};down.timing={};down.objects.find(p=>p.id===o.id).donutState='down';
+ const later=idx<drill.frames.length-1;
+ drill.frames.splice(idx,1,impact,down);sanitizeRoutes(drill.frames);changed();choose(idx);selectObject(o.id);
+ note('Interception added to the existing roll. Play from the previous step.'+(later?' Later steps are unchanged; review continuity.':''));
+}
 function donutInspector(o){
- const panel=$('objectPanel'),down=o.donutState==='down',picking=trainingPick?.kind==='roll'&&trainingPick.id===o.id;
- panel.innerHTML='<div class="decision-inspector"><h3>Tackle donut</h3><label>Name<input id="donutName" value="'+esc(o.label)+'"></label><label>Rolling heading (degrees)<input id="donutRot" type="number" min="0" max="359" step="1" value="'+wrapAngle(o.rot)+'" '+(picking||down?'disabled':'')+'></label><div class="facing-buttons" aria-label="Quick rolling directions">'+[[0,'↑'],[90,'→'],[180,'↓'],[270,'←']].map(([a,t])=>'<button type="button" data-donut-facing="'+a+'" '+(picking||down?'disabled':'')+'>'+t+'</button>').join('')+'</div><small>Rotate the upright donut using its handle or heading controls. The long axis is the rolling direction.</small><label>Intercepting player<select id="donutTackler"><option value="">None · roll only</option>'+f().objects.filter(p=>['attacker','defender','neutral','shield','bagplayer'].includes(p.type)).map(p=>'<option value="'+esc(p.id)+'">'+esc(objectName(p))+'</option>').join('')+'</select></label><label>Stop at (% of planned roll)<input id="donutFraction" type="number" min="10" max="95" value="65"></label><label>Full roll duration (s)<input id="donutSeconds" type="number" min=".5" max="30" step=".5" value="2"></label><button id="donutRoll" class="primary" '+(down?'disabled':'')+'>'+(picking?'Cancel target selection':'Choose rolling distance')+'</button><button id="donutReset">Stand donut upright</button><button id="donutDelete" class="danger-action">Delete donut</button><small>Coach-controlled equipment practice; not a live player tackle.</small></div>';
+ const panel=$('objectPanel'),down=o.donutState==='down',impact=o.donutState==='impact',picking=trainingPick?.kind==='roll'&&trainingPick.id===o.id,draft=donutDraft(o),roll=existingDonutRoll(o);
+ const allowed=f().objects.filter(p=>canCarry(p)&&p.type!=='coach'&&!f().objects.some(q=>q.members?.some(m=>m.id===p.id)||q.type==='ball'&&q.ownerId===p.id));
+ const selectedPlayer=picking?trainingPick.tackler:(impact||down?o.donutTacklerId||draft.tackler:draft.tackler);
+ const disabled=down||impact;
+ panel.innerHTML='<div class="decision-inspector"><h3>Tackle donut</h3><label>Name<input id="donutName" value="'+esc(o.label)+'"></label><label>Rolling heading (degrees)<input id="donutRot" type="number" min="0" max="359" step="1" value="'+wrapAngle(o.rot)+'" '+(picking||disabled?'disabled':'')+'></label><div class="facing-buttons" aria-label="Quick rolling directions">'+[[0,'↑'],[90,'→'],[180,'↓'],[270,'←']].map(([a,t])=>'<button type="button" data-donut-facing="'+a+'" '+(picking||disabled?'disabled':'')+'>'+t+'</button>').join('')+'</div><small>Point the long axis along the rolling direction.</small><label>Intercepting player<select id="donutTackler"><option value="">None · roll only</option>'+allowed.map(p=>'<option value="'+esc(p.id)+'" '+(selectedPlayer===p.id?'selected':'')+'>'+esc(objectName(p))+'</option>').join('')+'</select></label><label>Interception point (% of planned roll)<input id="donutFraction" type="number" min="10" max="95" value="'+(picking?trainingPick.fraction*100:draft.fraction)+'"></label><label>Full duration of new roll (s)<input id="donutSeconds" type="number" min=".5" max="30" step=".5" value="'+(picking?trainingPick.seconds:draft.seconds)+'"></label><button id="donutRoll" class="'+(roll?'':'primary')+'" '+(disabled?'disabled':'')+'>'+ (picking?'Cancel target selection':'Choose roll end on pitch')+'</button>'+(roll?'<button id="donutIntercept" class="primary">Intercept this existing roll</button><small>This uses the movement from the previous step and adds a stopped-donut step.</small>':'')+'<small id="donutActionHelp"></small><button id="donutReset">Stand donut upright</button><button id="donutDelete" class="danger-action">Delete donut</button><small>Coach-controlled equipment practice; not a live player tackle.</small></div>';
  const locked=()=>trainingPick?.kind==='roll'&&trainingPick.id===o.id;
  const fields=['donutTackler','donutFraction','donutSeconds','donutName'];
+ const remember=()=>{draft.tackler=$('donutTackler').value;draft.fraction=clamp(Number($('donutFraction').value)||65,10,95);draft.seconds=clamp(Number($('donutSeconds').value)||2,.5,30)};
+ const updateHelp=()=>{const player=allowed.find(p=>p.id===draft.tackler);$('donutActionHelp').textContent=disabled?'Stand the donut upright to plan another roll.':player?objectName(player)+' selected. '+(roll?'Use Intercept this existing roll, or plan another roll.':'Click Choose roll end on pitch, then click ahead of the donut.'):'Choose a player for an interception, or leave None for a roll only.';if($('donutIntercept'))$('donutIntercept').disabled=!player||locked();};
+ $('donutTackler').onchange=()=>{remember();updateHelp()};
+ for(const id of ['donutFraction','donutSeconds'])$(id).oninput=remember;
  $('donutName').onchange=e=>{o.label=e.target.value;changed();render()};
- const rotateTo=angle=>{if(locked()||o.donutState==='down')return;o.rot=wrapAngle(angle);$('donutRot').value=o.rot;changed();render();tracks()};
+ const rotateTo=angle=>{if(locked()||disabled)return;o.rot=wrapAngle(angle);$('donutRot').value=o.rot;changed();render();tracks()};
  $('donutRot').onchange=e=>rotateTo(Number(e.target.value)||0);
  for(const button of panel.querySelectorAll('[data-donut-facing]'))button.onclick=()=>rotateTo(Number(button.dataset.donutFacing)-geometry().rotation);
  $('donutReset').onclick=()=>{trainingPick=null;o.donutState='ready';delete o.donutTacklerId;changed();render();inspector()};
  $('donutDelete').onclick=()=>{trainingPick=null;deleteObject('here')};
- function setPickUI(on){for(const id of [...fields,'donutRot'])$(id).disabled=on||id==='donutRot'&&down;for(const b of panel.querySelectorAll('[data-donut-facing]'))b.disabled=on||down;$('donutRoll').textContent=on?'Cancel target selection':'Choose rolling distance'}
- if(picking){$('donutTackler').value=trainingPick.tackler;$('donutFraction').value=trainingPick.fraction*100;$('donutSeconds').value=trainingPick.seconds}
+ function setPickUI(on){for(const id of [...fields,'donutRot'])$(id).disabled=on||(disabled&&id!=='donutName');for(const b of panel.querySelectorAll('[data-donut-facing]'))b.disabled=on||disabled;$('donutRoll').textContent=on?'Cancel target selection':'Choose roll end on pitch';updateHelp()}
  setPickUI(picking);
+ if($('donutIntercept'))$('donutIntercept').onclick=()=>{remember();try{interceptExistingDonut(o,draft,roll)}catch(err){$('donutActionHelp').textContent=err.message;note(err.message)}};
  $('donutRoll').onclick=()=>{
   if(locked()){trainingPick=null;setPickUI(false);render();note('Rolling target cancelled.');return}
-  if(down)return;
-  trainingPick={kind:'roll',id:o.id,tackler:$('donutTackler').value,fraction:clamp(Number($('donutFraction').value)||65,10,95)/100,seconds:clamp(Number($('donutSeconds').value)||2,.5,30)};
+  if(disabled)return;
+  remember();
+  trainingPick={kind:'roll',id:o.id,tackler:draft.tackler,fraction:draft.fraction/100,seconds:draft.seconds};
   setPickUI(true);render();note('Click ahead of the donut. Distance snaps onto the highlighted rolling lane.');focusPitch();
  };
 }
