@@ -1,5 +1,5 @@
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.7.1';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.7.1';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.7.2';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {coachingMarkup,sequenceMarkup} from './coaching-output.js?v=0.7.1';
 const $=id=>document.getElementById(id);const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0;

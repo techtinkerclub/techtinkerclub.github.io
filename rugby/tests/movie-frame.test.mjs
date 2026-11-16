@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {createMovieFrame} from '../js/movie-frame.js';
+const canvases=[];
+const makeCanvas=()=>{
+ const surface={pixel:'unpainted',width:0,height:0};
+ surface.getContext=()=>({fillRect(){surface.pixel='blank';},complete(value){surface.pixel=value},drawImage(source){surface.pixel=source.pixel}});
+ canvases.push(surface);return surface;
+};
+const {canvas,ctx,present}=createMovieFrame(1080,1920,makeCanvas);
+assert.equal(canvas.width,1080);assert.equal(canvas.height,1920);
+await present(async()=>{ctx.fillRect();ctx.complete('setup')});
+assert.equal(canvas.pixel,'setup');
+let resume;const gate=new Promise(r=>resume=r);
+const pending=present(async()=>{ctx.fillRect();await gate;ctx.complete('tackle')});
+assert.equal(canvases[1].pixel,'blank');assert.equal(canvas.pixel,'setup');
+await assert.rejects(present(()=>{}),/Overlapping/);
+resume();await pending;assert.equal(canvas.pixel,'tackle');
+await assert.rejects(present(async()=>{ctx.fillRect();throw Error('decode failed')}),/decode failed/);
+assert.equal(canvas.pixel,'tackle');
+await present(async()=>{ctx.fillRect();ctx.complete('coaching card')});assert.equal(canvas.pixel,'coaching card');
+console.log('Movie frame publication: delayed decode, overlap protection, failed decode, dimensions and card transitions passed.');

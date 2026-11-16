@@ -1,6 +1,7 @@
 import {esc} from './model.js?v=0.5.3';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.7.1';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.1';
+import {createMovieFrame} from './movie-frame.js?v=0.7.2';
 import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines} from './coaching-output.js?v=0.7.1';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
@@ -27,9 +28,8 @@ export async function recordDrill(d,opts={},progress=()=>{}){
  const drill=playbackData(d),options=outputOptions(opts),seconds=drillDuration(drill),plan=moviePlan(seconds,opts);
  if(plan.total>360)throw Error('The complete movie exceeds six minutes. Choose normal speed only or a faster replay.');
  if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Edge or Chrome.');
- const {width:W,height:H,bitrate,fps}=plan.quality,canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+ const {width:W,height:H,bitrate,fps}=plan.quality,frame=createMovieFrame(W,H),{canvas,ctx}=frame;
  if(!canvas.captureStream)throw Error('Canvas video recording is unavailable in this browser.');
- const ctx=canvas.getContext('2d',{alpha:false});if(!ctx)throw Error('Canvas is unavailable.');
  // Short-form video uses a distinct layout, not a cropped landscape movie.
  const portrait=plan.options.format==='portrait',unit=W/(portrait?1080:1920),pad=Math.round((portrait?72:42)*unit),right=portrait?Math.round(120*unit):pad,content=W-pad-right;
  const top=Math.round((portrait?260:110)*unit),bottom=Math.round((portrait?(plan.options.notes?490:285):(plan.options.notes?190:105))*unit);
@@ -45,7 +45,7 @@ export async function recordDrill(d,opts={},progress=()=>{}){
  }
  let total=plan.total;for(const page of cardPages){page.start=total;total+=page.seconds;page.end=total}
  if(total>360)throw Error('Movie with coaching card exceeds six minutes. Choose a faster replay or export the full card as paper / presentation.');
- const draw=async elapsed=>{
+ const draw=elapsed=>frame.present(async()=>{
   ctx.fillStyle='#111c17';ctx.fillRect(0,0,W,H);
   const page=elapsed>=plan.total&&cardPages.length?(cardPages.find(p=>elapsed<p.end)||cardPages.at(-1)):null;
   if(page){const k=cardPages.indexOf(page);line('COACHING CARD · '+(k+1)+' / '+cardPages.length,72*unit,portrait?26:22,true,'#c9f07c');line(drill.title,125*unit,portrait?40:36,true);line(cardMeta(drill),171*unit,portrait?27:24,false,'#b7c8ba');line(page.label,240*unit,portrait?39:35,true,'#c9f07c');block(page.lines,302*unit,portrait?34:28);return}
@@ -62,8 +62,10 @@ export async function recordDrill(d,opts={},progress=()=>{}){
   if(plan.options.notes){const value=scene.frame.notes||legend,limit=portrait?5:3;const wrapped=wrapCanvas(ctx,value,content),lines=noteLines(ctx,value,content,limit);let after=block(lines,base+(portrait?53:37)*unit,size,false,'#d6e4d6');if(wrapped.length>limit)line('Full step notes in coaching sheets / presentation',after+6*unit,portrait?22:17,false,'#b7c8ba')}
   const trackY=H-Math.round((portrait?140:16)*unit),trackH=Math.max(2,Math.round(5*unit));ctx.fillStyle='#526b59';ctx.fillRect(pad,trackY,content,trackH);ctx.fillStyle='#c9f07c';ctx.fillRect(pad,trackY,content*Math.min(1,elapsed/total),trackH);
   if(plan.segments.length>1){ctx.fillStyle='#f4f7ee';ctx.fillRect(pad+content*plan.segments[0].end/total-1,trackY-2,Math.max(2,Math.round(3*unit)),trackH+4)}
- };
- await draw(0);const stream=canvas.captureStream(fps);
+ });
+ await draw(0); // Start capture only after a complete initial frame exists.
+ if(!frame.ready)throw Error('Initial movie frame did not render.');
+ const stream=canvas.captureStream(fps);
  let recorder,recorded;
  try{
   // Avoid a restrictive fixed H.264 profile/level, especially for Full HD and 4K.
