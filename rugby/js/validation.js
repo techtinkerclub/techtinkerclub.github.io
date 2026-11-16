@@ -93,17 +93,24 @@ export function checkDrill(raw,{age=Number(raw.ageMin)||10,direction='auto',offs
    if(old){const prev=offsideBands(old.objects,d,g,direction).find(q=>q.id===b.id);if(prev)for(const id of b.members.filter(id=>!prev.members.includes(id))){const p=lookup(old,id),t=team(p);if(!t)continue;coverage.offside++;const q=projected(p,g,b.v);if(t===1?q>prev.blue+14:q<prev.orange-14)add('offside',i,[id,b.id],name(p)+' starts the arrival ahead of the previous offside guide. Check the actual entry route.');}}
   }
   if(!old)continue;
-  const events=[]; // authored pass endpoints are sampled by the same engine; tackle impact calculation remains in the shared engine
+  // Authored pass endpoints are evaluated by the same engine used in playback.
   for(const b of f.objects.filter(o=>o.type==='ball')){
    const a=lookup(old,b.id);if(!a)continue;const m=ballMovement(old,f,b,g);
    if(!m?.pass&&!a.ownerId&&!b.ownerId&&!b.transferKind&&dist(g.toView(a.x,a.y),g.toView(b.x,b.y))>12)add('possession',i,[b.id],'Unattached ball moves without a named action. Check carry, loose-ball movement or reset.');
+   if(m?.pass&&team(m.from)&&team(m.to)&&team(m.from)!==team(m.to))add('possession',i,[b.id], 'Pass changes teams; review whether this is a turnover or interception.');
    if(!v||!m?.pass||['kick','tap','feed','throw','handover','turnover','set'].includes(b.transferKind))continue;
    const t=team(m.from);if(!t)continue;coverage.passing++;const s=g.toView(m.start.x,m.start.y),points=routeSamples(m.start,m.end,f.paths?.[b.id],g),max=Math.max(...points.map(p=>t*(dot(p,v)-dot(s,v)))),release=m.timing.start/100;
    const receiver=objectPose(old,f,m.to.id,release,g),passer=objectPose(old,f,m.from.id,release,g);
    if(max>1)add('passing',i,[b.id,m.from.id,m.to.id],name(m.from)+' → '+name(m.to)+': ball travels forward in the diagram ('+(max/g.scale).toFixed(2)+' m). Check release timing or pass path.','review',release);
    if(receiver&&passer&&t*(projected(receiver,g,v)-projected(passer,g,v))>1)add('passing',i,[m.to.id,m.from.id],name(m.to)+' is ahead of the passer at release. Check support depth.','review',release);
-   if(team(m.from)&&team(m.to)&&team(m.from)!==team(m.to))add('possession',i,[b.id], 'Pass changes teams; use turnover if possession is awarded or intercepted.');
-   if(age===10&&old.guide?.kind==='freepass'){coverage.age++;for(const p of old.objects.filter(canCarry)){if(team(p)!==-t)continue;if(t*(projected(p,g,v)-projected(passer,g,v))<7*g.scale-1)add('age',i,[p.id],name(p)+' is less than 7 m from the illustrated free-pass mark. Check scale and actual restart distance.','review',release)}}
+   const freepass=old.guide?.kind==='freepass'||f.guide?.kind==='freepass'||/free[ -]pass/i.test(old.name)&&/pass|restart/i.test(f.name)||/free[ -]pass/i.test(f.name);
+   if(age===10&&freepass){
+    coverage.age++;
+    const opponents=old.objects.filter(p=>canCarry(p)&&team(p)===-t);
+    for(const p of opponents){coverage.age++;if(t*(projected(p,g,v)-projected(passer,g,v))<7*g.scale-1)add('age',i,[p.id],name(p)+' is less than 7 m in front of the illustrated free-pass mark. Check actual restart distance.','review',release)}
+    if(!opponents.length)add('age',i,[],'No defending team drawn at this free pass; the 7 m retreat cannot be checked.','info');
+    for(const p of old.objects.filter(canCarry)){const atRelease=objectPose(old,f,p.id,release,g);if(!atRelease)continue;coverage.age++;if(dist(g.toView(p.x,p.y),g.toView(atRelease.x,atRelease.y))>2)add('age',i,[p.id],name(p)+' moves before the illustrated free pass is released. Check that everyone waits.','review',release)}
+   }
   }
   if(v)for(const o of f.objects.filter(o=>o.type==='decision')){
    const p=lookup(f,o.decision?.playerId),t=team(p);if(!t)continue;const origin=decisionLocation(f,o,g,old);
