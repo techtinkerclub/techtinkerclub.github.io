@@ -1,6 +1,6 @@
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.8.0';
-import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.0';
+import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.1';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.6.0';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.7.0';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
@@ -51,7 +51,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  }
  const order=[...objects.filter(o=>contactType(o.type)),...objects.filter(o=>!contactType(o.type)&&o.type!=='ball'&&!isShield(o)),...objects.filter(isShield),...objects.filter(o=>o.type==='ball')];
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
- let body=field+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision').map(o=>svgObj(o,g,poses,ink)).join('')+(decisions?decisionOverlay(fr,g,esc,'',ink):'')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
+ let body=field+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision').map(o=>svgObj(o,g,poses,ink)).join('')+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+g.viewWidth+' '+g.viewHeight+'" width="'+g.viewWidth+'" height="'+g.viewHeight+'" font-family="Arial,sans-serif">'+body+'</svg>',g,index:i,frame:fr};
 }
