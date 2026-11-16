@@ -5,7 +5,7 @@ export const validPhase=p=>Object.hasOwn(PHASES,p);
 export function supportTitle(side){return side==='defence'?'Defending support arrives':'Attacking support arrives'}
 export function nextPhase(p){const keys=Object.keys(PHASES),i=keys.indexOf(p);return i<0?null:keys[i+1]||null}
 export const team=o=>['attacker','shield'].includes(o?.type)?'attack':['defender','bagplayer'].includes(o?.type)?'defence':null;
-export function roles(frame,m){const r=m.breakdown||{},members=m.members||[];const carrierId=r.carrierId||members.find(x=>x.pose==='grounded')?.id;const tacklerId=r.tacklerId||members.find(x=>x.pose==='tackling')?.id;const tacklerIds=[...new Set([tacklerId,...(r.tacklerIds||[]),...members.filter(x=>x.pose==='tackling').map(x=>x.id)].filter(id=>id&&id!==carrierId&&findObject(frame,id)))].slice(0,2);return {...r,carrierId,tacklerId,tacklerIds,ballId:r.ballId||frame.objects.find(o=>o.type==='ball'&&o.ownerId===carrierId)?.id}}
+export function roles(frame,m){const r=m.breakdown||{},members=m.members||[];const carrierId=r.carrierId||members.find(x=>x.pose==='grounded')?.id;const tacklerId=(findObject(frame,r.tacklerId)?r.tacklerId:null)||members.find(x=>x.pose==='tackling')?.id;const tacklerIds=[...new Set([tacklerId,...(Array.isArray(r.tacklerIds)?r.tacklerIds:[]),...members.filter(x=>x.pose==='tackling').map(x=>x.id)].filter(id=>id&&id!==carrierId&&findObject(frame,id)))].slice(0,2);return {...r,carrierId,tacklerId,tacklerIds,ballId:r.ballId||frame.objects.find(o=>o.type==='ball'&&o.ownerId===carrierId)?.id}}
 export function candidates(frame,m,side){const r=roles(frame,m),a=findObject(frame,r.carrierId),t=team(a);return frame.objects.filter(o=>team(o)&&o.id!==r.carrierId&&!r.tacklerIds.includes(o.id)&&(side==='attack'?team(o)===t:team(o)!==t))}
 export function cleanBreakdowns(frames){for(const f of frames)for(const o of f.objects){if(!o.breakdown)continue;if(!['tackle','ruck'].includes(o.type)||!validPhase(o.breakdown.phase)){delete o.breakdown;continue}const r={phase:o.breakdown.phase};if(['attack','defence'].includes(o.breakdown.arrivalSide))r.arrivalSide=o.breakdown.arrivalSide;for(const k of ['carrierId','tacklerId','ballId'])if(typeof o.breakdown[k]==='string'&&findObject(f,o.breakdown[k]))r[k]=o.breakdown[k];const ids=roles(f,o).tacklerIds;if(ids.length){r.tacklerId=ids[0];r.tacklerIds=ids}o.breakdown=r}return frames}
 export function setParticipants(f,m,g,ids,u10=false){
@@ -28,7 +28,7 @@ export function setParticipants(f,m,g,ids,u10=false){
   put(o,(j-(n-1)/2)*29,base-advance,sign===1?0:180)
  });
  const active=new Set(players.map(o=>o.id));for(const x of f.objects)if(x!==m&&Array.isArray(x.members))x.members=x.members.filter(y=>!active.has(y.id));
- m.members=[...(grounded?[grounded]:[]),...players.map(o=>({id:o.id,pose:phase==='support'?'standing':'bound'}))];
+ for(const o of players)delete o.playerPose;m.members=[...(grounded?[grounded]:[]),...players.map(o=>({id:o.id,pose:phase==='support'?'standing':'bound'}))];
  return {ok:true,message:(phase==='support'?supportTitle(first):PHASES[phase])+' · '+players.length+' arriving players'};
 }
 export function advance(f,m,g,phase,ids,u10=false,arrivalSide=null){
