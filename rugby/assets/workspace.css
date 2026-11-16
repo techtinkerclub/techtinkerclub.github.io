@@ -116,3 +116,18 @@ button.danger-action:hover:not(:disabled) { border-color:#e67e73;background:#4b2
 .object-menu kbd { color:var(--muted);font-size:10px; }
 body.presentation-mode .selection-tools,body.presentation-mode .object-menu { display:none; }
 @media(max-width:500px){.selection-tools > span{max-width:30vw}.selection-actions button{padding:3px 5px;font-size:11px}}
+
+/* Path editing and history controls */
+.route-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:5px 7px;background:#24372b;border:1px solid var(--line);border-radius:6px;font-size:11px}
+.route-tools[hidden]{display:none!important}
+.route-tools label{display:flex;align-items:center;gap:4px;white-space:nowrap;color:var(--muted)}
+.route-tools select{width:auto;padding:3px 5px;font-size:11px}
+.route-tools input[type=checkbox]{width:auto;accent-color:var(--accent)}
+.route-tools button{padding:3px 7px;font-size:11px}
+.route-tools span{flex-basis:100%;font-size:11px}
+.pitch.drawing-route,.pitch.drawing-route .obj,.pitch.drawing-route .waypoint{cursor:crosshair}
+.waypoint:hover circle:nth-of-type(2){fill:white}
+body.presentation-mode .route-tools{display:none}
+.selection-actions{flex-wrap:wrap;justify-content:flex-end}
+#editCurrent[hidden]{display:none}
+@media(max-width:600px){.selection-tools{flex-wrap:wrap}.selection-tools>span{max-width:none;flex-basis:100%}.selection-actions{flex:1}}
