@@ -1,7 +1,8 @@
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.8.0';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.8.4';
-import {pitchGeometry,trainingField} from './pitch.js?v=0.8.2';
+import {pitchGeometry,trainingField} from './pitch.js?v=0.9.0';
+import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.9.0';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession} from './possession.js?v=0.8.4';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
 import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts} from './contact.js?v=0.8.4';
@@ -11,7 +12,7 @@ import {cardLinks} from './coaching-output.js?v=0.7.1';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
- const out={version:1,title:str(d.title,160)||'Rugby drill',length:num(d.length,5,100,20),width:num(d.width,5,70,15)};
+ const out={...pitchSettings(d),version:1,title:str(d.title,160)||'Rugby drill',length:num(d.length,5,100,20),width:num(d.width,5,70,15)};
  for(const k of ['age','objective','safety','instructions','coaching','equipment','players','regression','progression','questions','notes'])out[k]=str(d[k],20000);
  out.ageMin=num(d.ageMin,6,16,6);out.ageMax=num(d.ageMax,out.ageMin,16,16);out.minutes=num(d.minutes,1,120,8);out.category=str(d.category,80);out.links=cardLinks(d);
  out.frames=d.frames.map((f,i)=>{
@@ -24,7 +25,7 @@ export function playbackData(d){
    if(contactType(o.type)&&Array.isArray(o.members))q.members=o.members.slice(0,17).filter(m=>m&&typeof m.id==='string').map(m=>({id:m.id,pose:m.pose}));
    if(contactType(o.type)&&o.breakdown&&typeof o.breakdown==='object'){const b=o.breakdown;q.breakdown={phase:b.phase,arrivalSide:b.arrivalSide,carrierId:b.carrierId,tacklerId:b.tacklerId,tacklerIds:Array.isArray(b.tacklerIds)?b.tacklerIds.slice(0,2):undefined,ballId:b.ballId}}
    const t=f.timing?.[o.id];if(t&&Object.hasOwn(f.timing,o.id)){const start=num(t.start,0,99,0);timing[o.id]={start,end:num(t.end,start+1,100,100)}}
-   if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return copyTraining(o,q);
+   if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return copyLayoutMarker(o,copyTraining(o,q));
   });
   const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};cleanGuide(result);cleanTraining(result);return result;
  });
@@ -36,7 +37,7 @@ export function timeLocation(d,t){if(t<=0||d.frames.length<2)return {i:0,p:1};le
 const svgObj=(o,g,poses,ink=false)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+')">'+posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type))),color)+'</g>'+(o.label&&!contactType(o.type)?'<text y="'+(o.type==='label'?4:34)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
 export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,ghosts=false,ink=false,prefix='scene'}={}){
  const g=pitchGeometry(d.length,d.width,orientation),loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),poses=trainingPoses(objects,posesFor(objects));
- let field=trainingField(g,false),arrows='',starts='',changes=[];
+ let field=trainingField(g,false,.5,pitchSettings(d)),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
  if(old)for(const o of fr.objects){
   if(o.type==='decision')continue;
