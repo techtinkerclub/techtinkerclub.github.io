@@ -7,12 +7,12 @@ import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './
 import { removeObject, isEditingKeyTarget } from './object-edit.js?v=0.3.3';
 import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypointOverlay, routeInsertion, insertionHandles } from './routes.js?v=0.4.3';
 import { createHistory } from './history.js?v=0.4.0';
-import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, carrySide, setCarrySide } from './possession.js?v=0.5.1';
+import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, carrySide, setCarrySide } from './possession.js?v=0.5.2';
 import {createCamera} from './camera.js?v=0.5.0';
-import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactLabels} from './contact.js?v=0.5.1';
-import {PHASES,validPhase,nextPhase,team,roles,cleanBreakdowns,candidates,advance} from './breakdown.js?v=0.5.1';
+import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactLabels} from './contact.js?v=0.5.2';
+import {PHASES,validPhase,nextPhase,team,roles,cleanBreakdowns,candidates,advance} from './breakdown.js?v=0.5.2';
 initWorkspace();
-const SEEDS = await fetch(new URL('../data/drills.json?v=0.5.1', import.meta.url)).then(r => {
+const SEEDS = await fetch(new URL('../data/drills.json?v=0.5.2', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }).then(data => {

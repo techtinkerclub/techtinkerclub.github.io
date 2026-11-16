@@ -35,20 +35,50 @@ export function syncPossession(frames,g){
 export function frameObjects(frame,g){
  return frame.objects.map(o=>o.type==='ball'?carriedPose(o,carrier(frame,o),g):o);
 }
-export function objectPose(old,next,id,p,g){
+function rawObjectPose(old,next,id,p,g){
  const a=findObject(old,id),b=findObject(next,id);
  if(!a)return b?{...b}:null;if(!b)return {...a};
  const t=next.timing?.[id]||{start:0,end:100},q=clamp((p*100-t.start)/Math.max(1,t.end-t.start),0,1);
  const route=next.paths?.[id],s=sampleRoute(routeSamples(a,b,route,g),q),pos=g.fromView(s.point.x,s.point.y);
  return {...b,...pos,rot:route?.follow&&s.angle!==null&&p*100>=t.start?wrapAngle(s.angle-g.rotation):a.rot+shortestTurn(a.rot,b.rot)*q};
 }
-export function ballMovement(old,next,ball,g){
+// Find the first visual contact between the two authored approach paths.
+// No collision physics or automatic tackle inference: only newly authored tackle formations.
+export function tackleImpacts(old,next,g){
+ const events=[];
+ for(const marker of next.objects){
+  if(marker.type!=='tackle'||marker.breakdown&&marker.breakdown.phase!=='tackle')continue;
+  const a=marker.members?.find(m=>m.pose==='grounded')?.id,d=marker.members?.find(m=>m.pose==='tackling')?.id;
+  if(!a||!d||!findObject(old,a)||!findObject(old,d))continue;
+  const prior=findObject(old,marker.id);
+  if(prior?.type==='tackle'&&prior.members?.some(m=>m.id===a&&m.pose==='grounded')&&prior.members?.some(m=>m.id===d&&m.pose==='tackling'))continue;
+  const distance=t=>{const x=rawObjectPose(old,next,a,t,g),y=rawObjectPose(old,next,d,t,g),u=g.toView(x.x,x.y),v=g.toView(y.x,y.y);return Math.hypot(u.x-v.x,u.y-v.y)};
+  const radius=34;let time=1;
+  if(distance(0)<=radius)time=0;
+  else for(let i=1;i<=40;i++)if(distance(i/40)<=radius){let lo=(i-1)/40,hi=i/40;for(let j=0;j<10;j++){const mid=(lo+hi)/2;if(distance(mid)<=radius)hi=mid;else lo=mid}time=hi;break}
+  events.push({marker:marker.id,players:[a,d],time});
+ }
+ return events;
+}
+export function objectPose(old,next,id,p,g,events=null){
+ const pose=rawObjectPose(old,next,id,p,g),a=findObject(old,id),b=findObject(next,id);
+ if(!pose||!a||!b)return pose;
+ const impact=(events??tackleImpacts(old,next,g)).find(e=>e.players.includes(id));
+ if(!impact)return pose;
+ const t=impact.time,route=next.paths?.[id];
+ // Keep the standing orientation during approach; a followed run uses its path tangent.
+ const facing=route?.follow?rawObjectPose(old,next,id,Math.min(p,t),g).rot:a.rot;
+ if(p<t)pose.rot=facing;
+ else{const q=t>=1?1:clamp((p-t)/(1-t),0,1),smooth=q*q*(3-2*q);pose.rot=facing+shortestTurn(facing,b.rot)*smooth}
+ return pose;
+}
+export function ballMovement(old,next,ball,g,events=null){
  const a=findObject(old,ball.id);if(!a)return null;
  const from=carrier(old,a),to=carrier(next,ball);
  if(from&&to&&from.id===to.id)return null;
  const t=next.timing?.[ball.id]||{start:0,end:100};
- const start=from?carriedPose(a,objectPose(old,next,from.id,t.start/100,g),g):a;
- const end=to?carriedPose(ball,objectPose(old,next,to.id,t.end/100,g),g):ball;
+ const start=from?carriedPose(a,objectPose(old,next,from.id,t.start/100,g,events),g):a;
+ const end=to?carriedPose(ball,objectPose(old,next,to.id,t.end/100,g,events),g):ball;
  return {start,end,pass:!!(from&&to)&&ball.transferKind!=='turnover',turnover:!!to&&ball.transferKind==='turnover',presentation:ball.transferKind==='presentation'&&!to,from,to,timing:t};
 }
 export function movementFor(old,next,o,g){
@@ -56,28 +86,34 @@ export function movementFor(old,next,o,g){
  if(o.type==='ball')return ballMovement(old,next,o,g);
  const a=findObject(old,o.id);return a?{start:a,end:o,pass:false}:null;
 }
-export function ballPose(old,next,ball,p,g){
+export function ballPose(old,next,ball,p,g,events=null){
  const a=findObject(old,ball.id);if(!a)return p>=1?carriedPose(ball,carrier(next,ball),g):null;
  const from=carrier(old,a),to=carrier(next,ball);
  if(from&&to&&from.id===to.id){
   // A change of hand stays attached, and creates no pass trajectory.
   const s=clamp(p,0,1),eased=s*s*(3-2*s);
-  return carriedPose(ball,objectPose(old,next,to.id,p,g),g,lateral(a)+(lateral(ball)-lateral(a))*eased);
+  return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g,lateral(a)+(lateral(ball)-lateral(a))*eased);
  }
- const m=ballMovement(old,next,ball,g),t=m.timing;
- if(m.turnover){if(p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g),g);return from?carriedPose(a,objectPose(old,next,from.id,p,g),g):{...a}}
- if(from&&p*100<=t.start)return carriedPose(a,objectPose(old,next,from.id,p,g),g);
- if(to&&p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g),g);
+ const m=ballMovement(old,next,ball,g,events),t=m.timing;
+ if(m.turnover){if(p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g);return from?carriedPose(a,objectPose(old,next,from.id,p,g,events),g):{...a}}
+ if(from&&p*100<=t.start)return carriedPose(a,objectPose(old,next,from.id,p,g,events),g);
+ if(to&&p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g);
  const q=clamp((p*100-t.start)/Math.max(1,t.end-t.start),0,1);
  const s=sampleRoute(routeSamples(m.start,m.end,next.paths?.[ball.id],g),q);
  return {...ball,...g.fromView(s.point.x,s.point.y),rot:a.rot+shortestTurn(a.rot,ball.rot)*q,ownerId:undefined};
 }
 export function transitionObjects(old,next,p,g){
+ const events=tackleImpacts(old,next,g);
  return next.objects.map(o=>{
-  if(!findObject(old,o.id)&&p<1&&!(Array.isArray(o.members)&&p>=.78))return null;
-  if(o.type==='ball')return ballPose(old,next,o,p,g);
-  const prior=findObject(old,o.id),pose=objectPose(old,next,o.id,p,g);
-  if(Array.isArray(o.members)||Array.isArray(prior?.members)){pose.members=p>=.65?o.members:prior?.members;if(prior&&p<.65){pose.type=prior.type;pose.label=prior.label;pose.breakdown=prior.breakdown}}
+  const prior=findObject(old,o.id),impact=events.find(e=>e.marker===o.id);
+  const switchAt=impact?impact.time:o.breakdown?.phase==='release'?.15:.65;
+  if(!prior&&p<1&&!(Array.isArray(o.members)&&p>=(impact?switchAt:.78)))return null;
+  if(o.type==='ball')return ballPose(old,next,o,p,g,events);
+  const pose=objectPose(old,next,o.id,p,g,events);
+  if(Array.isArray(o.members)||Array.isArray(prior?.members)){
+   pose.members=p>=switchAt?o.members:prior?.members;
+   if(prior&&p<switchAt){pose.type=prior.type;pose.label=prior.label;pose.breakdown=prior.breakdown}
+  }
   return pose;
  }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>!findObject(next,o.id)):[]);
 }

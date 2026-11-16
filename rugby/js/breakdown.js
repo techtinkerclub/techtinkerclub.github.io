@@ -1,5 +1,5 @@
 // Author-controlled schematic breakdown stages; not a technique or law validator.
-import {carrier,findObject} from './possession.js?v=0.5.1';
+import {carrier,findObject} from './possession.js?v=0.5.2';
 export const PHASES={tackle:'Tackle',release:'Release and present',support:'Attacking support arrives',ruck:'Ruck formed',contest:'Contest for possession',secured:'Ball secured · use it'};
 export const validPhase=p=>Object.hasOwn(PHASES,p);
 export function nextPhase(p){const keys=Object.keys(PHASES),i=keys.indexOf(p);return i<0?null:keys[i+1]||null}
@@ -17,12 +17,13 @@ export function setParticipants(f,m,g,ids,u10=false){
  if(['ruck','contest','secured'].includes(phase)&&(!same.length||!other.length))return {ok:false,message:'A formed ruck requires at least one standing player from each team.'};
  if(phase==='support'&&!same.length)return {ok:false,message:'Select at least one attacking support player.'};
  if(phase==='support'&&other.length)return {ok:false,message:'Add defending support at the Ruck formed stage.'};
- const p=g.toView(m.x,m.y),ang=(m.rot+g.rotation)*Math.PI/180,c=Math.cos(ang),s=Math.sin(ang);
+ const ball=findObject(f,r.ballId),p=g.toView(ball?.x??m.x,ball?.y??m.y),ang=(m.rot+g.rotation)*Math.PI/180,c=Math.cos(ang),s=Math.sin(ang);
  const put=(o,x,y,r)=>{Object.assign(o,g.fromView(p.x+x*c-y*s,p.y+x*s+y*c),{rot:((m.rot+r)%360+360)%360});if(f.paths?.[o.id])delete f.paths[o.id]};
  // The marker is the ball area. Separate grounded participants from standing ones.
  for(const [group,sign] of [[same,1],[other,-1]])group.forEach((o,i)=>{
   const row=Math.floor(i/3),n=Math.min(3,group.length-row*3),j=i%3;
-  put(o,(j-(n-1)/2)*29,sign*((phase==='support'?40:20)+row*29),sign===1?0:180)
+  const base=sign*((phase==='support'?40:20)+row*29);const advance=phase==='secured'?20+Math.max(1,Math.ceil(same.length/3))*29:0;
+  put(o,(j-(n-1)/2)*29,base-advance,sign===1?0:180)
  });
  const active=new Set(players.map(o=>o.id));for(const x of f.objects)if(x!==m&&Array.isArray(x.members))x.members=x.members.filter(y=>!active.has(y.id));
  m.members=[...(grounded?[grounded]:[]),...players.map(o=>({id:o.id,pose:phase==='support'?'standing':'bound'}))];
@@ -36,8 +37,9 @@ export function advance(f,m,g,phase,ids,u10=false){
  m.breakdown={phase,carrierId:a.id,tacklerId:d.id,ballId:b.id};m.label=PHASES[phase];
  if(phase==='release'){
   // Both responsibilities happen immediately; shown as simultaneous rather than a delayed release.
-  put(d,65,-10,180);put(a,-30,5,90);put(b,0,0,0);delete b.ownerId;b.groundState='presented';b.transferKind='presentation';f.timing[b.id]={start:0,end:45};m.members=[{id:a.id,pose:'grounded'}];
- }else if(phase==='secured'){const out=setParticipants(f,m,g,ids,u10);if(!out.ok)return out;put(b,0,47,0);b.groundState='secured';delete b.transferKind;f.timing[b.id]={start:0,end:90};}
+  put(d,65,-15,180);put(a,-12,-9,180);put(b,0,25,0);delete b.ownerId;b.groundState='presented';b.transferKind='presentation';f.timing[b.id]={start:0,end:45};m.members=[{id:a.id,pose:'grounded'}];
+ }else if(phase==='secured'){const out=setParticipants(f,m,g,ids,u10);if(!out.ok)return out;// Make the ball available at the rear by advancing the bound group, not by sliding the ball unaided.
+ b.groundState='secured';delete b.transferKind;}
  else {if(phase==='ruck'||phase==='contest')m.type='ruck';const out=setParticipants(f,m,g,ids,u10);if(!out.ok)return out}
  return {ok:true,message:PHASES[phase]};
 }
