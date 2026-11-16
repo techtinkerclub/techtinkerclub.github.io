@@ -146,7 +146,7 @@ $('groupFaceLeft').onclick=()=>rotateGroup(-15,false);$('groupFaceRight').onclic
 function activeObject(){return f().objects.find(o=>o.id===selected)}
 function focusPitch(){pitch.focus({preventScroll:true})}
 function updateSelectionTools(o){
- $('moveScope').disabled=preview!==null||!!routeDrawing||!!ballPicking||!!trainingPick||!!groupIds.size;
+ $('moveScope').disabled=preview!==null||!!routeDrawing||!!ballPicking||!!trainingPick||!!groupIds.size;$('moveScope').title=groupIds.size?'Group moves affect this step only. Individual move scope is unchanged.':'Position change scope for individual objects';
  $('groupToggle').disabled=preview!==null||!!routeDrawing||!!ballPicking||!!trainingPick;
  $('selectionLabel').textContent=groupIds.size?groupIds.size+' players selected':o?(o.label||types[o.type][0]):'No selection';
  $('drawRouteSide').disabled=!o||['decision','donut'].includes(o.type)||!!ballPicking||!!((o.type==='ball'||isShield(o))&&o.ownerId&&!selectedMovement());
@@ -501,7 +501,7 @@ pitch.addEventListener('pointerdown',e=>{
  if(!g){selected=null;groupIds.clear();render();inspector();return}
  const hit=f().objects.find(o=>o.id===g.dataset.id),gp=groupTarget(hit);
  if((e.ctrlKey||e.metaKey)&&gp){if(!groupIds.size){const prior=groupTarget(activeObject());if(prior)groupIds.add(prior.id)}groupMode=true;toggleGroupPlayer(hit);e.preventDefault();return}
- if(gp&&groupIds.has(gp.id)){if($('moveScope').value!=='here'){note('Group movement is available in Current step only.');e.preventDefault();return}const items=groupSnapshot(f(),[...groupIds],geometry());drag={id:gp.id,kind:'group',items,pointerId:e.pointerId,origin:viewPoint(e),moved:false};pitch.setPointerCapture(e.pointerId);e.preventDefault();return}
+ if(gp&&groupIds.has(gp.id)){const items=groupSnapshot(f(),[...groupIds],geometry());drag={id:gp.id,kind:'group',items,pointerId:e.pointerId,origin:viewPoint(e),moved:false};pitch.setPointerCapture(e.pointerId);e.preventDefault();return}
  if(groupMode&&gp){toggleGroupPlayer(hit);e.preventDefault();return}
  groupIds.clear();groupMode=false;selected=g.dataset.id;
  if(pendingInsert&&pendingInsert.id!==selected)pendingInsert=null;
