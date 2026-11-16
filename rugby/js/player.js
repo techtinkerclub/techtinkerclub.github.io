@@ -1,3 +1,4 @@
+import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.10.1';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.9.0';
 import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.9.0';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
@@ -27,4 +28,26 @@ $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};
 $('print').onclick=()=>{if(d){stop();printDrill(d,opts)}};
 $('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings()};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{$('video').disabled=false}};
-try{if(location.hash.length>1){const p=await decodeShare(location.hash.slice(1));open(p.drill,p.options)}}catch(err){$('message').textContent=err.message+' Open an exported JSON file instead.'}
+const params=new URLSearchParams(location.search),catalogueId=params.get('drill');
+async function reviewCopy(value,message){if(await copyText(value)){$('reviewStatus').textContent=message;return}$('reviewCopyValue').value=value;$('reviewCopyDialog').showModal();$('reviewCopyValue').select()}
+if(catalogueId!==null){
+ // Catalogued resources are read-only and load only by a validated catalogue identifier.
+ document.body.classList.add('catalogue-player');$('backLibrary').hidden=false;$('backLibrary').href=libraryHref(readFilters(params));$('openFileLabel').hidden=true;$('downloadDrill').hidden=true;
+ $('empty').innerHTML='<h2>Loading drill…</h2><p>Please use the library link to choose another resource.</p>';
+ try{
+  if(!/^seed-\\d{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');
+  const list=await loadCatalogue(),entry=list.find(x=>x.id===catalogueId);if(!entry)throw Error('This drill is not in the published catalogue.');
+  open(entry,{});document.title=entry.title+' · Rugby Coaching Library';
+  $('catalogueReview').hidden=false;
+  const link=new URL(drillHref(entry.id),location.href).href;
+  $('copyDrillLink').onclick=()=>reviewCopy(link,'Drill link copied.');
+  $('copyReview').onclick=()=>reviewCopy(feedbackText(entry,link),'Review questions copied.');
+  if(!isAnimated(entry)){
+   // A text card is not a missing animation: show its existing coaching content only.
+   $('board').hidden=true;$('controls').hidden=true;$('stepReading').hidden=true;
+   $('coachSequenceContent').closest('details').hidden=true;
+   $('empty').hidden=false;$('empty').innerHTML='<h2>Coaching card</h2><p>This resource has written guidance but no animation yet.</p>';
+  }
+ }catch(err){$('empty').hidden=false;$('empty').innerHTML='<h2>Drill unavailable</h2><p>Return to the library and try again.</p>';$('message').textContent=err.message}
+}else{try{if(location.hash.length>1){const p=await decodeShare(location.hash.slice(1));open(p.drill,p.options)}}catch(err){$('message').textContent=err.message+' Open an exported JSON file instead.'}}
+
