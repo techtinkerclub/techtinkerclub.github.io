@@ -1,4 +1,5 @@
 
+import {initPanelLayout} from './layout.js?v=0.4.9';
 const $=id=>document.getElementById(id);
 const tabs=['Object','Step','Drill'];
 export function openInspector(name,reveal=true) {
@@ -37,5 +38,6 @@ export function initWorkspace(){
  }
  $('present').addEventListener('click',()=>{body.classList.toggle('presentation-mode');sync()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]')&&body.classList.contains('presentation-mode')){body.classList.remove('presentation-mode');sync();}});
+ initPanelLayout({sync, mobile:()=>mq.matches});
  openInspector('Step',false);
 }

@@ -200,3 +200,44 @@ body.presentation-mode .compact-footer .footer-narration{max-width:100%;flex:1;t
 .carry-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .carry-choices button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 3px;font-size:11px;text-align:center}
 .carry-choices svg{width:48px;height:44px}
+
+/* Resizable workspace: retain a generous central drawing region. */
+body{--equipment-width:var(--user-tools-width,184px);--inspector-width:var(--user-inspector-width,258px)}
+body.hide-equipment{--equipment-width:0px}
+body.hide-inspector{--inspector-width:0px}
+body>.timeline{position:relative;height:var(--user-timeline-height,190px);padding-top:12px}
+body.hide-tracks>.timeline,body.presentation-mode>.timeline{height:auto;padding-top:7px}
+.panel-splitter{position:absolute;z-index:8;touch-action:none;user-select:none;display:flex;align-items:center;justify-content:center;outline:none}
+.panel-splitter.vertical{top:0;bottom:0;width:9px;cursor:col-resize}
+#splitTools{left:calc(var(--equipment-width) - 4px)}
+#splitInspector{right:calc(var(--inspector-width) - 4px)}
+.panel-splitter.horizontal{top:0;left:0;right:0;height:10px;cursor:row-resize}
+.panel-splitter span{display:block;border-radius:6px;background:#718578;opacity:.65;transition:opacity .12s,background .12s}
+.panel-splitter.vertical span{width:3px;height:32px}
+.panel-splitter.horizontal span{height:3px;width:48px}
+.panel-splitter:hover,.panel-splitter.dragging,.panel-splitter:focus-visible{background:#c9f07c18}
+.panel-splitter:hover span,.panel-splitter.dragging span,.panel-splitter:focus-visible span{background:var(--accent);opacity:1}
+body.hide-equipment #splitTools,body.hide-inspector #splitInspector,body.hide-tracks #splitTimeline,body.presentation-mode .panel-splitter{display:none}
+body.resizing-workspace,body.resizing-workspace *{cursor:col-resize!important;user-select:none!important}
+body.resizing-workspace.resize-horizontal,body.resizing-workspace.resize-horizontal *{cursor:row-resize!important}
+/* Theme-native slim scrollbars keep full scrolling functionality. */
+html{color-scheme:dark}
+.object-palette-scroll,.inspector-body,.tracks,.scenes,.sidebar,dialog,.head-actions{scrollbar-width:thin;scrollbar-color:#45574b transparent}
+.object-palette-scroll::-webkit-scrollbar,.inspector-body::-webkit-scrollbar,.tracks::-webkit-scrollbar,.scenes::-webkit-scrollbar,.sidebar::-webkit-scrollbar,dialog::-webkit-scrollbar,.head-actions::-webkit-scrollbar{width:6px;height:6px}
+.object-palette-scroll::-webkit-scrollbar-thumb,.inspector-body::-webkit-scrollbar-thumb,.tracks::-webkit-scrollbar-thumb,.scenes::-webkit-scrollbar-thumb,.sidebar::-webkit-scrollbar-thumb,dialog::-webkit-scrollbar-thumb,.head-actions::-webkit-scrollbar-thumb{background:#45574b;border-radius:6px}
+.object-palette-scroll::-webkit-scrollbar-track,.inspector-body::-webkit-scrollbar-track,.tracks::-webkit-scrollbar-track,.scenes::-webkit-scrollbar-track,.sidebar::-webkit-scrollbar-track,dialog::-webkit-scrollbar-track,.head-actions::-webkit-scrollbar-track{background:transparent}
+/* Tool tiles adapt to panel width. Remove redundant vertical spacing. */
+.sidebar .palette,.action-grid{grid-template-columns:repeat(auto-fit,minmax(54px,1fr))}
+.sidebar .palette button{min-height:44px;padding:4px 2px}
+.sidebar .palette svg{width:22px;height:22px}
+.action-grid button{min-height:40px}
+.action-panel{padding:8px 8px 6px}
+.object-palette-scroll{padding:8px}
+.sidebar .group{margin-bottom:8px}
+.action-status{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#resetLayout{color:var(--muted);font-size:11px}
+.stage{padding:6px;gap:5px}
+.inspector-tabs{padding:6px}
+.timeline-top{gap:4px 8px}
+@media(max-width:760px){body>.main>.panel-splitter.vertical{display:none}body{--equipment-width:0px;--inspector-width:0px}.sidebar,.inspector{width:min(270px,82vw)}}
+@media(max-height:570px){.action-grid button,.sidebar .palette button{min-height:34px}.sidebar .palette svg{width:18px;height:18px}}

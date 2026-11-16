@@ -1,6 +1,6 @@
 import { $, clone, esc, clamp, uid, types, shape, obj, sample, blank } from './model.js';
 import { RESOURCES, EMPHASIS } from './resources.js';
-import { initWorkspace, openInspector } from './workspace.js?v=0.3.1';
+import { initWorkspace, openInspector } from './workspace.js?v=0.4.9';
 import { pitchGeometry, trainingField } from './pitch.js?v=0.4.2';
 import { placePoint, gridStep, loadGridPrefs, saveGridPrefs } from './grid.js?v=0.4.2';
 import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './rotation.js?v=0.3.3';
