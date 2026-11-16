@@ -7,7 +7,7 @@ import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './
 import { removeObject, isEditingKeyTarget } from './object-edit.js?v=0.3.3';
 import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypointOverlay, routeInsertion, insertionHandles } from './routes.js?v=0.4.3';
 import { createHistory } from './history.js?v=0.4.0';
-import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession } from './possession.js?v=0.4.6';
+import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession } from './possession.js?v=0.4.6-1';
 initWorkspace();
 const SEEDS = await fetch(new URL('../data/drills.json?v=0.4.1', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -286,7 +286,7 @@ pitch.addEventListener('pointerdown',e=>{
  render();inspector();openInspector('Object');
  // Clicking a carried ball still selects it for passing; dragging it moves its carrier.
  const owner=o.type==='ball'?carrier(f(),o):null,moving=owner||o,p=point(e);
- drag={id:moving.id,kind:'move',pointerId:e.pointerId,dx:moving.x-p.x,dy:moving.y-p.y,moved:false,contact:null,origin:viewPoint(e)};
+ drag={id:moving.id,kind:'move',pointerId:e.pointerId,dx:moving.x-p.x,dy:moving.y-p.y,moved:false,contact:null,origin:viewPoint(e),originalPosition:{x:moving.x,y:moving.y}};
  if(owner)note('Ball attached to '+(owner.label||'player')+' · drag to move both.');
  pitch.setPointerCapture(e.pointerId);
  e.preventDefault();
@@ -327,7 +327,7 @@ function finishDrag(e){
    // Moving a player to a free ball is a pickup, not a pass.
    const pickup=gesture.id===playerId;
    if(idx&&f().paths)delete f().paths[ballId];
-   const n=assignPossession(drill.frames,idx,ballId,playerId,geometry());
+   const n=assignPossession(drill.frames,idx,ballId,playerId,geometry(),pickup?null:gesture.originalPosition);
    if(n){
     if(idx&&drill.frames[idx-1].objects.some(o=>o.id===ballId&&!o.ownerId)){
      f().timing[ballId]=pickup?{start:99,end:100}:{start:0,end:100};
