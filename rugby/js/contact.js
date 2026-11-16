@@ -1,5 +1,5 @@
 // Schematic formation presets, not coaching technique or an age-grade law validator.
-import {canCarry,carrier} from './possession.js?v=0.5.3';
+import {canCarry,carrier} from './possession.js?v=0.8.4';
 import {team,roles,setParticipants} from './breakdown.js?v=0.8.4';
 const CONTACTS={tackle:{title:'Tackle',min:2,max:3,color:'#fa9e91'},ruck:{title:'Ruck',min:2,max:16,color:'#f7d27a'},maul:{title:'Maul',min:3,max:16,color:'#c8b0f5'},scrum:{title:'Scrum',min:4,max:16,color:'#91dbce'}};
 export const contactType=t=>Object.hasOwn(CONTACTS,t);
@@ -26,7 +26,7 @@ export function arrangeContact(frame,marker,g,previous=null,explicit=null,u10=fa
   const ball=frame.objects.find(o=>o.type==='ball'&&!carrier(frame,o)&&Math.hypot(g.toView(o.x,o.y).x-g.toView(marker.x,marker.y).x,g.toView(o.x,o.y).y-g.toView(marker.x,marker.y).y)<100);
   if(!ball)return {ok:false,message:'Present the ball on the ground before arranging a ruck.'};
   const prior=[...frame.objects,...(previous?.objects||[])].find(o=>o.type==='tackle'&&o.members?.length&&Math.hypot(g.toView(o.x,o.y).x-g.toView(marker.x,marker.y).x,g.toView(o.x,o.y).y-g.toView(marker.x,marker.y).y)<100);
-  const r=prior&&roles(frame,prior);unique=unique.filter(o=>team(o)&&o.id!==r?.carrierId&&o.id!==r?.tacklerId);
+  const r=prior&&roles(frame,prior);unique=unique.filter(o=>team(o)&&o.id!==r?.carrierId&&!r?.tacklerIds?.includes(o.id));
   const a=unique.filter(o=>team(o)==='attack'),d=unique.filter(o=>team(o)==='defence');if(!a.length||!d.length)return {ok:false,message:'Select standing arrivals from both teams, not the original tackle pair.'};
   if(u10&&(a.length>1||d.length>1)){if(explicit)return {ok:false,message:'U10: one arriving player per team.'};unique=[a[0],d[0]]}
  }
