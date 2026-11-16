@@ -6,9 +6,9 @@ export const findObject=(frame,id)=>frame?.objects.find(o=>o.id===id);
 export const carrier=(frame,ball)=>{const o=ball?.ownerId&&findObject(frame,ball.ownerId);return canCarry(o)?o:null};
 export function carriedPose(ball,player,g){
  if(!player)return {...ball};
- // A fixed offset in the logical pitch keeps the small ball symbol visible beside its carrier.
- const p=g.toView(player.x,player.y),right=g.orientation==='right';
- return {...ball,...g.fromView(p.x+(right?16:24),p.y+(right?24:-16))};
+ // Ball follows the carrier's translation and facing direction.
+ const p=g.toView(player.x,player.y),a=((Number(player.rot)||0)+g.rotation)*Math.PI/180;
+ return {...ball,...g.fromView(p.x+24*Math.cos(a)+16*Math.sin(a),p.y+24*Math.sin(a)-16*Math.cos(a))};
 }
 export function syncPossession(frames,g){
  for(const frame of frames)for(const o of frame.objects){
@@ -58,4 +58,42 @@ export function transitionObjects(old,next,p,g){
   if(!findObject(old,o.id)&&p<1)return null;
   return o.type==='ball'?ballPose(old,next,o,p,g):objectPose(old,next,o.id,p,g);
  }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>!findObject(next,o.id)):[]);
+}
+
+// Magnetic pickup is an editor gesture, never an inferred turnover in playback.
+export function contactTarget(frame,moving,position,g,radius=32){
+ if(!moving)return null;
+ const isBall=moving.type==='ball';
+ if(isBall&&carrier(frame,moving))return null;
+ if(!isBall&&(!canCarry(moving)||frame.objects.some(o=>o.type==='ball'&&o.ownerId===moving.id)))return null;
+ const p=g.toView(position.x,position.y);
+ let best=null,distance=radius;
+ for(const o of frame.objects){
+  if(o.id===moving.id)continue;
+  if(isBall?(!canCarry(o)||frame.objects.some(b=>b.type==='ball'&&b.ownerId===o.id)):(o.type!=='ball'||!!carrier(frame,o)))continue;
+  const v=g.toView(o.x,o.y),d=Math.hypot(p.x-v.x,p.y-v.y);
+  if(d<distance){distance=d;best=isBall?{ballId:moving.id,playerId:o.id}:{ballId:o.id,playerId:moving.id}}
+ }
+ return best;
+}
+// Propagate into unchanged later steps; preserve a different authored possession,
+// missing player/ball, or independently animated free-ball movement.
+export function assignPossession(frames,index,ballId,ownerId,g){
+ const frame=frames[index],ball=findObject(frame,ballId);if(ball?.type!=='ball')return 0;
+ if(ownerId&&!canCarry(findObject(frame,ownerId)))return 0;
+ const oldOwner=ball.ownerId||null;
+ if(oldOwner===(ownerId||null))return 0;
+ const releasePosition=oldOwner?carriedPose(ball,carrier(frame,ball),g):ball;
+ let count=0,previous={x:ball.x,y:ball.y};
+ for(let i=index;i<frames.length;i++){
+  const fr=frames[i],b=findObject(fr,ballId);
+  if(b?.type!=='ball'||(b.ownerId||null)!==oldOwner||(ownerId&&!canCarry(findObject(fr,ownerId))))break;
+  if(i>index&&!oldOwner&&(Math.hypot(b.x-previous.x,b.y-previous.y)>1e-5||fr.paths?.[ballId]?.points?.length||Object.hasOwn(fr.timing||{},ballId)))break;
+  previous={x:b.x,y:b.y};
+  if(ownerId){b.ownerId=ownerId;Object.assign(b,carriedPose(b,findObject(fr,ownerId),g))}
+  else{delete b.ownerId;Object.assign(b,{x:releasePosition.x,y:releasePosition.y})}
+  if(i>index){if(fr.timing)delete fr.timing[ballId];if(fr.paths)delete fr.paths[ballId]}
+  count++;
+ }
+ return count;
 }
