@@ -1,5 +1,5 @@
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.8.0';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.8.0';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.8.1';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.8.1';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {coachingMarkup,sequenceMarkup,decisionMarkup} from './coaching-output.js?v=0.8.0';
