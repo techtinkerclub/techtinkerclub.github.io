@@ -1,6 +1,7 @@
+import {physicalUnit} from './symbol-scale.js?v=0.12.0';
 // Guided phase authoring. Schematic positions, explicit outcomes, no physics or live-contact instruction.
 import {pitchGeometry} from './pitch.js?v=0.6.0';
-import {carrier,canCarry,syncPossession} from './possession.js?v=0.7.0';
+import {carrier,canCarry,syncPossession} from './possession.js?v=0.12.0';
 const wr='https://passport.world.rugby/laws-of-the-game/laws-by-number/';
 export const RULES={rfu:'https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-',u10:'https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf',older:'https://surreyrugby.co.uk/images/pages/competition_rugby/Age-Grade-Information/AgeGrade%20Variation%20Summary_26_27_vAug2026.pdf',u11:'https://rugbyreferee.net/wp-content/uploads/2025/09/25-26-u11s-RRNet-RFU-Regulations.pdf'};
 const def=(title,min,law,stages,note)=>({title,min,url:wr+law,stages,note});
@@ -89,14 +90,14 @@ export function generateStage(frame,guide,length,width){
  const pass=(o)=>hold(o,'pass',25,75);
  if(kind==='scrum'){
   const n=packSize(q.age),a=r.own||[],d=r.opp||[];if(a.length!==n||d.length!==n)throw Error('Pack membership does not match age grade.');
-  const p=center(82,n>3?135:98),gap=s===0?39:15;
+  const u=physicalUnit(g),p=center(82*u,(n>3?135:98)*u),gap=(s===0?39:15)*u;
   const pack=(ids,sign,rot)=>{const coords=[[-27,0],[0,0],[27,0],[-14,29],[14,29],[-40,27],[40,27],[0,58]];
    const layout=n===6?[...coords.slice(0,5),[0,58]]:coords.slice(0,n);
-   ids.forEach((id,i)=>put(lookup(f,id),p.x+layout[i][0],p.y+sign*(gap+layout[i][1]),rot))};
-  if(s<=3){pack(a,dir,ownRot);pack(d,-dir,oppRot);put(actor,p.x-65,p.y,90);put(lookup(f,r.otherHalf),p.x+53,p.y-dir*(gap+(n>3?70:27)),oppRot);if(s>=1)marker('scrum',p,[...a,...d]);}
+   ids.forEach((id,i)=>put(lookup(f,id),p.x+layout[i][0]*u,p.y+sign*(gap+layout[i][1]*u),rot))};
+  if(s<=3){pack(a,dir,ownRot);pack(d,-dir,oppRot);put(actor,p.x-65*u,p.y,90);put(lookup(f,r.otherHalf),p.x+53*u,p.y-dir*(gap+(n>3?70:27)*u),oppRot);if(s>=1)marker('scrum',p,[...a,...d]);}
   if(s===0)hold(actor,'set',85,90);
   if(s===2)ground(p.x,p.y,'feed',25,75);
-  if(s===3){const rear=p.y+dir*(gap+(n>3?82:33));ground(p.x,rear,'feed',20,75);put(actor,p.x-18,rear+dir*12,ownRot)}
+  if(s===3){const rear=p.y+dir*(gap+(n>3?82:33)*u);ground(p.x,rear,'feed',20,75);put(actor,p.x-18*u,rear+dir*12*u,ownRot)}
   if(s===4){hold(actor,'set',25,60);marker('scrum',p,[...a,...d]);}
   if(s===5){if(!rec)throw Error('Choose a first receiver.');const v=g.toView(actor.x,actor.y);
     if((g.toView(rec.x,rec.y).y-v.y)*dir<0)throw Error('Place the receiver behind or level with the scrum-half in the current step.');
@@ -104,9 +105,9 @@ export function generateStage(frame,guide,length,width){
     pass(rec);}
   f.notes=['Select the nearest eligible players for the packs. Other players remain behind their required offside lines.','Schematic referee-controlled engagement; no pushing in U10–U12. Stop if unsafe.','Feeding scrum-half introduces the ball into the tunnel. U10: only feeding hooker strikes.','Ball reaches the rear; designated scrum-half is ready to play it.','Scrum-half gathers the available ball.','Scrum-half passes away. This preset never depicts a No. 8 pick or an illegal push.'][s];
  }else if(kind==='maul'){
-  const a=[actor.id,support.id,...r.own],d=[opp.id,...r.opp],p=center(64,Math.max(55,Math.ceil(Math.max(a.length,d.length)/2)*29+25));if(q.age===10&&(a.length>2||d.length>2))throw Error('U10 maul maximum two per side.');
-  if(s===0){put(actor,p.x,p.y+dir*12,ownRot);put(opp,p.x,p.y-dir*14,oppRot);hold(actor);}
-  if(s===1||s===2){const form=(ids,sign,rot)=>ids.forEach((id,i)=>{const row=i===0?0:Math.floor((i+1)/2),x=i<=1?0:(i%2===0?-25:25);put(lookup(f,id),p.x+x,p.y+sign*(13+row*27),rot)});form(a,dir,ownRot);form(d,-dir,oppRot);marker('maul',p,[...a,...d]);if(s===2)hold(support,'handover',55,60)}
+  const a=[actor.id,support.id,...r.own],d=[opp.id,...r.opp],u=physicalUnit(g),p=center(64*u,Math.max(55,Math.ceil(Math.max(a.length,d.length)/2)*29+25)*u);if(q.age===10&&(a.length>2||d.length>2))throw Error('U10 maul maximum two per side.');
+  if(s===0){put(actor,p.x,p.y+dir*12*u,ownRot);put(opp,p.x,p.y-dir*14*u,oppRot);hold(actor);}
+  if(s===1||s===2){const form=(ids,sign,rot)=>ids.forEach((id,i)=>{const row=i===0?0:Math.floor((i+1)/2),x=i<=1?0:(i%2===0?-25:25);put(lookup(f,id),p.x+x*u,p.y+sign*(13+row*27)*u,rot)});form(a,dir,ownRot);form(d,-dir,oppRot);marker('maul',p,[...a,...d]);if(s===2)hold(support,'handover',55,60)}
   if(s===3){const v=g.toView(support.x,support.y);if((g.toView(rec.x,rec.y).y-v.y)*dir<0)throw Error('Move the outside receiver behind the ball before playing away.');pass(rec)}
   f.notes=['Carrier is held upright; this is not yet a maul.','A teammate binds, making a maul with an opponent and the carrier. Stay on feet.','Transfer to bound support without a long-arm transfer. No automatic driving or collapse.','Use the ball promptly and play away.'][s];
  }else if(kind==='lineout'){
