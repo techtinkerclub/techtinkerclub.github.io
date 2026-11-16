@@ -62,17 +62,18 @@ export function tackleImpacts(old,next,g){
  const events=[];
  for(const marker of next.objects){
   if(marker.type!=='tackle'||marker.breakdown&&marker.breakdown.phase!=='tackle')continue;
-  const a=marker.members?.find(m=>m.pose==='grounded')?.id,d=marker.members?.find(m=>m.pose==='tackling')?.id;
-  if(!a||!d||!findObject(old,a)||!findObject(old,d))continue;
+  const a=marker.members?.find(m=>m.pose==='grounded')?.id,ds=(marker.members||[]).filter(m=>m.pose==='tackling').map(m=>m.id);
+  if(!a||!findObject(old,a)||!ds.length)continue;
   const prior=findObject(old,marker.id);
-  if(prior?.type==='tackle'&&prior.members?.some(m=>m.id===a&&m.pose==='grounded')&&prior.members?.some(m=>m.id===d&&m.pose==='tackling'))continue;
-  const distance=t=>{const x=rawObjectPose(old,next,a,t,g),y=rawObjectPose(old,next,d,t,g),u=g.toView(x.x,x.y),v=g.toView(y.x,y.y);return Math.hypot(u.x-v.x,u.y-v.y)};
-  const radius=34;let time=1;
-  if(distance(0)<=radius)time=0;
-  else for(let i=1;i<=40;i++)if(distance(i/40)<=radius){let lo=(i-1)/40,hi=i/40;for(let j=0;j<10;j++){const mid=(lo+hi)/2;if(distance(mid)<=radius)hi=mid;else lo=mid}time=hi;break}
-  events.push({marker:marker.id,players:[a,d],time});
+  for(const d of ds){
+   if(!findObject(old,d)||prior?.members?.some(m=>m.id===d&&m.pose==='tackling'))continue;
+   const distance=t=>{const x=rawObjectPose(old,next,a,t,g),y=rawObjectPose(old,next,d,t,g),u=g.toView(x.x,x.y),v=g.toView(y.x,y.y);return Math.hypot(u.x-v.x,u.y-v.y)};
+   let time=1;if(distance(0)<=34)time=0;
+   else for(let i=1;i<=40;i++)if(distance(i/40)<=34){let lo=(i-1)/40,hi=i/40;for(let j=0;j<10;j++){const mid=(lo+hi)/2;if(distance(mid)<=34)hi=mid;else lo=mid}time=hi;break}
+   events.push({marker:marker.id,players:[a,d],time,tackler:d,carrier:a});
+  }
  }
- return events;
+ return events.sort((a,b)=>a.time-b.time);
 }
 export function objectPose(old,next,id,p,g,events=null){
  const pose=rawObjectPose(old,next,id,p,g),a=findObject(old,id),b=findObject(next,id);
@@ -135,8 +136,10 @@ export function transitionObjects(old,next,p,g){
   if(o.type==='ball')return ballPose(old,next,o,p,g,events);
   if(isShield(o))return shieldTransition(old,next,o,p,g,events);
   const pose=objectPose(old,next,o.id,p,g,events);
+  if(prior&&p<(next.timing?.[o.id]?.end??100)/100){if(prior.playerPose)pose.playerPose=prior.playerPose;else delete pose.playerPose;}
   if(Array.isArray(o.members)||Array.isArray(prior?.members)){
    pose.members=p>=switchAt?o.members:prior?.members;
+   if(o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')){const arrived=events.filter(e=>e.marker===o.id&&p>=e.time);if(arrived.length||prior?.members?.length){const ready=new Set([...(prior?.members||[]).map(m=>m.id),...arrived.flatMap(e=>e.players)]);pose.members=(o.members||[]).filter(m=>ready.has(m.id)||!events.some(e=>e.marker===o.id&&e.tackler===m.id)&&p>=switchAt);}}
    if(prior&&p<switchAt){pose.type=prior.type;pose.label=prior.label;pose.breakdown=prior.breakdown}
   }
   return pose;
