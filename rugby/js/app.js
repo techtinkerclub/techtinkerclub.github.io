@@ -15,7 +15,8 @@ import {insertable,fillMissing,syncInsertedCopies,scopeIndices} from './insertio
 import {breakdownContext} from './breakdown-context.js?v=0.5.7';
 import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
 import {PRESETS,presetPositions} from './presets.js?v=0.6.0';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.7.2';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.7.3';
+import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.7.0';
 initWorkspace();
@@ -555,6 +556,7 @@ $('finishGame').onclick=()=>{if(!canEditObjects()||!f().guide)return;try{const n
 
 function shareOptions(){return outputOptions({orientation,runs:$('shareRuns').checked,passes:$('sharePasses').checked,labels:$('shareLabels').checked})}
 const getMovieSettings=bindMovieSettings($('movieOptions'),'movie');
+const movieProgress=createExportProgress();
 let sharingBusy=false;
 $('share').onclick=()=>{$('shareRuns').checked=showPaths;$('sharePasses').checked=showPasses;$('shareLabels').checked=showActionLabels;$('shareLink').value='';$('shareStatus').textContent='';$('shareDialog').showModal()};
 $('closeShare').onclick=()=>{if(!sharingBusy)$('shareDialog').close()};
@@ -564,6 +566,6 @@ function shareBusy(on){sharingBusy=on;for(const id of ['shareCopy','shareOpen','
 async function makeShare(){const code=await shareCode(drill,shareOptions()),url=new URL('./play.html',location.href);url.hash=code;return url.href}
 $('shareCopy').onclick=async()=>{shareBusy(true);try{const link=await makeShare();$('shareLink').value=link;try{await navigator.clipboard.writeText(link);$('shareStatus').textContent='Link copied. Anyone with the link can view this snapshot.'}catch{$('shareLink').focus();$('shareLink').select();$('shareStatus').textContent='Select and copy the link manually.'}if(link.length>8000)$('shareStatus').textContent+=' Long links may be truncated by messaging apps.'}catch(err){$('shareStatus').textContent=err.message}finally{shareBusy(false)}};
 $('shareOpen').onclick=async()=>{const w=window.open('about:blank','_blank');if(!w){$('shareStatus').textContent='Popup blocked. Copy the link instead.';return}w.opener=null;shareBusy(true);try{const url=await makeShare();$('shareLink').value=url;w.location.replace(url)}catch(err){w.close();$('shareStatus').textContent=err.message}finally{shareBusy(false)}};
-$('shareMovie').onclick=async()=>{shareBusy(true);try{const result=await recordDrill(drill,{...shareOptions(),...getMovieSettings()},(p,stage)=>$('shareStatus').textContent='Recording '+Math.round(p*100)+'%'+(stage?' · '+stage:'')+' · keep this tab visible.');saveBlob(result.blob,outputName(drill)+'.'+result.extension);$('shareStatus').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}catch(err){$('shareStatus').textContent=err.message}finally{shareBusy(false)}};
+$('shareMovie').onclick=async()=>{if(sharingBusy)return;shareBusy(true);$('shareStatus').textContent='';try{const settings={...shareOptions(),...getMovieSettings()},name=outputName(drill);const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(drill,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{shareBusy(false)}};
 $('sharePrint').onclick=()=>{const opts=shareOptions();$('shareDialog').close();printDrill(drill,opts)};
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});resetHistory();syncGrid();refresh();

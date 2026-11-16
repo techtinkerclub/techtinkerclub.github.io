@@ -1,8 +1,9 @@
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.7.1';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.7.2';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.7.3';
+import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {coachingMarkup,sequenceMarkup} from './coaching-output.js?v=0.7.1';
-const $=id=>document.getElementById(id);const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0;
+const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0;
 function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
 function render(){if(!d)return;const s=renderScene(d,{...opts,time:t});$('board').innerHTML=s.svg;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t}
 function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);t=0;$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('orientation').value=opts.orientation;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
@@ -13,5 +14,5 @@ $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();const i=Number(b.dataset.jumpStep);t=d.frames.slice(0,i+1).reduce((sum,f,k)=>sum+(k?f.seconds:0),0);render();$('board').scrollIntoView({block:'nearest'})};
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};
 $('print').onclick=()=>{if(d){stop();printDrill(d,opts)}};
-$('video').onclick=async()=>{if(!d)return;stop();$('video').disabled=true;try{const result=await recordDrill(d,{...opts,...getMovieSettings()},(p,stage)=>$('message').textContent='Recording '+Math.round(p*100)+'%'+(stage?' · '+stage:'')+' · keep this tab visible');saveBlob(result.blob,outputName(d)+'.'+result.extension);$('message').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}catch(err){$('message').textContent=err.message}finally{$('video').disabled=false}};
+$('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings()};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{$('video').disabled=false}};
 try{if(location.hash.length>1){const p=await decodeShare(location.hash.slice(1));open(p.drill,p.options)}}catch(err){$('message').textContent=err.message+' Open an exported JSON file instead.'}

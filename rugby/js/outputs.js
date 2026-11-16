@@ -24,7 +24,8 @@ export const outputName=d=>String(d.title||'rugby-drill').replace(/[^\p{L}\p{N}]
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
 function svgImage(svg){return new Promise((resolve,reject)=>{const uri=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'})),im=new Image();im.onload=()=>{URL.revokeObjectURL(uri);resolve(im)};im.onerror=()=>{URL.revokeObjectURL(uri);reject(Error('Could not render the video frame.'))};im.src=uri})}
 function fitText(ctx,text,max){let s=String(text||'');while(s.length>1&&ctx.measureText(s).width>max)s=s.slice(0,-2)+'…';return s}
-export async function recordDrill(d,opts={},progress=()=>{}){
+export async function recordDrill(d,opts={},progress=()=>{},signal=null){
+ const checkAbort=()=>{if(signal?.aborted)throw new DOMException('Export cancelled','AbortError')};checkAbort();progress(0,'Preparing video…');
  const drill=playbackData(d),options=outputOptions(opts),seconds=drillDuration(drill),plan=moviePlan(seconds,opts);
  if(plan.total>360)throw Error('The complete movie exceeds six minutes. Choose normal speed only or a faster replay.');
  if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Edge or Chrome.');
@@ -63,7 +64,7 @@ export async function recordDrill(d,opts={},progress=()=>{}){
   const trackY=H-Math.round((portrait?140:16)*unit),trackH=Math.max(2,Math.round(5*unit));ctx.fillStyle='#526b59';ctx.fillRect(pad,trackY,content,trackH);ctx.fillStyle='#c9f07c';ctx.fillRect(pad,trackY,content*Math.min(1,elapsed/total),trackH);
   if(plan.segments.length>1){ctx.fillStyle='#f4f7ee';ctx.fillRect(pad+content*plan.segments[0].end/total-1,trackY-2,Math.max(2,Math.round(3*unit)),trackH+4)}
  });
- await draw(0); // Start capture only after a complete initial frame exists.
+ await draw(0);checkAbort(); // Start capture only after a complete initial frame exists.
  if(!frame.ready)throw Error('Initial movie frame did not render.');
  const stream=canvas.captureStream(fps);
  let recorder,recorded;
@@ -76,16 +77,16 @@ export async function recordDrill(d,opts={},progress=()=>{}){
   const chunks=[];let encoderError=null;
   recorded=new Promise((res,rej)=>{recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onstop=()=>res(new Blob(chunks,{type:recorder.mimeType||chunks[0]?.type||'video/webm'}));recorder.onerror=e=>{encoderError=e.error||Error('Video encoder failed.');rej(encoderError)}});
   recorded.catch(()=>{});
-  recorder.start(250);progress(0);const start=performance.now();let elapsed=0;
+  recorder.start(250);progress(0,'Recording · '+plan.segments[0].title);const start=performance.now();let elapsed=0;
   // Record in real time. Holds introduce each pass and make the reset intentional.
   while(elapsed<total){
-   if(encoderError)throw encoderError;if(recorder.state==='inactive')throw Error('Recording ended unexpectedly.');
+   checkAbort();if(encoderError)throw encoderError;if(recorder.state==='inactive')throw Error('Recording ended unexpectedly.');
    if(document.hidden)throw Error('The tab was hidden during recording. Export again with this tab visible.');
-   const begin=performance.now();elapsed=Math.min(total,(begin-start)/1000);await draw(elapsed);
+   const begin=performance.now();elapsed=Math.min(total,(begin-start)/1000);await draw(elapsed);checkAbort();
    const m=movieMoment(plan,elapsed);progress(elapsed/total,elapsed>=plan.total&&cardPages.length?'Coaching card':m.segment.title);
    await delay(Math.max(0,1000/fps-(performance.now()-begin)));
   }
-  await delay(120);recorder.stop();const blob=await recorded;if(!blob.size)throw Error('No video data was produced.');
+  checkAbort();progress(1,'Finalising video…');await delay(120);checkAbort();recorder.stop();const blob=await recorded;checkAbort();if(!blob.size)throw Error('No video data was produced.');
   return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total};
  }catch(e){if(recorder?.state==='recording')recorder.stop();throw e}finally{for(const track of stream.getTracks())track.stop()}
 }
