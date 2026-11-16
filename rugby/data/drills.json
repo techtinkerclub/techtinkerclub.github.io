@@ -6015,6 +6015,354 @@
           "timing": {}
         }
       ]
+    },
+    {
+      "version": 1,
+      "id": "seed-055",
+      "title": "Cone Slalom · Curved Running",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 16,
+      "category": "Movement",
+      "length": 20,
+      "width": 10,
+      "objective": "Change direction smoothly while carrying the ball in two hands.",
+      "safety": "Non-contact movement exercise. Leave sufficient space around equipment and other children; no live collisions. Adjust pace and spacing to ability.",
+      "minutes": 8,
+      "players": "1 runner per lane; small groups",
+      "equipment": "5 cones; one ball per runner",
+      "instructions": "Set up cones in a straight line. Run around alternate sides of each cone, maintaining control before accelerating through the finish. Rotate frequently; leave room between runners.",
+      "coaching": "Look ahead, keep the ball secure, vary pace and use small controlled steps.",
+      "regression": "Walk through the pattern first; increase spacing.",
+      "progression": "After the final cone, add a touch defender or a passing option.",
+      "questions": "When should you slow down? When can you accelerate?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby – coaching children",
+          "url": "https://passport.world.rugby/coaching/coaching-children/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original illustrative coaching adaptation; not a reproduction of an official drill.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "Start behind the first cone.",
+          "objects": [
+            {
+              "id": "runner",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 335,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 205,
+              "rot": 0
+            },
+            {
+              "id": "c4",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 140,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Weave around the cones",
+          "seconds": 6,
+          "notes": "Follow the smooth slalom route; keep the head up.",
+          "objects": [
+            {
+              "id": "runner",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 65,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 335,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 205,
+              "rot": 0
+            },
+            {
+              "id": "c4",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 140,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "runner": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {
+            "runner": {
+              "mode": "smooth",
+              "follow": true,
+              "points": [
+                {
+                  "x": 330,
+                  "y": 400
+                },
+                {
+                  "x": 570,
+                  "y": 335
+                },
+                {
+                  "x": 330,
+                  "y": 270
+                },
+                {
+                  "x": 570,
+                  "y": 205
+                },
+                {
+                  "x": 330,
+                  "y": 140
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-056",
+      "title": "Support Arc · Around an Obstacle",
+      "age": "All ages",
+      "ageMin": 8,
+      "ageMax": 16,
+      "category": "Attack",
+      "length": 20,
+      "width": 15,
+      "objective": "Move around congestion and arrive in a useful support position.",
+      "safety": "Non-contact movement exercise. Leave sufficient space around equipment and other children; no live collisions. Adjust pace and spacing to ability.",
+      "minutes": 8,
+      "players": "2–4 per group",
+      "equipment": "Cones; optional ball; a marker for congestion",
+      "instructions": "Use cones or a marker to represent a stationary group. A support runner arcs around the outside, avoiding the occupied space. Coach the running line only, not contact or legal maul entry.",
+      "coaching": "Scan the space, avoid crossing in front of the carrier, communicate and maintain useful depth.",
+      "regression": "Walk the route without a ball.",
+      "progression": "Add a moving ball carrier or a passive touch defender; check age-grade offside requirements before using a maul scenario.",
+      "questions": "Where is the free space? How can you stay available for a pass?",
+      "notes": "",
+      "links": [
+        {
+          "label": "World Rugby – coaching children",
+          "url": "https://passport.world.rugby/coaching/coaching-children/",
+          "kind": "Reference"
+        }
+      ],
+      "provenance": "Original illustrative coaching adaptation; not a reproduction of an official drill.",
+      "review": "Draft · coach review",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "The maul marker represents an occupied area, not a live contact situation.",
+          "objects": [
+            {
+              "id": "runner",
+              "type": "attacker",
+              "label": "A1",
+              "x": 400,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "m",
+              "type": "maul",
+              "label": "Maul (marker)",
+              "x": 450,
+              "y": 240,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 110,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 110,
+              "y": 450,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 450,
+              "rot": 0
+            }
+          ],
+          "timing": {}
+        },
+        {
+          "name": "Arc around congestion",
+          "seconds": 4,
+          "notes": "Loop around the outside of the marker into space.",
+          "objects": [
+            {
+              "id": "runner",
+              "type": "attacker",
+              "label": "A1",
+              "x": 650,
+              "y": 125,
+              "rot": 0
+            },
+            {
+              "id": "m",
+              "type": "maul",
+              "label": "Maul (marker)",
+              "x": 450,
+              "y": 240,
+              "rot": 0
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 110,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 90,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 110,
+              "y": 450,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 450,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "runner": {
+              "start": 0,
+              "end": 100
+            }
+          },
+          "paths": {
+            "runner": {
+              "mode": "smooth",
+              "follow": true,
+              "points": [
+                {
+                  "x": 600,
+                  "y": 345
+                },
+                {
+                  "x": 700,
+                  "y": 255
+                },
+                {
+                  "x": 710,
+                  "y": 180
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }
