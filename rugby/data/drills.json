@@ -24958,12 +24958,12 @@
       "players": "Coach-led diagram with two teams.",
       "equipment": "Rugby ball and cones",
       "instructions": "Pause when A2 and D2 have joined. Ask the group to identify each team's rearmost relevant point. Move A3 and D3 to the correct side before discussing when the ball is out.",
-      "coaching": "Players outside the ruck stay behind their team's offside line, parallel to the try line, until permitted to advance.",
+      "coaching": "Retreat towards your own try line and remain onside while the breakdown continues. Players not joining the ruck must wait behind their team's offside line.",
       "safety": "Use stationary markers; no binding or live contact is required to explain offside.",
       "regression": "Use two cones for each team's offside line and place non-participants behind them.",
       "progression": "Move the ruck position and ask players to identify the new lines.",
       "questions": "Can A3 step around the side before the ball is out? Where must D3 wait?",
-      "notes": "The diagram marks the sides where A3 and D3 wait, not precise measured offside lines. Set the actual lines with a coach.",
+      "notes": "Switch on Show breakdown offside guides to see the two lines appear and move as the formation changes. The guides use schematic player footprints, not measured body positions. This sequence ends before the ball is played away.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -25313,7 +25313,7 @@
         {
           "name": "Release and present",
           "seconds": 0.8,
-          "notes": "Tackler immediately releases; carrier immediately makes ball available.",
+          "notes": "D1 releases immediately, moves clear and retreats towards the orange team's own end. A1 makes the ball available.",
           "objects": [
             {
               "id": "a1",
@@ -25344,7 +25344,7 @@
               "type": "defender",
               "label": "D1",
               "x": 542.6095238095238,
-              "y": 236.7142857142857,
+              "y": 185,
               "rot": 180,
               "playerPose": "standing"
             },
@@ -25442,7 +25442,7 @@
         {
           "name": "Attacking support",
           "seconds": 1.4,
-          "notes": "A2 approaches from own side, on feet.",
+          "notes": "A2 arrives on feet over the ball. The tackle offside guides appear; players not involved stay behind their team's line.",
           "objects": [
             {
               "id": "a1",
@@ -25473,7 +25473,7 @@
               "type": "defender",
               "label": "D1",
               "x": 542.6095238095238,
-              "y": 236.7142857142857,
+              "y": 185,
               "rot": 180,
               "playerPose": "standing"
             },
@@ -25569,7 +25569,7 @@
         {
           "name": "Ruck formed",
           "seconds": 1.4,
-          "notes": "One standing arrival each side. Others remain clear and onside.",
+          "notes": "D2 joins from the orange side. A ruck forms and the guides move to the rearmost extent of its participants.",
           "objects": [
             {
               "id": "a1",
@@ -25600,7 +25600,7 @@
               "type": "defender",
               "label": "D1",
               "x": 542.6095238095238,
-              "y": 236.7142857142857,
+              "y": 185,
               "rot": 180,
               "playerPose": "standing"
             },
@@ -25731,7 +25731,7 @@
               "type": "defender",
               "label": "D1",
               "x": 542.6095238095238,
-              "y": 236.7142857142857,
+              "y": 185,
               "rot": 180,
               "playerPose": "standing"
             },
@@ -25831,7 +25831,7 @@
         {
           "name": "Ball available",
           "seconds": 1.4,
-          "notes": "Ball available at rear. Do not delay putting it back into play.",
+          "notes": "The ball is available at the rear. The guides remain while the ruck is shown; the next player must play the ball away promptly.",
           "objects": [
             {
               "id": "a1",
@@ -25862,7 +25862,7 @@
               "type": "defender",
               "label": "D1",
               "x": 542.6095238095238,
-              "y": 236.7142857142857,
+              "y": 185,
               "rot": 180,
               "playerPose": "standing"
             },
@@ -25962,7 +25962,7 @@
         {
           "name": "Non-participants stay back",
           "seconds": 1.2,
-          "notes": "A3 and D3 retreat to their own sides of the contact area. The labelled positions illustrate sides, not measured offside lines.",
+          "notes": "Blue players outside the ruck stay behind the blue line; orange players stay behind the orange line. D1 has retired after the tackle. The dashed lines are approximate.",
           "objects": [
             {
               "id": "a1",
@@ -25993,7 +25993,7 @@
               "type": "defender",
               "label": "D1",
               "x": 542.6095238095238,
-              "y": 236.7142857142857,
+              "y": 185,
               "rot": 180,
               "playerPose": "standing"
             },
