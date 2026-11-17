@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.13.0 / Coach Edition v0.3.0
+# Rugby Coaching Studio — Classic v0.13.9 / Coach Edition v0.3.2
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
@@ -27,6 +27,14 @@ The saved drill stores a branching object with version, fork step, question, cur
 Limits: one two-way fork per drill; nested decision trees and automatically triggered choices are not yet implemented. Older annotation-only decision diamonds remain distinct and supported. At least one step must remain in each outcome. To remove branching, select the one you want to retain and choose Edit decision → Remove fork; export JSON first if you also want the other path.
 
 Worked example: seed-132, React to the carrier · two outcomes. Five defenders advance at the signal, then respond to a coach carry / touch or a backward pass and controlled tackle on an age-matched runner. This is schematic. Never use a live adult tackle target with U10 players; check RFU rules and qualified-coach guidance.
+
+## Coach whistle · GO (v0.13.9)
+
+Select a **Coach** object and use **Object → Coach start signal**. Set **Show whistle cue for (seconds)** to a value from **0.1–3.0 s** (default **0.5 s**, e.g. 0.2 s or 0.5 s). Choose **Add whistle · GO**. The cue belongs to the first action step and appears for that duration during animated playback, video and presentation. Static diagrams can show the cue as an editing annotation even after its playback duration. The optional audible whistle remains a short separate sound; the visual duration does not stretch or shorten the whole action step.
+
+To remove the whistle, select the Coach and press **Remove whistle · GO**, then **Save to GitHub** if you want the online copy updated. Removal is independent of the current step or edits to the original coach setup. When the step was automatically named for the whistle, removal also clears that automatic label and narration; the step itself remains in case other actions were added.
+
+Both editors and read-only players share the same signal model, import/export support and rendering code. Older drills without a duration retain a default of 0.5 s.
 
 ## Structure
 
