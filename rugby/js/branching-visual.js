@@ -1,9 +1,9 @@
 // A reusable, literal visual map of TWO real, coach-authored outcomes.
 // Used by both editors, both read-only players and the printed coaching pack.
 // It visualises saved ball/player trajectories; it does not invent tactical decisions.
-import {esc} from './model.js?v=0.12.10';
+import {esc} from './model.js?v=0.13.4';
 import {hasOutcomes,outcomeViews} from './branching.js?v=1';
-import {playbackData,renderScene} from './scene.js?v=0.13.1';
+import {playbackData,renderScene} from './scene.js?v=0.13.6';
 import {movementFor,frameObjects} from './possession.js?v=0.12.31';
 import {routeSamples,routeSVG} from './routes.js?v=0.4.3';
 const ACTIVE=new Set(['coach','attacker','defender','neutral','shield','bagplayer','ball']);
