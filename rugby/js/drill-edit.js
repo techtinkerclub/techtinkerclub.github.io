@@ -40,7 +40,8 @@ const staticTypes=new Set(['cone','flag','bag','sausage','ladder','label','offsi
 const linked=(f,id)=>f.objects.some(o=>contactTypes.has(o.type)&&(o.id===id||o.members?.some(m=>m.id===id)||[o.breakdown?.carrierId,o.breakdown?.tacklerId,...(o.breakdown?.tacklerIds||[])].includes(id)))||f.objects.some(o=>o.type==='donut'&&o.donutTacklerId===id)||!!f.guide&&Object.values(f.guide.roles||{}).flat().includes(id);
 const find=(f,id)=>f?.objects.find(o=>o.id===id);
 const route=(f,id)=>f?.paths?.[id]?.points||[];
-const stateChanged=(a,b)=>a.ownerId!==b.ownerId||a.groundState!==b.groundState||a.transferKind!==b.transferKind||a.donutState!==b.donutState||a.playerPose!==b.playerPose;
+// A new Ready / running pose does not by itself interrupt a repositioned run.
+const stateChanged=(a,b)=>a.ownerId!==b.ownerId||a.groundState!==b.groundState||a.transferKind!==b.transferKind||a.donutState!==b.donutState;
 export function canPropagate(f,o){return !!o&&!contactTypes.has(o.type)&&!['decision','donut','ball','shieldItem'].includes(o.type)&&!o.ownerId&&!linked(f,o.id)}
 export function canEntire(o){return !!o&&staticTypes.has(o.type)&&!o.layoutMarker}
 export function propagatePosition(frames,index,id,origin,scope){
@@ -65,7 +66,7 @@ export function propagatePosition(frames,index,id,origin,scope){
   const f=frames[i],o=find(f,id);
   if(!o)return stop(i,'object is no longer present');
   if(!canPropagate(f,o))return stop(i,'contact formation or guided action');
-  if(stateChanged(previous,o))return stop(i,'deliberate change of action or pose');
+  if(stateChanged(previous,o))return stop(i,'deliberate change of linked action');
   if(scope==='until'&&(!same(previous,o)||route(f,id).length))return stop(i,'next deliberate movement');
   const extra=scope==='onward'?extras(f):[];
   if(!fits(o)||extra.some(p=>!fits(p)))return stop(i,'pitch boundary');
