@@ -1,8 +1,8 @@
 // Coach's diagram checker, not a referee or contact technique validator.
-import {playbackData} from './scene.js?v=0.12.28';
+import {playbackData} from './scene.js?v=0.12.30';
 import {pitchGeometry} from './pitch.js?v=0.12.23';
-import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.12.27';
-import {posesFor} from './contact.js?v=0.12.28';
+import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.12.30';
+import {posesFor} from './contact.js?v=0.12.30';
 import {decisionLocation,trainingTransition,trainingPoses} from './training.js?v=0.12.0';
 import {routeSamples} from './routes.js?v=0.4.3';
 const team=o=>['attacker','shield'].includes(o?.type)?1:['defender','bagplayer'].includes(o?.type)?-1:0;
