@@ -13,6 +13,7 @@ const CATEGORIES={
   {id:'attacker',icon:'＋',title:'Add attacker',description:'Add one attacker. Drag them into position on the field.'},
   {id:'defender',icon:'＋',title:'Add defender',description:'Add one defender and place them opposite the attackers.'},
   {id:'ball',icon:'◉',title:'Add a rugby ball',description:'Put a ball in the drill; give it to a player whenever you are ready.'},
+  {id:'fieldLine',icon:'━',title:'Add a practice/reference line',description:'Mark a start line, tackle boundary or zone. Not an offside guide; adjust its length, direction and colour.'},
   {id:'sausage',icon:'▬',title:'Place a ground bag',description:'Add a sausage bag lying on the pitch.'},
   {id:'shield',icon:'▤',title:'Add contact shield',description:'Add a shield, then choose its holder in Object.'},
   {id:'donut',icon:'◯',title:'Add tackle donut',description:'Set its ready, rolling or down state using Object.'},
@@ -157,7 +158,7 @@ function doAction(key){
  case 'threeVTwo':
   done=add('attacker')&&add('attacker')&&add('attacker')&&add('defender')&&add('defender');
   message='Three attackers and two defenders added. Drag them into your starting positions, then add a running or passing step.';break;
- case 'attacker':case 'defender':case 'ball':case 'sausage':case 'donut':
+ case 'attacker':case 'defender':case 'ball':case 'sausage':case 'donut':case 'fieldLine':
   done=add(key);message=key.charAt(0).toUpperCase()+key.slice(1)+' added. Drag it into position; use Object to edit its properties.';break;
  case 'shield':done=add('shieldItem');message='Shield added. In Object → Contact shield, choose the player carrying it.';break;
  case 'setUp':done=launch('tabDrill');message='Set the drill name, age group and pitch area, then apply the settings.';break;
