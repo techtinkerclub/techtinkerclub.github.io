@@ -2,7 +2,7 @@ import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews} from './branching.js?v=1';
-import {drawnDecisionAt,convertDrawnDecision} from './annotation-to-branch.js?v=1';
+import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
 import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=3';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition} from './symbol-scale.js?v=0.12.27';
@@ -57,7 +57,7 @@ let setupPending=false,validationResult=null,validationHighlight=new Set(),guide
 const history=createHistory();let routeDrawing=false,routeClickCount=0,ballPicking=null,ballChoiceId=null,showPasses=true;
 let ballPickKind='pass',showActionLabels=true,autoContact=true;try{autoContact=localStorage.getItem('rugby-auto-contact')!=='off'}catch{}
 const donutDrafts=new Map();let familyFilter='';
-let trainingPick=null,showDecisions=true,pendingInsert=null,breakdownPreferred=null,breakdownView=null,groupIds=new Set(),groupMode=false;
+let trainingPick=null,pendingDecisionPlacement=null,showDecisions=true,pendingInsert=null,breakdownPreferred=null,breakdownView=null,groupIds=new Set(),groupMode=false;
 let autoAttach=true;try{autoAttach=localStorage.getItem('rugby-auto-attach')!=='off'}catch{}
 const gridPrefs=loadGridPrefs();
 let saveFeedback='',githubDrills=[],githubBaseline=null,githubSaving=false,githubLoading=false,githubLoaded=false,stagedImports=[];const githubStore=createGithubStore();
@@ -350,8 +350,8 @@ function renderOutcomeBar(){
  const b=hasOutcomes(drill)?branchInfo(drill):null;
  const diamond=!b?drawnDecisionAt(drill,idx,selected):null;
  $('createOutcomes').hidden=!!b;
- $('createOutcomes').textContent=diamond?'◆ Make drawn decision playable':'◆ Add playable decision';
- $('createOutcomes').title=diamond?'Convert the selected yellow diamond and its drawn A/B paths into real movement':'Split this step into two editable outcome sequences';
+ $('createOutcomes').textContent=diamond?'◆ Make this decision playable':'◆ Add decision on a run';
+ $('createOutcomes').title=diamond?'Convert the drawn diamond into two real movement sequences':'Select a running player, then click the location on the path where the decision occurs';
  $('outcomeControls').hidden=!b;
  if(!b)return;
  $('outcomeQuestion').textContent='◆ '+b.question+' · common start through step '+(b.fork+1);
@@ -369,10 +369,10 @@ function openOutcomeDialog(edit=false){
  const b=hasOutcomes(drill)?branchInfo(drill):null;
  const marker=!b?drawnDecisionAt(drill,idx,selected):null;
  const d=marker?.decision?decisionData(marker.decision):null;
- if(!b&&!marker&&f().objects.filter(o=>o.type==='decision').length>1){
+ if(!b&&!marker&&!pendingDecisionPlacement&&f().objects.filter(o=>o.type==='decision').length>1){
   note('Select the yellow decision diamond you want to convert first.');return;
  }
- const actor=f().objects.find(o=>o.id===d?.playerId);
+ const actor=f().objects.find(o=>o.id===(pendingDecisionPlacement?.actorId||d?.playerId));
  const autoLabel=(o,i)=>{
   if(!o)return i?'Option B':'Option A';
   const name=(o.label||'').trim();
@@ -384,22 +384,52 @@ function openOutcomeDialog(edit=false){
   if(o.kind==='run')return (actor?.label||'Carrier')+' runs through the channel';
   return 'Option '+(i?'B':'A');
  };
+ const availableReceivers=f().objects.filter(o=>['attacker','neutral','shield','bagplayer'].includes(o.type)&&o.id!==actor?.id);
+ const ball=actor&&f().objects.find(o=>o.type==='ball'&&o.ownerId===actor.id);
+ const location=pendingDecisionPlacement?decisionLocation(f(),{
+  id:'preview',x:actor?.x||450,y:actor?.y||270,
+  decision:decisionData({playerId:actor.id,anchor:pendingDecisionPlacement.anchor,options:[]})
+ },geometry(),drill.frames[idx-1]):null;
+ const receiverDefault=availableReceivers.find(o=>ball&&location&&o.y>=geometry().fromView(location.x,location.y).y-2)||availableReceivers[0];
+ const recommendedB=ball&&receiverDefault?'pass':'run';
+ const receiverForOption=(opt)=>{
+  const end=opt?.points?.at(-1);
+  if(!end)return receiverDefault?.id||'';
+  return availableReceivers.find(o=>Math.hypot(o.x-end.x,o.y-end.y)<=65)?.id||receiverDefault?.id||'';
+ };
+ for(const [key,i] of [['A',0],['B',1]]){
+  const kind=b?'main':marker?(['main','run','pass'].includes(d?.options?.[i]?.kind)?d.options[i].kind:'run'):i===0?'main':recommendedB;
+  const select=$('outcomeAction'+key);
+  select.value=kind;
+  const receiver=$('outcomeReceiver'+key);
+  receiver.replaceChildren(new Option('Choose a receiver…',''),...availableReceivers.map(o=>new Option(objectName(o),o.id)));
+  receiver.value=receiverForOption(d?.options?.[i]);
+  const update=()=>{$('outcomeReceiverRow'+key).hidden=select.value!=='pass'};
+  select.onchange=update;update();
+ }
+ $('outcomeActionGroup').hidden=!!b;
  $('outcomeDialog').dataset.markerId=marker?.id||'';
- $('outcomeDialogTitle').textContent=b?'Edit the two outcomes':marker?'Turn your drawn decision into playable A and B':'Create two playable outcomes';
- $('outcomeDialogHint').textContent=b?'Rename your existing playable outcomes.':marker
-  ?'Your diamond is already positioned on the player’s run. The editor will split that step at the diamond, turn the two drawn paths into a run or pass where possible, then let you edit the defenders and tackle yourself.'
-  :'The selected step becomes a shared decision point. A and B will have separate steps. Add the real player movements in each outcome.';
+ $('outcomeDialogTitle').textContent=b?'Edit the two outcomes':marker?'Make this drawn decision playable':'Decision on '+(actor?.label||'the player')+'’s run';
+ $('outcomeDialogHint').textContent=b?'Change the names of the two existing outcomes.':marker
+  ?'The player runs to your yellow diamond and the animation pauses there. Choose what A and B do; your drawn routes will become real movement where possible.'
+  :'The player will run to the point you clicked, then playback pauses. Name A and B and choose each action. Afterwards, adjust the movement and defenders separately in each outcome.';
  $('outcomePrompt').value=b?.question||d?.question||'What happens next?';
- $('outcomeLabelA').value=b?.choices[0].label||autoLabel(d?.options?.[0],0);
- $('outcomeLabelB').value=b?.choices[1].label||autoLabel(d?.options?.[1],1);
- $('outcomeSave').textContent=b?'Update decision':marker?'Convert and animate A + B':'Create two outcomes';
+ $('outcomeLabelA').value=b?.choices[0].label||(!marker?'Keep running':autoLabel(d?.options?.[0],0));
+ $('outcomeLabelB').value=b?.choices[1].label||(!marker?(recommendedB==='pass'?'Pass to '+(receiverDefault?.label||'support player'):'Change direction'):autoLabel(d?.options?.[1],1));
+ $('outcomeSave').textContent=b?'Save names':marker?'Create playable A + B':'Create decision on run';
  $('outcomeRemove').hidden=!b;
  $('outcomeError').textContent='';
  $('outcomeDialog').showModal();
 }
-$('createOutcomes').onclick=()=>openOutcomeDialog();
+$('createOutcomes').onclick=()=>{
+ if(hasOutcomes(drill))return;
+ const marker=drawnDecisionAt(drill,idx,selected);
+ if(marker){openOutcomeDialog();return}
+ beginDecisionPlacement();
+};
 $('editOutcomes').onclick=()=>openOutcomeDialog(true);
 $('outcomeCancel').onclick=()=>$('outcomeDialog').close();
+$('outcomeDialog').addEventListener('close',()=>{pendingDecisionPlacement=null});
 $('outcomeSave').onclick=()=>{
  try{
   const q=$('outcomePrompt').value,a=$('outcomeLabelA').value,b=$('outcomeLabelB').value;
@@ -414,20 +444,23 @@ $('outcomeSave').onclick=()=>{
   }else{
    const fork=idx,markerId=$('outcomeDialog').dataset.markerId;
    const marker=markerId?f().objects.find(o=>o.id===markerId&&o.type==='decision'):null;
-   if(marker){
-    const converted=convertDrawnDecision(drill,fork,markerId,{question:q,labelA:a,labelB:b});
-    drill=converted.drill;
-    $('outcomeDialog').close();selected=null;changed();choose(fork+1);
-    note('Converted the yellow diamond into playable A/B actions. The fork now pauses '+(converted.midStep?'at the diamond on the player’s run.':'after the selected step.')+' Edit defenders separately in each outcome.'+(converted.warnings.length?' CHECK: '+converted.warnings.join(' '):''));
-   }else{
-    const actor=f().objects.find(o=>o.id===selected),branch=createOutcomes(drill,fork,q,a,b);
-    const x=actor?Math.min(870,actor.x+55):450,y=actor?Math.max(45,actor.y-50):270;
-    const point=obj(uid(),'decision','Choice',x,y);
-    point.decision=decisionData({playerId:actor&&canCarry(actor)?actor.id:'',question:branch.question,cue:'Choose one outcome for each repetition.',options:[{label:branch.choices[0].label,kind:'main'},{label:branch.choices[1].label,kind:'run'}]});
-    branch.markerId=point.id;drill.frames[fork].objects.push(point);
-    $('outcomeDialog').close();changed();selected=null;choose(fork+1);
-    note('Two real outcomes created. Edit A, then click B to build the alternative. The beginning is shared.');
-   }
+   const settings={
+    question:q,labelA:a,labelB:b,
+    actionA:$('outcomeActionA').value,actionB:$('outcomeActionB').value,
+    receiverA:$('outcomeReceiverA').value,receiverB:$('outcomeReceiverB').value,
+    strict:true
+   };
+   const placement=pendingDecisionPlacement;
+   let converted;
+   if(marker)converted=convertDrawnDecision(drill,fork,markerId,settings);
+   else if(placement&&placement.step===fork)
+    converted=createDecisionOnRun(drill,fork,placement.actorId,placement.anchor,placement.markerId,settings);
+   else throw Error('Select a player’s running path first, then click where the decision happens.');
+   // Only commit the copied, validated drill after conversion succeeds.
+   drill=converted.drill;
+   $('outcomeDialog').close();selected=null;
+   changed();choose(fork+1);
+   note('Decision created on the running path. Edit A, then B. Press Restart + Play to see the player reach the decision and stop.'+(converted.warnings.length?' Check: '+converted.warnings.join(' '):''));
   }
  }catch(e){
   $('outcomeError').textContent=e.message;
@@ -659,10 +692,31 @@ function ensureRoute(){
 }
 function hasMovement(a,b,r){return !!(a&&b&&(Math.hypot(a.x-b.x,a.y-b.y)>1e-6||r?.points?.length))}
 function canInsertPoint(){const o=preview===null?activeObject():null,r=o&&f().paths?.[o.id];const m=selectedMovement();return !routeDrawing&&!ballPicking&&!!o&&!!m&&hasMovement(m.start,m.end,r)&&(r?.points?.length||0)<64}
-const addDecisionButton=document.createElement('button');addDecisionButton.id='addDecisionOnRoute';addDecisionButton.textContent='+ Add decision on path';$('routeHelp').before(addDecisionButton);addDecisionButton.onclick=()=>{const o=activeObject();if(!o||!decisionRoute(f(),drill.frames[idx-1],o.id,geometry()))return;trainingPick={kind:'anchor',id:o.id};showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true');note('Click the running trajectory where the player makes a decision.');focusPitch();};
+const addDecisionButton=document.createElement('button');addDecisionButton.id='addDecisionOnRoute';addDecisionButton.textContent='◆ Add decision to this run';$('routeHelp').before(addDecisionButton);addDecisionButton.onclick=()=>beginDecisionPlacement();
+function beginDecisionPlacement(){
+ if(hasOutcomes(drill)){note('This drill already has an A/B decision. Use the outcome buttons to edit it.');return}
+ if(!requireAppliedSetup())return;
+ if(preview!==null){stop();preview=null;refresh()}
+ const actor=activeObject(),g=geometry();
+ if(!actor||!canCarry(actor)||idx===0||!decisionRoute(f(),drill.frames[idx-1],actor.id,g)){
+  note('Select a player running in a later step. Draw their movement first, then choose Add decision to this run.');
+  return;
+ }
+ const old=f().objects.filter(o=>o.type==='decision');
+ if(old.length){
+  note('This step already contains a decision diamond. Select that diamond to make it playable.');
+  return;
+ }
+ trainingPick={kind:'anchor',id:actor.id};
+ showDecisions=true;
+ $('decisionToggle').classList.add('selected');
+ $('decisionToggle').setAttribute('aria-pressed','true');
+ note('Click the running line at the exact place where the player must choose A or B. Both options will start there.');
+ focusPitch();
+}
 function updateRouteTools(){
  const o=preview===null?activeObject():null,route=o&&f().paths?.[o.id],m=o&&selectedMovement(),existing=!!(m&&(hasMovement(m.start,m.end,route)||route));
- $('routeTools').hidden=!(routeDrawing||existing);addDecisionButton.hidden=!existing||!canCarry(o)||routeDrawing||!!ballPicking;addDecisionButton.disabled=!!trainingPick;
+ $('routeTools').hidden=!(routeDrawing||existing);addDecisionButton.hidden=!existing||!canCarry(o)||routeDrawing||!!ballPicking||hasOutcomes(drill);addDecisionButton.disabled=!!trainingPick;
  $('addPointSide').hidden=!canInsertPoint();$('addPointSide').disabled=!canInsertPoint();
  $('actionHint').textContent=routeDrawing?'Click route points, then Finish path.':ballPicking?'Choose a player on the pitch.':$('drawRouteSide').disabled?'Select a player or a free/pass ball.':canInsertPoint()?'Drag a + on the line to curve it.':'Draw a route or move into a new step.';
  $('routeStyle').value=route?.mode||'smooth';$('followRoute').checked=!!route?.follow;$('followRoute').disabled=o?.type==='ball';
@@ -1560,7 +1614,16 @@ function donutInspector(o){
   setPickUI(true);render();note('Click '+(draft.direction==='auto'?'either side of':draft.direction==='reverse'?'behind':'ahead of')+' the donut. Distance snaps onto the highlighted rolling lane.');focusPitch();
  };
 }
-function handleTrainingPick(e){const pick=trainingPick,o=f().objects.find(o=>o.id===pick.id),p=point(e);if(!o){trainingPick=null;return}if(pick.kind==='anchor'){const g=geometry(),route=decisionRoute(f(),drill.frames[idx-1],o.id,g);trainingPick=null;if(!route||f().objects.length>=200){render();return}const anchor=decisionFraction(route,viewPoint(e)),n={id:uid(),type:'decision',label:'Decision '+(f().objects.filter(x=>x.type==='decision').length+1),x:p.x,y:p.y,rot:0,decision:decisionData({playerId:o.id,anchor,options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative run',kind:'run'}]})};const q=decisionLocation(f(),n,g,drill.frames[idx-1]);Object.assign(n,g.fromView(q.x,q.y));f().objects.push(n);selected=n.id;changed();refresh();openInspector('Object',true);note('Decision added to the run. Draw the alternative in the inspector.');return}if(pick.kind==='option'){const option=o.decision.options[pick.index];if(!option){trainingPick=null;return}if(pick.fresh){option.points=[];pick.fresh=false}if(option.points.length<12)option.points.push(p);changed();render();inspector();return}try{const frames=donutSteps(f(),o.id,p,pick.tackler,pick.fraction,pick.seconds,geometry(),pick.direction);if(drill.frames.length+frames.length>150)throw Error('Maximum of 150 steps reached.');trainingPick=null;drill.frames.splice(idx+1,0,...frames);sanitizeRoutes(drill.frames);changed();choose(idx+1);selectObject(o.id);note(frames[0].notes)}catch(err){note(err.message)}}
+function handleTrainingPick(e){const pick=trainingPick,o=f().objects.find(o=>o.id===pick.id),p=point(e);if(!o){trainingPick=null;return}if(pick.kind==='anchor'){
+ const g=geometry(),route=decisionRoute(f(),drill.frames[idx-1],o.id,g);
+ trainingPick=null;
+ if(!route){note('This run has changed. Select it again.');render();return}
+ const anchor=decisionFraction(route,viewPoint(e));
+ // Store only an in-memory placement until the user confirms the decision.
+ // Cancel or Escape leaves the original drill and undo history unchanged.
+ pendingDecisionPlacement={step:idx,actorId:o.id,anchor,markerId:uid()};
+ render();openOutcomeDialog();return;
+}if(pick.kind==='option'){const option=o.decision.options[pick.index];if(!option){trainingPick=null;return}if(pick.fresh){option.points=[];pick.fresh=false}if(option.points.length<12)option.points.push(p);changed();render();inspector();return}try{const frames=donutSteps(f(),o.id,p,pick.tackler,pick.fraction,pick.seconds,geometry(),pick.direction);if(drill.frames.length+frames.length>150)throw Error('Maximum of 150 steps reached.');trainingPick=null;drill.frames.splice(idx+1,0,...frames);sanitizeRoutes(drill.frames);changed();choose(idx+1);selectObject(o.id);note(frames[0].notes)}catch(err){note(err.message)}}
 
 function shareOptions(){return outputOptions({orientation,scaleMode,offside:$('offsideGuides').checked,markups:$('shareMarkups').checked,runs:$('shareRuns').checked,passes:$('sharePasses').checked,labels:$('shareLabels').checked,decisions:$('shareDecisions').checked})}
 const getMovieSettings=bindMovieSettings($('movieOptions'),'movie');
