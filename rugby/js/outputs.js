@@ -4,7 +4,7 @@ import {hasOutcomes,outcomeViews} from './branching.js?v=1';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.1';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
-import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup} from './coaching-output.js?v=0.8.0';
+import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.0';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
 const decode64=s=>{if(!/^[A-Za-z0-9_-]+$/.test(s))throw Error('Invalid share code.');return Uint8Array.from(atob(s.replaceAll('-','+').replaceAll('_','/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0))};
@@ -46,7 +46,7 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  // Optional paginated full coaching card. Text is wrapped, not silently truncated.
  const cardPages=[];if(plan.options.card){
   const size=portrait?34:28,maxLines=portrait?26:21;ctx.font=font(size);
-  for(const entry of [...cardEntries(drill),...chapters.flatMap(ch=>ch.drill.frames.map((f,i)=>({label:(ch.headline?ch.headline+' · ':'')+'Step '+(i+1)+' · '+f.name,value:[String(f.notes||'').trim(),decisionText(f)].filter(Boolean).join('\n')}))).filter(x=>x.value),...cardLinks(drill).map(x=>({label:'Reference',value:x.label+' — '+x.url}))]){
+  for(const entry of [...cardEntries(drill),...chapters.flatMap(ch=>ch.drill.frames.map((f,i)=>({label:(ch.headline?ch.headline+' · ':'')+'Step '+(i+1)+' · '+f.name,value:[String(f.notes||'').trim(),hasOutcomes(drill)&&i===drill.branching.fork?drill.branching.question+' · '+drill.branching.choices.map(q=>q.id.toUpperCase()+': '+q.label).join(' / '):decisionText(f)].filter(Boolean).join('\n')}))).filter(x=>x.value),...cardLinks(drill).map(x=>({label:'Reference',value:x.label+' — '+x.url}))]){
    const lines=wrapCanvas(ctx,entry.value,content);for(let n=0;n<lines.length;n+=maxLines){const part=lines.slice(n,n+maxLines),words=part.join(' ').split(/\s+/).length;cardPages.push({label:entry.label+(n?' (continued)':''),lines:part,seconds:Math.max(3,1.5+words/3)})}
   }
  }
@@ -104,7 +104,8 @@ export function printMarkup(raw,opts={}){
  const d=playbackData(raw);
  if(hasOutcomes(d)){
   const b=d.branching;
-  return outcomeViews(d).map((v,i)=>'<section class="print-page print-branch-heading"><small>◆ PLAYABLE DECISION · OPTION '+v.id.toUpperCase()+'</small><h2>'+esc(v.label)+'</h2><p><strong>Decision:</strong> '+esc(b.question)+'</p><p>Shared setup and signal, then outcome '+v.id.toUpperCase()+'. Repeat the exercise with the other outcome.</p></section>'+printMarkup(v.drill,{...opts,_skipCard:i>0})).join('');
+  const cover='<section class="print-page print-card"><header><div><small>RUGBY COACHING STUDIO · DECISION DRILL</small><h1>'+esc(d.title)+'</h1></div><p>Shared setup · two playable outcomes</p></header>'+coachingMarkup(d)+'<footer>Check current age-grade rules and contact safety before delivery.</footer></section>';
+  return cover+outcomeViews(d).map((v,i)=>'<section class="print-page print-branch-heading"><small>◆ PLAYABLE DECISION · OPTION '+v.id.toUpperCase()+'</small><h2>'+esc(v.label)+'</h2><p><strong>Decision:</strong> '+esc(b.question)+'</p><p>Shared setup and signal, then outcome '+v.id.toUpperCase()+'. Repeat the exercise with the other outcome.</p></section>'+printMarkup(v.drill,{...opts,_skipCard:true,_branching:b,_branchFork:b.fork})).join('');
  }
  const o=outputOptions(opts),pages=[],age=cardAge(d),groups=[];
  // Long notes receive their own sequence section; they may flow to another sheet rather than disappear.
@@ -113,7 +114,7 @@ export function printMarkup(raw,opts={}){
  if(!opts._skipCard)pages.push('<section class="print-page print-card">'+head('Coaching card')+coachingMarkup(d)+'<footer>Check current age-grade laws and safe coaching practice before delivery.</footer></section>');
  for(const [index,group] of groups.entries()){
   const cards=group.frames.map((fr,j)=>{const k=group.start+j,scene=renderScene(d,{...o,index:k,ink:true,ghosts:true,runs:true,passes:true,labels:true,prefix:'p'+k});
-   return '<article class="print-step'+(fr.notes.length>500||decisionList(fr).length?' long-note':'')+'"><h3>'+String(k+1).padStart(2,'0')+' · '+esc(fr.name)+' <small>'+(k?fr.seconds.toFixed(1)+' s':'Setup')+'</small></h3><div class="print-step-body"><div class="print-diagram">'+scene.svg+'</div><div><h4>Technical coaching notes</h4><p>'+esc(fr.notes||'Follow the positions and movement arrows in the diagram.')+'</p>'+(o.decisions?decisionMarkup(fr):'')+'<h4>Coach observations</h4><div class="print-notelines"></div></div></div></article>'}).join('');
+   return '<article class="print-step'+(fr.notes.length>500||decisionList(fr).length?' long-note':'')+'"><h3>'+String(k+1).padStart(2,'0')+' · '+esc(fr.name)+' <small>'+(k?fr.seconds.toFixed(1)+' s':'Setup')+'</small></h3><div class="print-step-body"><div class="print-diagram">'+scene.svg+'</div><div><h4>Technical coaching notes</h4><p>'+esc(fr.notes||'Follow the positions and movement arrows in the diagram.')+'</p>'+(o.decisions?(opts._branching&&k===opts._branchFork?branchDecisionMarkup(opts._branching):decisionMarkup(fr)):'')+'<h4>Coach observations</h4><div class="print-notelines"></div></div></div></article>'}).join('');
   pages.push('<section class="print-page">'+head('Sequence '+(index+1)+' / '+groups.length)+'<div class="print-legend"><span> ───➤ Run / movement</span><span> – – ➤ Ball movement · – · – Kick</span><span> ◌ Starting position · ◆ Decision / dotted alternative</span></div>'+cards+'<footer>'+esc(cardMeta(d))+' · check age-grade laws before delivery.</footer></section>');
  }return pages.join('');
 }
