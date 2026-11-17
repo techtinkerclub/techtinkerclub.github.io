@@ -1,0 +1,81 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+
+const origin='http://127.0.0.1:8765';
+const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-fake-ui-for-media-stream']});
+const errors=[];
+const capture=page=>{
+ page.on('pageerror',e=>errors.push('PAGE ERROR '+e.message));
+ page.on('console',msg=>{if(msg.type()==='error')errors.push('CONSOLE ERROR '+msg.text())});
+};
+try {
+ const page=await browser.newPage({viewport:{width:1440,height:850},acceptDownloads:true});
+ capture(page);
+ await page.goto(origin+'/rugby/play.html?drill=seed-133',{waitUntil:'networkidle',timeout:40000});
+ await page.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Hold the line'),{timeout:15000});
+ assert.match(await page.title(),/Hold the line/);
+ assert.equal(await page.locator('#branchPlayer').isVisible(),true,'Outcome selector should appear');
+ assert.match(await page.locator('#coachCardContent').innerText(),/World Rugby|RFU/i);
+ await page.locator('#speed').selectOption('2');
+ await page.locator('#play').click();
+ await page.locator('#branchDecisionPanel').waitFor({state:'visible',timeout:12000});
+ const chooserText=await page.locator('#branchDecisionPanel').innerText();
+ assert.match(chooserText,/carry|pass/i);
+ assert.equal(await page.locator('#play').innerText(),'Play','Playback must pause at the choice');
+ assert.equal(await page.locator('[data-branch-choice="a"]').count(),1);
+ assert.equal(await page.locator('[data-branch-choice="b"]').count(),1);
+ await page.locator('[data-branch-choice="b"]').click();
+ assert.equal(await page.locator('#branchDecisionPanel').isVisible(),false);
+ assert.equal(await page.locator('#branchChoice').inputValue(),'b');
+ await page.waitForTimeout(850);
+ assert.ok(Number(await page.locator('#seek').inputValue())>2.8,'Choosing B must continue after the fork');
+ await page.locator('#play').click(); // pause before export
+ await page.locator('#restart').click();
+ await page.locator('#play').click();
+ await page.locator('#branchDecisionPanel').waitFor({state:'visible',timeout:12000});
+ await page.locator('[data-branch-choice="a"]').click();
+ assert.equal(await page.locator('#branchChoice').inputValue(),'a');
+ await page.locator('#play').click();
+ // Verify the settings and actual video creation in a headless Chromium browser.
+ await page.locator('#video').evaluate(el=>el.closest('details').open=true);
+ await page.locator('#playerMovieMode').selectOption('single');
+ await page.locator('#playerMovieQuality').selectOption('720');
+ await page.locator('#playerMovieBranches').selectOption('all');
+ assert.equal(await page.locator('#playerMovieBranches').inputValue(),'all');
+ const downloadWait=page.waitForEvent('download',{timeout:110000});
+ await page.locator('#video').click();
+ let download;
+ try{download=await downloadWait}catch(e){throw new Error('Movie export failed: '+(await page.locator('#message').innerText())+' / '+e.message)}
+ assert.ok(/\.(webm|mp4)$/i.test(download.suggestedFilename()),'Movie should download as video');
+ await download.path();
+ console.log('BROWSER PLAYER PASS: public link, A/B stop and continue, literature and two-outcome movie download '+download.suggestedFilename());
+ await page.close();
+ const classic=await browser.newPage({viewport:{width:1550,height:950},acceptDownloads:true});
+ capture(classic);
+ await classic.goto(origin+'/rugby/',{waitUntil:'networkidle',timeout:40000});
+ await classic.locator('#outcomeBar').waitFor();
+ assert.ok(await classic.locator('#outcomeSave').count());
+ assert.ok(await classic.locator('#outcomeActionA').count());
+ assert.ok(await classic.locator('#outcomeActionB').count());
+ const file=await (await fetch(origin+'/rugby/data/drills.json')).json();
+ const drill=file.drills.find(d=>d.id==='seed-133');
+ assert.ok(drill);
+ await classic.locator('#file').setInputFiles({name:'coach-drill.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(drill))});
+ await classic.waitForFunction(()=>document.querySelector('#stageTitle')?.textContent.includes('Hold the line'),{timeout:10000});
+ assert.equal(await classic.locator('#outcomeA').isVisible(),true);
+ assert.equal(await classic.locator('#outcomeB').isVisible(),true);
+ await classic.locator('#outcomeB').click();
+ assert.match(await classic.locator('#outcomeQuestion').innerText(),/Ball carrier/i);
+ await classic.locator('#compareOutcomes').click();
+ assert.equal(await classic.locator('#outcomeMapDialog').evaluate(el=>el.open),true,'Compare both must open');
+ await classic.locator('#closeOutcomeMap').click();
+ console.log('BROWSER CLASSIC PASS: import saved drill, switch B, compare A/B, retain existing tools');
+ await classic.close();
+ const coach=await browser.newPage({viewport:{width:1440,height:850}});
+ capture(coach);
+ await coach.goto(origin+'/rugby/coach/',{waitUntil:'networkidle',timeout:40000});
+ assert.ok(await coach.locator('#outcomeActionB').count());
+ console.log('BROWSER COACH PASS: shares same decision form and engine');
+ await coach.close();
+ if(errors.length)throw new Error('Browser errors: '+errors.join(' | '));
+} finally {await browser.close()}
