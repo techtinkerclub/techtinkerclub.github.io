@@ -25,3 +25,5 @@
 .print-branch-heading h2{font-size:30px;margin:15px 0}
 .print-branch-heading p{font-size:18px;line-height:1.5;max-width:650px}
 @media(max-width:760px){.outcome-bar{padding:5px 1px}.outcome-bar #outcomeQuestion{flex-basis:100%;max-width:100%}.outcome-bar #outcomeControls button{flex:1 1 auto;white-space:normal;line-height:1.25}.branch-player{grid-template-columns:minmax(0,1fr)}}
+
+body.presentation-mode .outcome-bar{display:none}
