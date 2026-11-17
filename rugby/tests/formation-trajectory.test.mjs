@@ -37,6 +37,12 @@ const shifted={x:500+offset.x,y:440+offset.y};
 assert.deepEqual(unraiseFormationPoint(shifted,next,next.objects[1],g),{x:500,y:440});
 assert(labelPosition({...players[2],rot:0},g,'standing').y>0);
 assert(labelPosition({...players[2],rot:180},g,'standing').y<0);
+// Text is baseline-aligned: a caption ABOVE the player otherwise looks
+// 10px farther away than one BELOW, even when the offsets are identical.
+const lower=labelPosition({...players[2],rot:0},g,'standing');
+const upper=labelPosition({...players[2],rot:180},g,'standing');
+assert(Math.abs(lower.y+upper.y-10)<1e-6,
+ 'Captions must have matching visible gaps above and below in portrait view');
 assert.equal(orderObjects(players)[0].id,'sausage');
 setDrawingOrder([next],'sausage','front','top');
 assert.equal(orderObjects(next.objects).at(-1).id,'sausage');
