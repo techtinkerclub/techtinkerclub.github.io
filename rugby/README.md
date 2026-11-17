@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.14.1 / Coach Edition v0.3.3
+# Rugby Coaching Studio — Classic v0.14.3 / Coach Edition v0.3.3
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
@@ -56,7 +56,7 @@ After converting, edit Outcome A, use the B button to edit Outcome B, then play 
 - js/outputs.js, js/movie.js, js/coaching-output.js — share links, movies and coaching documentation.
 - js/player.js — branch chooser and read-only player.
 - js/github-store.js — saving to data/coach-drills.json.
-- data/drills.json — starter catalogue, currently 132 records.
+- data/drills.json — starter catalogue, currently 142 records.
 - tests/branching.test.mjs and other tests/*.test.mjs — regression coverage.
 - .github/workflows/rugby-qa.yml — continuous tests for Rugby folder changes.
 
@@ -82,3 +82,9 @@ Both Classic Studio and Coach Edition have a touch-first layout at widths up to 
 **Cross-device saving:** local, unsaved edits do not sync from one device to another. Save to GitHub (with permitted GitHub credentials configured on that device), then open the saved drill on the other device. Export a JSON backup before switching devices if saving is not available. Browser movie exporting depends on format support and device processing limits.
 
 This release is responsive and touch-oriented but should still be physically checked on iOS Safari and Android Chrome, particularly complex SVG dragging, pitch panning, modal editing and movie export. Keep controls and pinch interactions distinct from the underlying drill model.
+
+## Animation quality and U10 Understanding the Game review (November 2026)
+
+Player-on-player tackles now show the tackler's contact stance during playback; inherited recovery poses no longer leave moving players sliding in a low posture. Ball presentation is a short controlled placement, separate from a pass. All 15 U10 rules lessons have been reviewed for written explanations; key examples now have visible offside guides, accurate free-pass/scrum marks and marked in-goal areas where appropriate.
+
+Read [ANIMATION_AUDIT.md](./ANIMATION_AUDIT.md) for corrections, audit thresholds, source links, current 142-drill checks and remaining browser/video verification. The new Node regression checks are included in the Rugby QA workflow. Real-device and movie visual testing remains outstanding.
