@@ -540,8 +540,8 @@
               "id": "mwko06q2r10wwh",
               "type": "defender",
               "label": "D1",
-              "x": 450.0000000000001,
-              "y": 295.24166666666673,
+              "x": 450,
+              "y": 386.5,
               "rot": 0
             },
             {
@@ -621,10 +621,10 @@
               "id": "mwko758271hcp3",
               "type": "shieldItem",
               "label": "",
-              "x": 450.0000000000001,
-              "y": 287.7856666666667,
+              "x": 450,
+              "y": 388.75233333333335,
               "rot": 0,
-              "ownerId": "mwko06q2r10wwh"
+              "ownerId": "mwko072avp7wre"
             },
             {
               "id": "mwkpwupi3yqu0i",
@@ -697,19 +697,27 @@
             "mwko4wpmsdirgs": {
               "start": 25,
               "end": 70
+            },
+            "mwko758271hcp3": {
+              "start": 79,
+              "end": 80
             }
           },
           "paths": {
-            "mwko3a96tai59c": {
+            "mwko06q2r10wwh": {
               "mode": "smooth",
               "points": [
                 {
-                  "x": 654,
-                  "y": 114.66666666666667
+                  "x": 388.79999999999995,
+                  "y": 316.6
                 },
                 {
-                  "x": 475.5,
-                  "y": 37
+                  "x": 348,
+                  "y": 339.9
+                },
+                {
+                  "x": 368.4,
+                  "y": 370.96666666666664
                 }
               ],
               "follow": false
@@ -728,6 +736,406 @@
                 {
                   "x": 450,
                   "y": 68.06666666666666
+                }
+              ],
+              "follow": false
+            },
+            "mwko3a96tai59c": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 654,
+                  "y": 114.66666666666667
+                },
+                {
+                  "x": 475.5,
+                  "y": 37
+                }
+              ],
+              "follow": false
+            }
+          }
+        },
+        {
+          "name": "Pass to Coach",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwko06q2r10wwh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwko06wal3mstg",
+              "type": "defender",
+              "label": "D2",
+              "x": 526.5,
+              "y": 318.5416666666667,
+              "rot": 0
+            },
+            {
+              "id": "mwko072avp7wre",
+              "type": "defender",
+              "label": "D3",
+              "x": 450,
+              "y": 396.20833333333337,
+              "rot": 0
+            },
+            {
+              "id": "mwko07962eg8ba",
+              "type": "defender",
+              "label": "D4",
+              "x": 450,
+              "y": 425.33333333333337,
+              "rot": 0
+            },
+            {
+              "id": "mwko3a2ya6ju52",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 83.6,
+              "rot": 180
+            },
+            {
+              "id": "mwko3a96tai59c",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 56.41666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko3afv8riv49",
+              "type": "attacker",
+              "label": "A3",
+              "x": 450,
+              "y": 143.79166666666669,
+              "rot": 180
+            },
+            {
+              "id": "mwko3am2mh6y4m",
+              "type": "attacker",
+              "label": "A4",
+              "x": 450,
+              "y": 114.66666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko4krm39vpeq",
+              "type": "sausage",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "mwko4wpmsdirgs",
+              "type": "ball",
+              "label": "",
+              "x": 690.312,
+              "y": 264.874,
+              "rot": 0,
+              "ownerId": "mwktucsgx1wsbp"
+            },
+            {
+              "id": "mwko758271hcp3",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450,
+              "y": 388.75233333333335,
+              "rot": 0,
+              "ownerId": "mwko072avp7wre"
+            },
+            {
+              "id": "mwkpwupi3yqu0i",
+              "type": "cone",
+              "label": "",
+              "x": 399,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwuvarw6uyk",
+              "type": "cone",
+              "label": "",
+              "x": 399,
+              "y": 153.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwv1iebxo5f",
+              "type": "cone",
+              "label": "",
+              "x": 501,
+              "y": 153.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwv7y3tvbdz",
+              "type": "cone",
+              "label": "",
+              "x": 501,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwktjp1zu1hg7w",
+              "type": "ruck",
+              "label": "Attack secures · play away",
+              "x": 450.0000000000001,
+              "y": 266.1166666666667,
+              "rot": 0,
+              "breakdown": {
+                "phase": "secured",
+                "mode": "pad",
+                "padId": "mwko4krm39vpeq",
+                "arrivalSide": "attack",
+                "winner": "attack",
+                "clearanceCm": 50
+              },
+              "members": [
+                {
+                  "id": "mwko3a2ya6ju52",
+                  "pose": "bound"
+                },
+                {
+                  "id": "mwko06q2r10wwh",
+                  "pose": "standing"
+                }
+              ]
+            },
+            {
+              "id": "mwktucsgx1wsbp",
+              "type": "coach",
+              "label": "Coach",
+              "x": 705,
+              "y": 270,
+              "rot": 270
+            }
+          ],
+          "timing": {
+            "mwko4wpmsdirgs": {
+              "start": 35,
+              "end": 70
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Step 6",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwko06q2r10wwh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 464.1666666666667,
+              "rot": 0
+            },
+            {
+              "id": "mwko06wal3mstg",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 495.23333333333335,
+              "rot": 0
+            },
+            {
+              "id": "mwko072avp7wre",
+              "type": "defender",
+              "label": "D3",
+              "x": 450,
+              "y": 396.20833333333337,
+              "rot": 0
+            },
+            {
+              "id": "mwko07962eg8ba",
+              "type": "defender",
+              "label": "D4",
+              "x": 450,
+              "y": 425.33333333333337,
+              "rot": 0
+            },
+            {
+              "id": "mwko3a2ya6ju52",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 83.6,
+              "rot": 180
+            },
+            {
+              "id": "mwko3a96tai59c",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 56.41666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko3afv8riv49",
+              "type": "attacker",
+              "label": "A3",
+              "x": 450,
+              "y": 143.79166666666669,
+              "rot": 180
+            },
+            {
+              "id": "mwko3am2mh6y4m",
+              "type": "attacker",
+              "label": "A4",
+              "x": 450,
+              "y": 114.66666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko4krm39vpeq",
+              "type": "sausage",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "mwko4wpmsdirgs",
+              "type": "ball",
+              "label": "",
+              "x": 496.51200000000006,
+              "y": 257.1073333333334,
+              "rot": 0
+            },
+            {
+              "id": "mwko758271hcp3",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450,
+              "y": 388.75233333333335,
+              "rot": 0,
+              "ownerId": "mwko072avp7wre"
+            },
+            {
+              "id": "mwkpwupi3yqu0i",
+              "type": "cone",
+              "label": "",
+              "x": 399,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwuvarw6uyk",
+              "type": "cone",
+              "label": "",
+              "x": 399,
+              "y": 153.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwv1iebxo5f",
+              "type": "cone",
+              "label": "",
+              "x": 501,
+              "y": 153.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwv7y3tvbdz",
+              "type": "cone",
+              "label": "",
+              "x": 501,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwktjp1zu1hg7w",
+              "type": "ruck",
+              "label": "Attack secures · play away",
+              "x": 450.0000000000001,
+              "y": 266.1166666666667,
+              "rot": 0,
+              "breakdown": {
+                "phase": "secured",
+                "mode": "pad",
+                "padId": "mwko4krm39vpeq",
+                "arrivalSide": "attack",
+                "winner": "attack",
+                "clearanceCm": 50
+              },
+              "members": [
+                {
+                  "id": "mwko3a2ya6ju52",
+                  "pose": "bound"
+                },
+                {
+                  "id": "mwko06q2r10wwh",
+                  "pose": "standing"
+                }
+              ]
+            },
+            {
+              "id": "mwktucsgx1wsbp",
+              "type": "coach",
+              "label": "Coach",
+              "x": 715.1999999999999,
+              "y": 270,
+              "rot": 270
+            }
+          ],
+          "timing": {
+            "mwko4wpmsdirgs": {
+              "start": 50,
+              "end": 51
+            }
+          },
+          "paths": {
+            "mwko06q2r10wwh": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 307.2,
+                  "y": 402.0333333333333
+                },
+                {
+                  "x": 286.79999999999995,
+                  "y": 440.8666666666667
+                },
+                {
+                  "x": 348,
+                  "y": 471.93333333333334
+                },
+                {
+                  "x": 450,
+                  "y": 487.46666666666664
+                }
+              ],
+              "follow": false
+            },
+            "mwko06wal3mstg": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 674.4,
+                  "y": 409.8
+                },
+                {
+                  "x": 531.5999999999999,
+                  "y": 495.23333333333335
+                }
+              ],
+              "follow": false
+            },
+            "mwktucsgx1wsbp": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 531.5999999999999,
+                  "y": 262.23333333333335
                 }
               ],
               "follow": false
@@ -752,7 +1160,7 @@
       "links": [],
       "provenance": "Coach-created / imported drill",
       "review": "Coach review required",
-      "savedAt": "2026-11-17T15:22:17.844Z"
+      "savedAt": "2026-11-17T15:27:53.791Z"
     },
     {
       "version": 1,
