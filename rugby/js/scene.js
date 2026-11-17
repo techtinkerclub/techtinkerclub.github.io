@@ -4,6 +4,7 @@ import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors}
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.13.4';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=1';
+import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=1';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.12.23';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
@@ -37,7 +38,7 @@ export function playbackData(d){
    const t=f.timing?.[o.id];if(t&&Object.hasOwn(f.timing,o.id)){const start=num(t.start,0,99,0);timing[o.id]={start,end:num(t.end,start+1,100,100)}}
    if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return copyLayoutMarker(o,copyTraining(o,q));
   });
-  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};cleanGuide(result);cleanTraining(result);return result;
+  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};const cue=signalForFrame({...f,objects});if(cue)result.signal=cue;cleanGuide(result);cleanTraining(result);return result;
  });
  cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);normaliseRecoveryPoses(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
  if(hasOutcomes(d)){const b=branchInfo(d),views=outcomeViews(d).map(v=>({id:v.id,clean:playbackData(v.drill)}));out.branching={version:1,fork:b.fork,question:b.question,active:b.active,...(typeof b.markerId==='string'?{markerId:b.markerId}:{}),choices:b.choices.map(v=>({id:v.id,label:v.label,frames:views.find(w=>w.id===v.id).clean.frames.slice(b.fork+1)}))};out.frames=views.find(v=>v.id===b.active).clean.frames;}
@@ -63,7 +64,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  }
  const order=orderObjects(objects);
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
- let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink)).join('')+contestResultOverlay(fr,objects,g,p,ink)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
+ let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink)).join('') +whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null})+contestResultOverlay(fr,objects,g,p,ink)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+g.viewWidth+' '+g.viewHeight+'" width="'+g.viewWidth+'" height="'+g.viewHeight+'" font-family="Arial,sans-serif">'+body+'</svg>',g,index:i,frame:fr};
 }
