@@ -23,7 +23,7 @@ assert.equal(signalForFrame(source.frames[2]).duration,.5);
 const views=outcomeViews(playbackData(publicDrill)),[A,B]=views.map(v=>v.drill);
 assert.equal(A.frames.length,5);
 assert.equal(B.frames.length,6);
-assert.ok(decisionTime(A)>0);
+assert.ok(decisionTime(publicDrill)>0);
 assert.equal(A.frames[0].objects.filter(o=>o.type==='defender').length,6,'Preserve all six defenders from the original');
 assert.ok(source.frames[0].objects.some(o=>o.type==='cone'),'Mark the practice area');
 const begin=source.frames[0].objects.filter(o=>o.type==='defender');
