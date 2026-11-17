@@ -1,4 +1,4 @@
-import {physicalUnit} from './symbol-scale.js?v=0.12.0';
+import {physicalUnit,symbolRadius} from './symbol-scale.js?v=0.12.0';
 // Schematic formation presets, not coaching technique or an age-grade law validator.
 import {canCarry,carrier} from './possession.js?v=0.12.0';
 import {team,roles,setParticipants} from './breakdown.js?v=0.12.0';
@@ -58,7 +58,7 @@ export function arrangeContact(frame,marker,g,previous=null,explicit=null,u10=fa
  if(marker.type==='tackle'){const b=frame.objects.find(o=>o.type==='ball'&&o.ownerId===players[0]?.id);if(b)marker.breakdown={phase:'tackle',carrierId:players[0].id,tacklerId:players[1].id,tacklerIds:players.slice(1).map(p=>p.id),ballId:b.id};marker.label=players.length===3?'Double tackle':'Tackle';}
  return {ok:true,count:players.length,message:spec.title+' formation arranged · '+players.length+' players.'};
 }
-export const PLAYER_POSES={standing:'Standing / running',tackling:'Tackling',grounded:'On the ground',kneeling:'Kneeling',bound:'Bound',recovering:'Recovering to feet',crouched:'Crouched',ready:'Ready / low balanced stance'};
+export const PLAYER_POSES={standing:'Standing / running',tackling:'Tackling',grounded:'On the ground',kneeling:'Kneeling',bound:'Bound',recovering:'Recovering to feet',crouched:'Crouched',ready:'Ready to react · low stance'};
 export function posesFor(objects){const map=new Map(objects.filter(o=>canCarry(o)&&Object.hasOwn(PLAYER_POSES,o.playerPose)).map(o=>[o.id,o.playerPose]));for(const marker of objects)if(contactType(marker.type))for(const m of marker.members||[])map.set(m.id,m.pose);return map}
 // Arranged contact is communicated by player poses and the top caption, not a legacy letter.
 export function contactMarkerShape(o,base){
@@ -68,12 +68,23 @@ export function contactMarkerShape(o,base){
 }
 export function posedShape(o,pose,normal,color){
  if(!pose||pose==='standing')return normal;
- if(pose==='ready')return '<path d="M-8 7L-16 14L-19 10M8 7L16 14L19 10M-10 -4L-19 0M10 -4L19 0" fill="none" stroke="#102e23" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M-8 7L-16 14L-19 10M8 7L16 14L19 10M-10 -4L-19 0M10 -4L19 0" fill="none" stroke="'+color+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse rx="14" ry="11.5" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-5 -7L0 -15L5 -7Z" fill="#fff"/><path d="M-7 5H7" stroke="#102e23" stroke-width="1.3" opacity=".5"/>';
+ // Top-down ready stance: lower, wide balanced base and open arms, not a tackle.
+ if(pose==='ready')return '<path d="M-7 7L-16 15L-23 10M7 7L16 15L23 10M-11 -5L-20 0M11 -5L20 0" fill="none" stroke="#102e23" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M-7 7L-16 15L-23 10M7 7L16 15L23 10M-11 -5L-20 0M11 -5L20 0" fill="none" stroke="'+color+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><ellipse rx="13" ry="12" fill="'+color+'" stroke="#102e23" stroke-width="2.5"/><path d="M-5 -6L0 -15L5 -6Z" fill="#fff"/><path d="M-16 15l-7 -5M16 15l7 -5" stroke="#eff8dd" stroke-width="2.3" stroke-linecap="round"/>';
  if(pose==='kneeling')return '<ellipse rx="12" ry="14" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-9" r="7" fill="'+color+'" stroke="#102e23" stroke-width="1.6"/><path d="M-9 9v8M9 9v8" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>';
  if(pose==='recovering')return '<ellipse rx="12" ry="18" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-11" r="7" fill="'+color+'" stroke="#102e23" stroke-width="1.4"/><path d="M-8 6L-14 15M8 6L13 15" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>';
  if(pose==='grounded')return '<rect x="-12" y="-23" width="24" height="46" rx="11" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-16" r="8" fill="'+color+'" stroke="#102e23" stroke-width="1.5"/><path d="M-9 3H9" stroke="#102e23" stroke-width="1.4"/>';
  if(pose==='tackling')return '<ellipse rx="12" ry="20" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-10 -8L-17 -15M10 -8L17 -15" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/><path d="M-4 -15L0 -21L4 -15Z" fill="#fff"/>';
  return '<ellipse rx="16" ry="12" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-12 0H-20M12 0H20" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/><path d="M-5 -7L0 -14L5 -7Z" fill="#fff"/>';
+}
+// An unscaled diagram cue keeps the ready stance legible in Realistic scale.
+// It is not a second object, equipment or a movement marker.
+export function readyCue(o,pose,g,ink=false){
+ if(pose!=='ready'||!canCarry(o))return '';
+ const radius=Math.max(9,symbolRadius(o,g,pose)),top=-(radius+30);
+ const bg=ink?'#e5f3da':'#1a3328',fg=ink?'#27533c':'#def7ab',stroke=ink?'#658b64':'#9fc780';
+ return '<g class="ready-stance-cue" aria-label="Ready to react · low stance" pointer-events="none">'+
+ '<rect x="-22" y="'+top+'" width="44" height="15" rx="5" fill="'+bg+'" fill-opacity=".94" stroke="'+stroke+'" stroke-width="1"/>'+
+ '<text x="0" y="'+(top+10.7)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="9.5" font-weight="700" letter-spacing=".5" fill="'+fg+'">READY</text></g>';
 }
 // Keep action captions in a narrow band outside the playing area.
 export function contactLabels(objects,g,escape,extra=[]){
