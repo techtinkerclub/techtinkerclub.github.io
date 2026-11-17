@@ -14,6 +14,10 @@ export function contestDrive(frame,previous,marker,g,{distanceCm=10,exchanges=2,
  if(!Number.isFinite(cm)||cm<1||cm>150)return {ok:false,message:'Enter a drive distance between 1 and 150 cm.'};
  if(!Number.isInteger(rounds)||rounds<1||rounds>4)return {ok:false,message:'Choose 1–4 push–pull exchanges.'};
  const ids=contactDragIds(frame,marker),included=ids.map(id=>frame.objects.find(o=>o.id===id));
+ const side=o=>['attacker','shield'].includes(o?.type)?'attack':['defender','bagplayer'].includes(o?.type)?'defence':null;
+ const contestSides=new Set((marker.members||[]).map(m=>side(frame.objects.find(o=>o.id===m.id))).filter(Boolean));
+ if(!contestSides.has('attack')||!contestSides.has('defence'))
+  return {ok:false,message:'A ruck contest needs at least one attacker and one defender linked.'};
  const old=new Map(previous.objects.map(o=>[o.id,o]));
  if(ids.length<3||!marker.members?.some(m=>playerTypes.has(frame.objects.find(o=>o.id===m.id)?.type)))
   return {ok:false,message:'Link the attacking and defending players to the ruck first.'};
