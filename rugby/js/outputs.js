@@ -1,5 +1,6 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.12.33';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.0';
+import {hasOutcomes,outcomeViews} from './branching.js?v=1';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.1';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
@@ -27,8 +28,12 @@ function svgImage(svg){return new Promise((resolve,reject)=>{const uri=URL.creat
 function fitText(ctx,text,max){let s=String(text||'');while(s.length>1&&ctx.measureText(s).width>max)s=s.slice(0,-2)+'…';return s}
 export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  const checkAbort=()=>{if(signal?.aborted)throw new DOMException('Export cancelled','AbortError')};checkAbort();progress(0,'Preparing video…');
- const drill=playbackData(d),options=outputOptions(opts),seconds=drillDuration(drill),plan=moviePlan(seconds,opts);
- if(plan.total>360)throw Error('The complete movie exceeds six minutes. Choose normal speed only or a faster replay.');
+ const drill=playbackData(d),options=outputOptions(opts);
+ const views=hasOutcomes(drill)&&opts.branchMode!=='selected'?outcomeViews(drill):[{id:hasOutcomes(drill)?drill.branching.active:'',label:hasOutcomes(drill)?drill.branching.choices.find(c=>c.id===drill.branching.active).label:'Complete drill',drill:outcomeViews(drill).find(v=>!hasOutcomes(drill)||v.id===drill.branching.active).drill}];
+ let videoDuration=0;
+ const chapters=views.map(v=>{const plan=moviePlan(drillDuration(v.drill),opts),start=videoDuration;videoDuration+=plan.total;return {...v,plan,start,end:videoDuration,headline:v.id?'OPTION '+v.id.toUpperCase()+' · '+v.label:''}});
+ const plan=chapters[0].plan;
+ if(videoDuration>360)throw Error('The complete movie exceeds six minutes. Choose normal speed only, a faster replay, or export only the selected outcome.');
  if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Edge or Chrome.');
  const {width:W,height:H,bitrate,fps}=plan.quality,frame=createMovieFrame(W,H),{canvas,ctx}=frame;
  if(!canvas.captureStream)throw Error('Canvas video recording is unavailable in this browser.');
@@ -41,20 +46,22 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  // Optional paginated full coaching card. Text is wrapped, not silently truncated.
  const cardPages=[];if(plan.options.card){
   const size=portrait?34:28,maxLines=portrait?26:21;ctx.font=font(size);
-  for(const entry of [...cardEntries(drill),...drill.frames.map((f,i)=>({label:'Step '+(i+1)+' · '+f.name,value:[String(f.notes||'').trim(),decisionText(f)].filter(Boolean).join('\n')})).filter(x=>x.value),...cardLinks(drill).map(x=>({label:'Reference',value:x.label+' — '+x.url}))]){
+  for(const entry of [...cardEntries(drill),...chapters.flatMap(ch=>ch.drill.frames.map((f,i)=>({label:(ch.headline?ch.headline+' · ':'')+'Step '+(i+1)+' · '+f.name,value:[String(f.notes||'').trim(),decisionText(f)].filter(Boolean).join('\n')}))).filter(x=>x.value),...cardLinks(drill).map(x=>({label:'Reference',value:x.label+' — '+x.url}))]){
    const lines=wrapCanvas(ctx,entry.value,content);for(let n=0;n<lines.length;n+=maxLines){const part=lines.slice(n,n+maxLines),words=part.join(' ').split(/\s+/).length;cardPages.push({label:entry.label+(n?' (continued)':''),lines:part,seconds:Math.max(3,1.5+words/3)})}
   }
  }
- let total=plan.total;for(const page of cardPages){page.start=total;total+=page.seconds;page.end=total}
+ let total=videoDuration;for(const page of cardPages){page.start=total;total+=page.seconds;page.end=total}
  if(total>360)throw Error('Movie with coaching card exceeds six minutes. Choose a faster replay or export the full card as paper / presentation.');
  const draw=elapsed=>frame.present(async()=>{
   ctx.fillStyle='#111c17';ctx.fillRect(0,0,W,H);
-  const page=elapsed>=plan.total&&cardPages.length?(cardPages.find(p=>elapsed<p.end)||cardPages.at(-1)):null;
+  const page=elapsed>=videoDuration&&cardPages.length?(cardPages.find(p=>elapsed<p.end)||cardPages.at(-1)):null;
   if(page){const k=cardPages.indexOf(page);line('COACHING CARD · '+(k+1)+' / '+cardPages.length,72*unit,portrait?26:22,true,'#c9f07c');line(drill.title,125*unit,portrait?40:36,true);line(cardMeta(drill),171*unit,portrait?27:24,false,'#b7c8ba');line(page.label,240*unit,portrait?39:35,true,'#c9f07c');block(page.lines,302*unit,portrait?34:28);return}
-  const moment=movieMoment(plan,elapsed),{segment,time}=moment,scene=renderScene(drill,{...options,runs:segment.runs,passes:segment.passes,decisions:options.decisions&&(plan.options.mode==='single'||segment.kind==='replay'),time});
+  const chapter=chapters.find(c=>elapsed<c.end)||chapters.at(-1);
+  const moment=movieMoment(chapter.plan,Math.max(0,elapsed-chapter.start)),{segment,time}=moment,scene=renderScene(chapter.drill,{...options,runs:segment.runs,passes:segment.passes,decisions:options.decisions&&(plan.options.mode==='single'||segment.kind==='replay'),time});
+  const headline=chapter.headline?chapter.headline+' · '+segment.title:segment.title;
   const {width:w,height:h}=movieRaster(scene.g,content,H-top-bottom),im=await svgImage(rasterSVG(scene.svg,w,h));
-  if(portrait){line('RUGBY COACHING STUDIO',76*unit,25,true,'#c9f07c');ctx.font=font(42,true);const title=noteLines(ctx,drill.title,content,2);block(title,132*unit,42,true);line(segment.title,235*unit,28,true,'#c9f07c')}
-  else{line(drill.title,39*unit,34,true);line(segment.title,77*unit,23,true,'#c9f07c')}
+  if(portrait){line('RUGBY COACHING STUDIO',76*unit,25,true,'#c9f07c');ctx.font=font(42,true);const title=noteLines(ctx,drill.title,content,2);block(title,132*unit,42,true);line(headline,235*unit,28,true,'#c9f07c')}
+  else{line(drill.title,39*unit,34,true);line(headline,77*unit,23,true,'#c9f07c')}
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
   ctx.drawImage(im,Math.round(pad+(content-w)/2),Math.round(top+(H-top-bottom-h)/2),w,h);
   const base=H-bottom+Math.round((portrait?53:32)*unit);
@@ -63,7 +70,8 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
   const size=portrait?32:23;ctx.font=font(size);
   if(plan.options.notes){const q=options.decisions&&(plan.options.mode==='single'||segment.kind==='replay')?decisionList(scene.frame).map(x=>x.label+': '+x.decision.question).join(' · '):'';const value=[q,scene.frame.notes].filter(Boolean).join('\n')||legend,limit=portrait?5:3;const wrapped=wrapCanvas(ctx,value,content),lines=noteLines(ctx,value,content,limit);let after=block(lines,base+(portrait?53:37)*unit,size,false,'#d6e4d6');if(wrapped.length>limit)line('Full step notes in coaching sheets / presentation',after+6*unit,portrait?22:17,false,'#b7c8ba')}
   const trackY=H-Math.round((portrait?140:16)*unit),trackH=Math.max(2,Math.round(5*unit));ctx.fillStyle='#526b59';ctx.fillRect(pad,trackY,content,trackH);ctx.fillStyle='#c9f07c';ctx.fillRect(pad,trackY,content*Math.min(1,elapsed/total),trackH);
-  if(plan.segments.length>1){ctx.fillStyle='#f4f7ee';ctx.fillRect(pad+content*plan.segments[0].end/total-1,trackY-2,Math.max(2,Math.round(3*unit)),trackH+4)}
+  if(chapters.length>1){for(const ch of chapters.slice(1)){ctx.fillStyle='#f4f7ee';ctx.fillRect(pad+content*ch.start/total-1,trackY-2,Math.max(2,Math.round(3*unit)),trackH+4)}}
+  else if(plan.segments.length>1){ctx.fillStyle='#f4f7ee';ctx.fillRect(pad+content*plan.segments[0].end/total-1,trackY-2,Math.max(2,Math.round(3*unit)),trackH+4)}
  });
  await draw(0);checkAbort(); // Start capture only after a complete initial frame exists.
  if(!frame.ready)throw Error('Initial movie frame did not render.');
@@ -78,13 +86,14 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
   const chunks=[];let encoderError=null;
   recorded=new Promise((res,rej)=>{recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onstop=()=>res(new Blob(chunks,{type:recorder.mimeType||chunks[0]?.type||'video/webm'}));recorder.onerror=e=>{encoderError=e.error||Error('Video encoder failed.');rej(encoderError)}});
   recorded.catch(()=>{});
-  recorder.start(250);progress(0,'Recording · '+plan.segments[0].title);const start=performance.now();let elapsed=0;
+  recorder.start(250);progress(0,'Recording · '+(chapters[0].headline||plan.segments[0].title));const start=performance.now();let elapsed=0;
   // Record in real time. Holds introduce each pass and make the reset intentional.
   while(elapsed<total){
    checkAbort();if(encoderError)throw encoderError;if(recorder.state==='inactive')throw Error('Recording ended unexpectedly.');
    if(document.hidden)throw Error('The tab was hidden during recording. Export again with this tab visible.');
    const begin=performance.now();elapsed=Math.min(total,(begin-start)/1000);await draw(elapsed);checkAbort();
-   const m=movieMoment(plan,elapsed);progress(elapsed/total,elapsed>=plan.total&&cardPages.length?'Coaching card':m.segment.title);
+   const ch=chapters.find(x=>elapsed<x.end)||chapters.at(-1),m=movieMoment(ch.plan,Math.max(0,elapsed-ch.start));
+   progress(elapsed/total,elapsed>=videoDuration&&cardPages.length?'Coaching card':(ch.headline?ch.headline+' · ':'')+m.segment.title);
    await delay(Math.max(0,1000/fps-(performance.now()-begin)));
   }
   checkAbort();progress(1,'Finalising video…');await delay(120);checkAbort();recorder.stop();const blob=await recorded;checkAbort();if(!blob.size)throw Error('No video data was produced.');
@@ -92,11 +101,16 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  }catch(e){if(recorder?.state==='recording')recorder.stop();throw e}finally{for(const track of stream.getTracks())track.stop()}
 }
 export function printMarkup(raw,opts={}){
- const d=playbackData(raw),o=outputOptions(opts),pages=[],age=cardAge(d),groups=[];
+ const d=playbackData(raw);
+ if(hasOutcomes(d)){
+  const b=d.branching;
+  return outcomeViews(d).map((v,i)=>'<section class="print-page print-branch-heading"><small>◆ PLAYABLE DECISION · OPTION '+v.id.toUpperCase()+'</small><h2>'+esc(v.label)+'</h2><p><strong>Decision:</strong> '+esc(b.question)+'</p><p>Shared setup and signal, then outcome '+v.id.toUpperCase()+'. Repeat the exercise with the other outcome.</p></section>'+printMarkup(v.drill,{...opts,_skipCard:i>0})).join('');
+ }
+ const o=outputOptions(opts),pages=[],age=cardAge(d),groups=[];
  // Long notes receive their own sequence section; they may flow to another sheet rather than disappear.
  for(let i=0;i<d.frames.length;){const count=d.frames[i].notes.length>500||d.frames[i+1]?.notes.length>500||decisionList(d.frames[i]).length||decisionList(d.frames[i+1]).length?1:2;groups.push({start:i,frames:d.frames.slice(i,i+count)});i+=count}
  const head=(label)=>'<header><div><small>RUGBY COACHING STUDIO · '+esc(age)+'</small><h1>'+esc(d.title)+'</h1></div><p>'+esc(label)+'</p></header>';
- pages.push('<section class="print-page print-card">'+head('Coaching card')+coachingMarkup(d)+'<footer>Check current age-grade laws and safe coaching practice before delivery.</footer></section>');
+ if(!opts._skipCard)pages.push('<section class="print-page print-card">'+head('Coaching card')+coachingMarkup(d)+'<footer>Check current age-grade laws and safe coaching practice before delivery.</footer></section>');
  for(const [index,group] of groups.entries()){
   const cards=group.frames.map((fr,j)=>{const k=group.start+j,scene=renderScene(d,{...o,index:k,ink:true,ghosts:true,runs:true,passes:true,labels:true,prefix:'p'+k});
    return '<article class="print-step'+(fr.notes.length>500||decisionList(fr).length?' long-note':'')+'"><h3>'+String(k+1).padStart(2,'0')+' · '+esc(fr.name)+' <small>'+(k?fr.seconds.toFixed(1)+' s':'Setup')+'</small></h3><div class="print-step-body"><div class="print-diagram">'+scene.svg+'</div><div><h4>Technical coaching notes</h4><p>'+esc(fr.notes||'Follow the positions and movement arrows in the diagram.')+'</p>'+(o.decisions?decisionMarkup(fr):'')+'<h4>Coach observations</h4><div class="print-notelines"></div></div></div></article>'}).join('');
