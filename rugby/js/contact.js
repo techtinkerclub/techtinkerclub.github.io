@@ -58,7 +58,7 @@ export function arrangeContact(frame,marker,g,previous=null,explicit=null,u10=fa
  if(marker.type==='tackle'){const b=frame.objects.find(o=>o.type==='ball'&&o.ownerId===players[0]?.id);if(b)marker.breakdown={phase:'tackle',carrierId:players[0].id,tacklerId:players[1].id,tacklerIds:players.slice(1).map(p=>p.id),ballId:b.id};marker.label=players.length===3?'Double tackle':'Tackle';}
  return {ok:true,count:players.length,message:spec.title+' formation arranged · '+players.length+' players.'};
 }
-export const PLAYER_POSES={standing:'Standing / running',tackling:'Tackling',grounded:'On the ground',kneeling:'Kneeling',bound:'Bound',recovering:'Recovering to feet',crouched:'Crouched'};
+export const PLAYER_POSES={standing:'Standing / running',tackling:'Tackling',grounded:'On the ground',kneeling:'Kneeling',bound:'Bound',recovering:'Recovering to feet',crouched:'Crouched',ready:'Ready / low balanced stance'};
 export function posesFor(objects){const map=new Map(objects.filter(o=>canCarry(o)&&Object.hasOwn(PLAYER_POSES,o.playerPose)).map(o=>[o.id,o.playerPose]));for(const marker of objects)if(contactType(marker.type))for(const m of marker.members||[])map.set(m.id,m.pose);return map}
 // Arranged contact is communicated by player poses and the top caption, not a legacy letter.
 export function contactMarkerShape(o,base){
@@ -68,6 +68,7 @@ export function contactMarkerShape(o,base){
 }
 export function posedShape(o,pose,normal,color){
  if(!pose||pose==='standing')return normal;
+ if(pose==='ready')return '<path d="M-8 7L-16 14L-19 10M8 7L16 14L19 10M-10 -4L-19 0M10 -4L19 0" fill="none" stroke="#102e23" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M-8 7L-16 14L-19 10M8 7L16 14L19 10M-10 -4L-19 0M10 -4L19 0" fill="none" stroke="'+color+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse rx="14" ry="11.5" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-5 -7L0 -15L5 -7Z" fill="#fff"/><path d="M-7 5H7" stroke="#102e23" stroke-width="1.3" opacity=".5"/>';
  if(pose==='kneeling')return '<ellipse rx="12" ry="14" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-9" r="7" fill="'+color+'" stroke="#102e23" stroke-width="1.6"/><path d="M-9 9v8M9 9v8" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>';
  if(pose==='recovering')return '<ellipse rx="12" ry="18" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-11" r="7" fill="'+color+'" stroke="#102e23" stroke-width="1.4"/><path d="M-8 6L-14 15M8 6L13 15" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>';
  if(pose==='grounded')return '<rect x="-12" y="-23" width="24" height="46" rx="11" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-16" r="8" fill="'+color+'" stroke="#102e23" stroke-width="1.5"/><path d="M-9 3H9" stroke="#102e23" stroke-width="1.4"/>';
