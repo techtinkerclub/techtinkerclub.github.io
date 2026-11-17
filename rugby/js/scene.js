@@ -1,6 +1,6 @@
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.12.10';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
-import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors} from './symbol-scale.js?v=0.12.26';
+import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors} from './symbol-scale.js?v=0.12.27';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.12.10';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
