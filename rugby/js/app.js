@@ -42,7 +42,7 @@ import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
-import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.24';
+import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.25';
 initWorkspace();
 const SEEDS = await fetch(new URL('../data/drills.json?v=0.13.3', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
