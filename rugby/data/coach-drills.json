@@ -175,6 +175,160 @@
           ],
           "timing": {},
           "paths": {}
+        },
+        {
+          "name": "Step 3",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 79.36363636363637,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 79.36363636363637,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.79999999999995,
+              "y": 79.36363636363637,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 79.36363636363637,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 79.36363636363637,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 79.36363636363637,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 225.6,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 354.72727272727275,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 232.33200000000002,
+              "y": 262.37454545454545,
+              "rot": 0,
+              "ownerId": "mwl6w26yzp8oka"
+            },
+            {
+              "id": "mwl7w298wu7j9d",
+              "type": "decision",
+              "label": "Decision",
+              "x": 205.0776470413472,
+              "y": 312.45003961239456,
+              "rot": 0,
+              "decision": {
+                "playerId": "mwl6w26yzp8oka",
+                "anchor": 0.5817454696327244,
+                "question": "Open gap?",
+                "cue": "Look on defense movement to spot possible gaps.",
+                "options": [
+                  {
+                    "id": "option-1",
+                    "label": "Alternative run",
+                    "kind": "run",
+                    "mode": "smooth",
+                    "points": [
+                      {
+                        "x": 185.12417515345982,
+                        "y": 267.9341226156656
+                      },
+                      {
+                        "x": 179.30273646763393,
+                        "y": 250.4721063787287
+                      },
+                      {
+                        "x": 176.06859793526786,
+                        "y": 228.30874895368305
+                      },
+                      {
+                        "x": 177.36223911830356,
+                        "y": 206.8170196136871
+                      },
+                      {
+                        "x": 176.7154185267857,
+                        "y": 183.98205257267148
+                      },
+                      {
+                        "x": 175.4217595563616,
+                        "y": 167.8632555676745
+                      },
+                      {
+                        "x": 184.47735456194195,
+                        "y": 152.41606817864752
+                      },
+                      {
+                        "x": 185.12417515345982,
+                        "y": 134.9540334726309
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {
+            "mwl6w26yzp8oka": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 205.2,
+                  "y": 312.3636363636364
+                }
+              ],
+              "follow": false
+            }
+          },
+          "signal": {
+            "kind": "whistle",
+            "coachId": "mwl6w26yzp8oka",
+            "label": "GO"
+          }
         }
       ],
       "attackDirection": "up",
@@ -194,7 +348,7 @@
       "links": [],
       "provenance": "Coach-created / imported drill",
       "review": "Coach review required",
-      "savedAt": "2026-11-17T21:35:55.358Z"
+      "savedAt": "2026-11-17T21:46:13.783Z"
     },
     {
       "version": 1,
