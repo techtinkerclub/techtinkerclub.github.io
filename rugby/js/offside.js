@@ -1,4 +1,4 @@
-import {symbolFactors} from './symbol-scale.js?v=0.12.0';
+import {symbolFactors} from './symbol-scale.js?v=0.12.23';
 // Shared approximate offside guide, using diagram icon footprints rather than actual feet.
 const team=o=>['attacker','shield'].includes(o?.type)?1:['defender','bagplayer'].includes(o?.type)?-1:0;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
