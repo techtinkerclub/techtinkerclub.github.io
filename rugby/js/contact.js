@@ -26,7 +26,7 @@ export function arrangeContact(frame,marker,g,previous=null,explicit=null,u10=fa
   const res=setParticipants(frame,marker,g,explicit,u10);
   if(!res.ok){marker.breakdown=old;return res}
   marker.label='Ruck formed · pad drill';
-  return {...res,message:'Ruck practice arranged over sausage. You can continue to the contest.'};
+  return {...res,message:'Ruck practice arranged over ground equipment. You can continue to the contest.'};
  }
  if(marker.breakdown&&marker.breakdown.phase!=='tackle'){if(!explicit)return {ok:false,message:'Choose participants in the inspector.'};return setParticipants(frame,marker,g,explicit,u10)}
  if(!contactType(marker.type))return {ok:false,message:'Select a contact marker.'};
