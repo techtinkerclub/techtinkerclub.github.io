@@ -231,7 +231,7 @@ export function transitionObjects(old,next,p,g){
  for(const o of next.objects){const plan=recoveryPlan(old,next,o.id);if(plan)recoveries.set(o.id,plan)}
  const result=next.objects.map(o=>{
   const prior=findObject(old,o.id),impact=events.find(e=>e.marker===o.id);
-  const switchAt=impact?impact.time:o.breakdown?.phase==='release'?.15:.65;
+  const switchAt=impact?impact.time:o.breakdown?.phase==='release'?.15:o.type==='ruck'&&o.breakdown?.phase==='contest'&&['attack','defence'].includes(o.breakdown?.winner)? .88:.65;
   if(o.type==='label'||isDiagramObject(o))return textVisible(next.timing?.[o.id],p)?{...o}:null;
   if(!prior&&p<1&&!(Array.isArray(o.members)&&p>=(impact?switchAt:.78)))return null;
   if(o.type==='ball')return ballPose(old,next,o,p,g,events);
