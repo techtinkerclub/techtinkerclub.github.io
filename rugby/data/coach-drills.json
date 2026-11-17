@@ -96,7 +96,7 @@
         },
         {
           "name": "Step 2",
-          "seconds": 2,
+          "seconds": 0.5,
           "notes": "",
           "objects": [
             {
@@ -151,90 +151,8 @@
               "id": "mwl6w26yzp8oka",
               "type": "coach",
               "label": "Coach",
-              "x": 164.39999999999998,
-              "y": 312.3636363636364,
-              "rot": 0
-            },
-            {
-              "id": "mwl6w5ww333x3x",
-              "type": "attacker",
-              "label": "A1",
-              "x": 552,
-              "y": 354.72727272727275,
-              "rot": 0
-            },
-            {
-              "id": "mwl6wf87jrw70e",
-              "type": "ball",
-              "label": "",
-              "x": 171.13199999999998,
-              "y": 304.7381818181818,
-              "rot": 0,
-              "ownerId": "mwl6w26yzp8oka"
-            }
-          ],
-          "timing": {},
-          "paths": {}
-        },
-        {
-          "name": "Step 3",
-          "seconds": 2,
-          "notes": "",
-          "objects": [
-            {
-              "id": "mwl6tallzpoqql",
-              "type": "defender",
-              "label": "D1",
               "x": 144,
-              "y": 79.36363636363637,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tazaxnplm8",
-              "type": "defender",
-              "label": "D2",
-              "x": 266.4,
-              "y": 79.36363636363637,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tb8m0b9lap",
-              "type": "defender",
-              "label": "D3",
-              "x": 388.79999999999995,
-              "y": 79.36363636363637,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tbehy92zxz",
-              "type": "defender",
-              "label": "D4",
-              "x": 511.2,
-              "y": 79.36363636363637,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tbkosxh9wx",
-              "type": "defender",
-              "label": "D5",
-              "x": 633.5999999999999,
-              "y": 79.36363636363637,
-              "rot": 180
-            },
-            {
-              "id": "mwl6v7mdq8f43k",
-              "type": "defender",
-              "label": "D6",
-              "x": 756,
-              "y": 79.36363636363637,
-              "rot": 180
-            },
-            {
-              "id": "mwl6w26yzp8oka",
-              "type": "coach",
-              "label": "Coach",
-              "x": 164.39999999999998,
-              "y": 312.3636363636364,
+              "y": 333.54545454545456,
               "rot": 0
             },
             {
@@ -249,8 +167,8 @@
               "id": "mwl6wf87jrw70e",
               "type": "ball",
               "label": "",
-              "x": 171.13199999999998,
-              "y": 304.7381818181818,
+              "x": 150.732,
+              "y": 325.92,
               "rot": 0,
               "ownerId": "mwl6w26yzp8oka"
             }
@@ -276,7 +194,7 @@
       "links": [],
       "provenance": "Coach-created / imported drill",
       "review": "Coach review required",
-      "savedAt": "2026-11-17T21:25:12.488Z"
+      "savedAt": "2026-11-17T21:35:55.358Z"
     },
     {
       "version": 1,
