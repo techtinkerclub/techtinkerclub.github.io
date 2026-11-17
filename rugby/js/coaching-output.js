@@ -2,6 +2,7 @@
 import {esc} from './model.js?v=0.5.3';
 import {decisionList,decisionData} from './training.js?v=0.8.0';
 import {hasOutcomes} from './branching.js?v=1';
+import {signalForFrame} from './whistle-signal.js?v=1';
 export function decisionMarkup(f){return decisionList(f).map(o=>{const d=decisionData(o.decision);return '<div class="decision-note"><strong>◆ '+esc(o.label)+'</strong><p>'+esc(d.question)+'</p><p>'+esc(d.cue)+'</p>'+d.options.map((q,i)=>'<p>'+String.fromCharCode(65+i)+' · '+esc(q.label)+(q.kind==='main'?' (demonstrated)':' (alternative)')+'</p>').join('')+'</div>'}).join('')}
 export function branchDecisionMarkup(b){
  if(!b)return '';
@@ -15,7 +16,7 @@ export function cardMeta(d){return [cardAge(d),d.length+' × '+d.width+' m',d.mi
 export function cardEntries(d){return CARD_FIELDS.map(([key,label])=>({key,label,value:String(d[key]||'').trim()})).filter(x=>x.value)}
 export function cardLinks(d){return (Array.isArray(d.links)?d.links:[]).filter(x=>x&&typeof x.url==='string'&&/^https?:\/\/[^\s]+$/i.test(x.url)).slice(0,30).map(x=>({label:String(x.label||x.url).slice(0,200),url:x.url.slice(0,2000),kind:String(x.kind||'Reference').slice(0,80)}))}
 export function coachingMarkup(d){const items=cardEntries(d),links=cardLinks(d);return '<p class="coach-meta">'+esc(cardMeta(d))+'</p>'+(hasOutcomes(d)?branchDecisionMarkup(d.branching):'')+'<div class="coach-fields">'+(items.length?items.map(x=>'<section class="coach-field"><h3>'+esc(x.label)+'</h3><p>'+esc(x.value)+'</p></section>').join(''):'<p>No coaching card notes have been added yet.</p>')+'</div>'+(links.length?'<section class="coach-links"><h3>References</h3>'+links.map(x=>'<p><a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">'+esc(x.label)+'</a><small> '+esc(x.kind)+'</small></p>').join('')+'</section>':'')}
-export function sequenceMarkup(d){return (hasOutcomes(d)?'<p class="coach-meta">Viewing outcome '+esc(d.branching.active.toUpperCase())+' · '+esc(d.branching.choices.find(c=>c.id===d.branching.active).label)+'</p>':'')+d.frames.map((f,i)=>'<article class="coach-sequence-row"><h3>'+String(i+1).padStart(2,'0')+' · '+esc(f.name)+'</h3><p>'+esc(f.notes||'No step note added.')+'</p>'+(hasOutcomes(d)&&i===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(f))+'<button data-jump-step="'+i+'">View step</button></article>').join('')}
+export function sequenceMarkup(d){return (hasOutcomes(d)?'<p class="coach-meta">Viewing outcome '+esc(d.branching.active.toUpperCase())+' · '+esc(d.branching.choices.find(c=>c.id===d.branching.active).label)+'</p>':'')+d.frames.map((f,i)=>'<article class="coach-sequence-row"><h3>'+String(i+1).padStart(2,'0')+' · '+esc(f.name)+'</h3><p>'+(signalForFrame(f)?'<strong>WHISTLE · GO · Coach starts the action.</strong> ':'')+esc(f.notes||'No step note added.')+'</p>'+(hasOutcomes(d)&&i===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(f))+'<button data-jump-step="'+i+'">View step</button></article>').join('')}
 // Canvas text wrapping, including long unbroken words, respecting explicit paragraph breaks.
 export function wrapCanvas(ctx,value,maxWidth){
  const lines=[];for(const paragraph of String(value||'').split(/\r?\n/)){let line='';for(const word of paragraph.trim().split(/\s+/).filter(Boolean)){
