@@ -6,7 +6,7 @@ import {initMobileEditor} from '../js/mobile-editor.js';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 test('both editors load the same mobile and tablet skin without replacing the engine',()=>{
  const classic=read('index.html'),coach=read('coach/index.html'),css=read('assets/mobile-editor.css'),workspace=read('js/workspace.js');
- for(const page of [classic,coach])assert.match(page,/href="\.\/assets\/mobile-editor\.css\?v=0\.1\.0"/);
+ for(const page of [classic,coach])assert.match(page,/href="\.\/assets\/mobile-editor\.css\?v=0\.1\.1"/);
  assert.match(workspace,/initMobileEditor/);
  assert.match(workspace,/max-width:1100px/);
  assert.match(css,/\.mobile-view-tools #equipmentPanel/);
