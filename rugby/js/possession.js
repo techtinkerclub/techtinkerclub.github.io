@@ -202,7 +202,7 @@ export function transitionObjects(old,next,p,g){
   // A ready stance is a deliberate pause, not a pose that slides along the ground.
   const moving=prior&&travels(prior,o,next);
   if(prior&&o.playerPose==='ready'&&prior.playerPose!=='ready'){
-   const switchAt=moving?(next.timing?.[o.id]?.end??100)/100:.12;
+   const switchAt=moving?(next.timing?.[o.id]?.end??100)/100:0;
    pose.playerPose=p>=switchAt?'ready':(prior.playerPose||'standing');
   }else if(prior?.playerPose==='ready'&&moving&&o.playerPose!=='ready'){
    pose.playerPose=p*100>=(next.timing?.[o.id]?.start??0)?'standing':'ready';
