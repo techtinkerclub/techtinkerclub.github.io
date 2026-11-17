@@ -712,7 +712,7 @@
       "regression": "Use shorter passes.",
       "progression": "Introduce a second ball if spacing allows.",
       "questions": "When should your hands be ready? How can you let your teammate know you want the ball?",
-      "notes": "A stationary handling circle has no attacking end. Pass around the group for catching practice, then use a directional drill to practise backward match passes.",
+      "notes": "Non-directional handling circle: catching, calling and showing hands. There is deliberately no attacking try line. This exercise is NOT a legal forward-pass option in match play; follow with a directional backward passing activity.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -726,7 +726,7 @@
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "Space children in a circle. Pass to a teammate who calls and shows hands. Follow with a moving version.",
+          "notes": "Players form a stationary circle with no opposition try line. They call for the ball and show hands.",
           "objects": [
             {
               "id": "o0",
@@ -1514,7 +1514,7 @@
       "regression": "Walk the route.",
       "progression": "Add a passive defender at the turn.",
       "questions": "How can A1 prepare to catch before reaching the corner? When should A3 call?",
-      "notes": "The running direction changes at the corner. The recipient waits behind the runner's new direction; no single match attack arrow applies.",
+      "notes": "An L-shaped unopposed handling exercise: the running direction changes at the corner, so it does not represent a fixed rugby attack direction. Re-check the legal backward pass before transferring this skill into a game.",
       "links": [
         {
           "label": "World Rugby · Coaching activity index",
@@ -1650,7 +1650,7 @@
         {
           "name": "Turn and pass",
           "seconds": 1.8,
-          "notes": "A1 rounds the corner to the right and passes back towards A3, who stays behind the new running line.",
+          "notes": "A1 rounds the corner and passes towards A3 along the new running direction. In a match, set the support behind the carrier and keep the pass backwards relative to the attack direction.",
           "objects": [
             {
               "id": "a1",
@@ -2472,7 +2472,7 @@
       "regression": "Static diamond.",
       "progression": "Add a roaming passive defender.",
       "questions": "When can the passer follow? How much space should the next receiver leave?",
-      "notes": "The diamond is a non-directional catch-and-follow pattern with no attacking end. Pass only to a clear target. Use the continuous passing drill next to practise sideways and backward passes towards a fixed try line.",
+      "notes": "Non-directional diamond handling/catch-and-follow: no attacking end. Some passes would be forward if you treated the top of the diagram as the opposition try line. Use this only for ball-handling practice; use the directional continuous-passing lesson to teach legal match passes.",
       "links": [
         {
           "label": "World Rugby · Coaching through games (method reference)",
@@ -2486,7 +2486,7 @@
         {
           "name": "Diamond setup",
           "seconds": 0,
-          "notes": "Four players spaced in a diamond; A1 starts with the ball.",
+          "notes": "A non-directional handling diamond for calling, catching and following; not a depiction of forward passes in a match.",
           "objects": [
             {
               "id": "a1",
