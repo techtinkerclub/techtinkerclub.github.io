@@ -73,3 +73,11 @@ body.hide-tracks>.timeline:has(.outcome-bar),body.presentation-mode>.timeline:ha
  .branch-preview-pitch svg{max-height:205px}
  .branch-preview-legend{color:black!important}
 }
+
+/* Explain the difference between a drawn annotation and real playable branches. */
+.decision-live-help{background:#f7edd6;color:#342822;border:1px solid #bba56c;padding:11px 12px;border-radius:10px;display:grid;gap:7px;margin:9px 0}
+.decision-live-help strong{color:#5d3727;font-size:13px}
+.decision-live-help p{margin:0;font-size:12px;line-height:1.5}
+.decision-live-help button{background:#7c3035;color:white;border:1px solid #7c3035;padding:9px;font-size:12px;font-weight:750;border-radius:7px}
+.decision-live-help button:hover{background:#64242a}
+#outcomeDialogHint{line-height:1.5}
