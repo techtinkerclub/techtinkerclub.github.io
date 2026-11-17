@@ -535,7 +535,8 @@ function updateContactTools(){
   }
  }
  $('contactInfo').textContent=(breakdown?o.label||PHASES[o.breakdown.phase]:contactTitle(o.type))+' · '+(o.members?.length||0)+' linked players'+(padMode?' · pad practice, no tackle':'');
- $('arrangeContact').textContent=padMode?'Link selected players · keep positions':'Arrange players';
+ $('arrangeContact').textContent=padMode?'Link players · keep positions':'Arrange players';
+ $('continueBreakdown').textContent=padMode?'Open sequence steps':'Open breakdown sequence';
  $('currentFormationEdit').querySelector('summary').textContent=padMode?'Players in this contest':'Edit current formation';
  $('placeContactAtPad').hidden=!padMode;$('padContactHelp').hidden=!padMode;
  $('arrangeContact').disabled=routeDrawing||!!ballPicking;
@@ -639,7 +640,7 @@ function updateBreakdownDock(){
  breakdownPreferred=c.marker.id;nav.textContent='Breakdown';
  const choices=$('breakdownSelect'),opts=c.current.map((m,i)=>'<option value="'+esc(m.id)+'">'+esc(m.label||PHASES[m.breakdown.phase])+(c.current.length>1?' · '+(i+1):'')+'</option>').join('');
  $('breakdownSelectWrap').hidden=c.current.length<2;if(choices.innerHTML!==opts)choices.innerHTML=opts;choices.value=c.marker.id;
- $('breakdownSource').textContent='Step '+(idx+1)+' of '+drill.frames.length+' · '+(c.existing>=0?'next stage already exists':'continue from this step');
+ $('breakdownSource').textContent='Step '+(idx+1)+' of '+drill.frames.length+' · '+(c.existing>=0?'next stage already exists':'continue from this step')+(c.marker.breakdown?.mode==='pad'?' · Next stage keeps positions; move the arriving player to show the approach.':'');
  updateBreakdownTools(c.marker);
  if(c.existing>=0){$('advanceBreakdown').textContent='Go to step '+(c.existing+1)+' · '+(drill.frames[c.existing].objects.find(o=>o.id===c.marker.id)?.label||'Next stage');$('advanceBreakdown').disabled=routeDrawing||!!ballPicking;$('arrivalChoices').hidden=true;$('arrivalOrderWrap').hidden=true;$('retainedArrivals').hidden=true;$('breakdownError').textContent=''}
 }
@@ -685,7 +686,7 @@ function nextBreakdownStep(marker){
  const res=advance(frame,m,geometry(),phase,ids,drill.ageMin===10&&drill.ageMax===10,side);
  if(!res.ok){$('breakdownError').textContent=res.message;note(res.message);return}
  frame.name=res.message;
- drill.frames.splice(idx+1,0,frame);idx++;breakdownPreferred=m.id;sanitizeRoutes(drill.frames);changed();choose(idx);revealBreakdown();note(res.message);
+ drill.frames.splice(idx+1,0,frame);idx++;breakdownPreferred=m.id;sanitizeRoutes(drill.frames);changed();choose(idx);revealBreakdown();note(res.message+(m.breakdown?.mode==='pad'?' · No automatic movement; drag arriving players to show the action.':''));
 }
 $('arrivalOrder').onchange=()=>{const o=activeBreakdown();if(['release','pad'].includes(o?.breakdown?.phase))updateBreakdownDock()};
 $('advanceBreakdown').onclick=()=>nextBreakdownStep(activeBreakdown());
