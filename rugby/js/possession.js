@@ -117,6 +117,27 @@ function rawObjectPose(old,next,id,p,g){
  const route=next.paths?.[id],s=sampleRoute(routeSamples(a,b,route,g),q),pos=g.fromView(s.point.x,s.point.y);
  return {...b,...pos,rot:route?.follow&&s.angle!==null&&p*100>=t.start?wrapAngle(s.angle-g.rotation):a.rot+shortestTurn(a.rot,b.rot)*q};
 }
+// An intact formation can travel along the contact marker's route. Each
+// participant keeps their relative position as the whole contest shifts;
+// there is no inferred tackle or automated clearout. This only applies when
+// the coach has moved the marker and members together in the destination step.
+function formationRoutePosition(old,next,id,p,g){
+ const from=findObject(old,id),to=findObject(next,id);
+ if(!from||!to)return null;
+ for(const marker of next.objects){
+  if(!['ruck','tackle','maul','scrum'].includes(marker.type)||!next.paths?.[marker.id]?.points?.length)continue;
+  const previous=findObject(old,marker.id);
+  if(!previous||previous.type!==marker.type||previous.breakdown?.phase!==marker.breakdown?.phase)continue;
+  const member=marker.members?.some(m=>m.id===id)&&previous.members?.some(m=>m.id===id);
+  const linkedBall=to.type==='ball'&&marker.breakdown?.ballId===id&&previous.breakdown?.ballId===id&&!to.ownerId&&!from.ownerId;
+  if(!member&&!linkedBall)continue;
+  if(next.paths?.[id]?.points?.length||Object.hasOwn(next.timing||{},id))continue;
+  if(Math.hypot((to.x-from.x)-(marker.x-previous.x),(to.y-from.y)-(marker.y-previous.y))>0.0001)continue;
+  const moving=rawObjectPose(old,next,marker.id,p,g);
+  return {x:from.x+moving.x-previous.x,y:from.y+moving.y-previous.y};
+ }
+ return null;
+}
 // Find the first visual contact between the two authored approach paths.
 // No collision physics or automatic tackle inference: only newly authored tackle formations.
 export function tackleImpacts(old,next,g){
@@ -166,6 +187,10 @@ export function movementFor(old,next,o,g){
 export function ballPose(old,next,ball,p,g,events=null){
  const a=findObject(old,ball.id);if(!a)return p>=1?carriedPose(ball,carrier(next,ball),g):null;
  const from=carrier(old,a),to=carrier(next,ball);
+ if(!from&&!to){
+  const attached=formationRoutePosition(old,next,ball.id,p,g);
+  if(attached)return {...ball,...attached};
+ }
  if(from&&to&&from.id===to.id){
   // A change of hand stays attached, and creates no pass trajectory.
   const s=clamp(p,0,1),eased=s*s*(3-2*s);
@@ -199,6 +224,8 @@ export function transitionObjects(old,next,p,g){
   if(o.type==='ball')return ballPose(old,next,o,p,g,events);
   if(isShield(o))return shieldTransition(old,next,o,p,g,events);
   const pose=objectPose(old,next,o.id,p,g,events);
+  const groupPosition=formationRoutePosition(old,next,o.id,p,g);
+  if(groupPosition)Object.assign(pose,groupPosition);
   // A ready stance is a deliberate pause, not a pose that slides along the ground.
   const moving=prior&&travels(prior,o,next);
   if(prior&&o.playerPose==='ready'&&(prior.playerPose!=='ready'||moving&&o.posePinned===true)){
