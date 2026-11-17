@@ -2,6 +2,7 @@ import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews} from './branching.js?v=1';
+import {drawnDecisionAt,convertDrawnDecision} from './annotation-to-branch.js?v=1';
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
 import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=3';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition} from './symbol-scale.js?v=0.12.27';
@@ -151,7 +152,13 @@ function pitchMarkingInspector(o,disabled){
  $('markDashed').onchange=e=>change('dashed',e.target.checked);
  if(area){$('markFill').onchange=e=>change('fill',e.target.checked,true);$('markFillOpacity').oninput=e=>$('markFillText').textContent=e.target.value+'%';$('markFillOpacity').onchange=e=>change('fillOpacity',Number(e.target.value))}
 }
-function inspector(){let o=f().objects.find(x=>x.id===selected);if(preview!==null&&['decision','donut'].includes(o?.type)){$('objectPanel').innerHTML='<small>Select a step to edit the annotation or equipment.</small>';return}if(o?.type==='decision'){decisionInspector(o);return}if(o?.type==='donut'){donutInspector(o);return}let disabled=preview!==null?'disabled':'';if(!o){$('objectPanel').innerHTML=groupIds.size?'<small>Group editing affects the current step only. Attached equipment follows its holder.</small>':'<small>Select an object on the pitch to edit its label, rotation and timing.</small>';return}let t=f().timing?.[o.id]||{start:0,end:100};const stepDuration=Number(f().seconds)||2,clockAt=v=>(stepDuration*v/100).toFixed(1)+' s';$('objectPanel').innerHTML=`<div class="field"><label>Object: ${esc(types[o.type][0])}</label><input id="objLabel" value="${esc(o.label)}" ${disabled}></div><div class="field"><label>Rotation (degrees)</label><input id="objRot" type="number" min="-360" max="360" value="${o.rot}" ${disabled}><div class="facing-buttons" aria-label="Quick facing directions">${[["↑",0,"up"],["→",90,"right"],["↓",180,"down"],["←",270,"left"]].map(([symbol,a,word])=>`<button type="button" data-facing="${a}" title="Face ${word} on screen" aria-label="Face ${word} on screen" ${disabled}>${symbol}</button>`).join("")}</div><small>Drag the green handle on the pitch to rotate. Hold Shift for 15° steps. Degrees are relative to the pitch.</small></div>${idx>0?`<div class="pair"><div class="field"><label>${(o.type==='label'||isDiagramObject(o))?'Visible from (%)':'Movement starts (%)'}</label><input id="start" type="number" min="0" max="99" value="${t.start}" ${disabled}></div><div class="field"><label>${(o.type==='label'||isDiagramObject(o))?'Visible until (%)':'Movement finishes (%)'}</label><input id="end" type="number" min="1" max="100" value="${t.end}" ${disabled}></div></div><small>${(o.type==='label'||isDiagramObject(o))?'<strong>Annotation visibility:</strong> 0% shows the label when this step begins, 100% keeps it visible until the step ends. For example, 25–75% shows it only during the middle half.':'<strong>Movement timing:</strong> 0% is the beginning of this step; 100% is its end. This changes <em>when</em> the object travels, not how far. A separate step creates a real pause.'}</small><small>For this ${esc(stepDuration.toFixed(1))} s step: ${(o.type==='label'||isDiagramObject(o))?'visible':'movement'} from ${esc(clockAt(t.start))} to ${esc(clockAt(t.end))}.</small>`:''}<div class="flex" style="margin-top:9px"><button id="copyObj" ${disabled}>Duplicate</button><button id="delObj" class="danger-action" ${disabled} ${contactType(o.type)&&!(f().guide&&o.id===f().guide.id+'-formation')?'hidden':''}>${selectedPathId===o.id?'Remove movement (keep player)':'Delete object'}</button></div>`;if(isDiagramObject(o))pitchMarkingInspector(o,disabled);
+function inspector(){let o=f().objects.find(x=>x.id===selected);if(preview!==null&&['decision','donut'].includes(o?.type)){
+  $('objectPanel').innerHTML=o?.type==='decision'
+   ?'<div class="decision-live-help"><strong>Viewing playback</strong><p>These yellow lines are drawn choices only. They are not animated paths yet.</p><button type="button" id="dpEditNow">Edit decision and make it playable</button></div>'
+   :'<small>Select a step to edit the annotation or equipment.</small>';
+  if(o?.type==='decision')$('dpEditNow').onclick=()=>{stop();preview=null;refresh();selected=o.id;inspector();openInspector('Object',false)};
+  return
+ }if(o?.type==='decision'){decisionInspector(o);return}if(o?.type==='donut'){donutInspector(o);return}let disabled=preview!==null?'disabled':'';if(!o){$('objectPanel').innerHTML=groupIds.size?'<small>Group editing affects the current step only. Attached equipment follows its holder.</small>':'<small>Select an object on the pitch to edit its label, rotation and timing.</small>';return}let t=f().timing?.[o.id]||{start:0,end:100};const stepDuration=Number(f().seconds)||2,clockAt=v=>(stepDuration*v/100).toFixed(1)+' s';$('objectPanel').innerHTML=`<div class="field"><label>Object: ${esc(types[o.type][0])}</label><input id="objLabel" value="${esc(o.label)}" ${disabled}></div><div class="field"><label>Rotation (degrees)</label><input id="objRot" type="number" min="-360" max="360" value="${o.rot}" ${disabled}><div class="facing-buttons" aria-label="Quick facing directions">${[["↑",0,"up"],["→",90,"right"],["↓",180,"down"],["←",270,"left"]].map(([symbol,a,word])=>`<button type="button" data-facing="${a}" title="Face ${word} on screen" aria-label="Face ${word} on screen" ${disabled}>${symbol}</button>`).join("")}</div><small>Drag the green handle on the pitch to rotate. Hold Shift for 15° steps. Degrees are relative to the pitch.</small></div>${idx>0?`<div class="pair"><div class="field"><label>${(o.type==='label'||isDiagramObject(o))?'Visible from (%)':'Movement starts (%)'}</label><input id="start" type="number" min="0" max="99" value="${t.start}" ${disabled}></div><div class="field"><label>${(o.type==='label'||isDiagramObject(o))?'Visible until (%)':'Movement finishes (%)'}</label><input id="end" type="number" min="1" max="100" value="${t.end}" ${disabled}></div></div><small>${(o.type==='label'||isDiagramObject(o))?'<strong>Annotation visibility:</strong> 0% shows the label when this step begins, 100% keeps it visible until the step ends. For example, 25–75% shows it only during the middle half.':'<strong>Movement timing:</strong> 0% is the beginning of this step; 100% is its end. This changes <em>when</em> the object travels, not how far. A separate step creates a real pause.'}</small><small>For this ${esc(stepDuration.toFixed(1))} s step: ${(o.type==='label'||isDiagramObject(o))?'visible':'movement'} from ${esc(clockAt(t.start))} to ${esc(clockAt(t.end))}.</small>`:''}<div class="flex" style="margin-top:9px"><button id="copyObj" ${disabled}>Duplicate</button><button id="delObj" class="danger-action" ${disabled} ${contactType(o.type)&&!(f().guide&&o.id===f().guide.id+'-formation')?'hidden':''}>${selectedPathId===o.id?'Remove movement (keep player)':'Delete object'}</button></div>`;if(isDiagramObject(o))pitchMarkingInspector(o,disabled);
 if(o.type==='coach'){
  const panel=document.createElement('div');
  panel.className='section coach-start-cue';
@@ -341,7 +348,10 @@ $('tryDecisionDemo').onclick=()=>{
 };
 function renderOutcomeBar(){
  const b=hasOutcomes(drill)?branchInfo(drill):null;
+ const diamond=!b?drawnDecisionAt(drill,idx,selected):null;
  $('createOutcomes').hidden=!!b;
+ $('createOutcomes').textContent=diamond?'◆ Make drawn decision playable':'◆ Add playable decision';
+ $('createOutcomes').title=diamond?'Convert the selected yellow diamond and its drawn A/B paths into real movement':'Split this step into two editable outcome sequences';
  $('outcomeControls').hidden=!b;
  if(!b)return;
  $('outcomeQuestion').textContent='◆ '+b.question+' · common start through step '+(b.fork+1);
@@ -355,12 +365,34 @@ function renderOutcomeBar(){
 function openOutcomeDialog(edit=false){
  if(playing)stop();
  if(!requireAppliedSetup())return;
+ if(preview!==null){preview=null;refresh()}
  const b=hasOutcomes(drill)?branchInfo(drill):null;
- $('outcomeDialogTitle').textContent=b?'Edit the two outcomes':'Create two playable outcomes';
- $('outcomePrompt').value=b?.question||'Who receives the ball at the signal?';
- $('outcomeLabelA').value=b?.choices[0].label||'Coach carries through a gap';
- $('outcomeLabelB').value=b?.choices[1].label||'Pass to support runner';
- $('outcomeSave').textContent=b?'Update decision':'Create two outcomes';
+ const marker=!b?drawnDecisionAt(drill,idx,selected):null;
+ const d=marker?.decision?decisionData(marker.decision):null;
+ if(!b&&!marker&&f().objects.filter(o=>o.type==='decision').length>1){
+  note('Select the yellow decision diamond you want to convert first.');return;
+ }
+ const actor=f().objects.find(o=>o.id===d?.playerId);
+ const autoLabel=(o,i)=>{
+  if(!o)return i?'Option B':'Option A';
+  const name=(o.label||'').trim();
+  if(name&&!['Alternative run','New option','Demonstrated action','Alternative'].includes(name))return name;
+  if(o.kind==='pass'){
+   const p=o.points?.at(-1),receiver=p&&f().objects.filter(v=>['attacker','neutral','shield'].includes(v.type)&&v.id!==actor?.id).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];
+   return 'Pass to '+(receiver?.label||'support player');
+  }
+  if(o.kind==='run')return (actor?.label||'Carrier')+' runs through the channel';
+  return 'Option '+(i?'B':'A');
+ };
+ $('outcomeDialog').dataset.markerId=marker?.id||'';
+ $('outcomeDialogTitle').textContent=b?'Edit the two outcomes':marker?'Turn your drawn decision into playable A and B':'Create two playable outcomes';
+ $('outcomeDialogHint').textContent=b?'Rename your existing playable outcomes.':marker
+  ?'Your diamond is already positioned on the player’s run. The editor will split that step at the diamond, turn the two drawn paths into a run or pass where possible, then let you edit the defenders and tackle yourself.'
+  :'The selected step becomes a shared decision point. A and B will have separate steps. Add the real player movements in each outcome.';
+ $('outcomePrompt').value=b?.question||d?.question||'What happens next?';
+ $('outcomeLabelA').value=b?.choices[0].label||autoLabel(d?.options?.[0],0);
+ $('outcomeLabelB').value=b?.choices[1].label||autoLabel(d?.options?.[1],1);
+ $('outcomeSave').textContent=b?'Update decision':marker?'Convert and animate A + B':'Create two outcomes';
  $('outcomeRemove').hidden=!b;
  $('outcomeError').textContent='';
  $('outcomeDialog').showModal();
@@ -373,22 +405,34 @@ $('outcomeSave').onclick=()=>{
   const q=$('outcomePrompt').value,a=$('outcomeLabelA').value,b=$('outcomeLabelB').value;
   if(!a.trim()||!b.trim())throw Error('Both options need an action name.');
   const existing=hasOutcomes(drill);
-  $('outcomeDialog').close();
   if(existing){
    editOutcomes(drill,q,a,b);
    const data=branchInfo(drill),marker=drill.frames[data.fork].objects.find(o=>o.id===data.markerId);
    if(marker)marker.decision=decisionData({...marker.decision,question:data.question,options:[{label:data.choices[0].label,kind:'main'},{label:data.choices[1].label,kind:'run'}]});
+   $('outcomeDialog').close();
    changed();refresh();note('Decision updated in both outcomes.');
   }else{
-   const fork=idx,actor=f().objects.find(o=>o.id===selected),branch=createOutcomes(drill,fork,q,a,b);
-   const x=actor?Math.min(870,actor.x+55):450,y=actor?Math.max(45,actor.y-50):270;
-   const marker=obj(uid(),'decision','Choice',x,y);
-   marker.decision=decisionData({playerId:actor&&canCarry(actor)?actor.id:'',question:branch.question,cue:'Choose one outcome for each repetition.',options:[{label:branch.choices[0].label,kind:'main'},{label:branch.choices[1].label,kind:'run'}]});
-   branch.markerId=marker.id;drill.frames[fork].objects.push(marker);
-   changed();selected=null;choose(fork+1);
-   note('Two real outcomes created. Edit A, then click B to build its alternative. The beginning is shared.');
+   const fork=idx,markerId=$('outcomeDialog').dataset.markerId;
+   const marker=markerId?f().objects.find(o=>o.id===markerId&&o.type==='decision'):null;
+   if(marker){
+    const converted=convertDrawnDecision(drill,fork,markerId,{question:q,labelA:a,labelB:b});
+    drill=converted.drill;
+    $('outcomeDialog').close();selected=null;changed();choose(fork+1);
+    note('Converted the yellow diamond into playable A/B actions. The fork now pauses '+(converted.midStep?'at the diamond on the player’s run.':'after the selected step.')+' Edit defenders separately in each outcome.'+(converted.warnings.length?' CHECK: '+converted.warnings.join(' '):''));
+   }else{
+    const actor=f().objects.find(o=>o.id===selected),branch=createOutcomes(drill,fork,q,a,b);
+    const x=actor?Math.min(870,actor.x+55):450,y=actor?Math.max(45,actor.y-50):270;
+    const point=obj(uid(),'decision','Choice',x,y);
+    point.decision=decisionData({playerId:actor&&canCarry(actor)?actor.id:'',question:branch.question,cue:'Choose one outcome for each repetition.',options:[{label:branch.choices[0].label,kind:'main'},{label:branch.choices[1].label,kind:'run'}]});
+    branch.markerId=point.id;drill.frames[fork].objects.push(point);
+    $('outcomeDialog').close();changed();selected=null;choose(fork+1);
+    note('Two real outcomes created. Edit A, then click B to build the alternative. The beginning is shared.');
+   }
   }
- }catch(e){$('outcomeError').textContent=e.message;$('outcomeDialog').showModal()}
+ }catch(e){
+  $('outcomeError').textContent=e.message;
+  note('Could not create the playable decision: '+e.message);
+ }
 };
 $('outcomeRemove').onclick=()=>{
  if(!confirm('Remove the decision split? The currently selected outcome will remain as a normal, linear drill. The other outcome will no longer be available. Export JSON first if you need it.'))return;
@@ -1289,7 +1333,7 @@ $('play').onclick=()=>{
   raf=requestAnimationFrame(tick);
  }
  raf=requestAnimationFrame(tick);
- note('Playing the drill. The decision will pause and show both outcomes.');
+ note(hasOutcomes(drill)?'Playing the drill. At the real fork, playback will pause and show A and B.':'Playing the linear drill. The yellow decision arrows are drawings only. To make them playable, select the diamond and choose Make playable decision.');
  inspector();
 };
 function download(name,body,type){const url=URL.createObjectURL(new Blob([body],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}const filename=()=>drill.title.replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||'rugby-drill';$('export').onclick=()=>{if(requireAppliedSetup()){download(filename()+'.json',JSON.stringify(drill,null,2),'application/json');$('shareStatus').textContent='Editable drill JSON exported.'}};$('png').onclick=()=>{if(!requireAppliedSetup())return;const scene=renderScene(drill,{...shareOptions(),index:idx});download(filename()+'-step-'+(idx+1)+'.svg',scene.svg,'image/svg+xml');$('shareStatus').textContent='Step '+(idx+1)+' SVG exported.'};function readSavedLibrary(){const data=JSON.parse(localStorage.getItem('rugby-studio-v1')||'[]');if(!Array.isArray(data))throw Error('Saved library is unreadable');return data}
@@ -1432,7 +1476,13 @@ $('finishGame').onclick=()=>{if(!canEditObjects()||!f().guide)return;try{const n
 
 
 $('decisionToggle').onclick=()=>{trainingPick=null;showDecisions=!showDecisions;$('decisionToggle').classList.toggle('selected',showDecisions);$('decisionToggle').setAttribute('aria-pressed',String(showDecisions));render();inspector()};
-function decisionInspector(o){const d=o.decision=decisionData(o.decision),panel=$('objectPanel');panel.innerHTML='<div class="decision-inspector"><h3>Decision point</h3><small>Drag the decision diamond along its running path. Alternatives are visual only; click their points to edit.</small><label>Title<input id="dpTitle" value="'+esc(o.label)+'"></label><label>Player<select id="dpPlayer"><option value="">Any player</option>'+f().objects.filter(canCarry).map(p=>'<option value="'+esc(p.id)+'" '+(d.playerId===p.id?'selected':'')+'>'+esc(objectName(p))+'</option>').join('')+'</select></label><label>Question<textarea id="dpQuestion">'+esc(d.question)+'</textarea></label><label>Coaching cue<textarea id="dpCue">'+esc(d.cue)+'</textarea></label><h3>Options</h3>'+d.options.map((q,i)=>'<div class="decision-option"><b>'+String.fromCharCode(65+i)+'</b><input data-dp-label="'+i+'" value="'+esc(q.label)+'" aria-label="Option label"><select data-dp-kind="'+i+'" aria-label="Option type">'+[['main','Demonstrated action'],['run','Alternative run'],['pass','Alternative pass'],['note','Text only']].map(([v,label])=>'<option value="'+v+'" '+(q.kind===v?'selected':'')+'>'+label+'</option>').join('')+'</select>'+(['run','pass'].includes(q.kind)?'<button data-dp-path="'+i+'">'+(trainingPick?.kind==='option'&&trainingPick.id===o.id&&trainingPick.index===i?'Finish preview':q.points.length?'Redraw preview':'Draw preview')+'</button><small>'+q.points.length+' points</small><label>Path shape<select data-dp-mode="'+i+'"><option value="smooth" '+(q.mode==='smooth'?'selected':'')+'>Smooth curve</option><option value="corners" '+(q.mode==='corners'?'selected':'')+'>Straight segments</option></select></label>':'')+'<button data-dp-remove="'+i+'">Remove option</button></div>').join('')+'<button id="dpAdd" '+(d.options.length>=6?'disabled':'')+'>+ Add option</button><button id="dpDelete" class="danger-action">Delete decision</button></div>';
+function decisionInspector(o){const d=o.decision=decisionData(o.decision),panel=$('objectPanel');panel.innerHTML='<div class="decision-inspector"><h3>Decision point</h3>'+
+ (hasOutcomes(drill)
+  ?'<div class="decision-live-help"><strong>Playable outcome decision</strong><p>Use the A / B buttons in the sequence bar to edit each real animation.</p><button type="button" id="dpSeeOutcomes">Compare A + B</button></div>'
+  :'<div class="decision-live-help"><strong>Drawing only — not an animated choice</strong><p>The yellow arrows are just sketches. Convert this diamond to create A/B steps that the players and ball actually follow, with playback pausing at this point.</p><button type="button" id="dpMakePlayable">◆ Turn this drawing into playable A + B</button></div>')+
+ '<small>Drag the diamond along the selected player’s path. Drawn arrows are editable guides; converting makes them real animation steps.</small><label>Title<input id="dpTitle" value="'+esc(o.label)+'"></label><label>Player<select id="dpPlayer"><option value="">Any player</option>'+f().objects.filter(canCarry).map(p=>'<option value="'+esc(p.id)+'" '+(d.playerId===p.id?'selected':'')+'>'+esc(objectName(p))+'</option>').join('')+'</select></label><label>Question<textarea id="dpQuestion">'+esc(d.question)+'</textarea></label><label>Coaching cue<textarea id="dpCue">'+esc(d.cue)+'</textarea></label><h3>Options</h3>'+d.options.map((q,i)=>'<div class="decision-option"><b>'+String.fromCharCode(65+i)+'</b><input data-dp-label="'+i+'" value="'+esc(q.label)+'" aria-label="Option label"><select data-dp-kind="'+i+'" aria-label="Option type">'+[['main','Demonstrated action'],['run','Alternative run'],['pass','Alternative pass'],['note','Text only']].map(([v,label])=>'<option value="'+v+'" '+(q.kind===v?'selected':'')+'>'+label+'</option>').join('')+'</select>'+(['run','pass'].includes(q.kind)?'<button data-dp-path="'+i+'">'+(trainingPick?.kind==='option'&&trainingPick.id===o.id&&trainingPick.index===i?'Finish preview':q.points.length?'Redraw preview':'Draw preview')+'</button><small>'+q.points.length+' points</small><label>Path shape<select data-dp-mode="'+i+'"><option value="smooth" '+(q.mode==='smooth'?'selected':'')+'>Smooth curve</option><option value="corners" '+(q.mode==='corners'?'selected':'')+'>Straight segments</option></select></label>':'')+'<button data-dp-remove="'+i+'">Remove option</button></div>').join('')+'<button id="dpAdd" '+(d.options.length>=6?'disabled':'')+'>+ Add option</button><button id="dpDelete" class="danger-action">Delete decision</button></div>';
+ if($('dpMakePlayable'))$('dpMakePlayable').onclick=()=>openOutcomeDialog();
+ if($('dpSeeOutcomes'))$('dpSeeOutcomes').onclick=()=>compareOutcomePaths();
  const commit=()=>{changed();render()};$('dpTitle').onchange=e=>{o.label=e.target.value.slice(0,160);commit()};$('dpPlayer').onchange=e=>{o.decision.playerId=e.target.value;o.decision.anchor=null;commit()};$('dpQuestion').onchange=e=>{o.decision.question=e.target.value;commit()};$('dpCue').onchange=e=>{o.decision.cue=e.target.value;commit()};
  for(const b of panel.querySelectorAll('[data-dp-mode]'))b.onchange=()=>{o.decision.options[Number(b.dataset.dpMode)].mode=b.value;commit();inspector()};
  for(const b of panel.querySelectorAll('[data-dp-label]'))b.onchange=()=>{o.decision.options[Number(b.dataset.dpLabel)].label=b.value;commit()};
