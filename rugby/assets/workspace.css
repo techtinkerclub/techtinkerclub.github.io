@@ -275,3 +275,32 @@ html{color-scheme:dark}
 #groupTools{margin:0 0 12px;padding:9px;border:1px solid var(--line);border-radius:6px;background:#213329}#groupTools .flex{gap:4px;flex-wrap:wrap}#groupTools button{font-size:11px;padding:5px 7px}#groupTools small{line-height:1.4}#pitchPreset,#presetMarkers{width:100%}
 
 .action-grid button[hidden],#shieldHolderWrap[hidden]{display:none!important}#gameDialog{width:min(570px,94vw);max-height:88dvh;overflow:auto}#gameDialog a{color:var(--accent)}#gameRoles{display:grid;gap:9px;margin:12px 0}#gameRoles>label{display:grid;gap:4px;font-size:12px}#gameRoles fieldset{border:1px solid var(--line);border-radius:6px;display:grid;gap:5px;padding:8px;max-height:190px;overflow:auto}#gameRoles legend{color:var(--accent)}#gameRoles .phase-check{display:flex;align-items:center;gap:6px}#gameRoles input[type=checkbox]{width:auto;accent-color:var(--accent)}#gameError,#gameDockError{color:#ffb3a5}#gameError:empty,#gameDockError:empty{display:none}#gameDock{display:grid;gap:6px;flex:0 1 auto;min-height:0;max-height:43%;overflow:auto;padding:9px;background:#213329;border-bottom:1px solid var(--line)}#gameDock[hidden]{display:none!important}#gameDock h3{margin:0;color:var(--accent)}#gameDock p{font-size:11px;line-height:1.4}#gameDock small{line-height:1.35}#gameDock summary{cursor:pointer;font-size:11px;color:var(--muted)}
+
+/* v0.12.20: drag the timing bar, or drag either end to trim the movement. */
+.timing-row{border-radius:5px;align-items:center}
+.timing-row.timing-selected{background:#2b402d}
+.timing-row.timing-selected .track-name{color:var(--accent)}
+.timing-row .track-name{min-width:0}
+.timing-bar{position:relative;isolation:isolate;min-width:120px}
+.timing-bar .timing-span{
+  position:absolute;top:4px;height:14px;min-width:3px;max-width:100%;
+  background:var(--timing-color,#f1aa63);border-radius:4px;box-shadow:inset 0 0 0 1px #11191660;
+  color:#142018;cursor:grab;touch-action:none;white-space:nowrap;overflow:visible;display:flex;align-items:center;
+}
+.timing-bar .timing-span:active{cursor:grabbing}
+.timing-bar .timing-span-text{font-size:10px;font-variant-numeric:tabular-nums;font-weight:700;padding:0 6px;overflow:hidden;white-space:nowrap;pointer-events:none}
+.timing-bar .timing-handle{
+  position:absolute;top:1px;transform:translateX(-50%);width:13px;height:20px;min-height:0;padding:0;
+  border:0;border-radius:4px;background:transparent;box-shadow:none;cursor:ew-resize;touch-action:none;
+  z-index:2;
+}
+.timing-bar .timing-handle:before{
+  content:'';display:block;width:5px;height:15px;margin:auto;border-radius:3px;
+  background:#f6f5de;border:1px solid #213329;box-shadow:0 0 2px #16241b;
+}
+.timing-bar .timing-handle:hover:before,.timing-bar .timing-handle:focus-visible:before{background:#c9f07c}
+.timing-bar .timing-span:focus-visible,.timing-bar .timing-handle:focus-visible{outline:2px solid #f0f4d7;outline-offset:2px}
+.timing-bar .timing-handle-start{border-radius:5px 1px 1px 5px}
+.timing-bar .timing-handle-end{border-radius:1px 5px 5px 1px}
+.timing-bar .timing-handle-start[style*="left: 0%"]{transform:translateX(-2px)}
+.timing-bar .timing-handle-end[style*="left: 100%"]{transform:translateX(calc(-100% + 2px))}
