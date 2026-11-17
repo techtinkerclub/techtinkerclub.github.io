@@ -128,6 +128,15 @@ export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,
   if(option.kind==='run'&&option.points.length){
    const last=option.points.at(-1),runner=end.objects.find(o=>o.id===actor.id);
    runner.x=last.x;runner.y=last.y;
+   // A carried ball must end beside its moving carrier, not at the position
+   // from the original unbranched step (which can be metres away).
+   if(ball){
+    const carried=end.objects.find(o=>o.id===ball.id);
+    if(carried&&carried.ownerId===actor.id){
+     carried.x=runner.x+(ball.x-actor.x);
+     carried.y=runner.y+(ball.y-actor.y);
+    }
+   }
    end.paths[runner.id]={mode:option.mode==='corners'?'corners':'smooth',points:copy(option.points.slice(0,-1)),follow:false};
    end.notes+=' The selected player follows the drawn run into the channel.';
   }else if(option.kind==='pass'){
