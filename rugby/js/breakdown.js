@@ -11,7 +11,7 @@ export function roles(frame,m){const r=m.breakdown||{},members=m.members||[];con
 export function candidates(frame,m,side){const r=roles(frame,m),a=findObject(frame,r.carrierId),t=r.mode==='pad'?'attack':team(a);return frame.objects.filter(o=>team(o)&&o.id!==r.carrierId&&!r.tacklerIds.includes(o.id)&&(side==='attack'?team(o)===t:team(o)!==t))}
 export function cleanBreakdowns(frames){for(const f of frames)for(const o of f.objects){if(!o.breakdown)continue;if(!['tackle','ruck'].includes(o.type)||!validPhase(o.breakdown.phase)){delete o.breakdown;continue}const r={phase:o.breakdown.phase};if(o.breakdown.mode==='pad'&&o.type==='ruck'){r.mode='pad';if(typeof o.breakdown.padId==='string')r.padId=o.breakdown.padId}if(['attack','defence'].includes(o.breakdown.arrivalSide))r.arrivalSide=o.breakdown.arrivalSide;
  if(o.type==='ruck'&&['contest','secured'].includes(r.phase)&&['attack','defence'].includes(o.breakdown.winner)){
-  r.winner=o.breakdown.winner;
+  r.winner=o.breakdown.winner;if(o.breakdown.showWinnerLabel===false)r.showWinnerLabel=false;
   if(Number.isFinite(o.breakdown.clearanceCm)&&o.breakdown.clearanceCm>=20&&o.breakdown.clearanceCm<=100)r.clearanceCm=o.breakdown.clearanceCm;
  }for(const k of ['carrierId','tacklerId','ballId'])if(typeof o.breakdown[k]==='string'&&findObject(f,o.breakdown[k]))r[k]=o.breakdown[k];const ids=roles(f,o).tacklerIds;if(ids.length){r.tacklerId=ids[0];r.tacklerIds=ids}o.breakdown=r}return frames}
 export function setParticipants(f,m,g,ids,u10=false){
