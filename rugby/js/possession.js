@@ -60,7 +60,8 @@ function destinationPose(old,next,id){
  const a=findObject(old,id),b=findObject(next,id),formed=formationPose(next,id);
  if(formed)return formed;
  const current=b?.playerPose||'standing',prior=authoredPose(old,id);
- if(b?.posePinned!==true&&travels(a,b,next)&&LOW_POSES.has(prior)&&(current===prior||current==='recovering'))return 'standing';
+ if(prior==='ready'&&travels(a,b,next)&&current==='ready')return 'standing';
+  if(b?.posePinned!==true&&travels(a,b,next)&&LOW_POSES.has(prior)&&(current===prior||current==='recovering'))return 'standing';
  return current;
 }
 // Clean inherited standalone poses in imported/editor data, without changing coordinates,
@@ -72,7 +73,7 @@ export function normaliseRecoveryPoses(frames){
   for(const id of inherited.keys())if(!findObject(next,id))inherited.delete(id);
   for(const player of next.objects){
    if(!canCarry(player))continue;
-   if(formationPose(next,player.id)||player.posePinned===true){inherited.delete(player.id);continue}
+   if(formationPose(next,player.id)||player.posePinned===true&&player.playerPose!=='ready'){inherited.delete(player.id);continue}
    const copied=inherited.get(player.id),raw=player.playerPose;
    let pose=destinationPose(old,next,player.id);
    if(copied&&raw===copied)pose='standing';else if(copied)inherited.delete(player.id);
@@ -195,7 +196,16 @@ export function transitionObjects(old,next,p,g){
   if(o.type==='ball')return ballPose(old,next,o,p,g,events);
   if(isShield(o))return shieldTransition(old,next,o,p,g,events);
   const pose=objectPose(old,next,o.id,p,g,events);
-  if(prior&&p<(next.timing?.[o.id]?.end??100)/100){if(prior.playerPose)pose.playerPose=prior.playerPose;else delete pose.playerPose;}
+  // A ready stance is a deliberate pause, not a pose that slides along the ground.
+  const moving=prior&&travels(prior,o,next);
+  if(prior&&o.playerPose==='ready'&&prior.playerPose!=='ready'){
+   const switchAt=moving?(next.timing?.[o.id]?.end??100)/100:.12;
+   pose.playerPose=p>=switchAt?'ready':(prior.playerPose||'standing');
+  }else if(prior?.playerPose==='ready'&&moving&&o.playerPose!=='ready'){
+   pose.playerPose=p*100>=(next.timing?.[o.id]?.start??0)?'standing':'ready';
+  }else if(prior&&p<(next.timing?.[o.id]?.end??100)/100){
+   if(prior.playerPose)pose.playerPose=prior.playerPose;else delete pose.playerPose;
+  }
   const recovery=recoveries.get(o.id);if(recovery)pose.playerPose=p<=recovery.start?recovery.prior:p<recovery.ready?(recovery.prior==='bound'?'standing':'recovering'):recovery.moving?'standing':recovery.target;
   if(Array.isArray(o.members)||Array.isArray(prior?.members)){
    pose.members=p>=switchAt?o.members:prior?.members;
