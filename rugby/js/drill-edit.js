@@ -36,7 +36,7 @@ export function resizeDrill(d,length,width,mode='relative'){
  return {ok:true,drill:next,translation:{x:dx,y:dy}};
 }
 const contactTypes=new Set(['tackle','ruck','maul','scrum']);
-const staticTypes=new Set(['cone','flag','bag','sausage','ladder','label']);
+const staticTypes=new Set(['cone','flag','bag','sausage','ladder','label','offsideLine','directionArrow','measureLine','zoneCircle','zoneRect']);
 const linked=(f,id)=>f.objects.some(o=>contactTypes.has(o.type)&&(o.id===id||o.members?.some(m=>m.id===id)||[o.breakdown?.carrierId,o.breakdown?.tacklerId,...(o.breakdown?.tacklerIds||[])].includes(id)))||f.objects.some(o=>o.type==='donut'&&o.donutTacklerId===id)||!!f.guide&&Object.values(f.guide.roles||{}).flat().includes(id);
 const find=(f,id)=>f?.objects.find(o=>o.id===id);
 const route=(f,id)=>f?.paths?.[id]?.points||[];
