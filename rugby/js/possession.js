@@ -3,7 +3,7 @@ import {textVisible} from './text-label.js?v=0.12.8';
 import {visualUnit} from './symbol-scale.js?v=0.12.23';
 import { routeSamples, sampleRoute } from './routes.js?v=0.4.3';
 import { wrapAngle, shortestTurn } from './rotation.js?v=0.3.3';
-import {outcomeMemberDisplacement} from './ruck-outcome.js?v=0.12.30';
+import {outcomeMemberDisplacement} from './ruck-outcome.js?v=0.12.31';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const canCarry=o=>!!o&&['attacker','defender','neutral','coach','shield','bagplayer'].includes(o.type);
 export const findObject=(frame,id)=>frame?.objects.find(o=>o.id===id);
