@@ -11,7 +11,7 @@ import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyL
 import {normaliseAge,setupValues,setupAge,prepareSetup} from './setup.js?v=0.12.4';
 import { placePoint, gridStep, loadGridPrefs, saveGridPrefs } from './grid.js?v=0.4.2';
 import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './rotation.js?v=0.3.3';
-import { removeObject, resetStepMovement, isEditingKeyTarget } from './object-edit.js?v=0.12.17';
+import { removeObject, resetStepMovement, isEditingKeyTarget } from './object-edit.js?v=0.12.18';
 import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypointOverlay, routeInsertion, insertionHandles } from './routes.js?v=0.4.3';
 import { createHistory } from './history.js?v=0.4.0';
 import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.12.13';
