@@ -92,7 +92,19 @@ export function trainingTransition(objects,old,next,p,g){
  return o;
  });
 }
-export function trainingPoses(objects,poses){for(const o of objects)if(o.type==='donut'&&['impact','down'].includes(o.donutState)&&o.donutTacklerId&&!poses.has(o.donutTacklerId))poses.set(o.donutTacklerId,'tackling');return poses}
+// A donut impact explicitly makes its selected tackler tackle, regardless of an
+// inherited Standing or Ready pose. A pose deliberately pinned in *this* step wins.
+// Never show a tackling pose for an unassigned, rolling or reset training pad.
+export function trainingPoses(objects,poses){
+ for(const o of objects){
+  if(o.type!=='donut'||!['impact','down'].includes(o.donutState)||!o.donutTacklerId)continue;
+  const player=objects.find(p=>p.id===o.donutTacklerId&&['attacker','defender','neutral','shield','bagplayer'].includes(p.type));
+  if(!player||player.posePinned===true)continue;
+  if(objects.some(marker=>Array.isArray(marker.members)&&marker.members.some(member=>member.id===player.id)))continue;
+  poses.set(player.id,'tackling');
+ }
+ return poses;
+}
 // The wheel represents a moving target. Put the tackler at its rear quarter,
 // not in front of the roll. This is schematic positioning, not a head/neck technique model.
 export function donutRearContact(z,h,approach,g){
