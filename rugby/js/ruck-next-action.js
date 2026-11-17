@@ -20,7 +20,7 @@ export function prepareRuckPlayAway(frame,markerId,playerId,ballId,g){
  const ball=nextPlayBalls(frame).find(o=>o.id===ballId);
  if(!ball)return {ok:false,message:'Choose the rugby ball to be played in the next step.'};
  if(ball.ownerId===player.id)return {ok:false,message:'That player already has this ball; choose another action.'};
- const next=structuredClone(frame);
+ const next=JSON.parse(JSON.stringify(frame));
  next.name=(player.label||'Support player')+' plays ball away';
  next.seconds=2;
  next.notes='';
