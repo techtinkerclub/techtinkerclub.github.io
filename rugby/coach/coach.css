@@ -1,0 +1,99 @@
+/* Coach Edition: separate presentation layer; original /rugby/ files untouched.
+   Harbury-inspired red/white hoops + ink + muted gold, not an official club identity. */
+:root {
+ --bg:#161b1e;--panel:#20272a;--panel2:#2d373a;--line:#435054;
+ --text:#f4f2ed;--muted:#b9c1c0;--accent:#e7bc65;
+ --green:#a5293c;--orange:#d8a14c;
+ --coach-red:#a4223a;--coach-burgundy:#681b2c;--coach-cream:#fff6e8;
+ --coach-gold:#eccb79;
+}
+body.coach-edition{grid-template-rows:auto auto minmax(0,1fr) auto;background:var(--bg);--equipment-width:185px;--inspector-width:286px}
+body.coach-edition > header{background:linear-gradient(115deg,#6c1729 0%,#7c2031 57%,#401922 100%);border-bottom:3px solid #ead2ad;box-shadow:0 3px 16px #0003;position:relative}
+body.coach-edition > header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:repeating-linear-gradient(90deg,#f6f4ec 0 74px,#bb344b 74px 148px);opacity:.9}
+body.coach-edition .brandmark{border-radius:10px;background:repeating-linear-gradient(180deg,#faf8f1 0 9px,#b42c40 9px 18px);border:2px solid #faf6e8;color:#181c1e;text-shadow:0 1px 1px #fff;font-weight:900;box-shadow:0 0 0 2px #ffffff24}
+body.coach-edition header h1{color:#fff9ed;letter-spacing:-.5px}
+body.coach-edition header .brand small{color:#f6d9c5}
+body.coach-edition header button{background:#ffffff17;border-color:#ffffff35;color:#fff9ee}
+body.coach-edition header button:hover{border-color:#ffe6a4;background:#ffffff30}
+body.coach-edition header #save{background:#f5e7c6;color:#451322;border-color:#fff7e8;box-shadow:0 2px 0 #35121e}
+body.coach-edition header #save:hover{background:#ffefcb}
+body.coach-edition #saveState{color:#e7d6cd}
+body.coach-edition .sidebar,body.coach-edition .inspector,body.coach-edition > .timeline{background:#20272a}
+body.coach-edition .sidebar{border-right-color:#495152}
+body.coach-edition .inspector-tabs{background:#242c2f}
+body.coach-edition .inspector-tabs [aria-selected=true]{background:#421e2c;color:#ffe3a1;border-color:#b34a5e}
+body.coach-edition .sidebar h3,body.coach-edition h3{color:#cbbba6}
+body.coach-edition button.selected{background:#4e2531;color:#ffdda1;border-color:#bf6575}
+body.coach-edition button.primary{background:#ae3045;color:#fffaf0;border-color:#c64d5f}
+body.coach-edition button.primary:hover{background:#c63c55}
+body.coach-edition input,body.coach-edition select,body.coach-edition textarea{background:#171f21;border-color:#526165;color:#f3f3ec}
+body.coach-edition input:focus-visible,body.coach-edition button:focus-visible,body.coach-edition select:focus-visible,body.coach-edition textarea:focus-visible,body.coach-edition a:focus-visible{outline:2px solid #ffdc88;outline-offset:2px}
+body.coach-edition input[type=checkbox],body.coach-edition input[type=range]{accent-color:#c63d55}
+body.coach-edition .stage{background:#171d1e}
+body.coach-edition .field-wrap{border-color:#78645b;box-shadow:inset 0 0 0 1px #f2c78235;background:#243d30}
+body.coach-edition .scene.selected,body.coach-edition .scene.active{border-color:#d3ad6f;background:#49313a}
+body.coach-edition .inspector .inspector-route{border-color:#5f4a4b}
+body.coach-edition .timeline{border-top:3px solid #8d3444}
+body.coach-edition .stage-heading h2{font-weight:750;letter-spacing:-.2px}
+body.coach-edition .tool-section{border-bottom:1px solid #3c4748;padding-bottom:10px;margin-bottom:12px}
+body.coach-edition .sidebar .palette button:hover,body.coach-edition .sidebar .action-grid button:hover{background:#3a3234;color:#fff}
+body.coach-edition .sidebar .palette button{border-color:#445053}
+body.coach-edition .board-view-menu .view-menu-panel{background:#232c2d}
+/* A single, visible flow. Entire older editor remains in this document. */
+.coach-journey{display:flex;align-items:center;gap:18px;justify-content:space-between;min-width:0;min-height:63px;padding:8px 16px;background:#f2eee6;border-bottom:2px solid #b34353;color:#2e2529}
+.coach-journey-title{display:grid;gap:2px;min-width:140px}
+.coach-journey-title strong{font-size:15px;letter-spacing:-.3px}
+.coach-eyebrow{font-size:9px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:#903347}
+.coach-journey-actions{display:flex;align-items:center;gap:5px;min-width:0;overflow-x:auto;scrollbar-width:thin;padding:2px 0}
+.coach-journey-actions button{display:flex;align-items:center;gap:7px;flex:0 0 auto;background:transparent;color:#422f34;border:1px solid transparent;padding:8px 10px;font-size:12px;font-weight:650;white-space:nowrap;border-radius:9px;min-height:35px}
+.coach-journey-actions button:hover{background:#e9d9ce;border-color:#d9b5aa}
+.coach-journey-actions button.coach-step-accent{background:#792639;color:#fff8eb;border-color:#792639;box-shadow:0 2px 4px #311a2130}
+.coach-journey-actions button.coach-step-accent .coach-count{color:#f3c874}
+.coach-journey-actions .coach-count{font-size:9px;font-variant-numeric:tabular-nums;color:#9a5263;letter-spacing:1px}
+.coach-journey-switch{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.coach-journey-switch button{font-size:11px;font-weight:800;border:1px solid #cdb9b0;color:#5d2634;background:#fff9f0;padding:7px 10px;border-radius:8px}
+.coach-journey-switch a{font-size:11px;color:#7b3447;text-decoration:underline;text-underline-offset:2px;font-weight:700;white-space:nowrap}
+body.coach-guided .sidebar .tool-section[aria-label="Movement actions"],
+body.coach-guided .sidebar .tool-section[aria-label="Ball actions"],
+body.coach-guided .sidebar #advancedTools,
+body.coach-guided .sidebar #extraActions,
+body.coach-guided .sidebar .tool-section.tool-details:not(#extraActions){display:none !important}
+body.coach-guided #equipmentPanel .tool-section.add-objects h3::after{content:' · quick add';font-size:9px;color:#e7bc65;letter-spacing:0;text-transform:none}
+body.coach-edition .sidebar .insert-scope{font-size:11px}
+/* The new interaction layer: choice cards, not duplicated tool code. */
+.coach-dialog{width:min(730px,calc(100vw - 24px));max-width:730px;max-height:min(84dvh,850px);overflow:auto;color:#292b2d;background:#fffaf3;border:1px solid #d5bdb2;border-radius:19px;padding:0;box-shadow:0 30px 100px #0009}
+.coach-dialog::backdrop{background:#131516ac;backdrop-filter:blur(3px)}
+.coach-modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:25px 27px 16px;border-top:8px solid transparent;border-image:repeating-linear-gradient(90deg,#ad3047 0 50px,#f2eee5 50px 100px) 8}
+.coach-modal-head h2{font-size:27px;line-height:1.1;letter-spacing:-.8px;margin:4px 0 7px;color:#2b2228}
+.coach-modal-head p{color:#686168;font-size:13px;line-height:1.5;max-width:550px}
+.coach-dialog button.coach-close{background:#eee4de;border:0;color:#6d3342;padding:7px;border-radius:9px;font-size:16px;flex:0 0 auto}
+.coach-dialog button{font:inherit}
+.coach-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:10px 26px 23px}
+.coach-choice-grid button{text-align:left;display:flex;flex-direction:column;gap:9px;border:1px solid #dbc6bc;background:#fff;color:#32282c;border-radius:13px;min-height:181px;padding:17px 14px}
+.coach-choice-grid button:hover,.coach-action-card:hover{border-color:#af4055;background:#fff7ef;box-shadow:0 2px 0 #d0a4a4}
+.coach-choice-grid strong{font-size:15px}
+.coach-choice-grid small{color:#69666b;font-size:12px;line-height:1.5}
+.coach-choice-icon{display:grid;place-items:center;font-size:24px;color:#a42a40;background:#f6e8df;border-radius:9px;width:46px;height:46px}
+.coach-modal-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #e6d8d1;padding:15px 26px;color:#786b6b;font-size:11px;line-height:1.5}
+.coach-modal-footer a{color:#8b2b43}
+.coach-action-dialog .coach-modal-head{padding-bottom:13px}
+.coach-category-tabs{display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid #e2d4c9;margin:0 25px;padding-bottom:10px}
+.coach-category-tabs button{font-size:12px;font-weight:750;color:#634956;border:1px solid #d9c7bb;border-radius:18px;padding:8px 12px;background:#fff}
+.coach-category-tabs button[aria-selected=true]{background:#792639;color:#fff;border-color:#792639}
+.coach-action-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:18px 25px;max-height:380px;overflow-y:auto}
+.coach-action-card{text-align:left;display:grid;grid-template-columns:40px minmax(0,1fr);gap:9px;align-items:start;background:#fff;color:#302a2a;border:1px solid #e2d0c7;border-radius:12px;min-height:90px;padding:13px}
+.coach-action-card .coach-action-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:9px;color:#933246;background:#f8ece4;font-size:21px}
+.coach-action-card .coach-action-copy{display:grid;gap:4px}
+.coach-action-card strong{font-size:13px;line-height:1.3}
+.coach-action-card small{font-size:11.5px;color:#666467;line-height:1.4}
+.coach-action-help{border-top:1px solid #ecddd5;background:#f9f2e9;padding:12px 26px;color:#76545a;font-size:12px;line-height:1.5}
+.coach-toast{position:fixed;right:22px;bottom:calc(25dvh + 20px);z-index:400;max-width:380px;border:1px solid #f2c076;background:#2b2530;color:#f8f4e9;padding:12px 17px;border-radius:11px;font-size:12px;line-height:1.45;box-shadow:0 8px 25px #0007}
+.coach-toast[hidden]{display:none}
+body.presentation-mode .coach-journey{display:none}
+body.presentation-mode{grid-template-rows:auto minmax(0,1fr) auto}
+/* Defensive responsive rules: still possible to reach everything on a laptop. */
+@media(max-width:1250px){.coach-journey{gap:7px;padding:8px}.coach-journey-title{display:none}.coach-journey-actions button{padding:7px 8px}}
+@media(max-width:920px){body.coach-edition{--equipment-width:160px;--inspector-width:240px}.coach-journey-switch a{display:none}.coach-journey-actions button{font-size:11px}.coach-journey{min-height:54px}}
+@media(max-width:760px){body.coach-edition{grid-template-rows:auto auto minmax(0,1fr) auto}.coach-journey{min-height:48px}.coach-journey-actions{flex:1}.coach-journey-actions button{font-size:11px;padding:7px}.coach-journey-switch{margin-left:auto}.coach-dialog{width:calc(100vw - 14px)}.coach-choice-grid{grid-template-columns:1fr;padding:8px 15px 16px}.coach-choice-grid button{min-height:80px}.coach-modal-head{padding:19px 17px 12px}.coach-action-cards{grid-template-columns:1fr;padding:13px 15px}.coach-category-tabs{margin:0 15px}.coach-modal-footer{padding:13px 15px}}
+@media(max-height:680px){.coach-journey{min-height:45px;padding:4px 10px}.coach-journey-actions button{padding:5px 8px;min-height:30px}.coach-dialog{max-height:88dvh}}
+@media(prefers-reduced-motion:reduce){.coach-dialog::backdrop{backdrop-filter:none}}
