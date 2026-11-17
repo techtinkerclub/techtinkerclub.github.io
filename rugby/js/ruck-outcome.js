@@ -3,6 +3,36 @@
 export const ruckSide=o=>['attacker','shield'].includes(o?.type)?'attack':['defender','bagplayer'].includes(o?.type)?'defence':null;
 export const contestWinner=m=>['contest','secured'].includes(m?.breakdown?.phase)&&['attack','defence'].includes(m?.breakdown?.winner)?m.breakdown.winner:null;
 
+// Undo a generated ruck result without destroying the coach-authored
+// push-pull route. Return the losing participant and their attached shield to
+// the normal formation-relative destination, and restore the earlier pose.
+// The separate pad, ball and waiting players are never touched.
+export function clearContestOutcome(frame,previous,marker){
+ const winner=contestWinner(marker);
+ if(!winner||marker.breakdown.phase!=='contest')return {ok:false,message:'There is no generated contest result to clear.'};
+ const oldMarker=previous?.objects?.find(o=>o.id===marker.id);
+ if(!oldMarker)return {ok:false,message:'The preceding ruck step is missing.'};
+ const find=(f,id)=>f?.objects.find(o=>o.id===id);
+ const dx=marker.x-oldMarker.x,dy=marker.y-oldMarker.y;
+ let restored=0;
+ for(const member of marker.members||[]){
+  const player=find(frame,member.id),before=find(previous,member.id);
+  if(!player||!before||ruckSide(player)===winner)continue;
+  player.x=before.x+dx;player.y=before.y+dy;
+  const prior=oldMarker.members?.find(m=>m.id===member.id);
+  member.pose=prior?.pose||'bound';
+  for(const item of frame.objects.filter(o=>o.type==='shieldItem'&&o.ownerId===member.id)){
+   const previousItem=find(previous,item.id);
+   if(previousItem){item.x=previousItem.x+dx;item.y=previousItem.y+dy;item.rot=previousItem.rot}
+  }
+  restored++;
+ }
+ delete marker.breakdown.winner;
+ delete marker.breakdown.clearanceCm;
+ return {ok:true,message:'Contest result cleared; '+restored+' losing player'+(restored===1?'':'s')+' returned to the formation. Your push–pull path is preserved.'};
+}
+
+
 export function outcomeMemberDisplacement(old,next,marker,id,p,g){
  const winner=contestWinner(marker);
  if(!winner||marker.breakdown?.phase!=='contest'||!marker.members?.some(m=>m.id===id))return null;
@@ -44,7 +74,7 @@ export function nextPlayCue(frame,objects,marker,g,ink=false){
 }
 
 export function contestResultOverlay(frame,objects,g,progress=1,ink=false){
- const markers=(frame?.objects||[]).filter(o=>o.type==='ruck'&&contestWinner(o));
+ const markers=(frame?.objects||[]).filter(o=>o.type==='ruck'&&contestWinner(o)&&o.breakdown?.showWinnerLabel!==false);
  if(!markers.length)return '';
  const safe=(x,a,b)=>Math.max(a,Math.min(b,x));
  return markers.map(marker=>{
