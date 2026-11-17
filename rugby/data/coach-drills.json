@@ -146,7 +146,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 386.5,
+              "y": 339.90000000000003,
               "rot": 0
             },
             {
@@ -154,16 +154,26 @@
               "type": "defender",
               "label": "D3",
               "x": 450,
-              "y": 433.1,
+              "y": 386.5,
               "rot": 0
             },
             {
               "id": "mwkid504zybjrr",
               "type": "label",
               "label": "CHASE",
-              "x": 603,
-              "y": 293.3,
-              "rot": 0
+              "x": 450,
+              "y": 479.7,
+              "rot": 0,
+              "textStyle": {
+                "fontSize": 20,
+                "color": "#ffffff",
+                "background": true,
+                "backgroundColor": "#193b2a",
+                "backgroundOpacity": 80,
+                "border": true,
+                "borderColor": "#ff0000",
+                "borderWidth": 1.5
+              }
             }
           ],
           "timing": {},
@@ -193,7 +203,7 @@
       "ageMax": 10,
       "minutes": 8,
       "links": [],
-      "savedAt": "2026-11-17T10:10:03.947Z"
+      "savedAt": "2026-11-17T10:33:30.397Z"
     }
   ]
 }
