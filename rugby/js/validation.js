@@ -1,8 +1,8 @@
 // Coach's diagram checker, not a referee or contact technique validator.
-import {playbackData} from './scene.js?v=0.13.1';
+import {playbackData} from './scene.js?v=0.13.10';
 import {pitchGeometry} from './pitch.js?v=0.12.23';
-import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.12.31';
-import {posesFor} from './contact.js?v=0.12.32';
+import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.12.34';
+import {posesFor} from './contact.js?v=0.12.33';
 import {decisionLocation,trainingTransition,trainingPoses} from './training.js?v=0.12.0';
 import {routeSamples} from './routes.js?v=0.4.3';
 const team=o=>['attacker','shield'].includes(o?.type)?1:['defender','bagplayer'].includes(o?.type)?-1:0;
@@ -65,6 +65,17 @@ export function checkDrill(raw,{age=Number(raw.ageMin)||10,direction='auto',offs
   for(const b of f.objects.filter(o=>o.type==='ball')){
    const a=lookup(old,b.id);if(!a)continue;const m=ballMovement(old,f,b,g);
    if(!m?.pass&&!a.ownerId&&!b.ownerId&&!b.transferKind&&dist(g.toView(a.x,a.y),g.toView(b.x,b.y))>12)add('possession',i,[b.id],'Unattached ball moves without a named action. Check carry, loose-ball movement or reset.');
+   // Presentation is a controlled release or push near the grounded player,
+   // not a pass to the supporting player. 1.35m is a diagram-review heuristic,
+   // NOT a claim that rugby law imposes a particular reach distance.
+   if(b.transferKind==='presentation'&&a.ownerId&&!b.ownerId){
+    const grounded=lookup(f,a.ownerId);coverage.possession++;
+    if(grounded){
+     const separation=dist(g.toView(b.x,b.y),g.toView(grounded.x,grounded.y))/g.scale;
+     if(separation>1.35)add('possession',i,[b.id,a.ownerId],
+      name(grounded)+' presents the ball '+separation.toFixed(1)+' m away. This may look like a throw rather than a controlled placement; check the grounded position and ball spot.');
+    }
+   }
    if(m?.pass&&team(m.from)&&team(m.to)&&team(m.from)!==team(m.to))add('possession',i,[b.id], 'Pass changes teams; review whether this is a turnover or interception.');
    if(!v||!m?.pass||['kick','tap','feed','throw','handover','turnover','set'].includes(b.transferKind))continue;
    const t=team(m.from);if(!t)continue;coverage.passing++;const s=g.toView(m.start.x,m.start.y),points=routeSamples(m.start,m.end,f.paths?.[b.id],g),max=Math.max(...points.map(p=>t*(dot(p,v)-dot(s,v)))),release=m.timing.start/100;
@@ -83,6 +94,19 @@ export function checkDrill(raw,{age=Number(raw.ageMin)||10,direction='auto',offs
   if(v)for(const o of f.objects.filter(o=>o.type==='decision')){
    const p=lookup(f,o.decision?.playerId),t=team(p);if(!t)continue;const origin=decisionLocation(f,o,g,old);
    for(const q of o.decision?.options||[])if(q.kind==='pass'&&q.points?.length){coverage.passing++;if(q.points.some(x=>t*(projected(x,g,v)-dot(origin,v))>1))add('passing',i,[o.id,p.id],'Alternative "'+q.label+'" points forward from the decision anchor.');}
+  }
+  // Simple quality indicator: positional changes across the whole step can
+  // suggest unrealistic playback speed. This is not player fitness analysis
+  // or a law check; formation resets can legitimately trigger a review.
+  for(const player of players){
+   const previous=lookup(old,player.id);
+   if(!previous||!(f.seconds>0))continue;
+   const m=dist(g.toView(previous.x,previous.y),g.toView(player.x,player.y))/g.scale;
+   const speed=m/f.seconds;
+   if(speed>8.5){
+    coverage.spacing++;
+    add('spacing',i,[player.id],name(player)+' travels '+m.toFixed(1)+' m in '+f.seconds.toFixed(1)+' s ('+speed.toFixed(1)+' m/s). Slow the animation or explain a formation reset.');
+   }
   }
   const prior=trainingPoses(old.objects,posesFor(old.objects)),departing=players.filter(p=>lookup(old,p.id)&&low(prior.get(p.id))&&(!low(poses.get(p.id))||p.posePinned)&&dist(g.toView(p.x,p.y),g.toView(lookup(old,p.id).x,lookup(old,p.id).y))>1);
   coverage.recovery+=departing.length;
