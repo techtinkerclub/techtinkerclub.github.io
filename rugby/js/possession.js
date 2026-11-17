@@ -162,7 +162,9 @@ export function tackleImpacts(old,next,g){
    const distance=t=>{const x=rawObjectPose(old,next,a,t,g),y=rawObjectPose(old,next,d,t,g),u=g.toView(x.x,x.y),v=g.toView(y.x,y.y);return Math.hypot(u.x-v.x,u.y-v.y)};
    let time=1;if(distance(0)<=34)time=0;
    else for(let i=1;i<=40;i++)if(distance(i/40)<=34){let lo=(i-1)/40,hi=i/40;for(let j=0;j<10;j++){const mid=(lo+hi)/2;if(distance(mid)<=34)hi=mid;else lo=mid}time=hi;break}
-   events.push({marker:marker.id,players:[a,d],time,tackler:d,carrier:a});
+   // Even when the final frame is the first close contact, leave a short
+   // visible window for the tackling stance before the step ends.
+   events.push({marker:marker.id,players:[a,d],time:Math.min(time,.94),tackler:d,carrier:a});
   }
  }
  return events.sort((a,b)=>a.time-b.time);
@@ -213,6 +215,18 @@ export function ballPose(old,next,ball,p,g,events=null){
   return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g,lateral(a)+(lateral(ball)-lateral(a))*eased);
  }
  const m=ballMovement(old,next,ball,g,events),t=m.timing;
+ if(m.presentation&&from&&!to){
+  // Presentation is a controlled ground placement, not a pass or kick.
+  // Follow the carrier as they go down, then ease the ball from their hands
+  // to the authored spot in the first part of the release step.
+  const carrierNow=objectPose(old,next,from.id,p,g,events);
+  const held=carriedPose(a,carrierNow,g);
+  const q=clamp((p*100-t.start)/Math.max(1,t.end-t.start),0,1);
+  if(q<.12)return {...held,ownerId:from.id,groundState:undefined};
+  const tGround=clamp((q-.12)/.88,0,1),eased=tGround*tGround*(3-2*tGround);
+  return {...ball,x:held.x+(ball.x-held.x)*eased,y:held.y+(ball.y-held.y)*eased,
+   ownerId:undefined,groundState:q>=.85?(ball.groundState||'presented'):undefined};
+ }
  if(m.turnover||m.instant){if(p*100>=t.end)return to?carriedPose(ball,objectPose(old,next,to.id,p,g,events),g):{...ball};return from?carriedPose(a,objectPose(old,next,from.id,p,g,events),g):{...a}}
  if(from&&p*100<=t.start)return carriedPose(a,objectPose(old,next,from.id,p,g,events),g);
  if(to&&p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g);
