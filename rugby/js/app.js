@@ -25,6 +25,7 @@ import {insertable,fillMissing,syncInsertedCopies,scopeIndices} from './insertio
 import {breakdownContext} from './breakdown-context.js?v=0.5.7';
 import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
 import {contactDragIds,contactHandlePoint} from './contact-drag.js?v=0.12.24';
+import {formationTrajectorySVG,unraiseFormationPoint,formationRouteOffset} from './formation-trajectory.js?v=0.12.27';
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.26';
 import {PRESETS} from './presets.js?v=0.6.0';
 import {renderScene} from './scene.js?v=0.12.25';
@@ -105,13 +106,13 @@ function render(){
  const pathVisible=active?.type==='ball'?showPasses:showPaths;
  const magnet=preview===null&&drag?.contact?objects.find(o=>o.id===drag.contact.playerId):null;
  const magnetOverlay=magnet?(()=>{const p=g.toView(magnet.x,magnet.y);return `<g data-editor-only="true" pointer-events="none"><circle cx="${p.x}" cy="${p.y}" r="32" stroke="#d6f77b" stroke-width="3" stroke-dasharray="5 3" fill="#d6f77b" fill-opacity=".12"/><text x="${p.x}" y="${p.y-40}" fill="#e6ffac" font-size="13" text-anchor="middle" paint-order="stroke" stroke="#20372b" stroke-width="3">Release to attach</text></g>`})():'';
- const handles=pathVisible&&!routeDrawing&&move&&!move.turnover&&!move.instant&&!move.presentation&&hasMovement(move.start,move.end,route)?insertionHandles(move.start,move.end,route,g):'';
+ const handles=pathVisible&&!routeDrawing&&!contactType(active?.type)&&move&&!move.turnover&&!move.instant&&!move.presentation&&hasMovement(move.start,move.end,route)?insertionHandles(move.start,move.end,route,g):'';
  const poses=visiblePlayerPoses(objects);
  pitch.innerHTML=trainingField(g,showGrid,gridPrefs.step,pitchSettings(drill))+($('offsideGuides').checked?offsideOverlay(objects,drill,g,guideDirection):'')+(showActionLabels?phaseOverlay(drill.frames[lineIndex],g):'')+lines+pathHits+(trainingPick?.kind==='roll'&&preview===null?'<g id="donutLanePreview" data-editor-only="true">'+donutLaneOverlay(f().objects.find(o=>o.id===trainingPick.id),g,null,trainingPick.direction)+'</g>':'')+orderObjects(objects).filter(o=>o.type!=='decision'&&(showMarkups||!isDiagramObject(o))).map(o=>{
   const sel=(selected===o.id||groupIds.has(o.id))&&preview===null,p=g.toView(o.x,o.y),pose=poses.get(o.id),radius=symbolRadius(o,g,pose);
   const graphic=isDiagramObject(o)?`<g transform="rotate(${o.rot+g.rotation})">${diagramSVG(o,g)}</g>`:o.type==='label'?textLabelSVG(o,{baseline:labelOffset(o,g)}):`<g transform="rotate(${o.rot+g.rotation}) ${symbolTransform(o,g,pose)}">${posedShape(o,pose,contactMarkerShape(o,donutShape(o,shape(o.type))),types[o.type][1])}</g>${o.label&&!contactType(o.type)?`<text x="${labelPosition(o,g,pose).x}" y="${labelPosition(o,g,pose).y}" text-anchor="middle" fill="#fff" paint-order="stroke" stroke="#234f38" stroke-width="3" font-size="13" font-weight="600">${esc(o.label)}</text>`:''}`;
   return `<g class="obj" data-id="${esc(o.id)}" transform="translate(${p.x} ${p.y})"><circle r="${Math.max(o.type==='ball'?5:8,radius+2)}" fill="transparent"/>${sel?'<circle data-editor-only="true" r="'+Math.max(10,radius+5)+'" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 3" fill="none" pointer-events="none"/>':''}${graphic}</g>`;
- }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[])])]):'');
+ }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!ballPicking&&!trainingPick&&!groupIds.size?formationTrajectorySVG(drill.frames[idx-1]?.objects.find(o=>o.id===active.id),f(),active,g):'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&!contactType(active.type)&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[])])]):'');
  // Playback may change a player's pose without changing the selected step.
  // Keep the read-only inspector aligned with the frame actually on screen.
  if(preview!==null){const selector=$('playerPose');if(selector?.disabled&&selected)selector.value=poses.get(selected)||'standing'}
@@ -399,7 +400,7 @@ function previousObject(){return idx>0?drill.frames[idx-1].objects.find(o=>o.id=
 function selectedMovement(){const o=activeObject(),m=o&&!['decision','donut'].includes(o.type)&&!isDiagramObject(o)&&movementFor(drill.frames[idx-1],f(),o,geometry());return m?.turnover||m?.instant||m?.presentation?null:m}
 function ensureRoute(){
  if(!f().paths)f().paths=Object.create(null);
- if(!Object.hasOwn(f().paths,selected))Object.defineProperty(f().paths,selected,{value:{mode:'smooth',points:[],follow:false},enumerable:true,writable:true,configurable:true});
+ if(!Object.hasOwn(f().paths,selected))Object.defineProperty(f().paths,selected,{value:{mode:contactType(activeObject()?.type)?'corners':'smooth',points:[],follow:false},enumerable:true,writable:true,configurable:true});
  return f().paths[selected];
 }
 function hasMovement(a,b,r){return !!(a&&b&&(Math.hypot(a.x-b.x,a.y-b.y)>1e-6||r?.points?.length))}
@@ -439,11 +440,21 @@ function toggleRoute(){
   const n=stripDecisions(clone(f()));n.name='Step '+(idx+2);n.seconds=2;n.notes='';n.timing={};n.paths={};
   drill.frames.splice(idx+1,0,n);idx++;sanitizeRoutes(drill.frames);changed();refresh();
  }
- routeDrawing=true;routeClickCount=0;render();focusPitch();note('Click the pitch to draw the route, then Finish path. The final click is the destination.');
+ routeDrawing=true;routeClickCount=0;render();focusPitch();note(contactType(activeObject()?.type)?'Click each push and pull position to trace the contest. The ruck and its players stay together. Finish path when done.':'Click the pitch to draw the route, then Finish path. The final click is the destination.');
 }
 function finishRoute(){
  selectedPathId=null;
  routeDrawing=false;routeClickCount=0;render();inspector();tracks();note('Path ready. Press Play or adjust the numbered waypoints.');
+}
+// The marker anchors an intact formation: route clicks reposition participants
+// as one group, so their animation stays coherent around the pad.
+function moveFormationTo(marker,destination){
+ const g=geometry(),before=g.toView(marker.x,marker.y),target=g.toView(destination.x,destination.y);
+ const items=groupSnapshot(f(),contactDragIds(f(),marker),g);
+ for(const moved of groupTranslate(items,target.x-before.x,target.y-before.y,g)){
+  const item=f().objects.find(o=>o.id===moved.id);
+  if(item)Object.assign(item,moved);
+ }
 }
 function addRoutePoint(e){
  const o=activeObject();if(!o||!previousObject())return;
@@ -453,7 +464,12 @@ function addRoutePoint(e){
  if(routeClickCount===0)route.points=[];
  else if(route.points.length<64)route.points.push({x:o.x,y:o.y});
  else {note('Maximum of 64 intermediate points. Finish this route.');return}
- const oldPosition={x:o.x,y:o.y};o.x=q.x;o.y=q.y;routeClickCount++;if(idx)releaseMovedPlayer(drill.frames[idx-1],f(),o.id,geometry());const ripple=rippleFrom(o.id,oldPosition);changed();render();tracks();if(ripple&&(!ripple.ok||ripple.stop!==null))note('Path updated.'+rippleFeedback(ripple));
+ const oldPosition={x:o.x,y:o.y};
+ if(contactType(o.type))moveFormationTo(o,q);else{o.x=q.x;o.y=q.y}
+ routeClickCount++;
+ if(!contactType(o.type)&&idx)releaseMovedPlayer(drill.frames[idx-1],f(),o.id,geometry());
+ const ripple=contactType(o.type)?null:rippleFrom(o.id,oldPosition);
+ changed();render();tracks();if(ripple&&(!ripple.ok||ripple.stop!==null))note('Path updated.'+rippleFeedback(ripple));
 }
 $('drawRouteSide').onclick=toggleRoute;
 $('addPointSide').onclick=()=>insertPathPoint();
