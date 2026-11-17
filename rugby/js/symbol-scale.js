@@ -1,7 +1,10 @@
-// Nominal top-view dimensions in metres. Coaching mode magnifies glyphs only.
+// Nominal top-view dimensions in metres. Coaching view magnifies every
+// physical symbol by the same ratio, with a legibility floor for large pitches.
+export const COACHING_MAGNIFICATION = 1.30;
+const MIN_COACHING_FACTOR = 0.80;
 export const normalScaleMode = value => value === 'coaching' ? 'coaching' : 'realistic';
 export const physicalUnit = g => Number.isFinite(g?.scale)&&g.scale>0 ? g.scale*0.45/30 : 1;
-export const visualUnit = g => g?.displayMode==='coaching' ? Math.max(physicalUnit(g),0.80) : physicalUnit(g);
+export const visualUnit = g => g?.displayMode==='coaching' ? Math.max(physicalUnit(g)*COACHING_MAGNIFICATION,MIN_COACHING_FACTOR) : physicalUnit(g);
 const playerTypes=new Set(['attacker','defender','neutral','coach','shield','bagplayer']);
 export function symbolFactors(o,g,pose){
  const k=Number.isFinite(g?.scale)&&g.scale>0?g.scale:30/0.45, u=physicalUnit(g), mode=normalScaleMode(g?.displayMode);
@@ -19,7 +22,12 @@ export function symbolFactors(o,g,pose){
   case 'ladder': x=.45*k/24;y=4*k/50;break;
   case 'label':case 'decision': return [1,1];
  }
- if(mode==='coaching'){x=Math.max(x,.80);y=Math.max(y,.80)}
+ if(mode==='coaching'){
+  // A minimum alone only enlarged cones on short pitches while players and
+  // donuts stayed unchanged. Magnify every physical object consistently.
+  x=Math.max(x*COACHING_MAGNIFICATION,MIN_COACHING_FACTOR);
+  y=Math.max(y*COACHING_MAGNIFICATION,MIN_COACHING_FACTOR);
+ }
  return [x,y];
 }
 export function symbolTransform(o,g,pose){const [x,y]=symbolFactors(o,g,pose);return 'scale('+x+' '+y+')'}
