@@ -1,6 +1,7 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.11.1';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.12.33';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.12.23';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.0';
+import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=1';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.0';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {coachingMarkup,sequenceMarkup,decisionMarkup} from './coaching-output.js?v=0.8.0';
@@ -14,12 +15,27 @@ function render(){
  const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
  board.innerHTML=s.svg;shownStep=s.index;
- const key=s.index+':'+opts.decisions;
+ const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
  if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?decisionMarkup(s.frame):'';$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
  $('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t;
  $('previousStep').disabled=t<=0;$('nextStep').disabled=t>=drillDuration(d);$('play').disabled=d.frames.length<2;
 }
-function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);t=0;shownStep=-1;notesKey='';$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
+function setPlayerOutcome(id){
+ if(!d||!hasOutcomes(d))return;
+ stop();chooseOutcome(d,id);t=0;shownStep=-1;notesKey='';
+ $('branchChoice').value=id;$('seek').max=drillDuration(d);
+ $('coachSequenceContent').innerHTML=sequenceMarkup(d);render();
+}
+$('branchChoice').onchange=()=>setPlayerOutcome($('branchChoice').value);
+function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);
+ const b=hasOutcomes(d)?branchInfo(d):null;
+ $('branchPlayer').hidden=!b;
+ if(b){
+  $('branchPrompt').textContent='◆ '+b.question;
+  $('branchChoice').replaceChildren(...b.choices.map(c=>new Option(c.id.toUpperCase()+' · '+c.label,c.id)));
+  $('branchChoice').value=b.active;
+ }
+t=0;shownStep=-1;notesKey='';$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
 $('play').onclick=()=>{if(!d)return;if(playing){stop();return}if(t>=drillDuration(d))t=0;playing=true;$('play').textContent='Pause';last=performance.now();function tick(now){if(!playing)return;t=Math.min(drillDuration(d),t+(now-last)/1000*Number($('speed').value));last=now;render();if(t>=drillDuration(d))stop();else raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick)};
 $('restart').onclick=()=>jumpStep(0);$('previousStep').onclick=()=>jumpStep(stepTarget(-1));$('nextStep').onclick=()=>jumpStep(stepTarget(1));$('seek').oninput=()=>{stop();t=Number($('seek').value);render()};
 for(const k of ['runs','passes','labels','decisions','markups','offside','orientation','scaleMode'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode'].includes(k)?$(k).value:$(k).checked;render()};
