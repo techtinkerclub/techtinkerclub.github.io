@@ -3,6 +3,7 @@ import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews} from './branching.js?v=1';
 import {signalForFrame,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=1';
+import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=1';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition} from './symbol-scale.js?v=0.12.27';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.13.4';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
@@ -268,6 +269,33 @@ createTimingTrackEditor($('tracks'),{
 
 // A true choice changes the editable timeline: the first part is shared,
 // then A and B each own their own sequence, including ball, tackling and timing.
+function compareOutcomePaths(){
+ if(!hasOutcomes(drill))return;
+ stop();
+ try{
+  $('outcomeMapTitle').textContent='◆ '+branchInfo(drill).question;
+  $('outcomeMapCards').innerHTML=outcomeCardsMarkup(drill,'edit');
+  $('outcomeMapDialog').showModal();
+ }catch(err){note('Could not display the decision comparison: '+err.message)}
+}
+$('compareOutcomes').onclick=compareOutcomePaths;
+$('closeOutcomeMap').onclick=()=>$('outcomeMapDialog').close();
+$('outcomeMapCards').onclick=e=>{
+ const button=e.target.closest('[data-branch-choice]');
+ if(!button||!hasOutcomes(drill))return;
+ const choice=button.dataset.branchChoice;
+ $('outcomeMapDialog').close();
+ if(branchInfo(drill).active!==choice)$('outcome'+choice.toUpperCase()).click();
+ else choose(Math.min(branchInfo(drill).fork+1,drill.frames.length-1));
+ note('Editing option '+choice.toUpperCase()+'. Choose Compare A + B to inspect the other consequence.');
+};
+$('tryDecisionDemo').onclick=()=>{
+ if(!confirmLeave())return;
+ const fixture=SEEDS.find(x=>x.id==='seed-132');
+ if(!fixture){note('The decision example is missing from the starter catalogue.');return}
+ drill=freshSeed(fixture);dirty=false;selected=null;resetHistory();choose(0);
+ note('Loaded the five-defender decision demo. Press Play to reach the fork, then Compare A + B to inspect the two routes. Open option A or B to edit each response.');
+};
 function renderOutcomeBar(){
  const b=hasOutcomes(drill)?branchInfo(drill):null;
  $('createOutcomes').hidden=!!b;
