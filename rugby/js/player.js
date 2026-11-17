@@ -1,5 +1,5 @@
-import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.11.1';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.0';
+import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.13.1';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.1';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=1';
 import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.0';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
