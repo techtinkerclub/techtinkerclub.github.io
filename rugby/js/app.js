@@ -24,6 +24,7 @@ import {PHASES,supportTitle,validPhase,nextPhase,team,roles,cleanBreakdowns,cand
 import {insertable,fillMissing,syncInsertedCopies,scopeIndices} from './insertion.js?v=0.8.0';
 import {breakdownContext} from './breakdown-context.js?v=0.5.7';
 import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
+import {contactDragIds,contactHandlePoint} from './contact-drag.js?v=0.12.24';
 import {PRESETS} from './presets.js?v=0.6.0';
 import {renderScene} from './scene.js?v=0.12.23';
 import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.12.23';
@@ -61,6 +62,22 @@ const placement=(p,free=false)=>placePoint(p,geometry(),gridPrefs.snap&&!free,gr
 function syncGrid(){for(const [id,on] of [['grid',showGrid],['snapGrid',gridPrefs.snap]]){$(id).classList.toggle('selected',on);$(id).setAttribute('aria-pressed',String(on))}$('gridStep').value=String(gridPrefs.step);gridPrefs.visible=showGrid;saveGridPrefs(gridPrefs)}
 // Resolve the player poses identically for SVG rendering and Object inspector.
 const visiblePlayerPoses=objects=>trainingPoses(objects,posesFor(objects));
+// This is deliberately an editor-only grip, not a ruck object.
+// It sits above overlapping equipment and works even when the contact marker
+// has no graphic because it already contains players.
+function contactDragGrip(frame,marker,g){
+ if(!contactType(marker?.type))return '';
+ const center=g.toView(marker.x,marker.y),p=contactHandlePoint(frame,marker,g),name=contactTitle(marker.type);
+ return `<g data-editor-only="true" class="formation-grip">
+ <path d="M${center.x} ${center.y}L${p.x} ${p.y}" fill="none" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 5" opacity=".85" pointer-events="none"/>
+ <g data-contact-grip="${esc(marker.id)}" role="button" aria-label="Drag ${esc(name)} and involved players" tabindex="0" style="cursor:move;touch-action:none">
+  <circle cx="${p.x}" cy="${p.y}" r="21" stroke="#102e23" stroke-width="3" fill="#d6f77b"/>
+  <circle cx="${p.x}" cy="${p.y}" r="17" stroke="#28482b" stroke-width="1.5" fill="none"/>
+  <path d="M${p.x-12} ${p.y}H${p.x+12}M${p.x} ${p.y-12}V${p.y+12}M${p.x-12} ${p.y}l4 -4m-4 4l4 4m20 -4l-4 -4m4 4l-4 4m-8 -16l-4 4m4 -4l4 4m-4 20l-4 -4m4 4l4 -4" stroke="#1e3725" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <title>Move ${esc(name)} and its players · current step only</title>
+ </g>
+ </g>`;
+}
 function render(){
  const g={...geometry(),displayMode:scaleMode},objects=preview===null?frameObjects(f(),g):tween(preview,g);
  camera.apply(g);
@@ -91,7 +108,7 @@ function render(){
   const sel=(selected===o.id||groupIds.has(o.id))&&preview===null,p=g.toView(o.x,o.y),pose=poses.get(o.id),radius=symbolRadius(o,g,pose);
   const graphic=isDiagramObject(o)?`<g transform="rotate(${o.rot+g.rotation})">${diagramSVG(o,g)}</g>`:o.type==='label'?textLabelSVG(o,{baseline:labelOffset(o,g)}):`<g transform="rotate(${o.rot+g.rotation}) ${symbolTransform(o,g,pose)}">${posedShape(o,pose,contactMarkerShape(o,donutShape(o,shape(o.type))),types[o.type][1])}</g>${o.label&&!contactType(o.type)?`<text y="${labelOffset(o,g,pose)}" text-anchor="middle" fill="#fff" paint-order="stroke" stroke="#234f38" stroke-width="3" font-size="13" font-weight="600">${esc(o.label)}</text>`:''}`;
   return `<g class="obj" data-id="${esc(o.id)}" transform="translate(${p.x} ${p.y})"><circle r="${Math.max(o.type==='ball'?5:8,radius+2)}" fill="transparent"/>${sel?'<circle data-editor-only="true" r="'+Math.max(10,radius+5)+'" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 3" fill="none" pointer-events="none"/>':''}${graphic}</g>`;
- }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[])])]):'');
+ }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[])])]):'');
  // Playback may change a player's pose without changing the selected step.
  // Keep the read-only inspector aligned with the frame actually on screen.
  if(preview!==null){const selector=$('playerPose');if(selector?.disabled&&selected)selector.value=poses.get(selected)||'standing'}
@@ -623,6 +640,16 @@ pitch.addEventListener('pointerdown',e=>{
  if(trainingPick){handleTrainingPick(e);e.preventDefault();return}
  if(ballPicking){const owner=carrier(f(),chosenBall()),players=overlapAt(viewPoint(e)).filter(o=>canCarry(o)&&o.id!==owner?.id);if(players.length===1)finishBallPick(players[0].id);else if(players.length>1){$('recipientChoice').focus();note('Several players overlap. Choose the recipient by name in Actions.')}e.preventDefault();return}
  if(routeDrawing){addRoutePoint(e);e.preventDefault();return}
+ const grip=e.target.closest('[data-contact-grip]');
+ if(grip){
+  const marker=f().objects.find(o=>o.id===grip.dataset.contactGrip);
+  if(!contactType(marker?.type))return;
+  selected=marker.id;selectedPathId=null;groupIds.clear();groupMode=false;
+  drag={id:marker.id,kind:'formation',items:groupSnapshot(f(),contactDragIds(f(),marker),geometry()),pointerId:e.pointerId,origin:viewPoint(e),moved:false};
+  pitch.setPointerCapture(e.pointerId);
+  note('Move the '+contactTitle(marker.type).toLowerCase()+' and its involved players. This step only; other equipment stays put.');
+  e.preventDefault();return;
+ }
  const dp=e.target.closest('[data-dp-point]');if(dp&&activeObject()?.type==='decision'){const o=activeObject(),i=Number(dp.dataset.dpOption),k=Number(dp.dataset.dpPoint),option=o.decision.options[i];if(!option?.points[k])return;if(e.altKey){option.points.splice(k,1);changed();render();inspector();return}drag={id:o.id,kind:'decision-waypoint',option:i,index:k,pointerId:e.pointerId,moved:false};pitch.setPointerCapture(e.pointerId);e.preventDefault();return;}
  const plus=e.target.closest('[data-insert-point]');
  if(plus){insertPathPoint(viewPoint(e),Number(plus.dataset.insertPoint),e);e.preventDefault();return}
@@ -654,8 +681,13 @@ pitch.addEventListener('pointerdown',e=>{
  // Clicking a carried ball still selects it for passing; dragging it moves its carrier.
  const owner=o.type==='ball'||isShield(o)?carrier(f(),o):null,moving=owner||o,p=point(e);let scope=$('moveScope').value;
  if(scope!=='here'&&(!canPropagate(f(),moving)||scope==='entire'&&!canEntire(moving))){scope='here';note('Linked action: this edit applies to the current step only. Review the following transition.');}
- drag={id:moving.id,scope,kind:o.type==='decision'&&o.decision?.anchor!==null&&decisionRoute(f(),drill.frames[idx-1],o.decision?.playerId,geometry())?'decision-anchor':'move',pointerId:e.pointerId,dx:moving.x-p.x,dy:moving.y-p.y,moved:false,contact:null,origin:viewPoint(e),originalPosition:{x:moving.x,y:moving.y}};
- if(owner)note((isShield(o)?'Shield':'Ball')+' attached to '+(owner.label||'player')+' · drag to move both.');
+ if(contactType(o.type)&&o.members?.length){
+  drag={id:o.id,kind:'formation',items:groupSnapshot(f(),contactDragIds(f(),o),geometry()),pointerId:e.pointerId,origin:viewPoint(e),moved:false};
+  note('Move the '+contactTitle(o.type).toLowerCase()+' and its involved players. This step only; other equipment stays put.');
+ }else{
+  drag={id:moving.id,scope,kind:o.type==='decision'&&o.decision?.anchor!==null&&decisionRoute(f(),drill.frames[idx-1],o.decision?.playerId,geometry())?'decision-anchor':'move',pointerId:e.pointerId,dx:moving.x-p.x,dy:moving.y-p.y,moved:false,contact:null,origin:viewPoint(e),originalPosition:{x:moving.x,y:moving.y}};
+  if(owner)note((isShield(o)?'Shield':'Ball')+' attached to '+(owner.label||'player')+' · drag to move both.');
+ }
  pitch.setPointerCapture(e.pointerId);
  e.preventDefault();
 });
@@ -664,7 +696,7 @@ pitch.addEventListener('pointermove',e=>{
   lane.innerHTML=donutLaneOverlay(pad,geometry(),viewPoint(e),trainingPick.direction);return}
  if(!drag||e.pointerId!==drag.pointerId)return;
  const o=f().objects.find(x=>x.id===drag.id);if(!o)return;
- if(drag.kind==='group'){
+ if(drag.kind==='group'||drag.kind==='formation'){
   const q=viewPoint(e),rawX=q.x-drag.origin.x,rawY=q.y-drag.origin.y;if(!drag.moved&&Math.hypot(rawX,rawY)<3)return;
   const g=geometry(),anchor=drag.items.find(x=>x.id===drag.id),target=anchor&&placement(g.fromView(anchor.x+rawX,anchor.y+rawY),e.shiftKey),snap=target&&g.toView(target.x,target.y);const dx=snap?snap.x-anchor.x:rawX,dy=snap?snap.y-anchor.y:rawY;
   for(const p of groupTranslate(drag.items,dx,dy,g))Object.assign(f().objects.find(o=>o.id===p.id),p);
