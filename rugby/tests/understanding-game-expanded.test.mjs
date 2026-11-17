@@ -49,7 +49,11 @@ test('U10 free pass includes defenders retreating seven metres from the mark',()
   const player=obj(f,id);
   assert(player,'Missing '+id);
   const g=pitchGeometry(d.length,d.width,'up');
-  assert(Math.abs(g.toView(player.y===null?mark:player).y-g.toView(mark).y)/g.scale>=7-1e-4,id+' not back seven metres');
+  // U10 attackers move towards smaller y in this lesson; defenders retreat
+  // to their own end, away from the marked free pass. Measure signed metres
+  // in pitch coordinates instead of relying on a screen-oriented pixel test.
+  const retreat=(mark.y-player.y)*d.length/466;
+  assert(retreat>=6.99,id+' not back seven metres (measured '+retreat.toFixed(2)+' m)');
  }
  assert.equal(obj(d.frames[3],'b').transferKind,'pass');
 });
