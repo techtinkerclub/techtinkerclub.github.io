@@ -1,6 +1,6 @@
 import {physicalUnit,symbolRadius} from './symbol-scale.js?v=0.12.0';
 // Schematic formation presets, not coaching technique or an age-grade law validator.
-import {canCarry,carrier} from './possession.js?v=0.12.0';
+import {canCarry,carrier} from './possession.js?v=0.12.13';
 import {team,roles,setParticipants} from './breakdown.js?v=0.12.0';
 const CONTACTS={tackle:{title:'Tackle',min:2,max:3,color:'#fa9e91'},ruck:{title:'Ruck',min:2,max:16,color:'#f7d27a'},maul:{title:'Maul',min:3,max:16,color:'#c8b0f5'},scrum:{title:'Scrum',min:4,max:16,color:'#91dbce'}};
 export const contactType=t=>Object.hasOwn(CONTACTS,t);
@@ -69,7 +69,13 @@ export function contactMarkerShape(o,base){
 export function posedShape(o,pose,normal,color){
  if(!pose||pose==='standing')return normal;
  // Top-down ready stance: lower, wide balanced base and open arms, not a tackle.
- if(pose==='ready')return '<path d="M-7 7L-16 15L-23 10M7 7L16 15L23 10M-11 -5L-20 0M11 -5L20 0" fill="none" stroke="#102e23" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M-7 7L-16 15L-23 10M7 7L16 15L23 10M-11 -5L-20 0M11 -5L20 0" fill="none" stroke="'+color+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><ellipse rx="13" ry="12" fill="'+color+'" stroke="#102e23" stroke-width="2.5"/><path d="M-5 -6L0 -15L5 -6Z" fill="#fff"/><path d="M-16 15l-7 -5M16 15l7 -5" stroke="#eff8dd" stroke-width="2.3" stroke-linecap="round"/>';
+ if(pose==='ready')return '<path d="M-9 -8Q-18 -8 -20 -13L-16 -23M9 -8Q18 -8 20 -13L16 -23" fill="none" stroke="#102e23" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>'+
+ '<path d="M-9 -8Q-18 -8 -20 -13L-16 -23M9 -8Q18 -8 20 -13L16 -23" fill="none" stroke="'+color+'" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>'+
+ '<path d="M-8 11L-14 21M8 11L14 21" fill="none" stroke="#102e23" stroke-width="7" stroke-linecap="round"/>'+
+ '<path d="M-8 11L-14 21M8 11L14 21" fill="none" stroke="'+color+'" stroke-width="4.5" stroke-linecap="round"/>'+
+ '<ellipse rx="13.5" ry="17" fill="'+color+'" stroke="#102e23" stroke-width="2.5"/>'+
+ '<path d="M-4 -13L0 -21L4 -13Z" fill="#f7fff6"/>'+
+ '<path d="M-6 5H6" stroke="#102e23" stroke-width="1.6" opacity=".42"/>';
  if(pose==='kneeling')return '<ellipse rx="12" ry="14" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-9" r="7" fill="'+color+'" stroke="#102e23" stroke-width="1.6"/><path d="M-9 9v8M9 9v8" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>';
  if(pose==='recovering')return '<ellipse rx="12" ry="18" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-11" r="7" fill="'+color+'" stroke="#102e23" stroke-width="1.4"/><path d="M-8 6L-14 15M8 6L13 15" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>';
  if(pose==='grounded')return '<rect x="-12" y="-23" width="24" height="46" rx="11" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-16" r="8" fill="'+color+'" stroke="#102e23" stroke-width="1.5"/><path d="M-9 3H9" stroke="#102e23" stroke-width="1.4"/>';
