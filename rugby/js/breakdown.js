@@ -9,7 +9,11 @@ export function nextPhase(p){if(p==='pad')return 'support';const keys=['tackle',
 export const team=o=>['attacker','shield'].includes(o?.type)?'attack':['defender','bagplayer'].includes(o?.type)?'defence':null;
 export function roles(frame,m){const r=m.breakdown||{},members=m.members||[];const carrierId=r.mode==='pad'?null:r.carrierId||members.find(x=>x.pose==='grounded')?.id;const tacklerId=(findObject(frame,r.tacklerId)?r.tacklerId:null)||members.find(x=>x.pose==='tackling')?.id;const tacklerIds=[...new Set([tacklerId,...(Array.isArray(r.tacklerIds)?r.tacklerIds:[]),...members.filter(x=>x.pose==='tackling').map(x=>x.id)].filter(id=>id&&id!==carrierId&&findObject(frame,id)))].slice(0,2);return {...r,carrierId,tacklerId,tacklerIds,ballId:r.mode==='pad'?r.ballId||null:r.ballId||(carrierId?frame.objects.find(o=>o.type==='ball'&&o.ownerId===carrierId)?.id:null)}}
 export function candidates(frame,m,side){const r=roles(frame,m),a=findObject(frame,r.carrierId),t=r.mode==='pad'?'attack':team(a);return frame.objects.filter(o=>team(o)&&o.id!==r.carrierId&&!r.tacklerIds.includes(o.id)&&(side==='attack'?team(o)===t:team(o)!==t))}
-export function cleanBreakdowns(frames){for(const f of frames)for(const o of f.objects){if(!o.breakdown)continue;if(!['tackle','ruck'].includes(o.type)||!validPhase(o.breakdown.phase)){delete o.breakdown;continue}const r={phase:o.breakdown.phase};if(o.breakdown.mode==='pad'&&o.type==='ruck'){r.mode='pad';if(typeof o.breakdown.padId==='string')r.padId=o.breakdown.padId}if(['attack','defence'].includes(o.breakdown.arrivalSide))r.arrivalSide=o.breakdown.arrivalSide;for(const k of ['carrierId','tacklerId','ballId'])if(typeof o.breakdown[k]==='string'&&findObject(f,o.breakdown[k]))r[k]=o.breakdown[k];const ids=roles(f,o).tacklerIds;if(ids.length){r.tacklerId=ids[0];r.tacklerIds=ids}o.breakdown=r}return frames}
+export function cleanBreakdowns(frames){for(const f of frames)for(const o of f.objects){if(!o.breakdown)continue;if(!['tackle','ruck'].includes(o.type)||!validPhase(o.breakdown.phase)){delete o.breakdown;continue}const r={phase:o.breakdown.phase};if(o.breakdown.mode==='pad'&&o.type==='ruck'){r.mode='pad';if(typeof o.breakdown.padId==='string')r.padId=o.breakdown.padId}if(['attack','defence'].includes(o.breakdown.arrivalSide))r.arrivalSide=o.breakdown.arrivalSide;
+ if(o.type==='ruck'&&['contest','secured'].includes(r.phase)&&['attack','defence'].includes(o.breakdown.winner)){
+  r.winner=o.breakdown.winner;
+  if(Number.isFinite(o.breakdown.clearanceCm)&&o.breakdown.clearanceCm>=20&&o.breakdown.clearanceCm<=100)r.clearanceCm=o.breakdown.clearanceCm;
+ }for(const k of ['carrierId','tacklerId','ballId'])if(typeof o.breakdown[k]==='string'&&findObject(f,o.breakdown[k]))r[k]=o.breakdown[k];const ids=roles(f,o).tacklerIds;if(ids.length){r.tacklerId=ids[0];r.tacklerIds=ids}o.breakdown=r}return frames}
 export function setParticipants(f,m,g,ids,u10=false){
  const r=roles(f,m),a=findObject(f,r.carrierId),phase=r.phase,grounded=r.mode==='pad'?null:a?{id:a.id,pose:'grounded'}:null;
  const allowed=new Set([...candidates(f,m,'attack'),...candidates(f,m,'defence')].map(o=>o.id));
@@ -52,11 +56,11 @@ export function advance(f,m,g,phase,ids,u10=false,arrivalSide=null){
   const pad=findObject(f,r.padId);
   if(!isGroundPad(pad))return {ok:false,message:'Add a sausage bag or a donut lying flat, or restore the linked equipment.'};
   const side=arrivalSide||r.arrivalSide||'attack',old=m.breakdown;
-  m.breakdown={phase,mode:'pad',padId:r.padId,arrivalSide:side};
+  m.breakdown={phase,mode:'pad',padId:r.padId,arrivalSide:side,...(phase==='secured'&&['attack','defence'].includes(r.winner)?{winner:r.winner,clearanceCm:r.clearanceCm}:{})};
   const result=setParticipants(f,m,g,ids,u10);
   if(!result.ok){m.breakdown=old;return result}
   m.type='ruck';
-  m.label=phase==='secured'?'Clearout complete · reset':phase==='ruck'?'Ruck formed · pad drill':phase==='contest'?'Contest over the pad':phase==='support'?supportTitle(side):PHASES[phase];
+  m.label=phase==='secured'?(m.breakdown.winner?(m.breakdown.winner==='attack'?'Attack':'Defence')+' secures · play away':'Clearout complete · reset'):phase==='ruck'?'Ruck formed · pad drill':phase==='contest'?'Contest over the pad':phase==='support'?supportTitle(side):PHASES[phase];
   return {ok:true,message:m.label};
  }
 
