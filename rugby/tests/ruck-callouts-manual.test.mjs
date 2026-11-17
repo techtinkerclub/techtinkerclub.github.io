@@ -65,5 +65,5 @@ assert.match(app,/clearRuckCallouts/);
 assert.match(app,/prepareRuckPlayAway/);
 assert.match(app,/delete marker.breakdown.nextPlayerId/);
 const page=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.match(page,/ANIMATED LIBRARY 0\.12\.33/);
+assert.match(page,/ANIMATED LIBRARY 0\.13\.0/);
 console.log('Manual captions: hidden by default, explicit next-player only, no guessed A3, clean export, separate ball-play step, no source mutation.');
