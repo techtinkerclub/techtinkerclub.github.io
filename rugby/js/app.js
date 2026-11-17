@@ -203,6 +203,10 @@ function refresh(){closeObjectMenu();const fr=f();$('stageTitle').textContent=dr
  // A pad-based ruck practice starts at the sausage; it has no tackle stage.
  // Selecting a particular sausage first determines which pad to use.
  if(type==='ruck'){
+  if(prior?.type==='donut'&&prior.donutState!=='down'){
+   note('Set this donut to Down in its Object panel first, then add the ruck. There is no tackle required in the pad drill.');
+   return;
+  }
   const pads=f().objects.filter(isGroundPad);
   const pad=isGroundPad(prior)?pads.find(o=>o.id===prior.id):pads[0];
   if(pad){
