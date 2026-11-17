@@ -23,5 +23,5 @@ export function symbolFactors(o,g,pose){
  return [x,y];
 }
 export function symbolTransform(o,g,pose){const [x,y]=symbolFactors(o,g,pose);return 'scale('+x+' '+y+')'}
-export function symbolRadius(o,g,pose){const [x,y]=symbolFactors(o,g,pose);const base=o.type==='ladder'?[12,25]:o.type==='donut'?[o.donutState==='down'?23:10,23]:o.type==='sausage'?[29,9]:o.type==='bag'?[10,21]:o.type==='shieldItem'?[17,6]:o.type==='ball'?[10,6]:o.type==='cone'?[11,12]:pose==='grounded'?[12,23]:[16,20];return Math.max(base[0]*x,base[1]*y)}
+export function symbolRadius(o,g,pose){const [x,y]=symbolFactors(o,g,pose);const base=o.type==='ladder'?[12,25]:o.type==='donut'?[o.donutState==='down'?23:10,23]:o.type==='sausage'?[29,9]:o.type==='bag'?[10,21]:o.type==='shieldItem'?[17,6]:o.type==='ball'?[10,6]:o.type==='cone'?[11,12]:pose==='grounded'?[12,23]:pose==='ready'?[23,24]:[16,20];return Math.max(base[0]*x,base[1]*y)}
 export const labelOffset=(o,g,pose)=>o.type==='label'?4:Math.max(13,symbolRadius(o,g,pose)+11);
