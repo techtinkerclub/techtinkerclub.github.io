@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.14.0 / Coach Edition v0.3.3
+# Rugby Coaching Studio — Classic v0.14.1 / Coach Edition v0.3.3
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
