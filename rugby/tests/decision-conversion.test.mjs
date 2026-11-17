@@ -63,6 +63,7 @@ assert.throws(()=>convertDrawnDecision(noActor,1,'decision'),/Choose the player 
 const tooMany=structuredClone(source);tooMany.frames[1].objects.at(-1).decision.options.push({label:'C',kind:'run',points:[]});
 assert.throws(()=>convertDrawnDecision(tooMany,1,'decision'),/exactly two options/);
 const forward=structuredClone(source);forward.frames[1].objects.find(o=>o.id==='runner').y=260;
+forward.frames[1].objects.at(-1).decision.options[1].points=[{x:589,y:260}];
 const notForward=convertDrawnDecision(forward,1,'decision');
 assert.match(notForward.warnings.join(' '),/forward/i,'Do not silently turn a drawn forward arrow into a rugby pass');
 assert.equal(outcomeViews(notForward.drill)[1].drill.frames[2].objects.find(o=>o.id==='ball').ownerId,'coach');
