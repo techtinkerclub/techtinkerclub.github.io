@@ -8,7 +8,7 @@
       "title": "Rolling donut tackle",
       "age": "U10",
       "category": "Contact",
-      "length": 12,
+      "length": 10,
       "width": 8,
       "objective": "",
       "safety": "",
@@ -22,16 +22,16 @@
               "id": "mwjrpei00y7600",
               "type": "coach",
               "label": "Coach",
-              "x": 422.8,
-              "y": 60.3,
+              "x": 450,
+              "y": 75.83333333333334,
               "rot": 180
             },
             {
               "id": "mwjrun260a5sun",
               "type": "donut",
               "label": "",
-              "x": 422.8,
-              "y": 83.6,
+              "x": 450,
+              "y": 95.25,
               "rot": 133,
               "donutState": "ready"
             },
@@ -39,48 +39,132 @@
               "id": "mwjrux6zwsuvb0",
               "type": "cone",
               "label": "",
-              "x": 422.8,
-              "y": 223.4,
+              "x": 450,
+              "y": 246.70000000000002,
               "rot": 0
             },
             {
               "id": "mwjrvonkw8jqbz",
               "type": "cone",
               "label": "",
-              "x": 368.4,
-              "y": 316.6,
+              "x": 399,
+              "y": 339.90000000000003,
               "rot": 0
             },
             {
               "id": "mwjrvwjw1hsxy7",
               "type": "cone",
               "label": "",
-              "x": 477.2,
-              "y": 316.6,
+              "x": 501,
+              "y": 339.90000000000003,
               "rot": 0
             },
             {
               "id": "mwjrwkusidvzuh",
               "type": "defender",
               "label": "D1",
-              "x": 422.8,
-              "y": 316.6,
+              "x": 450,
+              "y": 339.90000000000003,
               "rot": 0
             },
             {
               "id": "mwjrwljzuxg0if",
               "type": "defender",
               "label": "D2",
-              "x": 422.8,
-              "y": 363.2,
+              "x": 450,
+              "y": 386.5,
               "rot": 0
             },
             {
               "id": "mwjrwm60lbdvso",
               "type": "defender",
               "label": "D3",
-              "x": 422.8,
-              "y": 409.8,
+              "x": 450,
+              "y": 433.1,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Chase",
+          "seconds": 1,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwjrpei00y7600",
+              "type": "coach",
+              "label": "Coach",
+              "x": 450,
+              "y": 75.83333333333334,
+              "rot": 180
+            },
+            {
+              "id": "mwjrun260a5sun",
+              "type": "donut",
+              "label": "",
+              "x": 450,
+              "y": 95.25,
+              "rot": 133,
+              "donutState": "ready"
+            },
+            {
+              "id": "mwjrux6zwsuvb0",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 246.70000000000002,
+              "rot": 0
+            },
+            {
+              "id": "mwjrvonkw8jqbz",
+              "type": "cone",
+              "label": "",
+              "x": 399,
+              "y": 339.90000000000003,
+              "rot": 0
+            },
+            {
+              "id": "mwjrvwjw1hsxy7",
+              "type": "cone",
+              "label": "",
+              "x": 501,
+              "y": 339.90000000000003,
+              "rot": 0
+            },
+            {
+              "id": "mwjrwkusidvzuh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 270,
+              "rot": 0,
+              "playerPose": "standing",
+              "posePinned": true
+            },
+            {
+              "id": "mwjrwljzuxg0if",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwjrwm60lbdvso",
+              "type": "defender",
+              "label": "D3",
+              "x": 450,
+              "y": 433.1,
+              "rot": 0
+            },
+            {
+              "id": "mwkid504zybjrr",
+              "type": "label",
+              "label": "CHASE",
+              "x": 603,
+              "y": 293.3,
               "rot": 0
             }
           ],
@@ -90,7 +174,7 @@
       ],
       "attackDirection": "down",
       "showAttack": true,
-      "boundary": "cones",
+      "boundary": "flags",
       "players": "",
       "equipment": "",
       "instructions": "",
@@ -105,7 +189,7 @@
       "ageMax": 10,
       "minutes": 8,
       "links": [],
-      "savedAt": "2026-11-17T09:33:30.030Z"
+      "savedAt": "2026-11-17T09:53:56.289Z"
     }
   ]
 }
