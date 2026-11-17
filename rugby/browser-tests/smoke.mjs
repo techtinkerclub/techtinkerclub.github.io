@@ -85,7 +85,7 @@ try {
  await classic.locator('#file').setInputFiles({name:'linear-run.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(linear))});
  await classic.waitForFunction(()=>document.querySelector('#stageTitle')?.textContent.includes('Decision creation browser QA'));
  await classic.locator('#scenes [data-step="1"]').click();
- await classic.locator('#objectPicker').selectOption(coachId);
+ await classic.locator('#pitch .obj[data-id="'+coachId+'"]').click({force:true});
  await classic.locator('#addDecisionOnRoute').click();
  await classic.locator('[data-path-id="'+coachId+'"]').click({force:true});
  await classic.waitForFunction(()=>document.querySelector('#outcomeDialog')?.open,{timeout:10000});
