@@ -202,6 +202,108 @@
           }
         },
         {
+          "name": "Chill",
+          "seconds": 0.5,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwjrpei00y7600",
+              "type": "coach",
+              "label": "Coach",
+              "x": 450,
+              "y": 75.83333333333334,
+              "rot": 180
+            },
+            {
+              "id": "mwjrun260a5sun",
+              "type": "donut",
+              "label": "",
+              "x": 450,
+              "y": 95.25,
+              "rot": 133,
+              "donutState": "ready"
+            },
+            {
+              "id": "mwjrux6zwsuvb0",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 246.70000000000002,
+              "rot": 0
+            },
+            {
+              "id": "mwjrvonkw8jqbz",
+              "type": "cone",
+              "label": "",
+              "x": 399,
+              "y": 339.90000000000003,
+              "rot": 0
+            },
+            {
+              "id": "mwjrvwjw1hsxy7",
+              "type": "cone",
+              "label": "",
+              "x": 501,
+              "y": 339.90000000000003,
+              "rot": 0
+            },
+            {
+              "id": "mwjrwkusidvzuh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 270,
+              "rot": 0,
+              "playerPose": "ready",
+              "posePinned": true
+            },
+            {
+              "id": "mwjrwljzuxg0if",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 339.90000000000003,
+              "rot": 0
+            },
+            {
+              "id": "mwjrwm60lbdvso",
+              "type": "defender",
+              "label": "D3",
+              "x": 450,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkid504zybjrr",
+              "type": "label",
+              "label": "CHILL",
+              "x": 450,
+              "y": 479.7,
+              "rot": 0,
+              "textStyle": {
+                "fontSize": 20,
+                "color": "#ffffff",
+                "background": true,
+                "backgroundColor": "#193b2a",
+                "backgroundOpacity": 80,
+                "border": true,
+                "borderColor": "#ff0000",
+                "borderWidth": 1.5
+              }
+            },
+            {
+              "id": "mwkktzgxa91gd7",
+              "type": "coach",
+              "label": "Coach",
+              "x": 756,
+              "y": 200.1,
+              "rot": 312
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
           "name": "Intercept rolling donut",
           "seconds": 1.3,
           "notes": "Track the moving pad and arrive at its trailing quarter under coach control.",
@@ -273,9 +375,17 @@
               "rot": 0
             },
             {
+              "id": "mwkktzgxa91gd7",
+              "type": "coach",
+              "label": "Coach",
+              "x": 756,
+              "y": 200.1,
+              "rot": 312
+            },
+            {
               "id": "mwkid504zybjrr",
               "type": "label",
-              "label": "CHASE",
+              "label": "KILL",
               "x": 450,
               "y": 479.7,
               "rot": 0,
@@ -289,17 +399,14 @@
                 "borderColor": "#ff0000",
                 "borderWidth": 1.5
               }
-            },
-            {
-              "id": "mwkktzgxa91gd7",
-              "type": "coach",
-              "label": "Coach",
-              "x": 756,
-              "y": 200.1,
-              "rot": 312
             }
           ],
-          "timing": {},
+          "timing": {
+            "mwjrwkusidvzuh": {
+              "start": 11,
+              "end": 100
+            }
+          },
           "paths": {}
         },
         {
@@ -374,9 +481,17 @@
               "rot": 0
             },
             {
+              "id": "mwkktzgxa91gd7",
+              "type": "coach",
+              "label": "Coach",
+              "x": 756,
+              "y": 200.1,
+              "rot": 312
+            },
+            {
               "id": "mwkid504zybjrr",
               "type": "label",
-              "label": "CHASE",
+              "label": "RESET",
               "x": 450,
               "y": 479.7,
               "rot": 0,
@@ -390,14 +505,6 @@
                 "borderColor": "#ff0000",
                 "borderWidth": 1.5
               }
-            },
-            {
-              "id": "mwkktzgxa91gd7",
-              "type": "coach",
-              "label": "Coach",
-              "x": 756,
-              "y": 200.1,
-              "rot": 312
             }
           ],
           "timing": {},
@@ -420,8 +527,8 @@
               "id": "mwjrun260a5sun",
               "type": "donut",
               "label": "",
-              "x": 654.125667947684,
-              "y": 182.21394451998063,
+              "x": 475.5,
+              "y": 106.9,
               "rot": 133,
               "donutState": "ready"
             },
@@ -476,9 +583,17 @@
               "rot": 0
             },
             {
+              "id": "mwkktzgxa91gd7",
+              "type": "coach",
+              "label": "Coach",
+              "x": 756,
+              "y": 200.1,
+              "rot": 312
+            },
+            {
               "id": "mwkid504zybjrr",
               "type": "label",
-              "label": "CHASE",
+              "label": "RETURN",
               "x": 450,
               "y": 479.7,
               "rot": 0,
@@ -492,17 +607,22 @@
                 "borderColor": "#ff0000",
                 "borderWidth": 1.5
               }
-            },
-            {
-              "id": "mwkktzgxa91gd7",
-              "type": "coach",
-              "label": "Coach",
-              "x": 705,
-              "y": 200.1,
-              "rot": 312
             }
           ],
-          "timing": {},
+          "timing": {
+            "mwkktzgxa91gd7": {
+              "start": 0,
+              "end": 86
+            },
+            "mwjrun260a5sun": {
+              "start": 32,
+              "end": 100
+            },
+            "mwjrwkusidvzuh": {
+              "start": 28,
+              "end": 100
+            }
+          },
           "paths": {
             "mwjrwkusidvzuh": {
               "mode": "smooth",
@@ -537,6 +657,16 @@
                 }
               ],
               "follow": true
+            },
+            "mwkktzgxa91gd7": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 679.5,
+                  "y": 188.45000000000002
+                }
+              ],
+              "follow": false
             }
           }
         }
@@ -558,7 +688,7 @@
       "ageMax": 10,
       "minutes": 8,
       "links": [],
-      "savedAt": "2026-11-17T11:44:08.951Z"
+      "savedAt": "2026-11-17T11:59:47.548Z"
     }
   ]
 }
