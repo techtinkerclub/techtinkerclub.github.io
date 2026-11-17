@@ -13,7 +13,7 @@ const metres=(g,a,b)=>{
  return Math.hypot(p.x-q.x,p.y-q.y)/g.scale;
 };
 test('library remains readable and old drill identities are preserved',()=>{
- assert.equal(catalog.drills.length,133);
+ assert(catalog.drills.length>=142,'All original and newly added rules lessons remain');
  for(const d of catalog.drills){
   assert(d.frames.length>=1,d.id);
   for(const [i,f] of d.frames.entries()){
@@ -23,8 +23,8 @@ test('library remains readable and old drill identities are preserved',()=>{
   }
  }
 });
-test('six U10 understanding lessons have useful written steps and deliberate pacing',()=>{
- for(const id of ['seed-081','seed-082','seed-083','seed-084','seed-085','seed-086']){
+test('all U10 understanding lessons have useful written steps and deliberate pacing',()=>{
+ for(const id of catalog.drills.filter(d=>d.title.startsWith('Understand the game · U10 ')).map(d=>d.id)){
   const d=get(id);assert(d&&d.ageMin<=10&&d.ageMax>=10,id);
   assert(d.frames.length>=4,id);
   assert(d.frames.slice(1).every(f=>f.name?.length>=8&&f.notes?.length>=35),id);
