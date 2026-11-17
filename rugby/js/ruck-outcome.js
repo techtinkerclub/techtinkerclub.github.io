@@ -20,7 +20,7 @@ export function contestResultOverlay(frame,objects,g,progress=1,ink=false){
  if(!markers.length)return '';
  const safe=(x,a,b)=>Math.max(a,Math.min(b,x));
  return markers.map(marker=>{
-  if(marker.breakdown.phase==='contest'&&progress<.82)return '';
+  if(marker.breakdown.phase==='contest'&&progress<.9)return '';
   const winner=contestWinner(marker);
   const found=(marker.members||[]).map(m=>objects.find(o=>o.id===m.id))
    .find(o=>ruckSide(o)===winner);
