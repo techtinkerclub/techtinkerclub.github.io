@@ -54,14 +54,16 @@ button.branch-preview-card:hover,button.branch-preview-card:focus-visible{border
 .outcome-map-dialog{width:min(1140px,98vw);max-height:90dvh;overflow:auto;padding:20px;background:#172c24;border-color:#a7946d;color:#f7f8ef}
 #outcomeMapCards{margin-top:12px}
 .outcome-bar #tryDecisionDemo{color:var(--accent);border:1px solid var(--accent);font-weight:750;background:transparent}
-body>.timeline:has(.outcome-bar){grid-template-rows:auto auto auto minmax(44px,auto) minmax(0,1fr);height:max(235px,var(--user-timeline-height,190px))}
+body>.timeline:has(.outcome-bar){grid-template-rows:auto auto auto minmax(58px,auto) minmax(58px,1fr);height:max(265px,var(--user-timeline-height,190px))}
+body>.timeline:has(.outcome-bar) .scenes{min-height:58px;align-items:stretch;overflow-y:auto}
+body>.timeline:has(.outcome-bar) .scene{min-height:48px;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
 body.hide-tracks>.timeline:has(.outcome-bar),body.presentation-mode>.timeline:has(.outcome-bar){grid-template-rows:auto auto auto auto;height:auto}
 @media(max-width:760px){
  .branch-preview-grid,.outcome-map-dialog .branch-preview-grid{grid-template-columns:1fr;gap:11px}
  .branch-preview-card{padding:10px}
  .outcome-map-dialog{padding:12px;width:calc(100vw - 12px);max-height:92dvh}
  .branch-decision-panel{padding:10px;margin:8px 0}
- body>.timeline:has(.outcome-bar){grid-template-rows:auto auto auto minmax(45px,auto) minmax(0,1fr);height:clamp(235px,36dvh,305px)}
+ body>.timeline:has(.outcome-bar){grid-template-rows:auto auto auto minmax(58px,auto) minmax(44px,1fr);height:clamp(265px,40dvh,330px)}
  .branch-decision-head h2{font-size:16px}
 }
 @media print{
