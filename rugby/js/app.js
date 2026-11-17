@@ -67,13 +67,15 @@ const visiblePlayerPoses=objects=>trainingPoses(objects,posesFor(objects));
 // has no graphic because it already contains players.
 function contactDragGrip(frame,marker,g){
  if(!contactType(marker?.type))return '';
- const center=g.toView(marker.x,marker.y),p=contactHandlePoint(frame,marker,g),name=contactTitle(marker.type);
+ const center=g.toView(marker.x,marker.y),p=contactHandlePoint(frame,marker,g),name=contactTitle(marker.type),labelY=p.y+34>g.margin+g.fh-5?p.y-28:p.y+34;
  return `<g data-editor-only="true" class="formation-grip">
  <path d="M${center.x} ${center.y}L${p.x} ${p.y}" fill="none" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 5" opacity=".85" pointer-events="none"/>
  <g data-contact-grip="${esc(marker.id)}" role="button" aria-label="Drag ${esc(name)} and involved players" tabindex="0" style="cursor:move;touch-action:none">
   <circle cx="${p.x}" cy="${p.y}" r="21" stroke="#102e23" stroke-width="3" fill="#d6f77b"/>
   <circle cx="${p.x}" cy="${p.y}" r="17" stroke="#28482b" stroke-width="1.5" fill="none"/>
   <path d="M${p.x-12} ${p.y}H${p.x+12}M${p.x} ${p.y-12}V${p.y+12}M${p.x-12} ${p.y}l4 -4m-4 4l4 4m20 -4l-4 -4m4 4l-4 4m-8 -16l-4 4m4 -4l4 4m-4 20l-4 -4m4 4l4 -4" stroke="#1e3725" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <rect x="${p.x-42}" y="${labelY-14}" width="84" height="20" rx="8" fill="#193b2a" stroke="#d6f77b" stroke-width="1.5"/>
+  <text x="${p.x}" y="${labelY}" text-anchor="middle" font-size="11" font-weight="700" fill="#efffc8">MOVE ${esc(name.toUpperCase())}</text>
   <title>Move ${esc(name)} and its players · current step only</title>
  </g>
  </g>`;
