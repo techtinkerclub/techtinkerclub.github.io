@@ -3,6 +3,7 @@ import {textVisible} from './text-label.js?v=0.12.8';
 import {visualUnit} from './symbol-scale.js?v=0.12.23';
 import { routeSamples, sampleRoute } from './routes.js?v=0.4.3';
 import { wrapAngle, shortestTurn } from './rotation.js?v=0.3.3';
+import {outcomeMemberDisplacement} from './ruck-outcome.js?v=0.12.30';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const canCarry=o=>!!o&&['attacker','defender','neutral','coach','shield','bagplayer'].includes(o.type);
 export const findObject=(frame,id)=>frame?.objects.find(o=>o.id===id);
@@ -132,9 +133,15 @@ function formationRoutePosition(old,next,id,p,g){
   const linkedBall=to.type==='ball'&&marker.breakdown?.ballId===id&&previous.breakdown?.ballId===id&&!to.ownerId&&!from.ownerId;
   if(!member&&!linkedBall)continue;
   if(next.paths?.[id]?.points?.length||Object.hasOwn(next.timing||{},id))continue;
-  if(Math.hypot((to.x-from.x)-(marker.x-previous.x),(to.y-from.y)-(marker.y-previous.y))>0.0001)continue;
+  const extra=member?outcomeMemberDisplacement(old,next,marker,id,p,g):null;
+  if(!extra&&Math.hypot((to.x-from.x)-(marker.x-previous.x),(to.y-from.y)-(marker.y-previous.y))>0.0001)continue;
   const moving=rawObjectPose(old,next,marker.id,p,g);
-  return {x:from.x+moving.x-previous.x,y:from.y+moving.y-previous.y};
+  const baseline={x:from.x+moving.x-previous.x,y:from.y+moving.y-previous.y};
+  if(!extra)return baseline;
+  // Follow the entire push–pull route, then visibly separate the losing
+  // player at the end. All this stays in authored pitch-space coordinates.
+  const view=g.toView(baseline.x,baseline.y);
+  return g.fromView(view.x+extra.x,view.y+extra.y);
  }
  return null;
 }
