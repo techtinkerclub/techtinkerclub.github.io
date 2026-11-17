@@ -35,7 +35,7 @@ export function checkDrill(raw,{age=Number(raw.ageMin)||10,direction='auto',offs
   for(const m of f.objects.filter(o=>Array.isArray(o.members)))for(const p of m.members)if(!canCarry(lookup(f,p.id)))add('possession',i,[m.id],'Formation refers to a missing player.','data');
  }
  let d;try{d=playbackData(raw)}catch(err){add('possession',0,[],'Cannot validate playback: '+err.message,'data');return {findings,coverage,age,steps:raw.frames.length,directionKnown:false}}
- const g=pitchGeometry(d.length,d.width,'up'),v=attackVector(d,g,direction);
+ const g=pitchGeometry(d.length,d.width,'up'),nonDirectional=raw.category==='Handling'&&raw.showAttack===false&&direction==='auto',v=nonDirectional?null:attackVector(d,g,direction);
  let samples=0;
  for(let i=0;i<d.frames.length;i++){
   const f=d.frames[i],old=d.frames[i-1],players=f.objects.filter(canCarry),poses=trainingPoses(f.objects,posesFor(f.objects)),bands=offside?offsideBands(f.objects,d,g,direction):[];
@@ -119,7 +119,7 @@ export function checkDrill(raw,{age=Number(raw.ageMin)||10,direction='auto',offs
    }
   }
  }
- if(!v)add('passing',0,[],'No fixed attack direction selected; directional passing and offside checks skipped. Choose “Use pitch direction” for a directional drill.','info');
+ if(!v)add('passing',0,[],nonDirectional?'This is a non-directional handling exercise, not live attacking play. Match-law passing checks do not apply to the circle or diamond sequence; use a directional passing drill for legal backward passes.':'No fixed attack direction selected; directional passing and offside checks skipped. Choose “Use pitch direction” for a directional drill.','info');
  if(age!==10)add('age',0,[],'Season-specific rule checks currently cover U10 only. Verify other ages with the current RFU appendix.','info');
  if(d.frames.length===1)add('recovery',0,[],'Static card: no animated transitions to check.','info');
  if(spacing&&d.frames.some(f=>f.objects.filter(canCarry).length>40))add('spacing',0,[],'Spacing samples skipped for steps with more than 40 players.','info');
