@@ -3,7 +3,7 @@ import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset} from './symbol-scale.js?v=0.12.15';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.12.10';
-import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.16';
+import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.4.9';
 import { pitchGeometry, trainingField } from './pitch.js?v=0.12.5';
@@ -24,7 +24,7 @@ import {insertable,fillMissing,syncInsertedCopies,scopeIndices} from './insertio
 import {breakdownContext} from './breakdown-context.js?v=0.5.7';
 import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.12.16';
+import {renderScene} from './scene.js?v=0.12.20';
 import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.12.16';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
