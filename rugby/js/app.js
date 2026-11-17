@@ -196,15 +196,25 @@ createTimingTrackEditor($('tracks'),{
  onCancel:()=>{preview=null;refresh()},
  onSelect:id=>{editMode();selected=id;render();inspector();openInspector('Object')}
 });
-function refresh(){closeObjectMenu();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTime').value=idx?fr.seconds:0;$('stepTime').disabled=!idx;$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();inspector();tracks()}function choose(i){selectedPathId=null;validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){selectedPathId=null;const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';if(isDiagramObject(n)){n.diagram=diagramSettings(type,{},drill.width);n.label=''}if(f().objects.length>=200){note('Maximum objects in this step reached.');return}f().objects.push(n);selected=n.id;
+function refresh(){closeObjectMenu();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTime').value=idx?fr.seconds:0;$('stepTime').disabled=!idx;$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();inspector();tracks()}function choose(i){selectedPathId=null;validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){selectedPathId=null;const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';
+ // A pad-based ruck practice starts at the sausage; it has no tackle stage.
+ // Selecting a particular sausage first determines which pad to use.
+ if(type==='ruck'){
+  const pads=f().objects.filter(o=>o.type==='sausage');
+  const pad=prior?.type==='sausage'?pads.find(o=>o.id===prior.id):pads[0];
+  if(pad){
+   Object.assign(n,{x:pad.x,y:pad.y,rot:pad.rot,label:PHASES.pad,breakdown:{phase:'pad',mode:'pad',padId:pad.id,arrivalSide:'attack'}});
+  }
+ }
+ if(isDiagramObject(n)){n.diagram=diagramSettings(type,{},drill.width);n.label=''}if(f().objects.length>=200){note('Maximum objects in this step reached.');return}f().objects.push(n);selected=n.id;
  const result=fillMissing(drill.frames,idx,n,insertable(n)?$('insertScope').value:'here',geometry());
  if(result.added.length)pendingInsert={id:n.id,index:idx,indices:result.added,origin:{x:n.x,y:n.y}};
- changed();refresh();openInspector('Object',false);if(result.added.length||result.skipped)note(insertionMessage(n,result));};let groups=[['Players',['attacker','defender','neutral','coach']],['Ball & markers',['ball','cone','flag']],['Contact equipment',['shieldItem','bag','donut']],['Agility equipment',['sausage','ladder']],['Annotations',['label']],['Pitch markings',['offsideLine','directionArrow','measureLine','zoneCircle','zoneRect','spotMarker']]];
+ changed();refresh();openInspector('Object',false);if(result.added.length||result.skipped)note(insertionMessage(n,result));};let groups=[['Players',['attacker','defender','neutral','coach']],['Ball & markers',['ball','cone','flag']],['Contact equipment',['shieldItem','bag','sausage','donut']],['Agility equipment',['ladder']],['Annotations',['label']],['Pitch markings',['offsideLine','directionArrow','measureLine','zoneCircle','zoneRect','spotMarker']]];
 const paletteNames={tackle:'Tackle',ruck:'Ruck',maul:'Maul',scrum:'Scrum',label:'Text label',decision:'Standalone decision',shieldItem:'Contact shield',sausage:'Sausage bag',donut:'Tackle donut',offsideLine:'Offside reference',directionArrow:'Direction arrow',measureLine:'Distance ruler',zoneCircle:'Circle / zone',zoneRect:'Square / rectangle',spotMarker:'Spot / marker'};
 const paletteTiles=ts=>ts.map(t=>`<button data-type="${t}" title="Add ${esc(types[t][0])}"><svg viewBox="-32 -32 64 64" aria-hidden="true">${shape(t)}</svg>${esc(paletteNames[t]||types[t][0])}</button>`).join('');
 $('palette').innerHTML=groups.map(([name,ts])=>`<div class="group"><h4>${esc(name)}</h4><div class="palette">${paletteTiles(ts)}</div></div>`).join('');
-$('rugbyPalette').innerHTML=paletteTiles(['tackle']);
-$('legacyPalette').innerHTML=paletteTiles(['ruck','maul','scrum','decision'])+'<small class="legacy-hint">For standalone diagrams or older drills. For a route decision, select its path and use Add decision on path in the Object inspector.</small>';
+$('rugbyPalette').innerHTML=paletteTiles(['tackle','ruck']);
+$('legacyPalette').innerHTML=paletteTiles(['maul','scrum','decision'])+'<small class="legacy-hint">For standalone diagrams or older drills. For a route decision, select its path and use Add decision on path in the Object inspector.</small>';
 for(const id of ['palette','rugbyPalette','legacyPalette'])$(id).onclick=e=>{const b=e.target.closest('[data-type]');if(b)add(b.dataset.type)};
 $('pitchPreset').innerHTML='<option value="">Current / custom size</option>'+PRESETS.map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('');
 const setupFields={title:'title',age:'age',ageMin:'ageMin',ageMax:'ageMax',category:'category',minutes:'minutes',length:'length',width:'width',attackDirection:'attackDirection',boundary:'boundaryStyle',preset:'pitchPreset',markers:'presetMarkers',resizeMode:'resizeMode'};
@@ -463,7 +473,7 @@ function updateObjectPicker(){const list=$('objectPicker'),isGroup=groupMode||gr
 $('objectPicker').onchange=()=>{if($('objectPicker').value)selectObject($('objectPicker').value);else{selected=null;selectedPathId=null;render();inspector()}};
 let memberSignature='';
 function updateContactTools(){
- const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
+ const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);$('startPadRuck').hidden=!ok||o.type!=='ruck'||!!o.breakdown||!f().objects.some(q=>q.type==='sausage');$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
  const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')||!o.breakdown}
  const breakdown=validPhase(o.breakdown?.phase),near=contactCandidates(f(),o,geometry()),ids=new Set((o.members||[]).map(m=>m.id));
  const tackle=o.type==='tackle'&&(!breakdown||o.breakdown.phase==='tackle');
@@ -481,8 +491,26 @@ function updateContactTools(){
    c.onchange=()=>fillPrimary(p.value,x.value);p.onchange=()=>fillSecond(x.value);fillPrimary(primary,second);
   }else $('contactMembers').innerHTML=players.map(p=>'<label><input type="checkbox" data-contact-player="'+esc(p.id)+'" '+((ids.size?ids.has(p.id):near.some(x=>x.id===p.id))?'checked':'')+'> '+esc(objectName(p))+'</label>').join('');
  }
- $('contactInfo').textContent=(breakdown?o.label||PHASES[o.breakdown.phase]:contactTitle(o.type))+' · '+(o.members?.length||0)+' arranged players';$('arrangeContact').disabled=routeDrawing||!!ballPicking;$('endContact').disabled=routeDrawing||!!ballPicking;
+ $('contactInfo').textContent=(breakdown?o.label||PHASES[o.breakdown.phase]:contactTitle(o.type))+' · '+(o.members?.length||0)+' arranged players'+(o.breakdown?.mode==='pad'?' · sausage practice, no tackle':'');$('arrangeContact').disabled=routeDrawing||!!ballPicking;$('endContact').disabled=routeDrawing||!!ballPicking;
 }
+// Convert an existing bare ruck marker (including an older saved drill) to a
+// sausage drill without requiring the coach to delete and recreate it.
+$('startPadRuck').onclick=()=>{
+ if(!canEditObjects())return;
+ const o=activeObject();if(o?.type!=='ruck'||o.breakdown)return;
+ const pads=f().objects.filter(x=>x.type==='sausage'),g=geometry(),p=g.toView(o.x,o.y);
+ const pad=pads.sort((a,b)=>{
+  const pa=g.toView(a.x,a.y),pb=g.toView(b.x,b.y);
+  return Math.hypot(pa.x-p.x,pa.y-p.y)-Math.hypot(pb.x-p.x,pb.y-p.y);
+ })[0];
+ if(!pad){note('Add a sausage bag on the pitch first.');return}
+ const arranged=!!o.members?.length;
+ o.breakdown={phase:arranged?'ruck':'pad',mode:'pad',padId:pad.id,arrivalSide:'attack'};
+ if(!arranged)Object.assign(o,{x:pad.x,y:pad.y,rot:pad.rot});
+ o.label=arranged?'Ruck formed · pad drill':PHASES.pad;
+ changed();refresh();openInspector('Object',false);
+ note(arranged?'Linked this existing ruck and its players to the sausage. Continue the contest in Step.':'Sausage linked. Open Step and choose which side arrives first; no tackle required.');
+};
 function arrangeMarker(o,explicit=null){if(f().guide&&o.id===f().guide.id+'-formation'){note('This is a guided formation. Move players or use the next guided stage.');return false}const result=arrangeContact(f(),o,geometry(),drill.frames[idx-1],explicit,drill.ageMin===10&&drill.ageMax===10);note(result.message);return result.ok}
 $('arrangeContact').onclick=()=>{if(!canEditObjects())return;const o=activeObject();if(!contactType(o?.type))return;const ids=$('tackleCarrier')?[$('tackleCarrier').value,$('primaryTackler').value,$('additionalTackler').value].filter(Boolean):[...$('contactMembers').querySelectorAll('input:checked')].map(x=>x.dataset.contactPlayer);if($('tackleCarrier')&&(!$('tackleCarrier').value||!$('primaryTackler').value)){note('Choose a ball carrier and a primary tackler.');return}if(arrangeMarker(o,ids)){changed();memberSignature='';refresh()}};
 $('endContact').onclick=()=>deleteObject('here');$('continueBreakdown').onclick=revealBreakdown;
@@ -518,10 +546,11 @@ function updateBreakdownTools(o){
  const phase=o.breakdown?.phase,next=nextPhase(phase);$('breakdownTools').hidden=!validPhase(phase);
  if(!validPhase(phase)){arrivalSignature='';$('arrivalChoices').hidden=true;return}
  $('breakdownPhase').textContent=o.label||PHASES[phase];
- $('arrivalOrderWrap').hidden=phase!=='release';const order=$('arrivalOrder');
- if(phase==='release'&&order.dataset.marker!==o.id+':'+idx){order.dataset.marker=o.id+':'+idx;order.value=o.breakdown?.arrivalSide||'defence'}
- const side=phase==='release'?order.value:o.breakdown?.arrivalSide||'attack';
- $('advanceBreakdown').textContent=next?'Next: '+(next==='support'?supportTitle(side):next==='ruck'&&side==='defence'?'Clearout · ruck formed':PHASES[next]):'Sequence complete';
+ const chooseFirst=phase==='release'||phase==='pad';
+ $('arrivalOrderWrap').hidden=!chooseFirst;const order=$('arrivalOrder');
+ if(chooseFirst&&order.dataset.marker!==o.id+':'+idx){order.dataset.marker=o.id+':'+idx;order.value=o.breakdown?.arrivalSide||(phase==='pad'?'attack':'defence')}
+ const side=chooseFirst?order.value:o.breakdown?.arrivalSide||'attack';
+ $('advanceBreakdown').textContent=next?'Next: '+(next==='support'?supportTitle(side):o.breakdown?.mode==='pad'&&next==='secured'?'Clearout complete · reset':next==='ruck'&&side==='defence'?'Clearout · ruck formed':PHASES[next]):'Sequence complete';
  $('advanceBreakdown').disabled=!next||routeDrawing||!!ballPicking;
  const current=next&&next!=='release'&&next!=='support'?existingArrivals(f(),o):[];
  const attack=candidates(f(),o,'attack'),defence=candidates(f(),o,'defence'),u10=drill.ageMin===10&&drill.ageMax===10;
@@ -550,7 +579,7 @@ function nextBreakdownStep(marker){
  frame.name=res.message;
  drill.frames.splice(idx+1,0,frame);idx++;breakdownPreferred=m.id;sanitizeRoutes(drill.frames);changed();choose(idx);revealBreakdown();note(res.message);
 }
-$('arrivalOrder').onchange=()=>{const o=activeBreakdown();if(o?.breakdown?.phase==='release')updateBreakdownDock()};
+$('arrivalOrder').onchange=()=>{const o=activeBreakdown();if(['release','pad'].includes(o?.breakdown?.phase))updateBreakdownDock()};
 $('advanceBreakdown').onclick=()=>nextBreakdownStep(activeBreakdown());
 
 
