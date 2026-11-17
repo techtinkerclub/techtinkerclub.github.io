@@ -10,12 +10,12 @@ const coachEngine=coach.match(/src="\.\/js\/app\.js\?v=[\d.]+"/)?.[0];
 assert(classicEngine&&coachEngine);
 assert.equal(classicEngine,coachEngine,'Coach and Classic must use exactly the same animation/editor engine');
 assert.match(coach,/<base href="\.\.\/"/);
-assert.match(coach,/src="\.\/coach\/coach\.js\?v=0\.1\.0"/);
-assert.match(coach,/href="\.\/coach\/coach\.css\?v=0\.1\.0"/);
+assert.match(coach,/src="\.\/coach\/coach\.js\?v=0\.2\.0"/);
+assert.match(coach,/href="\.\/coach\/coach\.css\?v=0\.2\.0"/);
 assert.match(classic,/href="\.\/coach\/"/,'Classic must link to the new experiment');
 assert.match(coach,/href="\.\/index\.html"/,'New experiment must link back to Classic');
 assert.match(coach,/href="\.\/coach\/library\.html"/);
-for(const id of ['coachJourney','coachStart','coachActions','coachSequence','coachNotes','coachShare','coachMode','coachWelcome','coachActionDialog','coachActionCards','coachActionHelp','coachToast']){
+for(const id of ['coachJourney','coachStart','coachActions','coachSequence','coachNotes','coachShare','coachMode','coachWelcome','coachActionDialog','coachActionCards','coachActionHelp','coachToast','coachObjectChoice','coachUseObject','coachSelectionHelp']){
  assert(coach.includes('id="'+id+'"'),'Missing guide UI: '+id);
 }
 const ids=[...coach.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
@@ -26,11 +26,17 @@ assert.match(guide,/case 'padRuck'/);
 assert.match(guide,/case 'nextBall'/);
 assert.match(guide,/case 'members'/);
 assert.match(guide,/case 'twoTeams'/);
+assert.match(guide,/case 'threeVTwo'/);
+assert.match(guide,/case 'attach'/);
+assert.match(guide,/function guidePreflight\(key\)/);
+assert.match(guide,/if\(guidePreflight\(key\)\)return;\s*closeDialogs\(\)/,'Close guide before calling original edit handlers');
+assert.match(guide,/picker\.dispatchEvent\(new Event\('change'/,'Picker must use existing object-selection handler');
 assert.match(guide,/case 'notes'/);
 assert.match(guide,/case 'check'/);
 assert.match(guide,/case 'save'/);
 assert.match(guide,/rugbyCoachEditionAllTools/);
 assert.match(css,/--coach-red:#a4223a/);
+assert.match(css,/\.coach-object-bar/);
 assert.match(css,/body\.coach-guided/);
 assert.match(css,/body\.coach-edition > header::before/);
 assert.match(store,/\/contents\/rugby\/data\/coach-drills\.json/,'Both editors use the same central GitHub drill library');
