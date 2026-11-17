@@ -1,11 +1,11 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.6';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.9';
 import {hasOutcomes,outcomeViews} from './branching.js?v=1';
-import {outcomeCardsMarkup} from './branching-visual.js?v=2';
+import {outcomeCardsMarkup} from './branching-visual.js?v=3';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.1';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
-import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.6';
+import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.9';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
 const decode64=s=>{if(!/^[A-Za-z0-9_-]+$/.test(s))throw Error('Invalid share code.');return Uint8Array.from(atob(s.replaceAll('-','+').replaceAll('_','/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0))};
@@ -47,7 +47,7 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  // Optional paginated full coaching card. Text is wrapped, not silently truncated.
  const cardPages=[];if(plan.options.card){
   const size=portrait?34:28,maxLines=portrait?26:21;ctx.font=font(size);
-  for(const entry of [...cardEntries(drill),...chapters.flatMap(ch=>ch.drill.frames.map((f,i)=>({label:(ch.headline?ch.headline+' · ':'')+'Step '+(i+1)+' · '+f.name,value:[f.signal?.kind==='whistle'?'Coach whistle · GO':'',String(f.notes||'').trim(),hasOutcomes(drill)&&i===drill.branching.fork?drill.branching.question+' · '+drill.branching.choices.map(q=>q.id.toUpperCase()+': '+q.label).join(' / '):decisionText(f)].filter(Boolean).join('\n')}))).filter(x=>x.value),...cardLinks(drill).map(x=>({label:'Reference',value:x.label+' — '+x.url}))]){
+  for(const entry of [...cardEntries(drill),...chapters.flatMap(ch=>ch.drill.frames.map((f,i)=>({label:(ch.headline?ch.headline+' · ':'')+'Step '+(i+1)+' · '+f.name,value:[f.signal?.kind==='whistle'?'Coach whistle · GO ('+Number(f.signal.duration??0.5).toFixed(1)+' s cue)':'',String(f.notes||'').trim(),hasOutcomes(drill)&&i===drill.branching.fork?drill.branching.question+' · '+drill.branching.choices.map(q=>q.id.toUpperCase()+': '+q.label).join(' / '):decisionText(f)].filter(Boolean).join('\n')}))).filter(x=>x.value),...cardLinks(drill).map(x=>({label:'Reference',value:x.label+' — '+x.url}))]){
    const lines=wrapCanvas(ctx,entry.value,content);for(let n=0;n<lines.length;n+=maxLines){const part=lines.slice(n,n+maxLines),words=part.join(' ').split(/\s+/).length;cardPages.push({label:entry.label+(n?' (continued)':''),lines:part,seconds:Math.max(3,1.5+words/3)})}
   }
  }
