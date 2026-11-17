@@ -24,6 +24,7 @@ for(const winner of ['attack','defence']){
  ruck.breakdown.phase='contest';
  const result=contestDrive(now,before,ruck,g,{winner,distanceCm:10,exchanges:2,clearanceCm:50});
  assert(result.ok,result.message);
+ ruck.breakdown.showWinnerLabel=true;
  assert(contestResultOverlay(now,now.objects,g,1).includes(winner==='attack'?'ATTACK SECURES':'DEFENCE SECURES'));
  ruck.breakdown.showWinnerLabel=false;
  assert.equal(contestResultOverlay(now,now.objects,g,1),'','Hide only the generated callouts');
@@ -51,7 +52,7 @@ assert.match(app,/releaseFormationPlayer/);
 assert.match(app,/hidePlayerNameAll/);
 assert.match(app,/clearContestOutcome\(f\(\),drill\.frames\[idx-1\],marker\)/);
 const page=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.match(page,/ANIMATED LIBRARY 0\.12\.32/);
+assert.match(page,/ANIMATED LIBRARY 0\.12\.33/);
 assert.match(page,/id="showContestLabel"/);
 assert.match(page,/id="clearContestResult"/);
 console.log('Editable formation poses, hide winner caption, clear outcome and restore loser, preserve path, exported state: passed.');
