@@ -11,7 +11,7 @@ import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyL
 import {normaliseAge,setupValues,setupAge,prepareSetup} from './setup.js?v=0.12.4';
 import { placePoint, gridStep, loadGridPrefs, saveGridPrefs } from './grid.js?v=0.4.2';
 import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './rotation.js?v=0.3.3';
-import { removeObject, isEditingKeyTarget } from './object-edit.js?v=0.3.3';
+import { removeObject, resetStepMovement, isEditingKeyTarget } from './object-edit.js?v=0.12.17';
 import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypointOverlay, routeInsertion, insertionHandles } from './routes.js?v=0.4.3';
 import { createHistory } from './history.js?v=0.4.0';
 import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.12.13';
@@ -48,7 +48,7 @@ let trainingPick=null,showDecisions=true,pendingInsert=null,breakdownPreferred=n
 let autoAttach=true;try{autoAttach=localStorage.getItem('rugby-auto-attach')!=='off'}catch{}
 const gridPrefs=loadGridPrefs();
 let saveFeedback='',githubDrills=[],githubBaseline=null,githubSaving=false,githubLoading=false,githubLoaded=false,stagedImports=[];const githubStore=createGithubStore();
-let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,showPaths=true,showMarkups=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drill.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0),at=i=>drill.frames.slice(1,i+1).reduce((a,x)=>a+x.seconds,0);function note(s){$('status').textContent=s;$('status').title=s}function changed(record=true){validationHighlight.clear();validationResult=null;drill.frames.forEach(fr=>{cleanGuide(fr);cleanTraining(fr)});cleanContacts(drill.frames);cleanBreakdowns(drill.frames);if(record)normaliseRecoveryPoses(drill.frames);syncPossession(drill.frames,geometry());dirty=true;saveFeedback='';syncSaveState();if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){let acc=0;for(let i=1;i<drill.frames.length;i++){const end=acc+drill.frames[i].seconds;if(t<end)return {i,p:(t-acc)/(end-acc)};acc=end}return {i:drill.frames.length-1,p:1}}function tween(t,g=geometry()){if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?trainingTransition(transitionObjects(drill.frames[i-1],drill.frames[i],p,g),drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
+let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,selectedPathId=null,showPaths=true,showMarkups=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drill.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0),at=i=>drill.frames.slice(1,i+1).reduce((a,x)=>a+x.seconds,0);function note(s){$('status').textContent=s;$('status').title=s}function changed(record=true){validationHighlight.clear();validationResult=null;drill.frames.forEach(fr=>{cleanGuide(fr);cleanTraining(fr)});cleanContacts(drill.frames);cleanBreakdowns(drill.frames);if(record)normaliseRecoveryPoses(drill.frames);syncPossession(drill.frames,geometry());dirty=true;saveFeedback='';syncSaveState();if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){let acc=0;for(let i=1;i<drill.frames.length;i++){const end=acc+drill.frames[i].seconds;if(t<end)return {i,p:(t-acc)/(end-acc)};acc=end}return {i:drill.frames.length-1,p:1}}function tween(t,g=geometry()){if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?trainingTransition(transitionObjects(drill.frames[i-1],drill.frames[i],p,g),drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
 const geometry=()=>pitchGeometry(drill.length,drill.width,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
 $('scaleMode').value=scaleMode;$('scaleMode').onchange=()=>{scaleMode=normalScaleMode($('scaleMode').value);try{localStorage.setItem('rugby-symbol-scale',scaleMode)}catch{}render();note(scaleMode==='realistic'?'Realistic scale · nominal dimensions in metres.':'Coaching view · enlarged symbols; positions unchanged.')};
@@ -154,7 +154,7 @@ if(canCarry(o)){
  $('objectPanel').insertBefore(el,$('objectPanel').lastElementChild);
  $('playerPose').onchange=e=>{o.playerPose=e.target.value;o.posePinned=true;changed();render();inspector();tracks();note((o.label||types[o.type][0])+': '+(PLAYER_POSES[o.playerPose]||'Standing / running')+' · current step')};
  if(canRestore)$('restoreAutoPose').onclick=()=>{delete o.playerPose;delete o.posePinned;changed();render();inspector();tracks();note((o.label||types[o.type][0])+': automatic tackle pose restored for this step')};
-};$('objLabel').oninput=e=>{o.label=e.target.value;changed();render()};$('objRot').onchange=e=>{o.rot=clamp(Number(e.target.value)||0,-360,360);$('objRot').value=o.rot;changed();render();tracks()};for(const button of $('objectPanel').querySelectorAll('[data-facing]'))button.onclick=()=>{o.rot=wrapAngle(Number(button.dataset.facing)-geometry().rotation);$('objRot').value=o.rot;changed();render();tracks()};if(idx>0){function timing(){let s=clamp(Number($('start').value)||0,0,99),e=clamp(Number($('end').value)||1,s+1,100);f().timing[o.id]={start:s,end:e};changed();render();inspector();tracks()}$('start').onchange=timing;$('end').onchange=timing}$('copyObj').onclick=duplicateSelected;$('delObj').onclick=()=>deleteObject('here')}function tracks(){if(!idx){$('tracks').innerHTML='<div style="padding:10px" class="muted">Select a later step to configure independent movement tracks.</div>';return}let old=drill.frames[idx-1];let moving=f().objects.filter(o=>{if(o.type==='decision')return false;let a=old.objects.find(x=>x.id===o.id);if(isDiagramObject(o))return false;const m=movementFor(old,f(),o,geometry());return m&&(hasMovement(m.start,m.end,f().paths?.[o.id])||a.rot!==o.rot||a.ownerId!==o.ownerId||a.playerPose!==o.playerPose)});$('tracks').innerHTML=moving.length?moving.map(o=>{let t=f().timing[o.id]||{start:0,end:100};return `<div class="track"><button class="track-name" data-track="${esc(o.id)}" title="Edit movement timing">${esc(o.type==='ball'&&o.transferKind==='turnover'?'Turnover → '+(carrier(f(),o)?.label||'receiver'):o.type==='ball'&&carrier(old,old.objects.find(x=>x.id===o.id))&&carrier(f(),o)&&old.objects.find(x=>x.id===o.id)?.ownerId!==o.ownerId?'Pass → '+(carrier(f(),o).label||'receiver'):o.label||types[o.type][0])}</button><div class="trackbar"><div class="span" style="left:${t.start}%;width:${t.end-t.start}%;background:${types[o.type][1]}">${t.start}–${t.end}%</div></div></div>`}).join(''):'<div style="padding:10px" class="muted">No movement from the previous step. Drag an existing object to a new position.</div>'}$('tracks').addEventListener('click',e=>{const b=e.target.closest('[data-track]');if(!b)return;editMode();selected=b.dataset.track;render();inspector();openInspector('Object')});function refresh(){closeObjectMenu();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTime').value=idx?fr.seconds:0;$('stepTime').disabled=!idx;$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();inspector();tracks()}function choose(i){validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';if(isDiagramObject(n)){n.diagram=diagramSettings(type,{},drill.width);n.label=''}if(f().objects.length>=200){note('Maximum objects in this step reached.');return}f().objects.push(n);selected=n.id;
+};$('objLabel').oninput=e=>{o.label=e.target.value;changed();render()};$('objRot').onchange=e=>{o.rot=clamp(Number(e.target.value)||0,-360,360);$('objRot').value=o.rot;changed();render();tracks()};for(const button of $('objectPanel').querySelectorAll('[data-facing]'))button.onclick=()=>{o.rot=wrapAngle(Number(button.dataset.facing)-geometry().rotation);$('objRot').value=o.rot;changed();render();tracks()};if(idx>0){function timing(){let s=clamp(Number($('start').value)||0,0,99),e=clamp(Number($('end').value)||1,s+1,100);f().timing[o.id]={start:s,end:e};changed();render();inspector();tracks()}$('start').onchange=timing;$('end').onchange=timing}$('copyObj').onclick=duplicateSelected;$('delObj').onclick=()=>deleteObject('here')}function tracks(){if(!idx){$('tracks').innerHTML='<div style="padding:10px" class="muted">Select a later step to configure independent movement tracks.</div>';return}let old=drill.frames[idx-1];let moving=f().objects.filter(o=>{if(o.type==='decision')return false;let a=old.objects.find(x=>x.id===o.id);if(isDiagramObject(o))return false;const m=movementFor(old,f(),o,geometry());return m&&(hasMovement(m.start,m.end,f().paths?.[o.id])||a.rot!==o.rot||a.ownerId!==o.ownerId||a.playerPose!==o.playerPose)});$('tracks').innerHTML=moving.length?moving.map(o=>{let t=f().timing[o.id]||{start:0,end:100};return `<div class="track"><button class="track-name" data-track="${esc(o.id)}" title="Edit movement timing">${esc(o.type==='ball'&&o.transferKind==='turnover'?'Turnover → '+(carrier(f(),o)?.label||'receiver'):o.type==='ball'&&carrier(old,old.objects.find(x=>x.id===o.id))&&carrier(f(),o)&&old.objects.find(x=>x.id===o.id)?.ownerId!==o.ownerId?'Pass → '+(carrier(f(),o).label||'receiver'):o.label||types[o.type][0])}</button><div class="trackbar"><div class="span" style="left:${t.start}%;width:${t.end-t.start}%;background:${types[o.type][1]}">${t.start}–${t.end}%</div></div></div>`}).join(''):'<div style="padding:10px" class="muted">No movement from the previous step. Drag an existing object to a new position.</div>'}$('tracks').addEventListener('click',e=>{const b=e.target.closest('[data-track]');if(!b)return;editMode();selected=b.dataset.track;render();inspector();openInspector('Object')});function refresh(){closeObjectMenu();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTime').value=idx?fr.seconds:0;$('stepTime').disabled=!idx;$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();inspector();tracks()}function choose(i){selectedPathId=null;validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){selectedPathId=null;const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';if(isDiagramObject(n)){n.diagram=diagramSettings(type,{},drill.width);n.label=''}if(f().objects.length>=200){note('Maximum objects in this step reached.');return}f().objects.push(n);selected=n.id;
  const result=fillMissing(drill.frames,idx,n,insertable(n)?$('insertScope').value:'here',geometry());
  if(result.added.length)pendingInsert={id:n.id,index:idx,indices:result.added,origin:{x:n.x,y:n.y}};
  changed();refresh();openInspector('Object',false);if(result.added.length||result.skipped)note(insertionMessage(n,result));};let groups=[['Players',['attacker','defender','neutral','coach']],['Ball & markers',['ball','cone','flag']],['Contact equipment',['shieldItem','bag','donut']],['Agility equipment',['sausage','ladder']],['Annotations',['label']],['Pitch markings',['offsideLine','directionArrow','measureLine','zoneCircle','zoneRect','spotMarker']]];
@@ -251,18 +251,29 @@ function duplicateSelected(){
  pendingInsert=null;const n={...clone(o),id:uid(),x:clamp(o.x+35,30,870),y:clamp(o.y+35,25,515),label:o.label?o.label+' copy':''};delete n.ownerId;delete n.members;delete n.breakdown;delete n.transferKind;delete n.groundState;delete n.donutTacklerId;delete n.layoutMarker;
  Object.assign(n,placement(n));if(f().objects.length>=200){note('Maximum objects in this step reached.');return}f().objects.push(n);selected=n.id;const r=fillMissing(drill.frames,idx,n,insertable(n)?$('insertScope').value:'here',geometry());if(r.added.length)pendingInsert={id:n.id,index:idx,indices:r.added,origin:{x:n.x,y:n.y}};changed();refresh();openInspector('Object',false);focusPitch();note('Object duplicated. '+insertionMessage(n,r));
 }
+// Removing a selected running line cancels only that step's movement. It does
+// not delete the player, and it does not rewrite later steps.
+function cancelSelectedMovement(){
+ if(!canEditObjects())return;
+ const o=activeObject();if(!o)return;
+ const result=resetStepMovement(drill.frames,idx,o.id);
+ if(!result.ok){note(result.message);return}
+ drill.frames=result.frames;selectedPathId=null;pendingInsert=null;
+ changed();refresh();openInspector('Object',false);focusPitch();
+ note((o.label||types[o.type][0])+' returned to the previous step position. Movement removed from this step; later steps unchanged. Undo restores it.');
+}
 function deleteObject(scope='here'){
  if(!canEditObjects())return;
  const o=activeObject();if(!o)return;
  const name=o.label||types[o.type][0],result=removeObject(drill.frames,o.id,idx,scope);
  if(!result.removed)return;
  if(scope!=='here'&&result.removed>1&&!confirm('Delete '+name+' from '+result.removed+' steps?'))return;
- drill.frames=sanitizeRoutes(result.frames);selected=null;changed();refresh();focusPitch();
+ drill.frames=sanitizeRoutes(result.frames);selected=null;selectedPathId=null;changed();refresh();focusPitch();
  note(name+' deleted from '+(result.removed===1?'one step':result.removed+' steps')+'.');
 }
 function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
 function openObjectMenu(e){
- if(!canEditObjects())return;
+ if(!canEditObjects())return;selectedPathId=null;
  const group=e.target.closest('[data-id]'),handle=e.target.closest('[data-rotate]'),stack=overlapAt(viewPoint(e));
  if(!group&&!handle&&!stack.length)return;
  groupIds.clear();groupMode=false;
@@ -294,18 +305,18 @@ document.addEventListener('keydown',e=>{
  if(e.key==='Escape'&&!$('objectMenu').hidden){closeObjectMenu();focusPitch();e.preventDefault();return}
  if(e.key==='Escape'&&(groupIds.size||groupMode)&&!isEditingKeyTarget(e.target)&&!document.querySelector('dialog[open]')){groupIds.clear();groupMode=false;render();inspector();e.preventDefault();return}
  if(e.key!=='Delete'||e.repeat||e.ctrlKey||e.metaKey||e.altKey||isEditingKeyTarget(e.target)||!canEditObjects()||!activeObject())return;
- e.preventDefault();closeObjectMenu();deleteObject('here');
+ e.preventDefault();closeObjectMenu();if(selectedPathId===selected)cancelSelectedMovement();else deleteObject('here');
 });
 
 
 function historyButtons(){
  $('undoEdit').disabled=!history.canUndo;$('redoEdit').disabled=!history.canRedo;
 }
-function resetHistory(){saveFeedback='';githubBaseline=null;validationHighlight.clear();validationResult=null;guideDirection='auto';setupPending=false;trainingPick=null;drill.frames.forEach(cleanTraining);groupIds.clear();groupMode=false;breakdownPreferred=null;breakdownView=null;arrivalSignature='';cleanContacts(drill.frames);cleanBreakdowns(drill.frames);sanitizeRoutes(drill.frames);syncPossession(drill.frames,geometry());history.reset(drill);historyButtons()}
+function resetHistory(){selectedPathId=null;saveFeedback='';githubBaseline=null;validationHighlight.clear();validationResult=null;guideDirection='auto';setupPending=false;trainingPick=null;drill.frames.forEach(cleanTraining);groupIds.clear();groupMode=false;breakdownPreferred=null;breakdownView=null;arrivalSignature='';cleanContacts(drill.frames);cleanBreakdowns(drill.frames);sanitizeRoutes(drill.frames);syncPossession(drill.frames,geometry());history.reset(drill);historyButtons()}
 function restoreHistory(direction){
  if(drag||document.querySelector('dialog[open]')||document.body.classList.contains('presentation-mode'))return;
  if(!requireAppliedSetup())return;const value=history[direction]();if(!value)return;
- drill=value;dirty=true;saveFeedback='';selected=null;groupIds.clear();groupMode=false;choose(Math.min(idx,drill.frames.length-1));historyButtons();note(direction==='undo'?'Undid last change.':'Redid last change.');
+ drill=value;dirty=true;saveFeedback='';selected=null;selectedPathId=null;groupIds.clear();groupMode=false;choose(Math.min(idx,drill.frames.length-1));historyButtons();note(direction==='undo'?'Undid last change.':'Redid last change.');
 }
 $('undoEdit').onclick=()=>restoreHistory('undo');$('redoEdit').onclick=()=>restoreHistory('redo');
 document.addEventListener('keydown',e=>{
@@ -330,7 +341,9 @@ function updateRouteTools(){
  $('actionHint').textContent=routeDrawing?'Click route points, then Finish path.':ballPicking?'Choose a player on the pitch.':$('drawRouteSide').disabled?'Select a player or a free/pass ball.':canInsertPoint()?'Drag a + on the line to curve it.':'Draw a route or move into a new step.';
  $('routeStyle').value=route?.mode||'smooth';$('followRoute').checked=!!route?.follow;$('followRoute').disabled=o?.type==='ball';
  $('clearRoute').disabled=!route?.points?.length;$('removeWaypoint').disabled=!route?.points?.length;
- $('routeHelp').textContent=routeDrawing?'Click route points, then Finish path in Actions.':'Drag a + on the line or numbered points. Alt-click removes a point.';
+ $('resetMovement').disabled=!existing||!idx||!(canCarry(o)||o?.type==='ball'&&!o.ownerId);
+ $('resetMovement').hidden=!existing;
+ $('routeHelp').textContent=routeDrawing?'Click route points, then Finish path in Actions.':selectedPathId===selected&&existing?'Running line selected. Press Delete to cancel this movement, not delete the player.':'Click a running line to select it, then Delete to return the player to their starting position. Straighten keeps the destination; Alt-click removes a waypoint.';
  pitch.classList.toggle('drawing-route',routeDrawing);
 }
 function insertPathPoint(pointer=null,interval=null,event=null){
@@ -344,6 +357,7 @@ function insertPathPoint(pointer=null,interval=null,event=null){
  render();focusPitch();note('Path point added. Drag the numbered point to shape the route.');return true;
 }
 function toggleRoute(){
+ selectedPathId=null;
  if(routeDrawing){finishRoute();return}
  if(!canEditObjects()||!activeObject()||['decision','donut'].includes(activeObject().type))return;
  if(activeObject().type==='ball'){showPasses=true;$('passTrails').classList.add('selected');$('passTrails').setAttribute('aria-pressed','true')}
@@ -357,6 +371,7 @@ function toggleRoute(){
  routeDrawing=true;routeClickCount=0;render();focusPitch();note('Click the pitch to draw the route, then Finish path. The final click is the destination.');
 }
 function finishRoute(){
+ selectedPathId=null;
  routeDrawing=false;routeClickCount=0;render();inspector();tracks();note('Path ready. Press Play or adjust the numbered waypoints.');
 }
 function addRoutePoint(e){
@@ -373,6 +388,7 @@ $('drawRouteSide').onclick=toggleRoute;
 $('addPointSide').onclick=()=>insertPathPoint();
 $('routeStyle').onchange=()=>{if(!activeObject()||!previousObject())return;const r=ensureRoute();r.mode=$('routeStyle').value;changed();render();tracks()};
 $('followRoute').onchange=()=>{if(!activeObject()||!previousObject())return;ensureRoute().follow=$('followRoute').checked;changed();render()};
+$('resetMovement').onclick=cancelSelectedMovement;
 $('clearRoute').onclick=()=>{if(!activeObject()||!previousObject())return;ensureRoute().points=[];changed();render();tracks();focusPitch()};
 $('removeWaypoint').onclick=()=>{if(!activeObject()||!previousObject())return;ensureRoute().points.pop();changed();render();tracks();focusPitch()};
 $('editCurrent').onclick=()=>{if(preview===null)return;let t=preview,best=0;for(let i=1;i<drill.frames.length;i++)if(Math.abs(at(i)-t)<Math.abs(at(best)-t))best=i;choose(best)};
@@ -383,9 +399,9 @@ function changeCarrySide(side){if(!canEditObjects())return;const b=selectedCarri
 $('carryLeft').onclick=()=>changeCarrySide('left');$('carryRight').onclick=()=>changeCarrySide('right');
 function objectName(o){return (o.label||types[o.type][0])+((o.type==='ball'||isShield(o))&&carrier(f(),o)?' · '+(carrier(f(),o).label||'carried'):'')}
 function overlapAt(p){const g=geometry();return frameObjects(f(),g).filter(o=>{const q=g.toView(o.x,o.y);return Math.hypot(p.x-q.x,p.y-q.y)<(o.type==='ball'?16:29)}).reverse()}
-function selectObject(id){if(!f().objects.some(o=>o.id===id))return;trainingPick=null;groupIds.clear();groupMode=false;if(pendingInsert&&pendingInsert.id!==id)pendingInsert=null;selected=id;render();inspector();openInspector('Object',false)}
+function selectObject(id){if(!f().objects.some(o=>o.id===id))return;selectedPathId=null;trainingPick=null;groupIds.clear();groupMode=false;if(pendingInsert&&pendingInsert.id!==id)pendingInsert=null;selected=id;render();inspector();openInspector('Object',false)}
 function updateObjectPicker(){const list=$('objectPicker'),isGroup=groupMode||groupIds.size>0;$('objectHeading').hidden=isGroup;list.hidden=isGroup;$('objectPanel').hidden=isGroup;const options='<option value="">Select an object…</option>'+f().objects.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');if(list.innerHTML!==options)list.innerHTML=options;list.value=selected||'';list.disabled=preview!==null||!!ballPicking||routeDrawing}
-$('objectPicker').onchange=()=>{if($('objectPicker').value)selectObject($('objectPicker').value);else{selected=null;render();inspector()}};
+$('objectPicker').onchange=()=>{if($('objectPicker').value)selectObject($('objectPicker').value);else{selected=null;selectedPathId=null;render();inspector()}};
 let memberSignature='';
 function updateContactTools(){
  const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
@@ -583,8 +599,9 @@ pitch.addEventListener('pointerdown',e=>{
   e.preventDefault();return;
  }
  const path=e.target.closest('[data-path-id]');
- if(path&&!groupMode&&!groupIds.size){const id=path.dataset.pathId;if(id!==selected){selected=id;render();inspector();openInspector('Object',false);note('Path selected. Drag the line or a + handle to bend it.')}else{insertPathPoint(viewPoint(e),null,e)}e.preventDefault();return}
+ if(path&&!groupMode&&!groupIds.size){const id=path.dataset.pathId,alreadySelected=selectedPathId===id&&selected===id;selected=id;selectedPathId=id;if(!alreadySelected){render();inspector();openInspector('Object',false);note('Running line selected. Press Delete to remove this movement and return the player to the start of this step.')}else{insertPathPoint(viewPoint(e),null,e)}e.preventDefault();return}
  const g=e.target.closest('[data-id]');
+ selectedPathId=null;
  if(!g){selected=null;groupIds.clear();render();inspector();return}
  const hit=f().objects.find(o=>o.id===g.dataset.id),gp=groupTarget(hit);
  if((e.ctrlKey||e.metaKey)&&gp){if(!groupIds.size){const prior=groupTarget(activeObject());if(prior)groupIds.add(prior.id)}groupMode=true;toggleGroupPlayer(hit);e.preventDefault();return}
