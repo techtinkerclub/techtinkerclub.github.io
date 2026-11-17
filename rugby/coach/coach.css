@@ -97,3 +97,29 @@ body.presentation-mode{grid-template-rows:auto minmax(0,1fr) auto}
 @media(max-width:760px){body.coach-edition{grid-template-rows:auto auto minmax(0,1fr) auto}.coach-journey{min-height:48px}.coach-journey-actions{flex:1}.coach-journey-actions button{font-size:11px;padding:7px}.coach-journey-switch{margin-left:auto}.coach-dialog{width:calc(100vw - 14px)}.coach-choice-grid{grid-template-columns:1fr;padding:8px 15px 16px}.coach-choice-grid button{min-height:80px}.coach-modal-head{padding:19px 17px 12px}.coach-action-cards{grid-template-columns:1fr;padding:13px 15px}.coach-category-tabs{margin:0 15px}.coach-modal-footer{padding:13px 15px}}
 @media(max-height:680px){.coach-journey{min-height:45px;padding:4px 10px}.coach-journey-actions button{padding:5px 8px;min-height:30px}.coach-dialog{max-height:88dvh}}
 @media(prefers-reduced-motion:reduce){.coach-dialog::backdrop{backdrop-filter:none}}
+
+/* Coach Edition v0.2: select the actor before choosing an action. */
+.coach-object-bar{display:grid;gap:7px;margin:13px 25px 0;padding:12px 14px;border:1px solid #e3cfc1;background:#f8f0e7;border-radius:12px;color:#463339}
+.coach-object-bar label{font-size:12px;font-weight:750;color:#563741}
+.coach-object-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px}
+.coach-object-row select{background:#fff;color:#30272b;border:1px solid #c4a79f;border-radius:7px;min-height:39px}
+.coach-object-row button{background:#792639;color:#fff8eb;border:1px solid #792639;border-radius:8px;padding:8px 13px;font-size:12px;font-weight:700}
+.coach-object-bar small{font-size:11px;line-height:1.45;color:#6d5b5c}
+.coach-object-bar small.needs-attention{color:#8d2038;font-weight:750}
+@media(max-width:760px){
+ body.coach-edition>header{padding:8px 10px;gap:5px}
+ body.coach-edition>header .brandmark{width:30px;height:30px;font-size:17px}
+ body.coach-edition>header h1{font-size:16px}
+ body.coach-edition>header .brand small{font-size:10px}
+ body.coach-edition>header .head-actions{width:100%;display:flex;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px}
+ body.coach-edition>header .head-actions .command-group{flex:0 0 auto}
+ body.coach-edition .coach-journey{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px;min-height:unset;padding:6px 10px}
+ body.coach-edition .coach-journey-title{display:grid;grid-column:1;grid-row:1;min-width:0}
+ body.coach-edition .coach-journey-switch{grid-column:2;grid-row:1;margin:0}
+ body.coach-edition .coach-journey-switch a{display:inline-flex;font-size:11px}
+ body.coach-edition .coach-journey-actions{grid-column:1/-1;grid-row:2;width:100%;padding:2px 0}
+ body.coach-edition .coach-journey-actions button{min-height:39px}
+ .coach-object-bar{margin:10px 15px 0;padding:10px}
+ .coach-object-row{grid-template-columns:minmax(0,1fr)}
+ .coach-object-row button{min-height:40px}
+}
