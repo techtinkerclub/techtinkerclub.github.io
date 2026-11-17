@@ -4,7 +4,7 @@ import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=1';
 import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.0';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
-import {coachingMarkup,sequenceMarkup,decisionMarkup} from './coaching-output.js?v=0.8.0';
+import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.0';
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0;
 function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
 function stepEnd(i){return d.frames.slice(0,i+1).reduce((sum,f,k)=>sum+(k?f.seconds:0),0)}
@@ -16,7 +16,7 @@ function render(){
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
  board.innerHTML=s.svg;shownStep=s.index;
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
- if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?decisionMarkup(s.frame):'';$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
+ if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
  $('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t;
  $('previousStep').disabled=t<=0;$('nextStep').disabled=t>=drillDuration(d);$('play').disabled=d.frames.length<2;
 }
