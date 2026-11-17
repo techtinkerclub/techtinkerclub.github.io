@@ -1,11 +1,12 @@
 // Optional coaching diagrams, measured in metres. These are annotations, not laws or collision objects.
-export const DIAGRAM_TYPES=['offsideLine','directionArrow','measureLine','zoneCircle','zoneRect'];
+export const DIAGRAM_TYPES=['offsideLine','directionArrow','measureLine','zoneCircle','zoneRect','spotMarker'];
 const defaults={
  offsideLine:{length:8,width:2,color:'#ffd48a',opacity:90,fill:false,fillOpacity:12,dashed:true},
  directionArrow:{length:3,width:2,color:'#bde8ff',opacity:90,fill:false,fillOpacity:12,dashed:false},
  measureLine:{length:3,width:2,color:'#d4e6c9',opacity:95,fill:false,fillOpacity:12,dashed:false},
  zoneCircle:{length:3,width:3,color:'#bce6f5',opacity:85,fill:false,fillOpacity:12,dashed:false},
- zoneRect:{length:4,width:3,color:'#c9f07c',opacity:85,fill:false,fillOpacity:12,dashed:false}
+ zoneRect:{length:4,width:3,color:'#c9f07c',opacity:85,fill:false,fillOpacity:12,dashed:false},
+ spotMarker:{length:.65,width:.65,color:'#ffe79a',opacity:95,fill:false,fillOpacity:12,dashed:false}
 };
 export const isDiagramObject=o=>DIAGRAM_TYPES.includes(typeof o==='string'?o:o?.type);
 const clamp=(v,min,max,fallback)=>Number.isFinite(Number(v))?Math.max(min,Math.min(max,Number(v))):fallback;
@@ -28,6 +29,8 @@ export function diagramSVG(o,g,{ink=false}={}){
   visible='<path d="M'+(-a/2)+' 0H'+(a/2)+'"'+attrs+'/>';
   if(o.type==='measureLine'){
    visible+='<path d="M'+(-a/2)+' -8v16M'+(a/2)+' -8v16"'+attrs+'/>';
+   // One tick per whole metre measured from the starting cap.
+   for(let mark=1;mark<s.length;mark++)visible+='<path d="M'+(-a/2+mark*g.scale)+' -4v8"'+attrs+' stroke-width="1.4"/>';
    measurement='<text x="0" y="-10" text-anchor="middle" font-size="12" font-weight="650" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#ffffff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(label)+'</text>';
   }
   hit='<path d="M'+(-a/2)+' 0H'+(a/2)+'" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"/>';
@@ -35,6 +38,9 @@ export function diagramSVG(o,g,{ink=false}={}){
   const end=-a/2,tip=end,base=end+Math.min(17,a*.3);
   visible='<path d="M0 '+(a/2)+'V'+tip+'M-9 '+base+'L0 '+tip+'L9 '+base+'"'+attrs+'/>';
   hit='<path d="M0 '+(a/2)+'V'+tip+'" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"/>';
+ }else if(o.type==='spotMarker'){
+  const radius=a/2;visible='<circle r="'+radius+'" fill="'+st+'" fill-opacity="'+s.opacity/100+'" stroke="'+st+'" stroke-width="1"/><path d="M'+(-Math.max(7,radius+3))+' 0H'+Math.max(7,radius+3)+'M0 '+(-Math.max(7,radius+3))+'V'+Math.max(7,radius+3)+'" fill="none" stroke="'+st+'" stroke-width="1.4"/>';
+  hit='<circle r="'+Math.max(12,radius+4)+'" fill="transparent" pointer-events="all"/>';
  }else if(o.type==='zoneCircle'){
   const radius=a/2;visible='<circle r="'+radius+'" fill="'+(s.fill?st:'none')+'" fill-opacity="'+(s.fill?s.fillOpacity/100:0)+'"'+attrs.replace(' fill="none"','')+'/>';
   hit='<circle r="'+radius+'" fill="transparent" stroke="transparent" stroke-width="16" pointer-events="all"/>';
