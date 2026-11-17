@@ -142,6 +142,157 @@
           ],
           "timing": {},
           "paths": {}
+        },
+        {
+          "name": "Step 2",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwko06q2r10wwh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 279.70833333333337,
+              "rot": 0
+            },
+            {
+              "id": "mwko06wal3mstg",
+              "type": "defender",
+              "label": "D2",
+              "x": 526.5,
+              "y": 318.5416666666667,
+              "rot": 0
+            },
+            {
+              "id": "mwko072avp7wre",
+              "type": "defender",
+              "label": "D3",
+              "x": 450,
+              "y": 454.45833333333337,
+              "rot": 0
+            },
+            {
+              "id": "mwko07962eg8ba",
+              "type": "defender",
+              "label": "D4",
+              "x": 450,
+              "y": 483.58333333333337,
+              "rot": 0
+            },
+            {
+              "id": "mwko3a2ya6ju52",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 260.2916666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko3a96tai59c",
+              "type": "attacker",
+              "label": "A2",
+              "x": 526.5,
+              "y": 221.45833333333334,
+              "rot": 180
+            },
+            {
+              "id": "mwko3afv8riv49",
+              "type": "attacker",
+              "label": "A3",
+              "x": 450,
+              "y": 85.54166666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko3am2mh6y4m",
+              "type": "attacker",
+              "label": "A4",
+              "x": 450,
+              "y": 56.41666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko4krm39vpeq",
+              "type": "sausage",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "mwko4wpmsdirgs",
+              "type": "ball",
+              "label": "",
+              "x": 501,
+              "y": 260.2916666666667,
+              "rot": 0
+            },
+            {
+              "id": "mwko758271hcp3",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450.0000000000001,
+              "y": 270.3883333333333,
+              "rot": 0,
+              "ownerId": "mwko06q2r10wwh"
+            },
+            {
+              "id": "mwkpwupi3yqu0i",
+              "type": "cone",
+              "label": "",
+              "x": 399,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwuvarw6uyk",
+              "type": "cone",
+              "label": "",
+              "x": 399,
+              "y": 153.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwv1iebxo5f",
+              "type": "cone",
+              "label": "",
+              "x": 501,
+              "y": 153.5,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwv7y3tvbdz",
+              "type": "cone",
+              "label": "",
+              "x": 501,
+              "y": 386.5,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {
+            "mwko06wal3mstg": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 526.5,
+                  "y": 386.5
+                }
+              ],
+              "follow": false
+            },
+            "mwko3a96tai59c": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 526.5,
+                  "y": 153.5
+                }
+              ],
+              "follow": false
+            }
+          }
         }
       ],
       "attackDirection": "up",
@@ -161,7 +312,7 @@
       "links": [],
       "provenance": "Coach-created / imported drill",
       "review": "Coach review required",
-      "savedAt": "2026-11-17T13:25:06.599Z"
+      "savedAt": "2026-11-17T13:55:47.638Z"
     },
     {
       "version": 1,
