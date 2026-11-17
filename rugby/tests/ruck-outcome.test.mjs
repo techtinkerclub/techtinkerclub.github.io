@@ -40,7 +40,7 @@ for(const winner of ['attack','defence']){
   assert(distance(shield,shieldPose(shield,defender,g))<1e-5,
    'Tackle pad must follow D1 through contest, even on losing side');
   const svg=contestResultOverlay(after,display,g,p,false);
-  if(p<.9)assert.equal(svg,'Result badge must not appear early');
+  if(p<.9)assert.equal(svg,'','Result badge must not appear early');
   else{
    assert.match(svg,new RegExp(winner==='attack'?'ATTACK SECURES':'DEFENCE SECURES'));
    assert.match(svg,new RegExp(winner==='attack'?'A2 NEXT':'D2 NEXT'));
