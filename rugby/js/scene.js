@@ -40,7 +40,7 @@ export function playbackData(d){
   const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};cleanGuide(result);cleanTraining(result);return result;
  });
  cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);normaliseRecoveryPoses(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
- if(hasOutcomes(d)){const b=branchInfo(d),views=outcomeViews(d).map(v=>({id:v.id,clean:playbackData(v.drill)}));out.branching={version:1,fork:b.fork,question:b.question,active:b.active,choices:b.choices.map(v=>({id:v.id,label:v.label,frames:views.find(w=>w.id===v.id).clean.frames.slice(b.fork+1)}))};out.frames=views.find(v=>v.id===b.active).clean.frames;}
+ if(hasOutcomes(d)){const b=branchInfo(d),views=outcomeViews(d).map(v=>({id:v.id,clean:playbackData(v.drill)}));out.branching={version:1,fork:b.fork,question:b.question,active:b.active,...(typeof b.markerId==='string'?{markerId:b.markerId}:{}),choices:b.choices.map(v=>({id:v.id,label:v.label,frames:views.find(w=>w.id===v.id).clean.frames.slice(b.fork+1)}))};out.frames=views.find(v=>v.id===b.active).clean.frames;}
  return out;
 }
 export function drillDuration(d){return d.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0)}
