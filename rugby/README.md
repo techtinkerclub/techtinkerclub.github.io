@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.13.9 / Coach Edition v0.3.2
+# Rugby Coaching Studio — Classic v0.14.0 / Coach Edition v0.3.3
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
@@ -35,6 +35,16 @@ Select a **Coach** object and use **Object → Coach start signal**. Set **Show 
 To remove the whistle, select the Coach and press **Remove whistle · GO**, then **Save to GitHub** if you want the online copy updated. Removal is independent of the current step or edits to the original coach setup. When the step was automatically named for the whistle, removal also clears that automatic label and narration; the step itself remains in case other actions were added.
 
 Both editors and read-only players share the same signal model, import/export support and rendering code. Older drills without a duration retain a default of 0.5 s.
+
+## Convert a drawn decision into playable actions (v0.14.0)
+
+The old yellow diamond and dotted/curved yellow preview arrows are **annotation only**. They do not make the coach or a player move, and playback does not pause at them without a playable branch.
+
+For an existing drawing, first **pause** the animation and select the step containing the diamond. Select the yellow question-mark diamond, then use **Object → Turn this drawing into playable A + B**. Or click **Make drawn decision playable** beside the timeline. The modal starts with the existing question and the names of the two drawn options.
+
+**Conversion:** The model splits the current action step where the diamond is anchored along the named player's running path, preserving the common setup, whistle and defenders' partial movement. Option A and option B receive separate editable suffix frames. A drawn **run** becomes an actual player running path; a drawn **pass** becomes a real ball transfer if the ball carrier possesses a ball, the arrow reaches a receiving player and the pass is not forward. The old preview lines are cleared to avoid double arrows. Other players continue any existing movements but the app intentionally does **not** invent defender responses or tackles: animate those in each outcome. A single fork with exactly two alternatives is supported; a drawn diamond must have a selected Player. A copy is changed in the editor; nothing is saved back to GitHub until the user explicitly saves it.
+
+After converting, edit Outcome A, use the B button to edit Outcome B, then play from the start. At the fork the app pauses and displays a side-by-side comparison of real paths. Choose either to continue; media and coaching sheets can include both.
 
 ## Structure
 
