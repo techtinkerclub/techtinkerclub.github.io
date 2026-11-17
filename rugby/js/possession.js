@@ -64,6 +64,9 @@ function destinationPose(old,next,id){
  if(formed)return formed;
  const current=b?.playerPose||'standing',prior=authoredPose(old,id);
  if(prior==='ready'&&travels(a,b,next)&&current==='ready'&&b?.posePinned!==true)return 'standing';
+  // Copied tackle/recovery poses are transient, unless explicitly pinned.
+  // Grounded ball presentation is intentionally preserved while the ball is live.
+  if(b?.posePinned!==true&&(prior==='recovering'||prior==='tackling')&&current===prior)return 'standing';
   if(b?.posePinned!==true&&travels(a,b,next)&&LOW_POSES.has(prior)&&(current===prior||current==='recovering'))return 'standing';
  return current;
 }
@@ -244,8 +247,25 @@ export function transitionObjects(old,next,p,g){
    pose.playerPose=p>=switchAt?'ready':moving?'standing':(prior.playerPose||'standing');
   }else if(prior?.playerPose==='ready'&&moving&&o.playerPose!=='ready'){
    pose.playerPose=p*100>=(next.timing?.[o.id]?.start??0)?'standing':'ready';
-  }else if(prior&&p<(next.timing?.[o.id]?.end??100)/100){
-   if(prior.playerPose)pose.playerPose=prior.playerPose;else delete pose.playerPose;
+  }else if(prior){
+   // Previously a new pose only appeared at 100%: the animation looked as
+   // though players stood throughout a tackle, then snapped at the end.
+   const desired=o.playerPose||'standing',previous=prior.playerPose||'standing';
+   const end=(next.timing?.[o.id]?.end??100)/100;
+   const poseAt=desired===previous?end:Math.min(end,desired==='grounded'?.86:desired==='tackling'?.70:desired==='kneeling'?.82:.72);
+   if(p<poseAt){if(prior.playerPose)pose.playerPose=prior.playerPose;else delete pose.playerPose;}
+  }
+  // A genuinely authored player-on-player tackle has a short ready-to-wrap
+  // approach, then the tackler tackles and the carrier is grounded on contact.
+  // Do not infer collisions where no tackle marker was authored.
+  const tackle=events.find(e=>e.players.includes(o.id));
+  if(tackle){
+   const at=tackle.time;
+   if(p>=at)pose.playerPose=o.id===tackle.tackler?'tackling':'grounded';
+   else if(o.id===tackle.tackler){
+    const lead=Math.min(.24,.4/Math.max(.5,Number(next.seconds)||2));
+    if(p>=Math.max(0,at-lead))pose.playerPose='ready';
+   }
   }
   const recovery=recoveries.get(o.id);if(recovery)pose.playerPose=p<=recovery.start?recovery.prior:p<recovery.ready?(recovery.prior==='bound'?'standing':'recovering'):recovery.moving?'standing':recovery.target;
   if(Array.isArray(o.members)||Array.isArray(prior?.members)){
