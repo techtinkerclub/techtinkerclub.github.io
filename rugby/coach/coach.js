@@ -23,7 +23,7 @@ const CATEGORIES={
   {id:'move',icon:'↝',title:'Show a player running',description:'Select the player, then draw their movement path.'},
   {id:'step',icon:'＋',title:'Add the next step',description:'Keep the current arrangement and show the next action.'},
   {id:'whistle',icon:'♫',title:'Coach blows whistle · GO',description:'Select the coach. Add a whistle that starts the first action step.'},
-  {id:'outcome',icon:'◆',title:'Create two playable outcomes',description:'Split at the current step. Animate option A and option B separately, then export both.'},
+  {id:'outcome',icon:'◆',title:'Make a decision playable · A / B',description:'Select a yellow decision diamond to turn its drawn run or pass into animation. Or create a new A/B fork at this step.'},
   {id:'attach',icon:'◉',title:'Give a free ball to a player',description:'Choose a player to carry the ball before making a pass.'},
   {id:'pass',icon:'⇢',title:'Pass the ball',description:'Choose the receiver; the original ball-passing animation is used.'},
   {id:'release',icon:'↗',title:'Release the ball',description:'Place the ball on the ground after a carry or tackle.'},
