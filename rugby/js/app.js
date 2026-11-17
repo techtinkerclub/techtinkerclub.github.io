@@ -27,7 +27,8 @@ import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
 import {contactDragIds,contactHandlePoint} from './contact-drag.js?v=0.12.29';
 import {formationTrajectorySVG,formationTrajectoryTransform} from './formation-trajectory.js?v=0.12.29';
 import {contestDrive} from './contest-motion.js?v=0.12.31';
-import {contestResultOverlay,clearContestOutcome} from './ruck-outcome.js?v=0.12.32';
+import {contestResultOverlay,clearContestOutcome,contestWinner} from './ruck-outcome.js?v=0.12.33';
+import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-action.js?v=0.12.33';
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
@@ -554,6 +555,32 @@ let memberSignature='';
 function updateContactTools(){
  const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);
  $('contestMovementTools').hidden=!ok||o.type!=='ruck'||o.breakdown?.phase!=='contest';
+ const hasRuckStep=ok&&o.type==='ruck'&&['contest','secured'].includes(o.breakdown?.phase);
+ $('ruckCalloutsTools').hidden=!hasRuckStep;
+ if(hasRuckStep){
+  const key=o.id+':'+idx,selectedWinner=contestWinner(o);
+  $('showContestLabel').checked=o.breakdown.showWinnerLabel===true;
+  const waiting=nextPlayPlayers(f(),o);
+  const picker=$('ruckNextPlayer');
+  const available='<option value="">Nobody selected · no NEXT label</option>'+
+   waiting.map(p=>'<option value="'+esc(p.id)+'">'+esc(objectName(p))+'</option>').join('');
+  if(picker.innerHTML!==available)picker.innerHTML=available;
+  picker.value=waiting.some(p=>p.id===o.breakdown.nextPlayerId)?o.breakdown.nextPlayerId:'';
+  $('showRuckNextLabel').checked=o.breakdown.showNextPlayerLabel===true&&!!picker.value;
+  $('showRuckNextLabel').disabled=!picker.value;
+  const balls=nextPlayBalls(f());
+  const chooseBall=$('ruckNextBall');
+  const ballOptions='<option value="">Choose the ball to play…</option>'+
+   balls.map((b,i)=>'<option value="'+esc(b.id)+'">Rugby ball '+(i+1)+(b.ownerId?' · currently held':' · available')+'</option>').join('');
+  if(chooseBall.dataset.step!==key||chooseBall.innerHTML!==ballOptions){
+   chooseBall.innerHTML=ballOptions;chooseBall.value='';chooseBall.dataset.step=key;
+  }
+  $('createRuckPlayAway').disabled=!selectedWinner||!picker.value||!chooseBall.value;
+  $('ruckNextStatus').textContent=selectedWinner
+   ?'These labels belong to Step '+(idx+1)+' only. To play the ball, select the player and rugby ball, then create a separate step.'
+   :'Generate or set a winning side in Contest before choosing who plays the ball.';
+ }
+
  if(ok&&o.type==='ruck'&&o.breakdown?.phase==='contest'){
   const key=o.id+':'+idx;
   if($('contestMovementTools').dataset.step!==key){
@@ -565,7 +592,6 @@ function updateContactTools(){
     :'The winner will remain over the pad and the losing player will give ground. The separate ball stays where you placed it.';
   }
  }
- $('showContestLabel').checked=o?.breakdown?.showWinnerLabel!==false;
  $('clearContestResult').hidden=!ok||!['attack','defence'].includes(o.breakdown?.winner);
  $('startPadRuck').hidden=!ok||o.type!=='ruck'||!!o.breakdown||!f().objects.some(isGroundPad);$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
  const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=o.breakdown?.mode==='pad'&&o.breakdown?.phase!=='contest'||o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')||!o.breakdown}
@@ -693,11 +719,53 @@ $('padNudgeTools').onclick=e=>{
 $('showContestLabel').onchange=()=>{
  if(!canEditObjects())return;
  const marker=activeObject();
- if(marker?.type!=='ruck'||marker.breakdown?.phase!=='contest')return;
- if($('showContestLabel').checked)delete marker.breakdown.showWinnerLabel;
- else marker.breakdown.showWinnerLabel=false;
+ if(marker?.type!=='ruck'||!['contest','secured'].includes(marker.breakdown?.phase))return;
+ if($('showContestLabel').checked)marker.breakdown.showWinnerLabel=true;
+ else delete marker.breakdown.showWinnerLabel;
  changed();render();inspector();
- note($('showContestLabel').checked?'Winner callouts shown.':'Winner and next-player callouts hidden; contest outcome unchanged.');
+ note($('showContestLabel').checked?'Winner label shown in this step.':'Winner label hidden in this step. The contest result stays.');
+};
+$('ruckNextPlayer').onchange=()=>{
+ if(!canEditObjects())return;
+ const marker=activeObject();
+ if(marker?.type!=='ruck'||!contestWinner(marker))return;
+ const target=$('ruckNextPlayer').value;
+ if(target&&nextPlayPlayers(f(),marker).some(o=>o.id===target))marker.breakdown.nextPlayerId=target;
+ else{delete marker.breakdown.nextPlayerId;delete marker.breakdown.showNextPlayerLabel}
+ changed();render();inspector();
+ note(target?'Next player selected; use the checkbox if you want a visible cue.':'Next-player selection cleared; nothing will be guessed.');
+};
+$('showRuckNextLabel').onchange=()=>{
+ if(!canEditObjects())return;
+ const marker=activeObject();
+ if(marker?.type!=='ruck'||!contestWinner(marker))return;
+ if($('showRuckNextLabel').checked&&marker.breakdown.nextPlayerId)marker.breakdown.showNextPlayerLabel=true;
+ else delete marker.breakdown.showNextPlayerLabel;
+ changed();render();inspector();
+ note(marker.breakdown.showNextPlayerLabel?'Next-player cue shown in this step.':'Next-player cue hidden.');
+};
+$('ruckNextBall').onchange=()=>{
+ $('createRuckPlayAway').disabled=!$('ruckNextPlayer').value||!$('ruckNextBall').value;
+};
+$('clearRuckCallouts').onclick=()=>{
+ if(!canEditObjects())return;
+ const marker=activeObject();
+ if(marker?.type!=='ruck'||!marker.breakdown)return;
+ delete marker.breakdown.showWinnerLabel;
+ delete marker.breakdown.showNextPlayerLabel;
+ changed();render();inspector();
+ note('Both coaching labels hidden in this step. Winner, players and ball movement remain unchanged.');
+};
+$('createRuckPlayAway').onclick=()=>{
+ if(!canEditObjects()||drill.frames.length>=150)return;
+ const marker=activeObject();
+ if(marker?.type!=='ruck'||!contestWinner(marker))return;
+ const result=prepareRuckPlayAway(f(),marker.id,$('ruckNextPlayer').value,$('ruckNextBall').value,geometry());
+ if(!result.ok){$('ruckNextStatus').textContent=result.message;note(result.message);return}
+ drill.frames.splice(idx+1,0,result.frame);
+ sanitizeRoutes(drill.frames);
+ changed();choose(idx+1);
+ note(result.message);
 };
 $('clearContestResult').onclick=()=>{
  if(!canEditObjects())return;
@@ -1024,7 +1092,13 @@ function finishDrag(e){
 pitch.addEventListener('pointerup',finishDrag);
 pitch.addEventListener('pointercancel',finishDrag);
 pitch.addEventListener('lostpointercapture',finishDrag);
-$('stepName').onchange=()=>{editMode();f().name=$('stepName').value||'Step';changed();refresh()};$('stepTime').onchange=()=>{if(!idx)return;editMode();f().seconds=clamp(Number($('stepTime').value)||1,.5,30);changed();refresh()};$('stepNotes').onchange=()=>{editMode();f().notes=$('stepNotes').value;changed();refresh()};$('scenes').onclick=e=>{let b=e.target.closest('[data-step]');if(b){choose(Number(b.dataset.step));openInspector('Step',false)}};$('addStep').onclick=()=>{editMode();if(drill.frames.length>=150){note('Maximum of 150 steps reached.');return}let n=stripDecisions(clone(f()));if(n.guide&&n.guide.stage===GAME_PHASES[n.guide.kind]?.stages.length-1)delete n.guide;for(const b of n.objects.filter(o=>o.type==='ball'))delete b.transferKind;n.name='Step '+(idx+2);n.seconds=2;n.notes='';n.timing={};n.paths={};drill.frames.splice(idx+1,0,n);sanitizeRoutes(drill.frames);changed();choose(idx+1)};$('deleteStep').onclick=()=>{if(drill.frames.length<2)return;editMode();drill.frames.splice(idx,1);drill.frames[0].seconds=0;sanitizeRoutes(drill.frames);changed();choose(Math.min(idx,drill.frames.length-1))};$('back').onclick=()=>choose(idx-1);$('forward').onclick=()=>choose(idx+1);$('restart').onclick=()=>choose(0);$('trails').onclick=()=>{showPaths=!showPaths;$('trails').classList.toggle('selected',showPaths);$('trails').setAttribute('aria-pressed',String(showPaths));render()};$('markups').onclick=()=>{showMarkups=!showMarkups;$('markups').classList.toggle('selected',showMarkups);$('markups').setAttribute('aria-pressed',String(showMarkups));if(!showMarkups&&isDiagramObject(activeObject())){selected=null;inspector()}render();note(showMarkups?'Pitch markings visible.':'Pitch markings hidden for this view.')};$('grid').onclick=()=>{showGrid=!showGrid;syncGrid();render()};$('snapGrid').onclick=()=>{gridPrefs.snap=!gridPrefs.snap;syncGrid();note(gridPrefs.snap?'Snap on · '+gridPrefs.step+' m spacing. Hold Shift for free movement.':'Snap off · free movement.');};$('gridStep').onchange=()=>{gridPrefs.step=gridStep($('gridStep').value);syncGrid();render();note('Grid spacing set to '+gridPrefs.step+' m. Existing positions unchanged.')};$('orientation').onclick=()=>{orientation=orientation==='up'?'right':'up';$('orientation').textContent=orientation==='up'?'View ↕':'View ↔';render()};$('scrub').oninput=()=>{ballPicking=null;routeDrawing=false;stop();preview=Number($('scrub').value);render();inspector();note('Preview mode. Select a step to resume editing.')};$('play').onclick=()=>{trainingPick=null;ballPicking=null;if(routeDrawing)finishRoute();if(playing){stop();return}if(duration()<=0){note('Add a second step to animate the drill.');return}let base=preview??at(idx);if(base>=duration()-.01)base=0;preview=base;playing=true;$('play').textContent='Ⅱ Pause';clock=performance.now();function tick(now){if(!playing)return;preview=Math.min(duration(),preview+(now-clock)/1000*Number($('speed').value));clock=now;render();if(preview>=duration()){stop();return}raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick);note('Playing the drill. Select a step to edit.');inspector()};function download(name,body,type){const url=URL.createObjectURL(new Blob([body],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}const filename=()=>drill.title.replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||'rugby-drill';$('export').onclick=()=>{if(requireAppliedSetup()){download(filename()+'.json',JSON.stringify(drill,null,2),'application/json');$('shareStatus').textContent='Editable drill JSON exported.'}};$('png').onclick=()=>{if(!requireAppliedSetup())return;const scene=renderScene(drill,{...shareOptions(),index:idx});download(filename()+'-step-'+(idx+1)+'.svg',scene.svg,'image/svg+xml');$('shareStatus').textContent='Step '+(idx+1)+' SVG exported.'};function readSavedLibrary(){const data=JSON.parse(localStorage.getItem('rugby-studio-v1')||'[]');if(!Array.isArray(data))throw Error('Saved library is unreadable');return data}
+$('stepName').onchange=()=>{editMode();f().name=$('stepName').value||'Step';changed();refresh()};$('stepTime').onchange=()=>{if(!idx)return;editMode();f().seconds=clamp(Number($('stepTime').value)||1,.5,30);changed();refresh()};$('stepNotes').onchange=()=>{editMode();f().notes=$('stepNotes').value;changed();refresh()};$('scenes').onclick=e=>{let b=e.target.closest('[data-step]');if(b){choose(Number(b.dataset.step));openInspector('Step',false)}};$('addStep').onclick=()=>{editMode();if(drill.frames.length>=150){note('Maximum of 150 steps reached.');return}let n=stripDecisions(clone(f()));if(n.guide&&n.guide.stage===GAME_PHASES[n.guide.kind]?.stages.length-1)delete n.guide;for(const b of n.objects.filter(o=>o.type==='ball'))delete b.transferKind;
+ for(const marker of n.objects.filter(o=>o.type==='ruck'&&o.breakdown)){
+  delete marker.breakdown.showWinnerLabel;
+  delete marker.breakdown.showNextPlayerLabel;
+  delete marker.breakdown.nextPlayerId;
+ }
+ n.name='Step '+(idx+2);n.seconds=2;n.notes='';n.timing={};n.paths={};drill.frames.splice(idx+1,0,n);sanitizeRoutes(drill.frames);changed();choose(idx+1)};$('deleteStep').onclick=()=>{if(drill.frames.length<2)return;editMode();drill.frames.splice(idx,1);drill.frames[0].seconds=0;sanitizeRoutes(drill.frames);changed();choose(Math.min(idx,drill.frames.length-1))};$('back').onclick=()=>choose(idx-1);$('forward').onclick=()=>choose(idx+1);$('restart').onclick=()=>choose(0);$('trails').onclick=()=>{showPaths=!showPaths;$('trails').classList.toggle('selected',showPaths);$('trails').setAttribute('aria-pressed',String(showPaths));render()};$('markups').onclick=()=>{showMarkups=!showMarkups;$('markups').classList.toggle('selected',showMarkups);$('markups').setAttribute('aria-pressed',String(showMarkups));if(!showMarkups&&isDiagramObject(activeObject())){selected=null;inspector()}render();note(showMarkups?'Pitch markings visible.':'Pitch markings hidden for this view.')};$('grid').onclick=()=>{showGrid=!showGrid;syncGrid();render()};$('snapGrid').onclick=()=>{gridPrefs.snap=!gridPrefs.snap;syncGrid();note(gridPrefs.snap?'Snap on · '+gridPrefs.step+' m spacing. Hold Shift for free movement.':'Snap off · free movement.');};$('gridStep').onchange=()=>{gridPrefs.step=gridStep($('gridStep').value);syncGrid();render();note('Grid spacing set to '+gridPrefs.step+' m. Existing positions unchanged.')};$('orientation').onclick=()=>{orientation=orientation==='up'?'right':'up';$('orientation').textContent=orientation==='up'?'View ↕':'View ↔';render()};$('scrub').oninput=()=>{ballPicking=null;routeDrawing=false;stop();preview=Number($('scrub').value);render();inspector();note('Preview mode. Select a step to resume editing.')};$('play').onclick=()=>{trainingPick=null;ballPicking=null;if(routeDrawing)finishRoute();if(playing){stop();return}if(duration()<=0){note('Add a second step to animate the drill.');return}let base=preview??at(idx);if(base>=duration()-.01)base=0;preview=base;playing=true;$('play').textContent='Ⅱ Pause';clock=performance.now();function tick(now){if(!playing)return;preview=Math.min(duration(),preview+(now-clock)/1000*Number($('speed').value));clock=now;render();if(preview>=duration()){stop();return}raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick);note('Playing the drill. Select a step to edit.');inspector()};function download(name,body,type){const url=URL.createObjectURL(new Blob([body],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}const filename=()=>drill.title.replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||'rugby-drill';$('export').onclick=()=>{if(requireAppliedSetup()){download(filename()+'.json',JSON.stringify(drill,null,2),'application/json');$('shareStatus').textContent='Editable drill JSON exported.'}};$('png').onclick=()=>{if(!requireAppliedSetup())return;const scene=renderScene(drill,{...shareOptions(),index:idx});download(filename()+'-step-'+(idx+1)+'.svg',scene.svg,'image/svg+xml');$('shareStatus').textContent='Step '+(idx+1)+' SVG exported.'};function readSavedLibrary(){const data=JSON.parse(localStorage.getItem('rugby-studio-v1')||'[]');if(!Array.isArray(data))throw Error('Saved library is unreadable');return data}
 function stored(){try{return readSavedLibrary()}catch{return []}}
 function syncSaveState(){
  const button=$('save'),status=$('saveState'),saved=githubBaseline&&githubBaseline.id===drill.id?githubBaseline:null,pending=dirty||setupPending;
