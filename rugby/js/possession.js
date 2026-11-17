@@ -62,7 +62,7 @@ function destinationPose(old,next,id){
  const a=findObject(old,id),b=findObject(next,id),formed=formationPose(next,id);
  if(formed)return formed;
  const current=b?.playerPose||'standing',prior=authoredPose(old,id);
- if(prior==='ready'&&travels(a,b,next)&&current==='ready')return 'standing';
+ if(prior==='ready'&&travels(a,b,next)&&current==='ready'&&b?.posePinned!==true)return 'standing';
   if(b?.posePinned!==true&&travels(a,b,next)&&LOW_POSES.has(prior)&&(current===prior||current==='recovering'))return 'standing';
  return current;
 }
@@ -75,7 +75,7 @@ export function normaliseRecoveryPoses(frames){
   for(const id of inherited.keys())if(!findObject(next,id))inherited.delete(id);
   for(const player of next.objects){
    if(!canCarry(player))continue;
-   if(formationPose(next,player.id)||player.posePinned===true&&player.playerPose!=='ready'){inherited.delete(player.id);continue}
+   if(formationPose(next,player.id)||player.posePinned===true){inherited.delete(player.id);continue}
    const copied=inherited.get(player.id),raw=player.playerPose;
    let pose=destinationPose(old,next,player.id);
    if(copied&&raw===copied)pose='standing';else if(copied)inherited.delete(player.id);
@@ -201,9 +201,9 @@ export function transitionObjects(old,next,p,g){
   const pose=objectPose(old,next,o.id,p,g,events);
   // A ready stance is a deliberate pause, not a pose that slides along the ground.
   const moving=prior&&travels(prior,o,next);
-  if(prior&&o.playerPose==='ready'&&prior.playerPose!=='ready'){
+  if(prior&&o.playerPose==='ready'&&(prior.playerPose!=='ready'||moving&&o.posePinned===true)){
    const switchAt=moving?(next.timing?.[o.id]?.end??100)/100:0;
-   pose.playerPose=p>=switchAt?'ready':(prior.playerPose||'standing');
+   pose.playerPose=p>=switchAt?'ready':moving?'standing':(prior.playerPose||'standing');
   }else if(prior?.playerPose==='ready'&&moving&&o.playerPose!=='ready'){
    pose.playerPose=p*100>=(next.timing?.[o.id]?.start??0)?'standing':'ready';
   }else if(prior&&p<(next.timing?.[o.id]?.end??100)/100){
