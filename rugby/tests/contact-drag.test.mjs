@@ -28,7 +28,11 @@ for(const moved of newPosition){
 assert.equal(objects.find(o=>o.id==='sausage').x,450);
 const grip=contactHandlePoint(frame,marker,g);
 assert(grip.x>20&&grip.x<880&&grip.y>20&&grip.y<520);
-assert(Math.hypot(grip.x-450,grip.y-250)>95);
+assert(Math.hypot(grip.x-450,grip.y-250)>60&&Math.hypot(grip.x-450,grip.y-250)<90,
+ 'Compact contact grip should not be a long tether');
+const clutter={objects:objects.map(o=>o.id==='sausage'?{...o,x:600,y:400}:o)};
+assert.deepEqual(contactHandlePoint(clutter,marker,g),grip,
+ 'Handle must not flip or rotate when nearby equipment moves');
 const bare={id:'tackle',type:'tackle',x:300,y:100,rot:0,members:[]};
 assert.deepEqual(contactDragIds({objects:[bare]},bare),['tackle']);
 const studio=readFileSync(new URL('../js/app.js',import.meta.url),'utf8');
