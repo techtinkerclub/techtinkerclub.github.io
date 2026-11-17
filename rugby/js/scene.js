@@ -3,7 +3,7 @@ import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,symbolFactors} from './symbol-scale.js?v=0.12.15';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.12.10';
-import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.14';
+import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.16';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.9.0';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.12.13';
