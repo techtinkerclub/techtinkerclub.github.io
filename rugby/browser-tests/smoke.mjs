@@ -37,7 +37,7 @@ try {
  assert.equal(await page.locator('#branchChoice').inputValue(),'a');
  await page.locator('#play').click();
  // Verify the settings and actual video creation in a headless Chromium browser.
- await page.locator('#video').evaluate(el=>el.closest('details').open=true);
+ await page.locator('#playerMovieMode').evaluate(el=>{for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true});
  await page.locator('#playerMovieMode').selectOption('single');
  await page.locator('#playerMovieQuality').selectOption('720');
  await page.locator('#playerMovieBranches').selectOption('all');
