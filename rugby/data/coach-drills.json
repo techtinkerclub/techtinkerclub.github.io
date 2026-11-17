@@ -10,13 +10,13 @@
       "category": "Contact",
       "length": 10,
       "width": 8,
-      "objective": "",
-      "safety": "",
+      "objective": "Track a moving tackle donut, get balanced before contact, and finish a controlled tackle. The aim is good feet and a safe wrap, not a big hit.",
+      "safety": "U10 supervised tackle practice. Use a properly padded donut and check the surface, space and equipment first. Start with slow, predictable rolls and only increase the challenge when each player can control their approach. Keep the waiting players and second coach outside the rolling/contact lane. Stop immediately for head-first contact, poor head position, loss of balance or an uncontrolled dive. Adults supervise and roll/reset the equipment; they are not the tackle target. No player-on-player contact or ruck follows this drill. Follow current RFU age-grade and club tackle guidance.",
       "frames": [
         {
           "name": "Set up",
           "seconds": 0,
-          "notes": "",
+          "notes": "Coach and donut at the release point. D1 leads the line; D2 and D3 wait behind the cones. The second coach watches from outside the lane. Check everyone is ready before starting.",
           "objects": [
             {
               "id": "mwjrpei00y7600",
@@ -98,7 +98,7 @@
         {
           "name": "Chase",
           "seconds": 1,
-          "notes": "",
+          "notes": "CHASE: D1 moves up towards the middle cone as the queue closes the gap behind. The donut stays still for now.",
           "objects": [
             {
               "id": "mwjrpei00y7600",
@@ -204,7 +204,7 @@
         {
           "name": "Chill",
           "seconds": 0.5,
-          "notes": "",
+          "notes": "CHILL: D1 settles into a low, balanced ready position with eyes on the donut. Short steps and control before the roll begins.",
           "objects": [
             {
               "id": "mwjrpei00y7600",
@@ -306,7 +306,7 @@
         {
           "name": "Intercept rolling donut",
           "seconds": 1.3,
-          "notes": "Track the moving pad and arrive at its trailing quarter under coach control.",
+          "notes": "KILL: the coach rolls the donut diagonally. D1 tracks it, adjusts the approach and makes a controlled shoulder-and-arms wrap, with the head safely to the side. Stop the roll without diving.",
           "objects": [
             {
               "id": "mwjrpei00y7600",
@@ -412,7 +412,7 @@
         {
           "name": "Donut stopped",
           "seconds": 1,
-          "notes": "Release the pad and reset. No player ruck is implied.",
+          "notes": "RESET: release the donut, regain balance and clear the contact area. Other players stay behind the cones.",
           "objects": [
             {
               "id": "mwjrpei00y7600",
@@ -511,9 +511,9 @@
           "paths": {}
         },
         {
-          "name": "Step 5",
+          "name": "Return and rotate",
           "seconds": 2,
-          "notes": "",
+          "notes": "RETURN: D1 loops back outside the working lane while the second coach helps get the donut back to its start. D2 becomes the next tackler once the lane is clear.",
           "objects": [
             {
               "id": "mwjrpei00y7600",
@@ -674,20 +674,31 @@
       "attackDirection": "down",
       "showAttack": true,
       "boundary": "flags",
-      "players": "",
-      "equipment": "",
-      "instructions": "",
-      "coaching": "",
-      "regression": "",
-      "progression": "",
-      "questions": "",
-      "notes": "",
+      "players": "3 players in a queue (one working, two waiting); 2 coaches shown.",
+      "equipment": "1 tackle donut, 3 cones, and a clear 10 × 8 m working area.",
+      "instructions": "Set up the players in a line behind the two back cones. The first player moves towards the middle cone on the CHASE call, then settles into a ready position on CHILL. Once the player is balanced and watching, the coach sends the donut on a slow, predictable diagonal roll. The player tracks it, adjusts their feet, makes a controlled tackle and stops the roll. On RESET, release the pad and get up. On RETURN, loop back outside the working lane while the coaches recover the donut; the next player moves to the front. One player goes at a time.",
+      "coaching": "CHASE — eyes on the donut; close the distance without sprinting blindly.\nCHILL — shorten the steps, keep the feet moving and get into a balanced, low position with eyes up.\nKILL — meet the moving pad under control, keep the head safely to the side, make shoulder contact and wrap with the arms. Don't dive or lead with the head.\nRESET — release, regain your feet and clear the lane.\nCoach one thing at a time. If the approach is messy, slow the roll down.",
+      "regression": "Start with the donut stationary, or roll it very gently over a short distance. Bring the player closer and practise getting into position and wrapping before adding a moving target.",
+      "progression": "Vary which side the donut travels towards, or change the roll angle between turns. Have the tackler read the line and adjust their feet rather than guessing. Keep the roll slow enough for a safe tackle; only add speed when technique stays consistent.",
+      "questions": "When did you need to slow your feet? Where were you looking as the donut moved? Did you get close enough to wrap, or reach and dive? Where was your head at contact? Were you in control when you released?",
+      "notes": "The animation shows three players taking turns and two coaches, with one coach working the donut and the other observing/resetting from the side. CHASE–CHILL–KILL–RESET–RETURN are the on-pitch cues. The step timings are for the animation, not prescribed running speeds. Pause between turns for a quick correction; keep the other players behind the cones.",
       "provenance": "Coach-created / imported drill",
       "review": "Coach review required",
       "ageMin": 10,
       "ageMax": 10,
       "minutes": 8,
-      "links": [],
+      "links": [
+        {
+          "label": "World Rugby – Tackle Ready",
+          "kind": "Law / safety",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready"
+        },
+        {
+          "label": "RFU – Tackle Safe learning",
+          "kind": "Law / safety",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000300587-how-do-i-find-and-book-the-tackle-safe-elearning-"
+        }
+      ],
       "savedAt": "2026-11-17T12:09:20.381Z"
     }
   ]
