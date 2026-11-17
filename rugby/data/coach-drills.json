@@ -674,7 +674,7 @@
       "attackDirection": "down",
       "showAttack": true,
       "boundary": "flags",
-      "players": "3 players in a queue (one working, two waiting); 2 coaches shown.",
+      "players": "3 players in a queue (one working, two waiting); 2 coaches.",
       "equipment": "1 tackle donut, 3 cones, and a clear 10 × 8 m working area.",
       "instructions": "Set up the players in a line behind the two back cones. The first player moves towards the middle cone on the CHASE call, then settles into a ready position on CHILL. Once the player is balanced and watching, the coach sends the donut on a slow, predictable diagonal roll. The player tracks it, adjusts their feet, makes a controlled tackle and stops the roll. On RESET, release the pad and get up. On RETURN, loop back outside the working lane while the coaches recover the donut; the next player moves to the front. One player goes at a time.",
       "coaching": "CHASE — eyes on the donut; close the distance without sprinting blindly.\nCHILL — shorten the steps, keep the feet moving and get into a balanced, low position with eyes up.\nKILL — meet the moving pad under control, keep the head safely to the side, make shoulder contact and wrap with the arms. Don't dive or lead with the head.\nRESET — release, regain your feet and clear the lane.\nCoach one thing at a time. If the approach is messy, slow the roll down.",
@@ -704,7 +704,7 @@
           "kind": "Law / safety"
         }
       ],
-      "savedAt": "2026-11-17T12:53:12.033Z"
+      "savedAt": "2026-11-17T12:54:43.638Z"
     },
     {
       "version": 1,
