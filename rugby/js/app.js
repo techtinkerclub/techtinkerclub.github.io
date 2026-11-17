@@ -534,7 +534,9 @@ function updateContactTools(){
     $('contactMembers').innerHTML=players.map(p=>'<label><input type="checkbox" data-contact-player="'+esc(p.id)+'" '+((ids.size?ids.has(p.id):padMode?suggested.has(p.id):near.some(x=>x.id===p.id))?'checked':'')+'> '+esc(objectName(p))+'</label>').join('');
   }
  }
- $('contactInfo').textContent=(breakdown?o.label||PHASES[o.breakdown.phase]:contactTitle(o.type))+' · '+(o.members?.length||0)+' linked players'+(padMode?' · pad practice, no tackle':'');
+ $('contactInfo').textContent=o.type==='ruck'&&!o.breakdown&&f().objects.some(isGroundPad)
+  ?'This ruck is not linked to a pad. Choose Use ground pad before arranging; otherwise the old ruck preset uses a loose rugby ball.'
+  :(breakdown?o.label||PHASES[o.breakdown.phase]:contactTitle(o.type))+' · '+(o.members?.length||0)+' linked players'+(padMode?' · pad practice, no tackle':'');
  $('arrangeContact').textContent=padMode?'Link players · keep positions':'Arrange players';
  $('continueBreakdown').textContent=padMode?'Open sequence steps':'Open breakdown sequence';
  $('currentFormationEdit').querySelector('summary').textContent=padMode?'Players in this contest':'Edit current formation';
@@ -572,11 +574,16 @@ $('startPadRuck').onclick=()=>{
  })[0];
  if(!pad){note('Add a sausage bag on the pitch first.');return}
  const arranged=!!o.members?.length;
+ const current=g.toView(o.x,o.y),desired=g.toView(pad.x,pad.y);
+ for(const moved of groupTranslate(groupSnapshot(f(),[o.id,...(o.members||[]).map(m=>m.id)],g),desired.x-current.x,desired.y-current.y,g)){
+  const target=f().objects.find(p=>p.id===moved.id);
+  if(target)Object.assign(target,moved);
+ }
  o.breakdown={phase:arranged?'ruck':'pad',mode:'pad',padId:pad.id,arrivalSide:'attack'};
- if(!arranged)Object.assign(o,{x:pad.x,y:pad.y,rot:pad.rot});
+ if(!arranged)o.rot=pad.rot;
  o.label=arranged?'Ruck formed · pad drill':PHASES.pad;
- changed();refresh();openInspector('Object',false);
- note(arranged?'Linked this existing ruck to the ground pad. Existing players remain in place.':'Ground pad linked. Choose players in Object, then continue in Step; no tackle required.');
+ changed();memberSignature='';refresh();openInspector('Object',false);
+ note(arranged?'Linked and moved the existing ruck formation over the ground pad. Ball left alone.':'Ground pad linked. Choose players in Object, then continue in Step; no tackle required.');
 };
 function arrangeMarker(o,explicit=null){if(f().guide&&o.id===f().guide.id+'-formation'){note('This is a guided formation. Move players or use the next guided stage.');return false}const result=arrangeContact(f(),o,geometry(),drill.frames[idx-1],explicit,drill.ageMin===10&&drill.ageMax===10);note(result.message);return result.ok}
 function selectedContactIds(){return $('tackleCarrier')?[$('tackleCarrier').value,$('primaryTackler').value,$('additionalTackler').value].filter(Boolean):[...$('contactMembers').querySelectorAll('input:checked')].map(x=>x.dataset.contactPlayer)}
