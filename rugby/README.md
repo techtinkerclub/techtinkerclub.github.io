@@ -66,7 +66,7 @@ Run node --test rugby/tests/*.test.mjs from the repository root with Node 22, th
 
 Check current RFU age-grade contact rules and safeguarding guidance before use. Schematics and validations are not independent safety approval.
 
-## Working from a phone or tablet (mobile workspace v0.1.1)
+## Working from a phone or tablet (mobile workspace v0.1.2)
 
 Both Classic Studio and Coach Edition have a touch-first layout at widths up to 1100px. No features are deleted: the existing pitch, palette, inspector, branching controls and timeline are the same shared components.
 
