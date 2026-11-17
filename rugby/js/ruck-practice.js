@@ -16,10 +16,6 @@ export function linkRuckPlayersInPlace(frame,marker,ids,u10=false){
  if(!members.length)return {ok:false,message:'Choose at least one player to link to this ruck.'};
  if(u10&&(a.length>1||d.length>1))return {ok:false,message:'U10: select no more than one arriving player from each team.'};
  if(members.length>16)return {ok:false,message:'Too many players in this contact formation.'};
- if(marker.breakdown.phase==='support'&&a.length&&d.length===0&&marker.breakdown.arrivalSide==='defence'||
-    marker.breakdown.phase==='support'&&d.length&&a.length===0&&marker.breakdown.arrivalSide==='attack'){
-  // An intentional new manual choice can change which side arrives first.
- }
  const contested=!!a.length&&!!d.length,oldPhase=marker.breakdown.phase;
  const phase=contested?['contest','secured'].includes(oldPhase)?oldPhase:'ruck':'support';
  const first=contested?marker.breakdown.arrivalSide||'attack':a.length?'attack':'defence';
@@ -47,4 +43,25 @@ export function nudgeRuckPlayer(frame,marker,id,g,dx,dy,metres=.15){
  const p=g.fromView(x,y);
  player.x=p.x;player.y=p.y;
  return true;
+}
+
+// An intentional preset only: this is NOT called by Next stage. Never use
+// the rugby ball as the centre of a contact-pad training exercise.
+export function placeRuckPlayersAtPad(frame,marker,ids,g,u10=false){
+ const checked=linkRuckPlayersInPlace(frame,marker,ids,u10);
+ if(!checked.ok)return checked;
+ const pad=frame.objects.find(o=>o.id===marker.breakdown.padId);
+ const center=g.toView(pad.x,pad.y),scale=Number.isFinite(g.scale)?g.scale*.45/30:1;
+ const a=(Number(marker.rot||0)+Number(g.rotation||0))*Math.PI/180,c=Math.cos(a),s=Math.sin(a);
+ for(const member of marker.members){
+  const player=frame.objects.find(o=>o.id===member.id),who=side(player);
+  if(!player||!who)continue;
+  // Player icons partially overlap the grounded pad (as viewed from above).
+  const forward=who==='attack'?1:-1,offset=20*scale;
+  const px=center.x-forward*offset*s,py=center.y+forward*offset*c;
+  const x=Math.max(g.margin+8,Math.min(g.margin+g.fw-8,px));
+  const y=Math.max(g.margin+8,Math.min(g.margin+g.fh-8,py));
+  Object.assign(player,g.fromView(x,y),{rot:((Number(marker.rot||0)+(who==='attack'?0:180))%360+360)%360});
+ }
+ return {ok:true,message:'Players positioned around the '+padTitle(pad)+'. Ball and other equipment left alone.',count:checked.count};
 }
