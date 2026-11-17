@@ -1366,7 +1366,10 @@ $('play').onclick=()=>{
  if(playing){stop();return}
  if(duration()<=0){note('Add a second step to animate the drill.');return}
  if(preview===null&&idx===0)decisionResolved=false;
- let base=preview??at(idx);
+ // A branched drill must be watched from the shared run to understand the
+ // decision. Clicking Play after editing a step starts at the beginning;
+ // continuing after selecting A/B is handled by the explicit preview time.
+ let base=preview??(hasOutcomes(drill)?0:at(idx));
  if(base>=duration()-.01){base=0;decisionResolved=false}
  preview=base;
  const fork=hasOutcomes(drill)?decisionTime(drill):null;
@@ -1530,7 +1533,27 @@ $('finishGame').onclick=()=>{if(!canEditObjects()||!f().guide)return;try{const n
 
 
 $('decisionToggle').onclick=()=>{trainingPick=null;showDecisions=!showDecisions;$('decisionToggle').classList.toggle('selected',showDecisions);$('decisionToggle').setAttribute('aria-pressed',String(showDecisions));render();inspector()};
-function decisionInspector(o){const d=o.decision=decisionData(o.decision),panel=$('objectPanel');panel.innerHTML='<div class="decision-inspector"><h3>Decision point</h3>'+
+function decisionInspector(o){
+ const panel=$('objectPanel');
+ if(hasOutcomes(drill)){
+  const branch=branchInfo(drill);
+  const own=drill.frames[branch.fork]?.objects.some(v=>v.id===o.id&&o.type==='decision');
+  if(own){
+   panel.innerHTML='<div class="decision-inspector"><h3>Playable decision</h3>'+
+    '<div class="decision-live-help"><strong>'+esc(branch.question)+'</strong><p>The player reaches this diamond, playback pauses, then you choose A or B. Each option has a real editable movement sequence.</p></div>'+
+    '<div class="decision-quick-actions"><button type="button" id="dpOpenA">Edit A · '+esc(branch.choices[0].label)+'</button>'+
+    '<button type="button" id="dpOpenB">Edit B · '+esc(branch.choices[1].label)+'</button>'+
+    '<button type="button" id="dpSeeOutcomes">Compare movement paths</button>'+
+    '<button type="button" id="dpEditOutcomes">Rename A / B</button></div></div>';
+   $('dpOpenA').onclick=()=>$('outcomeA').click();
+   $('dpOpenB').onclick=()=>$('outcomeB').click();
+   $('dpSeeOutcomes').onclick=()=>compareOutcomePaths();
+   $('dpEditOutcomes').onclick=()=>openOutcomeDialog(true);
+   return;
+  }
+ }
+ const d=o.decision=decisionData(o.decision);
+ panel.innerHTML='<div class="decision-inspector"><h3>Decision point</h3>'+
  (hasOutcomes(drill)
   ?'<div class="decision-live-help"><strong>Playable outcome decision</strong><p>Use the A / B buttons in the sequence bar to edit each real animation.</p><button type="button" id="dpSeeOutcomes">Compare A + B</button></div>'
   :'<div class="decision-live-help"><strong>Drawing only — not an animated choice</strong><p>The yellow arrows are just sketches. Convert this diamond to create A/B steps that the players and ball actually follow, with playback pausing at this point.</p><button type="button" id="dpMakePlayable">◆ Turn this drawing into playable A + B</button></div>')+
