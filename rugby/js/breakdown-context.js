@@ -1,5 +1,5 @@
 // Navigation is independent of object selection. Never resurrect a missing marker or modify data.
-import {validPhase,nextPhase} from './breakdown.js?v=0.12.32';
+import {validPhase,nextPhase} from './breakdown.js?v=0.12.33';
 export function breakdownContext(frames,index,selected=null,preferred=null){
  const markers=(i)=>frames[i]?.objects.filter(o=>validPhase(o.breakdown?.phase))||[];
  const current=markers(index);
