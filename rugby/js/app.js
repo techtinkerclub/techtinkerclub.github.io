@@ -7,7 +7,7 @@ import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,d
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.4.9';
 import { pitchGeometry, trainingField } from './pitch.js?v=0.12.5';
-import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
+import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.19';
 import {normaliseAge,setupValues,setupAge,prepareSetup} from './setup.js?v=0.12.4';
 import { placePoint, gridStep, loadGridPrefs, saveGridPrefs } from './grid.js?v=0.4.2';
 import { wrapAngle, shortestTurn, rotationFromPointer, rotationHandle } from './rotation.js?v=0.3.3';
@@ -253,14 +253,31 @@ function duplicateSelected(){
 }
 // Removing a selected running line cancels only that step's movement. It does
 // not delete the player, and it does not rewrite later steps.
+// Keep a deliberate position correction consistent with later animation snapshots.
+// 'onward' translates later destinations AND their paths without altering run lengths.
+function rippleFrom(id,oldPosition){
+ const scope=$('moveScope').value;
+ if(scope==='here'||!oldPosition||idx>=drill.frames.length-1)return null;
+ const o=f().objects.find(p=>p.id===id);
+ if(!o)return null;
+ if(!canPropagate(f(),o)||scope==='entire'&&!canEntire(o))return {ok:false,count:0,stop:null,reason:'Linked action or equipment placement; later steps were not changed.'};
+ return propagatePosition(drill.frames,idx,id,oldPosition,scope);
+}
+function rippleFeedback(result){
+ if(!result)return ' Only this step was changed.';
+ if(!result.ok)return ' Later steps unchanged: '+result.reason;
+ if(result.stop!==null)return ' Updated '+result.count+' following step'+(result.count===1?'':'s')+', but stopped before step '+(result.stop+1)+' ('+result.reason+'). Review that transition.';
+ return result.count?' Updated '+result.count+' following step'+(result.count===1?'':'s')+' with matching run routes.':' No later positions needed changing.';
+}
 function cancelSelectedMovement(){
  if(!canEditObjects())return;
  const o=activeObject();if(!o)return;
- const result=resetStepMovement(drill.frames,idx,o.id);
+ const previousPosition={x:o.x,y:o.y},result=resetStepMovement(drill.frames,idx,o.id);
  if(!result.ok){note(result.message);return}
  drill.frames=result.frames;selectedPathId=null;pendingInsert=null;
+ const ripple=rippleFrom(o.id,previousPosition);
  changed();refresh();openInspector('Object',false);focusPitch();
- note((o.label||types[o.type][0])+' returned to the previous step position. Movement removed from this step; later steps unchanged. Undo restores it.');
+ note((o.label||types[o.type][0])+' returned to the previous step position.'+rippleFeedback(ripple)+' Undo restores the edit.');
 }
 function deleteObject(scope='here'){
  if(!canEditObjects())return;
@@ -382,7 +399,7 @@ function addRoutePoint(e){
  if(routeClickCount===0)route.points=[];
  else if(route.points.length<64)route.points.push({x:o.x,y:o.y});
  else {note('Maximum of 64 intermediate points. Finish this route.');return}
- o.x=q.x;o.y=q.y;routeClickCount++;if(idx)releaseMovedPlayer(drill.frames[idx-1],f(),o.id,geometry());changed();render();tracks();
+ const oldPosition={x:o.x,y:o.y};o.x=q.x;o.y=q.y;routeClickCount++;if(idx)releaseMovedPlayer(drill.frames[idx-1],f(),o.id,geometry());const ripple=rippleFrom(o.id,oldPosition);changed();render();tracks();if(ripple&&(!ripple.ok||ripple.stop!==null))note('Path updated.'+rippleFeedback(ripple));
 }
 $('drawRouteSide').onclick=toggleRoute;
 $('addPointSide').onclick=()=>insertPathPoint();
@@ -612,8 +629,8 @@ pitch.addEventListener('pointerdown',e=>{
  const o=f().objects.find(x=>x.id===selected);if(!o)return;
  render();inspector();openInspector('Object',false);
  // Clicking a carried ball still selects it for passing; dragging it moves its carrier.
- const owner=o.type==='ball'||isShield(o)?carrier(f(),o):null,moving=owner||o,p=point(e),scope=$('moveScope').value;
- if(scope!=='here'&&(!canPropagate(f(),moving)||scope==='entire'&&!canEntire(moving))){note('Choose Current step only for this object or contact formation.');e.preventDefault();return}
+ const owner=o.type==='ball'||isShield(o)?carrier(f(),o):null,moving=owner||o,p=point(e);let scope=$('moveScope').value;
+ if(scope!=='here'&&(!canPropagate(f(),moving)||scope==='entire'&&!canEntire(moving))){scope='here';note('Linked action: this edit applies to the current step only. Review the following transition.');}
  drag={id:moving.id,scope,kind:o.type==='decision'&&o.decision?.anchor!==null&&decisionRoute(f(),drill.frames[idx-1],o.decision?.playerId,geometry())?'decision-anchor':'move',pointerId:e.pointerId,dx:moving.x-p.x,dy:moving.y-p.y,moved:false,contact:null,origin:viewPoint(e),originalPosition:{x:moving.x,y:moving.y}};
  if(owner)note((isShield(o)?'Shield':'Ball')+' attached to '+(owner.label||'player')+' · drag to move both.');
  pitch.setPointerCapture(e.pointerId);
@@ -678,7 +695,7 @@ function finishDrag(e){
  if(e.type==='pointerup'&&gesture.kind==='move'&&gesture.moved&&marker&&gesture.scope&&gesture.scope!=='here'){
   const result=propagatePosition(drill.frames,idx,marker.id,gesture.originalPosition,gesture.scope);
   if(!result.ok){Object.assign(marker,gesture.originalPosition);pendingInsert=null;changed();render();inspector();tracks();note(result.reason);return}
-  pendingInsert=null;changed();render();inspector();tracks();note('Position updated in '+(1+result.count)+' step'+(result.count?'s':'')+(result.stop!==null?' · stopped before step '+(result.stop+1)+': '+result.reason+'.':'.')+' Undo reverses the whole edit.');return;
+  pendingInsert=null;changed();render();inspector();tracks();note('Position updated.'+rippleFeedback(result)+' Undo reverses the whole edit.');return;
  }
  if(pendingInsert?.id===gesture.id&&pendingInsert.index===idx&&marker&&(gesture.moved||attached)){
   const result=syncInsertedCopies(drill.frames,pendingInsert.indices,marker,pendingInsert.origin,geometry());pendingInsert.origin={x:marker.x,y:marker.y};if(attached||marker.ownerId)pendingInsert=null;if(result.skipped)note('Attached here; '+result.skipped+' copies skipped because the holder is unavailable.');
@@ -750,7 +767,7 @@ async function saveToGitHub(){
  finally{githubSaving=false;syncSaveState()}
 }
 $('save').onclick=saveToGitHub;
-function confirmLeave(){if(githubSaving){note('Wait for the active GitHub save to finish.');return false}return !(dirty||setupPending)||confirm('You have unsaved or unapplied changes. Continue without saving?')}$('new').onclick=()=>{if(!confirmLeave())return;drill=enrich(blank());dirty=false;selected=null;$('moveScope').value='here';resetHistory();choose(0);openInspector('Drill',true)};function libraryItems(){const remote=new Set(githubDrills.map(x=>x.id));return [...githubDrills.map(x=>({d:enrich(clone(x)),mine:true,source:'github'})),...stagedImports.map(x=>({d:enrich(clone(x)),mine:true,source:'import'})),...stored().filter(x=>!remote.has(x.id)).map(x=>({d:enrich(x),mine:true,source:'local'})),...SEEDS.map(d=>({d,mine:false,source:'seed'}))]}function mini(d){
+function confirmLeave(){if(githubSaving){note('Wait for the active GitHub save to finish.');return false}return !(dirty||setupPending)||confirm('You have unsaved or unapplied changes. Continue without saving?')}$('new').onclick=()=>{if(!confirmLeave())return;drill=enrich(blank());dirty=false;selected=null;$('moveScope').value='onward';resetHistory();choose(0);openInspector('Drill',true)};function libraryItems(){const remote=new Set(githubDrills.map(x=>x.id));return [...githubDrills.map(x=>({d:enrich(clone(x)),mine:true,source:'github'})),...stagedImports.map(x=>({d:enrich(clone(x)),mine:true,source:'import'})),...stored().filter(x=>!remote.has(x.id)).map(x=>({d:enrich(x),mine:true,source:'local'})),...SEEDS.map(d=>({d,mine:false,source:'seed'}))]}function mini(d){
  const objects=d.frames[0]?frameObjects(d.frames[0],pitchGeometry(d.length,d.width,'up')):[];
  if(!objects.length)return '<svg class="mini" viewBox="0 0 250 90"><text x="125" y="48" fill="#d4e6c9" font-size="11" text-anchor="middle">Coaching card · diagram not yet built</text></svg>';
  const g=pitchGeometry(d.length,d.width,'up'),m=g.margin;
