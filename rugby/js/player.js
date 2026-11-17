@@ -2,8 +2,8 @@ import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,is
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.6';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=1';
-import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=1';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.0';
+import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=2';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.8';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.6';
