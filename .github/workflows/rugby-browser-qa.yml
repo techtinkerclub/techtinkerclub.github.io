@@ -1,0 +1,41 @@
+name: Rugby Coaching Studio Browser QA
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'rugby/**'
+      - '.github/workflows/rugby-browser-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rugby-browser-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save --ignore-scripts playwright
+          npx playwright install chromium --with-deps
+      - name: Serve the website locally
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/rugby-http.log 2>&1 &
+          for i in $(seq 1 25); do
+            if curl -fsS http://127.0.0.1:8765/rugby/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/rugby-http.log
+          exit 1
+      - name: Play decision drill and export video in Chromium
+        run: node rugby/browser-tests/smoke.mjs
