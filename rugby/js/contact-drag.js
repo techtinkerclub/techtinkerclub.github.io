@@ -25,7 +25,7 @@ export function contactDragIds(frame,marker){
 // that made the grip apparently rotate/jump during a drag.
 export function contactHandlePoint(_frame,marker,g){
  const center=g.toView(marker.x,marker.y),margin=g.margin||0;
- const x=Math.max(margin+25,Math.min(margin+g.fw-25,center.x-77));
- const y=Math.max(margin+40,Math.min(margin+g.fh-30,center.y-58));
+ const x=Math.max(margin+49,Math.min(margin+g.fw-49,center.x-62));
+ const y=Math.max(margin+50,Math.min(margin+g.fh-30,center.y-44));
  return {x,y};
 }
