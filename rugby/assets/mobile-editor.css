@@ -72,7 +72,7 @@
  body.mobile-workspace .scenes .scene{scroll-snap-align:start}
  body.mobile-workspace .timing-span{min-height:22px;top:0}
  body.mobile-workspace .timing-handle{min-width:20px;min-height:26px}
- body.mobile-workspace-nav{
+ body.mobile-workspace .mobile-workspace-nav{
   display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;
   align-items:stretch;position:relative;z-index:35;
   width:100%;height:calc(var(--mobile-nav-height,56px) + env(safe-area-inset-bottom));
