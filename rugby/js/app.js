@@ -1,9 +1,9 @@
-import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.12.10';
+import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews} from './branching.js?v=1';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition} from './symbol-scale.js?v=0.12.27';
-import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.12.10';
+import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.13.4';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.4.9';
@@ -128,7 +128,7 @@ function render(){
  updateSelectionTools(active);$('trails').setAttribute('aria-pressed',String(showPaths));updateRouteTools();updateGroupTools();updateBallTools();updateCarryControls();updateShieldTools();updateExtendTools();updateObjectPicker();updateContactTools();updateBreakdownDock();updateGameDock();$('editCurrent').hidden=preview===null;
  $('sceneLabel').textContent=preview===null?`Step ${idx+1} of ${drill.frames.length} · ${f().name}`:drill.frames[locate(preview).i].name;$('narration').textContent=preview===null?f().notes:(drill.frames[locate(preview).i]?.notes||'');$('narration').title=$('narration').textContent;$('timeLabel').textContent=`${(preview??at(idx)).toFixed(1)} / ${duration().toFixed(1)} s`;$('scrub').max=Math.max(.01,duration());$('scrub').value=preview??at(idx)}
 function pitchMarkingInspector(o,disabled){
- const s=diagramSettings(o.type,o.diagram,drill.width),panel=document.createElement('div'),rect=o.type==='zoneRect',area=rect||o.type==='zoneCircle',dim=(o.type==='zoneCircle'||o.type==='spotMarker')?'Diameter (m)':rect||o.type==='offsideLine'?'Across pitch (m)':'Length (m)';
+ const s=diagramSettings(o.type,o.diagram,drill.width),panel=document.createElement('div'),rect=o.type==='zoneRect',area=rect||o.type==='zoneCircle',dim=(o.type==='zoneCircle'||o.type==='spotMarker')?'Diameter (m)':rect||o.type==='offsideLine'||o.type==='fieldLine'?'Line length (m)':'Length (m)';
  panel.className='section marking-inspector';
  panel.innerHTML='<h3>Pitch marking · measured in metres</h3>'+
  (o.type==='offsideLine'?'<small><strong>Manual coaching reference only.</strong> Use the separate Breakdown offside guides option for calculated examples. This line does not certify the legal offside position.</small>':'')+
@@ -328,8 +328,8 @@ function refresh(){closeObjectMenu();renderOutcomeBar();const fr=f();$('stageTit
  if(isDiagramObject(n)){n.diagram=diagramSettings(type,{},drill.width);n.label=''}if(f().objects.length>=200){note('Maximum objects in this step reached.');return}f().objects.push(n);selected=n.id;
  const result=fillMissing(drill.frames,idx,n,insertable(n)?$('insertScope').value:'here',geometry());
  if(result.added.length)pendingInsert={id:n.id,index:idx,indices:result.added,origin:{x:n.x,y:n.y}};
- changed();refresh();openInspector('Object',false);if(result.added.length||result.skipped)note(insertionMessage(n,result));};let groups=[['Players',['attacker','defender','neutral','coach']],['Ball & markers',['ball','cone','flag']],['Contact equipment',['shieldItem','bag','sausage','donut']],['Agility equipment',['ladder']],['Annotations',['label']],['Pitch markings',['offsideLine','directionArrow','measureLine','zoneCircle','zoneRect','spotMarker']]];
-const paletteNames={tackle:'Tackle',ruck:'Ruck',maul:'Maul',scrum:'Scrum',label:'Text label',decision:'Standalone decision',shieldItem:'Contact shield',sausage:'Sausage bag',donut:'Tackle donut',offsideLine:'Offside reference',directionArrow:'Direction arrow',measureLine:'Distance ruler',zoneCircle:'Circle / zone',zoneRect:'Square / rectangle',spotMarker:'Spot / marker'};
+ changed();refresh();openInspector('Object',false);if(result.added.length||result.skipped)note(insertionMessage(n,result));};let groups=[['Players',['attacker','defender','neutral','coach']],['Ball & markers',['ball','cone','flag']],['Contact equipment',['shieldItem','bag','sausage','donut']],['Agility equipment',['ladder']],['Annotations',['label']],['Pitch markings',['fieldLine','offsideLine','directionArrow','measureLine','zoneCircle','zoneRect','spotMarker']]];
+const paletteNames={tackle:'Tackle',ruck:'Ruck',maul:'Maul',scrum:'Scrum',label:'Text label',decision:'Standalone decision',shieldItem:'Contact shield',sausage:'Sausage bag',donut:'Tackle donut',offsideLine:'Offside reference',fieldLine:'Practice line · not offside',directionArrow:'Direction arrow',measureLine:'Distance ruler',zoneCircle:'Circle / zone',zoneRect:'Square / rectangle',spotMarker:'Spot / marker'};
 const paletteTiles=ts=>ts.map(t=>`<button data-type="${t}" title="Add ${esc(types[t][0])}"><svg viewBox="-32 -32 64 64" aria-hidden="true">${shape(t)}</svg>${esc(paletteNames[t]||types[t][0])}</button>`).join('');
 $('palette').innerHTML=groups.map(([name,ts])=>`<div class="group"><h4>${esc(name)}</h4><div class="palette">${paletteTiles(ts)}</div></div>`).join('');
 $('rugbyPalette').innerHTML=paletteTiles(['tackle','ruck']);
