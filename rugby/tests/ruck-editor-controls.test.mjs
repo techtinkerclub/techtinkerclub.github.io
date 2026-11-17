@@ -52,7 +52,7 @@ assert.match(app,/releaseFormationPlayer/);
 assert.match(app,/hidePlayerNameAll/);
 assert.match(app,/clearContestOutcome\(f\(\),drill\.frames\[idx-1\],marker\)/);
 const page=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.match(page,/ANIMATED LIBRARY 0\.12\.33/);
+assert.match(page,/ANIMATED LIBRARY 0\.13\.0/);
 assert.match(page,/id="showContestLabel"/);
 assert.match(page,/id="clearContestResult"/);
 console.log('Editable formation poses, hide winner caption, clear outcome and restore loser, preserve path, exported state: passed.');
