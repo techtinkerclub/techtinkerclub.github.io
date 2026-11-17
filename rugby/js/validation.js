@@ -1,5 +1,5 @@
 // Coach's diagram checker, not a referee or contact technique validator.
-import {playbackData} from './scene.js?v=0.13.10';
+import {playbackData} from './scene.js?v=0.13.11';
 import {pitchGeometry} from './pitch.js?v=0.12.23';
 import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.12.34';
 import {posesFor} from './contact.js?v=0.12.33';
