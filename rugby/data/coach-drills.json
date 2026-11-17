@@ -422,7 +422,7 @@
               "label": "",
               "x": 654.125667947684,
               "y": 182.21394451998063,
-              "rot": 316,
+              "rot": 133,
               "donutState": "ready"
             },
             {
@@ -453,9 +453,9 @@
               "id": "mwjrwkusidvzuh",
               "type": "defender",
               "label": "D1",
-              "x": 603,
-              "y": 176.8,
-              "rot": 95,
+              "x": 450,
+              "y": 433.1,
+              "rot": 110.3801350519596,
               "playerPose": "standing",
               "posePinned": true
             },
@@ -506,120 +506,33 @@
           "paths": {
             "mwjrwkusidvzuh": {
               "mode": "smooth",
-              "points": [],
-              "follow": false
-            }
-          }
-        },
-        {
-          "name": "Roll tackle donut",
-          "seconds": 2,
-          "notes": "Roll in a straight line; keep the lane clear.",
-          "objects": [
-            {
-              "id": "mwjrpei00y7600",
-              "type": "coach",
-              "label": "Coach",
-              "x": 450,
-              "y": 75.83333333333334,
-              "rot": 180
-            },
-            {
-              "id": "mwjrun260a5sun",
-              "type": "donut",
-              "label": "",
-              "x": 466.07113829502583,
-              "y": 93.24624510523067,
-              "rot": 316,
-              "donutState": "rolling"
-            },
-            {
-              "id": "mwjrux6zwsuvb0",
-              "type": "cone",
-              "label": "",
-              "x": 450,
-              "y": 246.70000000000002,
-              "rot": 0
-            },
-            {
-              "id": "mwjrvonkw8jqbz",
-              "type": "cone",
-              "label": "",
-              "x": 399,
-              "y": 339.90000000000003,
-              "rot": 0
-            },
-            {
-              "id": "mwjrvwjw1hsxy7",
-              "type": "cone",
-              "label": "",
-              "x": 501,
-              "y": 339.90000000000003,
-              "rot": 0
-            },
-            {
-              "id": "mwjrwkusidvzuh",
-              "type": "defender",
-              "label": "D1",
-              "x": 450,
-              "y": 433.1,
-              "rot": 0,
-              "playerPose": "standing"
-            },
-            {
-              "id": "mwjrwljzuxg0if",
-              "type": "defender",
-              "label": "D2",
-              "x": 450,
-              "y": 339.90000000000003,
-              "rot": 0
-            },
-            {
-              "id": "mwjrwm60lbdvso",
-              "type": "defender",
-              "label": "D3",
-              "x": 450,
-              "y": 386.5,
-              "rot": 0
-            },
-            {
-              "id": "mwkid504zybjrr",
-              "type": "label",
-              "label": "CHASE",
-              "x": 450,
-              "y": 479.7,
-              "rot": 0,
-              "textStyle": {
-                "fontSize": 20,
-                "color": "#ffffff",
-                "background": true,
-                "backgroundColor": "#193b2a",
-                "backgroundOpacity": 80,
-                "border": true,
-                "borderColor": "#ff0000",
-                "borderWidth": 1.5
-              }
-            },
-            {
-              "id": "mwkktzgxa91gd7",
-              "type": "coach",
-              "label": "Coach",
-              "x": 705,
-              "y": 200.1,
-              "rot": 312
-            }
-          ],
-          "timing": {},
-          "paths": {
-            "mwjrwkusidvzuh": {
-              "mode": "smooth",
               "points": [
                 {
-                  "x": 654,
-                  "y": 386.5
+                  "x": 679.5,
+                  "y": 363.2
                 },
                 {
-                  "x": 552,
+                  "x": 679.5,
+                  "y": 421.45
+                },
+                {
+                  "x": 628.5,
+                  "y": 456.40000000000003
+                },
+                {
+                  "x": 526.5,
+                  "y": 479.7
+                },
+                {
+                  "x": 475.5,
+                  "y": 479.7
+                },
+                {
+                  "x": 450,
+                  "y": 468.05
+                },
+                {
+                  "x": 450,
                   "y": 456.40000000000003
                 }
               ],
@@ -645,7 +558,7 @@
       "ageMax": 10,
       "minutes": 8,
       "links": [],
-      "savedAt": "2026-11-17T11:14:32.714Z"
+      "savedAt": "2026-11-17T11:44:08.951Z"
     }
   ]
 }
