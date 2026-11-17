@@ -127,7 +127,7 @@ function formationRoutePosition(old,next,id,p,g){
  for(const marker of next.objects){
   if(!['ruck','tackle','maul','scrum'].includes(marker.type)||!next.paths?.[marker.id]?.points?.length)continue;
   const previous=findObject(old,marker.id);
-  if(!previous||previous.type!==marker.type||previous.breakdown?.phase!==marker.breakdown?.phase)continue;
+  if(!previous||previous.type!==marker.type)continue;
   const member=marker.members?.some(m=>m.id===id)&&previous.members?.some(m=>m.id===id);
   const linkedBall=to.type==='ball'&&marker.breakdown?.ballId===id&&previous.breakdown?.ballId===id&&!to.ownerId&&!from.ownerId;
   if(!member&&!linkedBall)continue;
