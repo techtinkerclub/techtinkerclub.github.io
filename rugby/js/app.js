@@ -174,6 +174,22 @@ if(o.type==='label'){
  $('textBorderWidth').onchange=e=>update('borderWidth',Number(e.target.value),true);
 }
 if(canCarry(o)){
+ if(preview===null&&o.label){
+  const hide=document.createElement('button');
+  hide.type='button';hide.id='hidePlayerNameAll';
+  hide.textContent='Hide player name in all steps';
+  hide.title='Remove this player\'s name from the pitch in every drill step; the player and formation remain intact.';
+  $('objLabel').after(hide);
+  hide.onclick=()=>{
+   const playerId=o.id;
+   for(const step of drill.frames){
+    const player=step.objects.find(item=>item.id===playerId);
+    if(player)player.label='';
+   }
+   changed();refresh();
+   note('Player label hidden throughout the drill. The player and their ruck position were not changed.');
+  };
+ }
  const visibleObjects=preview===null?frameObjects(f(),geometry()):tween(preview,geometry());
  const state=inspectedPose(visibleObjects,o.id,visiblePlayerPoses(visibleObjects));
  const {pose,formation,donut,source}=state;
