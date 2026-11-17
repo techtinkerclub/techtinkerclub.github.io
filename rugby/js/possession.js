@@ -160,6 +160,12 @@ export function tackleImpacts(old,next,g){
 export function objectPose(old,next,id,p,g,events=null){
  const pose=rawObjectPose(old,next,id,p,g),a=findObject(old,id),b=findObject(next,id);
  if(!pose||!a||!b)return pose;
+ // Apply the formation trajectory BEFORE calculating equipment attached to
+ // this player. The render loop previously applied it only after the shield
+ // had already used the player's plain linear movement, so the shield could
+ // float away during a back-and-forth contest.
+ const formationPosition=formationRoutePosition(old,next,id,p,g);
+ if(formationPosition)Object.assign(pose,formationPosition);
  const impact=(events??tackleImpacts(old,next,g)).find(e=>e.players.includes(id));
  if(!impact)return pose;
  const t=impact.time,route=next.paths?.[id];
@@ -224,8 +230,6 @@ export function transitionObjects(old,next,p,g){
   if(o.type==='ball')return ballPose(old,next,o,p,g,events);
   if(isShield(o))return shieldTransition(old,next,o,p,g,events);
   const pose=objectPose(old,next,o.id,p,g,events);
-  const groupPosition=formationRoutePosition(old,next,o.id,p,g);
-  if(groupPosition)Object.assign(pose,groupPosition);
   // A ready stance is a deliberate pause, not a pose that slides along the ground.
   const moving=prior&&travels(prior,o,next);
   if(prior&&o.playerPose==='ready'&&(prior.playerPose!=='ready'||moving&&o.posePinned===true)){
