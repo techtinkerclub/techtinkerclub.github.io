@@ -20,20 +20,12 @@ export function contactDragIds(frame,marker){
 }
 // Place a selected contact marker's drag grip outside the overlap of players,
 // balls and pads. The point is in pitch SVG coordinates.
-export function contactHandlePoint(frame,marker,g){
- const center=g.toView(marker.x,marker.y);
- const edges={left:g.margin+21,right:g.margin+g.fw-21,top:g.margin+21,bottom:g.margin+g.fh-21};
- const offsets=[[104,-83],[-104,-83],[104,83],[-104,83],[0,-115],[115,0],[-115,0],[0,115],[150,-109],[-150,-109],[150,109],[-150,109]];
- let best=null,score=-Infinity;
- for(let i=0;i<offsets.length;i++){
-  const [dx,dy]=offsets[i],x=center.x+dx,y=center.y+dy;
-  if(x<edges.left||x>edges.right||y<edges.top||y>edges.bottom)continue;
-  const clearance=Math.min(200,...frame.objects.filter(o=>o.id!==marker.id).map(o=>{
-   const v=g.toView(o.x,o.y);
-   const extent=o.type==='sausage'?64:o.type==='bag'?45:o.type==='donut'?44:o.type==='shieldItem'?35:29;
-   return Math.hypot(v.x-x,v.y-y)-extent;
-  }));
-  if(clearance-i*.75>score){score=clearance-i*.75;best={x,y}}
- }
- return best||{x:Math.max(edges.left,Math.min(edges.right,center.x+85)),y:Math.max(edges.top,Math.min(edges.bottom,center.y-85))};
+// A compact proxy with a FIXED screen direction relative to its contact
+// marker. Never choose a different side because other equipment has moved:
+// that made the grip apparently rotate/jump during a drag.
+export function contactHandlePoint(_frame,marker,g){
+ const center=g.toView(marker.x,marker.y),margin=g.margin||0;
+ const x=Math.max(margin+25,Math.min(margin+g.fw-25,center.x-77));
+ const y=Math.max(margin+40,Math.min(margin+g.fh-30,center.y-58));
+ return {x,y};
 }
