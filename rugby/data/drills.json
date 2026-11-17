@@ -28700,7 +28700,17 @@
               "end": 45
             }
           },
-          "paths": {}
+          "paths": {},
+          "teachingGuides": [
+            {
+              "kind": "mark",
+              "a": {
+                "x": 438.34285714285716,
+                "y": 255.95948051948054
+              },
+              "label": "Present close"
+            }
+          ]
         },
         {
           "name": "Clear the area · back to feet",
@@ -29023,7 +29033,17 @@
               "end": 45
             }
           },
-          "paths": {}
+          "paths": {},
+          "teachingGuides": [
+            {
+              "kind": "mark",
+              "a": {
+                "x": 459.792,
+                "y": 272.5
+              },
+              "label": "Ball available here"
+            }
+          ]
         },
         {
           "name": "A1 clear · A2 collects",
@@ -29082,7 +29102,17 @@
               "end": 95
             }
           },
-          "paths": {}
+          "paths": {},
+          "teachingGuides": [
+            {
+              "kind": "mark",
+              "a": {
+                "x": 459.792,
+                "y": 272.5
+              },
+              "label": "Presented here"
+            }
+          ]
         }
       ]
     },
@@ -29109,7 +29139,7 @@
       "regression": "Use a passer, receiver and cones for the mark and retreat line.",
       "progression": "Repeat from the other touchline with teams changing roles.",
       "questions": "Who restarts? Where is the 5 m mark? Where must blue wait? When may anyone run?",
-      "notes": "The free-pass mark is now 5 m inside the right touchline on the 15 m-wide practice pitch. Blue defenders are shown at least 7 m back.",
+      "notes": "The distance guides on steps 3–4 are calculated from the diagram geometry: 5 m in from the touchline, plus a 7 m defensive retreat. Player positions are schematic, but the restart mark and dashed retreat line are measured. The free pass must be made before anyone runs.",
       "links": [
         {
           "label": "RFU age-grade rules of play",
@@ -29395,7 +29425,53 @@
               "end": 1
             }
           },
-          "paths": {}
+          "paths": {},
+          "teachingGuides": [
+            {
+              "kind": "distance",
+              "a": {
+                "x": 858,
+                "y": 270
+              },
+              "b": {
+                "x": 586,
+                "y": 270
+              },
+              "label": "In from touch"
+            },
+            {
+              "kind": "mark",
+              "a": {
+                "x": 586,
+                "y": 270
+              },
+              "label": "Free-pass mark"
+            },
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 433.1
+              },
+              "b": {
+                "x": 858,
+                "y": 433.1
+              },
+              "label": "Blue retreat line"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 586,
+                "y": 270
+              },
+              "b": {
+                "x": 586,
+                "y": 433.1
+              },
+              "label": "Back 7 m"
+            }
+          ]
         },
         {
           "name": "Pass backwards to restart",
@@ -29509,7 +29585,53 @@
               "end": 70
             }
           },
-          "paths": {}
+          "paths": {},
+          "teachingGuides": [
+            {
+              "kind": "distance",
+              "a": {
+                "x": 858,
+                "y": 270
+              },
+              "b": {
+                "x": 586,
+                "y": 270
+              },
+              "label": "In from touch"
+            },
+            {
+              "kind": "mark",
+              "a": {
+                "x": 586,
+                "y": 270
+              },
+              "label": "Free-pass mark"
+            },
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 433.1
+              },
+              "b": {
+                "x": 858,
+                "y": 433.1
+              },
+              "label": "Blue retreat line"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 586,
+                "y": 270
+              },
+              "b": {
+                "x": 586,
+                "y": 433.1
+              },
+              "label": "Back 7 m"
+            }
+          ]
         }
       ]
     },
@@ -56018,7 +56140,7 @@
       "regression": "Set out positions with cones and talk through the correct choice before playing the animation.",
       "progression": "Swap the roles or the direction of attack and ask children to explain the correct decision without prompting.",
       "questions": "Which team gets the free pass? Where must defenders wait? When may everyone begin to run?",
-      "notes": "The defender positions are shown behind the illustrated seven-metre line. Recheck with actual cones in training.",
+      "notes": "The marked 7 m retreat line is measured from the free-pass position. Defenders wait on their own side of that line until the pass starts play; this is an understanding exercise, not a physical restart technique lesson.",
       "links": [
         {
           "label": "RFU Regulation 15 Appendix 4 · U10 rules",
@@ -56222,7 +56344,41 @@
             }
           ],
           "paths": {},
-          "timing": {}
+          "timing": {},
+          "teachingGuides": [
+            {
+              "kind": "mark",
+              "a": {
+                "x": 420,
+                "y": 300
+              },
+              "label": "Free-pass mark"
+            },
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 136.9
+              },
+              "b": {
+                "x": 858,
+                "y": 136.9
+              },
+              "label": "Defenders wait behind"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 420,
+                "y": 300
+              },
+              "b": {
+                "x": 420,
+                "y": 136.9
+              },
+              "label": "7 m retreat"
+            }
+          ]
         },
         {
           "name": "Pass before running",
@@ -56286,7 +56442,41 @@
               "start": 10,
               "end": 75
             }
-          }
+          },
+          "teachingGuides": [
+            {
+              "kind": "mark",
+              "a": {
+                "x": 420,
+                "y": 300
+              },
+              "label": "Free-pass mark"
+            },
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 136.9
+              },
+              "b": {
+                "x": 858,
+                "y": 136.9
+              },
+              "label": "Defenders wait behind"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 420,
+                "y": 300
+              },
+              "b": {
+                "x": 420,
+                "y": 136.9
+              },
+              "label": "7 m retreat"
+            }
+          ]
         },
         {
           "name": "Play continues",
@@ -56344,7 +56534,41 @@
             }
           ],
           "paths": {},
-          "timing": {}
+          "timing": {},
+          "teachingGuides": [
+            {
+              "kind": "mark",
+              "a": {
+                "x": 420,
+                "y": 300
+              },
+              "label": "Free-pass mark"
+            },
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 136.9
+              },
+              "b": {
+                "x": 858,
+                "y": 136.9
+              },
+              "label": "Defenders wait behind"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 420,
+                "y": 300
+              },
+              "b": {
+                "x": 420,
+                "y": 136.9
+              },
+              "label": "7 m retreat"
+            }
+          ]
         }
       ]
     },
@@ -56371,7 +56595,7 @@
       "regression": "Use six cones and a stationary ball to identify roles; no physical engagement.",
       "progression": "Swap the roles or the direction of attack and ask children to explain the correct decision without prompting.",
       "questions": "How many players form the scrum? Is pushing allowed? Who feeds? What must the scrum half do with the ball?",
-      "notes": "This is a role and restart diagram, not a safe-binding or body-position lesson. Do not imitate the engagement from the screen.",
+      "notes": "Three players per side, Crouch–Bind–Set, no pushing; the putting-in scrum-half passes away. The measured 5 m guide is for the attacking backs, not the scrum-half. The graphic is not a scrum contact-technique demonstration.",
       "links": [
         {
           "label": "RFU Regulation 15 Appendix 4 · U10 rules",
@@ -56607,7 +56831,33 @@
             }
           ],
           "paths": {},
-          "timing": {}
+          "timing": {},
+          "teachingGuides": [
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 354.5
+              },
+              "b": {
+                "x": 858,
+                "y": 354.5
+              },
+              "label": "Attacking backs 5 m back"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 625,
+                "y": 238
+              },
+              "b": {
+                "x": 625,
+                "y": 354.5
+              },
+              "label": "Backs offside guide"
+            }
+          ]
         },
         {
           "name": "Feed into tunnel",
@@ -56744,7 +56994,33 @@
               "start": 15,
               "end": 80
             }
-          }
+          },
+          "teachingGuides": [
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 354.5
+              },
+              "b": {
+                "x": 858,
+                "y": 354.5
+              },
+              "label": "Attacking backs 5 m back"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 625,
+                "y": 238
+              },
+              "b": {
+                "x": 625,
+                "y": 354.5
+              },
+              "label": "Backs offside guide"
+            }
+          ]
         },
         {
           "name": "Ball moves to rear",
@@ -56867,7 +57143,33 @@
             }
           ],
           "paths": {},
-          "timing": {}
+          "timing": {},
+          "teachingGuides": [
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 354.5
+              },
+              "b": {
+                "x": 858,
+                "y": 354.5
+              },
+              "label": "Attacking backs 5 m back"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 625,
+                "y": 238
+              },
+              "b": {
+                "x": 625,
+                "y": 354.5
+              },
+              "label": "Backs offside guide"
+            }
+          ]
         },
         {
           "name": "Nine collects",
@@ -56997,7 +57299,33 @@
               "start": 30,
               "end": 80
             }
-          }
+          },
+          "teachingGuides": [
+            {
+              "kind": "line",
+              "a": {
+                "x": 42,
+                "y": 354.5
+              },
+              "b": {
+                "x": 858,
+                "y": 354.5
+              },
+              "label": "Attacking backs 5 m back"
+            },
+            {
+              "kind": "distance",
+              "a": {
+                "x": 625,
+                "y": 238
+              },
+              "b": {
+                "x": 625,
+                "y": 354.5
+              },
+              "label": "Backs offside guide"
+            }
+          ]
         },
         {
           "name": "Nine passes away",
