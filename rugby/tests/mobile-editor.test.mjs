@@ -15,6 +15,8 @@ test('both editors load the same mobile and tablet skin without replacing the en
  assert.match(css,/env\(safe-area-inset-bottom\)/);
  assert.match(css,/body\.mobile-workspace\.presentation-mode/);
  assert.match(css,/min-height:48px/);
+ assert.match(css,/mobile-camera-controls/);
+ assert.match(read('js/mobile-editor.js'),/data-mobile-camera="zoomFit"/);
  assert.equal(classic.match(/src="\.\/js\/app\.js\?v=[\d.]+"/)?.[0],coach.match(/src="\.\/js\/app\.js\?v=[\d.]+"/)?.[0]);
 });
 function classes(){
