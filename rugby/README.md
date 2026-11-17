@@ -65,3 +65,20 @@ After converting, edit Outcome A, use the B button to edit Outcome B, then play 
 Run node --test rugby/tests/*.test.mjs from the repository root with Node 22, then inspect editor, player, printed sheets and movie export in a real browser. The GitHub Pages site and repository are public. No identifiable child information should be stored. A noindex tag is not authentication. GitHub credentials for saving are held in the caller's memory and not saved in drills.
 
 Check current RFU age-grade contact rules and safeguarding guidance before use. Schematics and validations are not independent safety approval.
+
+## Working from a phone or tablet (mobile workspace v0.1.0)
+
+Both Classic Studio and Coach Edition have a touch-first layout at widths up to 1100px. No features are deleted: the existing pitch, palette, inspector, branching controls and timeline are the same shared components.
+
+- **Pitch** leaves the diagram at maximum usable size. Tap or drag a player or object; use the pitch camera's +/- or Fit controls and Pan mode as needed.
+- **Add** opens the players/equipment/actions sheet. Selecting an add/draw action returns to the pitch to position the object or draw the path.
+- **Edit** opens the existing Object / Step / Drill inspector in a scrollable bottom sheet. Selecting a specialised action can reveal this panel automatically.
+- **Steps** opens the sequence, playhead and timing tracks. Swipe horizontally through the step cards.
+- **Play** is a shortcut to the existing animation playback; **Save** triggers the same GitHub save process as on desktop. Both shortcuts remain available without opening the timeline or scrolling the top toolbar.
+- The full top toolbar remains horizontally scrollable for advanced actions, view controls, import/export and sharing.
+- Tablets use the same layout so the pitch is not squeezed between two narrow inspectors. Turning the device sideways gives more room; the browser's orientation is never locked.
+- The existing read-only viewer keeps its own separately responsive layout.
+
+**Cross-device saving:** local, unsaved edits do not sync from one device to another. Save to GitHub (with permitted GitHub credentials configured on that device), then open the saved drill on the other device. Export a JSON backup before switching devices if saving is not available. Browser movie exporting depends on format support and device processing limits.
+
+This release is responsive and touch-oriented but should still be physically checked on iOS Safari and Android Chrome, particularly complex SVG dragging, pitch panning, modal editing and movie export. Keep controls and pinch interactions distinct from the underlying drill model.
