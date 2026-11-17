@@ -68,6 +68,9 @@ export function contestDrive(frame,previous,marker,g,{distanceCm=10,exchanges=2,
  frame.timing||={};
  frame.paths[marker.id]={mode:'corners',points:waypoints,follow:false};
  marker.breakdown={...marker.breakdown,winner,clearanceCm:clearCm};
+ // The side that loses the contest is no longer bound at the final frame.
+ // It changes pose only near the end of the contest transition.
+ marker.members=marker.members.map(m=>losers.has(m.id)?{...m,pose:'standing'}:{...m,pose:'bound'});
  delete frame.timing[marker.id];
  for(const {id,position} of nextPositions){
   const target=frame.objects.find(o=>o.id===id);
