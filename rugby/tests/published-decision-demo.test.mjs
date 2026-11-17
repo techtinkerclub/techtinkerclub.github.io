@@ -45,6 +45,7 @@ assert.ok(runner.y>=A.frames[2].objects.find(o=>o.id===coach).y,'Receiver must b
 assert.equal(ball.ownerId,coach);
 assert.equal(B.frames[3].objects.find(o=>o.type==='ball').ownerId,runner.id,'Real ball passes to runner');
 assert.equal(B.frames[3].objects.find(o=>o.type==='ball').transferKind,'pass');
+assert.ok(B.frames[3].objects.find(o=>o.type==='ball').y>B.frames[2].objects.find(o=>o.type==='ball').y,'Pass must travel backwards in the diagram');
 const contact=B.frames[4].objects.find(o=>o.type==='tackle');
 assert.ok(contact,'Runner branch needs a tackle marker');
 assert.equal(contact.breakdown.carrierId,runner.id);
