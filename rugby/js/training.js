@@ -69,19 +69,25 @@ export function donutLane(pad,g,direction='forward'){
 }
 export function donutTarget(pad,end,g,direction='forward'){
  if(!end||!Number.isFinite(end.x)||!Number.isFinite(end.y))throw Error('Choose a rolling distance on the pitch.');
- const lane=donutLane(pad,g,direction),b=g.toView(end.x,end.y),{a,h,max}=lane;
- const projection=(b.x-a.x)*h.x+(b.y-a.y)*h.y;
- const distance=clip(projection,0,max);
- return {...lane,distance,target:{x:a.x+h.x*distance,y:a.y+h.y*distance}};
+ const b=g.toView(end.x,end.y),axis=donutLane(pad,g,'forward');
+ const signed=(b.x-axis.a.x)*axis.h.x+(b.y-axis.a.y)*axis.h.y;
+ const chosen=direction==='auto'?(signed<0?'reverse':'forward'):direction;
+ const lane=donutLane(pad,g,chosen),{a,h,max}=lane;
+ const projection=(b.x-a.x)*h.x+(b.y-a.y)*h.y,distance=clip(projection,0,max);
+ return {...lane,direction:chosen,distance,target:{x:a.x+h.x*distance,y:a.y+h.y*distance}};
 }
 export function donutLaneOverlay(pad,g,pointer=null,direction='forward'){
  if(!pad||pad.donutState==='down')return '';
- const {a,h,max,end}=donutLane(pad,g,direction);
- if(max<10)return '';
- const offset=Math.min(24,max*.5),start={x:a.x+h.x*offset,y:a.y+h.y*offset};
+ const directions=direction==='auto'?['forward','reverse']:[direction];
+ const paths=directions.map(dir=>{
+  const {a,h,max,end}=donutLane(pad,g,dir);if(max<10)return '';
+  const offset=Math.min(24,max*.5),start={x:a.x+h.x*offset,y:a.y+h.y*offset};
+  return '<path d="M'+start.x+' '+start.y+'L'+end.x+' '+end.y+'" fill="none" stroke="#f6cf80" stroke-opacity=".7" stroke-width="2.5" marker-end="url(#arr)"/>';
+ }).join('');
+ if(!paths)return '';
  const target=pointer?donutTarget(pad,g.fromView(pointer.x,pointer.y),g,direction):null;
  const info=target&&target.distance>=10?'<circle cx="'+target.target.x+'" cy="'+target.target.y+'" r="7" fill="#ffe2a0" stroke="#483b27" stroke-width="1.5"/><text x="'+(target.target.x+12)+'" y="'+(target.target.y-9)+'" font-size="13" fill="#ffe2a0" paint-order="stroke" stroke="#203b2b" stroke-width="3">'+(target.distance/g.scale).toFixed(1)+' m</text>':'';
- return '<g pointer-events="none"><path d="M'+start.x+' '+start.y+'L'+end.x+' '+end.y+'" fill="none" stroke="#f6cf80" stroke-opacity=".7" stroke-width="2.5" marker-end="url(#arr)"/>'+info+'</g>';
+ return '<g pointer-events="none">'+paths+info+'</g>';
 }
 export function trainingTransition(objects,old,next,p,g){
  return objects.map(o=>{
