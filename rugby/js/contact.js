@@ -13,7 +13,7 @@ export function cleanContacts(frames){
  for(const frame of frames){
   const ids=new Set(frame.objects.filter(canCarry).map(o=>o.id));
   for(const o of frame.objects){if(!contactType(o.type)){delete o.members;continue}
-   if(Array.isArray(o.members)){const seen=new Set();o.members=o.members.filter(m=>m&&ids.has(m.id)&&!seen.has(m.id)&&['grounded','tackling','bound','crouched','standing','kneeling','recovering'].includes(m.pose)&&seen.add(m.id)).slice(0,17)}
+   if(Array.isArray(o.members)){const seen=new Set();o.members=o.members.filter(m=>m&&ids.has(m.id)&&!seen.has(m.id)&&['grounded','tackling','bound','crouched','standing','kneeling','recovering','ready'].includes(m.pose)&&seen.add(m.id)).slice(0,17)}
   }
  }
  return frames;
