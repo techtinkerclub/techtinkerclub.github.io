@@ -1,6 +1,7 @@
 import {physicalUnit} from './symbol-scale.js?v=0.12.0';
 // Author-controlled schematic breakdown stages; not a technique or law validator.
 import {carrier,findObject} from './possession.js?v=0.12.0';
+import {isGroundPad} from './ruck-practice.js?v=0.12.28';
 export const PHASES={pad:'Sausage ready · ruck practice',tackle:'Tackle',release:'Release and present',support:'Attacking support arrives',ruck:'Ruck formed',contest:'Contest for possession',secured:'Ball secured · use it'};
 export const validPhase=p=>Object.hasOwn(PHASES,p);
 export function supportTitle(side){return side==='defence'?'Defending support arrives':'Attacking support arrives'}
@@ -39,7 +40,7 @@ export function advance(f,m,g,phase,ids,u10=false,arrivalSide=null){
  if(r.mode==='pad'){
   if(phase!==nextPhase(r.phase))return {ok:false,message:'Continue the current pad practice stage first.'};
   const pad=findObject(f,r.padId);
-  if(pad?.type!=='sausage')return {ok:false,message:'Add a sausage bag, or restore the one linked to this ruck practice.'};
+  if(!isGroundPad(pad))return {ok:false,message:'Add a sausage bag or a donut lying flat, or restore the linked equipment.'};
   const side=arrivalSide||r.arrivalSide||'attack',old=m.breakdown;
   m.breakdown={phase,mode:'pad',padId:r.padId,arrivalSide:side,...(b?{ballId:b.id}:{})};
   const result=setParticipants(f,m,g,ids,u10);
