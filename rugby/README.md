@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.14.3 / Coach Edition v0.3.3
+# Rugby Coaching Studio — Classic v0.14.5 / Coach Edition v0.3.3
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
@@ -105,3 +105,5 @@ The Rugby library now contains **142** editable starter drills. Fifteen are anim
 The catalogue-audit regression test checks every starter for unique IDs, valid object references, renderable playback, realistic presentation reach, reasonable stage-average speed, and unpinned final recovery poses. Dedicated U10 understanding and tackle tests check technical scenarios such as release, scoring, offside guides and restarts.
 
 An automated audit is not a guarantee of law accuracy, safe physical contact technique, artistic quality or iOS/Android behaviour. Non-directional skill exercises may have deliberately different passing directions from match play. Check current RFU rules and obtain qualified contact coaching before running these activities.
+
+The full-library pass-direction regression now reviews ball transfers at the authored release/catch positions. Non-directional handling activities (circle, L-shaped and diamond) explicitly hide a fixed attack arrow and direct coaches to a directional drill when teaching legal backward match passes. The measured coaching-guide overlays in relevant free-pass and ball-placement lessons are preserved in editor, share view and movie rendering.
