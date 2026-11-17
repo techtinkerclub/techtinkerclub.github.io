@@ -19,10 +19,13 @@ export function setDrawingOrder(frames,id,layer,edge='normal'){
  let updated=0;
  for(const frame of frames){
   const target=frame.objects?.find(o=>o.id===id);if(!target)continue;
-  const peers=frame.objects.filter(o=>o.id!==id&&drawLayer(o)===layer);
+  const peers=frame.objects.map((o,i)=>({o,i})).filter(({o})=>o.id!==id&&drawLayer(o)===layer);
   target.drawLayer=layer;
-  if(edge==='top')target.drawOrder=Math.min(1000000,Math.max(-1000000,0,...peers.map((o,i)=>drawOrderValue(o,i)))+1);
-  else if(edge==='bottom')target.drawOrder=Math.max(-1000000,Math.min(1000000,0,...peers.map((o,i)=>drawOrderValue(o,i)))-1);
+  // Compare against each peer's original index in the full frame, not an
+  // index in a filtered subset (which could leave a later player above us).
+  const values=peers.map(({o,i})=>drawOrderValue(o,i));
+  if(edge==='top')target.drawOrder=Math.min(1000000,Math.max(-1000000,0,...values))+1;
+  else if(edge==='bottom')target.drawOrder=Math.max(-1000000,Math.min(1000000,0,...values))-1;
   else delete target.drawOrder;
   updated++;
  }
