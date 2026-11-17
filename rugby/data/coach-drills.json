@@ -10,13 +10,13 @@
       "category": "Attack",
       "length": 15,
       "width": 10,
-      "objective": "",
-      "safety": "",
+      "objective": "After losing possession at recent tackles, we want players to stop watching and get involved. The first support player arrives promptly, makes a safe, strong position over the contact area and protects possession. The next support player is already ready to move the ball away. Success is quick support followed by a useful pass, not simply winning a pushing contest.",
+      "safety": "Controlled contact practice only, not a full match ruck: the rugby ball is deliberately to the side of the sausage bag. D1 must be able to hold the shield securely and remain balanced; A1 begins at walking pace against gentle resistance. Stop any charging, head-down entry, contact near the head/neck, collapsing, twisting, lifting, falling onto the bag or stepping on another player. Both players stay on their feet with heads and shoulders above hips. Keep A2 and D2 out of the physical contest and avoid collisions with waiting players. Check the bag cannot roll or trip anyone and keep the nearby ball outside the players' feet. In actual U10 play, ruck participation is limited to two from each side; players must join from their own side and the ball must be used promptly after 'Use it!' (five seconds). Only progress to opposed contact under a suitably experienced, RFU-aligned club coach after a practical risk check.",
       "frames": [
         {
-          "name": "Set up",
+          "name": "Set up and explain",
           "seconds": 0,
-          "notes": "",
+          "notes": "Four attackers and four defenders are queued on opposite sides. D1 carries the shield; the sausage bag lies on the grass and the separate rugby ball is to its side. A1 will be first support and A2 will play the ball. Coach explains why arriving promptly matters. This is a technique station; check which direction would be onside in a real match.",
           "objects": [
             {
               "id": "mwko06q2r10wwh",
@@ -152,9 +152,9 @@
           "paths": {}
         },
         {
-          "name": "Step 2",
+          "name": "Arrive and make contact",
           "seconds": 2,
-          "notes": "",
+          "notes": "A1 moves to the bag as D1 brings in the shield. Their contact is controlled and on their feet; A1 works against the pad, not D1's head or neck. A2 and D2 move into waiting positions without joining. Watch the posture and approach before introducing any push.",
           "objects": [
             {
               "id": "mwko06q2r10wwh",
@@ -335,9 +335,9 @@
           }
         },
         {
-          "name": "Contest over the pad",
+          "name": "Controlled contest",
           "seconds": 3,
-          "notes": "",
+          "notes": "A1 and D1 make a short, low-force push–pull over the grounded bag. In this demonstration A1 secures the space and D1 yields. A2 moves to the separate ball late in the step, but may only touch it when the coach calls 'Won—use it!' This is a ball-availability cue, not a legal hands-in-the-ruck action.",
           "objects": [
             {
               "id": "mwko06q2r10wwh",
@@ -532,9 +532,9 @@
           }
         },
         {
-          "name": "Attack secures · play away",
+          "name": "Win it and pass away",
           "seconds": 2,
-          "notes": "",
+          "notes": "The winning side plays away. A2 passes the ball to A3, while A1 and D1 disengage and the others start returning to their lines. D1's shield changes to D3 as part of the rotation. In a match the ruck is over when the ball has been played out; the animation's ruck-marker membership can be tidied separately.",
           "objects": [
             {
               "id": "mwko06q2r10wwh",
@@ -783,9 +783,9 @@
           }
         },
         {
-          "name": "Pass to Coach",
+          "name": "Pass to coach and rotate",
           "seconds": 2,
-          "notes": "",
+          "notes": "A3 passes to the coach to finish the repetition. D1 and D2 return, and D3 has the shield for the next turn. Check the pass goes to the intended target and players clear the working lane rather than crossing the path of the next pair.",
           "objects": [
             {
               "id": "mwko06q2r10wwh",
@@ -972,9 +972,9 @@
           }
         },
         {
-          "name": "Step 6",
+          "name": "Reset for next repetition",
           "seconds": 2,
-          "notes": "",
+          "notes": "Coach brings the ball back towards the starting spot and everyone resets. Swap jobs so players experience first support, shield resistance and playing the ball away. Ask one quick question before the next repetition: 'Who helped first, and who was ready to pass?'",
           "objects": [
             {
               "id": "mwko06q2r10wwh",
@@ -1158,15 +1158,41 @@
       "ageMin": 10,
       "ageMax": 10,
       "minutes": 8,
-      "players": "",
-      "equipment": "",
-      "instructions": "",
-      "coaching": "",
-      "regression": "",
-      "progression": "",
-      "questions": "",
-      "notes": "",
-      "links": [],
+      "players": "Eight players shown in two rotating groups of four, plus a coach. A1 is the first attacking support player; D1 holds the tackle shield and offers controlled resistance. A2 and D2 are the next players, ready for the outcome without joining the contact. Once attack secures the area, A2 plays the separate ball to A3, who passes to the coach. A4, D3 and D4 wait their turn and rotate through the jobs. Keep queues moving; use two stations if numbers or space allow.",
+      "equipment": "One sausage bag lying securely on the grass, one hand-held tackle shield for D1, one size 4 rugby ball positioned clear of the contact, four cones to mark the working area and a clear space for the receiving pass. The coach stands outside the running and contact lanes. Have a second ball ready for quick resets if available.",
+      "instructions": "1. Explain the situation: 'Our player has been stopped. Don't watch—help us keep the ball.' Set A1 and D1 on opposite sides of the ground bag, with the shield held securely by D1. A2 and D2 are the next players; A3 is the receiver.\n2. On the coach's cue, A1 and D1 approach under control. A1 establishes a balanced, on-feet contact position against the shield. Start with D1 offering very light, predictable resistance. A2 and D2 move to their waiting positions; neither joins the contact.\n3. Allow a brief, controlled push–pull over the bag. For the demonstration, the attacking side wins: A1 holds the space and D1 gives ground. Do not let players charge, dive or try to throw each other off balance.\n4. When you call 'Won—use it!', A2 plays the separate ball promptly and passes to A3. This ball is a safe training cue, not a ball being handled inside a live ruck.\n5. A3 passes to the coach. Players leave the contact area, return to their lines and rotate the shield/contact/ball-playing roles. Repeat with a new first support player.\n6. Before transferring this to a match-like game, reset the approach so support arrives from its own side of the breakdown; then introduce a realistic tackle and ball presentation only with appropriately coached, age-grade contact skills.",
+      "coaching": "Look for a reaction rather than a spectator: A1 goes as soon as a team-mate needs help; A2 gets into a useful position early. At contact, keep eyes up and the neck neutral, with head and shoulders above hips, a stable base, and short controlled leg steps. Bind with the arms—do not dive or launch the shoulder or head at the shield. A2 watches the ball, not the pushing, calls for it and passes accurately to A3 when released. The key question after each go is 'Did we get support there, and did we play away quickly?' A good rep is safe and tidy even if there is little movement over the bag.",
+      "regression": "Begin without opposition: A1 walks to the bag, stops in a strong position and calls 'Here'. Then put D1 behind the shield with no pushing and rehearse just the approach and posture. Add the loose ball and let A2 pass it to A3 on the coach's call. Reduce the queue and rotate often if children are waiting. Repeat slowly until heads stay up and everyone knows which side to enter from.",
+      "progression": "Move A1 a few metres farther away so they must react to a sudden 'tackle' call rather than start on a countdown. Increase D1's resistance a little only after technique is sound; keep the challenge about footwork and body shape, not collisions. Occasionally let the defending side win and ask D2 to play the separate ball while A2 reorganises—tell the players who won; do not assume the attackers always win. Finally try a small conditioned game starting from a safely coached tackle-and-presentation situation, with support arriving onside, legal age-grade ruck numbers and the next player using the ball quickly. Do not increase speed and force together.",
+      "questions": "Who should react first when a team-mate is stopped?\nWhich side must you come from to join a real ruck?\nWhere should your eyes and head be when you meet the shield?\nIf A1 is protecting the ball, what is A2's job?\nHow do you know when the ball is available, and who can play it?\nWhat changes if D1 wins instead of A1?\nHow is our ball placed beside the bag different from a ball inside a real ruck?",
+      "notes": "Coaching purpose: we lost possession because teammates were watching after tackles rather than supporting. Keep the message simple—'First there, on your feet, next player ready.' This animation is a rehearsed attacking win, not evidence that an opposed ruck will always be won. A1/D1 demonstrate the contact; A2 takes the ball placed to the side, A3 receives, and the coach collects it for the next repetition. D1's shield is passed to D3 during rotation. IMPORTANT before using the diagram to teach match laws: the A1 entry currently comes from the opposite side to the marked attack direction. Reposition the entry queues for a genuine onside support approach. Also review Step 4: A1 moves away after the contest while still listed as a member of the ruck marker; release the formation link once the ball is out when polishing the animation. The stated 8 minutes is practice time, not the sum of animation durations. These notes guide coaching but are not an RFU safety sign-off.",
+      "links": [
+        {
+          "label": "RFU: U10 Rules of Play (Regulation 15, Appendix 4)",
+          "url": "https://www.englandrugby.com/run/rules-governance/rfu-rules-and-regulations/regulation-15-age-grade-rugby/regulation-15-appendix-4-u10-rules-of-play",
+          "kind": "U10 laws / check latest season"
+        },
+        {
+          "label": "U10 regulations 2026–27: one-page summary (RugbyReferee.net)",
+          "url": "https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf",
+          "kind": "2026–27 U10 overview"
+        },
+        {
+          "label": "World Rugby Rugby Ready: The ruck",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/rugby-ready/the-ruck/",
+          "kind": "Technique and safety"
+        },
+        {
+          "label": "World Rugby coaching: Rucking",
+          "url": "https://passport.world.rugby/coaching/key-factor-analysis/unit-skills/rucking/",
+          "kind": "Technical coaching points"
+        },
+        {
+          "label": "World Rugby Law 15: Ruck",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/15-ruck/",
+          "kind": "General laws – apply age-grade variations"
+        }
+      ],
       "provenance": "Coach-created / imported drill",
       "review": "Coach review required",
       "savedAt": "2026-11-17T16:09:24.299Z"
