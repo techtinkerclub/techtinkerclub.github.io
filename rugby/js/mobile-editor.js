@@ -14,6 +14,29 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
   '<button type="button" data-mobile-action="play" aria-label="Play drill"><span aria-hidden="true">▶</span><span class="mobile-command-label">Play</span></button>'+
   '<button type="button" data-mobile-action="save" aria-label="Save drill to GitHub"><span aria-hidden="true">⇧</span><span class="mobile-command-label">Save</span></button>';
  timeline.after(nav);
+ // Camera shortcuts on the pitch itself: keep zoom, fit and pan discoverable
+ // without scrolling through the desktop toolbar. They forward to existing controls.
+ const field=document.querySelector?.('.field-wrap');
+ if(field){
+  const cameraTools=document.createElement('div');
+  cameraTools.className='mobile-camera-controls';
+  cameraTools.setAttribute('role','group');
+  cameraTools.setAttribute('aria-label','Pitch zoom and pan');
+  cameraTools.innerHTML='<button type="button" data-mobile-camera="zoomOut" aria-label="Zoom out">−</button>'+
+   '<button type="button" data-mobile-camera="zoomFit" aria-label="Fit pitch to screen">Fit</button>'+
+   '<button type="button" data-mobile-camera="zoomIn" aria-label="Zoom in">+</button>'+
+   '<button type="button" data-mobile-camera="panMode" aria-pressed="false" aria-label="Move the pitch view">Pan</button>';
+  field.appendChild(cameraTools);
+  cameraTools.addEventListener('click',event=>{
+   const button=event.target.closest('[data-mobile-camera]');
+   if(!button||!enabled())return;
+   const original=document.getElementById(button.dataset.mobileCamera);
+   original?.click();
+   if(button.dataset.mobileCamera==='panMode'){
+    button.setAttribute('aria-pressed',original?.getAttribute('aria-pressed')||'false');
+   }
+  });
+ }
  const viewButtons=[...nav.querySelectorAll('[data-mobile-view]')];
  let active='pitch';
  function paint(){
