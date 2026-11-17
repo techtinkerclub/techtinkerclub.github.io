@@ -302,5 +302,5 @@ html{color-scheme:dark}
 .timing-bar .timing-span:focus-visible,.timing-bar .timing-handle:focus-visible{outline:2px solid #f0f4d7;outline-offset:2px}
 .timing-bar .timing-handle-start{border-radius:5px 1px 1px 5px}
 .timing-bar .timing-handle-end{border-radius:1px 5px 5px 1px}
-.timing-bar .timing-handle-start[style*="left: 0%"]{transform:translateX(-2px)}
-.timing-bar .timing-handle-end[style*="left: 100%"]{transform:translateX(calc(-100% + 2px))}
+.timing-bar .timing-handle-start[style*="left: 0%"],.timing-bar .timing-handle-start[style*="left:0%"]{transform:translateX(-2px)}
+.timing-bar .timing-handle-end[style*="left: 100%"],.timing-bar .timing-handle-end[style*="left:100%"]{transform:translateX(calc(-100% + 2px))}
