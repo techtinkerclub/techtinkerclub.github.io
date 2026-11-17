@@ -13,6 +13,9 @@ async function check(path,viewport){
  try{
   await page.goto(origin+path,{waitUntil:'networkidle',timeout:45000});
   await page.locator('#stageTitle').waitFor({state:'visible'});
+  // Coach Edition intentionally displays a first-visit welcome dialog.
+  const welcome=page.locator('#coachWelcome');
+  if(await welcome.count()&&await welcome.evaluate(el=>el.open))await page.locator('#coachWelcome [data-coach-close]').first().click();
   const nav=page.locator('.mobile-workspace-nav');
   assert(await nav.isVisible(),path+' '+viewport.width+': bottom navigation must be visible');
   const measured=await page.evaluate(()=>{
