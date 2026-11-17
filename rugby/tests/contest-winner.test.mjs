@@ -27,6 +27,7 @@ for(const winner of ['attack','defence']){
  current.objects[1].breakdown.phase='contest';
  const response=contestDrive(current,before,current.objects[1],g,{distanceCm:10,exchanges:2,winner,clearanceCm:50});
  assert(response.ok,response.message);
+ current.objects[1].breakdown.showWinnerLabel=true; // Explicit annotation: automatic captions are off by default.
  const pad=before.objects[0],other=winner==='attack'?'d':'a',winning=winner==='attack'?'a':'d';
  const loss=current.objects.find(o=>o.id===other),win=current.objects.find(o=>o.id===winning);
  assert(gap(loss,pad)>gap(win,pad)+20,'Winner must hold pad while loser steps clear');
