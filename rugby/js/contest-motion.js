@@ -3,7 +3,7 @@
 // push forwards, defenders push back, and the chosen side wins the last drive.
 // The pitch-space route is also used by export and the animation.
 import {contactDragIds} from './contact-drag.js?v=0.12.29';
-import {ruckSide} from './ruck-outcome.js?v=0.12.31';
+import {ruckSide} from './ruck-outcome.js?v=0.12.32';
 
 const playerTypes=new Set(['attacker','defender','neutral','shield','bagplayer']);
 export function contestDrive(frame,previous,marker,g,{distanceCm=10,exchanges=2,winner='attack',clearanceCm=50}={}){
