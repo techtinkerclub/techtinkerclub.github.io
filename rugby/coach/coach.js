@@ -22,6 +22,7 @@ const CATEGORIES={
  move:[
   {id:'move',icon:'↝',title:'Show a player running',description:'Select the player, then draw their movement path.'},
   {id:'step',icon:'＋',title:'Add the next step',description:'Keep the current arrangement and show the next action.'},
+  {id:'whistle',icon:'♫',title:'Coach blows whistle · GO',description:'Select the coach. Add a whistle that starts the first action step.'},
   {id:'outcome',icon:'◆',title:'Create two playable outcomes',description:'Split at the current step. Animate option A and option B separately, then export both.'},
   {id:'attach',icon:'◉',title:'Give a free ball to a player',description:'Choose a player to carry the ball before making a pass.'},
   {id:'pass',icon:'⇢',title:'Pass the ball',description:'Choose the receiver; the original ball-passing animation is used.'},
@@ -127,6 +128,7 @@ function guidePreflight(key){
  if(!$('coachActionDialog')?.open)return false;
  const checks={
   move:['drawRouteSide','Choose a player from the list above, then try Run again.'],
+  whistle:['coachWhistle','Select the Coach in the list above, then try Whistle · GO again.'],
   attach:['attachBallSide','Add a rugby ball first. Once it is free, choose Give ball.'],
   pass:['passBallSide','A player needs to be carrying the ball. Add a ball and use Give ball first.'],
   release:['releaseBallSide','Give the ball to a player first, then you can release it.'],
@@ -138,7 +140,7 @@ function guidePreflight(key){
  if(control&&!control.disabled&&!control.hidden)return false;
  const hint=$('coachSelectionHelp');
  if(hint){hint.textContent=message;hint.classList.add('needs-attention')}
- if(key==='move'){pendingAction='move';$('coachObjectChoice')?.focus()}
+ if(key==='move'||key==='whistle'){pendingAction=key;$('coachObjectChoice')?.focus()}
  return true;
 }
 function doAction(key){
@@ -165,6 +167,7 @@ function doAction(key){
  case 'move':
   done=launch('drawRouteSide');message='Click where the run finishes. Add bends to the running line if you need them.';break;
  case 'step':done=launch('addStep');message='New step added. Move just the players who act next, or choose another action.';break;
+ case 'whistle':done=launch('coachWhistle');message='Whistle signal added or removed on the first action step. Live playback can sound the whistle.';break;
  case 'outcome':done=launch('createOutcomes');message='Name the decision and both outcomes. You can build each movement sequence separately.';break;
  case 'attach':done=launch('attachBallSide');message='Choose the first ball carrier on the pitch.';break;
  case 'pass':done=launch('passBallSide');message='Choose the receiving player to complete the pass.';break;
@@ -244,7 +247,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   picker.dispatchEvent(new Event('change',{bubbles:true}));
   const resume=pendingAction;
   pendingAction=null;
-  if(resume==='move'&&!$('drawRouteSide')?.disabled)doAction(resume);
+  if((resume==='move'&&!$('drawRouteSide')?.disabled)||(resume==='whistle'&&!$('coachWhistle')?.disabled))doAction(resume);
   else openActions(chosenCategory);
  });
  for(const button of document.querySelectorAll('[data-coach-close]'))
