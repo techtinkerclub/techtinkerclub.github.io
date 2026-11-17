@@ -88,3 +88,20 @@ This release is responsive and touch-oriented but should still be physically che
 Player-on-player tackles now show the tackler's contact stance during playback; inherited recovery poses no longer leave moving players sliding in a low posture. Ball presentation is a short controlled placement, separate from a pass. All 15 U10 rules lessons have been reviewed for written explanations; key examples now have visible offside guides, accurate free-pass/scrum marks and marked in-goal areas where appropriate.
 
 Read [ANIMATION_AUDIT.md](./ANIMATION_AUDIT.md) for corrections, audit thresholds, source links, current 142-drill checks and remaining browser/video verification. The new Node regression checks are included in the Rugby QA workflow. Real-device and movie visual testing remains outstanding.
+
+## Catalogue-wide animation and U10 teaching review (November 2026)
+
+The Rugby library now contains **142** editable starter drills. Fifteen are animated **Understand the game · U10** lessons, available through the public library's Rules walk-through filter. The original six cover ruck entry, offside, participation limits, tackle responsibilities, ball presentation and touch restarts. Nine new examples cover passing direction, knock-ons, support running, free-pass retreat, U10 scrums, mauls, tries, held-up balls and kicking/hand-off restrictions. Every rules lesson has coaching prompts, narration and age-grade references.
+
+### Shared animation changes
+
+- A player-on-player tackle with an **authored tackle marker** shows the tackler lowering into a ready stance before contact and tackling at impact, while the ball carrier goes to ground. This is a schematic explanation, not a physical tackling technique guide.
+- The tackler releases in the following stage. A recovering player returns upright before travelling away, instead of sliding in a grounded pose. Deliberately pinned poses are preserved.
+- Ball presentation eases the ball from a grounded player's hands into a nearby placed position. It is not represented as a ballistic throw or multi-metre pass. The ball stays down until an explicit collection.
+- The starter catalogue received measured-distance and pacing edits: 17 overly long presentation gaps, 29 unrealistically fast movement stages, and nine inherited/final recovery poses were corrected.
+
+### Ongoing QA and limits
+
+The catalogue-audit regression test checks every starter for unique IDs, valid object references, renderable playback, realistic presentation reach, reasonable stage-average speed, and unpinned final recovery poses. Dedicated U10 understanding and tackle tests check technical scenarios such as release, scoring, offside guides and restarts.
+
+An automated audit is not a guarantee of law accuracy, safe physical contact technique, artistic quality or iOS/Android behaviour. Non-directional skill exercises may have deliberately different passing directions from match play. Check current RFU rules and obtain qualified contact coaching before running these activities.
