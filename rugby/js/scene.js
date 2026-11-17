@@ -2,7 +2,7 @@ import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,symbolFactors} from './symbol-scale.js?v=0.12.0';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
-import {esc,types,shape,clamp} from './model.js?v=0.8.0';
+import {esc,types,shape,clamp} from './model.js?v=0.12.9';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.0';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.9.0';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.9.0';
