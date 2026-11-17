@@ -1,0 +1,27 @@
+/* Outcome decision controls: shared by Classic Studio and Coach Edition. */
+.outcome-bar{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:6px 3px;border-bottom:1px solid var(--line);min-height:38px}
+.outcome-bar button{font-size:12px;padding:6px 11px;min-height:32px}
+.outcome-bar #createOutcomes{border:1px dashed var(--accent);color:var(--accent);background:transparent;font-weight:700}
+.outcome-bar #outcomeControls{display:flex;flex:1 1 auto;gap:7px;flex-wrap:wrap;align-items:center;min-width:0}
+.outcome-bar #outcomeControls[hidden],.outcome-bar button[hidden]{display:none!important}
+.outcome-bar #outcomeQuestion{font-size:12px;font-weight:700;max-width:400px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;color:var(--accent);margin-right:5px}
+.outcome-bar #outcomeControls button.selected{box-shadow:inset 0 -3px 0 var(--accent);border-color:var(--accent);font-weight:800}
+.outcome-dialog{width:min(610px,95vw);max-height:89dvh;overflow:auto}
+.outcome-dialog>p{font-size:13px;color:var(--muted);line-height:1.5;margin:12px 0}
+.outcome-dialog>label{display:grid;gap:6px;font-size:12px;font-weight:700;margin:14px 0}
+.outcome-dialog>small{display:block;line-height:1.5;margin:12px 0}
+.outcome-dialog-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-top:15px}
+.outcome-dialog-actions button{width:auto}
+#outcomeRemove{margin-right:auto}
+#outcomeError:not(:empty){color:#ffb3a6;margin-top:10px}
+.branch-player{padding:11px 15px;margin:10px 0;background:var(--panel,#18241e);border:1px solid var(--accent,#c9f07c);border-radius:9px;display:grid;grid-template-columns:minmax(0,1fr) minmax(170px,290px);gap:7px 14px;align-items:center}
+.branch-player[hidden]{display:none!important}
+.branch-player strong{font-size:13px}
+.branch-player p{font-size:12px;line-height:1.45;color:var(--muted,#b4bfb4);margin:3px 0}
+.branch-player label{font-size:12px}
+.branch-player select{width:100%;min-height:40px}
+.print-branch-heading{break-after:page;padding:30px;display:grid;align-content:center;min-height:70vh;border:4px double #555}
+.print-branch-heading small{letter-spacing:2px}
+.print-branch-heading h2{font-size:30px;margin:15px 0}
+.print-branch-heading p{font-size:18px;line-height:1.5;max-width:650px}
+@media(max-width:760px){.outcome-bar{padding:5px 1px}.outcome-bar #outcomeQuestion{flex-basis:100%;max-width:100%}.outcome-bar #outcomeControls button{flex:1 1 auto;white-space:normal;line-height:1.25}.branch-player{grid-template-columns:minmax(0,1fr)}}
