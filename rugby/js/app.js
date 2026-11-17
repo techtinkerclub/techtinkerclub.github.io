@@ -27,7 +27,7 @@ import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
 import {contactDragIds,contactHandlePoint} from './contact-drag.js?v=0.12.29';
 import {formationTrajectorySVG,formationTrajectoryTransform} from './formation-trajectory.js?v=0.12.29';
 import {contestDrive} from './contest-motion.js?v=0.12.31';
-import {contestResultOverlay} from './ruck-outcome.js?v=0.12.31';
+import {contestResultOverlay,clearContestOutcome} from './ruck-outcome.js?v=0.12.32';
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
@@ -178,11 +178,31 @@ if(canCarry(o)){
  const state=inspectedPose(visibleObjects,o.id,visiblePlayerPoses(visibleObjects));
  const {pose,formation,donut,source}=state;
  const canRestore=!!donut&&o.posePinned===true&&!formation&&preview===null;
- const help=formation?'Managed by the contact formation. Select its marker to edit.':preview!==null?'Showing the pose in the current playback frame. Select a step to edit it.':source==='donut'?'Automatically tackling the donut in this step. Choose another pose to override it.':pose==='ready'?'Low, balanced waiting stance. Add a normal step and move the player to show their reaction.':'Choose a pose for this step. The player on the pitch updates to match.';
+ const help=formation?'This player belongs to a contact formation. Changing the pose here updates that formation in this step.':preview!==null?'Showing the pose in the current playback frame. Select a step to edit it.':source==='donut'?'Automatically tackling the donut in this step. Choose another pose to override it.':pose==='ready'?'Low, balanced waiting stance. Add a normal step and move the player to show their reaction.':'Choose a pose for this step. The player on the pitch updates to match.';
  const el=document.createElement('div');el.className='field';
- el.innerHTML='<label>Player pose<select id="playerPose" '+(formation||preview!==null?'disabled':'')+'>'+Object.entries(PLAYER_POSES).map(([k,v])=>'<option value="'+k+'" '+(k===pose?'selected':'')+'>'+v+'</option>').join('')+'</select></label><small>'+help+'</small>'+(canRestore?'<button id="restoreAutoPose" type="button">Use automatic tackle pose</button>':'');
+ el.innerHTML='<label>Player pose<select id="playerPose" '+(preview!==null?'disabled':'')+'>'+Object.entries(PLAYER_POSES).map(([k,v])=>'<option value="'+k+'" '+(k===pose?'selected':'')+'>'+v+'</option>').join('')+'</select></label><small>'+help+'</small>'+(canRestore?'<button id="restoreAutoPose" type="button">Use automatic tackle pose</button>':'');
  $('objectPanel').insertBefore(el,$('objectPanel').lastElementChild);
- $('playerPose').onchange=e=>{o.playerPose=e.target.value;o.posePinned=true;changed();render();inspector();tracks();note((o.label||types[o.type][0])+': '+(PLAYER_POSES[o.playerPose]||'Standing / running')+' · current step')};
+ $('playerPose').onchange=e=>{
+  const member=formation&&f().objects.find(m=>m.id===formation.id)?.members?.find(m=>m.id===o.id);
+  if(member){member.pose=e.target.value;delete o.playerPose;delete o.posePinned;}
+  else{o.playerPose=e.target.value;o.posePinned=true;}
+  changed();render();inspector();tracks();
+  note((o.label||types[o.type][0])+': '+(PLAYER_POSES[e.target.value]||'Standing / running')+' · current step');
+ };
+ if(formation&&preview===null){
+  const release=document.createElement('button');
+  release.type='button';release.id='releaseFormationPlayer';
+  release.textContent='Remove from '+contactTitle(formation.type).toLowerCase()+' · current step';
+  release.onclick=()=>{
+   const marker=f().objects.find(m=>m.id===formation.id);
+   if(!marker?.members?.some(m=>m.id===o.id))return;
+   marker.members=marker.members.filter(m=>m.id!==o.id);
+   o.playerPose='standing';o.posePinned=true;
+   changed();render();inspector();tracks();
+   note((o.label||types[o.type][0])+' left the formation and returned to standing in this step.');
+  };
+  el.appendChild(release);
+ }
  if(canRestore)$('restoreAutoPose').onclick=()=>{delete o.playerPose;delete o.posePinned;changed();render();inspector();tracks();note((o.label||types[o.type][0])+': automatic tackle pose restored for this step')};
 };$('objLabel').oninput=e=>{o.label=e.target.value;changed();render()};$('objRot').onchange=e=>{o.rot=clamp(Number(e.target.value)||0,-360,360);$('objRot').value=o.rot;changed();render();tracks()};for(const button of $('objectPanel').querySelectorAll('[data-facing]'))button.onclick=()=>{o.rot=wrapAngle(Number(button.dataset.facing)-geometry().rotation);$('objRot').value=o.rot;changed();render();tracks()};if(idx>0){function timing(){let s=clamp(Number($('start').value)||0,0,99),e=clamp(Number($('end').value)||1,s+1,100);f().timing[o.id]={start:s,end:e};changed();render();inspector();tracks()}$('start').onchange=timing;$('end').onchange=timing}$('copyObj').onclick=duplicateSelected;$('delObj').onclick=()=>selectedPathId===o.id?cancelSelectedMovement():deleteObject('here')}function tracks(){if(!idx){$('tracks').innerHTML='<div style="padding:10px" class="muted">Select a later step to configure independent movement tracks.</div>';return}let old=drill.frames[idx-1];let moving=f().objects.filter(o=>{if(o.type==='decision')return false;let a=old.objects.find(x=>x.id===o.id);if(isDiagramObject(o))return false;const m=movementFor(old,f(),o,geometry());return m&&(hasMovement(m.start,m.end,f().paths?.[o.id])||a.rot!==o.rot||a.ownerId!==o.ownerId||a.playerPose!==o.playerPose)});$('tracks').innerHTML=moving.length?moving.map(o=>{
  const previous=old.objects.find(x=>x.id===o.id);
@@ -529,6 +549,8 @@ function updateContactTools(){
     :'The winner will remain over the pad and the losing player will give ground. The separate ball stays where you placed it.';
   }
  }
+ $('showContestLabel').checked=o?.breakdown?.showWinnerLabel!==false;
+ $('clearContestResult').hidden=!ok||!['attack','defence'].includes(o.breakdown?.winner);
  $('startPadRuck').hidden=!ok||o.type!=='ruck'||!!o.breakdown||!f().objects.some(isGroundPad);$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
  const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=o.breakdown?.mode==='pad'&&o.breakdown?.phase!=='contest'||o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')||!o.breakdown}
  const breakdown=validPhase(o.breakdown?.phase),near=contactCandidates(f(),o,geometry()),ids=new Set((o.members||[]).map(m=>m.id));
@@ -651,6 +673,24 @@ $('padNudgeTools').onclick=e=>{
  if(nudgeRuckPlayer(f(),o,button.dataset.nudgeId,geometry(),Number(button.dataset.dx),Number(button.dataset.dy))){
   changed();render();inspector();tracks();note('Adjusted '+objectName(player)+' by 15 cm. Ruck membership stays intact.');
  }
+};
+$('showContestLabel').onchange=()=>{
+ if(!canEditObjects())return;
+ const marker=activeObject();
+ if(marker?.type!=='ruck'||marker.breakdown?.phase!=='contest')return;
+ if($('showContestLabel').checked)delete marker.breakdown.showWinnerLabel;
+ else marker.breakdown.showWinnerLabel=false;
+ changed();render();inspector();
+ note($('showContestLabel').checked?'Winner callouts shown.':'Winner and next-player callouts hidden; contest outcome unchanged.');
+};
+$('clearContestResult').onclick=()=>{
+ if(!canEditObjects())return;
+ const marker=activeObject();
+ if(marker?.type!=='ruck'||marker.breakdown?.phase!=='contest')return;
+ const result=clearContestOutcome(f(),drill.frames[idx-1],marker);
+ $('contestMotionStatus').textContent=result.message;
+ note(result.message);
+ if(result.ok){changed();refresh();openInspector('Object',false)}
 };
 $('applyContestMotion').onclick=()=>{
  if(!canEditObjects())return;
