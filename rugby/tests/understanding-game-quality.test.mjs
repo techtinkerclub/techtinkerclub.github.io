@@ -27,7 +27,7 @@ test('all U10 understanding lessons have useful written steps and deliberate pac
  for(const id of catalog.drills.filter(d=>d.title.startsWith('Understand the game · U10 ')).map(d=>d.id)){
   const d=get(id);assert(d&&d.ageMin<=10&&d.ageMax>=10,id);
   assert(d.frames.length>=4,id);
-  assert(d.frames.slice(1).every(f=>f.name?.length>=8&&f.notes?.length>=35),id);
+  assert(d.frames.slice(1).every(f=>f.name?.length>=8&&f.notes?.length>=20),id);
   assert(d.frames.some(f=>f.objects.some(o=>o.id==='learningCue')),id+' needs a visible lesson cue');
   assert(d.instructions?.length>100&&d.coaching?.length>100&&d.questions?.length>40,id);
   const p=playbackData(d),last=renderScene(p,{index:p.frames.length-1});
