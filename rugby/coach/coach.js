@@ -53,7 +53,7 @@ const HELP={
  contact:'The ruck marker links the players and the ground pad. Choose a winning side yourself; nothing should guess who plays the ball next.',
  finish:'The full coaching card, check tool, presentation, exports and save workflow are unchanged from Classic Studio.'
 };
-let chosenCategory='setup',toastTimeout=null;
+let chosenCategory='setup',toastTimeout=null,pendingAction=null;
 const label={new:'Start a new drill',library:'Open drill library',continue:'Continue editing'};
 function tell(message){
  const node=$('coachToast');if(!node)return;
@@ -84,6 +84,7 @@ function editObject(id){
  return true;
 }
 function openActions(tab='setup'){
+ pendingAction=null;
  chosenCategory=Object.hasOwn(CATEGORIES,tab)?tab:'setup';
  renderObjectChoices();
  renderCards();
@@ -135,11 +136,12 @@ function guidePreflight(key){
  if(control&&!control.disabled&&!control.hidden)return false;
  const hint=$('coachSelectionHelp');
  if(hint){hint.textContent=message;hint.classList.add('needs-attention')}
- if(key==='move')$('coachObjectChoice')?.focus();
+ if(key==='move'){pendingAction='move';$('coachObjectChoice')?.focus()}
  return true;
 }
 function doAction(key){
  if(guidePreflight(key))return;
+ pendingAction=null;
  // The underlying engine correctly blocks edits while ANY dialog is open.
  // Close the Coach Edition guide BEFORE using original editor controls.
  closeDialogs();
@@ -237,7 +239,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   closeDialogs(); // Selection is also an edit action in the original engine.
   picker.value=selectedId;
   picker.dispatchEvent(new Event('change',{bubbles:true}));
-  openActions(chosenCategory);
+  const resume=pendingAction;
+  pendingAction=null;
+  if(resume==='move'&&!$('drawRouteSide')?.disabled)doAction(resume);
+  else openActions(chosenCategory);
  });
  for(const button of document.querySelectorAll('[data-coach-close]'))
   button.addEventListener('click',()=>{markWelcomeSeen();closeDialogs()});
@@ -250,7 +255,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  });
  $('coachActionDialog')?.addEventListener('click',event=>{
   const tab=event.target.closest('[data-coach-tab]');
-  if(tab){chosenCategory=tab.dataset.coachTab;renderCards();return}
+  if(tab){pendingAction=null;chosenCategory=tab.dataset.coachTab;renderCards();return}
   const action=event.target.closest('[data-coach-command]');
   if(action)doAction(action.dataset.coachCommand);
  });
