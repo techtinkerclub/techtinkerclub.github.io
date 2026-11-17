@@ -1,6 +1,6 @@
 import {physicalUnit} from './symbol-scale.js?v=0.12.0';
 // Author-controlled schematic breakdown stages; not a technique or law validator.
-import {carrier,findObject} from './possession.js?v=0.12.0';
+import {carrier,findObject} from './possession.js?v=0.12.30';
 import {isGroundPad} from './ruck-practice.js?v=0.12.28';
 export const PHASES={pad:'Pad ready · ruck practice',tackle:'Tackle',release:'Release and present',support:'Attacking support arrives',ruck:'Ruck formed',contest:'Contest for possession',secured:'Ball secured · use it'};
 export const validPhase=p=>Object.hasOwn(PHASES,p);
