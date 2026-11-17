@@ -2,7 +2,7 @@ import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews} from './branching.js?v=1';
-import {signalForFrame,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=1';
+import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
 import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=2';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition} from './symbol-scale.js?v=0.12.27';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.13.4';
@@ -153,24 +153,61 @@ function pitchMarkingInspector(o,disabled){
 }
 function inspector(){let o=f().objects.find(x=>x.id===selected);if(preview!==null&&['decision','donut'].includes(o?.type)){$('objectPanel').innerHTML='<small>Select a step to edit the annotation or equipment.</small>';return}if(o?.type==='decision'){decisionInspector(o);return}if(o?.type==='donut'){donutInspector(o);return}let disabled=preview!==null?'disabled':'';if(!o){$('objectPanel').innerHTML=groupIds.size?'<small>Group editing affects the current step only. Attached equipment follows its holder.</small>':'<small>Select an object on the pitch to edit its label, rotation and timing.</small>';return}let t=f().timing?.[o.id]||{start:0,end:100};const stepDuration=Number(f().seconds)||2,clockAt=v=>(stepDuration*v/100).toFixed(1)+' s';$('objectPanel').innerHTML=`<div class="field"><label>Object: ${esc(types[o.type][0])}</label><input id="objLabel" value="${esc(o.label)}" ${disabled}></div><div class="field"><label>Rotation (degrees)</label><input id="objRot" type="number" min="-360" max="360" value="${o.rot}" ${disabled}><div class="facing-buttons" aria-label="Quick facing directions">${[["↑",0,"up"],["→",90,"right"],["↓",180,"down"],["←",270,"left"]].map(([symbol,a,word])=>`<button type="button" data-facing="${a}" title="Face ${word} on screen" aria-label="Face ${word} on screen" ${disabled}>${symbol}</button>`).join("")}</div><small>Drag the green handle on the pitch to rotate. Hold Shift for 15° steps. Degrees are relative to the pitch.</small></div>${idx>0?`<div class="pair"><div class="field"><label>${(o.type==='label'||isDiagramObject(o))?'Visible from (%)':'Movement starts (%)'}</label><input id="start" type="number" min="0" max="99" value="${t.start}" ${disabled}></div><div class="field"><label>${(o.type==='label'||isDiagramObject(o))?'Visible until (%)':'Movement finishes (%)'}</label><input id="end" type="number" min="1" max="100" value="${t.end}" ${disabled}></div></div><small>${(o.type==='label'||isDiagramObject(o))?'<strong>Annotation visibility:</strong> 0% shows the label when this step begins, 100% keeps it visible until the step ends. For example, 25–75% shows it only during the middle half.':'<strong>Movement timing:</strong> 0% is the beginning of this step; 100% is its end. This changes <em>when</em> the object travels, not how far. A separate step creates a real pause.'}</small><small>For this ${esc(stepDuration.toFixed(1))} s step: ${(o.type==='label'||isDiagramObject(o))?'visible':'movement'} from ${esc(clockAt(t.start))} to ${esc(clockAt(t.end))}.</small>`:''}<div class="flex" style="margin-top:9px"><button id="copyObj" ${disabled}>Duplicate</button><button id="delObj" class="danger-action" ${disabled} ${contactType(o.type)&&!(f().guide&&o.id===f().guide.id+'-formation')?'hidden':''}>${selectedPathId===o.id?'Remove movement (keep player)':'Delete object'}</button></div>`;if(isDiagramObject(o))pitchMarkingInspector(o,disabled);
 if(o.type==='coach'){
- const box=document.createElement('div');
- box.className='section coach-start-cue';
- const existing=drill.frames[1]?.signal?.kind==='whistle'&&drill.frames[1]?.signal?.coachId===o.id;
- box.innerHTML='<h3>Coach start signal</h3><button type="button" id="coachWhistle" '+disabled+'>'+(existing?'Remove whistle · GO':'Blow whistle · GO')+'</button><small>The whistle starts the first action step. It appears beside the coach in playback, video frames and coaching notes. Sound plays in live playback unless muted.</small>';
- $('objectPanel').append(box);
+ const panel=document.createElement('div');
+ panel.className='section coach-start-cue';
+ const cueStep=drill.frames.findIndex(fr=>fr.signal?.kind==='whistle'&&fr.signal.coachId===o.id);
+ const active=cueStep>=0;
+ const value=active?signalForFrame(drill.frames[cueStep])?.duration??DEFAULT_WHISTLE_DURATION:DEFAULT_WHISTLE_DURATION;
+ panel.innerHTML='<h3>Coach start signal</h3>'+
+ '<div class="field"><label for="coachWhistleDuration">Show whistle cue for (seconds)</label>'+
+ '<input id="coachWhistleDuration" type="number" min="0.1" max="3" step="0.1" inputmode="decimal" value="'+value.toFixed(1)+'" '+disabled+'>'+
+ '<small>For example, 0.2 or 0.5 seconds. This controls the visible WHISTLE · GO cue, not the length of the drill step.</small></div>'+
+ '<button type="button" id="coachWhistle" '+disabled+'>'+(active?'Remove whistle · GO':'Add whistle · GO')+'</button>'+
+ '<small>'+(active?'Whistle is currently on step '+(cueStep+1)+'. Change its time above or remove it here.':'Adds a start signal to the first action step. The whistle sound can be muted during playback.')+'</small>';
+ $('objectPanel').append(panel);
+ const readDuration=()=>{
+  const field=$('coachWhistleDuration'),v=Number(field.value);
+  if(field.value.trim()===''||!Number.isFinite(v)||v<0.1||v>3){
+   note('Enter a whistle display time between 0.1 and 3.0 seconds.');field.focus();return null;
+  }
+  return normalWhistleDuration(v);
+ };
+ $('coachWhistleDuration').onchange=()=>{
+  if(!active)return;
+  const duration=readDuration();if(duration===null)return;
+  const frame=drill.frames.find(fr=>fr.signal?.kind==='whistle'&&fr.signal.coachId===o.id);
+  if(!frame)return;
+  frame.signal.duration=duration;
+  changed();inspector();
+  note('Whistle cue now displays for '+duration.toFixed(1)+' seconds. The sound and step duration are unchanged.');
+ };
  $('coachWhistle').onclick=()=>{
-  if(!drill.frames[0].objects.some(p=>p.id===o.id&&p.type==='coach')){note('The whistle coach must be present in the initial setup. Move or add the coach to the first step.');return}
+  // Removal must come FIRST. Never block a valid removal because the coach
+  // has moved, the selected step has changed, or a past setup was edited.
+  if(removeWhistle(drill,o.id)){
+   changed();choose(Math.min(idx,drill.frames.length-1));
+   selected=o.id;inspector();openInspector('Object',false);
+   note('Whistle · GO removed. The action step remains; delete that step separately if no longer needed.');
+   return;
+  }
+  const duration=readDuration();if(duration===null)return;
+  if(!drill.frames[0].objects.some(p=>p.id===o.id&&p.type==='coach')){
+   note('To add a start whistle, the coach must be in the initial setup.');return;
+  }
   if(drill.frames.length===1){
    const next=stripDecisions(clone(drill.frames[0]));
-   next.name='GO · coach whistle';next.seconds=2;next.notes='The coach blows the whistle. Players start the action.';next.timing={};next.paths={};
+   next.name='GO · coach whistle';next.seconds=2;
+   next.notes='The coach blows the whistle. Players start the action.';
+   next.timing={};next.paths={};
    drill.frames.push(next);
   }
   const step=drill.frames[1];
-  if(!step.objects.some(p=>p.id===o.id&&p.type==='coach')){note('Make the coach present in the first action step.');return}
-  if(step.signal?.kind==='whistle'&&step.signal.coachId===o.id)delete step.signal;
-  else step.signal={kind:'whistle',coachId:o.id,label:'GO'};
-  const enabled=!!step.signal;changed();choose(enabled?1:Math.min(idx,drill.frames.length-1));selected=o.id;inspector();openInspector('Object',false);
-  note(enabled?'Whistle · GO added to the first action step. It will play automatically.':'Start whistle removed.');
+  if(!step.objects.some(p=>p.id===o.id&&p.type==='coach')){
+   note('Add the coach to the first action step to place a start whistle.');return;
+  }
+  step.signal={kind:'whistle',coachId:o.id,label:'GO',duration};
+  changed();choose(1);selected=o.id;inspector();openInspector('Object',false);
+  note('Whistle · GO added. Cue displays for '+duration.toFixed(1)+' seconds at the start of the action.');
  };
 }
 if(o.type==='label'){
