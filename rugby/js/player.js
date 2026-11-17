@@ -1,12 +1,12 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.13.1';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.6';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.9';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=1';
-import {playWhistle,crossedWhistles} from './whistle-signal.js?v=1';
-import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=2';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.8';
+import {playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
+import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=3';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.9';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
-import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.6';
+import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.9';
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
 function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
 function stepEnd(i){return d.frames.slice(0,i+1).reduce((sum,f,k)=>sum+(k?f.seconds:0),0)}
