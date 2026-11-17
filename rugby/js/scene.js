@@ -4,7 +4,7 @@ import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors}
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.13.4';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=1';
-import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=1';
+import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=2';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
 import {pitchGeometry,trainingField} from './pitch.js?v=0.12.23';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
