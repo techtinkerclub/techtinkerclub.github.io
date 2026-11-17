@@ -269,31 +269,37 @@ createTimingTrackEditor($('tracks'),{
 
 // A true choice changes the editable timeline: the first part is shared,
 // then A and B each own their own sequence, including ball, tackling and timing.
-function compareOutcomePaths(){
+let decisionPaused=false,decisionResolved=false;
+function compareOutcomePaths({atFork=false}={}){
  if(!hasOutcomes(drill))return;
  stop();
+ if(atFork){preview=decisionTime(drill);render()}
+ decisionPaused=atFork;
  try{
   $('outcomeMapTitle').textContent='◆ '+branchInfo(drill).question;
   $('outcomeMapCards').innerHTML=outcomeCardsMarkup(drill,'edit');
   $('outcomeMapDialog').showModal();
  }catch(err){note('Could not display the decision comparison: '+err.message)}
 }
-$('compareOutcomes').onclick=compareOutcomePaths;
-$('closeOutcomeMap').onclick=()=>$('outcomeMapDialog').close();
+$('compareOutcomes').onclick=()=>compareOutcomePaths();
+$('closeOutcomeMap').onclick=()=>{const paused=decisionPaused;$('outcomeMapDialog').close();decisionPaused=false;if(paused)decisionResolved=true};
 $('outcomeMapCards').onclick=e=>{
  const button=e.target.closest('[data-branch-choice]');
  if(!button||!hasOutcomes(drill))return;
  const choice=button.dataset.branchChoice;
+ const resume=decisionPaused;decisionPaused=false;
  $('outcomeMapDialog').close();
  if(branchInfo(drill).active!==choice)$('outcome'+choice.toUpperCase()).click();
  else choose(Math.min(branchInfo(drill).fork+1,drill.frames.length-1));
+ decisionResolved=true;
+ if(resume){preview=decisionTime(drill);render();$('play').click()}
  note('Editing option '+choice.toUpperCase()+'. Choose Compare A + B to inspect the other consequence.');
 };
 $('tryDecisionDemo').onclick=()=>{
  if(!confirmLeave())return;
  const fixture=SEEDS.find(x=>x.id==='seed-132');
  if(!fixture){note('The decision example is missing from the starter catalogue.');return}
- drill=freshSeed(fixture);dirty=false;selected=null;resetHistory();choose(0);
+ drill=freshSeed(fixture);dirty=false;selected=null;decisionResolved=false;resetHistory();choose(0);
  note('Loaded the five-defender decision demo. Press Play to reach the fork, then Compare A + B to inspect the two routes. Open option A or B to edit each response.');
 };
 function renderOutcomeBar(){
@@ -1219,7 +1225,37 @@ $('stepName').onchange=()=>{editMode();f().name=$('stepName').value||'Step';chan
  }
  n.name='Step '+(idx+2);n.seconds=2;n.notes='';n.timing={};n.paths={};drill.frames.splice(idx+1,0,n);if(hasOutcomes(drill)&&idx<branchInfo(drill).fork)drill.branching.fork++;sanitizeRoutes(drill.frames);changed();choose(idx+1)};$('deleteStep').onclick=()=>{if(drill.frames.length<2)return;if(hasOutcomes(drill)&&(idx<=branchInfo(drill).fork||drill.frames.length===branchInfo(drill).fork+2)){note('To keep both outcomes valid, leave the shared decision step and at least one step in each outcome.');return}editMode();drill.frames.splice(idx,1);drill.frames[0].seconds=0;sanitizeRoutes(drill.frames);changed();choose(Math.min(idx,drill.frames.length-1))};$('back').onclick=()=>choose(idx-1);$('forward').onclick=()=>choose(idx+1);$('restart').onclick=()=>choose(0);$('trails').onclick=()=>{showPaths=!showPaths;$('trails').classList.toggle('selected',showPaths);$('trails').setAttribute('aria-pressed',String(showPaths));render()};$('markups').onclick=()=>{showMarkups=!showMarkups;$('markups').classList.toggle('selected',showMarkups);$('markups').setAttribute('aria-pressed',String(showMarkups));if(!showMarkups&&isDiagramObject(activeObject())){selected=null;inspector()}render();note(showMarkups?'Pitch markings visible.':'Pitch markings hidden for this view.')};$('grid').onclick=()=>{showGrid=!showGrid;syncGrid();render()};$('snapGrid').onclick=()=>{gridPrefs.snap=!gridPrefs.snap;syncGrid();note(gridPrefs.snap?'Snap on · '+gridPrefs.step+' m spacing. Hold Shift for free movement.':'Snap off · free movement.');};$('gridStep').onchange=()=>{gridPrefs.step=gridStep($('gridStep').value);syncGrid();render();note('Grid spacing set to '+gridPrefs.step+' m. Existing positions unchanged.')};$('orientation').onclick=()=>{orientation=orientation==='up'?'right':'up';$('orientation').textContent=orientation==='up'?'View ↕':'View ↔';render()};$('scrub').oninput=()=>{ballPicking=null;routeDrawing=false;stop();preview=Number($('scrub').value);render();inspector();note('Preview mode. Select a step to resume editing.')};let whistleSoundOn=true;
 $('whistleSound').onclick=()=>{whistleSoundOn=!whistleSoundOn;$('whistleSound').setAttribute('aria-pressed',String(whistleSoundOn));$('whistleSound').textContent=whistleSoundOn?'Whistle sound: on':'Whistle sound: off'};
-$('play').onclick=()=>{trainingPick=null;ballPicking=null;if(routeDrawing)finishRoute();if(playing){stop();return}if(duration()<=0){note('Add a second step to animate the drill.');return}let base=preview??at(idx);if(base>=duration()-.01)base=0;preview=base;playing=true;$('play').textContent='Ⅱ Pause';if(whistleSoundOn&&crossedWhistles(drill,base,base,{includeStart:true}).length)playWhistle();clock=performance.now();function tick(now){if(!playing)return;const previous=preview;preview=Math.min(duration(),preview+(now-clock)/1000*Number($('speed').value));clock=now;if(whistleSoundOn&&crossedWhistles(drill,previous,preview).length)playWhistle();render();if(preview>=duration()){stop();return}raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick);note('Playing the drill. Select a step to edit.');inspector()};function download(name,body,type){const url=URL.createObjectURL(new Blob([body],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}const filename=()=>drill.title.replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||'rugby-drill';$('export').onclick=()=>{if(requireAppliedSetup()){download(filename()+'.json',JSON.stringify(drill,null,2),'application/json');$('shareStatus').textContent='Editable drill JSON exported.'}};$('png').onclick=()=>{if(!requireAppliedSetup())return;const scene=renderScene(drill,{...shareOptions(),index:idx});download(filename()+'-step-'+(idx+1)+'.svg',scene.svg,'image/svg+xml');$('shareStatus').textContent='Step '+(idx+1)+' SVG exported.'};function readSavedLibrary(){const data=JSON.parse(localStorage.getItem('rugby-studio-v1')||'[]');if(!Array.isArray(data))throw Error('Saved library is unreadable');return data}
+$('play').onclick=()=>{
+ trainingPick=null;ballPicking=null;
+ if(routeDrawing)finishRoute();
+ if(playing){stop();return}
+ if(duration()<=0){note('Add a second step to animate the drill.');return}
+ if(preview===null&&idx===0)decisionResolved=false;
+ let base=preview??at(idx);
+ if(base>=duration()-.01){base=0;decisionResolved=false}
+ preview=base;
+ const fork=hasOutcomes(drill)?decisionTime(drill):null;
+ if(fork!==null&&!decisionResolved&&base>=fork-1e-6){compareOutcomePaths({atFork:true});return}
+ playing=true;$('play').textContent='Ⅱ Pause';
+ if(whistleSoundOn&&crossedWhistles(drill,base,base,{includeStart:true}).length)playWhistle();
+ clock=performance.now();
+ function tick(now){
+  if(!playing)return;
+  const from=preview;
+  preview=Math.min(duration(),from+(now-clock)/1000*Number($('speed').value));clock=now;
+  if(fork!==null&&!decisionResolved&&from<=fork+1e-6&&preview>=fork-1e-6){
+   preview=fork;compareOutcomePaths({atFork:true});return;
+  }
+  if(whistleSoundOn&&crossedWhistles(drill,from,preview).length)playWhistle();
+  render();
+  if(preview>=duration()){stop();return}
+  raf=requestAnimationFrame(tick);
+ }
+ raf=requestAnimationFrame(tick);
+ note('Playing the drill. The decision will pause and show both outcomes.');
+ inspector();
+};
+function download(name,body,type){const url=URL.createObjectURL(new Blob([body],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}const filename=()=>drill.title.replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||'rugby-drill';$('export').onclick=()=>{if(requireAppliedSetup()){download(filename()+'.json',JSON.stringify(drill,null,2),'application/json');$('shareStatus').textContent='Editable drill JSON exported.'}};$('png').onclick=()=>{if(!requireAppliedSetup())return;const scene=renderScene(drill,{...shareOptions(),index:idx});download(filename()+'-step-'+(idx+1)+'.svg',scene.svg,'image/svg+xml');$('shareStatus').textContent='Step '+(idx+1)+' SVG exported.'};function readSavedLibrary(){const data=JSON.parse(localStorage.getItem('rugby-studio-v1')||'[]');if(!Array.isArray(data))throw Error('Saved library is unreadable');return data}
 function stored(){try{return readSavedLibrary()}catch{return []}}
 function syncSaveState(){
  const button=$('save'),status=$('saveState'),saved=githubBaseline&&githubBaseline.id===drill.id?githubBaseline:null,pending=dirty||setupPending;
