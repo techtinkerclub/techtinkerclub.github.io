@@ -1,5 +1,111 @@
 {
   "version": 1,
   "kind": "rugby-coach-library",
-  "drills": []
+  "drills": [
+    {
+      "version": 1,
+      "id": "mwjrn9r5zug49w",
+      "title": "Rolling donut tackle",
+      "age": "U10",
+      "category": "Contact",
+      "length": 12,
+      "width": 8,
+      "objective": "",
+      "safety": "",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwjrpei00y7600",
+              "type": "coach",
+              "label": "Coach",
+              "x": 422.8,
+              "y": 60.3,
+              "rot": 180
+            },
+            {
+              "id": "mwjrun260a5sun",
+              "type": "donut",
+              "label": "",
+              "x": 422.8,
+              "y": 83.6,
+              "rot": 133,
+              "donutState": "ready"
+            },
+            {
+              "id": "mwjrux6zwsuvb0",
+              "type": "cone",
+              "label": "",
+              "x": 422.8,
+              "y": 223.4,
+              "rot": 0
+            },
+            {
+              "id": "mwjrvonkw8jqbz",
+              "type": "cone",
+              "label": "",
+              "x": 368.4,
+              "y": 316.6,
+              "rot": 0
+            },
+            {
+              "id": "mwjrvwjw1hsxy7",
+              "type": "cone",
+              "label": "",
+              "x": 477.2,
+              "y": 316.6,
+              "rot": 0
+            },
+            {
+              "id": "mwjrwkusidvzuh",
+              "type": "defender",
+              "label": "D1",
+              "x": 422.8,
+              "y": 316.6,
+              "rot": 0
+            },
+            {
+              "id": "mwjrwljzuxg0if",
+              "type": "defender",
+              "label": "D2",
+              "x": 422.8,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwjrwm60lbdvso",
+              "type": "defender",
+              "label": "D3",
+              "x": 422.8,
+              "y": 409.8,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "down",
+      "showAttack": true,
+      "boundary": "cones",
+      "players": "",
+      "equipment": "",
+      "instructions": "",
+      "coaching": "",
+      "regression": "",
+      "progression": "",
+      "questions": "",
+      "notes": "",
+      "provenance": "Coach-created / imported drill",
+      "review": "Coach review required",
+      "ageMin": 10,
+      "ageMax": 10,
+      "minutes": 8,
+      "links": [],
+      "savedAt": "2026-11-17T09:33:30.030Z"
+    }
+  ]
 }
