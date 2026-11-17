@@ -659,7 +659,8 @@ pitch.addEventListener('pointerdown',e=>{
  e.preventDefault();
 });
 pitch.addEventListener('pointermove',e=>{
- if(trainingPick?.kind==='roll'&&!drag){const lane=$('donutLanePreview'),pad=f().objects.find(o=>o.id===trainingPick.id);if(lane&&pad)lane.innerHTML=donutLaneOverlay(pad,geometry(),viewPoint(e));return}
+ if(trainingPick?.kind==='roll'&&!drag){const lane=$('donutLanePreview'),pad=f().objects.find(o=>o.id===trainingPick.id);if(lane&&pad)// Preserve the selected roll direction when the mouse redraws the preview.
+  lane.innerHTML=donutLaneOverlay(pad,geometry(),viewPoint(e),trainingPick.direction);return}
  if(!drag||e.pointerId!==drag.pointerId)return;
  const o=f().objects.find(x=>x.id===drag.id);if(!o)return;
  if(drag.kind==='group'){
