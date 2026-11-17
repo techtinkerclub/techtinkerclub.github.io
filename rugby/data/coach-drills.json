@@ -682,8 +682,8 @@
       "progression": "Vary which side the donut travels towards, or change the roll angle between turns. Have the tackler read the line and adjust their feet rather than guessing. Keep the roll slow enough for a safe tackle; only add speed when technique stays consistent.",
       "questions": "When did you need to slow your feet? Where were you looking as the donut moved? Did you get close enough to wrap, or reach and dive? Where was your head at contact? Were you in control when you released?",
       "notes": "The animation shows three players taking turns and two coaches, with one coach working the donut and the other observing/resetting from the side. CHASE–CHILL–KILL–RESET–RETURN are the on-pitch cues. The step timings are for the animation, not prescribed running speeds. Pause between turns for a quick correction; keep the other players behind the cones.",
-      "provenance": "Coach-created / imported drill",
-      "review": "Coach review required",
+      "provenance": "Club coaching drill",
+      "review": "Check tackle progression and supervision before use",
       "ageMin": 10,
       "ageMax": 10,
       "minutes": 8,
@@ -697,9 +697,14 @@
           "label": "RFU – Tackle Safe learning",
           "kind": "Law / safety",
           "url": "https://rfu.freshdesk.com/support/solutions/articles/103000300587-how-do-i-find-and-book-the-tackle-safe-elearning-"
+        },
+        {
+          "label": "RFU – Age Grade Regulations",
+          "kind": "Law / safety",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-"
         }
       ],
-      "savedAt": "2026-11-17T12:09:20.381Z"
+      "savedAt": "2026-11-17T12:27:54Z"
     }
   ]
 }
