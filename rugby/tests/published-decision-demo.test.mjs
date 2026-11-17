@@ -1,0 +1,77 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {playbackData,renderScene,drillDuration} from '../js/scene.js';
+import {outcomeViews,chooseOutcome} from '../js/branching.js';
+import {decisionTime,outcomeCardsMarkup} from '../js/branching-visual.js';
+import {printMarkup} from '../js/outputs.js';
+import {signalForFrame} from '../js/whistle-signal.js';
+const read=p=>JSON.parse(readFileSync(new URL('../data/'+p+'.json',import.meta.url),'utf8'));
+const privateLibrary=read('coach-drills'),publicLibrary=read('drills');
+const source=privateLibrary.drills.find(d=>d.id==='mwl6su34qnwssj');
+const publicDrill=publicLibrary.drills.find(d=>d.id==='seed-133');
+assert.ok(source,'Original shared GitHub drill missing');
+assert.ok(publicDrill,'Public presentation drill missing');
+assert.equal(publicLibrary.drills.length,133);
+assert.equal(source.title,'Hold the line · Carry or pass?');
+assert.equal(publicDrill.title,source.title);
+assert.equal(publicDrill.savedFromCoachDrill,source.id);
+assert.equal(source.ageMin,10);
+assert.equal(source.category,'Defence');
+assert.equal(source.branching.fork,2);
+assert.equal(source.branching.choices.length,2);
+assert.equal(signalForFrame(source.frames[2]).duration,.5);
+const views=outcomeViews(playbackData(publicDrill)),[A,B]=views.map(v=>v.drill);
+assert.equal(A.frames.length,5);
+assert.equal(B.frames.length,6);
+assert.ok(decisionTime(A)>0);
+assert.equal(A.frames[0].objects.filter(o=>o.type==='defender').length,6,'Preserve all six defenders from the original');
+assert.ok(source.frames[0].objects.some(o=>o.type==='cone'),'Mark the practice area');
+const begin=source.frames[0].objects.filter(o=>o.type==='defender');
+const start=source.frames[2].objects.filter(o=>o.type==='defender');
+assert.deepEqual(start.map(o=>o.label),['D1','D2','D3','D4','D5','D6']);
+for(const defender of start){
+ const before=begin.find(o=>o.id===defender.id);
+ assert.ok(defender.y>before.y,defender.label+' must join the collective step-up');
+}
+const marker=A.frames[2].objects.find(o=>o.type==='decision');
+assert.ok(marker);
+const coach=marker.decision.playerId;
+assert.equal(A.frames[2].objects.find(o=>o.id===coach)?.type,'coach');
+assert.ok(A.frames[3].objects.some(o=>o.type==='ball'&&o.ownerId===coach),'Coach retains possession in A');
+assert.ok(A.frames.slice(3).every(f=>!f.objects.some(o=>o.type==='tackle')),'Adult-coach carry must remain touch-only');
+assert.match(A.frames[4].objects.find(o=>o.id==='coach-demo-touch-caption').label,/TOUCH/);
+const runner=A.frames[2].objects.find(o=>o.type==='attacker'),ball=A.frames[2].objects.find(o=>o.type==='ball');
+assert.ok(runner.y>=A.frames[2].objects.find(o=>o.id===coach).y,'Receiver must be behind the coach at pass start');
+assert.equal(ball.ownerId,coach);
+assert.equal(B.frames[3].objects.find(o=>o.type==='ball').ownerId,runner.id,'Real ball passes to runner');
+assert.equal(B.frames[3].objects.find(o=>o.type==='ball').transferKind,'pass');
+const contact=B.frames[4].objects.find(o=>o.type==='tackle');
+assert.ok(contact,'Runner branch needs a tackle marker');
+assert.equal(contact.breakdown.carrierId,runner.id);
+assert.equal(contact.breakdown.tacklerIds?.length,1,'One primary tackler, not a simultaneous double tackle');
+assert.equal(B.frames[5].objects.find(o=>o.type==='ball').ownerId,undefined,'After the tackle ball must be released');
+assert.equal(B.frames[5].objects.find(o=>o.type==='ball').transferKind,'presentation');
+for(const branch of views){
+ for(let step=0;step<branch.drill.frames.length;step++){
+  const scene=renderScene(branch.drill,{index:step,runs:true,passes:true,decisions:true,markups:true,labels:true});
+  assert.match(scene.svg,/<svg/);
+  assert.doesNotMatch(scene.svg,/NaN|undefined/,'Branch '+branch.id+' step '+step+': invalid SVG');
+ }
+ assert.ok(drillDuration(branch.drill)>0);
+}
+const pathCards=outcomeCardsMarkup(publicDrill,'choose');
+assert.match(pathCards,/data-branch-choice="a"/);
+assert.match(pathCards,/data-branch-choice="b"/);
+const printed=printMarkup(publicDrill);
+for(const term of ['OPTION A','OPTION B','World Rugby','Hold the line','D4'])assert.ok(printed.includes(term),'Print missing '+term);
+assert.ok(publicDrill.links.some(l=>l.url.includes('englandrugby.com')));
+assert.ok(publicDrill.links.some(l=>l.url.includes('passport.world.rugby')));
+assert.equal(publicDrill.links.length,4);
+const switched=structuredClone(publicDrill);
+chooseOutcome(switched,'b');
+assert.equal(switched.frames.length,6);
+assert.equal(switched.frames.at(-1).name,'B3 · Release and present');
+chooseOutcome(switched,'a');
+assert.equal(switched.frames.length,5);
+assert.equal(switched.frames.at(-1).name,'A2 · Two-hand touch · stop and reset');
+console.log('Published U10 decision drill: both options, safe touch/contact, six-player line, ball transfer, frames, print and reference links — passed.');
