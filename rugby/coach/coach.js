@@ -21,6 +21,7 @@ const CATEGORIES={
  move:[
   {id:'move',icon:'↝',title:'Show a player running',description:'Select the player, then draw their movement path.'},
   {id:'step',icon:'＋',title:'Add the next step',description:'Keep the current arrangement and show the next action.'},
+  {id:'outcome',icon:'◆',title:'Create two playable outcomes',description:'Split at the current step. Animate option A and option B separately, then export both.'},
   {id:'attach',icon:'◉',title:'Give a free ball to a player',description:'Choose a player to carry the ball before making a pass.'},
   {id:'pass',icon:'⇢',title:'Pass the ball',description:'Choose the receiver; the original ball-passing animation is used.'},
   {id:'release',icon:'↗',title:'Release the ball',description:'Place the ball on the ground after a carry or tackle.'},
@@ -163,6 +164,7 @@ function doAction(key){
  case 'move':
   done=launch('drawRouteSide');message='Click where the run finishes. Add bends to the running line if you need them.';break;
  case 'step':done=launch('addStep');message='New step added. Move just the players who act next, or choose another action.';break;
+ case 'outcome':done=launch('createOutcomes');message='Name the decision and both outcomes. You can build each movement sequence separately.';break;
  case 'attach':done=launch('attachBallSide');message='Choose the first ball carrier on the pitch.';break;
  case 'pass':done=launch('passBallSide');message='Choose the receiving player to complete the pass.';break;
  case 'release':done=launch('releaseBallSide');message='Ball released. Move it to the intended location if needed.';break;
