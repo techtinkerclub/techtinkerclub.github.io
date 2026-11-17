@@ -8,7 +8,7 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const data=JSON.parse(read('data/drills.json'));
 const example=data.drills.find(d=>d.id==='seed-132');
 assert.ok(example,'Missing coached decision demonstration');
-assert.equal(data.drills.length,132);
+assert.ok(data.drills.length>=132,'Keep original starter drills and published additions');
 assert.equal(example.frames[0].objects.filter(o=>o.type==='defender').length,5,'Five defenders needed');
 assert.equal(example.branching.fork,1);
 assert.equal(example.branching.choices.length,2);
