@@ -29,6 +29,8 @@ assert.match(guide,/case 'twoTeams'/);
 assert.match(guide,/case 'threeVTwo'/);
 assert.match(guide,/case 'attach'/);
 assert.match(guide,/function guidePreflight\(key\)/);
+assert.match(guide,/pendingAction='move'/);
+assert.match(guide,/if\(resume==='move'&&/,'Selecting a player resumes pending run creation');
 assert.match(guide,/if\(guidePreflight\(key\)\)return;\s*closeDialogs\(\)/,'Close guide before calling original edit handlers');
 assert.match(guide,/picker\.dispatchEvent\(new Event\('change'/,'Picker must use existing object-selection handler');
 assert.match(guide,/case 'notes'/);
