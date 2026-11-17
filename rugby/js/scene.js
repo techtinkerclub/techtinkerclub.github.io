@@ -1,18 +1,18 @@
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.12.10';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
-import {normalScaleMode,symbolTransform,labelOffset,symbolFactors} from './symbol-scale.js?v=0.12.15';
+import {normalScaleMode,symbolTransform,labelOffset,symbolFactors} from './symbol-scale.js?v=0.12.23';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.12.10';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
-import {pitchGeometry,trainingField} from './pitch.js?v=0.9.0';
+import {pitchGeometry,trainingField} from './pitch.js?v=0.12.23';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
-import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.12.13';
+import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.12.23';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
 import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts,PLAYER_POSES} from './contact.js?v=0.12.15';
 import {cleanBreakdowns} from './breakdown.js?v=0.12.0';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.7.1';
-import {offsideOverlay} from './offside.js?v=0.12.0';
+import {offsideOverlay} from './offside.js?v=0.12.23';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
