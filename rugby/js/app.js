@@ -415,7 +415,7 @@ function updateRouteTools(){
  $('clearRoute').disabled=!route?.points?.length;$('removeWaypoint').disabled=!route?.points?.length;
  $('resetMovement').disabled=!existing||!idx||!(canCarry(o)||o?.type==='ball'&&!o.ownerId);
  $('resetMovement').hidden=!existing;
- $('routeHelp').textContent=routeDrawing?'Click route points, then Finish path in Actions.':selectedPathId===selected&&existing?'Running line selected. Press Delete to cancel this movement, not delete the player.':'Click a running line to select it, then Delete to return the player to their starting position. Straighten keeps the destination; Alt-click removes a waypoint.';
+ $('routeHelp').textContent=contactType(o?.type)?routeDrawing?'Click each push or pull position, then Finish path. Each click adds a turn in the contest.':'The raised lime line follows the MOVE handle. Drag the numbered points to shape the contest, or click the line to add a point. Use Draw path for extra back-and-forth movements.':routeDrawing?'Click route points, then Finish path in Actions.':selectedPathId===selected&&existing?'Running line selected. Press Delete to cancel this movement, not delete the player.':'Click a running line to select it, then Delete to return the player to their starting position. Straighten keeps the destination; Alt-click removes a waypoint.';
  pitch.classList.toggle('drawing-route',routeDrawing);
 }
 function insertPathPoint(pointer=null,interval=null,event=null){
@@ -713,6 +713,23 @@ pitch.addEventListener('pointerdown',e=>{
   note('Move the '+contactTitle(marker.type).toLowerCase()+' and its involved players. This step only; other equipment stays put.');
   e.preventDefault();return;
  }
+ // These grips are intentionally over the equipment: dragging a numbered
+ // point edits the actual route even though its on-screen copy is elevated.
+ const contactPoint=e.target.closest('[data-contact-route-waypoint]');
+ if(contactPoint&&contactType(activeObject()?.type)){
+  const marker=activeObject(),index=Number(contactPoint.dataset.contactRouteWaypoint),route=f().paths?.[marker.id];
+  if(!route?.points?.[index])return;
+  if(e.altKey){route.points.splice(index,1);changed();render();tracks();e.preventDefault();return}
+  drag={id:marker.id,kind:'waypoint',index,pointerId:e.pointerId,moved:false,contactOffset:formationRouteOffset(f(),marker,geometry())};
+  pitch.setPointerCapture(e.pointerId);e.preventDefault();return;
+ }
+ const contactLine=e.target.closest('[data-contact-route-insert]');
+ if(contactLine&&contactType(activeObject()?.type)){
+  const marker=activeObject(),g=geometry();
+  const actual=unraiseFormationPoint(viewPoint(e),f(),marker,g);
+  insertPathPoint(g.toView(actual.x,actual.y));
+  e.preventDefault();return;
+ }
  const dp=e.target.closest('[data-dp-point]');if(dp&&activeObject()?.type==='decision'){const o=activeObject(),i=Number(dp.dataset.dpOption),k=Number(dp.dataset.dpPoint),option=o.decision.options[i];if(!option?.points[k])return;if(e.altKey){option.points.splice(k,1);changed();render();inspector();return}drag={id:o.id,kind:'decision-waypoint',option:i,index:k,pointerId:e.pointerId,moved:false};pitch.setPointerCapture(e.pointerId);e.preventDefault();return;}
  const plus=e.target.closest('[data-insert-point]');
  if(plus){insertPathPoint(viewPoint(e),Number(plus.dataset.insertPoint),e);e.preventDefault();return}
@@ -766,7 +783,7 @@ pitch.addEventListener('pointermove',e=>{
  }else if(drag.kind==='decision-waypoint'){const p=o.decision.options[drag.option]?.points[drag.index];if(!p)return;Object.assign(p,placement(point(e),e.shiftKey));
  }else if(drag.kind==='decision-anchor'){const g=geometry(),route=decisionRoute(f(),drill.frames[idx-1],o.decision.playerId,g);if(!route)return;o.decision.anchor=decisionFraction(route,viewPoint(e));const q=decisionLocation(f(),o,g,drill.frames[idx-1]);Object.assign(o,g.fromView(q.x,q.y));
  }else if(drag.kind==='waypoint'){
-  const q=point(e),p=ensureRoute().points[drag.index];if(!p)return;
+  const g=geometry(),q=drag.contactOffset?g.fromView(viewPoint(e).x-drag.contactOffset.x,viewPoint(e).y-drag.contactOffset.y):point(e),p=ensureRoute().points[drag.index];if(!p)return;
   const pos=placement(q,e.shiftKey);if(Math.abs(pos.x-p.x)<1e-8&&Math.abs(pos.y-p.y)<1e-8)return;Object.assign(p,pos);
  }else if(drag.kind==='rotate'){
   const g=geometry(),angle=rotationFromPointer(g.toView(o.x,o.y),viewPoint(e),g.rotation,e.shiftKey?15:1);
