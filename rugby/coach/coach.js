@@ -9,6 +9,7 @@ body.classList.add('coach-edition','coach-guided');
 const CATEGORIES={
  setup:[
   {id:'twoTeams',icon:'♟',title:'Add 2 attackers + 2 defenders',description:'Build a small group to arrange on the pitch. No other objects are changed.'},
+  {id:'threeVTwo',icon:'♟',title:'Add 3 attackers + 2 defenders',description:'Start a simple 3 v 2 exercise; drag the players into position.'},
   {id:'attacker',icon:'＋',title:'Add attacker',description:'Add one attacker. Drag them into position on the field.'},
   {id:'defender',icon:'＋',title:'Add defender',description:'Add one defender and place them opposite the attackers.'},
   {id:'ball',icon:'◉',title:'Add a rugby ball',description:'Put a ball in the drill; give it to a player whenever you are ready.'},
@@ -20,7 +21,8 @@ const CATEGORIES={
  move:[
   {id:'move',icon:'↝',title:'Show a player running',description:'Select the player, then draw their movement path.'},
   {id:'step',icon:'＋',title:'Add the next step',description:'Keep the current arrangement and show the next action.'},
-  {id:'pass',icon:'⇢',title:'Pass or give the ball',description:'Use the existing ball control to choose who receives it.'},
+  {id:'attach',icon:'◉',title:'Give a free ball to a player',description:'Choose a player to carry the ball before making a pass.'},
+  {id:'pass',icon:'⇢',title:'Pass the ball',description:'Choose the receiver; the original ball-passing animation is used.'},
   {id:'release',icon:'↗',title:'Release the ball',description:'Place the ball on the ground after a carry or tackle.'},
   {id:'turnover',icon:'⇄',title:'Change possession',description:'Choose a new ball carrier when the other team wins it.'},
   {id:'timing',icon:'◷',title:'Fine-tune who moves when',description:'Show timing tracks to drag the start and end of a run.'}
@@ -83,6 +85,7 @@ function editObject(id){
 }
 function openActions(tab='setup'){
  chosenCategory=Object.hasOwn(CATEGORIES,tab)?tab:'setup';
+ renderObjectChoices();
  renderCards();
  closeDialogs();
  const dialog=$('coachActionDialog');
@@ -105,7 +108,41 @@ function renderCards(){
  $('coachActionsTitle').textContent=TITLES[chosenCategory];
  $('coachActionHelp').textContent=HELP[chosenCategory];
 }
+// Use the original object picker, so the guide never maintains a second selection model.
+function renderObjectChoices(){
+ const source=$('objectPicker'),target=$('coachObjectChoice'),hint=$('coachSelectionHelp');
+ if(!source||!target||!hint)return;
+ target.replaceChildren(...Array.from(source.options).map(option=>new Option(option.textContent,option.value)));
+ target.value=source.value||'';
+ const current=source.selectedOptions?.[0]?.textContent;
+ hint.textContent=source.value?'Selected: '+current+'. Choose an action below.':'No player selected. Pick an object here when an action needs one.';
+ hint.classList.remove('needs-attention');
+}
+// A missing prerequisite is explained where the coach is choosing the action.
+// In particular, never silently dismiss the action dialog for a disabled control.
+function guidePreflight(key){
+ if(!$('coachActionDialog')?.open)return false;
+ const checks={
+  move:['drawRouteSide','Choose a player from the list above, then try Run again.'],
+  attach:['attachBallSide','Add a rugby ball first. Once it is free, choose Give ball.'],
+  pass:['passBallSide','A player needs to be carrying the ball. Add a ball and use Give ball first.'],
+  release:['releaseBallSide','Give the ball to a player first, then you can release it.'],
+  turnover:['turnoverSide','Add a rugby ball first, then you can change possession.']
+ };
+ const [id,message]=checks[key]||[];
+ if(!id)return false;
+ const control=$(id);
+ if(control&&!control.disabled&&!control.hidden)return false;
+ const hint=$('coachSelectionHelp');
+ if(hint){hint.textContent=message;hint.classList.add('needs-attention')}
+ if(key==='move')$('coachObjectChoice')?.focus();
+ return true;
+}
 function doAction(key){
+ if(guidePreflight(key))return;
+ // The underlying engine correctly blocks edits while ANY dialog is open.
+ // Close the Coach Edition guide BEFORE using original editor controls.
+ closeDialogs();
  let done=false,message='';
  switch(key){
  case 'new':done=launch('new');message='New drill opened. Add a few players, then build the first action.';break;
@@ -114,6 +151,9 @@ function doAction(key){
  case 'twoTeams':
   done=add('attacker')&&add('attacker')&&add('defender')&&add('defender');
   message='Four players added. Drag them apart on the pitch; use the next step to show their movement.';break;
+ case 'threeVTwo':
+  done=add('attacker')&&add('attacker')&&add('attacker')&&add('defender')&&add('defender');
+  message='Three attackers and two defenders added. Drag them into your starting positions, then add a running or passing step.';break;
  case 'attacker':case 'defender':case 'ball':case 'sausage':case 'donut':
   done=add(key);message=key.charAt(0).toUpperCase()+key.slice(1)+' added. Drag it into position; use Object to edit its properties.';break;
  case 'shield':done=add('shieldItem');message='Shield added. In Object → Contact shield, choose the player carrying it.';break;
@@ -121,6 +161,7 @@ function doAction(key){
  case 'move':
   done=launch('drawRouteSide');message='Click where the run finishes. Add bends to the running line if you need them.';break;
  case 'step':done=launch('addStep');message='New step added. Move just the players who act next, or choose another action.';break;
+ case 'attach':done=launch('attachBallSide');message='Choose the first ball carrier on the pitch.';break;
  case 'pass':done=launch('passBallSide');message='Choose the receiving player to complete the pass.';break;
  case 'release':done=launch('releaseBallSide');message='Ball released. Move it to the intended location if needed.';break;
  case 'turnover':done=launch('turnoverSide');message='Choose the player taking possession.';break;
@@ -186,6 +227,18 @@ document.addEventListener('DOMContentLoaded',()=>{
  $('coachNotes')?.addEventListener('click',()=>doAction('notes'));
  $('coachShare')?.addEventListener('click',()=>doAction('share'));
  $('coachMode')?.addEventListener('click',toggleTools);
+ $('coachUseObject')?.addEventListener('click',()=>{
+  const choice=$('coachObjectChoice'),picker=$('objectPicker');
+  if(!picker||!choice?.value){
+   const hint=$('coachSelectionHelp');if(hint){hint.textContent='Choose a player or object first.';hint.classList.add('needs-attention')}
+   return;
+  }
+  const selectedId=choice.value;
+  closeDialogs(); // Selection is also an edit action in the original engine.
+  picker.value=selectedId;
+  picker.dispatchEvent(new Event('change',{bubbles:true}));
+  openActions(chosenCategory);
+ });
  for(const button of document.querySelectorAll('[data-coach-close]'))
   button.addEventListener('click',()=>{markWelcomeSeen();closeDialogs()});
  $('coachWelcome')?.addEventListener('click',event=>{
