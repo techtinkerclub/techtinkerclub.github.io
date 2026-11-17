@@ -1,19 +1,19 @@
 import {physicalUnit} from './symbol-scale.js?v=0.12.0';
 // Author-controlled schematic breakdown stages; not a technique or law validator.
 import {carrier,findObject} from './possession.js?v=0.12.0';
-export const PHASES={tackle:'Tackle',release:'Release and present',support:'Attacking support arrives',ruck:'Ruck formed',contest:'Contest for possession',secured:'Ball secured · use it'};
+export const PHASES={pad:'Sausage ready · ruck practice',tackle:'Tackle',release:'Release and present',support:'Attacking support arrives',ruck:'Ruck formed',contest:'Contest for possession',secured:'Ball secured · use it'};
 export const validPhase=p=>Object.hasOwn(PHASES,p);
 export function supportTitle(side){return side==='defence'?'Defending support arrives':'Attacking support arrives'}
-export function nextPhase(p){const keys=Object.keys(PHASES),i=keys.indexOf(p);return i<0?null:keys[i+1]||null}
+export function nextPhase(p){if(p==='pad')return 'support';const keys=['tackle','release','support','ruck','contest','secured'],i=keys.indexOf(p);return i<0?null:keys[i+1]||null}
 export const team=o=>['attacker','shield'].includes(o?.type)?'attack':['defender','bagplayer'].includes(o?.type)?'defence':null;
 export function roles(frame,m){const r=m.breakdown||{},members=m.members||[];const carrierId=r.carrierId||members.find(x=>x.pose==='grounded')?.id;const tacklerId=(findObject(frame,r.tacklerId)?r.tacklerId:null)||members.find(x=>x.pose==='tackling')?.id;const tacklerIds=[...new Set([tacklerId,...(Array.isArray(r.tacklerIds)?r.tacklerIds:[]),...members.filter(x=>x.pose==='tackling').map(x=>x.id)].filter(id=>id&&id!==carrierId&&findObject(frame,id)))].slice(0,2);return {...r,carrierId,tacklerId,tacklerIds,ballId:r.ballId||frame.objects.find(o=>o.type==='ball'&&o.ownerId===carrierId)?.id}}
-export function candidates(frame,m,side){const r=roles(frame,m),a=findObject(frame,r.carrierId),t=team(a);return frame.objects.filter(o=>team(o)&&o.id!==r.carrierId&&!r.tacklerIds.includes(o.id)&&(side==='attack'?team(o)===t:team(o)!==t))}
-export function cleanBreakdowns(frames){for(const f of frames)for(const o of f.objects){if(!o.breakdown)continue;if(!['tackle','ruck'].includes(o.type)||!validPhase(o.breakdown.phase)){delete o.breakdown;continue}const r={phase:o.breakdown.phase};if(['attack','defence'].includes(o.breakdown.arrivalSide))r.arrivalSide=o.breakdown.arrivalSide;for(const k of ['carrierId','tacklerId','ballId'])if(typeof o.breakdown[k]==='string'&&findObject(f,o.breakdown[k]))r[k]=o.breakdown[k];const ids=roles(f,o).tacklerIds;if(ids.length){r.tacklerId=ids[0];r.tacklerIds=ids}o.breakdown=r}return frames}
+export function candidates(frame,m,side){const r=roles(frame,m),a=findObject(frame,r.carrierId),t=r.mode==='pad'?'attack':team(a);return frame.objects.filter(o=>team(o)&&o.id!==r.carrierId&&!r.tacklerIds.includes(o.id)&&(side==='attack'?team(o)===t:team(o)!==t))}
+export function cleanBreakdowns(frames){for(const f of frames)for(const o of f.objects){if(!o.breakdown)continue;if(!['tackle','ruck'].includes(o.type)||!validPhase(o.breakdown.phase)){delete o.breakdown;continue}const r={phase:o.breakdown.phase};if(o.breakdown.mode==='pad'&&o.type==='ruck'){r.mode='pad';if(typeof o.breakdown.padId==='string')r.padId=o.breakdown.padId}if(['attack','defence'].includes(o.breakdown.arrivalSide))r.arrivalSide=o.breakdown.arrivalSide;for(const k of ['carrierId','tacklerId','ballId'])if(typeof o.breakdown[k]==='string'&&findObject(f,o.breakdown[k]))r[k]=o.breakdown[k];const ids=roles(f,o).tacklerIds;if(ids.length){r.tacklerId=ids[0];r.tacklerIds=ids}o.breakdown=r}return frames}
 export function setParticipants(f,m,g,ids,u10=false){
- const r=roles(f,m),a=findObject(f,r.carrierId),phase=r.phase,grounded=a?{id:a.id,pose:'grounded'}:null;
+ const r=roles(f,m),a=findObject(f,r.carrierId),phase=r.phase,grounded=r.mode==='pad'?null:a?{id:a.id,pose:'grounded'}:null;
  const allowed=new Set([...candidates(f,m,'attack'),...candidates(f,m,'defence')].map(o=>o.id));
  const players=[...new Set(ids)].filter(id=>allowed.has(id)).map(id=>findObject(f,id));
- const same=players.filter(o=>team(o)===team(a)),other=players.filter(o=>team(o)!==team(a));
+ const referenceTeam=r.mode==='pad'?'attack':team(a),same=players.filter(o=>team(o)===referenceTeam),other=players.filter(o=>team(o)!==referenceTeam);
  if(u10&&(same.length>1||other.length>1))return {ok:false,message:'U10: one arriving support player per team; the next player plays the ball away.'};
  if(players.length>16)return {ok:false,message:'Diagram limit: 16 arriving players.'};
  if(['ruck','contest','secured'].includes(phase)&&(!same.length||!other.length))return {ok:false,message:'A formed ruck requires at least one standing player from each team.'};
@@ -34,6 +34,22 @@ export function setParticipants(f,m,g,ids,u10=false){
 }
 export function advance(f,m,g,phase,ids,u10=false,arrivalSide=null){
  const r=roles(f,m),a=findObject(f,r.carrierId),d=findObject(f,r.tacklerId),b=findObject(f,r.ballId);
+ // A sausage ruck drill is a separate coaching sequence. There is no tackled
+ // ball carrier, no tackler and no requirement to invent a grounded player.
+ if(r.mode==='pad'){
+  if(phase!==nextPhase(r.phase))return {ok:false,message:'Continue the current pad practice stage first.'};
+  const pad=findObject(f,r.padId);
+  if(pad?.type!=='sausage')return {ok:false,message:'Add a sausage bag, or restore the one linked to this ruck practice.'};
+  const side=arrivalSide||r.arrivalSide||'attack',old=m.breakdown;
+  m.breakdown={phase,mode:'pad',padId:r.padId,arrivalSide:side,...(b?{ballId:b.id}:{})};
+  const result=setParticipants(f,m,g,ids,u10);
+  if(!result.ok){m.breakdown=old;return result}
+  m.type='ruck';
+  m.label=phase==='secured'?(b?'Ball secured · pad drill':'Clearout complete · reset'):phase==='ruck'?'Ruck formed · pad drill':phase==='contest'?'Contest over the pad':phase==='support'?supportTitle(side):PHASES[phase];
+  if(phase==='secured'&&b){b.groundState='secured';delete b.transferKind}
+  return {ok:true,message:m.label};
+ }
+
  if(phase!==nextPhase(r.phase||'tackle')||!a||!d||!b)return {ok:false,message:'An arranged tackle with a ball carrier, tackler and ball is required.'};
  const p=g.toView(m.x,m.y),angle=(m.rot+g.rotation)*Math.PI/180,c=Math.cos(angle),s=Math.sin(angle);
  const put=(o,x,y,rot)=>{Object.assign(o,g.fromView(p.x+physicalUnit(g)*(x*c-y*s),p.y+physicalUnit(g)*(x*s+y*c)));if(rot!==undefined)o.rot=((m.rot+rot)%360+360)%360;if(f.paths?.[o.id])delete f.paths[o.id]};
