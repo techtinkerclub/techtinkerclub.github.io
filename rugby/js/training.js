@@ -54,9 +54,9 @@ export function donutShape(o,base){
  return '<rect x="-10" y="-23" width="20" height="46" rx="8" fill="#e8a75d" stroke="#553a28" stroke-width="2.2"/><path d="M-4 -16V16M4 -16V16" stroke="#ffd7a2" stroke-width="1.5" opacity=".8"/>'+tread;
 }
 // In view coordinates, 0 degrees points up; the orientation transform rotates the heading too.
-export function donutLane(pad,g){
+export function donutLane(pad,g,direction='forward'){
  const a=g.toView(pad.x,pad.y),angle=((Number(pad.rot)||0)+g.rotation)*Math.PI/180;
- const h={x:Math.sin(angle),y:-Math.cos(angle)};
+ const h=direction==='reverse'?{x:-Math.sin(angle),y:Math.cos(angle)}:{x:Math.sin(angle),y:-Math.cos(angle)};
  // Allow for the physical footprint of the wheel at the end of the illustrated lane.
  const inset=Math.min(.375*g.scale,Math.min(g.fw,g.fh)/2),loX=g.margin+inset,hiX=g.margin+g.fw-inset,loY=g.margin+inset,hiY=g.margin+g.fh-inset;
  let max=Infinity;
@@ -67,19 +67,19 @@ export function donutLane(pad,g){
  max=Math.max(0,max);
  return {a,h,max,end:{x:a.x+h.x*max,y:a.y+h.y*max}};
 }
-export function donutTarget(pad,end,g){
+export function donutTarget(pad,end,g,direction='forward'){
  if(!end||!Number.isFinite(end.x)||!Number.isFinite(end.y))throw Error('Choose a rolling distance on the pitch.');
- const lane=donutLane(pad,g),b=g.toView(end.x,end.y),{a,h,max}=lane;
+ const lane=donutLane(pad,g,direction),b=g.toView(end.x,end.y),{a,h,max}=lane;
  const projection=(b.x-a.x)*h.x+(b.y-a.y)*h.y;
  const distance=clip(projection,0,max);
  return {...lane,distance,target:{x:a.x+h.x*distance,y:a.y+h.y*distance}};
 }
-export function donutLaneOverlay(pad,g,pointer=null){
+export function donutLaneOverlay(pad,g,pointer=null,direction='forward'){
  if(!pad||pad.donutState==='down')return '';
- const {a,h,max,end}=donutLane(pad,g);
+ const {a,h,max,end}=donutLane(pad,g,direction);
  if(max<10)return '';
  const offset=Math.min(24,max*.5),start={x:a.x+h.x*offset,y:a.y+h.y*offset};
- const target=pointer?donutTarget(pad,g.fromView(pointer.x,pointer.y),g):null;
+ const target=pointer?donutTarget(pad,g.fromView(pointer.x,pointer.y),g,direction):null;
  const info=target&&target.distance>=10?'<circle cx="'+target.target.x+'" cy="'+target.target.y+'" r="7" fill="#ffe2a0" stroke="#483b27" stroke-width="1.5"/><text x="'+(target.target.x+12)+'" y="'+(target.target.y-9)+'" font-size="13" fill="#ffe2a0" paint-order="stroke" stroke="#203b2b" stroke-width="3">'+(target.distance/g.scale).toFixed(1)+' m</text>':'';
  return '<g pointer-events="none"><path d="M'+start.x+' '+start.y+'L'+end.x+' '+end.y+'" fill="none" stroke="#f6cf80" stroke-opacity=".7" stroke-width="2.5" marker-end="url(#arr)"/>'+info+'</g>';
 }
@@ -87,7 +87,7 @@ export function trainingTransition(objects,old,next,p,g){
  return objects.map(o=>{
  if(o.type!=='donut')return o;const b=next.objects.find(x=>x.id===o.id),a=old?.objects.find(x=>x.id===o.id);if(!a||!b)return o;
  const A=g.toView(a.x,a.y),B=g.toView(b.x,b.y),distance=Math.hypot(B.x-A.x,B.y-A.y),timing=next.timing?.[o.id]||{start:0,end:100},q=clip((p*100-timing.start)/Math.max(1,timing.end-timing.start),0,1);
- if(distance>1e-6&&['rolling','impact'].includes(b.donutState)){o={...o,rot:b.rot,donutState:b.donutState==='impact'&&q>=.999?'impact':'rolling',rollPhase:distance*q/(2*Math.PI*.375*g.scale)};if(o.donutState==='rolling')delete o.donutTacklerId;return o}
+ if(distance>1e-6&&['rolling','impact'].includes(b.donutState)){o={...o,rot:b.rot,donutState:b.donutState==='impact'&&q>=.999?'impact':'rolling',rollPhase:distance*q*((B.x-A.x)*Math.sin((b.rot+g.rotation)*Math.PI/180)-(B.y-A.y)*Math.cos((b.rot+g.rotation)*Math.PI/180)<0?-1:1)/(2*Math.PI*.375*g.scale)};if(o.donutState==='rolling')delete o.donutTacklerId;return o}
  if(b.donutState==='down'&&a.donutState==='impact'&&q<.45)return {...o,donutState:'impact',donutTacklerId:a.donutTacklerId,rot:a.rot};
  return o;
  });
@@ -113,4 +113,4 @@ export function donutRearContact(z,h,approach,g){
  const heading=(Math.atan2(z.x-contact.x,contact.y-z.y)*180/Math.PI-g.rotation+360)%360;
  return {...contact,heading};
 }
-export function donutSteps(f,id,end,tacklerId,fraction,seconds,g){const pad=f.objects.find(o=>o.id===id&&o.type==='donut'),dest=end;if(!pad||!dest)throw Error('Select a donut and target.');if(pad.donutState==='down')throw Error('Stand the donut upright before rolling.');const lane=donutTarget(pad,dest,g),a=lane.a,dist=lane.distance,dx=lane.h.x*dist,dy=lane.h.y*dist;if(dist<10)throw Error('Choose a point farther forward along the rolling direction.');const player=f.objects.find(o=>o.id===tacklerId&&['attacker','defender','neutral','shield','bagplayer'].includes(o.type));if(tacklerId&&!player)throw Error('Select an existing tackler.');if(player&&f.objects.some(o=>o.members?.some(m=>m.id===player.id)||o.type==='ball'&&o.ownerId===player.id))throw Error('Choose a player who is free of the ball and other contact formations.');const q=player?clip(Number(fraction)||.65,.1,.95):1,z={x:a.x+dx*q,y:a.y+dy*q},step=stripDecisions(JSON.parse(JSON.stringify(f)));delete step.guide;step.name=player?'Intercept rolling donut':'Roll tackle donut';step.seconds=Math.max(.5,clip(Number(seconds)||2,.5,30)*q);step.notes=player?'Track the moving pad and arrive at its trailing quarter under coach control.':'Roll in a straight line; keep the lane clear.';step.paths={};step.timing={};Object.assign(step.objects.find(o=>o.id===id),g.fromView(z.x,z.y),{rot:pad.rot,donutState:player?'impact':'rolling'});const rollItem=step.objects.find(o=>o.id===id);delete rollItem.donutTacklerId;if(!player)return [step];rollItem.donutTacklerId=player.id;const contact=donutRearContact(z,lane.h,g.toView(player.x,player.y),g);if(contact.x<g.margin||contact.x>g.margin+g.fw||contact.y<g.margin||contact.y>g.margin+g.fh)throw Error('Choose an interception farther from the boundary.');Object.assign(step.objects.find(o=>o.id===player.id),g.fromView(contact.x,contact.y),{rot:contact.heading});const down=JSON.parse(JSON.stringify(step));down.name='Donut stopped';down.seconds=.6;down.notes='Release the pad and reset. No player ruck is implied.';down.objects.find(o=>o.id===id).donutState='down';return [step,down]}
+export function donutSteps(f,id,end,tacklerId,fraction,seconds,g,direction='forward'){const pad=f.objects.find(o=>o.id===id&&o.type==='donut'),dest=end;if(!pad||!dest)throw Error('Select a donut and target.');if(pad.donutState==='down')throw Error('Stand the donut upright before rolling.');const lane=donutTarget(pad,dest,g,direction),a=lane.a,dist=lane.distance,dx=lane.h.x*dist,dy=lane.h.y*dist;if(dist<10)throw Error('Choose a point farther along the selected rolling direction.');const player=f.objects.find(o=>o.id===tacklerId&&['attacker','defender','neutral','shield','bagplayer'].includes(o.type));if(tacklerId&&!player)throw Error('Select an existing tackler.');if(player&&f.objects.some(o=>o.members?.some(m=>m.id===player.id)||o.type==='ball'&&o.ownerId===player.id))throw Error('Choose a player who is free of the ball and other contact formations.');const q=player?clip(Number(fraction)||.65,.1,.95):1,z={x:a.x+dx*q,y:a.y+dy*q},step=stripDecisions(JSON.parse(JSON.stringify(f)));delete step.guide;step.name=player?'Intercept rolling donut':'Roll tackle donut';step.seconds=Math.max(.5,clip(Number(seconds)||2,.5,30)*q);step.notes=player?'Track the moving pad and arrive at its trailing quarter under coach control.':'Roll in a straight line; keep the lane clear.';step.paths={};step.timing={};Object.assign(step.objects.find(o=>o.id===id),g.fromView(z.x,z.y),{rot:pad.rot,donutState:player?'impact':'rolling'});const rollItem=step.objects.find(o=>o.id===id);delete rollItem.donutTacklerId;if(!player)return [step];rollItem.donutTacklerId=player.id;const contact=donutRearContact(z,lane.h,g.toView(player.x,player.y),g);if(contact.x<g.margin||contact.x>g.margin+g.fw||contact.y<g.margin||contact.y>g.margin+g.fh)throw Error('Choose an interception farther from the boundary.');Object.assign(step.objects.find(o=>o.id===player.id),g.fromView(contact.x,contact.y),{rot:contact.heading});const down=JSON.parse(JSON.stringify(step));down.name='Donut stopped';down.seconds=.6;down.notes='Release the pad and reset. No player ruck is implied.';down.objects.find(o=>o.id===id).donutState='down';return [step,down]}
