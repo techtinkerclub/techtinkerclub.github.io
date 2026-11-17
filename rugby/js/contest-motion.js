@@ -79,5 +79,5 @@ export function contestDrive(frame,previous,marker,g,{distanceCm=10,exchanges=2,
  }
  // Half a second per push keeps the contact movement legible at normal speed.
  frame.seconds=Math.max(Number(frame.seconds)||1.5,.6*offsets.length);
- return {ok:true,message:rounds+' push–pull exchange'+(rounds===1?'':'s')+' at '+cm+' cm per drive. '+(winner==='attack'?'A1 / attacking side':'Defending side')+' secures the pad; the opposition gives '+clearCm+' cm. The separate ball stays ready for the next player.',distanceCm:cm,exchanges:rounds,winner,clearanceCm:clearCm,waypoints:waypoints.length,seconds:frame.seconds};
+ return {ok:true,message:rounds+' push–pull exchange'+(rounds===1?'':'s')+' at '+cm+' cm per drive. '+(winner==='attack'?'Attackers':'Defenders')+' secure the pad; the opposition gives '+clearCm+' cm. The separate ball stays ready for the next player.',distanceCm:cm,exchanges:rounds,winner,clearanceCm:clearCm,waypoints:waypoints.length,seconds:frame.seconds};
 }
