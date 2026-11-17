@@ -1,6 +1,6 @@
 import {isDiagramObject} from './diagram-shapes.js?v=0.12.10';
 import {textVisible} from './text-label.js?v=0.12.8';
-import {visualUnit} from './symbol-scale.js?v=0.12.0';
+import {visualUnit} from './symbol-scale.js?v=0.12.23';
 import { routeSamples, sampleRoute } from './routes.js?v=0.4.3';
 import { wrapAngle, shortestTurn } from './rotation.js?v=0.3.3';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));

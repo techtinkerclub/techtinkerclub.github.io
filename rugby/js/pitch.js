@@ -1,3 +1,4 @@
+import {symbolFactors} from './symbol-scale.js?v=0.12.23';
 
 /** Scale the original normalized drill coordinates into a proportional training area.
  * Legacy records use 42..858 across, 37..503 along, with attack toward decreasing y.
@@ -44,7 +45,12 @@ export function trainingField(g,grid=false,gridStep=.5,settings={}){
   `<rect x="${m+i*fw/n}" y="${m}" width="${fw/n}" height="${fh}" fill="#fff" opacity=".035"/>`:
   `<rect x="${m}" y="${m+i*fh/n}" width="${fw}" height="${fh/n}" fill="#fff" opacity=".035"/>`).join('');
  const boundary=['line','cones','flags','none'].includes(settings.boundary)?settings.boundary:'line';
- const border=boundary==='line'?'<rect x="'+m+'" y="'+m+'" width="'+fw+'" height="'+fh+'" fill="none" stroke="#d4e6c9" stroke-width="2"/>':boundary==='none'?'':[[m,m],[m+fw,m],[m,m+fh],[m+fw,m+fh]].map(([x,y])=>'<g transform="translate('+x+' '+y+')">'+(boundary==='cones'?'<path d="M-9 7L0 -11L9 7Z" fill="#ffda78" stroke="#a46d33" stroke-width="1.1"/>':'<path d="M0 10V-15L13 -10L0 -5" fill="#ef8177" stroke="#d4e6c9" stroke-width="1.4" stroke-linejoin="round"/>')+'</g>').join('');
+ const cornerType=boundary==='cones'?'cone':'flag';
+ const [cx,cy]=symbolFactors({type:cornerType},g);
+ const cornerShape=boundary==='cones'
+  ?'<path d="M0 -12L11 10H-11Z" fill="#ffda78" stroke="#754c29" stroke-width="1.5"/>'
+  :'<path d="M-5 14V-15L13 -8L-5 -2" fill="#ef8177" stroke="#ffe4ce" stroke-width="1.6"/>';
+ const border=boundary==='line'?'<rect x="'+m+'" y="'+m+'" width="'+fw+'" height="'+fh+'" fill="none" stroke="#d4e6c9" stroke-width="2"/>':boundary==='none'?'':[[m,m],[m+fw,m],[m,m+fh],[m+fw,m+fh]].map(([x,y])=>'<g transform="translate('+x+' '+y+') scale('+cx+' '+cy+')">'+cornerShape+'</g>').join('');
  const dir=({up:0,right:90,down:180,left:270}[settings.attackDirection]??0)+g.rotation;
  const angle=((dir%360)+360)%360,vertical=angle%180===0;
  const sign=angle===0||angle===90?1:-1,span=Math.min(64,(vertical?fh:fw)*.27);
