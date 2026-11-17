@@ -16,6 +16,8 @@ test('both editors load the same mobile and tablet skin without replacing the en
  assert.match(css,/body\.mobile-workspace\.presentation-mode/);
  assert.match(css,/min-height:48px/);
  assert.match(css,/mobile-camera-controls/);
+ assert.match(css,/body\\.mobile-workspace \\.mobile-workspace-nav\\s*\\{\\s*display:grid/,'Mobile navbar must be visible when editor is active');
+ assert.doesNotMatch(css,/body\\.mobile-workspace-nav\\s*\\{/,'Nav is an element, not a body class');
  assert.match(read('js/mobile-editor.js'),/data-mobile-camera="zoomFit"/);
  assert.equal(classic.match(/src="\.\/js\/app\.js\?v=[\d.]+"/)?.[0],coach.match(/src="\.\/js\/app\.js\?v=[\d.]+"/)?.[0]);
 });
