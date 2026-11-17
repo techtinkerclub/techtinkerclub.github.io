@@ -81,3 +81,12 @@ body.hide-tracks>.timeline:has(.outcome-bar),body.presentation-mode>.timeline:ha
 .decision-live-help button{background:#7c3035;color:white;border:1px solid #7c3035;padding:9px;font-size:12px;font-weight:750;border-radius:7px}
 .decision-live-help button:hover{background:#64242a}
 #outcomeDialogHint{line-height:1.5}
+
+/* Decision-on-run creation: one simple confirmation, not two separate editors. */
+.outcome-actions-simple{display:grid;gap:10px;padding:10px 12px;border:1px solid var(--line,#718675);border-radius:10px;margin:10px 0}
+.outcome-actions-simple[hidden],.outcome-action-choice label[hidden]{display:none!important}
+.outcome-actions-simple .outcome-action-intro{font-size:12px;line-height:1.5;margin:0 0 2px;color:var(--muted,#c4d0c3)}
+.outcome-action-choice{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end;gap:10px}
+.outcome-action-choice label{display:grid;gap:5px;margin:0!important;font-size:12px}
+.outcome-action-choice select{min-height:38px;max-width:100%;width:100%}
+@media(max-width:600px){.outcome-action-choice{grid-template-columns:minmax(0,1fr)}}
