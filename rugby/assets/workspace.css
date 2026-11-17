@@ -304,3 +304,12 @@ html{color-scheme:dark}
 .timing-bar .timing-handle-end{border-radius:1px 5px 5px 1px}
 .timing-bar .timing-handle-start[style*="left: 0%"],.timing-bar .timing-handle-start[style*="left:0%"]{transform:translateX(-2px)}
 .timing-bar .timing-handle-end[style*="left: 100%"],.timing-bar .timing-handle-end[style*="left:100%"]{transform:translateX(calc(-100% + 2px))}
+
+/* Drill families: concise fork choices, not another editor. */
+.variant-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 12px}
+.variant-actions>button{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:13px;text-align:left;min-height:96px;white-space:normal;border-radius:8px}
+.variant-actions>button strong{font-size:14px;color:var(--accent)}
+.variant-actions>button span{font-size:12px;line-height:1.45;color:var(--text)}
+#variationDialog>small{display:block;color:var(--muted);line-height:1.45}
+.drillcard .drill-relation{color:var(--accent);font-size:11px;font-weight:600;margin:5px 0 7px;line-height:1.35}
+@media(max-width:530px){.variant-actions{grid-template-columns:1fr}}
