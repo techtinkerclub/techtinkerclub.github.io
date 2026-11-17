@@ -66,11 +66,11 @@ Run node --test rugby/tests/*.test.mjs from the repository root with Node 22, th
 
 Check current RFU age-grade contact rules and safeguarding guidance before use. Schematics and validations are not independent safety approval.
 
-## Working from a phone or tablet (mobile workspace v0.1.0)
+## Working from a phone or tablet (mobile workspace v0.1.1)
 
 Both Classic Studio and Coach Edition have a touch-first layout at widths up to 1100px. No features are deleted: the existing pitch, palette, inspector, branching controls and timeline are the same shared components.
 
-- **Pitch** leaves the diagram at maximum usable size. Tap or drag a player or object; use the pitch camera's +/- or Fit controls and Pan mode as needed.
+- **Pitch** leaves the diagram at maximum usable size. Tap or drag a player or object; use the touch-sized + / − / Fit / Pan controls directly over the pitch when needed.
 - **Add** opens the players/equipment/actions sheet. Selecting an add/draw action returns to the pitch to position the object or draw the path.
 - **Edit** opens the existing Object / Step / Drill inspector in a scrollable bottom sheet. Selecting a specialised action can reveal this panel automatically.
 - **Steps** opens the sequence, playhead and timing tracks. Swipe horizontally through the step cards.
