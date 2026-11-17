@@ -31,6 +31,18 @@
  body.mobile-workspace .pitch .obj > circle:first-child{stroke:transparent;stroke-width:30px;vector-effect:non-scaling-stroke;pointer-events:all}
  body.mobile-workspace .pitch .path-hit{stroke-width:30px;vector-effect:non-scaling-stroke;pointer-events:stroke}
  body.mobile-workspace .pitch [data-waypoint],body.mobile-workspace .pitch [data-insert-point]{touch-action:none}
+ .mobile-camera-controls{display:none}
+ body.mobile-workspace .mobile-camera-controls{
+  display:flex;align-items:center;gap:3px;position:absolute;top:7px;right:7px;
+  z-index:5;padding:3px;border:1px solid #ffffff40;border-radius:10px;
+  background:#13241ee8;box-shadow:0 3px 14px #0008;
+ }
+ body.mobile-workspace .mobile-camera-controls button{
+  min-width:43px;min-height:43px;padding:6px 7px;font-size:13px;font-weight:750;
+  background:#263b2f;color:var(--text);border-color:#607361;
+ }
+ body.mobile-workspace .mobile-camera-controls button[aria-pressed=true]{color:var(--accent);border-color:var(--accent)}
+ body.mobile-workspace.presentation-mode .mobile-camera-controls{display:none!important}
  body.mobile-workspace .board-footer .note{max-height:2.8em}
  body.mobile-workspace > .main > .panel-splitter,body.mobile-workspace > .timeline > .panel-splitter{display:none!important}
  body.mobile-workspace .sidebar,body.mobile-workspace .inspector{display:none;position:absolute;z-index:12;left:0;right:0;top:auto;bottom:0;width:100%;max-width:none;height:var(--mobile-sheet-height);max-height:calc(100% - 26px);margin:0;border:1px solid var(--line);border-bottom:0;border-radius:17px 17px 0 0;background:var(--panel);box-shadow:0 -8px 35px #0009;overscroll-behavior:contain}
