@@ -1,5 +1,5 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.11.1';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.12.32';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.12.33';
 import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.12.23';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
