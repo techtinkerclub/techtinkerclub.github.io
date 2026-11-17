@@ -29,7 +29,7 @@ assert.match(guide,/case 'twoTeams'/);
 assert.match(guide,/case 'notes'/);
 assert.match(guide,/case 'check'/);
 assert.match(guide,/case 'save'/);
-assert.match(guide,/coachEditionAllTools/);
+assert.match(guide,/rugbyCoachEditionAllTools/);
 assert.match(css,/--coach-red:#a4223a/);
 assert.match(css,/body\.coach-guided/);
 assert.match(css,/body\.coach-edition > header::before/);
