@@ -5,7 +5,7 @@ const rank={back:0,middle:1,front:2};
 const ground=new Set(['sausage','ladder','cone','flag','offsideLine','directionArrow','measureLine','zoneCircle','zoneRect','spotMarker']);
 const central=new Set(['bag','donut','shieldItem','tackle','ruck','maul','scrum','decision']);
 export function defaultDrawLayer(type){return ground.has(type)?'back':central.has(type)?'middle':'front'}
-export function drawLayer(o){return DRAW_LAYERS.includes(o?.drawLayer)?o.drawLayer:defaultDrawLayer(o?.type)}
+export function drawLayer(o){return DRAW_LAYERS.includes(o?.drawLayer)?o.drawLayer:o?.type==='donut'&&o.donutState==='down'?'back':defaultDrawLayer(o?.type)}
 export function drawOrderValue(o,i){return Number.isFinite(o?.drawOrder)?o.drawOrder:i}
 export function orderObjects(objects){
  return objects.map((o,i)=>({o,i})).sort((a,b)=>
