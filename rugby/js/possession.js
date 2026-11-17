@@ -1,3 +1,4 @@
+import {textVisible} from './text-label.js?v=0.12.8';
 import {visualUnit} from './symbol-scale.js?v=0.12.0';
 import { routeSamples, sampleRoute } from './routes.js?v=0.4.3';
 import { wrapAngle, shortestTurn } from './rotation.js?v=0.3.3';
@@ -192,6 +193,7 @@ export function transitionObjects(old,next,p,g){
  const result=next.objects.map(o=>{
   const prior=findObject(old,o.id),impact=events.find(e=>e.marker===o.id);
   const switchAt=impact?impact.time:o.breakdown?.phase==='release'?.15:.65;
+  if(o.type==='label')return textVisible(next.timing?.[o.id],p)?{...o}:null;
   if(!prior&&p<1&&!(Array.isArray(o.members)&&p>=(impact?switchAt:.78)))return null;
   if(o.type==='ball')return ballPose(old,next,o,p,g,events);
   if(isShield(o))return shieldTransition(old,next,o,p,g,events);
@@ -213,7 +215,7 @@ export function transitionObjects(old,next,p,g){
    if(prior&&p<switchAt){pose.type=prior.type;pose.label=prior.label;pose.breakdown=prior.breakdown}
   }
   return pose;
- }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>!findObject(next,o.id)):[]);
+ }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>o.type!=='label'&&!findObject(next,o.id)):[]);
  // Old markers are kept for visual continuity, but may never control a player who has left.
  return result.map(o=>{if(!o.members?.length)return o;const members=o.members.filter(m=>{const recovery=recoveries.get(m.id);return !recovery||p<=recovery.start||m.pose===recovery.target&&formationPose(next,m.id)===m.pose});return members.length===o.members.length?o:{...o,members}});
 }
