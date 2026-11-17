@@ -26,7 +26,8 @@ import {breakdownContext} from './breakdown-context.js?v=0.5.7';
 import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
 import {contactDragIds,contactHandlePoint} from './contact-drag.js?v=0.12.24';
 import {formationTrajectorySVG,unraiseFormationPoint,formationRouteOffset} from './formation-trajectory.js?v=0.12.27';
-import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.27';
+import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
+import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
 import {renderScene} from './scene.js?v=0.12.27';
 import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.12.23';
@@ -202,8 +203,8 @@ function refresh(){closeObjectMenu();const fr=f();$('stageTitle').textContent=dr
  // A pad-based ruck practice starts at the sausage; it has no tackle stage.
  // Selecting a particular sausage first determines which pad to use.
  if(type==='ruck'){
-  const pads=f().objects.filter(o=>o.type==='sausage');
-  const pad=prior?.type==='sausage'?pads.find(o=>o.id===prior.id):pads[0];
+  const pads=f().objects.filter(isGroundPad);
+  const pad=isGroundPad(prior)?pads.find(o=>o.id===prior.id):pads[0];
   if(pad){
    Object.assign(n,{x:pad.x,y:pad.y,rot:pad.rot,label:PHASES.pad,breakdown:{phase:'pad',mode:'pad',padId:pad.id,arrivalSide:'attack'}});
   }
@@ -505,11 +506,12 @@ function updateObjectPicker(){const list=$('objectPicker'),isGroup=groupMode||gr
 $('objectPicker').onchange=()=>{if($('objectPicker').value)selectObject($('objectPicker').value);else{selected=null;selectedPathId=null;render();inspector()}};
 let memberSignature='';
 function updateContactTools(){
- const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);$('startPadRuck').hidden=!ok||o.type!=='ruck'||!!o.breakdown||!f().objects.some(q=>q.type==='sausage');$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
- const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')||!o.breakdown}
+ const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);$('startPadRuck').hidden=!ok||o.type!=='ruck'||!!o.breakdown||!f().objects.some(isGroundPad);$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
+ const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=o.breakdown?.mode==='pad'||o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')||!o.breakdown}
  const breakdown=validPhase(o.breakdown?.phase),near=contactCandidates(f(),o,geometry()),ids=new Set((o.members||[]).map(m=>m.id));
  const tackle=o.type==='tackle'&&(!breakdown||o.breakdown.phase==='tackle');
- const players=breakdown&&o.breakdown.phase!=='tackle'?[...candidates(f(),o,'attack'),...candidates(f(),o,'defence')]:f().objects.filter(canCarry),sig=JSON.stringify([o.id,idx,players.map(p=>[p.id,p.label]),[...ids],near.map(p=>p.id),o.breakdown?.tacklerIds,tackle]);
+ const players=breakdown&&o.breakdown.phase!=='tackle'?[...candidates(f(),o,'attack'),...candidates(f(),o,'defence')]:f().objects.filter(canCarry),padMode=o.breakdown?.mode==='pad',
+  sig=JSON.stringify([o.id,idx,players.map(p=>[p.id,p.label]),[...ids],padMode?'pad':near.map(p=>p.id),o.breakdown?.tacklerIds,tackle]);
  if(sig!==memberSignature){
   memberSignature=sig;
   if(tackle){
@@ -521,16 +523,48 @@ function updateContactTools(){
    function fillSecond(wanted){const available=opponents().filter(v=>v.id!==p.value);x.innerHTML='<option value="">None</option>'+available.map(v=>option(v,wanted)).join('');x.value=available.some(v=>v.id===wanted)?wanted:''}
    function fillPrimary(wanted,extra){const available=opponents();p.innerHTML='<option value="">Choose tackler</option>'+available.map(v=>option(v,wanted)).join('');p.value=available.some(v=>v.id===wanted)?wanted:available.find(v=>near.some(q=>q.id===v.id))?.id||'';fillSecond(extra)}
    c.onchange=()=>fillPrimary(p.value,x.value);p.onchange=()=>fillSecond(x.value);fillPrimary(primary,second);
-  }else $('contactMembers').innerHTML=players.map(p=>'<label><input type="checkbox" data-contact-player="'+esc(p.id)+'" '+((ids.size?ids.has(p.id):near.some(x=>x.id===p.id))?'checked':'')+'> '+esc(objectName(p))+'</label>').join('');
+  }else {
+    const suggested=new Set();
+    if(padMode&&!ids.size){
+      for(const side of ['attack','defence']){
+        const nearest=near.find(p=>team(p)===side);
+        if(nearest)suggested.add(nearest.id);
+      }
+    }
+    $('contactMembers').innerHTML=players.map(p=>'<label><input type="checkbox" data-contact-player="'+esc(p.id)+'" '+((ids.size?ids.has(p.id):padMode?suggested.has(p.id):near.some(x=>x.id===p.id))?'checked':'')+'> '+esc(objectName(p))+'</label>').join('');
+  }
  }
- $('contactInfo').textContent=(breakdown?o.label||PHASES[o.breakdown.phase]:contactTitle(o.type))+' · '+(o.members?.length||0)+' arranged players'+(o.breakdown?.mode==='pad'?' · sausage practice, no tackle':'');$('arrangeContact').disabled=routeDrawing||!!ballPicking;$('endContact').disabled=routeDrawing||!!ballPicking;
+ $('contactInfo').textContent=(breakdown?o.label||PHASES[o.breakdown.phase]:contactTitle(o.type))+' · '+(o.members?.length||0)+' linked players'+(padMode?' · pad practice, no tackle':'');
+ $('arrangeContact').textContent=padMode?'Link selected players · keep positions':'Arrange players';
+ $('currentFormationEdit').querySelector('summary').textContent=padMode?'Players in this contest':'Edit current formation';
+ $('placeContactAtPad').hidden=!padMode;$('padContactHelp').hidden=!padMode;
+ $('arrangeContact').disabled=routeDrawing||!!ballPicking;
+ $('placeContactAtPad').disabled=routeDrawing||!!ballPicking;
+ const pads=f().objects.filter(isGroundPad),linkedPad=padMode&&pads.find(p=>p.id===o.breakdown.padId);
+ $('ruckPadWrap').hidden=!padMode;
+ if(padMode){
+   const picker=$('ruckPadChoice'),options=pads.map((p,i)=>'<option value="'+esc(p.id)+'">'+esc(padTitle(p))+(pads.length>1?' '+(i+1):'')+'</option>').join('');
+   if(picker.innerHTML!==options)picker.innerHTML=options;
+   picker.value=linkedPad?.id||'';
+ }
+ const nudge=$('padNudgeTools');
+ nudge.hidden=!padMode||!o.members?.length;
+ if(padMode&&o.members?.length){
+   nudge.innerHTML='<small>Fine-adjust included players without moving the pad · 15 cm per press</small>'+o.members.map(m=>{
+     const player=f().objects.find(p=>p.id===m.id);if(!player)return '';
+     return '<div class="flex" style="align-items:center;gap:5px;flex-wrap:wrap;margin:5px 0"><strong>'+esc(objectName(player))+'</strong>'+
+      [['↑',0,-1,'up'],['←',-1,0,'left'],['→',1,0,'right'],['↓',0,1,'down']].map(([symbol,dx,dy,word])=>
+       '<button type="button" data-nudge-id="'+esc(player.id)+'" data-dx="'+dx+'" data-dy="'+dy+'" title="Move '+esc(objectName(player))+' '+word+' by 15 cm">'+symbol+'</button>').join('')+'</div>'
+   }).join('');
+ }else nudge.innerHTML='';
+ $('endContact').disabled=routeDrawing||!!ballPicking;
 }
 // Convert an existing bare ruck marker (including an older saved drill) to a
 // sausage drill without requiring the coach to delete and recreate it.
 $('startPadRuck').onclick=()=>{
  if(!canEditObjects())return;
  const o=activeObject();if(o?.type!=='ruck'||o.breakdown)return;
- const pads=f().objects.filter(x=>x.type==='sausage'),g=geometry(),p=g.toView(o.x,o.y);
+ const pads=f().objects.filter(isGroundPad),g=geometry(),p=g.toView(o.x,o.y);
  const pad=pads.sort((a,b)=>{
   const pa=g.toView(a.x,a.y),pb=g.toView(b.x,b.y);
   return Math.hypot(pa.x-p.x,pa.y-p.y)-Math.hypot(pb.x-p.x,pb.y-p.y);
@@ -541,10 +575,43 @@ $('startPadRuck').onclick=()=>{
  if(!arranged)Object.assign(o,{x:pad.x,y:pad.y,rot:pad.rot});
  o.label=arranged?'Ruck formed · pad drill':PHASES.pad;
  changed();refresh();openInspector('Object',false);
- note(arranged?'Linked this existing ruck and its players to the sausage. Continue the contest in Step.':'Sausage linked. Open Step and choose which side arrives first; no tackle required.');
+ note(arranged?'Linked this existing ruck to the ground pad. Existing players remain in place.':'Ground pad linked. Choose players in Object, then continue in Step; no tackle required.');
 };
 function arrangeMarker(o,explicit=null){if(f().guide&&o.id===f().guide.id+'-formation'){note('This is a guided formation. Move players or use the next guided stage.');return false}const result=arrangeContact(f(),o,geometry(),drill.frames[idx-1],explicit,drill.ageMin===10&&drill.ageMax===10);note(result.message);return result.ok}
-$('arrangeContact').onclick=()=>{if(!canEditObjects())return;const o=activeObject();if(!contactType(o?.type))return;const ids=$('tackleCarrier')?[$('tackleCarrier').value,$('primaryTackler').value,$('additionalTackler').value].filter(Boolean):[...$('contactMembers').querySelectorAll('input:checked')].map(x=>x.dataset.contactPlayer);if($('tackleCarrier')&&(!$('tackleCarrier').value||!$('primaryTackler').value)){note('Choose a ball carrier and a primary tackler.');return}if(arrangeMarker(o,ids)){changed();memberSignature='';refresh()}};
+function selectedContactIds(){return $('tackleCarrier')?[$('tackleCarrier').value,$('primaryTackler').value,$('additionalTackler').value].filter(Boolean):[...$('contactMembers').querySelectorAll('input:checked')].map(x=>x.dataset.contactPlayer)}
+$('arrangeContact').onclick=()=>{
+ if(!canEditObjects())return;const o=activeObject();if(!contactType(o?.type))return;
+ const ids=selectedContactIds();
+ if($('tackleCarrier')&&(!$('tackleCarrier').value||!$('primaryTackler').value)){note('Choose a ball carrier and a primary tackler.');return}
+ if(o.breakdown?.mode==='pad'){
+  const res=linkRuckPlayersInPlace(f(),o,ids,drill.ageMin===10&&drill.ageMax===10);
+  note(res.message);if(res.ok){changed();memberSignature='';refresh()}
+ }else if(arrangeMarker(o,ids)){changed();memberSignature='';refresh()}
+};
+$('placeContactAtPad').onclick=()=>{
+ if(!canEditObjects())return;
+ const o=activeObject();if(o?.breakdown?.mode!=='pad')return;
+ const result=placeRuckPlayersAtPad(f(),o,selectedContactIds(),geometry(),drill.ageMin===10&&drill.ageMax===10);
+ note(result.message);if(result.ok){changed();memberSignature='';refresh()}
+};
+$('ruckPadChoice').onchange=()=>{
+ if(!canEditObjects())return;
+ const o=activeObject();if(o?.breakdown?.mode!=='pad')return;
+ const pad=f().objects.find(q=>q.id===$('ruckPadChoice').value&&isGroundPad(q));if(!pad)return;
+ o.breakdown.padId=pad.id;
+ if(!o.members?.length){o.x=pad.x;o.y=pad.y;o.rot=pad.rot}
+ changed();memberSignature='';refresh();
+ note('Ruck linked to '+padTitle(pad)+'. Players and any separate ball were not moved.');
+};
+$('padNudgeTools').onclick=e=>{
+ const button=e.target.closest('[data-nudge-id]');
+ if(!button||!canEditObjects())return;
+ const o=activeObject();if(!o)return;
+ const player=f().objects.find(p=>p.id===button.dataset.nudgeId);
+ if(nudgeRuckPlayer(f(),o,button.dataset.nudgeId,geometry(),Number(button.dataset.dx),Number(button.dataset.dy))){
+  changed();render();inspector();tracks();note('Adjusted '+objectName(player)+' by 15 cm. Ruck membership stays intact.');
+ }
+};
 $('endContact').onclick=()=>deleteObject('here');$('continueBreakdown').onclick=revealBreakdown;
 function activeBreakdown(){return breakdownContext(drill.frames,idx,selected,breakdownPreferred).marker}
 function revealBreakdown(){openInspector('Step',true);$('breakdownDock').focus({preventScroll:true});$('breakdownDock').scrollIntoView({block:'nearest'})}
