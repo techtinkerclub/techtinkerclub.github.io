@@ -1,5 +1,5 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.0';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.1';
 import {hasOutcomes,outcomeViews} from './branching.js?v=1';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.1';
