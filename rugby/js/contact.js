@@ -1,4 +1,4 @@
-import {physicalUnit,symbolRadius} from './symbol-scale.js?v=0.12.0';
+import {physicalUnit} from './symbol-scale.js?v=0.12.0';
 // Schematic formation presets, not coaching technique or an age-grade law validator.
 import {canCarry,carrier} from './possession.js?v=0.12.13';
 import {team,roles,setParticipants} from './breakdown.js?v=0.12.0';
@@ -68,29 +68,17 @@ export function contactMarkerShape(o,base){
 }
 export function posedShape(o,pose,normal,color){
  if(!pose||pose==='standing')return normal;
- // Top-down ready stance: lower, wide balanced base and open arms, not a tackle.
- if(pose==='ready')return '<path d="M-9 -8Q-18 -8 -20 -13L-16 -23M9 -8Q18 -8 20 -13L16 -23" fill="none" stroke="#102e23" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>'+
- '<path d="M-9 -8Q-18 -8 -20 -13L-16 -23M9 -8Q18 -8 20 -13L16 -23" fill="none" stroke="'+color+'" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>'+
- '<path d="M-8 11L-14 21M8 11L14 21" fill="none" stroke="#102e23" stroke-width="7" stroke-linecap="round"/>'+
- '<path d="M-8 11L-14 21M8 11L14 21" fill="none" stroke="'+color+'" stroke-width="4.5" stroke-linecap="round"/>'+
- '<ellipse rx="13.5" ry="17" fill="'+color+'" stroke="#102e23" stroke-width="2.5"/>'+
- '<path d="M-4 -13L0 -21L4 -13Z" fill="#f7fff6"/>'+
- '<path d="M-6 5H6" stroke="#102e23" stroke-width="1.6" opacity=".42"/>';
+ // Same visual language as the standard player: oval body, short arms only.
+ // Hands angle modestly forward to suggest a balanced, ready-to-wrap stance.
+ if(pose==='ready')return '<path d="M-13 -3Q-18 -4 -22 -9M13 -3Q18 -4 22 -9" fill="none" stroke="#102e23" stroke-width="8" stroke-linecap="round"/>'+
+ '<path d="M-13 -3Q-18 -4 -22 -9M13 -3Q18 -4 22 -9" fill="none" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>'+
+ '<ellipse rx="15.5" ry="13.5" fill="'+color+'" stroke="#102e23" stroke-width="2.5"/>'+
+ '<path d="M-5 -8L0 -16L5 -8Z" fill="#fff"/>';
  if(pose==='kneeling')return '<ellipse rx="12" ry="14" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-9" r="7" fill="'+color+'" stroke="#102e23" stroke-width="1.6"/><path d="M-9 9v8M9 9v8" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>';
  if(pose==='recovering')return '<ellipse rx="12" ry="18" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-11" r="7" fill="'+color+'" stroke="#102e23" stroke-width="1.4"/><path d="M-8 6L-14 15M8 6L13 15" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/>';
  if(pose==='grounded')return '<rect x="-12" y="-23" width="24" height="46" rx="11" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><circle cy="-16" r="8" fill="'+color+'" stroke="#102e23" stroke-width="1.5"/><path d="M-9 3H9" stroke="#102e23" stroke-width="1.4"/>';
  if(pose==='tackling')return '<ellipse rx="12" ry="20" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-10 -8L-17 -15M10 -8L17 -15" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/><path d="M-4 -15L0 -21L4 -15Z" fill="#fff"/>';
  return '<ellipse rx="16" ry="12" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-12 0H-20M12 0H20" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/><path d="M-5 -7L0 -14L5 -7Z" fill="#fff"/>';
-}
-// An unscaled diagram cue keeps the ready stance legible in Realistic scale.
-// It is not a second object, equipment or a movement marker.
-export function readyCue(o,pose,g,ink=false){
- if(pose!=='ready'||!canCarry(o))return '';
- const radius=Math.max(9,symbolRadius(o,g,pose)),top=-(radius+30);
- const bg=ink?'#e5f3da':'#1a3328',fg=ink?'#27533c':'#def7ab',stroke=ink?'#658b64':'#9fc780';
- return '<g class="ready-stance-cue" aria-label="Ready to react · low stance" pointer-events="none">'+
- '<rect x="-22" y="'+top+'" width="44" height="15" rx="5" fill="'+bg+'" fill-opacity=".94" stroke="'+stroke+'" stroke-width="1"/>'+
- '<text x="0" y="'+(top+10.7)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="9.5" font-weight="700" letter-spacing=".5" fill="'+fg+'">READY</text></g>';
 }
 // Keep action captions in a narrow band outside the playing area.
 export function contactLabels(objects,g,escape,extra=[]){
