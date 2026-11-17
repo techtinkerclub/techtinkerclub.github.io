@@ -9,12 +9,12 @@ import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.12.31';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
 import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts,PLAYER_POSES} from './contact.js?v=0.12.32';
-import {cleanBreakdowns} from './breakdown.js?v=0.12.32';
+import {cleanBreakdowns} from './breakdown.js?v=0.12.33';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.7.1';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {offsideOverlay} from './offside.js?v=0.12.23';
-import {contestResultOverlay} from './ruck-outcome.js?v=0.12.32';
+import {contestResultOverlay} from './ruck-outcome.js?v=0.12.33';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
