@@ -61,7 +61,7 @@ function open(data,options){stop();d=playbackData(data);opts=outputOptions(optio
   $('branchChoice').replaceChildren(...b.choices.map(c=>new Option(c.id.toUpperCase()+' · '+c.label,c.id)));
   $('branchChoice').value=b.active;
  }
-t=0;shownStep=-1;notesKey='';$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
+t=0;shownStep=-1;notesKey='';$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('teachingGuides').checked=opts.teachingGuides;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
 let soundOn=true;
 $('whistleSound').onclick=()=>{soundOn=!soundOn;$('whistleSound').setAttribute('aria-pressed',String(soundOn));$('whistleSound').textContent=soundOn?'Whistle sound: on':'Whistle sound: off'};
 $('play').onclick=()=>{
@@ -87,7 +87,7 @@ $('play').onclick=()=>{
  raf=requestAnimationFrame(tick);
 };
 $('restart').onclick=()=>jumpStep(0);$('previousStep').onclick=()=>jumpStep(stepTarget(-1));$('nextStep').onclick=()=>jumpStep(stepTarget(1));$('seek').oninput=()=>{stop();t=Number($('seek').value);if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render()};
-for(const k of ['runs','passes','labels','decisions','markups','offside','orientation','scaleMode'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode'].includes(k)?$(k).value:$(k).checked;render()};
+for(const k of ['runs','passes','labels','decisions','markups','offside','teachingGuides','orientation','scaleMode'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode'].includes(k)?$(k).value:$(k).checked;render()};
 $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>3000000)throw Error('File is too large.');open(JSON.parse(await file.text()),opts)}catch(err){$('message').textContent=err.message}};
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();jumpStep(Number(b.dataset.jumpStep),true)};
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};
@@ -102,9 +102,9 @@ if(catalogueId!==null){
  try{
   if(!/^seed-[0-9]{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');
   const list=await loadCatalogue(),entry=list.find(x=>x.id===catalogueId);if(!entry)throw Error('This drill is not in the published catalogue.');
-  open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082',scaleMode:params.get('scale')==='coaching'?'coaching':'realistic'});document.title=entry.title+' · Rugby Coaching Library';
+  open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082',teachingGuides:params.get('guides')!=='0',scaleMode:params.get('scale')==='coaching'?'coaching':'realistic'});document.title=entry.title+' · Rugby Coaching Library';
   $('catalogueReview').hidden=false;
-  const shareLink=()=>{const link=new URL(drillHref(entry.id),location.href);link.searchParams.set('offside',opts.offside?'1':'0');link.searchParams.set('scale',opts.scaleMode);return link.href};
+  const shareLink=()=>{const link=new URL(drillHref(entry.id),location.href);link.searchParams.set('offside',opts.offside?'1':'0');link.searchParams.set('guides',opts.teachingGuides?'1':'0');link.searchParams.set('scale',opts.scaleMode);return link.href};
   $('copyDrillLink').onclick=()=>reviewCopy(shareLink(),'Drill link copied.');
   $('copyReview').onclick=()=>reviewCopy(feedbackText(entry,shareLink()),'Review questions copied.');
   if(!isAnimated(entry)){
