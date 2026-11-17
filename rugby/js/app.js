@@ -599,9 +599,18 @@ $('ruckPadChoice').onchange=()=>{
  const o=activeObject();if(o?.breakdown?.mode!=='pad')return;
  const pad=f().objects.find(q=>q.id===$('ruckPadChoice').value&&isGroundPad(q));if(!pad)return;
  o.breakdown.padId=pad.id;
- if(!o.members?.length){o.x=pad.x;o.y=pad.y;o.rot=pad.rot}
+ // Changing the contact pad intentionally relocates the *whole* linked
+ // formation, retaining its relative layout. A separate safety ball never
+ // joins this translation.
+ const g=geometry(),from=g.toView(o.x,o.y),to=g.toView(pad.x,pad.y);
+ const related=[o.id,...(o.members||[]).map(m=>m.id)];
+ for(const moved of groupTranslate(groupSnapshot(f(),related,g),to.x-from.x,to.y-from.y,g)){
+  const target=f().objects.find(item=>item.id===moved.id);
+  if(target)Object.assign(target,moved);
+ }
+ if(!o.members?.length)o.rot=pad.rot;
  changed();memberSignature='';refresh();
- note('Ruck linked to '+padTitle(pad)+'. Players and any separate ball were not moved.');
+ note('Linked to '+padTitle(pad)+'. Ruck and included players moved together; the separate ball stayed put.');
 };
 $('padNudgeTools').onclick=e=>{
  const button=e.target.closest('[data-nudge-id]');
