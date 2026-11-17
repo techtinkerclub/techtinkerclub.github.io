@@ -1,7 +1,7 @@
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.12.10';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
-import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition} from './symbol-scale.js?v=0.12.26';
+import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition} from './symbol-scale.js?v=0.12.27';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.12.10';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
 import { RESOURCES, EMPHASIS } from './resources.js';
