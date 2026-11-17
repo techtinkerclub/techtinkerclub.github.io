@@ -139,9 +139,7 @@
               "label": "D1",
               "x": 450,
               "y": 270,
-              "rot": 0,
-              "playerPose": "standing",
-              "posePinned": true
+              "rot": 0
             },
             {
               "id": "mwjrwljzuxg0if",
@@ -169,7 +167,13 @@
             }
           ],
           "timing": {},
-          "paths": {}
+          "paths": {
+            "mwjrwkusidvzuh": {
+              "mode": "smooth",
+              "points": [],
+              "follow": true
+            }
+          }
         }
       ],
       "attackDirection": "down",
@@ -189,7 +193,7 @@
       "ageMax": 10,
       "minutes": 8,
       "links": [],
-      "savedAt": "2026-11-17T09:53:56.289Z"
+      "savedAt": "2026-11-17T10:10:03.947Z"
     }
   ]
 }
