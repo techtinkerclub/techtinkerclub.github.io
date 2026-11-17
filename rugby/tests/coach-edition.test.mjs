@@ -10,7 +10,7 @@ const coachEngine=coach.match(/src="\.\/js\/app\.js\?v=[\d.]+"/)?.[0];
 assert(classicEngine&&coachEngine);
 assert.equal(classicEngine,coachEngine,'Coach and Classic must use exactly the same animation/editor engine');
 assert.match(coach,/<base href="\.\.\/"/);
-assert.match(coach,/src="\.\/coach\/coach\.js\?v=0\.3\.1"/);
+assert.match(coach,/src="\.\/coach\/coach\.js\?v=0\.3\.3"/);
 assert.match(coach,/href="\.\/coach\/coach\.css\?v=0\.2\.0"/);
 assert.match(classic,/href="\.\/coach\/"/,'Classic must link to the new experiment');
 assert.match(coach,/href="\.\/index\.html"/,'New experiment must link back to Classic');
