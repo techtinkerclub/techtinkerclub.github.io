@@ -12,6 +12,7 @@ import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanCo
 import {cleanBreakdowns} from './breakdown.js?v=0.12.25';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.7.1';
+import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.26';
 import {offsideOverlay} from './offside.js?v=0.12.23';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
@@ -24,7 +25,7 @@ export function playbackData(d){
   const ids=new Set(),timing=Object.create(null),paths=Object.create(null);
   const objects=f.objects.map(o=>{
    if(!o||!Object.hasOwn(types,o.type)||typeof o.id!=='string'||o.id.length>200||['__proto__','prototype','constructor'].includes(o.id)||ids.has(o.id)||!Number.isFinite(o.x)||!Number.isFinite(o.y))throw Error('Invalid object.');
-   ids.add(o.id);const q={id:o.id,type:o.type,label:str(o.label,160),x:num(o.x,0,900,450),y:num(o.y,0,540,270),rot:num(o.rot,-360,360,0)};
+   ids.add(o.id);const q=copyDrawingOrder(o,{id:o.id,type:o.type,label:str(o.label,160),x:num(o.x,0,900,450),y:num(o.y,0,540,270),rot:num(o.rot,-360,360,0)});
    if(o.type==='label')q.textStyle=normaliseTextStyle(o.textStyle);
    if(isDiagramObject(o))q.diagram=diagramSettings(o.type,o.diagram,out.width);
    if(canCarry(o)&&Object.hasOwn(PLAYER_POSES,o.playerPose)){q.playerPose=o.playerPose;if(o.posePinned===true)q.posePinned=true}
@@ -57,7 +58,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
   arrows+='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(ink?3.4:3)+'" '+(ball?(o.transferKind==='kick'?'stroke-dasharray="13 4 3 4" ':'stroke-dasharray="7 6" '):'')+'marker-end="url(#arr)" opacity=".95"/>';
   if(ghosts&&canCarry(o)){const q=g.toView(m.start.x,m.start.y);starts+='<circle cx="'+q.x+'" cy="'+q.y+'" r="'+Math.max(3,15*symbolFactors(o,g)[0])+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-dasharray="4 3"/>'}
  }
- const order=[...objects.filter(isDiagramObject),...objects.filter(o=>contactType(o.type)),...objects.filter(o=>!isDiagramObject(o)&&!contactType(o.type)&&o.type!=='ball'&&!isShield(o)),...objects.filter(isShield),...objects.filter(o=>o.type==='ball')];
+ const order=orderObjects(objects);
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
  let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink)).join('')+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
