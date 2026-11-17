@@ -32,7 +32,7 @@ export function setParticipants(f,m,g,ids,u10=false){
  if(r.mode==='pad'){
   const active=new Set(players.map(o=>o.id));
   for(const x of f.objects)if(x!==m&&Array.isArray(x.members))x.members=x.members.filter(y=>!active.has(y.id));
-  m.members=players.map(o=>({id:o.id,pose:phase==='support'?'standing':'bound'}));
+  m.members=players.map(o=>({id:o.id,pose:phase==='support'||phase==='secured'&&r.winner&&team(o)!==r.winner?'standing':'bound'}));
   return {ok:true,message:(phase==='support'?supportTitle(first):PHASES[phase])+' · '+players.length+' arriving players, positions preserved'};
  }
  const ball=findObject(f,r.ballId),p=g.toView(ball?.x??m.x,ball?.y??m.y),ang=(m.rot+g.rotation)*Math.PI/180,c=Math.cos(ang),s=Math.sin(ang);
