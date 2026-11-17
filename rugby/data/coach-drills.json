@@ -4,395 +4,8 @@
   "drills": [
     {
       "version": 1,
-      "id": "mwknxqa9qygu8c",
-      "title": "Untitled drill",
-      "age": "U10",
-      "category": "Attack",
-      "length": 12,
-      "width": 8,
-      "objective": "",
-      "safety": "",
-      "frames": [
-        {
-          "name": "Set up",
-          "seconds": 0,
-          "notes": "",
-          "objects": [
-            {
-              "id": "mwko06q2r10wwh",
-              "type": "defender",
-              "label": "D1",
-              "x": 450,
-              "y": 479.7,
-              "rot": 0
-            },
-            {
-              "id": "mwko06wal3mstg",
-              "type": "defender",
-              "label": "D2",
-              "x": 450,
-              "y": 450.575,
-              "rot": 0
-            },
-            {
-              "id": "mwko072avp7wre",
-              "type": "defender",
-              "label": "D3",
-              "x": 450,
-              "y": 421.45,
-              "rot": 0
-            },
-            {
-              "id": "mwko07962eg8ba",
-              "type": "defender",
-              "label": "D4",
-              "x": 450,
-              "y": 396.20833333333337,
-              "rot": 0
-            },
-            {
-              "id": "mwko3a2ya6ju52",
-              "type": "attacker",
-              "label": "A1",
-              "x": 450,
-              "y": 143.79166666666669,
-              "rot": 180
-            },
-            {
-              "id": "mwko3a96tai59c",
-              "type": "attacker",
-              "label": "A2",
-              "x": 450,
-              "y": 114.66666666666667,
-              "rot": 180
-            },
-            {
-              "id": "mwko3afv8riv49",
-              "type": "attacker",
-              "label": "A3",
-              "x": 450,
-              "y": 85.54166666666667,
-              "rot": 180
-            },
-            {
-              "id": "mwko3am2mh6y4m",
-              "type": "attacker",
-              "label": "A4",
-              "x": 450,
-              "y": 56.41666666666667,
-              "rot": 180
-            },
-            {
-              "id": "mwko4krm39vpeq",
-              "type": "sausage",
-              "label": "",
-              "x": 450,
-              "y": 270,
-              "rot": 0
-            },
-            {
-              "id": "mwko4wpmsdirgs",
-              "type": "ball",
-              "label": "",
-              "x": 501,
-              "y": 260.2916666666667,
-              "rot": 0
-            },
-            {
-              "id": "mwko758271hcp3",
-              "type": "shieldItem",
-              "label": "",
-              "x": 450.0000000000001,
-              "y": 386.8883333333333,
-              "rot": 0,
-              "ownerId": "mwko07962eg8ba"
-            }
-          ],
-          "timing": {},
-          "paths": {}
-        },
-        {
-          "name": "Step 2",
-          "seconds": 2,
-          "notes": "",
-          "objects": [
-            {
-              "id": "mwko06q2r10wwh",
-              "type": "defender",
-              "label": "D1",
-              "x": 450,
-              "y": 479.7,
-              "rot": 0
-            },
-            {
-              "id": "mwko06wal3mstg",
-              "type": "defender",
-              "label": "D2",
-              "x": 450,
-              "y": 450.575,
-              "rot": 0
-            },
-            {
-              "id": "mwko072avp7wre",
-              "type": "defender",
-              "label": "D3",
-              "x": 526.5,
-              "y": 328.25,
-              "rot": 0
-            },
-            {
-              "id": "mwko07962eg8ba",
-              "type": "defender",
-              "label": "D4",
-              "x": 450.0000000000001,
-              "y": 280.485,
-              "rot": 0
-            },
-            {
-              "id": "mwko3a2ya6ju52",
-              "type": "attacker",
-              "label": "A1",
-              "x": 450.0000000000001,
-              "y": 259.515,
-              "rot": 180
-            },
-            {
-              "id": "mwko3a96tai59c",
-              "type": "attacker",
-              "label": "A2",
-              "x": 526.5,
-              "y": 211.75,
-              "rot": 180
-            },
-            {
-              "id": "mwko3afv8riv49",
-              "type": "attacker",
-              "label": "A3",
-              "x": 450,
-              "y": 85.54166666666667,
-              "rot": 180
-            },
-            {
-              "id": "mwko3am2mh6y4m",
-              "type": "attacker",
-              "label": "A4",
-              "x": 450,
-              "y": 56.41666666666667,
-              "rot": 180
-            },
-            {
-              "id": "mwko4krm39vpeq",
-              "type": "sausage",
-              "label": "",
-              "x": 450,
-              "y": 270,
-              "rot": 0
-            },
-            {
-              "id": "mwko4wpmsdirgs",
-              "type": "ball",
-              "label": "",
-              "x": 501,
-              "y": 260.2916666666667,
-              "rot": 0
-            },
-            {
-              "id": "mwko758271hcp3",
-              "type": "shieldItem",
-              "label": "",
-              "x": 450.0000000000001,
-              "y": 271.165,
-              "rot": 0,
-              "ownerId": "mwko07962eg8ba"
-            },
-            {
-              "id": "mwko9zdn1ju9k0",
-              "type": "ruck",
-              "label": "Ruck marker",
-              "x": 450.0000000000001,
-              "y": 270,
-              "rot": 180,
-              "members": [
-                {
-                  "id": "mwko3a2ya6ju52",
-                  "pose": "bound"
-                },
-                {
-                  "id": "mwko07962eg8ba",
-                  "pose": "bound"
-                }
-              ]
-            }
-          ],
-          "timing": {
-            "mwko07962eg8ba": {
-              "start": 0,
-              "end": 56
-            }
-          },
-          "paths": {
-            "mwko072avp7wre": {
-              "mode": "smooth",
-              "points": [
-                {
-                  "x": 526.5,
-                  "y": 386.5
-                }
-              ],
-              "follow": false
-            },
-            "mwko3a96tai59c": {
-              "mode": "smooth",
-              "points": [
-                {
-                  "x": 501,
-                  "y": 153.5
-                }
-              ],
-              "follow": false
-            }
-          }
-        },
-        {
-          "name": "Step 3",
-          "seconds": 2,
-          "notes": "",
-          "objects": [
-            {
-              "id": "mwko06q2r10wwh",
-              "type": "defender",
-              "label": "D1",
-              "x": 450,
-              "y": 479.7,
-              "rot": 0
-            },
-            {
-              "id": "mwko06wal3mstg",
-              "type": "defender",
-              "label": "D2",
-              "x": 450,
-              "y": 450.575,
-              "rot": 0
-            },
-            {
-              "id": "mwko072avp7wre",
-              "type": "defender",
-              "label": "D3",
-              "x": 526.5,
-              "y": 328.25,
-              "rot": 0
-            },
-            {
-              "id": "mwko07962eg8ba",
-              "type": "defender",
-              "label": "D4",
-              "x": 450.0000000000001,
-              "y": 280.485,
-              "rot": 0
-            },
-            {
-              "id": "mwko3a2ya6ju52",
-              "type": "attacker",
-              "label": "A1",
-              "x": 450.0000000000001,
-              "y": 259.515,
-              "rot": 180
-            },
-            {
-              "id": "mwko3a96tai59c",
-              "type": "attacker",
-              "label": "A2",
-              "x": 526.5,
-              "y": 211.75,
-              "rot": 180
-            },
-            {
-              "id": "mwko3afv8riv49",
-              "type": "attacker",
-              "label": "A3",
-              "x": 450,
-              "y": 85.54166666666667,
-              "rot": 180
-            },
-            {
-              "id": "mwko3am2mh6y4m",
-              "type": "attacker",
-              "label": "A4",
-              "x": 450,
-              "y": 56.41666666666667,
-              "rot": 180
-            },
-            {
-              "id": "mwko4krm39vpeq",
-              "type": "sausage",
-              "label": "",
-              "x": 450,
-              "y": 270,
-              "rot": 0
-            },
-            {
-              "id": "mwko4wpmsdirgs",
-              "type": "ball",
-              "label": "",
-              "x": 501,
-              "y": 260.2916666666667,
-              "rot": 0
-            },
-            {
-              "id": "mwko758271hcp3",
-              "type": "shieldItem",
-              "label": "",
-              "x": 450.0000000000001,
-              "y": 271.165,
-              "rot": 0,
-              "ownerId": "mwko07962eg8ba"
-            },
-            {
-              "id": "mwko9zdn1ju9k0",
-              "type": "ruck",
-              "label": "Ruck marker",
-              "x": 450.0000000000001,
-              "y": 270,
-              "rot": 180,
-              "members": [
-                {
-                  "id": "mwko07962eg8ba",
-                  "pose": "bound"
-                },
-                {
-                  "id": "mwko3a2ya6ju52",
-                  "pose": "bound"
-                }
-              ]
-            }
-          ],
-          "timing": {},
-          "paths": {}
-        }
-      ],
-      "attackDirection": "up",
-      "showAttack": true,
-      "boundary": "line",
-      "ageMin": 10,
-      "ageMax": 10,
-      "minutes": 8,
-      "players": "",
-      "equipment": "",
-      "instructions": "",
-      "coaching": "",
-      "regression": "",
-      "progression": "",
-      "questions": "",
-      "notes": "",
-      "links": [],
-      "provenance": "Coach-created / imported drill",
-      "review": "Coach review required",
-      "savedAt": "2026-11-17T12:41:23.353Z"
-    },
-    {
-      "version": 1,
       "id": "mwjrn9r5zug49w",
-      "title": "Rolling donut tackle",
+      "title": "Tackling rolling donut - basic",
       "age": "U10",
       "category": "Contact",
       "length": 10,
@@ -1077,21 +690,408 @@
       "links": [
         {
           "label": "World Rugby – Tackle Ready",
-          "kind": "Law / safety",
-          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready"
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready",
+          "kind": "Law / safety"
         },
         {
           "label": "RFU – Tackle Safe learning",
-          "kind": "Law / safety",
-          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000300587-how-do-i-find-and-book-the-tackle-safe-elearning-"
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000300587-how-do-i-find-and-book-the-tackle-safe-elearning-",
+          "kind": "Law / safety"
         },
         {
           "label": "RFU – Age Grade Regulations",
-          "kind": "Law / safety",
-          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-"
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-",
+          "kind": "Law / safety"
         }
       ],
-      "savedAt": "2026-11-17T12:27:54Z"
+      "savedAt": "2026-11-17T12:53:12.033Z"
+    },
+    {
+      "version": 1,
+      "id": "mwknxqa9qygu8c",
+      "title": "Untitled drill",
+      "age": "U10",
+      "category": "Attack",
+      "length": 12,
+      "width": 8,
+      "objective": "",
+      "safety": "",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwko06q2r10wwh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 479.7,
+              "rot": 0
+            },
+            {
+              "id": "mwko06wal3mstg",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 450.575,
+              "rot": 0
+            },
+            {
+              "id": "mwko072avp7wre",
+              "type": "defender",
+              "label": "D3",
+              "x": 450,
+              "y": 421.45,
+              "rot": 0
+            },
+            {
+              "id": "mwko07962eg8ba",
+              "type": "defender",
+              "label": "D4",
+              "x": 450,
+              "y": 396.20833333333337,
+              "rot": 0
+            },
+            {
+              "id": "mwko3a2ya6ju52",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 143.79166666666669,
+              "rot": 180
+            },
+            {
+              "id": "mwko3a96tai59c",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 114.66666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko3afv8riv49",
+              "type": "attacker",
+              "label": "A3",
+              "x": 450,
+              "y": 85.54166666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko3am2mh6y4m",
+              "type": "attacker",
+              "label": "A4",
+              "x": 450,
+              "y": 56.41666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko4krm39vpeq",
+              "type": "sausage",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "mwko4wpmsdirgs",
+              "type": "ball",
+              "label": "",
+              "x": 501,
+              "y": 260.2916666666667,
+              "rot": 0
+            },
+            {
+              "id": "mwko758271hcp3",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450.0000000000001,
+              "y": 386.8883333333333,
+              "rot": 0,
+              "ownerId": "mwko07962eg8ba"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Step 2",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwko06q2r10wwh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 479.7,
+              "rot": 0
+            },
+            {
+              "id": "mwko06wal3mstg",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 450.575,
+              "rot": 0
+            },
+            {
+              "id": "mwko072avp7wre",
+              "type": "defender",
+              "label": "D3",
+              "x": 526.5,
+              "y": 328.25,
+              "rot": 0
+            },
+            {
+              "id": "mwko07962eg8ba",
+              "type": "defender",
+              "label": "D4",
+              "x": 450.0000000000001,
+              "y": 280.485,
+              "rot": 0
+            },
+            {
+              "id": "mwko3a2ya6ju52",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450.0000000000001,
+              "y": 259.515,
+              "rot": 180
+            },
+            {
+              "id": "mwko3a96tai59c",
+              "type": "attacker",
+              "label": "A2",
+              "x": 526.5,
+              "y": 211.75,
+              "rot": 180
+            },
+            {
+              "id": "mwko3afv8riv49",
+              "type": "attacker",
+              "label": "A3",
+              "x": 450,
+              "y": 85.54166666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko3am2mh6y4m",
+              "type": "attacker",
+              "label": "A4",
+              "x": 450,
+              "y": 56.41666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko4krm39vpeq",
+              "type": "sausage",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "mwko4wpmsdirgs",
+              "type": "ball",
+              "label": "",
+              "x": 501,
+              "y": 260.2916666666667,
+              "rot": 0
+            },
+            {
+              "id": "mwko758271hcp3",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450.0000000000001,
+              "y": 271.165,
+              "rot": 0,
+              "ownerId": "mwko07962eg8ba"
+            },
+            {
+              "id": "mwko9zdn1ju9k0",
+              "type": "ruck",
+              "label": "Ruck marker",
+              "x": 450.0000000000001,
+              "y": 270,
+              "rot": 180,
+              "members": [
+                {
+                  "id": "mwko3a2ya6ju52",
+                  "pose": "bound"
+                },
+                {
+                  "id": "mwko07962eg8ba",
+                  "pose": "bound"
+                }
+              ]
+            }
+          ],
+          "timing": {
+            "mwko07962eg8ba": {
+              "start": 0,
+              "end": 56
+            }
+          },
+          "paths": {
+            "mwko072avp7wre": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 526.5,
+                  "y": 386.5
+                }
+              ],
+              "follow": false
+            },
+            "mwko3a96tai59c": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 501,
+                  "y": 153.5
+                }
+              ],
+              "follow": false
+            }
+          }
+        },
+        {
+          "name": "Step 3",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwko06q2r10wwh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 479.7,
+              "rot": 0
+            },
+            {
+              "id": "mwko06wal3mstg",
+              "type": "defender",
+              "label": "D2",
+              "x": 450,
+              "y": 450.575,
+              "rot": 0
+            },
+            {
+              "id": "mwko072avp7wre",
+              "type": "defender",
+              "label": "D3",
+              "x": 526.5,
+              "y": 328.25,
+              "rot": 0
+            },
+            {
+              "id": "mwko07962eg8ba",
+              "type": "defender",
+              "label": "D4",
+              "x": 450.0000000000001,
+              "y": 280.485,
+              "rot": 0
+            },
+            {
+              "id": "mwko3a2ya6ju52",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450.0000000000001,
+              "y": 259.515,
+              "rot": 180
+            },
+            {
+              "id": "mwko3a96tai59c",
+              "type": "attacker",
+              "label": "A2",
+              "x": 526.5,
+              "y": 211.75,
+              "rot": 180
+            },
+            {
+              "id": "mwko3afv8riv49",
+              "type": "attacker",
+              "label": "A3",
+              "x": 450,
+              "y": 85.54166666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko3am2mh6y4m",
+              "type": "attacker",
+              "label": "A4",
+              "x": 450,
+              "y": 56.41666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko4krm39vpeq",
+              "type": "sausage",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "mwko4wpmsdirgs",
+              "type": "ball",
+              "label": "",
+              "x": 501,
+              "y": 260.2916666666667,
+              "rot": 0
+            },
+            {
+              "id": "mwko758271hcp3",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450.0000000000001,
+              "y": 271.165,
+              "rot": 0,
+              "ownerId": "mwko07962eg8ba"
+            },
+            {
+              "id": "mwko9zdn1ju9k0",
+              "type": "ruck",
+              "label": "Ruck marker",
+              "x": 450.0000000000001,
+              "y": 270,
+              "rot": 180,
+              "members": [
+                {
+                  "id": "mwko07962eg8ba",
+                  "pose": "bound"
+                },
+                {
+                  "id": "mwko3a2ya6ju52",
+                  "pose": "bound"
+                }
+              ]
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "line",
+      "ageMin": 10,
+      "ageMax": 10,
+      "minutes": 8,
+      "players": "",
+      "equipment": "",
+      "instructions": "",
+      "coaching": "",
+      "regression": "",
+      "progression": "",
+      "questions": "",
+      "notes": "",
+      "links": [],
+      "provenance": "Coach-created / imported drill",
+      "review": "Coach review required",
+      "savedAt": "2026-11-17T12:41:23.353Z"
     }
   ]
 }
