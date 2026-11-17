@@ -1,0 +1,29 @@
+/* Shared Harbury-inspired presentation and public-library skin.
+   No official logos or marks are reproduced. */
+:root{--bg:#171d1f;--panel:#22292c;--panel2:#323b3d;--line:#566063;--text:#f6f2eb;--muted:#bbc1be;--accent:#e9be70;color-scheme:dark}
+body{background:#161b1e;color:#f5f1eb}
+.read-only-player{background:#171d1f;color:#f5f1eb}
+.read-only-player header,.site-header{background:linear-gradient(115deg,#711b2c,#94263d 60%,#451e29);border-bottom:3px solid #edd6b5;position:relative;color:#fff8ef}
+.read-only-player header::before,.site-header::before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:repeating-linear-gradient(90deg,#f5f3ed 0 60px,#bb344b 60px 120px)}
+.read-only-player header small,.read-only-player .library-back,.brand span{color:#f3d7ac}
+.read-only-player header h1,.site-header strong{color:#fff9f1}
+.read-only-player #controls{border-color:#655254;background:#282e30}
+.read-only-player .step-reading{border-color:#5a5555;background:#22292b}
+.read-only-player .step-reading h2{color:#f3d9a5}
+.read-only-player .player-options{--player-border:#675f59;--player-accent:#f0c87d}
+.read-only-player button,.read-only-player select,.read-only-player .file-label{background:#35383b;border-color:#7a6063;color:#f7f1e9}
+.read-only-player #play,.read-only-player button:focus-visible{background:#c04459;color:#fff;border-color:#f1b4a8}
+.read-only-player #seek{accent-color:#b33048}
+.read-only-player #message,.read-only-player .library-back{color:#e9c879}
+.read-only-player #reviewCopyDialog{background:#24292b;color:#f7f1e9}
+.read-only-player #reviewCopyValue{background:#12181b;color:#fff}
+.site-header .brandmark{background:repeating-linear-gradient(180deg,#f6f3ee 0 11px,#ad2b42 11px 21px);color:#242124;border:2px solid #fcf9f0;box-shadow:0 0 0 1px #fff5}
+.site-header .header-row button,.site-header button{color:#fff7eb;border-color:#dca1a9}
+.intro .eyebrow{color:#e9c47d}
+#quickFilters button[aria-pressed=true]{background:#632d3b;border-color:#e5b66c;color:#fff0cf}
+.search-panel,.review-note{border-color:#555659;background:#22292b}
+input,select,textarea{background:#141c1e;color:#f4eee7;border-color:#6c6261}
+a,.library-back{color:#f1c578}
+button:hover,a:hover{border-color:#e5bd72}
+:focus-visible{outline-color:#ffd58b}
+@media print{.read-only-player header,.site-header{background:#fff!important;color:#222!important;border-color:#8c243c!important}}
