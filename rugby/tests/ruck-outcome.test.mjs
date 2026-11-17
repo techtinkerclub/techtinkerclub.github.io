@@ -26,6 +26,9 @@ for(const winner of ['attack','defence']){
  ruck.breakdown.phase='contest';
  const result=contestDrive(after,before,ruck,g,{winner,distanceCm:10,exchanges:2,clearanceCm:50});
  assert(result.ok,result.message);
+ ruck.breakdown.showWinnerLabel=true; // Captions require deliberate coach opt-in.
+ ruck.breakdown.nextPlayerId=winner==='attack'?'A2':'D2';
+ ruck.breakdown.showNextPlayerLabel=true;
  assert.equal(contestWinner(ruck),winner);
  assert.equal(ruck.breakdown.clearanceCm,50);
  assert.equal(after.paths.ruck.points.length,4);
