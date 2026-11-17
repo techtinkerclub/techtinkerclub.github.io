@@ -33,3 +33,17 @@ export function symbolFactors(o,g,pose){
 export function symbolTransform(o,g,pose){const [x,y]=symbolFactors(o,g,pose);return 'scale('+x+' '+y+')'}
 export function symbolRadius(o,g,pose){const [x,y]=symbolFactors(o,g,pose);const base=o.type==='ladder'?[12,25]:o.type==='donut'?[o.donutState==='down'?23:10,23]:o.type==='sausage'?[29,9]:o.type==='bag'?[10,21]:o.type==='shieldItem'?[17,6]:o.type==='ball'?[10,6]:o.type==='cone'?[11,12]:pose==='grounded'?[12,23]:pose==='ready'?[22,15]:[16,20];return Math.max(base[0]*x,base[1]*y)}
 export const labelOffset=(o,g,pose)=>o.type==='label'?4:Math.max(13,symbolRadius(o,g,pose)+11);
+// A player's arrow points forward (local -Y); put the caption behind their
+// facing direction (local +Y) while keeping text horizontally readable.
+// Other equipment retains its simple lower caption.
+export function labelPosition(o,g,pose){
+ const distance=labelOffset(o,g,pose);
+ if(!playerTypes.has(o?.type))return {x:0,y:distance};
+ const angle=((Number(o.rot)||0)+(Number(g.rotation)||0))*Math.PI/180;
+ const desired={x:-Math.sin(angle)*distance,y:Math.cos(angle)*distance};
+ // Keep the caption anchor inside the playing field at pitch edges.
+ const at=g.toView(o.x,o.y),margin=g.margin||0;
+ const clamp=(n,low,high)=>Math.max(low,Math.min(high,n));
+ return {x:clamp(at.x+desired.x,margin+7,margin+g.fw-7)-at.x,
+  y:clamp(at.y+desired.y,margin+10,margin+g.fh-7)-at.y};
+}
