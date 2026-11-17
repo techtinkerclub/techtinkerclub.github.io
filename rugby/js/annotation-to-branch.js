@@ -45,7 +45,7 @@ export function drawnDecisionAt(drill,step,selectedId=''){
  const list=(frame?.objects||[]).filter(o=>o.type==='decision');
  return list.find(o=>o.id===selectedId)||list.length===1&&list[0]||null;
 }
-export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,labelB}={}){
+export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,labelB,actionA,actionB,receiverA,receiverB,strict=false}={}){
  if(hasOutcomes(source))throw Error('This drill already has a playable decision.');
  if(!Number.isInteger(stepIndex)||stepIndex<0||stepIndex>=source?.frames?.length)
   throw Error('Select the step containing your question-mark diamond first.');
@@ -58,7 +58,14 @@ export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,
   throw Error('Choose the player making the decision in the diamond’s Player field first.');
  const actor=original.objects.find(o=>o.id===def.playerId);
  const forkPoint=original.objects.find(o=>o.id===markerId);
- const sampleOptions=def.options.map(o=>copy(o));
+ const sampleOptions=def.options.map((o,i)=>{
+  const override=i===0?actionA:actionB;
+  if(!override)return copy(o);
+  if(!['main','run','pass'].includes(override))throw Error('Choose a recognised action for each outcome.');
+  // Keep a previously drawn path only when its action type is unchanged.
+  return {...copy(o),kind:override,points:override===o.kind?copy(o.points):[]};
+ });
+ const receiverIds=[receiverA,receiverB];
  const ball=original.objects.find(o=>o.type==='ball'&&o.ownerId===actor.id);
  const receiverFor=option=>{
   if(option.kind!=='pass'||!option.points.length)return null;
@@ -67,13 +74,30 @@ export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,
   const nearest=candidates.sort((a,b)=>dist(a,target)-dist(b,target))[0];
   return nearest&&dist(nearest,target)<=65?nearest:null;
  };
- const receivers=sampleOptions.map(receiverFor);
+ const receivers=sampleOptions.map((option,i)=>{
+  if(option.kind!=='pass')return null;
+  const explicit=receiverIds[i];
+  if(explicit){
+   const receiver=original.objects.find(o=>o.id===explicit&&actorTypes.has(o.type)&&o.id!==actor.id);
+   if(!receiver)throw Error('The selected receiving player is no longer in this step.');
+   if(!option.points.length)option.points=[{x:receiver.x,y:receiver.y}];
+   return receiver;
+  }
+  return receiverFor(option);
+ });
  const names=[labelA,labelB].map((v,i)=>String(v||labelFor(sampleOptions[i],i,actor,receivers[i])).trim().slice(0,140));
  if(names.some(x=>!x))throw Error('Give both outcomes a name.');
  const q=String(question||def.question||'What happens next?').trim().slice(0,240)||'What happens next?';
  const geom=pitchGeometry(d.length||20,d.width||15,'up');
  const anchored=stepIndex>0&&Number.isFinite(def.anchor)&&def.anchor>.05&&def.anchor<.95;
  const fraction=anchored?def.anchor:1;
+ if(anchored){
+  // A fork must not falsify the moment of arrival by lengthening either half.
+  // The existing editor supports a minimum action-step duration of 0.5 s.
+  const seconds=Number(original.seconds)||2;
+  if(Math.min(seconds*fraction,seconds*(1-fraction))<.5)
+   throw Error('The decision is too close to the start or end of this movement. Move the diamond further along the run, or make the running step longer (at least 1 second).');
+ }
  const common=copy(original);
  if(anchored){
   common.seconds=Math.max(.5,round(original.seconds*fraction));
@@ -141,11 +165,21 @@ export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,
    end.notes+=' The selected player follows the drawn run into the channel.';
   }else if(option.kind==='pass'){
    const receiver=receivers[i],passBall=ball&&end.objects.find(o=>o.id===ball.id);
-   if(!receiver){warnings.push('Option '+String.fromCharCode(65+i)+': select a pass endpoint near the intended receiving player.');}
-   else if(!passBall){warnings.push('Option '+String.fromCharCode(65+i)+': give a ball to '+actor.label+' before the fork to animate the pass.');}
+   if(!receiver){
+    const warning='Option '+String.fromCharCode(65+i)+': select the receiving player before creating the pass.';
+    if(strict)throw Error(warning);
+    warnings.push(warning);
+   }
+   else if(!passBall){
+    const warning='Option '+String.fromCharCode(65+i)+': '+actor.label+' must carry the ball before the decision to pass it.';
+    if(strict)throw Error(warning);
+    warnings.push(warning);
+   }
    // Default editor attack direction is up; never pre-create an obviously forward pass.
    else if(receiver.y<common.objects.find(o=>o.id===actor.id).y-2){
-    warnings.push('Option '+String.fromCharCode(65+i)+': the illustrated pass appears forward. Move the receiver behind the carrier before animating the pass.');
+    const warning='Option '+String.fromCharCode(65+i)+': the pass would be forward. Move the receiver level with or behind the carrier before creating it.';
+    if(strict)throw Error(warning);
+    warnings.push(warning);
    }else{
     passBall.ownerId=receiver.id;passBall.transferKind='pass';
     passBall.x=receiver.x+11;passBall.y=receiver.y-11;
@@ -165,4 +199,44 @@ export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,
  ]};
  branchInfo(d);
  return {drill:d,warnings,midStep:anchored,forkTime:d.frames.slice(1,stepIndex+1).reduce((n,f)=>n+f.seconds,0)};
+}
+
+
+// Primary Classic editor path: select an actual moving player, click their run,
+// name A and B, and create the true fork in ONE action. No annotation-only stage.
+export function createDecisionOnRun(source,stepIndex,actorId,fraction,markerId,options={}){
+ if(hasOutcomes(source))throw Error('This drill already has a decision with two outcomes.');
+ const frame=source?.frames?.[stepIndex],before=source?.frames?.[stepIndex-1];
+ if(!frame||!before)throw Error('First add a running step. The setup alone has no movement.');
+ const actor=frame.objects.find(o=>o.id===actorId&&actorTypes.has(o.type));
+ const previous=before.objects.find(o=>o.id===actorId);
+ if(!actor||!previous)throw Error('Select a player whose run is visible in this step.');
+ const moving=dist(actor,previous)>.1||frame.paths?.[actorId]?.points?.length>0;
+ if(!moving)throw Error('Draw a running path for this player before adding a decision.');
+ if(!Number.isFinite(fraction)||fraction<=.01||fraction>=.99)
+  throw Error('Place the decision somewhere between the beginning and end of the run.');
+ if(frame.objects.length>=200)throw Error('The step already has the maximum number of objects.');
+ if(frame.objects.some(o=>o.type==='decision'))
+  throw Error('This step already has a decision. Select its diamond to make it playable.');
+ const safeId=String(markerId||'').trim();
+ if(!safeId||frame.objects.some(o=>o.id===safeId))throw Error('Decision marker needs a unique identifier.');
+ const cloneDrill=copy(source);
+ const geom=pitchGeometry(source.length||20,source.width||15,'up');
+ const loc=pointAt(previous,actor,frame.paths?.[actorId],geom,fraction);
+ const receivers=frame.objects.filter(o=>actorTypes.has(o.type)&&o.id!==actorId&&o.type!=='coach');
+ const preferred=receivers.find(o=>o.id===options.receiverB)||receivers[0];
+ const wantsPass=options.actionB==='pass';
+ const markers=[
+  {label:options.labelA||'Keep running',kind:options.actionA||'main',mode:'smooth',points:[]},
+  {label:options.labelB||(wantsPass?'Pass to '+(preferred?.label||'support'):'Different route'),kind:options.actionB||'run',mode:'smooth',
+    points:wantsPass&&preferred?[{x:preferred.x,y:preferred.y}]:[]}
+ ];
+ const marker={id:safeId,type:'decision',label:'Decision',x:loc.x,y:loc.y,rot:0,
+  decision:{playerId:actorId,anchor:fraction,question:options.question||'What should the ball carrier do?',cue:'React to the defenders at this point.',options:markers}};
+ cloneDrill.frames[stepIndex].objects.push(marker);
+ return convertDrawnDecision(cloneDrill,stepIndex,safeId,{
+  question:options.question,labelA:options.labelA||markers[0].label,labelB:options.labelB||markers[1].label,
+  actionA:options.actionA||'main',actionB:options.actionB||'run',
+  receiverA:options.receiverA,receiverB:options.receiverB,strict:true
+ });
 }
