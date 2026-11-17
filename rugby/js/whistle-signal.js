@@ -2,10 +2,30 @@
 // The whistle lives on the action step it starts and can be carried through
 // editor preview, read-only playback, video visuals, shared JSON and printed notes.
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+export const DEFAULT_WHISTLE_DURATION=0.5; // seconds of VISUAL cue, not animation-step duration
+export function normalWhistleDuration(value){
+ const number=Number(value);
+ return Number.isFinite(number)&&number>=0.1
+  ?Math.round(clamp(number,0.1,3)*10)/10
+  :DEFAULT_WHISTLE_DURATION;
+}
+// Removing an existing cue must never depend on the editor's selected step,
+// the first-step setup, or whether a player has been moved since adding it.
+export function removeWhistle(drill,coachId){
+ if(!Array.isArray(drill?.frames))return 0;
+ let removed=0;
+ drill.frames.forEach((frame,index)=>{
+  if(frame.signal?.kind!=='whistle'||frame.signal.coachId!==coachId)return;
+  delete frame.signal;removed++;
+  if(frame.name==='GO · coach whistle')frame.name='Step '+(index+1);
+  if(frame.notes==='The coach blows the whistle. Players start the action.')frame.notes='';
+ });
+ return removed;
+}
 export function signalForFrame(frame){
  const s=frame?.signal;
  return s?.kind==='whistle'&&typeof s.coachId==='string'&&frame.objects?.some(o=>o.id===s.coachId&&o.type==='coach')
-  ?{kind:'whistle',coachId:s.coachId,label:'GO'}:null;
+  ?{kind:'whistle',coachId:s.coachId,label:'GO',duration:normalWhistleDuration(s.duration)}:null;
 }
 export function whistleAt(drill,frameIndex){
  if(!drill||!Number.isInteger(frameIndex)||frameIndex<0||frameIndex>=drill.frames.length)return null;
@@ -22,7 +42,7 @@ export function crossedWhistles(drill,from,to,{includeStart=false}={}){
 }
 export function whistleOverlay(frame,g,elapsed=0,{ink=false,staticView=false}={}){
  const signal=signalForFrame(frame);
- if(!signal||(!staticView&&elapsed>.85))return '';
+ if(!signal||(!staticView&&elapsed>=signal.duration))return '';
  const actor=frame.objects.find(o=>o.id===signal.coachId);
  if(!actor)return '';
  const p=g.toView(actor.x,actor.y),x=clamp(p.x+25,g.margin+10,g.margin+g.fw-124),y=clamp(p.y-57,g.margin+9,g.margin+g.fh-41);
