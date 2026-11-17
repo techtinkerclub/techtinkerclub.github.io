@@ -19,6 +19,15 @@ export function cleanContacts(frames){
  return frames;
 }
 export function arrangeContact(frame,marker,g,previous=null,explicit=null,u10=false){
+ if(marker.breakdown?.mode==='pad'&&marker.breakdown.phase==='pad'){
+  if(!explicit?.length)return {ok:false,message:'Choose one player from each side, or use Next stage to show the arrivals separately.'};
+  const old={...marker.breakdown};
+  marker.breakdown.phase='ruck';
+  const res=setParticipants(frame,marker,g,explicit,u10);
+  if(!res.ok){marker.breakdown=old;return res}
+  marker.label='Ruck formed · pad drill';
+  return {...res,message:'Ruck practice arranged over sausage. You can continue to the contest.'};
+ }
  if(marker.breakdown&&marker.breakdown.phase!=='tackle'){if(!explicit)return {ok:false,message:'Choose participants in the inspector.'};return setParticipants(frame,marker,g,explicit,u10)}
  if(!contactType(marker.type))return {ok:false,message:'Select a contact marker.'};
  const spec=CONTACTS[marker.type],near=explicit?explicit.map(id=>frame.objects.find(o=>o.id===id)).filter(canCarry):contactCandidates(frame,marker,g);
