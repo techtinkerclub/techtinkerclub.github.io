@@ -24,7 +24,7 @@ import {PHASES,supportTitle,validPhase,nextPhase,team,roles,cleanBreakdowns,cand
 import {insertable,fillMissing,syncInsertedCopies,scopeIndices} from './insertion.js?v=0.8.0';
 import {breakdownContext} from './breakdown-context.js?v=0.5.7';
 import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
-import {contactDragIds,contactHandlePoint} from './contact-drag.js?v=0.12.24';
+import {contactDragIds,contactHandlePoint} from './contact-drag.js?v=0.12.29';
 import {formationTrajectorySVG,formationTrajectoryTransform} from './formation-trajectory.js?v=0.12.29';
 import {contestDrive} from './contest-motion.js?v=0.12.29';
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
@@ -518,7 +518,7 @@ function updateContactTools(){
  const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);
  $('contestMovementTools').hidden=!ok||o.type!=='ruck'||o.breakdown?.phase!=='contest';
  $('startPadRuck').hidden=!ok||o.type!=='ruck'||!!o.breakdown||!f().objects.some(isGroundPad);$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
- const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=o.breakdown?.mode==='pad'||o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')||!o.breakdown}
+ const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=o.breakdown?.mode==='pad'&&o.breakdown?.phase!=='contest'||o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')||!o.breakdown}
  const breakdown=validPhase(o.breakdown?.phase),near=contactCandidates(f(),o,geometry()),ids=new Set((o.members||[]).map(m=>m.id));
  const tackle=o.type==='tackle'&&(!breakdown||o.breakdown.phase==='tackle');
  const players=breakdown&&o.breakdown.phase!=='tackle'?[...candidates(f(),o,'attack'),...candidates(f(),o,'defence')]:f().objects.filter(canCarry),padMode=o.breakdown?.mode==='pad',
