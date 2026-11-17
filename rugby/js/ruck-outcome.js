@@ -29,6 +29,9 @@ export function clearContestOutcome(frame,previous,marker){
  }
  delete marker.breakdown.winner;
  delete marker.breakdown.clearanceCm;
+ delete marker.breakdown.showWinnerLabel;
+ delete marker.breakdown.showNextPlayerLabel;
+ delete marker.breakdown.nextPlayerId;
  return {ok:true,message:'Contest result cleared; '+restored+' losing player'+(restored===1?'':'s')+' returned to the formation. Your push–pull path is preserved.'};
 }
 
