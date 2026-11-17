@@ -11,7 +11,7 @@ const source=privateLibrary.drills.find(d=>d.id==='mwl6su34qnwssj');
 const publicDrill=publicLibrary.drills.find(d=>d.id==='seed-133');
 assert.ok(source,'Original shared GitHub drill missing');
 assert.ok(publicDrill,'Public presentation drill missing');
-assert.equal(publicLibrary.drills.length,133);
+assert(publicLibrary.drills.length>=133,'The original 133 drills must survive catalogue expansion');
 assert.equal(source.title,'Hold the line · Carry or pass?');
 assert.equal(publicDrill.title,source.title);
 assert.equal(publicDrill.savedFromCoachDrill,source.id);
