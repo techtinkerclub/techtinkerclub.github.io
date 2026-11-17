@@ -1,3 +1,4 @@
+import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors} from './symbol-scale.js?v=0.12.27';
@@ -38,7 +39,7 @@ export function playbackData(d){
    const t=f.timing?.[o.id];if(t&&Object.hasOwn(f.timing,o.id)){const start=num(t.start,0,99,0);timing[o.id]={start,end:num(t.end,start+1,100,100)}}
    if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return copyLayoutMarker(o,copyTraining(o,q));
   });
-  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};const cue=signalForFrame({...f,objects});if(cue)result.signal=cue;cleanGuide(result);cleanTraining(result);return result;
+  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};const guides=cleanTeachingGuides(f.teachingGuides);if(guides.length)result.teachingGuides=guides;const cue=signalForFrame({...f,objects});if(cue)result.signal=cue;cleanGuide(result);cleanTraining(result);return result;
  });
  cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);normaliseRecoveryPoses(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
  if(hasOutcomes(d)){const b=branchInfo(d),views=outcomeViews(d).map(v=>({id:v.id,clean:playbackData(v.drill)}));out.branching={version:1,fork:b.fork,question:b.question,active:b.active,...(typeof b.markerId==='string'?{markerId:b.markerId}:{}),choices:b.choices.map(v=>({id:v.id,label:v.label,frames:views.find(w=>w.id===v.id).clean.frames.slice(b.fork+1)}))};out.frames=views.find(v=>v.id===b.active).clean.frames;}
@@ -47,7 +48,7 @@ export function playbackData(d){
 export function drillDuration(d){return d.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0)}
 export function timeLocation(d,t){if(t<=0||d.frames.length<2)return {i:0,p:1};let acc=0;for(let i=1;i<d.frames.length;i++){const end=acc+d.frames[i].seconds;if(t<=end)return {i,p:clamp((t-acc)/d.frames[i].seconds,0,1)};acc=end}return {i:d.frames.length-1,p:1}}
 const svgObj=(o,g,poses,ink=false)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];if(isDiagramObject(o))return '<g transform="translate('+q.x+' '+q.y+') rotate('+(o.rot+g.rotation)+')">'+diagramSVG(o,g,{ink})+'</g>';if(o.type==='label')return '<g transform="translate('+q.x+' '+q.y+')">'+textLabelSVG(o,{baseline:labelOffset(o,g),ink})+'</g>';return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+') '+symbolTransform(o,g,poses.get(o.id))+'">'+posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type))),color)+'</g>'+(o.label&&!contactType(o.type)?'<text x="'+labelPosition(o,g,poses.get(o.id)).x+'" y="'+labelPosition(o,g,poses.get(o.id)).y+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
-export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,markups=true,scaleMode='realistic',ghosts=false,ink=false,prefix='scene'}={}){
+export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,teachingGuides=true,markups=true,scaleMode='realistic',ghosts=false,ink=false,prefix='scene'}={}){
  const g={...pitchGeometry(d.length,d.width,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),poses=trainingPoses(objects,posesFor(objects));
  let field=trainingField(g,false,.5,pitchSettings(d)),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
@@ -64,7 +65,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  }
  const order=orderObjects(objects);
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
- let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink)).join('') +whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null})+contestResultOverlay(fr,objects,g,p,ink)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
+ let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink)).join('') +whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null})+contestResultOverlay(fr,objects,g,p,ink)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'')+(labels?contactLabels(objects,g,esc,[...new Set(changes)]):'');
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+g.viewWidth+' '+g.viewHeight+'" width="'+g.viewWidth+'" height="'+g.viewHeight+'" font-family="Arial,sans-serif">'+body+'</svg>',g,index:i,frame:fr};
 }
