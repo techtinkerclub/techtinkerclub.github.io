@@ -515,7 +515,9 @@ function updateObjectPicker(){const list=$('objectPicker'),isGroup=groupMode||gr
 $('objectPicker').onchange=()=>{if($('objectPicker').value)selectObject($('objectPicker').value);else{selected=null;selectedPathId=null;render();inspector()}};
 let memberSignature='';
 function updateContactTools(){
- const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);$('startPadRuck').hidden=!ok||o.type!=='ruck'||!!o.breakdown||!f().objects.some(isGroundPad);$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
+ const o=preview===null?activeObject():null,ok=!!o&&contactType(o.type);
+ $('contestMovementTools').hidden=!ok||o.type!=='ruck'||o.breakdown?.phase!=='contest';
+ $('startPadRuck').hidden=!ok||o.type!=='ruck'||!!o.breakdown||!f().objects.some(isGroundPad);$('continueBreakdown').hidden=!ok||!validPhase(o?.breakdown?.phase);$('contactTools').hidden=!ok||!!(f().guide&&o?.id===f().guide.id+'-formation');if(!ok){memberSignature='';return}
  const details=$('currentFormationEdit'),key=o.id+':'+idx+':'+(o.breakdown?.phase||'');if(details.dataset.key!==key){details.dataset.key=key;details.open=o.breakdown?.mode==='pad'||o.type==='tackle'&&(!o.breakdown||o.breakdown.phase==='tackle')||!o.breakdown}
  const breakdown=validPhase(o.breakdown?.phase),near=contactCandidates(f(),o,geometry()),ids=new Set((o.members||[]).map(m=>m.id));
  const tackle=o.type==='tackle'&&(!breakdown||o.breakdown.phase==='tackle');
@@ -637,6 +639,22 @@ $('padNudgeTools').onclick=e=>{
  if(nudgeRuckPlayer(f(),o,button.dataset.nudgeId,geometry(),Number(button.dataset.dx),Number(button.dataset.dy))){
   changed();render();inspector();tracks();note('Adjusted '+objectName(player)+' by 15 cm. Ruck membership stays intact.');
  }
+};
+$('applyContestMotion').onclick=()=>{
+ if(!canEditObjects())return;
+ const marker=activeObject();
+ if(marker?.type!=='ruck'||marker.breakdown?.phase!=='contest')return;
+ const result=contestDrive(f(),drill.frames[idx-1],marker,geometry(),{
+  distanceCm:Number($('contestDistance').value),
+  exchanges:Number($('contestExchanges').value),
+  winner:$('contestWinner').value
+ });
+ $('contestMotionStatus').textContent=result.message;
+ note(result.message);
+ if(!result.ok)return;
+ // Only the current step changes. The original positions remain in the
+ // previous step; a ruck moving along its route carries linked participants.
+ changed();refresh();openInspector('Object',false);
 };
 $('endContact').onclick=()=>deleteObject('here');$('continueBreakdown').onclick=revealBreakdown;
 function activeBreakdown(){return breakdownContext(drill.frames,idx,selected,breakdownPreferred).marker}
@@ -878,7 +896,7 @@ pitch.addEventListener('pointermove',e=>{
  }else if(drag.kind==='decision-waypoint'){const p=o.decision.options[drag.option]?.points[drag.index];if(!p)return;Object.assign(p,placement(point(e),e.shiftKey));
  }else if(drag.kind==='decision-anchor'){const g=geometry(),route=decisionRoute(f(),drill.frames[idx-1],o.decision.playerId,g);if(!route)return;o.decision.anchor=decisionFraction(route,viewPoint(e));const q=decisionLocation(f(),o,g,drill.frames[idx-1]);Object.assign(o,g.fromView(q.x,q.y));
  }else if(drag.kind==='waypoint'){
-  const g=geometry(),q=drag.contactTransform?g.fromView(...Object.values(drag.contactTransform.fromProxy(viewPoint(e)))):point(e),p=ensureRoute().points[drag.index];if(!p)return;
+  const g=geometry(),proxy=drag.contactTransform?.fromProxy(viewPoint(e)),q=proxy?g.fromView(proxy.x,proxy.y):point(e),p=ensureRoute().points[drag.index];if(!p)return;
   const pos=placement(q,e.shiftKey);if(Math.abs(pos.x-p.x)<1e-8&&Math.abs(pos.y-p.y)<1e-8)return;Object.assign(p,pos);
  }else if(drag.kind==='rotate'){
   const g=geometry(),angle=rotationFromPointer(g.toView(o.x,o.y),viewPoint(e),g.rotation,e.shiftKey?15:1);
