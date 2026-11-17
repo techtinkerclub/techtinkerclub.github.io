@@ -1,6 +1,7 @@
 import {esc} from './model.js?v=0.5.3';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.6';
 import {hasOutcomes,outcomeViews} from './branching.js?v=1';
+import {outcomeCardsMarkup} from './branching-visual.js?v=2';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.1';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
@@ -104,7 +105,7 @@ export function printMarkup(raw,opts={}){
  const d=playbackData(raw);
  if(hasOutcomes(d)){
   const b=d.branching;
-  const cover='<section class="print-page print-card"><header><div><small>RUGBY COACHING STUDIO · DECISION DRILL</small><h1>'+esc(d.title)+'</h1></div><p>Shared setup · two playable outcomes</p></header>'+coachingMarkup(d)+'<footer>Check current age-grade rules and contact safety before delivery.</footer></section>';
+  const cover='<section class="print-page print-card"><header><div><small>RUGBY COACHING STUDIO · DECISION DRILL</small><h1>'+esc(d.title)+'</h1></div><p>Shared setup · two playable outcomes</p></header>'+coachingMarkup(d)+outcomeCardsMarkup(d,'print')+'<footer>Check current age-grade rules and contact safety before delivery.</footer></section>';
   return cover+outcomeViews(d).map((v,i)=>'<section class="print-page print-branch-heading"><small>◆ PLAYABLE DECISION · OPTION '+v.id.toUpperCase()+'</small><h2>'+esc(v.label)+'</h2><p><strong>Decision:</strong> '+esc(b.question)+'</p><p>Shared setup and signal, then outcome '+v.id.toUpperCase()+'. Repeat the exercise with the other outcome.</p></section>'+printMarkup(v.drill,{...opts,_skipCard:true,_branching:b,_branchFork:b.fork})).join('');
  }
  const o=outputOptions(opts),pages=[],age=cardAge(d),groups=[];
