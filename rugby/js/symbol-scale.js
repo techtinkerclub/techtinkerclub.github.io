@@ -40,7 +40,12 @@ export function labelPosition(o,g,pose){
  const distance=labelOffset(o,g,pose);
  if(!playerTypes.has(o?.type))return {x:0,y:distance};
  const angle=((Number(o.rot)||0)+(Number(g.rotation)||0))*Math.PI/180;
- const desired={x:-Math.sin(angle)*distance,y:Math.cos(angle)*distance};
+ // SVG text uses its bottom baseline by default. Above a player, that
+ // puts the whole 13px caption another ~10px away from the shirt; below a
+ // player, the glyphs sit 10px ABOVE the baseline and look much closer.
+ // Compensate only for the upward-facing placement so the visible gaps match.
+ const behindY=Math.cos(angle);
+ const desired={x:-Math.sin(angle)*distance,y:behindY*distance+10*Math.max(0,-behindY)};
  // Keep the caption anchor inside the playing field at pitch edges.
  const at=g.toView(o.x,o.y),margin=g.margin||0;
  const clamp=(n,low,high)=>Math.max(low,Math.min(high,n));
