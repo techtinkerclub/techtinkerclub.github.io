@@ -27,3 +27,8 @@ a,.library-back{color:#f1c578}
 button:hover,a:hover{border-color:#e5bd72}
 :focus-visible{outline-color:#ffd58b}
 @media print{.read-only-player header,.site-header{background:#fff!important;color:#222!important;border-color:#8c243c!important}}
+
+.coach-library-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.coach-library-back{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 12px;border:1px solid #e2b28f;border-radius:8px;color:#fff1d6!important;background:#6f2939;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap}
+.coach-library-back:hover{background:#953c50;border-color:#ffcf86}
+@media(max-width:590px){.coach-library-actions{width:100%;justify-content:space-between}.coach-library-back{min-height:36px}}
