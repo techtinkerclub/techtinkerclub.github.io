@@ -30,7 +30,7 @@ export function playbackData(d){
    if(canCarry(o)&&Object.hasOwn(PLAYER_POSES,o.playerPose)){q.playerPose=o.playerPose;if(o.posePinned===true)q.posePinned=true}
     if(o.type==='ball'||isShield(o)){if(typeof o.ownerId==='string')q.ownerId=o.ownerId;if(o.type==='ball'){if(['left','right'].includes(o.carrySide))q.carrySide=o.carrySide;if(['turnover','presentation','set','handover','throw','feed','kick','pass','tap'].includes(o.transferKind))q.transferKind=o.transferKind;if(['presented','secured','grounded'].includes(o.groundState))q.groundState=o.groundState}}
    if(contactType(o.type)&&Array.isArray(o.members))q.members=o.members.slice(0,17).filter(m=>m&&typeof m.id==='string').map(m=>({id:m.id,pose:m.pose}));
-   if(contactType(o.type)&&o.breakdown&&typeof o.breakdown==='object'){const b=o.breakdown;q.breakdown={phase:b.phase,arrivalSide:b.arrivalSide,carrierId:b.carrierId,tacklerId:b.tacklerId,tacklerIds:Array.isArray(b.tacklerIds)?b.tacklerIds.slice(0,2):undefined,ballId:b.ballId}}
+   if(contactType(o.type)&&o.breakdown&&typeof o.breakdown==='object'){const b=o.breakdown;q.breakdown={phase:b.phase,mode:b.mode==='pad'?'pad':undefined,padId:typeof b.padId==='string'?b.padId:undefined,arrivalSide:b.arrivalSide,carrierId:b.carrierId,tacklerId:b.tacklerId,tacklerIds:Array.isArray(b.tacklerIds)?b.tacklerIds.slice(0,2):undefined,ballId:b.ballId}}
    const t=f.timing?.[o.id];if(t&&Object.hasOwn(f.timing,o.id)){const start=num(t.start,0,99,0);timing[o.id]={start,end:num(t.end,start+1,100,100)}}
    if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return copyLayoutMarker(o,copyTraining(o,q));
   });
