@@ -2,15 +2,16 @@ import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,is
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.6';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=1';
+import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=1';
 import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.0';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.6';
-const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0;
+const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
 function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
 function stepEnd(i){return d.frames.slice(0,i+1).reduce((sum,f,k)=>sum+(k?f.seconds:0),0)}
 function stepTarget(direction){if(!d)return 0;const i=Math.max(0,shownStep),atEnd=Math.abs(t-stepEnd(i))<1e-7;return Math.max(0,Math.min(d.frames.length-1,direction<0?i-1:atEnd?i+1:i))}
-function jumpStep(i,scroll=false){if(!d)return;stop();t=stepEnd(Math.max(0,Math.min(i,d.frames.length-1)));render();if(scroll)$('board').scrollIntoView({block:'start',behavior:'auto'})}
+function jumpStep(i,scroll=false){if(!d)return;stop();t=stepEnd(Math.max(0,Math.min(i,d.frames.length-1)));if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render();if(scroll)$('board').scrollIntoView({block:'start',behavior:'auto'})}
 function render(){
  if(!d)return;
  const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
@@ -21,14 +22,38 @@ function render(){
  $('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t;
  $('previousStep').disabled=t<=0;$('nextStep').disabled=t>=drillDuration(d);$('play').disabled=d.frames.length<2;
 }
-function setPlayerOutcome(id){
+function showOutcomeDecision({jump=true}={}){
  if(!d||!hasOutcomes(d))return;
- stop();chooseOutcome(d,id);t=0;shownStep=-1;notesKey='';
+ stop();
+ const fork=decisionTime(d);
+ if(jump)t=fork;
+ $('branchDecisionQuestion').textContent='◆ '+d.branching.question;
+ $('branchDecisionCards').innerHTML=outcomeCardsMarkup(d,'choose');
+ $('branchDecisionPanel').hidden=false;
+ render();
+ $('branchDecisionPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function setPlayerOutcome(id,{atFork=false,resume=false}={}){
+ if(!d||!hasOutcomes(d))return;
+ stop();
+ chooseOutcome(d,id);
+ t=atFork?decisionTime(d):0;
+ choiceResolved=true;
+ shownStep=-1;notesKey='';
  $('branchChoice').value=id;$('seek').max=drillDuration(d);
+ $('branchDecisionPanel').hidden=true;
+ $('coachCardContent').innerHTML=coachingMarkup(d);
  $('coachSequenceContent').innerHTML=sequenceMarkup(d);render();
+ if(resume)$('play').click();
 }
 $('branchChoice').onchange=()=>setPlayerOutcome($('branchChoice').value);
-function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);
+$('branchCompare').onclick=()=>{choiceResolved=false;showOutcomeDecision()};
+$('branchDismiss').onclick=()=>{$('branchDecisionPanel').hidden=true;choiceResolved=true;render()};
+$('branchDecisionCards').onclick=e=>{
+ const target=e.target.closest('[data-branch-choice]');
+ if(target)setPlayerOutcome(target.dataset.branchChoice,{atFork:true,resume:true});
+};
+function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);choiceResolved=false;$('branchDecisionPanel').hidden=true;
  const b=hasOutcomes(d)?branchInfo(d):null;
  $('branchPlayer').hidden=!b;
  if(b){
@@ -39,8 +64,29 @@ function open(data,options){stop();d=playbackData(data);opts=outputOptions(optio
 t=0;shownStep=-1;notesKey='';$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
 let soundOn=true;
 $('whistleSound').onclick=()=>{soundOn=!soundOn;$('whistleSound').setAttribute('aria-pressed',String(soundOn));$('whistleSound').textContent=soundOn?'Whistle sound: on':'Whistle sound: off'};
-$('play').onclick=()=>{if(!d)return;if(playing){stop();return}if(t>=drillDuration(d))t=0;playing=true;$('play').textContent='Pause';if(soundOn&&crossedWhistles(d,t,t,{includeStart:true}).length)playWhistle();last=performance.now();function tick(now){if(!playing)return;const from=t;t=Math.min(drillDuration(d),t+(now-last)/1000*Number($('speed').value));last=now;if(soundOn&&crossedWhistles(d,from,t).length)playWhistle();render();if(t>=drillDuration(d))stop();else raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick)};
-$('restart').onclick=()=>jumpStep(0);$('previousStep').onclick=()=>jumpStep(stepTarget(-1));$('nextStep').onclick=()=>jumpStep(stepTarget(1));$('seek').oninput=()=>{stop();t=Number($('seek').value);render()};
+$('play').onclick=()=>{
+ if(!d)return;
+ if(playing){stop();return}
+ const total=drillDuration(d);
+ if(t>=total){t=0;choiceResolved=false}
+ if(hasOutcomes(d)&&!choiceResolved&&t>=decisionTime(d)-1e-6){showOutcomeDecision();return}
+ playing=true;$('play').textContent='Pause';
+ if(soundOn&&crossedWhistles(d,t,t,{includeStart:true}).length)playWhistle();
+ last=performance.now();
+ function tick(now){
+  if(!playing)return;
+  const from=t,delta=(now-last)/1000*Number($('speed').value);
+  t=Math.min(total,from+delta);last=now;
+  if(hasOutcomes(d)&&!choiceResolved&&from<=decisionTime(d)+1e-6&&t>=decisionTime(d)-1e-6){
+   t=decisionTime(d);showOutcomeDecision({jump:false});return;
+  }
+  if(soundOn&&crossedWhistles(d,from,t).length)playWhistle();
+  render();
+  if(t>=total)stop();else raf=requestAnimationFrame(tick);
+ }
+ raf=requestAnimationFrame(tick);
+};
+$('restart').onclick=()=>jumpStep(0);$('previousStep').onclick=()=>jumpStep(stepTarget(-1));$('nextStep').onclick=()=>jumpStep(stepTarget(1));$('seek').oninput=()=>{stop();t=Number($('seek').value);if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render()};
 for(const k of ['runs','passes','labels','decisions','markups','offside','orientation','scaleMode'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode'].includes(k)?$(k).value:$(k).checked;render()};
 $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>3000000)throw Error('File is too large.');open(JSON.parse(await file.text()),opts)}catch(err){$('message').textContent=err.message}};
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();jumpStep(Number(b.dataset.jumpStep),true)};
