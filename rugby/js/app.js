@@ -2,7 +2,7 @@ import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset} from './symbol-scale.js?v=0.12.0';
-import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.8.0';
+import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.12.9';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.2';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.4.9';
