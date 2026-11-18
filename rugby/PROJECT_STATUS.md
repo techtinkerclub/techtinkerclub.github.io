@@ -6,7 +6,7 @@ Updated 18 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.19.0** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.19.2** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
 
 ## Public publishing workflow
@@ -121,3 +121,12 @@ The left Decision making tool is the single creation/edit entry point; duplicate
 - Expanded regression assertions for matching strip colours, action separation, new contextual menus, colour shortcut, modal hiding and layout; verified JS syntax and isolated core tag/touch logic. Refreshed public asset module versions.
 
 **Acceptance still needed:** native browser interaction tests of both modals, right-click on group selection, printable/video outputs and small-screen layouts, plus full CI (GitHub status API returned no check result in this session). Do not claim these user journeys are fully tested. Current RFU Regulation 15 appendices remain authoritative for live coaching.
+
+## v0.19.2 — explicit ball rip, loose-ball pickup and participant selection
+
+- **Actions…** no longer requires selecting the entire tackle/ruck/maul group first: the contact section of the dialog provides participant checkboxes, preselecting the clicked player and (for exactly two players) both. Age restrictions and actual ball prerequisites still apply; disabled options now explain what is missing (U9/U10, ball carrier, opponent, grounded ball, number of players).
+- Added **Rip ball from a player (teammate / opponent)**. Choose current carrier, recipient, time (10–95% of the step) and editable coaching label. This creates a `transferKind: 'rip'` transition that changes possession *without* any imaginary pass. The presentation displays the authored rip label and an event cue, not a dashed ball flight. Supports a rip from a grounded carrier without automatically moving the tackling/player contact formation.
+- RFU age guard: U7/U8 cannot use rip; U9 supports teammate rip only (then pass); U10+ may select a teammate or opponent subject to current age-grade rules and safe context. The editor does not certify physical technique or automatically force the follow-up pass.
+- **Release ball** and **Pick up a loose ball** remain separate, consecutive action steps rather than one forced pass. Players from either team can be chosen for the pickup. New pickup dialog selects the free ball, picker and event time, starting from either the ball or a player. Ball changes are shown in **Step → Actions in this step** with editable timing, removable transfers and an editable rip label; player run timing remains separately adjustable on tracks.
+- Tests in `ball-events-rip.test.mjs` cover rip transfer semantics, release and pickup without pass lines, UI element wiring and U9 opponent restriction. Source syntax was checked and isolated ball movement verified; full Node/Playwright live-browser acceptance is still pending.
+- **Known boundary:** The rip event indicates a possession handover and coaching cue; it is not a physically animated hand/arm extraction technique. The drill author should position both players close together and separately show any legal subsequent pass. No automatic collision detection, continuity law adjudication or age-grade technique certification.
