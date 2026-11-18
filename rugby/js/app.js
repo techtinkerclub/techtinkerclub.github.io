@@ -857,6 +857,12 @@ function openActionChooser(fromGroup=groupIds.size>=2){
  if(!canEditObjects())return;
  actionFromGroup=fromGroup;
  const sel=$('actionKind'),roster=f().objects.filter(canCarry),selectedIds=[...groupIds];
+ if(!fromGroup){
+  const clicked=activeObject();
+  if(canCarry(clicked)&&!selectedIds.includes(clicked.id))selectedIds.push(clicked.id);
+  else if(clicked?.type==='ball'&&clicked.ownerId&&!selectedIds.includes(clicked.ownerId))selectedIds.push(clicked.ownerId);
+  if(roster.length===2)for(const p of roster)if(!selectedIds.includes(p.id))selectedIds.push(p.id);
+ }
  const participants=roster.filter(o=>selectedIds.includes(o.id)),age=Number(drill.ageMin)||10;
  const active=activeObject(),player=fromGroup?participants[0]:active?.type==='ball'?carrier(f(),active):active;
  const ball=active?.type==='ball'?active:f().objects.find(b=>b.type==='ball'&&b.ownerId===player?.id);
@@ -873,7 +879,7 @@ function openActionChooser(fromGroup=groupIds.size>=2){
   ruck:{valid:age>=10&&hasOpposition&&roster.length>=2&&free,help:'Select standing players from each side. A ruck requires the ball on the ground. U10+ only.'},
   maul:{valid:age>=10&&hasOpposition&&carrierAvailable&&roster.length>=3,help:'Select ball carrier and players from both sides. U10+ only.'},
   'release-ball':{valid:!fromGroup&&!!ball&&!!carrier(f(),ball),help:'Put the ball on the ground at a specified moment; it stays there until someone picks it up. No pass flight.'},
-  'pickup-ball':{valid:!fromGroup&&canCarry(player)&&free,help:'Collect a loose ball in a separate editable step. Adjust pickup time independently of player running.'},
+  'pickup-ball':{valid:!fromGroup&&roster.length>0&&free,help:'Collect a loose ball in a separate editable step. Adjust pickup time independently of player running.'},
   'pass-ball':{valid:!fromGroup&&!!ball&&!!carrier(f(),ball),help:'Pass through the air to an intended receiver; timing uses the ball track.'},
   'turnover-ball':{valid:!fromGroup&&!!ball&&!!carrier(f(),ball),help:'Change possession instantly without pretending a pass was thrown.'},
   'rip-ball':{valid:age>=9&&carrierAvailable&&roster.length>=2,help:'A named hand-to-hand rip from a ball carrier, either by a teammate or an opponent where permitted. U9 defenders cannot rip; the receiver must pass following an age-grade rip.'}
@@ -920,17 +926,43 @@ $('actionContinue').onclick=()=>{
  if(choice==='rip-ball'){openRipDialog();return}
  const active=activeObject(),player=active?.type==='ball'?carrier(f(),active):group?[...groupIds].map(id=>f().objects.find(o=>o.id===id)).find(canCarry):active;
  if(choice==='release-ball'){if(player)selected=player.id;groupIds.clear();groupMode=false;releaseBall();openStepActions();return}
- if(choice==='pickup-ball'){
-  if(!canCarry(player))return;
-  const free=f().objects.find(b=>b.type==='ball'&&!b.ownerId);if(!free)return;
-  groupIds.clear();groupMode=false;selected=player.id;ballChoiceId=ballPicking=free.id;ballPickKind='pass';finishBallPick(player.id);openStepActions();return;
- }
+ if(choice==='pickup-ball'){openPickupDialog();return;}
  if(choice==='pass-ball'||choice==='turnover-ball'){
   if(player)selected=player.id;groupIds.clear();groupMode=false;
   beginBallPick(choice==='turnover-ball'?'turnover':'pass');return;
  }
 };
 
+function openPickupDialog(){
+ const balls=f().objects.filter(b=>b.type==='ball'&&!b.ownerId),players=f().objects.filter(canCarry);
+ if(!balls.length||!players.length){note('Add a loose ball and a player before recording pickup.');return}
+ const options=items=>items.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');
+ $('pickupBall').innerHTML=options(balls);$('pickupBy').innerHTML=options(players);
+ const active=activeObject();
+ if(active?.type==='ball'&&balls.some(b=>b.id===active.id))$('pickupBall').value=active.id;
+ if(canCarry(active))$('pickupBy').value=active.id;
+ $('pickupAt').value='55';$('pickupError').textContent='';
+ $('pickupDialog').showModal();
+}
+$('pickupCancel').onclick=()=>$('pickupDialog').close();
+$('pickupSave').onclick=()=>{
+ const ball=f().objects.find(b=>b.id===$('pickupBall').value&&b.type==='ball'&&!b.ownerId);
+ const player=f().objects.find(o=>o.id===$('pickupBy').value&&canCarry(o)),pct=Number($('pickupAt').value);
+ if(!ball||!player){$('pickupError').textContent='Choose a loose ball and a valid receiving player.';return}
+ if(!Number.isFinite(pct)||pct<10||pct>95){$('pickupError').textContent='Choose a time from 10 to 95% of the step.';return}
+ if(f().objects.some(b=>b.type==='ball'&&b.ownerId===player.id)){$('pickupError').textContent='This player already carries a ball.';return}
+ const prev=idx?drill.frames[idx-1].objects.find(o=>o.id===ball.id):null;
+ if((idx===0||prev?.ownerId)&&drill.frames.length>=150){$('pickupError').textContent='Maximum 150 steps reached.';return}
+ const id=ball.id;
+ $('pickupDialog').close();groupIds.clear();groupMode=false;
+ selected=player.id;ballChoiceId=ballPicking=id;ballPickKind='pass';
+ finishBallPick(player.id);
+ const picked=f().objects.find(o=>o.id===id);
+ if(picked?.transferKind==='pickup'&&picked.ownerId===player.id){
+  f().timing ||= {};f().timing[id]={start:pct-1,end:pct};
+  changed();refresh();openStepActions();note('Pickup at '+pct+'%: ball stays on the ground until collected. No pass is drawn.');
+ }
+};
 function openRipDialog(){
  const players=f().objects.filter(canCarry),balls=f().objects.filter(o=>o.type==='ball'&&o.ownerId&&players.some(p=>p.id===o.ownerId));
  if(!balls.length||players.length<2){note('Rip requires a ball carrier and another player.');return}
