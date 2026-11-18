@@ -715,6 +715,7 @@ function deleteObject(scope='here'){
  drill.frames=sanitizeRoutes(result.frames);if(hasOutcomes(candidate))drill.branching=candidate.branching;selected=null;selectedPathId=null;changed();refresh();focusPitch();
  note(name+' deleted from '+(result.removed===1?'one step':result.removed+' steps')+'.');
 }
+let menuRoutePoint=null;
 function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
 function openObjectMenu(e){
  if(!canEditObjects())return;
@@ -726,11 +727,11 @@ function openObjectMenu(e){
  else{selectedPathId=null;if(group&&!stack.some(o=>o.id===selected))selected=group.dataset.id;else if(!group&&!handle)selected=stack[0].id;}
  $('stackOptions').hidden=stack.length<2;$('stackOptions').innerHTML=stack.length<2?'':'<small>Choose overlapping object</small>'+stack.map(o=>'<button data-stack-id="'+esc(o.id)+'">'+esc(objectName(o))+'</button>').join('');
  const o=activeObject();if(!o)return;
- e.preventDefault();render();inspector();openInspector('Object',false);
+ e.preventDefault();menuRoutePoint=viewPoint(e);render();inspector();openInspector('Object',false);
  const moving=!!(idx>0&&canCarry(o)&&decisionRoute(f(),drill.frames[idx-1],o.id,geometry()));
  const decision=hasOutcomes(drill),annotation=o.type==='decision';
  const ball=chosenBall(),hasBall=!!ball,carried=!!(ball&&carrier(f(),ball));
- const drawable=!['decision','donut','label'].includes(o.type)&&!isDiagramObject(o)&&!(isShield(o)&&o.ownerId);
+ const drawable=(canCarry(o)||o.type==='ball'||contactType(o.type))&&!(isShield(o)&&o.ownerId);
  const visible=(id,on,disabled=false)=>{const el=$(id);el.hidden=!on;el.disabled=disabled};
  visible('menuDecision',moving&&!decision);
  visible('menuEditDecision',decision||annotation);
@@ -763,7 +764,7 @@ $('objectMenu').addEventListener('click',e=>{
  else if(command==='reset-movement')cancelSelectedMovement();
  else if(command==='duplicate')duplicateSelected();
  else if(command==='route')toggleRoute();
- else if(command==='point')insertPathPoint();
+ else if(command==='point')insertPathPoint(menuRoutePoint);
  else if(command==='ball')beginBallPick();
  else if(command==='release')releaseBall();
  else if(command==='front')changeDrawingLayer('front','top');
