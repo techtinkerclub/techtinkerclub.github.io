@@ -1,6 +1,6 @@
 // Lightweight coaching gaze cues. No physical head IK or invented contact.
 // The existing rotation remains the player's BODY orientation.
-import {canCarry,ballMovement} from './possession.js?v=0.19.1';
+import {canCarry} from './possession.js?v=0.19.1';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 export const HEAD_MODES=Object.freeze({run:'Follow running direction',player:'Follow another player',forward:'Look straight ahead'});
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -35,7 +35,7 @@ export function playerHeadAngle(o,objects,g,previous=null,current=null,p=1){
   });
   if(pass){
    const timing=current.timing?.[pass.id]||{start:35,end:70};
-   const begin=clamp((Number(timing.start)||35)/100,0,1);
+   const begin=clamp(Number.isFinite(Number(timing.start))?Number(timing.start)/100:.35,0,1);
    if(p>=Math.max(0,begin-.28)&&p<=Math.min(1,begin+.07)){target=find(pass.ownerId);override=!!target}
   }
  }
@@ -61,7 +61,7 @@ export function playerHeadAngle(o,objects,g,previous=null,current=null,p=1){
  else if(look.mode==='run'&&before&&current){
   const end=current.objects.find(q=>q.id===o.id)||o;
   const route=current.paths?.[o.id],timing=current.timing?.[o.id]||{start:0,end:100};
-  const start=clamp(Number(timing.start)/100||0,0,1),finish=clamp(Number(timing.end)/100||1,0,1);
+  const start=clamp(Number.isFinite(Number(timing.start))?Number(timing.start)/100:0,0,1),finish=clamp(Number.isFinite(Number(timing.end))?Number(timing.end)/100:1,0,1);
   const total=Math.hypot(where(before,g).x-where(end,g).x,where(before,g).y-where(end,g).y);
   if(total>3&&p>=start&&p<=finish){
    const t=clamp((p-start)/Math.max(.01,finish-start),0,1);
