@@ -126,4 +126,12 @@ export function printMarkup(raw,opts={}){
   pages.push('<section class="print-page">'+head('Sequence '+(index+1)+' / '+groups.length)+'<div class="print-legend"><span> ───➤ Run / movement</span><span> – – ➤ Ball movement · – · – Kick</span><span> ◌ Starting position · ◆ Decision / dotted alternative</span></div>'+cards+'<footer>'+esc(cardMeta(d))+' · check age-grade laws before delivery.</footer></section>');
  }return pages.join('');
 }
+export function printProgression(drills,title='Coaching progression',opts={}){
+ if(!Array.isArray(drills)||!drills.length||drills.length>8)throw Error('Choose between one and eight drills for the progression pack.');
+ const list=drills.map(d=>playbackData(d));
+ const heading='<section class="print-page print-card"><header><div><small>RUGBY COACHING STUDIO · PROGRESSION PACK</small><h1>'+esc(String(title||'Coaching progression').slice(0,160))+'</h1></div><p>'+list.length+' linked drills</p></header><h2>Session sequence</h2><ol>'+list.map((d,i)=>'<li><strong>'+String(i+1)+'. '+esc(d.title)+'</strong> · '+esc(cardMeta(d))+(d.objective?'<p>'+esc(d.objective)+'</p>':'')+'</li>').join('')+'</ol><p>Follow the drills in this order. Each section has its own coaching notes and diagrams; return to its setup before beginning the next drill.</p><footer>Check current age-grade rules, space, supervision and contact safety before delivery.</footer></section>';
+ const chapters=list.map((d,i)=>'<section class="print-page print-branch-heading"><small>PROGRESSION STAGE '+(i+1)+' OF '+list.length+'</small><h2>'+esc(d.title)+'</h2><p>'+esc(cardMeta(d))+'</p></section>'+printMarkup(d,opts)).join('');
+ document.getElementById('printPack')?.remove();
+ const div=document.createElement('div');div.id='printPack';div.innerHTML=heading+chapters;document.body.append(div);window.print();
+}
 export function printDrill(d,opts={}){document.getElementById('printPack')?.remove();const div=document.createElement('div');div.id='printPack';div.innerHTML=printMarkup(d,opts);document.body.append(div);window.print()}
