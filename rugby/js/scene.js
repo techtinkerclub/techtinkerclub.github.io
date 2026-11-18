@@ -6,7 +6,7 @@ import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
 import {headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor} from './cartoon-players.js?v=1';
+import {playerAppearance,cartoonPitchDecor} from './cartoon-players.js?v=2';
 import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=8';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
