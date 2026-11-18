@@ -6,7 +6,7 @@ import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
 import {headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor} from './cartoon-players.js?v=4';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs} from './cartoon-players.js?v=5';
 import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=8';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
@@ -62,7 +62,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  const g={...drillGeometry(d,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1];
  const objects=timedSkillObjects(old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),old,fr,p),poses=trainingPoses(objects,posesFor(objects));
  const focused=framing==='action',camera=focused?(time===null?actionViewport(d,g,i):actionViewportAt(d,g,i,p)):wholeFieldView(g);
- let field=trainingField(g,false,.5,pitchSettings(d))+(cartoonMode&&!ink?cartoonPitchDecor(g):''),arrows='',starts='',changes=[];
+ let field=(cartoonMode&&!ink?cartoonSpriteDefs():'')+trainingField(g,false,.5,pitchSettings(d))+(cartoonMode&&!ink?cartoonPitchDecor(g):''),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
  if(old)for(const o of fr.objects){
   if(o.type==='decision'||isDiagramObject(o))continue;
