@@ -923,6 +923,49 @@ $('actionContinue').onclick=()=>{
  }
 };
 
+function openRipDialog(){
+ const players=f().objects.filter(canCarry),balls=f().objects.filter(o=>o.type==='ball'&&o.ownerId&&players.some(p=>p.id===o.ownerId));
+ if(!balls.length||players.length<2){note('Rip requires a ball carrier and another player.');return}
+ const chosen=activeObject(),chosenBall=chosen?.type==='ball'?chosen:balls.find(b=>b.ownerId===chosen?.id)||balls[0];
+ const options=items=>items.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');
+ const donors=players.filter(p=>balls.some(b=>b.ownerId===p.id));
+ $('ripFrom').innerHTML=options(donors);$('ripFrom').value=chosenBall.ownerId;
+ function targets(){
+  const from=f().objects.find(o=>o.id===$('ripFrom').value),age=Number(drill.ageMin)||10;
+  const choices=players.filter(p=>p.id!==from?.id&&!(age===9&&from?.type!==p.type));
+  $('ripTo').innerHTML=options(choices);$('ripSave').disabled=!choices.length;
+  $('ripGuidance').textContent=age===9?'U9: only a teammate can rip the ball. The receiving teammate must pass; defender ripping is not permitted.':age===10?'U10: a rip may be coached with appropriate contact safety. The ball should be passed away after the rip.':'Rip is a coached possession action; check current RFU age-grade rules and safe contact technique.';
+  $('ripError').textContent=choices.length?'':'No permitted recipient for this age group. Add an eligible player.';
+ }
+ $('ripFrom').onchange=targets;targets();
+ $('ripAt').value='70';$('ripLabel').value='Rip and pass';
+ $('ripDialog').showModal();
+}
+$('ripCancel').onclick=()=>$('ripDialog').close();
+$('ripSave').onclick=()=>{
+ const age=Number(drill.ageMin)||10,fromId=$('ripFrom').value,toId=$('ripTo').value,pct=Number($('ripAt').value);
+ if(!Number.isFinite(pct)||pct<10||pct>95){$('ripError').textContent='Choose a time between 10 and 95%.';return}
+ const from=f().objects.find(o=>o.id===fromId),to=f().objects.find(o=>o.id===toId),ball=f().objects.find(o=>o.type==='ball'&&o.ownerId===fromId);
+ if(!from||!canCarry(to)||fromId===toId||!ball){$('ripError').textContent='Choose a current ball carrier and a different player.';return}
+ if(age<9||age===9&&from.type!==to.type){$('ripError').textContent='U9 defenders may not rip; choose a teammate. U7/U8 use tag rugby.';return}
+ if(idx===0&&hasOutcomes(drill)){$('ripError').textContent='Choose an action step in the selected decision outcome first.';return}
+ if(drill.frames.length>=150){$('ripError').textContent='Maximum 150 steps reached.';return}
+ const previous=idx?drill.frames[idx-1].objects.find(o=>o.id===ball.id):null;
+ const newStep=idx===0||previous&&(previous.ownerId||null)!==(ball.ownerId||null);
+ if(newStep){
+  const next=stripDecisions(clone(f()));next.name='Rip ball';next.seconds=2;next.notes='Player removes ball from carrier; coach the immediate pass away.';next.timing={};next.paths={};
+  drill.frames.splice(idx+1,0,next);idx++;
+ }
+ const count=assignPossession(drill.frames,idx,ball.id,toId,geometry());
+ if(!count){$('ripError').textContent='Could not transfer possession. Check ball ownership.';return}
+ const item=f().objects.find(o=>o.id===ball.id);
+ item.transferKind='rip';item.ripLabel=$('ripLabel').value.trim().slice(0,100)||'Rip ball';
+ f().timing ||= {};f().timing[ball.id]={start:Math.max(0,pct-1),end:pct};
+ if(f().paths)delete f().paths[ball.id];
+ selected=ballChoiceId=ball.id;groupIds.clear();groupMode=false;
+ $('ripDialog').close();changed();refresh();openStepActions();
+ note('Rip recorded at '+pct+'% without a pass. Add a separate pass action as the next step. Receiver may be from the same team or opposing team when allowed.');
+};
 let skillMode='touch',skillFromGroup=false;
 function openSkillDialog(kind,fromGroup=false,scope='any'){
  if(!canEditObjects())return;
