@@ -724,7 +724,24 @@ function openObjectMenu(e){
  if(group&&!stack.some(o=>o.id===selected))selected=group.dataset.id;else if(!group&&!handle)selected=stack[0].id;
  $('stackOptions').hidden=stack.length<2;$('stackOptions').innerHTML=stack.length<2?'':'<small>Choose overlapping object</small>'+stack.map(o=>'<button data-stack-id="'+esc(o.id)+'">'+esc(objectName(o))+'</button>').join('');
  const o=activeObject();if(!o)return;
- e.preventDefault();render();inspector();openInspector('Object',false);$('menuAddPoint').disabled=!canInsertPoint();$('menuBall').disabled=!chosenBall();$('menuRelease').disabled=!carrier(f(),chosenBall());
+ e.preventDefault();render();inspector();openInspector('Object',false);
+ const moving=!!(idx>0&&canCarry(o)&&decisionRoute(f(),drill.frames[idx-1],o.id,geometry()));
+ const decision=hasOutcomes(drill),annotation=o.type==='decision';
+ const ball=chosenBall(),hasBall=!!ball,carried=!!(ball&&carrier(f(),ball));
+ const drawable=!['decision','donut','label'].includes(o.type)&&!isDiagramObject(o)&&!(isShield(o)&&o.ownerId);
+ const visible=(id,on,disabled=false)=>{const el=$(id);el.hidden=!on;el.disabled=disabled};
+ visible('menuDecision',moving&&!decision);
+ visible('menuEditDecision',decision||annotation);
+ visible('menuWhistle',o.type==='coach');
+ visible('menuRoute',drawable);
+ visible('menuAddPoint',canInsertPoint());
+ visible('menuResetMovement',!!(idx>0&&selectedMovement()&&(canCarry(o)||o.type==='ball'&&!o.ownerId)));
+ visible('menuBall',(canCarry(o)||o.type==='ball')&&hasBall,!hasBall);
+ visible('menuRelease',carried&&(o.id===ball.id||o.id===ball.ownerId));
+ visible('menuFront',!annotation);visible('menuBack',!annotation);
+ visible('menuDeleteOnward',idx<drill.frames.length-1&&!annotation);
+ visible('menuDeleteAll',drill.frames.length>1&&!annotation);
+ $('menuDuplicate').hidden=annotation;
  const menu=$('objectMenu');$('objectMenuLabel').textContent=o.label||types[o.type][0];
  menu.hidden=false;
  menu.style.left='0px';menu.style.top='0px';
@@ -738,7 +755,18 @@ $('objectMenu').addEventListener('click',e=>{
  const stacked=e.target.closest('[data-stack-id]');if(stacked){selectObject(stacked.dataset.stackId);closeObjectMenu();return}
  const b=e.target.closest('[data-object-command]');if(!b)return;
  const command=b.dataset.objectCommand;closeObjectMenu();focusPitch();
- if(command==='left')rotateSelected(-15);else if(command==='right')rotateSelected(15);else if(command==='duplicate')duplicateSelected();else if(command==='route')toggleRoute();else if(command==='point')insertPathPoint();else if(command==='ball')beginBallPick();else if(command==='release')releaseBall();else if(command==='front')changeDrawingLayer('front','top');else if(command==='back')changeDrawingLayer('back','bottom');else deleteObject(command);
+ if(command==='decision')beginDecisionPlacement();
+ else if(command==='edit-decision'){if(hasOutcomes(drill))openOutcomeDialog(true);else openOutcomeDialog()}
+ else if(command==='whistle'){openInspector('Object',true);$('coachWhistleDuration')?.focus()}
+ else if(command==='reset-movement')cancelSelectedMovement();
+ else if(command==='duplicate')duplicateSelected();
+ else if(command==='route')toggleRoute();
+ else if(command==='point')insertPathPoint();
+ else if(command==='ball')beginBallPick();
+ else if(command==='release')releaseBall();
+ else if(command==='front')changeDrawingLayer('front','top');
+ else if(command==='back')changeDrawingLayer('back','bottom');
+ else deleteObject(command);
 });
 document.addEventListener('pointerdown',e=>{if(!e.target.closest('#objectMenu'))closeObjectMenu()},{capture:true});
 window.addEventListener('resize',closeObjectMenu);
