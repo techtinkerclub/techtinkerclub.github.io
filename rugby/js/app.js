@@ -530,21 +530,95 @@ for(const key of ['a','b'])$('outcome'+key.toUpperCase()).onclick=()=>{
  note('Now editing outcome '+key.toUpperCase()+'. The shared setup stays unchanged; changes here affect this outcome.');
 };
 
+function openStepActions(){
+ closeObjectMenu();
+ openInspector('Step',true);
+ updateSkillActionsPanel();
+ const panel=$('skillActionsPanel');
+ panel?.scrollIntoView({block:'nearest',behavior:'smooth'});
+ panel?.classList.add('action-focus');
+ note('Step → Actions in this step: edit timings or remove actions. Movement timing is in the timeline tracks.');
+}
+$('actionManage').onclick=()=>{$('actionChooser').close();openStepActions()};
+function retimeBallEvent(ballId,atPercent){
+ if(!idx||!Number.isFinite(atPercent)||atPercent<10||atPercent>95)return false;
+ const current=f(),prior=drill.frames[idx-1],ball=current.objects.find(o=>o.id===ballId),before=prior.objects.find(o=>o.id===ballId);
+ if(ball?.type!=='ball'||before?.type!=='ball'||!['drop','pickup','turnover'].includes(ball.transferKind))return false;
+ const at=atPercent/100;
+ if(ball.transferKind==='drop'){
+  const owner=carrier(prior,before),nextOwner=current.objects.find(o=>o.id===owner?.id);
+  if(!owner||!nextOwner)return false;
+  const pos=carriedPose(ball,objectPose(prior,current,owner.id,at,geometry()),geometry());
+  // A released ball is stationary after the chosen release instant.
+  const old={x:ball.x,y:ball.y};
+  const count=drill.frames.length;
+  for(let i=idx;i<count;i++){
+   const item=drill.frames[i].objects.find(o=>o.id===ballId);
+   if(!item||item.ownerId||i>idx&&Math.hypot(item.x-old.x,item.y-old.y)>1e-5)break;
+   item.x=pos.x;item.y=pos.y;item.rot=pos.rot;
+  }
+ }
+ current.timing ||= {};current.timing[ballId]={start:Math.max(0,atPercent-1),end:atPercent};
+ return true;
+}
+function undoBallEvent(ballId){
+ if(!idx)return false;
+ const current=f(),prior=drill.frames[idx-1],ball=current.objects.find(o=>o.id===ballId),before=prior.objects.find(o=>o.id===ballId);
+ if(ball?.type!=='ball'||before?.type!=='ball'||(ball.ownerId||null)===(before.ownerId||null))return false;
+ const originalOwner=before.ownerId||null;
+ const count=assignPossession(drill.frames,idx,ballId,originalOwner,geometry());
+ if(!count)return false;
+ if(!originalOwner){
+  const old={x:ball.x,y:ball.y};
+  for(let i=idx;i<idx+count;i++){
+   const item=drill.frames[i].objects.find(o=>o.id===ballId);
+   if(!item||item.ownerId)break;
+   item.x=before.x;item.y=before.y;item.rot=before.rot;
+   if(before.groundState)item.groundState=before.groundState;
+  }
+ }
+ const target=f().objects.find(o=>o.id===ballId);
+ if(target){delete target.transferKind;delete target.groundState;if(before.groundState)target.groundState=before.groundState}
+ if(current.timing)delete current.timing[ballId];
+ if(current.paths)delete current.paths[ballId];
+ return true;
+}
 function updateSkillActionsPanel(){
  const panel=$('skillActionsPanel'),list=$('skillActionsList');
  if(!panel||!list)return;
- const events=f().interactions||[];
- panel.hidden=!events.length;
- const name=id=>f().objects.find(o=>o.id===id)?.label||f().objects.find(o=>o.id===id)?.type||'Object';
- list.innerHTML=events.map((event,i)=>'<div class="skill-action-row" data-skill-index="'+i+'"><strong>'+esc(event.kind==='tag'?'Tag removed · '+event.side:'Touch')+'</strong><small>'+esc(name(event.actorId))+' → '+esc(name(event.targetId))+'</small><label>At (%) <input type="number" data-skill-at="'+i+'" min="10" max="95" step="5" value="'+Math.round(event.at*100)+'"></label><button type="button" data-skill-delete="'+i+'" class="danger-action">Remove cue</button></div>').join('');
+ const events=f().interactions||[],prior=drill.frames[idx-1];
+ const name=id=>{const o=f().objects.find(p=>p.id===id);return o?.label||o?.type||'Object'};
+ const eventRows=events.map((event,i)=>'<div class="skill-action-row" data-skill-index="'+i+'"><strong>'+esc(event.kind==='tag'?'Tag removed · '+event.side:event.targetId&&canCarry(f().objects.find(o=>o.id===event.targetId))?'Player touch':'Touch target')+'</strong><small>'+esc(name(event.actorId))+' → '+esc(name(event.targetId))+'</small><label>At (%) <input type="number" data-skill-at="'+i+'" min="10" max="95" step="5" value="'+Math.round(event.at*100)+'"></label><button type="button" data-skill-delete="'+i+'" class="danger-action">Remove action</button></div>').join('');
+ const balls=idx?f().objects.filter(o=>o.type==='ball'&&prior?.objects.some(b=>b.id===o.id&&(b.ownerId||null)!==(o.ownerId||null))):[];
+ const ballRows=balls.map(ball=>{
+  const before=prior.objects.find(o=>o.id===ball.id),from=before.ownerId,to=ball.ownerId;
+  const type=ball.transferKind==='drop'?'Release ball':ball.transferKind==='pickup'?'Pick up ball':ball.transferKind==='turnover'?'Change possession (no pass)':from&&to?'Pass ball':from?'Release ball':'Receive ball';
+  const window=f().timing?.[ball.id]||{start:0,end:100};
+  return '<div class="skill-action-row" data-ball-event="'+esc(ball.id)+'"><strong>'+esc(type)+'</strong><small>'+esc(from?name(from):'Ground')+' → '+esc(to?name(to):'Ground')+'</small>'+
+   (['drop','pickup','turnover'].includes(ball.transferKind)?'<label>At (%) <input type="number" data-ball-at="'+esc(ball.id)+'" min="10" max="95" step="5" value="'+window.end+'"></label>':'<small>Use ball timing track to adjust the pass window.</small>')+
+   '<button type="button" data-ball-delete="'+esc(ball.id)+'" class="danger-action">Undo transfer</button></div>';
+ }).join('');
+ list.innerHTML=eventRows+ballRows+(events.length||balls.length?'':'<p class="muted">No authored actions in this step. Select a player and right-click → Actions… to add one.</p>');
+ panel.hidden=false;
 }
 $('skillActionsList').addEventListener('change',event=>{
+ const ballControl=event.target.closest('[data-ball-at]');
+ if(ballControl){
+  const pct=Number(ballControl.value);
+  if(!retimeBallEvent(ballControl.dataset.ballAt,pct)){note('Use a moment between 10% and 95%, in a valid ball action step.');updateSkillActionsPanel();return}
+  changed();refresh();note('Ball event occurs at '+pct+'%. Player running windows remain independent.');return;
+ }
  const input=event.target.closest('[data-skill-at]');if(!input)return;
  const i=Number(input.dataset.skillAt),item=f().interactions?.[i],value=Number(input.value);
  if(!item||!Number.isFinite(value)||value<10||value>95){note('Action timing must be between 10 and 95%.');updateSkillActionsPanel();return}
  item.at=value/100;changed();render();updateSkillActionsPanel();
 });
 $('skillActionsList').addEventListener('click',event=>{
+ const ballControl=event.target.closest('[data-ball-delete]');
+ if(ballControl){
+  if(!undoBallEvent(ballControl.dataset.ballDelete)){note('Could not safely revert that ball transfer.');return}
+  changed();refresh();note('Ball transfer removed. The ball and players remain. Undo restores the transfer.');return;
+ }
  const button=event.target.closest('[data-skill-delete]');if(!button)return;
  const i=Number(button.dataset.skillDelete),action=f().interactions?.[i];if(!action)return;
  f().interactions.splice(i,1);
@@ -932,6 +1006,7 @@ function openObjectMenu(e){
  visible('menuWhistle',o.type==='coach');
  visible('menuAction',canCarry(o));
  visible('menuConeColour',o.type==='cone');
+ visible('menuManageActions',!!f().interactions?.length||!!(idx&&f().objects.some(p=>p.type==='ball'&&drill.frames[idx-1]?.objects.some(b=>b.id===p.id&&(b.ownerId||null)!==(p.ownerId||null)))));
 
  visible('menuRoute',drawable);
  visible('menuAddPoint',canInsertPoint());
@@ -958,6 +1033,7 @@ $('objectMenu').addEventListener('click',e=>{
  const command=b.dataset.objectCommand;closeObjectMenu();focusPitch();
  if(command==='actions')openActionChooser(groupIds.size>=2);
  else if(command==='cone-colour'){openInspector('Object',true);$('coneColour')?.focus()}
+ else if(command==='manage-actions')openStepActions();
  else if(command==='decision')beginDecisionPlacement();
  else if(command==='edit-decision'){if(hasOutcomes(drill))openOutcomeDialog(true);else openOutcomeDialog()}
  else if(command==='whistle'){openInspector('Object',true);$('coachWhistleDuration')?.focus()}
