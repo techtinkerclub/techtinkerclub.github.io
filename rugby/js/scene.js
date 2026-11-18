@@ -6,7 +6,7 @@ import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
 import {headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs} from './cartoon-players.js?v=5';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder} from './cartoon-players.js?v=6';
 import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=8';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
@@ -75,7 +75,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
   arrows+='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(ink?3.4:3)+'" '+(ball?(o.transferKind==='kick'?'stroke-dasharray="13 4 3 4" ':'stroke-dasharray="7 6" '):'')+'marker-end="url(#arr)" opacity=".95"/>';
   if(ghosts&&canCarry(o)){const q=g.toView(m.start.x,m.start.y);starts+='<circle cx="'+q.x+'" cy="'+q.y+'" r="'+Math.max(3,15*symbolFactors(o,g)[0])+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-dasharray="4 3"/>'}
  }
- const order=orderObjects(objects);
+ const order=cartoonObjectOrder(orderObjects(objects),cartoonMode&&!ink);
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
  const caption=labels?contactLabels(objects,focused?{...g,viewWidth:camera.width}:g,esc,[...new Set(changes)]):'';
  const placedCaption=focused&&caption?'<g transform="translate('+camera.x+' '+camera.y+')">'+caption+'</g>':caption;
