@@ -725,7 +725,7 @@
       "ageMax": 10,
       "minutes": 12,
       "players": "Six defenders (D1–D6), one support attacker (A1), one coach/ball feeder. Start with all six defenders across the same line. The coach and A1 are behind them, with A1 slightly deeper to receive.",
-      "equipment": "One rugby ball and four cones to mark an 11 × 20 m working area. No contact pads are required for the touch version.",
+      "equipment": "One rugby ball. The saved 10 × 20 m practice area uses boundary flags; no separate cones or contact pads are shown. For a real session, mark the area safely using the available training equipment.",
       "instructions": "Set up D1–D6 in a connected defensive line. The ball begins on the ground by the coach; A1 waits deeper and to the opposite side. On the whistle, defenders take a few controlled steps forward together. The coach runs towards the line and a decision is reached. PAUSE: choose A or B.\nA — Carry: the coach keeps the ball and runs into the near-side channel. D1 and D2 close the space and make a two-hand TOUCH on the adult coach. Stop and reset.\nB — Pass: the coach passes backwards to A1. D4 tracks A1 into the outside channel and completes a controlled tackle; D5 closes the space as cover, not as a simultaneous second tackler. A1 releases and presents the ball. Reset to the same start after either option.\nTry both outcomes. For the players, avoid announcing which option the coach will choose until the defenders have started moving.",
       "coaching": "DEFENCE — Go together on GO, not six separate sprints. Look across the line and talk: 'UP', 'BALL', 'MY SIDE'. Shorten steps as the carrier approaches. The closest player tracks the hips; the next defender covers the space beside them. Everyone else stays connected and watches for the pass.\nATTACK — Pick up securely, eyes up and choose space. When passing, keep A1 behind the carrier and send the ball backwards. A1 catches before accelerating; keep the ball available after a legal tackle.\nKeep the tempo modest. One good read and one good call are more valuable than a big collision.",
       "regression": "First walk it through with defenders knowing the option. Use two-hand touch on every carrier, keep the pass simple and allow a verbal pause so the defenders can identify their responsibilities.",
@@ -982,7 +982,7 @@
               }
             ],
             "explanation": "The coach keeps the ball and carries into the inside channel. The nearest two defenders close the gap and finish with two-hand touch. Children must not tackle an adult coach.",
-            "watchFor": "D2 and D3 communicate, close space without diving in and hold the inside. The other defenders keep their channels rather than chasing the coach."
+            "watchFor": "D1 and D2 communicate, close space without diving in and hold the inside. The other defenders keep their channels rather than chasing the coach."
           },
           {
             "id": "b",
@@ -1685,7 +1685,7 @@
       "ageMax": 10,
       "minutes": 7,
       "players": "Six defenders (D1–D6), one support attacker (A1), one coach/ball feeder. Start with all six defenders across the same line. The coach and A1 are behind them, with A1 slightly deeper to receive.",
-      "equipment": "One rugby ball and four cones to mark an 11 × 20 m working area. No contact pads are required for the touch version.",
+      "equipment": "One rugby ball. The saved 10 × 20 m practice area uses boundary flags; no separate cones or contact pads are shown. For a real session, mark the area safely using the available training equipment.",
       "instructions": "1. Set out the six-defender line as shown. Coach and supporting runner remain in their starting positions. 2. Explain that this is a whistle-reaction exercise, not permission to cross an offside line. 3. Blow the whistle and ask every defender to advance two short steps together. 4. Stop, check spacing and communication, reset, then repeat. 5. Progress to Hold the line · Carry or pass? after the group can move together.",
       "coaching": "Coach the timing of the FIRST step, not an all-out sprint. Keep shoulders square, communication short and the line connected. Use the pause to ask who moved early or late. Keep all actions non-contact. At a real U10 free pass, ensure the defenders have retired the required distance and only advance when lawfully permitted.",
       "regression": "Start with slower calls and two small steps. Stop if any defender sprints ahead or loses spacing.",
