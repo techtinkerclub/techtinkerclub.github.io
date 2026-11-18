@@ -43,7 +43,7 @@ assert.match(html,/id="contactParticipants"/,'Contacts must support selecting pl
 assert.match(app,/function openRipDialog\(/);
 assert.match(app,/age===9&&from\.type!==to\.type/,'U9 ripping by opponents is not allowed');
 assert.match(app,/arrangeSelectedContact\(choice,outcome\)/,'Contact chooser sends selected participants and tackle outcome');
-assert.match(app,/ball\.transferKind='rip'/);
+assert.match(app,/item\.transferKind='rip'/,'Rip marks the transferred ball in the edited step');
 assert.match(app,/retimeBallEvent/,'Timed possession events can be edited');
 assert.match(app,/data-rip-label/,'Rip label remains editable');
 assert.match(app,/undoBallEvent/,'Rip and possession events are removable');
