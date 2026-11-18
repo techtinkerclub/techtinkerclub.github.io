@@ -1,6 +1,6 @@
-# Rugby Coaching Studio — Classic Studio v0.17.0
+# Rugby Coaching Studio — Classic Studio v0.17.1
 
-Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
+Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
 ## Main interfaces
 
@@ -157,7 +157,7 @@ Starter **seed-143 · Defensive line · Whistle then advance together** has the 
 
 The code and regression suite guard saved data and film sequencing. Browser export and real-device visual QA are still required before saying every effect is production-perfect.
 
-## Publishing and revision workflow (v0.17.0)
+## Publishing and revision workflow (v0.17.1)
 
 - **Save to GitHub** records a working revision in `data/coach-drills.json`. It does not change public presentations.
 - **Publish** is an explicit action available on the saved drill in the editor or GitHub library. It copies that exact saved revision, including editable frames, notes and both decision outcomes, into `data/published-drills.json`.

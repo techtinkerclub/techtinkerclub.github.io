@@ -34,3 +34,12 @@ dialog.wide{width:min(1040px,95vw);max-height:90vh;overflow:auto}.filters{displa
 .save-mode-actions button{min-width:94px;padding:10px 15px}
 .save-mode-dialog .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:480px){.save-mode-heading{padding:19px 17px 13px}.save-mode-options{padding:0 17px 16px}.save-mode-choice{padding:11px;gap:10px}.save-mode-recommended{display:none}.save-mode-actions{padding:12px 17px 16px}.save-mode-icon{flex-basis:30px;width:30px;height:30px}}
+
+/* Source revisions and curated publication are intentionally separate actions. */
+.publication-control{display:flex;align-items:center;flex-wrap:wrap;gap:5px;max-width:248px;margin-left:3px}
+.publication-control button{padding:7px 9px;font-size:12px;line-height:1.35;white-space:nowrap}
+.publication-control #pubPublish{color:var(--accent);border-color:#667f50;background:#26372a}
+.publication-control #pubPublish:hover:not(:disabled){background:#33462e;border-color:var(--accent)}
+.publication-control #pubUnpublish{color:#e6bea7;border-color:#6c5749;background:#29241f}
+.publication-control #pubState{display:block;flex-basis:100%;font-size:10px;line-height:1.35;color:var(--muted);text-align:left;overflow-wrap:anywhere}
+@media(max-width:1100px){.publication-control{max-width:205px;flex:0 0 auto}.publication-control button{min-height:40px}}
