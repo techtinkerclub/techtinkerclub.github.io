@@ -194,7 +194,7 @@ export function ballMovement(old,next,ball,g,events=null){
  const t=next.timing?.[ball.id]||{start:0,end:100};
  const start=from?carriedPose(a,objectPose(old,next,from.id,t.start/100,g,events),g):a;
  const end=to?carriedPose(ball,objectPose(old,next,to.id,t.end/100,g,events),g):ball;
- return {start,end,pass:!!(from&&to)&&!['turnover','set','handover','throw','pickup','drop'].includes(ball.transferKind),turnover:!!to&&ball.transferKind==='turnover',instant:['set','handover','pickup','drop'].includes(ball.transferKind),drop:ball.transferKind==='drop'&&!!from&&!to,pickup:ball.transferKind==='pickup'&&!from&&!!to,presentation:ball.transferKind==='presentation'&&!to,from,to,timing:t};
+ return {start,end,pass:!!(from&&to)&&!['turnover','set','handover','throw','pickup','drop','rip'].includes(ball.transferKind),turnover:!!to&&ball.transferKind==='turnover',instant:['set','handover','pickup','drop','rip'].includes(ball.transferKind),drop:ball.transferKind==='drop'&&!!from&&!to,pickup:ball.transferKind==='pickup'&&!from&&!!to,presentation:ball.transferKind==='presentation'&&!to,from,to,timing:t};
 }
 export function movementFor(old,next,o,g){
  if(!old)return null;
