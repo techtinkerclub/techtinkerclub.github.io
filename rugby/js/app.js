@@ -1,6 +1,6 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
-import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=6';
+import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=6';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
@@ -872,6 +872,7 @@ function ensureSkillActionStep(title){
 let actionScope='any',actionFromGroup=false;
 function openActionChooser(fromGroup=groupIds.size>=2){
  if(!canEditObjects())return;
+ hydrateLegacyTagItems(drill.frames);
  actionFromGroup=fromGroup;
  const sel=$('actionKind'),roster=f().objects.filter(canCarry),selectedIds=[...groupIds];
  if(!fromGroup){
@@ -1030,6 +1031,7 @@ $('ripSave').onclick=()=>{
 let skillMode='touch',skillFromGroup=false;
 function openSkillDialog(kind,fromGroup=false,scope='any'){
  if(!canEditObjects())return;
+ if(kind==='tag-return')hydrateLegacyTagItems(drill.frames);
  skillMode=kind;skillFromGroup=fromGroup;actionScope=scope;
  const roster=f().objects.filter(canCarry);
  const returns=outstandingTagItems(f());
