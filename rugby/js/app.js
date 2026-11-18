@@ -2,6 +2,7 @@ import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {HEAD_MODES,headSettings} from './player-gaze.js?v=3';
 import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder} from './cartoon-players.js?v=6';
+import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=8';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
@@ -344,6 +345,20 @@ if(canCarry(o)){
   changed();render();inspector();tracks();
   note((o.label||types[o.type][0])+': '+(PLAYER_POSES[e.target.value]||'Standing / running')+' · current step');
  };
+ if(o.type==='coach'){
+  const coachPose=document.createElement('div');coachPose.className='field';
+  const chosen=Object.hasOwn(COACH_GESTURES,o.coachGesture)?o.coachGesture:'auto';
+  coachPose.innerHTML='<label>Cartoon coach gesture<select id="coachGesture" '+(preview!==null?'disabled':'')+'>'+
+   Object.entries(COACH_GESTURES).map(([k,v])=>'<option value="'+k+'" '+(chosen===k?'selected':'')+'>'+v+'</option>').join('')+
+   '</select></label><small>Minion Mode only. Automatic: standing, walking or signalling GO. The classic coach and drill timing stay unchanged.</small>';
+  $('objectPanel').insertBefore(coachPose,$('objectPanel').lastElementChild);
+  $('coachGesture').onchange=e=>{
+   if(!Object.hasOwn(COACH_GESTURES,e.target.value))return;
+   if(e.target.value==='auto')delete o.coachGesture;else o.coachGesture=e.target.value;
+   changed();render();inspector();tracks();
+   note('Cartoon coach: '+COACH_GESTURES[e.target.value]+' · current step');
+  };
+ }
  if(formation&&preview===null){
   const release=document.createElement('button');
   release.type='button';release.id='releaseFormationPlayer';
