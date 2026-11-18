@@ -49,7 +49,7 @@ export function cartoonPoseIndex(o,pose,objects,previous,frame,p=1){
  const tackle=markers.find(m=>m.type==='tackle'),ruck=markers.find(m=>m.type==='ruck'),maul=markers.find(m=>m.type==='maul');
  const ball=currentBall(o,previous,frame),move=movingInfo(o,previous,frame,p);
  if(pose==='grounded'){
-  if(ball.all.some(b=>(b.ownerId===o.id||!b.ownerId)&&
+  if(ball.all.some(b=>(b.ownerId===o.id||(!b.ownerId&&Math.hypot(b.x-o.x,b.y-o.y)<35))&&
     (b.groundState==='presented'||b.transferKind==='presentation')) )return 17;
   if(ball.held?.groundState==='grounded')return 12;
   const earlier=previous?.objects?.find(q=>q.id===o.id)?.playerPose;
@@ -108,7 +108,7 @@ function bodyEquipment(o){
   '<path d="M-7 -25V-10M7 -25V-10" stroke="#f2b47e" stroke-width="1.9"/></g>';
  return '';
 }
-const tileUse=(id,x,y,t)=>'<svg width="'+t+'" height="'+t+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden"><use href="#'+id+'"/></svg>';
+const tileUse=(id,x,y,t)=>'<svg width="'+t+'" height="'+t+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden" style="overflow:hidden"><use href="#'+id+'"/></svg>';
 function cartoonMinion(o,pose,objects,g,previous,frame,p){
  const poseId=cartoonPoseIndex(o,pose,objects,previous,frame,p);
  const team=o.type==='defender'||o.type==='bagplayer'?1:0;
