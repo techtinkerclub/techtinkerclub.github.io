@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.18.6
+# Rugby Coaching Studio — Classic Studio v0.18.7
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -184,3 +184,7 @@ Published presentation pages now have **Add to video**, which opens the public-l
 Right-click a player to see relevant movement and ball actions; right-click an editable running path to add a decision at that run, add a route point, or remove only the movement. The single Decision making panel remains the primary creation route. Rotate using the green handle or Object inspector rather than redundant 15° context commands.
 
 In **Share / export → Video progression**, arrange up to eight drills and choose **Print progression pack** to print the ordered coaching cards and step diagrams. This does not alter the saved drills or create a permanent public presentation sequence.
+
+## Linked public progressions (v0.18.7)
+
+In the public library select **Add to video** on published drills, arrange the order, then choose **Open linked presentation**, **Copy presentation link**, **Print progression pack**, or **Export video**. A progression URL such as `/rugby/sequence.html?drills=seed-143,seed-133` uses stable public IDs and opens each drill in the same read-only presentation player. Unpublished entries are not silently replaced by stale copies. Links refer to explicitly published snapshots, not unsaved editor changes.
