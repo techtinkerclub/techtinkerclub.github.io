@@ -11,6 +11,7 @@ import {bindMovieSettings} from './movie.js?v=0.18.4';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
 let viewZoom=1,viewPan={x:0,y:0},viewBase=null,panEnabled=false,dragStart=null,pinchStart=null;
+let decisionRewind=0;
 const touches=new Map();
 $('playerMinionMode').onclick=()=>{
  opts.cartoonMode=!opts.cartoonMode;
@@ -70,7 +71,7 @@ boardEl.addEventListener('wheel',event=>{
  event.preventDefault();changeZoom(event.deltaY<0?1.18:1/1.18);
 },{passive:false});
 
-function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
+function stop(){playing=false;cancelAnimationFrame(raf);cancelAnimationFrame(decisionRewind);decisionRewind=0;$('play').textContent='Play'}
 function stepEnd(i){return stepEndSeconds(d,i)}
 function stepTarget(direction){if(!d)return 0;const i=Math.max(0,shownStep),atEnd=Math.abs(t-stepEnd(i))<1e-7;return Math.max(0,Math.min(d.frames.length-1,direction<0?i-1:atEnd?i+1:i))}
 function jumpStep(i,scroll=false){if(!d)return;stop();t=stepStartSeconds(d,Math.max(0,Math.min(i,d.frames.length-1)));if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render();if(scroll)$('board').scrollIntoView({block:'start',behavior:'auto'})}
@@ -88,12 +89,29 @@ function showOutcomeDecision({jump=true}={}){
  if(!d||!hasOutcomes(d))return;
  stop();
  const fork=decisionTime(d);
- if(jump)t=fork;
- $('branchDecisionQuestion').textContent='◆ '+d.branching.question;
- $('branchDecisionCards').innerHTML=outcomeCardsMarkup(d,'choose');
- $('branchDecisionPanel').hidden=false;
- render();
- $('branchDecisionPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+ const present=()=>{
+  t=fork;
+  $('branchDecisionQuestion').textContent='◆ '+d.branching.question;
+  $('branchDecisionCards').innerHTML=outcomeCardsMarkup(d,'choose');
+  $('branchDecisionPanel').hidden=false;
+  render();
+  $('branchDecisionPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+ };
+ // A coach comparing outcomes after playing one of them must see the reset.
+ // Never teleport the runner straight to the decision point. Playback that
+ // naturally arrives at the fork remains frozen there without any rewind.
+ if(jump&&t>fork+.03){
+  const end=t,started=performance.now();
+  const duration=Math.max(550,Math.min(1800,(end-fork)*180));
+  const back=now=>{
+   const p=Math.min(1,(now-started)/duration);
+   t=end-(end-fork)*(1-(1-p)*(1-p));
+   render();
+   if(p<1)decisionRewind=requestAnimationFrame(back);
+   else {decisionRewind=0;present();}
+  };
+  decisionRewind=requestAnimationFrame(back);
+ }else present();
 }
 function setPlayerOutcome(id,{atFork=false,resume=false}={}){
  if(!d||!hasOutcomes(d))return;
