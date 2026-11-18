@@ -34,7 +34,7 @@ assert.match(renderScene(safe,{index:1}).svg,/#65b8f8/);
 assert.match(skillIcon(safe.frames[0].objects[0]),/tag-belt/);
 assert.equal(Object.keys(TAG_COLORS).length,4);
 const belts=skillIcon(safe.frames[0].objects[0]);
-assert.equal((belts.match(/fill="#8bd67e"/g)||[]).length,2,'Both tags should share the player's selected strip colour');
+assert.equal((belts.match(/fill="#8bd67e"/g)||[]).length,2,'Both tags should share the selected strip colour');
 assert.equal(safe.frames[0].objects[0].tagColor,'green','Chosen strip colour must survive export');
 
 assert.equal(addInteraction(d.frames[1],'touch','tagger','cone').ok,true);
