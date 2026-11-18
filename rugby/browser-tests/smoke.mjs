@@ -14,6 +14,13 @@ try {
  await page.goto(origin+'/rugby/play.html?drill=seed-133',{waitUntil:'networkidle',timeout:40000});
  await page.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Hold the line'),{timeout:15000});
  assert.match(await page.title(),/Hold the line/);
+ // Top-down Minions have gaze goggles but never a second facing arrow.
+ await page.locator('#playerMinionMode').click();
+ assert.ok(await page.locator('#board .minion-top-down').count()>0,'Top-down Minions should render');
+ assert.equal(await page.locator('#board .player-gaze-arrow').count(),0,'No extra arrow in Minion mode');
+ assert.ok(await page.locator('#board .cartoon-player-goggles').count()>0,'Goggles indicate gaze');
+ await page.locator('#playerMinionMode').click();
+ assert.equal(await page.locator('#board .minion-top-down').count(),0,'Switch restores classic view');
   assert.equal(await page.locator('#addPlayerToVideo').isVisible(),true);
   assert.match(await page.locator('#addPlayerToVideo').getAttribute('href'),/video=seed-133/);
  assert.equal(await page.locator('#branchPlayer').isVisible(),true,'Outcome selector should appear');

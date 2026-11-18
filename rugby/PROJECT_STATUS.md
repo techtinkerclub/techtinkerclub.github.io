@@ -6,8 +6,14 @@ Updated 18 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.19.6** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.19.7** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## Overhead Minion view (0.19.7)
+
+- Minion Mode retains top-down rugby players: yellow crowns, compressed leading-edge goggles, rear overalls in team colours, and short overhead gloves and boots. One/two-eye variants are stable per player across frames.
+- The goggles follow the existing head tracking without adding direction arrows. Classic players and all drill data, poses, movements, and decisions remain untouched.
+- The shared renderer covers Studio, read-only presentation, and video export. Browser smoke-test assertions added for switching modes; deployment and full QA are not yet independently verified.
 
 ## Public publishing workflow
 
