@@ -4,6 +4,268 @@
   "drills": [
     {
       "version": 1,
+      "id": "mwm9audbu64no1",
+      "title": "Tag removal and pass",
+      "age": "U10",
+      "category": "Attack",
+      "length": 10,
+      "width": 5,
+      "objective": "",
+      "safety": "",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwm9aw076rsq4c",
+              "type": "attacker",
+              "label": "A1",
+              "x": 456.0263197544642,
+              "y": 190.8531411307199,
+              "rot": 180,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0
+            },
+            {
+              "id": "mwm9awcnn4o2mr",
+              "type": "defender",
+              "label": "D1",
+              "x": 456.0263197544642,
+              "y": 365.718149937221,
+              "rot": 0
+            },
+            {
+              "id": "mwm9bcfjek8y5y",
+              "type": "ball",
+              "label": "",
+              "x": 429.0983197544642,
+              "y": 199.2411411307199,
+              "rot": 0,
+              "ownerId": "mwm9aw076rsq4c"
+            },
+            {
+              "id": "mwm9e69z9y4p4a",
+              "type": "attacker",
+              "label": "A2",
+              "x": 352.79168526785713,
+              "y": 128.25913600376677,
+              "rot": 180
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Step 2",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwm9aw076rsq4c",
+              "type": "attacker",
+              "label": "A1",
+              "x": 457.7317271205357,
+              "y": 277.77570408412396,
+              "rot": 180,
+              "tagBelt": true,
+              "tags": {
+                "left": false,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0
+            },
+            {
+              "id": "mwm9awcnn4o2mr",
+              "type": "defender",
+              "label": "D1",
+              "x": 459.437134486607,
+              "y": 280.9869100516184,
+              "rot": 0,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "blue",
+              "heldTags": 1
+            },
+            {
+              "id": "mwm9bcfjek8y5y",
+              "type": "ball",
+              "label": "",
+              "x": 430.8037271205357,
+              "y": 286.163704084124,
+              "rot": 0,
+              "ownerId": "mwm9aw076rsq4c"
+            },
+            {
+              "id": "mwm9e69z9y4p4a",
+              "type": "attacker",
+              "label": "A2",
+              "x": 356.2025237165179,
+              "y": 237.09493979317807,
+              "rot": 180
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Step 3",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwm9aw076rsq4c",
+              "type": "attacker",
+              "label": "A1",
+              "x": 457.7317271205357,
+              "y": 277.77570408412396,
+              "rot": 359,
+              "tagBelt": true,
+              "tags": {
+                "left": false,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0
+            },
+            {
+              "id": "mwm9awcnn4o2mr",
+              "type": "defender",
+              "label": "D1",
+              "x": 493.378032924107,
+              "y": 314.5609082031251,
+              "rot": 0,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "blue",
+              "heldTags": 1
+            },
+            {
+              "id": "mwm9bcfjek8y5y",
+              "type": "ball",
+              "label": "",
+              "x": 329.2745237165179,
+              "y": 245.4829397931781,
+              "rot": 0,
+              "ownerId": "mwm9e69z9y4p4a"
+            },
+            {
+              "id": "mwm9e69z9y4p4a",
+              "type": "attacker",
+              "label": "A2",
+              "x": 356.2025237165179,
+              "y": 237.09493979317807,
+              "rot": 180
+            }
+          ],
+          "timing": {
+            "mwm9bcfjek8y5y": {
+              "start": 35,
+              "end": 100
+            },
+            "mwm9awcnn4o2mr": {
+              "start": 0,
+              "end": 72
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Step 4",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwm9aw076rsq4c",
+              "type": "attacker",
+              "label": "A1",
+              "x": 457.7317271205357,
+              "y": 277.77570408412396,
+              "rot": 359,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0
+            },
+            {
+              "id": "mwm9awcnn4o2mr",
+              "type": "defender",
+              "label": "D1",
+              "x": 493.378032924107,
+              "y": 314.5609082031251,
+              "rot": 0,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "blue",
+              "heldTags": 1
+            },
+            {
+              "id": "mwm9bcfjek8y5y",
+              "type": "ball",
+              "label": "",
+              "x": 329.2745237165179,
+              "y": 245.4829397931781,
+              "rot": 0,
+              "ownerId": "mwm9e69z9y4p4a"
+            },
+            {
+              "id": "mwm9e69z9y4p4a",
+              "type": "attacker",
+              "label": "A2",
+              "x": 356.2025237165179,
+              "y": 237.09493979317807,
+              "rot": 180
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "line",
+      "ageMin": 10,
+      "ageMax": 10,
+      "minutes": 8,
+      "players": "",
+      "equipment": "",
+      "instructions": "",
+      "coaching": "",
+      "regression": "",
+      "progression": "",
+      "questions": "",
+      "notes": "",
+      "links": [],
+      "provenance": "Coach-created / imported drill",
+      "review": "Coach review required",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "revision": 1,
+      "savedAt": "2026-11-18T15:24:42.939Z"
+    },
+    {
+      "version": 1,
       "id": "mwlwflvgp8foni",
       "title": "Hold the line · Carry or pass?",
       "age": "U10",
