@@ -36,6 +36,8 @@ export function playbackData(d){
   const objects=f.objects.map(o=>{
    if(!o||!Object.hasOwn(types,o.type)||typeof o.id!=='string'||o.id.length>200||['__proto__','prototype','constructor'].includes(o.id)||ids.has(o.id)||!Number.isFinite(o.x)||!Number.isFinite(o.y))throw Error('Invalid object.');
    ids.add(o.id);const q=copyDrawingOrder(o,{id:o.id,type:o.type,label:str(o.label,160),x:num(o.x,0,900,450),y:num(o.y,0,540,270),rot:num(o.rot,-360,360,0)});
+   if(o.type==='cone')q.coneColor=o.coneColor;
+   if(canCarry(o)){q.tagBelt=o.tagBelt;q.tags=o.tags;q.heldTags=o.heldTags}
    if(o.type==='label')q.textStyle=normaliseTextStyle(o.textStyle);
    if(isDiagramObject(o))q.diagram=diagramSettings(o.type,o.diagram,out.width);
    if(canCarry(o)&&Object.hasOwn(PLAYER_POSES,o.playerPose)){q.playerPose=o.playerPose;if(o.posePinned===true)q.posePinned=true}
