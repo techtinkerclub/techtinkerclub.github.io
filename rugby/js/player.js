@@ -5,9 +5,11 @@ import {playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
 import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=4';
 import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.14';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
+import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {bindMovieSettings} from './movie.js?v=0.7.2';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
+let viewerZoom=1,viewerPan={x:0,y:0},viewerPanning=false,viewerPointer=null;
 function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
 function stepEnd(i){return d.frames.slice(0,i+1).reduce((sum,f,k)=>sum+(k?f.seconds:0),0)}
 function stepTarget(direction){if(!d)return 0;const i=Math.max(0,shownStep),atEnd=Math.abs(t-stepEnd(i))<1e-7;return Math.max(0,Math.min(d.frames.length-1,direction<0?i-1:atEnd?i+1:i))}
@@ -16,7 +18,11 @@ function render(){
  if(!d)return;
  const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
- board.innerHTML=s.svg;shownStep=s.index;
+ const view=zoomWindow(s.camera,viewerZoom,viewerPan);
+ board.innerHTML=s.svg.replace(/viewBox="[^"]*"/,'viewBox="'+[view.x,view.y,view.width,view.height].join(' ')+'"');shownStep=s.index;
+ $('playerZoomValue').textContent=Math.round(viewerZoom*100)+'%';
+ $('playerZoomOut').disabled=viewerZoom<=1.001;
+ $('playerZoomIn').disabled=viewerZoom>=11.999;
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
  if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
  $('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t;
@@ -53,7 +59,7 @@ $('branchDecisionCards').onclick=e=>{
  const target=e.target.closest('[data-branch-choice]');
  if(target)setPlayerOutcome(target.dataset.branchChoice,{atFork:true,resume:true});
 };
-function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);if(d.pitchContext?.mode==='field'&&options?.framing===undefined)opts.framing='action';choiceResolved=false;$('branchDecisionPanel').hidden=true;
+function open(data,options){stop();d=playbackData(data);viewerZoom=1;viewerPan={x:0,y:0};$('playerCamera').hidden=false;opts=outputOptions(options);if(d.pitchContext?.mode==='field'&&options?.framing===undefined)opts.framing='action';choiceResolved=false;$('branchDecisionPanel').hidden=true;
  const b=hasOutcomes(d)?branchInfo(d):null;
  $('branchPlayer').hidden=!b;
  if(b){
@@ -86,6 +92,53 @@ $('play').onclick=()=>{
  }
  raf=requestAnimationFrame(tick);
 };
+const changeViewerZoom=factor=>{
+ if(!d)return;
+ const next=viewerZoomLevel(viewerZoom*factor);
+ if(Math.abs(next-viewerZoom)<1e-7)return;
+ const previous=viewerZoom;viewerZoom=next;
+ // Pan offset is in the coordinate space of the underlying action/field camera.
+ // On zooming back to 1×, reset pan; do not change physical drill positions.
+ if(next<=1.00001)viewerPan={x:0,y:0};
+ else if(previous>1)viewerPan={x:viewerPan.x*previous/next,y:viewerPan.y*previous/next};
+ render();
+};
+$('playerZoomIn').onclick=()=>changeViewerZoom(1.3);
+$('playerZoomOut').onclick=()=>changeViewerZoom(1/1.3);
+$('playerZoomFit').onclick=()=>{viewerZoom=1;viewerPan={x:0,y:0};render()};
+$('playerPan').onclick=()=>{
+ viewerPanning=!viewerPanning;
+ $('playerPan').setAttribute('aria-pressed',String(viewerPanning));
+ $('board').classList.toggle('camera-pan-ready',viewerPanning);
+};
+$('board').addEventListener('pointerdown',e=>{
+ if(!d||!viewerPanning||viewerZoom<=1||e.button!==0)return;
+ const svg=$('board').querySelector('svg');
+ if(!svg)return;
+ viewerPointer={id:e.pointerId,x:e.clientX,y:e.clientY,
+  pan:{...viewerPan},scaleX:Number(svg.viewBox.baseVal.width)/Math.max(1,$('board').clientWidth),
+  scaleY:Number(svg.viewBox.baseVal.height)/Math.max(1,$('board').clientHeight)};
+ $('board').setPointerCapture(e.pointerId);
+ $('board').classList.add('camera-panning');
+ e.preventDefault();
+});
+$('board').addEventListener('pointermove',e=>{
+ const pointer=viewerPointer;
+ if(!pointer||pointer.id!==e.pointerId)return;
+ viewerPan={x:pointer.pan.x-(e.clientX-pointer.x)*pointer.scaleX,
+  y:pointer.pan.y-(e.clientY-pointer.y)*pointer.scaleY};
+ render();e.preventDefault();
+});
+for(const eventName of ['pointerup','pointercancel','lostpointercapture'])
+ $('board').addEventListener(eventName,e=>{
+  if(!viewerPointer||viewerPointer.id!==e.pointerId)return;
+  viewerPointer=null;$('board').classList.remove('camera-panning');
+  if($('board').hasPointerCapture?.(e.pointerId))$('board').releasePointerCapture(e.pointerId);
+ });
+$('board').addEventListener('wheel',e=>{
+ if(!d)return;e.preventDefault();changeViewerZoom(e.deltaY<0?1.15:1/1.15);
+},{passive:false});
+
 $('restart').onclick=()=>jumpStep(0);$('previousStep').onclick=()=>jumpStep(stepTarget(-1));$('nextStep').onclick=()=>jumpStep(stepTarget(1));$('seek').oninput=()=>{stop();t=Number($('seek').value);if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render()};
 for(const k of ['runs','passes','labels','decisions','markups','offside','teachingGuides','orientation','scaleMode','framing'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode','framing'].includes(k)?$(k).value:$(k).checked;render()};
 $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>3000000)throw Error('File is too large.');open(JSON.parse(await file.text()),opts)}catch(err){$('message').textContent=err.message}};
@@ -109,7 +162,7 @@ if(catalogueId!==null){
   $('copyReview').onclick=()=>reviewCopy(feedbackText(entry,shareLink()),'Review questions copied.');
   if(!isAnimated(entry)){
    // A text card is not a missing animation: show its existing coaching content only.
-   $('board').hidden=true;$('controls').hidden=true;$('stepReading').hidden=true;
+   $('board').hidden=true;$('playerCamera').hidden=true;$('controls').hidden=true;$('stepReading').hidden=true;
    $('coachSequenceContent').closest('details').hidden=true;
    $('empty').hidden=false;$('empty').innerHTML='<h2>Coaching card</h2><p>This resource has written guidance but no animation yet.</p>';
   }
