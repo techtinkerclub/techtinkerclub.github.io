@@ -44,7 +44,7 @@ import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-or
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
 import {renderScene} from './scene.js?v=0.18.0';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.18.4';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.18.6';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.18.4';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
@@ -1988,6 +1988,12 @@ $('movieSequenceFile').onchange=async e=>{
  }catch(err){note('Could not add video stage: '+err.message)}
 };
 
+$('printProgression').onclick=()=>{
+ if(!videoSequence.length){note('Add at least one drill to the sequence before printing.');return}
+ const items=videoSequence.map(item=>item.current?clone(drill):clone(item.drill));
+ const opts=shareOptions(),title=$('movieTitle').value.trim()||'Coaching progression';
+ $('shareDialog').close();printProgression(items,title,opts);
+};
 function shareOptions(){return outputOptions({orientation,scaleMode,framing:$('shareFraming').value,teachingGuides:showMarkups,offside:$('offsideGuides').checked,markups:$('shareMarkups').checked,runs:$('shareRuns').checked,passes:$('sharePasses').checked,labels:$('shareLabels').checked,decisions:$('shareDecisions').checked})}
 const getMovieSettings=bindMovieSettings($('movieOptions'),'movie');
 const movieProgress=createExportProgress();
