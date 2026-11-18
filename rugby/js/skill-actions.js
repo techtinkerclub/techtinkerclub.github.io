@@ -56,7 +56,7 @@ export function sanitizeInteractions(frame){
   a&&['touch','tag','tag-return'].includes(a.kind)&&typeof a.actorId==='string'&&typeof a.targetId==='string'&&a.actorId!==a.targetId&&ids.has(a.actorId)&&ids.has(a.targetId)&&canCarry(ids.get(a.actorId))&&
   (a.kind==='touch'||canCarry(ids.get(a.targetId)))&&
   (a.kind==='touch'||(TAG_SIDES.includes(a.side)&&ids.get(a.actorId).tagBelt===true&&ids.get(a.targetId).tagBelt===true))
- ).map(a=>({kind:a.kind,actorId:a.actorId,targetId:a.targetId,side:a.kind!=='touch'?a.side:undefined,at:Math.max(.1,Math.min(.95,Number(a.at)||.7)),label:text(a.label)}));
+ ).map(a=>({kind:a.kind,actorId:a.actorId,targetId:a.targetId,side:a.kind!=='touch'?a.side:undefined,at:Math.max(.1,Math.min(.95,Number(a.at)||.7)),displaySeconds:Math.max(.2,Math.min(8,Number(a.displaySeconds) || (a.kind==='tag'?1.6:1.2))),label:text(a.label)}));
  if(!frame.interactions.length)delete frame.interactions;
  return frame;
 }
@@ -97,11 +97,28 @@ export function timedSkillObjects(objects,previous,frame,progress){
  }
  return objects.map(o=>affected.has(o.id)?{...o,...affected.get(o.id)}:o);
 }
-export function interactionOverlay(frame,objects,g,progress=1,ink=false){
+export function interactionOverlay(frame,objects,g,progress=1,ink=false,context=null){
  if(!frame?.interactions?.length)return '';
  const positions=new Map(objects.map(o=>[o.id,o]));
  const safe=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- return '<g class="non-contact-actions" pointer-events="none">'+frame.interactions.filter(a=>progress>=a.at).map(a=>{
+ const frames=context?.frames,stepIndex=context?.index,now=Math.max(0,Math.min(1,progress))*(Number(frame.seconds)||2);
+ const candidates=[];
+ if(Array.isArray(frames)&&Number.isInteger(stepIndex)){
+  let elapsed=0;
+  for(let i=stepIndex;i>=0;i--){
+   const source=frames[i];
+   if(i<stepIndex)elapsed+=Number(frames[i+1]?.seconds)||2;
+   if(elapsed>8)break;
+   for(const a of source.interactions||[]){
+    const eventAt=i===stepIndex?0:(Number(source.seconds)||2);
+    const passed=elapsed+(i===stepIndex?now-(Number(a.at)||.7)*(Number(source.seconds)||2):now+(Number(source.seconds)||2)*(1-(Number(a.at)||.7)));
+    if(passed>=-1e-6&&passed<=(Number(a.displaySeconds)||(a.kind==='tag'?1.6:1.2)))candidates.push(a);
+   }
+  }
+ }else{
+  for(const a of frame.interactions)if(progress>=(Number(a.at)||.7)&&((progress-(Number(a.at)||.7))*(Number(frame.seconds)||2))<=(Number(a.displaySeconds)||(a.kind==='tag'?1.6:1.2)))candidates.push(a);
+ }
+ return '<g class="non-contact-actions" pointer-events="none">'+candidates.map(a=>{
   const actor=positions.get(a.actorId),target=positions.get(a.targetId);if(!actor||!target)return '';
   const p=g.toView(actor.x,actor.y),q=g.toView(target.x,target.y);
   const taking=a.kind==='tag',returning=a.kind==='tag-return',tag=taking||returning,equipment=!canCarry(target);
@@ -160,7 +177,7 @@ export function addInteraction(frame,kind,actorId,targetId,side='left',label='')
   }
  }
  if(!['tag','tag-return','touch'].includes(kind))return {ok:false,message:'Unsupported action.'};
- const entry={kind,actorId,targetId,side:kind==='touch'?undefined:side,at:.7,label:text(label)||(kind==='tag'?'TAG!':kind==='tag-return'?'Tag returned':'Touch')};
+ const entry={kind,actorId,targetId,side:kind==='touch'?undefined:side,at:.7,displaySeconds:kind==='tag'?1.6:1.2,label:text(label)||(kind==='tag'?'TAG!':kind==='tag-return'?'Tag returned':'Touch')};
  frame.interactions=(frame.interactions||[]).concat(entry).slice(-12);
  return {ok:true,message:kind==='tag'?'TAG! Tagger raises the strip and calls TAG. Carrier stops and passes, then tagger returns the strip.':kind==='tag-return'?'Tag returned to the correct player and hip. Both player states updated; no ball possession changed.':'Touch recorded; no rugby tag or turnover created.'};
 }
