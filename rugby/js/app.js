@@ -734,9 +734,18 @@ function deleteObject(scope='here'){
  drill.frames=sanitizeRoutes(result.frames);if(hasOutcomes(candidate))drill.branching=candidate.branching;selected=null;selectedPathId=null;changed();refresh();focusPitch();
  note(name+' deleted from '+(result.removed===1?'one step':result.removed+' steps')+'.');
 }
+function ensureSkillActionStep(title){
+ if(idx!==0)return true;
+ if(hasOutcomes(drill)){note('Choose the action step in outcome A or B before recording contact.');return false}
+ if(drill.frames.length>=150){note('Maximum of 150 action steps reached.');return false}
+ const next=stripDecisions(clone(f()));
+ next.name=title;next.seconds=2;next.notes='';next.timing={};next.paths={};
+ drill.frames.splice(1,0,next);changed();choose(1);
+ return true;
+}
 let skillMode='touch',skillFromGroup=false;
 function openSkillDialog(kind,fromGroup=false){
- if(!canEditObjects())return;
+ if(!canEditObjects()||!ensureSkillActionStep(kind==='tag'?'Tag removal':'Touch cue'))return;
  skillMode=kind;skillFromGroup=fromGroup;
  const roster=f().objects.filter(canCarry);
  const candidates=fromGroup?roster.filter(o=>groupIds.has(o.id)):roster;
@@ -780,6 +789,7 @@ $('skillSave').onclick=()=>{
  $('skillDialog').close();changed();refresh();note(result.message);
 };
 function arrangeSelectedContact(kind){
+ if(!ensureSkillActionStep(kind[0].toUpperCase()+kind.slice(1)))return;
  const ids=[...groupIds],players=f().objects.filter(o=>ids.includes(o.id)&&canCarry(o));
  const opposite=players.some(o=>o.type==='attacker')&&players.some(o=>o.type==='defender');
  const contactAge=Number(drill.ageMin)||10;
