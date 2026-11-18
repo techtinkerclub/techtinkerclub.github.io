@@ -1,7 +1,7 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {HEAD_MODES,headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder} from './cartoon-players.js?v=9';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder} from './cartoon-players.js?v=10';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=8';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
@@ -13,7 +13,7 @@ import {familyMembers,publicationState,duplicateTitleGroups,revisionLabel} from 
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews,removeObjectAcrossOutcomes} from './branching.js?v=0.18.5';
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=0.18.0';
-import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=8';
+import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=9';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,symbolLabelSize} from './symbol-scale.js?v=0.18.8';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.18.8';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
@@ -47,8 +47,8 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.20.3';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.3';
+import {renderScene} from './scene.js?v=0.20.4';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.4';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.18.4';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
