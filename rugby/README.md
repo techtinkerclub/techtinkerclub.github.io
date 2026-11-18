@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.18.7
+# Rugby Coaching Studio — Classic Studio v0.18.9
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -188,3 +188,12 @@ In **Share / export → Video progression**, arrange up to eight drills and choo
 ## Linked public progressions (v0.18.7)
 
 In the public library select **Add to video** on published drills, arrange the order, then choose **Open linked presentation**, **Copy presentation link**, **Print progression pack**, or **Export video**. A progression URL such as `/rugby/sequence.html?drills=seed-143,seed-133` uses stable public IDs and opens each drill in the same read-only presentation player. Unpublished entries are not silently replaced by stale copies. Links refer to explicitly published snapshots, not unsaved editor changes.
+
+## Agility, touch and tag coaching (v0.18.9)
+
+- **Cones:** select a cone on the pitch → **Object → Cone colour** (seven preset colours). The saved colour appears in stills, presentations and videos.
+- **Agility palette:** ladder, hurdle, hoop, slalom pole and flat marker disc. Touch a player/object/line by right-clicking the *player* → **Record touch** and choosing its target. Step details lists timed cues for editing or removal.
+- **Tag rugby:** select a player → **Object → Equip this player with a tag belt**. When a defender and a ball carrier have belts, right-click the defender → **Remove carrier tag**. Choose the carrier, left/red or right/blue tag and cue time. The strip is removed during playback; no tackle, ruck or automatic turnover occurs. Add the next pass or restart as a separate normal step. Reset or unequip belts in Object.
+- **Multiple-player actions:** Ctrl-click two or more players (or use Group select) and right-click any selected player for context-sensitive non-contact or contact actions. U7/U8 use tag/touch, U9 can tackle, U10+ can also arrange rucks and mauls when ball/participant conditions permit. These use the same editable contact markers as the normal editor.
+
+The added skills are schematic coaching aids. A tag/removal cue does not perform automatic referee logic or physically stop a pre-authored running path; make the stop and follow-up pass clear in the drill sequence.
