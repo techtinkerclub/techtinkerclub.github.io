@@ -1,5 +1,5 @@
-import {recordDrill,saveBlob,outputName} from './outputs.js?v=0.18.3';
-import {bindMovieSettings} from './movie.js?v=0.18.3';
+import {recordDrill,saveBlob,outputName} from './outputs.js?v=0.18.4';
+import {bindMovieSettings} from './movie.js?v=0.18.4';
 import {createExportProgress} from './export-progress.js?v=0.18.3';
 import {playbackData} from './scene.js?v=0.18.0';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
