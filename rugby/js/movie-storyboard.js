@@ -31,9 +31,18 @@ export function movieStoryboard(source,opts={}){
     heading:optionLabel?(optionLabel+' · '+(pass==='replay'?'Coaching replay':'Normal speed')):(pass==='replay'?'Coaching replay':'Normal speed')},
     (to-from)/rate);
   };
+  // Do not teleport a player from the end of an option to the fork (or
+  // from the drill end to the start for a replay). Reverse the SAME saved
+  // animation, clearly labelled as a rewind, before presenting a new option.
+  // No newly invented movement or changes to the original drill are needed.
+  const rewind=(view,from,to,heading='REWIND TO DECISION POINT')=>{
+   if(from-to<=.00001)return;
+   const duration=Math.max(1,Math.min(3,(from-to)/3));
+   add({...base,kind:'rewind',drill:view,from,to,speed:(from-to)/duration,heading},duration);
+  };
   if(!hasOutcomes(d)){
    makeMotion(d,0,total);
-   if(replay)makeMotion(d,0,total,'','replay');
+   if(replay){rewind(d,total,0,'REWIND FOR SLOW-MOTION REPLAY');makeMotion(d,0,total,'','replay');}
    continue;
   }
   const b=d.branching,fork=decisionTime(d),views=outcomeViews(d),ordered=opts.branchMode==='selected'?views.filter(v=>v.id===b.active):views;
@@ -42,14 +51,22 @@ export function movieStoryboard(source,opts={}){
    body:clean(b.question,240)||'What does the player decide?',
    why:clean(b.context,500)||'See how the players respond before following either outcome.',
    watch:clean(b.watchFor,500)||'Watch the first reaction and how the players keep their spacing.'},decisionPause);
+  let previousOption=null;
   for(const v of ordered){
    const choice=b.choices.find(q=>q.id===v.id),first=v.drill.frames[b.fork+1];
    const title='OPTION '+v.id.toUpperCase()+' · '+clean(v.label,140);
+   // Each alternative must start from the very same frozen fork position.
+   // Show the reverse journey instead of an unexplained snap backwards.
+   if(previousOption)rewind(previousOption.drill,drillDuration(previousOption.drill),fork);
    add({...base,drill:v.drill,kind:'choice',at:fork,heading:title,
     body:clean(choice.explanation,500)||clean(first?.notes,420)||'Follow the movement shown in this option.',
     watch:clean(choice.watchFor,500)||'Watch the players nearest the ball and the space around them.'},choicePause);
    makeMotion(v.drill,fork,drillDuration(v.drill),title);
-   if(replay)makeMotion(v.drill,fork,drillDuration(v.drill),title,'replay');
+   if(replay){
+    rewind(v.drill,drillDuration(v.drill),fork,'REWIND FOR SLOW-MOTION REPLAY');
+    makeMotion(v.drill,fork,drillDuration(v.drill),title,'replay');
+   }
+   previousOption=v;
   }
  }
  let end=0;
@@ -61,6 +78,8 @@ export function storyboardClip(plan,at){
  return plan.clips.find(q=>at<q.end)||plan.clips.at(-1);
 }
 export function storyboardTime(clip,elapsed){
- return clip.kind==='motion'?
-  Math.min(clip.to,clip.from+Math.max(0,elapsed-clip.start)*clip.speed):clip.at;
+ const passed=Math.max(0,elapsed-clip.start);
+ if(clip.kind==='motion')return Math.min(clip.to,clip.from+passed*clip.speed);
+ if(clip.kind==='rewind')return Math.max(clip.to,clip.from-passed*clip.speed);
+ return clip.at;
 }
