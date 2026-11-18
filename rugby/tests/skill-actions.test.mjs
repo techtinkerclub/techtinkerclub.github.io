@@ -51,3 +51,10 @@ for(const id of ['menuGroupTouch','menuGroupTackle','menuGroupRuck','menuGroupMa
 }
 assert.match(app,/groupIds\.size>=2/,'Right-click should retain genuine multi-selection');
 assert.match(app,/age>=10&&sides/,'Maul must not be offered as a U8 shortcut');
+
+assert.match(app,/function updateSkillActionsPanel\(/,'Coach must be able to edit and remove touch/tag actions');
+assert.match(app,/data-skill-delete/,'Contact events must be individually removable');
+assert.match(app,/ensureSkillActionStep/,'Actions recorded from setup must create a real action step');
+assert.match(app,/age>=10&&sides/,'U9 must not show ruck or maul shortcuts');
+assert.match(html,/id="skillActionsList"/,'Step inspector must expose contact event editing');
+assert.match(read('assets/workspace.css'),/skill-action-row/,'Contact event controls need visible styling');
