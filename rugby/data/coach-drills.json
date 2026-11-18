@@ -330,32 +330,32 @@
           }
         },
         {
-          "name": "A1 · Carry into the near-side channel",
-          "seconds": 1.6,
-          "notes": "Coach keeps the ball and accelerates through the near-side gap. D1 calls the carrier, D2 covers the inside, and the other defenders remain connected. D1 and D2 stop the adult coach with two-hand touch only.",
+          "name": "B1 · Backwards pass to A1",
+          "seconds": 1.5,
+          "notes": "Coach passes backwards across to A1, who stays deeper until the ball arrives. D4 calls the receiver; D5 covers the neighbouring channel while the remaining defenders stay connected.",
           "objects": [
             {
               "id": "mwl6tallzpoqql",
               "type": "defender",
               "label": "D1",
-              "x": 174.6,
-              "y": 188.45,
+              "x": 144,
+              "y": 135,
               "rot": 180
             },
             {
               "id": "mwl6tazaxnplm8",
               "type": "defender",
               "label": "D2",
-              "x": 195,
-              "y": 188.45,
+              "x": 266.4,
+              "y": 140,
               "rot": 180
             },
             {
               "id": "mwl6tb8m0b9lap",
               "type": "defender",
               "label": "D3",
-              "x": 388.7999999999999,
-              "y": 162.4,
+              "x": 388.79999999999995,
+              "y": 148,
               "rot": 180
             },
             {
@@ -363,7 +363,7 @@
               "type": "defender",
               "label": "D4",
               "x": 511.2,
-              "y": 160.2,
+              "y": 150,
               "rot": 180
             },
             {
@@ -371,7 +371,7 @@
               "type": "defender",
               "label": "D5",
               "x": 633.5999999999999,
-              "y": 160.2,
+              "y": 149,
               "rot": 180
             },
             {
@@ -379,63 +379,49 @@
               "type": "defender",
               "label": "D6",
               "x": 756,
-              "y": 158,
+              "y": 137,
               "rot": 180
             },
             {
               "id": "mwl6w26yzp8oka",
               "type": "coach",
               "label": "Coach",
-              "x": 184.79999999999998,
-              "y": 200.1,
+              "x": 256.2,
+              "y": 238.22727272727275,
               "rot": 0
             },
             {
               "id": "mwl6w5ww333x3x",
               "type": "attacker",
               "label": "A1",
-              "x": 552,
-              "y": 386.5,
+              "x": 562.1999999999999,
+              "y": 338,
               "rot": 0
             },
             {
               "id": "mwl6wf87jrw70e",
               "type": "ball",
               "label": "",
-              "x": 191.532,
-              "y": 191.712,
+              "x": 568.9319999999999,
+              "y": 329.6119999999999,
               "rot": 0,
-              "ownerId": "mwl6w26yzp8oka"
+              "ownerId": "mwl6w5ww333x3x",
+              "transferKind": "pass"
             }
           ],
-          "timing": {},
+          "timing": {
+            "mwl6wf87jrw70e": {
+              "start": 75,
+              "end": 100
+            }
+          },
           "paths": {
-            "mwl6tallzpoqql": {
-              "mode": "smooth",
-              "points": [
-                {
-                  "x": 154.2,
-                  "y": 153.50000000000003
-                }
-              ],
-              "follow": false
-            },
-            "mwl6tazaxnplm8": {
-              "mode": "smooth",
-              "points": [
-                {
-                  "x": 246,
-                  "y": 153.50000000000003
-                }
-              ],
-              "follow": false
-            },
             "mwl6w26yzp8oka": {
               "mode": "smooth",
               "points": [
                 {
-                  "x": 184.79999999999998,
-                  "y": 270.00000000000006
+                  "x": 246,
+                  "y": 280.5909090909091
                 }
               ],
               "follow": false
@@ -443,48 +429,48 @@
           }
         },
         {
-          "name": "A2 · Two-hand touch · stop and reset",
-          "seconds": 1.1,
-          "notes": "Freeze when D1 and D2 have closed the channel. Count the touch; do not make a live tackle on the adult. Ask who called the ball and whether the rest of the line stayed connected.",
+          "name": "B2 · A1 attacks; D4 tackles",
+          "seconds": 2,
+          "notes": "A1 receives, looks up and carries into the outside channel. D4 tracks A1, shortens steps and makes the controlled tackle using safe head placement and a wrap. D5 closes the adjacent gap as cover; D5 does not join the tackle.",
           "objects": [
             {
               "id": "mwl6tallzpoqql",
               "type": "defender",
               "label": "D1",
-              "x": 174.6,
-              "y": 188.45,
+              "x": 144,
+              "y": 152,
               "rot": 180
             },
             {
               "id": "mwl6tazaxnplm8",
               "type": "defender",
               "label": "D2",
-              "x": 195,
-              "y": 188.45,
+              "x": 266.4,
+              "y": 153,
               "rot": 180
             },
             {
               "id": "mwl6tb8m0b9lap",
               "type": "defender",
               "label": "D3",
-              "x": 388.7999999999999,
-              "y": 162.4,
+              "x": 388.79999999999995,
+              "y": 155,
               "rot": 180
             },
             {
               "id": "mwl6tbehy92zxz",
               "type": "defender",
               "label": "D4",
-              "x": 511.2,
-              "y": 160.2,
+              "x": 582.5999999999999,
+              "y": 188.2381818181818,
               "rot": 180
             },
             {
               "id": "mwl6tbkosxh9wx",
               "type": "defender",
               "label": "D5",
-              "x": 633.5999999999999,
-              "y": 160.2,
+              "x": 592.8,
+              "y": 185.27272727272728,
               "rot": 180
             },
             {
@@ -492,54 +478,243 @@
               "type": "defender",
               "label": "D6",
               "x": 756,
-              "y": 158,
+              "y": 151,
               "rot": 180
             },
             {
               "id": "mwl6w26yzp8oka",
               "type": "coach",
               "label": "Coach",
-              "x": 184.79999999999998,
-              "y": 200.1,
+              "x": 256.2,
+              "y": 238.22727272727275,
               "rot": 0
             },
             {
               "id": "mwl6w5ww333x3x",
               "type": "attacker",
               "label": "A1",
-              "x": 552,
-              "y": 386.5,
-              "rot": 0
+              "x": 582.5999999999999,
+              "y": 203.48909090909092,
+              "rot": 90
             },
             {
               "id": "mwl6wf87jrw70e",
               "type": "ball",
               "label": "",
-              "x": 191.532,
-              "y": 191.712,
+              "x": 589.9439999999998,
+              "y": 211.17809090909094,
               "rot": 0,
-              "ownerId": "mwl6w26yzp8oka"
+              "ownerId": "mwl6w5ww333x3x"
             },
             {
-              "id": "coach-demo-touch-caption",
+              "id": "mwl8tvglg3qrmc",
+              "type": "tackle",
+              "label": "Tackle",
+              "x": 582.5999999999999,
+              "y": 195.86363636363635,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "mwl6w5ww333x3x",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "mwl6tbehy92zxz",
+                  "pose": "tackling"
+                }
+              ],
+              "breakdown": {
+                "phase": "tackle",
+                "carrierId": "mwl6w5ww333x3x",
+                "tacklerId": "mwl6tbehy92zxz",
+                "ballId": "mwl6wf87jrw70e",
+                "tacklerIds": [
+                  "mwl6tbehy92zxz"
+                ]
+              }
+            },
+            {
+              "id": "coach-demo-tackle-caption",
               "type": "label",
-              "label": "TWO-HAND TOUCH · STOP",
-              "x": 245,
-              "y": 259.2,
+              "label": "D4 TACKLES · D5 COVERS",
+              "x": 660,
+              "y": 242,
               "rot": 0,
               "textStyle": {
-                "fontSize": 14,
-                "color": "#ffefd0",
+                "fontSize": 13,
+                "color": "#eef9ef",
                 "background": true,
-                "backgroundColor": "#243b2b",
-                "backgroundOpacity": 92,
+                "backgroundColor": "#263b31",
+                "backgroundOpacity": 90,
                 "border": true,
-                "borderColor": "#ebcc91",
-                "borderWidth": 1.2
+                "borderColor": "#b1cdb7",
+                "borderWidth": 1
               }
             }
           ],
           "timing": {},
+          "paths": {
+            "mwl6tbehy92zxz": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 521.4,
+                  "y": 164.0909090909091
+                }
+              ],
+              "follow": false
+            },
+            "mwl6tbkosxh9wx": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 623.4,
+                  "y": 174.6818181818182
+                }
+              ],
+              "follow": false
+            },
+            "mwl6w5ww333x3x": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 582.5999999999999,
+                  "y": 259.40909090909093
+                }
+              ],
+              "follow": false
+            }
+          }
+        },
+        {
+          "name": "B3 · Release and present",
+          "seconds": 1.4,
+          "notes": "D4 releases and gets back to feet. A1 goes to ground safely, releases and presents the ball away from pressure. D5 stays on feet and does not dive into the contact area. Reset the players and repeat with the other outcome.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 152,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 153,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.79999999999995,
+              "y": 155,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 622.3799999999999,
+              "y": 186.33181818181816,
+              "rot": 180,
+              "playerPose": "standing"
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 592.8,
+              "y": 185.27272727272728,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 151,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 256.2,
+              "y": 238.22727272727275,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 575.2559999999999,
+              "y": 190.14454545454547,
+              "rot": 180
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 582.5999999999999,
+              "y": 211.75,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "mwl8tvglg3qrmc",
+              "type": "tackle",
+              "label": "Release and present",
+              "x": 582.5999999999999,
+              "y": 195.86363636363635,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "mwl6w5ww333x3x",
+                  "pose": "grounded"
+                }
+              ],
+              "breakdown": {
+                "phase": "release",
+                "arrivalSide": "defence",
+                "carrierId": "mwl6w5ww333x3x",
+                "tacklerId": "mwl6tbehy92zxz",
+                "ballId": "mwl6wf87jrw70e",
+                "tacklerIds": [
+                  "mwl6tbehy92zxz"
+                ]
+              }
+            },
+            {
+              "id": "coach-demo-presentation-caption",
+              "type": "label",
+              "label": "RELEASE · PRESENT",
+              "x": 666,
+              "y": 253,
+              "rot": 0,
+              "textStyle": {
+                "fontSize": 14,
+                "color": "#eef9ef",
+                "background": true,
+                "backgroundColor": "#263b31",
+                "backgroundOpacity": 90,
+                "border": true,
+                "borderColor": "#b1cdb7",
+                "borderWidth": 1
+              }
+            }
+          ],
+          "timing": {
+            "mwl6wf87jrw70e": {
+              "start": 0,
+              "end": 45
+            }
+          },
           "paths": {}
         }
       ],
@@ -581,12 +756,12 @@
       ],
       "provenance": "Original coach-created drill, refined for presentation and age-grade coaching review; not an RFU-endorsed exercise.",
       "review": "Coaching draft · check age-grade and contact setup with club lead coach before use",
-      "savedAt": "2026-11-18T09:04:55.391Z",
+      "savedAt": "2026-11-18T09:07:38.494Z",
       "branching": {
         "version": 1,
         "fork": 2,
         "question": "Ball carrier's choice: carry into the gap or pass to A1?",
-        "active": "a",
+        "active": "b",
         "markerId": "mwl7w298wu7j9d",
         "choices": [
           {
@@ -886,42 +1061,10 @@
                     "type": "ball",
                     "label": "",
                     "x": 568.9319999999999,
-                    "y": 330.3745454545454,
+                    "y": 329.6119999999999,
                     "rot": 0,
                     "ownerId": "mwl6w5ww333x3x",
                     "transferKind": "pass"
-                  },
-                  {
-                    "id": "coach-demo-cone-nw",
-                    "type": "cone",
-                    "label": "",
-                    "x": 85,
-                    "y": 50,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-ne",
-                    "type": "cone",
-                    "label": "",
-                    "x": 815,
-                    "y": 50,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-sw",
-                    "type": "cone",
-                    "label": "",
-                    "x": 85,
-                    "y": 460,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-se",
-                    "type": "cone",
-                    "label": "",
-                    "x": 815,
-                    "y": 460,
-                    "rot": 0
                   }
                 ],
                 "timing": {
@@ -1017,7 +1160,7 @@
                     "type": "ball",
                     "label": "",
                     "x": 589.9439999999998,
-                    "y": 210.47909090909093,
+                    "y": 211.17809090909094,
                     "rot": 0,
                     "ownerId": "mwl6w5ww333x3x"
                   },
@@ -1047,38 +1190,6 @@
                         "mwl6tbehy92zxz"
                       ]
                     }
-                  },
-                  {
-                    "id": "coach-demo-cone-nw",
-                    "type": "cone",
-                    "label": "",
-                    "x": 85,
-                    "y": 50,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-ne",
-                    "type": "cone",
-                    "label": "",
-                    "x": 815,
-                    "y": 50,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-sw",
-                    "type": "cone",
-                    "label": "",
-                    "x": 85,
-                    "y": 460,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-se",
-                    "type": "cone",
-                    "label": "",
-                    "x": 815,
-                    "y": 460,
-                    "rot": 0
                   },
                   {
                     "id": "coach-demo-tackle-caption",
@@ -1236,38 +1347,6 @@
                         "mwl6tbehy92zxz"
                       ]
                     }
-                  },
-                  {
-                    "id": "coach-demo-cone-nw",
-                    "type": "cone",
-                    "label": "",
-                    "x": 85,
-                    "y": 50,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-ne",
-                    "type": "cone",
-                    "label": "",
-                    "x": 815,
-                    "y": 50,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-sw",
-                    "type": "cone",
-                    "label": "",
-                    "x": 85,
-                    "y": 460,
-                    "rot": 0
-                  },
-                  {
-                    "id": "coach-demo-cone-se",
-                    "type": "cone",
-                    "label": "",
-                    "x": 815,
-                    "y": 460,
-                    "rot": 0
                   },
                   {
                     "id": "coach-demo-presentation-caption",
