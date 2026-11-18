@@ -68,13 +68,15 @@ function coachSpriteIndex(o,previous,frame,progress){
   return COACH_INDEX.walking;
  return COACH_INDEX.idle;
 }
-function coachSprite(o,previous,frame,progress){
+function coachSprite(o,objects,g,previous,frame,progress){
  const index=coachSpriteIndex(o,previous,frame,progress),col=index%COACH_COLUMNS,row=Math.floor(index/COACH_COLUMNS);
  const t=COACH_TILE,size=76;
- // The supplied coach artwork has its face/torso pointing towards the BOTTOM
- // of the sheet. Rugby Studio's default local forward is UP (-Y), hence
- // the 180 degree asset correction inside the already-authored object rotation.
- return '<g class="cartoon-player cartoon-coach top-down-coach-image" pointer-events="none" transform="rotate(180)">'+
+ // The original sheet already places the head north and boots south.
+ // Follow the same look/target cue used in Classic mode without reversing
+ // that silhouette or altering the coach's saved orientation.
+ const look=playerHeadAngle(o,objects||[],g,previous,frame,progress);
+ const angle=look===null?0:look;
+ return '<g class="cartoon-player cartoon-coach top-down-coach-image" pointer-events="none" transform="rotate('+safeAngle(angle)+')">'+
   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+
   '" viewBox="'+(col*t)+' '+(row*t)+' '+t+' '+t+'" overflow="hidden">'+
   '<use href="#rugby-coach-atlas"/></svg></g>';
@@ -104,7 +106,7 @@ function sheetPlayer(o,pose,objects,g,previous,frame,progress){
 /** The regular player keeps its existing diagram geometry and a single gaze arrow. */
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
  if(!canCarry(o))return original;
- if(cartoonMode&&!ink)return o.type==='coach'?coachSprite(o,previous,frame,progress):sheetPlayer(o,pose,objects,g,previous,frame,progress);
+ if(cartoonMode&&!ink)return o.type==='coach'?coachSprite(o,objects,g,previous,frame,progress):sheetPlayer(o,pose,objects,g,previous,frame,progress);
  const plain=original.replace(arrowRE,'');
  if(['grounded','kneeling'].includes(pose))return plain;
  // Normal view preserves the single gaze arrow, but never an extra pair of eyes.
