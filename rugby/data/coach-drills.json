@@ -31,7 +31,8 @@
                 "right": true
               },
               "tagColor": "red",
-              "heldTags": 0
+              "heldTags": 0,
+              "heldTagItems": []
             },
             {
               "id": "mwm9awcnn4o2mr",
@@ -39,7 +40,15 @@
               "label": "D1",
               "x": 456.0263197544642,
               "y": 365.718149937221,
-              "rot": 0
+              "rot": 0,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "blue",
+              "heldTags": 0,
+              "heldTagItems": []
             },
             {
               "id": "mwm9bcfjek8y5y",
@@ -56,7 +65,15 @@
               "label": "A2",
               "x": 352.79168526785713,
               "y": 128.25913600376677,
-              "rot": 180
+              "rot": 180,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0,
+              "heldTagItems": []
             }
           ],
           "timing": {},
@@ -71,8 +88,8 @@
               "id": "mwm9aw076rsq4c",
               "type": "attacker",
               "label": "A1",
-              "x": 457.7317271205357,
-              "y": 277.77570408412396,
+              "x": 456.0263197544642,
+              "y": 256.59289411272323,
               "rot": 180,
               "tagBelt": true,
               "tags": {
@@ -80,14 +97,15 @@
                 "right": true
               },
               "tagColor": "red",
-              "heldTags": 0
+              "heldTags": 0,
+              "heldTagItems": []
             },
             {
               "id": "mwm9awcnn4o2mr",
               "type": "defender",
               "label": "D1",
-              "x": 459.437134486607,
-              "y": 280.9869100516184,
+              "x": 450.91009765624995,
+              "y": 264.186766531808,
               "rot": 0,
               "tagBelt": true,
               "tags": {
@@ -95,14 +113,21 @@
                 "right": true
               },
               "tagColor": "blue",
-              "heldTags": 1
+              "heldTags": 1,
+              "heldTagItems": [
+                {
+                  "targetId": "mwm9aw076rsq4c",
+                  "side": "left",
+                  "color": "red"
+                }
+              ]
             },
             {
               "id": "mwm9bcfjek8y5y",
               "type": "ball",
               "label": "",
-              "x": 430.8037271205357,
-              "y": 286.163704084124,
+              "x": 429.0983197544642,
+              "y": 264.98089411272326,
               "rot": 0,
               "ownerId": "mwm9aw076rsq4c"
             },
@@ -110,40 +135,75 @@
               "id": "mwm9e69z9y4p4a",
               "type": "attacker",
               "label": "A2",
-              "x": 356.2025237165179,
-              "y": 237.09493979317807,
-              "rot": 180
+              "x": 247.90906110491073,
+              "y": 221.02523729596822,
+              "rot": 180,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0,
+              "heldTagItems": []
             }
           ],
-          "timing": {},
-          "paths": {}
+          "timing": {
+            "mwm9e69z9y4p4a": {
+              "start": 0,
+              "end": 67
+            }
+          },
+          "paths": {
+            "mwm9e69z9y4p4a": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 274.76925083705356,
+                  "y": 154.05626190185546
+                }
+              ],
+              "follow": false
+            }
+          },
+          "interactions": [
+            {
+              "kind": "tag",
+              "actorId": "mwm9awcnn4o2mr",
+              "targetId": "mwm9aw076rsq4c",
+              "side": "left",
+              "at": 0.9,
+              "label": "TAG!"
+            }
+          ]
         },
         {
           "name": "Step 3",
-          "seconds": 2,
+          "seconds": 1.5,
           "notes": "",
           "objects": [
             {
               "id": "mwm9aw076rsq4c",
               "type": "attacker",
               "label": "A1",
-              "x": 457.7317271205357,
-              "y": 277.77570408412396,
-              "rot": 359,
+              "x": 456.0263197544642,
+              "y": 256.59289411272323,
+              "rot": 320,
               "tagBelt": true,
               "tags": {
                 "left": false,
                 "right": true
               },
               "tagColor": "red",
-              "heldTags": 0
+              "heldTags": 0,
+              "heldTagItems": []
             },
             {
               "id": "mwm9awcnn4o2mr",
               "type": "defender",
               "label": "D1",
-              "x": 493.378032924107,
-              "y": 314.5609082031251,
+              "x": 545.3312827845982,
+              "y": 315.4125747244699,
               "rot": 0,
               "tagBelt": true,
               "tags": {
@@ -151,14 +211,21 @@
                 "right": true
               },
               "tagColor": "blue",
-              "heldTags": 1
+              "heldTags": 1,
+              "heldTagItems": [
+                {
+                  "targetId": "mwm9aw076rsq4c",
+                  "side": "left",
+                  "color": "red"
+                }
+              ]
             },
             {
               "id": "mwm9bcfjek8y5y",
               "type": "ball",
               "label": "",
-              "x": 329.2745237165179,
-              "y": 245.4829397931781,
+              "x": 220.98106110491074,
+              "y": 229.41323729596823,
               "rot": 0,
               "ownerId": "mwm9e69z9y4p4a"
             },
@@ -166,19 +233,31 @@
               "id": "mwm9e69z9y4p4a",
               "type": "attacker",
               "label": "A2",
-              "x": 356.2025237165179,
-              "y": 237.09493979317807,
-              "rot": 180
+              "x": 247.90906110491073,
+              "y": 221.02523729596822,
+              "rot": 180,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0,
+              "heldTagItems": []
             }
           ],
           "timing": {
             "mwm9bcfjek8y5y": {
-              "start": 35,
+              "start": 61,
               "end": 100
+            },
+            "mwm9aw076rsq4c": {
+              "start": 0,
+              "end": 36
             },
             "mwm9awcnn4o2mr": {
               "start": 0,
-              "end": 72
+              "end": 58
             }
           },
           "paths": {}
@@ -192,23 +271,24 @@
               "id": "mwm9aw076rsq4c",
               "type": "attacker",
               "label": "A1",
-              "x": 457.7317271205357,
-              "y": 277.77570408412396,
-              "rot": 359,
+              "x": 456.0263197544642,
+              "y": 256.59289411272323,
+              "rot": 320,
               "tagBelt": true,
               "tags": {
                 "left": true,
                 "right": true
               },
               "tagColor": "red",
-              "heldTags": 0
+              "heldTags": 0,
+              "heldTagItems": []
             },
             {
               "id": "mwm9awcnn4o2mr",
               "type": "defender",
               "label": "D1",
-              "x": 493.378032924107,
-              "y": 314.5609082031251,
+              "x": 545.3312827845982,
+              "y": 315.4125747244699,
               "rot": 0,
               "tagBelt": true,
               "tags": {
@@ -216,14 +296,15 @@
                 "right": true
               },
               "tagColor": "blue",
-              "heldTags": 1
+              "heldTags": 0,
+              "heldTagItems": []
             },
             {
               "id": "mwm9bcfjek8y5y",
               "type": "ball",
               "label": "",
-              "x": 329.2745237165179,
-              "y": 245.4829397931781,
+              "x": 220.98106110491074,
+              "y": 229.41323729596823,
               "rot": 0,
               "ownerId": "mwm9e69z9y4p4a"
             },
@@ -231,9 +312,93 @@
               "id": "mwm9e69z9y4p4a",
               "type": "attacker",
               "label": "A2",
-              "x": 356.2025237165179,
-              "y": 237.09493979317807,
-              "rot": 180
+              "x": 247.90906110491073,
+              "y": 221.02523729596822,
+              "rot": 180,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0,
+              "heldTagItems": []
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "interactions": [
+            {
+              "kind": "tag-return",
+              "actorId": "mwm9awcnn4o2mr",
+              "targetId": "mwm9aw076rsq4c",
+              "side": "left",
+              "at": 0.7,
+              "label": "Tag returned"
+            }
+          ]
+        },
+        {
+          "name": "Step 5",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwm9aw076rsq4c",
+              "type": "attacker",
+              "label": "A1",
+              "x": 456.0263197544642,
+              "y": 256.59289411272323,
+              "rot": 320,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0,
+              "heldTagItems": []
+            },
+            {
+              "id": "mwm9awcnn4o2mr",
+              "type": "defender",
+              "label": "D1",
+              "x": 545.3312827845982,
+              "y": 315.4125747244699,
+              "rot": 0,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "blue",
+              "heldTags": 0,
+              "heldTagItems": []
+            },
+            {
+              "id": "mwm9bcfjek8y5y",
+              "type": "ball",
+              "label": "",
+              "x": 220.98106110491074,
+              "y": 229.41323729596823,
+              "rot": 0,
+              "ownerId": "mwm9e69z9y4p4a"
+            },
+            {
+              "id": "mwm9e69z9y4p4a",
+              "type": "attacker",
+              "label": "A2",
+              "x": 247.90906110491073,
+              "y": 221.02523729596822,
+              "rot": 180,
+              "tagBelt": true,
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "tagColor": "red",
+              "heldTags": 0,
+              "heldTagItems": []
             }
           ],
           "timing": {},
@@ -261,8 +426,8 @@
         "mode": "training",
         "age": "U10"
       },
-      "revision": 1,
-      "savedAt": "2026-11-18T15:24:42.939Z"
+      "revision": 2,
+      "savedAt": "2026-11-18T15:47:42.161Z"
     },
     {
       "version": 1,
