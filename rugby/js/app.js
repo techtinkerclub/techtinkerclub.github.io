@@ -578,7 +578,7 @@ function undoBallEvent(ballId){
   }
  }
  const target=f().objects.find(o=>o.id===ballId);
- if(target){delete target.transferKind;delete target.groundState;if(before.groundState)target.groundState=before.groundState}
+ if(target){delete target.transferKind;delete target.ripLabel;delete target.groundState;if(before.groundState)target.groundState=before.groundState}
  if(current.timing)delete current.timing[ballId];
  if(current.paths)delete current.paths[ballId];
  return true;
@@ -798,7 +798,7 @@ function rotateSelected(delta){
 function duplicateSelected(){
  if(!canEditObjects())return;
  const o=activeObject();if(!o)return;
- pendingInsert=null;const n={...clone(o),id:uid(),x:clamp(o.x+35,30,870),y:clamp(o.y+35,25,515),label:o.label?o.label+' copy':''};delete n.ownerId;delete n.members;delete n.breakdown;delete n.transferKind;delete n.groundState;delete n.donutTacklerId;delete n.layoutMarker;
+ pendingInsert=null;const n={...clone(o),id:uid(),x:clamp(o.x+35,30,870),y:clamp(o.y+35,25,515),label:o.label?o.label+' copy':''};delete n.ownerId;delete n.members;delete n.breakdown;delete n.transferKind;delete n.ripLabel;delete n.groundState;delete n.donutTacklerId;delete n.layoutMarker;
  Object.assign(n,placement(n));if(f().objects.length>=200){note('Maximum objects in this step reached.');return}f().objects.push(n);selected=n.id;const r=fillMissing(drill.frames,idx,n,insertable(n)?$('insertScope').value:'here',geometry());if(r.added.length)pendingInsert={id:n.id,index:idx,indices:r.added,origin:{x:n.x,y:n.y}};changed();refresh();openInspector('Object',false);focusPitch();note('Object duplicated. '+insertionMessage(n,r));
 }
 // Removing a selected running line cancels only that step's movement. It does
@@ -957,9 +957,9 @@ $('ripSave').onclick=()=>{
  if(!from||!canCarry(to)||fromId===toId||!ball){$('ripError').textContent='Choose a current ball carrier and a different player.';return}
  if(age<9||age===9&&from.type!==to.type){$('ripError').textContent='U9 defenders may not rip; choose a teammate. U7/U8 use tag rugby.';return}
  if(idx===0&&hasOutcomes(drill)){$('ripError').textContent='Choose an action step in the selected decision outcome first.';return}
- if(drill.frames.length>=150){$('ripError').textContent='Maximum 150 steps reached.';return}
  const previous=idx?drill.frames[idx-1].objects.find(o=>o.id===ball.id):null;
  const newStep=idx===0||previous&&(previous.ownerId||null)!==(ball.ownerId||null);
+ if(newStep&&drill.frames.length>=150){$('ripError').textContent='Maximum 150 steps reached.';return}
  if(newStep){
   const next=stripDecisions(clone(f()));next.name='Rip ball';next.seconds=2;next.notes='Player removes ball from carrier; coach the immediate pass away.';next.timing={};next.paths={};
   drill.frames.splice(idx+1,0,next);idx++;
@@ -1674,7 +1674,7 @@ function finishBallPick(targetId){
  assignPossession(drill.frames,idx,ball.id,targetId,geometry());if(pendingInsert?.id===ball.id&&pendingInsert.index===idx){syncInsertedCopies(drill.frames,pendingInsert.indices,ball,pendingInsert.origin,geometry());pendingInsert=null}selected=ballChoiceId=ball.id;
  if(ballPickKind==='turnover'){ball.transferKind='turnover';if(idx){f().timing[ball.id]={start:79,end:80};if(f().paths)delete f().paths[ball.id]}}
  else if(!from){ball.transferKind='pickup';delete ball.groundState;if(idx){f().timing[ball.id]={start:54,end:55};if(f().paths)delete f().paths[ball.id]}}
- else{delete ball.transferKind;delete ball.groundState;if(idx){f().timing[ball.id]={start:35,end:70};if(f().paths)delete f().paths[ball.id]}}
+ else{delete ball.transferKind;delete ball.ripLabel;delete ball.groundState;if(idx){f().timing[ball.id]={start:35,end:70};if(f().paths)delete f().paths[ball.id]}}
  showPasses=true;$('passTrails').classList.add('selected');$('passTrails').setAttribute('aria-pressed','true');
  changed();refresh();focusPitch();note(ballPickKind==='turnover'?'Possession changed without a pass.':from?'Pass created. Adjust its timing or path.':'Pickup created without a pass line. Adjust when the ball is collected in Step details.');
 }
