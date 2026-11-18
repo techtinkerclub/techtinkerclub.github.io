@@ -4,6 +4,300 @@
   "drills": [
     {
       "version": 1,
+      "id": "mwmap2i5iw18nb",
+      "title": "Rip and pass",
+      "age": "U10",
+      "category": "Attack",
+      "length": 10,
+      "width": 8,
+      "objective": "",
+      "safety": "",
+      "frames": [
+        {
+          "name": "Set up",
+          "seconds": 0,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwmap6wdhcxj99",
+              "type": "attacker",
+              "label": "A1",
+              "x": 432.19155133928575,
+              "y": 197.77075526646206,
+              "rot": 180
+            },
+            {
+              "id": "mwmap7h0vp0w1y",
+              "type": "defender",
+              "label": "D1",
+              "x": 425.2523353794643,
+              "y": 368.17347926548547,
+              "rot": 0
+            },
+            {
+              "id": "mwmapo2sr5s3dv",
+              "type": "ball",
+              "label": "",
+              "x": 415.3615513392857,
+              "y": 206.1587552664621,
+              "rot": 0,
+              "ownerId": "mwmap6wdhcxj99"
+            },
+            {
+              "id": "mwmapuh8xn5q23",
+              "type": "defender",
+              "label": "D2",
+              "x": 503.2008928571429,
+              "y": 413.7463638741629,
+              "rot": 0
+            },
+            {
+              "id": "mwmassn1bkio6r",
+              "type": "defender",
+              "label": "D3",
+              "x": 574.2101869419643,
+              "y": 453.37485142299107,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Step 2",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwmap6wdhcxj99",
+              "type": "attacker",
+              "label": "A1",
+              "x": 432.19155133928575,
+              "y": 269.10213849748885,
+              "rot": 180
+            },
+            {
+              "id": "mwmap7h0vp0w1y",
+              "type": "defender",
+              "label": "D1",
+              "x": 429.87852678571426,
+              "y": 274.0556842041015,
+              "rot": 0
+            },
+            {
+              "id": "mwmapo2sr5s3dv",
+              "type": "ball",
+              "label": "",
+              "x": 415.3615513392857,
+              "y": 277.4901384974889,
+              "rot": 0,
+              "ownerId": "mwmap6wdhcxj99"
+            },
+            {
+              "id": "mwmapuh8xn5q23",
+              "type": "defender",
+              "label": "D2",
+              "x": 463.8784793526786,
+              "y": 308.7307276262556,
+              "rot": 0
+            },
+            {
+              "id": "mwmassn1bkio6r",
+              "type": "defender",
+              "label": "D3",
+              "x": 597.3410016741071,
+              "y": 326.5635531180245,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Step 3",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwmap6wdhcxj99",
+              "type": "attacker",
+              "label": "A1",
+              "x": 431.0350390625,
+              "y": 271.5789113507952,
+              "rot": 180
+            },
+            {
+              "id": "mwmap7h0vp0w1y",
+              "type": "defender",
+              "label": "D1",
+              "x": 431.0350390625,
+              "y": 277.8699113507952,
+              "rot": 0
+            },
+            {
+              "id": "mwmapo2sr5s3dv",
+              "type": "ball",
+              "label": "",
+              "x": 434.1203683035715,
+              "y": 268.0387021833146,
+              "rot": 0,
+              "ownerId": "mwmapuh8xn5q23",
+              "transferKind": "rip",
+              "ripLabel": "Rip and pass"
+            },
+            {
+              "id": "mwmapuh8xn5q23",
+              "type": "defender",
+              "label": "D2",
+              "x": 417.2903683035715,
+              "y": 276.42670218331466,
+              "rot": 0
+            },
+            {
+              "id": "mwmar0xmv1d694",
+              "type": "tackle",
+              "label": "Held upright",
+              "x": 431.0350390625,
+              "y": 271.5789113507952,
+              "rot": 180,
+              "contactOutcome": "held",
+              "members": [
+                {
+                  "id": "mwmap6wdhcxj99",
+                  "pose": "held"
+                },
+                {
+                  "id": "mwmap7h0vp0w1y",
+                  "pose": "tackling"
+                }
+              ]
+            },
+            {
+              "id": "mwmassn1bkio6r",
+              "type": "defender",
+              "label": "D3",
+              "x": 597.3410016741071,
+              "y": 326.5635531180245,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "mwmapo2sr5s3dv": {
+              "start": 89,
+              "end": 90
+            }
+          },
+          "paths": {
+            "mwmapuh8xn5q23": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 393.16995814732144,
+                  "y": 292.8465674700056
+                }
+              ],
+              "follow": false
+            }
+          }
+        },
+        {
+          "name": "Pass to D3",
+          "seconds": 2,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwmap6wdhcxj99",
+              "type": "attacker",
+              "label": "A1",
+              "x": 447.6660248674665,
+              "y": 231.05584991455078,
+              "rot": 180
+            },
+            {
+              "id": "mwmap7h0vp0w1y",
+              "type": "defender",
+              "label": "D1",
+              "x": 490.1674330357143,
+              "y": 341.1871859566824,
+              "rot": 0,
+              "playerPose": "standing"
+            },
+            {
+              "id": "mwmapo2sr5s3dv",
+              "type": "ball",
+              "label": "",
+              "x": 614.1710016741072,
+              "y": 318.17555311802454,
+              "rot": 0,
+              "ownerId": "mwmassn1bkio6r"
+            },
+            {
+              "id": "mwmapuh8xn5q23",
+              "type": "defender",
+              "label": "D2",
+              "x": 376.39857055664066,
+              "y": 308.760632760184,
+              "rot": 0
+            },
+            {
+              "id": "mwmar0xmv1d694",
+              "type": "tackle",
+              "label": "Held upright",
+              "x": 431.0350390625,
+              "y": 271.5789113507952,
+              "rot": 180,
+              "contactOutcome": "held",
+              "members": [
+                {
+                  "id": "mwmap6wdhcxj99",
+                  "pose": "standing"
+                }
+              ]
+            },
+            {
+              "id": "mwmassn1bkio6r",
+              "type": "defender",
+              "label": "D3",
+              "x": 597.3410016741071,
+              "y": 326.5635531180245,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "mwmapo2sr5s3dv": {
+              "start": 92,
+              "end": 100
+            }
+          },
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "line",
+      "ageMin": 10,
+      "ageMax": 10,
+      "minutes": 8,
+      "players": "",
+      "equipment": "",
+      "instructions": "",
+      "coaching": "",
+      "regression": "",
+      "progression": "",
+      "questions": "",
+      "notes": "",
+      "links": [],
+      "provenance": "Coach-created / imported drill",
+      "review": "Coach review required",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "revision": 1,
+      "savedAt": "2026-11-18T15:59:24.017Z"
+    },
+    {
+      "version": 1,
       "id": "mwm9audbu64no1",
       "title": "Tag removal and pass",
       "age": "U10",
