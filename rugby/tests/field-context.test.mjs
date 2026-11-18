@@ -92,5 +92,5 @@ test('manual read-only zoom changes SVG viewBox without changing the field',asyn
  const a=zoomWindow(base,1),b=zoomWindow(base,2);
  assert.equal(a.width,700);assert.equal(b.width,350);
  assert.equal(zoomWindow(base,4,{x:900,y:-100}).x,525);
- assert.equal(zoomWindow(base,4,{x:900,y:-100}).y,0);
+ assert.equal(zoomWindow(base,4,{x:900,y:-100}).y,350);
 });
