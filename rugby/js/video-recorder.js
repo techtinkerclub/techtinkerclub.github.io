@@ -88,21 +88,22 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
    }
   }else{
    const time=storyboardTime(clip,elapsed);
+   const playingClip=clip.kind==='motion'||clip.kind==='rewind';
    const showArrows=clip.kind==='motion'&&clip.pass==='replay';
    const options={orientation:opts.orientation||'up',scaleMode:opts.scaleMode||'realistic',
     framing:opts.framing||'field',offside:opts.offside===true,
     teachingGuides:opts.teachingGuides!==false,markups:opts.markups!==false,
     labels:opts.labels!==false,decisions:opts.decisions!==false,
-    runs:showArrows,passes:showArrows};
+    runs:showArrows,passes:showArrows,cartoonMode:opts.cartoonMode===true};
    const scene=renderScene(clip.drill,{...options,time,prefix:'video-story'});
    const {width:w,height:h}=movieRaster(scene.g,content,sceneHeight);
    const image=await imageFromSVG(rasterSVG(scene.svg,w,h));
    const videoTitle=clip.kind==='intro'&&clip.index===0&&story.drills.length>1&&String(opts.movieTitle||'').trim()
     ?String(opts.movieTitle).trim().slice(0,160):clip.title;
-   renderHeading(videoTitle,clip.kind==='motion'?clip.heading:clip.stage);
+   renderHeading(videoTitle,playingClip?clip.heading:clip.stage);
    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
    ctx.drawImage(image,Math.round(pad+(content-w)/2),Math.round(top+(sceneHeight-h)/2),w,h);
-   if(clip.kind!=='motion'){
+   if(!playingClip){
     // Freeze the scene and put a readable explanation OVER it. This is not
     // an inserted invented action or an editing-only annotation.
     const x=pad+20*unit,y=top+25*unit,bw=content-40*unit,bh=sceneHeight-50*unit;
@@ -124,7 +125,7 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
    }else{
     const label=clip.pass==='replay'?'COACHING REPLAY · '+clip.speed+'×':clip.heading;
     drawText(label,pad,top+sceneHeight+Math.round(46*unit),portrait?31:27,{bold:true,color:'#c9f07c',max:content});
-    if(settings.notes){
+    if(settings.notes&&clip.kind==='motion'){
      const note=scene.frame.notes||'Watch how the players move and react.';
      wrapText(note,pad,top+sceneHeight+Math.round(90*unit),portrait?29:24,content,portrait?4:2);
     }
