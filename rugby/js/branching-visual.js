@@ -4,7 +4,7 @@
 import {stepEndSeconds} from './step-timeline.js?v=1';
 import {esc} from './model.js?v=0.13.4';
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
-import {playbackData,renderScene} from './scene.js?v=0.20.5';
+import {playbackData,renderScene} from './scene.js?v=0.20.8';
 import {movementFor,frameObjects} from './possession.js?v=0.12.31';
 import {routeSamples,routeSVG} from './routes.js?v=0.4.3';
 const ACTIVE=new Set(['coach','attacker','defender','neutral','shield','bagplayer','ball']);
