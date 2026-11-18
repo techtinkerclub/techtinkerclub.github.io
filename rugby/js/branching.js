@@ -1,3 +1,4 @@
+import {removeObject} from './object-edit.js';
 // Shared decision-path model for Classic Studio, Coach Edition and read-only outputs.
 // One common opening sequence; each outcome owns its steps after the decision.
 // Keep the saved drill's frames as the currently selected, linear editing path.
@@ -87,4 +88,32 @@ export function editOutcomes(d,question,labelA,labelB,guidance=null){
 export function removeOutcomes(d){
  if(!branchInfo(d))return;
  delete d.branching; // Keep the selected outcome as an ordinary linear drill.
+}
+
+// Apply a scoped deletion to the common opening and both stored outcomes.
+// The currently selected outcome is represented by drill.frames, not necessarily
+// by its cached choice.frames; refresh that cache before editing the other branch.
+export function removeObjectAcrossOutcomes(drill,id,index,scope='here'){
+ if(!hasOutcomes(drill)){
+  const result=removeObject(drill.frames,id,index,scope);
+  return {frames:result.frames,removed:result.removed};
+ }
+ const b=branchInfo(drill);
+ syncActiveOutcome(drill);
+ const active=b.active;
+ const commonCount=b.fork+1;
+ const main=removeObject(drill.frames,id,index,scope);
+ let removed=main.removed;
+ const other=b.choices.find(c=>c.id!==active);
+ // A shared step deletion affects the corresponding object in *both* options;
+ // for 'onward' only the suffix from the selected step is affected.
+ const suffixStart=scope==='here'&&index<commonCount?0:scope==='onward'?Math.max(0,index-commonCount):scope==='all'?0:null;
+ if(suffixStart!==null){
+  const otherResult=removeObject(other.frames,id,suffixStart,scope==='here'?'all':scope==='all'?'all':'onward');
+  other.frames=otherResult.frames;
+  removed+=otherResult.removed;
+ }
+ drill.frames=main.frames;
+ b.choices.find(c=>c.id===active).frames=copy(main.frames.slice(commonCount));
+ return {frames:drill.frames,removed};
 }
