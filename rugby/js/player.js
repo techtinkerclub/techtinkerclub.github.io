@@ -1,15 +1,65 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.13.5';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.15';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
+import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
 import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=4';
 import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.13.14';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
-import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {bindMovieSettings} from './movie.js?v=0.7.2';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
-let viewerZoom=1,viewerPan={x:0,y:0},viewerPanning=false,viewerPointer=null;
+let viewZoom=1,viewPan={x:0,y:0},viewBase=null,panEnabled=false,dragStart=null,pinchStart=null;
+const touches=new Map();
+function applyZoom(){
+ if(!viewBase)return;
+ const svg=$('board').querySelector('svg');if(!svg)return;
+ const v=zoomWindow(viewBase,viewZoom,viewPan);
+ svg.setAttribute('viewBox',[v.x,v.y,v.width,v.height].join(' '));
+ $('playerZoomLevel').textContent=Math.round(viewZoom*100)+'%';
+ $('playerZoomIn').disabled=viewZoom>=11.999;
+ $('playerZoomOut').disabled=viewZoom<=1.001;
+}
+function resetZoom(){viewZoom=1;viewPan={x:0,y:0};dragStart=null;pinchStart=null;applyZoom()}
+function changeZoom(factor){viewZoom=viewerZoomLevel(viewZoom*factor);applyZoom()}
+$('playerZoomIn').onclick=()=>changeZoom(1.5);
+$('playerZoomOut').onclick=()=>changeZoom(1/1.5);
+$('playerZoomFit').onclick=()=>resetZoom();
+$('playerPan').onclick=()=>{
+ panEnabled=!panEnabled;$('playerPan').setAttribute('aria-pressed',String(panEnabled));
+};
+const boardEl=$('board');
+const pinchDist=()=>{const [a,b]=[...touches.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
+boardEl.addEventListener('pointerdown',event=>{
+ if(!d||event.button!==0||event.pointerType!=='touch'&&!panEnabled)return;
+ if(event.pointerType==='touch')touches.set(event.pointerId,{x:event.clientX,y:event.clientY});
+ if(touches.size===2){pinchStart={distance:pinchDist(),zoom:viewZoom};dragStart=null}
+ else if(panEnabled)dragStart={id:event.pointerId,x:event.clientX,y:event.clientY,pan:{...viewPan}};
+ boardEl.setPointerCapture(event.pointerId);event.preventDefault();
+});
+boardEl.addEventListener('pointermove',event=>{
+ if(!d)return;
+ if(touches.has(event.pointerId))touches.set(event.pointerId,{x:event.clientX,y:event.clientY});
+ if(touches.size===2&&pinchStart&&pinchStart.distance>0){
+  viewZoom=viewerZoomLevel(pinchStart.zoom*pinchDist()/pinchStart.distance);applyZoom();event.preventDefault();return;
+ }
+ if(!dragStart||dragStart.id!==event.pointerId||!viewBase)return;
+ const rect=boardEl.getBoundingClientRect();
+ viewPan={x:dragStart.pan.x-(event.clientX-dragStart.x)*viewBase.width/(Math.max(rect.width,1)*viewZoom),
+  y:dragStart.pan.y-(event.clientY-dragStart.y)*viewBase.height/(Math.max(rect.height,1)*viewZoom)};
+ applyZoom();event.preventDefault();
+});
+for(const kind of ['pointerup','pointercancel','lostpointercapture'])boardEl.addEventListener(kind,event=>{
+ touches.delete(event.pointerId);
+ if(dragStart?.id===event.pointerId)dragStart=null;
+ if(touches.size<2)pinchStart=null;
+ if(boardEl.hasPointerCapture?.(event.pointerId))boardEl.releasePointerCapture(event.pointerId);
+});
+boardEl.addEventListener('wheel',event=>{
+ if(!d)return;
+ event.preventDefault();changeZoom(event.deltaY<0?1.18:1/1.18);
+},{passive:false});
+
 function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
 function stepEnd(i){return d.frames.slice(0,i+1).reduce((sum,f,k)=>sum+(k?f.seconds:0),0)}
 function stepTarget(direction){if(!d)return 0;const i=Math.max(0,shownStep),atEnd=Math.abs(t-stepEnd(i))<1e-7;return Math.max(0,Math.min(d.frames.length-1,direction<0?i-1:atEnd?i+1:i))}
@@ -18,11 +68,7 @@ function render(){
  if(!d)return;
  const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
- const view=zoomWindow(s.camera,viewerZoom,viewerPan);
- board.innerHTML=s.svg.replace(/viewBox="[^"]*"/,'viewBox="'+[view.x,view.y,view.width,view.height].join(' ')+'"');shownStep=s.index;
- $('playerZoomValue').textContent=Math.round(viewerZoom*100)+'%';
- $('playerZoomOut').disabled=viewerZoom<=1.001;
- $('playerZoomIn').disabled=viewerZoom>=11.999;
+ board.innerHTML=s.svg;viewBase=s.camera;applyZoom();shownStep=s.index;
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
  if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
  $('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t;
@@ -59,7 +105,7 @@ $('branchDecisionCards').onclick=e=>{
  const target=e.target.closest('[data-branch-choice]');
  if(target)setPlayerOutcome(target.dataset.branchChoice,{atFork:true,resume:true});
 };
-function open(data,options){stop();d=playbackData(data);viewerZoom=1;viewerPan={x:0,y:0};$('playerCamera').hidden=false;opts=outputOptions(options);if(d.pitchContext?.mode==='field'&&options?.framing===undefined)opts.framing='action';choiceResolved=false;$('branchDecisionPanel').hidden=true;
+function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);if(d.pitchContext?.mode==='field'&&options?.framing===undefined)opts.framing='action';choiceResolved=false;$('branchDecisionPanel').hidden=true;
  const b=hasOutcomes(d)?branchInfo(d):null;
  $('branchPlayer').hidden=!b;
  if(b){
@@ -67,7 +113,7 @@ function open(data,options){stop();d=playbackData(data);viewerZoom=1;viewerPan={
   $('branchChoice').replaceChildren(...b.choices.map(c=>new Option(c.id.toUpperCase()+' · '+c.label,c.id)));
   $('branchChoice').value=b.active;
  }
-t=0;shownStep=-1;notesKey='';$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('teachingGuides').checked=opts.teachingGuides;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('framing').value=opts.framing;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
+t=0;shownStep=-1;notesKey='';resetZoom();$('viewerCamera').hidden=false;$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('teachingGuides').checked=opts.teachingGuides;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('framing').value=opts.framing;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
 let soundOn=true;
 $('whistleSound').onclick=()=>{soundOn=!soundOn;$('whistleSound').setAttribute('aria-pressed',String(soundOn));$('whistleSound').textContent=soundOn?'Whistle sound: on':'Whistle sound: off'};
 $('play').onclick=()=>{
@@ -92,55 +138,8 @@ $('play').onclick=()=>{
  }
  raf=requestAnimationFrame(tick);
 };
-const changeViewerZoom=factor=>{
- if(!d)return;
- const next=viewerZoomLevel(viewerZoom*factor);
- if(Math.abs(next-viewerZoom)<1e-7)return;
- const previous=viewerZoom;viewerZoom=next;
- // Pan offset is in the coordinate space of the underlying action/field camera.
- // On zooming back to 1×, reset pan; do not change physical drill positions.
- if(next<=1.00001)viewerPan={x:0,y:0};
- else if(previous>1)viewerPan={x:viewerPan.x*previous/next,y:viewerPan.y*previous/next};
- render();
-};
-$('playerZoomIn').onclick=()=>changeViewerZoom(1.3);
-$('playerZoomOut').onclick=()=>changeViewerZoom(1/1.3);
-$('playerZoomFit').onclick=()=>{viewerZoom=1;viewerPan={x:0,y:0};render()};
-$('playerPan').onclick=()=>{
- viewerPanning=!viewerPanning;
- $('playerPan').setAttribute('aria-pressed',String(viewerPanning));
- $('board').classList.toggle('camera-pan-ready',viewerPanning);
-};
-$('board').addEventListener('pointerdown',e=>{
- if(!d||!viewerPanning||viewerZoom<=1||e.button!==0)return;
- const svg=$('board').querySelector('svg');
- if(!svg)return;
- viewerPointer={id:e.pointerId,x:e.clientX,y:e.clientY,
-  pan:{...viewerPan},scaleX:Number(svg.viewBox.baseVal.width)/Math.max(1,$('board').clientWidth),
-  scaleY:Number(svg.viewBox.baseVal.height)/Math.max(1,$('board').clientHeight)};
- $('board').setPointerCapture(e.pointerId);
- $('board').classList.add('camera-panning');
- e.preventDefault();
-});
-$('board').addEventListener('pointermove',e=>{
- const pointer=viewerPointer;
- if(!pointer||pointer.id!==e.pointerId)return;
- viewerPan={x:pointer.pan.x-(e.clientX-pointer.x)*pointer.scaleX,
-  y:pointer.pan.y-(e.clientY-pointer.y)*pointer.scaleY};
- render();e.preventDefault();
-});
-for(const eventName of ['pointerup','pointercancel','lostpointercapture'])
- $('board').addEventListener(eventName,e=>{
-  if(!viewerPointer||viewerPointer.id!==e.pointerId)return;
-  viewerPointer=null;$('board').classList.remove('camera-panning');
-  if($('board').hasPointerCapture?.(e.pointerId))$('board').releasePointerCapture(e.pointerId);
- });
-$('board').addEventListener('wheel',e=>{
- if(!d)return;e.preventDefault();changeViewerZoom(e.deltaY<0?1.15:1/1.15);
-},{passive:false});
-
 $('restart').onclick=()=>jumpStep(0);$('previousStep').onclick=()=>jumpStep(stepTarget(-1));$('nextStep').onclick=()=>jumpStep(stepTarget(1));$('seek').oninput=()=>{stop();t=Number($('seek').value);if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render()};
-for(const k of ['runs','passes','labels','decisions','markups','offside','teachingGuides','orientation','scaleMode','framing'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode','framing'].includes(k)?$(k).value:$(k).checked;render()};
+for(const k of ['runs','passes','labels','decisions','markups','offside','teachingGuides','orientation','scaleMode','framing'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode','framing'].includes(k)?$(k).value:$(k).checked;if(['orientation','framing'].includes(k))resetZoom();render()};
 $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>3000000)throw Error('File is too large.');open(JSON.parse(await file.text()),opts)}catch(err){$('message').textContent=err.message}};
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();jumpStep(Number(b.dataset.jumpStep),true)};
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};
@@ -162,7 +161,7 @@ if(catalogueId!==null){
   $('copyReview').onclick=()=>reviewCopy(feedbackText(entry,shareLink()),'Review questions copied.');
   if(!isAnimated(entry)){
    // A text card is not a missing animation: show its existing coaching content only.
-   $('board').hidden=true;$('playerCamera').hidden=true;$('controls').hidden=true;$('stepReading').hidden=true;
+   $('board').hidden=true;$('controls').hidden=true;$('stepReading').hidden=true;
    $('coachSequenceContent').closest('details').hidden=true;
    $('empty').hidden=false;$('empty').innerHTML='<h2>Coaching card</h2><p>This resource has written guidance but no animation yet.</p>';
   }
