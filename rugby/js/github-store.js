@@ -41,6 +41,30 @@ export function createGithubStore(fetcher=fetch){
    if(JSON.stringify(stored)!==JSON.stringify(snapshot))throw Error('Commit verification failed. Refresh the GitHub library before retrying.');
    return {data:verify.data,snapshot:stored,commit};
   },
+  // Read recent GitHub snapshots on demand. A library commit may update another
+  // drill, so only report commits where this particular ID actually changed.
+  async history(id,limit=12){
+   if(!/^[A-Za-z0-9_-]{4,180}$/.test(id))throw Error('Invalid drill ID.');
+   const url='https://api.github.com/repos/techtinkerclub/techtinkerclub.github.io/commits?path=rugby/data/coach-drills.json&per_page=35';
+   const commits=await request(url);
+   if(!Array.isArray(commits))throw Error('GitHub history is unavailable.');
+   const found=[];let newest=null;
+   for(const commit of commits){
+    if(found.length>=limit)break;
+    const sha=commit.sha;if(!/^[a-f0-9]{40}$/.test(sha||''))continue;
+    try{
+     const version=(await load(sha)).data.drills.find(d=>d.id===id)||null;
+     if(newest===null){newest=version;if(version)found.push({commit:sha,revision:Number(version.revision)||1,savedAt:version.savedAt||commit.commit?.committer?.date||'',title:version.title,drill:version});continue}
+     if(!version)break; // The drill did not exist before this commit.
+     const canonical=d=>{const c=JSON.parse(JSON.stringify(d));delete c.savedAt;delete c.revision;return JSON.stringify(c)};
+     if(canonical(version)!==canonical(newest)){
+      found.push({commit:sha,revision:Number(version.revision)||1,savedAt:version.savedAt||commit.commit?.committer?.date||'',title:version.title,drill:version});
+     }
+     newest=version;
+    }catch(err){if(err.status===403||err.status===401)throw err;throw Error('Could not read historical library snapshot. '+err.message)}
+   }
+   return {entries:found,scanned:commits.length,limited:commits.length===35};
+  },
   async remove(id,baseline){
    if(!token)throw Error('Connect to GitHub first.');
    const latest=await load(),existing=latest.data.drills.find(x=>x.id===id);
