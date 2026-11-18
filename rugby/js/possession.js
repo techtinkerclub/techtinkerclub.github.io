@@ -232,7 +232,11 @@ export function ballPose(old,next,ball,p,g,events=null){
  if(to&&p*100>=t.end)return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g);
  const q=clamp((p*100-t.start)/Math.max(1,t.end-t.start),0,1);
  const s=sampleRoute(routeSamples(m.start,m.end,next.paths?.[ball.id],g),q);
- return {...ball,...g.fromView(s.point.x,s.point.y),rot:a.rot+shortestTurn(a.rot,ball.rot)*q,ownerId:undefined};
+ // Follow the actual flight-path tangent with a small 10° visual offset.
+ // SVG rugby-ball silhouette is tilted -24° in its own coordinate system.
+ // The visual adjustment is temporary; no stored drill rotation is changed.
+ const angle=m.pass&&s.angle!==null?wrapAngle(s.angle-90+24+10-(g.rotation||0)):a.rot+shortestTurn(a.rot,ball.rot)*q;
+ return {...ball,...g.fromView(s.point.x,s.point.y),rot:angle,ownerId:undefined};
 }
 export function shieldTransition(old,next,item,p,g,events=null){
  const a=findObject(old,item.id);if(!a)return p>=1?shieldPose(item,carrier(next,item),g):null;

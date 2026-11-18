@@ -198,7 +198,7 @@ export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,
   {id:'b',label:names[1],frames:copy(framesB)}
  ]};
  branchInfo(d);
- return {drill:d,warnings,midStep:anchored,forkTime:d.frames.slice(1,stepIndex+1).reduce((n,f)=>n+f.seconds,0)};
+ return {drill:d,warnings,midStep:anchored,forkTime:d.frames.slice(0,stepIndex+1).reduce((n,f)=>n+(Number(f.seconds)||0),0)};
 }
 
 

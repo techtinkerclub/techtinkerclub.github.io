@@ -1,3 +1,4 @@
+import {stepStartSeconds} from './step-timeline.js?v=1';
 // Coach-authored start signals: independent from player objects and law/decision markers.
 // The whistle lives on the action step it starts and can be carried through
 // editor preview, read-only playback, video visuals, shared JSON and printed notes.
@@ -31,7 +32,7 @@ export function whistleAt(drill,frameIndex){
  if(!drill||!Number.isInteger(frameIndex)||frameIndex<0||frameIndex>=drill.frames.length)return null;
  const s=signalForFrame(drill.frames[frameIndex]);
  if(!s)return null;
- const at=drill.frames.slice(1,frameIndex).reduce((total,f)=>total+(Number(f.seconds)||0),0);
+ const at=stepStartSeconds(drill,frameIndex);
  return {at,...s,step:frameIndex};
 }
 export function whistleEvents(drill){

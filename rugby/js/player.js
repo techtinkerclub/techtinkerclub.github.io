@@ -1,5 +1,6 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.17.0';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.16.1';
+import {stepEndSeconds,stepStartSeconds} from './step-timeline.js?v=1';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.18.0';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
 import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
@@ -61,9 +62,9 @@ boardEl.addEventListener('wheel',event=>{
 },{passive:false});
 
 function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='Play'}
-function stepEnd(i){return d.frames.slice(0,i+1).reduce((sum,f,k)=>sum+(k?f.seconds:0),0)}
+function stepEnd(i){return stepEndSeconds(d,i)}
 function stepTarget(direction){if(!d)return 0;const i=Math.max(0,shownStep),atEnd=Math.abs(t-stepEnd(i))<1e-7;return Math.max(0,Math.min(d.frames.length-1,direction<0?i-1:atEnd?i+1:i))}
-function jumpStep(i,scroll=false){if(!d)return;stop();t=stepEnd(Math.max(0,Math.min(i,d.frames.length-1)));if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render();if(scroll)$('board').scrollIntoView({block:'start',behavior:'auto'})}
+function jumpStep(i,scroll=false){if(!d)return;stop();t=stepStartSeconds(d,Math.max(0,Math.min(i,d.frames.length-1)));if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render();if(scroll)$('board').scrollIntoView({block:'start',behavior:'auto'})}
 function render(){
  if(!d)return;
  const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
