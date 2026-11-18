@@ -6,7 +6,7 @@ Updated 18 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.18.9** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.19.0** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
 
 ## Public publishing workflow
@@ -108,3 +108,16 @@ The left Decision making tool is the single creation/edit entry point; duplicate
 - Multi-player contact arrangements may reposition the selected players to a preset. Review the diagram and timing before using it for an actual coaching drill.
 - Verify Node tests and Playwright/real-browser checks (including mobile long-press, video and printing). Syntax and isolated model checks passed during authoring, but the full CI and live site acceptance results were not independently established in this session.
 - U7/U8 tag rugby and U9 transitional tackling distinctions are aligned with RFU Regulation 15 guidance, but current season rules and club contact policy remain authoritative.
+
+## v0.19.0 — contextual action chooser and tag/touch semantics (18 Nov 2026)
+
+- Feedback-driven UI overhaul: replaced six competing right-click touch/tag/contact buttons with one **Actions…** command on individual players or multi-selected groups. The modal distinguishes **Touch another player**, **Touch equipment or pitch line**, **Remove a tag**, **Tackle**, **Ruck**, **Maul** and disables choices whose selected actors, ball status or age-group prerequisites are missing. After choosing, touch/tag open a focused actor/target/time editor; contact uses the existing validated formation editor. No extra contact type is introduced.
+- Right-click a cone → **Change cone colour…**, which opens the existing fixed-colour Object setting; no duplicate palette or inconsistent separate colour state.
+- Corrected tag belt: both hip tags have the same user-selected strip colour (red, blue, green or yellow) that contrasts with the player's kit; side removed and colour are independent. Existing tag belts without an explicit colour receive a conservative default. A chosen tag colour survives save/import/presentation/video. Tag removal additionally checks the opposing player and whether the tagger has both their own strips.
+- Visually differentiated tag removal (colour strip at tagger and amber cue), a non-contact player touch (blue cue), and equipment/line contact (teal target cue). They are distinct edit-time actions, not synonyms. A plain touch never requires tag belts.
+- Tag guidance now explicitly mentions RFU U7/U8 expectations: ball carrier attempts to stop and pass within 3 seconds / approximately 3 strides; tagger calls TAG and returns the strip before rejoining. These are **guidance, not automatic physics or referee enforcement**. Touch/target cues do not automatically alter possession. The player can author subsequent steps normally.
+- Revised group-contact creation validates on a detached frame before committing. Invalid participants no longer leave ghost markers or empty steps; contact formations still use their existing age/possession checks.
+- Improved video builder and editor action-dialog spacing, minimum action button sizes, multi-column wrap on narrower viewports and [hidden] handling for tag-specific fields so **Tag to remove** never appears while recording a touch.
+- Expanded regression assertions for matching strip colours, action separation, new contextual menus, colour shortcut, modal hiding and layout; verified JS syntax and isolated core tag/touch logic. Refreshed public asset module versions.
+
+**Acceptance still needed:** native browser interaction tests of both modals, right-click on group selection, printable/video outputs and small-screen layouts, plus full CI (GitHub status API returned no check result in this session). Do not claim these user journeys are fully tested. Current RFU Regulation 15 appendices remain authoritative for live coaching.
