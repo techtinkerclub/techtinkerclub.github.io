@@ -1571,11 +1571,17 @@ function finishBallPick(targetId){
  if(!b||!canCarry(target)){note('Choose a player on the pitch, or press Esc to cancel.');return}
  const from=carrier(f(),b);if(from?.id===targetId){ballPicking=null;render();return}
  ballPicking=null;
- // If the selected frame already contains a transfer, create a new step for the next pass.
+ // Each step describes one ownership transition for a given ball. A release
+ // followed by pickup must create a separate step, never masquerade as a pass.
  let ball=b;
- if(from&&(!idx||!drill.frames[idx-1].objects.some(o=>o.id===b.id&&o.ownerId===from.id))){
+ const previousBall=idx?drill.frames[idx-1].objects.find(o=>o.id===b.id):null;
+ const alreadyTransferred=idx>0&&previousBall&&(previousBall.ownerId||null)!==(b.ownerId||null);
+ if(!idx||alreadyTransferred){
   if(drill.frames.length>=150){render();note('Maximum of 150 steps reached.');return}
-  const n=stripDecisions(clone(f()));n.name=(ballPickKind==='turnover'?'Turnover to ':'Pass to ')+(target.label||'player');n.seconds=2;n.notes='';n.timing={};n.paths={};drill.frames.splice(idx+1,0,n);idx++;ball=n.objects.find(o=>o.id===b.id);sanitizeRoutes(drill.frames);
+  const n=stripDecisions(clone(f()));
+  n.name=(ballPickKind==='turnover'?'Change possession to ':from?'Pass to ':'Pick up ball · ')+(target.label||'player');
+  n.seconds=2;n.notes='';n.timing={};n.paths={};
+  drill.frames.splice(idx+1,0,n);idx++;ball=n.objects.find(o=>o.id===b.id);sanitizeRoutes(drill.frames);
  }
  assignPossession(drill.frames,idx,ball.id,targetId,geometry());if(pendingInsert?.id===ball.id&&pendingInsert.index===idx){syncInsertedCopies(drill.frames,pendingInsert.indices,ball,pendingInsert.origin,geometry());pendingInsert=null}selected=ballChoiceId=ball.id;
  if(ballPickKind==='turnover'){ball.transferKind='turnover';if(idx){f().timing[ball.id]={start:79,end:80};if(f().paths)delete f().paths[ball.id]}}
@@ -1594,9 +1600,16 @@ function releaseBall(){
   const next=stripDecisions(clone(f()));next.name='Release ball';next.seconds=2;next.notes='';next.timing={};next.paths={};
   drill.frames.splice(1,0,next);idx=1;b=f().objects.find(o=>o.id===b.id);p=carrier(f(),b);
  }
- const current=f(),prior=drill.frames[idx-1],priorBall=prior?.objects.find(o=>o.id===b.id);
+ let current=f(),prior=drill.frames[idx-1],priorBall=prior?.objects.find(o=>o.id===b.id);
+ // If this step already contains a pass/pickup, release in a new step.
+ if(priorBall&&(priorBall.ownerId||null)!==(b.ownerId||null)){
+  if(drill.frames.length>=150){note('Maximum of 150 steps reached.');return}
+  const next=stripDecisions(clone(current));next.name='Release ball';next.seconds=2;next.notes='';next.timing={};next.paths={};
+  drill.frames.splice(idx+1,0,next);idx++;current=f();prior=drill.frames[idx-1];
+  b=current.objects.find(o=>o.id===b.id);p=carrier(current,b);priorBall=prior.objects.find(o=>o.id===b.id);
+ }
  const from=priorBall&&carrier(prior,priorBall);
- if(!from){note('For a timed release, the player must still have the ball in the preceding step. Select or create that step first.');return}
+ if(!from||from.id!==p?.id){note('Timed release requires this player to carry the ball from the preceding step.');return}
  const releaseAt=85,held=carriedPose(b,objectPose(prior,current,p.id,releaseAt/100,geometry()),geometry());
  const oldX=b.x,oldY=b.y;
  const count=assignPossession(drill.frames,idx,b.id,null,geometry());
