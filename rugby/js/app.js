@@ -901,6 +901,7 @@ function openActionChooser(fromGroup=groupIds.size>=2){
  rosterList.innerHTML=roster.map(p=>'<label class="action-participant"><input type="checkbox" value="'+esc(p.id)+'" '+(selectedIds.includes(p.id)?'checked':'')+'><span>'+esc(objectName(p))+(f().objects.some(b=>b.type==='ball'&&b.ownerId===p.id)?' · ball carrier':'')+'</span></label>').join('');
  function update(){
   const key=sel.value,rule=rules[key],contact=['tackle','ruck','maul'].includes(key);
+  $('tackleOutcomeRow').hidden=key!=='tackle';
   $('contactParticipantsRow').hidden=!contact;
   $('actionChooserHelp').textContent=rule?.help||'';
   $('actionContinue').disabled=!rule?.valid;
@@ -917,7 +918,7 @@ $('actionContinue').onclick=()=>{
  if(['tackle','ruck','maul'].includes(choice)){
   const selectedIds=[...$('contactParticipants').querySelectorAll('input:checked')].map(input=>input.value);
   if(selectedIds.length<2){$('actionChooserError').textContent='Select at least two players before arranging contact.';return}
-  groupIds=new Set(selectedIds);groupMode=true;$('actionChooser').close();arrangeSelectedContact(choice);return;
+  groupIds=new Set(selectedIds);groupMode=true;const outcome=choice==='tackle'?$('tackleOutcome').value:'ground';$('actionChooser').close();arrangeSelectedContact(choice,outcome);return;
  }
  $('actionChooser').close();
  if(choice==='touch-player'){openSkillDialog('touch',group,'player');return}
@@ -1063,7 +1064,7 @@ $('skillSave').onclick=()=>{
  }
  $('skillDialog').close();changed();refresh();note(result.message);
 };
-function arrangeSelectedContact(kind){
+function arrangeSelectedContact(kind,outcome='ground'){
  const ids=[...groupIds],players=f().objects.filter(o=>ids.includes(o.id)&&canCarry(o));
  const age=Number(drill.ageMin)||10,opposite=players.some(o=>o.type==='attacker')&&players.some(o=>o.type==='defender');
  const hasCarrier=players.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id));
@@ -1077,16 +1078,17 @@ function arrangeSelectedContact(kind){
  // Check a detached copy before changing the drill. A rejected formation
  // must never leave a marker, relocated player or empty step behind.
  const draft=idx===0?stripDecisions(clone(f())):clone(f());
- if(idx===0){draft.name=kind[0].toUpperCase()+kind.slice(1);draft.seconds=2;draft.notes='';draft.timing={};draft.paths={}}
+ if(idx===0){draft.name=kind==='tackle'&&outcome==='held'?'Held upright':kind[0].toUpperCase()+kind.slice(1);draft.seconds=2;draft.notes='';draft.timing={};draft.paths={}}
  const mx=players.reduce((v,o)=>v+o.x,0)/players.length,my=players.reduce((v,o)=>v+o.y,0)/players.length;
- const marker=obj(uid(),kind,kind[0].toUpperCase()+kind.slice(1),mx,my);
+ const marker=obj(uid(),kind,kind==='tackle'&&outcome==='held'?'Held upright':kind[0].toUpperCase()+kind.slice(1),mx,my);
+ if(kind==='tackle'&&outcome==='held')marker.contactOutcome='held';
  draft.objects.push(marker);
  const result=arrangeContact(draft,marker,geometry(),idx===0?f():drill.frames[idx-1],ids,age===10&&Number(drill.ageMax)===10);
  if(!result.ok){note(result.message);return}
  if(idx===0){drill.frames.splice(1,0,draft);idx=1}
  else drill.frames[idx]=draft;
  selected=marker.id;groupIds.clear();groupMode=false;changed();refresh();openInspector('Object',false);
- note(result.message+' Inspect the action and safe contact technique before coaching.');
+ note(result.message+(kind==='tackle'&&outcome==='held'?' Carrier remains on feet. Rip or pass separately; this is not a completed tackle and has no automatic ruck.':' Select Open breakdown sequence to continue ground tackle → ball presentation → support → ruck.'));
 }
 let menuRoutePoint=null;
 function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
