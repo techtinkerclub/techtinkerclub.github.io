@@ -32,14 +32,27 @@ export function createGithubStore(fetcher=fetch){
    const latest=await load(),existing=latest.data.drills.find(x=>x.id===drill.id);
    if(existing&&(!baseline||JSON.stringify(existing)!==JSON.stringify(baseline)))throw Error('This drill changed on GitHub. Reopen the latest saved copy or export your current edits before retrying.');
    if(!existing&&baseline)throw Error('This drill was removed on GitHub. Reopen the latest library before saving.');
-   const snapshot={...JSON.parse(JSON.stringify(drill)),savedAt:new Date().toISOString()};
+   const snapshot={...JSON.parse(JSON.stringify(drill)),revision:existing?Math.max(1,Number(existing.revision)||1)+1:1,savedAt:new Date().toISOString()};
    const data={...latest.data,drills:[snapshot,...latest.data.drills.filter(x=>x.id!==snapshot.id)]},json=JSON.stringify(data,null,2)+'\n';
    if(new TextEncoder().encode(json).length>750000)throw Error('GitHub library size limit reached. Export JSON to protect your work.');
    const result=await request(ROOT,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Save rugby drill: '+String(drill.title||'Untitled').replace(/[\r\n]/g,' ').slice(0,100),content:encode(json),sha:latest.sha,branch:'master'})});
    const commit=result.commit?.sha;if(!/^[a-f0-9]{40}$/.test(commit||''))throw Error('Commit could not be confirmed. Refresh the GitHub library before retrying.');
    const verify=await load(commit),stored=verify.data.drills.find(x=>x.id===snapshot.id);
    if(JSON.stringify(stored)!==JSON.stringify(snapshot))throw Error('Commit verification failed. Refresh the GitHub library before retrying.');
-   return {data:verify.data,snapshot:stored,commit};
+   return {data:verify.data,snapshot:stored,commit};,
+  async remove(id,baseline){
+   if(!token)throw Error('Connect to GitHub first.');
+   const latest=await load(),existing=latest.data.drills.find(x=>x.id===id);
+   if(!existing)throw Error('Drill no longer exists on GitHub. Refresh the library.');
+   if(!baseline||JSON.stringify(existing)!==JSON.stringify(baseline))throw Error('This drill changed on GitHub. Refresh and review it before deleting.');
+   const data={...latest.data,drills:latest.data.drills.filter(x=>x.id!==id)};
+   const json=JSON.stringify(data,null,2)+'\n';
+   const result=await request(ROOT,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Remove rugby drill: '+String(existing.title||id).replace(/[\\r\\n]/g,' ').slice(0,100),content:encode(json),sha:latest.sha,branch:'master'})});
+   const commit=result.commit?.sha;
+   if(!/^[a-f0-9]{40}$/.test(commit||''))throw Error('Deletion commit could not be confirmed. Refresh GitHub.');
+   const verify=await load(commit);
+   if(verify.data.drills.some(x=>x.id===id))throw Error('Deletion verification failed. Refresh GitHub.');
+   return {data:verify.data,commit};
   }
  };
 }
