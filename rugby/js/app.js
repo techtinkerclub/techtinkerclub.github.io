@@ -932,14 +932,14 @@ function openObjectMenu(e){
  visible('menuWhistle',o.type==='coach');
  visible('menuAction',canCarry(o));
  visible('menuConeColour',o.type==='cone');
- for(const id of ['menuTouch','menuTag','menuGroupTouch','menuGroupTackle','menuGroupRuck','menuGroupMaul'])$(id).hidden=true;
+
  visible('menuRoute',drawable);
  visible('menuAddPoint',canInsertPoint());
  visible('menuResetMovement',!!(idx>0&&selectedMovement()&&(canCarry(o)||o.type==='ball'&&!o.ownerId)));
  visible('menuBall',(canCarry(o)||o.type==='ball')&&hasBall,!hasBall);
  visible('menuRelease',carried&&(o.id===ball.id||o.id===ball.ownerId));
  visible('menuFront',!annotation);visible('menuBack',!annotation);
- for(const id of ['menuGroupTouch','menuGroupTackle','menuGroupRuck','menuGroupMaul'])$(id).hidden=true;
+
  visible('menuDeleteOnward',idx<drill.frames.length-1&&!annotation);
  visible('menuDeleteAll',drill.frames.length>1&&!annotation);
  $('menuDuplicate').hidden=annotation;
@@ -958,11 +958,6 @@ $('objectMenu').addEventListener('click',e=>{
  const command=b.dataset.objectCommand;closeObjectMenu();focusPitch();
  if(command==='actions')openActionChooser(groupIds.size>=2);
  else if(command==='cone-colour'){openInspector('Object',true);$('coneColour')?.focus()}
- else if(command==='touch'||command==='tag')openSkillDialog(command,groupIds.size>=2);
- else if(command==='group-touch')openSkillDialog('touch',true);
- else if(command==='group-tackle')arrangeSelectedContact('tackle');
- else if(command==='group-ruck')arrangeSelectedContact('ruck');
- else if(command==='group-maul')arrangeSelectedContact('maul');
  else if(command==='decision')beginDecisionPlacement();
  else if(command==='edit-decision'){if(hasOutcomes(drill))openOutcomeDialog(true);else openOutcomeDialog()}
  else if(command==='whistle'){openInspector('Object',true);$('coachWhistleDuration')?.focus()}
