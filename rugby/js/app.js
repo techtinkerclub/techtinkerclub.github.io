@@ -857,7 +857,9 @@ function openActionChooser(fromGroup=groupIds.size>=2){
  const hasOpposition=participants.some(o=>o.type==='attacker')&&participants.some(o=>o.type==='defender');
  const hasCarrier=participants.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id));
  const looseBall=f().objects.some(o=>o.type==='ball'&&!o.ownerId);
- const player=fromGroup?participants[0]:activeObject();
+ const player=fromGroup?participants[0]:(activeObject()?.type==='ball'?carrier(f(),activeObject()):activeObject());
+ const selectedBall=fromGroup?null:activeObject()?.type==='ball'?activeObject():f().objects.find(b=>b.type==='ball'&&b.ownerId===player?.id);
+ const freeBall=f().objects.find(b=>b.type==='ball'&&!b.ownerId);
  const eligibleTaggers=(fromGroup?participants:f().objects.filter(canCarry)).filter(o=>o.tagBelt&&o.tags?.left!==false&&o.tags?.right!==false);
  const hasTaggedCarrier=f().objects.some(o=>canCarry(o)&&o.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id));
  const rules={
@@ -866,7 +868,11 @@ function openActionChooser(fromGroup=groupIds.size>=2){
   tag:{valid:eligibleTaggers.length>0&&hasTaggedCarrier,help:'Tag rugby: remove a strip from a ball carrier wearing two tags. The carrier stops and passes within three seconds / approximately three strides; the tagger calls TAG and returns the strip.'},
   tackle:{valid:fromGroup&&age>=9&&hasOpposition&&hasCarrier&&participants.length>=2&&participants.length<=3,help:'Physical tackle: selected ball carrier and one or two opposing defenders. Requires age-appropriate qualified contact coaching.'},
   ruck:{valid:fromGroup&&age>=10&&hasOpposition&&looseBall,help:'Ruck: selected standing arrivals from both teams and a ball already presented on the ground. No automatic tackle is invented.'},
-  maul:{valid:fromGroup&&age>=10&&hasOpposition&&hasCarrier&&participants.length>=3,help:'Maul: selected ball carrier and participants from both teams. No grounded ball or tackle is created.'}
+  maul:{valid:fromGroup&&age>=10&&hasOpposition&&hasCarrier&&participants.length>=3,help:'Maul: selected ball carrier and participants from both teams. No grounded ball or tackle is created.'},
+  'release-ball':{valid:!fromGroup&&!!selectedBall&&!!carrier(f(),selectedBall),help:'Detach the ball at a chosen point during this step, without drawing a pass. Then edit the release moment in Step → Actions and the player run in Tracks.'},
+  'pickup-ball':{valid:!fromGroup&&canCarry(player)&&!!freeBall&&!f().objects.some(b=>b.type==='ball'&&b.ownerId===player.id),help:'A stationary free ball is picked up by this player at the selected time. There is no pass or imaginary ball flight.'},
+  'pass-ball':{valid:!fromGroup&&!!selectedBall&&!!carrier(f(),selectedBall),help:'A real pass travels from the current carrier to the receiver. Select the receiver on the pitch or by name.'},
+  'turnover-ball':{valid:!fromGroup&&!!selectedBall&&!!carrier(f(),selectedBall),help:'Change possession without a pass. Use this only for a deliberate turnover or demonstration; touching someone does not itself transfer possession.'}
  };
  for(const option of sel.options){const status=rules[option.value];option.disabled=!status?.valid;option.textContent=option.textContent.replace(/ \(unavailable\)$/,'')+(status?.valid?'':' (unavailable)')}
  const first=Array.from(sel.options).find(o=>!o.disabled);
@@ -884,7 +890,18 @@ $('actionContinue').onclick=()=>{
  if(choice==='touch-player'){openSkillDialog('touch',group,'player');return}
  if(choice==='touch-target'){openSkillDialog('touch',group,'target');return}
  if(choice==='tag'){openSkillDialog('tag',group,'player');return}
- if(['tackle','ruck','maul'].includes(choice))arrangeSelectedContact(choice);
+ if(['tackle','ruck','maul'].includes(choice)){arrangeSelectedContact(choice);return}
+ if(choice==='release-ball'){if(player){selected=player.id;groupIds.clear();groupMode=false}releaseBall();openStepActions();return}
+ if(choice==='pickup-ball'){
+  if(!player||!canCarry(player))return;
+  const free=f().objects.find(b=>b.type==='ball'&&!b.ownerId);if(!free)return;
+  groupIds.clear();groupMode=false;selected=player.id;
+  ballChoiceId=ballPicking=free.id;ballPickKind='pass';finishBallPick(player.id);openStepActions();return;
+ }
+ if(choice==='pass-ball'||choice==='turnover-ball'){
+  if(player){selected=player.id;groupIds.clear();groupMode=false}
+  beginBallPick(choice==='turnover-ball'?'turnover':'pass');return;
+ }
 };
 let skillMode='touch',skillFromGroup=false;
 function openSkillDialog(kind,fromGroup=false,scope='any'){
@@ -1004,7 +1021,7 @@ function openObjectMenu(e){
  visible('menuDecision',moving&&!decision);
  visible('menuEditDecision',decision||annotation);
  visible('menuWhistle',o.type==='coach');
- visible('menuAction',canCarry(o));
+ visible('menuAction',canCarry(o)||o.type==='ball');
  visible('menuConeColour',o.type==='cone');
  visible('menuManageActions',!!f().interactions?.length||!!(idx&&f().objects.some(p=>p.type==='ball'&&drill.frames[idx-1]?.objects.some(b=>b.id===p.id&&(b.ownerId||null)!==(p.ownerId||null)))));
 
