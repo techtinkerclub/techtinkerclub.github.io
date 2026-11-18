@@ -123,7 +123,7 @@ export function fullFieldSVG(g,grid=false,gridStep=.5,settings={}){
    for(let i=1;i<nx;i++)marks+=line(c.x+i*step,c.inGoal+c.y,c.x+i*step,c.inGoal+c.y+g.practice.length,{stroke:'#d8f4c1',opacity:.13,weight:.6});
    for(let i=1;i<ny;i++)marks+=line(c.x,c.inGoal+c.y+i*step,c.x+g.practice.width,c.inGoal+c.y+i*step,{stroke:'#d8f4c1',opacity:.13,weight:.6});
   }
- }}
+ }
  // Other scene code uses the shared marker arrow definition.
  const defs='<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#f9f4d9"/></marker></defs>';
  return defs+base+stripes+marks;
