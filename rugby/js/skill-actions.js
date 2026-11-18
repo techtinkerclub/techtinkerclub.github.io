@@ -76,6 +76,24 @@ export function interactionOverlay(frame,objects,g,progress=1,ink=false){
    '<text x="'+mid.x+'" y="'+(mid.y+4)+'" fill="'+(ink?'#222':'#f7ffed')+'" text-anchor="middle" font-size="11" font-weight="700">'+safe(label)+'</text>';
  }).join('')+'</g>';
 }
+export function ripOverlay(frame,previous,objects,g,progress=1,ink=false){
+ if(!previous||!frame?.objects)return '';
+ const current=new Map(frame.objects.map(o=>[o.id,o]));
+ const positions=new Map(objects.map(o=>[o.id,o]));
+ return frame.objects.filter(b=>b.type==='ball'&&b.transferKind==='rip'&&previous.objects.some(o=>o.id===b.id&&o.ownerId!==b.ownerId)&&progress*100>=(frame.timing?.[b.id]?.end??70)).map(ball=>{
+  const holder=positions.get(ball.ownerId),oldBall=previous.objects.find(o=>o.id===ball.id);
+  if(!holder||!oldBall)return '';
+  const oldHolder=positions.get(oldBall.ownerId),v=g.toView(holder.x,holder.y);
+  const text=String(ball.ripLabel||'RIP BALL').slice(0,100).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const w=Math.max(85,Math.min(210,text.length*7+18));
+  const x=v.x,y=v.y-43;
+  const colour=ink?'#444':'#efc989';
+  return '<g class="ball-rip-cue" pointer-events="none">'+
+   (oldHolder?'<circle cx="'+v.x+'" cy="'+v.y+'" r="27" stroke="'+colour+'" stroke-width="2" stroke-dasharray="2 5" fill="none"/>':'')+
+   '<rect x="'+(x-w/2)+'" y="'+(y-12)+'" width="'+w+'" height="25" rx="6" fill="'+(ink?'#fff':'#44341f')+'" stroke="'+colour+'"/>'+
+   '<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" fill="'+(ink?'#222':'#ffeac4')+'" font-size="11" font-weight="700">'+text+'</text></g>';
+ }).join('');
+}
 export function addInteraction(frame,kind,actorId,targetId,side='left',label=''){
  const actor=frame.objects.find(o=>o.id===actorId),target=frame.objects.find(o=>o.id===targetId);
  if(!canCarry(actor)||!target||actorId===targetId)return {ok:false,message:'Choose a player and a different target.'};
