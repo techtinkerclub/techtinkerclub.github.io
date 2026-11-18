@@ -6,7 +6,7 @@ Updated 18 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.18.6** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.18.7** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
 
 ## Public publishing workflow
@@ -82,4 +82,12 @@ The left Decision making tool is the single creation/edit entry point; duplicate
 - Ordered video sequences can be printed as a coaching progression pack with a contents page, each drill's coaching card and all step diagrams; the editor drill models remain independent. A regression test covers core controls, CSS hiding and print composition.
 - The editable and public versions of **Hold the line · Carry or pass?** have matching equipment wording (boundary flags, no four-cone claim) and Option A watch-points (D1 and D2).
 - **Verification still required:** live Chromium CI for the new commits, manual right-click on players and SVG paths, mobile touch alternatives, physical iOS Safari recording, multi-drill print pagination. Latest source commits are not a browser sign-off.
-- **Still pending:** a stable linked public *presentation* for a progression (video and printable pack are now available); the right-click redesign should receive real-coach usability testing.
+- **Linked presentation implemented in v0.18.7:** public library sequences now open `/rugby/sequence.html?drills=seed-...,...` with next/previous navigation and embedded read-only drill players. Only existing published IDs resolve. A copied link follows published updates. Real-coach usability and iOS Safari testing remain pending.
+
+## v0.18.7 — shareable read-only multi-drill progression
+
+- Public library video builder now offers **Open linked presentation**, **Copy presentation link** and **Print progression pack** alongside video export.
+- New `/rugby/sequence.html?drills=seed-143,seed-133` example (ordered public drill IDs; only actually published resources resolve). Stable links load explicitly published revisions and use the existing read-only player for each stage.
+- Public printing reuses shared print CSS and print markup. The progression never changes source drills or grants edit rights.
+- Right-click on the actual SVG running path works, adding a point at the click position. Irrelevant equipment movement actions are hidden.
+- **Acceptance outstanding:** Node/Playwright CI for latest HEAD, public sequence URL, phone/tablet operation, iOS Safari video recording, printed pagination and right-click/long-press UX. Source commits alone do not prove tests passed.
