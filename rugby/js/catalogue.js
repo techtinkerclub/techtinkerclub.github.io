@@ -48,7 +48,7 @@ export async function loadCatalogue(fetcher=fetch){
   if(pack?.version!==1||pack.kind!=='rugby-visual-qa'||!Array.isArray(pack.drills))throw Error('Invalid test-drill pack');
   const known=new Set(curated.map(d=>d.id));
   for(const d of pack.drills){
-   if(!/^seed-\\d{3,}$/.test(d?.id)||known.has(d.id)||d.category!=='Test drills'||!Array.isArray(d.frames)||d.frames.length<2)
+   if(!/^seed-\d{3,}$/.test(d?.id)||known.has(d.id)||d.category!=='Test drills'||!Array.isArray(d.frames)||d.frames.length<2)
     throw Error('Invalid or duplicate test drill '+d?.id);
    known.add(d.id);
   }
