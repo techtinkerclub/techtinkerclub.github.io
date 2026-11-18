@@ -12,7 +12,7 @@ test('retroactive publishing preserves two existing public URLs and current sour
   assert.ok(published&&original);
   assert.equal(published.savedFromCoachDrill,sourceId);
   const {id:_p,savedFromCoachDrill:_s,publishedAt:_a,publishedSourceSavedAt:_t,publishedRevision:_r,...unwrapped}=published;
-  const {id:_originalId,...authored}=original;
+  const {id:_originalId,savedFromCoachDrill:_legacySource,...authored}=original;
   assert.deepEqual(unwrapped,authored,'Publication must not invent any uneditable drill features');
   assert.equal(published.publishedSourceSavedAt,original.savedAt);
  }
