@@ -61,7 +61,7 @@ function overheadMinion(o,pose,objects,g,previous,frame,progress,ink){
   :hairStyle===1?'<path d="M-3 -3Q2 -9 5 -2" stroke="'+outline+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>':'';
  return '<g class="cartoon-player minion-mode-player minion-top-down" data-pose="'+(STANCES[pose]?pose:'standing')+'" pointer-events="none">'+
   '<ellipse cy="3.5" rx="'+n(w+3)+'" ry="'+n(h+3)+'" fill="#000" opacity="'+(ink?'.04':'.12')+'"/>'+
-  boots+armShapes+body+overalls+crown+hair+gaze+gloves+'</g>';
+  boots+armShapes+body+overalls+crown+'<g transform="translate(0 '+n(s.hy)+')">'+hair+'</g>'+gaze+gloves+'</g>';
 }
 
 /** The regular player remains untouched except for its single correct gaze arrow. */
