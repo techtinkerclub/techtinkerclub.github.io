@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.19.2
+# Rugby Coaching Studio — Classic Studio v0.19.3
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -211,3 +211,7 @@ Right-click a player (or ball) → **Actions…**. Choose **Rip ball** to open a
 For a genuine loose-ball scenario, **Release ball** to the ground, then in a following step use **Pick up a free ball**. Pick the ball, recipient (teammate or opponent), and timing. These are separate transitions and do not generate a false pass. In **Step → Actions in this step**, edit the timing or remove the ball change with **Undo transfer**; the original players and ball remain. Player movement has its own timing tracks, so movement can happen before or after the ball event.
 
 Tackle, ruck and maul no longer require selecting the full group beforehand: select participants inside **Actions…**. Unavailable options explain missing age/ball conditions. Rucks still require a loose ball on the ground and U10+; U9 cannot use rucks or mauls.
+
+## Ground tackle versus upright hold (v0.19.3)
+
+From **Actions… → Contact**, choose either **Tackle to ground** or **Held upright** after selecting the players. For **Tackle to ground**, the ball carrier is grounded, the existing **Open breakdown sequence** is available, and you can progress through **Release and present → Support arrives → Ruck formed → Contest → Ball secured** as before. For **Held upright**, the ball carrier remains on their feet with one or two engaged defenders; the app does **not** treat this as a completed tackle or generate a ruck. Continue with the separate Rip ball, Pass or other authored actions if appropriate for the age group. Existing saved tackle and ruck drills are unchanged.
