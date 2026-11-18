@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.19.4
+# Rugby Coaching Studio — Classic Studio v0.19.5
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -223,3 +223,9 @@ For an RFU U7/U8 tag exercise, equip both players with belts, select the tagger 
 After authoring the tagged carrier's pass, select the tagger and choose **Actions… → Return a tag to its player**. Only strips the selected tagger has actually taken are offered, and returning restores the correct player's correct hip strip. Set when the return happens; edit or remove the event in **Step → Actions in this step**. If the removal and return are attempted within one step, return automatically gets its own following step. The Object inspector's **Reset belt (setup only)** is a manual setup override, **not** a referee-law tag-return animation.
 
 RFU U8 practice: stop, lift the tag and call TAG; pass, hand the strip back, then rejoin only with the tags restored. The visual callout is not generated speech audio and the editor does not automatically stop running or award a pass. The coach should set player movement and pass timing to show the correct sequence.
+
+## Callout durations and head direction (v0.19.5)
+
+In **Actions… → Remove a tag** or a touch/return action, set **Show callout for (seconds)**; defaults are long enough to read but can be adjusted from 0.2 to 8 seconds. The callout may continue into the following step; the tagger still holds the raised strip until an actual Return tag action. To change the duration later, use **Step → Actions in this step → Callout (s)**. The visible TAG! bubble is not audio.
+
+For any player select **Object → Head direction**. Choose **Follow running direction** (default), **Follow another player** and pick the target, or **Look straight ahead** (no tracking). The player's head cue can look sideways while their body follows the existing run; body rotation remains independently editable. In all modes a real authored tackle/held-upright chase prioritises eyes on the ball carrier; a defender genuinely closing on the carrier also watches them; a passer looks towards the receiver before release. These are bounded visual coaching cues, not motion-capture-level anatomy or physics.
