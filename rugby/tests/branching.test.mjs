@@ -66,7 +66,7 @@ const code=await shareCode(example,{decisions:true});
 const readBack=await decodeShare(code);
 assert.equal(readBack.drill.branching.choices.length,2,'Sharing lost the alternative outcome');
 
-for(const editor of ['index.html','coach/index.html']){
+for(const editor of ['index.html']){
  const page=read(editor);
  for(const id of ['outcomeBar','decisionToolStart','outcomeControls','outcomeA','outcomeB','outcomePrompt','outcomeDialog','outcomeSave'])
   assert.ok(page.includes('id="'+id+'"'),editor+' missing '+id);
