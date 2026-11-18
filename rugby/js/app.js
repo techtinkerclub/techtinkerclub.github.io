@@ -1512,11 +1512,16 @@ function chooseSaveMode(){
  return new Promise(resolve=>{
   const exists=githubDrills.some(x=>x.id===drill.id)||githubBaseline?.id===drill.id;
   const dialog=document.createElement('dialog');
-  dialog.innerHTML='<form method="dialog" class="setup-form" style="max-width:520px"><h2>Save drill to GitHub</h2><p>Choose what happens to the existing drill and its library entry.</p>'+
-   '<label style="display:block;margin:12px 0"><input type="radio" name="saveKind" value="revision" checked> <strong>'+(exists?'Update existing drill':'Save this drill')+'</strong> — '+(exists?'next revision, same link and library entry.':'keep this drill identity and its family links.')+'</label>'+
-   '<label style="display:block;margin:12px 0"><input type="radio" name="saveKind" value="version" ' + '' +'> <strong>Save related version</strong> — separate drill in the same family.</label>'+
-   '<label style="display:block;margin:12px 0"><input type="radio" name="saveKind" value="new"> <strong>Save completely new drill</strong> — unrelated entry.</label>'+
-   '<div class="flex"><button value="cancel">Cancel</button><button class="primary" value="save">Continue</button></div></form>';
+  dialog.className='save-mode-dialog';
+  const options=[
+   {id:'revision',icon:'↻',title:exists?'Update existing drill':'Save this drill',detail:exists?'Keep the same drill and link. Save your changes as the next revision.':'Save with this drill identity and keep existing family links.',recommended:true},
+   {id:'version',icon:'⑂',title:'Save related version',detail:'Keep the original. Create a separate variation grouped in the same family.'},
+   {id:'new',icon:'+',title:'Save as new drill',detail:'Create an independent drill with its own identity and library entry.'}
+  ];
+  dialog.innerHTML='<form method="dialog" class="save-mode-form"><div class="save-mode-heading"><h2>Save drill to GitHub</h2><p>How would you like to save <strong>'+esc(drill.title)+'</strong>?</p></div>'+
+   '<fieldset class="save-mode-options"><legend class="sr-only">Choose save type</legend>'+
+   options.map(o=>'<label class="save-mode-choice"><input type="radio" name="saveKind" value="'+o.id+'" '+(o.recommended?'checked':'')+'><span class="save-mode-icon" aria-hidden="true">'+o.icon+'</span><span class="save-mode-copy"><span class="save-mode-title">'+o.title+(o.recommended?'<span class="save-mode-recommended">Recommended</span>':'')+'</span><span class="save-mode-description">'+o.detail+'</span></span><span class="save-mode-indicator" aria-hidden="true"></span></label>').join('')+
+   '</fieldset><div class="save-mode-actions"><button type="submit" value="cancel">Cancel</button><button type="submit" class="primary" value="save">Continue</button></div></form>';
   document.body.appendChild(dialog);
   dialog.addEventListener('close',()=>{const selection=dialog.querySelector('input[name="saveKind"]:checked')?.value;const mode=dialog.returnValue==='save'?selection:null;dialog.remove();resolve(mode)},{once:true});
   dialog.showModal();
