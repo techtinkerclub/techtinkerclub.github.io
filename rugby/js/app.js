@@ -618,7 +618,7 @@ function updateSkillActionsPanel(){
  if(!panel||!list)return;
  const events=f().interactions||[],prior=drill.frames[idx-1];
  const name=id=>{const o=f().objects.find(p=>p.id===id);return o?.label||o?.type||'Object'};
- const eventRows=events.map((event,i)=>'<div class="skill-action-row" data-skill-index="'+i+'"><strong>'+esc(event.kind==='tag'?'TAG! · '+event.side:event.kind==='tag-return'?'Tag returned · '+event.side:event.targetId&&canCarry(f().objects.find(o=>o.id===event.targetId))?'Player touch':'Touch target')+'</strong><small>'+esc(name(event.actorId))+' → '+esc(name(event.targetId))+'</small><label>At (%) <input type="number" data-skill-at="'+i+'" min="10" max="95" step="5" value="'+Math.round(event.at*100)+'"></label><button type="button" data-skill-delete="'+i+'" class="danger-action">Remove action</button></div>').join('');
+ const eventRows=events.map((event,i)=>'<div class="skill-action-row" data-skill-index="'+i+'"><strong>'+esc(event.kind==='tag'?'TAG! · '+event.side:event.kind==='tag-return'?'Tag returned · '+event.side:event.targetId&&canCarry(f().objects.find(o=>o.id===event.targetId))?'Player touch':'Touch target')+'</strong><small>'+esc(name(event.actorId))+' → '+esc(name(event.targetId))+'</small><label>At (%) <input type="number" data-skill-at="'+i+'" min="10" max="95" step="5" value="'+Math.round(event.at*100)+'"></label><label>Callout (s) <input type="number" data-callout-seconds="'+i+'" min=".2" max="8" step=".1" value="'+(event.displaySeconds??(event.kind==='tag'?1.6:1.2))+'"></label><button type="button" data-skill-delete="'+i+'" class="danger-action">Remove action</button></div>').join('');
  const balls=idx?f().objects.filter(o=>o.type==='ball'&&prior?.objects.some(b=>b.id===o.id&&(b.ownerId||null)!==(o.ownerId||null))):[];
  const ballRows=balls.map(ball=>{
   const before=prior.objects.find(o=>o.id===ball.id),from=before.ownerId,to=ball.ownerId;
@@ -633,6 +633,13 @@ function updateSkillActionsPanel(){
  panel.hidden=false;
 }
 $('skillActionsList').addEventListener('change',event=>{
+ const durationInput=event.target.closest('[data-callout-seconds]');
+ if(durationInput){
+  const entry=f().interactions?.[Number(durationInput.dataset.calloutSeconds)],seconds=Number(durationInput.value);
+  if(!entry||!Number.isFinite(seconds)||seconds<.2||seconds>8){note('Callout duration must be between 0.2 and 8 seconds.');updateSkillActionsPanel();return}
+  entry.displaySeconds=seconds;changed();render();updateSkillActionsPanel();
+  note('Callout shows for '+seconds.toFixed(1)+' seconds, even if the next step begins.');return;
+ }
  const labelControl=event.target.closest('[data-rip-label]');
  if(labelControl){const b=f().objects.find(o=>o.id===labelControl.dataset.ripLabel&&o.transferKind==='rip');if(b){b.ripLabel=labelControl.value.trim().slice(0,100)||'Rip ball';changed();render();updateSkillActionsPanel()}return}
  const ballControl=event.target.closest('[data-ball-at]');
@@ -1076,7 +1083,7 @@ function openSkillDialog(kind,fromGroup=false,scope='any'){
  $('skillDialogHeading').textContent=kind==='tag-return'?'Tag rugby · return a strip':kind==='tag'?'Tag rugby · remove a strip':scope==='target'?'Agility · touch a target':'Touch rugby · record a touch';
  $('skillDialogHelp').textContent=kind==='tag-return'?'Choose the player holding a tag and return it to the correct ball carrier. The strip must go back on its original hip.':kind==='tag'?'Choose the defender taking a tag and the ball carrier. The ball carrier attempts to stop and pass within three seconds / about three strides. The tagger calls TAG, returns the strip, then rejoins play.':'Select the player and '+(scope==='target'?'equipment or line to touch for the agility exercise.':'other player to touch. This is NOT tag removal.')+' No physical tackle or automatic change of possession occurs.';
  $('skillSideRow').hidden=kind!=='tag'&&kind!=='tag-return';
- $('skillActionLabel').value='';$('skillAt').value='70';$('skillActionError').textContent='';
+ $('skillActionLabel').value='';$('skillAt').value='70';$('skillDuration').value=kind==='tag'?1.6:kind==='tag-return'?1.2:1.0;$('skillActionError').textContent='';
  function fillTargets(){
   const actor=$('skillActor').value;
   const actorObject=f().objects.find(o=>o.id===actor);
@@ -1108,7 +1115,8 @@ function openSkillDialog(kind,fromGroup=false,scope='any'){
 $('skillCancel').onclick=()=>$('skillDialog').close();
 $('skillSave').onclick=()=>{
  const actor=$('skillActor').value,target=$('skillTarget').value,side=$('skillTagSide').value;
- const n=Number($('skillAt').value);
+ const n=Number($('skillAt').value),displaySeconds=Number($('skillDuration').value);
+ if(!Number.isFinite(displaySeconds)||displaySeconds<.2||displaySeconds>8){$('skillActionError').textContent='Choose a display time between 0.2 and 8 seconds.';return}
  if(!Number.isFinite(n)||n<10||n>95){$('skillActionError').textContent='Use a time from 10 to 95% of this step.';return}
  const dryRun=addInteraction(clone(f()),skillMode,actor,target,side,$('skillActionLabel').value.trim());
  if(!dryRun.ok){$('skillActionError').textContent=dryRun.message;return}
@@ -1123,6 +1131,7 @@ $('skillSave').onclick=()=>{
  const result=addInteraction(f(),skillMode,actor,target,side,$('skillActionLabel').value.trim());
  if(!result.ok){$('skillActionError').textContent=result.message;return}
  f().interactions.at(-1).at=n/100;
+ f().interactions.at(-1).displaySeconds=displaySeconds;
  if(skillMode==='tag'||skillMode==='tag-return'){
   // Propagate the new state through authored following steps, stopping at any
   // later action affecting this same strip. Never manufacture a new tag.
