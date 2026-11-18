@@ -5,7 +5,7 @@ import {canCarry} from './possession.js?v=0.19.1';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 import {playerHeadAngle} from './player-gaze.js?v=3';
 import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI} from './minion-rig-data.js?v=1';
-import {NOSE_COACH_URI,NOSE_COACH_TILE,NOSE_COACH_COLS} from './coach-nose-data.js?v=1';
+import {COACH_ATLAS_URI,COACH_TILE,COACH_COLUMNS} from './coach-atlas-data.js?v=1';
 const arrowRE=/<path d="M-5 -12 L0 -19 L5 -12 Z" fill="#f7fff6"\s*\/>|<path d="M-5 -8L0 -16L5 -8Z" fill="#fff"\s*\/>|<path d="M-5 -12L0 -19L5 -12Z" fill="#fff"\s*\/>|<path d="M-4 -15L0 -21L4 -15Z" fill="#fff"\s*\/>|<path d="M-5 -7L0 -14L5 -7Z" fill="#fff"\s*\/>/g;
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
@@ -15,7 +15,7 @@ const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0
 export function cartoonSpriteDefs(){
  return '<defs><image id="rugby-minion-body-v9" href="'+RIG_BODY_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
   '<image id="rugby-minion-head-v9" href="'+RIG_HEAD_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
-  '<image id="rugby-coach-nose-v9" href="'+NOSE_COACH_URI+'" width="'+(NOSE_COACH_COLS*NOSE_COACH_TILE)+'" height="'+(2*NOSE_COACH_TILE)+'"/></defs>';
+  '<image id="rugby-coach-original-v10" href="'+COACH_ATLAS_URI+'" width="'+(COACH_COLUMNS*COACH_TILE)+'" height="'+(2*COACH_TILE)+'"/></defs>';
 }
 function movingInfo(o,previous,frame,p){
  const before=previous?.objects?.find(q=>q.id===o.id),after=frame?.objects?.find(q=>q.id===o.id);
@@ -116,7 +116,10 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  const tile=RIG_TILE,x=(atlasId%RIG_COLS)*tile,y=Math.floor(atlasId/RIG_COLS)*tile;
  const entry=RIG_POSES[poseId],pivot=entry.headPivot;
  const move=movingInfo(o,previous,frame,p);
- const rotation=entry.grounded?0:smoothGaze(o,objects,g,previous,frame,p);
+ // The source goggle is at the SOUTH edge of the head, so rotate only the
+ // articulated head by 180 degrees to align its original eye with the game's
+ // local forward (-Y). Keep the legs, arms and torso in their original stance.
+ const rotation=entry.grounded?0:180+smoothGaze(o,objects,g,previous,frame,p);
  const gait=move.moving?Math.sin(p*12*Math.PI)*1.3:0;
  const wobble=move.moving?Math.sin(p*7*Math.PI)*1.1:0;
  const size=54;
@@ -153,15 +156,16 @@ function coachTravelAngle(o,g,previous,frame,p){
  return ((absolute-(Number(o.rot)||0)-(Number(g.rotation)||0)+180)%360+360)%360-180;
 }
 function cartoonCoach(o,objects,g,previous,frame,p){
- const k=coachIndex(o,previous,frame,p),t=NOSE_COACH_TILE,size=76;
- const x=k%NOSE_COACH_COLS*t,y=Math.floor(k/NOSE_COACH_COLS)*t;
- // Forehead/nose are genuinely at the NORTH end of every source sprite.
- // The outer render already applies saved o.rot; only relative travel/target
- // adjustment is needed here. Do NOT add an extra 180 degree inversion.
+ const k=coachIndex(o,previous,frame,p),t=COACH_TILE,size=46;
+ const x=k%COACH_COLUMNS*t,y=Math.floor(k/COACH_COLUMNS)*t;
+ // Use the actual coach artwork supplied by the user. The artificial
+ // protruding nose was visually incorrect and has been discarded.
+ // Body/head remain upright (crown north, boots south), with body-facing and
+ // route-following handled by the same object rotation as Classic mode.
  const angle=coachTravelAngle(o,g,previous,frame,p)??smoothGaze(o,objects,g,previous,frame,p);
  return '<g class="cartoon-coach top-down-coach-image" data-coach-pose="'+k+'" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden" style="overflow:hidden">'+
-  '<use href="#rugby-coach-nose-v9"/></svg></g>';
+  '<use href="#rugby-coach-original-v10"/></svg></g>';
 }
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
  if(!canCarry(o))return original;
