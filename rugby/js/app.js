@@ -751,7 +751,7 @@ function openObjectMenu(e){
  const r=menu.getBoundingClientRect(),pad=8;
  menu.style.left=Math.max(pad,Math.min(e.clientX,window.innerWidth-r.width-pad))+'px';
  menu.style.top=Math.max(pad,Math.min(e.clientY,window.innerHeight-r.height-pad))+'px';
- menu.querySelector('button').focus({preventScroll:true});
+ menu.querySelector('button:not([hidden]):not([disabled])')?.focus({preventScroll:true});
 }
 pitch.addEventListener('contextmenu',openObjectMenu);
 $('objectMenu').addEventListener('click',e=>{
