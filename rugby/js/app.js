@@ -881,7 +881,12 @@ function openActionChooser(fromGroup=groupIds.size>=2){
  for(const option of sel.options){
   const rule=rules[option.value];
   option.disabled=!rule?.valid;
-  option.textContent=option.textContent.replace(/ \(unavailable\)$/,'')+(rule?.valid?'':' (unavailable)');
+  option.textContent=option.textContent.replace(/ \(.*? unavailable\)$/,'').replace(/ \(unavailable\)$/,'')+(rule?.valid?'':(
+   option.value==='tackle'?' (requires U9+, opponent and ball carrier; unavailable)':
+   option.value==='ruck'?' (requires U10+, loose ball and both teams; unavailable)':
+   option.value==='maul'?' (requires U10+, carrier and 3 players; unavailable)':
+   option.value==='rip-ball'?' (requires U9+ and ball carrier; unavailable)':
+   option.value==='tag'?' (requires tag belts; unavailable)':' (unavailable)'));
  }
  const first=Array.from(sel.options).find(o=>!o.disabled);
  if(!first){note('Select or add players and a ball first.');return}
