@@ -588,7 +588,7 @@ function updateSkillActionsPanel(){
  if(!panel||!list)return;
  const events=f().interactions||[],prior=drill.frames[idx-1];
  const name=id=>{const o=f().objects.find(p=>p.id===id);return o?.label||o?.type||'Object'};
- const eventRows=events.map((event,i)=>'<div class="skill-action-row" data-skill-index="'+i+'"><strong>'+esc(event.kind==='tag'?'Tag removed · '+event.side:event.targetId&&canCarry(f().objects.find(o=>o.id===event.targetId))?'Player touch':'Touch target')+'</strong><small>'+esc(name(event.actorId))+' → '+esc(name(event.targetId))+'</small><label>At (%) <input type="number" data-skill-at="'+i+'" min="10" max="95" step="5" value="'+Math.round(event.at*100)+'"></label><button type="button" data-skill-delete="'+i+'" class="danger-action">Remove action</button></div>').join('');
+ const eventRows=events.map((event,i)=>'<div class="skill-action-row" data-skill-index="'+i+'"><strong>'+esc(event.kind==='tag'?'TAG! · '+event.side:event.kind==='tag-return'?'Tag returned · '+event.side:event.targetId&&canCarry(f().objects.find(o=>o.id===event.targetId))?'Player touch':'Touch target')+'</strong><small>'+esc(name(event.actorId))+' → '+esc(name(event.targetId))+'</small><label>At (%) <input type="number" data-skill-at="'+i+'" min="10" max="95" step="5" value="'+Math.round(event.at*100)+'"></label><button type="button" data-skill-delete="'+i+'" class="danger-action">Remove action</button></div>').join('');
  const balls=idx?f().objects.filter(o=>o.type==='ball'&&prior?.objects.some(b=>b.id===o.id&&(b.ownerId||null)!==(o.ownerId||null))):[];
  const ballRows=balls.map(ball=>{
   const before=prior.objects.find(o=>o.id===ball.id),from=before.ownerId,to=ball.ownerId;
@@ -625,18 +625,35 @@ $('skillActionsList').addEventListener('click',event=>{
  const button=event.target.closest('[data-skill-delete]');if(!button)return;
  const i=Number(button.dataset.skillDelete),action=f().interactions?.[i];if(!action)return;
  f().interactions.splice(i,1);
- if(action.kind==='tag'){
-  // Undo the authored capture only. Later separately-authored captures remain.
+ if(action.kind==='tag'||action.kind==='tag-return'){
+  const taking=action.kind==='tag';
+  const same=a=>['tag','tag-return'].includes(a.kind)&&a.actorId===action.actorId&&a.targetId===action.targetId&&a.side===action.side;
   for(let k=idx;k<drill.frames.length;k++){
    const fr=drill.frames[k];
-   const again=fr.interactions?.some(a=>a.kind==='tag'&&a.targetId===action.targetId&&a.side===action.side);
-   if(again)break;
-   const target=fr.objects.find(o=>o.id===action.targetId);
-   if(target?.tags)target.tags[action.side]=true;
-   const taker=fr.objects.find(o=>o.id===action.actorId);
-   if(taker?.tagBelt)taker.heldTags=Math.max(0,(Number(taker.heldTags)||0)-1);
+   if(k>idx){
+    const next=(fr.interactions||[]).find(same);
+    if(next){
+     // Deleting the take also removes its later return; the frame after the
+     // original return is already restored, so leave its stored state alone.
+     if(taking&&next.kind==='tag-return')fr.interactions=fr.interactions.filter(a=>a!==next);
+     break;
+    }
+   }
+   const owner=fr.objects.find(o=>o.id===action.targetId),tagger=fr.objects.find(o=>o.id===action.actorId);
+   if(owner?.tags)owner.tags[action.side]=taking;
+   if(tagger?.tagBelt){
+    tagger.heldTagItems=Array.isArray(tagger.heldTagItems)?tagger.heldTagItems.map(item=>({...item})):[];
+    const heldIndex=tagger.heldTagItems.findIndex(item=>item.targetId===action.targetId&&item.side===action.side);
+    if(taking){
+     if(heldIndex>=0){tagger.heldTagItems.splice(heldIndex,1);tagger.heldTags=Math.max(0,(Number(tagger.heldTags)||0)-1)}
+    }else if(heldIndex<0){
+     tagger.heldTagItems.push({targetId:action.targetId,side:action.side,color:owner?.tagColor||'yellow'});
+     tagger.heldTags=Math.min(12,(Number(tagger.heldTags)||0)+1);
+    }
+   }
   }
  }
+
  changed();refresh();note('Action cue removed. Players and other steps retained. Undo restores it.');
 });
 function refresh(){closeObjectMenu();renderOutcomeBar();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTimeLabel').textContent=idx?'Seconds to reach this step':'Setup hold before action (seconds)';$('stepTime').value=fr.seconds||0;$('stepTime').disabled=false;$('stepTime').min=idx?'.5':'0';$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();updateSkillActionsPanel();inspector();tracks()}function choose(i){selectedPathId=null;validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){selectedPathId=null;const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','hurdle','hoop','slalomPole','markerDisc','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';if(type==='cone')n.coneColor='yellow';
@@ -1063,6 +1080,13 @@ $('skillSave').onclick=()=>{
  if(!Number.isFinite(n)||n<10||n>95){$('skillActionError').textContent='Use a time from 10 to 95% of this step.';return}
  const dryRun=addInteraction(clone(f()),skillMode,actor,target,side,$('skillActionLabel').value.trim());
  if(!dryRun.ok){$('skillActionError').textContent=dryRun.message;return}
+ if(skillMode==='tag-return'&&f().interactions?.some(a=>a.kind==='tag'&&a.actorId===actor&&a.targetId===target&&a.side===side)){
+  // Return in the next authored step rather than shouting and returning at once.
+  if(drill.frames.length>=150){$('skillActionError').textContent='Maximum 150 steps reached.';return}
+  const next=stripDecisions(clone(f()));
+  next.name='Return tag';next.seconds=1.5;next.notes='Tagger hands the removed strip back; receiver puts it on the original hip.';next.timing={};next.paths={};
+  drill.frames.splice(idx+1,0,next);idx++;selected=actor;
+ }
  if(!ensureSkillActionStep(skillMode==='tag'?'Tag removal':skillMode==='tag-return'?'Return tag':'Touch cue'))return;
  const result=addInteraction(f(),skillMode,actor,target,side,$('skillActionLabel').value.trim());
  if(!result.ok){$('skillActionError').textContent=result.message;return}
