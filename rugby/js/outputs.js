@@ -112,7 +112,7 @@ export function printMarkup(raw,opts={}){
  const d=playbackData(raw);
  if(hasOutcomes(d)){
   const b=d.branching;
-  const cover='<section class="print-page print-card"><header><div><small>RUGBY COACHING STUDIO · DECISION DRILL</small><h1>'+esc(d.title)+'</h1></div><p>Shared setup · two playable outcomes</p></header>'+coachingMarkup(d)+outcomeCardsMarkup(d,'print')+'<footer>Check current age-grade rules and contact safety before delivery.</footer></section>';
+  const cover='<section class="print-page print-card"><header><div><small>RUGBY COACHING STUDIO · DECISION DRILL</small><h1>'+esc(d.title)+'</h1></div><p>Shared setup · two playable outcomes</p></header>'+coachingMarkup(d)+outcomeCardsMarkup(d,'print',opts)+'<footer>Check current age-grade rules and contact safety before delivery.</footer></section>';
   return cover+outcomeViews(d).map((v,i)=>'<section class="print-page print-branch-heading"><small>◆ PLAYABLE DECISION · OPTION '+v.id.toUpperCase()+'</small><h2>'+esc(v.label)+'</h2><p><strong>Decision:</strong> '+esc(b.question)+'</p><p>Shared setup and signal, then outcome '+v.id.toUpperCase()+'. Repeat the exercise with the other outcome.</p></section>'+printMarkup(v.drill,{...opts,_skipCard:true,_branching:b,_branchFork:b.fork})).join('');
  }
  const o=outputOptions(opts),pages=[],age=cardAge(d),groups=[];
