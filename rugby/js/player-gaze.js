@@ -71,7 +71,8 @@ export function playerHeadAngle(o,objects,g,previous=null,current=null,p=1){
  if(absolute===null||!Number.isFinite(absolute))return 0;
  return clamp(wrap(absolute-(Number(o.rot)||0)-(Number(g.rotation)||0)),-100,100);
 }
-export function playerHeadSVG(o,objects,g,previous=null,current=null,p=1,ink=false){
+export function playerHeadSVG(o,objects,g,previous=null,current=null,p=1,ink=false,visiblePose=null){
+ if(['grounded','kneeling'].includes(visiblePose))return '';
  const angle=playerHeadAngle(o,objects,g,previous,current,p);
  if(angle===null)return '';
  // Small overhead head with a dark gaze dot. It rotates independently inside
