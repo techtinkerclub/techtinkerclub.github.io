@@ -1770,17 +1770,22 @@ function finishDrag(e){
   const {ballId,shieldId,playerId}=gesture.contact,b=f().objects.find(o=>o.id===ballId),player=f().objects.find(o=>o.id===playerId);
   if(shieldId&&assignShield(drill.frames,idx,shieldId,playerId,geometry(),gesture.originalPosition)){selected=playerId;attached=true;if(idx)f().timing[shieldId]={start:99,end:100};note('Shield attached to '+(player.label||'player')+'.')}
   if(b&&!carrier(f(),b)&&canCarry(player)){
-   // Moving a player to a free ball is a pickup, not a pass.
-   const pickup=gesture.id===playerId;
-   if(idx&&f().paths)delete f().paths[ballId];
-   const n=assignPossession(drill.frames,idx,ballId,playerId,geometry(),pickup?null:gesture.originalPosition);
-   if(n){
-    delete b.transferKind;
-    if(idx&&drill.frames[idx-1].objects.some(o=>o.id===ballId&&!o.ownerId)){
-     f().timing[ballId]=pickup?{start:99,end:100}:{start:0,end:100};
+   // Dragging onto a truly free ball is a pickup, not a pass.
+   // A ball freed earlier in this SAME step already has a release event:
+   // let the coach add a subsequent pickup step rather than merging the two.
+   const before=idx?drill.frames[idx-1]?.objects.find(o=>o.id===ballId):null;
+   if(idx&&before?.ownerId){
+    note('Ball was released in this step. Use Actions → Pick up a free ball; it creates the next step, not a false pass.');
+   }else{
+    const pickup=gesture.id===playerId;
+    if(idx&&f().paths)delete f().paths[ballId];
+    const n=assignPossession(drill.frames,idx,ballId,playerId,geometry(),pickup?null:gesture.originalPosition);
+    if(n){
+     b.transferKind=idx?'pickup':undefined;
+     if(idx&&before&&!before.ownerId)f().timing[ballId]={start:pickup?99:54,end:pickup?100:55};
+     selected=playerId;ballChoiceId=ballId;attached=true;
+     note('Ball picked up without a pass. Edit pickup timing under Step → Actions.');
     }
-    selected=playerId;ballChoiceId=ballId;attached=true;
-    note('Ball attached to '+(player.label||'player')+' · move either to move both.');
    }
   }
  }
