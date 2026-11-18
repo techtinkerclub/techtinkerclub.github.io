@@ -167,34 +167,6 @@ try {
  assert.ok(Number(await phone.locator('#scrub').inputValue())>phoneBefore,'Touch-screen playback must move the editor playhead');
  await phone.close();
  console.log('BROWSER CAMERA/MOBILE PASS: live action focus, still-full-pitch option, touch navigation and play');
- // Full rugby field: choose an RFU U10 field, place the practice across a
- // try line, zoom between training area and whole field, and preserve steps.
- const fieldPage=await browser.newPage({viewport:{width:1460,height:950}});
- capture(fieldPage);
- await fieldPage.goto(origin+'/rugby/',{waitUntil:'networkidle',timeout:40000});
- const fieldExample=file.drills.find(x=>x.id==='seed-057');
- await fieldPage.locator('#file').setInputFiles({name:'tryline-practice.json',
-  mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fieldExample))});
- await fieldPage.waitForFunction(()=>document.querySelector('#stageTitle')?.textContent.includes('Breakdown'));
- const beforeSteps=await fieldPage.locator('#scenes .scene').count();
- await fieldPage.locator('#tabDrill').click();
- await fieldPage.locator('#fieldMode').selectOption('field');
- await fieldPage.locator('#fieldAge').selectOption('U10');
- await fieldPage.locator('#fieldAnchor').selectOption('top-try');
- assert.equal(await fieldPage.locator('#fieldY').inputValue(),'-5');
- await fieldPage.locator('#applyPitchSettings').click();
- await fieldPage.waitForFunction(()=>!!document.querySelector('#pitch [data-practice-area="true"]'));
- assert.equal(await fieldPage.locator('#scenes .scene').count(),beforeSteps,
-  'Placing the practice on a pitch must not rewrite drill steps');
- const closeArea=await fieldPage.locator('#pitch').getAttribute('viewBox');
- await fieldPage.locator('#zoomFit').click();
- const fullField=await fieldPage.locator('#pitch').getAttribute('viewBox');
- assert.notEqual(closeArea,fullField,'Fit drill and whole field must be different views');
- assert.ok(await fieldPage.locator('#pitch').innerHTML().then(x=>x.includes('IN-GOAL')));
- await fieldPage.locator('#zoomArea').click();
- assert.equal(await fieldPage.locator('#pitch').getAttribute('viewBox'),closeArea);
- console.log('BROWSER RFU FIELD PASS: 60×35 U10, 5m in-goal, practice placement, zoom, all steps retained');
- await fieldPage.close();
  // The full pitch is a non-destructive background behind an editable practice.
  const fieldPage=await browser.newPage({viewport:{width:1490,height:950}});
  capture(fieldPage);
