@@ -2,9 +2,10 @@
 // physical symbol by the same ratio, with a legibility floor for large pitches.
 export const COACHING_MAGNIFICATION = 1.30;
 const MIN_COACHING_FACTOR = 0.80;
+const MIN_FULL_FIELD_COACHING_FACTOR = 1.05;
 export const normalScaleMode = value => value === 'coaching' ? 'coaching' : 'realistic';
 export const physicalUnit = g => Number.isFinite(g?.scale)&&g.scale>0 ? g.scale*0.45/30 : 1;
-export const visualUnit = g => g?.displayMode==='coaching' ? Math.max(physicalUnit(g)*COACHING_MAGNIFICATION,MIN_COACHING_FACTOR) : physicalUnit(g);
+export const visualUnit = g => g?.displayMode==='coaching' ? Math.max(physicalUnit(g)*COACHING_MAGNIFICATION,g?.fieldContext?.mode==='field'?MIN_FULL_FIELD_COACHING_FACTOR:MIN_COACHING_FACTOR) : physicalUnit(g);
 const playerTypes=new Set(['attacker','defender','neutral','coach','shield','bagplayer']);
 export function symbolFactors(o,g,pose){
  const k=Number.isFinite(g?.scale)&&g.scale>0?g.scale:30/0.45, u=physicalUnit(g), mode=normalScaleMode(g?.displayMode);
@@ -25,8 +26,9 @@ export function symbolFactors(o,g,pose){
  if(mode==='coaching'){
   // A minimum alone only enlarged cones on short pitches while players and
   // donuts stayed unchanged. Magnify every physical object consistently.
-  x=Math.max(x*COACHING_MAGNIFICATION,MIN_COACHING_FACTOR);
-  y=Math.max(y*COACHING_MAGNIFICATION,MIN_COACHING_FACTOR);
+  const minimum=g?.fieldContext?.mode==='field'?MIN_FULL_FIELD_COACHING_FACTOR:MIN_COACHING_FACTOR;
+  x=Math.max(x*COACHING_MAGNIFICATION,minimum);
+  y=Math.max(y*COACHING_MAGNIFICATION,minimum);
  }
  return [x,y];
 }
