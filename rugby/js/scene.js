@@ -5,7 +5,7 @@ import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.18.8';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
-import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,timedSkillObjects} from './skill-actions.js?v=5';
+import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=5';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
@@ -77,7 +77,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
  const caption=labels?contactLabels(objects,focused?{...g,viewWidth:camera.width}:g,esc,[...new Set(changes)]):'';
  const placedCaption=focused&&caption?'<g transform="translate('+camera.x+' '+camera.y+')">'+caption+'</g>':caption;
- let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink)+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null})+contestResultOverlay(fr,objects,g,p,ink)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
+ let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink)+ripOverlay(fr,old,objects,g,time===null?1:p,ink)+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null})+contestResultOverlay(fr,objects,g,p,ink)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+camera.x+' '+camera.y+' '+camera.width+' '+camera.height+'" width="'+camera.width+'" height="'+camera.height+'" font-family="Arial,sans-serif">'+body+'</svg>',g:{...g,viewWidth:camera.width,viewHeight:camera.height},camera,index:i,frame:fr};
 }
