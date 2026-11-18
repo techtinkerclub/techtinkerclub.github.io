@@ -362,7 +362,7 @@
       ],
       "attackDirection": "up",
       "showAttack": true,
-      "boundary": "cones",
+      "boundary": "flags",
       "ageMin": 10,
       "ageMax": 10,
       "minutes": 7,
@@ -403,7 +403,8 @@
         "mode": "training",
         "age": "U10"
       },
-      "savedAt": "2026-11-18T09:19:11.721Z"
+      "savedAt": "2026-11-18T09:42:24.850Z",
+      "revision": 2
     },
     {
       "version": 1,
