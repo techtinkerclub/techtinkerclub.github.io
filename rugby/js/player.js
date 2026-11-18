@@ -92,7 +92,7 @@ function showOutcomeDecision({jump=true}={}){
  const present=()=>{
   t=fork;
   $('branchDecisionQuestion').textContent='◆ '+d.branching.question;
-  $('branchDecisionCards').innerHTML=outcomeCardsMarkup(d,'choose');
+  $('branchDecisionCards').innerHTML=outcomeCardsMarkup(d,'choose',{cartoonMode:opts.cartoonMode});
   $('branchDecisionPanel').hidden=false;
   render();
   $('branchDecisionPanel').focus({preventScroll:true}); // Keep the pitch/page position stable while the choice panel opens.
