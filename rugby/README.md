@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.14.5 / Coach Edition v0.3.3
+# Rugby Coaching Studio — Classic v0.14.6 / Coach Edition v0.3.3
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
@@ -107,3 +107,9 @@ The catalogue-audit regression test checks every starter for unique IDs, valid o
 An automated audit is not a guarantee of law accuracy, safe physical contact technique, artistic quality or iOS/Android behaviour. Non-directional skill exercises may have deliberately different passing directions from match play. Check current RFU rules and obtain qualified contact coaching before running these activities.
 
 The full-library pass-direction regression now reviews ball transfers at the authored release/catch positions. Non-directional handling activities (circle, L-shaped and diamond) explicitly hide a fixed attack arrow and direct coaches to a directional drill when teaching legal backward match passes. The measured coaching-guide overlays in relevant free-pass and ball-placement lessons are preserved in editor, share view and movie rendering.
+
+## Ruck contact and compact pitch review (Classic v0.14.6)
+
+A second library audit found 24 formed-ruck and contest frames across seven drills in which opposing standing participants were 1.14–1.26 m apart, centre to centre. The library pairs are now about 0.43 m apart to show an actual joined contest. Auto-arranged rucks and staged tackle-to-ruck actions also use closer positions. The diagram checker reports a formed ruck with an on-feet opponent gap greater than 0.65 m. This is a drawing-quality heuristic, not an RFU law limit or instruction on safe physical contact.
+
+Fourteen older narrated drills previously used a generic 60 × 35 m pitch. Their pitches were resized for the illustrated activity: short pass/restart demonstrations use 12–16 m lengths; scrum and maul examples are around 20–24 m; kicking activities retain 32–45 m lengths. Short passing and restart examples were re-centred so they are not stranded in a corner. This affects starter examples only, not user-saved drills. Complete visual review on actual devices and movie export comparison remain outstanding.

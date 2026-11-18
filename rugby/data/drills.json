@@ -12642,7 +12642,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 289.9571428571428,
+              "y": 281.6523571,
               "rot": 0
             },
             {
@@ -12650,7 +12650,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 263.32857142857137,
+              "y": 271.6333571,
               "rot": 180
             },
             {
@@ -12737,7 +12737,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 289.9571428571428,
+              "y": 281.6523571,
               "rot": 0
             },
             {
@@ -12745,7 +12745,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 263.32857142857137,
+              "y": 271.6333571,
               "rot": 180
             },
             {
@@ -12832,7 +12832,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 257.3371428571428,
+              "y": 249.0323571,
               "rot": 0
             },
             {
@@ -12840,7 +12840,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 230.70857142857136,
+              "y": 239.0133571,
               "rot": 180
             },
             {
@@ -13490,7 +13490,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 289.9571428571428,
+              "y": 281.6523571,
               "rot": 0
             },
             {
@@ -13498,7 +13498,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 263.32857142857137,
+              "y": 271.6333571,
               "rot": 180
             },
             {
@@ -13595,7 +13595,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 289.9571428571428,
+              "y": 281.6523571,
               "rot": 0
             },
             {
@@ -13603,7 +13603,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 263.32857142857137,
+              "y": 271.6333571,
               "rot": 180
             },
             {
@@ -13700,7 +13700,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 257.3371428571428,
+              "y": 249.0323571,
               "rot": 0
             },
             {
@@ -13708,7 +13708,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 230.70857142857136,
+              "y": 239.0133571,
               "rot": 180
             },
             {
@@ -14033,8 +14033,8 @@
       "ageMin": 10,
       "ageMax": 10,
       "category": "Set piece",
-      "length": 60,
-      "width": 35,
+      "length": 24,
+      "width": 18,
       "objective": "Understand the roles, feed and exit of an uncontested U10 scrum.",
       "safety": "Use an unbound walk-through. Any engagement or contact must be led by a qualified scrum coach under the relevant age-grade rules.",
       "minutes": 8,
@@ -15056,8 +15056,8 @@
       "ageMin": 10,
       "ageMax": 10,
       "category": "Contact",
-      "length": 60,
-      "width": 35,
+      "length": 20,
+      "width": 15,
       "objective": "Recognise when an upright hold becomes a maul and how the ball leaves it.",
       "safety": "Walk through positions only. No holding, pulling, collapsing or driving in this demonstration; qualified supervision is required for contact practice.",
       "minutes": 8,
@@ -15507,8 +15507,8 @@
       "ageMin": 14,
       "ageMax": 14,
       "category": "Set piece",
-      "length": 60,
-      "width": 35,
+      "length": 24,
+      "width": 18,
       "objective": "Recognise the thrower, catcher, two lines and first receiver at an uncontested lineout.",
       "safety": "Uncontested and unlifted practice only. Keep a clear landing area and follow the current U14 rules before any progression.",
       "minutes": 8,
@@ -16098,8 +16098,8 @@
       "ageMin": 10,
       "ageMax": 10,
       "category": "Attack",
-      "length": 60,
-      "width": 35,
+      "length": 12,
+      "width": 9,
       "objective": "Recognise a safe backward pass to support before a carrier goes to ground.",
       "safety": "No opponent contact is shown or needed. Any later contact practice requires a qualified coach.",
       "minutes": 8,
@@ -16140,24 +16140,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 536.25,
+              "y": 337.5,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0,
               "ownerId": "a1"
             }
@@ -16174,24 +16174,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 536.25,
+              "y": 337.5,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 221.98204081632656,
-              "y": 322.0114285714286,
+              "x": 396.7230612,
+              "y": 190.5171429,
               "rot": 0,
               "ownerId": "a1",
               "transferKind": "set"
@@ -16236,24 +16236,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 536.25,
+              "y": 337.5,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 336.9820408163265,
-              "y": 412.0114285714286,
+              "x": 569.2230612,
+              "y": 325.5171429,
               "rot": 0,
               "ownerId": "a2",
               "transferKind": "pass"
@@ -16299,8 +16299,8 @@
       "ageMin": 10,
       "ageMax": 10,
       "category": "Set piece",
-      "length": 60,
-      "width": 35,
+      "length": 16,
+      "width": 12,
       "objective": "Understand the stationary free pass and when players may move in U10.",
       "safety": "No charging onto the pass or rushing an unready receiver. Walk through the restart initially.",
       "minutes": 8,
@@ -16341,24 +16341,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 381,
+              "y": 216,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 519,
+              "y": 324,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 200,
-              "y": 330,
+              "x": 381,
+              "y": 216,
               "rot": 0,
               "ownerId": "a1"
             }
@@ -16375,24 +16375,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 381,
+              "y": 216,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 519,
+              "y": 324,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 221.98204081632656,
-              "y": 322.0114285714286,
+              "x": 407.378449,
+              "y": 206.4137143,
               "rot": 0,
               "ownerId": "a1",
               "transferKind": "set"
@@ -16437,24 +16437,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 381,
+              "y": 216,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 519,
+              "y": 324,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 336.9820408163265,
-              "y": 412.0114285714286,
+              "x": 545.378449,
+              "y": 314.4137143,
               "rot": 0,
               "ownerId": "a2",
               "transferKind": "pass"
@@ -16500,8 +16500,8 @@
       "ageMin": 12,
       "ageMax": 12,
       "category": "Set piece",
-      "length": 60,
-      "width": 35,
+      "length": 14,
+      "width": 10,
       "objective": "Recognise a visible tap and the next action at an age-appropriate kick restart.",
       "safety": "No charging defenders. Only practise restart kicks permitted for the age group by the current rules.",
       "minutes": 8,
@@ -16542,24 +16542,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 536.25,
+              "y": 337.5,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0,
               "ownerId": "a1"
             }
@@ -16576,24 +16576,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 536.25,
+              "y": 337.5,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 221.98204081632656,
-              "y": 322.0114285714286,
+              "x": 396.7230612,
+              "y": 190.5171429,
               "rot": 0,
               "ownerId": "a1",
               "transferKind": "set"
@@ -16638,24 +16638,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 536.25,
+              "y": 337.5,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0,
               "transferKind": "tap"
             }
@@ -16699,24 +16699,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 536.25,
+              "y": 337.5,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 221.98204081632656,
-              "y": 322.0114285714286,
+              "x": 396.7230612,
+              "y": 190.5171429,
               "rot": 0,
               "ownerId": "a1",
               "transferKind": "set"
@@ -16761,24 +16761,24 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 200,
-              "y": 330,
+              "x": 363.75,
+              "y": 202.5,
               "rot": 0
             },
             {
               "id": "a2",
               "type": "attacker",
               "label": "A2",
-              "x": 315,
-              "y": 420,
+              "x": 536.25,
+              "y": 337.5,
               "rot": 0
             },
             {
               "id": "b",
               "type": "ball",
               "label": "",
-              "x": 336.9820408163265,
-              "y": 412.0114285714286,
+              "x": 569.2230612,
+              "y": 325.5171429,
               "rot": 0,
               "ownerId": "a2",
               "transferKind": "pass"
@@ -16824,8 +16824,8 @@
       "ageMin": 12,
       "ageMax": 12,
       "category": "Handling",
-      "length": 60,
-      "width": 35,
+      "length": 32,
+      "width": 18,
       "objective": "Recognise a punt from hand and an uncontested reception.",
       "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
@@ -17086,8 +17086,8 @@
       "ageMin": 12,
       "ageMax": 12,
       "category": "Handling",
-      "length": 60,
-      "width": 35,
+      "length": 32,
+      "width": 18,
       "objective": "Recognise how a low kick from hand can reach space behind a defence.",
       "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
@@ -17348,8 +17348,8 @@
       "ageMin": 12,
       "ageMax": 12,
       "category": "Handling",
-      "length": 60,
-      "width": 35,
+      "length": 32,
+      "width": 18,
       "objective": "Recognise a short chip into space and a safe, uncontested collection.",
       "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
@@ -17610,8 +17610,8 @@
       "ageMin": 12,
       "ageMax": 12,
       "category": "Handling",
-      "length": 60,
-      "width": 35,
+      "length": 32,
+      "width": 18,
       "objective": "Recognise space across the field and the direction of a cross-field kick.",
       "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
@@ -17872,8 +17872,8 @@
       "ageMin": 14,
       "ageMax": 14,
       "category": "Handling",
-      "length": 60,
-      "width": 35,
+      "length": 32,
+      "width": 18,
       "objective": "Recognise the intended direction of a kick from hand behind a breakdown.",
       "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
@@ -18134,8 +18134,8 @@
       "ageMin": 12,
       "ageMax": 12,
       "category": "Set piece",
-      "length": 60,
-      "width": 35,
+      "length": 34,
+      "width": 20,
       "objective": "Recognise the kick and receiving roles at a permitted kick-off or restart.",
       "safety": "Uncontested kicking practice only, with a clear lane and safe retrieval. Use only the kick types permitted by the current age-grade rules; no contact with airborne players.",
       "minutes": 8,
@@ -18396,8 +18396,8 @@
       "ageMin": 10,
       "ageMax": 10,
       "category": "Attack",
-      "length": 60,
-      "width": 35,
+      "length": 18,
+      "width": 12,
       "objective": "Recognise a try as grounding the ball in the opponents' in-goal area.",
       "safety": "No diving, chasing into the boundary, or contested grounding. Use a suitable surface and leave space beyond the line.",
       "minutes": 8,
@@ -18597,8 +18597,8 @@
       "ageMin": 14,
       "ageMax": 14,
       "category": "Set piece",
-      "length": 60,
-      "width": 35,
+      "length": 45,
+      "width": 20,
       "objective": "Identify the place-kicker's starting position and the intended goal line.",
       "safety": "Use an empty kicking lane and age-appropriate practice only. No one stands in the kick's path.",
       "minutes": 8,
@@ -19431,7 +19431,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 289.9571428571428,
+              "y": 281.6523571,
               "rot": 0
             },
             {
@@ -19439,7 +19439,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 263.32857142857137,
+              "y": 271.6333571,
               "rot": 180
             },
             {
@@ -19536,7 +19536,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 289.9571428571428,
+              "y": 281.6523571,
               "rot": 0
             },
             {
@@ -19544,7 +19544,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 263.32857142857137,
+              "y": 271.6333571,
               "rot": 180
             },
             {
@@ -19641,7 +19641,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 257.3371428571428,
+              "y": 249.0323571,
               "rot": 0
             },
             {
@@ -19649,7 +19649,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 230.70857142857136,
+              "y": 239.0133571,
               "rot": 180
             },
             {
@@ -22071,7 +22071,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 276.65714285714284,
+              "y": 267.8969481,
               "rot": 0
             },
             {
@@ -22096,7 +22096,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 250.02857142857147,
+              "y": 258.7887662,
               "rot": 180
             },
             {
@@ -22202,7 +22202,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 276.65714285714284,
+              "y": 267.8969481,
               "rot": 0
             },
             {
@@ -22227,7 +22227,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 250.02857142857147,
+              "y": 258.7887662,
               "rot": 180
             },
             {
@@ -22333,7 +22333,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 244.03714285714287,
+              "y": 235.2769481,
               "rot": 0
             },
             {
@@ -22358,7 +22358,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 217.40857142857146,
+              "y": 226.1687662,
               "rot": 180
             },
             {
@@ -25746,7 +25746,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 276.65714285714284,
+              "y": 267.8969481,
               "rot": 0
             },
             {
@@ -25771,7 +25771,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 250.02857142857147,
+              "y": 258.7887662,
               "rot": 180
             },
             {
@@ -25925,7 +25925,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 276.65714285714284,
+              "y": 267.8969481,
               "rot": 0
             },
             {
@@ -25950,7 +25950,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 250.02857142857147,
+              "y": 258.7887662,
               "rot": 180
             },
             {
@@ -26104,7 +26104,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 244.03714285714287,
+              "y": 235.2769481,
               "rot": 0
             },
             {
@@ -26129,7 +26129,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 217.40857142857146,
+              "y": 226.1687662,
               "rot": 180
             },
             {
@@ -26283,7 +26283,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 244.03714285714287,
+              "y": 235.2769481,
               "rot": 0
             },
             {
@@ -26308,7 +26308,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 217.40857142857146,
+              "y": 226.1687662,
               "rot": 180
             },
             {
@@ -27305,7 +27305,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 276.65714285714284,
+              "y": 267.8969481,
               "rot": 0
             },
             {
@@ -27330,7 +27330,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 250.02857142857147,
+              "y": 258.7887662,
               "rot": 180
             },
             {
@@ -27454,7 +27454,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 276.65714285714284,
+              "y": 267.8969481,
               "rot": 0
             },
             {
@@ -27479,7 +27479,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 250.02857142857147,
+              "y": 258.7887662,
               "rot": 180
             },
             {
@@ -27603,7 +27603,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 244.03714285714287,
+              "y": 235.2769481,
               "rot": 0
             },
             {
@@ -27628,7 +27628,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 217.40857142857146,
+              "y": 226.1687662,
               "rot": 180
             },
             {
@@ -27752,7 +27752,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 244.03714285714287,
+              "y": 235.2769481,
               "rot": 0
             },
             {
@@ -27777,7 +27777,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 217.40857142857146,
+              "y": 226.1687662,
               "rot": 180
             },
             {
@@ -46358,7 +46358,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 276.65714285714284,
+              "y": 268.3523571,
               "rot": 0
             },
             {
@@ -46383,7 +46383,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 250.02857142857147,
+              "y": 258.3333571,
               "rot": 180
             },
             {
@@ -46489,7 +46489,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 276.65714285714284,
+              "y": 268.3523571,
               "rot": 0
             },
             {
@@ -46514,7 +46514,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 250.02857142857147,
+              "y": 258.3333571,
               "rot": 180
             },
             {
@@ -46620,7 +46620,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 244.03714285714287,
+              "y": 235.7323571,
               "rot": 0
             },
             {
@@ -46645,7 +46645,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 217.40857142857146,
+              "y": 225.7133571,
               "rot": 180
             },
             {
@@ -46751,7 +46751,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 450,
-              "y": 244.03714285714287,
+              "y": 235.7323571,
               "rot": 0
             },
             {
@@ -46776,7 +46776,7 @@
               "type": "defender",
               "label": "D2",
               "x": 450,
-              "y": 217.40857142857146,
+              "y": 225.7133571,
               "rot": 180
             },
             {

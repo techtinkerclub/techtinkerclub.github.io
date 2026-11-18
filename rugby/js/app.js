@@ -23,9 +23,9 @@ import {deriveDrill,readDerivation,relationLabel,rekeyImportedFamilies} from './
 import {timingTrackHTML,createTimingTrackEditor} from './timing-tracks.js?v=0.12.20';
 import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.12.34';
 import {createCamera} from './camera.js?v=0.5.0';
-import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactMarkerShape,contactLabels,PLAYER_POSES} from './contact.js?v=0.12.33';
+import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactMarkerShape,contactLabels,PLAYER_POSES} from './contact.js?v=0.12.34';
 import {inspectedPose} from './pose-inspector.js?v=0.12.17';
-import {PHASES,supportTitle,validPhase,nextPhase,team,roles,cleanBreakdowns,candidates,advance} from './breakdown.js?v=0.12.33';
+import {PHASES,supportTitle,validPhase,nextPhase,team,roles,cleanBreakdowns,candidates,advance} from './breakdown.js?v=0.12.34';
 import {insertable,fillMissing,syncInsertedCopies,scopeIndices} from './insertion.js?v=0.8.0';
 import {breakdownContext} from './breakdown-context.js?v=0.5.7';
 import {groupSnapshot,groupTranslate,groupRotate} from './group.js?v=0.6.0';
@@ -37,14 +37,14 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.13.11';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.13.11';
+import {renderScene} from './scene.js?v=0.13.12';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.13.12';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.1';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
-import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.25';
+import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.26';
 initWorkspace();
-const SEEDS = await fetch(new URL('../data/drills.json?v=0.13.3', import.meta.url)).then(r => {
+const SEEDS = await fetch(new URL('../data/drills.json?v=0.13.4', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }).then(data => {

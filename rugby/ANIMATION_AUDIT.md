@@ -36,3 +36,9 @@ Rules and safety references:
 - https://help.rfu.com/support/solutions/articles/103000390646-how-is-a-match-restarted-in-the-age-grade-game-if-an-attacking-player-is-held-up-in-goal-
 
 The source and data changes are committed to GitHub. The repository tests have been added but **an actual Safari/Chrome visual replay and exported-video comparison of all 142 drills has not been completed**. Static validation alone is not an independent rugby-law, safeguarding or electrical-like safety sign-off. Visual QA is still required before representing every drill as production-perfect.
+
+## Further geometry review — 17 November 2026
+
+The first audit checked membership and movement speed but missed the distance between opposing players in an already formed ruck. On rechecking the complete 142-drill starter catalogue, 24 stages across seven ruck demonstrations had the on-feet contesting players positioned 1.14–1.26 m apart (centre to centre). Saved participant pairs have been brought to approximately 0.43 m, and future presets were made closer. The editor checker and new regression test now check a 0.65 m maximum centre-to-centre separation in formed non-pad rucks. This is a visual teaching-diagram heuristic, not a rugby law or a physical tackling/binding coaching instruction.
+
+Fourteen generic 60 × 35 m starter drill pitches were reduced according to the type of action, retaining space for kicking and moving short-range passing demonstrations into the middle of their pitches. Measured lesson-specific distances in other drills were preserved. Visual replay and cross-device/video verification are still required before treating this as a finished quality review.

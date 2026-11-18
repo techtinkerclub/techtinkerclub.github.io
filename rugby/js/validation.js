@@ -1,8 +1,8 @@
 // Coach's diagram checker, not a referee or contact technique validator.
-import {playbackData} from './scene.js?v=0.13.11';
+import {playbackData} from './scene.js?v=0.13.12';
 import {pitchGeometry} from './pitch.js?v=0.12.23';
 import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.12.34';
-import {posesFor} from './contact.js?v=0.12.33';
+import {posesFor} from './contact.js?v=0.12.34';
 import {decisionLocation,trainingTransition,trainingPoses} from './training.js?v=0.12.0';
 import {routeSamples} from './routes.js?v=0.4.3';
 const team=o=>['attacker','shield'].includes(o?.type)?1:['defender','bagplayer'].includes(o?.type)?-1:0;
@@ -51,6 +51,22 @@ export function checkDrill(raw,{age=Number(raw.ageMin)||10,direction='auto',offs
     }
    }
    if(m.type==='ruck'&&members.length&&!(m.breakdown?.mode==='pad'&&m.breakdown.phase==='support')){coverage.breakdown++;const up=members.filter(p=>onFeet(p.pose));if(![1,-1].every(t=>up.some(p=>team(lookup(f,p.id))===t)))add('breakdown',i,[m.id],'Ruck marker lacks an on-feet participant from each team. Check the formation.')}
+   // A formed ruck needs on-feet opponents in visible contact, not just
+   // the correct membership list. Pad drills are separate non-live formations.
+   if(m.type==='ruck'&&members.length&&m.breakdown?.mode!=='pad'&&
+      (!phase||['ruck','contest','secured'].includes(phase))){
+    const active=members.filter(p=>['bound','standing','crouched','ready'].includes(p.pose))
+      .map(p=>lookup(f,p.id)).filter(Boolean);
+    const attack=active.filter(p=>team(p)===1),defence=active.filter(p=>team(p)===-1);
+    if(attack.length&&defence.length){
+     coverage.breakdown++;
+     const gap=Math.min(...attack.flatMap(a=>defence.map(b=>
+      dist(g.toView(a.x,a.y),g.toView(b.x,b.y))/g.scale)));
+     // 0.65 m is a schematic diagram heuristic, not a rugby-law limit.
+     if(gap>.65)add('breakdown',i,[m.id,...attack.map(p=>p.id),...defence.map(p=>p.id)],
+       'Ruck members from opposing sides are '+gap.toFixed(2)+' m apart (centre to centre). Bring them into visible contact or mark this as an approach stage.');
+    }
+   }
    if(phase==='release'){coverage.breakdown++;const b=lookup(f,m.breakdown.ballId);if(!b||b.ownerId||!['presented','secured','grounded'].includes(b.groundState))add('breakdown',i,[m.id],'Release stage does not show the ball available on the ground.');if(members.some(p=>p.pose==='tackling'))add('breakdown',i,[m.id],'Tackler remains in the tackle pose at release.')}
    if(age===10&&f.guide?.kind==='lineout'&&(!old||old.guide?.id!==f.guide.id)){coverage.age++;add('age',i,[],'U10 match play uses a free pass after touch, not a lineout.')}
   }
