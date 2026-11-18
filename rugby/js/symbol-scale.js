@@ -8,7 +8,7 @@ const MIN_COACHING_FACTOR = 0.80;
 // minima, preserving relative visual weight and contact-shape proportions.
 const FIELD_COACH_MINIMUM = Object.freeze({
  player:.29,ball:.18,cone:.17,flag:.19,shieldItem:.24,
- bag:.23,sausage:.24,donut:.25,ladder:.24,other:.22
+ bag:.23,sausage:.24,donut:.25,ladder:.24,hurdle:.23,hoop:.23,slalomPole:.18,markerDisc:.16,other:.22
 });
 function fullFieldMinimum(o){
  if(playerTypes.has(o?.type))return FIELD_COACH_MINIMUM.player;
@@ -32,6 +32,10 @@ export function symbolFactors(o,g,pose){
   case 'sausage': x=1.25*k/58;y=.35*k/18;break;
   case 'donut': x=.75*k/(o.donutState==='down'?46:20);y=.75*k/46;if(o.donutState!=='down')x=.30*k/20;break;
   case 'ladder': x=.45*k/24;y=4*k/50;break;
+  case 'hurdle': x=.55*k/50;y=.30*k/28;break;
+  case 'hoop': x=.55*k/48;y=.55*k/34;break;
+  case 'slalomPole': x=.12*k/24;y=.60*k/54;break; // schematic upright equipment marker
+  case 'markerDisc': x=.20*k/36;y=.20*k/24;break;
   case 'label':case 'decision': return [1,1];
  }
  if(mode==='coaching'){
@@ -44,7 +48,7 @@ export function symbolFactors(o,g,pose){
  return [x,y];
 }
 export function symbolTransform(o,g,pose){const [x,y]=symbolFactors(o,g,pose);return 'scale('+x+' '+y+')'}
-export function symbolRadius(o,g,pose){const [x,y]=symbolFactors(o,g,pose);const base=o.type==='ladder'?[12,25]:o.type==='donut'?[o.donutState==='down'?23:10,23]:o.type==='sausage'?[29,9]:o.type==='bag'?[10,21]:o.type==='shieldItem'?[17,6]:o.type==='ball'?[10,6]:o.type==='cone'?[11,12]:pose==='grounded'?[12,23]:pose==='ready'?[22,15]:[16,20];return Math.max(base[0]*x,base[1]*y)}
+export function symbolRadius(o,g,pose){const [x,y]=symbolFactors(o,g,pose);const base=o.type==='hoop'?[24,17]:o.type==='hurdle'?[25,15]:o.type==='slalomPole'?[12,27]:o.type==='markerDisc'?[18,12]:o.type==='ladder'?[12,25]:o.type==='donut'?[o.donutState==='down'?23:10,23]:o.type==='sausage'?[29,9]:o.type==='bag'?[10,21]:o.type==='shieldItem'?[17,6]:o.type==='ball'?[10,6]:o.type==='cone'?[11,12]:pose==='grounded'?[12,23]:pose==='ready'?[22,15]:[16,20];return Math.max(base[0]*x,base[1]*y)}
 export const symbolLabelSize = g => g?.fieldContext?.mode==='field'?10:13;
 export const labelOffset=(o,g,pose)=>o.type==='label'?4:g?.fieldContext?.mode==='field'?Math.max(9,symbolRadius(o,g,pose)+5):Math.max(13,symbolRadius(o,g,pose)+11);
 // A player's arrow points forward (local -Y); put the caption behind their
