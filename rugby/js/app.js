@@ -406,7 +406,7 @@ function compareOutcomePaths({atFork=false}={}){
  decisionPaused=atFork;
  try{
   $('outcomeMapTitle').textContent='◆ '+branchInfo(drill).question;
-  $('outcomeMapCards').innerHTML=outcomeCardsMarkup(drill,'edit');
+  $('outcomeMapCards').innerHTML=outcomeCardsMarkup(drill,'edit',{cartoonMode});
   $('outcomeMapDialog').showModal();
  }catch(err){note('Could not display the decision comparison: '+err.message)}
 }
