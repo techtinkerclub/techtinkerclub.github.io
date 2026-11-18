@@ -1,4 +1,4 @@
-import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.17.0';
+import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.18.0';
 import {playbackData,renderScene} from './scene.js?v=0.20.5';
 import {publicVideoBuilder} from './public-video.js?v=0.20.5';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -21,7 +21,7 @@ function thumb(d){
 function card(d,f){const animated=isAnimated(d),kind=isRules(d)?'RULES WALK-THROUGH':animated?'ANIMATED DRILL':'COACHING CARD',href=esc(drillHref(d.id,f));return '<article class="drill-card"><a class="thumb '+(animated?'':'card-only')+'" href="'+href+'" aria-label="View '+esc(d.title)+'">'+thumb(d)+'</a><div class="card-body"><div class="card-type">'+kind+' · '+esc(d.category)+'</div><h3>'+esc(d.title)+'</h3><div class="card-meta">'+(d.publishedAt?'Updated '+esc(new Date(d.publishedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}))+' · '+(Number.isInteger(d.publishedRevision)?'Revision '+d.publishedRevision:'Legacy revision')+' · ':'')+esc(ageLabel(d))+' · '+esc(d.minutes)+' min'+(animated?' · '+d.frames.length+' steps':'')+' · '+esc(d.length)+' × '+esc(d.width)+' m</div><p class="card-objective">'+esc(d.objective)+'</p><a class="view-link" href="'+href+'">'+(animated?'Watch drill':'Read coaching card')+'<span aria-hidden="true">›</span></a>'+(animated?'<button type="button" class="add-to-video" data-add-video="'+esc(d.id)+'">+ Add to video</button>':'')+'</div></article>'}
 function render(reset=true){
  if(reset)limit=18;const f=read();replaceUrl(f);
- for(const b of $('quickFilters').querySelectorAll('button')){const k=b.dataset.quick,on=k==='all'?!f.age&&!f.category&&!f.format&&!f.q:k==='u10'?f.age==='10':f.format===k;b.setAttribute('aria-pressed',String(on))}
+ for(const b of $('quickFilters').querySelectorAll('button')){const k=b.dataset.quick,on=k==='all'?!f.age&&!f.category&&!f.format&&!f.q:k==='u10'?f.age==='10':k==='test'?f.category==='Test drills':f.format===k;b.setAttribute('aria-pressed',String(on))}
  if(!ready)return;
  const list=filterDrills(drills,f);$('count').textContent=list.length+' matching · '+list.filter(isAnimated).length+' animated';$('results').innerHTML=list.slice(0,limit).map(d=>card(d,f)).join('');$('empty').hidden=!!list.length;$('more').hidden=list.length<=limit;$('more').textContent='Show more ('+Math.max(0,list.length-limit)+' remaining)';refreshVideoCards();
 }
@@ -33,7 +33,7 @@ async function copy(value,title){
 }
 for(const id of Object.values(fields))$(id).addEventListener(id==='search'?'input':'change',()=>render());
 $('clear').onclick=()=>{write(readFilters(''));render();$('search').focus()};
-$('quickFilters').onclick=e=>{const b=e.target.closest('[data-quick]');if(!b)return;const f=read(),k=b.dataset.quick;if(k==='all')write(readFilters(''));else if(k==='u10')$('age').value=f.age==='10'?'':'10';else $('format').value=f.format===k?'':k;render()};
+$('quickFilters').onclick=e=>{const b=e.target.closest('[data-quick]');if(!b)return;const f=read(),k=b.dataset.quick;if(k==='all')write(readFilters(''));else if(k==='u10')$('age').value=f.age==='10'?'':'10';else if(k==='test')$('category').value=f.category==='Test drills'?'':'Test drills';else $('format').value=f.format===k?'':k;render()};
 $('more').onclick=()=>{limit+=18;render(false)};
 $('shareLibrary').onclick=()=>copy(new URL('./library.html',location.href).href,'Library link');
 $('feedback').onclick=()=>copy(feedbackText(null,new URL('./library.html',location.href).href),'Review questions');
