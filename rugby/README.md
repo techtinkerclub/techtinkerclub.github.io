@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.18.9
+# Rugby Coaching Studio — Classic Studio v0.19.0
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -197,3 +197,9 @@ In the public library select **Add to video** on published drills, arrange the o
 - **Multiple-player actions:** Ctrl-click two or more players (or use Group select) and right-click any selected player for context-sensitive non-contact or contact actions. U7/U8 use tag/touch, U9 can tackle, U10+ can also arrange rucks and mauls when ball/participant conditions permit. These use the same editable contact markers as the normal editor.
 
 The added skills are schematic coaching aids. A tag/removal cue does not perform automatic referee logic or physically stop a pre-authored running path; make the stop and follow-up pass clear in the drill sequence.
+
+## Contextual Actions and tag/touch distinction (v0.19.0)
+
+Right-click a player or a selected group → **Actions…**. Choose a player touch, an agility target touch, a rugby tag removal or an eligible tackle/ruck/maul, then configure the details. Irrelevant actions are unavailable. A touch does not require a tag belt. The tag action is separate and requires a tagged ball carrier and an opposing tagger with two attached strips; this is NOT a physical tackle. Right-click a cone → **Change cone colour…** to focus its fixed-colour Object selector.
+
+Tag belts have matching left/right strips with the coach's selected colour (red, blue, green, yellow). Colour and the selected hip are separate. RFU tag-rugby guidance is displayed at the action; subsequent stop/pass/tag-return steps are authored explicitly rather than invented. Player touches, target touches and tag removals have different diagrams and cue colours. Both video builder actions and contact dialogs have more consistent spacing; tag-only controls hide for a normal touch. Contact arrangements are validated before applying to prevent failed actions leaving an empty step.
