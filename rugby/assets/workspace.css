@@ -110,6 +110,7 @@ button.danger-action:hover:not(:disabled) { border-color:#e67e73;background:#4b2
 .object-menu { position:fixed;z-index:50;display:grid;gap:2px;min-width:228px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);overflow:auto;background:#24352c;border:1px solid #58705f;border-radius:8px;box-shadow:0 10px 30px #0008;padding:5px; }
 .object-menu[hidden] { display:none!important; }
 .object-menu button { display:flex;justify-content:space-between;align-items:center;text-align:left;border:1px solid transparent;background:transparent;border-radius:4px;padding:8px 10px;font-size:12px; }
+.object-menu button[hidden],.object-menu #stackOptions[hidden] { display:none!important; }
 .object-menu button:hover,.object-menu button:focus-visible { background:#354a3b;border-color:#647e66; }
 .object-menu .menu-label { font-weight:650;font-size:12px;color:#d6f77b;padding:6px 10px;overflow-wrap:anywhere; }
 .menu-separator { border-top:1px solid var(--line);margin:3px 4px; }
