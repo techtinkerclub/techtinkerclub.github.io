@@ -91,7 +91,7 @@ const app=file('js/app.js');
 assert.match(app,/function beginDecisionPlacement\(/,'Main Classic action must use guided decision placement');
 assert.match(app,/createDecisionOnRun\(drill,fork,placement.actorId/,'Decision is created on the exact clicked run');
 assert.match(app,/pendingDecisionPlacement=\{step:idx,actorId:o.id,anchor,markerId:uid\(\)\}/,'The running path is not modified until confirmation');
-assert.match(app,/addDecisionButton\.textContent='◆ Add decision to this run'/);
+assert.match(app,/\$\('decisionToolStart'\)\.onclick=/);\n assert.doesNotMatch(app,/addDecisionButton\.textContent/);
 assert.match(app,/function decisionInspector\(o\)/);
 assert.match(app,/function compareOutcomePaths/);
 assert.match(app,/showOutcomeDecision|compareOutcomePaths\(\{atFork:true\}\)/);

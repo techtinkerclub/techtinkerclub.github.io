@@ -68,7 +68,7 @@ assert.equal(readBack.drill.branching.choices.length,2,'Sharing lost the alterna
 
 for(const editor of ['index.html','coach/index.html']){
  const page=read(editor);
- for(const id of ['outcomeBar','createOutcomes','outcomeControls','outcomeA','outcomeB','outcomePrompt','outcomeDialog','outcomeSave'])
+ for(const id of ['outcomeBar','decisionToolStart','outcomeControls','outcomeA','outcomeB','outcomePrompt','outcomeDialog','outcomeSave'])
   assert.ok(page.includes('id="'+id+'"'),editor+' missing '+id);
 }
 for(const player of ['play.html','coach/play.html']){
