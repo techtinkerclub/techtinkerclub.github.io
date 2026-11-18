@@ -1,152 +1,179 @@
-// IMAGE-BASED Minion Mode. The artwork is extracted from the user-supplied 90-degree
-// top-down pose sheet. This skin cannot change any drill positions, timing or ball state.
+// Independent-head, image-based Minion Mode. Visual translation ONLY: the editor,
+// possession, coaching gaze, tackling, ball physics and timing use the same data
+// and shared engines as Classic mode. Every source pose is ball- and pad-free.
 import {canCarry} from './possession.js?v=0.19.1';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
-import {MINION_ATLAS_URI,MINION_TILE,MINION_COLUMNS,MINION_POSES_PER_TEAM} from './minion-atlas-v2.js?v=1';
-import {COACH_ATLAS_URI,COACH_TILE,COACH_COLUMNS,COACH_GESTURES} from './coach-atlas-data.js?v=1';
+import {playerHeadAngle} from './player-gaze.js?v=3';
+import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI} from './minion-rig-data.js?v=1';
+import {NOSE_COACH_URI,NOSE_COACH_TILE,NOSE_COACH_COLS} from './coach-nose-data.js?v=1';
 const arrowRE=/<path d="M-5 -12 L0 -19 L5 -12 Z" fill="#f7fff6"\s*\/>|<path d="M-5 -8L0 -16L5 -8Z" fill="#fff"\s*\/>|<path d="M-5 -12L0 -19L5 -12Z" fill="#fff"\s*\/>|<path d="M-4 -15L0 -21L4 -15Z" fill="#fff"\s*\/>|<path d="M-5 -7L0 -14L5 -7Z" fill="#fff"\s*\/>/g;
-const safeAngle=n=>Number.isFinite(n)?n.toFixed(1):'0';
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
 const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0))>>>0;return h};
 
-/** Add once at the SVG root so that exports and canvases contain the actual raster artwork. */
+/** Embedded assets also survive self-contained SVG, printed coaching sheets and video canvas exports. */
 export function cartoonSpriteDefs(){
- return '<defs><image id="rugby-minion-atlas" href="'+MINION_ATLAS_URI+
-  '" width="'+(MINION_COLUMNS*MINION_TILE)+'" height="'+(4*MINION_TILE)+'" />'+
-  '<image id="rugby-coach-atlas" href="'+COACH_ATLAS_URI+'" width="'+(COACH_COLUMNS*COACH_TILE)+'" height="'+(2*COACH_TILE)+'" /></defs>';
+ return '<defs><image id="rugby-minion-body-v9" href="'+RIG_BODY_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
+  '<image id="rugby-minion-head-v9" href="'+RIG_HEAD_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
+  '<image id="rugby-coach-nose-v9" href="'+NOSE_COACH_URI+'" width="'+(NOSE_COACH_COLS*NOSE_COACH_TILE)+'" height="'+(2*NOSE_COACH_TILE)+'"/></defs>';
 }
-// Visual-only mapping of the existing game states to the extracted, ball-free sheet.
-function spriteIndex(o,pose,objects,previous,frame,progress){
- const members=(frame?.objects||[]).filter(m=>['tackle','ruck','maul','scrum'].includes(m.type)&&m.members?.some(member=>member.id===o.id));
- const inContact=members.find(m=>m.type==='tackle'),inRuck=members.find(m=>m.type==='ruck'),inMaul=members.find(m=>m.type==='maul');
+function movingInfo(o,previous,frame,p){
+ const before=previous?.objects?.find(q=>q.id===o.id),after=frame?.objects?.find(q=>q.id===o.id);
+ if(!before||!after)return {moving:false,distance:0,speed:0,turning:false};
+ const dist=Math.hypot(after.x-before.x,after.y-before.y);
+ const range=frame.timing?.[o.id]||{start:0,end:100};
+ const start=clamp((Number(range.start)||0)/100,0,1),end=clamp(Number.isFinite(Number(range.end))?Number(range.end)/100:1,0,1);
+ const path=frame.paths?.[o.id];
+ const changing=!!path?.points?.length||Math.abs((Number(after.rot)||0)-(Number(before.rot)||0))>35;
+ return {moving:(dist>2||!!path?.points?.length)&&p>=start&&p<=end,distance:dist,
+  speed:dist/Math.max(.1,Number(frame.seconds)||2),turning:changing};
+}
+function currentBall(o,previous,frame){
+ const balls=(frame?.objects||[]).filter(q=>q.type==='ball');
+ const previously=id=>previous?.objects?.find(q=>q.id===id);
+ return {
+  held:balls.find(q=>q.ownerId===o.id),
+  received:balls.find(q=>q.ownerId===o.id&&previously(q.id)?.ownerId!==o.id),
+  passed:balls.find(q=>previously(q.id)?.ownerId===o.id&&q.ownerId!==o.id&&q.transferKind==='pass'),
+  all:balls
+ };
+}
+function inWindow(frame,id,p,lead=.07,trail=.15){
+ const v=frame?.timing?.[id]||{start:30,end:70};
+ return p>=Math.max(0,Number(v.start)/100-lead)&&p<=Math.min(1,Number(v.end)/100+trail);
+}
+// The player pose is authored by the *same* contact/skill model as Classic mode.
+// This layer only chooses which existing original artwork best illustrates it.
+export function cartoonPoseIndex(o,pose,objects,previous,frame,p=1){
+ const markers=(frame?.objects||[]).filter(m=>['tackle','ruck','maul','scrum'].includes(m.type)&&m.members?.some(v=>v.id===o.id));
+ const tackle=markers.find(m=>m.type==='tackle'),ruck=markers.find(m=>m.type==='ruck'),maul=markers.find(m=>m.type==='maul');
+ const ball=currentBall(o,previous,frame),move=movingInfo(o,previous,frame,p);
  if(pose==='grounded'){
-  const earlier=previous?.objects?.find(p=>p.id===o.id)?.playerPose;
-  // Transitional loss-of-balance sprite before the saved grounded state.
-  if(earlier&&earlier!=='grounded'&&progress<.35)return 12;
-  return 6;
+  if(ball.all.some(b=>(b.ownerId===o.id||!b.ownerId)&&
+    (b.groundState==='presented'||b.transferKind==='presentation')) )return 17;
+  if(ball.held?.groundState==='grounded')return 12;
+  const earlier=previous?.objects?.find(q=>q.id===o.id)?.playerPose;
+  if(earlier&&earlier!=='grounded'&&p<.34)return 15;
+  return 16;
  }
- if(pose==='recovering'||pose==='kneeling')return 7;
- if(pose==='tackling')return inContact&&progress>.55?5:4;
- if(pose==='held')return 4;
- if(pose==='bound')return inMaul?14:inRuck?13:8;
- if(pose==='ready'||pose==='crouched')return 3;
- const before=previous?.objects?.find(p=>p.id===o.id),end=frame?.objects?.find(p=>p.id===o.id);
- const balls=frame?.objects?.filter(b=>b.type==='ball')||[];
- if(pose==='standing'&&previous&&frame){
-  const passing=balls.some(b=>previous.objects?.find(q=>q.id===b.id)?.ownerId===o.id&&b.ownerId!==o.id&&b.transferKind==='pass');
-  const receiving=balls.some(b=>b.ownerId===o.id&&previous.objects?.find(q=>q.id===b.id)?.ownerId!==o.id&&b.transferKind==='pass');
-  if((passing||receiving)&&progress>=.25&&progress<=.85)return 11; // empty hands; ball stays separate
+ if(pose==='recovering'||pose==='kneeling')return 18;
+ if(o.type==='shield')return 23;
+ if(o.type==='bagplayer')return 24;
+ if(pose==='tackling')return tackle&&p>=.53?14:13;
+ if(pose==='held')return 14;
+ if(pose==='bound')return maul?22:ruck?.breakdown?.phase==='clearout'?21:20;
+ if(pose==='crouched')return ruck?21:3;
+ if(pose==='ready')return 3;
+ if(tackle&&tackle.members?.some(m=>m.id===o.id&&m.pose==='tackling'))return p<.5?13:14;
+ if(maul)return 22;
+ if(ruck)return ruck.breakdown?.phase==='clearout'?21:20;
+ if(ball.passed&&inWindow(frame,ball.passed.id,p,.23,.1)){
+  const when=frame.timing?.[ball.passed.id]||{start:35};
+  return p<Number(when.start)/100?8:9;
  }
- if(before&&end&&pose==='standing'){
-  const distance=Math.hypot((Number(end.x)||0)-(Number(before.x)||0),(Number(end.y)||0)-(Number(before.y)||0));
-  const timing=frame?.timing?.[o.id]||{start:0,end:100},start=Number(timing.start)/100,finish=Number(timing.end)/100;
-  if(distance>2&&progress>=start&&progress<=finish){
-   if(Math.abs((Number(end.rot)||0)-(Number(before.rot)||0))>32)return 10; // changing direction
-   const hasCarrier=frame.objects?.some(ball=>ball.type==='ball'&&ball.ownerId&&ball.ownerId!==o.id);
-   if(o.type==='attacker'&&hasCarrier&&distance>3&&distance/(Number(frame?.seconds)||2)<35)return 15; // supporting run
-   return distance/(Number(frame?.seconds)||2)>35?2:1;
-  }
+ if(ball.received&&inWindow(frame,ball.received.id,p,.06,.1)){
+  if(ball.received.transferKind==='pickup')return 11;
+  return 10;
  }
- return hash(o.id)%5===0?9:0;
+ if(ball.held?.groundState==='grounded')return 12;
+ if(ball.held&&ball.held.groundState!=='presented'&&move.moving)return move.speed>42?2:7;
+ if(ball.held)return 7;
+ if(move.moving){
+  if(move.turning)return 4;
+  if(move.speed>42)return 2;
+  const anotherCarrier=ball.all.some(b=>b.ownerId&&b.ownerId!==o.id);
+  return anotherCarrier&&o.type==='attacker'?19:1;
+ }
+ if(o.headMode==='player'&&o.headTargetId)return 6;
+ return 0;
 }
-// An equipped pad belongs to the player's model even when the character body
-// is replaced by artwork. Draw equipment AFTER the sprite so it remains visible.
-function attachedEquipmentGraphic(o){
+// Brief five-sample averaging softens abrupt look-before-pass onset/return,
+// without calculating separate cartoon tactics or changing authored targeting.
+function smoothGaze(o,objects,g,previous,frame,p){
+ const offsets=[-.085,-.045,0,.045,.085],weights=[1,2,3,2,1];
+ let sum=0,weight=0;
+ for(let i=0;i<offsets.length;i++){
+  const value=playerHeadAngle(o,objects,g,previous,frame,clamp(p+offsets[i],0,1));
+  if(Number.isFinite(value)){sum+=value*weights[i];weight+=weights[i];}
+ }
+ return weight?sum/weight:0;
+}
+function bodyEquipment(o){
  if(o.type==='shield')return '<g class="minion-equipment-overlay" aria-label="Tackle shield carried">'+
-  '<rect x="-17" y="-19" width="34" height="16" rx="4" fill="#31444e" stroke="#d6e7ed" stroke-width="2"/>'+
-  '<path d="M-12 -11H12" fill="none" stroke="#85aab5" stroke-width="2"/>'+
-  '<path d="M-11 -19V-23M11 -19V-23" fill="none" stroke="#131c24" stroke-width="2.5"/>'+
-  '</g>';
+  '<rect x="-18" y="-25" width="36" height="20" rx="5" fill="#31444e" stroke="#d6e7ed" stroke-width="2.2"/>'+
+  '<path d="M-11 -15H11" stroke="#85aab5" stroke-width="2"/>'+
+  '<path d="M-11 -24V-28M11 -24V-28" stroke="#1e2b35" stroke-width="2.5"/></g>';
  if(o.type==='bagplayer')return '<g class="minion-equipment-overlay" aria-label="Tackle bag carried">'+
-  '<rect x="-11" y="-30" width="22" height="28" rx="7" fill="#be7848" stroke="#502e22" stroke-width="2"/>'+
-  '<path d="M-6 -22V-8M6 -22V-8" fill="none" stroke="#e4ab6e" stroke-width="1.8"/>'+
-  '</g>';
+  '<rect x="-12" y="-32" width="24" height="31" rx="8" fill="#c17b4a" stroke="#603626" stroke-width="2"/>'+
+  '<path d="M-7 -25V-10M7 -25V-10" stroke="#f2b47e" stroke-width="1.9"/></g>';
  return '';
 }
-const COACH_INDEX={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
-function coachSpriteIndex(o,previous,frame,progress){
+const tileUse=(id,x,y,t)=>'<svg width="'+t+'" height="'+t+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden"><use href="#'+id+'"/></svg>';
+function cartoonMinion(o,pose,objects,g,previous,frame,p){
+ const poseId=cartoonPoseIndex(o,pose,objects,previous,frame,p);
+ const team=o.type==='defender'||o.type==='bagplayer'?1:0;
+ const atlasId=poseId+team*RIG_TEAM_STRIDE;
+ const tile=RIG_TILE,x=(atlasId%RIG_COLS)*tile,y=Math.floor(atlasId/RIG_COLS)*tile;
+ const entry=RIG_POSES[poseId],pivot=entry.headPivot;
+ const move=movingInfo(o,previous,frame,p);
+ const rotation=entry.grounded?0:smoothGaze(o,objects,g,previous,frame,p);
+ const gait=move.moving?Math.sin(p*12*Math.PI)*1.3:0;
+ const wobble=move.moving?Math.sin(p*7*Math.PI)*1.1:0;
+ const size=54;
+ // Render the clipped head CELL before rotating it. Rotating the entire source
+ // atlas instead would leak neighbouring sprites into the character viewport.
+ const body=tileUse('rugby-minion-body-v9',x,y,tile);
+ const head=entry.grounded?'':
+  '<g class="minion-independent-head" data-head-angle="'+fmt(rotation)+'" transform="rotate('+fmt(rotation)+' '+fmt(pivot[0])+' '+fmt(pivot[1])+')">'+
+    tileUse('rugby-minion-head-v9',x,y,tile)+'</g>';
+ return '<g class="cartoon-player minion-mode-player minion-rig-player" data-stance="'+entry.name+'" pointer-events="none">'+
+  '<g transform="translate(0 '+fmt(gait)+') rotate('+fmt(wobble)+')">'+
+   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="0 0 '+tile+' '+tile+'" overflow="visible">'+body+head+'</svg>'+bodyEquipment(o)+'</g></g>';
+}
+const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
+function coachIndex(o,previous,frame,p){
  const gesture=String(o.coachGesture||'auto');
- if(Object.hasOwn(COACH_INDEX,gesture))return COACH_INDEX[gesture];
- const signal=frame?.signal;
- const fraction=Number(progress)||0,duration=Math.max(.01,Number(frame?.seconds)||2);
- if(signal?.kind==='whistle'&&signal.coachId===o.id&&fraction*duration<Math.max(.1,Number(signal.duration)||.5))
-  return COACH_INDEX.pointing_out;
- const prior=previous?.objects?.find(p=>p.id===o.id);
- const next=frame?.objects?.find(p=>p.id===o.id);
- if(prior&&next&&Math.hypot((next.x||0)-(prior.x||0),(next.y||0)-(prior.y||0))>.2&&fraction>0&&fraction<1)
-  return COACH_INDEX.walking;
- return COACH_INDEX.idle;
+ if(Object.hasOwn(COACH_POSES,gesture))return COACH_POSES[gesture];
+ const signal=frame?.signal,duration=Math.max(.1,Number(frame?.seconds)||2);
+ if(signal?.kind==='whistle'&&signal.coachId===o.id&&p*duration<=Math.max(.1,Number(signal.duration)||.5))return COACH_POSES.pointing_out;
+ if(movingInfo(o,previous,frame,p).moving)return COACH_POSES.walking;
+ return COACH_POSES.idle;
 }
-// Unlike the tiny Minion's independently swivelling goggles, the coach turns
-// his whole silhouette to follow the saved run. A full 180° turn is allowed.
-function coachTravelAngle(o,g,previous,frame,progress){
+function coachTravelAngle(o,g,previous,frame,p){
  if(o.headMode==='player')return null;
- const start=previous?.objects?.find(q=>q.id===o.id),end=frame?.objects?.find(q=>q.id===o.id);
- if(!start||!end||!g?.toView)return null;
- const move=Math.hypot(end.x-start.x,end.y-start.y);
- if(move<.1&&!frame?.paths?.[o.id]?.points?.length)return null;
- const timer=frame.timing?.[o.id]||{start:0,end:100},begin=Number(timer.start)/100,finish=Number(timer.end)/100;
- if(progress<begin||progress>finish)return null;
- const local=Math.max(0,Math.min(1,(progress-begin)/Math.max(.001,finish-begin)));
- const absolute=sampleRoute(routeSamples(start,end,frame.paths?.[o.id],g),local).angle;
+ const begin=previous?.objects?.find(q=>q.id===o.id),end=frame?.objects?.find(q=>q.id===o.id);
+ if(!begin||!end||!g?.toView)return null;
+ const moving=movingInfo(o,previous,frame,p);
+ if(!moving.moving)return null;
+ const timing=frame.timing?.[o.id]||{start:0,end:100};
+ const a=clamp((Number(timing.start)||0)/100,0,1),b=clamp(Number.isFinite(Number(timing.end))?Number(timing.end)/100:1,0,1);
+ const param=clamp((p-a)/Math.max(.001,b-a),0,1);
+ const absolute=sampleRoute(routeSamples(begin,end,frame.paths?.[o.id],g),param).angle;
  if(!Number.isFinite(absolute))return null;
- const raw=absolute-(Number(o.rot)||0)-(Number(g.rotation)||0);
- return ((raw+180)%360+360)%360-180;
+ return ((absolute-(Number(o.rot)||0)-(Number(g.rotation)||0)+180)%360+360)%360-180;
 }
-function coachSprite(o,objects,g,previous,frame,progress){
- const index=coachSpriteIndex(o,previous,frame,progress),col=index%COACH_COLUMNS,row=Math.floor(index/COACH_COLUMNS);
- const t=COACH_TILE,size=76;
- // The original sheet already places the head north and boots south.
- // Follow the same look/target cue used in Classic mode without reversing
- // that silhouette or altering the coach's saved orientation.
- const look=playerHeadAngle(o,objects||[],g,previous,frame,progress);
- const angle=coachTravelAngle(o,g,previous,frame,progress)??(look===null?0:look);
- return '<g class="cartoon-player cartoon-coach top-down-coach-image" pointer-events="none" transform="rotate('+safeAngle(angle)+')">'+
-  '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+
-  '" viewBox="'+(col*t)+' '+(row*t)+' '+t+' '+t+'" overflow="hidden">'+
-  '<use href="#rugby-coach-atlas"/></svg></g>';
+function cartoonCoach(o,objects,g,previous,frame,p){
+ const k=coachIndex(o,previous,frame,p),t=NOSE_COACH_TILE,size=76;
+ const x=k%NOSE_COACH_COLS*t,y=Math.floor(k/NOSE_COACH_COLS)*t;
+ // Forehead/nose are genuinely at the NORTH end of every source sprite.
+ // The outer render already applies saved o.rot; only relative travel/target
+ // adjustment is needed here. Do NOT add an extra 180 degree inversion.
+ const angle=coachTravelAngle(o,g,previous,frame,p)??smoothGaze(o,objects,g,previous,frame,p);
+ return '<g class="cartoon-coach top-down-coach-image" data-coach-pose="'+k+'" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
+  '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden">'+
+  '<use href="#rugby-coach-nose-v9"/></svg></g>';
 }
-// Silver goggles must follow exactly the same calculated gaze as Classic mode.
-// The static goggles were removed from the raster atlas so no contradictory
-// second pair remains. A single eye or a pair is based on stable player ID.
-function facingGoggles(cx,cy,angle,oneEye){
- const lens=(x,rx)=>'<g transform="translate('+x+' -19)">'+
-  '<ellipse rx="'+rx+'" ry="4.5" fill="#aeb8c2" stroke="#20282e" stroke-width="1.5"/>'+
-  '<ellipse cy=".7" rx="'+(rx-1.5)+'" ry="2.8" fill="#f8faf8"/>'+
-  '<circle cx="0" cy="-.6" r="1.5" fill="#443628"/><circle cx=".5" cy="-1.3" r=".65" fill="#fff"/></g>';
- return '<g class="minion-gaze" transform="translate('+cx+' '+cy+') rotate('+safeAngle(angle)+')">'+
-  '<path d="M-16 -17 Q0 -24 16 -17" stroke="#2a2c31" stroke-width="2.5" fill="none"/>'+
-  (oneEye?lens(0,7.2):lens(-6.2,5.4)+lens(6.2,5.4))+'</g>';
-}
-function sheetPlayer(o,pose,objects,g,previous,frame,progress){
- const index=spriteIndex(o,pose,objects,previous,frame,progress)+(o.type==='defender'||o.type==='bagplayer'?MINION_POSES_PER_TEAM:0);
- const col=index%MINION_COLUMNS,row=Math.floor(index/MINION_COLUMNS),t=MINION_TILE,size=54;
- const angle=playerHeadAngle(o,objects||[],g,previous,frame,progress);
- const lenses=(pose==='grounded'||pose==='kneeling')?'':facingGoggles(col*t+36,row*t+28,angle??0,hash(o.id)%4===0);
- return '<g class="cartoon-player minion-mode-player minion-top-down minion-image-player" data-pose="'+(pose||'standing')+'" pointer-events="none">'+
-  '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+
-  '" viewBox="'+(col*t)+' '+(row*t)+' '+t+' '+t+'" overflow="hidden">'+
-  '<use href="#rugby-minion-atlas"/>'+lenses+'</svg>'+attachedEquipmentGraphic(o)+'</g>';
-}
-/** The regular player keeps its existing diagram geometry and a single gaze arrow. */
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
  if(!canCarry(o))return original;
- if(cartoonMode)return o.type==='coach'?coachSprite(o,objects,g,previous,frame,progress):sheetPlayer(o,pose,objects,g,previous,frame,progress);
+ if(cartoonMode)return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonMinion(o,pose,objects,g,previous,frame,progress);
+ // Leave the normal editor and presentation appearance untouched.
  const plain=original.replace(arrowRE,'');
  if(['grounded','kneeling'].includes(pose))return plain;
- // Normal view preserves the single gaze arrow, but never an extra pair of eyes.
- // Import lazily via the separate player-gaze module, avoiding contact changes.
- return gazeArrow(o,objects,g,previous,frame,progress,plain,ink);
-}
-import {playerHeadAngle} from './player-gaze.js?v=3';
-function gazeArrow(o,objects,g,previous,frame,progress,original,ink){
  const angle=playerHeadAngle(o,objects,g,previous,frame,progress);
- if(angle===null)return original;
- return original+'<g class="player-gaze-arrow" pointer-events="none" transform="rotate('+safeAngle(angle)+')">'+
+ if(angle===null)return plain;
+ return plain+'<g class="player-gaze-arrow" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
   '<path d="M0 -21L-6 -11L6 -11Z" fill="#fffefa" stroke="'+(ink?'#333':'#173526')+'" stroke-width="1.5" stroke-linejoin="round"/></g>';
 }
-/** In cartoon mode a shield held by a player must sit IN FRONT of the player.
- * Free shields retain their normal drawing order; classic view is untouched.
- * This does not move any object or change its stored drawLayer/drawOrder. */
 export function cartoonObjectOrder(items,cartoonMode){
  if(!cartoonMode)return items;
  const attached=[],others=[];
