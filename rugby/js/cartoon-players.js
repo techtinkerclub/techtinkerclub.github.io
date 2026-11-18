@@ -1,6 +1,7 @@
 // IMAGE-BASED Minion Mode. The artwork is extracted from the user-supplied 90-degree
 // top-down pose sheet. This skin cannot change any drill positions, timing or ball state.
 import {canCarry} from './possession.js?v=0.19.1';
+import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 import {MINION_ATLAS_URI,MINION_TILE,MINION_COLUMNS,MINION_POSES_PER_TEAM} from './minion-atlas-v2.js?v=1';
 import {COACH_ATLAS_URI,COACH_TILE,COACH_COLUMNS,COACH_GESTURES} from './coach-atlas-data.js?v=1';
 const arrowRE=/<path d="M-5 -12 L0 -19 L5 -12 Z" fill="#f7fff6"\s*\/>|<path d="M-5 -8L0 -16L5 -8Z" fill="#fff"\s*\/>|<path d="M-5 -12L0 -19L5 -12Z" fill="#fff"\s*\/>|<path d="M-4 -15L0 -21L4 -15Z" fill="#fff"\s*\/>|<path d="M-5 -7L0 -14L5 -7Z" fill="#fff"\s*\/>/g;
@@ -75,6 +76,22 @@ function coachSpriteIndex(o,previous,frame,progress){
   return COACH_INDEX.walking;
  return COACH_INDEX.idle;
 }
+// Unlike the tiny Minion's independently swivelling goggles, the coach turns
+// his whole silhouette to follow the saved run. A full 180° turn is allowed.
+function coachTravelAngle(o,g,previous,frame,progress){
+ if(o.headMode==='player')return null;
+ const start=previous?.objects?.find(q=>q.id===o.id),end=frame?.objects?.find(q=>q.id===o.id);
+ if(!start||!end||!g?.toView)return null;
+ const move=Math.hypot(end.x-start.x,end.y-start.y);
+ if(move<.1&&!frame?.paths?.[o.id]?.points?.length)return null;
+ const timer=frame.timing?.[o.id]||{start:0,end:100},begin=Number(timer.start)/100,finish=Number(timer.end)/100;
+ if(progress<begin||progress>finish)return null;
+ const local=Math.max(0,Math.min(1,(progress-begin)/Math.max(.001,finish-begin)));
+ const absolute=sampleRoute(routeSamples(start,end,frame.paths?.[o.id],g),local).angle;
+ if(!Number.isFinite(absolute))return null;
+ const raw=absolute-(Number(o.rot)||0)-(Number(g.rotation)||0);
+ return ((raw+180)%360+360)%360-180;
+}
 function coachSprite(o,objects,g,previous,frame,progress){
  const index=coachSpriteIndex(o,previous,frame,progress),col=index%COACH_COLUMNS,row=Math.floor(index/COACH_COLUMNS);
  const t=COACH_TILE,size=76;
@@ -82,7 +99,7 @@ function coachSprite(o,objects,g,previous,frame,progress){
  // Follow the same look/target cue used in Classic mode without reversing
  // that silhouette or altering the coach's saved orientation.
  const look=playerHeadAngle(o,objects||[],g,previous,frame,progress);
- const angle=look===null?0:look;
+ const angle=coachTravelAngle(o,g,previous,frame,progress)??(look===null?0:look);
  return '<g class="cartoon-player cartoon-coach top-down-coach-image" pointer-events="none" transform="rotate('+safeAngle(angle)+')">'+
   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+
   '" viewBox="'+(col*t)+' '+(row*t)+' '+t+' '+t+'" overflow="hidden">'+
