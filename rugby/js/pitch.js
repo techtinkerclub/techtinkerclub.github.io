@@ -1,5 +1,5 @@
 import {fieldContext,fullFieldSVG} from './field-context.js?v=1';
-import {symbolFactors} from './symbol-scale.js?v=0.12.23';
+import {symbolFactors} from './symbol-scale.js?v=0.16.0';
 
 /** Scale the original normalized drill coordinates into a proportional training area.
  * Legacy records use 42..858 across, 37..503 along, with attack toward decreasing y.
