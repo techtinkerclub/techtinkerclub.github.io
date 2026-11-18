@@ -1025,7 +1025,7 @@ function openSkillDialog(kind,fromGroup=false,scope='any'){
  $('skillActor').innerHTML=options(candidates);
  if(actorId)$('skillActor').value=actorId;
  $('skillDialogHeading').textContent=kind==='tag-return'?'Tag rugby · return a strip':kind==='tag'?'Tag rugby · remove a strip':scope==='target'?'Agility · touch a target':'Touch rugby · record a touch';
- $('skillDialogHelp').textContent=kind==='tag-return'?'Choose the player holding a tag and return it to the correct ball carrier. The strip must go back on its original hip.':'Choose the defender taking a tag and the ball carrier. The ball carrier attempts to stop and pass within three seconds / about three strides. The tagger calls TAG, returns the strip, then rejoins play.':'Select the player and '+(scope==='target'?'equipment or line to touch for the agility exercise.':'other player to touch. This is NOT tag removal.')+' No physical tackle or automatic change of possession occurs.';
+ $('skillDialogHelp').textContent=kind==='tag-return'?'Choose the player holding a tag and return it to the correct ball carrier. The strip must go back on its original hip.':kind==='tag'?'Choose the defender taking a tag and the ball carrier. The ball carrier attempts to stop and pass within three seconds / about three strides. The tagger calls TAG, returns the strip, then rejoins play.':'Select the player and '+(scope==='target'?'equipment or line to touch for the agility exercise.':'other player to touch. This is NOT tag removal.')+' No physical tackle or automatic change of possession occurs.';
  $('skillSideRow').hidden=kind!=='tag'&&kind!=='tag-return';
  $('skillActionLabel').value='';$('skillAt').value='70';$('skillActionError').textContent='';
  function fillTargets(){
