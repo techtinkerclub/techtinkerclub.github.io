@@ -33,6 +33,18 @@ export function skillIcon(object){
  (right?'<rect x="9" y="1" width="5" height="14" rx="1.5" fill="#68baff" stroke="#fff" stroke-width=".7"/>':'')+
  (object.heldTags?'<circle cx="0" cy="19" r="6" fill="#f5e8a4"/><text x="0" y="22" font-size="9" font-weight="700" fill="#242c28" text-anchor="middle">'+object.heldTags+'</text>':'')+'</g>';
 }
+export function timedSkillObjects(objects,previous,frame,progress){
+ if(!previous||!Array.isArray(frame?.interactions)||progress>=1)return objects;
+ const prior=new Map(previous.objects.map(o=>[o.id,o]));
+ const hold=new Set();
+ for(const event of frame.interactions)if(event.kind==='tag'&&progress<event.at){hold.add(event.targetId);hold.add(event.actorId)}
+ if(!hold.size)return objects;
+ return objects.map(o=>{
+  if(!hold.has(o.id)||!prior.has(o.id))return o;
+  const before=prior.get(o.id);
+  return {...o,tagBelt:before.tagBelt,tags:before.tags?{...before.tags}:undefined,heldTags:before.heldTags};
+ });
+}
 export function interactionOverlay(frame,objects,g,progress=1,ink=false){
  if(!frame?.interactions?.length)return '';
  const positions=new Map(objects.map(o=>[o.id,o]));
