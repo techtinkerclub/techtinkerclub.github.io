@@ -194,7 +194,7 @@ export function ballMovement(old,next,ball,g,events=null){
  const t=next.timing?.[ball.id]||{start:0,end:100};
  const start=from?carriedPose(a,objectPose(old,next,from.id,t.start/100,g,events),g):a;
  const end=to?carriedPose(ball,objectPose(old,next,to.id,t.end/100,g,events),g):ball;
- return {start,end,pass:!!(from&&to)&&!['turnover','set','handover','throw'].includes(ball.transferKind),turnover:!!to&&ball.transferKind==='turnover',instant:['set','handover'].includes(ball.transferKind),presentation:ball.transferKind==='presentation'&&!to,from,to,timing:t};
+ return {start,end,pass:!!(from&&to)&&!['turnover','set','handover','throw','pickup','drop'].includes(ball.transferKind),turnover:!!to&&ball.transferKind==='turnover',instant:['set','handover','pickup','drop'].includes(ball.transferKind),drop:ball.transferKind==='drop'&&!!from&&!to,pickup:ball.transferKind==='pickup'&&!from&&!!to,presentation:ball.transferKind==='presentation'&&!to,from,to,timing:t};
 }
 export function movementFor(old,next,o,g){
  if(!old)return null;
@@ -215,6 +215,18 @@ export function ballPose(old,next,ball,p,g,events=null){
   return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g,lateral(a)+(lateral(ball)-lateral(a))*eased);
  }
  const m=ballMovement(old,next,ball,g,events),t=m.timing;
+ if(m.drop){
+  // A release is not a pass: stay carried until the specified event moment.
+  // The end object holds the ground position selected at the time of release.
+  const releaseAt=clamp(t.end/100,0,1);
+  if(p<releaseAt)return carriedPose(a,objectPose(old,next,from.id,p,g,events),g);
+  return {...ball,ownerId:undefined,groundState:ball.groundState||'grounded'};
+ }
+ if(m.pickup){
+  // Ground ball stays where it is until the receiver genuinely collects it.
+  if(p*100<t.end)return {...a,ownerId:undefined};
+  return carriedPose(ball,objectPose(old,next,to.id,p,g,events),g);
+ }
  if(m.presentation&&from&&!to){
   // Presentation is a controlled ground placement, not a pass or kick.
   // Follow the carrier as they go down, then ease the ball from their hands
