@@ -26,3 +26,15 @@ printProgression([src,pub],'Defensive progression');
 assert.equal(printed,1);assert.equal(nodes.length,1);
 assert.match(nodes[0].innerHTML,/PROGRESSION STAGE 2 OF 2/);
 assert.match(nodes[0].innerHTML,/Session sequence/);
+
+const publicBuilder=read('js/public-video.js');
+const sequence=read('js/sequence.js');
+const sequenceHtml=read('sequence.html');
+assert.match(publicBuilder,/id="videoPresent"/);
+assert.match(publicBuilder,/id="videoPrint"/);
+assert.match(publicBuilder,/id="videoLink"/);
+assert.match(publicBuilder,/sequence\.html/);
+assert.match(sequence,/loadCatalogue\(\)/,'Read-only presentation must resolve current published versions');
+assert.match(sequence,/play\.html\?/,'Each stage must retain the existing read-only player');
+assert.match(sequenceHtml,/id="drillViewer"/);
+assert.doesNotMatch(sequenceHtml,/app\.js|github-store/,'Progression must not expose editor dependencies');
