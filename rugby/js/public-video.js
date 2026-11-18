@@ -1,4 +1,4 @@
-import {recordDrill,saveBlob,outputName} from './outputs.js?v=0.18.4';
+import {recordDrill,saveBlob,outputName,printProgression} from './outputs.js?v=0.18.6';
 import {bindMovieSettings} from './movie.js?v=0.18.4';
 import {createExportProgress} from './export-progress.js?v=0.18.3';
 import {playbackData} from './scene.js?v=0.18.0';
@@ -15,6 +15,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
  '<ol id="videoStages"></ol><p id="videoHint" role="status"></p>'+
  '<label class="video-field">Add published drill<select id="videoPick"><option value="">Choose another drill…</option></select></label>'+
  '<button type="button" id="videoAdd">Add drill</button>'+
+ '<div class="video-row"><button type="button" id="videoPresent">Open linked presentation</button><button type="button" id="videoLink">Copy presentation link</button><button type="button" id="videoPrint">Print progression pack</button></div>'+
  '<details class="video-details"><summary>Video settings</summary><div id="publicMovieOptions"></div></details>'+
  '<div class="video-row video-footer"><p id="videoStatus" role="status"></p><button type="button" id="videoExport">Export video</button></div>'+
  '<small>The video downloads to your device. Keep this tab visible while recording. Your drills and public library remain unchanged.</small>';
@@ -30,6 +31,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
   button.textContent=stages.length?'Create video ('+stages.length+')':'Create video';
   get('videoPick').innerHTML='<option value="">Choose another drill…</option>'+eligible().filter(d=>!ids.includes(d.id)).map(d=>'<option value="'+esc(d.id)+'">'+esc(d.title)+' · '+esc(ageLabel(d))+'</option>').join('');
   get('videoExport').disabled=busy||!stages.length;
+  for(const id of ['videoPresent','videoLink','videoPrint'])get(id).disabled=busy||!stages.length;
   get('videoClear').disabled=busy||!stages.length;get('videoClose').disabled=busy;
   get('videoAdd').disabled=busy||ids.length>=8;
   for(const b of get('videoStages').querySelectorAll('button'))b.disabled=busy||b.disabled;
@@ -54,6 +56,21 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
   if(action==='up'&&i>0)[ids[i-1],ids[i]]=[ids[i],ids[i-1]];
   if(action==='down'&&i<ids.length-1)[ids[i+1],ids[i]]=[ids[i],ids[i+1]];
   render();
+ };
+ const progressionUrl=()=>{
+  const url=new URL('./sequence.html',location.href);url.searchParams.set('drills',ids.join(','));return url.href;
+ };
+ get('videoPresent').onclick=()=>{if(!ids.length||busy)return;window.open(progressionUrl(),'_blank','noopener')};
+ get('videoLink').onclick=async()=>{
+  if(!ids.length||busy)return;
+  const link=progressionUrl();
+  try{await navigator.clipboard.writeText(link);get('videoStatus').textContent='Linked presentation copied. Recipients see published updates through the same link.'}
+  catch{window.prompt('Copy the read-only progression link',link)}
+ };
+ get('videoPrint').onclick=()=>{
+  if(!ids.length||busy)return;
+  const stages=selected().map(playbackData),title=get('videoTitle').value.trim()||stages[0].title;
+  dialog.close();printProgression(stages,title,{scaleMode:'coaching',framing:'action',decisions:true,markups:true});
  };
  get('videoExport').onclick=async()=>{
   if(busy||!ids.length)return;busy=true;render();get('videoStatus').textContent='';
