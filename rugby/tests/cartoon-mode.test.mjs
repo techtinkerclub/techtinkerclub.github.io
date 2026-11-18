@@ -14,7 +14,8 @@ const cartoon=playerAppearance(player,'standing',original,[player,defender],view
 assert.match(classic,/player-gaze-arrow/);
 assert.equal((classic.match(/M-5 -12 L0 -19 L5 -12 Z/g)||[]).length,0,'Old fixed body arrow must be removed');
 assert.doesNotMatch(classic,/cartoon-player-eyes|goggle/,'Classic view cannot show cartoon eyes');
-assert.match(cartoon,/cartoon-player-eyes/);
+assert.match(cartoon,/cartoon-player-goggles/,'Top-down goggles show the gaze direction');
+assert.match(cartoon,/minion-top-down/,'Cartoon player is drawn from overhead');
 assert.match(cartoon,/cartoon-player/);
 assert.doesNotMatch(cartoon,/player-gaze-arrow|M-5 -12 L0 -19 L5 -12 Z/,'No direction arrow in cartoon mode');
 assert.match(cartoon,/#ffe063/,'Cartoon characters are yellow');
@@ -28,7 +29,7 @@ const base=renderScene(playbackData(d),{index:0,cartoonMode:false});
 const fun=renderScene(playbackData(d),{index:0,cartoonMode:true});
 assert.match(base.svg,/player-gaze-arrow/);
 assert.doesNotMatch(base.svg,/cartoon-pitch-decor/);
-assert.match(fun.svg,/cartoon-player-eyes/);
+assert.match(fun.svg,/cartoon-player-goggles/);
 assert.doesNotMatch(fun.svg,/player-gaze-arrow/);
 assert.match(fun.svg,/cartoon-pitch-decor/);
 assert.equal(outputOptions({cartoonMode:true}).cartoonMode,true);
