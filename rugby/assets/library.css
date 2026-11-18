@@ -28,3 +28,20 @@
 .video-footer p{flex:1;overflow-wrap:anywhere}.video-footer button{background:var(--accent);color:#122319;font-weight:750}
 .video-builder>small{display:block;color:var(--muted);font-size:11px}
 @media(max-width:560px){.video-builder{padding:13px}.video-heading h2{font-size:18px}.video-heading>button{font-size:12px;padding:7px}.video-stage-controls button{min-width:30px}.video-details fieldset{grid-template-columns:1fr}.video-footer{align-items:stretch;flex-direction:column}}
+
+
+/* Video builder: clear hierarchy, minimum gaps and predictable action sizes. */
+.video-builder{padding:clamp(16px,2.5vw,26px)!important}
+.video-builder .video-heading{gap:18px;margin-bottom:20px}
+.video-builder .video-field{margin:18px 0 22px}
+.video-builder #videoStages{margin:12px 0 10px;gap:10px}
+.video-builder #videoStages li{padding:12px;gap:12px}
+.video-builder #videoAdd{display:block;margin:12px 0 18px;min-height:42px}
+.video-builder .video-row:has(#videoPresent){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:12px;margin:8px 0 20px}
+.video-builder .video-row:has(#videoPresent) button{width:100%;min-height:46px;padding:10px 12px;line-height:1.35;white-space:normal}
+.video-builder #videoPick{width:100%;min-height:45px}
+.video-builder .video-details{margin-top:18px;padding-top:16px}
+.video-builder .video-footer{margin-top:20px;padding-top:18px;gap:16px}
+.video-builder .video-footer button{min-width:130px}
+@media(max-width:660px){.video-builder .video-row:has(#videoPresent){grid-template-columns:1fr 1fr}}
+@media(max-width:440px){.video-builder .video-row:has(#videoPresent){grid-template-columns:1fr}}
