@@ -2529,7 +2529,7 @@ $('printProgression').onclick=()=>{
  const opts=shareOptions(),title=$('movieTitle').value.trim()||'Coaching progression';
  $('shareDialog').close();printProgression(items,title,opts);
 };
-function shareOptions(){return outputOptions({orientation,scaleMode,framing:$('shareFraming').value,teachingGuides:showMarkups,offside:$('offsideGuides').checked,markups:$('shareMarkups').checked,runs:$('shareRuns').checked,passes:$('sharePasses').checked,labels:$('shareLabels').checked,decisions:$('shareDecisions').checked})}
+function shareOptions(){return outputOptions({orientation,scaleMode,cartoonMode,framing:$('shareFraming').value,teachingGuides:showMarkups,offside:$('offsideGuides').checked,markups:$('shareMarkups').checked,runs:$('shareRuns').checked,passes:$('sharePasses').checked,labels:$('shareLabels').checked,decisions:$('shareDecisions').checked})}
 const getMovieSettings=bindMovieSettings($('movieOptions'),'movie');
 const movieProgress=createExportProgress();
 let sharingBusy=false;
