@@ -7,6 +7,7 @@ import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
 import {headSettings} from './player-gaze.js?v=3';
 import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder} from './cartoon-players.js?v=6';
+import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=8';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
@@ -39,6 +40,7 @@ export function playbackData(d){
    if(!o||!Object.hasOwn(types,o.type)||typeof o.id!=='string'||o.id.length>200||['__proto__','prototype','constructor'].includes(o.id)||ids.has(o.id)||!Number.isFinite(o.x)||!Number.isFinite(o.y))throw Error('Invalid object.');
    ids.add(o.id);const q=copyDrawingOrder(o,{id:o.id,type:o.type,label:str(o.label,160),x:num(o.x,0,900,450),y:num(o.y,0,540,270),rot:num(o.rot,-360,360,0)});
    if(o.type==='cone')q.coneColor=o.coneColor;
+   if(o.type==='coach'&&Object.hasOwn(COACH_GESTURES,o.coachGesture)&&o.coachGesture!=='auto')q.coachGesture=o.coachGesture;
    if(canCarry(o)){q.tagBelt=o.tagBelt;q.tags=o.tags;q.tagColor=o.tagColor;q.heldTags=o.heldTags;q.heldTagItems=o.heldTagItems}
    if(o.type==='label')q.textStyle=normaliseTextStyle(o.textStyle);
    if(isDiagramObject(o))q.diagram=diagramSettings(o.type,o.diagram,out.width);
