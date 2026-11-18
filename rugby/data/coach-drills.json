@@ -96,7 +96,7 @@
         },
         {
           "name": "Whistle · advance two short steps together",
-          "seconds": 1.1,
+          "seconds": 1.5,
           "notes": "The coach blows the whistle. All six defenders step forward immediately and in unison, without sprinting into contact. Eyes up, spacing unchanged. They must be legally onside before moving in a real restart.",
           "objects": [
             {
@@ -208,7 +208,7 @@
         },
         {
           "name": "Hold shape · look and communicate",
-          "seconds": 0.8,
+          "seconds": 1,
           "notes": "Pause and check that the line is still connected, everyone is facing the play and nobody has sprinted out alone. Repeat several times before adding a ball-carrier decision.",
           "objects": [
             {
@@ -331,8 +331,8 @@
         "mode": "training",
         "age": "U10"
       },
-      "savedAt": "2026-11-18T11:56:00.445Z",
-      "revision": 4
+      "savedAt": "2026-11-18T11:56:48.330Z",
+      "revision": 5
     },
     {
       "version": 1,
