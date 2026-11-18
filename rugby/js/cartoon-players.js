@@ -82,7 +82,13 @@ export function cartoonPoseIndex(o,pose,objects,previous,frame,p=1){
  if(ball.held&&ball.held.groundState!=='presented'&&move.moving)return move.speed>42?2:7;
  if(ball.held)return 7;
  if(move.moving){
-  if(move.turning)return 4;
+  if(move.turning){
+   const before=previous?.objects?.find(q=>q.id===o.id),after=frame?.objects?.find(q=>q.id===o.id);
+   const diff=before&&after?Math.abs((((Number(after.rot)||0)-(Number(before.rot)||0)+540)%360)-180):0;
+   // A true reversal uses the turn sprite; a lateral feint uses the
+   // side-step sprite. They must not silently be identical.
+   return diff>=120?5:4;
+  }
   if(move.speed>42)return 2;
   const anotherCarrier=ball.all.some(b=>b.ownerId&&b.ownerId!==o.id);
   return anotherCarrier&&o.type==='attacker'?19:1;
