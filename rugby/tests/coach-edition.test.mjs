@@ -12,7 +12,7 @@ assert.equal(classicEngine,coachEngine,'Coach and Classic must use exactly the s
 assert.match(coach,/<base href="\.\.\/"/);
 assert.match(coach,/src="\.\/coach\/coach\.js\?v=0\.3\.3"/);
 assert.match(coach,/href="\.\/coach\/coach\.css\?v=0\.2\.0"/);
-assert.match(classic,/href="\.\/coach\/"/,'Classic must link to the new experiment');
+assert.doesNotMatch(classic,/href="\.\/coach\/"/,'Classic must not advertise the retired Coach Edition');
 assert.match(coach,/href="\.\/index\.html"/,'New experiment must link back to Classic');
 assert.match(coach,/href="\.\/coach\/library\.html"/);
 for(const id of ['coachJourney','coachStart','coachActions','coachSequence','coachNotes','coachShare','coachMode','coachWelcome','coachActionDialog','coachActionCards','coachActionHelp','coachToast','coachObjectChoice','coachUseObject','coachSelectionHelp']){
