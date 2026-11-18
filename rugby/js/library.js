@@ -1,5 +1,5 @@
 import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.13.3';
-import {playbackData,renderScene} from './scene.js?v=0.13.11';
+import {playbackData,renderScene} from './scene.js?v=0.16.0';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fields={q:'search',age:'age',category:'category',format:'format',sort:'sort'};
 let drills=[],ready=false,limit=18,thumbs=new Map(),messageTimer;
