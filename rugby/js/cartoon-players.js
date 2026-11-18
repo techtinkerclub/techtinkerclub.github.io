@@ -1,7 +1,7 @@
 // IMAGE-BASED Minion Mode. The artwork is extracted from the user-supplied 90-degree
 // top-down pose sheet. This skin cannot change any drill positions, timing or ball state.
 import {canCarry} from './possession.js?v=0.19.1';
-import {MINION_ATLAS_URI,MINION_TILE,MINION_COLUMNS} from './minion-atlas-data.js?v=1';
+import {MINION_ATLAS_URI,MINION_TILE,MINION_COLUMNS,MINION_POSES_PER_TEAM} from './minion-atlas-v2.js?v=1';
 import {COACH_ATLAS_URI,COACH_TILE,COACH_COLUMNS,COACH_GESTURES} from './coach-atlas-data.js?v=1';
 const arrowRE=/<path d="M-5 -12 L0 -19 L5 -12 Z" fill="#f7fff6"\s*\/>|<path d="M-5 -8L0 -16L5 -8Z" fill="#fff"\s*\/>|<path d="M-5 -12L0 -19L5 -12Z" fill="#fff"\s*\/>|<path d="M-4 -15L0 -21L4 -15Z" fill="#fff"\s*\/>|<path d="M-5 -7L0 -14L5 -7Z" fill="#fff"\s*\/>/g;
 const safeAngle=n=>Number.isFinite(n)?n.toFixed(1):'0';
@@ -13,19 +13,31 @@ export function cartoonSpriteDefs(){
   '" width="'+(MINION_COLUMNS*MINION_TILE)+'" height="'+(4*MINION_TILE)+'" />'+
   '<image id="rugby-coach-atlas" href="'+COACH_ATLAS_URI+'" width="'+(COACH_COLUMNS*COACH_TILE)+'" height="'+(2*COACH_TILE)+'" /></defs>';
 }
-function spriteIndex(o,pose,previous,frame,progress){
- const fixed={ready:3,crouched:3,tackling:5,held:4,grounded:6,kneeling:7,recovering:7,bound:8};
- if(Object.hasOwn(fixed,pose))return fixed[pose];
+// Visual-only mapping of the existing game states to the extracted, ball-free sheet.
+function spriteIndex(o,pose,objects,previous,frame,progress){
+ const members=(frame?.objects||[]).filter(m=>['tackle','ruck','maul','scrum'].includes(m.type)&&m.members?.some(member=>member.id===o.id));
+ const inContact=members.find(m=>m.type==='tackle'),inRuck=members.find(m=>m.type==='ruck'),inMaul=members.find(m=>m.type==='maul');
+ if(pose==='grounded')return 6;
+ if(pose==='recovering'||pose==='kneeling')return 7;
+ if(pose==='tackling')return inContact&&progress>.55?5:4;
+ if(pose==='held')return 4;
+ if(pose==='bound')return inMaul?14:inRuck?13:8;
+ if(pose==='ready'||pose==='crouched')return 3;
  const before=previous?.objects?.find(p=>p.id===o.id),end=frame?.objects?.find(p=>p.id===o.id);
+ const balls=frame?.objects?.filter(b=>b.type==='ball')||[];
+ if(pose==='standing'&&previous&&frame){
+  const passing=balls.some(b=>previous.objects?.find(q=>q.id===b.id)?.ownerId===o.id&&b.ownerId!==o.id&&b.transferKind==='pass');
+  const receiving=balls.some(b=>b.ownerId===o.id&&previous.objects?.find(q=>q.id===b.id)?.ownerId!==o.id&&b.transferKind==='pass');
+  if((passing||receiving)&&progress>=.25&&progress<=.85)return 11; // empty hands; ball stays separate
+ }
  if(before&&end&&pose==='standing'){
   const distance=Math.hypot((Number(end.x)||0)-(Number(before.x)||0),(Number(end.y)||0)-(Number(before.y)||0));
-  const timing=frame?.timing?.[o.id]||{start:0,end:100};
-  const start=Number(timing.start)/100,finish=Number(timing.end)/100;
-  if(distance>2&&Number(progress)>=start&&Number(progress)<=finish)
-   return distance/(Number(frame?.seconds)||2)>35?2:1; // sprint or jog
+  const timing=frame?.timing?.[o.id]||{start:0,end:100},start=Number(timing.start)/100,finish=Number(timing.end)/100;
+  if(distance>2&&progress>=start&&progress<=finish){
+   if(Math.abs((Number(end.rot)||0)-(Number(before.rot)||0))>32)return 10; // changing direction
+   return distance/(Number(frame?.seconds)||2)>35?2:1;
+  }
  }
- // The supplied sheet has one single-eye idle example (no single-eye tackle poses).
- // Preserve that original rather than inventing eye artwork for missing action poses.
  return hash(o.id)%5===0?9:0;
 }
 // An equipped pad belongs to the player's model even when the character body
@@ -59,25 +71,40 @@ function coachSpriteIndex(o,previous,frame,progress){
 function coachSprite(o,previous,frame,progress){
  const index=coachSpriteIndex(o,previous,frame,progress),col=index%COACH_COLUMNS,row=Math.floor(index/COACH_COLUMNS);
  const t=COACH_TILE,size=76;
- return '<g class="cartoon-player cartoon-coach top-down-coach-image" pointer-events="none">'+
+ // The supplied coach artwork has its face/torso pointing towards the BOTTOM
+ // of the sheet. Rugby Studio's default local forward is UP (-Y), hence
+ // the 180 degree asset correction inside the already-authored object rotation.
+ return '<g class="cartoon-player cartoon-coach top-down-coach-image" pointer-events="none" transform="rotate(180)">'+
   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+
   '" viewBox="'+(col*t)+' '+(row*t)+' '+t+' '+t+'" overflow="hidden">'+
   '<use href="#rugby-coach-atlas"/></svg></g>';
 }
-function sheetPlayer(o,pose,previous,frame,progress){
- const index=spriteIndex(o,pose,previous,frame,progress)+(o.type==='defender'?10:0);
- const col=index%MINION_COLUMNS,row=Math.floor(index/MINION_COLUMNS);
- const t=MINION_TILE, size=54;
+// Silver goggles must follow exactly the same calculated gaze as Classic mode.
+// The static goggles were removed from the raster atlas so no contradictory
+// second pair remains. A single eye or a pair is based on stable player ID.
+function facingGoggles(cx,cy,angle,oneEye){
+ const lens=(x,rx)=>'<g transform="translate('+x+' -19)">'+
+  '<ellipse rx="'+rx+'" ry="4.5" fill="#aeb8c2" stroke="#20282e" stroke-width="1.5"/>'+
+  '<ellipse cy=".7" rx="'+(rx-1.5)+'" ry="2.8" fill="#f8faf8"/>'+
+  '<circle cx="0" cy="-.6" r="1.5" fill="#443628"/><circle cx=".5" cy="-1.3" r=".65" fill="#fff"/></g>';
+ return '<g class="minion-gaze" transform="translate('+cx+' '+cy+') rotate('+safeAngle(angle)+')">'+
+  '<path d="M-16 -17 Q0 -24 16 -17" stroke="#2a2c31" stroke-width="2.5" fill="none"/>'+
+  (oneEye?lens(0,7.2):lens(-6.2,5.4)+lens(6.2,5.4))+'</g>';
+}
+function sheetPlayer(o,pose,objects,g,previous,frame,progress){
+ const index=spriteIndex(o,pose,objects,previous,frame,progress)+(o.type==='defender'||o.type==='bagplayer'?MINION_POSES_PER_TEAM:0);
+ const col=index%MINION_COLUMNS,row=Math.floor(index/MINION_COLUMNS),t=MINION_TILE,size=54;
+ const angle=playerHeadAngle(o,objects||[],g,previous,frame,progress);
+ const lenses=(pose==='grounded'||pose==='kneeling')?'':facingGoggles(col*t+36,row*t+28,angle??0,hash(o.id)%4===0);
  return '<g class="cartoon-player minion-mode-player minion-top-down minion-image-player" data-pose="'+(pose||'standing')+'" pointer-events="none">'+
   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+
   '" viewBox="'+(col*t)+' '+(row*t)+' '+t+' '+t+'" overflow="hidden">'+
-  '<use href="#rugby-minion-atlas"/></svg>'+attachedEquipmentGraphic(o)+'</g>';
+  '<use href="#rugby-minion-atlas"/>'+lenses+'</svg>'+attachedEquipmentGraphic(o)+'</g>';
 }
-
 /** The regular player keeps its existing diagram geometry and a single gaze arrow. */
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
  if(!canCarry(o))return original;
- if(cartoonMode&&!ink)return o.type==='coach'?coachSprite(o,previous,frame,progress):sheetPlayer(o,pose,previous,frame,progress);
+ if(cartoonMode&&!ink)return o.type==='coach'?coachSprite(o,previous,frame,progress):sheetPlayer(o,pose,objects,g,previous,frame,progress);
  const plain=original.replace(arrowRE,'');
  if(['grounded','kneeling'].includes(pose))return plain;
  // Normal view preserves the single gaze arrow, but never an extra pair of eyes.
