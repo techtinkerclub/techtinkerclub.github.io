@@ -184,11 +184,11 @@ try {
  await fieldPage.locator('#applyPitchSettings').click();
  await fieldPage.waitForFunction(()=>document.querySelector('#pitch [data-practice-area="true"]'));
  assert.equal(await fieldPage.locator('#scenes .scene').count(),initialStages);
- const zoomed=await fieldPage.locator('#pitch').getAttribute('viewBox');
+ const fieldZoomed=await fieldPage.locator('#pitch').getAttribute('viewBox');
  await fieldPage.locator('#zoomFit').click();
- assert.notEqual(await fieldPage.locator('#pitch').getAttribute('viewBox'),zoomed);
+ assert.notEqual(await fieldPage.locator('#pitch').getAttribute('viewBox'),fieldZoomed);
  await fieldPage.locator('#zoomArea').click();
- assert.equal(await fieldPage.locator('#pitch').getAttribute('viewBox'),zoomed);
+ assert.equal(await fieldPage.locator('#pitch').getAttribute('viewBox'),fieldZoomed);
  assert.match(await fieldPage.locator('#pitch').innerHTML(),/IN-GOAL/);
  console.log('BROWSER FULL PITCH PASS: field placement, correct age template, zoom and unchanged steps');
  await fieldPage.close();
