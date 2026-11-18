@@ -717,11 +717,13 @@ function deleteObject(scope='here'){
 }
 function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
 function openObjectMenu(e){
- if(!canEditObjects())return;selectedPathId=null;
- const group=e.target.closest('[data-id]'),handle=e.target.closest('[data-rotate]'),stack=overlapAt(viewPoint(e));
- if(!group&&!handle&&!stack.length)return;
+ if(!canEditObjects())return;
+ const path=e.target.closest('[data-path-id]'),group=e.target.closest('[data-id]'),handle=e.target.closest('[data-rotate]');
+ const stack=path?[]:overlapAt(viewPoint(e));
+ if(!path&&!group&&!handle&&!stack.length)return;
  groupIds.clear();groupMode=false;
- if(group&&!stack.some(o=>o.id===selected))selected=group.dataset.id;else if(!group&&!handle)selected=stack[0].id;
+ if(path){selected=path.dataset.pathId;selectedPathId=selected}
+ else{selectedPathId=null;if(group&&!stack.some(o=>o.id===selected))selected=group.dataset.id;else if(!group&&!handle)selected=stack[0].id;}
  $('stackOptions').hidden=stack.length<2;$('stackOptions').innerHTML=stack.length<2?'':'<small>Choose overlapping object</small>'+stack.map(o=>'<button data-stack-id="'+esc(o.id)+'">'+esc(objectName(o))+'</button>').join('');
  const o=activeObject();if(!o)return;
  e.preventDefault();render();inspector();openInspector('Object',false);
