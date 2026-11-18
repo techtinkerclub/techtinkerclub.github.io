@@ -386,3 +386,12 @@ html{color-scheme:dark}
 .head-look-panel #headTargetRow[hidden]{display:none!important}
 .head-look-panel small{line-height:1.45}
 .skill-action-row input[data-callout-seconds]{width:72px;min-width:60px}
+
+/* Small, unobtrusive pitch-corner Easter egg; does not overlap drill objects. */
+.field-wrap{position:relative}
+.pitches,.presentation-pitch-shell{min-width:0}
+.pitch-cartoon-toggle{position:absolute;z-index:12;top:9px;right:10px;padding:6px 10px;border:1px solid #89a875;border-radius:999px;background:rgba(20,41,30,.93);color:#edffd2;font-size:11px;font-weight:700;line-height:1.25;cursor:pointer;box-shadow:0 2px 9px #12271b55;white-space:nowrap}
+.pitch-cartoon-toggle[aria-pressed="true"]{background:#f2d44c;color:#28321b;border-color:#eeb844}
+.pitch-cartoon-toggle:hover{filter:brightness(1.12)}
+.pitch-cartoon-toggle:focus-visible{outline:3px solid #efff9f;outline-offset:2px}
+@media(max-width:600px){.pitch-cartoon-toggle{top:6px;right:6px;font-size:10px;padding:6px 8px}}
