@@ -1788,7 +1788,7 @@ $('shareCopy').onclick=async()=>{shareBusy(true);try{const link=await makeShare(
 $('shareOpen').onclick=async()=>{const w=window.open('about:blank','_blank');if(!w){$('shareStatus').textContent='Popup blocked. Copy the link instead.';return}w.opener=null;shareBusy(true);try{const url=await makeShare();$('shareLink').value=url;w.location.replace(url)}catch(err){w.close();$('shareStatus').textContent=err.message}finally{shareBusy(false)}};
 $('shareMovie').onclick=async()=>{if(sharingBusy)return;shareBusy(true);$('shareStatus').textContent='';try{if(!videoSequence.length)throw Error('Choose at least one drill for the video.');
  const sequence=videoSequence.map(item=>item.current?clone(drill):clone(item.drill));
- const settings={...shareOptions(),...getMovieSettings(),sequenceDrills:sequence},name=outputName({title:$('movieTitle').value.trim()||drill.title});
+ const settings={...shareOptions(),...getMovieSettings(),sequenceDrills:sequence,movieTitle:$('movieTitle').value.trim()},name=outputName({title:$('movieTitle').value.trim()||drill.title});
  const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(sequence[0],settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{shareBusy(false)}};
 $('sharePrint').onclick=()=>{const opts=shareOptions();$('shareDialog').close();printDrill(drill,opts)};
 // Close board options when returning to the pitch or leaving with Escape.

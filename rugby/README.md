@@ -126,7 +126,7 @@ Fourteen older narrated drills previously used a generic 60 × 35 m pitch. Their
 
 The browser QA now includes Chromium phone-sized touch navigation and action-focus playback. Chromium emulation is not a physical iOS Safari test; real-device verification and full 142-drill content sign-off are still necessary. This release does not add nested decisions or silently resize user-created pitches.
 
-## U10 teaching-demo repair (Classic v0.15.1)
+## U10 teaching-demo repair (Classic v0.15.2)
 
 The short **U10 offload to support** example now moves the carrier and tracking support player before a genuine backward transfer; the receiver visibly continues after catching. The old stage moved only the carried ball while the players stayed still. This remains explicitly non-contact practice.
 
@@ -140,7 +140,7 @@ The editor has **Fit drill**, **Action**, **Fit pitch**, wheel / pinch-friendly 
 
 The seed library includes a marked-field U10 touch free-pass restart (`seed-063`) and a U14 lineout near touch (`seed-061`). **U10 rugby has no lineouts**; the field is a spatial reference, not a licence to apply laws from older age grades. See [FIELD_GUIDE.md](./FIELD_GUIDE.md) for how to use it, size/source notes and limits. New regressions cover field geometry, preserved drill content and browser placement/zoom. Real iPhone/iPad Safari checks, full catalogue visual QA and coaching signoff remain open.
 
-## Full marked rugby fields and movable training areas (Classic v0.15.1)
+## Full marked rugby fields and movable training areas (Classic v0.15.2)
 
 The Drill tab has two field modes. **Training area only** is the old default, preserving every existing drill. **Place training area on a full marked field** overlays the exact practice rectangle on an age-grade field, with try lines, in-goal, halfway, age-appropriate reference lines and schematic goalpost bases. Choose U7–U16 or Adult, position the rectangle by drag, metric offsets from the upper try line and left touchline, or presets for try line, 5 m, 22 m, touchline and halfway. The rectangle can be positioned in in-goal within the selected template. A failed fit is rejected; all player movement, timing and stored metre distances stay unchanged. Editor controls include Fit pitch, Fit drill, Fit action, wheel/touch-pan and zoom up to 16×. Full-field context is retained in saved JSON, read-only links and video; action-focused video framing is optional.
 

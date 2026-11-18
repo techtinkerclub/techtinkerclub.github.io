@@ -97,7 +97,9 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
    const scene=renderScene(clip.drill,{...options,time,prefix:'video-story'});
    const {width:w,height:h}=movieRaster(scene.g,content,sceneHeight);
    const image=await imageFromSVG(rasterSVG(scene.svg,w,h));
-   renderHeading(clip.title,clip.kind==='motion'?clip.heading:clip.stage);
+   const videoTitle=clip.kind==='intro'&&clip.index===0&&story.drills.length>1&&String(opts.movieTitle||'').trim()
+    ?String(opts.movieTitle).trim().slice(0,160):clip.title;
+   renderHeading(videoTitle,clip.kind==='motion'?clip.heading:clip.stage);
    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
    ctx.drawImage(image,Math.round(pad+(content-w)/2),Math.round(top+(sceneHeight-h)/2),w,h);
    if(clip.kind!=='motion'){
