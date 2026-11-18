@@ -1,3 +1,4 @@
+import {fieldContext,validateFieldContext} from './field-context.js?v=1';
 // A single transactional setup operation, shared by the editor and tests.
 import {pitchSettings,resizeDrill} from './drill-edit.js?v=0.12.4';
 import {PRESETS,presetPositions} from './presets.js?v=0.6.0';
@@ -12,8 +13,8 @@ export function normaliseAge(d){
  return {age:ageLabel(min,max),ageMin:min,ageMax:max};
 }
 export function setupValues(d){
- const p=pitchSettings(d);
- return {title:d.title||'',...normaliseAge(d),category:categories.includes(d.category)?d.category:'Attack',minutes:d.minutes??8,length:d.length,width:d.width,attackDirection:p.showAttack?p.attackDirection:'hidden',boundary:p.boundary,preset:'',markers:'keep',resizeMode:'relative'};
+ const p=pitchSettings(d),field=fieldContext(d);
+ return {fieldMode:field.mode,fieldAge:field.age,fieldX:field.x,fieldY:field.y,title:d.title||'',...normaliseAge(d),category:categories.includes(d.category)?d.category:'Attack',minutes:d.minutes??8,length:d.length,width:d.width,attackDirection:p.showAttack?p.attackDirection:'hidden',boundary:p.boundary,preset:'',markers:'keep',resizeMode:'relative'};
 }
 export function setupAge(age){return ages[age]||null}
 export function prepareSetup(d,v,makeId){
@@ -29,6 +30,9 @@ export function prepareSetup(d,v,makeId){
  const resized=resizeDrill(d,Number(v.length),Number(v.width),v.resizeMode);
  if(!resized.ok)return resized;
  const next=resized.drill;
+ const context=validateFieldContext({mode:v.fieldMode,age:v.fieldAge,x:v.fieldX,y:v.fieldY},next.length,next.width);
+ if(!context.ok)return context;
+ Object.assign(next,{pitchContext:context.value});
  Object.assign(next,{title,age:ageLabel(...range),ageMin:range[0],ageMax:range[1],minutes,category:v.category,attackDirection:v.attackDirection==='hidden'?pitchSettings(d).attackDirection:v.attackDirection,showAttack:v.attackDirection!=='hidden',boundary:v.boundary});
  let removed=0,added=0;
  if(v.markers!=='keep'){

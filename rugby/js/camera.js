@@ -17,14 +17,14 @@ export function createCamera(pitch,{canNavigate=()=>true,getGeometry,onChange=()
  }
  function fit(){const g=getGeometry();zoom=1;cx=g.viewWidth/2;cy=g.viewHeight/2;apply(g)}
  function point(e){const p=pitch.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(pitch.getScreenCTM().inverse())}
- function changeZoom(factor,anchor=null){if(!canNavigate())return;if(!rect)apply();const next=camClamp(zoom*factor,1,5);if(Math.abs(next-zoom)<1e-9)return;
+ function changeZoom(factor,anchor=null){if(!canNavigate())return;if(!rect)apply();const next=camClamp(zoom*factor,1,16);if(Math.abs(next-zoom)<1e-9)return;
   if(anchor){const ratio=zoom/next;cx=anchor.x+(cx-anchor.x)*ratio;cy=anchor.y+(cy-anchor.y)*ratio}
   zoom=next;apply();
  }
  function focusView(view){
   if(!canNavigate()||!view||!(view.width>0&&view.height>0))return;
   const g=getGeometry(),{w,h}=size(),base=cameraRect(g,w,h,1);
-  zoom=camClamp(Math.min(base.width/view.width,base.height/view.height),1,5);
+  zoom=camClamp(Math.min(base.width/view.width,base.height/view.height)*.85,1,16);
   cx=view.x+view.width/2;cy=view.y+view.height/2;apply(g);
  }
  function setPanMode(on){panMode=!!on;pitch.classList.toggle('pan-ready',panMode||space);onChange(zoom,panMode)}

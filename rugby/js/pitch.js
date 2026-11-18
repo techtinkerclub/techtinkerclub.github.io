@@ -1,3 +1,4 @@
+import {fieldContext,fullFieldSVG} from './field-context.js?v=1';
 import {symbolFactors} from './symbol-scale.js?v=0.12.23';
 
 /** Scale the original normalized drill coordinates into a proportional training area.
@@ -20,6 +21,29 @@ export function pitchGeometry(length,width,orientation='up'){
  };
  return {length:l,width:w,scale,margin,fw,fh,viewWidth,viewHeight,toView,fromView,rotation:right?90:0,orientation:right?'right':'up'};
 }
+// The large field is a background reference. The drill still owns independent
+// metre dimensions and legacy normalized coordinates; placing the rectangle on
+// a field must never change the relative paths, speed or player spacing.
+export function drillGeometry(d,orientation='up'){
+ const context=fieldContext(d);
+ if(context.mode!=='field')return pitchGeometry(d.length,d.width,orientation);
+ const fullLength=context.length+2*context.inGoal;
+ const base=pitchGeometry(fullLength,context.width,orientation);
+ const fieldPoint=(x,y)=>base.toView(42+x*816/context.width,37+y*466/fullLength);
+ const toView=(x,y)=>fieldPoint(context.x+(x-42)/816*d.width,
+   context.inGoal+context.y+(y-37)/466*d.length);
+ const fromView=(x,y)=>{
+  const pos=base.fromView(x,y);
+  const mx=(pos.x-42)*context.width/816,my=(pos.y-37)*fullLength/466;
+  return {x:42+(mx-context.x)*816/d.width,
+   y:37+(my-context.inGoal-context.y)*466/d.length};
+ };
+ const a=toView(42,37),b=toView(858,503);
+ return {...base,toView,fromView,fieldPoint,fieldContext:context,
+  practice:{length:d.length,width:d.width},
+  trainingRect:{x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),
+   width:Math.abs(a.x-b.x),height:Math.abs(a.y-b.y)}};
+}
 // Rulers follow screen axes; labels are measured from the displayed top-left.
 export function metreRulers(g){
  const {margin:m,fw,fh,scale}=g;
@@ -39,6 +63,7 @@ export function metreRulers(g){
  return '<g data-metre-rulers="true" aria-label="Pitch edge scale in metres" pointer-events="none" fill="#b6cbb9" stroke="#b6cbb9" stroke-width=".85" font-size="10" font-weight="500">'+axis(fw,true)+axis(fh,false)+'</g>';
 }
 export function trainingField(g,grid=false,gridStep=.5,settings={}){
+ if(g.fieldContext?.mode==='field')return fullFieldSVG(g,grid,gridStep,settings);
  const {margin:m,fw,fh,viewWidth:vw,viewHeight:vh,orientation,scale,length,width}=g;
  const right=orientation==='right',n=8,step=[.25,.5,1,2,5].includes(Number(gridStep))?Number(gridStep):.5,spacing=step*scale;
  const stripes=Array.from({length:n},(_,i)=>i%2===0?'':right?

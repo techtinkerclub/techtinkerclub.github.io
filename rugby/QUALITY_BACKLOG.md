@@ -4,7 +4,7 @@ Updated 18 November 2026. Scope: Classic editor, shared Coach Edition engine, 14
 
 ## Baseline and current evidence
 
-- Classic v0.14.7 (Coach Edition v0.3.3); shared source engine.
+- Classic v0.15.0 (Coach Edition v0.3.3); shared source engine.
 - 142 resources: 116 animated drills and 26 written coaching cards with no pitch objects.
 - Specific corrections completed: player tackle/recovery lifecycle, short ball presentation, 24 disconnected ruck contest frames, measured free-pass/offside teaching guides, and 14 mismatched large pitch examples.
 - Automated regression and a Chromium browser smoke test cover branching and media export. The test has now been expanded with action camera and mobile touch-sized controls. Green CI is necessary but not a sign-off for rugby law accuracy or Safari.
@@ -35,3 +35,11 @@ Updated 18 November 2026. Scope: Classic editor, shared Coach Edition engine, 14
 ## Definition of done
 
 A feature is only 'complete' when automated regression passes, its end-user interaction is checked, the presentation and video agree, and rugby-relevant examples are reviewed by a competent age-grade coach. Everything else stays classified as **implemented, not fully verified**.
+
+## Current field-view work (Classic v0.15.0)
+
+- Added age-grade full-field layouts and age-aware pitch references, with an independently sized, positionable custom practice rectangle.
+- A local practice route retains its physical metre distances when moved to a marked match-field location; existing plain practice-only drills keep their original view by default.
+- Add full-field zoom and user-controlled presentation magnification without altering the authored action. Verify the 16× editor limit and 12× read-only zoom on small mobile screens.
+- New published examples: U10 touch free-pass (`seed-063`) and U14 lineout near touch (`seed-061`).
+- Work still needed: age-grade law/line verification by a competent coach; check whether lineout and 22m markers are appropriate for each junior format, physical Safari/iPad touch gestures, screenshots of all editor/presentation modes, and output-movie visual equivalence. This is still **implemented, awaiting complete user acceptance**, rather than all 142 drills certified.

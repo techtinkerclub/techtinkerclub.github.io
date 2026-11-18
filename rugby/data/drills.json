@@ -16088,7 +16088,13 @@
             }
           }
         }
-      ]
+      ],
+      "pitchContext": {
+        "mode": "field",
+        "age": "U14",
+        "x": 0,
+        "y": 17
+      }
     },
     {
       "version": 1,
@@ -16762,7 +16768,13 @@
           },
           "teachingGuides": []
         }
-      ]
+      ],
+      "pitchContext": {
+        "mode": "field",
+        "age": "U10",
+        "x": 0,
+        "y": 20
+      }
     },
     {
       "version": 1,

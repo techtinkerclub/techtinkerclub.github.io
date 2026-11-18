@@ -7,7 +7,8 @@ import {esc,types,shape,clamp} from './model.js?v=0.13.4';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=1';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=2';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
-import {pitchGeometry,trainingField} from './pitch.js?v=0.12.23';
+import {pitchGeometry,drillGeometry,trainingField} from './pitch.js?v=0.12.24';
+import {fieldContext,validateFieldContext} from './field-context.js?v=1';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.12.34';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
@@ -23,6 +24,8 @@ export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
  const out={...pitchSettings(d),version:1,title:str(d.title,160)||'Rugby drill',length:num(d.length,5,100,20),width:num(d.width,5,70,15)};
+ const field=fieldContext(d),checked=validateFieldContext(field,out.length,out.width);
+ out.pitchContext=checked.ok?checked.value:{mode:'training',age:field.age};
  for(const k of ['age','objective','safety','instructions','coaching','equipment','players','regression','progression','questions','notes'])out[k]=str(d[k],20000);
  out.ageMin=num(d.ageMin,6,16,6);out.ageMax=num(d.ageMax,out.ageMin,16,16);out.minutes=num(d.minutes,1,120,8);out.category=str(d.category,80);out.links=cardLinks(d);
  out.frames=d.frames.map((f,i)=>{
@@ -50,7 +53,7 @@ export function drillDuration(d){return d.frames.reduce((s,f,i)=>s+(i?f.seconds:
 export function timeLocation(d,t){if(t<=0||d.frames.length<2)return {i:0,p:1};let acc=0;for(let i=1;i<d.frames.length;i++){const end=acc+d.frames[i].seconds;if(t<=end)return {i,p:clamp((t-acc)/d.frames[i].seconds,0,1)};acc=end}return {i:d.frames.length-1,p:1}}
 const svgObj=(o,g,poses,ink=false)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];if(isDiagramObject(o))return '<g transform="translate('+q.x+' '+q.y+') rotate('+(o.rot+g.rotation)+')">'+diagramSVG(o,g,{ink})+'</g>';if(o.type==='label')return '<g transform="translate('+q.x+' '+q.y+')">'+textLabelSVG(o,{baseline:labelOffset(o,g),ink})+'</g>';return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+') '+symbolTransform(o,g,poses.get(o.id))+'">'+posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type))),color)+'</g>'+(o.label&&!contactType(o.type)?'<text x="'+labelPosition(o,g,poses.get(o.id)).x+'" y="'+labelPosition(o,g,poses.get(o.id)).y+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
 export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,teachingGuides=true,markups=true,scaleMode='realistic',framing='field',ghosts=false,ink=false,prefix='scene'}={}){
- const g={...pitchGeometry(d.length,d.width,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),poses=trainingPoses(objects,posesFor(objects));
+ const g={...drillGeometry(d,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),poses=trainingPoses(objects,posesFor(objects));
  const focused=framing==='action',camera=focused?(time===null?actionViewport(d,g,i):actionViewportAt(d,g,i,p)):wholeFieldView(g);
  let field=trainingField(g,false,.5,pitchSettings(d)),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');

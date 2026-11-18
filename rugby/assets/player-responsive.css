@@ -78,3 +78,13 @@
 .read-only-player .player-transport #play{grid-column:auto}
 .read-only-player .player-transport select{grid-column:span 2}
 }
+
+/* Pan/zoom works on a real field or a cropped coaching camera. */
+.read-only-player .viewer-camera{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:6px}
+.read-only-player .viewer-camera[hidden]{display:none}
+.read-only-player .viewer-camera button{min-height:42px;min-width:44px;padding:7px 11px}
+.read-only-player .viewer-camera button[aria-pressed="true"]{background:#365d45;border-color:#d4e6c9;color:#fff}
+.read-only-player .viewer-camera output{font-size:12px;min-width:42px;text-align:center;color:#d4e6c9;font-variant-numeric:tabular-nums}
+.read-only-player #board{touch-action:none}
+.read-only-player #board.camera-panning{cursor:grabbing}
+@media(max-width:760px){.read-only-player .viewer-camera{gap:5px;padding:2px}.read-only-player .viewer-camera button{min-width:42px;min-height:44px}}

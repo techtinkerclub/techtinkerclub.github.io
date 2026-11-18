@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.14.8 / Coach Edition v0.3.3
+# Rugby Coaching Studio — Classic v0.15.0 / Coach Edition v0.3.3
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
@@ -131,3 +131,11 @@ The browser QA now includes Chromium phone-sized touch navigation and action-foc
 The short **U10 offload to support** example now moves the carrier and tracking support player before a genuine backward transfer; the receiver visibly continues after catching. The old stage moved only the carried ball while the players stayed still. This remains explicitly non-contact practice.
 
 The older **U10 free-pass restart** example now illustrates a restart after touch, with an accurately measured **5 m** inside-touch mark, two defenders visibly retreating **at least 7 m**, a stationary backward pass, and a separate follow-on stage when movement is allowed. The previous narrative described retreat without drawing any defending players. The check uses physical pitch metres and has a regression test. Current-season reference: https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf (summary of RFU Regulation 15 Appendix 4); refer to the RFU's authoritative age-grade rules for any changes.
+
+## Full marked rugby fields and movable practice areas (Classic v0.15.0)
+
+**Drill → Full rugby field & training location** now separates the physical practice rectangle from its surrounding marked match field. The current custom training dimensions, player movements, paths and timings are untouched when you position that rectangle somewhere else on the full pitch. Select a U7–U16/Adult age-grade field template, then pick a quick location (halfway, 5m line, 22m, either try line or touchline), enter metre offsets or drag the highlighted rectangle in the preview. The larger field includes try/dead-ball lines, in-goals, halfway, appropriate 5m/22m/15m references and top-view goalpost positions. Younger pitches have simplified reference markings, not invented lineouts.
+
+The editor has **Fit drill**, **Action**, **Fit pitch**, wheel / pinch-friendly camera controls; read-only presentations also have **+**, **−**, **Fit** and **Pan**, as well as Whole field / Follow action. A presentation's exported video follows its selected viewing style; temporary manual pan/zoom is a viewport-only feature. The shared Classic and Coach editions both use the same saved `pitchContext` field. Old drills default to the original plain training rectangle.
+
+The seed library includes a marked-field U10 touch free-pass restart (`seed-063`) and a U14 lineout near touch (`seed-061`). **U10 rugby has no lineouts**; the field is a spatial reference, not a licence to apply laws from older age grades. See [FIELD_GUIDE.md](./FIELD_GUIDE.md) for how to use it, size/source notes and limits. New regressions cover field geometry, preserved drill content and browser placement/zoom. Real iPhone/iPad Safari checks, full catalogue visual QA and coaching signoff remain open.

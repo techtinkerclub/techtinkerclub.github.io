@@ -1,0 +1,17 @@
+/* Rugby field placement controls — shared Classic / Coach Edition. */
+.field-context-controls{border:1px solid #486b54;border-radius:10px;padding:12px;background:rgba(107,158,101,.08)}
+.field-context-controls h3{margin-top:0}
+.field-context-controls #fieldPlacement{display:grid;gap:10px;padding-top:8px}
+.field-context-controls #fieldPlacement[hidden]{display:none}
+.field-context-controls .field-law-note{color:#d7edc8;line-height:1.45}
+.setup-preview.field-map{position:relative;overflow:hidden;border:1px solid #587862;border-radius:10px;background:#183b29;min-height:160px;touch-action:none;cursor:grab}
+.setup-preview.field-map.dragging{cursor:grabbing;border-color:#d8f58a}
+.setup-preview.field-map svg{width:100%;height:100%;max-height:260px;display:block;touch-action:none}
+.setup-preview.field-map svg [data-practice-area]{stroke-width:3}
+.zoom-tools #zoomArea{white-space:nowrap;font-size:11px;min-width:63px}
+@media(max-width:640px){
+ .field-context-controls{padding:10px}
+ .field-context-controls #fieldPlacement .setup-pair{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+ .setup-preview.field-map{min-height:130px}
+ .zoom-tools #zoomArea{padding-inline:8px}
+}
