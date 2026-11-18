@@ -21,12 +21,12 @@ export function decisionReached(d,from,to,resolved=false){
  const at=decisionTime(d);
  return at!==null&&!resolved&&Number.isFinite(from)&&Number.isFinite(to)&&from<=at+1e-7&&to>=at-1e-7;
 }
-export function outcomePreviewSVG(raw,id){
+export function outcomePreviewSVG(raw,id,options={}){
  if(!hasOutcomes(raw))return '';
  const entry=outcomeViews(raw).find(c=>c.id===id);
  if(!entry)throw Error('Unknown decision outcome.');
  const d=playbackData(entry.drill),fork=raw.branching.fork;
- const scene=renderScene(d,{index:fork,runs:false,passes:false,decisions:false,labels:true,markups:true,scaleMode:'coaching',prefix:'branch-'+id});
+ const scene=renderScene(d,{index:fork,runs:false,passes:false,decisions:false,labels:true,markups:true,scaleMode:'coaching',cartoonMode:options.cartoonMode===true,prefix:'branch-'+id});
  const g=scene.g,arrow='branch-'+id+'-route-arrow';
  let paths='',endpoints='';
  for(let i=fork+1;i<d.frames.length;i++){
@@ -53,14 +53,14 @@ export function outcomePreviewSVG(raw,id){
   '<g aria-hidden="true" pointer-events="none">'+paths+endpoints+'</g>';
  return scene.svg.replace('</svg>',overlay+'</svg>').replace(/\swidth="[^"]+"\sheight="[^"]+"/,' width="100%" style="height:auto;display:block"');
 }
-export function outcomeCardsMarkup(raw,mode='choose'){
+export function outcomeCardsMarkup(raw,mode='choose',options={}){
  if(!hasOutcomes(raw))return '';
  const views=outcomeViews(raw),b=raw.branching;
  return '<div class="branch-preview-grid">'+views.map(entry=>{
   const label=esc(entry.label),steps=entry.drill.frames.slice(b.fork+1);
   const sequence=steps.map(s=>s.name).filter(Boolean).slice(0,4).join(' → ');
   const option=raw.branching.choices.find(c=>c.id===entry.id),tip=String(option?.watchFor||option?.explanation||'').trim();
-  const svg=outcomePreviewSVG(raw,entry.id),selected=raw.branching.active===entry.id;
+  const svg=outcomePreviewSVG(raw,entry.id,options),selected=raw.branching.active===entry.id;
   const content='<span class="branch-preview-title"><strong>OPTION '+entry.id.toUpperCase()+' · '+label+'</strong><small>'+steps.length+' animated step'+(steps.length===1?'':'s')+'</small></span>'+
     '<span class="branch-preview-pitch">'+svg+'</span>'+
     '<span class="branch-preview-summary">'+esc(tip||sequence||'Create the movement for this option')+'</span>'+
