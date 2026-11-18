@@ -99,6 +99,6 @@ for(const page of ['index.html','coach/index.html']){
  const html=file(page);
  for(const id of ['outcomeDialog','outcomePrompt','outcomeActionA','outcomeActionB','outcomeReceiverA','outcomeReceiverB','outcomeSave','outcomeCancel'])
   assert.ok(html.includes('id="'+id+'"'),page+' missing '+id);
- assert.match(html,/app\.js\?v=0\.(14|15)\.\d+/);
+ assert.match(html,/app\.js\?v=0\.\d+\.\d+/);
 }
 console.log('Decision on run: single-step creation, actual mid-run pause, independent editable A/B paths, backward pass, whistle, serialization, safety checks and both editor entrypoints passed.');

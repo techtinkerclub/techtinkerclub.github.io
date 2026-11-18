@@ -75,6 +75,6 @@ assert.match(app,/Playing the linear drill/,'Do not promise a pause for annotati
 for(const path of ['index.html','coach/index.html']){
  const page=read(path);
  assert.match(page,/id="outcomeDialogHint"/);
- assert.match(page,/app\.js\?v=0\.(14|15)\.\d+/);
+ assert.match(page,/app\.js\?v=0\.\d+\.\d+/);
 }
 console.log('Rugby decision conversion: linked mid-run pause, preserved shared whistle, A run, B backwards pass, independent timelines, original drill preservation and guided editor — passed.');

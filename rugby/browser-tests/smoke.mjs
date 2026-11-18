@@ -131,6 +131,8 @@ try {
  assert.match(combined.suggestedFilename(),/Defensive-line-whistle-to-decision-progression\.(mp4|webm)$/);
  await combined.path();
  console.log('BROWSER COMBINED MOVIE PASS: two linked drills, title and one real movie file');
+ await classic.locator('#movieProgressClose').waitFor({state:'visible'});
+ await classic.locator('#movieProgressClose').click();
  await classic.locator('#closeShare').click();
  console.log('BROWSER VIDEO PLAYLIST PASS: library drill added, re-ordered, explanations editable');
  await classic.close();

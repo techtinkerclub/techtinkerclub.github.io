@@ -46,7 +46,7 @@ test('whole field and closer action framing share actual field markings and post
  const full=renderScene(drill,{index:1,framing:'field'});
  assert.match(full.svg,/data-practice-area="true"/);
  assert.match(full.svg,/IN-GOAL/);
- assert.match(full.svg,/TRAINING AREA/);
+ assert.match(full.svg,/AREA · 12 × 10 m/);
  assert.match(full.svg,/<circle/,'Goalpost bases or players should render');
  const close=renderScene(drill,{index:1,framing:'action'});
  assert(close.camera.width<full.camera.width||close.camera.height<full.camera.height,

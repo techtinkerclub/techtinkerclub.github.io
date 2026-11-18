@@ -59,7 +59,7 @@ export function labelPosition(o,g,pose){
  // player, the glyphs sit 10px ABOVE the baseline and look much closer.
  // Compensate only for the upward-facing placement so the visible gaps match.
  const behindY=Math.cos(angle);
- const desired={x:-Math.sin(angle)*distance,y:behindY*distance+symbolLabelSize(g)*.75*Math.max(0,-behindY)};
+ const desired={x:-Math.sin(angle)*distance,y:behindY*distance+(g?.fieldContext?.mode==='field'?7.5:10)*Math.max(0,-behindY)};
  // Keep the caption anchor inside the playing field at pitch edges.
  const at=g.toView(o.x,o.y),margin=g.margin||0;
  const clamp=(n,low,high)=>Math.max(low,Math.min(high,n));

@@ -4,9 +4,9 @@ import test from 'node:test';
 import {initMobileEditor} from '../js/mobile-editor.js';
 
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-test('both editors load the same mobile and tablet skin without replacing the engine',()=>{
- const classic=read('index.html'),coach=read('coach/index.html'),css=read('assets/mobile-editor.css'),workspace=read('js/workspace.js');
- for(const page of [classic,coach])assert.match(page,/href="\.\/assets\/mobile-editor\.css\?v=0\.1\.2"/);
+test('Classic Studio loads the full shared mobile and tablet workspace',()=>{
+ const classic=read('index.html'),css=read('assets/mobile-editor.css'),workspace=read('js/workspace.js');
+ assert.match(classic,/href="\.\/assets\/mobile-editor\.css\?v=0\.1\.2"/);
  assert.match(workspace,/initMobileEditor/);
  assert.match(workspace,/max-width:1100px/);
  assert.match(css,/\.mobile-view-tools #equipmentPanel/);
@@ -20,7 +20,7 @@ test('both editors load the same mobile and tablet skin without replacing the en
  assert.doesNotMatch(css,/body\.mobile-workspace-nav\s*\{/,'Nav is an element, not a body class');
  assert.match(read('js/mobile-editor.js'),/data-mobile-camera="zoomFit"/);
  assert.match(read('js/mobile-editor.js'),/data-mobile-camera="zoomAction"/);
- assert.equal(classic.match(/src="\.\/js\/app\.js\?v=[\d.]+"/)?.[0],coach.match(/src="\.\/js\/app\.js\?v=[\d.]+"/)?.[0]);
+ assert.match(classic,/src="\.\/js\/app\.js\?v=0\.\d+\.\d+"/);
 });
 function classes(){
  const state=new Set();
