@@ -27,7 +27,7 @@ import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypoi
 import { createHistory } from './history.js?v=0.4.0';
 import {deriveDrill,readDerivation,relationLabel,rekeyImportedFamilies} from './drill-variations.js?v=0.12.22';
 import {timingTrackHTML,createTimingTrackEditor} from './timing-tracks.js?v=0.12.20';
-import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.18.0';
+import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, objectPose, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.18.0';
 import {createCamera} from './camera.js?v=0.5.1';
 import {actionViewport} from './action-camera.js?v=1';
 import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactMarkerShape,contactLabels,PLAYER_POSES} from './contact.js?v=0.12.34';
@@ -1503,16 +1503,41 @@ function finishBallPick(targetId){
  }
  assignPossession(drill.frames,idx,ball.id,targetId,geometry());if(pendingInsert?.id===ball.id&&pendingInsert.index===idx){syncInsertedCopies(drill.frames,pendingInsert.indices,ball,pendingInsert.origin,geometry());pendingInsert=null}selected=ballChoiceId=ball.id;
  if(ballPickKind==='turnover'){ball.transferKind='turnover';if(idx){f().timing[ball.id]={start:79,end:80};if(f().paths)delete f().paths[ball.id]}}
- else{delete ball.transferKind;delete ball.groundState;if(idx&&from){f().timing[ball.id]={start:35,end:70};if(f().paths)delete f().paths[ball.id]}}
+ else if(!from){ball.transferKind='pickup';delete ball.groundState;if(idx){f().timing[ball.id]={start:54,end:55};if(f().paths)delete f().paths[ball.id]}}
+ else{delete ball.transferKind;delete ball.groundState;if(idx){f().timing[ball.id]={start:35,end:70};if(f().paths)delete f().paths[ball.id]}}
  showPasses=true;$('passTrails').classList.add('selected');$('passTrails').setAttribute('aria-pressed','true');
- changed();refresh();focusPitch();note(ballPickKind==='turnover'?'Possession changed without a pass.':from?'Pass created. Adjust its timing or path.':'Ball attached. It follows the player.');
+ changed();refresh();focusPitch();note(ballPickKind==='turnover'?'Possession changed without a pass.':from?'Pass created. Adjust its timing or path.':'Pickup created without a pass line. Adjust when the ball is collected in Step details.');
 }
 function releaseBall(){
- if(!canEditObjects())return;const b=chosenBall(),p=carrier(f(),b);if(!p)return;
- assignPossession(drill.frames,idx,b.id,null,geometry());delete b.transferKind;
- if(idx&&drill.frames[idx-1].objects.some(o=>o.id===b.id&&o.ownerId)){f().timing[b.id]={start:99,end:100};if(f().paths)delete f().paths[b.id]}
- selected=ballChoiceId=b.id;changed();refresh();focusPitch();note('Ball released at its current position. You can move it independently.');
+ if(!canEditObjects())return;
+ let b=chosenBall(),p=carrier(f(),b);
+ if(!p)return;
+ if(idx===0){
+  if(hasOutcomes(drill)){note('Choose an action step to release the ball.');return}
+  if(drill.frames.length>=150){note('Maximum 150 steps.');return}
+  const next=stripDecisions(clone(f()));next.name='Release ball';next.seconds=2;next.notes='';next.timing={};next.paths={};
+  drill.frames.splice(1,0,next);idx=1;b=f().objects.find(o=>o.id===b.id);p=carrier(f(),b);
+ }
+ const current=f(),prior=drill.frames[idx-1],priorBall=prior?.objects.find(o=>o.id===b.id);
+ const from=priorBall&&carrier(prior,priorBall);
+ if(!from){note('For a timed release, the player must still have the ball in the preceding step. Select or create that step first.');return}
+ const releaseAt=85,held=carriedPose(b,objectPose(prior,current,p.id,releaseAt/100,geometry()),geometry());
+ const oldX=b.x,oldY=b.y;
+ const count=assignPossession(drill.frames,idx,b.id,null,geometry());
+ if(!count)return;
+ // Correct positions of propagated free copies: the player may be running
+ // after release, so the ball stays at the actual release point.
+ for(let i=idx;i<idx+count;i++){
+  const item=drill.frames[i].objects.find(o=>o.id===b.id);
+  if(item&&!item.ownerId){item.x=held.x;item.y=held.y;item.rot=held.rot;}
+ }
+ b=f().objects.find(o=>o.id===b.id);b.transferKind='drop';b.groundState='grounded';
+ f().timing ||= {};f().timing[b.id]={start:releaseAt-1,end:releaseAt};
+ if(f().paths)delete f().paths[b.id];
+ selected=ballChoiceId=b.id;changed();refresh();focusPitch();
+ note('Ball released at '+releaseAt+'% of this step, without a pass. Change its time in Step details; adjust A1’s running window independently.');
 }
+
 $('attachBallSide').onclick=$('passBallSide').onclick=()=>beginBallPick('pass');$('turnoverSide').onclick=()=>beginBallPick('turnover');$('recipientChoice').onchange=()=>{if(ballPicking&&$('recipientChoice').value)finishBallPick($('recipientChoice').value)};
 $('releaseBallSide').onclick=releaseBall;
 $('passTrails').onclick=()=>{showPasses=!showPasses;$('passTrails').classList.toggle('selected',showPasses);$('passTrails').setAttribute('aria-pressed',String(showPasses));render()};
