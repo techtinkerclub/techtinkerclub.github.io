@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.19.0
+# Rugby Coaching Studio — Classic Studio v0.19.2
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -203,3 +203,11 @@ The added skills are schematic coaching aids. A tag/removal cue does not perform
 Right-click a player or a selected group → **Actions…**. Choose a player touch, an agility target touch, a rugby tag removal or an eligible tackle/ruck/maul, then configure the details. Irrelevant actions are unavailable. A touch does not require a tag belt. The tag action is separate and requires a tagged ball carrier and an opposing tagger with two attached strips; this is NOT a physical tackle. Right-click a cone → **Change cone colour…** to focus its fixed-colour Object selector.
 
 Tag belts have matching left/right strips with the coach's selected colour (red, blue, green, yellow). Colour and the selected hip are separate. RFU tag-rugby guidance is displayed at the action; subsequent stop/pass/tag-return steps are authored explicitly rather than invented. Player touches, target touches and tag removals have different diagrams and cue colours. Both video builder actions and contact dialogs have more consistent spacing; tag-only controls hide for a normal touch. Contact arrangements are validated before applying to prevent failed actions leaving an empty step.
+
+## Rip ball and timed loose-ball pickup (v0.19.2)
+
+Right-click a player (or ball) → **Actions…**. Choose **Rip ball** to open a guided donor/recipient/time dialog; add a coaching label such as “Support player rips and passes.” It changes possession at that moment without displaying a pass. U9 rips are teammate-only and must be followed by a pass; for U10+ check the applicable RFU contact and ripping provisions. Position the players as intended; the rip cue is schematic rather than full hand/arm animation.
+
+For a genuine loose-ball scenario, **Release ball** to the ground, then in a following step use **Pick up a free ball**. Pick the ball, recipient (teammate or opponent), and timing. These are separate transitions and do not generate a false pass. In **Step → Actions in this step**, edit the timing or remove the ball change with **Undo transfer**; the original players and ball remain. Player movement has its own timing tracks, so movement can happen before or after the ball event.
+
+Tackle, ruck and maul no longer require selecting the full group beforehand: select participants inside **Actions…**. Unavailable options explain missing age/ball conditions. Rucks still require a loose ball on the ground and U10+; U9 cannot use rucks or mauls.
