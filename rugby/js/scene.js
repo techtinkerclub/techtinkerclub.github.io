@@ -5,7 +5,7 @@ import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.18.8';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
-import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=6';
+import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=7';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
