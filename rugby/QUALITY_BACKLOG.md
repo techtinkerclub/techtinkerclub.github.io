@@ -1,10 +1,10 @@
 # Rugby Coaching Studio — quality and usability backlog
 
-Updated 18 November 2026. Scope: Classic editor, shared Coach Edition engine, 142 starter drill resources, read-only library and share/video/print outputs. This is the next-release acceptance plan, not a claim that every item has been finished.
+Updated 18 November 2026. Scope: Classic Studio editor (desktop and mobile), 143 starter drill resources, read-only library and share/video/print outputs. This is the next-release acceptance plan, not a claim that every item has been finished.
 
 ## Baseline and current evidence
 
-- Classic v0.15.0 (Coach Edition v0.3.3); shared source engine.
+- Classic Studio is the primary maintained editor; the public library and mobile workspace reuse its rendering and data model.
 - 142 resources: 116 animated drills and 26 written coaching cards with no pitch objects.
 - Specific corrections completed: player tackle/recovery lifecycle, short ball presentation, 24 disconnected ruck contest frames, measured free-pass/offside teaching guides, and 14 mismatched large pitch examples.
 - Automated regression and a Chromium browser smoke test cover branching and media export. The test has now been expanded with action camera and mobile touch-sized controls. Green CI is necessary but not a sign-off for rugby law accuracy or Safari.
