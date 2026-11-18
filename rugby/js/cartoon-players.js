@@ -4,8 +4,8 @@
 import {canCarry} from './possession.js?v=0.19.1';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 import {playerHeadAngle} from './player-gaze.js?v=3';
-import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI} from './minion-rig-data.js?v=1';
-import {COACH_ATLAS_URI,COACH_TILE,COACH_COLUMNS} from './coach-atlas-data.js?v=1';
+import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI} from './minion-rig-data.js?v=2';
+import {REAR_COACH_URI,REAR_COACH_TILE,REAR_COACH_COLS} from './coach-rear-data.js?v=1';
 const arrowRE=/<path d="M-5 -12 L0 -19 L5 -12 Z" fill="#f7fff6"\s*\/>|<path d="M-5 -8L0 -16L5 -8Z" fill="#fff"\s*\/>|<path d="M-5 -12L0 -19L5 -12Z" fill="#fff"\s*\/>|<path d="M-4 -15L0 -21L4 -15Z" fill="#fff"\s*\/>|<path d="M-5 -7L0 -14L5 -7Z" fill="#fff"\s*\/>/g;
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
@@ -15,7 +15,7 @@ const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0
 export function cartoonSpriteDefs(){
  return '<defs><image id="rugby-minion-body-v9" href="'+RIG_BODY_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
   '<image id="rugby-minion-head-v9" href="'+RIG_HEAD_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
-  '<image id="rugby-coach-original-v10" href="'+COACH_ATLAS_URI+'" width="'+(COACH_COLUMNS*COACH_TILE)+'" height="'+(2*COACH_TILE)+'"/></defs>';
+  '<image id="rugby-coach-rear-v11" href="'+REAR_COACH_URI+'" width="'+(REAR_COACH_COLS*REAR_COACH_TILE)+'" height="'+(2*REAR_COACH_TILE)+'"/></defs>';
 }
 function movingInfo(o,previous,frame,p){
  const before=previous?.objects?.find(q=>q.id===o.id),after=frame?.objects?.find(q=>q.id===o.id);
@@ -56,13 +56,14 @@ export function cartoonPoseIndex(o,pose,objects,previous,frame,p=1){
   if(earlier&&earlier!=='grounded'&&p<.34)return 15;
   return 16;
  }
- if(pose==='recovering'||pose==='kneeling')return 18;
+ if(pose==='recovering')return 18;
+ if(pose==='kneeling')return 11; // one knee down, hand bracing against pitch
  if(o.type==='shield')return 23;
  if(o.type==='bagplayer')return 24;
  if(pose==='tackling')return tackle&&p>=.53?14:13;
- if(pose==='held')return 14;
+ if(pose==='held')return 7; // upright, both arms held close to the ball carrier
  if(pose==='bound')return maul?22:ruck?.breakdown?.phase==='clearout'?21:20;
- if(pose==='crouched')return ruck?21:3;
+ if(pose==='crouched')return ruck?21:14; // distinct low two-armed crouch, not ready stance
  if(pose==='ready')return 3;
  if(tackle&&tackle.members?.some(m=>m.id===o.id&&m.pose==='tackling'))return p<.5?13:14;
  if(maul)return 22;
@@ -98,14 +99,42 @@ function smoothGaze(o,objects,g,previous,frame,p){
  }
  return weight?sum/weight:0;
 }
+function cartoonStandalonePad(){
+ // The same footprint as the Classic pad; distinct comic styling only.
+ return '<g class="minion-pad-standalone" pointer-events="none">'+
+  '<rect x="-18" y="-8" width="36" height="16" rx="5" fill="#1a344b" stroke="#d4f0ff" stroke-width="1.5"/>'+
+  '<rect x="-15" y="-6" width="30" height="12" rx="3.5" fill="#377fc4" stroke="#203d57" stroke-width="1"/>'+
+  '<path d="M-9 -5V5M9 -5V5" stroke="#d5edff" stroke-width="1.5" opacity=".75"/>'+
+  '<path d="M-5 -1H5" stroke="#fef5a6" stroke-width="2" stroke-linecap="round"/>'+
+  '</g>';
+}
 function bodyEquipment(o){
- if(o.type==='shield')return '<g class="minion-equipment-overlay" aria-label="Tackle shield carried">'+
-  '<rect x="-18" y="-25" width="36" height="20" rx="5" fill="#31444e" stroke="#d6e7ed" stroke-width="2.2"/>'+
-  '<path d="M-11 -15H11" stroke="#85aab5" stroke-width="2"/>'+
-  '<path d="M-11 -24V-28M11 -24V-28" stroke="#1e2b35" stroke-width="2.5"/></g>';
- if(o.type==='bagplayer')return '<g class="minion-equipment-overlay" aria-label="Tackle bag carried">'+
-  '<rect x="-12" y="-32" width="24" height="31" rx="8" fill="#c17b4a" stroke="#603626" stroke-width="2"/>'+
-  '<path d="M-7 -25V-10M7 -25V-10" stroke="#f2b47e" stroke-width="1.9"/></g>';
+ if(o.type==='shield'){
+  // Empty-hand pad-holding player sprite. Pad is a visual overlay, not a
+  // replacement for shield/ownership/contact logic or the actual equipment object.
+  // Two mitts visibly grip the SIDE edges, never float in front of the head.
+  return '<g class="minion-equipment-overlay" aria-label="Tackle shield held at both side grips">'+
+   '<path d="M-11 -8Q-18 -15 -18 -23M11 -8Q18 -15 18 -23" stroke="#172832" stroke-width="7" fill="none" stroke-linecap="round"/>'+
+   '<path d="M-11 -8Q-18 -15 -18 -23M11 -8Q18 -15 18 -23" stroke="#ffd45b" stroke-width="4.6" fill="none" stroke-linecap="round"/>'+
+   '<rect x="-17" y="-37" width="34" height="23" rx="6.5" fill="#19334b" stroke="#f0fcff" stroke-width="1.8"/>'+
+   '<rect x="-14" y="-34" width="28" height="17" rx="4" fill="#307fc6" stroke="#1d4d73" stroke-width="1.4"/>'+
+   '<path d="M-10 -32V-19M10 -32V-19" stroke="#a9daf2" stroke-width="2"/>'+
+   '<path d="M-5 -26H5" stroke="#fff1a5" stroke-width="2.2" stroke-linecap="round"/>'+
+   '<ellipse cx="-17" cy="-23" rx="5.5" ry="6.5" fill="#272c34" stroke="#131a20" stroke-width="1.6"/>'+
+   '<ellipse cx="17" cy="-23" rx="5.5" ry="6.5" fill="#272c34" stroke="#131a20" stroke-width="1.6"/>'+
+   '<path d="M-20 -25L-15 -26M15 -26L20 -25" stroke="#777c81" stroke-width="1.2"/>'+
+   '</g>';
+ }
+ if(o.type==='bagplayer'){
+  return '<g class="minion-equipment-overlay" aria-label="Tackle bag held with both hands">'+
+   '<path d="M-10 -8L-14 -17M10 -8L14 -17" stroke="#ffd45b" stroke-width="6" stroke-linecap="round"/>'+
+   '<rect x="-13" y="-38" width="26" height="32" rx="9" fill="#1c3447" stroke="#e4f2ff" stroke-width="1.8"/>'+
+   '<rect x="-10.5" y="-35" width="21" height="26" rx="7" fill="#398cbb" stroke="#24638b" stroke-width="1.1"/>'+
+   '<path d="M-6 -32V-12M6 -32V-12" stroke="#bfecff" stroke-width="1.8" opacity=".85"/>'+
+   '<ellipse cx="-13" cy="-19" rx="5.2" ry="6" fill="#222a30" stroke="#151c26" stroke-width="1.5"/>'+
+   '<ellipse cx="13" cy="-19" rx="5.2" ry="6" fill="#222a30" stroke="#151c26" stroke-width="1.5"/>'+
+   '</g>';
+ }
  return '';
 }
 const tileUse=(id,x,y,t)=>'<svg width="'+t+'" height="'+t+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden" style="overflow:hidden"><use href="#'+id+'"/></svg>';
@@ -156,19 +185,19 @@ function coachTravelAngle(o,g,previous,frame,p){
  return ((absolute-(Number(o.rot)||0)-(Number(g.rotation)||0)+180)%360+360)%360-180;
 }
 function cartoonCoach(o,objects,g,previous,frame,p){
- const k=coachIndex(o,previous,frame,p),t=COACH_TILE,size=46;
- const x=k%COACH_COLUMNS*t,y=Math.floor(k/COACH_COLUMNS)*t;
- // Use the actual coach artwork supplied by the user. The artificial
- // protruding nose was visually incorrect and has been discarded.
- // Body/head remain upright (crown north, boots south), with body-facing and
- // route-following handled by the same object rotation as Classic mode.
+ const k=coachIndex(o,previous,frame,p),t=REAR_COACH_TILE,size=66;
+ const x=k%REAR_COACH_COLS*t,y=Math.floor(k/REAR_COACH_COLS)*t;
+ // The newly supplied rear-view coach sheet points north (head leading, boots
+ // trailing), the SAME local forward axis (-Y) as the Classic arrow.
+ // No nose markers, secondary eyes or fixed 180-degree correction are added.
+ // Pitch rotation is already applied by the outer object transform.
  const angle=coachTravelAngle(o,g,previous,frame,p)??smoothGaze(o,objects,g,previous,frame,p);
  return '<g class="cartoon-coach top-down-coach-image" data-coach-pose="'+k+'" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden" style="overflow:hidden">'+
-  '<use href="#rugby-coach-original-v10"/></svg></g>';
+  '<use href="#rugby-coach-rear-v11"/></svg></g>';
 }
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
- if(!canCarry(o))return original;
+ if(!canCarry(o))return cartoonMode&&o.type==='shieldItem'?cartoonStandalonePad():original;
  if(cartoonMode)return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonMinion(o,pose,objects,g,previous,frame,progress);
  // Leave the normal editor and presentation appearance untouched.
  const plain=original.replace(arrowRE,'');
