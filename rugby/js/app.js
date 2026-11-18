@@ -543,7 +543,7 @@ $('actionManage').onclick=()=>{$('actionChooser').close();openStepActions()};
 function retimeBallEvent(ballId,atPercent){
  if(!idx||!Number.isFinite(atPercent)||atPercent<10||atPercent>95)return false;
  const current=f(),prior=drill.frames[idx-1],ball=current.objects.find(o=>o.id===ballId),before=prior.objects.find(o=>o.id===ballId);
- if(ball?.type!=='ball'||before?.type!=='ball'||!['drop','pickup','turnover'].includes(ball.transferKind))return false;
+ if(ball?.type!=='ball'||before?.type!=='ball'||!['drop','pickup','turnover','rip'].includes(ball.transferKind))return false;
  const at=atPercent/100;
  if(ball.transferKind==='drop'){
   const owner=carrier(prior,before),nextOwner=current.objects.find(o=>o.id===owner?.id);
@@ -592,16 +592,19 @@ function updateSkillActionsPanel(){
  const balls=idx?f().objects.filter(o=>o.type==='ball'&&prior?.objects.some(b=>b.id===o.id&&(b.ownerId||null)!==(o.ownerId||null))):[];
  const ballRows=balls.map(ball=>{
   const before=prior.objects.find(o=>o.id===ball.id),from=before.ownerId,to=ball.ownerId;
-  const type=ball.transferKind==='drop'?'Release ball':ball.transferKind==='pickup'?'Pick up ball':ball.transferKind==='turnover'?'Change possession (no pass)':from&&to?'Pass ball':from?'Release ball':'Receive ball';
+  const type=ball.transferKind==='drop'?'Release ball':ball.transferKind==='pickup'?'Pick up ball':ball.transferKind==='turnover'?'Change possession (no pass)':ball.transferKind==='rip'?'Rip ball':from&&to?'Pass ball':from?'Release ball':'Receive ball';
   const window=f().timing?.[ball.id]||{start:0,end:100};
   return '<div class="skill-action-row" data-ball-event="'+esc(ball.id)+'"><strong>'+esc(type)+'</strong><small>'+esc(from?name(from):'Ground')+' → '+esc(to?name(to):'Ground')+'</small>'+
-   (['drop','pickup','turnover'].includes(ball.transferKind)?'<label>At (%) <input type="number" data-ball-at="'+esc(ball.id)+'" min="10" max="95" step="5" value="'+window.end+'"></label>':'<small>Use ball timing track to adjust the pass window.</small>')+
+   (['drop','pickup','turnover','rip'].includes(ball.transferKind)?'<label>At (%) <input type="number" data-ball-at="'+esc(ball.id)+'" min="10" max="95" step="5" value="'+window.end+'"></label>':'<small>Use ball timing track to adjust the pass window.</small>')+
+   (ball.transferKind==='rip'?'<label>Label <input type="text" data-rip-label="'+esc(ball.id)+'" maxlength="100" value="'+esc(ball.ripLabel||'Rip ball')+'"></label>':'')+
    '<button type="button" data-ball-delete="'+esc(ball.id)+'" class="danger-action">Undo transfer</button></div>';
  }).join('');
  list.innerHTML=eventRows+ballRows+(events.length||balls.length?'':'<p class="muted">No authored actions in this step. Select a player and right-click → Actions… to add one.</p>');
  panel.hidden=false;
 }
 $('skillActionsList').addEventListener('change',event=>{
+ const labelControl=event.target.closest('[data-rip-label]');
+ if(labelControl){const b=f().objects.find(o=>o.id===labelControl.dataset.ripLabel&&o.transferKind==='rip');if(b){b.ripLabel=labelControl.value.trim().slice(0,100)||'Rip ball';changed();render();updateSkillActionsPanel()}return}
  const ballControl=event.target.closest('[data-ball-at]');
  if(ballControl){
   const pct=Number(ballControl.value);
