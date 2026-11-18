@@ -64,7 +64,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  const g={...drillGeometry(d,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1];
  const objects=timedSkillObjects(old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),old,fr,p),poses=trainingPoses(objects,posesFor(objects));
  const focused=framing==='action',camera=focused?(time===null?actionViewport(d,g,i):actionViewportAt(d,g,i,p)):wholeFieldView(g);
- let field=(cartoonMode&&!ink?cartoonSpriteDefs():'')+trainingField(g,false,.5,pitchSettings(d))+(cartoonMode&&!ink?cartoonPitchDecor(g):''),arrows='',starts='',changes=[];
+ let field=(cartoonMode?cartoonSpriteDefs():'')+trainingField(g,false,.5,pitchSettings(d))+(cartoonMode&&!ink?cartoonPitchDecor(g):''),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
  if(old)for(const o of fr.objects){
   if(o.type==='decision'||isDiagramObject(o))continue;
@@ -77,11 +77,11 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
   arrows+='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+(ink?3.4:3)+'" '+(ball?(o.transferKind==='kick'?'stroke-dasharray="13 4 3 4" ':'stroke-dasharray="7 6" '):'')+'marker-end="url(#arr)" opacity=".95"/>';
   if(ghosts&&canCarry(o)){const q=g.toView(m.start.x,m.start.y);starts+='<circle cx="'+q.x+'" cy="'+q.y+'" r="'+Math.max(3,15*symbolFactors(o,g)[0])+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-dasharray="4 3"/>'}
  }
- const order=cartoonObjectOrder(orderObjects(objects),cartoonMode&&!ink);
+ const order=cartoonObjectOrder(orderObjects(objects),cartoonMode);
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
  const caption=labels?contactLabels(objects,focused?{...g,viewWidth:camera.width}:g,esc,[...new Set(changes)]):'';
  const placedCaption=focused&&caption?'<g transform="translate('+camera.x+' '+camera.y+')">'+caption+'</g>':caption;
- let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink,objects,old,fr,time===null?1:p,cartoonMode&&!ink)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink,{frames:d.frames,index:i})+ripOverlay(fr,old,objects,g,time===null?1:p,ink)+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null})+contestResultOverlay(fr,objects,g,p,ink)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
+ let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink,objects,old,fr,time===null?1:p,cartoonMode)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink,{frames:d.frames,index:i})+ripOverlay(fr,old,objects,g,time===null?1:p,ink)+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null})+contestResultOverlay(fr,objects,g,p,ink)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+camera.x+' '+camera.y+' '+camera.width+' '+camera.height+'" width="'+camera.width+'" height="'+camera.height+'" font-family="Arial,sans-serif">'+body+'</svg>',g:{...g,viewWidth:camera.width,viewHeight:camera.height},camera,index:i,frame:fr};
 }
