@@ -1512,8 +1512,8 @@ function chooseSaveMode(){
   const exists=githubDrills.some(x=>x.id===drill.id)||githubBaseline?.id===drill.id;
   const dialog=document.createElement('dialog');
   dialog.innerHTML='<form method="dialog" class="setup-form" style="max-width:520px"><h2>Save drill to GitHub</h2><p>Choose what happens to the existing drill and its library entry.</p>'+
-   (exists?'<label style="display:block;margin:12px 0"><input type="radio" name="saveKind" value="revision" checked> <strong>Update existing drill</strong> — next revision, same link and library entry.</label>':'')+
-   '<label style="display:block;margin:12px 0"><input type="radio" name="saveKind" value="version" '+(!exists?'checked':'')+'> <strong>Save related version</strong> — separate drill in the same family.</label>'+
+   '<label style="display:block;margin:12px 0"><input type="radio" name="saveKind" value="revision" checked> <strong>'+(exists?'Update existing drill':'Save this drill')+'</strong> — '+(exists?'next revision, same link and library entry.':'keep this drill identity and its family links.')+'</label>'+
+   '<label style="display:block;margin:12px 0"><input type="radio" name="saveKind" value="version" ' + '' +'> <strong>Save related version</strong> — separate drill in the same family.</label>'+
    '<label style="display:block;margin:12px 0"><input type="radio" name="saveKind" value="new"> <strong>Save completely new drill</strong> — unrelated entry.</label>'+
    '<div class="flex"><button value="cancel">Cancel</button><button class="primary" value="save">Continue</button></div></form>';
   document.body.appendChild(dialog);
