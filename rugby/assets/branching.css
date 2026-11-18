@@ -90,3 +90,22 @@ body.hide-tracks>.timeline:has(.outcome-bar),body.presentation-mode>.timeline:ha
 .outcome-action-choice label{display:grid;gap:5px;margin:0!important;font-size:12px}
 .outcome-action-choice select{min-height:38px;max-width:100%;width:100%}
 @media(max-width:600px){.outcome-action-choice{grid-template-columns:minmax(0,1fr)}}
+
+/* Read-only decision chooser: an independently scrollable output panel.
+   Avoids scrolling the entire mobile page backwards when the fork is reached.
+   The editor's decision panel and all ordinary application UI are unchanged. */
+body.read-only-player .branch-decision-panel:not([hidden]){
+ position:fixed;
+ z-index:950;
+ top:max(12px,env(safe-area-inset-top, 0px));
+ bottom:max(12px,env(safe-area-inset-bottom, 0px));
+ left:50%;
+ transform:translateX(-50%);
+ box-sizing:border-box;
+ width:min(850px,calc(100vw - 20px));
+ max-height:calc(100dvh - 24px);
+ margin:0;
+ overflow-y:auto;
+ overscroll-behavior:contain;
+ scrollbar-gutter:stable;
+}
