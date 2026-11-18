@@ -16,7 +16,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
  '<label class="video-field">Add published drill<select id="videoPick"><option value="">Choose another drill…</option></select></label>'+
  '<button type="button" id="videoAdd">Add drill</button>'+
  '<div class="video-row"><button type="button" id="videoPresent">Open linked presentation</button><button type="button" id="videoLink">Copy presentation link</button><button type="button" id="videoPrint">Print progression pack</button></div>'+
- '<details class="video-details"><summary>Video settings</summary><div id="publicMovieOptions"></div></details>'+
+ '<details class="video-details"><summary>Video settings</summary><div id="publicMovieOptions"></div><label class="video-field">Character style <select id="publicVideoStyle" aria-label="Video character style"><option value="classic">Classic coaching</option><option value="minion">Minion Mode · playful sprites and video cards</option></select></label></details>'+
  '<div class="video-row video-footer"><p id="videoStatus" role="status"></p><button type="button" id="videoExport">Export video</button></div>'+
  '<small>The video downloads to your device. Keep this tab visible while recording. Your drills and public library remain unchanged.</small>';
  document.body.append(dialog);
@@ -76,7 +76,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
   if(busy||!ids.length)return;busy=true;render();get('videoStatus').textContent='';
   try{
    const stages=selected().map(playbackData),title=get('videoTitle').value.trim()||stages[0].title;
-   const options={...settings(),sequenceDrills:stages,movieTitle:title,scaleMode:'coaching',framing:'action',labels:true,decisions:true,teachingGuides:true,markups:true};
+   const options={...settings(),cartoonMode:get('publicVideoStyle').value==='minion',sequenceDrills:stages,movieTitle:title,scaleMode:'coaching',framing:'action',labels:true,decisions:true,teachingGuides:true,markups:true};
    const file=await progress.run(async(update,signal)=>{
     const video=await recordDrill(stages[0],options,update,signal);
     if(!signal.aborted)saveBlob(video.blob,outputName({title})+'.'+video.extension);
