@@ -35,15 +35,24 @@ export function skillIcon(object){
 }
 export function timedSkillObjects(objects,previous,frame,progress){
  if(!previous||!Array.isArray(frame?.interactions)||progress>=1)return objects;
+ const events=frame.interactions.filter(a=>a.kind==='tag').sort((a,b)=>a.at-b.at);
+ if(!events.length)return objects;
  const prior=new Map(previous.objects.map(o=>[o.id,o]));
- const hold=new Set();
- for(const event of frame.interactions)if(event.kind==='tag'&&progress<event.at){hold.add(event.targetId);hold.add(event.actorId)}
- if(!hold.size)return objects;
- return objects.map(o=>{
-  if(!hold.has(o.id)||!prior.has(o.id))return o;
-  const before=prior.get(o.id);
-  return {...o,tagBelt:before.tagBelt,tags:before.tags?{...before.tags}:undefined,heldTags:before.heldTags};
- });
+ const affected=new Map();
+ for(const event of events){
+  for(const id of [event.targetId,event.actorId]){
+   if(!affected.has(id)){
+    const original=prior.get(id)||objects.find(o=>o.id===id);
+    if(original)affected.set(id,{tagBelt:original.tagBelt,tags:original.tags?{...original.tags}:undefined,heldTags:Number(original.heldTags)||0});
+   }
+  }
+  if(progress>=event.at){
+   const target=affected.get(event.targetId),actor=affected.get(event.actorId);
+   if(target?.tags)target.tags[event.side]=false;
+   if(actor)actor.heldTags=Math.min(12,actor.heldTags+1);
+  }
+ }
+ return objects.map(o=>affected.has(o.id)?{...o,...affected.get(o.id)}:o);
 }
 export function interactionOverlay(frame,objects,g,progress=1,ink=false){
  if(!frame?.interactions?.length)return '';
