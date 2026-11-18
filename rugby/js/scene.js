@@ -5,7 +5,7 @@ import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.16.1';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
-import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay} from './skill-actions.js?v=1';
+import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,timedSkillObjects} from './skill-actions.js?v=2';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
@@ -57,7 +57,8 @@ export function drillDuration(d){return drillSeconds(d)}
 export function timeLocation(d,t){return stepLocation(d,t)}
 const svgObj=(o,g,poses,ink=false)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];if(isDiagramObject(o))return '<g transform="translate('+q.x+' '+q.y+') rotate('+(o.rot+g.rotation)+')">'+diagramSVG(o,g,{ink})+'</g>';if(o.type==='label')return '<g transform="translate('+q.x+' '+q.y+')">'+textLabelSVG(o,{baseline:labelOffset(o,g),ink})+'</g>';return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+') '+symbolTransform(o,g,poses.get(o.id))+'">'+posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type,o.coneColor))),color)+skillIcon(o)+'</g>'+(o.label&&!contactType(o.type)?'<text x="'+labelPosition(o,g,poses.get(o.id)).x+'" y="'+labelPosition(o,g,poses.get(o.id)).y+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+symbolLabelSize(g)+'" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
 export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,teachingGuides=true,markups=true,scaleMode='realistic',framing='field',ghosts=false,ink=false,prefix='scene'}={}){
- const g={...drillGeometry(d,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1],objects=old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),poses=trainingPoses(objects,posesFor(objects));
+ const g={...drillGeometry(d,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1];
+ const objects=timedSkillObjects(old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),old,fr,p),poses=trainingPoses(objects,posesFor(objects));
  const focused=framing==='action',camera=focused?(time===null?actionViewport(d,g,i):actionViewportAt(d,g,i,p)):wholeFieldView(g);
  let field=trainingField(g,false,.5,pitchSettings(d)),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
