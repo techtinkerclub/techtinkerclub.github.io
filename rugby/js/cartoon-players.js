@@ -2,6 +2,7 @@
 // top-down pose sheet. This skin cannot change any drill positions, timing or ball state.
 import {canCarry} from './possession.js?v=0.19.1';
 import {MINION_ATLAS_URI,MINION_TILE,MINION_COLUMNS} from './minion-atlas-data.js?v=1';
+import {COACH_ATLAS_URI,COACH_TILE,COACH_COLUMNS,COACH_GESTURES} from './coach-atlas-data.js?v=1';
 const arrowRE=/<path d="M-5 -12 L0 -19 L5 -12 Z" fill="#f7fff6"\s*\/>|<path d="M-5 -8L0 -16L5 -8Z" fill="#fff"\s*\/>|<path d="M-5 -12L0 -19L5 -12Z" fill="#fff"\s*\/>|<path d="M-4 -15L0 -21L4 -15Z" fill="#fff"\s*\/>|<path d="M-5 -7L0 -14L5 -7Z" fill="#fff"\s*\/>/g;
 const safeAngle=n=>Number.isFinite(n)?n.toFixed(1):'0';
 const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0))>>>0;return h};
@@ -9,7 +10,8 @@ const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0
 /** Add once at the SVG root so that exports and canvases contain the actual raster artwork. */
 export function cartoonSpriteDefs(){
  return '<defs><image id="rugby-minion-atlas" href="'+MINION_ATLAS_URI+
-  '" width="'+(MINION_COLUMNS*MINION_TILE)+'" height="'+(4*MINION_TILE)+'" /></defs>';
+  '" width="'+(MINION_COLUMNS*MINION_TILE)+'" height="'+(4*MINION_TILE)+'" />'+
+  '<image id="rugby-coach-atlas" href="'+COACH_ATLAS_URI+'" width="'+(COACH_COLUMNS*COACH_TILE)+'" height="'+(2*COACH_TILE)+'" /></defs>';
 }
 function spriteIndex(o,pose,previous,frame,progress){
  const fixed={ready:3,crouched:3,tackling:5,held:4,grounded:6,kneeling:7,recovering:7,bound:8};
@@ -40,6 +42,28 @@ function attachedEquipmentGraphic(o){
   '</g>';
  return '';
 }
+const COACH_INDEX={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
+function coachSpriteIndex(o,previous,frame,progress){
+ const gesture=String(o.coachGesture||'auto');
+ if(Object.hasOwn(COACH_INDEX,gesture))return COACH_INDEX[gesture];
+ const signal=frame?.signal;
+ const fraction=Number(progress)||0,duration=Math.max(.01,Number(frame?.seconds)||2);
+ if(signal?.kind==='whistle'&&signal.coachId===o.id&&fraction*duration<Math.max(.1,Number(signal.duration)||.5))
+  return COACH_INDEX.pointing_out;
+ const prior=previous?.objects?.find(p=>p.id===o.id);
+ const next=frame?.objects?.find(p=>p.id===o.id);
+ if(prior&&next&&Math.hypot((next.x||0)-(prior.x||0),(next.y||0)-(prior.y||0))>.2&&fraction>0&&fraction<1)
+  return COACH_INDEX.walking;
+ return COACH_INDEX.idle;
+}
+function coachSprite(o,previous,frame,progress){
+ const index=coachSpriteIndex(o,previous,frame,progress),col=index%COACH_COLUMNS,row=Math.floor(index/COACH_COLUMNS);
+ const t=COACH_TILE,size=76;
+ return '<g class="cartoon-player cartoon-coach top-down-coach-image" pointer-events="none">'+
+  '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+
+  '" viewBox="'+(col*t)+' '+(row*t)+' '+t+' '+t+'" overflow="hidden">'+
+  '<use href="#rugby-coach-atlas"/></svg></g>';
+}
 function sheetPlayer(o,pose,previous,frame,progress){
  const index=spriteIndex(o,pose,previous,frame,progress)+(o.type==='defender'?10:0);
  const col=index%MINION_COLUMNS,row=Math.floor(index/MINION_COLUMNS);
@@ -53,7 +77,7 @@ function sheetPlayer(o,pose,previous,frame,progress){
 /** The regular player keeps its existing diagram geometry and a single gaze arrow. */
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
  if(!canCarry(o))return original;
- if(cartoonMode&&!ink)return sheetPlayer(o,pose,previous,frame,progress);
+ if(cartoonMode&&!ink)return o.type==='coach'?coachSprite(o,previous,frame,progress):sheetPlayer(o,pose,previous,frame,progress);
  const plain=original.replace(arrowRE,'');
  if(['grounded','kneeling'].includes(pose))return plain;
  // Normal view preserves the single gaze arrow, but never an extra pair of eyes.
