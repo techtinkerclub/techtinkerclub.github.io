@@ -109,8 +109,7 @@ export function interactionOverlay(frame,objects,g,progress=1,ink=false){
   const highlight=ink?'#555':taking?'#f3c368':returning?'#a9dd9d':equipment?'#8de3cc':'#a9d8ff';
   const width=Math.max(84,Math.min(230,label.length*7+25));
   const mid=taking?{x:p.x,y:p.y-84}:returning?{x:(p.x+q.x)/2,y:(p.y+q.y)/2-35}:{x:(p.x+q.x)/2,y:(p.y+q.y)/2-32};
-  const raised=taking?'<path d="M'+(p.x+9)+' '+(p.y-7)+'L'+(p.x+18)+' '+(p.y-39)+'" stroke="'+(ink?'#444':'#f0d5b1')+'" stroke-width="5" stroke-linecap="round"/>'+
-  '<rect x="'+(p.x+15)+'" y="'+(p.y-56)+'" width="7" height="18" rx="2" fill="'+tagColor(target.tagColor)+'" stroke="'+(ink?'#333':'#fff')+'" stroke-width="1"/>':'';
+  const raised=taking?'<circle cx="'+p.x+'" cy="'+p.y+'" r="29" fill="none" stroke="'+highlight+'" stroke-width="2" stroke-dasharray="4 4"/>':'';
   const flash=tag?raised:'<circle cx="'+q.x+'" cy="'+q.y+'" r="'+(equipment?17:23)+'" fill="none" stroke="'+highlight+'" stroke-width="2.5" stroke-dasharray="'+(equipment?'3 4':'5 3')+'"/>';
   const note=taking&&a.label&&!/^tag( removed)?/i.test(a.label)?'<text x="'+mid.x+'" y="'+(mid.y+20)+'" font-size="10" fill="'+(ink?'#333':'#f3dcb3')+'" text-anchor="middle">'+safe(a.label)+'</text>':'';
   return '<path d="M'+p.x+' '+p.y+'L'+q.x+' '+q.y+'" stroke="'+highlight+'" stroke-width="2" stroke-dasharray="'+(tag?'3 5':'5 3')+'" fill="none"/>'+
