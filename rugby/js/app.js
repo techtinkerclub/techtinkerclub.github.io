@@ -784,11 +784,11 @@ function openActionChooser(fromGroup=groupIds.size>=2){
  const hasCarrier=participants.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id));
  const looseBall=f().objects.some(o=>o.type==='ball'&&!o.ownerId);
  const player=fromGroup?participants[0]:activeObject();
- const eligibleTaggers=fromGroup?participants.filter(o=>o.tagBelt):f().objects.filter(o=>canCarry(o)&&o.tagBelt);
+ const eligibleTaggers=(fromGroup?participants:f().objects.filter(canCarry)).filter(o=>o.tagBelt&&o.tags?.left!==false&&o.tags?.right!==false);
  const hasTaggedCarrier=f().objects.some(o=>canCarry(o)&&o.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id));
  const rules={
-  'touch-player':{valid:!!player,help:'Non-contact touch: choose the touching player and another player. No tag belt, tackle, ruck or turnover is created.'},
-  'touch-target':{valid:!!player,help:'Agility skill: touch a cone, hoop, hurdle, pole or training line. This is a target cue, not a rugby tag.'},
+  'touch-player':{valid:!!player&&f().objects.some(o=>canCarry(o)&&o.id!==player.id),help:'Non-contact touch: choose the touching player and another player. No tag belt, tackle, ruck or turnover is created.'},
+  'touch-target':{valid:!!player&&f().objects.some(o=>!canCarry(o)&&!['decision','label','ball'].includes(o.type)),help:'Agility skill: touch a cone, hoop, hurdle, pole or training line. This is a target cue, not a rugby tag.'},
   tag:{valid:eligibleTaggers.length>0&&hasTaggedCarrier,help:'Tag rugby: remove a strip from a ball carrier wearing two tags. The carrier stops and passes within three seconds / approximately three strides; the tagger calls TAG and returns the strip.'},
   tackle:{valid:fromGroup&&age>=9&&hasOpposition&&hasCarrier&&participants.length>=2&&participants.length<=3,help:'Physical tackle: selected ball carrier and one or two opposing defenders. Requires age-appropriate qualified contact coaching.'},
   ruck:{valid:fromGroup&&age>=10&&hasOpposition&&looseBall,help:'Ruck: selected standing arrivals from both teams and a ball already presented on the ground. No automatic tackle is invented.'},
@@ -821,7 +821,7 @@ function openSkillDialog(kind,fromGroup=false,scope='any'){
  const chosen=activeObject();
  const actorId=kind==='tag'&&chosen&&chosen.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===chosen.id)
   ?candidates.find(o=>o.id!==chosen.id&&o.tagBelt&&o.type!==chosen.type)?.id
-  :(fromGroup?candidates.find(o=>o.tagBelt&&kind==='tag')?.id||candidates[0]?.id:(canCarry(chosen)?selected:candidates[0]?.id));
+  :(fromGroup?candidates.find(o=>kind==='tag'&&o.tagBelt&&!f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id))?.id||candidates[0]?.id:(canCarry(chosen)?selected:candidates[0]?.id));
  const options=(items)=>items.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');
  $('skillActor').innerHTML=options(candidates);
  if(actorId)$('skillActor').value=actorId;
@@ -831,7 +831,8 @@ function openSkillDialog(kind,fromGroup=false,scope='any'){
  $('skillActionLabel').value='';$('skillAt').value='70';$('skillActionError').textContent='';
  function fillTargets(){
   const actor=$('skillActor').value;
-  const targets=f().objects.filter(o=>o.id!==actor&&(kind==='tag'?canCarry(o)&&o.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id)
+  const actorObject=f().objects.find(o=>o.id===actor);
+  const targets=f().objects.filter(o=>o.id!==actor&&(kind==='tag'?canCarry(o)&&o.tagBelt&&o.type!==actorObject?.type&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id)
    :scope==='player'?canCarry(o):scope==='target'?!canCarry(o)&&!['decision','label','ball'].includes(o.type):!['decision','label','ball'].includes(o.type)));
   $('skillTarget').innerHTML=options(targets);
   if(kind==='tag'&&chosen&&targets.some(o=>o.id===chosen.id))$('skillTarget').value=chosen.id;
@@ -842,6 +843,8 @@ function openSkillDialog(kind,fromGroup=false,scope='any'){
  }
  $('skillActor').onchange=fillTargets;
  $('skillSideRow').style.display=kind==='tag'?'':'none';
+ $('skillTarget').closest('.field')?.querySelector('label')?.replaceChildren(document.createTextNode(kind==='tag'?'Tagged ball carrier':scope==='target'?'Equipment or pitch line':'Player to touch'));
+ $('skillSave').textContent=kind==='tag'?'Record tag removal':scope==='target'?'Add target touch':'Record touch';
  fillTargets();$('skillDialog').showModal();
 }
 $('skillCancel').onclick=()=>$('skillDialog').close();
