@@ -4,6 +4,7 @@ import {publicVideoBuilder} from './public-video.js?v=0.18.3';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fields={q:'search',age:'age',category:'category',format:'format',sort:'sort'};
 let drills=[],ready=false,limit=18,thumbs=new Map(),messageTimer,videoBuilder;
+const initialVideoId=new URLSearchParams(location.search).get('video');
 $('age').insertAdjacentHTML('beforeend',Array.from({length:11},(_,i)=>'<option value="'+(i+6)+'">U'+(i+6)+'</option>').join(''));
 $('category').insertAdjacentHTML('beforeend',CATEGORIES.map(x=>'<option>'+esc(x)+'</option>').join(''));
 function read(){return readFilters(new URLSearchParams(Object.entries(fields).map(([key,id])=>[key,$(id).value])))}
@@ -38,4 +39,4 @@ $('shareLibrary').onclick=()=>copy(new URL('./library.html',location.href).href,
 $('feedback').onclick=()=>copy(feedbackText(null,new URL('./library.html',location.href).href),'Review questions');
 window.addEventListener('popstate',()=>{write(readFilters(location.search));render()});
 write(readFilters(location.search));
-try{drills=await loadCatalogue();ready=true;videoBuilder=publicVideoBuilder({getDrills:()=>drills,isAnimated,ageLabel,onChange:refreshVideoCards});const stats=[[drills.length,'resources'],[drills.filter(isAnimated).length,'animated drills'],[drills.filter(isRules).length,'rules walk-throughs']];$('stats').innerHTML=stats.map(([n,label])=>'<div class="stat"><strong>'+n+'</strong><span>'+label+'</span></div>').join('');render()}catch(err){$('count').textContent='Could not load the library.';$('message').hidden=false;$('message').textContent=err.message+' Refresh the page to retry.'}
+try{drills=await loadCatalogue();ready=true;videoBuilder=publicVideoBuilder({getDrills:()=>drills,isAnimated,ageLabel,onChange:refreshVideoCards});const stats=[[drills.length,'resources'],[drills.filter(isAnimated).length,'animated drills'],[drills.filter(isRules).length,'rules walk-throughs']];$('stats').innerHTML=stats.map(([n,label])=>'<div class="stat"><strong>'+n+'</strong><span>'+label+'</span></div>').join('');render();if(initialVideoId&&drills.some(d=>d.id===initialVideoId&&isAnimated(d)))videoBuilder.add(initialVideoId)}catch(err){$('count').textContent='Could not load the library.';$('message').hidden=false;$('message').textContent=err.message+' Refresh the page to retry.'}

@@ -41,11 +41,11 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  let videoDuration=0;
  const chapters=views.map(v=>{const plan=moviePlan(drillDuration(v.drill),opts),start=videoDuration;videoDuration+=plan.total;return {...v,plan,start,end:videoDuration,headline:v.id?'OPTION '+v.id.toUpperCase()+' · '+v.label:''}});
  const plan=chapters[0].plan;
- if(videoDuration>360)throw Error('The complete movie exceeds six minutes. Choose normal speed only, a faster replay, or export only the selected outcome.');
+ if(videoDuration>360)throw Error('The complete video exceeds six minutes. Choose normal speed only, a faster replay, or export only the selected outcome.');
  if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Edge or Chrome.');
  const {width:W,height:H,bitrate,fps}=plan.quality,frame=createMovieFrame(W,H),{canvas,ctx}=frame;
  if(!canvas.captureStream)throw Error('Canvas video recording is unavailable in this browser.');
- // Short-form video uses a distinct layout, not a cropped landscape movie.
+ // Short-form video uses a distinct layout, not a cropped landscape video.
  const portrait=plan.options.format==='portrait',unit=W/(portrait?1080:1920),pad=Math.round((portrait?72:42)*unit),right=portrait?Math.round(120*unit):pad,content=W-pad-right;
  const top=Math.round((portrait?260:110)*unit),bottom=Math.round((portrait?(plan.options.notes?490:285):(plan.options.notes?190:105))*unit);
  const font=(size,bold=false)=>(bold?'bold ':'')+Math.round(size*unit)+'px Arial';
@@ -59,7 +59,7 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
   }
  }
  let total=videoDuration;for(const page of cardPages){page.start=total;total+=page.seconds;page.end=total}
- if(total>360)throw Error('Movie with coaching card exceeds six minutes. Choose a faster replay or export the full card as paper / presentation.');
+ if(total>360)throw Error('Video with coaching card exceeds six minutes. Choose a faster replay or export the full card as paper / presentation.');
  const draw=elapsed=>frame.present(async()=>{
   ctx.fillStyle='#111c17';ctx.fillRect(0,0,W,H);
   const page=elapsed>=videoDuration&&cardPages.length?(cardPages.find(p=>elapsed<p.end)||cardPages.at(-1)):null;

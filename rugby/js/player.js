@@ -5,9 +5,9 @@ import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
 import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
 import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=4';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.16.1';
-import {createExportProgress} from './export-progress.js?v=0.7.3';
-import {bindMovieSettings} from './movie.js?v=0.7.2';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.18.3';
+import {createExportProgress} from './export-progress.js?v=0.18.3';
+import {bindMovieSettings} from './movie.js?v=0.18.3';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
 let viewZoom=1,viewPan={x:0,y:0},viewBase=null,panEnabled=false,dragStart=null,pinchStart=null;
@@ -145,12 +145,12 @@ $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();jumpStep(Number(b.dataset.jumpStep),true)};
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};
 $('print').onclick=()=>{if(d){stop();printDrill(d,opts)}};
-$('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings()};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{$('video').disabled=false}};
+$('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings()};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{$('video').disabled=false}};
 const params=new URLSearchParams(location.search),catalogueId=params.get('drill');
 async function reviewCopy(value,message){if(await copyText(value)){$('reviewStatus').textContent=message;return}$('reviewCopyValue').value=value;$('reviewCopyDialog').showModal();$('reviewCopyValue').select()}
 if(catalogueId!==null){
  // Catalogued resources are read-only and load only by a validated catalogue identifier.
- document.body.classList.add('catalogue-player');$('backLibrary').hidden=false;$('backLibrary').href=libraryHref(readFilters(params));$('openFileLabel').hidden=true;$('downloadDrill').hidden=true;
+ document.body.classList.add('catalogue-player');$('backLibrary').hidden=false;$('backLibrary').href=libraryHref(readFilters(params));const compose=new URL('./library.html',location.href);compose.searchParams.set('video',entry.id);$('addPlayerToVideo').href=compose.href;$('addPlayerToVideo').hidden=false;$('openFileLabel').hidden=true;$('downloadDrill').hidden=true;
  $('empty').innerHTML='<h2>Loading drill…</h2><p>Please use the library link to choose another resource.</p>';
  try{
   if(!/^seed-[0-9]{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');

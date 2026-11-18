@@ -64,3 +64,9 @@ These supersede historic copies with outdated cone layouts and an obsolete share
 - Public video creation does not use GitHub credentials or modify drill data. Only published animated drills are selectable, up to eight. The list is temporary per tab.
 - User-facing Movie terminology becomes Video; internal movie API names stay stable to avoid breaking saved settings and tests.
 - Video format depends on browser MediaRecorder support; iOS Safari recording needs device-level acceptance testing.
+
+## v0.18.4 — presentation-to-library continuity
+
+- Read-only public presentations have Add to video, linking into the public library with the same published drill preselected.
+- The presentation header separates navigation links and the uppercase caption, including narrow mobile viewports.
+- Public video builder remains read-only; snapshot share links do not silently become published catalogue entries.

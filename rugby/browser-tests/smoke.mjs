@@ -14,6 +14,8 @@ try {
  await page.goto(origin+'/rugby/play.html?drill=seed-133',{waitUntil:'networkidle',timeout:40000});
  await page.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Hold the line'),{timeout:15000});
  assert.match(await page.title(),/Hold the line/);
+  assert.equal(await page.locator('#addPlayerToVideo').isVisible(),true);
+  assert.match(await page.locator('#addPlayerToVideo').getAttribute('href'),/video=seed-133/);
  assert.equal(await page.locator('#branchPlayer').isVisible(),true,'Outcome selector should appear');
  assert.match(await page.locator('#coachCardContent').innerText(),/World Rugby|RFU/i);
  await page.locator('#speed').selectOption('2');

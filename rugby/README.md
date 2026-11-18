@@ -176,3 +176,5 @@ Use **Decision making → Create A/B decision** in the left panel. Select the ru
 ### Public library video builder (v0.18.3)
 
 Publicly published animated drills have **Add to video** on library cards. **Create video** in the public library opens an ordered list of up to eight published drills with the same video settings and rendering engine as Studio. Change stage order, remove stages and download the completed video; this never edits an original, saves a revision or publishes a drill. An individual read-only presentation remains available on each card. Browser support for video recording varies, especially in iOS Safari.
+
+Published presentation pages now have **Add to video**, which opens the public-library video builder with the current published drill already selected. This link is only offered for stable published drill IDs; legacy snapshot share links are not silently substituted.

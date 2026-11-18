@@ -8,7 +8,7 @@ export function movieOptions(o={}){
  return {mode:o.mode==='single'?'single':'dual',quality:Object.hasOwn(MOVIE_QUALITIES,o.quality)?String(o.quality):'1080',replaySpeed:[.25,.5,.75].includes(Number(o.replaySpeed))?Number(o.replaySpeed):.5,format:o.format==='portrait'?'portrait':'landscape',notes:o.notes!==false,card:o.card===true,branchMode:o.branchMode==='selected'?'selected':'all',pauseCards:o.pauseCards!==false,introSeconds:[0,2,3,5].includes(Number(o.introSeconds))?Number(o.introSeconds):3,decisionSeconds:[3,5,8].includes(Number(o.decisionSeconds))?Number(o.decisionSeconds):8,choiceSeconds:[3,4,6].includes(Number(o.choiceSeconds))?Number(o.choiceSeconds):6};
 }
 export function moviePlan(seconds,options={}){
- if(!Number.isFinite(seconds)||seconds<=0)throw Error('Add at least one movement step before exporting a movie.');
+ if(!Number.isFinite(seconds)||seconds<=0)throw Error('Add at least one movement step before exporting a video.');
  const o=movieOptions(options),dual=o.mode==='dual',q=MOVIE_QUALITIES[o.quality];
  const segments=[{kind:'normal',speed:1,duration:seconds,intro:.6,outro:.7,runs:dual?false:options.runs!==false,passes:dual?false:options.passes!==false,title:dual?'1 / 2 · Normal speed':'Normal speed'}];
  if(dual)segments.push({kind:'replay',speed:o.replaySpeed,duration:seconds/o.replaySpeed,intro:1.2,outro:.8,runs:true,passes:true,title:'2 / 2 · Coaching replay · '+o.replaySpeed+'×'});
