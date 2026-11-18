@@ -1,6 +1,6 @@
 # Marked rugby fields and movable training areas
 
-Added in Rugby Coaching Studio Classic v0.15.0 (shared with Coach Edition).
+Added in Rugby Coaching Studio Classic v0.15.0.
 
 ## How to use
 
