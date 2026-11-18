@@ -95,7 +95,7 @@ function showOutcomeDecision({jump=true}={}){
   $('branchDecisionCards').innerHTML=outcomeCardsMarkup(d,'choose');
   $('branchDecisionPanel').hidden=false;
   render();
-  $('branchDecisionPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+  $('branchDecisionPanel').focus({preventScroll:true}); // Keep the pitch/page position stable while the choice panel opens.
  };
  // A coach comparing outcomes after playing one of them must see the reset.
  // Never teleport the runner straight to the decision point. Playback that
