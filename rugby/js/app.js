@@ -800,8 +800,32 @@ function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
 function openObjectMenu(e){
  if(!canEditObjects())return;
  const path=e.target.closest('[data-path-id]'),group=e.target.closest('[data-id]'),handle=e.target.closest('[data-rotate]');
- const stack=path?[]:overlapAt(viewPoint(e));
+ const stacked=group?.dataset.id;
+ const groupSelected=groupIds.size>=2&&stacked&&groupIds.has(stacked);
+ const stack=path||groupSelected?[]:overlapAt(viewPoint(e));
  if(!path&&!group&&!handle&&!stack.length)return;
+ if(groupSelected){
+  e.preventDefault();
+  const selectedPlayers=f().objects.filter(o=>groupIds.has(o.id)&&canCarry(o));
+  const chosen=selectedPlayers.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id));
+  const sides=selectedPlayers.some(o=>o.type==='attacker')&&selectedPlayers.some(o=>o.type==='defender');
+  const age=Number(drill.ageMin)||10;
+  const valid=(id,on)=>{$(id).hidden=!on;$(id).disabled=false};
+  for(const el of $('objectMenu').querySelectorAll('[data-object-command]'))el.hidden=true;
+  valid('menuGroupTouch',selectedPlayers.length>=2);
+  valid('menuTag',selectedPlayers.length>=2&&selectedPlayers.some(o=>o.tagBelt));
+  valid('menuGroupTackle',age>=9&&sides&&chosen&&selectedPlayers.length<=3);
+  valid('menuGroupRuck',age>=9&&sides&&f().objects.some(b=>b.type==='ball'&&!b.ownerId));
+  valid('menuGroupMaul',age>=10&&sides&&selectedPlayers.length>=3);
+  $('stackOptions').hidden=true;
+  $('objectMenuLabel').textContent=selectedPlayers.length+' selected players · group actions';
+  const menu=$('objectMenu');menu.hidden=false;menu.style.left='0px';menu.style.top='0px';
+  const bounds=menu.getBoundingClientRect();
+  menu.style.left=Math.max(8,Math.min(e.clientX,window.innerWidth-bounds.width-8))+'px';
+  menu.style.top=Math.max(8,Math.min(e.clientY,window.innerHeight-bounds.height-8))+'px';
+  menu.querySelector('button:not([hidden]):not([disabled])')?.focus({preventScroll:true});
+  return;
+ }
  groupIds.clear();groupMode=false;
  if(path){selected=path.dataset.pathId;selectedPathId=selected}
  else{selectedPathId=null;if(group&&!stack.some(o=>o.id===selected))selected=group.dataset.id;else if(!group&&!handle)selected=stack[0].id;}
@@ -816,12 +840,15 @@ function openObjectMenu(e){
  visible('menuDecision',moving&&!decision);
  visible('menuEditDecision',decision||annotation);
  visible('menuWhistle',o.type==='coach');
+ visible('menuTouch',canCarry(o));
+ visible('menuTag',canCarry(o)&&o.tagBelt===true);
  visible('menuRoute',drawable);
  visible('menuAddPoint',canInsertPoint());
  visible('menuResetMovement',!!(idx>0&&selectedMovement()&&(canCarry(o)||o.type==='ball'&&!o.ownerId)));
  visible('menuBall',(canCarry(o)||o.type==='ball')&&hasBall,!hasBall);
  visible('menuRelease',carried&&(o.id===ball.id||o.id===ball.ownerId));
  visible('menuFront',!annotation);visible('menuBack',!annotation);
+ for(const id of ['menuGroupTouch','menuGroupTackle','menuGroupRuck','menuGroupMaul'])$(id).hidden=true;
  visible('menuDeleteOnward',idx<drill.frames.length-1&&!annotation);
  visible('menuDeleteAll',drill.frames.length>1&&!annotation);
  $('menuDuplicate').hidden=annotation;
@@ -838,7 +865,12 @@ $('objectMenu').addEventListener('click',e=>{
  const stacked=e.target.closest('[data-stack-id]');if(stacked){selectObject(stacked.dataset.stackId);closeObjectMenu();return}
  const b=e.target.closest('[data-object-command]');if(!b)return;
  const command=b.dataset.objectCommand;closeObjectMenu();focusPitch();
- if(command==='decision')beginDecisionPlacement();
+ if(command==='touch'||command==='tag')openSkillDialog(command,groupIds.size>=2);
+ else if(command==='group-touch')openSkillDialog('touch',true);
+ else if(command==='group-tackle')arrangeSelectedContact('tackle');
+ else if(command==='group-ruck')arrangeSelectedContact('ruck');
+ else if(command==='group-maul')arrangeSelectedContact('maul');
+ else if(command==='decision')beginDecisionPlacement();
  else if(command==='edit-decision'){if(hasOutcomes(drill))openOutcomeDialog(true);else openOutcomeDialog()}
  else if(command==='whistle'){openInspector('Object',true);$('coachWhistleDuration')?.focus()}
  else if(command==='reset-movement')cancelSelectedMovement();
