@@ -41,6 +41,12 @@ assert.equal(addInteraction(d.frames[1],'touch','tagger','cone').ok,true);
 assert.equal(addInteraction(d.frames[1],'touch','tagger','hoop').ok,true);
 assert.equal(sanitizeInteractions(d.frames[1]).interactions.length,3);
 assert.match(renderScene(playbackData(d),{index:1}).svg,/Touch/);
+
+const plainTouch={objects:[{id:'p',type:'attacker',label:'P',x:100,y:110,rot:0},{id:'q',type:'defender',label:'Q',x:150,y:110,rot:180},{id:'mark',type:'cone',label:'',x:125,y:100,rot:0}]};
+assert.equal(addInteraction(plainTouch,'touch','p','q').ok,true,'A player touch must never need tag belts');
+assert.equal(addInteraction(plainTouch,'touch','p','mark').ok,true,'An equipment touch must never need tags');
+assert.equal(addInteraction(plainTouch,'tag','q','p').ok,false,'A rugby tag is different and requires a belt and ball carrier');
+
 const next=stripDecisions(structuredClone(d.frames[1]));
 assert.equal(next.interactions,undefined,'New action steps must not repeat previous contact cues');
 const invalid=structuredClone(d.frames[1]);invalid.objects=invalid.objects.filter(o=>o.id!=='cone');
