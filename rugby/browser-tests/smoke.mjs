@@ -112,5 +112,37 @@ try {
  assert.ok(await coach.locator('#outcomeActionB').count());
  console.log('BROWSER COACH PASS: shares same decision form and engine');
  await coach.close();
+ // The camera crops what is visible, never the physical diagram or drill.
+ const framed=await browser.newPage({viewport:{width:420,height:880}});
+ capture(framed);
+ await framed.goto(origin+'/rugby/play.html?drill=seed-057',{waitUntil:'networkidle',timeout:40000});
+ await framed.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Tackle, Present'));
+ const complete=await framed.locator('#board svg').getAttribute('viewBox');
+ await framed.locator('#framing').selectOption('action');
+ const closeView=await framed.locator('#board svg').getAttribute('viewBox');
+ assert.notEqual(closeView,complete,'Presentation action camera must change only the SVG viewport');
+ assert.equal(await framed.locator('#framing').inputValue(),'action');
+ await framed.locator('#play').click();
+ await framed.waitForTimeout(500);
+ assert.ok(Number(await framed.locator('#seek').inputValue())>0,'Action-framed read-only presentation plays');
+ await framed.close();
+ // Chromium touch emulation checks the interaction wiring on phone-size screens.
+ // It cannot substitute for a physical iPhone Safari acceptance test.
+ const phone=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2});
+ capture(phone);
+ await phone.goto(origin+'/rugby/',{waitUntil:'networkidle',timeout:40000});
+ await phone.locator('.mobile-workspace-nav').waitFor({state:'visible'});
+ assert.equal(await phone.locator('[data-mobile-camera="zoomAction"]').isVisible(),true,'Action camera must be reachable on a phone');
+ await phone.locator('[data-mobile-camera="zoomAction"]').click();
+ await phone.locator('[data-mobile-view="steps"]').click();
+ assert.equal(await phone.locator('body').evaluate(el=>el.classList.contains('mobile-view-steps')),true);
+ await phone.locator('[data-mobile-view="pitch"]').click();
+ const phoneBefore=Number(await phone.locator('#scrub').inputValue());
+ await phone.locator('[data-mobile-action="play"]').click();
+ await phone.waitForTimeout(650);
+ assert.equal(await phone.locator('body').evaluate(el=>el.classList.contains('mobile-view-pitch')),true);
+ assert.ok(Number(await phone.locator('#scrub').inputValue())>phoneBefore,'Touch-screen playback must move the editor playhead');
+ await phone.close();
+ console.log('BROWSER CAMERA/MOBILE PASS: live action focus, still-full-pitch option, touch navigation and play');
  if(errors.length)throw new Error('Browser errors: '+errors.join(' | '));
 } finally {await browser.close()}

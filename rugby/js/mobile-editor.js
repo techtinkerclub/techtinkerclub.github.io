@@ -23,7 +23,8 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
   cameraTools.setAttribute('role','group');
   cameraTools.setAttribute('aria-label','Pitch zoom and pan');
   cameraTools.innerHTML='<button type="button" data-mobile-camera="zoomOut" aria-label="Zoom out">−</button>'+
-   '<button type="button" data-mobile-camera="zoomFit" aria-label="Fit pitch to screen">Fit</button>'+
+   '<button type="button" data-mobile-camera="zoomFit" aria-label="Fit whole pitch to screen">Fit</button>'+
+   '<button type="button" data-mobile-camera="zoomAction" aria-label="Fit current action to screen">Action</button>'+
    '<button type="button" data-mobile-camera="zoomIn" aria-label="Zoom in">+</button>'+
    '<button type="button" data-mobile-camera="panMode" aria-pressed="false" aria-label="Move the pitch view">Pan</button>';
   field.appendChild(cameraTools);

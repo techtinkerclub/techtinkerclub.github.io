@@ -21,6 +21,12 @@ export function createCamera(pitch,{canNavigate=()=>true,getGeometry,onChange=()
   if(anchor){const ratio=zoom/next;cx=anchor.x+(cx-anchor.x)*ratio;cy=anchor.y+(cy-anchor.y)*ratio}
   zoom=next;apply();
  }
+ function focusView(view){
+  if(!canNavigate()||!view||!(view.width>0&&view.height>0))return;
+  const g=getGeometry(),{w,h}=size(),base=cameraRect(g,w,h,1);
+  zoom=camClamp(Math.min(base.width/view.width,base.height/view.height),1,5);
+  cx=view.x+view.width/2;cy=view.y+view.height/2;apply(g);
+ }
  function setPanMode(on){panMode=!!on;pitch.classList.toggle('pan-ready',panMode||space);onChange(zoom,panMode)}
  function down(e){if(!canNavigate()||pan||!(e.button===1||e.button===0&&(space||panMode)))return;
   if(!rect)apply();pan={id:e.pointerId,x:e.clientX,y:e.clientY,cx,cy,scale:rect.width/(pitch.clientWidth||900)};
@@ -35,5 +41,5 @@ export function createCamera(pitch,{canNavigate=()=>true,getGeometry,onChange=()
  document.addEventListener('keyup',e=>{if(e.code==='Space'){space=false;pitch.classList.toggle('pan-ready',panMode)}});
  window.addEventListener('blur',()=>{space=false;pitch.classList.toggle('pan-ready',panMode)});
  if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>apply()).observe(pitch);
- return {apply,fit,changeZoom,setPanMode,get panMode(){return panMode},get zoom(){return zoom}};
+ return {apply,fit,focusView,changeZoom,setPanMode,get panMode(){return panMode},get zoom(){return zoom}};
 }

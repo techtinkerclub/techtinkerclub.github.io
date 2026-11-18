@@ -1,16 +1,16 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.12';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.13';
 import {hasOutcomes,outcomeViews} from './branching.js?v=1';
 import {outcomeCardsMarkup} from './branching-visual.js?v=3';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
-import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.1';
+import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.2';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
 import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.9';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
 const decode64=s=>{if(!/^[A-Za-z0-9_-]+$/.test(s))throw Error('Invalid share code.');return Uint8Array.from(atob(s.replaceAll('-','+').replaceAll('_','/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0))};
 export async function readLimited(stream,max=RAW_LIMIT){const reader=stream.getReader(),parts=[];let length=0;try{while(true){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>max){await reader.cancel();throw Error('Drill is too large.')}parts.push(value)}}finally{reader.releaseLock()}const out=new Uint8Array(length);let offset=0;for(const p of parts){out.set(p,offset);offset+=p.length}return out}
-export function outputOptions(o={}){return {orientation:o.orientation==='right'?'right':'up',runs:o.runs!==false,passes:o.passes!==false,labels:o.labels!==false,decisions:o.decisions!==false,offside:o.offside===true,teachingGuides:o.teachingGuides!==false,markups:o.markups!==false,scaleMode:o.scaleMode==='coaching'?'coaching':'realistic'}}
+export function outputOptions(o={}){return {orientation:o.orientation==='right'?'right':'up',runs:o.runs!==false,passes:o.passes!==false,labels:o.labels!==false,decisions:o.decisions!==false,offside:o.offside===true,teachingGuides:o.teachingGuides!==false,markups:o.markups!==false,scaleMode:o.scaleMode==='coaching'?'coaching':'realistic',framing:o.framing==='action'?'action':'field'}}
 export async function shareCode(d,opts={}){
  const raw=new TextEncoder().encode(JSON.stringify({drill:playbackData(d),options:outputOptions(opts)}));if(raw.length>RAW_LIMIT)throw Error('Drill too large for a link. Export JSON and open it in the player instead.');
  let prefix='j',bytes=raw;

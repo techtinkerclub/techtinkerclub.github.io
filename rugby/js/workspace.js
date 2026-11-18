@@ -1,6 +1,6 @@
 
 import {initPanelLayout} from './layout.js?v=0.4.9';
-import {initMobileEditor} from './mobile-editor.js?v=0.1.1';
+import {initMobileEditor} from './mobile-editor.js?v=0.1.3';
 const $=id=>document.getElementById(id);
 const tabs=['Object','Step','Drill'];
 let mobileEditor=null;

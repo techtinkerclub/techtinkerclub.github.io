@@ -42,3 +42,11 @@ The source and data changes are committed to GitHub. The repository tests have b
 The first audit checked membership and movement speed but missed the distance between opposing players in an already formed ruck. On rechecking the complete 142-drill starter catalogue, 24 stages across seven ruck demonstrations had the on-feet contesting players positioned 1.14–1.26 m apart (centre to centre). Saved participant pairs have been brought to approximately 0.43 m, and future presets were made closer. The editor checker and new regression test now check a 0.65 m maximum centre-to-centre separation in formed non-pad rucks. This is a visual teaching-diagram heuristic, not a rugby law or a physical tackling/binding coaching instruction.
 
 Fourteen generic 60 × 35 m starter drill pitches were reduced according to the type of action, retaining space for kicking and moving short-range passing demonstrations into the middle of their pitches. Measured lesson-specific distances in other drills were preserved. Visual replay and cross-device/video verification are still required before treating this as a finished quality review.
+
+## Framing and workflow regression additions — 18 November 2026
+
+A new view-only action camera uses authored player, ball and contact movement to choose a tighter presentation frame. It retains physical pitch dimensions and includes measured guides. Steps discussing waiting or offside preserve their wider participants, and the whole pitch remains selectable. The same renderer is used for videos and printable views. This is a framing convenience, not a claim about the correctness of any displayed rugby situation.
+
+Editor regression checks now cover returning a player to the prior step on movement deletion, propagating routes through later stages, stopping at an explicitly authored run, and protecting contact-linked positions. The mobile Chromium smoke test exercises touch-sized navigation and play, but is not equivalent to real Safari testing.
+
+Remaining work: review the entire 116-animated-drill set at multiple timestamps, evaluate which of the 26 written-only cards merit animation, compare video outputs at multiple aspect ratios, test iOS Safari/iPadOS, and obtain qualified U10 contact/age-grade coaching feedback. See QUALITY_BACKLOG.md.

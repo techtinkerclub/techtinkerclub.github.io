@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.14.6 / Coach Edition v0.3.3
+# Rugby Coaching Studio — Classic v0.14.7 / Coach Edition v0.3.3
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
@@ -113,3 +113,15 @@ The full-library pass-direction regression now reviews ball transfers at the aut
 A second library audit found 24 formed-ruck and contest frames across seven drills in which opposing standing participants were 1.14–1.26 m apart, centre to centre. The library pairs are now about 0.43 m apart to show an actual joined contest. Auto-arranged rucks and staged tackle-to-ruck actions also use closer positions. The diagram checker reports a formed ruck with an on-feet opponent gap greater than 0.65 m. This is a drawing-quality heuristic, not an RFU law limit or instruction on safe physical contact.
 
 Fourteen older narrated drills previously used a generic 60 × 35 m pitch. Their pitches were resized for the illustrated activity: short pass/restart demonstrations use 12–16 m lengths; scrum and maul examples are around 20–24 m; kicking activities retain 32–45 m lengths. Short passing and restart examples were re-centred so they are not stranded in a corner. This affects starter examples only, not user-saved drills. Complete visual review on actual devices and movie export comparison remain outstanding.
+
+## Action camera and editing clarity (Classic v0.14.7)
+
+**Two different things must stay different:** pitch dimensions are real distances for drill setup, whereas camera framing is only what is visible on screen.
+
+- In both editors, the **Action** button next to the full-pitch zoom fits the current step without changing any player position, path, or measured distance. The mobile pitch controls also expose Action.
+- In the read-only player, **View options → Camera → Follow the action** enables an optional per-step close-up. **Whole pitch** remains the default and is better for demonstrations about offside, spacing or the entire formation.
+- The camera keeps each step in one frame and eases between step views to reduce jolting. Measured teaching guides are included in framing where present. Editor, Classic/Coach read-only views and video share the renderer. When action framing is selected, print pages use the same cropped view.
+- The position-editing scope control explains on selection whether movement applies to one step, until the next run, to future compatible runs, or to stationary equipment across the drill.
+- A separate regression test protects **Reset step movement**, future-route propagation, stop-at-next-run behaviour and protected contact formations.
+
+The browser QA now includes Chromium phone-sized touch navigation and action-focus playback. Chromium emulation is not a physical iOS Safari test; real-device verification and full 142-drill content sign-off are still necessary. This release does not add nested decisions or silently resize user-created pitches.

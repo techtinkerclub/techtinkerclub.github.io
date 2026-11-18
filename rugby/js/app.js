@@ -22,7 +22,8 @@ import { createHistory } from './history.js?v=0.4.0';
 import {deriveDrill,readDerivation,relationLabel,rekeyImportedFamilies} from './drill-variations.js?v=0.12.22';
 import {timingTrackHTML,createTimingTrackEditor} from './timing-tracks.js?v=0.12.20';
 import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.12.34';
-import {createCamera} from './camera.js?v=0.5.0';
+import {createCamera} from './camera.js?v=0.5.1';
+import {actionViewport} from './action-camera.js?v=1';
 import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactMarkerShape,contactLabels,PLAYER_POSES} from './contact.js?v=0.12.34';
 import {inspectedPose} from './pose-inspector.js?v=0.12.17';
 import {PHASES,supportTitle,validPhase,nextPhase,team,roles,cleanBreakdowns,candidates,advance} from './breakdown.js?v=0.12.34';
@@ -37,10 +38,10 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.13.12';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.13.12';
+import {renderScene} from './scene.js?v=0.13.13';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.13.13';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
-import {bindMovieSettings} from './movie.js?v=0.7.1';
+import {bindMovieSettings} from './movie.js?v=0.7.2';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.26';
 initWorkspace();
@@ -67,7 +68,12 @@ const geometry=()=>pitchGeometry(drill.length,drill.width,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
 $('scaleMode').value=scaleMode;$('scaleMode').onchange=()=>{scaleMode=normalScaleMode($('scaleMode').value);try{localStorage.setItem('rugby-symbol-scale',scaleMode)}catch{}render();note(scaleMode==='realistic'?'Realistic scale · nominal dimensions in metres.':'Coaching view · enlarged symbols; positions unchanged.')};
 const camera=createCamera(pitch,{getGeometry:geometry,canNavigate:()=>!drag&&!routeDrawing&&!ballPicking&&!trainingPick,onChange:(z,pan)=>{$('zoomFit').textContent=Math.round(z*100)+'%';$('panMode').classList.toggle('selected',pan);$('panMode').setAttribute('aria-pressed',String(pan));$('zoomOut').disabled=z<=1.001;$('zoomIn').disabled=z>=4.999}});
-$('zoomIn').onclick=()=>camera.changeZoom(1.25);$('zoomOut').onclick=()=>camera.changeZoom(.8);$('zoomFit').onclick=()=>camera.fit();$('panMode').onclick=()=>camera.setPanMode(!camera.panMode);
+$('zoomIn').onclick=()=>camera.changeZoom(1.25);$('zoomOut').onclick=()=>camera.changeZoom(.8);$('zoomFit').onclick=()=>camera.fit();$('zoomAction').onclick=()=>{const frameIndex=preview===null?idx:locate(preview).i;camera.focusView(actionViewport(drill,geometry(),frameIndex));note('Camera fitted to this action. Pitch measurements and saved positions are unchanged; use Fit pitch for the full field.');};$('panMode').onclick=()=>camera.setPanMode(!camera.panMode); $('moveScope').onchange=()=>{const explanation={
+ 'here':'Only this step will change; the next animation can still start from the previously saved position.',
+ 'until':'The adjustment carries forward until the next deliberately authored run.',
+ 'onward':'Compatible later positions and routes are moved together. Linked contact actions remain protected.',
+ 'entire':'Stationary equipment moves in all applicable steps; animated players cannot use this scope.'
+ };note('Move scope: '+explanation[$('moveScope').value]);};
 $('actionLabels').onclick=()=>{showActionLabels=!showActionLabels;$('actionLabels').classList.toggle('selected',showActionLabels);$('actionLabels').setAttribute('aria-pressed',String(showActionLabels));render()};
 const placement=(p,free=false)=>placePoint(p,geometry(),gridPrefs.snap&&!free,gridPrefs.step);
 function syncGrid(){for(const [id,on] of [['grid',showGrid],['snapGrid',gridPrefs.snap]]){$(id).classList.toggle('selected',on);$(id).setAttribute('aria-pressed',String(on))}$('gridStep').value=String(gridPrefs.step);gridPrefs.visible=showGrid;saveGridPrefs(gridPrefs)}
