@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.19.5
+# Rugby Coaching Studio — Classic Studio v0.19.6
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -229,3 +229,9 @@ RFU U8 practice: stop, lift the tag and call TAG; pass, hand the strip back, the
 In **Actions… → Remove a tag** or a touch/return action, set **Show callout for (seconds)**; defaults are long enough to read but can be adjusted from 0.2 to 8 seconds. The callout may continue into the following step; the tagger still holds the raised strip until an actual Return tag action. To change the duration later, use **Step → Actions in this step → Callout (s)**. The visible TAG! bubble is not audio.
 
 For any player select **Object → Head direction**. Choose **Follow running direction** (default), **Follow another player** and pick the target, or **Look straight ahead** (no tracking). The player's head cue can look sideways while their body follows the existing run; body rotation remains independently editable. In all modes a real authored tackle/held-upright chase prioritises eyes on the ball carrier; a defender genuinely closing on the carrier also watches them; a passer looks towards the receiver before release. These are bounded visual coaching cues, not motion-capture-level anatomy or physics.
+
+## Minion Mode and clearer gaze indicators (v0.19.6)
+
+A small **◉ Minion Mode** switch appears in the upper-right corner of the pitch in the editor and in public read-only presentations. Switch it on for yellow, goggle-eyed cartoon rugby characters (varying one/two goggles and team-coloured outfits) and some gentle pitch decorations; switch it back to return to standard player symbols. This changes **appearance only**, never the drill movement, contact mechanics, tags or ball possession.
+
+**Classic view** shows **one direction arrow** for each standing player, representing where their eyes would look from the player's existing head-direction settings. No extra eye icon. **Minion Mode** shows expressions and goggles tracking the same direction, with **no extra gaze arrow**. The visual choice is passed through the normal sharing/export options when requested; ordinary saved drill JSON remains untouched. Grounded players continue to suppress upright gaze indicators.
