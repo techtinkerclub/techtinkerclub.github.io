@@ -22,7 +22,7 @@ export function sanitizeInteractions(frame){
  frame.interactions=(Array.isArray(frame.interactions)?frame.interactions:[]).slice(0,12).filter(a=>
   a&&['touch','tag'].includes(a.kind)&&typeof a.actorId==='string'&&typeof a.targetId==='string'&&a.actorId!==a.targetId&&ids.has(a.actorId)&&ids.has(a.targetId)&&canCarry(ids.get(a.actorId))&&
   (a.kind==='touch'||canCarry(ids.get(a.targetId)))&&
-  (a.kind!=='tag'||TAG_SIDES.includes(a.side))
+  (a.kind!=='tag'||(TAG_SIDES.includes(a.side)&&ids.get(a.actorId).tagBelt===true&&ids.get(a.targetId).tagBelt===true))
  ).map(a=>({kind:a.kind,actorId:a.actorId,targetId:a.targetId,side:a.kind==='tag'?a.side:undefined,at:Math.max(.1,Math.min(.95,Number(a.at)||.7)),label:text(a.label)}));
  if(!frame.interactions.length)delete frame.interactions;
  return frame;
@@ -63,13 +63,17 @@ export function interactionOverlay(frame,objects,g,progress=1,ink=false){
  const safe=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  return '<g class="non-contact-actions" pointer-events="none">'+frame.interactions.filter(a=>progress>=a.at).map(a=>{
   const actor=positions.get(a.actorId),target=positions.get(a.targetId);if(!actor||!target)return '';
-  const p=g.toView(actor.x,actor.y),q=g.toView(target.x,target.y);
-  const label=a.label|| (a.kind==='tag'?'TAG '+a.side.toUpperCase():'TOUCH');
-  const mid={x:(p.x+q.x)/2,y:(p.y+q.y)/2-22};
-  const width=Math.max(58,Math.min(190,label.length*7+20));
-  return '<path d="M'+p.x+' '+p.y+' L'+q.x+' '+q.y+'" stroke="'+(ink?'#444':'#d2f58a')+'" stroke-width="2" stroke-dasharray="4 4" fill="none"/>'+
-   '<rect x="'+(mid.x-width/2)+'" y="'+(mid.y-12)+'" width="'+width+'" height="23" rx="6" fill="'+(ink?'#fff':'#20382b')+'" stroke="'+(ink?'#333':'#d2f58a')+'"/>'+
-   '<text x="'+mid.x+'" y="'+(mid.y+4)+'" fill="'+(ink?'#222':'#f4ffd8')+'" text-anchor="middle" font-size="11" font-weight="700">'+safe(label)+'</text>';
+  const p=g.toView(actor.x,actor.y),q=g.toView(target.x,target.y),tag=a.kind==='tag',equipment=!canCarry(target);
+  const label=a.label||(tag?'TAG!':equipment?'TOUCH TARGET':'TWO-HAND TOUCH');
+  const highlight=ink?'#555':tag?'#f3c368':equipment?'#8de3cc':'#a9d8ff';
+  const width=Math.max(84,Math.min(230,label.length*7+25));
+  const mid={x:(p.x+q.x)/2,y:(p.y+q.y)/2-32};
+  const flash=tag?'<rect x="'+(p.x+12)+'" y="'+(p.y-22)+'" width="7" height="18" rx="2" fill="'+tagColor(target.tagColor)+'" stroke="'+(ink?'#333':'#fff')+'" stroke-width="1"/>'
+   :'<circle cx="'+q.x+'" cy="'+q.y+'" r="'+(equipment?17:23)+'" fill="none" stroke="'+highlight+'" stroke-width="2.5" stroke-dasharray="'+(equipment?'3 4':'5 3')+'"/>';
+  return '<path d="M'+p.x+' '+p.y+' L'+q.x+' '+q.y+'" stroke="'+highlight+'" stroke-width="2" stroke-dasharray="'+(tag?'3 5':'5 3')+'" fill="none"/>'+
+   flash+
+   '<rect x="'+(mid.x-width/2)+'" y="'+(mid.y-13)+'" width="'+width+'" height="25" rx="7" fill="'+(ink?'#fff':tag?'#463721':equipment?'#153d36':'#233c51')+'" stroke="'+highlight+'" stroke-width="1.5"/>'+
+   '<text x="'+mid.x+'" y="'+(mid.y+4)+'" fill="'+(ink?'#222':'#f7ffed')+'" text-anchor="middle" font-size="11" font-weight="700">'+safe(label)+'</text>';
  }).join('')+'</g>';
 }
 export function addInteraction(frame,kind,actorId,targetId,side='left',label=''){
