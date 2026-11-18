@@ -50,3 +50,7 @@ A new view-only action camera uses authored player, ball and contact movement to
 Editor regression checks now cover returning a player to the prior step on movement deletion, propagating routes through later stages, stopping at an explicitly authored run, and protecting contact-linked positions. The mobile Chromium smoke test exercises touch-sized navigation and play, but is not equivalent to real Safari testing.
 
 Remaining work: review the entire 116-animated-drill set at multiple timestamps, evaluate which of the 26 written-only cards merit animation, compare video outputs at multiple aspect ratios, test iOS Safari/iPadOS, and obtain qualified U10 contact/age-grade coaching feedback. See QUALITY_BACKLOG.md.
+
+## Teaching-stage semantic corrections — 18 November 2026
+
+Two older short U10 resources were identified with narration/animation mismatches and repaired. In seed-062, the carrier and receiver previously stayed stationary during an alleged approach; they now both move and the ball remains visibly attached until the backwards pass, followed by support continuation. In seed-063, a seven-metre defensive retreat had no defenders on screen; it now shows a measured five-metre-in-from-touch restart mark, two actual retreating opponents, a backward pass with stationary players, and open play beginning afterwards. A dedicated regression checks the measured metres and movement order. These fixes do not constitute a full visual review of all other catalogue scenes.

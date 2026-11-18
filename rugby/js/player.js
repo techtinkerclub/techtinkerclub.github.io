@@ -1,4 +1,4 @@
-import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.13.4';
+import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.13.5';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.13';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=2';

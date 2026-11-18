@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic v0.14.7 / Coach Edition v0.3.3
+# Rugby Coaching Studio — Classic v0.14.8 / Coach Edition v0.3.3
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
 
@@ -125,3 +125,9 @@ Fourteen older narrated drills previously used a generic 60 × 35 m pitch. Their
 - A separate regression test protects **Reset step movement**, future-route propagation, stop-at-next-run behaviour and protected contact formations.
 
 The browser QA now includes Chromium phone-sized touch navigation and action-focus playback. Chromium emulation is not a physical iOS Safari test; real-device verification and full 142-drill content sign-off are still necessary. This release does not add nested decisions or silently resize user-created pitches.
+
+## U10 teaching-demo repair (Classic v0.14.8)
+
+The short **U10 offload to support** example now moves the carrier and tracking support player before a genuine backward transfer; the receiver visibly continues after catching. The old stage moved only the carried ball while the players stayed still. This remains explicitly non-contact practice.
+
+The older **U10 free-pass restart** example now illustrates a restart after touch, with an accurately measured **5 m** inside-touch mark, two defenders visibly retreating **at least 7 m**, a stationary backward pass, and a separate follow-on stage when movement is allowed. The previous narrative described retreat without drawing any defending players. The check uses physical pitch metres and has a regression test. Current-season reference: https://rugbyreferee.net/wp-content/uploads/2026/09/2026-27-u10s-RRNet-RFU-Regulations.pdf (summary of RFU Regulation 15 Appendix 4); refer to the RFU's authoritative age-grade rules for any changes.

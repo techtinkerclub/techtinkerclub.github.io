@@ -45,7 +45,7 @@ import {bindMovieSettings} from './movie.js?v=0.7.2';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.26';
 initWorkspace();
-const SEEDS = await fetch(new URL('../data/drills.json?v=0.13.4', import.meta.url)).then(r => {
+const SEEDS = await fetch(new URL('../data/drills.json?v=0.13.5', import.meta.url)).then(r => {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }).then(data => {
