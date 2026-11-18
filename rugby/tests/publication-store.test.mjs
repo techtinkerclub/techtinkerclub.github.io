@@ -29,14 +29,14 @@ test('publication is deliberate and stable through saves, updates, unpublishing 
  const initial=structuredClone(master.data.drills[0]);
  await assert.rejects(store.remove(initial.id,initial),/Unpublish this drill/);
  const updated=await store.save({...initial,title:initial.title+' revised'},initial);
- assert.equal(updated.snapshot.revision,2);
+ assert.equal(updated.snapshot.revision,(Number(initial.revision)||1)+1);
  assert.notEqual(publicRecords.data.drills.find(d=>d.id==='seed-133').title,updated.snapshot.title,
   'Saving must never silently republish');
  const published=await store.publish(initial.id,updated.snapshot,143);
  assert.equal(published.publicId,'seed-133');
  const record=published.data.drills.find(d=>d.id==='seed-133');
  assert.equal(record.savedFromCoachDrill,initial.id);
- assert.equal(record.publishedRevision,2);
+ assert.equal(record.publishedRevision,updated.snapshot.revision);
  assert.equal(record.title,updated.snapshot.title);
  await store.unpublish(initial.id);
  assert(publicRecords.data.unpublishedIds.includes('seed-133'));
