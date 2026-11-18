@@ -12,6 +12,15 @@ import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from 
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
 let viewZoom=1,viewPan={x:0,y:0},viewBase=null,panEnabled=false,dragStart=null,pinchStart=null;
 const touches=new Map();
+$('playerMinionMode').onclick=()=>{
+ opts.cartoonMode=!opts.cartoonMode;
+ const b=$('playerMinionMode');
+ b.textContent=opts.cartoonMode?'◉ Classic view':'◉ Minion Mode';
+ b.setAttribute('aria-pressed',String(!!opts.cartoonMode));
+ b.title=opts.cartoonMode?'Return to classic coaching view':'See playful goggle-eyed cartoon players';
+ render();
+};
+
 function applyZoom(){
  if(!viewBase)return;
  const svg=$('board').querySelector('svg');if(!svg)return;
