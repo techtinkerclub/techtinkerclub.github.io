@@ -6,7 +6,7 @@ Updated 18 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.19.2** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.19.3** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
 
 ## Public publishing workflow
@@ -130,3 +130,11 @@ The left Decision making tool is the single creation/edit entry point; duplicate
 - **Release ball** and **Pick up a loose ball** remain separate, consecutive action steps rather than one forced pass. Players from either team can be chosen for the pickup. New pickup dialog selects the free ball, picker and event time, starting from either the ball or a player. Ball changes are shown in **Step → Actions in this step** with editable timing, removable transfers and an editable rip label; player run timing remains separately adjustable on tracks.
 - Tests in `ball-events-rip.test.mjs` cover rip transfer semantics, release and pickup without pass lines, UI element wiring and U9 opponent restriction. Source syntax was checked and isolated ball movement verified; full Node/Playwright live-browser acceptance is still pending.
 - **Known boundary:** The rip event indicates a possession handover and coaching cue; it is not a physically animated hand/arm extraction technique. The drill author should position both players close together and separately show any legal subsequent pass. No automatic collision detection, continuity law adjudication or age-grade technique certification.
+
+## v0.19.3 — Tackle to ground / Held upright choice (18 Nov 2026)
+
+- **Actions… → Contact** now asks for an explicit **Contact outcome**: **Tackle to ground → ball presentation → ruck** or **Held upright · carrier stays on feet**. The existing tackle marker, player assignment and formation editor are reused; no duplicate new ruck system.
+- Ground tackle still uses the established breakdown progression: tackle (carrier grounded) → release and present → support arrives → ruck formed → contest → ball secured/play away. The **Open breakdown sequence** button remains available only on a grounded tackle.
+- Held upright is stored as `contactOutcome:'held'` on a tackle/contact marker; the ball carrier has a distinct `held` standing player pose and defenders remain engaged, with no grounded carrier or phantom tackle breakdown. This is a schematic upright stop, not a completed tackle. Subsequent rip/pass can be separately authored using the existing Actions menu. A new rip action does not create a ruck.
+- Modified contact cleaning, saved/published playback, SVG pose depiction and editor/presentation cache versions. Existing tackle drills without a contact outcome retain their original ground-tackle/ruck behaviour.
+- `tests/held-upright.test.mjs` covers no-breakdown for upright holds, ground-tackle breakdown preservation and the existing release/support/ruck phase order. Isolated JavaScript formation checks succeeded for both alternatives; full Node and live-browser regression are still outstanding.
