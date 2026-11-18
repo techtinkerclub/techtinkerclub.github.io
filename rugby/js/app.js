@@ -1,6 +1,6 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
-import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=6';
+import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=6';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
@@ -177,11 +177,11 @@ function appendSkillInspector(o,disabled){
  }
  const belt=o.tagBelt===true,left=o.tags?.left!==false,right=o.tags?.right!==false;
  panel.innerHTML='<h3>Tag rugby · belt</h3><label class="auto-attach"><input type="checkbox" id="tagBelt" '+(belt?'checked ':'')+disabled+'> Equip this player with a tag belt</label>'+
- (belt?'<label class="field">Tag strip colour<select id="tagColour" '+disabled+'>'+Object.keys(TAG_COLORS).map(key=>'<option value="'+key+'" '+(o.tagColor===key?'selected':'')+'>'+key[0].toUpperCase()+key.slice(1)+'</option>').join('')+'</select></label><p class="muted">Two matching strips, one on each hip. Tags currently held: '+(o.heldTags||0)+'</p><button type="button" id="tagRestore" '+disabled+'>Replace both tags</button> <button type="button" id="tagUnequip" '+disabled+'>Remove belt</button><small>Remaining on belt: '+(left?'left ':'')+(right?'right':'')+'. Removing a tag is a non-contact event, not a tackle or ruck.</small>':'<small>Use a belt for U7/U8 tag rugby drills. Tag removal requires a ball carrier and an opposing player wearing a belt.</small>');
+ (belt?'<label class="field">Tag strip colour<select id="tagColour" '+disabled+'>'+Object.keys(TAG_COLORS).map(key=>'<option value="'+key+'" '+(o.tagColor===key?'selected':'')+'>'+key[0].toUpperCase()+key.slice(1)+'</option>').join('')+'</select></label><p class="muted">Two matching strips, one on each hip. Tags currently held: '+(o.heldTags||0)+'</p><button type="button" id="tagRestore" '+disabled+'>Reset belt (setup only)</button> <button type="button" id="tagUnequip" '+disabled+'>Remove belt</button><small>Remaining on belt: '+(left?'left ':'')+(right?'right':'')+'. Removing a tag is a non-contact event, not a tackle or ruck.</small>':'<small>Use a belt for U7/U8 tag rugby drills. Tag removal requires a ball carrier and an opposing player wearing a belt.</small>');
  $('objectPanel').append(panel);
  const apply=fn=>{for(let i=idx;i<drill.frames.length;i++){const player=drill.frames[i].objects.find(p=>p.id===o.id);if(player)fn(player)}changed();render();inspector();tracks()};
- $('tagBelt').onchange=e=>apply(player=>{if(e.target.checked){player.tagBelt=true;player.tags={left:true,right:true};player.tagColor=player.tagColor||(['attacker','shield'].includes(player.type)?'yellow':'blue');player.heldTags=0}else{delete player.tagBelt;delete player.tags;delete player.tagColor;delete player.heldTags}});
- if(belt){$('tagColour').onchange=e=>{const colour=e.target.value;if(!Object.hasOwn(TAG_COLORS,colour))return;apply(player=>{player.tagColor=colour})};$('tagRestore').onclick=()=>apply(player=>{player.tagBelt=true;player.tags={left:true,right:true};player.heldTags=0});$('tagUnequip').onclick=()=>apply(player=>{delete player.tagBelt;delete player.tags;delete player.tagColor;delete player.heldTags})}
+ $('tagBelt').onchange=e=>apply(player=>{if(e.target.checked){player.tagBelt=true;player.tags={left:true,right:true};player.tagColor=player.tagColor||(['attacker','shield'].includes(player.type)?'yellow':'blue');player.heldTags=0;player.heldTagItems=[]}else{delete player.tagBelt;delete player.tags;delete player.tagColor;delete player.heldTagItems;delete player.heldTags}});
+ if(belt){$('tagColour').onchange=e=>{const colour=e.target.value;if(!Object.hasOwn(TAG_COLORS,colour))return;apply(player=>{player.tagColor=colour})};$('tagRestore').onclick=()=>apply(player=>{player.tagBelt=true;player.tags={left:true,right:true};player.heldTagItems=[];player.heldTags=0});$('tagUnequip').onclick=()=>apply(player=>{delete player.tagBelt;delete player.tags;delete player.tagColor;delete player.heldTags})}
 }
 function inspector(){let o=f().objects.find(x=>x.id===selected);if(preview!==null&&['decision','donut'].includes(o?.type)){
   $('objectPanel').innerHTML=o?.type==='decision'
@@ -871,10 +871,12 @@ function openActionChooser(fromGroup=groupIds.size>=2){
  const carrierAvailable=roster.some(p=>f().objects.some(b=>b.type==='ball'&&b.ownerId===p.id));
  const readyTaggers=roster.some(o=>o.tagBelt&&o.tags?.left!==false&&o.tags?.right!==false);
  const hasTaggedCarrier=roster.some(o=>o.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id));
+ const canReturn=outstandingTagItems(f()).length>0;
  const rules={
   'touch-player':{valid:!!player&&roster.some(o=>o.id!==player.id),help:'Non-contact touch: choose the touching player and target. Touch never needs a tag belt or changes ball possession automatically.'},
   'touch-target':{valid:!!player&&f().objects.some(o=>!canCarry(o)&&!['decision','label','ball'].includes(o.type)),help:'Agility: touch a cone, hoop, hurdle, pole or practice line. No tag or tackle is created.'},
-  tag:{valid:readyTaggers&&hasTaggedCarrier,help:'Tag rugby: remove one of the ball carrier’s two strips. No physical tackle or automatic turnover.'},
+  tag:{valid:readyTaggers&&hasTaggedCarrier,help:'Tag rugby: tagger stops, raises strip and calls TAG! The carrier stops to pass; the tag is returned afterwards.'},
+  'tag-return':{valid:canReturn,help:'Give a held tag back to its original owner, restoring the correct hip strip. The tagger may rejoin play after the return.'},
   tackle:{valid:age>=9&&hasOpposition&&carrierAvailable&&roster.length>=2,help:'Select ball carrier and opposing tackler(s) below. U9+ contact coaching only.'},
   ruck:{valid:age>=10&&hasOpposition&&roster.length>=2&&free,help:'Select standing players from each side. A ruck requires the ball on the ground. U10+ only.'},
   maul:{valid:age>=10&&hasOpposition&&carrierAvailable&&roster.length>=3,help:'Select ball carrier and players from both sides. U10+ only.'},
@@ -892,7 +894,7 @@ function openActionChooser(fromGroup=groupIds.size>=2){
    option.value==='ruck'?' (requires U10+, loose ball and both teams; unavailable)':
    option.value==='maul'?' (requires U10+, carrier and 3 players; unavailable)':
    option.value==='rip-ball'?' (requires U9+ and ball carrier; unavailable)':
-   option.value==='tag'?' (requires tag belts; unavailable)':' (unavailable)'));
+   option.value==='tag'?' (requires tag belts; unavailable)':option.value==='tag-return'?' (no outstanding tag to return)':' (unavailable)'));
  }
  const first=Array.from(sel.options).find(o=>!o.disabled);
  if(!first){note('Select or add players and a ball first.');return}
@@ -924,6 +926,7 @@ $('actionContinue').onclick=()=>{
  if(choice==='touch-player'){openSkillDialog('touch',group,'player');return}
  if(choice==='touch-target'){openSkillDialog('touch',group,'target');return}
  if(choice==='tag'){openSkillDialog('tag',group,'player');return}
+ if(choice==='tag-return'){openSkillDialog('tag-return',false,'player');return}
  if(choice==='rip-ball'){openRipDialog();return}
  const active=activeObject(),player=active?.type==='ball'?carrier(f(),active):group?[...groupIds].map(id=>f().objects.find(o=>o.id===id)).find(canCarry):active;
  if(choice==='release-ball'){if(player)selected=player.id;groupIds.clear();groupMode=false;releaseBall();openStepActions();return}
@@ -1012,34 +1015,45 @@ function openSkillDialog(kind,fromGroup=false,scope='any'){
  if(!canEditObjects())return;
  skillMode=kind;skillFromGroup=fromGroup;actionScope=scope;
  const roster=f().objects.filter(canCarry);
- const candidates=fromGroup?roster.filter(o=>groupIds.has(o.id)):roster;
+ const returns=outstandingTagItems(f());
+ const candidates=kind==='tag-return'?roster.filter(o=>returns.some(item=>item.actorId===o.id)):fromGroup?roster.filter(o=>groupIds.has(o.id)):roster;
  const chosen=activeObject();
- const actorId=kind==='tag'&&chosen&&chosen.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===chosen.id)
+ const actorId=kind==='tag-return'?returns[0]?.actorId:kind==='tag'&&chosen&&chosen.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===chosen.id)
   ?candidates.find(o=>o.id!==chosen.id&&o.tagBelt&&o.type!==chosen.type)?.id
   :(fromGroup?candidates.find(o=>kind==='tag'&&o.tagBelt&&!f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id))?.id||candidates[0]?.id:(canCarry(chosen)?selected:candidates[0]?.id));
  const options=(items)=>items.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');
  $('skillActor').innerHTML=options(candidates);
  if(actorId)$('skillActor').value=actorId;
- $('skillDialogHeading').textContent=kind==='tag'?'Tag rugby · remove a strip':scope==='target'?'Agility · touch a target':'Touch rugby · record a touch';
- $('skillDialogHelp').textContent=kind==='tag'?'Choose the defender taking a tag and the ball carrier. The ball carrier attempts to stop and pass within three seconds / about three strides. The tagger calls TAG, returns the strip, then rejoins play.':'Select the player and '+(scope==='target'?'equipment or line to touch for the agility exercise.':'other player to touch. This is NOT tag removal.')+' No physical tackle or automatic change of possession occurs.';
- $('skillSideRow').hidden=kind!=='tag';
+ $('skillDialogHeading').textContent=kind==='tag-return'?'Tag rugby · return a strip':kind==='tag'?'Tag rugby · remove a strip':scope==='target'?'Agility · touch a target':'Touch rugby · record a touch';
+ $('skillDialogHelp').textContent=kind==='tag-return'?'Choose the player holding a tag and return it to the correct ball carrier. The strip must go back on its original hip.':'Choose the defender taking a tag and the ball carrier. The ball carrier attempts to stop and pass within three seconds / about three strides. The tagger calls TAG, returns the strip, then rejoins play.':'Select the player and '+(scope==='target'?'equipment or line to touch for the agility exercise.':'other player to touch. This is NOT tag removal.')+' No physical tackle or automatic change of possession occurs.';
+ $('skillSideRow').hidden=kind!=='tag'&&kind!=='tag-return';
  $('skillActionLabel').value='';$('skillAt').value='70';$('skillActionError').textContent='';
  function fillTargets(){
   const actor=$('skillActor').value;
   const actorObject=f().objects.find(o=>o.id===actor);
-  const targets=f().objects.filter(o=>o.id!==actor&&(kind==='tag'?canCarry(o)&&o.tagBelt&&o.type!==actorObject?.type&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id)
+  const targets=f().objects.filter(o=>o.id!==actor&&(kind==='tag-return'?returns.some(item=>item.actorId===actor&&item.targetId===o.id):kind==='tag'?canCarry(o)&&o.tagBelt&&o.type!==actorObject?.type&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id)
    :scope==='player'?canCarry(o):scope==='target'?!canCarry(o)&&!['decision','label','ball'].includes(o.type):!['decision','label','ball'].includes(o.type)));
   $('skillTarget').innerHTML=options(targets);
+  if(kind==='tag-return'){const item=returns.find(item=>item.actorId===actor);if(item){$('skillTarget').value=item.targetId;$('skillTagSide').value=item.side}}
   if(kind==='tag'&&chosen&&targets.some(o=>o.id===chosen.id))$('skillTarget').value=chosen.id;
   if(fromGroup){const inGroup=targets.find(o=>groupIds.has(o.id));if(inGroup)$('skillTarget').value=inGroup.id}
   $('skillSave').disabled=!actor||!targets.length;
+  if(kind==='tag-return')fillSides();
   if(!targets.length)$('skillActionError').textContent='No eligible target in this step. Add another player or equip the ball carrier with a tag belt.';
   else $('skillActionError').textContent='';
  }
+ function fillSides(){
+  if(kind!=='tag-return')return;
+  const sides=returns.filter(item=>item.actorId===$('skillActor').value&&item.targetId===$('skillTarget').value);
+  $('skillTagSide').innerHTML=sides.map(item=>'<option value="'+item.side+'">'+(item.side==='left'?'Left':'Right')+' hip tag</option>').join('');
+  $('skillSave').disabled=!sides.length;
+ }
  $('skillActor').onchange=fillTargets;
- $('skillSideRow').style.display=kind==='tag'?'':'none';
- $('skillTarget').closest('.field')?.querySelector('label')?.replaceChildren(document.createTextNode(kind==='tag'?'Tagged ball carrier':scope==='target'?'Equipment or pitch line':'Player to touch'));
- $('skillSave').textContent=kind==='tag'?'Record tag removal':scope==='target'?'Add target touch':'Record touch';
+ $('skillTarget').onchange=fillSides;
+ if(kind==='tag')$('skillTagSide').innerHTML='<option value="left">Left hip tag</option><option value="right">Right hip tag</option>';
+ $('skillSideRow').style.display=(kind==='tag'||kind==='tag-return')?'':'none';
+ $('skillTarget').closest('.field')?.querySelector('label')?.replaceChildren(document.createTextNode(kind==='tag-return'?'Original tag owner':kind==='tag'?'Tagged ball carrier':scope==='target'?'Equipment or pitch line':'Player to touch'));
+ $('skillSave').textContent=kind==='tag-return'?'Return tag':kind==='tag'?'Record tag removal':scope==='target'?'Add target touch':'Record touch';
  fillTargets();$('skillDialog').showModal();
 }
 $('skillCancel').onclick=()=>$('skillDialog').close();
@@ -1049,17 +1063,20 @@ $('skillSave').onclick=()=>{
  if(!Number.isFinite(n)||n<10||n>95){$('skillActionError').textContent='Use a time from 10 to 95% of this step.';return}
  const dryRun=addInteraction(clone(f()),skillMode,actor,target,side,$('skillActionLabel').value.trim());
  if(!dryRun.ok){$('skillActionError').textContent=dryRun.message;return}
- if(!ensureSkillActionStep(skillMode==='tag'?'Tag removal':'Touch cue'))return;
+ if(!ensureSkillActionStep(skillMode==='tag'?'Tag removal':skillMode==='tag-return'?'Return tag':'Touch cue'))return;
  const result=addInteraction(f(),skillMode,actor,target,side,$('skillActionLabel').value.trim());
  if(!result.ok){$('skillActionError').textContent=result.message;return}
  f().interactions.at(-1).at=n/100;
- if(skillMode==='tag'){
-  // Tag loss persists into already-authored following frames. New steps inherit it automatically.
-  const from=f().objects.find(o=>o.id===target),taker=f().objects.find(o=>o.id===actor);
+ if(skillMode==='tag'||skillMode==='tag-return'){
+  // Propagate the new state through authored following steps, stopping at any
+  // later action affecting this same strip. Never manufacture a new tag.
+  const source=f().objects.find(o=>o.id===actor),owner=f().objects.find(o=>o.id===target);
   for(let i=idx+1;i<drill.frames.length;i++){
-   const frame=drill.frames[i],p=frame.objects.find(o=>o.id===target),t=frame.objects.find(o=>o.id===actor);
-   if(p?.tagBelt&&p.tags)p.tags[side]=false;
-   if(t?.tagBelt)t.heldTags=Math.max(Number(t.heldTags)||0,Number(taker.heldTags)||0);
+   const frame=drill.frames[i];
+   if(frame.interactions?.some(a=>['tag','tag-return'].includes(a.kind)&&a.targetId===target&&a.side===side))break;
+   const p=frame.objects.find(o=>o.id===target),t=frame.objects.find(o=>o.id===actor);
+   if(p?.tagBelt&&p.tags)p.tags[side]=owner.tags[side];
+   if(t?.tagBelt){t.heldTagItems=(source.heldTagItems||[]).map(item=>({...item}));t.heldTags=source.heldTags}
   }
  }
  $('skillDialog').close();changed();refresh();note(result.message);
