@@ -1,6 +1,6 @@
 import {loadPublicationData,applyPublications} from './publication.js?v=1';
 // The read-only library and player share the same curated catalogue, not browser storage.
-export const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game'];
+export const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game','Test drills'];
 export const FORMATS=['animated','card','rules'];
 export const isAnimated=d=>Array.isArray(d.frames)&&d.frames.length>1;
 export const isRules=d=>String(d.title).startsWith('Understand the game ·');
@@ -35,7 +35,29 @@ export async function loadCatalogue(fetcher=fetch){
  const data=await res.json();if(data?.version!==1||!Array.isArray(data.drills)||!data.drills.length)throw Error('The drill catalogue is unavailable.');
  const ids=new Set();for(const d of data.drills){if(!/^seed-\d{3,}$/.test(d.id)||ids.has(d.id)||!Array.isArray(d.frames)||!d.frames.length)throw Error('The catalogue contains an invalid entry.');ids.add(d.id)}
  const overrides=await loadPublicationData(fetcher);
- return applyPublications(data.drills,overrides);
+ const curated=applyPublications(data.drills,overrides);
+ // Permanent self-contained animation-regression fixtures are kept separate
+ // from the curated coaching catalogue and user-published drill overrides.
+ // They are nevertheless real, editable/previewable drills for both editors
+ // and read-only presentations, videos and the public library.
+ let qa=[];
+ try{
+  const response=await fetcher(new URL('../data/test-drills.json?v=1',import.meta.url),{cache:'no-cache'});
+  if(!response.ok)throw Error('Test pack HTTP '+response.status);
+  const pack=await response.json();
+  if(pack?.version!==1||pack.kind!=='rugby-visual-qa'||!Array.isArray(pack.drills))throw Error('Invalid test-drill pack');
+  const known=new Set(curated.map(d=>d.id));
+  for(const d of pack.drills){
+   if(!/^seed-\\d{3,}$/.test(d?.id)||known.has(d.id)||d.category!=='Test drills'||!Array.isArray(d.frames)||d.frames.length<2)
+    throw Error('Invalid or duplicate test drill '+d?.id);
+   known.add(d.id);
+  }
+  qa=pack.drills;
+ }catch(err){
+  // A slow cache/CDN rollout must not make the normal coaching library unusable.
+  console.warn('Rugby QA drill pack unavailable:',err);
+ }
+ return curated.concat(qa);
 }
 export async function copyText(s){
  try{await navigator.clipboard.writeText(s);return true}catch{return false}
