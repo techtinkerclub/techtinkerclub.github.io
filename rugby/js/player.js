@@ -1,4 +1,4 @@
-import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.18.0';
+import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.18.1';
 import {stepEndSeconds,stepStartSeconds} from './step-timeline.js?v=1';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.5';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
