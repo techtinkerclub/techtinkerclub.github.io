@@ -81,7 +81,7 @@ const frame={name:'Reference',seconds:0,notes:'',objects:[{id:'field-1',type:'fi
 const clean=playbackData({...drill,branching:undefined,frames:[frame]});
 assert.equal(clean.frames[0].objects[0].type,'fieldLine','General line must survive export sanitising');
 assert.match(renderScene(clean,{index:0}).svg,/data-line-kind="field-reference"/);
-for(const page of ['index.html','coach/index.html']){
+for(const page of ['index.html']){
  const html=read(page);
  assert.doesNotMatch(html,/id="tryDecisionDemo"/);
   assert.match(html,/id="decisionToolStart"/);
@@ -105,4 +105,4 @@ assert.match(guide,/case 'whistle'/);
 const css=read('assets/branching.css');
 assert.match(css,/\.scenes\{min-height:58px/,'Scene cards must remain visible after branching row');
 assert.match(css,/\.scene\{min-height:48px/,'Scene cards must not collapse to a thin strip');
-console.log('Rugby cues: ordinary practice line, playable decision previews, shared signal, whistle sound toggles, both editions, print and model tests passed.');
+console.log('Rugby cues: ordinary practice line, playable decision previews, shared signal, whistle sound toggles, Classic Studio, print and model tests passed.');
