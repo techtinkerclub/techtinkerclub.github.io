@@ -66,7 +66,7 @@ export function fullFieldSVG(g,grid=false,gridStep=.5,settings={}){
   return '<path d="M'+f(a.x)+' '+f(a.y)+'L'+f(b.x)+' '+f(b.y)+'" stroke="'+stroke+'" stroke-width="'+weight+'" stroke-opacity="'+opacity+'" '+(dash?'stroke-dasharray="'+dash+'" ':'')+'fill="none" vector-effect="non-scaling-stroke"/>';
  };
  const poly=pts=>pts.map(([x,y])=>{const q=p(x,y);return f(q.x)+','+f(q.y)}).join(' ');
- const text=(x,y,s,opacity=.85)=>{const q=p(x,y);return '<text x="'+f(q.x)+'" y="'+f(q.y)+'" fill="#edf5e8" fill-opacity="'+opacity+'" font-size="11" text-anchor="middle" paint-order="stroke" stroke="#1e4a30" stroke-width="3">'+s+'</text>'};
+ const text=(x,y,s,opacity=.85)=>{const q=p(x,y);return '<text x="'+f(q.x)+'" y="'+f(q.y)+'" fill="#edf5e8" fill-opacity="'+opacity+'" font-size="8" text-anchor="middle" paint-order="stroke" stroke="#1e4a30" stroke-width="3">'+s+'</text>'};
  const w=c.width;
  const base='<rect width="'+g.viewWidth+'" height="'+g.viewHeight+'" fill="#173a29"/>'+
   '<polygon points="'+poly([[0,0],[w,0],[w,total],[0,total]])+'" fill="#326944"/>';
@@ -100,9 +100,9 @@ export function fullFieldSVG(g,grid=false,gridStep=.5,settings={}){
   marks+=line(0,top+5,w,top+5,{dash:dashes,opacity:.8});
   marks+=line(0,bottom-5,w,bottom-5,{dash:dashes,opacity:.8});
  }
- marks+=text(w/2,top/2+2,'IN-GOAL',.68)+text(w/2,bottom+top/2+2,'IN-GOAL',.68);
+ marks+=text(w/2,top/2+2,'IN-GOAL',.46)+text(w/2,bottom+top/2+2,'IN-GOAL',.46);
  if(active){marks+=text(w/2,top+22+2,'22m',.67)+text(w/2,bottom-22-2,'22m',.67);}
- marks+=text(w/2,top+c.length/2-4,'HALFWAY',.64);
+ marks+=text(w/2,top+c.length/2-4,'HALFWAY',.44);
  // Top view of the actual positions of the two 5.6m-spaced uprights at each goal line.
  for(const y of [top,bottom]){
   for(const x of [w/2-2.8,w/2+2.8]){
@@ -115,8 +115,10 @@ export function fullFieldSVG(g,grid=false,gridStep=.5,settings={}){
  const area=poly([[c.x,c.inGoal+c.y],[c.x+g.practice.width,c.inGoal+c.y],
   [c.x+g.practice.width,c.inGoal+c.y+g.practice.length],[c.x,c.inGoal+c.y+g.practice.length]]);
  marks+='<polygon data-practice-area="true" points="'+area+'" fill="#d2f57a" fill-opacity=".09" stroke="#d2f57a" stroke-width="2.4" stroke-dasharray="8 5" vector-effect="non-scaling-stroke"/>';
- const q=p(c.x,c.inGoal+c.y),labelY=Math.max(15,q.y-7);
- marks+='<text x="'+f(q.x+5)+'" y="'+f(labelY)+'" fill="#e1f69f" font-size="12" font-weight="700" paint-order="stroke" stroke="#183a2b" stroke-width="3">TRAINING AREA · '+g.practice.length+' × '+g.practice.width+' m</text>';
+ const q=p(c.x,c.inGoal+c.y),labelY=Math.max(12,q.y-8);
+ // A small dimension badge is sufficient; the large headline used to obscure
+ // the goal line and player icons when coaches zoomed into a practice area.
+ marks+='<text x="'+f(q.x+3)+'" y="'+f(labelY)+'" fill="#e1f69f" font-size="8" font-weight="650" paint-order="stroke" stroke="#183a2b" stroke-width="1.5">AREA · '+g.practice.length+' × '+g.practice.width+' m</text>';
  if(grid){const step=[.25,.5,1,2,5].includes(Number(gridStep))?Number(gridStep):.5;
   const nx=Math.ceil(g.practice.width/step),ny=Math.ceil(g.practice.length/step);
   if(nx*ny<3000){
