@@ -105,6 +105,21 @@ try {
  await classic.locator('[data-branch-choice="b"]').click();
  assert.equal(await classic.locator('#outcomeB').getAttribute('aria-pressed'),'true');
  console.log('BROWSER DECISION CREATE PASS: select running player, click path, choose actual pass, pause at fork and continue B');
+ // Assemble a video progression from two existing, separately editable drills.
+ await classic.locator('#share').click({force:true});
+ await classic.locator('#shareDialog').waitFor({state:'visible'});
+ assert.equal(await classic.locator('#movieSequenceList li').count(),1);
+ const precursor=classic.locator('#movieSequencePick option').filter({hasText:'Whistle then advance together'}).first();
+ const sourceId=await precursor.getAttribute('value');
+ assert.notEqual(sourceId,'', 'The new simple defensive-line drill must be available to add');
+ await classic.locator('#movieSequencePick').selectOption(sourceId);
+ await classic.locator('#movieSequenceAdd').click();
+ assert.equal(await classic.locator('#movieSequenceList li').count(),2);
+ await classic.locator('#movieSequenceList [data-video-index="1"][data-video-move="up"]').click();
+ assert.match(await classic.locator('#movieSequenceList li').first().innerText(),/Whistle then advance together/);
+ await classic.locator('#movieTitle').fill('Defensive line · three-stage coaching progression');
+ await classic.locator('#closeShare').click();
+ console.log('BROWSER VIDEO PLAYLIST PASS: library drill added, re-ordered, explanations editable');
  await classic.close();
  const coach=await browser.newPage({viewport:{width:1440,height:850}});
  capture(coach);
@@ -179,6 +194,31 @@ try {
  await fieldPage.locator('#zoomArea').click();
  assert.equal(await fieldPage.locator('#pitch').getAttribute('viewBox'),closeArea);
  console.log('BROWSER RFU FIELD PASS: 60×35 U10, 5m in-goal, practice placement, zoom, all steps retained');
+ await fieldPage.close();
+ // The full pitch is a non-destructive background behind an editable practice.
+ const fieldPage=await browser.newPage({viewport:{width:1490,height:950}});
+ capture(fieldPage);
+ await fieldPage.goto(origin+'/rugby/',{waitUntil:'networkidle',timeout:40000});
+ const example=file.drills.find(d=>d.id==='seed-143');
+ await fieldPage.locator('#file').setInputFiles({name:'defensive-line.json',
+  mimeType:'application/json',buffer:Buffer.from(JSON.stringify(example))});
+ await fieldPage.waitForFunction(()=>document.querySelector('#stageTitle')?.textContent.includes('Defensive line'));
+ const initialStages=await fieldPage.locator('#scenes .scene').count();
+ await fieldPage.locator('#tabDrill').click();
+ await fieldPage.locator('#fieldMode').selectOption('field');
+ await fieldPage.locator('#fieldAge').selectOption('U10');
+ await fieldPage.locator('#fieldAnchor').selectOption('top-try');
+ assert.equal(await fieldPage.locator('#fieldY').inputValue(),'-5');
+ await fieldPage.locator('#applyPitchSettings').click();
+ await fieldPage.waitForFunction(()=>document.querySelector('#pitch [data-practice-area="true"]'));
+ assert.equal(await fieldPage.locator('#scenes .scene').count(),initialStages);
+ const zoomed=await fieldPage.locator('#pitch').getAttribute('viewBox');
+ await fieldPage.locator('#zoomFit').click();
+ assert.notEqual(await fieldPage.locator('#pitch').getAttribute('viewBox'),zoomed);
+ await fieldPage.locator('#zoomArea').click();
+ assert.equal(await fieldPage.locator('#pitch').getAttribute('viewBox'),zoomed);
+ assert.match(await fieldPage.locator('#pitch').innerHTML(),/IN-GOAL/);
+ console.log('BROWSER FULL PITCH PASS: field placement, correct age template, zoom and unchanged steps');
  await fieldPage.close();
  if(errors.length)throw new Error('Browser errors: '+errors.join(' | '));
 } finally {await browser.close()}

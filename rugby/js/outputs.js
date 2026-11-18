@@ -1,11 +1,12 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.13';
-import {hasOutcomes,outcomeViews} from './branching.js?v=1';
-import {outcomeCardsMarkup} from './branching-visual.js?v=3';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.13.15';
+import {hasOutcomes,outcomeViews} from './branching.js?v=2';
+import {outcomeCardsMarkup} from './branching-visual.js?v=4';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.2';
+import {recordCoachingMovie} from './video-recorder.js?v=1';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
-import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.9';
+import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
 const decode64=s=>{if(!/^[A-Za-z0-9_-]+$/.test(s))throw Error('Invalid share code.');return Uint8Array.from(atob(s.replaceAll('-','+').replaceAll('_','/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0))};
@@ -28,6 +29,12 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
 function svgImage(svg){return new Promise((resolve,reject)=>{const uri=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'})),im=new Image();im.onload=()=>{URL.revokeObjectURL(uri);resolve(im)};im.onerror=()=>{URL.revokeObjectURL(uri);reject(Error('Could not render the video frame.'))};im.src=uri})}
 function fitText(ctx,text,max){let s=String(text||'');while(s.length>1&&ctx.measureText(s).width>max)s=s.slice(0,-2)+'…';return s}
 export async function recordDrill(d,opts={},progress=()=>{},signal=null){
+ // Storyboard mode is the default for decisions and linked drill videos.
+ // Keep the proven legacy player for a single ordinary linear-drill export.
+ const movieSequence=Array.isArray(opts.sequenceDrills)&&opts.sequenceDrills.length?opts.sequenceDrills:null;
+ if(movieSequence||hasOutcomes(d))
+  return recordCoachingMovie(movieSequence||[d],opts,progress,signal);
+
  const checkAbort=()=>{if(signal?.aborted)throw new DOMException('Export cancelled','AbortError')};checkAbort();progress(0,'Preparing video…');
  const drill=playbackData(d),options=outputOptions(opts);
  const views=hasOutcomes(drill)&&opts.branchMode!=='selected'?outcomeViews(drill):[{id:hasOutcomes(drill)?drill.branching.active:'',label:hasOutcomes(drill)?drill.branching.choices.find(c=>c.id===drill.branching.active).label:'Complete drill',drill:outcomeViews(drill).find(v=>!hasOutcomes(drill)||v.id===drill.branching.active).drill}];

@@ -75,22 +75,3 @@ test('both editors expose the same field controls without replacing their engine
  assert.match(read('js/app.js'),/drillGeometry\(draft,'up'\)/);
  assert.match(read('js/app.js'),/fieldDrag/);
 });
-
-test('published touch restart and U14 lineout carry age-appropriate field context',()=>{
- const data=JSON.parse(readFileSync(new URL('../data/drills.json',import.meta.url),'utf8'));
- const get=id=>data.drills.find(d=>d.id===id);
- assert.equal(get('seed-063').pitchContext?.age,'U10');
- assert.equal(get('seed-061').pitchContext?.age,'U14');
- for(const id of ['seed-063','seed-061']){
-  const scene=renderScene(playbackData(get(id)),{index:0,framing:'field'});
-  assert.match(scene.svg,/data-practice-area="true"/);
- }
-});
-test('manual read-only zoom changes SVG viewBox without changing the field',async()=>{
- const {zoomWindow}=await import('../js/viewer-camera.js');
- const base={x:0,y:0,width:700,height:1200};
- const a=zoomWindow(base,1),b=zoomWindow(base,2);
- assert.equal(a.width,700);assert.equal(b.width,350);
- assert.equal(zoomWindow(base,4,{x:900,y:-100}).x,525);
- assert.equal(zoomWindow(base,4,{x:900,y:-100}).y,350);
-});

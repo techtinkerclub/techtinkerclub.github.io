@@ -10,6 +10,8 @@ export function branchInfo(d){
  if(typeof b.question!=='string'||b.question.length>240)throw Error('Invalid decision question.');
  if(!['a','b'].includes(b.active))throw Error('Invalid active outcome.');
  if(b.choices[0].id!=='a'||b.choices[1].id!=='b')throw Error('Invalid decision outcome IDs.');
+ for(const value of [b.context,b.watchFor,...b.choices.flatMap(c=>[c.explanation,c.watchFor])])
+  if(value!==undefined&&(typeof value!=='string'||value.length>500))throw Error('Invalid decision coaching text.');
  for(const c of b.choices){
   if(typeof c.label!=='string'||c.label.length>140||!Array.isArray(c.frames)||c.frames.length<1||c.frames.length>149-b.fork)throw Error('Invalid decision outcome.');
  }
@@ -65,13 +67,21 @@ export function outcomeViews(d){
  if(!b)return [{id:'',label:'Complete drill',drill:copy(d)}];
  return b.choices.map(c=>({id:c.id,label:c.label,drill:outcomeView(d,c.id)}));
 }
-export function editOutcomes(d,question,labelA,labelB){
+export function editOutcomes(d,question,labelA,labelB,guidance=null){
  const b=branchInfo(d);if(!b)throw Error('This drill has no outcome decision.');
  b.question=String(question||'What happens next?').trim().slice(0,240)||'What happens next?';
  for(const [i,value] of [labelA,labelB].entries()){
   const label=String(value||'').trim().slice(0,140);
   if(!label)throw Error('Give each outcome a name.');
   b.choices[i].label=label;
+ }
+ if(guidance){
+  b.context=String(guidance.context||'').trim().slice(0,500);
+  b.watchFor=String(guidance.watchFor||'').trim().slice(0,500);
+  b.choices.forEach((choice,i)=>{
+   choice.explanation=String(guidance.choices?.[i]?.explanation||'').trim().slice(0,500);
+   choice.watchFor=String(guidance.choices?.[i]?.watchFor||'').trim().slice(0,500);
+  });
  }
 }
 export function removeOutcomes(d){

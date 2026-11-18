@@ -4,7 +4,7 @@ import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors} from './symbol-scale.js?v=0.12.27';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.13.4';
-import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=1';
+import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=2';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
 import {pitchGeometry,drillGeometry,trainingField} from './pitch.js?v=0.12.24';
@@ -15,7 +15,7 @@ import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
 import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts,PLAYER_POSES} from './contact.js?v=0.12.34';
 import {cleanBreakdowns} from './breakdown.js?v=0.12.34';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
-import {cardLinks} from './coaching-output.js?v=0.7.1';
+import {cardLinks} from './coaching-output.js?v=0.13.10';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {offsideOverlay} from './offside.js?v=0.12.23';
 import {actionViewport,actionViewportAt,wholeFieldView} from './action-camera.js?v=1';
@@ -46,7 +46,7 @@ export function playbackData(d){
   const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):0,notes:str(f.notes),objects,timing,paths,guide:f.guide};const guides=cleanTeachingGuides(f.teachingGuides);if(guides.length)result.teachingGuides=guides;const cue=signalForFrame({...f,objects});if(cue)result.signal=cue;cleanGuide(result);cleanTraining(result);return result;
  });
  cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);normaliseRecoveryPoses(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
- if(hasOutcomes(d)){const b=branchInfo(d),views=outcomeViews(d).map(v=>({id:v.id,clean:playbackData(v.drill)}));out.branching={version:1,fork:b.fork,question:b.question,active:b.active,...(typeof b.markerId==='string'?{markerId:b.markerId}:{}),choices:b.choices.map(v=>({id:v.id,label:v.label,frames:views.find(w=>w.id===v.id).clean.frames.slice(b.fork+1)}))};out.frames=views.find(v=>v.id===b.active).clean.frames;}
+ if(hasOutcomes(d)){const b=branchInfo(d),views=outcomeViews(d).map(v=>({id:v.id,clean:playbackData(v.drill)}));out.branching={version:1,fork:b.fork,question:b.question,active:b.active,...(typeof b.markerId==='string'?{markerId:b.markerId}:{}),context:str(b.context,500),watchFor:str(b.watchFor,500),choices:b.choices.map(v=>({id:v.id,label:v.label,explanation:str(v.explanation,500),watchFor:str(v.watchFor,500),frames:views.find(w=>w.id===v.id).clean.frames.slice(b.fork+1)}))};out.frames=views.find(v=>v.id===b.active).clean.frames;}
  return out;
 }
 export function drillDuration(d){return d.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0)}

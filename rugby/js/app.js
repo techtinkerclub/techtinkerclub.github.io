@@ -2,10 +2,10 @@ import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.12.6';
-import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews} from './branching.js?v=1';
+import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews} from './branching.js?v=2';
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
-import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=3';
+import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=4';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition} from './symbol-scale.js?v=0.12.27';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.13.4';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
@@ -39,7 +39,7 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.13.13';
+import {renderScene} from './scene.js?v=0.13.15';
 import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.13.13';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.7.2';
@@ -422,9 +422,16 @@ function openOutcomeDialog(edit=false){
   ?'The player runs to your yellow diamond and the animation pauses there. Choose what A and B do; your drawn routes will become real movement where possible.'
   :'The player will run to the point you clicked, then playback pauses. Name A and B and choose each action. Afterwards, adjust the movement and defenders separately in each outcome.';
  $('outcomePrompt').value=b?.question||d?.question||'What happens next?';
+ $('outcomeContext').value=b?.context||'';
+ $('outcomeWatchFor').value=b?.watchFor||'';
+ for(const key of ['A','B']){
+  const choice=b?.choices[key==='A'?0:1];
+  $('outcomeExplain'+key).value=choice?.explanation||'';
+  $('outcomeWatch'+key).value=choice?.watchFor||'';
+ }
  $('outcomeLabelA').value=b?.choices[0].label||(!marker?'Keep running':autoLabel(d?.options?.[0],0));
  $('outcomeLabelB').value=b?.choices[1].label||(!marker?(recommendedB==='pass'?'Pass to '+(receiverDefault?.label||'support player'):'Change direction'):autoLabel(d?.options?.[1],1));
- $('outcomeSave').textContent=b?'Save names':marker?'Create playable A + B':'Create decision on run';
+ $('outcomeSave').textContent=b?'Save coaching explanation':marker?'Create playable A + B':'Create decision on run';
  $('outcomeRemove').hidden=!b;
  $('outcomeError').textContent='';
  $('outcomeDialog').showModal();
@@ -442,9 +449,13 @@ $('outcomeSave').onclick=()=>{
  try{
   const q=$('outcomePrompt').value,a=$('outcomeLabelA').value,b=$('outcomeLabelB').value;
   if(!a.trim()||!b.trim())throw Error('Both options need an action name.');
+  const guidance={
+   context:$('outcomeContext').value,watchFor:$('outcomeWatchFor').value,
+   choices:['A','B'].map(k=>({explanation:$('outcomeExplain'+k).value,watchFor:$('outcomeWatch'+k).value}))
+  };
   const existing=hasOutcomes(drill);
   if(existing){
-   editOutcomes(drill,q,a,b);
+   editOutcomes(drill,q,a,b,guidance);
    const data=branchInfo(drill),marker=drill.frames[data.fork].objects.find(o=>o.id===data.markerId);
    if(marker)marker.decision=decisionData({...marker.decision,question:data.question,options:[{label:data.choices[0].label,kind:'main'},{label:data.choices[1].label,kind:'run'}]});
    $('outcomeDialog').close();
@@ -466,6 +477,7 @@ $('outcomeSave').onclick=()=>{
    else throw Error('Select a player’s running path first, then click where the decision happens.');
    // Only commit the copied, validated drill after conversion succeeds.
    drill=converted.drill;
+   editOutcomes(drill,q,a,b,guidance);
    $('outcomeDialog').close();selected=null;
    changed();choose(fork+1);
    note('Decision created on the running path. Edit A, then B. Press Restart + Play to see the player reach the decision and stop.'+(converted.warnings.length?' Check: '+converted.warnings.join(' '):''));
@@ -1706,11 +1718,67 @@ function handleTrainingPick(e){const pick=trainingPick,o=f().objects.find(o=>o.i
  render();openOutcomeDialog();return;
 }if(pick.kind==='option'){const option=o.decision.options[pick.index];if(!option){trainingPick=null;return}if(pick.fresh){option.points=[];pick.fresh=false}if(option.points.length<12)option.points.push(p);changed();render();inspector();return}try{const frames=donutSteps(f(),o.id,p,pick.tackler,pick.fraction,pick.seconds,geometry(),pick.direction);if(drill.frames.length+frames.length>150)throw Error('Maximum of 150 steps reached.');trainingPick=null;drill.frames.splice(idx+1,0,...frames);sanitizeRoutes(drill.frames);changed();choose(idx+1);selectObject(o.id);note(frames[0].notes)}catch(err){note(err.message)}}
 
+// Video progression is deliberately an export-only playlist. Adding a stage
+// takes a snapshot; it does not concatenate editable drill timelines, move
+// players across pitch sizes or write back to GitHub.
+let videoSequence=[],videoSequenceOwner='';
+const videoChoices=()=>libraryItems().filter(entry=>entry.d.frames?.length>1);
+function renderVideoSequence(){
+ const list=$('movieSequenceList');
+ list.innerHTML=videoSequence.map((item,i)=>{
+  const d=item.current?drill:item.drill;
+  return '<li class="video-sequence-item" data-video-step="'+i+'"><span class="video-sequence-number">'+(i+1)+'</span><span class="video-sequence-text"><strong>'+esc(d.title)+'</strong><small>'+esc(d.age||'')+' · '+(d.frames?.length||0)+' steps'+(item.current?' · current edited drill':'')+'</small></span>'+
+   '<button type="button" data-video-move="up" data-video-index="'+i+'" aria-label="Move stage '+(i+1)+' earlier" '+(i===0?'disabled':'')+'>↑</button>'+
+   '<button type="button" data-video-move="down" data-video-index="'+i+'" aria-label="Move stage '+(i+1)+' later" '+(i===videoSequence.length-1?'disabled':'')+'>↓</button>'+
+   '<button type="button" data-video-move="remove" data-video-index="'+i+'" aria-label="Remove stage '+(i+1)+'">×</button></li>';
+ }).join('');
+ $('movieSequenceStatus').textContent=videoSequence.length===1?'One drill selected. Add another to create a progression.':videoSequence.length+' drills will play in order, with a fresh chapter introduction for each.';
+}
+function prepareVideoSequence(){
+ if(videoSequenceOwner!==drill.id||!videoSequence.length){
+  videoSequence=[{current:true}];videoSequenceOwner=drill.id;$('movieTitle').value=drill.title;
+ }
+ const choice=$('movieSequencePick'),all=videoChoices();
+ choice.innerHTML='<option value="">Choose a drill from your library…</option>'+all.map((entry,i)=>'<option value="'+i+'">'+esc(entry.d.title)+' · '+esc(entry.d.age||'')+'</option>').join('');
+ renderVideoSequence();
+}
+$('movieSequenceAdd').onclick=()=>{
+ if(videoSequence.length>=8){note('A coaching video can contain up to eight drills.');return}
+ const selected=$('movieSequencePick').value,i=Number(selected),options=videoChoices();
+ if(selected===''||!Number.isInteger(i)||!options[i]){note('Choose a drill from the list first.');return}
+ videoSequence.push({drill:clone(options[i].d)});renderVideoSequence();
+};
+$('movieSequenceCurrent').onclick=()=>{
+ if(videoSequence.length>=8){note('A coaching video can contain up to eight drills.');return}
+ videoSequence.push({current:true});renderVideoSequence();
+};
+$('movieSequenceList').onclick=e=>{
+ const button=e.target.closest('[data-video-move]');if(!button)return;
+ const i=Number(button.dataset.videoIndex),action=button.dataset.videoMove;
+ if(!Number.isInteger(i)||i<0||i>=videoSequence.length)return;
+ if(action==='remove')videoSequence.splice(i,1);
+ else if(action==='up'&&i>0)[videoSequence[i-1],videoSequence[i]]=[videoSequence[i],videoSequence[i-1]];
+ else if(action==='down'&&i<videoSequence.length-1)[videoSequence[i+1],videoSequence[i]]=[videoSequence[i],videoSequence[i+1]];
+ renderVideoSequence();
+};
+$('movieSequenceImport').onclick=()=>$('movieSequenceFile').click();
+$('movieSequenceFile').onchange=async e=>{
+ const file=e.target.files?.[0];e.target.value='';if(!file)return;
+ try{
+  if(videoSequence.length>=8)throw Error('Maximum eight drills in a video.');
+  if(file.size>3000000)throw Error('Drill file exceeds 3 MB.');
+  const raw=JSON.parse(await file.text()),candidate=raw.drill||raw;
+  const safe=validate(candidate);
+  if(safe.frames.length<2)throw Error('This file has no animated steps to export.');
+  videoSequence.push({drill:safe});renderVideoSequence();note('Imported '+safe.title+' into the video progression. The editable drill was not changed.');
+ }catch(err){note('Could not add video stage: '+err.message)}
+};
+
 function shareOptions(){return outputOptions({orientation,scaleMode,framing:$('shareFraming').value,teachingGuides:showMarkups,offside:$('offsideGuides').checked,markups:$('shareMarkups').checked,runs:$('shareRuns').checked,passes:$('sharePasses').checked,labels:$('shareLabels').checked,decisions:$('shareDecisions').checked})}
 const getMovieSettings=bindMovieSettings($('movieOptions'),'movie');
 const movieProgress=createExportProgress();
 let sharingBusy=false;
-$('share').onclick=()=>{if(!requireAppliedSetup())return;$('viewMenu').open=false;$('shareRuns').checked=showPaths;$('sharePasses').checked=showPasses;$('shareLabels').checked=showActionLabels;$('shareDecisions').checked=showDecisions;$('shareMarkups').checked=showMarkups;$('shareFraming').value=drill.pitchContext?.mode==='field'?'action':'field';$('shareLink').value='';$('shareStatus').textContent='';$('shareDialog').showModal()};
+$('share').onclick=()=>{if(!requireAppliedSetup())return;$('viewMenu').open=false;prepareVideoSequence();$('shareRuns').checked=showPaths;$('sharePasses').checked=showPasses;$('shareLabels').checked=showActionLabels;$('shareDecisions').checked=showDecisions;$('shareMarkups').checked=showMarkups;$('shareFraming').value=drill.pitchContext?.mode==='field'?'action':'field';$('shareLink').value='';$('shareStatus').textContent='';$('shareDialog').showModal()};
 $('closeShare').onclick=()=>{if(!sharingBusy)$('shareDialog').close()};
 $('shareDialog').addEventListener('cancel',e=>{if(sharingBusy)e.preventDefault()});
 for(const id of ['shareRuns','sharePasses','shareLabels','shareDecisions','shareMarkups','shareFraming'])$(id).onchange=()=>{$('shareLink').value=''};
@@ -1718,7 +1786,10 @@ function shareBusy(on){sharingBusy=on;for(const id of ['shareCopy','shareOpen','
 async function makeShare(){const code=await shareCode(drill,shareOptions()),url=new URL('./play.html',location.href);url.hash=code;return url.href}
 $('shareCopy').onclick=async()=>{shareBusy(true);try{const link=await makeShare();$('shareLink').value=link;try{await navigator.clipboard.writeText(link);$('shareStatus').textContent='Link copied. Anyone with the link can view this snapshot.'}catch{$('shareLink').focus();$('shareLink').select();$('shareStatus').textContent='Select and copy the link manually.'}if(link.length>8000)$('shareStatus').textContent+=' Long links may be truncated by messaging apps.'}catch(err){$('shareStatus').textContent=err.message}finally{shareBusy(false)}};
 $('shareOpen').onclick=async()=>{const w=window.open('about:blank','_blank');if(!w){$('shareStatus').textContent='Popup blocked. Copy the link instead.';return}w.opener=null;shareBusy(true);try{const url=await makeShare();$('shareLink').value=url;w.location.replace(url)}catch(err){w.close();$('shareStatus').textContent=err.message}finally{shareBusy(false)}};
-$('shareMovie').onclick=async()=>{if(sharingBusy)return;shareBusy(true);$('shareStatus').textContent='';try{const settings={...shareOptions(),...getMovieSettings()},name=outputName(drill);const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(drill,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{shareBusy(false)}};
+$('shareMovie').onclick=async()=>{if(sharingBusy)return;shareBusy(true);$('shareStatus').textContent='';try{if(!videoSequence.length)throw Error('Choose at least one drill for the video.');
+ const sequence=videoSequence.map(item=>item.current?clone(drill):clone(item.drill));
+ const settings={...shareOptions(),...getMovieSettings(),sequenceDrills:sequence},name=outputName({title:$('movieTitle').value.trim()||drill.title});
+ const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(sequence[0],settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{shareBusy(false)}};
 $('sharePrint').onclick=()=>{const opts=shareOptions();$('shareDialog').close();printDrill(drill,opts)};
 // Close board options when returning to the pitch or leaving with Escape.
 document.addEventListener('pointerdown',e=>{const menu=$('viewMenu');if(menu.open&&!menu.contains(e.target))menu.open=false});

@@ -2,8 +2,8 @@
 // Used by both editors, both read-only players and the printed coaching pack.
 // It visualises saved ball/player trajectories; it does not invent tactical decisions.
 import {esc} from './model.js?v=0.13.4';
-import {hasOutcomes,outcomeViews} from './branching.js?v=1';
-import {playbackData,renderScene} from './scene.js?v=0.13.9';
+import {hasOutcomes,outcomeViews} from './branching.js?v=2';
+import {playbackData,renderScene} from './scene.js?v=0.13.15';
 import {movementFor,frameObjects} from './possession.js?v=0.12.31';
 import {routeSamples,routeSVG} from './routes.js?v=0.4.3';
 const ACTIVE=new Set(['coach','attacker','defender','neutral','shield','bagplayer','ball']);
@@ -58,10 +58,11 @@ export function outcomeCardsMarkup(raw,mode='choose'){
  return '<div class="branch-preview-grid">'+views.map(entry=>{
   const label=esc(entry.label),steps=entry.drill.frames.slice(b.fork+1);
   const sequence=steps.map(s=>s.name).filter(Boolean).slice(0,4).join(' → ');
+  const option=raw.branching.choices.find(c=>c.id===entry.id),tip=String(option?.watchFor||option?.explanation||'').trim();
   const svg=outcomePreviewSVG(raw,entry.id),selected=raw.branching.active===entry.id;
   const content='<span class="branch-preview-title"><strong>OPTION '+entry.id.toUpperCase()+' · '+label+'</strong><small>'+steps.length+' animated step'+(steps.length===1?'':'s')+'</small></span>'+
     '<span class="branch-preview-pitch">'+svg+'</span>'+
-    '<span class="branch-preview-summary">'+esc(sequence||'Create the movement for this option')+'</span>'+
+    '<span class="branch-preview-summary">'+esc(tip||sequence||'Create the movement for this option')+'</span>'+
     (mode==='print'?'':'<span class="branch-preview-action">'+(mode==='edit'?'Open this outcome for editing':'Continue with this outcome')+'</span>');
   return mode==='print'?'<div class="branch-preview-card branch-print-card">'+content+'</div>':
    '<button type="button" class="branch-preview-card'+(selected?' is-active':'')+'" data-branch-choice="'+entry.id+'" aria-label="'+(mode==='edit'?'Edit ':'Play ')+'option '+entry.id.toUpperCase()+': '+label+'">'+content+'</button>';

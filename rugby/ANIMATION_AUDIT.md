@@ -54,3 +54,9 @@ Remaining work: review the entire 116-animated-drill set at multiple timestamps,
 ## Teaching-stage semantic corrections — 18 November 2026
 
 Two older short U10 resources were identified with narration/animation mismatches and repaired. In seed-062, the carrier and receiver previously stayed stationary during an alleged approach; they now both move and the ball remains visibly attached until the backwards pass, followed by support continuation. In seed-063, a seven-metre defensive retreat had no defenders on screen; it now shows a measured five-metre-in-from-touch restart mark, two actual retreating opponents, a backward pass with stationary players, and open play beginning afterwards. A dedicated regression checks the measured metres and movement order. These fixes do not constitute a full visual review of all other catalogue scenes.
+
+## Whistle-only defensive line / coaching video progression (18 November 2026)
+
+A simple precursor, seed-143, uses the **same six-defender starting geometry as seed-133**. All defenders advance approximately 2.24 m together on the coach's whistle, then stop for a spacing/communication check. This is **non-contact** and does not imply permission to rush a U10 free pass without the required retreat. The decision starter seed-133 now contains authored explanation and focus prompts for the common decision and each option.
+
+The new movie storyboard puts a static labelled pause at the decision and before each outcome. An ordered progression joins drills in the exported film but does not conflate their editable timelines. New tests check the authoring metadata, timing, source preservation, sequence ordering and browser controls. Visual validation of final encoded text remains to be completed.

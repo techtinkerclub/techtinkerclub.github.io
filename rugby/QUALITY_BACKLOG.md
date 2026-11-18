@@ -43,3 +43,10 @@ A feature is only 'complete' when automated regression passes, its end-user inte
 - Add full-field zoom and user-controlled presentation magnification without altering the authored action. Verify the 16× editor limit and 12× read-only zoom on small mobile screens.
 - New published examples: U10 touch free-pass (`seed-063`) and U14 lineout near touch (`seed-061`).
 - Work still needed: age-grade law/line verification by a competent coach; check whether lineout and 22m markers are appropriate for each junior format, physical Safari/iPad touch gestures, screenshots of all editor/presentation modes, and output-movie visual equivalence. This is still **implemented, awaiting complete user acceptance**, rather than all 142 drills certified.
+
+## November 2026 implementation — field context and coaching video
+
+- **Implemented:** full marked field layer, selectable age-grade templates, moveable metre-based training area, zoom to drill and action, legacy field mode, decision/option video explanations, and video-only ordered multi-drill progression.
+- **New starter:** seed-143, a non-contact whistle-triggered six-defender line advance whose starting positions exactly match seed-133. Editing seed-143 does not alter seed-133.
+- **QA still required:** replay full-field editing and drag on physical iOS Safari; visually inspect adult and U7–U14 field marking differences, particularly in-goal and posts; verify audio/whistle playback, readable text pauses at 720/1080/portrait, and all linked-stage films. Browser smoke test cannot replace coaching sign-off.
+- **Limits:** One two-way fork per drill, maximum eight drills in a video progression, and maximum six-minute export; the video playlist currently lives only in the editor session. The user must export their editable drills separately to preserve all stages.

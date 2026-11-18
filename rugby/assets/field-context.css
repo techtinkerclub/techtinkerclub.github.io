@@ -15,3 +15,25 @@
  .setup-preview.field-map{min-height:130px}
  .zoom-tools #zoomArea{padding-inline:8px}
 }
+
+/* One set of coaching explanations, reused by presentation/video. */
+.decision-coaching-panel{margin:14px 0;padding:12px;border:1px solid var(--line,#546c58);border-radius:9px;background:rgba(163,207,151,.06);display:grid;gap:9px}
+.decision-coaching-panel h3{margin:0;font-size:14px;color:var(--accent,#d0f38a)}
+.decision-coaching-panel label{display:grid;gap:4px;font-size:12px}
+.decision-coaching-panel textarea{box-sizing:border-box;width:100%;font:inherit;line-height:1.4;resize:vertical;min-height:54px;max-width:100%}
+.decision-coaching-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.decision-coaching-choices fieldset{min-width:0;display:grid;gap:8px;border:1px solid var(--line,#546c58);border-radius:8px;padding:9px}
+.decision-coaching-choices legend{font-weight:700;font-size:12px;padding-inline:5px;color:var(--text,#e9f4e6)}
+.movie-sequence-builder{display:grid;gap:10px;margin:16px 0;padding:14px;border:1px solid var(--line,#546c58);border-radius:10px;background:rgba(144,196,136,.08)}
+.movie-sequence-builder h3{margin:0;color:var(--accent,#c9f07c)}
+.movie-sequence-builder label{display:grid;gap:5px}
+.movie-sequence-builder input,.movie-sequence-builder select{max-width:100%;box-sizing:border-box}
+.movie-sequence-builder ol{list-style:none;padding:0;margin:3px 0;display:grid;gap:6px}
+.video-sequence-item{display:flex;align-items:center;gap:7px;padding:8px;border:1px solid var(--line,#546c58);border-radius:8px}
+.video-sequence-item .video-sequence-number{font-weight:800;flex:none;color:var(--accent,#c9f07c);min-width:20px}
+.video-sequence-item .video-sequence-text{flex:1;min-width:0;display:grid;gap:2px}
+.video-sequence-item .video-sequence-text strong,.video-sequence-item .video-sequence-text small{overflow-wrap:anywhere}
+.video-sequence-item button{min-width:34px;flex:none;padding:7px 9px}
+.movie-sequence-actions{display:flex;flex-wrap:wrap;gap:7px}
+.movie-sequence-actions button{min-height:38px}
+@media(max-width:660px){.decision-coaching-choices{grid-template-columns:1fr}.movie-sequence-builder{padding:10px}.video-sequence-item{flex-wrap:wrap}}

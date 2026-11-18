@@ -1,13 +1,17 @@
 // A shared schema for video, read-only presentation and print. No editor-only state.
 import {esc} from './model.js?v=0.5.3';
 import {decisionList,decisionData} from './training.js?v=0.8.0';
-import {hasOutcomes} from './branching.js?v=1';
+import {hasOutcomes} from './branching.js?v=2';
 import {signalForFrame} from './whistle-signal.js?v=2';
 export function decisionMarkup(f){return decisionList(f).map(o=>{const d=decisionData(o.decision);return '<div class="decision-note"><strong>◆ '+esc(o.label)+'</strong><p>'+esc(d.question)+'</p><p>'+esc(d.cue)+'</p>'+d.options.map((q,i)=>'<p>'+String.fromCharCode(65+i)+' · '+esc(q.label)+(q.kind==='main'?' (demonstrated)':' (alternative)')+'</p>').join('')+'</div>'}).join('')}
 export function branchDecisionMarkup(b){
  if(!b)return '';
  return '<div class="decision-note"><strong>◆ Real decision · '+esc(b.question)+'</strong>'+
- b.choices.map(c=>'<p><strong>'+c.id.toUpperCase()+' · '+esc(c.label)+'</strong> — independently animated outcome</p>').join('')+
+ (b.context?'<p><strong>Why this matters:</strong> '+esc(b.context)+'</p>':'')+
+ (b.watchFor?'<p><strong>Watch for:</strong> '+esc(b.watchFor)+'</p>':'')+
+ b.choices.map(c=>'<p><strong>'+c.id.toUpperCase()+' · '+esc(c.label)+'</strong>'+
+  (c.explanation?' — '+esc(c.explanation):' — independently animated outcome')+
+  (c.watchFor?'<br-placeholder><strong>Look for:</strong> '+esc(c.watchFor):'')+'</p>').join('').replaceAll('<br-placeholder>',' · ')+
  '<p>Both outcomes begin from the same setup. Choose A or B to watch the actual movement, not a dotted alternative.</p></div>';
 }
 export const CARD_FIELDS=[['objective','Learning objective'],['players','Players & organisation'],['equipment','Equipment & materials'],['instructions','How to run the drill'],['coaching','Technical coaching points'],['safety','Safety & law notes'],['regression','Make it easier'],['progression','Make it harder'],['questions','Questions for players'],['notes','Additional coaching notes']];
