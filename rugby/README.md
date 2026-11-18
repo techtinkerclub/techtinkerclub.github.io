@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.18.0
+# Rugby Coaching Studio — Classic Studio v0.18.1
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -168,3 +168,7 @@ The code and regression suite guard saved data and film sequencing. Browser expo
 - Published records show the publication timestamp and source revision when available; a missing historic revision is labelled as legacy, not guessed.
 - Publish deliberately, after checking your coaching notes and age-grade rules. A GitHub-saved resource is not automatically a published coaching recommendation.
 
+
+### Adding decisions in the supported editor
+
+Use **Decision making → Create A/B decision** in the left panel. Select the running player and click the position on their route. When there is one unambiguous moving player the editor selects that player automatically; from setup it takes you to the first running step. The shortest allowed authored action is 0.5 seconds before and after a decision, so the editor explains when Step duration must be increased instead of secretly altering timing. The demo-loader shortcut has been retired; examples remain in the library.

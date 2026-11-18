@@ -96,7 +96,7 @@ export function convertDrawnDecision(source,stepIndex,markerId,{question,labelA,
   // The existing editor supports a minimum action-step duration of 0.5 s.
   const seconds=Number(original.seconds)||2;
   if(Math.min(seconds*fraction,seconds*(1-fraction))<.5)
-   throw Error('The decision is too close to the start or end of this movement. Move the diamond further along the run, or make the running step longer (at least 1 second).');
+   throw Error('This run is too short for the selected decision point. Allow at least 0.5 seconds before and after the decision by increasing Step duration or choosing a point closer to the middle.');
  }
  const common=copy(original);
  if(anchored){

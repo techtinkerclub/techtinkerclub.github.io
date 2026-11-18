@@ -351,17 +351,12 @@ $('outcomeMapCards').onclick=e=>{
  if(resume){preview=decisionTime(drill);render();$('play').click()}
  note('Editing option '+choice.toUpperCase()+'. Choose Compare A + B to inspect the other consequence.');
 };
-$('tryDecisionDemo').onclick=()=>{
- if(!confirmLeave())return;
- const fixture=SEEDS.find(x=>x.id==='seed-132');
- if(!fixture){note('The decision example is missing from the starter catalogue.');return}
- drill=freshSeed(fixture);dirty=false;selected=null;decisionResolved=false;resetHistory();choose(0);
- note('Loaded the five-defender decision demo. Press Play to reach the fork, then Compare A + B to inspect the two routes. Open option A or B to edit each response.');
-};
 function renderOutcomeBar(){
  const b=hasOutcomes(drill)?branchInfo(drill):null;
  const diamond=!b?drawnDecisionAt(drill,idx,selected):null;
  $('createOutcomes').hidden=!!b;
+ $('decisionToolStart').textContent=b?'◆ Edit A/B decision':'◆ Create A/B decision';
+ $('decisionToolHelp').textContent=b?'The drill has two outcomes. Use A and B beside the timeline to edit each result.':'1. Create a running step. 2. Select the moving player. 3. Choose where on the run the decision happens.';
  $('createOutcomes').textContent=diamond?'◆ Make this decision playable':'◆ Add decision on a run';
  $('createOutcomes').title=diamond?'Convert the drawn diamond into two real movement sequences':'Select a running player, then click the location on the path where the decision occurs';
  $('outcomeControls').hidden=!b;
@@ -440,6 +435,27 @@ function openOutcomeDialog(edit=false){
  $('outcomeError').textContent='';
  $('outcomeDialog').showModal();
 }
+$('decisionToolStart').onclick=()=>{
+ if(hasOutcomes(drill)){openOutcomeDialog(true);return}
+ const marker=drawnDecisionAt(drill,idx,selected);
+ if(marker){openOutcomeDialog();return}
+ const movingPlayers=step=>{
+  if(step<1)return [];
+  const prev=drill.frames[step-1],cur=drill.frames[step],g=geometry();
+  return cur.objects.filter(o=>canCarry(o)&&!!decisionRoute(cur,prev,o.id,g));
+ };
+ if(idx===0){
+  const first=drill.frames.findIndex((_,i)=>i>0&&movingPlayers(i).length);
+  if(first<0){note('First create another step and move a player. A decision needs a run.');$('decisionToolHelp').textContent='Add Step → move a player → press Create A/B decision.';return}
+  choose(first);
+ }
+ const candidates=movingPlayers(idx);
+ if(!candidates.some(o=>o.id===selected)){
+  if(candidates.length===1){selected=candidates[0].id;render();inspector();tracks()}
+  else{note(candidates.length?'Select the player making the decision, then press Create A/B decision again.':'Move a player in this step, then press Create A/B decision.');return}
+ }
+ beginDecisionPlacement();
+};
 $('createOutcomes').onclick=()=>{
  if(hasOutcomes(drill))return;
  const marker=drawnDecisionAt(drill,idx,selected);
@@ -785,7 +801,8 @@ function beginDecisionPlacement(){
  showDecisions=true;
  $('decisionToggle').classList.add('selected');
  $('decisionToggle').setAttribute('aria-pressed','true');
- note('Click the running line at the exact place where the player must choose A or B. Both options will start there.');
+ note('Click the running line at the point where the player must choose A or B. Both options begin at that point.');
+ $('decisionToolHelp').textContent='Now click the intended decision point on the player’s running line. Escape cancels.';
  focusPitch();
 }
 function updateRouteTools(){
@@ -1880,6 +1897,13 @@ function handleTrainingPick(e){const pick=trainingPick,o=f().objects.find(o=>o.i
  trainingPick=null;
  if(!route){note('This run has changed. Select it again.');render();return}
  const anchor=decisionFraction(route,viewPoint(e));
+ const stepSeconds=Number(f().seconds)||0;
+ if(anchor>.01&&anchor<.99&&Math.min(stepSeconds*anchor,stepSeconds*(1-anchor))<.5-1e-6){
+  const needed=Math.ceil(Math.max(.5/anchor,.5/(1-anchor))*2)/2;
+  note('This running step is '+stepSeconds.toFixed(1)+' s. A decision here needs at least '+needed.toFixed(1)+' s, allowing 0.5 s for each part. Increase Step duration and retry.');
+  $('decisionToolHelp').textContent='Increase this Step’s duration to at least '+needed.toFixed(1)+' seconds, then choose the decision point again. No duration has been changed automatically.';
+  openInspector('Step',false);$('stepTime').focus();render();return;
+ }
  // Store only an in-memory placement until the user confirms the decision.
  // Cancel or Escape leaves the original drill and undo history unchanged.
  pendingDecisionPlacement={step:idx,actorId:o.id,anchor,markerId:uid()};

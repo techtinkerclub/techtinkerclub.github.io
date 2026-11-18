@@ -50,3 +50,10 @@ These supersede historic copies with outdated cone layouts and an obsolete share
 - Shared setup-aware clock drives editor, whistle, decisions, presentation and video, not a magic extra step.
 - During a genuine player-to-player pass, the rugby ball temporarily turns toward the actual route tangent with a 10° aesthetic offset; the stored authored orientation remains unchanged.
 - Separate pending polish: header link/label spacing on the read-only presentation page.
+
+## v0.18.1 — decision entry point
+
+- Removed redundant Try decision demo button near timeline; examples remain in the library.
+- Restored a prominent Decision making section on left, using the existing reproducible A/B split mechanism.
+- From setup, guide to first moving step; auto-select only if exactly one eligible runner, otherwise ask coach to choose.
+- Explain minimum 0.5 s per half when the run is too short and focus Step duration field; never silently extend a run or invent a decision.
