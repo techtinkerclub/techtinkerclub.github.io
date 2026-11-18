@@ -118,6 +118,7 @@ try {
  await framed.goto(origin+'/rugby/play.html?drill=seed-057',{waitUntil:'networkidle',timeout:40000});
  await framed.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Tackle, Present'));
  const complete=await framed.locator('#board svg').getAttribute('viewBox');
+ await framed.locator('#framing').evaluate(el=>{for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true});
  await framed.locator('#framing').selectOption('action');
  const closeView=await framed.locator('#board svg').getAttribute('viewBox');
  assert.notEqual(closeView,complete,'Presentation action camera must change only the SVG viewport');
