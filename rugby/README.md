@@ -1,22 +1,21 @@
-# Rugby Coaching Studio — Classic v0.15.0 / Coach Edition v0.3.3
+# Rugby Coaching Studio — Classic Studio v0.16.1
 
-Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open /rugby/ or /rugby/coach/.
+Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
-## Two interchangeable interfaces
+## Main interfaces
 
-- Classic Studio (/rugby/) — full editor and advanced controls.
-- Coach Edition (/rugby/coach/) — Harbury-inspired interface and guided actions over the exact same engine.
-- Public coaching libraries: /rugby/library.html and /rugby/coach/library.html.
-- Read-only players: /rugby/play.html and /rugby/coach/play.html.
+- **Editor:** /rugby/ — complete editor, responsive mobile workspace and advanced coaching tools.
+- **Public coaching library:** /rugby/library.html — curated, read-only coaching resources.
+- **Read-only drill presentation:** /rugby/play.html — interactive animation, printable notes and video export.
 
-Both editors use the same js/app.js, js/scene.js, data model and GitHub store. Develop shared capabilities once, exposing them from both interfaces rather than creating competing code.
+The mobile/tablet workspace uses the same editor, drill model, renderer and GitHub storage as the desktop interface. Saving a drill to GitHub does not automatically publish it in the separate curated library.
 
 ## True animated decisions
 
 A drill can now have one two-outcome decision:
 
 1. Open a drill and select the step that should be the shared decision/signal.
-2. Click ◆ Add playable decision beside the timeline; in Coach Edition, Add action → Create two playable outcomes is another entry point.
+2. Click ◆ Add playable decision beside the timeline.
 3. Name the question and outcomes A and B.
 4. Edit A using normal steps, runs, passes, poses, rucks and timing.
 5. Click B and edit its timeline independently. You can return to A without losing either path.
@@ -34,7 +33,7 @@ Select a **Coach** object and use **Object → Coach start signal**. Set **Show 
 
 To remove the whistle, select the Coach and press **Remove whistle · GO**, then **Save to GitHub** if you want the online copy updated. Removal is independent of the current step or edits to the original coach setup. When the step was automatically named for the whistle, removal also clears that automatic label and narration; the step itself remains in case other actions were added.
 
-Both editors and read-only players share the same signal model, import/export support and rendering code. Older drills without a duration retain a default of 0.5 s.
+The editor and read-only player share the same signal model, import/export support and rendering code. Older drills without a duration retain a default of 0.5 s.
 
 ## Convert a drawn decision into playable actions (v0.14.0)
 
@@ -48,7 +47,7 @@ After converting, edit Outcome A, use the B button to edit Outcome B, then play 
 
 ## Structure
 
-- index.html and coach/index.html — Classic and Coach UI.
+- index.html — Classic Studio desktop and mobile editor.
 - assets/branching.css — shared branch controls, player and printable headings.
 - js/app.js — editor, timeline, playback and GitHub save.
 - js/branching.js — shared fork model, branch switching and projections.
@@ -68,7 +67,7 @@ Check current RFU age-grade contact rules and safeguarding guidance before use. 
 
 ## Working from a phone or tablet (mobile workspace v0.1.2)
 
-Both Classic Studio and Coach Edition have a touch-first layout at widths up to 1100px. No features are deleted: the existing pitch, palette, inspector, branching controls and timeline are the same shared components.
+Classic Studio has a touch-first layout at widths up to 1100px. No features are deleted: the existing pitch, palette, inspector, branching controls and timeline are the same shared components.
 
 - **Pitch** leaves the diagram at maximum usable size. Tap or drag a player or object; use the touch-sized + / − / Fit / Pan controls directly over the pitch when needed.
 - **Add** opens the players/equipment/actions sheet. Selecting an add/draw action returns to the pitch to position the object or draw the path.
@@ -118,7 +117,7 @@ Fourteen older narrated drills previously used a generic 60 × 35 m pitch. Their
 
 **Two different things must stay different:** pitch dimensions are real distances for drill setup, whereas camera framing is only what is visible on screen.
 
-- In both editors, the **Action** button next to the full-pitch zoom fits the current step without changing any player position, path, or measured distance. The mobile pitch controls also expose Action.
+- In the editor, the **Action** button next to the full-pitch zoom fits the current step without changing any player position, path, or measured distance. The mobile pitch controls also expose Action.
 - In the read-only player, **View options → Camera → Follow the action** enables an optional per-step close-up. **Whole pitch** remains the default and is better for demonstrations about offside, spacing or the entire formation.
 - The camera keeps each step in one frame and eases between step views to reduce jolting. Measured teaching guides are included in framing where present. Editor, Classic/Coach read-only views and video share the renderer. When action framing is selected, print pages use the same cropped view.
 - The position-editing scope control explains on selection whether movement applies to one step, until the next run, to future compatible runs, or to stationary equipment across the drill.
@@ -136,7 +135,7 @@ The older **U10 free-pass restart** example now illustrates a restart after touc
 
 **Drill → Full rugby field & training location** now separates the physical practice rectangle from its surrounding marked match field. The current custom training dimensions, player movements, paths and timings are untouched when you position that rectangle somewhere else on the full pitch. Select a U7–U16/Adult age-grade field template, then pick a quick location (halfway, 5m line, 22m, either try line or touchline), enter metre offsets or drag the highlighted rectangle in the preview. The larger field includes try/dead-ball lines, in-goals, halfway, appropriate 5m/22m/15m references and top-view goalpost positions. Younger pitches have simplified reference markings, not invented lineouts.
 
-The editor has **Fit drill**, **Action**, **Fit pitch**, wheel / pinch-friendly camera controls; read-only presentations also have **+**, **−**, **Fit** and **Pan**, as well as Whole field / Follow action. A presentation's exported video follows its selected viewing style; temporary manual pan/zoom is a viewport-only feature. The shared Classic and Coach editions both use the same saved `pitchContext` field. Old drills default to the original plain training rectangle.
+The editor has **Fit drill**, **Action**, **Fit pitch**, wheel / pinch-friendly camera controls; read-only presentations also have **+**, **−**, **Fit** and **Pan**, as well as Whole field / Follow action. A presentation's exported video follows its selected viewing style; temporary manual pan/zoom is a viewport-only feature. All Classic Studio views use the same saved `pitchContext` field. Old drills default to the original plain training rectangle.
 
 The seed library includes a marked-field U10 touch free-pass restart (`seed-063`) and a U14 lineout near touch (`seed-061`). **U10 rugby has no lineouts**; the field is a spatial reference, not a licence to apply laws from older age grades. See [FIELD_GUIDE.md](./FIELD_GUIDE.md) for how to use it, size/source notes and limits. New regressions cover field geometry, preserved drill content and browser placement/zoom. Real iPhone/iPad Safari checks, full catalogue visual QA and coaching signoff remain open.
 
