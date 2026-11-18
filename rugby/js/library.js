@@ -1,6 +1,6 @@
 import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.17.0';
-import {playbackData,renderScene} from './scene.js?v=0.19.8';
-import {publicVideoBuilder} from './public-video.js?v=0.19.8';
+import {playbackData,renderScene} from './scene.js?v=0.19.9';
+import {publicVideoBuilder} from './public-video.js?v=0.19.9';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fields={q:'search',age:'age',category:'category',format:'format',sort:'sort'};
 let drills=[],ready=false,limit=18,thumbs=new Map(),messageTimer,videoBuilder;
