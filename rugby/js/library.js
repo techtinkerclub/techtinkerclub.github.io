@@ -1,8 +1,9 @@
 import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.17.0';
-import {playbackData,renderScene} from './scene.js?v=0.16.1';
+import {playbackData,renderScene} from './scene.js?v=0.18.0';
+import {publicVideoBuilder} from './public-video.js?v=0.18.3';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fields={q:'search',age:'age',category:'category',format:'format',sort:'sort'};
-let drills=[],ready=false,limit=18,thumbs=new Map(),messageTimer;
+let drills=[],ready=false,limit=18,thumbs=new Map(),messageTimer,videoBuilder;
 $('age').insertAdjacentHTML('beforeend',Array.from({length:11},(_,i)=>'<option value="'+(i+6)+'">U'+(i+6)+'</option>').join(''));
 $('category').insertAdjacentHTML('beforeend',CATEGORIES.map(x=>'<option>'+esc(x)+'</option>').join(''));
 function read(){return readFilters(new URLSearchParams(Object.entries(fields).map(([key,id])=>[key,$(id).value])))}
@@ -16,13 +17,15 @@ function thumb(d){
  thumbs.set(d.id,svg)}catch{thumbs.set(d.id,'<span>Open drill to view diagram</span>')}}
  return thumbs.get(d.id);
 }
-function card(d,f){const animated=isAnimated(d),kind=isRules(d)?'RULES WALK-THROUGH':animated?'ANIMATED DRILL':'COACHING CARD',href=esc(drillHref(d.id,f));return '<article class="drill-card"><a class="thumb '+(animated?'':'card-only')+'" href="'+href+'" aria-label="View '+esc(d.title)+'">'+thumb(d)+'</a><div class="card-body"><div class="card-type">'+kind+' · '+esc(d.category)+'</div><h3>'+esc(d.title)+'</h3><div class="card-meta">'+(d.publishedAt?'Updated '+esc(new Date(d.publishedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}))+' · '+(Number.isInteger(d.publishedRevision)?'Revision '+d.publishedRevision:'Legacy revision')+' · ':'')+esc(ageLabel(d))+' · '+esc(d.minutes)+' min'+(animated?' · '+d.frames.length+' steps':'')+' · '+esc(d.length)+' × '+esc(d.width)+' m</div><p class="card-objective">'+esc(d.objective)+'</p><a class="view-link" href="'+href+'">'+(animated?'Watch drill':'Read coaching card')+'<span aria-hidden="true">›</span></a></div></article>'}
+function card(d,f){const animated=isAnimated(d),kind=isRules(d)?'RULES WALK-THROUGH':animated?'ANIMATED DRILL':'COACHING CARD',href=esc(drillHref(d.id,f));return '<article class="drill-card"><a class="thumb '+(animated?'':'card-only')+'" href="'+href+'" aria-label="View '+esc(d.title)+'">'+thumb(d)+'</a><div class="card-body"><div class="card-type">'+kind+' · '+esc(d.category)+'</div><h3>'+esc(d.title)+'</h3><div class="card-meta">'+(d.publishedAt?'Updated '+esc(new Date(d.publishedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}))+' · '+(Number.isInteger(d.publishedRevision)?'Revision '+d.publishedRevision:'Legacy revision')+' · ':'')+esc(ageLabel(d))+' · '+esc(d.minutes)+' min'+(animated?' · '+d.frames.length+' steps':'')+' · '+esc(d.length)+' × '+esc(d.width)+' m</div><p class="card-objective">'+esc(d.objective)+'</p><a class="view-link" href="'+href+'">'+(animated?'Watch drill':'Read coaching card')+'<span aria-hidden="true">›</span></a>'+(animated?'<button type="button" class="add-to-video" data-add-video="'+esc(d.id)+'">+ Add to video</button>':'')+'</div></article>'}
 function render(reset=true){
  if(reset)limit=18;const f=read();replaceUrl(f);
  for(const b of $('quickFilters').querySelectorAll('button')){const k=b.dataset.quick,on=k==='all'?!f.age&&!f.category&&!f.format&&!f.q:k==='u10'?f.age==='10':f.format===k;b.setAttribute('aria-pressed',String(on))}
  if(!ready)return;
- const list=filterDrills(drills,f);$('count').textContent=list.length+' matching · '+list.filter(isAnimated).length+' animated';$('results').innerHTML=list.slice(0,limit).map(d=>card(d,f)).join('');$('empty').hidden=!!list.length;$('more').hidden=list.length<=limit;$('more').textContent='Show more ('+Math.max(0,list.length-limit)+' remaining)';
+ const list=filterDrills(drills,f);$('count').textContent=list.length+' matching · '+list.filter(isAnimated).length+' animated';$('results').innerHTML=list.slice(0,limit).map(d=>card(d,f)).join('');$('empty').hidden=!!list.length;$('more').hidden=list.length<=limit;$('more').textContent='Show more ('+Math.max(0,list.length-limit)+' remaining)';refreshVideoCards();
 }
+function refreshVideoCards(){if(!videoBuilder)return;for(const b of $('results').querySelectorAll('[data-add-video]')){const exists=videoBuilder.has(b.dataset.addVideo);b.textContent=exists?'✓ Added to video':'+ Add to video';b.disabled=exists||videoBuilder.full()}}
+$('results').addEventListener('click',e=>{const b=e.target.closest('[data-add-video]');if(b&&videoBuilder)videoBuilder.add(b.dataset.addVideo)});
 async function copy(value,title){
  if(await copyText(value)){$('message').hidden=false;$('message').textContent=title+' copied.';clearTimeout(messageTimer);messageTimer=setTimeout(()=>{$('message').hidden=true},4000);return}
  $('copyTitle').textContent=title;$('copyValue').value=value;$('copyDialog').showModal();$('copyValue').select()
@@ -35,4 +38,4 @@ $('shareLibrary').onclick=()=>copy(new URL('./library.html',location.href).href,
 $('feedback').onclick=()=>copy(feedbackText(null,new URL('./library.html',location.href).href),'Review questions');
 window.addEventListener('popstate',()=>{write(readFilters(location.search));render()});
 write(readFilters(location.search));
-try{drills=await loadCatalogue();ready=true;const stats=[[drills.length,'resources'],[drills.filter(isAnimated).length,'animated drills'],[drills.filter(isRules).length,'rules walk-throughs']];$('stats').innerHTML=stats.map(([n,label])=>'<div class="stat"><strong>'+n+'</strong><span>'+label+'</span></div>').join('');render()}catch(err){$('count').textContent='Could not load the library.';$('message').hidden=false;$('message').textContent=err.message+' Refresh the page to retry.'}
+try{drills=await loadCatalogue();ready=true;videoBuilder=publicVideoBuilder({getDrills:()=>drills,isAnimated,ageLabel,onChange:refreshVideoCards});const stats=[[drills.length,'resources'],[drills.filter(isAnimated).length,'animated drills'],[drills.filter(isRules).length,'rules walk-throughs']];$('stats').innerHTML=stats.map(([n,label])=>'<div class="stat"><strong>'+n+'</strong><span>'+label+'</span></div>').join('');render()}catch(err){$('count').textContent='Could not load the library.';$('message').hidden=false;$('message').textContent=err.message+' Refresh the page to retry.'}
