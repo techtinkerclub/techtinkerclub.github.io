@@ -530,7 +530,39 @@ for(const key of ['a','b'])$('outcome'+key.toUpperCase()).onclick=()=>{
  note('Now editing outcome '+key.toUpperCase()+'. The shared setup stays unchanged; changes here affect this outcome.');
 };
 
-function refresh(){closeObjectMenu();renderOutcomeBar();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTimeLabel').textContent=idx?'Seconds to reach this step':'Setup hold before action (seconds)';$('stepTime').value=fr.seconds||0;$('stepTime').disabled=false;$('stepTime').min=idx?'.5':'0';$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();inspector();tracks()}function choose(i){selectedPathId=null;validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){selectedPathId=null;const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','hurdle','hoop','slalomPole','markerDisc','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';if(type==='cone')n.coneColor='yellow';
+function updateSkillActionsPanel(){
+ const panel=$('skillActionsPanel'),list=$('skillActionsList');
+ if(!panel||!list)return;
+ const events=f().interactions||[];
+ panel.hidden=!events.length;
+ const name=id=>f().objects.find(o=>o.id===id)?.label||f().objects.find(o=>o.id===id)?.type||'Object';
+ list.innerHTML=events.map((event,i)=>'<div class="skill-action-row" data-skill-index="'+i+'"><strong>'+esc(event.kind==='tag'?'Tag removed · '+event.side:'Touch')+'</strong><small>'+esc(name(event.actorId))+' → '+esc(name(event.targetId))+'</small><label>At (%) <input type="number" data-skill-at="'+i+'" min="10" max="95" step="5" value="'+Math.round(event.at*100)+'"></label><button type="button" data-skill-delete="'+i+'" class="danger-action">Remove cue</button></div>').join('');
+}
+$('skillActionsList').addEventListener('change',event=>{
+ const input=event.target.closest('[data-skill-at]');if(!input)return;
+ const i=Number(input.dataset.skillAt),item=f().interactions?.[i],value=Number(input.value);
+ if(!item||!Number.isFinite(value)||value<10||value>95){note('Action timing must be between 10 and 95%.');updateSkillActionsPanel();return}
+ item.at=value/100;changed();render();updateSkillActionsPanel();
+});
+$('skillActionsList').addEventListener('click',event=>{
+ const button=event.target.closest('[data-skill-delete]');if(!button)return;
+ const i=Number(button.dataset.skillDelete),action=f().interactions?.[i];if(!action)return;
+ f().interactions.splice(i,1);
+ if(action.kind==='tag'){
+  // Undo the authored capture only. Later separately-authored captures remain.
+  for(let k=idx;k<drill.frames.length;k++){
+   const fr=drill.frames[k];
+   const again=fr.interactions?.some(a=>a.kind==='tag'&&a.targetId===action.targetId&&a.side===action.side);
+   if(again)break;
+   const target=fr.objects.find(o=>o.id===action.targetId);
+   if(target?.tags)target.tags[action.side]=true;
+   const taker=fr.objects.find(o=>o.id===action.actorId);
+   if(taker?.tagBelt)taker.heldTags=Math.max(0,(Number(taker.heldTags)||0)-1);
+  }
+ }
+ changed();refresh();note('Action cue removed. Players and other steps retained. Undo restores it.');
+});
+function refresh(){closeObjectMenu();renderOutcomeBar();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTimeLabel').textContent=idx?'Seconds to reach this step':'Setup hold before action (seconds)';$('stepTime').value=fr.seconds||0;$('stepTime').disabled=false;$('stepTime').min=idx?'.5':'0';$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();updateSkillActionsPanel();inspector();tracks()}function choose(i){selectedPathId=null;validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){selectedPathId=null;const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','hurdle','hoop','slalomPole','markerDisc','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';if(type==='cone')n.coneColor='yellow';
  // A pad-based ruck practice starts at the sausage; it has no tackle stage.
  // Selecting a particular sausage first determines which pad to use.
  if(type==='ruck'){
