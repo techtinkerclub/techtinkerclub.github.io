@@ -8,6 +8,31 @@ export const tagColor=key=>TAG_COLORS[key]||TAG_COLORS.yellow;
 const text=s=>String(s??'').slice(0,120);
 const tagItem=(item)=>item&&typeof item.targetId==='string'&&TAG_SIDES.includes(item.side)?{targetId:item.targetId,side:item.side,color:Object.hasOwn(TAG_COLORS,item.color)?item.color:'yellow'}:null;
 const heldItems=object=>Array.isArray(object?.heldTagItems)?object.heldTagItems.map(tagItem).filter(Boolean).slice(0,12):[];
+export function hydrateLegacyTagItems(frames){
+ // Older v0.19 tag drills recorded heldTags as a number but not who owned the
+ // strip. Reconstruct ownership from their authored tag events only.
+ const pending=new Map();
+ for(const frame of frames||[]){
+  const players=new Map((frame.objects||[]).map(o=>[o.id,o]));
+  for(const event of frame.interactions||[]){
+   if(!['tag','tag-return'].includes(event.kind)||!TAG_SIDES.includes(event.side))continue;
+   const key=event.actorId+'|'+event.targetId+'|'+event.side;
+   if(event.kind==='tag')pending.set(key,{actorId:event.actorId,targetId:event.targetId,side:event.side,color:players.get(event.targetId)?.tagColor||'yellow'});
+   else pending.delete(key);
+  }
+  for(const [key,item] of pending){
+   const owner=players.get(item.targetId);
+   if(!owner?.tagBelt||owner.tags?.[item.side]!==false)pending.delete(key);
+  }
+  for(const actor of (frame.objects||[]).filter(canCarry)){
+   if(!actor.tagBelt||!(Number(actor.heldTags)>0))continue;
+   const items=heldItems(actor);
+   for(const item of pending.values())if(item.actorId===actor.id&&!items.some(old=>old.targetId===item.targetId&&old.side===item.side))items.push({targetId:item.targetId,side:item.side,color:item.color});
+   if(items.length)actor.heldTagItems=items.slice(0,12);
+  }
+ }
+ return frames;
+}
 export function outstandingTagItems(frame){
  const ids=new Map((frame?.objects||[]).map(o=>[o.id,o]));
  return (frame?.objects||[]).filter(canCarry).flatMap(actor=>heldItems(actor).filter(item=>ids.get(item.targetId)?.tagBelt===true&&ids.get(item.targetId)?.tags?.[item.side]===false).map(item=>({actorId:actor.id,...item})));
