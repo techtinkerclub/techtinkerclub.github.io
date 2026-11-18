@@ -1,6 +1,6 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
-import {CONE_COLORS,coneColor,sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=3';
+import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=4';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
@@ -177,11 +177,11 @@ function appendSkillInspector(o,disabled){
  }
  const belt=o.tagBelt===true,left=o.tags?.left!==false,right=o.tags?.right!==false;
  panel.innerHTML='<h3>Tag rugby · belt</h3><label class="auto-attach"><input type="checkbox" id="tagBelt" '+(belt?'checked ':'')+disabled+'> Equip this player with a tag belt</label>'+
- (belt?'<p class="muted">Red tag on left · blue tag on right. Tags taken: '+(o.heldTags||0)+'</p><button type="button" id="tagRestore" '+disabled+'>Replace both tags</button> <button type="button" id="tagUnequip" '+disabled+'>Remove belt</button><small>Remaining on belt: '+(left?'left ':'')+(right?'right':'')+'. Removing a tag is a non-contact event, not a tackle or ruck.</small>':'<small>Use a belt for U7/U8 tag rugby drills. Tag removal requires a ball carrier and an opposing player wearing a belt.</small>');
+ (belt?'<label class="field">Tag strip colour<select id="tagColour" '+disabled+'>'+Object.keys(TAG_COLORS).map(key=>'<option value="'+key+'" '+(o.tagColor===key?'selected':'')+'>'+key[0].toUpperCase()+key.slice(1)+'</option>').join('')+'</select></label><p class="muted">Two matching strips, one on each hip. Tags currently held: '+(o.heldTags||0)+'</p><button type="button" id="tagRestore" '+disabled+'>Replace both tags</button> <button type="button" id="tagUnequip" '+disabled+'>Remove belt</button><small>Remaining on belt: '+(left?'left ':'')+(right?'right':'')+'. Removing a tag is a non-contact event, not a tackle or ruck.</small>':'<small>Use a belt for U7/U8 tag rugby drills. Tag removal requires a ball carrier and an opposing player wearing a belt.</small>');
  $('objectPanel').append(panel);
  const apply=fn=>{for(let i=idx;i<drill.frames.length;i++){const player=drill.frames[i].objects.find(p=>p.id===o.id);if(player)fn(player)}changed();render();inspector();tracks()};
- $('tagBelt').onchange=e=>apply(player=>{if(e.target.checked){player.tagBelt=true;player.tags={left:true,right:true};player.heldTags=0}else{delete player.tagBelt;delete player.tags;delete player.heldTags}});
- if(belt){$('tagRestore').onclick=()=>apply(player=>{player.tagBelt=true;player.tags={left:true,right:true};player.heldTags=0});$('tagUnequip').onclick=()=>apply(player=>{delete player.tagBelt;delete player.tags;delete player.heldTags})}
+ $('tagBelt').onchange=e=>apply(player=>{if(e.target.checked){player.tagBelt=true;player.tags={left:true,right:true};player.tagColor=player.tagColor||(['attacker','shield'].includes(player.type)?'yellow':'blue');player.heldTags=0}else{delete player.tagBelt;delete player.tags;delete player.tagColor;delete player.heldTags}});
+ if(belt){$('tagColour').onchange=e=>{const colour=e.target.value;if(!Object.hasOwn(TAG_COLORS,colour))return;apply(player=>{player.tagColor=colour})};$('tagRestore').onclick=()=>apply(player=>{player.tagBelt=true;player.tags={left:true,right:true};player.heldTags=0});$('tagUnequip').onclick=()=>apply(player=>{delete player.tagBelt;delete player.tags;delete player.tagColor;delete player.heldTags})}
 }
 function inspector(){let o=f().objects.find(x=>x.id===selected);if(preview!==null&&['decision','donut'].includes(o?.type)){
   $('objectPanel').innerHTML=o?.type==='decision'
