@@ -1,11 +1,22 @@
-// Nominal top-view dimensions in metres. Coaching view magnifies every
-// physical symbol by the same ratio, with a legibility floor for large pitches.
+// Nominal top-view dimensions in metres. Coaching view is an illustrative
+// size mode, not an actual-size pitch measurement. Maintain shape proportions
+// and modest minima on full-sized fields (rather than blowing up every shape).
 export const COACHING_MAGNIFICATION = 1.30;
 const MIN_COACHING_FACTOR = 0.80;
-const MIN_FULL_FIELD_COACHING_FACTOR = 1.05;
+// The old universal floor of 1.05 made a 20 cm cone almost as big as a player
+// and overwhelmed a 20 × 15 m training area when zoomed in. Use symbol-specific
+// minima, preserving relative visual weight and contact-shape proportions.
+const FIELD_COACH_MINIMUM = Object.freeze({
+ player:.29,ball:.18,cone:.17,flag:.19,shieldItem:.24,
+ bag:.23,sausage:.24,donut:.25,ladder:.24,other:.22
+});
+function fullFieldMinimum(o){
+ if(playerTypes.has(o?.type))return FIELD_COACH_MINIMUM.player;
+ return FIELD_COACH_MINIMUM[o?.type]??FIELD_COACH_MINIMUM.other;
+}
 export const normalScaleMode = value => value === 'coaching' ? 'coaching' : 'realistic';
 export const physicalUnit = g => Number.isFinite(g?.scale)&&g.scale>0 ? g.scale*0.45/30 : 1;
-export const visualUnit = g => g?.displayMode==='coaching' ? Math.max(physicalUnit(g)*COACHING_MAGNIFICATION,g?.fieldContext?.mode==='field'?MIN_FULL_FIELD_COACHING_FACTOR:MIN_COACHING_FACTOR) : physicalUnit(g);
+export const visualUnit = g => g?.displayMode==='coaching' ? Math.max(physicalUnit(g)*COACHING_MAGNIFICATION,g?.fieldContext?.mode==='field'?FIELD_COACH_MINIMUM.player:MIN_COACHING_FACTOR) : physicalUnit(g);
 const playerTypes=new Set(['attacker','defender','neutral','coach','shield','bagplayer']);
 export function symbolFactors(o,g,pose){
  const k=Number.isFinite(g?.scale)&&g.scale>0?g.scale:30/0.45, u=physicalUnit(g), mode=normalScaleMode(g?.displayMode);
@@ -24,9 +35,9 @@ export function symbolFactors(o,g,pose){
   case 'label':case 'decision': return [1,1];
  }
  if(mode==='coaching'){
-  // A minimum alone only enlarged cones on short pitches while players and
-  // donuts stayed unchanged. Magnify every physical object consistently.
-  const minimum=g?.fieldContext?.mode==='field'?MIN_FULL_FIELD_COACHING_FACTOR:MIN_COACHING_FACTOR;
+  // At full-field scale, a single universal minimum would erase distinctions
+  // between players, cones and balls. Use a modest floor for each shape.
+  const minimum=g?.fieldContext?.mode==='field'?fullFieldMinimum(o):MIN_COACHING_FACTOR;
   x=Math.max(x*COACHING_MAGNIFICATION,minimum);
   y=Math.max(y*COACHING_MAGNIFICATION,minimum);
  }
@@ -34,7 +45,8 @@ export function symbolFactors(o,g,pose){
 }
 export function symbolTransform(o,g,pose){const [x,y]=symbolFactors(o,g,pose);return 'scale('+x+' '+y+')'}
 export function symbolRadius(o,g,pose){const [x,y]=symbolFactors(o,g,pose);const base=o.type==='ladder'?[12,25]:o.type==='donut'?[o.donutState==='down'?23:10,23]:o.type==='sausage'?[29,9]:o.type==='bag'?[10,21]:o.type==='shieldItem'?[17,6]:o.type==='ball'?[10,6]:o.type==='cone'?[11,12]:pose==='grounded'?[12,23]:pose==='ready'?[22,15]:[16,20];return Math.max(base[0]*x,base[1]*y)}
-export const labelOffset=(o,g,pose)=>o.type==='label'?4:Math.max(13,symbolRadius(o,g,pose)+11);
+export const symbolLabelSize = g => g?.fieldContext?.mode==='field'?10:13;
+export const labelOffset=(o,g,pose)=>o.type==='label'?4:g?.fieldContext?.mode==='field'?Math.max(9,symbolRadius(o,g,pose)+5):Math.max(13,symbolRadius(o,g,pose)+11);
 // A player's arrow points forward (local -Y); put the caption behind their
 // facing direction (local +Y) while keeping text horizontally readable.
 // Other equipment retains its simple lower caption.
@@ -47,7 +59,7 @@ export function labelPosition(o,g,pose){
  // player, the glyphs sit 10px ABOVE the baseline and look much closer.
  // Compensate only for the upward-facing placement so the visible gaps match.
  const behindY=Math.cos(angle);
- const desired={x:-Math.sin(angle)*distance,y:behindY*distance+10*Math.max(0,-behindY)};
+ const desired={x:-Math.sin(angle)*distance,y:behindY*distance+symbolLabelSize(g)*.75*Math.max(0,-behindY)};
  // Keep the caption anchor inside the playing field at pitch edges.
  const at=g.toView(o.x,o.y),margin=g.margin||0;
  const clamp=(n,low,high)=>Math.max(low,Math.min(high,n));
