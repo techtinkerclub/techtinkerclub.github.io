@@ -98,7 +98,7 @@ export function timedSkillObjects(objects,previous,frame,progress){
  return objects.map(o=>affected.has(o.id)?{...o,...affected.get(o.id)}:o);
 }
 export function interactionOverlay(frame,objects,g,progress=1,ink=false,context=null){
- if(!frame?.interactions?.length)return '';
+ if(!frame)return '';
  const positions=new Map(objects.map(o=>[o.id,o]));
  const safe=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  const frames=context?.frames,stepIndex=context?.index,now=Math.max(0,Math.min(1,progress))*(Number(frame.seconds)||2);
@@ -107,16 +107,15 @@ export function interactionOverlay(frame,objects,g,progress=1,ink=false,context=
   let elapsed=0;
   for(let i=stepIndex;i>=0;i--){
    const source=frames[i];
-   if(i<stepIndex)elapsed+=Number(frames[i+1]?.seconds)||2;
+   if(i<stepIndex&&i+1<stepIndex)elapsed+=Number(frames[i+1]?.seconds)||2;
    if(elapsed>8)break;
    for(const a of source.interactions||[]){
-    const eventAt=i===stepIndex?0:(Number(source.seconds)||2);
     const passed=elapsed+(i===stepIndex?now-(Number(a.at)||.7)*(Number(source.seconds)||2):now+(Number(source.seconds)||2)*(1-(Number(a.at)||.7)));
     if(passed>=-1e-6&&passed<=(Number(a.displaySeconds)||(a.kind==='tag'?1.6:1.2)))candidates.push(a);
    }
   }
  }else{
-  for(const a of frame.interactions)if(progress>=(Number(a.at)||.7)&&((progress-(Number(a.at)||.7))*(Number(frame.seconds)||2))<=(Number(a.displaySeconds)||(a.kind==='tag'?1.6:1.2)))candidates.push(a);
+  for(const a of frame.interactions||[])if(progress>=(Number(a.at)||.7)&&((progress-(Number(a.at)||.7))*(Number(frame.seconds)||2))<=(Number(a.displaySeconds)||(a.kind==='tag'?1.6:1.2)))candidates.push(a);
  }
  return '<g class="non-contact-actions" pointer-events="none">'+candidates.map(a=>{
   const actor=positions.get(a.actorId),target=positions.get(a.targetId);if(!actor||!target)return '';
