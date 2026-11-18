@@ -50,7 +50,7 @@ assert.equal(invalid.interactions.length,2,'Deleting equipment clears orphan tou
 const source=await import('node:fs');
 const read=path=>source.readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const app=read('js/app.js'),html=read('index.html');
-for(const id of ['menuGroupTouch','menuGroupTackle','menuGroupRuck','menuGroupMaul','menuTouch','menuTag','skillDialog','coneColour','tagBelt']){
+for(const id of ['menuAction','menuConeColour','actionChooser','skillDialog','coneColour','tagBelt']){
  if(!['coneColour','tagBelt'].includes(id))assert.match(html,new RegExp('id="'+id+'"'));
  else assert.match(app,new RegExp(id));
 }
@@ -74,3 +74,8 @@ const css=read('assets/workspace.css');
 assert.match(css,/#skillSideRow\[hidden\]\{display:none!important\}/,'Touch dialog must not show tag-only settings');
 const libcss=read('assets/library.css');
 assert.match(libcss,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,'Progression action buttons require consistent size and spacing');
+
+for(const id of ['menuTouch','menuTag','menuGroupTouch','menuGroupTackle','menuGroupRuck','menuGroupMaul'])assert.doesNotMatch(html,new RegExp('id="'+id+'"'),'Old per-action buttons must not compete with Actions picker');
+assert.match(app,/if\(command==='actions'\)openActionChooser/,'Contextual action command must open chooser');
+assert.match(read('js/skill-actions.js'),/TOUCH TARGET/,'Agility target cues need distinct presentation');
+assert.match(read('js/skill-actions.js'),/TWO-HAND TOUCH/,'Player touches must be visually distinct from tags');
