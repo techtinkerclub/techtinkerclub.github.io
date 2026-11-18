@@ -4,6 +4,341 @@
   "drills": [
     {
       "version": 1,
+      "id": "seed-143",
+      "title": "Defensive line · Whistle then advance together",
+      "age": "U10",
+      "category": "Defence",
+      "length": 10,
+      "width": 20,
+      "objective": "Build the simplest defensive-line reaction: on a coach's whistle all six U10 defenders move two short steps forward together, preserve their spacing, then hold their shape. Use this before the carry-or-pass decision drill.",
+      "safety": "Non-contact reaction drill. Keep a clear run-off and stop the line well before the coach or attacker. The whistle is a coach's practice cue, not a substitute for checking current RFU U10 offside and restart requirements. Never treat this as permission to rush a free pass from an illegal starting position.",
+      "frames": [
+        {
+          "name": "Set up · six defenders connected",
+          "seconds": 1,
+          "notes": "Six defenders form a line at even spacing. The coach stays in the same position as in the later carry-or-pass drill. Explain: react to the whistle together, then stop square and balanced. The attacker and ground ball stay still.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 144,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 164.39999999999998,
+              "y": 339.9,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Whistle · advance two short steps together",
+          "seconds": 1.5,
+          "notes": "The coach blows the whistle. All six defenders step forward immediately and in unison, without sprinting into contact. Eyes up, spacing unchanged. They must be legally onside before moving in a real restart.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 144,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 164.39999999999998,
+              "y": 339.9,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "mwl6tallzpoqql": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6tazaxnplm8": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6tb8m0b9lap": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6tbehy92zxz": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6tbkosxh9wx": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6v7mdq8f43k": {
+              "start": 0,
+              "end": 84
+            }
+          },
+          "paths": {},
+          "signal": {
+            "kind": "whistle",
+            "coachId": "mwl6w26yzp8oka",
+            "label": "GO",
+            "duration": 0.35
+          }
+        },
+        {
+          "name": "Hold shape · look and communicate",
+          "seconds": 1,
+          "notes": "Pause and check that the line is still connected, everyone is facing the play and nobody has sprinted out alone. Repeat several times before adding a ball-carrier decision.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 144,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 164.39999999999998,
+              "y": 339.9,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "ageMin": 10,
+      "ageMax": 10,
+      "minutes": 7,
+      "players": "Six defenders (D1–D6), one support attacker (A1), one coach/ball feeder. Start with all six defenders across the same line. The coach and A1 are behind them, with A1 slightly deeper to receive.",
+      "equipment": "One rugby ball and four cones to mark an 11 × 20 m working area. No contact pads are required for the touch version.",
+      "instructions": "1. Set out the six-defender line as shown. Coach and supporting runner remain in their starting positions. 2. Explain that this is a whistle-reaction exercise, not permission to cross an offside line. 3. Blow the whistle and ask every defender to advance two short steps together. 4. Stop, check spacing and communication, reset, then repeat. 5. Progress to Hold the line · Carry or pass? after the group can move together.",
+      "coaching": "Coach the timing of the FIRST step, not an all-out sprint. Keep shoulders square, communication short and the line connected. Use the pause to ask who moved early or late. Keep all actions non-contact. At a real U10 free pass, ensure the defenders have retired the required distance and only advance when lawfully permitted.",
+      "regression": "Start with slower calls and two small steps. Stop if any defender sprints ahead or loses spacing.",
+      "progression": "Next: Hold the line · Carry or pass? (seed-133). The same defensive line and coach position now develop into two decision outcomes.",
+      "questions": "Did all six move on the whistle together? Was there a gap after the first step? Can you say which teammate you must stay connected with?",
+      "notes": "This drill contains two real playable outcomes after a shared whistle and defensive advance. Playback stops at the diamond. Choose A or B and the animation continues with different ball possession and defender reactions. The standard video export plays A and B in labelled chapters; the coaching sheet shows both. The illustrations are coach-authored examples, not automatic tactical predictions or official RFU material.",
+      "links": [
+        {
+          "label": "RFU Regulation 15 Appendix 4 · U10 Rules of Play (2026/27)",
+          "url": "https://www.englandrugby.com/run/rules-governance/rfu-rules-and-regulations/regulation-15-age-grade-rugby/regulation-15-appendix-4-u10-rules-of-play",
+          "kind": "Rules · primary authority"
+        },
+        {
+          "label": "World Rugby Passport · Tackling and contact",
+          "url": "https://passport.world.rugby/coaching/key-factor-analysis/tackling-and-contact/",
+          "kind": "Coaching safety"
+        },
+        {
+          "label": "Rugby Coaching TV · Introducing a defensive system",
+          "url": "https://www.rugbycoaching.tv/video/introducing-a-defensive-system/10001462",
+          "kind": "Coaching approach"
+        },
+        {
+          "label": "Rugby Coach Weekly · Improve defensive line skills",
+          "url": "https://www.rugbycoachweekly.net/rugby-drills-and-skills/defence/improve-defensive-line-skills",
+          "kind": "Drill progression"
+        }
+      ],
+      "provenance": "Coach-created Harbury U10 decision drill, shared for review. Original activity, not official RFU content.",
+      "review": "Coach review required — schematic drill, not RFU-endorsed.",
+      "savedFromCoachDrill": "mwlws9j9rth2wb",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T12:02:41.721Z",
+      "revision": 6,
+      "publishedAt": "2026-11-18T12:02:52.918Z",
+      "publishedRevision": 6,
+      "publishedSourceSavedAt": "2026-11-18T12:02:41.721Z"
+    },
+    {
+      "version": 1,
       "id": "seed-133",
       "title": "Hold the line · Carry or pass?",
       "age": "U10",
@@ -15,7 +350,7 @@
       "frames": [
         {
           "name": "Set up · six defenders and two attackers",
-          "seconds": 0.5,
+          "seconds": 1,
           "notes": "Six defenders start connected across the pitch. Coach and A1 stand behind the ball. The four cones mark a working area; A1 begins deeper so the eventual pass can travel backwards.",
           "objects": [
             {
@@ -1389,346 +1724,11 @@
         "mode": "training",
         "age": "U10"
       },
-      "savedAt": "2026-11-18T11:57:38.635Z",
-      "revision": 2,
-      "publishedAt": "2026-11-18T11:58:03.201Z",
-      "publishedRevision": 2,
-      "publishedSourceSavedAt": "2026-11-18T11:57:38.635Z"
-    },
-    {
-      "version": 1,
-      "id": "seed-143",
-      "title": "Defensive line · Whistle then advance together",
-      "age": "U10",
-      "category": "Defence",
-      "length": 10,
-      "width": 20,
-      "objective": "Build the simplest defensive-line reaction: on a coach's whistle all six U10 defenders move two short steps forward together, preserve their spacing, then hold their shape. Use this before the carry-or-pass decision drill.",
-      "safety": "Non-contact reaction drill. Keep a clear run-off and stop the line well before the coach or attacker. The whistle is a coach's practice cue, not a substitute for checking current RFU U10 offside and restart requirements. Never treat this as permission to rush a free pass from an illegal starting position.",
-      "frames": [
-        {
-          "name": "Set up · six defenders connected",
-          "seconds": 1,
-          "notes": "Six defenders form a line at even spacing. The coach stays in the same position as in the later carry-or-pass drill. Explain: react to the whistle together, then stop square and balanced. The attacker and ground ball stay still.",
-          "objects": [
-            {
-              "id": "mwl6tallzpoqql",
-              "type": "defender",
-              "label": "D1",
-              "x": 144,
-              "y": 83.60000000000001,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tazaxnplm8",
-              "type": "defender",
-              "label": "D2",
-              "x": 266.4,
-              "y": 83.60000000000001,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tb8m0b9lap",
-              "type": "defender",
-              "label": "D3",
-              "x": 388.7999999999999,
-              "y": 83.60000000000001,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tbehy92zxz",
-              "type": "defender",
-              "label": "D4",
-              "x": 511.2,
-              "y": 83.60000000000001,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tbkosxh9wx",
-              "type": "defender",
-              "label": "D5",
-              "x": 633.5999999999999,
-              "y": 83.60000000000001,
-              "rot": 180
-            },
-            {
-              "id": "mwl6v7mdq8f43k",
-              "type": "defender",
-              "label": "D6",
-              "x": 756,
-              "y": 83.60000000000001,
-              "rot": 180
-            },
-            {
-              "id": "mwl6w26yzp8oka",
-              "type": "coach",
-              "label": "Coach",
-              "x": 144,
-              "y": 363.2,
-              "rot": 0
-            },
-            {
-              "id": "mwl6w5ww333x3x",
-              "type": "attacker",
-              "label": "A1",
-              "x": 552,
-              "y": 386.5,
-              "rot": 0
-            },
-            {
-              "id": "mwl6wf87jrw70e",
-              "type": "ball",
-              "label": "",
-              "x": 164.39999999999998,
-              "y": 339.9,
-              "rot": 0
-            }
-          ],
-          "timing": {},
-          "paths": {}
-        },
-        {
-          "name": "Whistle · advance two short steps together",
-          "seconds": 1.5,
-          "notes": "The coach blows the whistle. All six defenders step forward immediately and in unison, without sprinting into contact. Eyes up, spacing unchanged. They must be legally onside before moving in a real restart.",
-          "objects": [
-            {
-              "id": "mwl6tallzpoqql",
-              "type": "defender",
-              "label": "D1",
-              "x": 144,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tazaxnplm8",
-              "type": "defender",
-              "label": "D2",
-              "x": 266.4,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tb8m0b9lap",
-              "type": "defender",
-              "label": "D3",
-              "x": 388.7999999999999,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tbehy92zxz",
-              "type": "defender",
-              "label": "D4",
-              "x": 511.2,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tbkosxh9wx",
-              "type": "defender",
-              "label": "D5",
-              "x": 633.5999999999999,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6v7mdq8f43k",
-              "type": "defender",
-              "label": "D6",
-              "x": 756,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6w26yzp8oka",
-              "type": "coach",
-              "label": "Coach",
-              "x": 144,
-              "y": 363.2,
-              "rot": 0
-            },
-            {
-              "id": "mwl6w5ww333x3x",
-              "type": "attacker",
-              "label": "A1",
-              "x": 552,
-              "y": 386.5,
-              "rot": 0
-            },
-            {
-              "id": "mwl6wf87jrw70e",
-              "type": "ball",
-              "label": "",
-              "x": 164.39999999999998,
-              "y": 339.9,
-              "rot": 0
-            }
-          ],
-          "timing": {
-            "mwl6tallzpoqql": {
-              "start": 0,
-              "end": 84
-            },
-            "mwl6tazaxnplm8": {
-              "start": 0,
-              "end": 84
-            },
-            "mwl6tb8m0b9lap": {
-              "start": 0,
-              "end": 84
-            },
-            "mwl6tbehy92zxz": {
-              "start": 0,
-              "end": 84
-            },
-            "mwl6tbkosxh9wx": {
-              "start": 0,
-              "end": 84
-            },
-            "mwl6v7mdq8f43k": {
-              "start": 0,
-              "end": 84
-            }
-          },
-          "paths": {},
-          "signal": {
-            "kind": "whistle",
-            "coachId": "mwl6w26yzp8oka",
-            "label": "GO",
-            "duration": 0.35
-          }
-        },
-        {
-          "name": "Hold shape · look and communicate",
-          "seconds": 1,
-          "notes": "Pause and check that the line is still connected, everyone is facing the play and nobody has sprinted out alone. Repeat several times before adding a ball-carrier decision.",
-          "objects": [
-            {
-              "id": "mwl6tallzpoqql",
-              "type": "defender",
-              "label": "D1",
-              "x": 144,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tazaxnplm8",
-              "type": "defender",
-              "label": "D2",
-              "x": 266.4,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tb8m0b9lap",
-              "type": "defender",
-              "label": "D3",
-              "x": 388.7999999999999,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tbehy92zxz",
-              "type": "defender",
-              "label": "D4",
-              "x": 511.2,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6tbkosxh9wx",
-              "type": "defender",
-              "label": "D5",
-              "x": 633.5999999999999,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6v7mdq8f43k",
-              "type": "defender",
-              "label": "D6",
-              "x": 756,
-              "y": 188.1,
-              "rot": 180
-            },
-            {
-              "id": "mwl6w26yzp8oka",
-              "type": "coach",
-              "label": "Coach",
-              "x": 144,
-              "y": 363.2,
-              "rot": 0
-            },
-            {
-              "id": "mwl6w5ww333x3x",
-              "type": "attacker",
-              "label": "A1",
-              "x": 552,
-              "y": 386.5,
-              "rot": 0
-            },
-            {
-              "id": "mwl6wf87jrw70e",
-              "type": "ball",
-              "label": "",
-              "x": 164.39999999999998,
-              "y": 339.9,
-              "rot": 0
-            }
-          ],
-          "timing": {},
-          "paths": {}
-        }
-      ],
-      "attackDirection": "up",
-      "showAttack": true,
-      "boundary": "flags",
-      "ageMin": 10,
-      "ageMax": 10,
-      "minutes": 7,
-      "players": "Six defenders (D1–D6), one support attacker (A1), one coach/ball feeder. Start with all six defenders across the same line. The coach and A1 are behind them, with A1 slightly deeper to receive.",
-      "equipment": "One rugby ball and four cones to mark an 11 × 20 m working area. No contact pads are required for the touch version.",
-      "instructions": "1. Set out the six-defender line as shown. Coach and supporting runner remain in their starting positions. 2. Explain that this is a whistle-reaction exercise, not permission to cross an offside line. 3. Blow the whistle and ask every defender to advance two short steps together. 4. Stop, check spacing and communication, reset, then repeat. 5. Progress to Hold the line · Carry or pass? after the group can move together.",
-      "coaching": "Coach the timing of the FIRST step, not an all-out sprint. Keep shoulders square, communication short and the line connected. Use the pause to ask who moved early or late. Keep all actions non-contact. At a real U10 free pass, ensure the defenders have retired the required distance and only advance when lawfully permitted.",
-      "regression": "Start with slower calls and two small steps. Stop if any defender sprints ahead or loses spacing.",
-      "progression": "Next: Hold the line · Carry or pass? (seed-133). The same defensive line and coach position now develop into two decision outcomes.",
-      "questions": "Did all six move on the whistle together? Was there a gap after the first step? Can you say which teammate you must stay connected with?",
-      "notes": "This drill contains two real playable outcomes after a shared whistle and defensive advance. Playback stops at the diamond. Choose A or B and the animation continues with different ball possession and defender reactions. The standard video export plays A and B in labelled chapters; the coaching sheet shows both. The illustrations are coach-authored examples, not automatic tactical predictions or official RFU material.",
-      "links": [
-        {
-          "label": "RFU Regulation 15 Appendix 4 · U10 Rules of Play (2026/27)",
-          "url": "https://www.englandrugby.com/run/rules-governance/rfu-rules-and-regulations/regulation-15-age-grade-rugby/regulation-15-appendix-4-u10-rules-of-play",
-          "kind": "Rules · primary authority"
-        },
-        {
-          "label": "World Rugby Passport · Tackling and contact",
-          "url": "https://passport.world.rugby/coaching/key-factor-analysis/tackling-and-contact/",
-          "kind": "Coaching safety"
-        },
-        {
-          "label": "Rugby Coaching TV · Introducing a defensive system",
-          "url": "https://www.rugbycoaching.tv/video/introducing-a-defensive-system/10001462",
-          "kind": "Coaching approach"
-        },
-        {
-          "label": "Rugby Coach Weekly · Improve defensive line skills",
-          "url": "https://www.rugbycoachweekly.net/rugby-drills-and-skills/defence/improve-defensive-line-skills",
-          "kind": "Drill progression"
-        }
-      ],
-      "provenance": "Coach-created Harbury U10 decision drill, shared for review. Original activity, not official RFU content.",
-      "review": "Coach review required — schematic drill, not RFU-endorsed.",
-      "savedFromCoachDrill": "mwlws9j9rth2wb",
-      "pitchContext": {
-        "mode": "training",
-        "age": "U10"
-      },
-      "savedAt": "2026-11-18T12:02:41.721Z",
-      "revision": 6,
-      "publishedAt": "2026-11-18T12:02:52.918Z",
-      "publishedRevision": 6,
-      "publishedSourceSavedAt": "2026-11-18T12:02:41.721Z"
+      "savedAt": "2026-11-18T12:03:18.789Z",
+      "revision": 3,
+      "publishedAt": "2026-11-18T12:03:23.367Z",
+      "publishedRevision": 3,
+      "publishedSourceSavedAt": "2026-11-18T12:03:18.789Z"
     }
   ],
   "unpublishedIds": []
