@@ -1407,7 +1407,7 @@
       "frames": [
         {
           "name": "Set up · six defenders connected",
-          "seconds": 0,
+          "seconds": 0.5,
           "notes": "Six defenders form a line at even spacing. The coach stays in the same position as in the later carry-or-pass drill. Explain: react to the whistle together, then stop square and balanced. The attacker and ground ball stay still.",
           "objects": [
             {
@@ -1723,11 +1723,11 @@
         "mode": "training",
         "age": "U10"
       },
-      "savedAt": "2026-11-18T09:42:54.906Z",
-      "revision": 3,
-      "publishedAt": "2026-11-18T11:00:06.633Z",
-      "publishedSourceSavedAt": "2026-11-18T09:42:54.906Z",
-      "publishedRevision": 3
+      "savedAt": "2026-11-18T11:56:00.445Z",
+      "revision": 4,
+      "publishedAt": "2026-11-18T11:56:06.634Z",
+      "publishedRevision": 4,
+      "publishedSourceSavedAt": "2026-11-18T11:56:00.445Z"
     }
   ],
   "unpublishedIds": []
