@@ -360,3 +360,19 @@ html{color-scheme:dark}
 .object-menu button{min-height:36px;padding:9px 11px}
 .skill-object button{margin:6px 8px 6px 0}
 .skill-object .field{display:grid;gap:7px;margin:10px 0}
+
+
+/* Unified action selection and standalone rip detail dialog */
+#ripDialog{box-sizing:border-box;width:min(94vw,530px);max-width:94vw;max-height:88dvh;overflow-y:auto;padding:clamp(16px,3vw,24px);border-radius:12px}
+#ripDialog .field{display:grid;gap:7px;margin:17px 0}
+#ripDialog select,#ripDialog input{width:100%;min-height:42px;box-sizing:border-box}
+#ripDialog p{line-height:1.5;margin:12px 0}
+#ripDialog h2{font-size:20px;margin:0 0 10px}
+.action-participants{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-height:225px;overflow:auto;padding:4px}
+.action-participant{display:flex;align-items:center;gap:9px;min-height:42px;min-width:0;padding:8px;border:1px solid var(--line);border-radius:7px;background:#1d3427;cursor:pointer}
+.action-participant input{width:18px!important;min-width:18px;min-height:18px;flex:none}
+.action-participant span{min-width:0;font-size:12px;overflow-wrap:anywhere}
+#contactParticipantsRow[hidden]{display:none!important}
+#ripError:not(:empty),#actionChooserError:not(:empty){color:#ffc3ad;padding:7px 0}
+.skill-action-row input[type=text]{min-width:120px;width:min(190px,100%)}
+@media(max-width:460px){.action-participants{grid-template-columns:1fr}#ripDialog,.action-chooser{padding:15px}}
