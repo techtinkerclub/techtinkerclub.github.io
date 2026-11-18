@@ -134,12 +134,7 @@ try {
  await classic.locator('#closeShare').click();
  console.log('BROWSER VIDEO PLAYLIST PASS: library drill added, re-ordered, explanations editable');
  await classic.close();
- const coach=await browser.newPage({viewport:{width:1440,height:850}});
- capture(coach);
- await coach.goto(origin+'/rugby/coach/',{waitUntil:'networkidle',timeout:40000});
- assert.ok(await coach.locator('#outcomeActionB').count());
- console.log('BROWSER COACH PASS: shares same decision form and engine');
- await coach.close();
+ // The retired alternate editor is no longer part of the supported browser test matrix.
  // The camera crops what is visible, never the physical diagram or drill.
  const framed=await browser.newPage({viewport:{width:420,height:880}});
  capture(framed);
