@@ -86,8 +86,15 @@ export function editOutcomes(d,question,labelA,labelB,guidance=null){
  }
 }
 export function removeOutcomes(d){
- if(!branchInfo(d))return;
- delete d.branching; // Keep the selected outcome as an ordinary linear drill.
+ const b=branchInfo(d);if(!b)return false;
+ const markerId=b.markerId;
+ if(markerId)for(const frame of d.frames){
+  frame.objects=frame.objects.filter(o=>o.id!==markerId);
+  if(frame.paths)delete frame.paths[markerId];
+  if(frame.timing)delete frame.timing[markerId];
+ }
+ delete d.branching;
+ return true;
 }
 
 // Apply a scoped deletion to the common opening and both stored outcomes.

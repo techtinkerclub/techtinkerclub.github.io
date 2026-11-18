@@ -6,7 +6,7 @@ import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
 import {loadPublicationData,publicationForSource,isPublished} from './publication.js?v=1';
 import {loadCatalogue} from './catalogue.js?v=0.17.0';
 import {familyMembers,publicationState,duplicateTitleGroups,revisionLabel} from './drill-families.js?v=1';
-import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews,removeObjectAcrossOutcomes} from './branching.js?v=3';
+import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews,removeObjectAcrossOutcomes} from './branching.js?v=0.18.5';
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=0.18.0';
 import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=4';
@@ -354,11 +354,8 @@ $('outcomeMapCards').onclick=e=>{
 function renderOutcomeBar(){
  const b=hasOutcomes(drill)?branchInfo(drill):null;
  const diamond=!b?drawnDecisionAt(drill,idx,selected):null;
- $('createOutcomes').hidden=!!b;
  $('decisionToolStart').textContent=b?'◆ Edit A/B decision':'◆ Create A/B decision';
  $('decisionToolHelp').textContent=b?'The drill has two outcomes. Use A and B beside the timeline to edit each result.':'1. Create a running step. 2. Select the moving player. 3. Choose where on the run the decision happens.';
- $('createOutcomes').textContent=diamond?'◆ Make this decision playable':'◆ Add decision on a run';
- $('createOutcomes').title=diamond?'Convert the drawn diamond into two real movement sequences':'Select a running player, then click the location on the path where the decision occurs';
  $('outcomeControls').hidden=!b;
  if(!b)return;
  $('outcomeQuestion').textContent='◆ '+b.question+' · common start through step '+(b.fork+1);
@@ -456,12 +453,6 @@ $('decisionToolStart').onclick=()=>{
  }
  beginDecisionPlacement();
 };
-$('createOutcomes').onclick=()=>{
- if(hasOutcomes(drill))return;
- const marker=drawnDecisionAt(drill,idx,selected);
- if(marker){openOutcomeDialog();return}
- beginDecisionPlacement();
-};
 $('editOutcomes').onclick=()=>openOutcomeDialog(true);
 $('outcomeCancel').onclick=()=>$('outcomeDialog').close();
 $('outcomeDialog').addEventListener('close',()=>{pendingDecisionPlacement=null});
@@ -509,9 +500,8 @@ $('outcomeSave').onclick=()=>{
 };
 $('outcomeRemove').onclick=()=>{
  if(!confirm('Remove the decision split? The currently selected outcome will remain as a normal, linear drill. The other outcome will no longer be available. Export JSON first if you need it.'))return;
- const b=branchInfo(drill);const marker=drill.frames[b.fork].objects.findIndex(o=>o.id===b.markerId);
- if(marker>=0)drill.frames[b.fork].objects.splice(marker,1);
- removeOutcomes(drill);$('outcomeDialog').close();changed();choose(Math.min(idx,drill.frames.length-1));
+ 
+ removeOutcomes(drill);$('outcomeDialog').close();selected=null;selectedPathId=null;trainingPick=null;changed();choose(Math.min(idx,drill.frames.length-1));note('Decision removed. Selected outcome preserved; Undo restores the split.');
 };
 for(const key of ['a','b'])$('outcome'+key.toUpperCase()).onclick=()=>{
  if(!hasOutcomes(drill)||branchInfo(drill).active===key)return;
@@ -714,6 +704,11 @@ function cancelSelectedMovement(){
 function deleteObject(scope='here'){
  if(!canEditObjects())return;
  const o=activeObject();if(!o)return;
+ if(o.type==='decision'&&hasOutcomes(drill)&&branchInfo(drill).markerId===o.id){
+  if(!confirm('Remove the complete A/B decision? The selected outcome will remain a normal drill; the other outcome is discarded. Undo is available before saving.'))return;
+  removeOutcomes(drill);selected=null;selectedPathId=null;trainingPick=null;changed();refresh();focusPitch();
+  note('Decision removed. Selected outcome preserved; Undo restores the split.');return;
+ }
  const name=o.label||types[o.type][0],candidate=clone(drill),result=removeObjectAcrossOutcomes(candidate,o.id,idx,scope);
  if(!result.removed)return;
  if(scope!=='here'&&result.removed>1&&!confirm('Delete '+name+' from '+result.removed+' steps?'))return;
@@ -782,7 +777,6 @@ function ensureRoute(){
 }
 function hasMovement(a,b,r){return !!(a&&b&&(Math.hypot(a.x-b.x,a.y-b.y)>1e-6||r?.points?.length))}
 function canInsertPoint(){const o=preview===null?activeObject():null,r=o&&f().paths?.[o.id];const m=selectedMovement();return !routeDrawing&&!ballPicking&&!!o&&!!m&&hasMovement(m.start,m.end,r)&&(r?.points?.length||0)<64}
-const addDecisionButton=document.createElement('button');addDecisionButton.id='addDecisionOnRoute';addDecisionButton.textContent='◆ Add decision to this run';$('routeHelp').before(addDecisionButton);addDecisionButton.onclick=()=>beginDecisionPlacement();
 function beginDecisionPlacement(){
  if(hasOutcomes(drill)){note('This drill already has an A/B decision. Use the outcome buttons to edit it.');return}
  if(!requireAppliedSetup())return;
@@ -807,7 +801,7 @@ function beginDecisionPlacement(){
 }
 function updateRouteTools(){
  const o=preview===null?activeObject():null,route=o&&f().paths?.[o.id],m=o&&selectedMovement(),existing=!!(m&&(hasMovement(m.start,m.end,route)||route));
- $('routeTools').hidden=!(routeDrawing||existing);addDecisionButton.hidden=!existing||!canCarry(o)||routeDrawing||!!ballPicking||hasOutcomes(drill);addDecisionButton.disabled=!!trainingPick;
+ $('routeTools').hidden=!(routeDrawing||existing);
  $('addPointSide').hidden=!canInsertPoint();$('addPointSide').disabled=!canInsertPoint();
  $('actionHint').textContent=routeDrawing?'Click route points, then Finish path.':ballPicking?'Choose a player on the pitch.':$('drawRouteSide').disabled?'Select a player or a free/pass ball.':canInsertPoint()?'Drag a + on the line to curve it.':'Draw a route or move into a new step.';
  $('routeStyle').value=route?.mode||'smooth';$('followRoute').checked=!!route?.follow;$('followRoute').disabled=o?.type==='ball';

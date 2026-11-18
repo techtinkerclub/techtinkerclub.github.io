@@ -70,3 +70,7 @@ These supersede historic copies with outdated cone layouts and an obsolete share
 - Read-only public presentations have Add to video, linking into the public library with the same published drill preselected.
 - The presentation header separates navigation links and the uppercase caption, including narrow mobile viewports.
 - Public video builder remains read-only; snapshot share links do not silently become published catalogue entries.
+
+## v0.18.5 — decision controls cleanup
+
+The left Decision making tool is the single creation/edit entry point; duplicate timeline/route-panel buttons are removed. A/B switches and comparison stay available. Removing a playable marker or Remove fork clears its branch, marker and editing references, leaving the selected path linear. No saved or public drill records are altered automatically.
