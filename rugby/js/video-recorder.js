@@ -35,7 +35,11 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
  const top=Math.round((portrait?225:130)*unit);
  const bottom=Math.round((portrait?345:205)*unit);
  const sceneHeight=H-top-bottom;
- const font=(n,bold=false)=>(bold?'700 ':'400 ')+Math.round(n*unit)+'px Arial,sans-serif';
+ // Themes affect the output video only. Editor controls remain exactly as before.
+ const cartoon=opts.cartoonMode===true;
+ const colors=cartoon?{background:'#172d49',panel:'#152943',accent:'#ffe05f',muted:'#a8e0ef',text:'#fff9e8',bar:'#617b94',border:'#ffd45a'}:
+  {background:'#101e18',panel:'#203a2b',accent:'#c9f07c',muted:'#a5d4e4',text:'#f3f8f0',bar:'#526657',border:'#a8cf77'};
+ const font=(n,bold=false)=>(bold?'700 ':'400 ')+Math.round(n*unit)+'px '+(cartoon?'"Trebuchet MS",Arial,sans-serif':'Arial,sans-serif');
  const cardPages=[];
  // Optional end-card is paginated; leave the film's explanatory pauses intact.
  if(settings.card){
@@ -60,11 +64,11 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
   check();
   const endCard=elapsed>=story.total&&cardPages.length?(cardPages.find(q=>elapsed<q.end)||cardPages.at(-1)):null;
   const clip=storyboardClip(story,Math.min(elapsed,Math.max(0,story.total-.0001)));
-  ctx.fillStyle='#101e18';ctx.fillRect(0,0,W,H);
-  function drawText(text,x,y,size,{bold=false,color='#f3f8f0',max=content}={}){
+  ctx.fillStyle=colors.background;ctx.fillRect(0,0,W,H);
+  function drawText(text,x,y,size,{bold=false,color=colors.text,max=content}={}){
    ctx.font=font(size,bold);ctx.fillStyle=color;ctx.fillText(fitted(ctx,text,max),x,y);
   }
-  function wrapText(text,x,y,size,maxWidth,maxLines=4,{bold=false,color='#e5f1e4'}={}){
+  function wrapText(text,x,y,size,maxWidth,maxLines=4,{bold=false,color=colors.text}={}){
    ctx.font=font(size,bold);ctx.fillStyle=color;
    const lines=wrapCanvas(ctx,String(text||''),maxWidth);
    let out=y;
@@ -75,13 +79,17 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
    return out;
   }
   const renderHeading=(title,detail)=>{
-   drawText(title,pad,Math.round(65*unit),portrait?32:34,{bold:true,color:'#c9f07c'});
+   if(cartoon){
+    // The playful briefing stripe is confined to the exported film.
+    ctx.fillStyle=colors.accent;ctx.fillRect(pad-13*unit,24*unit,6*unit,93*unit);
+   }
+   drawText(title,pad,Math.round(65*unit),portrait?32:34,{bold:true,color:colors.accent});
    drawText(detail,pad,Math.round(108*unit),portrait?28:24,{max:content});
   };
   if(endCard){
    renderHeading(endCard.title,'FULL COACHING NOTES');
-   ctx.fillStyle='#203a2b';ctx.fillRect(pad,top,content,sceneHeight);
-   drawText(endCard.label,pad+30*unit,top+55*unit,portrait?38:34,{bold:true,color:'#c9f07c',max:content-60*unit});
+   ctx.fillStyle=colors.panel;ctx.fillRect(pad,top,content,sceneHeight);
+   drawText(endCard.label,pad+30*unit,top+55*unit,portrait?38:34,{bold:true,color:colors.accent,max:content-60*unit});
    const size=portrait?32:28;
    let y=top+110*unit;for(const ln of endCard.lines){
     drawText(ln,pad+30*unit,y,size,{max:content-60*unit});y+=size*1.35*unit;
@@ -107,15 +115,21 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
     // Freeze the scene and put a readable explanation OVER it. This is not
     // an inserted invented action or an editing-only annotation.
     const x=pad+20*unit,y=top+25*unit,bw=content-40*unit,bh=sceneHeight-50*unit;
-    ctx.fillStyle='rgba(9,25,19,.89)';ctx.fillRect(x,y,bw,bh);
-    ctx.strokeStyle='#a8cf77';ctx.lineWidth=Math.max(1,2.1*unit);ctx.strokeRect(x,y,bw,bh);
+    ctx.fillStyle=cartoon?'rgba(17,41,76,.95)':'rgba(9,25,19,.89)';ctx.fillRect(x,y,bw,bh);
+    ctx.strokeStyle=colors.border;ctx.lineWidth=Math.max(1,(cartoon?5:2.1)*unit);ctx.strokeRect(x,y,bw,bh);
+    if(cartoon){ // Corner rivets make the video card read like a comic coaching board.
+     ctx.fillStyle='#ffffff';
+     for(const [cx,cy] of [[x+12*unit,y+12*unit],[x+bw-12*unit,y+12*unit],[x+12*unit,y+bh-12*unit],[x+bw-12*unit,y+bh-12*unit]]){
+      ctx.beginPath();ctx.arc(cx,cy,3.2*unit,0,Math.PI*2);ctx.fill();
+     }
+    }
     const tx=x+30*unit,max=bw-60*unit;
     let next=y+Math.round((portrait?58:58)*unit);
-    drawText(clip.heading,tx,next,portrait?36:36,{bold:true,color:'#c9f07c',max});
+    drawText(clip.heading,tx,next,portrait?36:36,{bold:true,color:colors.accent,max});
     next+=Math.round((portrait?67:66)*unit);
     next=wrapText(clip.body,tx,next,portrait?33:29,max,portrait?6:3,{bold:true});
     if(clip.why){
-     next+=22*unit;drawText('WHY IT MATTERS',tx,next,portrait?24:21,{bold:true,color:'#a5d4e4',max});
+     next+=22*unit;drawText('WHY IT MATTERS',tx,next,portrait?24:21,{bold:true,color:colors.muted,max});
      next+=32*unit;next=wrapText(clip.why,tx,next,portrait?29:25,max,portrait?5:3);
     }
     if(clip.watch){
@@ -124,7 +138,7 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
     }
    }else{
     const label=clip.pass==='replay'?'COACHING REPLAY · '+clip.speed+'×':clip.heading;
-    drawText(label,pad,top+sceneHeight+Math.round(46*unit),portrait?31:27,{bold:true,color:'#c9f07c',max:content});
+    drawText(label,pad,top+sceneHeight+Math.round(46*unit),portrait?31:27,{bold:true,color:colors.accent,max:content});
     if(settings.notes&&clip.kind==='motion'){
      const note=scene.frame.notes||'Watch how the players move and react.';
      wrapText(note,pad,top+sceneHeight+Math.round(90*unit),portrait?29:24,content,portrait?4:2);
@@ -133,8 +147,8 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
   }
   // Global playback progress, including option pauses and linked stages.
   const barY=H-Math.round((portrait?115:30)*unit),barH=Math.max(3,Math.round(7*unit));
-  ctx.fillStyle='#526657';ctx.fillRect(pad,barY,content,barH);
-  ctx.fillStyle='#c9f07c';ctx.fillRect(pad,barY,content*Math.max(0,Math.min(1,elapsed/total)),barH);
+  ctx.fillStyle=colors.bar;ctx.fillRect(pad,barY,content,barH);
+  ctx.fillStyle=colors.accent;ctx.fillRect(pad,barY,content*Math.max(0,Math.min(1,elapsed/total)),barH);
   for(const c of story.clips.filter(x=>['intro','decision','choice'].includes(x.kind)&&x.start>0)){
    ctx.fillStyle='#f8f8e8';ctx.fillRect(pad+content*c.start/total-1,barY-2,Math.max(2,3*unit),barH+4);
   }
