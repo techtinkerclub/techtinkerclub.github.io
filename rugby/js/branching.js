@@ -107,7 +107,7 @@ export function removeObjectAcrossOutcomes(drill,id,index,scope='here'){
  const other=b.choices.find(c=>c.id!==active);
  // A shared step deletion affects the corresponding object in *both* options;
  // for 'onward' only the suffix from the selected step is affected.
- const suffixStart=scope==='here'&&index<commonCount?0:scope==='onward'?Math.max(0,index-commonCount):scope==='all'?0:null;
+ const suffixStart=scope==='onward'&&index<commonCount?0:scope==='all'?0:null;
  if(suffixStart!==null){
   const otherResult=removeObject(other.frames,id,suffixStart,scope==='here'?'all':scope==='all'?'all':'onward');
   other.frames=otherResult.frames;
