@@ -11,7 +11,7 @@ The default palette includes four player types, equipment, Tackle, Decision poin
 
 Visual Decision point objects remain available and only annotate possible choices with diagram lines. The new Add playable decision action creates two **real animation timelines** after a shared step.
 
-Both Classic Studio and Coach Edition use one shared branching module. Outcome A and B have independent editable frame suffixes, while all steps up to and including the fork are shared. A viewer opening the read-only link can select A or B. Video output plays chapters labelled A and B, resetting the shared setup for each; movie settings can choose the selected outcome alone. Printed sheets contain one coaching card and individual, clearly labelled chapters for both sequences.
+Classic Studio and its read-only presentation player use the shared branching module. Outcome A and B have independent editable frame suffixes, while all steps up to and including the fork are shared. A viewer opening the read-only link can select A or B. Video output plays chapters labelled A and B, resetting the shared setup for each; movie settings can choose the selected outcome alone. Printed sheets contain one coaching card and individual, clearly labelled chapters for both sequences.
 
 The implementation supports one two-way fork per drill (not nested branches or automatic player decisions). The animation engine does not make tactical judgements; the coach authors both paths. Older drills and annotation-only decision markers remain compatible.
 
