@@ -113,7 +113,7 @@ function sheetPlayer(o,pose,objects,g,previous,frame,progress){
 /** The regular player keeps its existing diagram geometry and a single gaze arrow. */
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
  if(!canCarry(o))return original;
- if(cartoonMode&&!ink)return o.type==='coach'?coachSprite(o,objects,g,previous,frame,progress):sheetPlayer(o,pose,objects,g,previous,frame,progress);
+ if(cartoonMode)return o.type==='coach'?coachSprite(o,objects,g,previous,frame,progress):sheetPlayer(o,pose,objects,g,previous,frame,progress);
  const plain=original.replace(arrowRE,'');
  if(['grounded','kneeling'].includes(pose))return plain;
  // Normal view preserves the single gaze arrow, but never an extra pair of eyes.
