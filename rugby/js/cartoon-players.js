@@ -4,9 +4,9 @@
 import {canCarry} from './possession.js?v=0.19.1';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 import {playerHeadAngle} from './player-gaze.js?v=3';
+import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
 import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI} from './minion-rig-data.js?v=3';
 import {REAR_COACH_URI,REAR_COACH_TILE,REAR_COACH_COLS} from './coach-rear-data.js?v=2';
-const arrowRE=/<path d="M-5 -12 L0 -19 L5 -12 Z" fill="#f7fff6"\s*\/>|<path d="M-5 -8L0 -16L5 -8Z" fill="#fff"\s*\/>|<path d="M-5 -12L0 -19L5 -12Z" fill="#fff"\s*\/>|<path d="M-4 -15L0 -21L4 -15Z" fill="#fff"\s*\/>|<path d="M-5 -7L0 -14L5 -7Z" fill="#fff"\s*\/>/g;
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
 const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0))>>>0;return h};
@@ -217,15 +217,11 @@ function cartoonCoach(o,objects,g,previous,frame,p){
   '<use href="#rugby-coach-rear-v11"/></svg></g>';
 }
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
- if(!canCarry(o))return cartoonMode&&o.type==='shieldItem'?cartoonStandalonePad():original;
- if(cartoonMode)return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonMinion(o,pose,objects,g,previous,frame,progress);
- // Leave the normal editor and presentation appearance untouched.
- const plain=original.replace(arrowRE,'');
- if(['grounded','kneeling'].includes(pose))return plain;
- const angle=playerHeadAngle(o,objects,g,previous,frame,progress);
- if(angle===null)return plain;
- return plain+'<g class="player-gaze-arrow" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
-  '<path d="M0 -21L-6 -11L6 -11Z" fill="#fffefa" stroke="'+(ink?'#333':'#173526')+'" stroke-width="1.5" stroke-linejoin="round"/></g>';
+ // Explicit output-mode boundary: cartoon changes must not alter Classic pose,
+ // eye/arrow, scale, team colours or equipment.
+ if(!cartoonMode)return classicPlayerAppearance(o,pose,original,objects,g,previous,frame,progress,{ink});
+ if(!canCarry(o))return o.type==='shieldItem'?cartoonStandalonePad():original;
+ return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonMinion(o,pose,objects,g,previous,frame,progress);
 }
 export function cartoonObjectOrder(items,cartoonMode){
  if(!cartoonMode)return items;
