@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.18.1
+# Rugby Coaching Studio — Classic Studio v0.18.3
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -172,3 +172,7 @@ The code and regression suite guard saved data and film sequencing. Browser expo
 ### Adding decisions in the supported editor
 
 Use **Decision making → Create A/B decision** in the left panel. Select the running player and click the position on their route. When there is one unambiguous moving player the editor selects that player automatically; from setup it takes you to the first running step. The shortest allowed authored action is 0.5 seconds before and after a decision, so the editor explains when Step duration must be increased instead of secretly altering timing. The demo-loader shortcut has been retired; examples remain in the library.
+
+### Public library video builder (v0.18.3)
+
+Publicly published animated drills have **Add to video** on library cards. **Create video** in the public library opens an ordered list of up to eight published drills with the same video settings and rendering engine as Studio. Change stage order, remove stages and download the completed video; this never edits an original, saves a revision or publishes a drill. An individual read-only presentation remains available on each card. Browser support for video recording varies, especially in iOS Safari.

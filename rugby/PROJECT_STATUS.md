@@ -57,3 +57,10 @@ These supersede historic copies with outdated cone layouts and an obsolete share
 - Restored a prominent Decision making section on left, using the existing reproducible A/B split mechanism.
 - From setup, guide to first moving step; auto-select only if exactly one eligible runner, otherwise ask coach to choose.
 - Explain minimum 0.5 s per half when the run is too short and focus Step duration field; never silently extend a run or invent a decision.
+
+## v0.18.3 — shared video creation workflow
+
+- Public library includes Add to video for animated drill cards, stage selection/order, title and the same recording options as Studio, using the exact shared video generator.
+- Public video creation does not use GitHub credentials or modify drill data. Only published animated drills are selectable, up to eight. The list is temporary per tab.
+- User-facing Movie terminology becomes Video; internal movie API names stay stable to avoid breaking saved settings and tests.
+- Video format depends on browser MediaRecorder support; iOS Safari recording needs device-level acceptance testing.

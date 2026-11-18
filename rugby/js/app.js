@@ -44,9 +44,9 @@ import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-or
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
 import {renderScene} from './scene.js?v=0.18.0';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.16.1';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill} from './outputs.js?v=0.18.3';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
-import {bindMovieSettings} from './movie.js?v=0.7.2';
+import {bindMovieSettings} from './movie.js?v=0.18.3';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.26';
 initWorkspace();
@@ -1981,7 +1981,7 @@ $('shareOpen').onclick=async()=>{const w=window.open('about:blank','_blank');if(
 $('shareMovie').onclick=async()=>{if(sharingBusy)return;shareBusy(true);$('shareStatus').textContent='';try{if(!videoSequence.length)throw Error('Choose at least one drill for the video.');
  const sequence=videoSequence.map(item=>item.current?clone(drill):clone(item.drill));
  const settings={...shareOptions(),...getMovieSettings(),sequenceDrills:sequence,movieTitle:$('movieTitle').value.trim()},name=outputName({title:$('movieTitle').value.trim()||drill.title});
- const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(sequence[0],settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Movie exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{shareBusy(false)}};
+ const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(sequence[0],settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{shareBusy(false)}};
 $('sharePrint').onclick=()=>{const opts=shareOptions();$('shareDialog').close();printDrill(drill,opts)};
 // Close board options when returning to the pitch or leaving with Escape.
 document.addEventListener('pointerdown',e=>{const menu=$('viewMenu');if(menu.open&&!menu.contains(e.target))menu.open=false});
