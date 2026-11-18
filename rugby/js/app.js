@@ -745,7 +745,7 @@ function ensureSkillActionStep(title){
 }
 let skillMode='touch',skillFromGroup=false;
 function openSkillDialog(kind,fromGroup=false){
- if(!canEditObjects()||!ensureSkillActionStep(kind==='tag'?'Tag removal':'Touch cue'))return;
+ if(!canEditObjects())return;
  skillMode=kind;skillFromGroup=fromGroup;
  const roster=f().objects.filter(canCarry);
  const candidates=fromGroup?roster.filter(o=>groupIds.has(o.id)):roster;
@@ -774,6 +774,9 @@ $('skillSave').onclick=()=>{
  const actor=$('skillActor').value,target=$('skillTarget').value,side=$('skillTagSide').value;
  const n=Number($('skillAt').value);
  if(!Number.isFinite(n)||n<10||n>95){$('skillActionError').textContent='Use a time from 10 to 95% of this step.';return}
+ const dryRun=addInteraction(clone(f()),skillMode,actor,target,side,$('skillActionLabel').value.trim());
+ if(!dryRun.ok){$('skillActionError').textContent=dryRun.message;return}
+ if(!ensureSkillActionStep(skillMode==='tag'?'Tag removal':'Touch cue'))return;
  const result=addInteraction(f(),skillMode,actor,target,side,$('skillActionLabel').value.trim());
  if(!result.ok){$('skillActionError').textContent=result.message;return}
  f().interactions.at(-1).at=n/100;
