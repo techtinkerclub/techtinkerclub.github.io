@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.19.3
+# Rugby Coaching Studio — Classic Studio v0.19.4
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -215,3 +215,11 @@ Tackle, ruck and maul no longer require selecting the full group beforehand: sel
 ## Ground tackle versus upright hold (v0.19.3)
 
 From **Actions… → Contact**, choose either **Tackle to ground** or **Held upright** after selecting the players. For **Tackle to ground**, the ball carrier is grounded, the existing **Open breakdown sequence** is available, and you can progress through **Release and present → Support arrives → Ruck formed → Contest → Ball secured** as before. For **Held upright**, the ball carrier remains on their feet with one or two engaged defenders; the app does **not** treat this as a completed tackle or generate a ruck. Continue with the separate Rip ball, Pass or other authored actions if appropriate for the age group. Existing saved tackle and ruck drills are unchanged.
+
+## Calling TAG! and returning a tag (v0.19.4)
+
+For an RFU U7/U8 tag exercise, equip both players with belts, select the tagger and choose **Right-click → Actions… → Remove a tag**. Select the ball carrier, the hip strip and the event time. At that time the tagger visibly raises the removed strip and a **TAG!** shout bubble appears. The held tag remains with the tagger in later steps; no physical tackle or ball transfer is created.
+
+After authoring the tagged carrier's pass, select the tagger and choose **Actions… → Return a tag to its player**. Only strips the selected tagger has actually taken are offered, and returning restores the correct player's correct hip strip. Set when the return happens; edit or remove the event in **Step → Actions in this step**. If the removal and return are attempted within one step, return automatically gets its own following step. The Object inspector's **Reset belt (setup only)** is a manual setup override, **not** a referee-law tag-return animation.
+
+RFU U8 practice: stop, lift the tag and call TAG; pass, hand the strip back, then rejoin only with the tags restored. The visual callout is not generated speech audio and the editor does not automatically stop running or award a pass. The coach should set player movement and pass timing to show the correct sequence.
