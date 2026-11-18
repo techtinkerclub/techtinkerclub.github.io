@@ -14,7 +14,7 @@ function select(i){
  $('stageObjective').textContent=d.objective||'Follow the drill demonstration and coaching card.';
  $('previousStage').disabled=i===0;$('nextStage').disabled=i===stages.length-1;
  $('stageNav').querySelectorAll('button').forEach((b,j)=>{if(j===i)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});
- const p=new URLSearchParams({drill:d.id});$('drillViewer').src='./play.html?'+p;
+ const p=new URLSearchParams({drill:d.id});if(params.get('style')==='minion')p.set('minion','1');$('drillViewer').src='./play.html?'+p;
  const u=new URL(location.href);u.searchParams.set('stage',String(i+1));history.replaceState(null,'',u);
 }
 $('previousStage').onclick=()=>select(current-1);
