@@ -6,7 +6,7 @@ Updated 18 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.17.1** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.18.6** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
 
 ## Public publishing workflow
@@ -39,8 +39,8 @@ These supersede historic copies with outdated cone layouts and an obsolete share
 - A saved revision is not immediately published; updates require explicit publication (by design).
 - Older compressed share links (URL hash snapshots) remain immutable snapshots. Use stable `?drill=seed-...` public links when ongoing updates matter.
 - Safeguarding and coaching review remain the author's responsibility; publication is **not** RFU endorsement.
-- The decision drill still has setup notes referring to four cones even though the actual saved setup has none. Option A's defensive-pair wording also needs reconciliation. Correct both using standard coaching-card editing, save a new working revision, then explicitly update the public copy.
-- A fully linked *printable progression pack* and a linked public presentation are not yet implemented; linked video exports work.
+- The published decision-drill equipment and defensive-pair wording were reconciled in the 0.18.6 source and publication snapshots.
+- A printable progression pack is available from Studio's video-sequence builder. A stable linked public multi-drill presentation is not yet implemented.
 - Browser QA runs in Chromium CI; native iOS Safari acceptance testing is still outstanding.
 - Avoid unnecessary sequential commits. Implement coherent changes, test, and report **committed**, **CI passed**, and **deployed** separately.
 
@@ -74,3 +74,12 @@ These supersede historic copies with outdated cone layouts and an obsolete share
 ## v0.18.5 — decision controls cleanup
 
 The left Decision making tool is the single creation/edit entry point; duplicate timeline/route-panel buttons are removed. A/B switches and comparison stay available. Removing a playable marker or Remove fork clears its branch, marker and editing references, leaving the selected path linear. No saved or public drill records are altered automatically.
+
+## v0.18.6 — contextual right-click and printable progression packs
+
+- Context menus now show relevant commands rather than a universal list. Removed redundant 15-degree rotate commands (rotation handles and inspector remain).
+- Running-path SVG hit targets are recognised directly on right-click; eligible player runs offer **Add decision to this run** using the existing decision placement model. A/B edit, whistle, movement reset, ball actions, layer ordering and deletion scopes are shown only where applicable.
+- Ordered video sequences can be printed as a coaching progression pack with a contents page, each drill's coaching card and all step diagrams; the editor drill models remain independent. A regression test covers core controls, CSS hiding and print composition.
+- The editable and public versions of **Hold the line · Carry or pass?** have matching equipment wording (boundary flags, no four-cone claim) and Option A watch-points (D1 and D2).
+- **Verification still required:** live Chromium CI for the new commits, manual right-click on players and SVG paths, mobile touch alternatives, physical iOS Safari recording, multi-drill print pagination. Latest source commits are not a browser sign-off.
+- **Still pending:** a stable linked public *presentation* for a progression (video and printable pack are now available); the right-click redesign should receive real-coach usability testing.
