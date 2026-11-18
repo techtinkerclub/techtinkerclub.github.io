@@ -43,3 +43,10 @@ These supersede historic copies with outdated cone layouts and an obsolete share
 - A fully linked *printable progression pack* and a linked public presentation are not yet implemented; linked video exports work.
 - Browser QA runs in Chromium CI; native iOS Safari acceptance testing is still outstanding.
 - Avoid unnecessary sequential commits. Implement coherent changes, test, and report **committed**, **CI passed**, and **deployed** separately.
+
+## v0.18.0 — setup hold and ball flight direction
+
+- First step supports an editable 0–30 s stationary setup hold. Older zero-second drills are unchanged.
+- Shared setup-aware clock drives editor, whistle, decisions, presentation and video, not a magic extra step.
+- During a genuine player-to-player pass, the rugby ball temporarily turns toward the actual route tangent with a 10° aesthetic offset; the stored authored orientation remains unchanged.
+- Separate pending polish: header link/label spacing on the read-only presentation page.

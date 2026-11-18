@@ -1,5 +1,5 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.16.1';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.18.0';
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {outcomeCardsMarkup} from './branching-visual.js?v=4';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
@@ -122,7 +122,7 @@ export function printMarkup(raw,opts={}){
  if(!opts._skipCard)pages.push('<section class="print-page print-card">'+head('Coaching card')+coachingMarkup(d)+'<footer>Check current age-grade laws and safe coaching practice before delivery.</footer></section>');
  for(const [index,group] of groups.entries()){
   const cards=group.frames.map((fr,j)=>{const k=group.start+j,scene=renderScene(d,{...o,index:k,ink:true,ghosts:true,runs:true,passes:true,labels:true,prefix:'p'+k});
-   return '<article class="print-step'+(fr.notes.length>500||decisionList(fr).length?' long-note':'')+'"><h3>'+String(k+1).padStart(2,'0')+' · '+esc(fr.name)+' <small>'+(k?fr.seconds.toFixed(1)+' s':'Setup')+'</small></h3><div class="print-step-body"><div class="print-diagram">'+scene.svg+'</div><div><h4>Technical coaching notes</h4><p>'+esc(fr.notes||'Follow the positions and movement arrows in the diagram.')+'</p>'+(o.decisions?(opts._branching&&k===opts._branchFork?branchDecisionMarkup(opts._branching):decisionMarkup(fr)):'')+'<h4>Coach observations</h4><div class="print-notelines"></div></div></div></article>'}).join('');
+   return '<article class="print-step'+(fr.notes.length>500||decisionList(fr).length?' long-note':'')+'"><h3>'+String(k+1).padStart(2,'0')+' · '+esc(fr.name)+' <small>'+(k?fr.seconds.toFixed(1)+' s':fr.seconds>0?'Setup hold · '+fr.seconds.toFixed(1)+' s':'Setup')+'</small></h3><div class="print-step-body"><div class="print-diagram">'+scene.svg+'</div><div><h4>Technical coaching notes</h4><p>'+esc(fr.notes||'Follow the positions and movement arrows in the diagram.')+'</p>'+(o.decisions?(opts._branching&&k===opts._branchFork?branchDecisionMarkup(opts._branching):decisionMarkup(fr)):'')+'<h4>Coach observations</h4><div class="print-notelines"></div></div></div></article>'}).join('');
   pages.push('<section class="print-page">'+head('Sequence '+(index+1)+' / '+groups.length)+'<div class="print-legend"><span> ───➤ Run / movement</span><span> – – ➤ Ball movement · – · – Kick</span><span> ◌ Starting position · ◆ Decision / dotted alternative</span></div>'+cards+'<footer>'+esc(cardMeta(d))+' · check age-grade laws before delivery.</footer></section>');
  }return pages.join('');
 }

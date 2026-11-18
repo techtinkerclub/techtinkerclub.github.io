@@ -3,7 +3,7 @@
 // no movement or rugby judgement is inferred by this planner.
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {decisionTime} from './branching-visual.js?v=4';
-import {drillDuration} from './scene.js?v=0.16.1';
+import {drillDuration} from './scene.js?v=0.18.0';
 
 const clean=(v,max=500)=>String(v??'').replace(/\s+/g,' ').trim().slice(0,max);
 const seconds=(n,fallback,min=0,max=12)=>Number.isFinite(Number(n))?
