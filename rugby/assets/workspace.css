@@ -324,3 +324,17 @@ html{color-scheme:dark}
 #contestMovementTools .contest-winner{grid-column:1 / -1}
 #contestMovementTools #applyContestMotion{text-align:center}
 #contestMovementTools #contestMotionStatus{display:block;color:var(--muted)}
+
+/* Editable touch/tag event rows; no extra modal styling framework. */
+#skillActionsPanel{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+#skillActionsPanel h3{margin:0 0 6px}
+.skill-action-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.skill-action-row strong{font-size:12px}
+.skill-action-row small{flex:1 1 130px;color:var(--muted)}
+.skill-action-row label{font-size:12px;display:flex;align-items:center;gap:5px}
+.skill-action-row input{width:70px;padding:5px}
+.skill-action-row button{padding:6px 9px}
+#skillDialog{max-width:min(94vw,500px);width:500px}
+#skillDialog .field{margin:10px 0}
+#skillDialog select,#skillDialog input{max-width:100%}
+#skillActionError:not(:empty){color:#ffc29e}
