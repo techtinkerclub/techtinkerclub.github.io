@@ -6,7 +6,7 @@ Updated 18 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.18.7** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.18.9** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
 
 ## Public publishing workflow
@@ -91,3 +91,20 @@ The left Decision making tool is the single creation/edit entry point; duplicate
 - Public printing reuses shared print CSS and print markup. The progression never changes source drills or grants edit rights.
 - Right-click on the actual SVG running path works, adding a point at the click position. Irrelevant equipment movement actions are hidden.
 - **Acceptance outstanding:** Node/Playwright CI for latest HEAD, public sequence URL, phone/tablet operation, iOS Safari video recording, printed pagination and right-click/long-press UX. Source commits alone do not prove tests passed.
+
+## v0.18.9 — colour-coded agility, touch, tag and selected-player actions (18 Nov 2026)
+
+- Added seven fixed cone colours: yellow, orange, red, blue, green, white and purple, selected in Object inspector. Colour is saved as `coneColor` and preserved in the shared renderer and outputs.
+- Extended Agility equipment palette: low hurdle, hoop, slalom pole and flat marker disc, alongside the existing ladder. These are schematic equipment icons, not manufacturer-dimensioned training products.
+- Added **Record touch** through player right-click. An actor can touch another player, training object or pitch line; the cue has an adjustable time in its step, appears in playback and can be removed in Step details. No tackle, fall or possession change is invented.
+- Added individual **Tag rugby belt** equip/unequip/reset and the non-contact **Remove tag** action. Left/right strips and a taken-tag count display on players. Tag capture requires a ball-carrying tagged player and a tagged opponent. The action is timed and retained in saved/shared drills. Tag is not treated as a physical tackle or ruck; the author creates subsequent pass/restart steps.
+- Multi-select at least two players (Ctrl-click or Group select), then right-click a selected member for conditional Touch, Tackle, Ruck or Maul actions. Group-contact shortcuts use the **existing** contact formation model, not hidden generated animations. Age gates: U7/U8 no contact shortcuts, U9 tackle only, U10+ ruck/maul with proper prerequisites. Explicitly selected players must satisfy formation validation.
+- Timed touch/tag cues are visible in Step inspector, where they can be retimed or removed without deleting players. Cancelled action dialogs do not create empty steps. New steps do not inherit already-executed cues. A setup-stage action creates an editable movement step only once confirmed.
+- Added `tests/skill-actions.test.mjs` and expanded assertions for multi-selection/contact gating, save/renderer state and deletion. Updated client module cache references.
+
+### Known boundaries and acceptance checks
+
+- This implementation uses **authored schematic contact**: touch and tag badges do not automatically detect a physical collision, shorten a previously drawn run, enforce a pass count or award an RFU-law restart. Coaches must edit the stop/pass/restart sequence deliberately. Do not imply automatic rules refereeing.
+- Multi-player contact arrangements may reposition the selected players to a preset. Review the diagram and timing before using it for an actual coaching drill.
+- Verify Node tests and Playwright/real-browser checks (including mobile long-press, video and printing). Syntax and isolated model checks passed during authoring, but the full CI and live site acceptance results were not independently established in this session.
+- U7/U8 tag rugby and U9 transitional tackling distinctions are aligned with RFU Regulation 15 guidance, but current season rules and club contact policy remain authoritative.
