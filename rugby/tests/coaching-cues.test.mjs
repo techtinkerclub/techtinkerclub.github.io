@@ -83,7 +83,9 @@ assert.equal(clean.frames[0].objects[0].type,'fieldLine','General line must surv
 assert.match(renderScene(clean,{index:0}).svg,/data-line-kind="field-reference"/);
 for(const page of ['index.html','coach/index.html']){
  const html=read(page);
- assert.match(html,/id="tryDecisionDemo"/);
+ assert.doesNotMatch(html,/id="tryDecisionDemo"/);
+  assert.match(html,/id="decisionToolStart"/);
+  assert.match(html,/id="decisionToolHelp"/);
  assert.match(html,/id="compareOutcomes"/);
  assert.match(html,/id="whistleSound"/);
 }

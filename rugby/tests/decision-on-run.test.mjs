@@ -77,7 +77,7 @@ assert.deepEqual(outcomeViews(restored).map(v=>v.drill.frames.length),[3,3]);
 assert.throws(()=>createDecisionOnRun(source,0,'coach',.5,'bad',settings),/First add a running step/);
 assert.throws(()=>createDecisionOnRun(source,1,'runner',.5,'bad',settings),/Draw a running path/);
 assert.throws(()=>createDecisionOnRun(source,1,'coach',.01,'bad',settings),/Place the decision/);
-assert.throws(()=>createDecisionOnRun(source,1,'coach',.15,'bad',settings),/too close/);
+assert.throws(()=>createDecisionOnRun(source,1,'coach',.15,'bad',settings),/at least 0\.5 seconds before and after/);
 const forward=structuredClone(source);
 forward.frames[1].objects.find(o=>o.id==='runner').y=270;
 assert.throws(()=>createDecisionOnRun(forward,1,'coach',.55,'bad',settings),/forward/i,'Forward pass cannot be silently animated');
