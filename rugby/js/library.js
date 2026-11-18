@@ -1,4 +1,4 @@
-import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.13.3';
+import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.17.0';
 import {playbackData,renderScene} from './scene.js?v=0.16.1';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fields={q:'search',age:'age',category:'category',format:'format',sort:'sort'};
@@ -16,7 +16,7 @@ function thumb(d){
  thumbs.set(d.id,svg)}catch{thumbs.set(d.id,'<span>Open drill to view diagram</span>')}}
  return thumbs.get(d.id);
 }
-function card(d,f){const animated=isAnimated(d),kind=isRules(d)?'RULES WALK-THROUGH':animated?'ANIMATED DRILL':'COACHING CARD',href=esc(drillHref(d.id,f));return '<article class="drill-card"><a class="thumb '+(animated?'':'card-only')+'" href="'+href+'" aria-label="View '+esc(d.title)+'">'+thumb(d)+'</a><div class="card-body"><div class="card-type">'+kind+' · '+esc(d.category)+'</div><h3>'+esc(d.title)+'</h3><div class="card-meta">'+esc(ageLabel(d))+' · '+esc(d.minutes)+' min'+(animated?' · '+d.frames.length+' steps':'')+' · '+esc(d.length)+' × '+esc(d.width)+' m</div><p class="card-objective">'+esc(d.objective)+'</p><a class="view-link" href="'+href+'">'+(animated?'Watch drill':'Read coaching card')+'<span aria-hidden="true">›</span></a></div></article>'}
+function card(d,f){const animated=isAnimated(d),kind=isRules(d)?'RULES WALK-THROUGH':animated?'ANIMATED DRILL':'COACHING CARD',href=esc(drillHref(d.id,f));return '<article class="drill-card"><a class="thumb '+(animated?'':'card-only')+'" href="'+href+'" aria-label="View '+esc(d.title)+'">'+thumb(d)+'</a><div class="card-body"><div class="card-type">'+kind+' · '+esc(d.category)+'</div><h3>'+esc(d.title)+'</h3><div class="card-meta">'+(d.publishedAt?'Updated '+esc(new Date(d.publishedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}))+' · '+(Number.isInteger(d.publishedRevision)?'Revision '+d.publishedRevision:'Legacy revision')+' · ':'')+esc(ageLabel(d))+' · '+esc(d.minutes)+' min'+(animated?' · '+d.frames.length+' steps':'')+' · '+esc(d.length)+' × '+esc(d.width)+' m</div><p class="card-objective">'+esc(d.objective)+'</p><a class="view-link" href="'+href+'">'+(animated?'Watch drill':'Read coaching card')+'<span aria-hidden="true">›</span></a></div></article>'}
 function render(reset=true){
  if(reset)limit=18;const f=read();replaceUrl(f);
  for(const b of $('quickFilters').querySelectorAll('button')){const k=b.dataset.quick,on=k==='all'?!f.age&&!f.category&&!f.format&&!f.q:k==='u10'?f.age==='10':f.format===k;b.setAttribute('aria-pressed',String(on))}

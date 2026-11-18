@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — Classic Studio v0.16.2
+# Rugby Coaching Studio — Classic Studio v0.17.0
 
 Standalone web application for grassroots rugby coaches. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
@@ -156,3 +156,15 @@ Under **Share & export → Video progression**, add current, public/saved librar
 Starter **seed-143 · Defensive line · Whistle then advance together** has the same coach and six-player starting lineup as **seed-133 · Hold the line · Carry or pass?**. The first is a simple non-contact whistle reaction: all six move about two metres in unison, then check their shape. Put seed-143 first and seed-133 second in the video progression for the coaching sequence discussed. U10 free-pass offside/retreat requirements still apply; the coach's whistle is a training cue, not permission to advance illegally.
 
 The code and regression suite guard saved data and film sequencing. Browser export and real-device visual QA are still required before saying every effect is production-perfect.
+
+## Publishing and revision workflow (v0.17.0)
+
+- **Save to GitHub** records a working revision in `data/coach-drills.json`. It does not change public presentations.
+- **Publish** is an explicit action available on the saved drill in the editor or GitHub library. It copies that exact saved revision, including editable frames, notes and both decision outcomes, into `data/published-drills.json`.
+- **Update public copy** replaces only the published snapshot while keeping its stable `seed-...` ID and existing public presentation URL.
+- **Unpublish** hides the public entry and retains the publication snapshot and ID so it can be republished. Deleting the GitHub source is blocked while published.
+- The public library and presentation player combine the original starter catalogue with the publication overlay. A failed overlay fetch shows a loading error instead of an out-of-date public drill.
+- Legacy links `seed-133` and `seed-143` are retroactively mapped to saved sources `mwlwflvgp8foni` and `mwlws9j9rth2wb` respectively. Older catalogue content remains in Git history.
+- Published records show the publication timestamp and source revision when available; a missing historic revision is labelled as legacy, not guessed.
+- Publish deliberately, after checking your coaching notes and age-grade rules. A GitHub-saved resource is not automatically a published coaching recommendation.
+

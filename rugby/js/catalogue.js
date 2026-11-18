@@ -1,3 +1,4 @@
+import {loadPublicationData,applyPublications} from './publication.js?v=1';
 // The read-only library and player share the same curated catalogue, not browser storage.
 export const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game'];
 export const FORMATS=['animated','card','rules'];
@@ -33,7 +34,8 @@ export async function loadCatalogue(fetcher=fetch){
  if(!res.ok)throw Error('The library could not load (HTTP '+res.status+').');
  const data=await res.json();if(data?.version!==1||!Array.isArray(data.drills)||!data.drills.length)throw Error('The drill catalogue is unavailable.');
  const ids=new Set();for(const d of data.drills){if(!/^seed-\d{3,}$/.test(d.id)||ids.has(d.id)||!Array.isArray(d.frames)||!d.frames.length)throw Error('The catalogue contains an invalid entry.');ids.add(d.id)}
- return data.drills;
+ const overrides=await loadPublicationData(fetcher);
+ return applyPublications(data.drills,overrides);
 }
 export async function copyText(s){
  try{await navigator.clipboard.writeText(s);return true}catch{return false}

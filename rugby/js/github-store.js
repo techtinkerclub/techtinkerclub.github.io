@@ -1,5 +1,7 @@
+import {validatePublications,publicationForSource,isPublished} from './publication.js?v=1';
 // GitHub-only personal drill persistence. Credentials live in the caller's memory, never in storage.
 const ROOT='https://api.github.com/repos/techtinkerclub/techtinkerclub.github.io/contents/rugby/data/coach-drills.json';
+const PUBLIC_ROOT='https://api.github.com/repos/techtinkerclub/techtinkerclub.github.io/contents/rugby/data/published-drills.json';
 export const REPO_LIBRARY='https://github.com/techtinkerclub/techtinkerclub.github.io/blob/master/rugby/data/coach-drills.json';
 const empty=()=>({version:1,kind:'rugby-coach-library',drills:[]});
 const encode=s=>{const bytes=new TextEncoder().encode(s);let b='';for(let i=0;i<bytes.length;i+=8192)b+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(b)};
@@ -23,7 +25,22 @@ export function createGithubStore(fetcher=fetch){
   if(response.encoding!=='base64'||typeof response.content!=='string'||!response.sha)throw Error('GitHub returned an unsupported library format.');
   return {data:validateCoachLibrary(JSON.parse(decode(response.content))),sha:response.sha};
  };
+ const loadPublications=async(ref='master')=>{
+  const response=await request(PUBLIC_ROOT+'?ref='+encodeURIComponent(ref));
+  if(response.encoding!=='base64'||typeof response.content!=='string'||!response.sha)throw Error('Publication index is unreadable.');
+  return {data:validatePublications(JSON.parse(decode(response.content))),sha:response.sha};
+ };
+ const commitPublications=async(data,sha,message)=>{
+  const json=JSON.stringify(validatePublications(data),null,2)+'\n';
+  const result=await request(PUBLIC_ROOT,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,content:encode(json),sha,branch:'master'})});
+  const commit=result.commit?.sha;
+  if(!/^[a-f0-9]{40}$/.test(commit||''))throw Error('Publication commit could not be confirmed.');
+  const verified=await loadPublications(commit);
+  if(JSON.stringify(verified.data)!==JSON.stringify(data))throw Error('Publication verification failed.');
+  return {data:verified.data,commit};
+ };
  return {
+  loadPublications,
   connected:()=>!!token,disconnect:()=>{token=''},
   async connect(value){if(!/^github_pat_[A-Za-z0-9_]+$/.test(value))throw Error('Use a fine-grained GitHub personal access token.');token=value;try{return await load()}catch(e){token='';throw e}},
   load,
@@ -67,9 +84,36 @@ export function createGithubStore(fetcher=fetch){
    if(candidate&&found.length<limit)found.push(candidate);
    return {entries:found.slice(0,limit),scanned:commits.length,limited:commits.length===25};
   },
+  async publish(id,baseline,maxPublicId=143){
+   if(!token)throw Error('Connect GitHub first.');
+   const [working,publications]=await Promise.all([load(),loadPublications()]);
+   const saved=working.data.drills.find(d=>d.id===id);
+   if(!saved||!baseline||JSON.stringify(saved)!==JSON.stringify(baseline))throw Error('The saved drill changed. Reopen its latest GitHub revision before publishing.');
+   const existing=publicationForSource(publications.data,id);
+   const used=new Set(publications.data.drills.map(d=>d.id));
+   let n=Math.max(143,Number(maxPublicId)||143);
+   if(!existing)while(used.has('seed-'+String(++n).padStart(3,'0'))){}
+   const publicId=existing?.id||'seed-'+String(n).padStart(3,'0');
+   const exported={...JSON.parse(JSON.stringify(saved)),id:publicId,savedFromCoachDrill:id,publishedAt:new Date().toISOString(),
+    publishedRevision:Number.isInteger(saved.revision)?saved.revision:null,publishedSourceSavedAt:saved.savedAt||null};
+   const data={...publications.data,drills:[...publications.data.drills.filter(d=>d.id!==publicId),exported],
+    unpublishedIds:publications.data.unpublishedIds.filter(q=>q!==publicId)};
+   const result=await commitPublications(data,publications.sha,'Publish rugby drill '+publicId+' · '+String(saved.title||'').slice(0,85));
+   return {...result,publicId};
+  },
+  async unpublish(id){
+   if(!token)throw Error('Connect GitHub first.');
+   const publications=await loadPublications();
+   const record=publicationForSource(publications.data,id);
+   if(!record)throw Error('This saved drill has no public entry.');
+   if(publications.data.unpublishedIds.includes(record.id))throw Error('This public entry is already unpublished.');
+   const data={...publications.data,unpublishedIds:[...publications.data.unpublishedIds,record.id]};
+   return {...await commitPublications(data,publications.sha,'Unpublish rugby drill '+record.id),publicId:record.id};
+  },
   async remove(id,baseline){
    if(!token)throw Error('Connect to GitHub first.');
-   const latest=await load(),existing=latest.data.drills.find(x=>x.id===id);
+   const [latest,publications]=await Promise.all([load(),loadPublications()]),existing=latest.data.drills.find(x=>x.id===id);
+   if(isPublished(publications.data,id))throw Error('Unpublish this drill before deleting its GitHub source.');
    if(!existing)throw Error('Drill no longer exists on GitHub. Refresh the library.');
    if(!baseline||JSON.stringify(existing)!==JSON.stringify(baseline))throw Error('This drill changed on GitHub. Refresh and review it before deleting.');
    const data={...latest.data,drills:latest.data.drills.filter(x=>x.id!==id)};

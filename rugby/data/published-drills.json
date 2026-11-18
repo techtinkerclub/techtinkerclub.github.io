@@ -1,0 +1,1734 @@
+{
+  "version": 1,
+  "kind": "rugby-public-overrides",
+  "drills": [
+    {
+      "version": 1,
+      "id": "seed-133",
+      "title": "Hold the line · Carry or pass?",
+      "age": "U10",
+      "category": "Defence",
+      "length": 10,
+      "width": 20,
+      "objective": "Defenders move together, scan for the ball carrier and close the right channel without losing the line. The attack has a genuine choice: the coach carries, or passes backwards to A1.",
+      "safety": "U10 activity: begin with touch for both outcomes. Never ask children to tackle an adult coach. The adult-carry outcome is always a two-hand touch demonstration. If practising the A1 tackle, use only age-matched participants with an appropriately qualified coach, a progressive tackle warm-up, controlled speed and the current RFU tackle-height requirement. Head to the safe side, stable feet, shoulder-and-arm connection, and a complete wrap—not a head-first or diving contact. D5 is a covering defender, not a second simultaneous tackler. Stop immediately if spacing or head position becomes unsafe; the player who goes to ground must release and present safely. Confirm current RFU Regulation 15 Appendix 4 before the session.",
+      "frames": [
+        {
+          "name": "Set up · six defenders and two attackers",
+          "seconds": 0,
+          "notes": "Six defenders start connected across the pitch. Coach and A1 stand behind the ball. The four cones mark a working area; A1 begins deeper so the eventual pass can travel backwards.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 144,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 164.39999999999998,
+              "y": 339.9,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Coach collects the ball",
+          "seconds": 0.8,
+          "notes": "Coach picks up the grounded ball. Defenders stay ready and communicate their spacing; A1 waits deeper for a possible pass.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 144,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 150.732,
+              "y": 354.81199999999995,
+              "rot": 0,
+              "ownerId": "mwl6w26yzp8oka"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "WHISTLE · GO — read the carrier",
+          "seconds": 2,
+          "notes": "The whistle starts the movement. Coach runs towards the defensive line, while all six defenders take small steps up together. At the yellow diamond, STOP and choose A or B.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 122.8,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 126.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 129.4,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 127.2,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 125,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 121.7,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 205.0776470413472,
+              "y": 339.995043573634,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 211.8096470413472,
+              "y": 331.60704357363403,
+              "rot": 0,
+              "ownerId": "mwl6w26yzp8oka"
+            },
+            {
+              "id": "mwl7w298wu7j9d",
+              "type": "decision",
+              "label": "Decision",
+              "x": 205.0776470413472,
+              "y": 339.995043573634,
+              "rot": 0,
+              "decision": {
+                "playerId": "mwl6w26yzp8oka",
+                "anchor": null,
+                "question": "Open gap?",
+                "cue": "Look on defense movement to spot possible gaps.",
+                "options": [
+                  {
+                    "id": "option-1",
+                    "label": "Coach carries · D1 and D2 close for touch",
+                    "kind": "run",
+                    "mode": "smooth",
+                    "points": []
+                  },
+                  {
+                    "id": "option-2",
+                    "label": "Coach passes · A1 attacks D4's channel",
+                    "kind": "pass",
+                    "mode": "corners",
+                    "points": []
+                  }
+                ]
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {
+            "mwl6w26yzp8oka": {
+              "mode": "corners",
+              "points": [
+                {
+                  "x": 151.78932932619142,
+                  "y": 360.74680870684347
+                },
+                {
+                  "x": 159.63175448211786,
+                  "y": 358.51834524211415
+                },
+                {
+                  "x": 167.46508595406192,
+                  "y": 356.24875533388774
+                },
+                {
+                  "x": 175.26559491142183,
+                  "y": 353.8368544534841
+                },
+                {
+                  "x": 183.0077889823568,
+                  "y": 351.19228283781433
+                },
+                {
+                  "x": 190.65013056328104,
+                  "y": 348.19462050823455
+                },
+                {
+                  "x": 198.09853623520277,
+                  "y": 344.62231366528295
+                }
+              ],
+              "follow": false
+            }
+          },
+          "signal": {
+            "kind": "whistle",
+            "coachId": "mwl6w26yzp8oka",
+            "label": "GO",
+            "duration": 0.5
+          }
+        },
+        {
+          "name": "B1 · Backwards pass to A1",
+          "seconds": 1.5,
+          "notes": "Coach passes backwards across to A1, who stays deeper until the ball arrives. D4 calls the receiver; D5 covers the neighbouring channel while the remaining defenders stay connected.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 135,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 140,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.79999999999995,
+              "y": 148,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 150,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 149,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 137,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 256.2,
+              "y": 238.22727272727275,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 562.1999999999999,
+              "y": 338,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 568.9319999999999,
+              "y": 329.6119999999999,
+              "rot": 0,
+              "ownerId": "mwl6w5ww333x3x",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "mwl6wf87jrw70e": {
+              "start": 75,
+              "end": 100
+            }
+          },
+          "paths": {
+            "mwl6w26yzp8oka": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 246,
+                  "y": 280.5909090909091
+                }
+              ],
+              "follow": false
+            }
+          }
+        },
+        {
+          "name": "B2 · A1 attacks; D4 tackles",
+          "seconds": 2,
+          "notes": "A1 receives, looks up and carries into the outside channel. D4 tracks A1, shortens steps and makes the controlled tackle using safe head placement and a wrap. D5 closes the adjacent gap as cover; D5 does not join the tackle.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 152,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 153,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.79999999999995,
+              "y": 155,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 582.5999999999999,
+              "y": 188.2381818181818,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 592.8,
+              "y": 185.27272727272728,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 151,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 256.2,
+              "y": 238.22727272727275,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 582.5999999999999,
+              "y": 203.48909090909092,
+              "rot": 90
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 589.9439999999998,
+              "y": 211.17809090909094,
+              "rot": 0,
+              "ownerId": "mwl6w5ww333x3x"
+            },
+            {
+              "id": "mwl8tvglg3qrmc",
+              "type": "tackle",
+              "label": "Tackle",
+              "x": 582.5999999999999,
+              "y": 195.86363636363635,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "mwl6w5ww333x3x",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "mwl6tbehy92zxz",
+                  "pose": "tackling"
+                }
+              ],
+              "breakdown": {
+                "phase": "tackle",
+                "carrierId": "mwl6w5ww333x3x",
+                "tacklerId": "mwl6tbehy92zxz",
+                "ballId": "mwl6wf87jrw70e",
+                "tacklerIds": [
+                  "mwl6tbehy92zxz"
+                ]
+              }
+            },
+            {
+              "id": "coach-demo-tackle-caption",
+              "type": "label",
+              "label": "D4 TACKLES · D5 COVERS",
+              "x": 660,
+              "y": 242,
+              "rot": 0,
+              "textStyle": {
+                "fontSize": 13,
+                "color": "#eef9ef",
+                "background": true,
+                "backgroundColor": "#263b31",
+                "backgroundOpacity": 90,
+                "border": true,
+                "borderColor": "#b1cdb7",
+                "borderWidth": 1
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {
+            "mwl6tbehy92zxz": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 521.4,
+                  "y": 164.0909090909091
+                }
+              ],
+              "follow": false
+            },
+            "mwl6tbkosxh9wx": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 623.4,
+                  "y": 174.6818181818182
+                }
+              ],
+              "follow": false
+            },
+            "mwl6w5ww333x3x": {
+              "mode": "smooth",
+              "points": [
+                {
+                  "x": 582.5999999999999,
+                  "y": 259.40909090909093
+                }
+              ],
+              "follow": false
+            }
+          }
+        },
+        {
+          "name": "B3 · Release and present",
+          "seconds": 1.4,
+          "notes": "D4 releases and gets back to feet. A1 goes to ground safely, releases and presents the ball away from pressure. D5 stays on feet and does not dive into the contact area. Reset the players and repeat with the other outcome.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 152,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 153,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.79999999999995,
+              "y": 155,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 622.3799999999999,
+              "y": 186.33181818181816,
+              "rot": 180,
+              "playerPose": "standing"
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 592.8,
+              "y": 185.27272727272728,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 151,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 256.2,
+              "y": 238.22727272727275,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 575.2559999999999,
+              "y": 190.14454545454547,
+              "rot": 180
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 582.5999999999999,
+              "y": 211.75,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "mwl8tvglg3qrmc",
+              "type": "tackle",
+              "label": "Release and present",
+              "x": 582.5999999999999,
+              "y": 195.86363636363635,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "mwl6w5ww333x3x",
+                  "pose": "grounded"
+                }
+              ],
+              "breakdown": {
+                "phase": "release",
+                "arrivalSide": "defence",
+                "carrierId": "mwl6w5ww333x3x",
+                "tacklerId": "mwl6tbehy92zxz",
+                "ballId": "mwl6wf87jrw70e",
+                "tacklerIds": [
+                  "mwl6tbehy92zxz"
+                ]
+              }
+            },
+            {
+              "id": "coach-demo-presentation-caption",
+              "type": "label",
+              "label": "RELEASE · PRESENT",
+              "x": 666,
+              "y": 253,
+              "rot": 0,
+              "textStyle": {
+                "fontSize": 14,
+                "color": "#eef9ef",
+                "background": true,
+                "backgroundColor": "#263b31",
+                "backgroundOpacity": 90,
+                "border": true,
+                "borderColor": "#b1cdb7",
+                "borderWidth": 1
+              }
+            }
+          ],
+          "timing": {
+            "mwl6wf87jrw70e": {
+              "start": 0,
+              "end": 45
+            }
+          },
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "ageMin": 10,
+      "ageMax": 10,
+      "minutes": 12,
+      "players": "Six defenders (D1–D6), one support attacker (A1), one coach/ball feeder. Start with all six defenders across the same line. The coach and A1 are behind them, with A1 slightly deeper to receive.",
+      "equipment": "One rugby ball and four cones to mark an 11 × 20 m working area. No contact pads are required for the touch version.",
+      "instructions": "Set up D1–D6 in a connected defensive line. The ball begins on the ground by the coach; A1 waits deeper and to the opposite side. On the whistle, defenders take a few controlled steps forward together. The coach runs towards the line and a decision is reached. PAUSE: choose A or B.\nA — Carry: the coach keeps the ball and runs into the near-side channel. D1 and D2 close the space and make a two-hand TOUCH on the adult coach. Stop and reset.\nB — Pass: the coach passes backwards to A1. D4 tracks A1 into the outside channel and completes a controlled tackle; D5 closes the space as cover, not as a simultaneous second tackler. A1 releases and presents the ball. Reset to the same start after either option.\nTry both outcomes. For the players, avoid announcing which option the coach will choose until the defenders have started moving.",
+      "coaching": "DEFENCE — Go together on GO, not six separate sprints. Look across the line and talk: 'UP', 'BALL', 'MY SIDE'. Shorten steps as the carrier approaches. The closest player tracks the hips; the next defender covers the space beside them. Everyone else stays connected and watches for the pass.\nATTACK — Pick up securely, eyes up and choose space. When passing, keep A1 behind the carrier and send the ball backwards. A1 catches before accelerating; keep the ball available after a legal tackle.\nKeep the tempo modest. One good read and one good call are more valuable than a big collision.",
+      "regression": "First walk it through with defenders knowing the option. Use two-hand touch on every carrier, keep the pass simple and allow a verbal pause so the defenders can identify their responsibilities.",
+      "progression": "Do not reveal A or B until the coach reaches the decision. Vary the channel, move the receiving attacker to a new starting position (still behind for the pass), or shorten the time defenders have to communicate. Increase pace only after the defensive line stays organised; contact is a separate technical progression.",
+      "questions": "Who noticed the ball changing hands first? Did all six defenders move up together? Which two players were responsible for the channel, and who kept the line connected? Was the pass backwards? Could you stop the run with safe positioning rather than a rushed hit?",
+      "notes": "This drill contains two real playable outcomes after a shared whistle and defensive advance. Playback stops at the diamond. Choose A or B and the animation continues with different ball possession and defender reactions. The standard video export plays A and B in labelled chapters; the coaching sheet shows both. The illustrations are coach-authored examples, not automatic tactical predictions or official RFU material.",
+      "links": [
+        {
+          "label": "RFU Regulation 15 Appendix 4 · U10 Rules of Play (2026/27)",
+          "url": "https://www.englandrugby.com/run/rules-governance/rfu-rules-and-regulations/regulation-15-age-grade-rugby/regulation-15-appendix-4-u10-rules-of-play",
+          "kind": "Rules · primary authority"
+        },
+        {
+          "label": "World Rugby Passport · Tackling and contact",
+          "url": "https://passport.world.rugby/coaching/key-factor-analysis/tackling-and-contact/",
+          "kind": "Coaching safety"
+        },
+        {
+          "label": "Rugby Coaching TV · Introducing a defensive system",
+          "url": "https://www.rugbycoaching.tv/video/introducing-a-defensive-system/10001462",
+          "kind": "Coaching approach"
+        },
+        {
+          "label": "Rugby Coach Weekly · Improve defensive line skills",
+          "url": "https://www.rugbycoachweekly.net/rugby-drills-and-skills/defence/improve-defensive-line-skills",
+          "kind": "Drill progression"
+        }
+      ],
+      "provenance": "Coach-created Harbury U10 decision drill, shared for review. Original activity, not official RFU content.",
+      "review": "Coaching draft · check age-grade and contact setup with club lead coach before use",
+      "branching": {
+        "version": 1,
+        "fork": 2,
+        "question": "Ball carrier's choice: carry into the gap or pass to A1?",
+        "active": "b",
+        "markerId": "mwl7w298wu7j9d",
+        "choices": [
+          {
+            "id": "a",
+            "label": "Coach carries · D1 and D2 close for touch",
+            "frames": [
+              {
+                "name": "A1 · Carry into the near-side channel",
+                "seconds": 1.6,
+                "notes": "Coach keeps the ball and accelerates through the near-side gap. D1 calls the carrier, D2 covers the inside, and the other defenders remain connected. D1 and D2 stop the adult coach with two-hand touch only.",
+                "objects": [
+                  {
+                    "id": "mwl6tallzpoqql",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 174.6,
+                    "y": 188.45,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tazaxnplm8",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 195,
+                    "y": 188.45,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tb8m0b9lap",
+                    "type": "defender",
+                    "label": "D3",
+                    "x": 388.7999999999999,
+                    "y": 162.4,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbehy92zxz",
+                    "type": "defender",
+                    "label": "D4",
+                    "x": 511.2,
+                    "y": 160.2,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbkosxh9wx",
+                    "type": "defender",
+                    "label": "D5",
+                    "x": 633.5999999999999,
+                    "y": 160.2,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6v7mdq8f43k",
+                    "type": "defender",
+                    "label": "D6",
+                    "x": 756,
+                    "y": 158,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6w26yzp8oka",
+                    "type": "coach",
+                    "label": "Coach",
+                    "x": 184.79999999999998,
+                    "y": 200.1,
+                    "rot": 0
+                  },
+                  {
+                    "id": "mwl6w5ww333x3x",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 552,
+                    "y": 386.5,
+                    "rot": 0
+                  },
+                  {
+                    "id": "mwl6wf87jrw70e",
+                    "type": "ball",
+                    "label": "",
+                    "x": 191.532,
+                    "y": 191.712,
+                    "rot": 0,
+                    "ownerId": "mwl6w26yzp8oka"
+                  }
+                ],
+                "timing": {},
+                "paths": {
+                  "mwl6tallzpoqql": {
+                    "mode": "smooth",
+                    "points": [
+                      {
+                        "x": 154.2,
+                        "y": 153.50000000000003
+                      }
+                    ],
+                    "follow": false
+                  },
+                  "mwl6tazaxnplm8": {
+                    "mode": "smooth",
+                    "points": [
+                      {
+                        "x": 246,
+                        "y": 153.50000000000003
+                      }
+                    ],
+                    "follow": false
+                  },
+                  "mwl6w26yzp8oka": {
+                    "mode": "smooth",
+                    "points": [
+                      {
+                        "x": 184.79999999999998,
+                        "y": 270.00000000000006
+                      }
+                    ],
+                    "follow": false
+                  }
+                }
+              },
+              {
+                "name": "A2 · Two-hand touch · stop and reset",
+                "seconds": 1.1,
+                "notes": "Freeze when D1 and D2 have closed the channel. Count the touch; do not make a live tackle on the adult. Ask who called the ball and whether the rest of the line stayed connected.",
+                "objects": [
+                  {
+                    "id": "mwl6tallzpoqql",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 174.6,
+                    "y": 188.45,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tazaxnplm8",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 195,
+                    "y": 188.45,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tb8m0b9lap",
+                    "type": "defender",
+                    "label": "D3",
+                    "x": 388.7999999999999,
+                    "y": 162.4,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbehy92zxz",
+                    "type": "defender",
+                    "label": "D4",
+                    "x": 511.2,
+                    "y": 160.2,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbkosxh9wx",
+                    "type": "defender",
+                    "label": "D5",
+                    "x": 633.5999999999999,
+                    "y": 160.2,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6v7mdq8f43k",
+                    "type": "defender",
+                    "label": "D6",
+                    "x": 756,
+                    "y": 158,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6w26yzp8oka",
+                    "type": "coach",
+                    "label": "Coach",
+                    "x": 184.79999999999998,
+                    "y": 200.1,
+                    "rot": 0
+                  },
+                  {
+                    "id": "mwl6w5ww333x3x",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 552,
+                    "y": 386.5,
+                    "rot": 0
+                  },
+                  {
+                    "id": "mwl6wf87jrw70e",
+                    "type": "ball",
+                    "label": "",
+                    "x": 191.532,
+                    "y": 191.712,
+                    "rot": 0,
+                    "ownerId": "mwl6w26yzp8oka"
+                  },
+                  {
+                    "id": "coach-demo-touch-caption",
+                    "type": "label",
+                    "label": "TWO-HAND TOUCH · STOP",
+                    "x": 245,
+                    "y": 259.2,
+                    "rot": 0,
+                    "textStyle": {
+                      "fontSize": 14,
+                      "color": "#ffefd0",
+                      "background": true,
+                      "backgroundColor": "#243b2b",
+                      "backgroundOpacity": 92,
+                      "border": true,
+                      "borderColor": "#ebcc91",
+                      "borderWidth": 1.2
+                    }
+                  }
+                ],
+                "timing": {},
+                "paths": {}
+              }
+            ],
+            "explanation": "The coach keeps the ball and carries into the inside channel. The nearest two defenders close the gap and finish with two-hand touch. Children must not tackle an adult coach.",
+            "watchFor": "D2 and D3 communicate, close space without diving in and hold the inside. The other defenders keep their channels rather than chasing the coach."
+          },
+          {
+            "id": "b",
+            "label": "Coach passes · A1 attacks D4's channel",
+            "frames": [
+              {
+                "name": "B1 · Backwards pass to A1",
+                "seconds": 1.5,
+                "notes": "Coach passes backwards across to A1, who stays deeper until the ball arrives. D4 calls the receiver; D5 covers the neighbouring channel while the remaining defenders stay connected.",
+                "objects": [
+                  {
+                    "id": "mwl6tallzpoqql",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 144,
+                    "y": 135,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tazaxnplm8",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 266.4,
+                    "y": 140,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tb8m0b9lap",
+                    "type": "defender",
+                    "label": "D3",
+                    "x": 388.79999999999995,
+                    "y": 148,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbehy92zxz",
+                    "type": "defender",
+                    "label": "D4",
+                    "x": 511.2,
+                    "y": 150,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbkosxh9wx",
+                    "type": "defender",
+                    "label": "D5",
+                    "x": 633.5999999999999,
+                    "y": 149,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6v7mdq8f43k",
+                    "type": "defender",
+                    "label": "D6",
+                    "x": 756,
+                    "y": 137,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6w26yzp8oka",
+                    "type": "coach",
+                    "label": "Coach",
+                    "x": 256.2,
+                    "y": 238.22727272727275,
+                    "rot": 0
+                  },
+                  {
+                    "id": "mwl6w5ww333x3x",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 562.1999999999999,
+                    "y": 338,
+                    "rot": 0
+                  },
+                  {
+                    "id": "mwl6wf87jrw70e",
+                    "type": "ball",
+                    "label": "",
+                    "x": 568.9319999999999,
+                    "y": 329.6119999999999,
+                    "rot": 0,
+                    "ownerId": "mwl6w5ww333x3x",
+                    "transferKind": "pass"
+                  }
+                ],
+                "timing": {
+                  "mwl6wf87jrw70e": {
+                    "start": 75,
+                    "end": 100
+                  }
+                },
+                "paths": {
+                  "mwl6w26yzp8oka": {
+                    "mode": "smooth",
+                    "points": [
+                      {
+                        "x": 246,
+                        "y": 280.5909090909091
+                      }
+                    ],
+                    "follow": false
+                  }
+                }
+              },
+              {
+                "name": "B2 · A1 attacks; D4 tackles",
+                "seconds": 2,
+                "notes": "A1 receives, looks up and carries into the outside channel. D4 tracks A1, shortens steps and makes the controlled tackle using safe head placement and a wrap. D5 closes the adjacent gap as cover; D5 does not join the tackle.",
+                "objects": [
+                  {
+                    "id": "mwl6tallzpoqql",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 144,
+                    "y": 152,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tazaxnplm8",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 266.4,
+                    "y": 153,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tb8m0b9lap",
+                    "type": "defender",
+                    "label": "D3",
+                    "x": 388.79999999999995,
+                    "y": 155,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbehy92zxz",
+                    "type": "defender",
+                    "label": "D4",
+                    "x": 582.5999999999999,
+                    "y": 188.2381818181818,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbkosxh9wx",
+                    "type": "defender",
+                    "label": "D5",
+                    "x": 592.8,
+                    "y": 185.27272727272728,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6v7mdq8f43k",
+                    "type": "defender",
+                    "label": "D6",
+                    "x": 756,
+                    "y": 151,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6w26yzp8oka",
+                    "type": "coach",
+                    "label": "Coach",
+                    "x": 256.2,
+                    "y": 238.22727272727275,
+                    "rot": 0
+                  },
+                  {
+                    "id": "mwl6w5ww333x3x",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 582.5999999999999,
+                    "y": 203.48909090909092,
+                    "rot": 90
+                  },
+                  {
+                    "id": "mwl6wf87jrw70e",
+                    "type": "ball",
+                    "label": "",
+                    "x": 589.9439999999998,
+                    "y": 211.17809090909094,
+                    "rot": 0,
+                    "ownerId": "mwl6w5ww333x3x"
+                  },
+                  {
+                    "id": "mwl8tvglg3qrmc",
+                    "type": "tackle",
+                    "label": "Tackle",
+                    "x": 582.5999999999999,
+                    "y": 195.86363636363635,
+                    "rot": 0,
+                    "members": [
+                      {
+                        "id": "mwl6w5ww333x3x",
+                        "pose": "grounded"
+                      },
+                      {
+                        "id": "mwl6tbehy92zxz",
+                        "pose": "tackling"
+                      }
+                    ],
+                    "breakdown": {
+                      "phase": "tackle",
+                      "carrierId": "mwl6w5ww333x3x",
+                      "tacklerId": "mwl6tbehy92zxz",
+                      "ballId": "mwl6wf87jrw70e",
+                      "tacklerIds": [
+                        "mwl6tbehy92zxz"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "coach-demo-tackle-caption",
+                    "type": "label",
+                    "label": "D4 TACKLES · D5 COVERS",
+                    "x": 660,
+                    "y": 242,
+                    "rot": 0,
+                    "textStyle": {
+                      "fontSize": 13,
+                      "color": "#eef9ef",
+                      "background": true,
+                      "backgroundColor": "#263b31",
+                      "backgroundOpacity": 90,
+                      "border": true,
+                      "borderColor": "#b1cdb7",
+                      "borderWidth": 1
+                    }
+                  }
+                ],
+                "timing": {},
+                "paths": {
+                  "mwl6tbehy92zxz": {
+                    "mode": "smooth",
+                    "points": [
+                      {
+                        "x": 521.4,
+                        "y": 164.0909090909091
+                      }
+                    ],
+                    "follow": false
+                  },
+                  "mwl6tbkosxh9wx": {
+                    "mode": "smooth",
+                    "points": [
+                      {
+                        "x": 623.4,
+                        "y": 174.6818181818182
+                      }
+                    ],
+                    "follow": false
+                  },
+                  "mwl6w5ww333x3x": {
+                    "mode": "smooth",
+                    "points": [
+                      {
+                        "x": 582.5999999999999,
+                        "y": 259.40909090909093
+                      }
+                    ],
+                    "follow": false
+                  }
+                }
+              },
+              {
+                "name": "B3 · Release and present",
+                "seconds": 1.4,
+                "notes": "D4 releases and gets back to feet. A1 goes to ground safely, releases and presents the ball away from pressure. D5 stays on feet and does not dive into the contact area. Reset the players and repeat with the other outcome.",
+                "objects": [
+                  {
+                    "id": "mwl6tallzpoqql",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 144,
+                    "y": 152,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tazaxnplm8",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 266.4,
+                    "y": 153,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tb8m0b9lap",
+                    "type": "defender",
+                    "label": "D3",
+                    "x": 388.79999999999995,
+                    "y": 155,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6tbehy92zxz",
+                    "type": "defender",
+                    "label": "D4",
+                    "x": 622.3799999999999,
+                    "y": 186.33181818181816,
+                    "rot": 180,
+                    "playerPose": "standing"
+                  },
+                  {
+                    "id": "mwl6tbkosxh9wx",
+                    "type": "defender",
+                    "label": "D5",
+                    "x": 592.8,
+                    "y": 185.27272727272728,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6v7mdq8f43k",
+                    "type": "defender",
+                    "label": "D6",
+                    "x": 756,
+                    "y": 151,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6w26yzp8oka",
+                    "type": "coach",
+                    "label": "Coach",
+                    "x": 256.2,
+                    "y": 238.22727272727275,
+                    "rot": 0
+                  },
+                  {
+                    "id": "mwl6w5ww333x3x",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 575.2559999999999,
+                    "y": 190.14454545454547,
+                    "rot": 180
+                  },
+                  {
+                    "id": "mwl6wf87jrw70e",
+                    "type": "ball",
+                    "label": "",
+                    "x": 582.5999999999999,
+                    "y": 211.75,
+                    "rot": 0,
+                    "groundState": "presented",
+                    "transferKind": "presentation"
+                  },
+                  {
+                    "id": "mwl8tvglg3qrmc",
+                    "type": "tackle",
+                    "label": "Release and present",
+                    "x": 582.5999999999999,
+                    "y": 195.86363636363635,
+                    "rot": 0,
+                    "members": [
+                      {
+                        "id": "mwl6w5ww333x3x",
+                        "pose": "grounded"
+                      }
+                    ],
+                    "breakdown": {
+                      "phase": "release",
+                      "arrivalSide": "defence",
+                      "carrierId": "mwl6w5ww333x3x",
+                      "tacklerId": "mwl6tbehy92zxz",
+                      "ballId": "mwl6wf87jrw70e",
+                      "tacklerIds": [
+                        "mwl6tbehy92zxz"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "coach-demo-presentation-caption",
+                    "type": "label",
+                    "label": "RELEASE · PRESENT",
+                    "x": 666,
+                    "y": 253,
+                    "rot": 0,
+                    "textStyle": {
+                      "fontSize": 14,
+                      "color": "#eef9ef",
+                      "background": true,
+                      "backgroundColor": "#263b31",
+                      "backgroundOpacity": 90,
+                      "border": true,
+                      "borderColor": "#b1cdb7",
+                      "borderWidth": 1
+                    }
+                  }
+                ],
+                "timing": {
+                  "mwl6wf87jrw70e": {
+                    "start": 0,
+                    "end": 45
+                  }
+                },
+                "paths": {}
+              }
+            ],
+            "explanation": "The coach passes backwards to A1. The outside defenders track the new ball carrier, with one controlled age-matched tackler and a covering defender in the demonstration.",
+            "watchFor": "Watch the backward pass, D4's approach to the ball carrier and D5's covering position. The tackle must be controlled and supervised by a qualified coach."
+          }
+        ],
+        "context": "The first movement is the same in both cases: the defensive line advances together on the whistle. The choice comes when the ball is played. Defenders must identify the actual carrier before changing their shape.",
+        "watchFor": "Look at the first two steps: are all six defenders moving on the same cue, with their spacing intact? Then watch which defenders communicate and adjust to the carrier."
+      },
+      "savedFromCoachDrill": "mwlwflvgp8foni",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T09:11:13.931Z",
+      "publishedAt": "2026-11-18T11:00:06.633Z",
+      "publishedSourceSavedAt": "2026-11-18T09:11:13.931Z",
+      "publishedRevision": null
+    },
+    {
+      "version": 1,
+      "id": "seed-143",
+      "title": "Defensive line · Whistle then advance together",
+      "age": "U10",
+      "category": "Defence",
+      "length": 10,
+      "width": 20,
+      "objective": "Build the simplest defensive-line reaction: on a coach's whistle all six U10 defenders move two short steps forward together, preserve their spacing, then hold their shape. Use this before the carry-or-pass decision drill.",
+      "safety": "Non-contact reaction drill. Keep a clear run-off and stop the line well before the coach or attacker. The whistle is a coach's practice cue, not a substitute for checking current RFU U10 offside and restart requirements. Never treat this as permission to rush a free pass from an illegal starting position.",
+      "frames": [
+        {
+          "name": "Set up · six defenders connected",
+          "seconds": 0,
+          "notes": "Six defenders form a line at even spacing. The coach stays in the same position as in the later carry-or-pass drill. Explain: react to the whistle together, then stop square and balanced. The attacker and ground ball stay still.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 83.60000000000001,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 144,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 164.39999999999998,
+              "y": 339.9,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Whistle · advance two short steps together",
+          "seconds": 1.1,
+          "notes": "The coach blows the whistle. All six defenders step forward immediately and in unison, without sprinting into contact. Eyes up, spacing unchanged. They must be legally onside before moving in a real restart.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 144,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 164.39999999999998,
+              "y": 339.9,
+              "rot": 0
+            }
+          ],
+          "timing": {
+            "mwl6tallzpoqql": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6tazaxnplm8": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6tb8m0b9lap": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6tbehy92zxz": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6tbkosxh9wx": {
+              "start": 0,
+              "end": 84
+            },
+            "mwl6v7mdq8f43k": {
+              "start": 0,
+              "end": 84
+            }
+          },
+          "paths": {},
+          "signal": {
+            "kind": "whistle",
+            "coachId": "mwl6w26yzp8oka",
+            "label": "GO",
+            "duration": 0.35
+          }
+        },
+        {
+          "name": "Hold shape · look and communicate",
+          "seconds": 0.8,
+          "notes": "Pause and check that the line is still connected, everyone is facing the play and nobody has sprinted out alone. Repeat several times before adding a ball-carrier decision.",
+          "objects": [
+            {
+              "id": "mwl6tallzpoqql",
+              "type": "defender",
+              "label": "D1",
+              "x": 144,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tazaxnplm8",
+              "type": "defender",
+              "label": "D2",
+              "x": 266.4,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tb8m0b9lap",
+              "type": "defender",
+              "label": "D3",
+              "x": 388.7999999999999,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbehy92zxz",
+              "type": "defender",
+              "label": "D4",
+              "x": 511.2,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6tbkosxh9wx",
+              "type": "defender",
+              "label": "D5",
+              "x": 633.5999999999999,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6v7mdq8f43k",
+              "type": "defender",
+              "label": "D6",
+              "x": 756,
+              "y": 188.1,
+              "rot": 180
+            },
+            {
+              "id": "mwl6w26yzp8oka",
+              "type": "coach",
+              "label": "Coach",
+              "x": 144,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwl6w5ww333x3x",
+              "type": "attacker",
+              "label": "A1",
+              "x": 552,
+              "y": 386.5,
+              "rot": 0
+            },
+            {
+              "id": "mwl6wf87jrw70e",
+              "type": "ball",
+              "label": "",
+              "x": 164.39999999999998,
+              "y": 339.9,
+              "rot": 0
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "ageMin": 10,
+      "ageMax": 10,
+      "minutes": 7,
+      "players": "Six defenders (D1–D6), one support attacker (A1), one coach/ball feeder. Start with all six defenders across the same line. The coach and A1 are behind them, with A1 slightly deeper to receive.",
+      "equipment": "One rugby ball and four cones to mark an 11 × 20 m working area. No contact pads are required for the touch version.",
+      "instructions": "1. Set out the six-defender line as shown. Coach and supporting runner remain in their starting positions. 2. Explain that this is a whistle-reaction exercise, not permission to cross an offside line. 3. Blow the whistle and ask every defender to advance two short steps together. 4. Stop, check spacing and communication, reset, then repeat. 5. Progress to Hold the line · Carry or pass? after the group can move together.",
+      "coaching": "Coach the timing of the FIRST step, not an all-out sprint. Keep shoulders square, communication short and the line connected. Use the pause to ask who moved early or late. Keep all actions non-contact. At a real U10 free pass, ensure the defenders have retired the required distance and only advance when lawfully permitted.",
+      "regression": "Start with slower calls and two small steps. Stop if any defender sprints ahead or loses spacing.",
+      "progression": "Next: Hold the line · Carry or pass? (seed-133). The same defensive line and coach position now develop into two decision outcomes.",
+      "questions": "Did all six move on the whistle together? Was there a gap after the first step? Can you say which teammate you must stay connected with?",
+      "notes": "This drill contains two real playable outcomes after a shared whistle and defensive advance. Playback stops at the diamond. Choose A or B and the animation continues with different ball possession and defender reactions. The standard video export plays A and B in labelled chapters; the coaching sheet shows both. The illustrations are coach-authored examples, not automatic tactical predictions or official RFU material.",
+      "links": [
+        {
+          "label": "RFU Regulation 15 Appendix 4 · U10 Rules of Play (2026/27)",
+          "url": "https://www.englandrugby.com/run/rules-governance/rfu-rules-and-regulations/regulation-15-age-grade-rugby/regulation-15-appendix-4-u10-rules-of-play",
+          "kind": "Rules · primary authority"
+        },
+        {
+          "label": "World Rugby Passport · Tackling and contact",
+          "url": "https://passport.world.rugby/coaching/key-factor-analysis/tackling-and-contact/",
+          "kind": "Coaching safety"
+        },
+        {
+          "label": "Rugby Coaching TV · Introducing a defensive system",
+          "url": "https://www.rugbycoaching.tv/video/introducing-a-defensive-system/10001462",
+          "kind": "Coaching approach"
+        },
+        {
+          "label": "Rugby Coach Weekly · Improve defensive line skills",
+          "url": "https://www.rugbycoachweekly.net/rugby-drills-and-skills/defence/improve-defensive-line-skills",
+          "kind": "Drill progression"
+        }
+      ],
+      "provenance": "Coach-created Harbury U10 decision drill, shared for review. Original activity, not official RFU content.",
+      "review": "Coach review required — schematic drill, not RFU-endorsed.",
+      "savedFromCoachDrill": "mwlws9j9rth2wb",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T09:42:54.906Z",
+      "revision": 3,
+      "publishedAt": "2026-11-18T11:00:06.633Z",
+      "publishedSourceSavedAt": "2026-11-18T09:42:54.906Z",
+      "publishedRevision": 3
+    }
+  ],
+  "unpublishedIds": []
+}

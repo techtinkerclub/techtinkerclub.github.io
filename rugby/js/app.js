@@ -1,7 +1,9 @@
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
-import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.15.7';
+import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
+import {loadPublicationData,publicationForSource,isPublished} from './publication.js?v=1';
+import {loadCatalogue} from './catalogue.js?v=0.17.0';
 import {familyMembers,publicationState,duplicateTitleGroups,revisionLabel} from './drill-families.js?v=1';
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews,removeObjectAcrossOutcomes} from './branching.js?v=3';
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
@@ -47,14 +49,8 @@ import {bindMovieSettings} from './movie.js?v=0.7.2';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.26';
 initWorkspace();
-const SEEDS = await fetch(new URL('../data/drills.json?v=0.13.5', import.meta.url)).then(r => {
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  return r.json();
-}).then(data => {
-  if (data.version !== 1 || !Array.isArray(data.drills) || !data.drills.length) throw new Error('Invalid drill catalogue');
-  return data.drills;
-}).catch(err => {
-  const msg = document.createElement('p'); msg.setAttribute('role','alert'); msg.textContent = 'Could not load the drill library: ' + err.message; msg.style.padding = '16px'; document.body.prepend(msg); throw err;
+const SEEDS=await loadCatalogue().catch(err=>{
+ const msg=document.createElement('p');msg.setAttribute('role','alert');msg.textContent='Could not load the published library: '+err.message;msg.style.padding='16px';document.body.prepend(msg);throw err;
 });
 const MAIN_SAMPLE=SEEDS.find(x=>x.id==='seed-016')||SEEDS[0];const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game'];const fields=['players','equipment','instructions','coaching','regression','progression','questions','notes'];function enrich(d){if(hasOutcomes(d))branchInfo(d);normaliseRecoveryPoses(d.frames);Object.assign(d,pitchSettings(d));Object.assign(d,normaliseAge(d));d.minutes=clamp(Number(d.minutes)||8,1,120);for(let k of fields)d[k]=String(d[k]??'');d.links=Array.isArray(d.links)?d.links.filter(x=>x&&safeURL(x.url)).slice(0,100).map(x=>({label:String(x.label||x.url).slice(0,200),url:safeURL(x.url),kind:String(x.kind||'Reference').slice(0,80)})):[];d.provenance=String(d.provenance||'Coach-created / imported drill');d.review=String(d.review||'Coach review required');const relation=readDerivation(d.derivedFrom,d.id);if(relation)d.derivedFrom=relation;else delete d.derivedFrom;return d}function safeURL(u){try{let v=new URL(u);return ['https:','http:'].includes(v.protocol)?v.href:null}catch{return null}}function freshSeed(s){let d=clone(s);d.id=uid();d.age='Custom range';return enrich(d)}
 let setupPending=false,validationResult=null,validationHighlight=new Set(),guideDirection='auto';
@@ -65,6 +61,11 @@ let trainingPick=null,pendingDecisionPlacement=null,showDecisions=true,pendingIn
 let autoAttach=true;try{autoAttach=localStorage.getItem('rugby-auto-attach')!=='off'}catch{}
 const gridPrefs=loadGridPrefs();
 let saveFeedback='',githubDrills=[],githubBaseline=null,githubSaving=false,githubLoading=false,githubLoaded=false,stagedImports=[];const githubStore=createGithubStore();
+let publicationData=null,publicationLoading=false;
+const pubUI=document.createElement('div');pubUI.className='publication-control';
+pubUI.innerHTML='<button id="pubPublish" type="button" title="Explicitly publish the latest saved revision to the public coaching library">Publish</button><button id="pubUnpublish" type="button" hidden>Unpublish</button><small id="pubState" role="status">Publication status loading…</small>';
+document.querySelector('.head-actions .save-control')?.insertAdjacentElement('afterend',pubUI);
+
 let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,selectedPathId=null,showPaths=true,showMarkups=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drill.frames.reduce((s,f,i)=>s+(i?f.seconds:0),0),at=i=>drill.frames.slice(1,i+1).reduce((a,x)=>a+x.seconds,0);function note(s){$('status').textContent=s;$('status').title=s}function changed(record=true){validationHighlight.clear();validationResult=null;drill.frames.forEach(fr=>{cleanGuide(fr);cleanTraining(fr)});cleanContacts(drill.frames);cleanBreakdowns(drill.frames);if(record)normaliseRecoveryPoses(drill.frames);syncPossession(drill.frames,geometry());syncActiveOutcome(drill);dirty=true;saveFeedback='';syncSaveState();if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){let acc=0;for(let i=1;i<drill.frames.length;i++){const end=acc+drill.frames[i].seconds;if(t<end)return {i,p:(t-acc)/(end-acc)};acc=end}return {i:drill.frames.length-1,p:1}}function tween(t,g=geometry()){if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?trainingTransition(transitionObjects(drill.frames[i-1],drill.frames[i],p,g),drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
 const geometry=()=>drillGeometry(drill,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
@@ -1478,7 +1479,60 @@ function syncSaveState(){
  button.disabled=githubSaving;button.textContent=githubSaving?'Saving…':kind==='saved'?'✓ Saved to GitHub':pending?'Save to GitHub •':'Save to GitHub';
  button.title='Commits your drill to the public GitHub repository';
  status.textContent=message;status.dataset.state=kind;
+ updatePublicationControls();
 }
+function activePublicRecord(id){return publicationForSource(publicationData,id)}
+function pubLabel(d){
+ if(!publicationData)return 'Checking publication…';
+ const record=activePublicRecord(d.id);
+ if(!record)return 'Not published';
+ if(!isPublished(publicationData,d.id))return 'Unpublished · '+record.id+' reserved';
+ return 'Published · '+record.id+(record.publishedSourceSavedAt!==d.savedAt?' · newer saved revision available':' · current published copy');
+}
+function updatePublicationControls(){
+ const saved=githubDrills.find(x=>x.id===drill.id),record=activePublicRecord(drill.id),active=!!saved&&isPublished(publicationData,drill.id);
+ $('pubPublish').textContent=active?'Update public copy':record?'Republish':'Publish';
+ $('pubPublish').disabled=githubSaving||publicationLoading||!saved||dirty||setupPending;
+ $('pubPublish').title=!saved?'Save the drill to GitHub first':dirty?'Save your edits before publishing':'Publish this saved revision as an editable, stable public coaching resource';
+ $('pubUnpublish').hidden=!active;
+ $('pubUnpublish').disabled=githubSaving||publicationLoading;
+ $('pubState').textContent=pubLabel(saved||drill);
+}
+async function refreshPublicationData(){
+ if(publicationLoading)return;
+ publicationLoading=true;updatePublicationControls();
+ try{publicationData=await loadPublicationData()}catch(err){publicationData=null;note('Publication status unavailable: '+err.message)}
+ finally{publicationLoading=false;updatePublicationControls();if($('libraryDialog')?.open)renderLibrary()}
+}
+async function reloadPublishedCatalogue(){
+ const latest=await loadCatalogue();
+ SEEDS.splice(0,SEEDS.length,...latest);
+ publishedIds.clear();for(const seed of SEEDS)publishedIds.add(seed.id);
+}
+async function changePublication(id,action){
+ if(githubSaving||publicationLoading)return;
+ const saved=githubDrills.find(d=>d.id===id);
+ if(!saved){note('Save this drill to GitHub before publishing.');return}
+ if(id===drill.id&&(dirty||setupPending)){alert('Save the latest edits to GitHub before publishing.');return}
+ if(!githubStore.connected()){requestGithubConnection(false);note('Connect GitHub, then choose Publish again.');return}
+ const record=activePublicRecord(id),currentlyPublic=isPublished(publicationData,id);
+ const message=action==='unpublish'?'Unpublish "'+saved.title+'"? Its public link ('+record?.id+') will stop showing the drill. The source and publication history remain recoverable.':
+  (currentlyPublic?'Replace the published '+record.id+' with saved '+versionInfo(saved)+' of "'+saved.title+'"? Existing public links will display this new revision.':
+   'Publish "'+saved.title+'" ('+versionInfo(saved)+') to the public coaching library? Anyone can view this resource.');
+ if(!confirm(message))return;
+ githubSaving=true;updatePublicationControls();syncSaveState();
+ try{
+  const maxId=Math.max(143,...SEEDS.map(d=>Number(d.id.match(/^seed-(\d+)$/)?.[1])||0));
+  const out=action==='unpublish'?await githubStore.unpublish(id):await githubStore.publish(id,saved,maxId);
+  publicationData=out.data;
+  await reloadPublishedCatalogue();
+  note(action==='unpublish'?'Unpublished '+out.publicId+'. GitHub source is unchanged.':'Published '+out.publicId+' · '+out.commit.slice(0,7)+'. Public link: /rugby/play.html?drill='+out.publicId);
+  if($('libraryDialog').open)renderLibrary();
+ }catch(err){alert('Publication not confirmed: '+err.message);note(err.message)}
+ finally{githubSaving=false;updatePublicationControls();syncSaveState()}
+}
+$('pubPublish').onclick=()=>changePublication(drill.id,'publish');
+$('pubUnpublish').onclick=()=>changePublication(drill.id,'unpublish');
 function updateGitHubControls(){
  $('githubConnection').textContent=githubStore.connected()?'Disconnect GitHub':'Connect GitHub';
  $('githubLibraryState').textContent=githubLoading?'Loading GitHub library…':githubLoaded?'GitHub library loaded · '+githubDrills.length+' drills':'GitHub library not loaded';
@@ -1601,7 +1655,7 @@ function familyRows(){
  $('familyOverviewMeta').textContent=members.length+' related '+(members.length===1?'drill':'drills')+' · '+members.filter(x=>x.source==='github').length+' saved on GitHub';
  $('familyOverviewRows').innerHTML=members.map(({d,source})=>{
   const origin=source==='seed'?'Original starter':d.id===familyViewRoot?'Original drill':(d.derivedFrom?.kind==='extension'?'Extension':'Variation');
-  const state=publicationState(d,source,publishedIds);
+  const state=source==='github'?pubLabel(d):publicationState(d,source,publishedIds);
   return '<article class="drillcard"><div class="tag">'+esc(origin)+' · '+esc(versionInfo(d))+'</div><h3>'+esc(d.title)+'</h3><p>'+esc(state)+'</p><p>'+esc(d.category)+' · U'+esc(d.ageMin)+'–U'+esc(d.ageMax)+'</p><p>'+esc(d.objective||'')+'</p><div class="flex"><button data-family-open="'+esc(d.id)+'" data-source="'+esc(source)+'">Open in editor</button>'+(source==='github'?'<button data-family-history="'+esc(d.id)+'">Revision history</button>':'')+'</div></article>';
  }).join('')||'<p class="muted">This drill is no longer in the library.</p>';
 }
@@ -1655,7 +1709,7 @@ else items.sort((a,b)=>{
  const ga=a.source==='github'?0:a.source==='import'?1:a.source==='local'?2:3;
  const gb=b.source==='github'?0:b.source==='import'?1:b.source==='local'?2:3;
  return ga-gb||(ga===0?((Date.parse(b.d.savedAt||0)||0)-(Date.parse(a.d.savedAt||0)||0)):0);
-});$('libraryCount').textContent=`${items.length} matching · ${SEEDS.length} starter drills · ${SEEDS.filter(d=>d.frames.length>1).length} animated · ${githubDrills.length} on GitHub · ${stored().filter(x=>!githubDrills.some(y=>y.id===x.id)).length} legacy local`;$('libraryRows').innerHTML=items.map(({d,mine,source})=>`<article class="drillcard">${mini(d)}<div class="tag">${mine?(source==='github'?'GITHUB SAVED DRILL':source==='import'?'IMPORTED · NOT SAVED':'LEGACY LOCAL · SAVE TO GITHUB'):d.title.startsWith('Understand the game ·')?'RULES WALK-THROUGH':d.frames.length>1?'ANIMATED STARTER':'STARTER CARD'} · ${esc(d.category)}</div><h3>${esc(d.title)}</h3>${savedMetadata(d,source)}${d.derivedFrom?`<p class="drill-relation">↳ ${esc(relationLabel(d))}</p>`:''}${source==='github'&&(duplicateNames.get(d.title.trim().toLowerCase())||0)>1?`<p class="drill-relation">⚠ Same title as another saved drill — review before deleting</p>`:''}<p>${d.ageMin===d.ageMax?'U'+d.ageMin:'U'+d.ageMin+'–U'+d.ageMax} · ${d.minutes} min · ${esc(d.players||'Flexible')}</p><p>${esc(d.objective)}</p><p>${esc(d.review)} · ${d.links.length} links</p><div class="flex"><button data-load="${esc(d.id)}" data-source="${source}">Open${mine?'':' copy'}</button><button data-card="${esc(d.id)}" data-source="${source}">Read card</button><button data-derive="variation" data-id="${esc(d.id)}" data-source="${source}" title="Create a separate editable variation of this drill">Variation</button><button data-derive="extension" data-id="${esc(d.id)}" data-source="${source}" title="Create a separate extended drill with another stage">Extend</button><button data-family-overview="${esc(familyRoot(d))}" title="See original, variations, publication status and revision history">Family &amp; history (${familyCounts.get(familyRoot(d))||1})</button>${source==='local'||source==='github'?`<button data-source="${source}" data-remove="${esc(d.id)}">Delete</button>`:''}</div></article>`).join('')||'<p class="muted">No matching drills. Try a different filter.</p>'}function openLibrary(){renderLibrary();$('libraryDialog').showModal();refreshGitHubLibrary()}$('filterAge').innerHTML+=Array.from({length:11},(_,i)=>`<option value="${i+6}">U${i+6}</option>`).join('');$('filterCat').innerHTML+=CATEGORIES.map(c=>`<option>${c}</option>`).join('');for(let k of ['searchLib','filterAge','filterCat','filterMode'])$(k).oninput=renderLibrary;$('library').onclick=openLibrary;$('closeLibrary').onclick=()=>$('libraryDialog').close();$('showAllFamilies').onclick=()=>{familyFilter='';renderLibrary()};$('libraryRows').onclick=async e=>{let b=e.target.closest('[data-load],[data-card],[data-remove],[data-derive],[data-family],[data-family-overview]');if(!b)return;if(b.dataset.familyOverview){openFamily(b.dataset.familyOverview);return}if(b.dataset.family){familyFilter=b.dataset.family;$('searchLib').value='';$('filterAge').value='';$('filterCat').value='';$('filterMode').value='';renderLibrary();return}if(b.dataset.remove&&b.dataset.source==='github'){
+});$('libraryCount').textContent=`${items.length} matching · ${SEEDS.length} starter drills · ${SEEDS.filter(d=>d.frames.length>1).length} animated · ${githubDrills.length} on GitHub · ${stored().filter(x=>!githubDrills.some(y=>y.id===x.id)).length} legacy local`;$('libraryRows').innerHTML=items.map(({d,mine,source})=>`<article class="drillcard">${mini(d)}<div class="tag">${mine?(source==='github'?'GITHUB SAVED DRILL':source==='import'?'IMPORTED · NOT SAVED':'LEGACY LOCAL · SAVE TO GITHUB'):d.title.startsWith('Understand the game ·')?'RULES WALK-THROUGH':d.frames.length>1?'ANIMATED STARTER':'STARTER CARD'} · ${esc(d.category)}</div><h3>${esc(d.title)}</h3>${savedMetadata(d,source)}${source==='github'?`<p class="drill-relation"><strong>${esc(pubLabel(d))}</strong></p>`:''}${d.derivedFrom?`<p class="drill-relation">↳ ${esc(relationLabel(d))}</p>`:''}${source==='github'&&(duplicateNames.get(d.title.trim().toLowerCase())||0)>1?`<p class="drill-relation">⚠ Same title as another saved drill — review before deleting</p>`:''}<p>${d.ageMin===d.ageMax?'U'+d.ageMin:'U'+d.ageMin+'–U'+d.ageMax} · ${d.minutes} min · ${esc(d.players||'Flexible')}</p><p>${esc(d.objective)}</p><p>${esc(d.review)} · ${d.links.length} links</p><div class="flex"><button data-load="${esc(d.id)}" data-source="${source}">Open${mine?'':' copy'}</button><button data-card="${esc(d.id)}" data-source="${source}">Read card</button><button data-derive="variation" data-id="${esc(d.id)}" data-source="${source}" title="Create a separate editable variation of this drill">Variation</button><button data-derive="extension" data-id="${esc(d.id)}" data-source="${source}" title="Create a separate extended drill with another stage">Extend</button><button data-family-overview="${esc(familyRoot(d))}" title="See original, variations, publication status and revision history">Family &amp; history (${familyCounts.get(familyRoot(d))||1})</button>${source==='github'?`<button data-publish="${esc(d.id)}">${isPublished(publicationData,d.id)?'Update publication':'Publish'}</button>${isPublished(publicationData,d.id)?`<button data-unpublish="${esc(d.id)}">Unpublish</button>`:''}`:''}${source==='local'||source==='github'?`<button data-source="${source}" data-remove="${esc(d.id)}">Delete</button>`:''}</div></article>`).join('')||'<p class="muted">No matching drills. Try a different filter.</p>'}function openLibrary(){renderLibrary();$('libraryDialog').showModal();refreshGitHubLibrary()}$('filterAge').innerHTML+=Array.from({length:11},(_,i)=>`<option value="${i+6}">U${i+6}</option>`).join('');$('filterCat').innerHTML+=CATEGORIES.map(c=>`<option>${c}</option>`).join('');for(let k of ['searchLib','filterAge','filterCat','filterMode'])$(k).oninput=renderLibrary;$('library').onclick=openLibrary;$('closeLibrary').onclick=()=>$('libraryDialog').close();$('showAllFamilies').onclick=()=>{familyFilter='';renderLibrary()};$('libraryRows').onclick=async e=>{let b=e.target.closest('[data-load],[data-card],[data-remove],[data-derive],[data-family],[data-family-overview],[data-publish],[data-unpublish]');if(!b)return;if(b.dataset.publish){await changePublication(b.dataset.publish,'publish');return}if(b.dataset.unpublish){await changePublication(b.dataset.unpublish,'unpublish');return}if(b.dataset.familyOverview){openFamily(b.dataset.familyOverview);return}if(b.dataset.family){familyFilter=b.dataset.family;$('searchLib').value='';$('filterAge').value='';$('filterCat').value='';$('filterMode').value='';renderLibrary();return}if(b.dataset.remove&&b.dataset.source==='github'){
   if(!githubStore.connected()){note('Connect GitHub before deleting a saved drill.');requestGithubConnection(false);return}
   const target=githubDrills.find(x=>x.id===b.dataset.remove);if(!target)return;
   if(!confirm('Remove "'+target.title+'" ('+versionInfo(target)+', saved '+savedTime(target)+') from GitHub? Its saved public entry will disappear, but Git history remains.'))return;
@@ -1928,4 +1982,4 @@ $('closeValidation').onclick=()=>$('validationDialog').close();
 $('offsideGuides').onchange=()=>{render();note($('offsideGuides').checked?'Approximate offside guides enabled for visible tackle-support and ruck formations.':'Offside guides hidden.')};
 $('validationFindings').onclick=e=>{const b=e.target.closest('[data-finding]'),issue=b&&validationResult?.findings[Number(b.dataset.finding)];if(!issue)return;$('validationDialog').close();choose(issue.step);validationHighlight=new Set(issue.ids);const id=issue.ids.find(id=>f().objects.some(o=>o.id===id));if(id)selectObject(id);else render();if(issue.group==='offside'){$('offsideGuides').checked=true;render()}note(issue.message);focusPitch()};
 
-window.addEventListener('beforeunload',e=>{if(dirty||setupPending||githubSaving||stagedImports.length){e.preventDefault();e.returnValue=''}});resetHistory();syncGrid();refresh();updateGitHubControls();
+window.addEventListener('beforeunload',e=>{if(dirty||setupPending||githubSaving||stagedImports.length){e.preventDefault();e.returnValue=''}});resetHistory();syncGrid();refresh();updateGitHubControls();refreshPublicationData();

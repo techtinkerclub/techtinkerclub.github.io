@@ -1,4 +1,4 @@
-import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.13.5';
+import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.17.0';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.16.1';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
 import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
@@ -155,6 +155,7 @@ if(catalogueId!==null){
   if(!/^seed-[0-9]{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');
   const list=await loadCatalogue(),entry=list.find(x=>x.id===catalogueId);if(!entry)throw Error('This drill is not in the published catalogue.');
   open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082',teachingGuides:params.get('guides')!=='0',scaleMode:params.get('scale')==='coaching'?'coaching':'realistic',framing:params.get('framing')==='action'?'action':'field'});document.title=entry.title+' · Rugby Coaching Library';
+  if(entry.publishedAt){const stamp=document.createElement('small');stamp.className='published-stamp';stamp.textContent='Public copy updated '+new Date(entry.publishedAt).toLocaleDateString('en-GB')+' · '+(Number.isInteger(entry.publishedRevision)?'Revision '+entry.publishedRevision:'Legacy revision');$('objective').before(stamp)}
   $('catalogueReview').hidden=false;
   const shareLink=()=>{const link=new URL(drillHref(entry.id),location.href);link.searchParams.set('offside',opts.offside?'1':'0');link.searchParams.set('guides',opts.teachingGuides?'1':'0');link.searchParams.set('scale',opts.scaleMode);link.searchParams.set('framing',opts.framing);return link.href};
   $('copyDrillLink').onclick=()=>reviewCopy(shareLink(),'Drill link copied.');
