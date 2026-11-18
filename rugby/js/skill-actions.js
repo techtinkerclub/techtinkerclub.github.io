@@ -3,14 +3,17 @@ import {canCarry} from './possession.js?v=0.18.0';
 export const CONE_COLORS=Object.freeze({orange:'#ff9b46',yellow:'#ffda78',red:'#f06c68',blue:'#65b8f8',green:'#91d78e',white:'#f5f5ed',purple:'#bf9af5'});
 export const coneColor=name=>CONE_COLORS[name]||CONE_COLORS.yellow;
 export const TAG_SIDES=['left','right'];
+export const TAG_COLORS=Object.freeze({red:'#f15d62',blue:'#68baff',green:'#8bd67e',yellow:'#f5d56b'});
+export const tagColor=key=>TAG_COLORS[key]||TAG_COLORS.yellow;
 const text=s=>String(s??'').slice(0,120);
 export function sanitizeSkills(object){
  if(object.type==='cone')object.coneColor=Object.hasOwn(CONE_COLORS,object.coneColor)?object.coneColor:'yellow';
  if(canCarry(object)){
   if(object.tagBelt===true){
    object.tags={left:object.tags?.left!==false,right:object.tags?.right!==false};
+   object.tagColor=Object.hasOwn(TAG_COLORS,object.tagColor)?object.tagColor:(['attacker','shield'].includes(object.type)?'yellow':'blue');
    object.heldTags=Math.max(0,Math.min(12,Math.floor(Number(object.heldTags)||0)));
-  }else{delete object.tagBelt;delete object.tags;delete object.heldTags}
+  }else{delete object.tagBelt;delete object.tags;delete object.heldTags;delete object.tagColor}
  }
  return object;
 }
@@ -27,10 +30,10 @@ export function sanitizeInteractions(frame){
 export function skillIcon(object){
  if(object.type==='cone')return '';
  if(!canCarry(object)||object.tagBelt!==true)return '';
- const left=object.tags?.left!==false,right=object.tags?.right!==false;
+ const left=object.tags?.left!==false,right=object.tags?.right!==false,color=tagColor(object.tagColor);
  return '<g class="tag-belt" pointer-events="none"><path d="M-10 4H10" stroke="#242c28" stroke-width="3"/>'+
- (left?'<rect x="-14" y="1" width="5" height="14" rx="1.5" fill="#f15d62" stroke="#fff" stroke-width=".7"/>':'')+
- (right?'<rect x="9" y="1" width="5" height="14" rx="1.5" fill="#68baff" stroke="#fff" stroke-width=".7"/>':'')+
+ (left?'<rect x="-14" y="1" width="5" height="14" rx="1.5" fill="'+color+'" stroke="#fff" stroke-width=".7"/>':'')+
+ (right?'<rect x="9" y="1" width="5" height="14" rx="1.5" fill="'+color+'" stroke="#fff" stroke-width=".7"/>':'')+
  (object.heldTags?'<circle cx="0" cy="19" r="6" fill="#f5e8a4"/><text x="0" y="22" font-size="9" font-weight="700" fill="#242c28" text-anchor="middle">'+object.heldTags+'</text>':'')+'</g>';
 }
 export function timedSkillObjects(objects,previous,frame,progress){
@@ -74,7 +77,9 @@ export function addInteraction(frame,kind,actorId,targetId,side='left',label='')
  if(!canCarry(actor)||!target||actorId===targetId)return {ok:false,message:'Choose a player and a different target.'};
  if(kind==='tag'){
   if(!canCarry(target)||target.tagBelt!==true)return {ok:false,message:'The ball carrier must be wearing a tag belt.'};
-  if(actor.tagBelt!==true)return {ok:false,message:'The tagger needs an equipped tag belt.'};
+  if(actor.tagBelt!==true)return {ok:false,message:'For RFU U7/U8 games, both players must have properly equipped tag belts.'};
+  if(actor.type===target.type&&['attacker','defender'].includes(actor.type))return {ok:false,message:'Choose a player on the opposing team to take the tag.'};
+  if(actor.tags?.left===false||actor.tags?.right===false)return {ok:false,message:'The tagger must replace both tags before rejoining play.'};
   if(target.tags?.[side]===false)return {ok:false,message:'That tag has already been removed. Choose the other side or reset the belt.'};
   if(!frame.objects.some(o=>o.type==='ball'&&o.ownerId===targetId))return {ok:false,message:'Tag removal requires the target to be carrying the ball.'};
   target.tags={left:target.tags?.left!==false,right:target.tags?.right!==false,[side]:false};
@@ -83,5 +88,5 @@ export function addInteraction(frame,kind,actorId,targetId,side='left',label='')
  if(kind!=='tag'&&kind!=='touch')return {ok:false,message:'Unsupported action.'};
  const entry={kind,actorId,targetId,at:.7,label:text(label)||(kind==='tag'?'Tag removed · '+side:'Touch')};
  frame.interactions=(frame.interactions||[]).concat(entry).slice(-12);
- return {ok:true,message:kind==='tag'?'Tag removed. Carrier stays standing. Create a separate pass or stop/restart step.':'Touch cue recorded. No tackle or possession change was created.'};
+ return {ok:true,message:kind==='tag'?'Tag removed. Carrier must stop and pass within three seconds/approximately three strides; tagger calls TAG and returns the strip before rejoining. Author the pass and return separately.':'Touch recorded. No tag, tackle or automatic possession change was created.'};
 }
