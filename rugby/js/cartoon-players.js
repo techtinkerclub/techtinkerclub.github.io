@@ -17,7 +17,12 @@ export function cartoonSpriteDefs(){
 function spriteIndex(o,pose,objects,previous,frame,progress){
  const members=(frame?.objects||[]).filter(m=>['tackle','ruck','maul','scrum'].includes(m.type)&&m.members?.some(member=>member.id===o.id));
  const inContact=members.find(m=>m.type==='tackle'),inRuck=members.find(m=>m.type==='ruck'),inMaul=members.find(m=>m.type==='maul');
- if(pose==='grounded')return 6;
+ if(pose==='grounded'){
+  const earlier=previous?.objects?.find(p=>p.id===o.id)?.playerPose;
+  // Transitional loss-of-balance sprite before the saved grounded state.
+  if(earlier&&earlier!=='grounded'&&progress<.35)return 12;
+  return 6;
+ }
  if(pose==='recovering'||pose==='kneeling')return 7;
  if(pose==='tackling')return inContact&&progress>.55?5:4;
  if(pose==='held')return 4;
@@ -35,6 +40,8 @@ function spriteIndex(o,pose,objects,previous,frame,progress){
   const timing=frame?.timing?.[o.id]||{start:0,end:100},start=Number(timing.start)/100,finish=Number(timing.end)/100;
   if(distance>2&&progress>=start&&progress<=finish){
    if(Math.abs((Number(end.rot)||0)-(Number(before.rot)||0))>32)return 10; // changing direction
+   const hasCarrier=frame.objects?.some(ball=>ball.type==='ball'&&ball.ownerId&&ball.ownerId!==o.id);
+   if(o.type==='attacker'&&hasCarrier&&distance>3&&distance/(Number(frame?.seconds)||2)<35)return 15; // supporting run
    return distance/(Number(frame?.seconds)||2)>35?2:1;
   }
  }
