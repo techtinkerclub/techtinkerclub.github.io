@@ -733,6 +733,68 @@ function deleteObject(scope='here'){
  drill.frames=sanitizeRoutes(result.frames);if(hasOutcomes(candidate))drill.branching=candidate.branching;selected=null;selectedPathId=null;changed();refresh();focusPitch();
  note(name+' deleted from '+(result.removed===1?'one step':result.removed+' steps')+'.');
 }
+let skillMode='touch',skillFromGroup=false;
+function openSkillDialog(kind,fromGroup=false){
+ if(!canEditObjects())return;
+ skillMode=kind;skillFromGroup=fromGroup;
+ const roster=f().objects.filter(canCarry);
+ const candidates=fromGroup?roster.filter(o=>groupIds.has(o.id)):roster;
+ const actorId=fromGroup?candidates[0]?.id:(canCarry(activeObject())?selected:candidates[0]?.id);
+ const options=(items)=>items.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');
+ $('skillActor').innerHTML=options(candidates);
+ if(actorId)$('skillActor').value=actorId;
+ $('skillDialogHeading').textContent=kind==='tag'?'Remove a rugby tag':'Record a touch';
+ $('skillDialogHelp').textContent=kind==='tag'?'Non-contact tag: choose the player taking a tag and the ball carrier wearing a belt. The carrier remains standing; create the next pass/restart as a separate step.':'Choose the player touching another player, equipment or a practice line. This adds a timed visual cue, not a tackle or automatic ball turnover.';
+ $('skillSideRow').hidden=kind!=='tag';
+ $('skillActionLabel').value='';$('skillAt').value='70';$('skillActionError').textContent='';
+ function fillTargets(){
+  const actor=$('skillActor').value;
+  const targets=f().objects.filter(o=>o.id!==actor&&(kind==='tag'?canCarry(o)&&o.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id):true));
+  $('skillTarget').innerHTML=options(targets);
+  if(fromGroup){const inGroup=targets.find(o=>groupIds.has(o.id));if(inGroup)$('skillTarget').value=inGroup.id}
+  $('skillSave').disabled=!actor||!targets.length;
+  if(!targets.length)$('skillActionError').textContent='No eligible target in this step. Add another player or equip the ball carrier with a tag belt.';
+  else $('skillActionError').textContent='';
+ }
+ $('skillActor').onchange=fillTargets;
+ fillTargets();$('skillDialog').showModal();
+}
+$('skillCancel').onclick=()=>$('skillDialog').close();
+$('skillSave').onclick=()=>{
+ const actor=$('skillActor').value,target=$('skillTarget').value,side=$('skillTagSide').value;
+ const n=Number($('skillAt').value);
+ if(!Number.isFinite(n)||n<10||n>95){$('skillActionError').textContent='Use a time from 10 to 95% of this step.';return}
+ const result=addInteraction(f(),skillMode,actor,target,side,$('skillActionLabel').value.trim());
+ if(!result.ok){$('skillActionError').textContent=result.message;return}
+ f().interactions.at(-1).at=n/100;
+ if(skillMode==='tag'){
+  // Tag loss persists into already-authored following frames. New steps inherit it automatically.
+  const from=f().objects.find(o=>o.id===target),taker=f().objects.find(o=>o.id===actor);
+  for(let i=idx+1;i<drill.frames.length;i++){
+   const frame=drill.frames[i],p=frame.objects.find(o=>o.id===target),t=frame.objects.find(o=>o.id===actor);
+   if(p?.tagBelt&&p.tags)p.tags[side]=false;
+   if(t?.tagBelt)t.heldTags=Math.max(Number(t.heldTags)||0,Number(taker.heldTags)||0);
+  }
+ }
+ $('skillDialog').close();changed();refresh();note(result.message);
+};
+function arrangeSelectedContact(kind){
+ const ids=[...groupIds],players=f().objects.filter(o=>ids.includes(o.id)&&canCarry(o));
+ const opposite=players.some(o=>o.type==='attacker')&&players.some(o=>o.type==='defender');
+ const contactAge=Number(drill.ageMin)||10;
+ if(contactAge<9){note('U7/U8 training is non-contact. Use Touch or Tag instead.');return}
+ if(!opposite){note('Select players from both attack and defence before arranging contact.');return}
+ if(kind==='tackle'&&(!players.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id))||players.length<2||players.length>3)){note('For a tackle select a ball carrier and one or two opposing defenders.');return}
+ if(kind==='maul'&&(contactAge<10||players.length<3)){note('Maul: select at least three participants from both sides; not a U9 contact shortcut.');return}
+ if(kind==='ruck'&&!f().objects.some(b=>b.type==='ball'&&!b.ownerId)){note('Present the ball on the ground before arranging a ruck.');return}
+ const existing=f().objects.filter(o=>o.type===kind);
+ const mx=players.reduce((v,o)=>v+o.x,0)/players.length,my=players.reduce((v,o)=>v+o.y,0)/players.length;
+ const marker=obj(uid(),kind,kind[0].toUpperCase()+kind.slice(1),mx,my);
+ f().objects.push(marker);
+ const result=arrangeContact(f(),marker,geometry(),drill.frames[idx-1],ids,contactAge===10&&Number(drill.ageMax)===10);
+ if(!result.ok){f().objects=f().objects.filter(o=>o.id!==marker.id);note(result.message);return}
+ groupIds.clear();groupMode=false;selected=marker.id;changed();refresh();openInspector('Object',false);note(result.message+' Check poses and contact safety before use.');
+}
 let menuRoutePoint=null;
 function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
 function openObjectMenu(e){
