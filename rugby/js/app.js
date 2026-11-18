@@ -1,6 +1,6 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
-import {CONE_COLORS,coneColor,sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,addInteraction} from './skill-actions.js?v=1';
+import {CONE_COLORS,coneColor,sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=2';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
@@ -107,11 +107,12 @@ function contactDragGrip(frame,marker,g){
  </g>`;
 }
 function render(){
- const g={...geometry(),displayMode:scaleMode},objects=preview===null?frameObjects(f(),g):tween(preview,g);
+ const g={...geometry(),displayMode:scaleMode};let objects=preview===null?frameObjects(f(),g):tween(preview,g);
  camera.apply(g);
  pitch.setAttribute('preserveAspectRatio','xMidYMid meet');
  let lines='',pathHits='';
  const lineIndex=preview===null?idx:preview<=0?0:locate(preview).i;
+ if(preview!==null&&lineIndex>0)objects=timedSkillObjects(objects,drill.frames[lineIndex-1],drill.frames[lineIndex],locate(preview).p);
  if(lineIndex>0){
   const next=drill.frames[lineIndex],old=drill.frames[lineIndex-1];
   for(const o of next.objects){
