@@ -88,3 +88,11 @@
 .read-only-player #board{touch-action:none}
 .read-only-player #board.camera-panning{cursor:grabbing}
 @media(max-width:760px){.read-only-player .viewer-camera{gap:5px;padding:2px}.read-only-player .viewer-camera button{min-width:42px;min-height:44px}}
+
+/* The visual-mode toggle belongs to the pitch border, not the coaching tools. */
+.read-only-player .presentation-pitch-shell{position:relative;min-width:0;max-width:100%;display:flex;justify-content:center;align-items:center}
+.read-only-player .presentation-pitch-shell #board{flex:1 1 auto}
+.read-only-player .pitch-cartoon-toggle{position:absolute;z-index:6;top:10px;right:10px;border:1px solid #9fba7d;border-radius:999px;padding:7px 11px;background:rgba(20,41,30,.94);color:#f5ffdd;font-size:12px;font-weight:700;cursor:pointer;min-height:34px}
+.read-only-player .pitch-cartoon-toggle[aria-pressed="true"]{background:#ffdc57;border-color:#e7bd42;color:#28351d}
+.read-only-player .pitch-cartoon-toggle:focus-visible{outline:3px solid #c9f07c;outline-offset:2px}
+@media(max-width:760px){.read-only-player .presentation-pitch-shell{width:100%;}.read-only-player .presentation-pitch-shell #board{flex:0 1 auto}.read-only-player .pitch-cartoon-toggle{top:5px;right:5px;font-size:10px;min-height:30px;padding:5px 8px}}
