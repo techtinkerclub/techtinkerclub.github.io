@@ -750,7 +750,7 @@ function openSkillDialog(kind,fromGroup=false){
  $('skillActionLabel').value='';$('skillAt').value='70';$('skillActionError').textContent='';
  function fillTargets(){
   const actor=$('skillActor').value;
-  const targets=f().objects.filter(o=>o.id!==actor&&(kind==='tag'?canCarry(o)&&o.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id):true));
+  const targets=f().objects.filter(o=>o.id!==actor&&(kind==='tag'?canCarry(o)&&o.tagBelt&&f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id):!['decision','label','ball'].includes(o.type)));
   $('skillTarget').innerHTML=options(targets);
   if(fromGroup){const inGroup=targets.find(o=>groupIds.has(o.id));if(inGroup)$('skillTarget').value=inGroup.id}
   $('skillSave').disabled=!actor||!targets.length;
@@ -786,8 +786,8 @@ function arrangeSelectedContact(kind){
  if(contactAge<9){note('U7/U8 training is non-contact. Use Touch or Tag instead.');return}
  if(!opposite){note('Select players from both attack and defence before arranging contact.');return}
  if(kind==='tackle'&&(!players.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id))||players.length<2||players.length>3)){note('For a tackle select a ball carrier and one or two opposing defenders.');return}
- if(kind==='maul'&&(contactAge<10||players.length<3)){note('Maul: select at least three participants from both sides; not a U9 contact shortcut.');return}
- if(kind==='ruck'&&!f().objects.some(b=>b.type==='ball'&&!b.ownerId)){note('Present the ball on the ground before arranging a ruck.');return}
+ if(kind==='maul'&&(contactAge<10||players.length<3||!players.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id)))){note('Maul: select a ball carrier and at least two others from both sides. Not a U9 action.');return}
+ if(kind==='ruck'&&(contactAge<10||!f().objects.some(b=>b.type==='ball'&&!b.ownerId))){note('Ruck requires U10+ and a ball presented on the ground. U9 has tackles but no rucks or mauls.');return}
  const existing=f().objects.filter(o=>o.type===kind);
  const mx=players.reduce((v,o)=>v+o.x,0)/players.length,my=players.reduce((v,o)=>v+o.y,0)/players.length;
  const marker=obj(uid(),kind,kind[0].toUpperCase()+kind.slice(1),mx,my);
@@ -816,8 +816,8 @@ function openObjectMenu(e){
   valid('menuGroupTouch',selectedPlayers.length>=2);
   valid('menuTag',selectedPlayers.length>=2&&selectedPlayers.some(o=>o.tagBelt));
   valid('menuGroupTackle',age>=9&&sides&&chosen&&selectedPlayers.length<=3);
-  valid('menuGroupRuck',age>=9&&sides&&f().objects.some(b=>b.type==='ball'&&!b.ownerId));
-  valid('menuGroupMaul',age>=10&&sides&&selectedPlayers.length>=3);
+  valid('menuGroupRuck',age>=10&&sides&&f().objects.some(b=>b.type==='ball'&&!b.ownerId));
+  valid('menuGroupMaul',age>=10&&sides&&chosen&&selectedPlayers.length>=3);
   $('stackOptions').hidden=true;
   $('objectMenuLabel').textContent=selectedPlayers.length+' selected players · group actions';
   const menu=$('objectMenu');menu.hidden=false;menu.style.left='0px';menu.style.top='0px';
