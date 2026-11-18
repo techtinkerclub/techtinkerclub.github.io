@@ -867,22 +867,29 @@ $('skillSave').onclick=()=>{
  $('skillDialog').close();changed();refresh();note(result.message);
 };
 function arrangeSelectedContact(kind){
- if(!ensureSkillActionStep(kind[0].toUpperCase()+kind.slice(1)))return;
  const ids=[...groupIds],players=f().objects.filter(o=>ids.includes(o.id)&&canCarry(o));
- const opposite=players.some(o=>o.type==='attacker')&&players.some(o=>o.type==='defender');
- const contactAge=Number(drill.ageMin)||10;
- if(contactAge<9){note('U7/U8 training is non-contact. Use Touch or Tag instead.');return}
- if(!opposite){note('Select players from both attack and defence before arranging contact.');return}
- if(kind==='tackle'&&(!players.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id))||players.length<2||players.length>3)){note('For a tackle select a ball carrier and one or two opposing defenders.');return}
- if(kind==='maul'&&(contactAge<10||players.length<3||!players.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id)))){note('Maul: select a ball carrier and at least two others from both sides. Not a U9 action.');return}
- if(kind==='ruck'&&(contactAge<10||!f().objects.some(b=>b.type==='ball'&&!b.ownerId))){note('Ruck requires U10+ and a ball presented on the ground. U9 has tackles but no rucks or mauls.');return}
- const existing=f().objects.filter(o=>o.type===kind);
+ const age=Number(drill.ageMin)||10,opposite=players.some(o=>o.type==='attacker')&&players.some(o=>o.type==='defender');
+ const hasCarrier=players.some(o=>f().objects.some(b=>b.type==='ball'&&b.ownerId===o.id));
+ if(age<9){note('U7/U8 are non-contact. Use touch skills or tag removal, not a physical tackle.');return}
+ if(!opposite){note('Select players from attack and defence to create a contact action.');return}
+ if(kind==='tackle'&&(!hasCarrier||players.length<2||players.length>3)){note('Select the ball carrier and one or two opponents for a tackle.');return}
+ if(kind==='maul'&&(age<10||players.length<3||!hasCarrier)){note('Maul requires U10+, a ball carrier and at least three participants from both teams.');return}
+ if(kind==='ruck'&&(age<10||!f().objects.some(b=>b.type==='ball'&&!b.ownerId))){note('Ruck requires U10+ and a grounded, available ball. U9 has no rucks or mauls.');return}
+ if(idx===0&&hasOutcomes(drill)){note('Select a playable action step inside outcome A or B before arranging contact.');return}
+ if(idx===0&&drill.frames.length>=150){note('Maximum of 150 action steps reached.');return}
+ // Check a detached copy before changing the drill. A rejected formation
+ // must never leave a marker, relocated player or empty step behind.
+ const draft=idx===0?stripDecisions(clone(f())):clone(f());
+ if(idx===0){draft.name=kind[0].toUpperCase()+kind.slice(1);draft.seconds=2;draft.notes='';draft.timing={};draft.paths={}}
  const mx=players.reduce((v,o)=>v+o.x,0)/players.length,my=players.reduce((v,o)=>v+o.y,0)/players.length;
  const marker=obj(uid(),kind,kind[0].toUpperCase()+kind.slice(1),mx,my);
- f().objects.push(marker);
- const result=arrangeContact(f(),marker,geometry(),drill.frames[idx-1],ids,contactAge===10&&Number(drill.ageMax)===10);
- if(!result.ok){f().objects=f().objects.filter(o=>o.id!==marker.id);note(result.message);return}
- groupIds.clear();groupMode=false;selected=marker.id;changed();refresh();openInspector('Object',false);note(result.message+' Check poses and contact safety before use.');
+ draft.objects.push(marker);
+ const result=arrangeContact(draft,marker,geometry(),idx===0?f():drill.frames[idx-1],ids,age===10&&Number(drill.ageMax)===10);
+ if(!result.ok){note(result.message);return}
+ if(idx===0){drill.frames.splice(1,0,draft);idx=1}
+ else drill.frames[idx]=draft;
+ selected=marker.id;groupIds.clear();groupMode=false;changed();refresh();openInspector('Object',false);
+ note(result.message+' Inspect the action and safe contact technique before coaching.');
 }
 let menuRoutePoint=null;
 function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
