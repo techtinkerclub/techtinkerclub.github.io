@@ -89,30 +89,6 @@
               "x": 164.39999999999998,
               "y": 339.9,
               "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-ne",
-              "type": "cone",
-              "label": "",
-              "x": 815,
-              "y": 51.3,
-              "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-sw",
-              "type": "cone",
-              "label": "",
-              "x": 85,
-              "y": 502.3,
-              "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-se",
-              "type": "cone",
-              "label": "",
-              "x": 815,
-              "y": 502.3,
-              "rot": 0
             }
           ],
           "timing": {},
@@ -193,30 +169,6 @@
               "label": "",
               "x": 164.39999999999998,
               "y": 339.9,
-              "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-ne",
-              "type": "cone",
-              "label": "",
-              "x": 815,
-              "y": 51.3,
-              "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-sw",
-              "type": "cone",
-              "label": "",
-              "x": 85,
-              "y": 502.3,
-              "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-se",
-              "type": "cone",
-              "label": "",
-              "x": 815,
-              "y": 502.3,
               "rot": 0
             }
           ],
@@ -330,30 +282,6 @@
               "x": 164.39999999999998,
               "y": 339.9,
               "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-ne",
-              "type": "cone",
-              "label": "",
-              "x": 815,
-              "y": 51.3,
-              "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-sw",
-              "type": "cone",
-              "label": "",
-              "x": 85,
-              "y": 502.3,
-              "rot": 0
-            },
-            {
-              "id": "coach-demo-cone-se",
-              "type": "cone",
-              "label": "",
-              "x": 815,
-              "y": 502.3,
-              "rot": 0
             }
           ],
           "timing": {},
@@ -403,8 +331,8 @@
         "mode": "training",
         "age": "U10"
       },
-      "savedAt": "2026-11-18T09:42:24.850Z",
-      "revision": 2
+      "savedAt": "2026-11-18T09:42:54.906Z",
+      "revision": 3
     },
     {
       "version": 1,
