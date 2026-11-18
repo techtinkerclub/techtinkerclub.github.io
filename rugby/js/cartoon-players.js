@@ -10,6 +10,17 @@ const arrowRE=/<path d="M-5 -12 L0 -19 L5 -12 Z" fill="#f7fff6"\s*\/>|<path d="M
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
 const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0))>>>0;return h};
+// The original illustration sheet was not drawn on a uniform sprite scale.
+// At 128px source resolution, the upright head artwork ranges from 62px to
+// 85px wide. Normalise HEAD size (not arm reach / stance width) so jogging,
+// supporting, recovering and defending do not appear to grow or shrink.
+// Measured directly from the transparent alpha bounds of the approved atlas.
+// 12, 16 and 17 are grounded poses with the head already baked into the body.
+const MINION_SOURCE_HEAD_WIDTHS=[85,68,71,69,71,71,71,72,73,73,75,73,0,69,72,64,0,0,73,63,65,66,62,69,72];
+const MINION_HEAD_TARGET_PX=79;
+const minionHeadScale=poseId=>MINION_SOURCE_HEAD_WIDTHS[poseId]>0
+ ?(MINION_HEAD_TARGET_PX/MINION_SOURCE_HEAD_WIDTHS[poseId]).toFixed(3):'1';
+
 
 /** Embedded assets also survive self-contained SVG, printed coaching sheets and video canvas exports. */
 // Construct the large, self-contained SVG image definitions ONCE per module.
@@ -157,6 +168,7 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  // articulated head by 180 degrees to align its original eye with the game's
  // local forward (-Y). Keep the legs, arms and torso in their original stance.
  const rotation=entry.grounded?0:180+smoothGaze(o,objects,g,previous,frame,p);
+ const headScale=minionHeadScale(poseId);
  const gait=move.moving?Math.sin(p*12*Math.PI)*1.3:0;
  const wobble=move.moving?Math.sin(p*7*Math.PI)*1.1:0;
  const size=54;
@@ -164,7 +176,7 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  // atlas instead would leak neighbouring sprites into the character viewport.
  const body=tileUse('rugby-minion-body-v9',x,y,tile);
  const head=entry.grounded?'':
-  '<g class="minion-independent-head" data-head-angle="'+fmt(rotation)+'" transform="rotate('+fmt(rotation)+' '+fmt(pivot[0])+' '+fmt(pivot[1])+')">'+
+  '<g class="minion-independent-head" data-head-angle="'+fmt(rotation)+'" data-head-scale="'+headScale+'" transform="translate('+fmt(pivot[0])+' '+fmt(pivot[1])+') rotate('+fmt(rotation)+') scale('+headScale+') translate('+fmt(-pivot[0])+' '+fmt(-pivot[1])+')">'+
     tileUse('rugby-minion-head-v9',x,y,tile)+'</g>';
  return '<g class="cartoon-player minion-mode-player minion-rig-player" data-stance="'+entry.name+'" pointer-events="none">'+
   '<g transform="translate(0 '+fmt(gait)+') rotate('+fmt(wobble)+')">'+
