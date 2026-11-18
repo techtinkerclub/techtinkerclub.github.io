@@ -2,13 +2,13 @@ import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
-import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.16.1';
+import {normalScaleMode,symbolTransform,labelOffset,labelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.18.8';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
-import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,timedSkillObjects} from './skill-actions.js?v=2';
+import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,timedSkillObjects} from './skill-actions.js?v=3';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
-import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.12.20';
+import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import {pitchGeometry,drillGeometry,trainingField} from './pitch.js?v=0.16.1';
 import {fieldContext,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
