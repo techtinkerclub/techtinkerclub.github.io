@@ -6,7 +6,7 @@ Updated 18 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.19.3** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.19.4** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
 
 ## Public publishing workflow
@@ -138,3 +138,12 @@ The left Decision making tool is the single creation/edit entry point; duplicate
 - Held upright is stored as `contactOutcome:'held'` on a tackle/contact marker; the ball carrier has a distinct `held` standing player pose and defenders remain engaged, with no grounded carrier or phantom tackle breakdown. This is a schematic upright stop, not a completed tackle. Subsequent rip/pass can be separately authored using the existing Actions menu. A new rip action does not create a ruck.
 - Modified contact cleaning, saved/published playback, SVG pose depiction and editor/presentation cache versions. Existing tackle drills without a contact outcome retain their original ground-tackle/ruck behaviour.
 - `tests/held-upright.test.mjs` covers no-breakdown for upright holds, ground-tackle breakdown preservation and the existing release/support/ruck phase order. Isolated JavaScript formation checks succeeded for both alternatives; full Node and live-browser regression are still outstanding.
+
+## v0.19.4 — TAG! callout, raised tag and actual return action (18 November 2026)
+
+- RFU U7/U8 mini-tag coaching now makes the **tagger's call visible**: an authored tag-removal moment displays a prominent **TAG!** bubble over the tagger and the removed coloured strip raised visibly in the tagger's player graphic. The raised strip remains with its holder until it is returned. This is a text/animation callout, not audio playback.
+- Added **Actions… → Return a tag to its player**. The picker offers only outstanding strips and routes each back to its original wearer and original left/right hip. A return is saved as a timed `tag-return` interaction, distinct from a new tag, touch, possession change or the manual **Reset belt (setup only)** control. Tag-strip ownership is tracked in `heldTagItems` (targetId, side, colour) alongside the older numerical `heldTags` count.
+- The return removes the raised strip and restores the matching hip strip in the animation, decrements the correct tagger's held count, and propagates the state into subsequent authored steps. If a tag is taken and returned from the same step, the return creates a separate following step to avoid simultaneous TAG/RETURN callouts. Individual tag or return actions can still be retimed or removed in Step → Actions in this step.
+- Older saved tag drills with count-only tracking are supported where their authored removal events identify the tagger, recipient and side: ownership is reconstructed on opening Actions. No arbitrary owner is assigned when old event provenance is absent.
+- RFU U8 guidance: on a tag, the tagger stops, holds the strip aloft and shouts TAG; the referee calls TAG – PASS; after the ball is passed, the tagger returns the strip before rejoining. The tagged player must replace it before rejoining. The editor **does not automatically enforce a stop or pass**; coaches must author player movement and the next pass correctly.
+- Added `tests/tag-call-return.test.mjs` covering saved tag ownership, shout/raised strip, removal/return timing, return validation, legacy compatibility and read-only presentation. Adjusted the old skill-action test for the TAG! callout. Source syntax and the core model were checked in isolation; **full Node CI and live browser/mobile acceptance remain unconfirmed**.
