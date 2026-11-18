@@ -338,3 +338,25 @@ html{color-scheme:dark}
 #skillDialog .field{margin:10px 0}
 #skillDialog select,#skillDialog input{max-width:100%}
 #skillActionError:not(:empty){color:#ffc29e}
+
+
+/* Consistent spacing for the contextual action chooser and detail dialog. */
+#actionChooser,#skillDialog{box-sizing:border-box;width:min(94vw,530px);max-width:94vw;max-height:88dvh;overflow-y:auto;padding:clamp(16px,3vw,24px);border-radius:12px}
+#actionChooser[open],#skillDialog[open]{display:block}
+#actionChooser .field,#skillDialog .field{display:grid;gap:7px;margin:18px 0}
+#actionChooser .field[hidden],#skillDialog .field[hidden],#skillSideRow[hidden]{display:none!important}
+#actionChooser label,#skillDialog label{font-size:13px}
+#actionChooser select,#skillDialog select,#skillDialog input{width:100%;min-height:42px;box-sizing:border-box}
+#actionChooser p,#skillDialog p{line-height:1.5;margin:12px 0}
+.action-chooser-head,.action-chooser-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.action-chooser-head h2{font-size:20px;margin:3px 0 0}
+.action-chooser-head small{font-size:10px;color:var(--accent);letter-spacing:.09em}
+.action-chooser-help{padding:12px;background:#233c2b;border:1px solid #45664c;border-radius:8px}
+.action-chooser-foot{justify-content:flex-end;margin-top:18px}
+#skillDialog>.flex{gap:12px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+#skillActionError:not(:empty),#actionChooserError:not(:empty){padding:8px 0}
+#skillDialog label,#skillDialog .field{min-width:0}
+.object-menu{gap:5px;padding:9px;min-width:228px}
+.object-menu button{min-height:36px;padding:9px 11px}
+.skill-object button{margin:6px 8px 6px 0}
+.skill-object .field{display:grid;gap:7px;margin:10px 0}
