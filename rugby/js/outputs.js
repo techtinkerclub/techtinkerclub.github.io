@@ -4,7 +4,7 @@ import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {outcomeCardsMarkup} from './branching-visual.js?v=4';
 import {decisionList,decisionText} from './training.js?v=0.12.20';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.7.2';
-import {recordCoachingMovie} from './video-recorder.js?v=0.16.0';
+import {recordCoachingMovie} from './video-recorder.js?v=0.16.1';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
 import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
