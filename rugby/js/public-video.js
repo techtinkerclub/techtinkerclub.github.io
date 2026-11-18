@@ -58,7 +58,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
   render();
  };
  const progressionUrl=()=>{
-  const url=new URL('./sequence.html',location.href);url.searchParams.set('drills',ids.join(','));return url.href;
+  const url=new URL('./sequence.html',location.href);url.searchParams.set('drills',ids.join(','));if(get('publicVideoStyle').value==='minion')url.searchParams.set('style','minion');return url.href;
  };
  get('videoPresent').onclick=()=>{if(!ids.length||busy)return;window.open(progressionUrl(),'_blank','noopener')};
  get('videoLink').onclick=async()=>{
