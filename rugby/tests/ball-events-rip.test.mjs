@@ -48,3 +48,10 @@ assert.match(app,/retimeBallEvent/,'Timed possession events can be edited');
 assert.match(app,/data-rip-label/,'Rip label remains editable');
 assert.match(app,/undoBallEvent/,'Rip and possession events are removable');
 assert.match(css,/\.action-participants/);
+
+assert.match(html,/id="pickupDialog"/,'Loose-ball pickup needs a recipient and timing dialog');
+assert.match(app,/function openPickupDialog\(/);
+assert.match(app,/choice==='pickup-ball'\)\{openPickupDialog\(\)/,'Contextual pickup should open the pickup chooser');
+assert.match(app,/ballPickKind='pass';\s*finishBallPick\(player\.id\)/,'Pickup should use the existing non-pass pickup transition');
+assert.match(app,/option\.value==='ruck'/,'Unavailable contact actions should explain loose-ball requirement');
+assert.match(app,/function arrangeSelectedContact/,'Contact formation reuse remains intact');
