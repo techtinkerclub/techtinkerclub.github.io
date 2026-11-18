@@ -29,7 +29,7 @@ const safe=playbackData(d);
 assert.equal(safe.frames[1].objects.find(o=>o.id==='cone').coneColor,'blue');
 assert.equal(safe.frames[1].objects.find(o=>o.id==='runner').tags.left,false);
 assert.equal(safe.frames[1].interactions[0].kind,'tag');
-assert.match(renderScene(safe,{index:1}).svg,/Tag removed/);
+assert.match(renderScene(safe,{index:1}).svg,/TAG!/);
 assert.match(renderScene(safe,{index:1}).svg,/#65b8f8/);
 assert.match(skillIcon(safe.frames[0].objects[0]),/tag-belt/);
 assert.equal(Object.keys(TAG_COLORS).length,4);
