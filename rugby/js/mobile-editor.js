@@ -89,8 +89,8 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
   viewScrim.className='mobile-view-scrim';viewScrim.hidden=true;
   viewScrim.setAttribute('aria-label','Close view options');
   body.appendChild(viewScrim);
-  viewScrim.addEventListener('click',()=>{viewMenu.open=false});
-  viewButton.addEventListener('click',()=>{viewMenu.open=!viewMenu.open});
+  viewScrim.addEventListener('click',()=>{viewMenu.open=false;syncView()});
+  viewButton.addEventListener('click',()=>{viewMenu.open=!viewMenu.open;syncView()});
   const syncView=()=>{
    const open=body.classList.contains('mobile-workspace')&&viewMenu.open;
    viewButton.setAttribute('aria-expanded',String(open));
