@@ -14,7 +14,7 @@ import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,ed
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=0.18.0';
 import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=12';
-import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,cartoonLabelPosition,symbolLabelSize} from './symbol-scale.js?v=0.20.34';
+import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,cartoonLabelPosition,symbolLabelSize} from './symbol-scale.js?v=0.20.35';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.18.8';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
@@ -47,8 +47,8 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.20.34';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.34';
+import {renderScene} from './scene.js?v=0.20.35';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.35';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.18.4';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
