@@ -105,6 +105,43 @@ async function check(path,viewport){
   assert.match(await play.getAttribute('aria-label'),/Pause/i,'Mobile shortcut must reflect playback');
   await play.click();
   assert.match(await page.locator('#play').innerText(),/Play/i,'Mobile shortcut must pause existing playback');
+  // A preview used to strand the entire pitch in non-editable mode.
+  // Natural finish must return to the LAST actual authored step.
+  await tap('steps');
+  const steps=page.locator('#scenes .scene');
+  const lastIndex=await steps.count()-1;
+  assert(lastIndex>=1,'sample drill needs at least one animated step');
+  await steps.last().click();
+  await page.locator('#speed').selectOption('2');
+  await tap('pitch');
+  await play.click();
+  await page.waitForFunction(()=>document.querySelector('#play')?.textContent?.includes('Play')
+   &&document.querySelector('#status')?.textContent?.includes('editing last step'),{timeout:18000});
+  const returned=await page.evaluate(()=>({
+   selectedStep:[...document.querySelectorAll('#scenes .scene')].findIndex(x=>x.classList.contains('selected')),
+   total:document.querySelectorAll('#scenes .scene').length,
+   pickerDisabled:document.getElementById('objectPicker').disabled,
+   previewEdit:!document.getElementById('editCurrent').hidden
+  }));
+  assert.equal(returned.selectedStep,returned.total-1,'after playback the last authored step is selected');
+  assert.equal(returned.pickerDisabled,false,'after playback player selector is editable');
+  assert.equal(returned.previewEdit,false,'playback preview lock is cleared');
+
+  // A selected Pan mode may move the view over empty grass but must not block
+  // picking a visible rugby player for editing on a touch device.
+  const mobilePan=page.locator('[data-mobile-camera="panMode"]');
+  await mobilePan.click();
+  assert.equal(await mobilePan.getAttribute('aria-pressed'),'true');
+  const candidates=page.locator('#pitch .obj[data-id]');
+  assert(await candidates.count()>0,'there must be visible objects on the final pitch');
+  const id=await candidates.first().getAttribute('data-id');
+  const rect=await candidates.first().boundingBox();
+  assert(rect?.width>0&&rect?.height>0,'first selectable object has an on-screen hitbox');
+  await page.touchscreen.tap(rect.x+rect.width/2,rect.y+rect.height/2);
+  const value=await page.locator('#objectPicker').inputValue();
+  assert.equal(value,id,'tapping a player while Pan is selected must select that object');
+  assert.equal(await mobilePan.getAttribute('aria-pressed'),'false','selection automatically exits Pan mode');
+
   console.log('PASS',path,viewport.width+'x'+viewport.height,measured);
  }finally{await page.close()}
 }
