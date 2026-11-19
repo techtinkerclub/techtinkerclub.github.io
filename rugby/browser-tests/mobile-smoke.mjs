@@ -68,6 +68,32 @@ async function check(path,viewport){
   await tap('steps');
   assert(await page.locator('#timelinePanel').isVisible(),'Steps must open timeline');
   assert(await page.locator('#play').isVisible(),'Steps must expose the original Play button');
+  const switcher=page.locator('.mobile-timeline-switch');
+  assert(await switcher.isVisible(),'touch editor must offer separate Steps / Timing views');
+  assert(await page.locator('#scenes').isVisible(),'step cards must be visible by default');
+  assert(!(await page.locator('#trackArea').isVisible()),'timing tracks must not overlap step cards');
+  const sceneLayout=await page.evaluate(()=>{
+   const sheet=document.getElementById('timelinePanel').getBoundingClientRect(),
+    cards=document.getElementById('scenes').getBoundingClientRect(),
+    nav=document.querySelector('.mobile-workspace-nav').getBoundingClientRect();
+   return {sheetBottom:sheet.bottom,navTop:nav.top,cardsTop:cards.top,cardsBottom:cards.bottom};
+  });
+  assert(sceneLayout.sheetBottom<=sceneLayout.navTop+3,'step editor must finish above bottom navigation');
+  assert(sceneLayout.cardsTop>=0&&sceneLayout.cardsBottom<=sceneLayout.sheetBottom+3,
+   'step cards must remain inside scrollable sheet, not behind the pitch or tracks');
+  await page.locator('[data-mobile-step-panel="timing"]').click();
+  assert(await page.locator('#trackArea').isVisible(),'Timing tab must expose tracks');
+  assert(!(await page.locator('#scenes').isVisible()),'Timing view must not overlap step cards');
+  await page.locator('[data-mobile-step-panel="sequence"]').click();
+  assert(await page.locator('#scenes').isVisible(),'returning to Steps restores step cards');
+  assert(!(await page.locator('#trackArea').isVisible()));
+  await page.locator('[data-mobile-step-edit]').click();
+  assert(await page.locator('#inspectorPanel').isVisible(),'Edit selected step opens editable fields');
+  assert.equal(await page.locator('#tabStep').getAttribute('aria-selected'),'true');
+  await tap('steps');
+  assert(await page.locator('.mobile-timeline-more').isVisible(),'advanced sequence commands stay accessible');
+  await page.locator('.mobile-timeline-more summary').click();
+  assert(await page.locator('#present').isVisible(),'Presentation command is preserved within More options');
   await tap('pitch');
   assert(!(await page.locator('#timelinePanel').isVisible()),'Pitch must close timeline');
   const play=page.locator('[data-mobile-action="play"]');
