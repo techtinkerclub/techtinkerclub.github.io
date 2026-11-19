@@ -20,6 +20,9 @@ try{
  await pub.locator('#videoBuilder').waitFor({state:'visible',timeout:12000});
  assert.equal(await pub.locator('#videoStages li').count(),1);
  assert.equal(await pub.locator('#publicVideoStyle').inputValue(),'minion');
+ assert(await pub.locator('#publicMovieCamera').isVisible(),'video camera choice must not be buried');
+ assert.equal(await pub.locator('#publicMovieCamera').inputValue(),'follow','Ruckus starts with follow action camera');
+ await pub.locator('#publicMovieCamera').selectOption('follow');
  assert.equal(await pub.locator('#videoMoreDrills').getAttribute('open'),null,
   'multi-drill composition must be collapsed for a single video');
  assert.equal(await pub.locator('#videoTitleField').isVisible(),false,
@@ -54,6 +57,13 @@ try{
  assert.equal(await player.locator('#playerVideoStyle').inputValue(),'ruckus');
  assert.ok(await player.locator('#board .ruckus-player').count()>0);
  assert.equal(await player.locator('#board .cartoon-pitch-decor').count(),0);
+ await player.locator('#playerFollow').click();
+ assert.equal(await player.locator('#playerFollow').getAttribute('aria-pressed'),'true');
+ assert.equal(await player.locator('#framing').inputValue(),'follow');
+ const startView=await player.locator('#board svg').getAttribute('viewBox');
+ await player.locator('#seek').evaluate(el=>{el.value=String(Number(el.max)*.65);el.dispatchEvent(new Event('input',{bubbles:true}))});
+ const followView=await player.locator('#board svg').getAttribute('viewBox');
+ assert.notEqual(startView,followView,'read-only camera follows the moving players at different times');
  await player.close();
 
  // The editable library/Studio uses the same video options, but composition
@@ -69,9 +79,15 @@ try{
  });
  await editor.waitForFunction(()=>document.querySelector('#stageTitle')?.textContent?.includes('Whistle'),null,{timeout:12000});
  await editor.locator('#minionMode').click();
+ await editor.locator('#viewMenu summary').click();
+ await editor.locator('#followAction').check();
+ assert.equal(await editor.locator('#followAction').isChecked(),true);
+ await editor.locator('#viewMenu summary').click();
  await editor.locator('#share').click();
  await editor.locator('#shareDialog').waitFor({state:'visible'});
  assert.equal(await editor.locator('#shareVideoStyle').inputValue(),'ruckus');
+ assert(await editor.locator('#movieCamera').isVisible(),'export camera must be a visible first-class choice');
+ assert.equal(await editor.locator('#movieCamera').inputValue(),'follow');
  assert.equal(await editor.locator('#movieSequenceDisclosure').getAttribute('open'),null);
  await editor.locator('#movieOptions').evaluate(el=>{
   for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true;
