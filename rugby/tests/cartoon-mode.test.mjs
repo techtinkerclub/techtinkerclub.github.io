@@ -98,6 +98,20 @@ assert.doesNotMatch(comicTags,/tag-belt/,'Classic over-visor bars never appear o
 const frontBall={id:'ball1',type:'ball',x:101,y:121,ownerId:player.id};
 assert.equal(cartoonObjectOrder([frontBall,player,defender],true).at(-1).id,frontBall.id,'Ruckus draws attached ball after players');
 assert.equal(cartoonObjectOrder([frontBall,player,defender],false)[0].id,frontBall.id,'Classic draw order unchanged');
+
+const coach={id:'coach1',type:'coach',label:'Coach',x:130,y:130,rot:0};
+const coachIdle=playerAppearance(coach,'standing',original,[coach],view,null,null,1,{cartoonMode:true});
+const coachWalking=playerAppearance({...coach,coachGesture:'walking'},'standing',original,[coach],view,null,null,1,{cartoonMode:true});
+const coachCheering=playerAppearance({...coach,coachGesture:'celebrate'},'standing',original,[coach],view,null,null,1,{cartoonMode:true});
+assert.match(coachIdle,/ruckus-h-coach/,'The real H-cap rugby coach replaces Gru in Ruckus');
+assert.match(coachIdle,/data-coach-frame="1"/,'Coach idle uses the supplied standing3 sprite');
+assert.match(coachWalking,/data-coach-frame="3"/,'Coach walking uses the supplied walking3 sprite');
+assert.match(coachCheering,/data-coach-frame="7"/,'Coach celebration uses the supplied arms-up sprite');
+assert.match(coachIdle,/rugby-ruckus-coach-h8/,'Coach sprites reference the approved H-cap atlas');
+assert.doesNotMatch(coachIdle,/coach-user-overhead|Gru/,'The old cartoon coach image is never rendered');
+const coachSource=read('js/ruckus-coach-h8-data.js');
+assert.match(coachSource,/RUCKUS_COACH_URI/,'The new coach atlas is bundled into self-contained scenes');
+assert.doesNotMatch(read('js/cartoon-players.js'),/coach-user-overhead-data/,'The old Gru source is no longer loaded');
 const sprites=read('js/cartoon-players.js'),red=read('js/ruckus-red-54-atlas.js'),blue=read('js/ruckus-blue-54-atlas.js');
 assert.match(sprites,/ruckus-red-54-atlas/);
 assert.match(sprites,/ruckus-blue-54-atlas/);
