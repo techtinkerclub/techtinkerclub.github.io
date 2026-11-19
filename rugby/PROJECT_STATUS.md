@@ -6,8 +6,16 @@ Updated 19 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.40** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.41** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.41 — After playback, return to editable last step; reliable mobile player selection (19 November 2026)
+
+- User reported that **players sometimes cannot be selected after playback**, especially on mobile, and clarified the preferred destination is **editing the last step**.
+- Root cause 1: the Play handler stopped at `preview=duration()`; the editor disables object hit testing while `preview!==null`. Natural finish now calls `choose(drill.frames.length-1)`, clears preview and updates tools, and disables latched Pan mode. Manual Pause similarly returns to editing the nearest current authored step. Decision fork comparison remains an intentional pause and is not affected.
+- Root cause 2: `camera.js` captured *every* touch when Pan was on, even player taps, before Studio's pitch selection listener could receive them. On mobile, player/object/route hit targets and touches within the existing player hit radius take precedence over panning; blank grass can still pan. The edit selection also prefers a player when a broad route hit stroke overlaps a finger tap. Desktop spacebar/middle-button panning remains unchanged.
+- New Node regression tests in `tests/mobile-playback-selection.test.mjs` and browser coverage in `browser-tests/mobile-smoke.mjs` for natural playback completion, editability of final step and selecting a player with Pan enabled. Shared camera import bumped and Studio/Coach html cache keys refreshed; Classic player artwork and underlying drill frames untouched.
+- Latest QA/Pages results must be reviewed against the actual release commit; do not assume an earlier green run validates this revision.
 
 ## 0.20.40 — Fix inverted pass sprites (19 November 2026)
 
