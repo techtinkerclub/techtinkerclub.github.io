@@ -18,6 +18,7 @@ $('playerMinionMode').onclick=()=>{
  const b=$('playerMinionMode');
  b.textContent=opts.cartoonMode?'◉ Classic view':'◉ Harburling Ruckus';
  b.setAttribute('aria-pressed',String(!!opts.cartoonMode));
+ $('playerVideoStyle').value=opts.cartoonMode?'ruckus':'classic';
  b.title=opts.cartoonMode?'Return to classic coaching view':'Show the red rugby mascot animation skin';
  render();
 };
@@ -137,6 +138,8 @@ function open(data,options){stop();d=playbackData(data);opts=outputOptions(optio
  const b=hasOutcomes(d)?branchInfo(d):null;
  $('playerMinionMode').setAttribute('aria-pressed',String(!!opts.cartoonMode));
  $('playerMinionMode').textContent=opts.cartoonMode?'◉ Classic view':'◉ Harburling Ruckus';
+ $('playerVideoStyle').value=opts.cartoonMode?'ruckus':'classic';
+ getMovieSettings.setContext({hasDecision:hasOutcomes(d),story:hasOutcomes(d)});
  $('branchPlayer').hidden=!b;
  if(b){
   $('branchPrompt').textContent='◆ '+b.question;
@@ -174,7 +177,7 @@ $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();jumpStep(Number(b.dataset.jumpStep),true)};
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};
 $('print').onclick=()=>{if(d){stop();printDrill(d,opts)}};
-$('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings()};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{$('video').disabled=false}};
+$('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings(),cartoonMode:$('playerVideoStyle').value==='ruckus'};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{$('video').disabled=false}};
 const params=new URLSearchParams(location.search),catalogueId=params.get('drill');
 async function reviewCopy(value,message){if(await copyText(value)){$('reviewStatus').textContent=message;return}$('reviewCopyValue').value=value;$('reviewCopyDialog').showModal();$('reviewCopyValue').select()}
 if(catalogueId!==null){
