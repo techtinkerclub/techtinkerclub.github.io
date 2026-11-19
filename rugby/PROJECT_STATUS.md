@@ -6,8 +6,16 @@ Updated 19 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.39** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.40** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.40 — Fix inverted pass sprites (19 November 2026)
+
+- Reported with screenshots of an U10 drill: **catching now correct** in v0.20.39, but during either left/right pass the passer turns upside down.
+- Root cause: the same `ruckusActionSpriteTransform` used for both receiving and passing; it adds a 180-degree source turn and Y-axis reflections that are correct for the receive atlas poses but **incorrect for pass atlas frames 43–45**, which are already upright diagonally towards screen-right.
+- `ruckusPassSpriteTransform(localBearing)` is separate from the existing **unchanged** catching transform. Native upright pass sprite faces approximately +45 degrees; the opposite side is a horizontally mirrored copy facing -45 degrees. Only the remaining delta rotates the sprite: +45 degrees for rightward and -45 for leftward throws, no vertical flip in lateral passing. Actions retain their original authored ball trajectory, player position and rotations, and Classic rendering.
+- `tests/ruckus-catching-direction.test.mjs` now explicitly asserts both pass directions render `scale(±1 1)` and `rotate(±45 64 64)`, have no 180-degree passing turn, preserve receiving X/Y transforms, and keep actual facing vector aligned with ball direction.
+- Updated module cache versions for Studio, Coach, public library, read-only player, rendering and video to 0.20.40. Verify latest workflow and Pages release individually before claiming complete QA.
 
 ## 0.20.38–0.20.39 — Bidirectional Ruckus actions + separated mobile Steps/Timing (19 November 2026)
 
@@ -15,7 +23,7 @@ Updated 19 November 2026. This document is the maintained handover between chats
 - **Fix in `js/cartoon-players.js`:** both passing and receiving now use the same **four-axis-variant source-art transform** (unmirrored, X mirror, Y mirror, X+Y mirror) derived from actual authored ball flight. A small ±45° rotation aligns intermediate angles. These are SVG reflections of the genuine supplied sprite atlas; no new placeholder images. Explicitly handles the standard editor pass *without* a `transferKind`, which was previously failing to select the passing sprite. Sender faces the outbound tangent; receiver faces the incoming side. Classic gameplay, player rotations, camera, ball motion and authored timing remain untouched.
 - Added more demanding `tests/ruckus-catching-direction.test.mjs` checks that mathematically validate the **rendered sprite's face direction after mirroring and rotation**, not just metadata, along with real pass/catch sprite selection and exclusion of turnovers/pickups.
 - **Mobile Steps usability:** v0.20.36 had five timeline sections in a grid with only four explicit rows and an override forcing a maximum 290 px height; tracks overlapped the step cards. Mobile now uses a larger bounded bottom sheet and distinct **Steps** and **Timing** tabs (one view visible at a time), one-tap **Edit selected step** access, generous touch handles, selectable step card strip and **More options** disclosure for secondary sequence controls. All existing desktop buttons/timeline mechanics restored when leaving mobile mode. No new step format.
-- v0.20.39 also makes mobile View-sheet backdrop state synchronous and refreshes the Studio→workspace→mobile module cache chain after a Playwright tablet timing race. Browser smoke test extended for portrait phone, portrait tablet and landscape phone to assert step cards and timing tracks do not overlap, both subviews switch correctly, Edit selected step opens the inspector, and advanced controls stay reachable. The regular full-suite/desktop smoke failures from earlier commits remain independent issues; check latest run statuses before asserting deployment or complete QA.
+- v0.20.40 also makes mobile View-sheet backdrop state synchronous and refreshes the Studio→workspace→mobile module cache chain after a Playwright tablet timing race. Browser smoke test extended for portrait phone, portrait tablet and landscape phone to assert step cards and timing tracks do not overlap, both subviews switch correctly, Edit selected step opens the inspector, and advanced controls stay reachable. The regular full-suite/desktop smoke failures from earlier commits remain independent issues; check latest run statuses before asserting deployment or complete QA.
 
 ## 0.20.37 — Ruckus receiving animation faces incoming pass (19 November 2026)
 
