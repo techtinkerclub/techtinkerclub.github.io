@@ -70,3 +70,21 @@ export function labelPosition(o,g,pose){
  return {x:clamp(at.x+desired.x,margin+7,margin+g.fw-7)-at.x,
   y:clamp(at.y+desired.y,margin+10,margin+g.fh-7)-at.y};
 }
+
+// Minion artwork is an image atlas whose visible silhouette is much wider than
+// Classic's symbol radius. Place labels clear BELOW the entire sprite, not
+// "behind" the player (which overlaps goggles in rotated/side-on poses).
+// Prefer above only when the bottom of the field cannot accommodate a caption.
+export function cartoonLabelPosition(o,g,pose){
+ const [sx,sy]=symbolFactors(o,g,pose==='grounded'?'grounded':'standing');
+ // The original 54px sprite cell rotates inside its own SVG; allow for the
+ // diagonal bounding box, separately from the unscaled text label.
+ const extent=38*Math.max(sx,sy);
+ const gap=7,baseline=extent+gap+symbolLabelSize(g);
+ const q=g.toView(o.x,o.y),margin=g.margin||0;
+ const fieldBottom=margin+g.fh,fieldTop=margin;
+ const below=q.y+baseline<=fieldBottom-4;
+ const y=below?baseline:-extent-gap;
+ return {x:Math.max(margin+12,Math.min(q.x,margin+g.fw-12))-q.x,
+  y:Math.max(fieldTop+symbolLabelSize(g),Math.min(q.y+y,fieldBottom-4))-q.y};
+}
