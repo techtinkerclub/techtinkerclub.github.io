@@ -56,11 +56,14 @@ test('newly published separate version gets own public ID without altering origi
 });
 
 
-test('old special-case tackling demos are removed from the public QA catalogue',()=>{
+test('all 20 QA drills are retained and Test 01 matches native published tackling drill',()=>{
  const qa=read('test-drills').drills;
- const retired=new Set(['seed-901','seed-902','seed-903','seed-904','seed-916','seed-917','seed-919']);
- assert.ok(!qa.some(d=>retired.has(d.id)),'Retired tackle, grounded, presentation and target-follow QA fixtures must not appear publicly');
- assert.ok(qa.length>=10,'Retain the unrelated visual regression test drills');
- assert.ok(qa.some(d=>d.id==='seed-908'),'Unrelated passing QA demo is retained');
+ assert.equal(qa.length,20,'Visual regression drills should not disappear when a demo is fixed');
+ assert.equal(new Set(qa.map(d=>d.id)).size,20,'No duplicate test IDs');
+ for(let i=901;i<=920;i++)assert.ok(qa.some(d=>d.id==='seed-'+i),'Missing Test '+i);
  assert.ok(qa.every(d=>d.category==='Test drills'));
+ const first=qa.find(d=>d.id==='seed-901'),native=applyPublications(base,data).find(d=>d.id==='seed-144');
+ assert.ok(first&&native);
+ assert.deepEqual(first.frames,native.frames,'Test 01 uses the same normal user-editor frames as published Contact drill');
+ assert.ok(first.frames.every(f=>f.objects.every(o=>o.posePinned!==true)),'Test 01 contains no special pinned QA stances');
 });
