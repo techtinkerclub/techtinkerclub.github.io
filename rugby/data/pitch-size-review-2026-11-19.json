@@ -1,0 +1,2436 @@
+{
+  "date": "2026-11-19",
+  "revision": "0.20.12",
+  "scope": "Pitch dimensions and spatial fit; Classic geometry retained",
+  "source": "Rugby Coaching Studio 0.20.11 training drills plus published/personal/test",
+  "method": "Measure players, balls, contact equipment, routes and decision branches across every frame; preserve all real-world movement distances by reprojection when changing length/width. Boundary marking cones follow the resized pitch. Keep a conservative safety/clearance margin. Leave compact custom/QA pitches as-is.",
+  "counts": {
+    "total": 171,
+    "main": 143,
+    "personal": 6,
+    "published": 2,
+    "qa": 20,
+    "mainChanged": 88,
+    "mainUnchanged": 55,
+    "cropBlocked": 0
+  },
+  "entries": [
+    {
+      "id": "seed-001",
+      "title": "Sharks and Fishes",
+      "category": "Movement",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        15
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-002",
+      "title": "Rats and Rabbits",
+      "category": "Movement",
+      "old": [
+        15,
+        12
+      ],
+      "now": [
+        15,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-003",
+      "title": "Rob the Nest",
+      "category": "Movement",
+      "old": [
+        15,
+        15
+      ],
+      "now": [
+        13,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 2,
+      "topAnchor": false,
+      "savedAreaM2": 30
+    },
+    {
+      "id": "seed-004",
+      "title": "Animal Walks Relay",
+      "category": "Movement",
+      "old": [
+        15,
+        15
+      ],
+      "now": [
+        12,
+        8
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 129
+    },
+    {
+      "id": "seed-005",
+      "title": "Dog and Bone",
+      "category": "Movement",
+      "old": [
+        15,
+        15
+      ],
+      "now": [
+        9,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 90
+    },
+    {
+      "id": "seed-006",
+      "title": "Mirror Movement",
+      "category": "Defence",
+      "old": [
+        6,
+        5
+      ],
+      "now": [
+        6,
+        5
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-007",
+      "title": "Balance Challenge",
+      "category": "Movement",
+      "old": [
+        10,
+        10
+      ],
+      "now": [
+        5,
+        5
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 75
+    },
+    {
+      "id": "seed-008",
+      "title": "Jump and Land",
+      "category": "Movement",
+      "old": [
+        10,
+        10
+      ],
+      "now": [
+        6,
+        6
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 64
+    },
+    {
+      "id": "seed-009",
+      "title": "Passing Circle",
+      "category": "Handling",
+      "old": [
+        10,
+        10
+      ],
+      "now": [
+        10,
+        10
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-010",
+      "title": "Five Pass Game",
+      "category": "Handling",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        18,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 30
+    },
+    {
+      "id": "seed-011",
+      "title": "L-shaped Passing",
+      "category": "Handling",
+      "old": [
+        12,
+        10
+      ],
+      "now": [
+        12,
+        10
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-012",
+      "title": "Passing Gauntlet",
+      "category": "Handling",
+      "old": [
+        20,
+        12
+      ],
+      "now": [
+        20,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 40
+    },
+    {
+      "id": "seed-013",
+      "title": "Diamond Passing",
+      "category": "Handling",
+      "old": [
+        12,
+        12
+      ],
+      "now": [
+        12,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-014",
+      "title": "Two-ball End Ball",
+      "category": "Handling",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        13
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 40
+    },
+    {
+      "id": "seed-015",
+      "title": "Continuous Passing",
+      "category": "Handling",
+      "old": [
+        20,
+        12
+      ],
+      "now": [
+        17,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 36
+    },
+    {
+      "id": "seed-016",
+      "title": "2 vs 1 · Draw and pass",
+      "category": "Attack",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        11
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 80
+    },
+    {
+      "id": "seed-017",
+      "title": "Octopus",
+      "category": "Movement",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-018",
+      "title": "1v1 Channel",
+      "category": "Attack",
+      "old": [
+        12,
+        6
+      ],
+      "now": [
+        12,
+        6
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-019",
+      "title": "Two Gates",
+      "category": "Attack",
+      "old": [
+        12,
+        10
+      ],
+      "now": [
+        12,
+        10
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-020",
+      "title": "3 vs 2 Overload",
+      "category": "Attack",
+      "old": [
+        20,
+        18
+      ],
+      "now": [
+        20,
+        18
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-021",
+      "title": "Continuous 4 vs 2",
+      "category": "Attack",
+      "old": [
+        25,
+        18
+      ],
+      "now": [
+        25,
+        18
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-022",
+      "title": "Four-goal Touch",
+      "category": "Game",
+      "old": [
+        20,
+        20
+      ],
+      "now": [
+        16,
+        20
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 8,
+      "topAnchor": false,
+      "savedAreaM2": 80
+    },
+    {
+      "id": "seed-023",
+      "title": "Wide Touch",
+      "category": "Game",
+      "old": [
+        25,
+        30
+      ],
+      "now": [
+        22,
+        23
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 2,
+      "topAnchor": false,
+      "savedAreaM2": 244
+    },
+    {
+      "id": "seed-024",
+      "title": "Shadow Defence",
+      "category": "Defence",
+      "old": [
+        12,
+        6
+      ],
+      "now": [
+        12,
+        6
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-025",
+      "title": "Tag Channel",
+      "category": "Defence",
+      "old": [
+        12,
+        6
+      ],
+      "now": [
+        12,
+        6
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-026",
+      "title": "Defensive Gates",
+      "category": "Defence",
+      "old": [
+        12,
+        10
+      ],
+      "now": [
+        12,
+        10
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-027",
+      "title": "Controlled Tackle Progression",
+      "category": "Contact",
+      "old": [
+        10,
+        10
+      ],
+      "now": [
+        10,
+        10
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-028",
+      "title": "Side-on Tackle",
+      "category": "Contact",
+      "old": [
+        8,
+        6
+      ],
+      "now": [
+        8,
+        6
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-029",
+      "title": "Grid Tackling",
+      "category": "Contact",
+      "old": [
+        8,
+        8
+      ],
+      "now": [
+        8,
+        8
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-030",
+      "title": "Defensive Line Touch",
+      "category": "Defence",
+      "old": [
+        25,
+        20
+      ],
+      "now": [
+        22,
+        18
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 104
+    },
+    {
+      "id": "seed-031",
+      "title": "Fall and Place",
+      "category": "Contact",
+      "old": [
+        8,
+        8
+      ],
+      "now": [
+        8,
+        8
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-032",
+      "title": "Ball Presentation Touch",
+      "category": "Breakdown",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        15
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-033",
+      "title": "Pop off the Ground Touch",
+      "category": "Breakdown",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        15
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-034",
+      "title": "Ruck Touch",
+      "category": "Breakdown",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        18,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 84
+    },
+    {
+      "id": "seed-035",
+      "title": "Support Runner Challenge",
+      "category": "Attack",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        18,
+        13
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 66
+    },
+    {
+      "id": "seed-036",
+      "title": "Pyramid Attack",
+      "category": "Attack",
+      "old": [
+        20,
+        18
+      ],
+      "now": [
+        20,
+        16
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 40
+    },
+    {
+      "id": "seed-037",
+      "title": "Ruck and Roll",
+      "category": "Breakdown",
+      "old": [
+        25,
+        20
+      ],
+      "now": [
+        25,
+        17
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 75
+    },
+    {
+      "id": "seed-038",
+      "title": "Offload Touch",
+      "category": "Attack",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        15
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-039",
+      "title": "Drop-off Touch",
+      "category": "Game",
+      "old": [
+        25,
+        20
+      ],
+      "now": [
+        25,
+        20
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-040",
+      "title": "Colour Touch",
+      "category": "Game",
+      "old": [
+        20,
+        20
+      ],
+      "now": [
+        18,
+        20
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 40
+    },
+    {
+      "id": "seed-041",
+      "title": "Breakout Touch",
+      "category": "Game",
+      "old": [
+        25,
+        20
+      ],
+      "now": [
+        22,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 2,
+      "topAnchor": false,
+      "savedAreaM2": 170
+    },
+    {
+      "id": "seed-042",
+      "title": "Switch Passing",
+      "category": "Handling",
+      "old": [
+        15,
+        12
+      ],
+      "now": [
+        15,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 30
+    },
+    {
+      "id": "seed-043",
+      "title": "Loop Passing",
+      "category": "Handling",
+      "old": [
+        15,
+        12
+      ],
+      "now": [
+        13,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 24
+    },
+    {
+      "id": "seed-044",
+      "title": "Rugby Tennis",
+      "category": "Game",
+      "old": [
+        25,
+        20
+      ],
+      "now": [
+        20,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 200
+    },
+    {
+      "id": "seed-045",
+      "title": "Lineout End Ball",
+      "category": "Set piece",
+      "old": [
+        15,
+        12
+      ],
+      "now": [
+        13,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 50
+    },
+    {
+      "id": "seed-046",
+      "title": "Scrum and Play",
+      "category": "Set piece",
+      "old": [
+        15,
+        12
+      ],
+      "now": [
+        15,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-047",
+      "title": "Counter-attack Game",
+      "category": "Game",
+      "old": [
+        30,
+        25
+      ],
+      "now": [
+        27,
+        22
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 2,
+      "topAnchor": false,
+      "savedAreaM2": 156
+    },
+    {
+      "id": "seed-048",
+      "title": "Continuous Phase Game",
+      "category": "Game",
+      "old": [
+        30,
+        20
+      ],
+      "now": [
+        30,
+        18
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-049",
+      "title": "Order Ball",
+      "category": "Handling",
+      "old": [
+        10,
+        10
+      ],
+      "now": [
+        10,
+        10
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-050",
+      "title": "Back-to-back Passing",
+      "category": "Handling",
+      "old": [
+        10,
+        10
+      ],
+      "now": [
+        10,
+        8
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 20
+    },
+    {
+      "id": "seed-051",
+      "title": "Boundary Pass",
+      "category": "Handling",
+      "old": [
+        8,
+        8
+      ],
+      "now": [
+        8,
+        8
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-052",
+      "title": "Bench Ball",
+      "category": "Game",
+      "old": [
+        15,
+        12
+      ],
+      "now": [
+        15,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-053",
+      "title": "Partner Tag",
+      "category": "Movement",
+      "old": [
+        15,
+        15
+      ],
+      "now": [
+        15,
+        11
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-054",
+      "title": "2 to Score · Multi-defender channel",
+      "category": "Attack",
+      "old": [
+        20,
+        7
+      ],
+      "now": [
+        18,
+        7
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 14
+    },
+    {
+      "id": "seed-055",
+      "title": "Cone Slalom · Curved Running",
+      "category": "Movement",
+      "old": [
+        20,
+        10
+      ],
+      "now": [
+        20,
+        8
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 40
+    },
+    {
+      "id": "seed-056",
+      "title": "Support Arc · Around an Obstacle",
+      "category": "Attack",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        17,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 130
+    },
+    {
+      "id": "seed-057",
+      "title": "U10 Breakdown · Tackle, Present, Support and Play",
+      "category": "Breakdown",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        18,
+        9
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 138
+    },
+    {
+      "id": "seed-058",
+      "title": "U10 Shield Clearout · Defender Arrives First",
+      "category": "Breakdown",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        18,
+        9
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 138
+    },
+    {
+      "id": "seed-059",
+      "title": "U10 · Scrum",
+      "category": "Set piece",
+      "old": [
+        24,
+        18
+      ],
+      "now": [
+        24,
+        18
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-060",
+      "title": "U10 · Maul",
+      "category": "Contact",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        15
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-061",
+      "title": "U14 · Lineout · throw and catch",
+      "category": "Set piece",
+      "old": [
+        24,
+        18
+      ],
+      "now": [
+        18,
+        18
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 108
+    },
+    {
+      "id": "seed-062",
+      "title": "U10 · Offload to support",
+      "category": "Attack",
+      "old": [
+        12,
+        9
+      ],
+      "now": [
+        12,
+        9
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-063",
+      "title": "U10 · Free pass restart",
+      "category": "Set piece",
+      "old": [
+        16,
+        12
+      ],
+      "now": [
+        16,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-064",
+      "title": "U12 · Tap restart · free kick / penalty",
+      "category": "Set piece",
+      "old": [
+        14,
+        10
+      ],
+      "now": [
+        14,
+        10
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-065",
+      "title": "U12 · Punt · kick and receive",
+      "category": "Handling",
+      "old": [
+        32,
+        18
+      ],
+      "now": [
+        21,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 324
+    },
+    {
+      "id": "seed-066",
+      "title": "U12 · Grubber · kick and collect",
+      "category": "Handling",
+      "old": [
+        32,
+        18
+      ],
+      "now": [
+        21,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 324
+    },
+    {
+      "id": "seed-067",
+      "title": "U12 · Chip · kick and collect",
+      "category": "Handling",
+      "old": [
+        32,
+        18
+      ],
+      "now": [
+        21,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 324
+    },
+    {
+      "id": "seed-068",
+      "title": "U12 · Cross-field kick",
+      "category": "Handling",
+      "old": [
+        32,
+        18
+      ],
+      "now": [
+        21,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 324
+    },
+    {
+      "id": "seed-069",
+      "title": "U14 · Box kick · from hand",
+      "category": "Handling",
+      "old": [
+        32,
+        18
+      ],
+      "now": [
+        21,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 324
+    },
+    {
+      "id": "seed-070",
+      "title": "U12 · Kick-off / restart kick",
+      "category": "Set piece",
+      "old": [
+        34,
+        20
+      ],
+      "now": [
+        22,
+        14
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 372
+    },
+    {
+      "id": "seed-071",
+      "title": "U10 · Try · ground the ball",
+      "category": "Attack",
+      "old": [
+        18,
+        12
+      ],
+      "now": [
+        14,
+        9
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": true,
+      "savedAreaM2": 90
+    },
+    {
+      "id": "seed-072",
+      "title": "U14 · Goal kick · attempt",
+      "category": "Set piece",
+      "old": [
+        45,
+        20
+      ],
+      "now": [
+        32,
+        14
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": true,
+      "savedAreaM2": 452
+    },
+    {
+      "id": "seed-073",
+      "title": "U10 · Tracking a rolling tackle donut",
+      "category": "Contact",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        14,
+        13
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 118
+    },
+    {
+      "id": "seed-074",
+      "title": "U10 · Read the defender — tackle or offload",
+      "category": "Breakdown",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        18,
+        9
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 138
+    },
+    {
+      "id": "seed-075",
+      "title": "U10 · Inside and outside support",
+      "category": "Attack",
+      "old": [
+        20,
+        18
+      ],
+      "now": [
+        20,
+        16
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 40
+    },
+    {
+      "id": "seed-076",
+      "title": "U10 · Defensive fold and reconnect",
+      "category": "Defence",
+      "old": [
+        25,
+        20
+      ],
+      "now": [
+        22,
+        16
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 148
+    },
+    {
+      "id": "seed-077",
+      "title": "U10 · Two defenders, one carrier — double tackle and release",
+      "category": "Contact",
+      "old": [
+        22,
+        18
+      ],
+      "now": [
+        22,
+        16
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 44
+    },
+    {
+      "id": "seed-078",
+      "title": "U10 · Two-phase attack — recycle and go again",
+      "category": "Breakdown",
+      "old": [
+        22,
+        18
+      ],
+      "now": [
+        22,
+        18
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-079",
+      "title": "U10 · Turnover and counter-attack",
+      "category": "Game",
+      "old": [
+        25,
+        20
+      ],
+      "now": [
+        22,
+        20
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-080",
+      "title": "U10 · Rolling donut — two approach angles",
+      "category": "Contact",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        15
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-081",
+      "title": "Understand the game · U10 ruck entry",
+      "category": "Breakdown",
+      "old": [
+        22,
+        18
+      ],
+      "now": [
+        22,
+        14
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 88
+    },
+    {
+      "id": "seed-082",
+      "title": "Understand the game · U10 offside at the ruck",
+      "category": "Breakdown",
+      "old": [
+        22,
+        18
+      ],
+      "now": [
+        22,
+        14
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 88
+    },
+    {
+      "id": "seed-083",
+      "title": "Understand the game · U10 who joins and who waits",
+      "category": "Breakdown",
+      "old": [
+        22,
+        18
+      ],
+      "now": [
+        22,
+        16
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 44
+    },
+    {
+      "id": "seed-084",
+      "title": "Understand the game · U10 tackle responsibilities",
+      "category": "Contact",
+      "old": [
+        22,
+        18
+      ],
+      "now": [
+        22,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 66
+    },
+    {
+      "id": "seed-085",
+      "title": "Understand the game · U10 ball presentation",
+      "category": "Breakdown",
+      "old": [
+        12,
+        10
+      ],
+      "now": [
+        12,
+        8
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 24
+    },
+    {
+      "id": "seed-086",
+      "title": "Understand the game · U10 free-pass restart after touch",
+      "category": "Set piece",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        15
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-087",
+      "title": "Follow the leader · Ball explorers",
+      "category": "Movement",
+      "old": [
+        12,
+        10
+      ],
+      "now": [
+        12,
+        8
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 24
+    },
+    {
+      "id": "seed-088",
+      "title": "Tag thief · Protect your tags",
+      "category": "Game",
+      "old": [
+        12,
+        12
+      ],
+      "now": [
+        12,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-089",
+      "title": "Pass count · Find an open lane",
+      "category": "Handling",
+      "old": [
+        14,
+        12
+      ],
+      "now": [
+        14,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-090",
+      "title": "Chasing defenders · Two attackers, three gates",
+      "category": "Attack",
+      "old": [
+        30,
+        14
+      ],
+      "now": [
+        30,
+        14
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-091",
+      "title": "Drift as a line · Three defenders",
+      "category": "Defence",
+      "old": [
+        22,
+        20
+      ],
+      "now": [
+        20,
+        18
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 80
+    },
+    {
+      "id": "seed-092",
+      "title": "Loose ball · Collect, draw and pass",
+      "category": "Attack",
+      "old": [
+        18,
+        12
+      ],
+      "now": [
+        18,
+        9
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 54
+    },
+    {
+      "id": "seed-093",
+      "title": "Cut-out pass and loop",
+      "category": "Handling",
+      "old": [
+        25,
+        22
+      ],
+      "now": [
+        20,
+        22
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 110
+    },
+    {
+      "id": "seed-094",
+      "title": "One defender · Read three options",
+      "category": "Defence",
+      "old": [
+        15,
+        14
+      ],
+      "now": [
+        15,
+        14
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-095",
+      "title": "Corner choice · Two scoring gates",
+      "category": "Game",
+      "old": [
+        18,
+        16
+      ],
+      "now": [
+        18,
+        16
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-096",
+      "title": "Number touch · Called players enter",
+      "category": "Game",
+      "old": [
+        20,
+        16
+      ],
+      "now": [
+        20,
+        16
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-097",
+      "title": "Split-up touch · Reset into two groups",
+      "category": "Game",
+      "old": [
+        24,
+        20
+      ],
+      "now": [
+        24,
+        20
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-098",
+      "title": "Second wave · Deep support touch",
+      "category": "Game",
+      "old": [
+        25,
+        20
+      ],
+      "now": [
+        25,
+        20
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-099",
+      "title": "Middle runner · Pass both ways",
+      "category": "Handling",
+      "old": [
+        12,
+        10
+      ],
+      "now": [
+        8,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 40
+    },
+    {
+      "id": "seed-100",
+      "title": "Zigzag corridor · Left and right passes",
+      "category": "Handling",
+      "old": [
+        24,
+        10
+      ],
+      "now": [
+        22,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 20
+    },
+    {
+      "id": "seed-101",
+      "title": "Passing waves · Receive on the move",
+      "category": "Handling",
+      "old": [
+        20,
+        16
+      ],
+      "now": [
+        20,
+        14
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 40
+    },
+    {
+      "id": "seed-102",
+      "title": "Fan out from a cone",
+      "category": "Handling",
+      "old": [
+        20,
+        18
+      ],
+      "now": [
+        20,
+        18
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-103",
+      "title": "Pass and replace · Find a new support lane",
+      "category": "Handling",
+      "old": [
+        18,
+        16
+      ],
+      "now": [
+        14,
+        16
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 64
+    },
+    {
+      "id": "seed-104",
+      "title": "Catch in stride · Timed lead pass",
+      "category": "Handling",
+      "old": [
+        18,
+        12
+      ],
+      "now": [
+        18,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 36
+    },
+    {
+      "id": "seed-105",
+      "title": "Pressure pass · Defender shadows a lane",
+      "category": "Handling",
+      "old": [
+        16,
+        14
+      ],
+      "now": [
+        16,
+        14
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-106",
+      "title": "Colour call · Find the open exit",
+      "category": "Movement",
+      "old": [
+        14,
+        12
+      ],
+      "now": [
+        14,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 6,
+      "topAnchor": false,
+      "savedAreaM2": 28
+    },
+    {
+      "id": "seed-107",
+      "title": "Three channels · Spot the empty lane",
+      "category": "Attack",
+      "old": [
+        24,
+        18
+      ],
+      "now": [
+        24,
+        18
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-108",
+      "title": "Reactive 4 vs 2 · Recovering defender",
+      "category": "Attack",
+      "old": [
+        25,
+        22
+      ],
+      "now": [
+        25,
+        22
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-109",
+      "title": "Support from depth · Late runner",
+      "category": "Attack",
+      "old": [
+        22,
+        16
+      ],
+      "now": [
+        22,
+        16
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-110",
+      "title": "Two defenders, three attackers · Protect the middle",
+      "category": "Defence",
+      "old": [
+        20,
+        18
+      ],
+      "now": [
+        20,
+        18
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-111",
+      "title": "Touchline squeeze · Close the outside",
+      "category": "Defence",
+      "old": [
+        20,
+        14
+      ],
+      "now": [
+        18,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 100
+    },
+    {
+      "id": "seed-112",
+      "title": "Recover and reconnect · Delayed defender",
+      "category": "Defence",
+      "old": [
+        22,
+        18
+      ],
+      "now": [
+        22,
+        18
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-113",
+      "title": "Call and cover · Assign a threat",
+      "category": "Defence",
+      "old": [
+        18,
+        16
+      ],
+      "now": [
+        18,
+        16
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-114",
+      "title": "Lineout movement · Throw to a moving target",
+      "category": "Set piece",
+      "old": [
+        12,
+        10
+      ],
+      "now": [
+        12,
+        10
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-115",
+      "title": "Paired kick · Collect in space",
+      "category": "Handling",
+      "old": [
+        30,
+        18
+      ],
+      "now": [
+        26,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 228
+    },
+    {
+      "id": "seed-116",
+      "title": "Memory relay · Remember your receiver",
+      "category": "Handling",
+      "old": [
+        12,
+        12
+      ],
+      "now": [
+        12,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-117",
+      "title": "Front-on tracking · Stop before contact",
+      "category": "Contact",
+      "old": [
+        12,
+        10
+      ],
+      "now": [
+        12,
+        8
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 24
+    },
+    {
+      "id": "seed-118",
+      "title": "Rear tracking · Close from an angle",
+      "category": "Contact",
+      "old": [
+        16,
+        12
+      ],
+      "now": [
+        16,
+        12
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-119",
+      "title": "Defend the space · Tackle or stay connected?",
+      "category": "Defence",
+      "old": [
+        20,
+        16
+      ],
+      "now": [
+        20,
+        13
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-120",
+      "title": "Tracking a late sidestep",
+      "category": "Contact",
+      "old": [
+        15,
+        12
+      ],
+      "now": [
+        15,
+        9
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 45
+    },
+    {
+      "id": "seed-121",
+      "title": "U10 · No ruck formed — collect and pass",
+      "category": "Breakdown",
+      "old": [
+        20,
+        18
+      ],
+      "now": [
+        20,
+        14
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 80
+    },
+    {
+      "id": "seed-122",
+      "title": "U10 · Use it — play within five seconds",
+      "category": "Breakdown",
+      "old": [
+        20,
+        18
+      ],
+      "now": [
+        20,
+        14
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 80
+    },
+    {
+      "id": "seed-123",
+      "title": "U10 · Leave the tackle area and defend again",
+      "category": "Breakdown",
+      "old": [
+        22,
+        18
+      ],
+      "now": [
+        22,
+        14
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 88
+    },
+    {
+      "id": "seed-124",
+      "title": "Ruck around the clock · Find your own side",
+      "category": "Breakdown",
+      "old": [
+        14,
+        14
+      ],
+      "now": [
+        14,
+        14
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-125",
+      "title": "U10 · Maul — two each, others wait",
+      "category": "Breakdown",
+      "old": [
+        18,
+        16
+      ],
+      "now": [
+        18,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 108
+    },
+    {
+      "id": "seed-126",
+      "title": "Maul exit · Organise the next receiver",
+      "category": "Breakdown",
+      "old": [
+        18,
+        16
+      ],
+      "now": [
+        18,
+        10
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 108
+    },
+    {
+      "id": "seed-127",
+      "title": "U10 · Scrum to first receiver — passing exit",
+      "category": "Set piece",
+      "old": [
+        24,
+        18
+      ],
+      "now": [
+        24,
+        16
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 48
+    },
+    {
+      "id": "seed-128",
+      "title": "U12 · Five-player scrum — 3–2 formation",
+      "category": "Set piece",
+      "old": [
+        26,
+        20
+      ],
+      "now": [
+        26,
+        17
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 78
+    },
+    {
+      "id": "seed-129",
+      "title": "Narrow or wide · Read the reset",
+      "category": "Attack",
+      "old": [
+        24,
+        20
+      ],
+      "now": [
+        24,
+        17
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 72
+    },
+    {
+      "id": "seed-130",
+      "title": "Junior attack · Straighten before passing",
+      "category": "Attack",
+      "old": [
+        24,
+        20
+      ],
+      "now": [
+        24,
+        17
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 72
+    },
+    {
+      "id": "seed-131",
+      "title": "Junior defence · Inside cover after a break",
+      "category": "Defence",
+      "old": [
+        26,
+        20
+      ],
+      "now": [
+        21,
+        16
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 184
+    },
+    {
+      "id": "seed-132",
+      "title": "React to the carrier · two outcomes",
+      "category": "Defence",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        16,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 4,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-133",
+      "title": "Hold the line · Carry or pass?",
+      "category": "Defence",
+      "old": [
+        11,
+        20
+      ],
+      "now": [
+        11,
+        20
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    },
+    {
+      "id": "seed-134",
+      "title": "Understand the game · U10 backward or forward pass?",
+      "category": "Handling",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        14,
+        9
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 174
+    },
+    {
+      "id": "seed-135",
+      "title": "Understand the game · U10 what is a knock-on?",
+      "category": "Handling",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        15,
+        8
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 180
+    },
+    {
+      "id": "seed-136",
+      "title": "Understand the game · U10 run in support",
+      "category": "Attack",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        9
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 120
+    },
+    {
+      "id": "seed-137",
+      "title": "Understand the game · U10 free pass and seven-metre retreat",
+      "category": "Set piece",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        17,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 45
+    },
+    {
+      "id": "seed-138",
+      "title": "Understand the game · U10 the uncontested three-player scrum",
+      "category": "Set piece",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        17,
+        15
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 45
+    },
+    {
+      "id": "seed-139",
+      "title": "Understand the game · U10 held upright · when is it a maul?",
+      "category": "Breakdown",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        17,
+        11
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 113
+    },
+    {
+      "id": "seed-140",
+      "title": "Understand the game · U10 when is a try scored?",
+      "category": "Game",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-141",
+      "title": "Understand the game · U10 held up in goal · no try",
+      "category": "Game",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-142",
+      "title": "Understand the game · U10 no kicking or hand-off",
+      "category": "Game",
+      "old": [
+        20,
+        15
+      ],
+      "now": [
+        20,
+        12
+      ],
+      "changed": true,
+      "reason": "Practice area tightened while preserving movement distances and decision routes",
+      "perimeterMarkers": 0,
+      "topAnchor": false,
+      "savedAreaM2": 60
+    },
+    {
+      "id": "seed-143",
+      "title": "Defensive line · Whistle then advance together",
+      "category": "Defence",
+      "old": [
+        11,
+        20
+      ],
+      "now": [
+        11,
+        20
+      ],
+      "changed": false,
+      "reason": "Already appropriately sized or full-length movement required"
+    }
+  ],
+  "retained": {
+    "personal": "Existing saved personal coaching pitches are already compact (5–20 m width).",
+    "published": "Published 10 × 20 m defensive-line examples retained to preserve their line spacing.",
+    "qa": "20 software test drills retain their original 10 × 8 m dimensions to preserve regression fixtures."
+  },
+  "warnings": [
+    "These are practical coaching-space suggestions, not replacements for RFU age-grade field dimensions, coaching supervision or site-specific risk assessment."
+  ]
+}
