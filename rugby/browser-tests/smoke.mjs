@@ -14,13 +14,16 @@ try {
  await page.goto(origin+'/rugby/play.html?drill=seed-133',{waitUntil:'networkidle',timeout:40000});
  await page.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Hold the line'),{timeout:15000});
  assert.match(await page.title(),/Hold the line/);
- // Top-down Minions have gaze goggles but never a second facing arrow.
+ // Ruckus now uses the real overhead sprite atlases, not old .minion-top-down
+ // or .cartoon-player-goggles vector assets.
  await page.locator('#playerMinionMode').click();
- assert.ok(await page.locator('#board .minion-top-down').count()>0,'Top-down Minions should render');
- assert.equal(await page.locator('#board .player-gaze-arrow').count(),0,'No extra arrow in Minion mode');
- assert.ok(await page.locator('#board .cartoon-player-goggles').count()>0,'Goggles indicate gaze');
+ assert.ok(await page.locator('#board .ruckus-player').count()>0,'Ruckus sprites should render');
+ assert.equal(await page.locator('#board .player-gaze-arrow').count(),0,'No Classic gaze arrows in Ruckus');
+ assert.ok(await page.locator('#board .ruckus-player[data-ruckus-look]').count()>0,
+  'Overhead Ruckus sprites retain their gaze metadata');
+ assert.equal(await page.locator('#board .cartoon-pitch-decor').count(),0,'No corner flowers');
  await page.locator('#playerMinionMode').click();
- assert.equal(await page.locator('#board .minion-top-down').count(),0,'Switch restores classic view');
+ assert.equal(await page.locator('#board .ruckus-player').count(),0,'Switch restores Classic view');
   assert.equal(await page.locator('#addPlayerToVideo').isVisible(),true);
   assert.match(await page.locator('#addPlayerToVideo').getAttribute('href'),/video=seed-133/);
  assert.equal(await page.locator('#branchPlayer').isVisible(),true,'Outcome selector should appear');
@@ -66,6 +69,9 @@ try {
  await publicLibrary.locator('.add-to-video').first().click();
  assert.equal(await publicLibrary.locator('#videoBuilder').evaluate(el=>el.open),true);
  assert.equal(await publicLibrary.locator('#videoStages li').count(),1);
+ assert.equal(await publicLibrary.locator('#videoMoreDrills').evaluate(el=>el.open),false,
+  'Composition controls are optional for one video');
+ await publicLibrary.locator('#videoMoreDrills summary').click();
  const additional=await publicLibrary.locator('#videoPick option').evaluateAll(xs=>xs.filter(x=>x.value).map(x=>x.value)[0]);
  assert.ok(additional,'Must offer more published animated drills');
  await publicLibrary.locator('#videoPick').selectOption(additional);
@@ -73,7 +79,9 @@ try {
  assert.equal(await publicLibrary.locator('#videoStages li').count(),2);
  await publicLibrary.locator('[data-video-move="up"]').last().click();
  assert.equal(await publicLibrary.locator('#videoStages li').count(),2);
- await publicLibrary.locator('.video-details summary').click();
+ await publicLibrary.locator('#publicMovieOptions').evaluate(el=>{
+  for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true;
+ });
  assert.equal(await publicLibrary.locator('#publicMovieFormat').count(),1);
  assert.equal(await publicLibrary.locator('#videoExport').isEnabled(),true);
  await publicLibrary.locator('[data-video-move="remove"]').last().click();
@@ -139,6 +147,9 @@ try {
  await classic.locator('#share').click({force:true});
  await classic.locator('#shareDialog').waitFor({state:'visible'});
  assert.equal(await classic.locator('#movieSequenceList li').count(),1);
+ assert.equal(await classic.locator('#movieSequenceDisclosure').evaluate(el=>el.open),false,
+  'Single-drill export must not display progression builder by default');
+ await classic.locator('#movieSequenceDisclosure summary').click();
  const precursor=classic.locator('#movieSequencePick option').filter({hasText:'Whistle then advance together'}).first();
  const sourceId=await precursor.getAttribute('value');
  assert.notEqual(sourceId,'', 'The new simple defensive-line drill must be available to add');
