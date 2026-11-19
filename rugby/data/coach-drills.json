@@ -4293,6 +4293,739 @@
         }
       ],
       "savedAt": "2026-11-17T12:54:43.638Z"
+    },
+    {
+      "version": 1,
+      "id": "mwut10tackle191126",
+      "title": "U10 · Tackle, release and present to support",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Contact",
+      "length": 10,
+      "width": 8,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 8,
+      "players": "3 players per repetition: A1 carrier, D1 defender, A2 support; one qualified supervising coach.",
+      "equipment": "1 rugby ball, 4 cones; a clear 10 × 8 m working area.",
+      "objective": "Show an ordinary U10 tackle sequence: track under control, bring the carrier to ground, release promptly, present the ball backwards and collect it from the support side.",
+      "safety": "Coach-led demonstration only. Begin at walking speed with no contact, then add controlled tackle contact only under a suitably qualified club coach and the current RFU U10 Rules of Play. Keep the area clear; no diving, high contact or head-first entry. Stop if players lose control. The animation explains sequence and ball location, not physical tackle technique.",
+      "instructions": "Use four cones to mark a small 10 × 8 m working area. Place A1 and D1 facing each other, with A2 several steps behind A1. Run the sequence in the displayed order: (1) track and close; (2) controlled tackle; (3) D1 releases promptly and moves clear while A1 presents the ball towards A2; (4) A2 arrives on feet and collects the ball from the support side; (5) carry away and reset. Swap player roles between repetitions. Start without actual contact until the coach is satisfied with the positioning.",
+      "coaching": "Track: watch the carrier, shorten steps and keep the approach controlled.\nTackle: coach contact position and safe technique off-animation; no diving or high contact.\nRelease: the tackler must let go and get clear promptly.\nPresent: the grounded ball carrier makes the ball available back towards supporting teammates, not towards the defender.\nSupport: arrive from your own side, on your feet; pick up only while the ball is available and no ruck has formed.\nPlay: move the ball away and reset. Pause the presentation step to ask children which side the ball belongs on.",
+      "regression": "Use a no-contact walk-through: D1 tags/indicates the tackle, A1 kneels/lowers to a controlled grounded pose and presents the ball; A2 collects without an opposing contest. Repeat the sequence before any live tackling.",
+      "progression": "Once your qualified coach approves, increase the approach speed slightly, vary the defender's starting angle or have A2 choose an appropriate supporting line. Keep one tackle pair and one support runner in the confined area.",
+      "questions": "Who must release after the tackle? Why does A1 place the ball towards A2? Which direction is the support side? When can A2 pick up the ball? What changes if a ruck has already formed?",
+      "notes": "Standard Classic-editor drill data (players, one rugby ball, tackle marker, ordinary pose changes and ball transfer). No special test-only rendering or scripted sprites. Read the coaching notes before attempting contact; the animation is a visual sequence, not technical instruction.",
+      "provenance": "Rugby Coaching Studio · standard editor-compatible U10 drill",
+      "review": "Draft · qualified coach to check the 2026–27 U10 age-grade rules, tackle technique and setup before live contact",
+      "links": [
+        {
+          "label": "RFU · Age Grade Regulations",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-",
+          "kind": "Law / safety"
+        },
+        {
+          "label": "World Rugby · Tackle Ready",
+          "url": "https://passport.world.rugby/injury-prevention-and-risk-management/tackle-ready",
+          "kind": "Law / safety"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Set up · one carrier, one defender, one support",
+          "seconds": 0,
+          "notes": "A1 has the ball. D1 faces the runner from a controlled distance. A2 waits behind A1 as support. Coach positions the pair before the demonstration.",
+          "objects": [
+            {
+              "id": "tackle_demo_a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 425,
+              "y": 408,
+              "rot": 0
+            },
+            {
+              "id": "tackle_demo_d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 425,
+              "y": 168,
+              "rot": 180,
+              "playerPose": "ready"
+            },
+            {
+              "id": "tackle_demo_a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 548,
+              "y": 424,
+              "rot": 0
+            },
+            {
+              "id": "tackle_demo_ball",
+              "type": "ball",
+              "label": "",
+              "x": 441,
+              "y": 398,
+              "rot": 0,
+              "ownerId": "tackle_demo_a1"
+            },
+            {
+              "id": "tackle_demo_cone1",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone2",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone3",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone4",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Track and close the distance",
+          "seconds": 2.1,
+          "notes": "A1 carries forwards. D1 tracks from in front, shortens the steps and stays balanced. A2 advances behind the ball carrier. Start with a controlled, low-speed rehearsal.",
+          "objects": [
+            {
+              "id": "tackle_demo_a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 425,
+              "y": 331,
+              "rot": 0
+            },
+            {
+              "id": "tackle_demo_d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 425,
+              "y": 247,
+              "rot": 180,
+              "playerPose": "ready"
+            },
+            {
+              "id": "tackle_demo_a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 520,
+              "y": 398,
+              "rot": 0
+            },
+            {
+              "id": "tackle_demo_ball",
+              "type": "ball",
+              "label": "",
+              "x": 441,
+              "y": 320,
+              "rot": 0,
+              "ownerId": "tackle_demo_a1"
+            },
+            {
+              "id": "tackle_demo_cone1",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone2",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone3",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone4",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {
+            "tackle_demo_a1": {
+              "start": 10,
+              "end": 87
+            },
+            "tackle_demo_d1": {
+              "start": 18,
+              "end": 94
+            },
+            "tackle_demo_a2": {
+              "start": 35,
+              "end": 96
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Tackle · controlled contact and ground",
+          "seconds": 2.3,
+          "notes": "Pause at contact: show only the player-on-player positioning and the ball carrier going to ground. Teach actual tackle mechanics separately under qualified supervision.",
+          "objects": [
+            {
+              "id": "tackle_demo_a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 425,
+              "y": 284,
+              "rot": 90
+            },
+            {
+              "id": "tackle_demo_d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 424,
+              "y": 265,
+              "rot": 180,
+              "playerPose": "tackling"
+            },
+            {
+              "id": "tackle_demo_a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 520,
+              "y": 394,
+              "rot": 0
+            },
+            {
+              "id": "tackle_demo_ball",
+              "type": "ball",
+              "label": "",
+              "x": 443,
+              "y": 282,
+              "rot": 0,
+              "ownerId": "tackle_demo_a1"
+            },
+            {
+              "id": "tackle_demo_contact",
+              "type": "tackle",
+              "label": "Tackle",
+              "x": 425,
+              "y": 275,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "tackle_demo_a1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "tackle_demo_d1",
+                  "pose": "tackling"
+                }
+              ],
+              "breakdown": {
+                "phase": "tackle",
+                "carrierId": "tackle_demo_a1",
+                "tacklerId": "tackle_demo_d1",
+                "tacklerIds": [
+                  "tackle_demo_d1"
+                ],
+                "ballId": "tackle_demo_ball",
+                "arrivalSide": "attack"
+              }
+            },
+            {
+              "id": "tackle_demo_cone1",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone2",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone3",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone4",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {
+            "tackle_demo_a1": {
+              "start": 8,
+              "end": 90
+            },
+            "tackle_demo_d1": {
+              "start": 10,
+              "end": 90
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Release immediately · present towards A2",
+          "seconds": 2.2,
+          "notes": "D1 releases and moves away. A1 stays fully grounded and places the ball back towards A2, NOT forward towards the defender. Watch the ball travel just beyond the grounded player's hands.",
+          "objects": [
+            {
+              "id": "tackle_demo_a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 416,
+              "y": 282,
+              "rot": 180,
+              "playerPose": "grounded"
+            },
+            {
+              "id": "tackle_demo_d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 525,
+              "y": 245,
+              "rot": 180,
+              "playerPose": "standing"
+            },
+            {
+              "id": "tackle_demo_a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 520,
+              "y": 394,
+              "rot": 0
+            },
+            {
+              "id": "tackle_demo_ball",
+              "type": "ball",
+              "label": "",
+              "x": 430,
+              "y": 318,
+              "rot": 0,
+              "transferKind": "presentation",
+              "groundState": "presented"
+            },
+            {
+              "id": "tackle_demo_contact",
+              "type": "tackle",
+              "label": "Release and present",
+              "x": 425,
+              "y": 275,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "tackle_demo_a1",
+                  "pose": "grounded"
+                }
+              ],
+              "breakdown": {
+                "phase": "release",
+                "carrierId": "tackle_demo_a1",
+                "tacklerId": "tackle_demo_d1",
+                "tacklerIds": [
+                  "tackle_demo_d1"
+                ],
+                "ballId": "tackle_demo_ball",
+                "arrivalSide": "attack"
+              }
+            },
+            {
+              "id": "tackle_demo_cone1",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone2",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone3",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone4",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {
+            "tackle_demo_d1": {
+              "start": 0,
+              "end": 55
+            },
+            "tackle_demo_ball": {
+              "start": 8,
+              "end": 60
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Support arrives on feet from the correct side",
+          "seconds": 1.9,
+          "notes": "A2 approaches the presented ball from behind while remaining on their feet. D1 stays clear. The ball remains stationary on the ground until the support player takes it.",
+          "objects": [
+            {
+              "id": "tackle_demo_a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 416,
+              "y": 282,
+              "rot": 180,
+              "playerPose": "grounded"
+            },
+            {
+              "id": "tackle_demo_d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 555,
+              "y": 235,
+              "rot": 180
+            },
+            {
+              "id": "tackle_demo_a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 465,
+              "y": 363,
+              "rot": 0
+            },
+            {
+              "id": "tackle_demo_ball",
+              "type": "ball",
+              "label": "",
+              "x": 430,
+              "y": 318,
+              "rot": 0,
+              "groundState": "presented"
+            },
+            {
+              "id": "tackle_demo_contact",
+              "type": "tackle",
+              "label": "Support arrives",
+              "x": 425,
+              "y": 275,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "tackle_demo_a1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "tackle_demo_a2",
+                  "pose": "standing"
+                }
+              ],
+              "breakdown": {
+                "phase": "support",
+                "carrierId": "tackle_demo_a1",
+                "tacklerId": "tackle_demo_d1",
+                "tacklerIds": [
+                  "tackle_demo_d1"
+                ],
+                "ballId": "tackle_demo_ball",
+                "arrivalSide": "attack"
+              }
+            },
+            {
+              "id": "tackle_demo_cone1",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone2",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone3",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone4",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {
+            "tackle_demo_a2": {
+              "start": 10,
+              "end": 85
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "A2 collects the available ball",
+          "seconds": 1.8,
+          "notes": "With no ruck formed and the defender released, A2 picks up from their own side. A1 begins to recover. Show the separate ball attaching only when it is actually collected.",
+          "objects": [
+            {
+              "id": "tackle_demo_a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 416,
+              "y": 282,
+              "rot": 180,
+              "playerPose": "recovering"
+            },
+            {
+              "id": "tackle_demo_d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 555,
+              "y": 235,
+              "rot": 180
+            },
+            {
+              "id": "tackle_demo_a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 443,
+              "y": 347,
+              "rot": 0
+            },
+            {
+              "id": "tackle_demo_ball",
+              "type": "ball",
+              "label": "",
+              "x": 456,
+              "y": 336,
+              "rot": 0,
+              "ownerId": "tackle_demo_a2",
+              "transferKind": "pickup"
+            },
+            {
+              "id": "tackle_demo_cone1",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone2",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone3",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone4",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {
+            "tackle_demo_a2": {
+              "start": 0,
+              "end": 55
+            },
+            "tackle_demo_ball": {
+              "start": 62,
+              "end": 85
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Play away and reset",
+          "seconds": 2,
+          "notes": "A2 carries away into space. A1 regains their feet and clears the area; D1 resets. Rotate the carrier and defender roles for the next supervised repetition.",
+          "objects": [
+            {
+              "id": "tackle_demo_a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 378,
+              "y": 327,
+              "rot": 180,
+              "playerPose": "standing"
+            },
+            {
+              "id": "tackle_demo_d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 555,
+              "y": 235,
+              "rot": 180
+            },
+            {
+              "id": "tackle_demo_a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 548,
+              "y": 345,
+              "rot": 90
+            },
+            {
+              "id": "tackle_demo_ball",
+              "type": "ball",
+              "label": "",
+              "x": 561,
+              "y": 333,
+              "rot": 0,
+              "ownerId": "tackle_demo_a2"
+            },
+            {
+              "id": "tackle_demo_cone1",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone2",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone3",
+              "type": "cone",
+              "label": "",
+              "x": 290,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tackle_demo_cone4",
+              "type": "cone",
+              "label": "",
+              "x": 610,
+              "y": 465,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {
+            "tackle_demo_a1": {
+              "start": 15,
+              "end": 88
+            },
+            "tackle_demo_a2": {
+              "start": 8,
+              "end": 88
+            }
+          },
+          "paths": {}
+        }
+      ],
+      "savedAt": "2026-11-19T18:36:00.000Z",
+      "revision": 1
     }
   ]
 }
