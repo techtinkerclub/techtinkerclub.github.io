@@ -38,6 +38,20 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
    }
   });
  }
+ // Mobile: keep the view switch in the title bar, never atop pitch zoom.
+ // Reparent the SAME button, retaining its event listener and pressed state.
+ const visualMode=document.getElementById('minionMode');
+ const modeHome=visualMode?.parentElement;
+ const modeHeading=document.querySelector('.stage-heading');
+ function placeVisualMode(mobile){
+  if(!visualMode||!modeHome||!modeHeading)return;
+  const target=mobile?modeHeading:modeHome;
+  if(visualMode.parentElement!==target){
+   if(mobile)target.appendChild(visualMode);
+   else target.insertBefore(visualMode,target.firstChild);
+  }
+  visualMode.classList.toggle('mobile-mode-toggle',mobile);
+ }
  const viewButtons=[...nav.querySelectorAll('[data-mobile-view]')];
  let active='pitch';
  function paint(){
@@ -59,6 +73,7 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
   paint();sync();
  }
  function reset(mobile){
+  placeVisualMode(mobile);
   if(mobile){body.classList.add('mobile-workspace');show('pitch')}
   else{body.classList.remove('mobile-workspace',...VIEWS.map(x=>'mobile-view-'+x));active='pitch'}
  }
