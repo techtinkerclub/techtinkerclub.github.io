@@ -215,12 +215,12 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  else if(activeTackler){
   // Approach frames before contact and low wrap/contact frames afterwards.
   const fraction=impact?clamp(step/Math.max(.12,impactAt),0,1):step;
-  sprite=step<(impact?impactAt:.65)?27+Math.min(3,Math.floor(fraction*4)):
+  sprite=!impact?32:step<impactAt?27+Math.min(3,Math.floor(fraction*4)):
    31+Math.min(1,Math.floor(clamp((step-impactAt)/Math.max(.08,1-impactAt),0,.999)*2));
  }
  else if(activeCarrier){
   // The ball carrier stays upright until impact, then actually lies down.
-  sprite=step<(impact?impactAt:0)?(moving?10+look:look):
+  sprite=presentation?36:!impact?35:step<impactAt?(moving?10+look:look):
    33+Math.min(3,Math.floor(clamp((step-impactAt)/Math.max(.12,1-impactAt),0,.999)*4));
  }
  else if(pose==='grounded'||semantic===17||semantic===12||semantic===16){
