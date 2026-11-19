@@ -21,8 +21,12 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
  '<small>The video downloads to your device. Keep this tab visible while recording. Your drills and public library remain unchanged.</small>';
  document.body.append(dialog);
  const settings=bindMovieSettings(get('publicMovieOptions'),'publicMovie'),progress=createExportProgress();
+ get('publicMovieCamera').closest('label').classList.add('video-camera-choice');
+ get('publicVideoStyle').closest('label').after(get('publicMovieCamera').closest('label'));
+ get('publicVideoStyle').addEventListener('change',()=>{get('publicMovieCamera').value=get('publicVideoStyle').value==='minion'?'follow':'action'});
  if(['ruckus','minion'].includes(new URLSearchParams(location.search).get('style')))
   get('publicVideoStyle').value='minion';
+ if(get('publicVideoStyle').value==='minion')get('publicMovieCamera').value='follow';
  let busy=false;
  const eligible=()=>getDrills().filter(d=>isAnimated(d)&&d.frames?.length>1);
  const selected=()=>ids.map(id=>eligible().find(d=>d.id===id)).filter(Boolean);
@@ -83,7 +87,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
   if(busy||!ids.length)return;busy=true;render();get('videoStatus').textContent='';
   try{
    const stages=selected().map(playbackData),title=get('videoTitle').value.trim()||stages[0].title;
-   const options={...settings(),cartoonMode:get('publicVideoStyle').value==='minion',sequenceDrills:stages,movieTitle:title,scaleMode:'coaching',framing:'action',labels:true,decisions:true,teachingGuides:true,markups:true};
+   const options={...settings(),cartoonMode:get('publicVideoStyle').value==='minion',sequenceDrills:stages,movieTitle:title,scaleMode:'coaching',labels:true,decisions:true,teachingGuides:true,markups:true};
    const file=await progress.run(async(update,signal)=>{
     const video=await recordDrill(stages[0],options,update,signal);
     if(!signal.aborted)saveBlob(video.blob,outputName({title})+'.'+video.extension);
