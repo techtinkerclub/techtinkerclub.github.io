@@ -6,8 +6,17 @@ Updated 19 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.35** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.36** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.36 — Mobile touch controls and unclipped menus (19 November 2026)
+
+- **Screenshot and scope:** Phone view had a duplicated in-pitch camera bar, a second zoom toolbar, cumbersome horizontal toolbar scrolling and **View options opening underneath the pitch**. This is a touch editor UX problem; no changes to drill modelling or Classic player art.
+- **Single camera bar:** mobile `Zoom − / Fit / Action / + / Pan` controls now live in the stage toolbar *above* the pitch, with no in-pitch duplicate. The original full desktop editing toolbar (group select, move scope and field orientation) is still available inside the existing **Edit** bottom sheet, not deleted.
+- **View options:** the *existing* `#viewMenu` is moved to `document.body` in the mobile workspace and rendered as a high-z-index scrollable bottom sheet above the pitch and navigation, with a backdrop and keyboard dismissal. It is returned to its original toolbar position when switching back to desktop. This avoids the scroll-container clipping defect. This is not a second independent settings UI.
+- **No right-click required:** selecting any editable object shows a clearly labelled **⋯ [object] actions** button at the lower pitch edge. Tapping it invokes the **same existing contextual action menu** as desktop right-click, in an accessible mobile bottom sheet: contact, tag/touch, ball, route, duplicate, drawing order and deletion commands are unchanged and subject to the same guards. Group menu is supported for two or more selected players; desktop contextmenu is retained.
+- Updated the step-action help to say tap Actions on touch, right-click on desktop. Added `tests/mobile-overlays.test.mjs` with a DOM-level portal/restore test and overlay/action contracts. Extended `browser-tests/mobile-smoke.mjs` to verify mobile (390×844, 820×1180, 844×390) camera controls, View options, inspector selection and action menu. Added the mobile browser test to the existing GitHub Browser QA workflow.
+- **Validation boundary:** the broader Rugby QA suite already had 12 failing checks at the earlier v0.20.32 commit, including starter-drill data and stale browser sprite expectations. Mobile smoke/browser acceptance and deployment must be checked per commit; successful Node parse or Pages deployment alone is not acceptance.
 
 ## 0.20.35 — Mode-toggle and visual placement fixes (19 November 2026)
 
