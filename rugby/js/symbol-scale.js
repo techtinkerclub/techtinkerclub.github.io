@@ -57,14 +57,17 @@ export const labelOffset=(o,g,pose)=>o.type==='label'?4:g?.fieldContext?.mode===
 // The coach name stays a screen-readable caption rather than rotating with the body.
 // Keep it below the full sprite (or above if near the pitch's lower edge).
 function coachCaptionPosition(o,g,cartoon=false){
- const at=g.toView(o.x,o.y),margin=Number(g.margin)||0;
- const [sx,sy]=symbolFactors(o,g),extent=(cartoon?39:20)*Math.max(sx,sy);
- const top=margin+10,bottom=margin+(Number(g.fh)||Number(g.viewHeight)||540)-7;
- const left=margin+24,right=margin+(Number(g.fw)||Number(g.viewWidth)||900)-24;
- const clamp=(n,low,high)=>Math.max(low,Math.min(high,n));
- const below=at.y+extent+symbolLabelSize(g)+6,above=at.y-extent-5;
- const baseline=below<=bottom?below:above>=top?above:clamp(below,top,bottom);
- return {x:clamp(at.x,left,right)-at.x,y:baseline-at.y};
+ // Use the actual object anchor and SVG viewport, not the training pitch width:
+ // clamping to an offset training area made the coach's label drift sideways.
+ const at=g.toView(o.x,o.y),[sx,sy]=symbolFactors(o,g);
+ const extent=(cartoon?39:20)*Math.max(sx,sy),size=symbolLabelSize(g);
+ const vw=Number(g.viewWidth)||900,vh=Number(g.viewHeight)||540;
+ const halfLabel=Math.max(23,String(o.label||'Coach').length*size*.33);
+ const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
+ const below=at.y+extent+size+4,above=at.y-extent-5;
+ const baseline=below<=vh-5?below:above>=size+5?above:clamp(below,size+5,vh-5);
+ return {x:clamp(at.x,halfLabel+4,Math.max(halfLabel+4,vw-halfLabel-4))-at.x,
+  y:baseline-at.y};
 }
 export function labelPosition(o,g,pose){
  if(o?.type==='coach')return coachCaptionPosition(o,g);
