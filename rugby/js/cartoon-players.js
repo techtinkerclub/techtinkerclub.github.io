@@ -186,88 +186,59 @@ function minionCatchHeading(o,g,previous,frame){
  const angle=Math.atan2(b.x-a.x,a.y-b.y)*180/Math.PI;
  return wrapMinionAngle(angle-(Number(o.rot)||0)-(Number(g.rotation)||0));
 }
-// A single, truly overhead character rig. All poses use the same north-facing
-// coordinate system (forward = negative Y), then rotate as a whole. No 3/4 view,
-// image-atlas perspective changes, drop shadows, or out-of-sync head/body art.
-function overheadMinion(o,pose,objects,g,previous,frame,p){
- const poseId=cartoonPoseIndex(o,pose,objects,previous,frame,p);
- const defender=o.type==='defender'||o.type==='bagplayer';
- const kit=defender?'#dc5045':'#277fcd';
- const trim=defender?'#ffce6a':'#a5e7ff';
- const move=movingInfo(o,previous,frame,p);
- const grounded=[12,16,17].includes(poseId);
- const falling=poseId===15;
- const running=[1,2,4,5,7,19].includes(poseId)&&move.moving;
- const contact=[13,14,20,21,22].includes(poseId);
- const crouch=[3,11,13,14,20,21,22,23,24].includes(poseId);
- const carrying=[7,8,9].includes(poseId);
- const reach=[9,10,13,14,21].includes(poseId);
- const travel=(!grounded&&running)?minionTravelHeading(o,g,previous,frame,p):null;
- const incoming=poseId===10?minionCatchHeading(o,g,previous,frame):null;
- const bodyTurn=grounded?0:(travel??incoming??0);
- const gaze=grounded?0:smoothGaze(o,objects,g,previous,frame,p);
- // This head angle is *relative to the turning torso*; north is 0 throughout.
- const headTurn=grounded?0:wrapMinionAngle(gaze-bodyTurn);
- const cycle=running?Math.sin(p*8*Math.PI):0;
- const leftStep=running?cycle*6:0,rightStep=-leftStep;
- const armSwing=running?cycle*8:0;
- const limb=(x1,y1,x2,y2)=>'<path d="M'+x1+' '+y1+'Q'+((x1+x2)/2)+' '+((y1+y2)/2-3)+' '+x2+' '+y2+'" stroke="#e4b327" stroke-width="9" fill="none" stroke-linecap="round"/>'+
-  '<path d="M'+x1+' '+y1+'L'+x2+' '+y2+'" stroke="#ffe04a" stroke-width="6.5" stroke-linecap="round"/>'+
-  '<ellipse cx="'+x2+'" cy="'+y2+'" rx="5.5" ry="6" fill="#242933" stroke="#11151b" stroke-width="1.4"/>';
- const boot=(x,y)=>'<ellipse cx="'+x+'" cy="'+y+'" rx="7" ry="9.5" fill="#242933" stroke="#111820" stroke-width="1.6"/>'+
-  '<path d="M'+(x-3)+' '+(y-4)+'q3 -2 6 0" fill="none" stroke="#74808a" stroke-width="1.6"/>';
- const eye=(x,y,r)=>'<circle cx="'+x+'" cy="'+y+'" r="'+(r+1.6)+'" fill="#27313a" stroke="#151b20" stroke-width="1.3"/>'+
-  '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="url(#rugby-mascot-metal)" stroke="#56636a" stroke-width="1.1"/>'+
-  '<circle cx="'+x+'" cy="'+y+'" r="'+(r-3.5)+'" fill="#fffef7" stroke="#859da6" stroke-width=".8"/>'+
-  '<circle cx="'+x+'" cy="'+(y-1.2)+'" r="'+(r*.36)+'" fill="#79522e"/>'+
-  '<circle cx="'+x+'" cy="'+(y-1.2)+'" r="'+(r*.23)+'" fill="#161d22"/>'+
-  '<circle cx="'+(x-2.5)+'" cy="'+(y-3.4)+'" r="1.8" fill="#fff"/>';
- const goggles=defender?eye(0,-29,12.6):eye(-11.5,-29,10.7)+eye(11.5,-29,10.7);
- const hair='<path d="M-8 -9l-3 -7M-2 -10l-1 -8M5 -10l3 -7" stroke="#483528" stroke-width="1.8" stroke-linecap="round" fill="none"/>';
- const head='<g class="minion-independent-head" data-head-angle="'+fmt(headTurn)+'" transform="rotate('+fmt(headTurn)+')">'+
-  '<path d="M-23 -27Q-30 -15 -26 -3M23 -27Q30 -15 26 -3" stroke="#252b31" stroke-width="5.5" fill="none"/>'+
-  '<ellipse cx="0" cy="-10" rx="24" ry="24.5" fill="url(#rugby-mascot-yellow)" stroke="#6b5616" stroke-width="1.8"/>'+
-  '<path d="M-14 -29Q0 -37 14 -29" stroke="#fff59b" stroke-width="2.5" fill="none" opacity=".8"/>'+
-  hair+goggles+'</g>';
- const gradients='<defs><radialGradient id="rugby-mascot-yellow" cx="65%" cy="35%" r="75%"><stop stop-color="#fff36b"/><stop offset=".55" stop-color="#f9d62a"/><stop offset="1" stop-color="#c99713"/></radialGradient>'+
-  '<linearGradient id="rugby-mascot-metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#edf6f9"/><stop offset=".38" stop-color="#889aa3"/><stop offset=".68" stop-color="#eef5f7"/><stop offset="1" stop-color="#62737e"/></linearGradient></defs>';
- if(grounded){
-  // Ground poses are LONG, not a standing circle tipped sideways.
-  // The yellow head is at the front (north); boots and kit remain at the rear.
-  const presentation=poseId===17;
-  const arms=presentation
-   ?limb(-12,7,-17,27)+limb(12,7,17,27)
-   :limb(-15,-2,-28,-9)+limb(15,-2,28,-9);
-  return '<g class="cartoon-player minion-mode-player minion-overhead-player" data-stance="'+RIG_POSES[poseId].name+'" data-eye-count="'+(defender?1:2)+'" pointer-events="none">'+
-   '<svg x="-30" y="-30" width="60" height="60" viewBox="-44 -46 88 94" overflow="visible">'+
-   '<g transform="rotate('+(poseId===16?'-14':'0')+')">'+
-   gradients+boot(-12,33)+boot(12,33)+
-   '<rect x="-18" y="0" width="36" height="29" rx="12" fill="'+kit+'" stroke="#18354e" stroke-width="1.8"/>'+
-   '<path d="M-13 2V23M13 2V23" stroke="'+trim+'" stroke-width="2.5"/>'+
-   arms+
-   '<ellipse cx="0" cy="-13" rx="19" ry="20" fill="url(#rugby-mascot-yellow)" stroke="#78621b" stroke-width="1.7"/>'+
-   '<path d="M-13 -29Q0 -37 13 -29" stroke="#fff1a0" stroke-width="2" fill="none"/>'+
-   (presentation?'<path d="M-7 17L-12 25M7 17L12 25" stroke="#242933" stroke-width="3" stroke-linecap="round"/>':'')+
-   '</g></svg></g>';
- }
- const armY=crouch?-5:3;
- const leftArmX=reach?-29:-30, rightArmX=reach?29:30;
- const leftArmY=reach?-22:armY+armSwing;
- const rightArmY=reach?-22:armY-armSwing;
- const boots=boot(-12+leftStep,33-(crouch?5:0))+boot(12+rightStep,33-(crouch?5:0));
- const torso='<path d="M-23 2Q-24 -3 -19 -5L19 -5Q24 -3 23 2L22 29Q0 39 -22 29Z" fill="'+kit+'" stroke="#16374a" stroke-width="2"/>'+
-  '<path d="M-17 6L-14 25M17 6L14 25" stroke="'+trim+'" stroke-width="3.5" fill="none"/>'+
-  '<rect x="-11" y="19" width="22" height="12" rx="3" fill="'+kit+'" stroke="'+trim+'" stroke-width="1.5"/>'+ 
- '<path d="M-9 21h18" stroke="#fff" opacity=".25" stroke-width="1.3"/>';
- const body=gradients+boots+torso+limb(-21,4,leftArmX,leftArmY)+limb(21,4,rightArmX,rightArmY)+head;
- const tilt=falling?'-20':running?fmt(cycle*2):'0';
- return '<g class="cartoon-player minion-mode-player minion-overhead-player" data-stance="'+RIG_POSES[poseId].name+'" data-eye-count="'+(defender?1:2)+'" pointer-events="none">'+
-  '<svg x="-28" y="-28" width="56" height="56" viewBox="-44 -46 88 94" overflow="visible">'+
-   '<g transform="rotate('+fmt(bodyTurn)+' 0 0) rotate('+tilt+' 0 0)">'+body+'</g></svg>'+
-   '<g transform="rotate('+fmt(bodyTurn)+')">'+bodyEquipment(o)+'</g></g>';
-}
 function cartoonMinion(o,pose,objects,g,previous,frame,p){
- return overheadMinion(o,pose,objects,g,previous,frame,p);
+ const team=o.type==='defender'||o.type==='bagplayer'?1:0;
+ // The original "grounded" artwork (cell 16) is a side-on tumble: from our
+ // strict overhead camera it reads like a standing player tipped sideways.
+ // Keep its semantic pose ID, but draw the true prone, head-to-boots artwork
+ // from cell 12. Cell 17 remains the separate, arms-back ball-presentation pose.
+ // This is strictly a Minion visual translation, NOT a change to Classic,
+ // contact state, possession, player coordinates, or published drill data.
+ const prone=poseId===16;
+ // The original catching cell holds its hands low, behind a north-facing
+ // goggle. Use the forward, open-arm rig artwork for a true receiving shape.
+ // The semantic catch pose is unchanged, and the ball remains separately drawn.
+ const artworkId=prone?12:poseId===10?13:poseId;
+ const atlasId=artworkId+team*RIG_TEAM_STRIDE;
+ const tile=RIG_TILE,x=(atlasId%RIG_COLS)*tile,y=Math.floor(atlasId/RIG_COLS)*tile;
+ const entry=RIG_POSES[poseId],pivot=RIG_POSES[artworkId].headPivot;
+ // Original source goggles face south; articulated standing heads face north.
+ // Ground poses include their heads baked into the overhead body artwork.
+ // Only normal running/carrying stances inherit path heading. Contact,
+ // side-step, turn and bound poses retain their deliberate authored body angle.
+ const followTravel=[1,2,7,19].includes(poseId);
+ const travel=entry.grounded||!followTravel?null:minionTravelHeading(o,g,previous,frame,p);
+ const bodyTurn=entry.grounded?0:(travel??incoming??0);
+ // Preserve the independent head bearing when the body turns, including when
+ // it is watching a receiver or a tackle target instead of its running path.
+ let gaze=smoothGaze(o,objects,g,previous,frame,p);
+ if(incoming!==null&&travel===null&&(!o.headMode||o.headMode==='run'))gaze=incoming;
+ else if(o.headMode==='forward')gaze=bodyTurn;
+ const rotation=entry.grounded?0:180+gaze-bodyTurn;
+ const headScale=minionHeadScale(artworkId);
+ const animated=move.moving&&!entry.grounded;
+ const gait=animated?Math.sin(p*12*Math.PI)*1.3:0;
+ const wobble=animated?Math.sin(p*7*Math.PI)*1.1:0;
+ const size=54;
+ // Preserve a clear, shadow-free pitch beneath the character.
+ // A modest rotation distinguishes an ordinary tackled player from the
+ // straight-on try grounding (12) and ball presentation (17) illustrations.
+ // Minion poses have no synthetic drop or contact shadow.
+ const floorTilt=prone?'rotate(-15 64 64)':'';
+ // Clip the atlas cell before any pose-level rotation, or adjacent art leaks.
+ // The catching atlas cells contained a grey backing oval. Use their
+ // individually cleaned art for both teams, with all other poses unchanged.
+ const body=artworkId===10
+  ?tileUse('rugby-minion-catch-clean-v1',0,team*tile,tile)
+  :tileUse('rugby-minion-body-v9',x,y,tile);
+ const head=entry.grounded?'': 
+  '<g class="minion-independent-head" data-head-angle="'+fmt(rotation)+'" data-head-scale="'+headScale+'" transform="translate('+fmt(pivot[0])+' '+fmt(pivot[1])+') rotate('+fmt(rotation)+') scale('+headScale+') translate('+fmt(-pivot[0])+' '+fmt(-pivot[1])+')">'+
+    tileUse('rugby-minion-head-v9',x,y,tile)+'</g>';
+ return '<g class="cartoon-player minion-mode-player minion-rig-player" data-stance="'+entry.name+'" pointer-events="none">'+
+  '<g transform="translate(0 '+fmt(gait)+') rotate('+fmt(wobble)+')">'+
+   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="0 0 '+tile+' '+tile+'" overflow="visible">'+
+    '<g transform="rotate('+fmt(bodyTurn)+' 64 64)'+(floorTilt?' '+floorTilt:'')+'">'+body+head+'</g></svg>'+
+    '<g transform="rotate('+fmt(bodyTurn)+')">'+bodyEquipment(o)+'</g></g></g>';
 }
 const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
 function coachIndex(o,previous,frame,p){
