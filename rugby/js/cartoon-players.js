@@ -188,6 +188,23 @@ function minionCatchHeading(o,g,previous,frame){
  const angle=Math.atan2(b.x-a.x,a.y-b.y)*180/Math.PI;
  return wrapMinionAngle(angle-(Number(o.rot)||0)-(Number(g.rotation)||0));
 }
+// Only the authored tackle stance uses these extra limbs. The original
+// detailed atlas remains the body/head artwork for every character.
+// Atlas faces south at rest (goggle at lower edge), so hands extend toward +Y.
+// Draw underneath the articulated head to preserve the one-/two-eye artwork.
+function minionTackleArms(poseId){
+ if(poseId!==13&&poseId!==14)return '';
+ const contact=poseId===14;
+ const left=contact?[37,103]:[23,98],right=contact?[91,103]:[105,98];
+ const arm=(side,hand)=>{
+  const fromX=side<0?30:98,elbowX=side<0?19:109;
+  const midX=contact?(side<0?30:98):elbowX;
+  return '<path d="M'+fromX+' 68 Q'+midX+' 83 '+hand[0]+' '+hand[1]+'" fill="none" stroke="#1c292b" stroke-width="12" stroke-linecap="round"/>'+
+   '<path d="M'+fromX+' 68 Q'+midX+' 83 '+hand[0]+' '+hand[1]+'" fill="none" stroke="#ffdb31" stroke-width="8" stroke-linecap="round"/>'+
+   '<ellipse cx="'+hand[0]+'" cy="'+hand[1]+'" rx="7" ry="8" fill="#262b30" stroke="#121a1d" stroke-width="1.8"/>';
+ };
+ return '<g class="minion-tackle-arms" data-tackle-phase="'+(contact?'wrap':'ready')+'">'+arm(-1,left)+arm(1,right)+'</g>';
+}
 function cartoonMinion(o,pose,objects,g,previous,frame,p){
  const poseId=cartoonPoseIndex(o,pose,objects,previous,frame,p);
  const move=movingInfo(o,previous,frame,p);
@@ -242,7 +259,7 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  return '<g class="cartoon-player minion-mode-player minion-rig-player" data-stance="'+entry.name+'" pointer-events="none">'+
   '<g transform="translate(0 '+fmt(gait)+') rotate('+fmt(wobble)+')">'+
    '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="0 0 '+tile+' '+tile+'" overflow="visible">'+
-    '<g transform="rotate('+fmt(bodyTurn)+' 64 64)'+(floorTilt?' '+floorTilt:'')+'">'+body+head+'</g></svg>'+
+    '<g transform="rotate('+fmt(bodyTurn)+' 64 64)'+(floorTilt?' '+floorTilt:'')+'">'+body+minionTackleArms(poseId)+head+'</g></svg>'+
     '<g transform="rotate('+fmt(bodyTurn)+')">'+bodyEquipment(o)+'</g></g></g>';
 }
 const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
