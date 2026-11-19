@@ -1,4 +1,4 @@
-import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.18.6';
+import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.18.7';
 import {playbackData,renderScene} from './scene.js?v=0.20.30';
 import {publicVideoBuilder} from './public-video.js?v=0.20.30';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -20,7 +20,7 @@ function thumb(d){
 }
 function card(d,f){const animated=isAnimated(d),kind=isRules(d)?'RULES WALK-THROUGH':animated?'ANIMATED DRILL':'COACHING CARD',href=esc(drillHref(d.id,f));return '<article class="drill-card"><a class="thumb '+(animated?'':'card-only')+'" href="'+href+'" aria-label="View '+esc(d.title)+'">'+thumb(d)+'</a><div class="card-body"><div class="card-type">'+kind+' · '+esc(d.category)+'</div><h3>'+esc(d.title)+'</h3><div class="card-meta">'+(d.publishedAt?'Updated '+esc(new Date(d.publishedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}))+' · '+(Number.isInteger(d.publishedRevision)?'Revision '+d.publishedRevision:'Legacy revision')+' · ':'')+esc(ageLabel(d))+' · '+esc(d.minutes)+' min'+(animated?' · '+d.frames.length+' steps':'')+' · '+esc(d.length)+' × '+esc(d.width)+' m</div><p class="card-objective">'+esc(d.objective)+'</p><a class="view-link" href="'+href+'">'+(animated?'Watch drill':'Read coaching card')+'<span aria-hidden="true">›</span></a>'+(animated?'<button type="button" class="add-to-video" data-add-video="'+esc(d.id)+'">+ Add to video</button>':'')+'</div></article>'}
 function render(reset=true){
- if(reset)limit=18;const f=read();replaceUrl(f);
+ const f=read();if(reset)limit=f.category==='Test drills'?40:18;replaceUrl(f);
  for(const b of $('quickFilters').querySelectorAll('button')){const k=b.dataset.quick,on=k==='all'?!f.age&&!f.category&&!f.format&&!f.q:k==='u10'?f.age==='10':k==='test'?f.category==='Test drills':f.format===k;b.setAttribute('aria-pressed',String(on))}
  if(!ready)return;
  const list=filterDrills(drills,f);$('count').textContent=list.length+' matching · '+list.filter(isAnimated).length+' animated';$('results').innerHTML=list.slice(0,limit).map(d=>card(d,f)).join('');$('empty').hidden=!!list.length;$('more').hidden=list.length<=limit;$('more').textContent='Show more ('+Math.max(0,list.length-limit)+' remaining)';refreshVideoCards();
