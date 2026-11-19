@@ -1,10 +1,10 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.30';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.33';
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {outcomeCardsMarkup} from './branching-visual.js?v=12';
 import {decisionList,decisionText} from './training.js?v=0.18.8';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.18.4';
-import {recordCoachingMovie} from './video-recorder.js?v=0.20.15';
+import {recordCoachingMovie} from './video-recorder.js?v=0.20.33';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
 import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
