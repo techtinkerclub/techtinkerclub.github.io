@@ -23,7 +23,7 @@ const another={...player,id:'a2'};
 const alternate=playerAppearance(another,'standing',original,[another,defender],view,null,null,1,{cartoonMode:true});
 assert.equal(cartoon,alternate,'Same pose and team use the same sprite artwork');
 const defended=playerAppearance(defender,'standing',original,[player,defender],view,null,null,1,{cartoonMode:true});
-assert.notEqual(cartoon,defended,'Player orientation and gaze are preserved per player');
+assert.match(defended,/ruckus-player/,'Both teams use the approved red artwork; team distinction remains in Classic');
 const tacklePose=playerAppearance({...defender,playerPose:'tackling'},'tackling',original,[defender],view,null,null,1,{cartoonMode:true});
 assert.match(tacklePose,/ruckus-player/,'Tackle uses Ruckus artwork');
 assert.match(tacklePose,/data-ruckus-pose="8"/,'Tackle uses the separate tackle-approach artwork');
