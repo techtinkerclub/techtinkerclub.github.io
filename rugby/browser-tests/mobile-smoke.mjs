@@ -30,7 +30,8 @@ async function check(path,viewport){
   assert.equal(await page.locator('.field-wrap > .mobile-camera-controls').count(),0,'camera must not obscure rugby sprites');
   assert.equal(await page.locator('.stage .toolbar > .board-actions').count(),0,'desktop editing controls move to the Edit sheet');
   await page.locator('#mobileViewOptions').click();
-  await page.waitForFunction(()=>document.querySelector('#viewMenu')?.open);
+  await page.waitForFunction(()=>document.querySelector('#viewMenu')?.open
+    &&document.querySelector('#mobileViewScrim')?.hidden===false);
   const view=await page.evaluate(()=>{
    const menu=document.querySelector('#viewMenu'),box=menu.getBoundingClientRect();
    return {body:menu.parentElement===document.body,top:box.top,bottom:box.bottom,visible:getComputedStyle(menu).display!=='none',
