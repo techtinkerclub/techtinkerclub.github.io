@@ -116,7 +116,7 @@ async function check(path,viewport){
   await tap('pitch');
   await play.click();
   await page.waitForFunction(()=>document.querySelector('#play')?.textContent?.includes('Play')
-   &&document.querySelector('#status')?.textContent?.includes('editing last step'),{timeout:18000});
+   &&document.querySelector('#status')?.textContent?.includes('editing last step'),null,{timeout:18000});
   const returned=await page.evaluate(()=>({
    selectedStep:[...document.querySelectorAll('#scenes .scene')].findIndex(x=>x.classList.contains('selected')),
    total:document.querySelectorAll('#scenes .scene').length,
