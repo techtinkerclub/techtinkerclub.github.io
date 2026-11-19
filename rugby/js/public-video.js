@@ -10,24 +10,32 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
  document.querySelector('.header-row').insertBefore(button,get('shareLibrary'));
  const dialog=document.createElement('dialog');dialog.id='videoBuilder';dialog.className='video-builder';
  dialog.innerHTML='<div class="video-heading"><div><h2>Create coaching video</h2><p>Combine up to eight published animated drills. Each keeps its own pitch, timings, notes and decision outcomes.</p></div><button type="button" id="videoClose">Close</button></div>'+
- '<label class="video-field">Video title<input id="videoTitle" maxlength="160" placeholder="Defensive line progression"></label>'+
- '<div class="video-row"><h3>Stages in order</h3><button type="button" id="videoClear">Clear all</button></div>'+
+ '<label class="video-field" id="videoTitleField">Video title<input id="videoTitle" maxlength="160" placeholder="Defensive line progression"></label>'+
+ '<details id="videoMoreDrills" class="video-details"><summary>Combine with another drill (optional)</summary><div class="video-row" id="videoStageHeader"><h3>Stages in order</h3><button type="button" id="videoClear">Clear all</button></div>'+
  '<ol id="videoStages"></ol><p id="videoHint" role="status"></p>'+
  '<label class="video-field">Add published drill<select id="videoPick"><option value="">Choose another drill…</option></select></label>'+
- '<button type="button" id="videoAdd">Add drill</button>'+
- '<div class="video-row"><button type="button" id="videoPresent">Open linked presentation</button><button type="button" id="videoLink">Copy presentation link</button><button type="button" id="videoPrint">Print progression pack</button></div>'+
- '<details class="video-details"><summary>Video settings</summary><div id="publicMovieOptions"></div><label class="video-field">Character style <select id="publicVideoStyle" aria-label="Video character style"><option value="classic">Classic coaching</option><option value="minion">Minion Mode · playful sprites and video cards</option></select></label></details>'+
+ '<button type="button" id="videoAdd">Add drill</button></details>'+
+ '<div class="video-row" id="videoProgressionActions"><button type="button" id="videoPresent">Open linked presentation</button><button type="button" id="videoLink">Copy presentation link</button><button type="button" id="videoPrint">Print progression pack</button></div>'+
+ '<label class="video-field video-character-choice">Video characters<select id="publicVideoStyle" aria-label="Video character style"><option value="classic">Classic coaching</option><option value="minion">Harburling Ruckus · funny cartoon video</option></select></label>'+'<details class="video-details"><summary>More video settings (optional)</summary><div id="publicMovieOptions"></div></details>'+
  '<div class="video-row video-footer"><p id="videoStatus" role="status"></p><button type="button" id="videoExport">Export video</button></div>'+
  '<small>The video downloads to your device. Keep this tab visible while recording. Your drills and public library remain unchanged.</small>';
  document.body.append(dialog);
  const settings=bindMovieSettings(get('publicMovieOptions'),'publicMovie'),progress=createExportProgress();
+ if(['ruckus','minion'].includes(new URLSearchParams(location.search).get('style')))
+  get('publicVideoStyle').value='minion';
  let busy=false;
  const eligible=()=>getDrills().filter(d=>isAnimated(d)&&d.frames?.length>1);
  const selected=()=>ids.map(id=>eligible().find(d=>d.id===id)).filter(Boolean);
  function render(){
-  const stages=selected();
+  const stages=selected(),multi=stages.length>1;
+  settings.setContext({hasDecision:stages.some(d=>!!d.branching?.choices?.length),story:true});
+  get('videoTitleField').hidden=!multi;
+  get('videoStageHeader').hidden=!multi;
+  get('videoStages').hidden=!multi;
+  get('videoProgressionActions').hidden=!multi;
   get('videoStages').innerHTML=stages.map((d,i)=>'<li><b class="video-number">'+(i+1)+'</b><span class="video-stage-title"><strong>'+esc(d.title)+'</strong><small>'+esc(ageLabel(d))+' · '+d.frames.length+' steps</small></span><span class="video-stage-controls"><button data-video-move="up" data-index="'+i+'" aria-label="Move earlier" '+(!i?'disabled':'')+'>↑</button><button data-video-move="down" data-index="'+i+'" aria-label="Move later" '+(i===stages.length-1?'disabled':'')+'>↓</button><button data-video-move="remove" data-index="'+i+'" aria-label="Remove stage">×</button></span></li>').join('');
-  get('videoHint').textContent=stages.length?stages.length+' of 8 selected · each stage plays in order.':'Select an animated drill to get started.';
+  get('videoHint').textContent=multi?stages.length+' stages selected · they will play in order.':
+   stages.length?'One drill ready for video export. Add another only for a progression.':'Select an animated drill to get started.';
   button.textContent=stages.length?'Create video ('+stages.length+')':'Create video';
   get('videoPick').innerHTML='<option value="">Choose another drill…</option>'+eligible().filter(d=>!ids.includes(d.id)).map(d=>'<option value="'+esc(d.id)+'">'+esc(d.title)+' · '+esc(ageLabel(d))+'</option>').join('');
   get('videoExport').disabled=busy||!stages.length;
@@ -41,6 +49,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
   if(!eligible().some(d=>d.id===id)||ids.includes(id))return;
   if(ids.length>=8){get('videoStatus').textContent='Maximum eight drills per video.';return}
   ids.push(id);if(ids.length===1)get('videoTitle').value=eligible().find(d=>d.id===id).title;
+   if(ids.length>1)get('videoMoreDrills').open=true;
   get('videoStatus').textContent='';render();
  }
  button.onclick=()=>{render();dialog.showModal()};
