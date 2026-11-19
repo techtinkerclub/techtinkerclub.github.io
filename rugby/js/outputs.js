@@ -32,7 +32,7 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  // Storyboard mode is the default for decisions and linked drill videos.
  // Keep the proven legacy player for a single ordinary linear-drill export.
  const movieSequence=Array.isArray(opts.sequenceDrills)&&opts.sequenceDrills.length?opts.sequenceDrills:null;
- if(movieSequence||hasOutcomes(d))
+ if(movieSequence||hasOutcomes(d)||opts.cartoonMode===true)
   return recordCoachingMovie(movieSequence||[d],opts,progress,signal);
 
  const checkAbort=()=>{if(signal?.aborted)throw new DOMException('Export cancelled','AbortError')};checkAbort();progress(0,'Preparing video…');
