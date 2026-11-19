@@ -2,6 +2,7 @@
 // possession, coaching gaze, tackling, ball physics and timing use the same data
 // and shared engines as Classic mode. Every source pose is ball- and pad-free.
 import {canCarry,tackleImpacts} from './possession.js?v=0.19.1';
+import {tagColor} from './skill-actions.js?v=8';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 import {playerHeadAngle} from './player-gaze.js?v=3';
 import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
@@ -321,6 +322,16 @@ export function playerAppearance(o,pose,original,objects,g,previous,frame,progre
  if(!cartoonMode)return classicPlayerAppearance(o,pose,original,objects,g,previous,frame,progress,{ink});
  if(!canCarry(o))return o.type==='shieldItem'?cartoonStandalonePad():original;
  return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonRuckus(o,pose,objects,g,previous,frame,progress);
+}
+// The Classic belt tag overlay covers the Ruckus visor at pitch scale.
+// In Ruckus only, show small side-mounted tag indicators outside the artwork.
+export function cartoonTagIcon(o){
+ if(!canCarry(o)||o.tagBelt!==true)return '';
+ const c=tagColor(o.tagColor),left=o.tags?.left!==false,right=o.tags?.right!==false;
+ const tab=(x,side)=>'<g class="ruckus-tag-'+side+'"><rect x="'+x+'" y="7" width="7" height="13" rx="2" fill="'+c+'" stroke="#102e23" stroke-width="1.4"/><path d="M'+(x+1.5)+' 10v7" stroke="#fff" stroke-opacity=".6" stroke-width="1.2"/></g>';
+ const taken=Math.max(0,Number(o.heldTags)||0);
+ const counter=taken?'<g transform="translate(34 -28)"><circle r="9" fill="#f5e8a4" stroke="#173526" stroke-width="1.8"/><text y="3" text-anchor="middle" font-size="10" font-weight="700" fill="#172820">'+Math.min(12,taken)+'</text></g>':'';
+ return '<g class="ruckus-tag-indicators" pointer-events="none">'+(left?tab(-40,'left'):'')+(right?tab(33,'right'):'')+counter+'</g>';
 }
 export function cartoonObjectOrder(items,cartoonMode){
  if(!cartoonMode)return items;
