@@ -157,10 +157,9 @@ const tileUse=(id,x,y,t)=>'<svg width="'+t+'" height="'+t+'" viewBox="'+x+' '+y+
 // follows curved run paths. Apply the SAME route tangent to the cartoon torso;
 // otherwise the eyes turn correctly but the feet and arms run backwards.
 const wrapMinionAngle=n=>((n+180)%360+360)%360-180;
-// The supplied receive1/receive2 atlas frames (46/47) face about 45° to
-// screen-right from north before any SVG transformation. They are NOT generic
-// forward-facing sprites like the five standing frames.
-const RUCKUS_RECEIVE_SOURCE_BEARING=45;
+// The right-side catch in v0.20.36 was already correct. Its original
+// 180° source-art orientation is the baseline for BOTH receive frames.
+// Do not replace that with a guessed diagonal calibration.
 const NON_PASS_TRANSFERS=new Set(['pickup','turnover','rip','handover','set','presentation','drop']);
 /** Local bearing towards the ball as it ARRIVES, using the authored ball
  * route (or straight flight), never the receiver's previous body heading.
@@ -190,6 +189,18 @@ export function ruckusIncomingPassBearing(o,previous,frame,g){
  // Invert the direction of travel: the player's visor and catching hands
  // must look TOWARDS the source, regardless of existing authored rotation.
  return wrapMinionAngle(incoming+180-(Number(o.rot)||0)-(Number(g.rotation)||0));
+}
+/** Transform relative to the proven v0.20.36 right-hand reception.
+ * A ball arriving from the opposite hip ONLY mirrors the source pose;
+ * a diagonal arrival then adds the small deviation from that side.
+ * Rotations are relative to the already-authored body/field orientation.
+ */
+export function ruckusCatchPoseTransform(bearing,forward=0){
+ const relative=wrapMinionAngle(bearing-forward);
+ const mirror=relative<0?-1:1;
+ const sourceSide=mirror<0?-90:90;
+ const deviation=wrapMinionAngle(relative-sourceSide);
+ return {mirror,angle:180+forward+deviation};
 }
 function minionTravelHeading(o,g,previous,frame,p){
  const start=previous?.objects?.find(q=>q.id===o.id),end=frame?.objects?.find(q=>q.id===o.id);
@@ -328,11 +339,13 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  // against the INCOMING ball. The original 180° default turned the catcher's
  // visor away even when the Classic player was correctly facing the pass.
  // The outer scene still applies the authored o.rot + pitch rotation.
- const catchMirror=catchLocal!==null&&catchLocal<0?-1:1;
- const mirror=catchLocal!==null?catchMirror:([8,9,10].includes(semantic)&&relative<0)?-1:1;
- const angle=catchLocal!==null
-  ?catchLocal-(mirror===-1?-RUCKUS_RECEIVE_SOURCE_BEARING:RUCKUS_RECEIVE_SOURCE_BEARING)
-  :180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
+ // Preserve the v0.20.36 RECEIVING-FROM-RIGHT pose exactly. The mirrored
+ // receiving-from-left case should be the same pose facing the other way,
+ // not a new 90–180° rotation of a diagonal source-art guess.
+ const baseAngle=180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
+ const catchTurn=catchLocal===null?null:ruckusCatchPoseTransform(catchLocal,moving?forward:0);
+ const mirror=catchTurn?catchTurn.mirror:([8,9,10].includes(semantic)&&relative<0)?-1:1;
+ const angle=catchTurn?catchTurn.angle:baseAngle;
  // Our new image is a genuinely PRONE, ball-free pose, with both hands left.
  // A 90-degree offset aligns its hands with the existing presented ball.
  const proneAngle=90+presentationLocal;
