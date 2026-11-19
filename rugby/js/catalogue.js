@@ -42,7 +42,7 @@ export async function loadCatalogue(fetcher=fetch){
  // and read-only presentations, videos and the public library.
  let qa=[];
  try{
-  const response=await fetcher(new URL('../data/test-drills.json?v=2',import.meta.url),{cache:'no-cache'});
+  const response=await fetcher(new URL('../data/test-drills.json?v=3',import.meta.url),{cache:'no-cache'});
   if(!response.ok)throw Error('Test pack HTTP '+response.status);
   const pack=await response.json();
   if(pack?.version!==1||pack.kind!=='rugby-visual-qa'||!Array.isArray(pack.drills))throw Error('Invalid test-drill pack');
