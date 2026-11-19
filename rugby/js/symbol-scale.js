@@ -71,20 +71,24 @@ export function labelPosition(o,g,pose){
   y:clamp(at.y+desired.y,margin+10,margin+g.fh-7)-at.y};
 }
 
-// Minion artwork is an image atlas whose visible silhouette is much wider than
-// Classic's symbol radius. Place labels clear BELOW the entire sprite, not
-// "behind" the player (which overlaps goggles in rotated/side-on poses).
-// Prefer above only when the bottom of the field cannot accommodate a caption.
+// Minion captions follow EXACTLY the same side and body direction as Classic.
+// The image atlas is slightly larger than the schematic circle, so increase
+// the distance only by the additional visible footprint, never switch sides.
 export function cartoonLabelPosition(o,g,pose){
- const [sx,sy]=symbolFactors(o,g,pose==='grounded'?'grounded':'standing');
- // The original 54px sprite cell rotates inside its own SVG; allow for the
- // diagonal bounding box, separately from the unscaled text label.
- const extent=38*Math.max(sx,sy);
- const gap=7,baseline=extent+gap+symbolLabelSize(g);
- const q=g.toView(o.x,o.y),margin=g.margin||0;
- const fieldBottom=margin+g.fh,fieldTop=margin;
- const below=q.y+baseline<=fieldBottom-4;
- const y=below?baseline:-extent-gap;
- return {x:Math.max(margin+12,Math.min(q.x,margin+g.fw-12))-q.x,
-  y:Math.max(fieldTop+symbolLabelSize(g),Math.min(q.y+y,fieldBottom-4))-q.y};
+ const classic=labelPosition(o,g,pose);
+ if(!playerTypes.has(o?.type))return classic;
+ const [sx,sy]=symbolFactors(o,g,pose);
+ // Original sprites are 54px across; the Classic standing symbol extends 20px.
+ // Their footprint difference is small at realistic pitch scales.
+ const outer=27*Math.max(sx,sy);
+ const classicExtent=symbolRadius(o,g,pose);
+ const extra=Math.max(0,outer-classicExtent);
+ if(extra<=0)return classic;
+ const angle=((Number(o.rot)||0)+(Number(g.rotation)||0))*Math.PI/180;
+ const at=g.toView(o.x,o.y),margin=g.margin||0;
+ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+ return {
+  x:clamp(at.x+classic.x-Math.sin(angle)*extra,margin+7,margin+g.fw-7)-at.x,
+  y:clamp(at.y+classic.y+Math.cos(angle)*extra,margin+10,margin+g.fh-7)-at.y
+ };
 }
