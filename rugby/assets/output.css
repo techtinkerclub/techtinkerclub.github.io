@@ -35,8 +35,8 @@
 .movie-settings .movie-conditional[hidden]{display:none!important}
 .movie-settings .movie-conditional{min-width:0}
 .movie-settings .movie-conditional>label{display:grid;gap:4px}
-.video-character-choice{display:grid;gap:5px;margin:11px 0;font-size:13px;font-weight:650}
-.video-character-choice select{
+.video-character-choice,.video-camera-choice{display:grid;gap:5px;margin:11px 0;font-size:13px;font-weight:650}
+.video-character-choice select,.video-camera-choice select{
  width:100%;min-height:44px;border:1px solid #738979;border-radius:7px;
  background:#273a2d;color:#f5ffe8;padding:9px 10px;font:inherit
 }
@@ -46,3 +46,7 @@
 .movie-sequence-body{padding:5px 8px 12px}
 .movie-sequence-builder:not([open]) .movie-sequence-body{display:none}
 #shareDialog .movie-settings{margin-top:6px}
+
+.camera-follow-choice{display:flex;gap:8px;align-items:center;margin:7px 0;font-size:13px}
+.camera-follow-choice input{min-width:18px;min-height:18px;accent-color:#c9f07c}
+.read-only-player #playerFollow[aria-pressed="true"]{border-color:#c9f07c;color:#c9f07c;background:#28462d}
