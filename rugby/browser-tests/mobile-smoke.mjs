@@ -25,12 +25,46 @@ async function check(path,viewport){
   assert(measured.navTop>=0&&measured.navTop<measured.screenHeight,'nav must fit viewport');
   assert(measured.navBottom<=measured.screenHeight+2,'nav must not be pushed below the screen');
   assert(measured.fieldWidth>100&&measured.fieldHeight>40,'pitch should remain usable');
+  // Only one camera toolbar, with no buttons floating over the pitch.
+  assert(await page.locator('.mobile-quick-controls .mobile-camera-controls').isVisible(),'one accessible camera row above pitch');
+  assert.equal(await page.locator('.field-wrap > .mobile-camera-controls').count(),0,'camera must not obscure rugby sprites');
+  assert.equal(await page.locator('.stage .toolbar > .board-actions').count(),0,'desktop editing controls move to the Edit sheet');
+  await page.locator('#mobileViewOptions').click();
+  await page.waitForFunction(()=>document.querySelector('#viewMenu')?.open);
+  const view=await page.evaluate(()=>{
+   const menu=document.querySelector('#viewMenu'),box=menu.getBoundingClientRect();
+   return {body:menu.parentElement===document.body,top:box.top,bottom:box.bottom,visible:getComputedStyle(menu).display!=='none',
+    scrim:!document.querySelector('#mobileViewScrim').hidden};
+  });
+  assert(view.body&&view.visible&&view.scrim,'View options must be a visible sheet above the pitch, with backdrop');
+  assert(view.top>=-2&&view.bottom<=measured.navTop+2,'view sheet must fit above bottom navigation');
+  assert(await page.locator('#scaleMode').isVisible(),'View options content cannot be clipped behind the pitch');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(()=>!document.querySelector('#viewMenu')?.open);
+
   const tap=async name=>page.locator('[data-mobile-view="'+name+'"]').click();
   await tap('tools');
   assert(await page.locator('#equipmentPanel').isVisible(),'Add must open tools');
   await tap('edit');
   assert(await page.locator('#inspectorPanel').isVisible(),'Edit must open inspector');
   assert(!(await page.locator('#equipmentPanel').isVisible()),'Edit must close tools');
+  // Use the inspector to select an object, then call its *existing*
+  // right-click commands without a right mouse button.
+  await page.locator('#tabObject').click();
+  const picker=page.locator('#objectPicker');
+  assert(await picker.locator('option').count()>1,'sample drill should have selectable objects');
+  await picker.selectOption({index:1});
+  await tap('pitch');
+  const actions=page.locator('#mobileObjectActions');
+  assert(await actions.isVisible(),'selected-object Actions button must be visible on touch');
+  await actions.click();
+  assert(await page.locator('#objectMenu').isVisible(),'mobile context menu must open');
+  assert(await page.locator('#menuDeleteHere').isVisible(),'existing object commands remain accessible');
+  const context=await page.locator('#objectMenu').boundingBox();
+  assert(context.bottom<=measured.navTop+3,'object menu must stay above the bottom navigation');
+  await tap('edit');
+  assert(!(await page.locator('#objectMenu').isVisible()),'moving to Edit closes the context menu');
+
   await tap('steps');
   assert(await page.locator('#timelinePanel').isVisible(),'Steps must open timeline');
   assert(await page.locator('#play').isVisible(),'Steps must expose the original Play button');
