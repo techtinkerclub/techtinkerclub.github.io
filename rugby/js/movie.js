@@ -36,6 +36,7 @@ export function movieSettingsMarkup(prefix){
   item('decision','<label>Decision outcomes<select id="'+id('Branches')+'"><option value="all">Both outcomes · A then B</option><option value="selected">Currently selected outcome only</option></select></label>')+
   '<label>Playback<select id="'+id('Mode')+'"><option value="dual">Normal + slow coaching replay</option><option value="single">Normal speed only</option></select></label>'+
   item('replay','<label>Replay speed<select id="'+id('Speed')+'"><option value="0.25">0.25× · quarter speed</option><option value="0.5" selected>0.5× · half speed</option><option value="0.75">0.75×</option></select></label>')+
+  '<label>Video camera<select id="'+id('Camera')+'"><option value="action">Action focus · frame each step</option><option value="follow">Follow the action · smooth moving camera</option><option value="field">Whole pitch · fixed camera</option></select></label>'+
   '<label>Video format<select id="'+id('Format')+'"><option value="landscape">Landscape · 16:9</option><option value="portrait">Shorts / Reels · 9:16</option></select></label>'+
   '<label>Resolution<select id="'+id('Quality')+'"><option value="720">HD · 1280 × 720</option><option value="1080" selected>Full HD · 1920 × 1080</option><option value="2160">4K · 3840 × 2160</option></select></label>'+
   item('decision','<label class="movie-check"><input id="'+id('PauseCards')+'" type="checkbox" checked> Explain decisions and outcomes with pause cards</label>')+
@@ -72,6 +73,7 @@ export function bindMovieSettings(root,prefix){
  for(const name of ['Mode','Format','PauseCards'])get(name).addEventListener('change',sync);
  const read=()=>movieOptions({
   mode:get('Mode').value,replaySpeed:get('Speed').value,
+  framing:get('Camera').value,
   quality:get('Quality').value,format:get('Format').value,
   notes:get('Notes').checked,card:get('Card').checked,
   branchMode:context.hasDecision?get('Branches').value:'all',
@@ -82,6 +84,7 @@ export function bindMovieSettings(root,prefix){
  });
  read.setContext=next=>{
   context={hasDecision:next?.hasDecision===true,story:next?.story===true};
+  if(['field','action','follow'].includes(next?.framing))get('Camera').value=next.framing;
   sync();
  };
  read.setContext(context);
