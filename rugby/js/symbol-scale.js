@@ -65,7 +65,11 @@ function coachCaptionPosition(o,g,cartoon=false){
  const halfLabel=Math.max(23,String(o.label||'Coach').length*size*.33);
  const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
  const below=at.y+extent+size+4,above=at.y-extent-5;
- const baseline=below<=vh-5?below:above>=size+5?above:clamp(below,size+5,vh-5);
+ // Keep the coach's name on the pitch near its lower edge; this check is
+ // vertical only, so an offset training area cannot push the name sideways.
+ const top=Math.max(size+5,(Number(g.margin)||0)+size+5);
+ const bottom=Math.min(vh-5,(Number(g.margin)||0)+(Number(g.fh)||vh)-7);
+ const baseline=below<=bottom?below:above>=top?above:clamp(below,top,Math.max(top,bottom));
  return {x:clamp(at.x,halfLabel+4,Math.max(halfLabel+4,vw-halfLabel-4))-at.x,
   y:baseline-at.y};
 }
