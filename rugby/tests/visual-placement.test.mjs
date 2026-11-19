@@ -40,7 +40,7 @@ test('Mobile mode button is moved out of the pitch overlay without duplicating i
  assert.ok(js.includes("const visualMode=document.getElementById('minionMode')"));
  assert.ok(js.includes('const target=mobile?modeHeading:modeHome'));
  assert.ok(js.includes('target.appendChild(visualMode)'));
- assert.ok(js.includes('modeHome.insertBefore(visualMode,modeHome.firstChild)'));
+ assert.ok(js.includes('target.insertBefore(visualMode,target.firstChild)'));
  assert.ok(css.includes('.stage-heading > .mobile-mode-toggle'));
  assert.ok(css.includes('grid-column:2;grid-row:1/span 2;position:static'));
  assert.ok(!css.includes('.field-wrap > .pitch-cartoon-toggle'));
