@@ -6,8 +6,20 @@ Updated 19 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.43** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.44** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.44 — Contextual video export, Ruckus films everywhere, no corner flowers (19 November 2026)
+
+- User requested the editor and **both library routes** stop showing inapplicable multi-drill and decision-video options; explicitly provide **funny Ruckus video export** from Studio/saved library, public catalogue, and read-only presentation; **remove the four decorative flowers** from Ruckus pitch corners.
+- Reworked `js/movie.js` `bindMovieSettings` with `setContext({hasDecision,story})` and `videoSettingVisibility`. Decision outcome, decision pauses, and option explanation duration are hidden/disabled unless the selected drill(s) contain branches. Slow replay speed appears only when replay is selected. Story intro duration appears only where appropriate. The return value remains the original movie options function with a `setContext` method. Opening intro timing was decoupled from decision pause cards in `movie-storyboard.js`.
+- **Studio and Coach Editor** `movieSequenceDisclosure` is a closed-by-default optional progression. Adding more drills opens it, preserving all existing add/import/reorder/remove controls. `shareVideoStyle` prominently selects Classic or **Harburling Ruckus · funny cartoon video** and is initialised from the current view, but does not modify shared drill data or the presentation-link options.
+- **Public library** builder: single-drill export is the default; title and progression actions appear only for multiple stages, while stage controls remain accessible in the expandable optional builder. `publicVideoStyle` is now prominent and supports a preset from `?style=ruckus` or legacy `?style=minion`. `recordDrill` uses storyboard mode for a *single* Ruckus drill too, giving playful graphic cards and scene colour scheme rather than only normal-style video with cartoon sprites.
+- **Public read-only presentations** provide a prominent `playerVideoStyle` Classic/Ruckus choice, initialised/synchronised from the view toggle and explicitly passed into video export, independent of saved drill data.
+- `cartoonPitchDecor()` now returns an empty string, removing pink/yellow flower corner shapes from editor, both library displays and rendered video frames without altering field markings or Classic.
+- Added `tests/video-context-theme.test.mjs`; updated `tests/cartoon-mode.test.mjs`; added real-browser `browser-tests/video-export-ux.mjs` and a Browser QA workflow step to check a Ruckus download from the public library, conditional settings, editor multi-drill disclosure and player Ruckus styling.
+- **User's latest camera-facing idea (discussion, not implemented):** consider a Ruckus-only visual initial/idle facing-towards-centre style (top half looking down, lower half looking up) but preserve authored movement/head direction and manually locked facing, to prevent an unnatural flip on crossing halfway. Do not force players to always face pitch centre by default.
+- Validation: verify *this commit's* Pages deployment, Node regressions and browser export checks before claiming release fully QA-accepted. Native Safari MediaRecorder compatibility still needs device acceptance.
 
 ## 0.20.42–0.20.43 — Natural standing/running/carrying for passing and receiving (19 November 2026)
 
