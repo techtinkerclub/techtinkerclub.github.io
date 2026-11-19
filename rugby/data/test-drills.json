@@ -1,9 +1,1135 @@
 {
   "version": 1,
   "kind": "rugby-visual-qa",
-  "description": "Editor-compatible visual QA fixtures. Legacy tackled/grounded/presentation demonstrations retired from the public Test drills category in favour of native published coaching drill seed-144; old versions remain in Git history.",
+  "description": "All 20 Classic-editor visual QA drills restored; test fixtures are retained for regression and bug-fixing. Normal published coaching drills are also available separately in the Contact library.",
   "generatedAt": "2026-11-18T23:37:00Z",
   "drills": [
+    {
+      "version": 1,
+      "id": "seed-901",
+      "title": "Test 01 · Tackle → ground → present → recover",
+      "age": "U10",
+      "category": "Test drills",
+      "length": 10,
+      "width": 8,
+      "ageMin": 10,
+      "ageMax": 10,
+      "objective": "See the runner fall, lie flat, present the separately rendered ball backwards, then regain feet.",
+      "safety": "VISUAL SOFTWARE QA ONLY — not a practical session plan. Freeze and inspect the animation. For any real contact training, follow the current RFU age-grade rules and use appropriately qualified supervision; never infer safe tackle technique from a sprite.",
+      "frames": [
+        {
+          "name": "1 · Carrier upright; defender ready",
+          "seconds": 1.6,
+          "notes": "A1 upright with the ball, D1 visibly ready; A2 waits deeper.",
+          "objects": [
+            {
+              "id": "qa01_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 360,
+              "rot": 0
+            },
+            {
+              "id": "qa01_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 440,
+              "y": 230,
+              "rot": 180,
+              "playerPose": "ready",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 640,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "qa01_ball",
+              "type": "ball",
+              "label": "",
+              "x": 446.83,
+              "y": 351.61199999999997,
+              "rot": 0,
+              "ownerId": "qa01_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2 · Approach tackle",
+          "seconds": 1.7,
+          "notes": "A1 moves towards D1. D1 closes the gap and tracks the carrier.",
+          "objects": [
+            {
+              "id": "qa01_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "qa01_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 440,
+              "y": 268,
+              "rot": 180,
+              "playerPose": "tackling",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 640,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "qa01_ball",
+              "type": "ball",
+              "label": "",
+              "x": 446.83,
+              "y": 281.61199999999997,
+              "rot": 0,
+              "ownerId": "qa01_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3 · Tackle impact / falling",
+          "seconds": 2.1,
+          "notes": "Watch the impact transition: A1 must visibly fall, never slide upright.",
+          "objects": [
+            {
+              "id": "qa01_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 285,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 441,
+              "y": 269,
+              "rot": 180,
+              "playerPose": "tackling",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 640,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "qa01_ball",
+              "type": "ball",
+              "label": "",
+              "x": 446.83,
+              "y": 276.61199999999997,
+              "rot": 0,
+              "ownerId": "qa01_A1"
+            },
+            {
+              "id": "qa01_tackle",
+              "type": "tackle",
+              "label": "Tackle",
+              "x": 437,
+              "y": 275,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "qa01_A1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "qa01_D1",
+                  "pose": "tackling"
+                }
+              ],
+              "breakdown": {
+                "phase": "tackle",
+                "carrierId": "qa01_A1",
+                "tacklerId": "qa01_D1",
+                "ballId": "qa01_ball",
+                "tacklerIds": [
+                  "qa01_D1"
+                ]
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4 · Clearly flat on the ground",
+          "seconds": 2,
+          "notes": "Freeze. A1 must unmistakably be lying on the ground, not crouching.",
+          "objects": [
+            {
+              "id": "qa01_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 285,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 500,
+              "y": 265,
+              "rot": 180,
+              "playerPose": "standing",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 640,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "qa01_ball",
+              "type": "ball",
+              "label": "",
+              "x": 446.83,
+              "y": 276.61199999999997,
+              "rot": 0,
+              "ownerId": "qa01_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "5 · Ball presented backwards",
+          "seconds": 2.1,
+          "notes": "A1 stays grounded; ball is released towards support at larger Y, not shot metres away.",
+          "objects": [
+            {
+              "id": "qa01_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 285,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 500,
+              "y": 265,
+              "rot": 180,
+              "playerPose": "standing",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 640,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "qa01_ball",
+              "type": "ball",
+              "label": "",
+              "x": 442,
+              "y": 306,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {
+            "qa01_ball": {
+              "start": 25,
+              "end": 65
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "6 · A2 approaches; A1 recovers",
+          "seconds": 2.1,
+          "notes": "Ball is still on the ground; A1 is clearly getting up. No sliding across the turf.",
+          "objects": [
+            {
+              "id": "qa01_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 285,
+              "rot": 0,
+              "playerPose": "recovering",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 500,
+              "y": 265,
+              "rot": 180,
+              "playerPose": "standing",
+              "posePinned": true
+            },
+            {
+              "id": "qa01_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 580,
+              "y": 338,
+              "rot": 0
+            },
+            {
+              "id": "qa01_ball",
+              "type": "ball",
+              "label": "",
+              "x": 442,
+              "y": 306,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 3,
+      "players": "A1 carrying, D1 tackling, A2 supporting",
+      "equipment": "Digital rugby objects only; no physical equipment required for this visual QA.",
+      "instructions": "1. Open the drill in Classic view. 2. Play and scrub each named step. 3. Toggle Minion Mode without modifying steps. 4. Confirm positions, timing, possession, poses and contact meaning stay the same.",
+      "coaching": "Visual verification only. No alternative rugby behaviour is permitted in Minion Mode.",
+      "regression": "Test one isolated step at a time with playback paused, then compare with Classic at the identical timestamp.",
+      "progression": "Play the complete sequence and export a Minion Mode video; verify the same pose at each timestamp and the same movement on the pitch.",
+      "questions": "Can a viewer identify the action without reading the label? Is the Minion correctly oriented? Is ball/contact/equipment independent? Does it animate without sudden teleporting?",
+      "notes": "Classic view is the reference. Use the same drill at the same step/time and then switch to Minion Mode. This is software QA, not training advice.",
+      "links": [],
+      "provenance": "Classic Rugby Studio drill model: existing player, equipment, contact, timing and ball controls. QA fixture; not a coaching drill.",
+      "review": "Classic-first software regression fixture — inspect the Classic presentation before comparing the Minion translation. Not a practical contact coaching lesson.",
+      "savedFromCoachDrill": "qa-classic-001",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T22:28:00Z",
+      "revision": 1,
+      "publishedAt": "2026-11-18T22:28:00Z",
+      "publishedRevision": 1,
+      "publishedSourceSavedAt": "2026-11-18T22:28:00Z"
+    },
+    {
+      "version": 1,
+      "id": "seed-902",
+      "title": "Test 02 · Grounded vs presenting vs getting up",
+      "age": "U10",
+      "category": "Test drills",
+      "length": 10,
+      "width": 8,
+      "ageMin": 10,
+      "ageMax": 10,
+      "objective": "Directly compare the still grounded, presenting and recovery silhouettes, same player and position.",
+      "safety": "VISUAL SOFTWARE QA ONLY — not a practical session plan. Freeze and inspect the animation. For any real contact training, follow the current RFU age-grade rules and use appropriately qualified supervision; never infer safe tackle technique from a sprite.",
+      "frames": [
+        {
+          "name": "1 · Standing with ball",
+          "seconds": 1.5,
+          "notes": "Reference upright character pose.",
+          "objects": [
+            {
+              "id": "qa02_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "qa02_ball",
+              "type": "ball",
+              "label": "",
+              "x": 466.83,
+              "y": 261.61199999999997,
+              "rot": 0,
+              "ownerId": "qa02_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2 · Grounded: NO presentation",
+          "seconds": 2,
+          "notes": "The Minion must be clearly flat, not simply crouched.",
+          "objects": [
+            {
+              "id": "qa02_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa02_ball",
+              "type": "ball",
+              "label": "",
+              "x": 466.83,
+              "y": 261.61199999999997,
+              "rot": 0,
+              "ownerId": "qa02_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3 · Ball presentation",
+          "seconds": 2.2,
+          "notes": "Arms move to present; grounded body does not pop upright.",
+          "objects": [
+            {
+              "id": "qa02_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa02_ball",
+              "type": "ball",
+              "label": "",
+              "x": 456,
+              "y": 292,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4 · Recovery / on one knee",
+          "seconds": 1.9,
+          "notes": "Watch a distinct recovery silhouette and feet position.",
+          "objects": [
+            {
+              "id": "qa02_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0,
+              "playerPose": "recovering",
+              "posePinned": true
+            },
+            {
+              "id": "qa02_ball",
+              "type": "ball",
+              "label": "",
+              "x": 456,
+              "y": 292,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "5 · Back standing",
+          "seconds": 1.9,
+          "notes": "Normal player shape and gaze should return.",
+          "objects": [
+            {
+              "id": "qa02_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0,
+              "playerPose": "standing",
+              "posePinned": true
+            },
+            {
+              "id": "qa02_ball",
+              "type": "ball",
+              "label": "",
+              "x": 456,
+              "y": 292,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 3,
+      "players": "A1",
+      "equipment": "Digital rugby objects only; no physical equipment required for this visual QA.",
+      "instructions": "1. Open the drill in Classic view. 2. Play and scrub each named step. 3. Toggle Minion Mode without modifying steps. 4. Confirm positions, timing, possession, poses and contact meaning stay the same.",
+      "coaching": "Visual verification only. No alternative rugby behaviour is permitted in Minion Mode.",
+      "regression": "Test one isolated step at a time with playback paused, then compare with Classic at the identical timestamp.",
+      "progression": "Play the complete sequence and export a Minion Mode video; verify the same pose at each timestamp and the same movement on the pitch.",
+      "questions": "Can a viewer identify the action without reading the label? Is the Minion correctly oriented? Is ball/contact/equipment independent? Does it animate without sudden teleporting?",
+      "notes": "Classic view is the reference. Use the same drill at the same step/time and then switch to Minion Mode. This is software QA, not training advice.",
+      "links": [],
+      "provenance": "Classic Rugby Studio drill model: existing player, equipment, contact, timing and ball controls. QA fixture; not a coaching drill.",
+      "review": "Classic-first software regression fixture — inspect the Classic presentation before comparing the Minion translation. Not a practical contact coaching lesson.",
+      "savedFromCoachDrill": "qa-classic-002",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T22:28:00Z",
+      "revision": 1,
+      "publishedAt": "2026-11-18T22:28:00Z",
+      "publishedRevision": 1,
+      "publishedSourceSavedAt": "2026-11-18T22:28:00Z"
+    },
+    {
+      "version": 1,
+      "id": "seed-903",
+      "title": "Test 03 · Tackle approach and contact",
+      "age": "U10",
+      "category": "Test drills",
+      "length": 10,
+      "width": 8,
+      "ageMin": 10,
+      "ageMax": 10,
+      "objective": "Distinguish defensive ready, approach, wrap/contact, falling and release in two players.",
+      "safety": "VISUAL SOFTWARE QA ONLY — not a practical session plan. Freeze and inspect the animation. For any real contact training, follow the current RFU age-grade rules and use appropriately qualified supervision; never infer safe tackle technique from a sprite.",
+      "frames": [
+        {
+          "name": "1 · D1 defensive ready",
+          "seconds": 1.5,
+          "notes": "D1 low with shoulders set; A1 holds rugby ball.",
+          "objects": [
+            {
+              "id": "qa03_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 480,
+              "y": 370,
+              "rot": 0
+            },
+            {
+              "id": "qa03_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 480,
+              "y": 190,
+              "rot": 180,
+              "playerPose": "ready",
+              "posePinned": true
+            },
+            {
+              "id": "qa03_ball",
+              "type": "ball",
+              "label": "",
+              "x": 496.83,
+              "y": 361.612,
+              "rot": 0,
+              "ownerId": "qa03_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2 · D1 approaches",
+          "seconds": 1.6,
+          "notes": "Both advance slowly; D1 must lean into the correct tackle stance.",
+          "objects": [
+            {
+              "id": "qa03_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 480,
+              "y": 322,
+              "rot": 0
+            },
+            {
+              "id": "qa03_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 480,
+              "y": 252,
+              "rot": 180,
+              "playerPose": "tackling",
+              "posePinned": true
+            },
+            {
+              "id": "qa03_ball",
+              "type": "ball",
+              "label": "",
+              "x": 496.83,
+              "y": 313.612,
+              "rot": 0,
+              "ownerId": "qa03_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3 · Tackle / wrap at impact",
+          "seconds": 2.2,
+          "notes": "Check arms in contact and target-facing head; never depict dangerous technique as instructional.",
+          "objects": [
+            {
+              "id": "qa03_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 480,
+              "y": 298,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa03_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 467,
+              "y": 275,
+              "rot": 180,
+              "playerPose": "tackling",
+              "posePinned": true
+            },
+            {
+              "id": "qa03_ball",
+              "type": "ball",
+              "label": "",
+              "x": 496.83,
+              "y": 289.61199999999997,
+              "rot": 0,
+              "ownerId": "qa03_A1"
+            },
+            {
+              "id": "qa03_tackle",
+              "type": "tackle",
+              "label": "Tackle",
+              "x": 475,
+              "y": 285,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "qa03_A1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "qa03_D1",
+                  "pose": "tackling"
+                }
+              ],
+              "breakdown": {
+                "phase": "tackle",
+                "carrierId": "qa03_A1",
+                "tacklerId": "qa03_D1",
+                "ballId": "qa03_ball",
+                "tacklerIds": [
+                  "qa03_D1"
+                ]
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4 · D1 releases",
+          "seconds": 2,
+          "notes": "D1 releases and moves away; A1 remains flat on the ground.",
+          "objects": [
+            {
+              "id": "qa03_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 480,
+              "y": 298,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa03_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 545,
+              "y": 254,
+              "rot": 180,
+              "playerPose": "recovering",
+              "posePinned": true
+            },
+            {
+              "id": "qa03_ball",
+              "type": "ball",
+              "label": "",
+              "x": 496.83,
+              "y": 289.61199999999997,
+              "rot": 0,
+              "ownerId": "qa03_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "5 · Freeze grounded",
+          "seconds": 2,
+          "notes": "Check no tackle stance remains on a player who has already regained their feet.",
+          "objects": [
+            {
+              "id": "qa03_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 480,
+              "y": 298,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa03_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 545,
+              "y": 254,
+              "rot": 180,
+              "playerPose": "standing",
+              "posePinned": true
+            },
+            {
+              "id": "qa03_ball",
+              "type": "ball",
+              "label": "",
+              "x": 496.83,
+              "y": 289.61199999999997,
+              "rot": 0,
+              "ownerId": "qa03_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 3,
+      "players": "A1, D1",
+      "equipment": "Digital rugby objects only; no physical equipment required for this visual QA.",
+      "instructions": "1. Open the drill in Classic view. 2. Play and scrub each named step. 3. Toggle Minion Mode without modifying steps. 4. Confirm positions, timing, possession, poses and contact meaning stay the same.",
+      "coaching": "Visual verification only. No alternative rugby behaviour is permitted in Minion Mode.",
+      "regression": "Test one isolated step at a time with playback paused, then compare with Classic at the identical timestamp.",
+      "progression": "Play the complete sequence and export a Minion Mode video; verify the same pose at each timestamp and the same movement on the pitch.",
+      "questions": "Can a viewer identify the action without reading the label? Is the Minion correctly oriented? Is ball/contact/equipment independent? Does it animate without sudden teleporting?",
+      "notes": "Classic view is the reference. Use the same drill at the same step/time and then switch to Minion Mode. This is software QA, not training advice.",
+      "links": [],
+      "provenance": "Classic Rugby Studio drill model: existing player, equipment, contact, timing and ball controls. QA fixture; not a coaching drill.",
+      "review": "Classic-first software regression fixture — inspect the Classic presentation before comparing the Minion translation. Not a practical contact coaching lesson.",
+      "savedFromCoachDrill": "qa-classic-003",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T22:28:00Z",
+      "revision": 1,
+      "publishedAt": "2026-11-18T22:28:00Z",
+      "publishedRevision": 1,
+      "publishedSourceSavedAt": "2026-11-18T22:28:00Z"
+    },
+    {
+      "version": 1,
+      "id": "seed-904",
+      "title": "Test 04 · Ruck arrival, binding and contest",
+      "age": "U10",
+      "category": "Test drills",
+      "length": 10,
+      "width": 8,
+      "ageMin": 10,
+      "ageMax": 10,
+      "objective": "Compare a flat grounded carrier with the supporting ruck bind and distinct clear-out stance.",
+      "safety": "VISUAL SOFTWARE QA ONLY — not a practical session plan. Freeze and inspect the animation. For any real contact training, follow the current RFU age-grade rules and use appropriately qualified supervision; never infer safe tackle technique from a sprite.",
+      "frames": [
+        {
+          "name": "1 · Ball presented by grounded player",
+          "seconds": 1.8,
+          "notes": "A1 must stay flat and ball is independently placed behind the body.",
+          "objects": [
+            {
+              "id": "qa04_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 445,
+              "y": 290,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 400,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "qa04_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 530,
+              "y": 195,
+              "rot": 180
+            },
+            {
+              "id": "qa04_ball",
+              "type": "ball",
+              "label": "",
+              "x": 445,
+              "y": 310,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2 · A2 arrives on feet",
+          "seconds": 1.5,
+          "notes": "A2 approaches, D1 stays upright.",
+          "objects": [
+            {
+              "id": "qa04_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 445,
+              "y": 290,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 423,
+              "y": 322,
+              "rot": 0
+            },
+            {
+              "id": "qa04_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 526,
+              "y": 245,
+              "rot": 180
+            },
+            {
+              "id": "qa04_ball",
+              "type": "ball",
+              "label": "",
+              "x": 445,
+              "y": 310,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3 · Ruck bind",
+          "seconds": 2,
+          "notes": "Supporting player adopts bound, not defensive-ready stance.",
+          "objects": [
+            {
+              "id": "qa04_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 445,
+              "y": 290,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 451,
+              "y": 303,
+              "rot": 0,
+              "playerPose": "bound",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 484,
+              "y": 285,
+              "rot": 180,
+              "playerPose": "bound",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_ball",
+              "type": "ball",
+              "label": "",
+              "x": 445,
+              "y": 310,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "qa04_ruck",
+              "type": "ruck",
+              "label": "Ruck",
+              "x": 455,
+              "y": 293,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "qa04_A1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "qa04_A2",
+                  "pose": "bound"
+                },
+                {
+                  "id": "qa04_D1",
+                  "pose": "bound"
+                }
+              ],
+              "breakdown": {
+                "phase": "ruck"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4 · Ruck contest",
+          "seconds": 2,
+          "notes": "Distinct driving/ruck contest pose; ball and grounded player remain legible.",
+          "objects": [
+            {
+              "id": "qa04_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 445,
+              "y": 290,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 451,
+              "y": 303,
+              "rot": 0,
+              "playerPose": "bound",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 484,
+              "y": 285,
+              "rot": 180,
+              "playerPose": "bound",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_ball",
+              "type": "ball",
+              "label": "",
+              "x": 445,
+              "y": 310,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "qa04_ruck",
+              "type": "ruck",
+              "label": "Ruck",
+              "x": 455,
+              "y": 293,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "qa04_A1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "qa04_A2",
+                  "pose": "bound"
+                },
+                {
+                  "id": "qa04_D1",
+                  "pose": "bound"
+                }
+              ]
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "5 · Hold ruck contest positions",
+          "seconds": 2,
+          "notes": "Freeze frame for side-by-side comparison with ruck bind.",
+          "objects": [
+            {
+              "id": "qa04_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 445,
+              "y": 290,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 451,
+              "y": 303,
+              "rot": 0,
+              "playerPose": "bound",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 484,
+              "y": 285,
+              "rot": 180,
+              "playerPose": "bound",
+              "posePinned": true
+            },
+            {
+              "id": "qa04_ball",
+              "type": "ball",
+              "label": "",
+              "x": 445,
+              "y": 310,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "qa04_ruck",
+              "type": "ruck",
+              "label": "Ruck",
+              "x": 455,
+              "y": 293,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "qa04_A1",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "qa04_A2",
+                  "pose": "bound"
+                },
+                {
+                  "id": "qa04_D1",
+                  "pose": "bound"
+                }
+              ]
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 3,
+      "players": "A1, A2, D1",
+      "equipment": "Digital rugby objects only; no physical equipment required for this visual QA.",
+      "instructions": "1. Open the drill in Classic view. 2. Play and scrub each named step. 3. Toggle Minion Mode without modifying steps. 4. Confirm positions, timing, possession, poses and contact meaning stay the same.",
+      "coaching": "Visual verification only. No alternative rugby behaviour is permitted in Minion Mode.",
+      "regression": "Test one isolated step at a time with playback paused, then compare with Classic at the identical timestamp.",
+      "progression": "Play the complete sequence and export a Minion Mode video; verify the same pose at each timestamp and the same movement on the pitch.",
+      "questions": "Can a viewer identify the action without reading the label? Is the Minion correctly oriented? Is ball/contact/equipment independent? Does it animate without sudden teleporting?",
+      "notes": "Classic view is the reference. Use the same drill at the same step/time and then switch to Minion Mode. This is software QA, not training advice.",
+      "links": [],
+      "provenance": "Classic Rugby Studio drill model: existing player, equipment, contact, timing and ball controls. QA fixture; not a coaching drill.",
+      "review": "Classic-first software regression fixture — inspect the Classic presentation before comparing the Minion translation. Not a practical contact coaching lesson.",
+      "savedFromCoachDrill": "qa-classic-004",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T22:28:00Z",
+      "revision": 1,
+      "publishedAt": "2026-11-18T22:28:00Z",
+      "publishedRevision": 1,
+      "publishedSourceSavedAt": "2026-11-18T22:28:00Z"
+    },
     {
       "version": 1,
       "id": "seed-905",
@@ -2145,6 +3271,449 @@
     },
     {
       "version": 1,
+      "id": "seed-916",
+      "title": "Test 16 · Ball carrying, handover and presentation",
+      "age": "U10",
+      "category": "Test drills",
+      "length": 10,
+      "width": 8,
+      "ageMin": 10,
+      "ageMax": 10,
+      "objective": "Test ball visuals independently of player sprites: carry side, transfer, drop and presentation.",
+      "safety": "VISUAL SOFTWARE QA ONLY — not a practical session plan. Freeze and inspect the animation. For any real contact training, follow the current RFU age-grade rules and use appropriately qualified supervision; never infer safe tackle technique from a sprite.",
+      "frames": [
+        {
+          "name": "1 · Carry on right",
+          "seconds": 1.5,
+          "notes": "Ball appears by correct hand.",
+          "objects": [
+            {
+              "id": "qa16_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 390,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "qa16_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 560,
+              "y": 405,
+              "rot": 0
+            },
+            {
+              "id": "qa16_ball",
+              "type": "ball",
+              "label": "",
+              "x": 406.83,
+              "y": 331.612,
+              "rot": 0,
+              "ownerId": "qa16_A1",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2 · Carry on left",
+          "seconds": 1.8,
+          "notes": "Ball changes to the other hand without changing player artwork.",
+          "objects": [
+            {
+              "id": "qa16_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 390,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "qa16_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 560,
+              "y": 405,
+              "rot": 0
+            },
+            {
+              "id": "qa16_ball",
+              "type": "ball",
+              "label": "",
+              "x": 373.16999999999996,
+              "y": 331.612,
+              "rot": 0,
+              "ownerId": "qa16_A1",
+              "carrySide": "left"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3 · Handover to A2",
+          "seconds": 1.6,
+          "notes": "No throwing animation for an instant handover; player ownership changes.",
+          "objects": [
+            {
+              "id": "qa16_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 390,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "qa16_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 560,
+              "y": 405,
+              "rot": 0
+            },
+            {
+              "id": "qa16_ball",
+              "type": "ball",
+              "label": "",
+              "x": 543.17,
+              "y": 396.6119999999999,
+              "rot": 0,
+              "ownerId": "qa16_A2",
+              "carrySide": "left",
+              "transferKind": "handover"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4 · A2 sets ball down",
+          "seconds": 1.7,
+          "notes": "Ball becomes independently positioned on turf.",
+          "objects": [
+            {
+              "id": "qa16_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 390,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "qa16_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 560,
+              "y": 405,
+              "rot": 0
+            },
+            {
+              "id": "qa16_ball",
+              "type": "ball",
+              "label": "",
+              "x": 560,
+              "y": 390,
+              "rot": 0,
+              "carrySide": "left",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "5 · Grounded ball available",
+          "seconds": 1.9,
+          "notes": "Ball remains stationary and separate.",
+          "objects": [
+            {
+              "id": "qa16_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 390,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "qa16_A2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 560,
+              "y": 405,
+              "rot": 0
+            },
+            {
+              "id": "qa16_ball",
+              "type": "ball",
+              "label": "",
+              "x": 560,
+              "y": 390,
+              "rot": 0,
+              "carrySide": "left"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 3,
+      "players": "A1, A2",
+      "equipment": "Digital rugby objects only; no physical equipment required for this visual QA.",
+      "instructions": "1. Open the drill in Classic view. 2. Play and scrub each named step. 3. Toggle Minion Mode without modifying steps. 4. Confirm positions, timing, possession, poses and contact meaning stay the same.",
+      "coaching": "Visual verification only. No alternative rugby behaviour is permitted in Minion Mode.",
+      "regression": "Test one isolated step at a time with playback paused, then compare with Classic at the identical timestamp.",
+      "progression": "Play the complete sequence and export a Minion Mode video; verify the same pose at each timestamp and the same movement on the pitch.",
+      "questions": "Can a viewer identify the action without reading the label? Is the Minion correctly oriented? Is ball/contact/equipment independent? Does it animate without sudden teleporting?",
+      "notes": "Classic view is the reference. Use the same drill at the same step/time and then switch to Minion Mode. This is software QA, not training advice.",
+      "links": [],
+      "provenance": "Classic Rugby Studio drill model: existing player, equipment, contact, timing and ball controls. QA fixture; not a coaching drill.",
+      "review": "Classic-first software regression fixture — inspect the Classic presentation before comparing the Minion translation. Not a practical contact coaching lesson.",
+      "savedFromCoachDrill": "qa-classic-016",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T22:28:00Z",
+      "revision": 1,
+      "publishedAt": "2026-11-18T22:28:00Z",
+      "publishedRevision": 1,
+      "publishedSourceSavedAt": "2026-11-18T22:28:00Z"
+    },
+    {
+      "version": 1,
+      "id": "seed-917",
+      "title": "Test 17 · Fixate the tackle target",
+      "age": "U10",
+      "category": "Test drills",
+      "length": 10,
+      "width": 8,
+      "ageMin": 10,
+      "ageMax": 10,
+      "objective": "Verify defender gaze tracks the ball carrier before contact, without turning the whole torso the wrong way.",
+      "safety": "VISUAL SOFTWARE QA ONLY — not a practical session plan. Freeze and inspect the animation. For any real contact training, follow the current RFU age-grade rules and use appropriately qualified supervision; never infer safe tackle technique from a sprite.",
+      "frames": [
+        {
+          "name": "1 · Defender looks ahead",
+          "seconds": 1.5,
+          "notes": "Neutral defensive stance at a safe distance.",
+          "objects": [
+            {
+              "id": "qa17_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 360,
+              "y": 170,
+              "rot": 180,
+              "playerPose": "ready",
+              "posePinned": true
+            },
+            {
+              "id": "qa17_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 370,
+              "rot": 0
+            },
+            {
+              "id": "qa17_ball",
+              "type": "ball",
+              "label": "",
+              "x": 446.83,
+              "y": 361.612,
+              "rot": 0,
+              "ownerId": "qa17_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2 · Defender fixes on A1",
+          "seconds": 1.6,
+          "notes": "D1's head/goggle turns to follow A1.",
+          "objects": [
+            {
+              "id": "qa17_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 360,
+              "y": 170,
+              "rot": 180,
+              "playerPose": "ready",
+              "posePinned": true,
+              "headMode": "player",
+              "headTargetId": "qa17_A1"
+            },
+            {
+              "id": "qa17_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 430,
+              "y": 370,
+              "rot": 0
+            },
+            {
+              "id": "qa17_ball",
+              "type": "ball",
+              "label": "",
+              "x": 446.83,
+              "y": 361.612,
+              "rot": 0,
+              "ownerId": "qa17_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3 · Carrier moves across",
+          "seconds": 2,
+          "notes": "A1 side-steps; D1 tracks with eyes/head.",
+          "objects": [
+            {
+              "id": "qa17_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 360,
+              "y": 170,
+              "rot": 180,
+              "playerPose": "ready",
+              "posePinned": true,
+              "headMode": "player",
+              "headTargetId": "qa17_A1"
+            },
+            {
+              "id": "qa17_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 560,
+              "y": 320,
+              "rot": 0
+            },
+            {
+              "id": "qa17_ball",
+              "type": "ball",
+              "label": "",
+              "x": 576.83,
+              "y": 311.61199999999997,
+              "rot": 0,
+              "ownerId": "qa17_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4 · Defender approaches",
+          "seconds": 2,
+          "notes": "D1 starts moving, remains focused on A1.",
+          "objects": [
+            {
+              "id": "qa17_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 515,
+              "y": 250,
+              "rot": 180,
+              "playerPose": "tackling",
+              "posePinned": true,
+              "headMode": "player",
+              "headTargetId": "qa17_A1"
+            },
+            {
+              "id": "qa17_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 560,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "qa17_ball",
+              "type": "ball",
+              "label": "",
+              "x": 576.83,
+              "y": 281.61199999999997,
+              "rot": 0,
+              "ownerId": "qa17_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "5 · Freeze target fixation",
+          "seconds": 2,
+          "notes": "Review angle at small size, compared with Classic gaze arrow.",
+          "objects": [
+            {
+              "id": "qa17_D1",
+              "type": "defender",
+              "label": "D1",
+              "x": 515,
+              "y": 250,
+              "rot": 180,
+              "playerPose": "tackling",
+              "posePinned": true,
+              "headMode": "player",
+              "headTargetId": "qa17_A1"
+            },
+            {
+              "id": "qa17_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 560,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "qa17_ball",
+              "type": "ball",
+              "label": "",
+              "x": 576.83,
+              "y": 281.61199999999997,
+              "rot": 0,
+              "ownerId": "qa17_A1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 3,
+      "players": "D1, A1",
+      "equipment": "Digital rugby objects only; no physical equipment required for this visual QA.",
+      "instructions": "1. Open the drill in Classic view. 2. Play and scrub each named step. 3. Toggle Minion Mode without modifying steps. 4. Confirm positions, timing, possession, poses and contact meaning stay the same.",
+      "coaching": "Visual verification only. No alternative rugby behaviour is permitted in Minion Mode.",
+      "regression": "Test one isolated step at a time with playback paused, then compare with Classic at the identical timestamp.",
+      "progression": "Play the complete sequence and export a Minion Mode video; verify the same pose at each timestamp and the same movement on the pitch.",
+      "questions": "Can a viewer identify the action without reading the label? Is the Minion correctly oriented? Is ball/contact/equipment independent? Does it animate without sudden teleporting?",
+      "notes": "Classic view is the reference. Use the same drill at the same step/time and then switch to Minion Mode. This is software QA, not training advice.",
+      "links": [],
+      "provenance": "Classic Rugby Studio drill model: existing player, equipment, contact, timing and ball controls. QA fixture; not a coaching drill.",
+      "review": "Classic-first software regression fixture — inspect the Classic presentation before comparing the Minion translation. Not a practical contact coaching lesson.",
+      "savedFromCoachDrill": "qa-classic-017",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T22:28:00Z",
+      "revision": 1,
+      "publishedAt": "2026-11-18T22:28:00Z",
+      "publishedRevision": 1,
+      "publishedSourceSavedAt": "2026-11-18T22:28:00Z"
+    },
+    {
+      "version": 1,
       "id": "seed-918",
       "title": "Test 18 · Decision video · carry or pass",
       "age": "U10",
@@ -2424,6 +3993,156 @@
           }
         ]
       }
+    },
+    {
+      "version": 1,
+      "id": "seed-919",
+      "title": "Test 19 · Tackle donut and ground contact",
+      "age": "U10",
+      "category": "Test drills",
+      "length": 10,
+      "width": 8,
+      "ageMin": 10,
+      "ageMax": 10,
+      "objective": "Check the tackling stance against stationary equipment and recovery without using a second player.",
+      "safety": "VISUAL SOFTWARE QA ONLY — not a practical session plan. Freeze and inspect the animation. For any real contact training, follow the current RFU age-grade rules and use appropriately qualified supervision; never infer safe tackle technique from a sprite.",
+      "frames": [
+        {
+          "name": "1 · Donut set upright",
+          "seconds": 1.8,
+          "notes": "Tackler upright, equipment clearly distinct from player.",
+          "objects": [
+            {
+              "id": "qa19_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 370,
+              "y": 375,
+              "rot": 0
+            },
+            {
+              "id": "qa19_donut",
+              "type": "donut",
+              "label": "Tackle donut",
+              "x": 470,
+              "y": 275,
+              "rot": 0,
+              "donutState": "upright"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2 · Approach in tackle stance",
+          "seconds": 1.6,
+          "notes": "Player approaches, arms in tackling stance, not the defensive-ready pose.",
+          "objects": [
+            {
+              "id": "qa19_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433,
+              "y": 319,
+              "rot": 0,
+              "playerPose": "tackling",
+              "posePinned": true
+            },
+            {
+              "id": "qa19_donut",
+              "type": "donut",
+              "label": "Tackle donut",
+              "x": 470,
+              "y": 275,
+              "rot": 0,
+              "donutState": "upright"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3 · Pad goes down",
+          "seconds": 2,
+          "notes": "Donut is down while the tackler is in contact; no generated ball.",
+          "objects": [
+            {
+              "id": "qa19_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 467,
+              "y": 282,
+              "rot": 0,
+              "playerPose": "tackling",
+              "posePinned": true
+            },
+            {
+              "id": "qa19_donut",
+              "type": "donut",
+              "label": "Tackle donut",
+              "x": 470,
+              "y": 275,
+              "rot": 0,
+              "donutState": "down"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4 · Player recovers",
+          "seconds": 2,
+          "notes": "Recovery distinct from tackling contact.",
+          "objects": [
+            {
+              "id": "qa19_A1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 520,
+              "y": 290,
+              "rot": 0,
+              "playerPose": "recovering",
+              "posePinned": true
+            },
+            {
+              "id": "qa19_donut",
+              "type": "donut",
+              "label": "Tackle donut",
+              "x": 470,
+              "y": 275,
+              "rot": 0,
+              "donutState": "down"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 3,
+      "players": "A1",
+      "equipment": "Digital rugby objects only; no physical equipment required for this visual QA.",
+      "instructions": "1. Open the drill in Classic view. 2. Play and scrub each named step. 3. Toggle Minion Mode without modifying steps. 4. Confirm positions, timing, possession, poses and contact meaning stay the same.",
+      "coaching": "Visual verification only. No alternative rugby behaviour is permitted in Minion Mode.",
+      "regression": "Test one isolated step at a time with playback paused, then compare with Classic at the identical timestamp.",
+      "progression": "Play the complete sequence and export a Minion Mode video; verify the same pose at each timestamp and the same movement on the pitch.",
+      "questions": "Can a viewer identify the action without reading the label? Is the Minion correctly oriented? Is ball/contact/equipment independent? Does it animate without sudden teleporting?",
+      "notes": "Classic view is the reference. Use the same drill at the same step/time and then switch to Minion Mode. This is software QA, not training advice.",
+      "links": [],
+      "provenance": "Classic Rugby Studio drill model: existing player, equipment, contact, timing and ball controls. QA fixture; not a coaching drill.",
+      "review": "Classic-first software regression fixture — inspect the Classic presentation before comparing the Minion translation. Not a practical contact coaching lesson.",
+      "savedFromCoachDrill": "qa-classic-019",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-18T22:28:00Z",
+      "revision": 1,
+      "publishedAt": "2026-11-18T22:28:00Z",
+      "publishedRevision": 1,
+      "publishedSourceSavedAt": "2026-11-18T22:28:00Z"
     },
     {
       "version": 1,
