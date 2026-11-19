@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ruckusIncomingPassBearing,ruckusCatchPoseTransform,playerAppearance,cartoonPoseIndex} from '../js/cartoon-players.js';
+import {ruckusIncomingPassBearing,ruckusOutgoingPassBearing,ruckusActionSpriteTransform,playerAppearance,cartoonPoseIndex} from '../js/cartoon-players.js';
 import {classicPlayerAppearance} from '../js/classic-player-appearance.js';
 
 const g={toView:(x,y)=>({x,y}),rotation:0,viewWidth:900,viewHeight:540};
@@ -16,64 +16,75 @@ function passFrom(x,y,{rot=0,fieldRotation=0,route=null,transferKind=undefined}=
 }
 const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<.01,actual+' should be '+expected);
 
-test('the receiving mascot looks towards a ball arriving from either side',()=>{
- const left=passFrom(100,120),right=passFrom(300,120);
- near(ruckusIncomingPassBearing(left.receiving,left.before,left.after,g),-90);
- near(ruckusIncomingPassBearing(right.receiving,right.before,right.after,g),90);
- for(const [arrangement,expectedSide,expectedAngle,expectedMirror] of [
-  [left,'-90.0','180.0','-1'],[right,'90.0','180.0','1']
- ]){
-  const {receiving,before,after}=arrangement;
+// The atlas action poses visibly face north-east (45°) before transforms.
+// Verify the actual SVG reflection+rotation matrix, not only data attributes.
+function renderedFacing(t){
+ const rad=Math.PI/180,original=45*rad,theta=t.angle*rad;
+ const x=Math.sin(original)*t.mirrorX,y=-Math.cos(original)*t.mirrorY;
+ const dx=x*Math.cos(theta)-y*Math.sin(theta),dy=x*Math.sin(theta)+y*Math.cos(theta);
+ return ((Math.atan2(dx,-dy)/rad+180)%360+360)%360-180;
+}
+function equalAngle(actual,expected){
+ const error=((actual-expected+540)%360)-180;
+ assert.ok(Math.abs(error)<.01,'visible character faces '+actual+'°, expected '+expected+'°');
+}
+test('the original sprite plus mirrors on X, Y, and both axes cover every direction',()=>{
+ const checks=[
+  [45,-1,-1],[135,-1,1],[-45,1,-1],[-135,1,1],
+  [0,-1,-1],[90,-1,1],[180,1,1],[-90,1,-1]
+ ];
+ for(const [target,x,y] of checks){
+  const transform=ruckusActionSpriteTransform(target);
+  assert.equal(transform.mirrorX,x,'horizontal mirror at '+target);
+  assert.equal(transform.mirrorY,y,'vertical mirror at '+target);
+  equalAngle(renderedFacing(transform),target);
+ }
+ for(let target=-180;target<=180;target+=5)
+  equalAngle(renderedFacing(ruckusActionSpriteTransform(target)),target);
+});
+test('receiver faces the incoming pass from either side without reversing backwards',()=>{
+ for(const [from,side] of [[100,-90],[300,90]]){
+  const {receiving,before,after}=passFrom(from,120);
+  near(ruckusIncomingPassBearing(receiving,before,after,g),side);
   assert.equal(cartoonPoseIndex(receiving,'standing',after.objects,before,after,.5),10);
-  const image=playerAppearance(receiving,'standing',artwork,after.objects,g,before,after,.5,{cartoonMode:true});
-  assert.match(image,/data-ruckus-pose="4[67]"/);
-  assert.ok(image.includes('data-ruckus-catch="'+expectedSide+'"'),image);
-  assert.ok(image.includes('data-ruckus-mirror="'+expectedMirror+'"'),image);
-  assert.ok(image.includes('rotate('+expectedAngle+' 64 64)'),image);
+  const svg=playerAppearance(receiving,'standing',artwork,after.objects,g,before,after,.5,{cartoonMode:true});
+  assert.match(svg,/data-ruckus-pose="4[67]"/);
+  assert.ok(svg.includes('data-ruckus-catch="'+side.toFixed(1)+'"'));
+  const t=ruckusActionSpriteTransform(side);
+  assert.ok(svg.includes('rotate('+t.angle.toFixed(1)+' 64 64)'));
+  assert.ok(svg.includes('scale('+t.mirrorX+' '+t.mirrorY+')'));
+  equalAngle(renderedFacing(t),side);
  }
 });
-
-test('diagonal, north/south and turning catches face the incoming ball, not the old body rotation',()=>{
- near(ruckusIncomingPassBearing(player,passFrom(200,20).before,passFrom(200,20).after,g),0);
- near(ruckusIncomingPassBearing(player,passFrom(200,220).before,passFrom(200,220).after,g),-180);
- near(ruckusIncomingPassBearing(player,passFrom(100,20).before,passFrom(100,20).after,g),-45);
- const rotated=passFrom(100,120,{rot:90,fieldRotation:90});
- near(ruckusIncomingPassBearing(rotated.receiving,rotated.before,rotated.after,rotated.geometry),90);
- const mirrored=playerAppearance(rotated.receiving,'standing',artwork,rotated.after.objects,rotated.geometry,
-  rotated.before,rotated.after,.5,{cartoonMode:true});
- assert.ok(mirrored.includes('data-ruckus-catch="90.0"'));
- // The base 180° orientation must never be thrown away, even with field rotation.
- assert.ok(mirrored.includes('rotate(180.0 64 64)'));
+test('sender faces the receiver during ordinary editor passes without a transferKind',()=>{
+ for(const from of [100,300]){
+  const {receiving,before,after}=passFrom(from,120);
+  const passer={...before.objects[1],type:'attacker'};
+  before.objects[1]=passer;after.objects[1]=passer;
+  const heading=from===100?90:-90;
+  near(ruckusOutgoingPassBearing(passer,before,after,g),heading);
+  assert.ok([8,9].includes(cartoonPoseIndex(passer,'standing',after.objects,before,after,.5)),
+   'Standard editor transfer must select pass action instead of idle');
+  const svg=playerAppearance(passer,'standing',artwork,after.objects,g,before,after,.5,{cartoonMode:true});
+  assert.ok(svg.includes('data-ruckus-pass="'+heading.toFixed(1)+'"'));
+  assert.match(svg,/data-ruckus-pose="4[345]"/);
+  const t=ruckusActionSpriteTransform(heading);
+  assert.ok(svg.includes('scale('+t.mirrorX+' '+t.mirrorY+')'));
+  equalAngle(renderedFacing(t),heading);
+ }
 });
-
-test('catch direction follows the final tangent of a curved pass',()=>{
+test('diagonal and curved passes retain local directions even when field and body are rotated',()=>{
+ for(const [fromX,fromY,expected] of [[100,20,-45],[100,220,-135],[300,20,45],[300,220,135]]){
+  const {receiving,before,after}=passFrom(fromX,fromY);
+  near(ruckusIncomingPassBearing(receiving,before,after,g),expected);
+  equalAngle(renderedFacing(ruckusActionSpriteTransform(expected)),expected);
+ }
  const curved=passFrom(100,120,{route:{mode:'corners',points:[{x:200,y:70}]}});
  near(ruckusIncomingPassBearing(curved.receiving,curved.before,curved.after,g),0);
- const face=playerAppearance(curved.receiving,'standing',artwork,curved.after.objects,g,
-  curved.before,curved.after,.5,{cartoonMode:true});
- assert.ok(face.includes('data-ruckus-catch="0.0"'));
+ const rotated=passFrom(100,120,{rot:90,fieldRotation:90});
+ near(ruckusIncomingPassBearing(rotated.receiving,rotated.before,rotated.after,rotated.geometry),90);
+ equalAngle(renderedFacing(ruckusActionSpriteTransform(90)),90);
 });
-
-
-test('right-side reception is pixel-transform identical to the previously working v0.20.36 pose',()=>{
- const right=passFrom(300,120),out=playerAppearance(right.receiving,'standing',artwork,right.after.objects,g,
-  right.before,right.after,.5,{cartoonMode:true});
- assert.ok(out.includes('rotate(180.0 64 64) translate(0.0 0) scale(1 1)'),
-  'Do not rotate or mirror the already-correct right-side catch from v0.20.36');
- const left=passFrom(100,120),flipped=playerAppearance(left.receiving,'standing',artwork,left.after.objects,g,
-  left.before,left.after,.5,{cartoonMode:true});
- assert.ok(flipped.includes('rotate(180.0 64 64) translate(128.0 0) scale(-1 1)'),
-  'Left-side catch should ONLY mirror the same source receive frame');
-});
-
-test('receive transform is calibrated around the original v0.20.36 right-facing artwork',()=>{
- assert.deepEqual(ruckusCatchPoseTransform(90),{mirror:1,angle:180});
- assert.deepEqual(ruckusCatchPoseTransform(-90),{mirror:-1,angle:180});
- assert.deepEqual(ruckusCatchPoseTransform(45),{mirror:1,angle:135});
- assert.deepEqual(ruckusCatchPoseTransform(-45),{mirror:-1,angle:225});
- assert.deepEqual(ruckusCatchPoseTransform(90+30,30),{mirror:1,angle:210});
-});
-
 test('pickup, rip, turnover and ordinary possession never impose a catch animation direction',()=>{
  for(const kind of ['pickup','rip','turnover','handover','presentation','drop']){
   const event=passFrom(100,120,{transferKind:kind});
