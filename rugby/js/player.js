@@ -1,6 +1,6 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.18.4';
 import {stepEndSeconds,stepStartSeconds} from './step-timeline.js?v=1';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.22';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.24';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
 import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
@@ -16,9 +16,9 @@ const touches=new Map();
 $('playerMinionMode').onclick=()=>{
  opts.cartoonMode=!opts.cartoonMode;
  const b=$('playerMinionMode');
- b.textContent=opts.cartoonMode?'◉ Classic view':'◉ Minion Mode';
+ b.textContent=opts.cartoonMode?'◉ Classic view':'◉ Harburling Ruckus';
  b.setAttribute('aria-pressed',String(!!opts.cartoonMode));
- b.title=opts.cartoonMode?'Return to classic coaching view':'See playful goggle-eyed cartoon players';
+ b.title=opts.cartoonMode?'Return to classic coaching view':'Show the red rugby mascot animation skin';
  render();
 };
 
@@ -136,7 +136,7 @@ $('branchDecisionCards').onclick=e=>{
 function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);if(d.pitchContext?.mode==='field'&&options?.framing===undefined)opts.framing='action';choiceResolved=false;$('branchDecisionPanel').hidden=true;
  const b=hasOutcomes(d)?branchInfo(d):null;
  $('playerMinionMode').setAttribute('aria-pressed',String(!!opts.cartoonMode));
- $('playerMinionMode').textContent=opts.cartoonMode?'◉ Classic view':'◉ Minion Mode';
+ $('playerMinionMode').textContent=opts.cartoonMode?'◉ Classic view':'◉ Harburling Ruckus';
  $('branchPlayer').hidden=!b;
  if(b){
   $('branchPrompt').textContent='◆ '+b.question;
