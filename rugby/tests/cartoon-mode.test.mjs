@@ -24,6 +24,11 @@ const alternate=playerAppearance(another,'standing',original,[another,defender],
 assert.equal(cartoon,alternate,'Same pose and team use the same sprite artwork');
 const defended=playerAppearance(defender,'standing',original,[player,defender],view,null,null,1,{cartoonMode:true});
 assert.notEqual(cartoon,defended,'Different teams use distinct atlas art');
+const tacklePose=playerAppearance({...defender,playerPose:'tackling'},'tackling',original,[defender],view,null,null,1,{cartoonMode:true});
+assert.match(tacklePose,/minion-tackle-arms/,'Tackling adds forward wrapping arms');
+assert.match(tacklePose,/data-tackle-phase="ready"/,'Standalone tackle is contact-ready');
+assert.doesNotMatch(cartoon,/minion-tackle-arms/,'Standing is not accidentally given tackle arms');
+assert.doesNotMatch(defended,/minion-tackle-arms/,'Defender idle pose stays unchanged');
 assert.equal(playerAppearance({id:'ball',type:'ball'},'standing',original,[],view,null,null,1,{cartoonMode:true}),original,'Non-player objects must not be restyled');
 assert.match(cartoonPitchDecor(view),/cartoon-pitch-decor/);
 const d=blank();d.frames[0].objects=[player,defender];
