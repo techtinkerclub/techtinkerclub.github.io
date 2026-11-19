@@ -10,13 +10,13 @@
       "category": "Attack",
       "length": 10,
       "width": 8,
-      "objective": "",
-      "safety": "",
+      "objective": "Recognise when the ball can be ripped from a player held upright, then pass it away quickly to support rather than carrying into the next defender.",
+      "safety": "Coach-led, low-force demonstration with matched players. No high tackles, wrestling at the neck or repeated prolonged upright grappling. The rip and subsequent pass are separate actions. Follow current RFU U10 laws and club coaching guidance.",
       "frames": [
         {
-          "name": "Set up",
+          "name": "Set up · upright carrier and supporting defenders",
           "seconds": 0,
-          "notes": "",
+          "notes": "A1 begins with the ball; D1 and D2 can close the space, while D3 waits as the outlet.",
           "objects": [
             {
               "id": "mwmap6wdhcxj99",
@@ -64,9 +64,9 @@
           "paths": {}
         },
         {
-          "name": "Step 2",
+          "name": "Close under control · no rip yet",
           "seconds": 2,
-          "notes": "",
+          "notes": "A1 carries into the controlled upright hold; keep feet balanced and heads away from contact.",
           "objects": [
             {
               "id": "mwmap6wdhcxj99",
@@ -114,9 +114,9 @@
           "paths": {}
         },
         {
-          "name": "Step 3",
+          "name": "Legal rip · D2 secures the ball",
           "seconds": 2,
-          "notes": "",
+          "notes": "D2 removes the ball while A1 is held upright. This is a rip transfer, not a pass through the body.",
           "objects": [
             {
               "id": "mwmap6wdhcxj99",
@@ -151,7 +151,9 @@
               "label": "D2",
               "x": 417.2903683035715,
               "y": 276.42670218331466,
-              "rot": 0
+              "rot": 0,
+              "headMode": "player",
+              "headTargetId": "mwmassn1bkio6r"
             },
             {
               "id": "mwmar0xmv1d694",
@@ -183,8 +185,8 @@
           ],
           "timing": {
             "mwmapo2sr5s3dv": {
-              "start": 89,
-              "end": 90
+              "start": 62,
+              "end": 78
             }
           },
           "paths": {
@@ -203,7 +205,7 @@
         {
           "name": "Pass to D3",
           "seconds": 2,
-          "notes": "",
+          "notes": "D2 must pass the ball promptly to D3 after the rip; reset and switch roles.",
           "objects": [
             {
               "id": "mwmap6wdhcxj99",
@@ -229,7 +231,8 @@
               "x": 614.1710016741072,
               "y": 318.17555311802454,
               "rot": 0,
-              "ownerId": "mwmassn1bkio6r"
+              "ownerId": "mwmassn1bkio6r",
+              "transferKind": "pass"
             },
             {
               "id": "mwmapuh8xn5q23",
@@ -265,8 +268,8 @@
           ],
           "timing": {
             "mwmapo2sr5s3dv": {
-              "start": 92,
-              "end": 100
+              "start": 26,
+              "end": 73
             }
           },
           "paths": {}
@@ -278,14 +281,14 @@
       "ageMin": 10,
       "ageMax": 10,
       "minutes": 8,
-      "players": "",
-      "equipment": "",
-      "instructions": "",
-      "coaching": "",
-      "regression": "",
-      "progression": "",
-      "questions": "",
-      "notes": "",
+      "players": "One attacking ball carrier (A1) against three defenders (D1–D3), with D2 as the potential ripper and D3 supporting the turnover.",
+      "equipment": "One size 4 rugby ball; a small clearly marked working channel and a safe run-off.",
+      "instructions": "A1 carries towards the approaching defenders. D1 holds A1 upright under controlled, age-appropriate supervision. D2 approaches with eyes up, removes the ball legally rather than pulling a player to ground, then passes promptly to D3. Reset positions after each attempt. Rehearse the read, rip and pass without opposition before adding controlled resistance.",
+      "coaching": "Watch D2's decision and hand position, then the immediate pass to D3. A stop in forward momentum is not an invitation for unsafe wrestling. Keep the head clear, footing stable, and release promptly.",
+      "regression": "Begin with stationary, unopposed ball transfer to D2 followed by an easy pass to D3. Introduce the held-upright cue slowly.",
+      "progression": "Vary whether D2 has a clear opportunity to take the ball, but do not increase contact intensity until technique is secure and supervised.",
+      "questions": "Who supported the defender first? After the rip, did D2 look and pass away? What changes if the ball cannot be safely ripped?",
+      "notes": "A coached demonstration, not an automatic physics or law simulation. U10 rules permit a ball rip in defined circumstances and require the ball to be passed away. This does not depict an uncontrolled maul or sanction.",
       "links": [],
       "provenance": "Coach-created / imported drill",
       "review": "Coach review required",
@@ -304,13 +307,13 @@
       "category": "Attack",
       "length": 10,
       "width": 5,
-      "objective": "",
-      "safety": "",
+      "objective": "Rehearse a non-contact tag, clear TAG call, immediate backward pass from the ball carrier and return of the correct strip to the correct hip.",
+      "safety": "Tag-only, no tackles, grabs or blocking. Both players need securely fitted tag belts. Stop the carrier after the tag and keep the return separate from the running lane. This is a conditioned training variant, not a claim that U10 match play uses tag rules.",
       "frames": [
         {
-          "name": "Set up",
+          "name": "Set up · check both tag belts",
           "seconds": 0,
-          "notes": "",
+          "notes": "A1 has the ball; all three wear tag belts and A2 is behind for support.",
           "objects": [
             {
               "id": "mwm9aw076rsq4c",
@@ -374,9 +377,9 @@
           "paths": {}
         },
         {
-          "name": "Step 2",
+          "name": "TAG! · D1 removes A1's left strip",
           "seconds": 2,
-          "notes": "",
+          "notes": "D1 removes the left red strip from A1 and calls TAG; A1 stops with the ball.",
           "objects": [
             {
               "id": "mwm9aw076rsq4c",
@@ -392,7 +395,9 @@
               },
               "tagColor": "red",
               "heldTags": 0,
-              "heldTagItems": []
+              "heldTagItems": [],
+              "headMode": "player",
+              "headTargetId": "mwm9e69z9y4p4a"
             },
             {
               "id": "mwm9awcnn4o2mr",
@@ -466,15 +471,16 @@
               "actorId": "mwm9awcnn4o2mr",
               "targetId": "mwm9aw076rsq4c",
               "side": "left",
-              "at": 0.9,
-              "label": "TAG!"
+              "at": 0.72,
+              "label": "TAG!",
+              "displaySeconds": 1.4
             }
           ]
         },
         {
-          "name": "Step 3",
+          "name": "A1 passes backwards to A2",
           "seconds": 1.5,
-          "notes": "",
+          "notes": "A1 looks to A2 and passes backwards; D1 still holds the removed strip.",
           "objects": [
             {
               "id": "mwm9aw076rsq4c",
@@ -521,7 +527,8 @@
               "x": 220.98106110491074,
               "y": 229.41323729596823,
               "rot": 0,
-              "ownerId": "mwm9e69z9y4p4a"
+              "ownerId": "mwm9e69z9y4p4a",
+              "transferKind": "pass"
             },
             {
               "id": "mwm9e69z9y4p4a",
@@ -542,8 +549,8 @@
           ],
           "timing": {
             "mwm9bcfjek8y5y": {
-              "start": 61,
-              "end": 100
+              "start": 26,
+              "end": 77
             },
             "mwm9aw076rsq4c": {
               "start": 0,
@@ -557,9 +564,9 @@
           "paths": {}
         },
         {
-          "name": "Step 4",
+          "name": "D1 returns A1's left strip",
           "seconds": 2,
-          "notes": "",
+          "notes": "D1 moves near A1 before returning the left red strip to the correct hip.",
           "objects": [
             {
               "id": "mwm9aw076rsq4c",
@@ -581,8 +588,8 @@
               "id": "mwm9awcnn4o2mr",
               "type": "defender",
               "label": "D1",
-              "x": 545.3312827845982,
-              "y": 315.4125747244699,
+              "x": 470,
+              "y": 273,
               "rot": 0,
               "tagBelt": true,
               "tags": {
@@ -627,15 +634,16 @@
               "actorId": "mwm9awcnn4o2mr",
               "targetId": "mwm9aw076rsq4c",
               "side": "left",
-              "at": 0.7,
-              "label": "Tag returned"
+              "at": 0.92,
+              "label": "Tag returned",
+              "displaySeconds": 1.35
             }
           ]
         },
         {
-          "name": "Step 5",
+          "name": "Reset · both tags in place",
           "seconds": 2,
-          "notes": "",
+          "notes": "Check both strips are reattached before rotating the roles.",
           "objects": [
             {
               "id": "mwm9aw076rsq4c",
@@ -657,8 +665,8 @@
               "id": "mwm9awcnn4o2mr",
               "type": "defender",
               "label": "D1",
-              "x": 545.3312827845982,
-              "y": 315.4125747244699,
+              "x": 470,
+              "y": 273,
               "rot": 0,
               "tagBelt": true,
               "tags": {
@@ -705,14 +713,14 @@
       "ageMin": 10,
       "ageMax": 10,
       "minutes": 8,
-      "players": "",
-      "equipment": "",
-      "instructions": "",
-      "coaching": "",
-      "regression": "",
-      "progression": "",
-      "questions": "",
-      "notes": "",
+      "players": "A1 ball carrier, D1 tagger and A2 supporting receiver.",
+      "equipment": "One rugby ball, tag belts with two strips per participating player, and clear cones marking a narrow lane.",
+      "instructions": "A1 approaches D1 while A2 supports behind. D1 removes the left strip and calls TAG. A1 stops and passes the ball backwards to A2. D1 carries the red strip and returns it to A1's left hip before the players reset and rotate. Keep the pass, return and reset as separate actions.",
+      "coaching": "Check that A2 stays behind the carrier, D1 raises the strip, A1 stops instead of playing through the tag, and the strip is returned to the same player and side. Do not confuse tag removal with two-hand touch.",
+      "regression": "Practise a standing tag and return without the ball, then a stationary pass before jogging.",
+      "progression": "Introduce a modest moving approach and a wider support line after the sequence is reliable, without adding contact.",
+      "questions": "Was the carrier holding the ball when tagged? Who called TAG? Was the pass backwards? Which hip needed the strip returned?",
+      "notes": "Non-contact tag-conditioning exercise for U10 training; not the U10 match tackle rule. Explicit tag and tag-return events control the strip state in Classic view.",
       "links": [],
       "provenance": "Coach-created / imported drill",
       "review": "Coach review required",
@@ -956,7 +964,9 @@
               "label": "Coach",
               "x": 205.0776470413472,
               "y": 339.995043573634,
-              "rot": 0
+              "rot": 0,
+              "headMode": "player",
+              "headTargetId": "mwl6w5ww333x3x"
             },
             {
               "id": "mwl6w5ww333x3x",
@@ -2828,7 +2838,9 @@
               "label": "A2",
               "x": 536.6999999999998,
               "y": 248.64166666666668,
-              "rot": 180
+              "rot": 180,
+              "headMode": "player",
+              "headTargetId": "mwko3afv8riv49"
             },
             {
               "id": "mwko3afv8riv49",
@@ -3033,7 +3045,9 @@
               "label": "A3",
               "x": 450,
               "y": 169.03333333333333,
-              "rot": 180
+              "rot": 180,
+              "headMode": "player",
+              "headTargetId": "mwktucsgx1wsbp"
             },
             {
               "id": "mwko3am2mh6y4m",
@@ -3058,7 +3072,8 @@
               "x": 436.53600000000006,
               "y": 174.62533333333334,
               "rot": 0,
-              "ownerId": "mwko3afv8riv49"
+              "ownerId": "mwko3afv8riv49",
+              "transferKind": "pass"
             },
             {
               "id": "mwko758271hcp3",
@@ -3100,32 +3115,6 @@
               "x": 490.79999999999995,
               "y": 363.2,
               "rot": 0
-            },
-            {
-              "id": "mwktjp1zu1hg7w",
-              "type": "ruck",
-              "label": "Attack secures · play away",
-              "x": 450.0000000000001,
-              "y": 266.1166666666667,
-              "rot": 0,
-              "breakdown": {
-                "phase": "secured",
-                "mode": "pad",
-                "padId": "mwko4krm39vpeq",
-                "arrivalSide": "attack",
-                "winner": "attack",
-                "clearanceCm": 50
-              },
-              "members": [
-                {
-                  "id": "mwko3a2ya6ju52",
-                  "pose": "standing"
-                },
-                {
-                  "id": "mwko06q2r10wwh",
-                  "pose": "standing"
-                }
-              ]
             },
             {
               "id": "mwktucsgx1wsbp",
@@ -3309,7 +3298,8 @@
               "x": 690.312,
               "y": 264.874,
               "rot": 0,
-              "ownerId": "mwktucsgx1wsbp"
+              "ownerId": "mwktucsgx1wsbp",
+              "transferKind": "pass"
             },
             {
               "id": "mwko758271hcp3",
@@ -3351,32 +3341,6 @@
               "x": 490.79999999999995,
               "y": 363.2,
               "rot": 0
-            },
-            {
-              "id": "mwktjp1zu1hg7w",
-              "type": "ruck",
-              "label": "Attack secures · play away",
-              "x": 450.0000000000001,
-              "y": 266.1166666666667,
-              "rot": 0,
-              "breakdown": {
-                "phase": "secured",
-                "mode": "pad",
-                "padId": "mwko4krm39vpeq",
-                "arrivalSide": "attack",
-                "winner": "attack",
-                "clearanceCm": 50
-              },
-              "members": [
-                {
-                  "id": "mwko3a2ya6ju52",
-                  "pose": "standing"
-                },
-                {
-                  "id": "mwko06q2r10wwh",
-                  "pose": "standing"
-                }
-              ]
             },
             {
               "id": "mwktucsgx1wsbp",
@@ -3541,32 +3505,6 @@
               "rot": 0
             },
             {
-              "id": "mwktjp1zu1hg7w",
-              "type": "ruck",
-              "label": "Attack secures · play away",
-              "x": 450.0000000000001,
-              "y": 266.1166666666667,
-              "rot": 0,
-              "breakdown": {
-                "phase": "secured",
-                "mode": "pad",
-                "padId": "mwko4krm39vpeq",
-                "arrivalSide": "attack",
-                "winner": "attack",
-                "clearanceCm": 50
-              },
-              "members": [
-                {
-                  "id": "mwko3a2ya6ju52",
-                  "pose": "standing"
-                },
-                {
-                  "id": "mwko06q2r10wwh",
-                  "pose": "standing"
-                }
-              ]
-            },
-            {
               "id": "mwktucsgx1wsbp",
               "type": "coach",
               "label": "Coach",
@@ -3608,7 +3546,7 @@
       "regression": "Begin without opposition: A1 walks to the bag, stops in a strong position and calls 'Here'. Then put D1 behind the shield with no pushing and rehearse just the approach and posture. Add the loose ball and let A2 pass it to A3 on the coach's call. Reduce the queue and rotate often if children are waiting. Repeat slowly until heads stay up and everyone knows which side to enter from.",
       "progression": "Move A1 a few metres farther away so they must react to a sudden 'tackle' call rather than start on a countdown. Increase D1's resistance a little only after technique is sound; keep the challenge about footwork and body shape, not collisions. Occasionally let the defending side win and ask D2 to play the separate ball while A2 reorganises—tell the players who won; do not assume the attackers always win. Finally try a small conditioned game starting from a safely coached tackle-and-presentation situation, with support arriving onside, legal age-grade ruck numbers and the next player using the ball quickly. Do not increase speed and force together.",
       "questions": "Who should react first when a team-mate is stopped?\nWhich side must you come from to join a real ruck?\nWhere should your eyes and head be when you meet the shield?\nIf A1 is protecting the ball, what is A2's job?\nHow do you know when the ball is available, and who can play it?\nWhat changes if D1 wins instead of A1?\nHow is our ball placed beside the bag different from a ball inside a real ruck?",
-      "notes": "Coaching purpose: we lost possession because teammates were watching after tackles rather than supporting. Keep the message simple—'First there, on your feet, next player ready.' This animation is a rehearsed attacking win, not evidence that an opposed ruck will always be won. A1/D1 demonstrate the contact; A2 takes the ball placed to the side, A3 receives, and the coach collects it for the next repetition. D1's shield is passed to D3 during rotation. IMPORTANT before using the diagram to teach match laws: the A1 entry currently comes from the opposite side to the marked attack direction. Reposition the entry queues for a genuine onside support approach. Also review Step 4: A1 moves away after the contest while still listed as a member of the ruck marker; release the formation link once the ball is out when polishing the animation. The stated 8 minutes is practice time, not the sum of animation durations. These notes guide coaching but are not an RFU safety sign-off.",
+      "notes": "Coaching purpose: we lost possession because teammates were watching after tackles rather than supporting. Keep the message simple—'First there, on your feet, next player ready.' This animation is a rehearsed attacking win, not evidence that an opposed ruck will always be won. A1/D1 demonstrate the contact; A2 takes the ball placed to the side, A3 receives, and the coach collects it for the next repetition. D1's shield is passed to D3 during rotation. IMPORTANT before using the diagram to teach match laws: the A1 entry currently comes from the opposite side to the marked attack direction. Reposition the entry queues for a genuine onside support approach. The training-pad contact marker now clears once players disengage and the separate ball is played away, so A1 does not remain visually bound during the reset. The stated 8 minutes is practice time, not the sum of animation durations. These notes guide coaching but are not an RFU safety sign-off.",
       "links": [
         {
           "label": "RFU: U10 Rules of Play (Regulation 15, Appendix 4)",
