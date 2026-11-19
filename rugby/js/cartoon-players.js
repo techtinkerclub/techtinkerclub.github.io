@@ -199,6 +199,8 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const hasContact=tackleMarker&&(!tackleMarker.breakdown||tackleMarker.breakdown.phase==='tackle');
  const activeTackler=hasContact&&markerRole==='tackling';
  const activeCarrier=hasContact&&markerRole==='grounded';
+ const wasTackler=previous?.objects?.some(m=>m.type==='tackle'&&m.members?.some(v=>v.id===o.id&&v.pose==='tackling'));
+ const leavingTackle=wasTackler&&!hasContact;
  const impactAt=impact?.time??0;
  const earlierBall=previous?.objects?.filter(b=>b.type==='ball')||[];
  const presentation=frame?.objects?.some(b=>{
@@ -228,6 +230,7 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
   // sprites supplied as tackled1..4 instead, with the real ball overlay.
   sprite=presentation||semantic===17?36:35;
  }
+ else if(leavingTackle&&pose!=='grounded'&&pose!=='recovering')sprite=step<.3?24:look; // visibly let go and reset to normal stance
  else if(pose==='tackling'||[13,14].includes(semantic))sprite=ruckusSequence(27,6,step);
  else if(semantic===8)sprite=ruckusSequence(43,2,step);
  else if(semantic===9)sprite=ruckusSequence(44,2,step);
