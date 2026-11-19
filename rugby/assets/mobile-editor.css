@@ -42,6 +42,11 @@
   background:#263b2f;color:var(--text);border-color:#607361;
  }
  body.mobile-workspace .mobile-camera-controls button[aria-pressed=true]{color:var(--accent);border-color:var(--accent)}
+  /* Keep the visual-mode toggle away from the top-right camera controls. */
+  body.mobile-workspace .field-wrap > .pitch-cartoon-toggle{
+   top:auto;right:auto;bottom:8px;left:8px;
+   max-width:calc(100% - 16px);
+  }
  body.mobile-workspace.presentation-mode .mobile-camera-controls{display:none!important}
  body.mobile-workspace .board-footer .note{max-height:2.8em}
  body.mobile-workspace > .main > .panel-splitter,body.mobile-workspace > .timeline > .panel-splitter{display:none!important}
