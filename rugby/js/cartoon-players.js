@@ -158,6 +158,34 @@ function bodyEquipment(o){
  return '';
 }
 const tileUse=(id,x,y,t)=>'<svg width="'+t+'" height="'+t+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden" style="overflow:hidden"><use href="#'+id+'"/></svg>';
+// The Classic editor stores body rotation (rot), while the gaze engine already
+// follows curved run paths. Apply the SAME route tangent to the cartoon torso;
+// otherwise the eyes turn correctly but the feet and arms run backwards.
+const wrapMinionAngle=n=>((n+180)%360+360)%360-180;
+function minionTravelHeading(o,g,previous,frame,p){
+ const start=previous?.objects?.find(q=>q.id===o.id),end=frame?.objects?.find(q=>q.id===o.id);
+ if(!start||!end||!g?.toView||!movingInfo(o,previous,frame,p).moving)return null;
+ const timing=frame.timing?.[o.id]||{start:0,end:100};
+ const a=clamp(Number(timing.start??0)/100,0,1);
+ const b=clamp(Number(timing.end??100)/100,a,1);
+ const ratio=clamp((p-a)/Math.max(.001,b-a),0,1);
+ const absolute=sampleRoute(routeSamples(start,end,frame.paths?.[o.id],g),ratio).angle;
+ return Number.isFinite(absolute)
+  ?wrapMinionAngle(absolute-(Number(o.rot)||0)-(Number(g.rotation)||0)):null;
+}
+// At a catch, hands should face the INCOMING ball, not an unrelated old body
+// heading. This is a visual orientation: possession and ball timing are untouched.
+function minionCatchHeading(o,g,previous,frame){
+ if(!previous||!g?.toView)return null;
+ const incoming=currentBall(o,previous,frame).received;
+ const earlierBall=incoming&&previous.objects.find(q=>q.id===incoming.id);
+ const passer=earlierBall?.ownerId&&previous.objects.find(q=>q.id===earlierBall.ownerId);
+ if(!passer||passer.id===o.id)return null;
+ const a=g.toView(o.x,o.y),b=g.toView(passer.x,passer.y);
+ if(Math.hypot(a.x-b.x,a.y-b.y)<.1)return null;
+ const angle=Math.atan2(b.x-a.x,a.y-b.y)*180/Math.PI;
+ return wrapMinionAngle(angle-(Number(o.rot)||0)-(Number(g.rotation)||0));
+}
 function cartoonMinion(o,pose,objects,g,previous,frame,p){
  const poseId=cartoonPoseIndex(o,pose,objects,previous,frame,p);
  const team=o.type==='defender'||o.type==='bagplayer'?1:0;
@@ -168,14 +196,25 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  // This is strictly a Minion visual translation, NOT a change to Classic,
  // contact state, possession, player coordinates, or published drill data.
  const prone=poseId===16;
- const artworkId=prone?12:poseId;
+ // The original catching cell holds its hands low, behind a north-facing
+ // goggle. Use the forward, open-arm rig artwork for a true receiving shape.
+ // The semantic catch pose is unchanged, and the ball remains separately drawn.
+ const artworkId=prone?12:poseId===10?13:poseId;
  const atlasId=artworkId+team*RIG_TEAM_STRIDE;
  const tile=RIG_TILE,x=(atlasId%RIG_COLS)*tile,y=Math.floor(atlasId/RIG_COLS)*tile;
  const entry=RIG_POSES[poseId],pivot=RIG_POSES[artworkId].headPivot;
  const move=movingInfo(o,previous,frame,p);
  // Original source goggles face south; articulated standing heads face north.
  // Ground poses include their heads baked into the overhead body artwork.
- const rotation=entry.grounded?0:180+smoothGaze(o,objects,g,previous,frame,p);
+ const travel=entry.grounded?null:minionTravelHeading(o,g,previous,frame,p);
+ const incoming=poseId===10?minionCatchHeading(o,g,previous,frame):null;
+ const bodyTurn=entry.grounded?0:(travel??incoming??0);
+ // Preserve the independent head bearing when the body turns, including when
+ // it is watching a receiver or a tackle target instead of its running path.
+ let gaze=smoothGaze(o,objects,g,previous,frame,p);
+ if(incoming!==null&&travel===null&&(!o.headMode||o.headMode==='run'))gaze=incoming;
+ else if(o.headMode==='forward')gaze=bodyTurn;
+ const rotation=entry.grounded?0:180+gaze-bodyTurn;
  const headScale=minionHeadScale(artworkId);
  const animated=move.moving&&!entry.grounded;
  const gait=animated?Math.sin(p*12*Math.PI)*1.3:0;
@@ -198,7 +237,8 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  return '<g class="cartoon-player minion-mode-player minion-rig-player" data-stance="'+entry.name+'" pointer-events="none">'+
   '<g transform="translate(0 '+fmt(gait)+') rotate('+fmt(wobble)+')">'+
    '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="0 0 '+tile+' '+tile+'" overflow="visible">'+
-    '<g'+(floorTilt?' transform="'+floorTilt+'"':'')+'>'+body+head+'</g></svg>'+bodyEquipment(o)+'</g></g>';
+    '<g transform="rotate('+fmt(bodyTurn)+' 64 64)'+(floorTilt?' '+floorTilt:'')+'">'+body+head+'</g></svg>'+
+    '<g transform="rotate('+fmt(bodyTurn)+')">'+bodyEquipment(o)+'</g></g></g>';
 }
 const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
 function coachIndex(o,previous,frame,p){
