@@ -116,6 +116,54 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
    viewButton.setAttribute('aria-expanded','false');
   }
  }
+ // The old mobile sheet tried to show both step cards AND timing tracks in
+ // one clipped 54dvh grid (five children but only four declared rows).
+ // Use two clear editing views inside the SAME existing timeline.
+ const scenes=document.getElementById('scenes');
+ let timelineSwitch=null,stepPanel='sequence';
+ if(scenes?.parentElement===timeline){
+  timelineSwitch=document.createElement('div');
+  timelineSwitch.className='mobile-timeline-switch';
+  timelineSwitch.setAttribute('role','group');
+  timelineSwitch.setAttribute('aria-label','Choose step cards or player timing');
+  timelineSwitch.innerHTML='<button type="button" data-mobile-step-panel="sequence" aria-pressed="true">Steps</button>'+
+   '<button type="button" data-mobile-step-panel="timing" aria-pressed="false">Timing</button>'+
+   '<button type="button" data-mobile-step-edit="true">Edit selected step</button>';
+  timeline.insertBefore(timelineSwitch,scenes);
+  timelineSwitch.addEventListener('click',event=>{
+   const button=event.target.closest('button');
+   if(!button||!enabled())return;
+   if(button.dataset.mobileStepPanel){
+    stepPanel=button.dataset.mobileStepPanel;
+    paintStepPanel();
+    return;
+   }
+   if(button.dataset.mobileStepEdit){
+    const current=document.getElementById('editCurrent');
+    if(current&&!current.hidden)current.click();
+    const tab=document.getElementById('tabStep');
+    if(tab)tab.click();else show('edit');
+   }
+  });
+  scenes.addEventListener('click',event=>{
+   if(!enabled()||!event.target.closest('[data-step]'))return;
+   // app.js rebuilds the cards on selection; reveal the highlighted card.
+   queueMicrotask(()=>revealSelectedStep());
+  });
+ }
+ function revealSelectedStep(){
+  if(!enabled()||!body.classList.contains('mobile-view-steps'))return;
+  const selected=scenes?.querySelector?.('.scene.selected');
+  selected?.scrollIntoView?.({behavior:'instant',block:'nearest',inline:'center'});
+ }
+ function paintStepPanel(){
+  body.classList.toggle('mobile-timing-view',stepPanel==='timing');
+  for(const button of timelineSwitch?.querySelectorAll('[data-mobile-step-panel]')||[]){
+   const on=button.dataset.mobileStepPanel===stepPanel;
+   button.setAttribute('aria-pressed',String(on));
+   button.classList.toggle('selected',on);
+  }
+ }
  const viewButtons=[...nav.querySelectorAll('[data-mobile-view]')];
  let active='pitch';
  function paint(){
@@ -137,13 +185,19 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
   body.classList.toggle('hide-equipment',view!=='tools');
   body.classList.toggle('hide-inspector',view!=='edit');
   body.classList.toggle('hide-tracks',view!=='steps');
-  paint();sync();
+  paint();
+  paintStepPanel();
+  if(view==='steps')queueMicrotask(revealSelectedStep);
+  sync();
  }
  function reset(mobile){
   placeVisualMode(mobile);
   placeMobileUi(mobile);
   if(mobile){body.classList.add('mobile-workspace');show('pitch')}
-  else{body.classList.remove('mobile-workspace',...VIEWS.map(x=>'mobile-view-'+x));active='pitch'}
+  else{
+   body.classList.remove('mobile-workspace','mobile-timing-view',...VIEWS.map(x=>'mobile-view-'+x));
+   active='pitch';
+  }
  }
  // Also reflect the original Tools and Inspector toolbar buttons.
  function update(){
