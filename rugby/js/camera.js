@@ -7,7 +7,15 @@ export function cameraRect(g,w,h,z=1,cx=g.viewWidth/2,cy=g.viewHeight/2){
  const y=height>=g.viewHeight?(g.viewHeight-height)/2:camClamp(cy-height/2,0,g.viewHeight-height);
  return {x,y,width,height};
 }
-export function createCamera(pitch,{canNavigate=()=>true,getGeometry,onChange=()=>{}}){
+// On touch, tapping an editable object must reach the Studio selector even
+// when the camera's Pan button is latched. Empty grass still pans normally.
+export function shouldCapturePitchPan(e,{panMode=false,space=false,preferEdit=()=>false}={}){
+ if(e.button===1)return true;
+ if(e.button!==0||!(space||panMode))return false;
+ if(e.pointerType==='touch'&&panMode&&preferEdit(e))return false;
+ return true;
+}
+export function createCamera(pitch,{canNavigate=()=>true,getGeometry,onChange=()=>{},preferEdit=()=>false}){
  let zoom=1,cx=0,cy=0,key='',rect=null,space=false,pan=null,panMode=false;
  const size=()=>({w:pitch.clientWidth||900,h:pitch.clientHeight||540});
  function apply(g=getGeometry()){
@@ -28,7 +36,7 @@ export function createCamera(pitch,{canNavigate=()=>true,getGeometry,onChange=()
   cx=view.x+view.width/2;cy=view.y+view.height/2;apply(g);
  }
  function setPanMode(on){panMode=!!on;pitch.classList.toggle('pan-ready',panMode||space);onChange(zoom,panMode)}
- function down(e){if(!canNavigate()||pan||!(e.button===1||e.button===0&&(space||panMode)))return;
+ function down(e){if(!canNavigate()||pan||!shouldCapturePitchPan(e,{panMode,space,preferEdit}))return;
   if(!rect)apply();pan={id:e.pointerId,x:e.clientX,y:e.clientY,cx,cy,scale:rect.width/(pitch.clientWidth||900)};
   pitch.setPointerCapture(e.pointerId);pitch.classList.add('panning');e.stopImmediatePropagation();e.preventDefault();
  }
