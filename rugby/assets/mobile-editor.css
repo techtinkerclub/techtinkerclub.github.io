@@ -24,7 +24,18 @@
  body.mobile-workspace .board-actions{min-width:0;max-width:100%;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;padding-bottom:3px}
  body.mobile-workspace .board-actions > *{flex:0 0 auto}
  body.mobile-workspace .board-actions button,body.mobile-workspace .board-actions select{min-height:42px}
- body.mobile-workspace .stage-heading{flex:1 0 100%;min-height:0}
+ body.mobile-workspace .stage-heading{
+   flex:1 0 100%;min-height:0;display:grid;
+   grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;
+   align-items:center;gap:2px 8px
+  }
+  body.mobile-workspace .stage-heading h2{grid-column:1;grid-row:1}
+  body.mobile-workspace .stage-heading small{grid-column:1;grid-row:2}
+  body.mobile-workspace .stage-heading > .mobile-mode-toggle{
+   grid-column:2;grid-row:1/span 2;position:static;
+   max-width:min(46vw,175px);white-space:normal;min-height:38px;
+   text-align:center;font-size:11px;padding:6px 9px;line-height:1.2
+  }
  body.mobile-workspace .field-wrap{width:100%;height:100%;min-width:0;min-height:0;overflow:hidden}
  body.mobile-workspace .field-wrap > .pitch{width:100%;height:100%;touch-action:none}
  /* Expand invisible finger targets without enlarging diagram symbols or changing exports. */
@@ -42,11 +53,7 @@
   background:#263b2f;color:var(--text);border-color:#607361;
  }
  body.mobile-workspace .mobile-camera-controls button[aria-pressed=true]{color:var(--accent);border-color:var(--accent)}
-  /* Keep the visual-mode toggle away from the top-right camera controls. */
-  body.mobile-workspace .field-wrap > .pitch-cartoon-toggle{
-   top:auto;right:auto;bottom:8px;left:8px;
-   max-width:calc(100% - 16px);
-  }
+  /* The switch is moved into the heading; no switch overlays the camera. */
  body.mobile-workspace.presentation-mode .mobile-camera-controls{display:none!important}
  body.mobile-workspace .board-footer .note{max-height:2.8em}
  body.mobile-workspace > .main > .panel-splitter,body.mobile-workspace > .timeline > .panel-splitter{display:none!important}
@@ -121,7 +128,8 @@
  body.mobile-workspace{--mobile-sheet-height:min(65dvh,320px);--mobile-nav-height:50px}
  body.mobile-workspace .brand small{display:none}
  body.mobile-workspace .head-actions{max-height:46px}
- body.mobile-workspace .stage-heading{display:none}
+ body.mobile-workspace .stage-heading{display:grid;min-height:36px}
+  body.mobile-workspace .stage-heading small{display:none}
  body.mobile-workspace .board-footer .note{display:none}
  body.mobile-workspace.mobile-view-steps:not(.presentation-mode) > .timeline{height:min(69dvh,290px)!important}
 }
