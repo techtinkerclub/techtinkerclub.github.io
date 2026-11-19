@@ -1,7 +1,7 @@
 // Harburling Ruckus Mode: approved 54-pose user artwork. Visual translation ONLY.
 // possession, coaching gaze, tackling, ball physics and timing use the same data
 // and shared engines as Classic mode. Every source pose is ball- and pad-free.
-import {canCarry} from './possession.js?v=0.19.1';
+import {canCarry,tackleImpacts} from './possession.js?v=0.19.1';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 import {playerHeadAngle} from './player-gaze.js?v=3';
 import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
@@ -175,7 +175,7 @@ function minionTravelHeading(o,g,previous,frame,p){
 // Index positions are from the EXACT 54 PNGs supplied by the user, packed into
 // two identically indexed full-resolution 8x7 atlases. The app controls its ball
 // separately; there is never any ball painted into the player artwork.
-const RUCKUS_POSE=[5,8,12,24,11,17,2,12,43,45,46,21,42,27,31,33,35,42,37,12,20,30,24,24,24];
+const RUCKUS_POSE=[5,8,12,24,11,17,2,12,43,45,46,21,35,27,31,33,35,36,37,12,20,30,24,24,24];
 const ruckusSequence=(start,count,p)=>start+Math.min(count-1,Math.floor(clamp(p,0,.99999)*count));
 const ruckusLookBucket=angle=>4-Math.round((clamp(wrapMinionAngle(angle),-90,90)+90)/45);
 function cartoonRuckus(o,pose,objects,g,previous,frame,p){
@@ -191,16 +191,44 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const step=clamp(p,0,1);
  const team=(o.type==='defender'||o.type==='bagplayer')?'red':'blue';
  let sprite=RUCKUS_POSE[semantic]??5;
- if(pose==='held')sprite=24; // upright contact, NOT a ball-carry pose
+ // Prefer the *actual* contact and possession event over the ordinary stance.
+ // The Classic engine still owns coordinates, physics and event timing.
+ const tackleMarker=frame?.objects?.find(m=>m.type==='tackle'&&m.members?.some(member=>member.id===o.id));
+ const markerRole=tackleMarker?.members?.find(m=>m.id===o.id)?.pose;
+ const impact=previous&&frame?tackleImpacts(previous,frame,g).find(event=>event.players.includes(o.id)):null;
+ const hasContact=tackleMarker&&(!tackleMarker.breakdown||tackleMarker.breakdown.phase==='tackle');
+ const activeTackler=hasContact&&markerRole==='tackling';
+ const activeCarrier=hasContact&&markerRole==='grounded';
+ const impactAt=impact?.time??0;
+ const earlierBall=previous?.objects?.filter(b=>b.type==='ball')||[];
+ const presentation=frame?.objects?.some(b=>{
+  if(b.type!=='ball'||(b.transferKind!=='presentation'&&b.groundState!=='presented'))return false;
+  const old=earlierBall.find(a=>a.id===b.id);
+  return old?.ownerId===o.id||b.ownerId===o.id||
+   (pose==='grounded'&&!old?.ownerId&&Math.hypot(b.x-o.x,b.y-o.y)<28);
+ });
+ if(pose==='held')sprite=24;
  else if(pose==='crouched')sprite=21;
  else if(pose==='ready')sprite=23+Math.min(3,Math.floor(step*4));
  else if(pose==='kneeling')sprite=21;
  else if(pose==='recovering')sprite=ruckusSequence(37,5,step);
- else if(pose==='grounded'&&semantic!==17){
-  sprite=semantic===15?33:35;
+ else if(activeTackler){
+  // Approach frames before contact and low wrap/contact frames afterwards.
+  const fraction=impact?clamp(step/Math.max(.12,impactAt),0,1):step;
+  sprite=step<(impact?impactAt:.65)?27+Math.min(3,Math.floor(fraction*4)):
+   31+Math.min(1,Math.floor(clamp((step-impactAt)/Math.max(.08,1-impactAt),0,.999)*2));
+ }
+ else if(activeCarrier){
+  // The ball carrier stays upright until impact, then actually lies down.
+  sprite=step<(impact?impactAt:0)?(moving?10+look:look):
+   33+Math.min(3,Math.floor(clamp((step-impactAt)/Math.max(.12,1-impactAt),0,.999)*4));
+ }
+ else if(pose==='grounded'||semantic===17||semantic===12||semantic===16){
+  // 'present.png' was visibly a crouched pose. Use the genuine grounded
+  // sprites supplied as tackled1..4 instead, with the real ball overlay.
+  sprite=presentation||semantic===17?36:35;
  }
  else if(pose==='tackling'||[13,14].includes(semantic))sprite=ruckusSequence(27,6,step);
- else if(semantic===17||semantic===12)sprite=42;
  else if(semantic===8)sprite=ruckusSequence(43,2,step);
  else if(semantic===9)sprite=ruckusSequence(44,2,step);
  else if(semantic===10)sprite=ruckusSequence(46,2,step);
@@ -275,13 +303,17 @@ export function playerAppearance(o,pose,original,objects,g,previous,frame,progre
 }
 export function cartoonObjectOrder(items,cartoonMode){
  if(!cartoonMode)return items;
- const attached=[],others=[];
+ // Keep loose and carried rugby balls visually in front of the mascot, rather
+ // than buried under the torso after a catch. This changes draw order ONLY.
+ const balls=[],attached=[],others=[];
  for(const item of items){
-  if(item.type==='shieldItem'&&item.ownerId)attached.push(item);
+  if(item.type==='ball')balls.push(item);
+  else if(item.type==='shieldItem'&&item.ownerId)attached.push(item);
   else others.push(item);
  }
- return others.concat(attached);
+ return others.concat(attached,balls);
 }
+
 export function cartoonPitchDecor(g){
  const w=Number(g.viewWidth||900),h=Number(g.viewHeight||540),positions=[[30,30],[w-30,30],[30,h-30],[w-30,h-30]];
  const n=x=>(Math.round(x*10)/10).toString();
