@@ -14,7 +14,7 @@ import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,ed
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=0.18.0';
 import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=12';
-import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,cartoonLabelPosition,symbolLabelSize} from './symbol-scale.js?v=0.18.9';
+import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,cartoonLabelPosition,symbolLabelSize} from './symbol-scale.js?v=0.18.10';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.18.8';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
