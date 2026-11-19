@@ -12,6 +12,8 @@ import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from 
 const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
 let viewZoom=1,viewPan={x:0,y:0},viewBase=null,panEnabled=false,dragStart=null,pinchStart=null;
 let decisionRewind=0;
+$('playerMovieCamera').closest('label').classList.add('video-camera-choice');
+$('playerVideoStyle').closest('label').after($('playerMovieCamera').closest('label'));
 const touches=new Map();
 function syncLibraryVideoStyle(){
  const a=$('addPlayerToVideo');
