@@ -18,7 +18,7 @@ import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,c
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.18.8';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
-import { initWorkspace, openInspector } from './workspace.js?v=0.20.36';
+import { initWorkspace, openInspector } from './workspace.js?v=0.20.39';
 import { pitchGeometry,drillGeometry,trainingField } from './pitch.js?v=0.16.1';
 import {fieldContext,fieldPreset,fieldAnchor,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.19';
