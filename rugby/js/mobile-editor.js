@@ -42,7 +42,7 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
  // Reparent the SAME button, retaining its event listener and pressed state.
  const visualMode=document.getElementById('minionMode');
  const modeHome=visualMode?.parentElement;
- const modeHeading=document.querySelector('.stage-heading');
+ const modeHeading=document.querySelector?.('.stage-heading');
  function placeVisualMode(mobile){
   if(!visualMode||!modeHome||!modeHeading)return;
   const target=mobile?modeHeading:modeHome;
