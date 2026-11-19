@@ -465,12 +465,6 @@ export function cartoonObjectOrder(items,cartoonMode){
  return others.concat(attached,balls);
 }
 
-export function cartoonPitchDecor(g){
- const w=Number(g.viewWidth||900),h=Number(g.viewHeight||540),positions=[[30,30],[w-30,30],[30,h-30],[w-30,h-30]];
- const n=x=>(Math.round(x*10)/10).toString();
- return '<g class="cartoon-pitch-decor" pointer-events="none">'+
- positions.map(([x,y],i)=>'<g transform="translate('+x+' '+y+')">'+
- '<circle r="9" fill="#ffe97e" opacity=".8"/>'+
- Array.from({length:5},(_,k)=>'<circle cx="'+n(Math.cos(k*Math.PI*2/5)*12)+'" cy="'+n(Math.sin(k*Math.PI*2/5)*12)+'" r="6" fill="'+(i%2?'#f7b0d1':'#f9f3c5')+'" opacity=".7"/>').join('')+
- '<circle r="5" fill="#f4b743"/></g>').join('')+'</g>';
-}
+// Keep the Ruckus characters and playful video theme, but not the decorative
+// flowers at pitch corners. Pitch markings remain shared with Classic.
+export function cartoonPitchDecor(){return '';}
