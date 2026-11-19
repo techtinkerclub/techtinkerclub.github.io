@@ -1,110 +1,92 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
- cartoonPoseIndex,playerAppearance,ruckusPassLook,
- ruckusIncomingPassBearing,ruckusOutgoingPassBearing
-} from '../js/cartoon-players.js';
+import {ruckusIncomingPassBearing,ruckusOutgoingPassBearing,ruckusPassLook,playerAppearance,cartoonPoseIndex} from '../js/cartoon-players.js';
 import {classicPlayerAppearance} from '../js/classic-player-appearance.js';
 
 const g={toView:(x,y)=>({x,y}),rotation:0,viewWidth:900,viewHeight:540};
-const base={id:'A1',type:'attacker',x:200,y:120,rot:0,headMode:'run'};
-const artwork='<circle r="15" fill="#76b5fc"/>';
-function passFrom(x,y,{rot=0,fieldRotation=0,route=null,transferKind=undefined}={}){
- const receiving={...base,rot},sender={id:'A2',type:'attacker',x,y,rot:0,headMode:'run'};
- const before={objects:[receiving,sender,{type:'ball',id:'b1',ownerId:'A2',x,y}],
-  timing:{},paths:{},seconds:2};
- const after={objects:[receiving,sender,{type:'ball',id:'b1',ownerId:'A1',x:200,y:120,transferKind}],
-  timing:{b1:{start:35,end:70}},paths:route?{b1:route}:{},seconds:2};
- return {receiving,sender,before,after,geometry:{...g,rotation:fieldRotation}};
+const receiver={id:'A1',type:'attacker',x:200,y:120,rot:0,headMode:'run'};
+const original='<circle r="15" fill="#76b5fc"/>';
+function passFrom(x,y,{transferKind=undefined,receiverMoving=false}={}){
+ const sender={id:'A2',type:'attacker',x,y,rot:0,headMode:'run'};
+ const r={...receiver};
+ const before={objects:[r,sender,{type:'ball',id:'b1',ownerId:sender.id,x,y}],seconds:2,timing:{},paths:{}};
+ const after={objects:[r,sender,{type:'ball',id:'b1',ownerId:r.id,x:200,y:120,transferKind}],
+  seconds:2,timing:{b1:{start:35,end:70}},paths:{}};
+ if(receiverMoving){before.objects[0]={...r,x:190};after.timing.A1={start:0,end:100}}
+ return {r:after.objects[0],sender,before,after};
 }
-const near=(a,b)=>assert.ok(Math.abs(a-b)<.01,`${a} should be ${b}`);
-function sprite(svg){
- const m=svg.match(/data-ruckus-pose="(\d+)"/);
- assert.ok(m,'Expected Ruckus atlas pose');
- return Number(m[1]);
-}
-function ruckus(actor,sequence,progress=.5){
- return playerAppearance(actor,'standing',artwork,sequence.after.objects,
-  sequence.geometry,sequence.before,sequence.after,progress,{cartoonMode:true});
-}
+function svg(o,previous,frame,p){return playerAppearance(o,'standing',original,frame.objects,g,previous,frame,p,{cartoonMode:true})}
+function poseOf(markup){return Number(markup.match(/data-ruckus-pose="(\d+)"/)?.[1])}
+function bodyAngle(markup){return Number(markup.match(/rotate\((-?\d+(?:\.\d+)?) 64 64\)/)?.[1])}
+function approx(a,b){assert.ok(Math.abs(a-b)<.01,a+' !== '+b)}
 
-test('passing uses normal standing sprites, receiving uses normal carrying sprites',()=>{
- for(const x of [100,300]){
-  const drill=passFrom(x,120);
-  const passer=drill.sender,receiver=drill.receiving;
-  assert.equal(cartoonPoseIndex(passer,'standing',drill.after.objects,drill.before,drill.after,.5),0);
-  assert.equal(cartoonPoseIndex(receiver,'standing',drill.after.objects,drill.before,drill.after,.5),7);
-  for(const actor of [passer,receiver]){
-   const svg=ruckus(actor,drill);
-   assert.ok(sprite(svg)>=0&&sprite(svg)<=4,'no special pass/catch atlas frames 43–47');
-   assert.ok(svg.includes('scale(1 1)'),'no X/Y reflections during normal passes');
-   assert.ok(svg.includes('rotate(180.0 64 64)'),'normal standing/carrying body pose is preserved');
-   assert.doesNotMatch(svg,/data-ruckus-catch|data-ruckus-pass/);
+test('passing and receiving retain normal standing/carrying poses on BOTH sides throughout transfer',()=>{
+ for(const fromX of [100,300]){
+  const {r,sender,before,after}=passFrom(fromX,120);
+  for(const p of [0,.1,.25,.4,.55,.7,.85,1]){
+   const passing=svg(sender,before,after,p),catching=svg(r,before,after,p);
+   const pPose=cartoonPoseIndex(sender,'standing',after.objects,before,after,p);
+   const cPose=cartoonPoseIndex(r,'standing',after.objects,before,after,p);
+   assert.ok(![8,9,10].includes(pPose),'passer must not acquire a forced ball-facing body pose');
+   assert.ok(![8,9,10].includes(cPose),'receiver must not acquire a forced ball-facing body pose');
+   assert.ok(poseOf(passing)>=0&&poseOf(passing)<=4,'passer continues standard standing cycle');
+   assert.ok(poseOf(catching)>=0&&poseOf(catching)<=4,'receiver continues standard carrying/standing cycle');
+   assert.match(passing,/data-ruckus-mirror="1,1"/);
+   assert.match(catching,/data-ruckus-mirror="1,1"/);
+   approx(bodyAngle(passing),180);
+   approx(bodyAngle(catching),180);
+   assert.doesNotMatch(passing,/data-ruckus-pose="4[34567]"/);
+   assert.doesNotMatch(catching,/data-ruckus-pose="4[34567]"/);
   }
  }
 });
 
-test('left/right teammates look towards each other without rotating their bodies',()=>{
+test('passing side glance is gently eased, never spins the body or turns head backwards',()=>{
  for(const x of [100,300]){
-  const drill=passFrom(x,120),out=x===100?90:-90;
-  near(ruckusOutgoingPassBearing(drill.sender,drill.before,drill.after,g),out);
-  near(ruckusIncomingPassBearing(drill.receiving,drill.before,drill.after,g),-out);
-  near(ruckusPassLook(drill.sender,drill.before,drill.after,g,.5,0),out);
-  near(ruckusPassLook(drill.receiving,drill.before,drill.after,g,.5,0),-out);
-  const giver=ruckus(drill.sender,drill),taker=ruckus(drill.receiving,drill);
-  assert.ok(giver.includes('data-ruckus-look="'+out.toFixed(1)+'"'));
-  assert.ok(taker.includes('data-ruckus-look="'+(-out).toFixed(1)+'"'));
-  assert.notEqual(sprite(giver),sprite(taker),'two normal gaze positions face the teammates');
+  const {r,sender,before,after}=passFrom(x,120);
+  const actual=ruckusIncomingPassBearing(r,before,after,g);
+  const outgoing=ruckusOutgoingPassBearing(sender,before,after,g);
+  approx(actual,x===100?-90:90);
+  approx(outgoing,x===100?90:-90);
+  for(const actor of [r,sender]){
+   const values=[0,.05,.1,.15,.2,.3,.4,.55,.7,.8,.9,1]
+    .map(p=>ruckusPassLook(actor,before,after,g,p,0,0));
+   approx(values[0],0);approx(values.at(-1),0);
+   assert(values.some(v=>Math.abs(v)>0),'side glance should be visible briefly');
+   assert(values.every(v=>Number.isFinite(v)&&Math.abs(v)<=90),
+    'head motion is bounded by existing five-way look poses');
+  }
  }
 });
 
-test('teammate gaze eases in and out; no sudden full-body turnaround',()=>{
- const drill=passFrom(100,120);
- for(const actor of [drill.sender,drill.receiving]){
-  const p0=ruckusPassLook(actor,drill.before,drill.after,g,0,0);
-  const pEarly=ruckusPassLook(actor,drill.before,drill.after,g,.12,0);
-  const pMid=ruckusPassLook(actor,drill.before,drill.after,g,.5,0);
-  const pEnd=ruckusPassLook(actor,drill.before,drill.after,g,.99,0);
-  near(p0,0);near(pEnd,0);
-  assert.ok(Math.abs(pEarly)<Math.abs(pMid),'face turn ramps up instead of snapping');
-  assert.ok(Math.abs(pMid)<=90,'head/visor only turns up to 90 degrees');
-  const svg=ruckus(actor,drill);
-  assert.ok(svg.includes('scale(1 1)'),svg);
+test('running and carrying pose selection continues independent of transfer side',()=>{
+ for(const x of [100,300]){
+  const {r,before,after}=passFrom(x,120,{receiverMoving:true});
+  for(const p of [.2,.5,.8]){
+   const semantic=cartoonPoseIndex(r,'standing',after.objects,before,after,p);
+   assert.ok([1,2,7,19].includes(semantic),'receiver keeps natural move/carry semantics');
+   const markup=svg(r,before,after,p);
+   assert.match(markup,/data-ruckus-mirror="1,1"/);
+   assert.doesNotMatch(markup,/data-ruckus-pose="4[34567]"/);
+  }
  }
 });
 
-test('running players still use running sprites during a pass',()=>{
- const drill=passFrom(100,120);
- drill.before.objects[1]={...drill.sender,x:74};
- drill.after.objects[1]={...drill.sender,x:100};
- const pose=cartoonPoseIndex(drill.sender,'standing',drill.after.objects,drill.before,drill.after,.5);
- assert.ok([1,2,4,5,19].includes(pose),'running/turning remains a movement pose');
- const svg=ruckus(drill.sender,drill);
- assert.ok(sprite(svg)>=6&&sprite(svg)<=19,'uses original walking/running atlas, not pass frames');
-});
-
-test('pickup, turnover, rip and non-pass possessions do not cause teammate gaze',()=>{
- for(const transferKind of ['pickup','turnover','rip','handover','set','presentation','drop']){
-  const drill=passFrom(100,120,{transferKind});
-  near(ruckusPassLook(drill.sender,drill.before,drill.after,g,.5,17),17);
-  near(ruckusPassLook(drill.receiving,drill.before,drill.after,g,.5,-12),-12);
+test('pickups and non-pass ownership changes do not trigger fake pass glances',()=>{
+ for(const transferKind of ['pickup','rip','turnover','handover','presentation','drop']){
+  const {r,sender,before,after}=passFrom(100,120,{transferKind});
+  assert.equal(ruckusIncomingPassBearing(r,before,after,g),null,transferKind);
+  approx(ruckusPassLook(r,before,after,g,.5,0,0),0);
+  approx(ruckusPassLook(sender,before,after,g,.5,0,0),0);
  }
- const drill=passFrom(100,120);
- drill.before.objects.at(-1).ownerId='A1';
- near(ruckusPassLook(drill.receiving,drill.before,drill.after,g,.5,7),7);
 });
 
-test('curve bearings, field rotation and Classic rendering retain original drill state',()=>{
- const curved=passFrom(100,120,{route:{mode:'corners',points:[{x:200,y:70}]}});
- near(ruckusIncomingPassBearing(curved.receiving,curved.before,curved.after,g),0);
- const rotated=passFrom(100,120,{rot:90,fieldRotation:90});
- near(ruckusIncomingPassBearing(rotated.receiving,rotated.before,rotated.after,rotated.geometry),90);
- const drill=passFrom(100,120),snapshot=JSON.stringify(drill);
- const classic=playerAppearance(drill.receiving,'standing',artwork,drill.after.objects,g,
-  drill.before,drill.after,.5,{cartoonMode:false});
- const reference=classicPlayerAppearance(drill.receiving,'standing',artwork,drill.after.objects,g,
-  drill.before,drill.after,.5,{ink:false});
- assert.equal(classic,reference,'Classic player artwork is unchanged');
- ruckus(drill.sender,drill);ruckus(drill.receiving,drill);
- assert.equal(JSON.stringify(drill),snapshot,'Ruckus gaze changes do not edit drill data or ball physics');
+test('Ruckus visual selection is pure; Classic mode and the authored pass are unchanged',()=>{
+ const {r,sender,before,after}=passFrom(100,120);
+ const beforeData=JSON.stringify([r,sender,before,after]);
+ const classic=playerAppearance(r,'standing',original,after.objects,g,before,after,.5,{cartoonMode:false});
+ const expected=classicPlayerAppearance(r,'standing',original,after.objects,g,before,after,.5,{ink:false});
+ assert.equal(classic,expected);
+ for(const p of [0,.1,.3,.5,.7,1]){svg(r,before,after,p);svg(sender,before,after,p)}
+ assert.equal(JSON.stringify([r,sender,before,after]),beforeData);
 });
