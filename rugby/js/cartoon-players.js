@@ -29,7 +29,16 @@ const minionHeadScale=poseId=>MINION_SOURCE_HEAD_WIDTHS[poseId]>0
 // Rebuilding base64 image strings per animation frame wastes time and memory,
 // especially when recording a 30 fps cartoon video on a mobile device.
 const CARTOON_SPRITE_DEFS='<defs><image id="rugby-minion-body-v9" href="'+RIG_BODY_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
-  '<image id="rugby-ruckus-red-v1" href="'+RUCKUS_ATLAS_URI+'" width="'+(RUCKUS_COLS*RUCKUS_TILE)+'" height="'+(RUCKUS_ROWS*RUCKUS_TILE)+'"/>'+ 
+  '<image id="rugby-ruckus-red-v1" href="'+RUCKUS_ATLAS_URI+'" width="'+(RUCKUS_COLS*RUCKUS_TILE)+'" height="'+(RUCKUS_ROWS*RUCKUS_TILE)+'"/>'+
+  // Recolour only the RED fabric: blue visors, white rugby stripes, black
+  // outlines, gloves and boots are left unchanged. The same source atlas is
+  // reused for both teams without uploading or mirroring duplicate PNGs.
+  '<filter id="ruckus-team-blue-v2" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">'+
+    '<feColorMatrix in="SourceGraphic" type="hueRotate" values="225" result="blue-tint"/>'+
+    '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.8 -1.8 0 0 -0.28" result="red-only"/>'+
+    '<feComposite in="blue-tint" in2="red-only" operator="in" result="recoloured-fabric"/>'+
+    '<feComposite in="recoloured-fabric" in2="SourceGraphic" operator="over"/>'+
+  '</filter>'+ 
   '<image id="rugby-minion-head-v9" href="'+RIG_HEAD_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
   '<image id="rugby-minion-catch-clean-v1" href="'+RIG_CLEAN_CATCH_URI+'" width="'+RIG_TILE+'" height="'+(2*RIG_TILE)+'"/>'+
   '<image id="rugby-coach-rear-v11" href="'+REAR_COACH_URI+'" width="'+(REAR_COACH_COLS*REAR_COACH_TILE)+'" height="'+(2*REAR_COACH_TILE)+'"/>'+ 
@@ -280,24 +289,36 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  if(o.headMode==='forward'&&travel!==null)gaze=travel;
  const heading=travel??0;
  let sprite=RUCKUS_POSE[semantic]??0;
- // Five look bearings relative to the running body, spaced 45 degrees.
- // Source art looks south; after a 180° turn, source left/right reverse.
+ // The approved running set consists of five independent looking directions.
+ // The entire body follows the authored run while the selected visor direction
+ // follows the existing gaze engine. For stationary poses the body can rotate.
  if(isRunner&&move.moving){
   const relative=wrapMinionAngle(gaze-heading);
   const bucket=Math.max(0,Math.min(4,Math.round((relative+90)/45)));
-  sprite=5-bucket; // atlas 1..5: left, left45, forward, right45, right
+  sprite=5-bucket;
  }
- // An idle player turns their whole body to look. During a run the body
- // continues along the authored path while only the pose/look variant changes.
+ // Show the different approved approach/contact art over the SAME authored
+ // interval; do not change the contact model, timing or either player's path.
+ if(semantic===13||semantic===14){
+  const phase=Math.max(0,Math.min(1,p));
+  sprite=phase<.27?8:phase<.55?9:10;
+ }
+ // Unlike a rotation of the pitch, this is a local character-only transform.
+ // All selected sprites face south in source coordinates (visor at lower edge).
  const angle=entry.grounded?180:(isRunner&&move.moving?180+heading:180+gaze);
  const col=sprite%RUCKUS_COLS,row=Math.floor(sprite/RUCKUS_COLS);
  const pulse=move.moving&&!entry.grounded?Math.sin(p*12*Math.PI)*.7:0;
+ // Defenders retain the source red shirt. Attackers get an exclusively
+ // fabric-colour transformation; both share identical silhouettes and timing.
+ const team=o.type==='defender'||o.type==='bagplayer'?'red':'blue';
+ const paint=team==='blue'?' filter="url(#ruckus-team-blue-v2)"':'';
  const art=tileUse('rugby-ruckus-red-v1',col*RUCKUS_TILE,row*RUCKUS_TILE,RUCKUS_TILE);
- return '<g class="cartoon-player ruckus-player" data-stance="'+entry.name+'" data-ruckus-pose="'+sprite+'" data-ruckus-look="'+fmt(gaze)+'" pointer-events="none">'+
+ return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+sprite+'" data-ruckus-look="'+fmt(gaze)+'" pointer-events="none">'+
    '<svg x="-29" y="'+fmt(-29+pulse)+'" width="58" height="58" viewBox="0 0 72 72" overflow="visible">'+
-     '<g transform="rotate('+fmt(angle)+' 36 36)">'+art+'</g></svg>'+
+     '<g transform="rotate('+fmt(angle)+' 36 36)"'+paint+'>'+art+'</g></svg>'+
    '<g>'+bodyEquipment(o)+'</g></g>';
 }
+
 const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
 function coachIndex(o,previous,frame,p){
  const gesture=String(o.coachGesture||'auto');
