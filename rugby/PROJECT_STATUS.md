@@ -6,8 +6,19 @@ Updated 19 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.44** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.45** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.45 — Smooth Follow action camera across editor, libraries and exported video (19 November 2026)
+
+- User requested camera that **actually follows moving players/ball** in Studio, both library flows and exported videos. Earlier `actionViewportAt` only moved from one fixed step framing to the next; it did not track interpolated positions *through* a step.
+- Added pure `followActionViewport(d,g,i,p)` in `js/action-camera.js`: use the current interpolated moving players and ball (including timed routes) to shift the focus smoothly, retain an action-wide safe viewport to keep tactical context, clamp inside field, and ease changes at step boundaries. Does not change player or drill data; allows Full pitch and Action focus modes to remain independent.
+- `renderScene(...,{framing:'follow'})` now uses this view at the **same animation timestamp** as player and ball frames. Both exported video pipelines already call `renderScene` and therefore use the same follow camera at each captured video frame. `outputOptions` now recognises `'follow'`, alongside `'field'` and `'action'`.
+- Editor View options: **Follow the action during playback** checkbox, camera moves while playing; Action still means one-shot fit, manual camera controls disable follow. Editor export settings surface **Video camera** at top of share dialog beside Classic/Ruckus, seeded from editor follow preference or presentation camera choice.
+- Read-only public library presentations: visible **Follow action** quick toggle and Follow option in camera select. Both track while playing and seeking, and are available on mobile. The video's camera choice is independently selectable next to character style.
+- Public library video builder: visible Video camera selector, with follow preselected for Ruckus, action focus for Classic; explicitly preserve its selected mode instead of forcing `framing:'action'` at record time. This also applies to public library multi-drill videos.
+- Added Node regression tests in `tests/follow-action-camera.test.mjs`, plus real-browser checks for actual viewport motion, editor/recorder UI and Ruckus export in `browser-tests/video-export-ux.mjs`. Review GH Actions after the latest commit; deployment alone does not prove QA.
+- **Future fun ideas only (not implemented):** optional comic action captions, playful whistle/boing sounds, freeze-frame replay accents, celebratory end cards. Keep them off by default and never disguise actual rugby mechanics.
 
 ## 0.20.44 — Contextual video export, Ruckus films everywhere, no corner flowers (19 November 2026)
 
