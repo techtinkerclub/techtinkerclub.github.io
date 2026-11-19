@@ -180,11 +180,10 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  const gait=animated?Math.sin(p*12*Math.PI)*1.3:0;
  const wobble=animated?Math.sin(p*7*Math.PI)*1.1:0;
  const size=54;
- // Put the prone body visibly on the turf: a contact shadow beneath the full
- // length of the body, not a standing circular shadow beneath its boots.
+ // Preserve a clear, shadow-free pitch beneath the character.
  // A modest rotation distinguishes an ordinary tackled player from the
  // straight-on try grounding (12) and ball presentation (17) illustrations.
- const floorShadow=entry.grounded?'<ellipse cx="64" cy="77" rx="33" ry="43" transform="rotate('+(prone?-15:0)+' 64 77)" fill="#0a2017" opacity=".28"/>':'';
+ // Minion poses have no synthetic drop or contact shadow.
  const floorTilt=prone?'rotate(-15 64 64)':'';
  // Clip the atlas cell before any pose-level rotation, or adjacent art leaks.
  const body=tileUse('rugby-minion-body-v9',x,y,tile);
@@ -194,7 +193,7 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  return '<g class="cartoon-player minion-mode-player minion-rig-player" data-stance="'+entry.name+'" pointer-events="none">'+
   '<g transform="translate(0 '+fmt(gait)+') rotate('+fmt(wobble)+')">'+
    '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="0 0 '+tile+' '+tile+'" overflow="visible">'+
-    floorShadow+'<g'+(floorTilt?' transform="'+floorTilt+'"':'')+'>'+body+head+'</g></svg>'+bodyEquipment(o)+'</g></g>';
+    '<g'+(floorTilt?' transform="'+floorTilt+'"':'')+'>'+body+head+'</g></svg>'+bodyEquipment(o)+'</g></g>';
 }
 const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
 function coachIndex(o,previous,frame,p){
