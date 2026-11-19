@@ -37,6 +37,8 @@ jobs:
           done
           cat /tmp/rugby-http.log
           exit 1
+      - name: Test contextual video options and export an actual Ruckus movie in Chromium
+        run: node rugby/browser-tests/video-export-ux.mjs
       - name: Test mobile editor, view sheets and touch actions in Chromium
         run: node rugby/browser-tests/mobile-smoke.mjs
       - name: Play decision drill and export video in Chromium
