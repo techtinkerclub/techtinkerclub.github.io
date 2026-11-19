@@ -22,15 +22,18 @@ test('Ruckus tag indicators are on hips and hide after a tag is removed',()=>{
  const o={id:'a',type:'attacker',tagBelt:true,tagColor:'red',tags:{left:true,right:true}};
  const both=cartoonTagIcon(o);
  assert.match(both,/ruckus-tag-left/);assert.match(both,/ruckus-tag-right/);
- assert.match(both,/x="-20" y="7"/);assert.match(both,/x="14" y="7"/);
+ assert.match(both,/x="-12" y="5"/);assert.match(both,/x="7" y="5"/);
  assert.doesNotMatch(both,/x="-40"|x="33"/);
  o.tags.left=false;
  const after=cartoonTagIcon(o);
  assert.doesNotMatch(after,/ruckus-tag-left/);
  assert.match(after,/ruckus-tag-right/);
 });
-test('mobile toggle is in opposite pitch corner from camera controls',()=>{
+test('mobile toggle moves into the stage heading, away from the in-pitch camera controls',()=>{
  const css=readFileSync(new URL('../assets/mobile-editor.css',import.meta.url),'utf8');
- assert.match(css,/body\.mobile-workspace \.field-wrap > \.pitch-cartoon-toggle\s*\{[^}]*top:auto;right:auto;bottom:8px;left:8px/s);
- assert.match(css,/\.mobile-camera-controls\s*\{[^}]*top:7px;right:7px/s);
+ const js=readFileSync(new URL('../js/mobile-editor.js',import.meta.url),'utf8');
+ assert.match(css,/stage-heading > \\.mobile-mode-toggle/);
+ assert.match(css,/position:static/);
+ assert.match(js,/const target=mobile\\?modeHeading:modeHome/);
+ assert.match(css,/\\.mobile-camera-controls\\s*\\{[^}]*top:7px;right:7px/s);
 });
