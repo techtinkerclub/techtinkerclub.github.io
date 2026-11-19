@@ -42,6 +42,7 @@ test('Studio and both public entry points explicitly support exporting a funny R
  assert.match(coach,/id="movieSequenceDisclosure"/);
  assert.match(play,/id="playerVideoStyle"/);
  assert.match(player,/cartoonMode:\$\('playerVideoStyle'\)\.value==='ruckus'/);
+ assert.match(player,/searchParams\.set\('style','ruckus'\)/,'library playlist link remembers Ruckus choice');
  assert.match(publicVideo,/id="publicVideoStyle"/);
  assert.match(publicVideo,/cartoonMode:get\('publicVideoStyle'\)\.value==='minion'/);
  assert.match(outputs,/hasOutcomes\(d\)\|\|opts\.cartoonMode===true/,
