@@ -1,6 +1,6 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.18.4';
 import {stepEndSeconds,stepStartSeconds} from './step-timeline.js?v=1';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.24';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.25';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
 import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=2';
