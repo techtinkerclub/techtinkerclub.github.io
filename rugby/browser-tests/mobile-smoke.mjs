@@ -61,7 +61,7 @@ async function check(path,viewport){
   assert(await page.locator('#objectMenu').isVisible(),'mobile context menu must open');
   assert(await page.locator('#menuDeleteHere').isVisible(),'existing object commands remain accessible');
   const context=await page.locator('#objectMenu').boundingBox();
-  assert(context.bottom<=measured.navTop+3,'object menu must stay above the bottom navigation');
+  assert(context.y+context.height<=measured.navTop+3,'object menu must stay above the bottom navigation');
   await tap('edit');
   assert(!(await page.locator('#objectMenu').isVisible()),'moving to Edit closes the context menu');
 
