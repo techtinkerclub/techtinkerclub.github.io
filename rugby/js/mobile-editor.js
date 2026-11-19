@@ -28,6 +28,13 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
    '<button type="button" data-mobile-camera="zoomIn" aria-label="Zoom in">+</button>'+
    '<button type="button" data-mobile-camera="panMode" aria-pressed="false" aria-label="Move the pitch view">Pan</button>';
   field.appendChild(cameraTools);
+  // A visible contextual-action trigger means touch users never need right-click.
+  const selectedActions=document.createElement('button');
+  selectedActions.type='button';selectedActions.id='mobileObjectActions';
+  selectedActions.className='mobile-object-actions';
+  selectedActions.textContent='⋯ Object actions';selectedActions.hidden=true;
+  selectedActions.setAttribute('aria-controls','objectMenu');
+  field.appendChild(selectedActions);
   cameraTools.addEventListener('click',event=>{
    const button=event.target.closest('[data-mobile-camera]');
    if(!button||!enabled())return;
@@ -52,6 +59,63 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
   }
   visualMode.classList.toggle('mobile-mode-toggle',mobile);
  }
+ // The original desktop toolbar is much too crowded on phones. Keep its
+ // existing controls, but move them into the Edit bottom sheet. Put the only
+ // visible mobile camera row beside a View button, outside the pitch.
+ // The View details is portalled to body so overflow:hidden / overflow-x:auto
+ // ancestors can never clip its contents behind the pitch.
+ const toolbar=document.querySelector?.('.stage .toolbar');
+ const boardActions=document.querySelector?.('.board-actions');
+ const inspectorBody=document.querySelector?.('#inspectorPanel .inspector-body');
+ const viewMenu=document.getElementById('viewMenu');
+ const boardHome=boardActions?.parentElement,boardNext=boardActions?.nextSibling;
+ const menuHome=viewMenu?.parentElement,menuNext=viewMenu?.nextSibling;
+ const cameraTools=document.querySelector?.('.mobile-camera-controls');
+ const cameraHome=cameraTools?.parentElement;
+ let quickBar=null,viewButton=null,viewScrim=null;
+ if(toolbar&&boardActions&&inspectorBody&&viewMenu){
+  quickBar=document.createElement('div');
+  quickBar.className='mobile-quick-controls';
+  quickBar.setAttribute('role','group');
+  quickBar.setAttribute('aria-label','Mobile pitch camera and view settings');
+  toolbar.appendChild(quickBar);
+  viewButton=document.createElement('button');
+  viewButton.type='button';viewButton.id='mobileViewOptions';
+  viewButton.textContent='View ▾';viewButton.setAttribute('aria-controls','viewMenu');
+  viewButton.setAttribute('aria-expanded','false');
+  quickBar.appendChild(viewButton);
+  viewScrim=document.createElement('button');
+  viewScrim.type='button';viewScrim.id='mobileViewScrim';
+  viewScrim.className='mobile-view-scrim';viewScrim.hidden=true;
+  viewScrim.setAttribute('aria-label','Close view options');
+  body.appendChild(viewScrim);
+  viewScrim.addEventListener('click',()=>{viewMenu.open=false});
+  viewButton.addEventListener('click',()=>{viewMenu.open=!viewMenu.open});
+  const syncView=()=>{
+   const open=body.classList.contains('mobile-workspace')&&viewMenu.open;
+   viewButton.setAttribute('aria-expanded',String(open));
+   viewButton.classList.toggle('selected',open);
+   viewScrim.hidden=!open;
+  };
+  viewMenu.addEventListener('toggle',syncView);
+  viewMenu.querySelector('summary')?.addEventListener('click',()=>{queueMicrotask(syncView)});
+ }
+ function placeMobileUi(mobile){
+  if(!quickBar||!viewMenu||!boardActions||!inspectorBody)return;
+  if(mobile){
+   // Portal first; otherwise the menu inherits the toolbar's scroll clipping.
+   if(viewMenu.parentElement!==body)body.appendChild(viewMenu);
+   if(boardActions.parentElement!==inspectorBody)inspectorBody.prepend(boardActions);
+   if(cameraTools&&cameraTools.parentElement!==quickBar)quickBar.prepend(cameraTools);
+  }else{
+   viewMenu.open=false;
+   viewScrim.hidden=true;
+   if(boardHome&&boardActions.parentElement!==boardHome)boardHome.insertBefore(boardActions,boardNext);
+   if(menuHome&&viewMenu.parentElement!==menuHome)menuHome.insertBefore(viewMenu,menuNext);
+   if(cameraTools&&cameraHome&&cameraTools.parentElement!==cameraHome)cameraHome.appendChild(cameraTools);
+   viewButton.setAttribute('aria-expanded','false');
+  }
+ }
  const viewButtons=[...nav.querySelectorAll('[data-mobile-view]')];
  let active='pitch';
  function paint(){
@@ -66,6 +130,9 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
  }
  function show(view){
   if(!enabled()||!VIEWS.includes(view))return;
+  if(viewMenu?.open)viewMenu.open=false;
+  const context=document.getElementById('objectMenu');
+  if(context&&!context.hidden)context.hidden=true;
   active=view;
   body.classList.toggle('hide-equipment',view!=='tools');
   body.classList.toggle('hide-inspector',view!=='edit');
@@ -74,6 +141,7 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
  }
  function reset(mobile){
   placeVisualMode(mobile);
+  placeMobileUi(mobile);
   if(mobile){body.classList.add('mobile-workspace');show('pitch')}
   else{body.classList.remove('mobile-workspace',...VIEWS.map(x=>'mobile-view-'+x));active='pitch'}
  }
