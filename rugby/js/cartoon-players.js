@@ -364,14 +364,16 @@ export function playerAppearance(o,pose,original,objects,g,previous,frame,progre
  return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonRuckus(o,pose,objects,g,previous,frame,progress);
 }
 // The Classic belt tag overlay covers the Ruckus visor at pitch scale.
-// In Ruckus only, show small side-mounted tag indicators outside the artwork.
+// In Ruckus only, attach small coloured strips directly to the hips.
 export function cartoonTagIcon(o){
  if(!canCarry(o)||o.tagBelt!==true)return '';
  const c=tagColor(o.tagColor),left=o.tags?.left!==false,right=o.tags?.right!==false;
- const tab=(x,side)=>'<g class="ruckus-tag-'+side+'"><rect x="'+x+'" y="7" width="7" height="13" rx="2" fill="'+c+'" stroke="#102e23" stroke-width="1.4"/><path d="M'+(x+1.5)+' 10v7" stroke="#fff" stroke-opacity=".6" stroke-width="1.2"/></g>';
+ // Place tag strips against the mascot hips, not outside the 70px sprite.
+ const belt='<path d="M-16 10Q0 13 16 10" fill="none" stroke="#172932" stroke-width="3" stroke-linecap="round"/>';
+ const tab=(x,side)=>'<g class="ruckus-tag-'+side+'"><rect x="'+x+'" y="7" width="6" height="12" rx="2" fill="'+c+'" stroke="#102e23" stroke-width="1.3"/><path d="M'+(x+1.5)+' 9v7" stroke="#fff" stroke-opacity=".65" stroke-width="1"/></g>';
  const taken=Math.max(0,Number(o.heldTags)||0);
- const counter=taken?'<g transform="translate(34 -28)"><circle r="9" fill="#f5e8a4" stroke="#173526" stroke-width="1.8"/><text y="3" text-anchor="middle" font-size="10" font-weight="700" fill="#172820">'+Math.min(12,taken)+'</text></g>':'';
- return '<g class="ruckus-tag-indicators" pointer-events="none">'+(left?tab(-40,'left'):'')+(right?tab(33,'right'):'')+counter+'</g>';
+ const counter=taken?'<g transform="translate(30 -25)"><circle r="9" fill="#f5e8a4" stroke="#173526" stroke-width="1.8"/><text y="3" text-anchor="middle" font-size="10" font-weight="700" fill="#172820">'+Math.min(12,taken)+'</text></g>':'';
+ return '<g class="ruckus-tag-indicators" pointer-events="none">'+belt+(left?tab(-20,'left'):'')+(right?tab(14,'right'):'')+counter+'</g>';
 }
 export function cartoonObjectOrder(items,cartoonMode){
  if(!cartoonMode)return items;
