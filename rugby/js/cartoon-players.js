@@ -209,6 +209,25 @@ export function ruckusActionSpriteTransform(localBearing){
  else if(target>=-90){mirrorY=-1;source=-45}
  return {mirrorX,mirrorY,angle:180+wrapMinionAngle(target-source)};
 }
+/**
+ * Passing is NOT a receiving sprite. The approved pass/prepare/follow-through
+ * atlas tiles (43–45) already show an upright player looking diagonally to
+ * screen-right (about +45° from screen-up). Do not apply the receiving pose's
+ * baseline +180° turn or its Y-axis flip: both were rotating left/right passers
+ * onto their heads in v0.20.39.
+ *
+ * For rightward throws use the original tiles; for leftward throws use their
+ * horizontal reflection. Rotate only the remaining difference from each
+ * source heading. This keeps east/west passes within 45° of upright. Existing
+ * body/field rotation still belongs to the outer Classic scene transform.
+ */
+export function ruckusPassSpriteTransform(localBearing){
+ if(!Number.isFinite(localBearing))return null;
+ const target=wrapMinionAngle(localBearing);
+ const left=target<0;
+ const native=left?-45:45;
+ return {mirrorX:left?-1:1,mirrorY:1,angle:wrapMinionAngle(target-native)};
+}
 // Keep the old exported name for any existing tests or integrations.
 export function ruckusCatchPoseTransform(bearing,forward=0){
  const transform=ruckusActionSpriteTransform(wrapMinionAngle(bearing-forward));
@@ -275,7 +294,6 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const relative=moving?wrapMinionAngle(gaze-forward):gaze;
  const catchLocal=semantic===10?ruckusIncomingPassBearing(o,previous,frame,g):null;
  const passLocal=[8,9].includes(semantic)?ruckusOutgoingPassBearing(o,previous,frame,g):null;
- const actionBearing=catchLocal??passLocal;
  const look=ruckusLookBucket(relative);
  const step=clamp(p,0,1);
  const team=(o.type==='defender'||o.type==='bagplayer')?'red':'blue';
@@ -369,9 +387,12 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  // north-facing zero angle. The enclosing scene already applies o.rot.
  // Direction is chosen using the authored five-way sprite before rotation,
  // so we never rotate the entire head independently of its arms/feet.
- // Both PASS and RECEIVE use the same four-directional sprite reflections.
- // This avoids the old one-axis-only flip and keeps source art/timing intact.
- const action=actionBearing===null?null:ruckusActionSpriteTransform(actionBearing);
+  // Receiving is calibrated independently and must remain untouched.
+ // Passing uses tiles 43–45's native upright heading and ONLY a horizontal
+ // reflection for the opposite side. Shared X/Y flips previously turned
+ // players upside down on ordinary left/right passes.
+ const action=catchLocal!==null?ruckusActionSpriteTransform(catchLocal)
+  :passLocal!==null?ruckusPassSpriteTransform(passLocal):null;
  const forwardAngle=180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
  const mirrorX=action?.mirrorX??(([8,9,10].includes(semantic)&&relative<0)?-1:1);
  const mirrorY=action?.mirrorY??1;
