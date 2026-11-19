@@ -2617,6 +2617,8 @@ $('printProgression').onclick=()=>{
 };
 function shareOptions(){return outputOptions({orientation,scaleMode,cartoonMode,framing:$('shareFraming').value,teachingGuides:showMarkups,offside:$('offsideGuides').checked,markups:$('shareMarkups').checked,runs:$('shareRuns').checked,passes:$('sharePasses').checked,labels:$('shareLabels').checked,decisions:$('shareDecisions').checked})}
 const getMovieSettings=bindMovieSettings($('movieOptions'),'movie');
+$('movieCamera').closest('label').classList.add('video-camera-choice');
+$('shareVideoStyle').closest('label').after($('movieCamera').closest('label'));
 const movieProgress=createExportProgress();
 let sharingBusy=false;
 $('share').onclick=()=>{if(!requireAppliedSetup())return;$('viewMenu').open=false;prepareVideoSequence();
