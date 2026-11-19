@@ -160,27 +160,41 @@ const tileUse=(id,x,y,t)=>'<svg width="'+t+'" height="'+t+'" viewBox="'+x+' '+y+
 function cartoonMinion(o,pose,objects,g,previous,frame,p){
  const poseId=cartoonPoseIndex(o,pose,objects,previous,frame,p);
  const team=o.type==='defender'||o.type==='bagplayer'?1:0;
- const atlasId=poseId+team*RIG_TEAM_STRIDE;
+ // The original "grounded" artwork (cell 16) is a side-on tumble: from our
+ // strict overhead camera it reads like a standing player tipped sideways.
+ // Keep its semantic pose ID, but draw the true prone, head-to-boots artwork
+ // from cell 12. Cell 17 remains the separate, arms-back ball-presentation pose.
+ // This is strictly a Minion visual translation, NOT a change to Classic,
+ // contact state, possession, player coordinates, or published drill data.
+ const prone=poseId===16;
+ const artworkId=prone?12:poseId;
+ const atlasId=artworkId+team*RIG_TEAM_STRIDE;
  const tile=RIG_TILE,x=(atlasId%RIG_COLS)*tile,y=Math.floor(atlasId/RIG_COLS)*tile;
- const entry=RIG_POSES[poseId],pivot=entry.headPivot;
+ const entry=RIG_POSES[poseId],pivot=RIG_POSES[artworkId].headPivot;
  const move=movingInfo(o,previous,frame,p);
- // The source goggle is at the SOUTH edge of the head, so rotate only the
- // articulated head by 180 degrees to align its original eye with the game's
- // local forward (-Y). Keep the legs, arms and torso in their original stance.
+ // Original source goggles face south; articulated standing heads face north.
+ // Ground poses include their heads baked into the overhead body artwork.
  const rotation=entry.grounded?0:180+smoothGaze(o,objects,g,previous,frame,p);
- const headScale=minionHeadScale(poseId);
- const gait=move.moving?Math.sin(p*12*Math.PI)*1.3:0;
- const wobble=move.moving?Math.sin(p*7*Math.PI)*1.1:0;
+ const headScale=minionHeadScale(artworkId);
+ const animated=move.moving&&!entry.grounded;
+ const gait=animated?Math.sin(p*12*Math.PI)*1.3:0;
+ const wobble=animated?Math.sin(p*7*Math.PI)*1.1:0;
  const size=54;
- // Render the clipped head CELL before rotating it. Rotating the entire source
- // atlas instead would leak neighbouring sprites into the character viewport.
+ // Put the prone body visibly on the turf: a contact shadow beneath the full
+ // length of the body, not a standing circular shadow beneath its boots.
+ // A modest rotation distinguishes an ordinary tackled player from the
+ // straight-on try grounding (12) and ball presentation (17) illustrations.
+ const floorShadow=entry.grounded?'<ellipse cx="64" cy="77" rx="33" ry="43" transform="rotate('+(prone?-15:0)+' 64 77)" fill="#0a2017" opacity=".28"/>':'';
+ const floorTilt=prone?'rotate(-15 64 64)':'';
+ // Clip the atlas cell before any pose-level rotation, or adjacent art leaks.
  const body=tileUse('rugby-minion-body-v9',x,y,tile);
- const head=entry.grounded?'':
+ const head=entry.grounded?'': 
   '<g class="minion-independent-head" data-head-angle="'+fmt(rotation)+'" data-head-scale="'+headScale+'" transform="translate('+fmt(pivot[0])+' '+fmt(pivot[1])+') rotate('+fmt(rotation)+') scale('+headScale+') translate('+fmt(-pivot[0])+' '+fmt(-pivot[1])+')">'+
     tileUse('rugby-minion-head-v9',x,y,tile)+'</g>';
  return '<g class="cartoon-player minion-mode-player minion-rig-player" data-stance="'+entry.name+'" pointer-events="none">'+
   '<g transform="translate(0 '+fmt(gait)+') rotate('+fmt(wobble)+')">'+
-   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="0 0 '+tile+' '+tile+'" overflow="visible">'+body+head+'</svg>'+bodyEquipment(o)+'</g></g>';
+   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="0 0 '+tile+' '+tile+'" overflow="visible">'+
+    floorShadow+'<g'+(floorTilt?' transform="'+floorTilt+'"':'')+'>'+body+head+'</g></svg>'+bodyEquipment(o)+'</g></g>';
 }
 const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
 function coachIndex(o,previous,frame,p){
