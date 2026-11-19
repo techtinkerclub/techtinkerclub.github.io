@@ -64,7 +64,9 @@ test('follow camera is reachable in Studio, both library players and video expor
  assert.match(player,/opts\.framing==='follow'/);
  assert.match(movie,/<option value="follow">Follow the action/);
  assert.match(publicVideo,/const options=\{\.\.\.settings\(\)/);
- assert.doesNotMatch(publicVideo,/scaleMode:'coaching',framing:'action'/,
-  'public library must not overwrite user-selected follow mode');
+ const exportOptions=publicVideo.slice(publicVideo.indexOf('const options={...settings()'),
+  publicVideo.indexOf('const file=await',publicVideo.indexOf('const options={...settings()')));
+ assert.doesNotMatch(exportOptions,/framing:'action'/,
+  'public library video options must not override the chosen camera; printing may still use action framing');
  assert.match(video,/framing:opts\.framing\|\|'field'/);
 });
