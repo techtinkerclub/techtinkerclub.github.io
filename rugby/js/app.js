@@ -32,7 +32,7 @@ import {deriveDrill,readDerivation,relationLabel,rekeyImportedFamilies} from './
 import {timingTrackHTML,createTimingTrackEditor} from './timing-tracks.js?v=0.12.20';
 import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, objectPose, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.19.1';
 import {createCamera} from './camera.js?v=0.5.2';
-import {actionViewport} from './action-camera.js?v=1';
+import {actionViewport,followActionViewport} from './action-camera.js?v=2';
 import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactMarkerShape,contactLabels,PLAYER_POSES} from './contact.js?v=0.19.3';
 import {inspectedPose} from './pose-inspector.js?v=0.12.17';
 import {PHASES,supportTitle,validPhase,nextPhase,team,roles,cleanBreakdowns,candidates,advance} from './breakdown.js?v=0.12.34';
@@ -71,7 +71,7 @@ const pubUI=document.createElement('div');pubUI.className='publication-control';
 pubUI.innerHTML='<button id="pubPublish" type="button" title="Explicitly publish the latest saved revision to the public coaching library">Publish</button><button id="pubUnpublish" type="button" hidden>Unpublish</button><small id="pubState" role="status">Publication status loading…</small>';
 document.querySelector('.head-actions .save-control')?.insertAdjacentElement('afterend',pubUI);
 
-let cartoonMode=false;
+let cartoonMode=false,autoFollow=false;
 let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,selectedPathId=null,showPaths=true,showMarkups=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drillSeconds(drill),at=i=>i===0?0:stepEndSeconds(drill,i);function note(s){$('status').textContent=s;$('status').title=s}function changed(record=true){validationHighlight.clear();validationResult=null;drill.frames.forEach(fr=>{cleanGuide(fr);cleanTraining(fr)});cleanContacts(drill.frames);cleanBreakdowns(drill.frames);for(const fr of drill.frames){fr.objects.forEach(sanitizeSkills);sanitizeInteractions(fr)}if(record)normaliseRecoveryPoses(drill.frames);syncPossession(drill.frames,geometry());syncActiveOutcome(drill);dirty=true;saveFeedback='';syncSaveState();if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){return stepLocation(drill,t)}function tween(t,g=geometry()){if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?trainingTransition(transitionObjects(drill.frames[i-1],drill.frames[i],p,g),drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
 const geometry=()=>drillGeometry(drill,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
@@ -95,7 +95,9 @@ const camera=createCamera(pitch,{
   $('zoomOut').disabled=z<=1.001;$('zoomIn').disabled=z>=15.999;
  }
 });
-$('zoomIn').onclick=()=>camera.changeZoom(1.25);$('zoomOut').onclick=()=>camera.changeZoom(.8);$('zoomFit').onclick=()=>camera.fit();$('zoomArea').onclick=()=>{const box=geometry().trainingRect;if(box)camera.focusView({x:box.x-20,y:box.y-20,width:box.width+40,height:box.height+40});else camera.fit();};$('zoomAction').onclick=()=>{const frameIndex=preview===null?idx:locate(preview).i;camera.focusView(actionViewport(drill,geometry(),frameIndex));note('Camera fitted to this action. Pitch measurements and saved positions are unchanged; use Fit pitch for the full field.');};$('panMode').onclick=()=>camera.setPanMode(!camera.panMode); $('moveScope').onchange=()=>{const explanation={
+function stopFollow(){autoFollow=false;$('followAction').checked=false}
+$('followAction').onchange=()=>{autoFollow=$('followAction').checked;if(autoFollow)camera.setPanMode(false);render();note(autoFollow?'Camera follows moving players and the ball during playback.':'Manual camera restored.')};
+$('zoomIn').onclick=()=>{stopFollow();camera.changeZoom(1.25)};$('zoomOut').onclick=()=>{stopFollow();camera.changeZoom(.8)};$('zoomFit').onclick=()=>{stopFollow();camera.fit()};$('zoomArea').onclick=()=>{stopFollow();const box=geometry().trainingRect;if(box)camera.focusView({x:box.x-20,y:box.y-20,width:box.width+40,height:box.height+40});else camera.fit();};$('zoomAction').onclick=()=>{stopFollow();const frameIndex=preview===null?idx:locate(preview).i;camera.focusView(actionViewport(drill,geometry(),frameIndex));note('Camera fitted to this action. Pitch measurements and saved positions are unchanged; use Fit pitch for the full field.');};$('panMode').onclick=()=>{stopFollow();camera.setPanMode(!camera.panMode)}; $('moveScope').onchange=()=>{const explanation={
  'here':'Only this step will change; the next animation can still start from the previously saved position.',
  'until':'The adjustment carries forward until the next deliberately authored run.',
  'onward':'Compatible later positions and routes are moved together. Linked contact actions remain protected.',
@@ -140,6 +142,10 @@ function render(){
  pitch.setAttribute('preserveAspectRatio','xMidYMid meet');
  let lines='',pathHits='';
  const lineIndex=preview===null?idx:preview<=0?0:locate(preview).i;
+ if(autoFollow&&!(drag||routeDrawing||ballPicking||trainingPick)){
+  const p=preview===null?1:locate(preview).p;
+  camera.focusView(followActionViewport(drill,g,lineIndex,p));
+ }
  if(preview!==null&&lineIndex>0)objects=timedSkillObjects(objects,drill.frames[lineIndex-1],drill.frames[lineIndex],locate(preview).p);
  if(lineIndex>0){
   const next=drill.frames[lineIndex],old=drill.frames[lineIndex-1];
@@ -2615,6 +2621,7 @@ const movieProgress=createExportProgress();
 let sharingBusy=false;
 $('share').onclick=()=>{if(!requireAppliedSetup())return;$('viewMenu').open=false;prepareVideoSequence();
  $('shareVideoStyle').value=cartoonMode?'ruckus':'classic';
+ getMovieSettings.setContext({hasDecision:videoSequence.some(item=>hasOutcomes(item.current?drill:item.drill)),story:videoSequence.length>1,framing:autoFollow?'follow':$('shareFraming').value});
  $('movieSequenceDisclosure').open=videoSequence.length>1;$('shareRuns').checked=showPaths;$('sharePasses').checked=showPasses;$('shareLabels').checked=showActionLabels;$('shareDecisions').checked=showDecisions;$('shareMarkups').checked=showMarkups;$('shareFraming').value=drill.pitchContext?.mode==='field'?'action':'field';$('shareLink').value='';$('shareStatus').textContent='';$('shareDialog').showModal()};
 $('closeShare').onclick=()=>{if(!sharingBusy)$('shareDialog').close()};
 $('shareDialog').addEventListener('cancel',e=>{if(sharingBusy)e.preventDefault()});
