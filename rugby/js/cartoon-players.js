@@ -8,6 +8,7 @@ import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
 import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI,RIG_CLEAN_CATCH_URI} from './minion-rig-data.js?v=4';
 import {REAR_COACH_URI,REAR_COACH_TILE,REAR_COACH_COLS} from './coach-rear-data.js?v=2';
 import {COACH_OVERHEAD_URI} from './coach-user-overhead-data.js?v=1';
+import {RUCKUS_ATLAS_URI,RUCKUS_TILE,RUCKUS_COLS,RUCKUS_ROWS} from './harburling-ruckus-data.js?v=1';
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
 const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0))>>>0;return h};
@@ -28,6 +29,7 @@ const minionHeadScale=poseId=>MINION_SOURCE_HEAD_WIDTHS[poseId]>0
 // Rebuilding base64 image strings per animation frame wastes time and memory,
 // especially when recording a 30 fps cartoon video on a mobile device.
 const CARTOON_SPRITE_DEFS='<defs><image id="rugby-minion-body-v9" href="'+RIG_BODY_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
+  '<image id="rugby-ruckus-red-v1" href="'+RUCKUS_ATLAS_URI+'" width="'+(RUCKUS_COLS*RUCKUS_TILE)+'" height="'+(RUCKUS_ROWS*RUCKUS_TILE)+'"/>'+ 
   '<image id="rugby-minion-head-v9" href="'+RIG_HEAD_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
   '<image id="rugby-minion-catch-clean-v1" href="'+RIG_CLEAN_CATCH_URI+'" width="'+RIG_TILE+'" height="'+(2*RIG_TILE)+'"/>'+
   '<image id="rugby-coach-rear-v11" href="'+REAR_COACH_URI+'" width="'+(REAR_COACH_COLS*REAR_COACH_TILE)+'" height="'+(2*REAR_COACH_TILE)+'"/>'+ 
@@ -262,6 +264,40 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
     '<g transform="rotate('+fmt(bodyTurn)+' 64 64)'+(floorTilt?' '+floorTilt:'')+'">'+body+minionTackleArms(poseId)+head+'</g></svg>'+
     '<g transform="rotate('+fmt(bodyTurn)+')">'+bodyEquipment(o)+'</g></g></g>';
 }
+// Harburling Ruckus is a purely visual translation of the Classic drill model.
+// The approved red mascot art is packed in a transparent 26-pose atlas. For
+// moving players the body follows the existing run-path heading; a separate
+// five-direction look selection follows the existing gaze engine. For static
+// players, the entire mascot faces the authored look target (no new actions).
+const RUCKUS_POSE=[0,3,3,6,23,24,25,16,17,17,18,14,15,8,9,10,11,15,12,3,7,9,7,7,7];
+function cartoonRuckus(o,pose,objects,g,previous,frame,p){
+ const semantic=cartoonPoseIndex(o,pose,objects,previous,frame,p);
+ const entry=RIG_POSES[semantic],move=movingInfo(o,previous,frame,p);
+ const isRunner=[1,2,19].includes(semantic);
+ const followTravel=isRunner||semantic===7;
+ const travel=followTravel?minionTravelHeading(o,g,previous,frame,p):null;
+ let gaze=smoothGaze(o,objects,g,previous,frame,p);
+ if(o.headMode==='forward'&&travel!==null)gaze=travel;
+ const heading=travel??0;
+ let sprite=RUCKUS_POSE[semantic]??0;
+ // Five look bearings relative to the running body, spaced 45 degrees.
+ // Source art looks south; after a 180° turn, source left/right reverse.
+ if(isRunner&&move.moving){
+  const relative=wrapMinionAngle(gaze-heading);
+  const bucket=Math.max(0,Math.min(4,Math.round((relative+90)/45)));
+  sprite=5-bucket; // atlas 1..5: left, left45, forward, right45, right
+ }
+ // An idle player turns their whole body to look. During a run the body
+ // continues along the authored path while only the pose/look variant changes.
+ const angle=entry.grounded?180:(isRunner&&move.moving?180+heading:180+gaze);
+ const col=sprite%RUCKUS_COLS,row=Math.floor(sprite/RUCKUS_COLS);
+ const pulse=move.moving&&!entry.grounded?Math.sin(p*12*Math.PI)*.7:0;
+ const art=tileUse('rugby-ruckus-red-v1',col*RUCKUS_TILE,row*RUCKUS_TILE,RUCKUS_TILE);
+ return '<g class="cartoon-player ruckus-player" data-stance="'+entry.name+'" data-ruckus-pose="'+sprite+'" data-ruckus-look="'+fmt(gaze)+'" pointer-events="none">'+
+   '<svg x="-29" y="'+fmt(-29+pulse)+'" width="58" height="58" viewBox="0 0 72 72" overflow="visible">'+
+     '<g transform="rotate('+fmt(angle)+' 36 36)">'+art+'</g></svg>'+
+   '<g>'+bodyEquipment(o)+'</g></g>';
+}
 const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
 function coachIndex(o,previous,frame,p){
  const gesture=String(o.coachGesture||'auto');
@@ -300,7 +336,7 @@ export function playerAppearance(o,pose,original,objects,g,previous,frame,progre
  // eye/arrow, scale, team colours or equipment.
  if(!cartoonMode)return classicPlayerAppearance(o,pose,original,objects,g,previous,frame,progress,{ink});
  if(!canCarry(o))return o.type==='shieldItem'?cartoonStandalonePad():original;
- return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonMinion(o,pose,objects,g,previous,frame,progress);
+ return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonRuckus(o,pose,objects,g,previous,frame,progress);
 }
 export function cartoonObjectOrder(items,cartoonMode){
  if(!cartoonMode)return items;
