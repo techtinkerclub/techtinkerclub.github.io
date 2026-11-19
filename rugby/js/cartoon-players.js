@@ -7,6 +7,7 @@ import {playerHeadAngle} from './player-gaze.js?v=3';
 import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
 import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI,RIG_CLEAN_CATCH_URI} from './minion-rig-data.js?v=4';
 import {REAR_COACH_URI,REAR_COACH_TILE,REAR_COACH_COLS} from './coach-rear-data.js?v=2';
+import {COACH_OVERHEAD_URI} from './coach-user-overhead-data.js?v=1';
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
 const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0))>>>0;return h};
@@ -29,7 +30,8 @@ const minionHeadScale=poseId=>MINION_SOURCE_HEAD_WIDTHS[poseId]>0
 const CARTOON_SPRITE_DEFS='<defs><image id="rugby-minion-body-v9" href="'+RIG_BODY_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
   '<image id="rugby-minion-head-v9" href="'+RIG_HEAD_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
   '<image id="rugby-minion-catch-clean-v1" href="'+RIG_CLEAN_CATCH_URI+'" width="'+RIG_TILE+'" height="'+(2*RIG_TILE)+'"/>'+
-  '<image id="rugby-coach-rear-v11" href="'+REAR_COACH_URI+'" width="'+(REAR_COACH_COLS*REAR_COACH_TILE)+'" height="'+(2*REAR_COACH_TILE)+'"/></defs>';
+  '<image id="rugby-coach-rear-v11" href="'+REAR_COACH_URI+'" width="'+(REAR_COACH_COLS*REAR_COACH_TILE)+'" height="'+(2*REAR_COACH_TILE)+'"/>'+ 
+  '<image id="rugby-coach-user-overhead-v1" href="'+COACH_OVERHEAD_URI+'" width="112" height="69"/></defs>';
 export function cartoonSpriteDefs(){return CARTOON_SPRITE_DEFS;}
 function movingInfo(o,previous,frame,p){
  const before=previous?.objects?.find(q=>q.id===o.id),after=frame?.objects?.find(q=>q.id===o.id);
@@ -266,16 +268,15 @@ function coachTravelAngle(o,g,previous,frame,p){
  return ((absolute-(Number(o.rot)||0)-(Number(g.rotation)||0)+180)%360+360)%360-180;
 }
 function cartoonCoach(o,objects,g,previous,frame,p){
- const k=coachIndex(o,previous,frame,p),t=REAR_COACH_TILE,size=66;
- const x=k%REAR_COACH_COLS*t,y=Math.floor(k/REAR_COACH_COLS)*t;
- // The newly supplied rear-view coach sheet points north (head leading, boots
- // trailing), the SAME local forward axis (-Y) as the Classic arrow.
- // No nose markers, secondary eyes or fixed 180-degree correction are added.
- // Pitch rotation is already applied by the outer object transform.
- const angle=coachTravelAngle(o,g,previous,frame,p)??smoothGaze(o,objects,g,previous,frame,p);
- return '<g class="cartoon-coach top-down-coach-image" data-coach-pose="'+k+'" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
-  '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="'+x+' '+y+' '+t+' '+t+'" overflow="hidden" style="overflow:hidden">'+
-  '<use href="#rugby-coach-rear-v11"/></svg></g>';
+ const k=coachIndex(o,previous,frame,p);
+ // User's original overhead Gru reference is facing SOUTH (nose at bottom).
+ // Rotate by 180 degrees in local coordinates so that "forward" is north,
+ // matching the Classic arrow; the outer renderer already applies o.rot.
+ const turn=coachTravelAngle(o,g,previous,frame,p)??smoothGaze(o,objects,g,previous,frame,p);
+ const angle=wrapMinionAngle(turn+180);
+ return '<g class="cartoon-coach top-down-coach-image coach-user-overhead" data-coach-pose="'+k+'" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
+  '<svg x="-39" y="-25" width="78" height="50" viewBox="0 0 112 69" overflow="visible">'+
+    '<use href="#rugby-coach-user-overhead-v1"/></svg></g>';
 }
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
  // Explicit output-mode boundary: cartoon changes must not alter Classic pose,
