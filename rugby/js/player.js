@@ -13,12 +13,22 @@ const $=id=>document.getElementById(id);const movieProgress=createExportProgress
 let viewZoom=1,viewPan={x:0,y:0},viewBase=null,panEnabled=false,dragStart=null,pinchStart=null;
 let decisionRewind=0;
 const touches=new Map();
+function syncLibraryVideoStyle(){
+ const a=$('addPlayerToVideo');
+ if(!a||a.hidden||!a.getAttribute('href'))return;
+ const link=new URL(a.href,location.href);
+ if($('playerVideoStyle').value==='ruckus')link.searchParams.set('style','ruckus');
+ else link.searchParams.delete('style');
+ a.href=link.href;
+}
+$('playerVideoStyle').addEventListener('change',syncLibraryVideoStyle);
 $('playerMinionMode').onclick=()=>{
  opts.cartoonMode=!opts.cartoonMode;
  const b=$('playerMinionMode');
  b.textContent=opts.cartoonMode?'◉ Classic view':'◉ Harburling Ruckus';
  b.setAttribute('aria-pressed',String(!!opts.cartoonMode));
  $('playerVideoStyle').value=opts.cartoonMode?'ruckus':'classic';
+ syncLibraryVideoStyle();
  b.title=opts.cartoonMode?'Return to classic coaching view':'Show the red rugby mascot animation skin';
  render();
 };
@@ -187,7 +197,7 @@ if(catalogueId!==null){
  try{
   if(!/^seed-[0-9]{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');
   const list=await loadCatalogue(),entry=list.find(x=>x.id===catalogueId);if(!entry)throw Error('This drill is not in the published catalogue.');
-  const compose=new URL('./library.html',location.href);compose.searchParams.set('video',entry.id);$('addPlayerToVideo').href=compose.href;$('addPlayerToVideo').hidden=false;
+  const compose=new URL('./library.html',location.href);compose.searchParams.set('video',entry.id);$('addPlayerToVideo').href=compose.href;$('addPlayerToVideo').hidden=false;syncLibraryVideoStyle();
   open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082',teachingGuides:params.get('guides')!=='0',scaleMode:params.get('scale')==='coaching'?'coaching':'realistic',framing:params.get('framing')==='action'?'action':'field',cartoonMode:params.get('minion')==='1'});document.title=entry.title+' · Rugby Coaching Library';
   if(entry.publishedAt){const stamp=document.createElement('small');stamp.className='published-stamp';stamp.textContent='Public copy updated '+new Date(entry.publishedAt).toLocaleDateString('en-GB')+' · '+(Number.isInteger(entry.publishedRevision)?'Revision '+entry.publishedRevision:'Legacy revision');$('objective').before(stamp)}
   $('catalogueReview').hidden=false;
