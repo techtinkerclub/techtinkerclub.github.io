@@ -59,7 +59,24 @@ const presentedBall={id:'b1',type:'ball',x:105,y:125,transferKind:'presentation'
 const presentingStep={objects:[player,defender,contact,presentedBall],seconds:2};
 const beforePresent={objects:[player,defender,contact,{...presentedBall,ownerId:player.id,transferKind:'pass',groundState:'grounded'}],seconds:2};
 const presenting=playerAppearance(player,'grounded',original,[player,defender,contact,presentedBall],view,beforePresent,presentingStep,1,{cartoonMode:true});
-assert.match(presenting,/data-ruckus-pose="36"/,'Present on the ground using tackled4, not crouched artwork');
+assert.match(presenting,/data-ruckus-pose="present-prone"/,'Present on the ground using new ball-free prone image');
+assert.match(presenting,/rugby-ruckus-presentation-v1/,'Ruckus presentation uses dedicated sprite asset');
+assert.match(presenting,/data-ruckus-presentation-bearing="135.0"/,'Player turns towards real authored ball');
+const leftBall={...presentedBall,x:69,y:120};
+const rightBall={...presentedBall,x:132,y:120};
+for(const [ball,bearing,rotation] of [[leftBall,'-90.0','0.0'],[rightBall,'90.0','180.0']]){
+ const prev={objects:[player,{...ball,ownerId:player.id,groundState:'grounded'}],seconds:2};
+ const current={objects:[player,ball],seconds:2};
+ const svg=playerAppearance(player,'grounded',original,[player,ball],view,prev,current,1,{cartoonMode:true});
+ assert.match(svg,new RegExp('data-ruckus-presentation-bearing="'+bearing+'"'),'Presentation follows the actual ball side');
+ assert.match(svg,new RegExp('rotate\\('+rotation+' 64 64\\)'),'Ball-side orientation rotates the PRONE artwork');
+}
+const redBall={...presentedBall,x:126,y:120};
+const prevRed={objects:[defender,{...redBall,ownerId:defender.id,groundState:'grounded'}],seconds:2};
+const redSvg=playerAppearance(defender,'grounded',original,[defender,redBall],view,prevRed,{objects:[defender,redBall],seconds:2},1,{cartoonMode:true});
+assert.match(redSvg,/data-ruckus-pose="present-prone"/,'Defenders use the same presentation stance');
+assert.match(redSvg,/rugby-ruckus-presentation-v1/,'Red sprite references the same recoloured asset');
+assert.match(redSvg,/y="-104"/,'Defenders use red, not blue presentation artwork');
 const released={objects:[player,defender],seconds:2};
 const releasing=playerAppearance(defender,'standing',original,[player,defender],view,heldStep,released,.15,{cartoonMode:true});
 assert.match(releasing,/data-ruckus-pose="24"/,'Tackler loosens contact before standing after release');
