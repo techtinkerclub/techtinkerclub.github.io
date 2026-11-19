@@ -211,20 +211,26 @@ function overheadMinion(o,pose,objects,g,previous,frame,p){
  const cycle=running?Math.sin(p*8*Math.PI):0;
  const leftStep=running?cycle*6:0,rightStep=-leftStep;
  const armSwing=running?cycle*8:0;
- const limb=(x1,y1,x2,y2)=>'<path d="M'+x1+' '+y1+'L'+x2+' '+y2+'" stroke="#f7ce35" stroke-width="6.5" stroke-linecap="round"/><circle cx="'+x2+'" cy="'+y2+'" r="4.1" fill="#242933" stroke="#10171c" stroke-width="1.2"/>';
- const boot=(x,y)=>'<ellipse cx="'+x+'" cy="'+y+'" rx="5.5" ry="8" fill="#242933" stroke="#111820" stroke-width="1.5"/>';
- const eye=(x,y,r)=>'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#aebbc2" stroke="#35434a" stroke-width="1.4"/>'+
-  '<circle cx="'+x+'" cy="'+y+'" r="'+(r-2.5)+'" fill="#fafcfa" stroke="#e4edf0" stroke-width="1"/>'+
-  '<circle cx="'+x+'" cy="'+(y-1.5)+'" r="'+(r*.33)+'" fill="#704b29"/>'+
-  '<circle cx="'+x+'" cy="'+(y-1.5)+'" r="'+(r*.18)+'" fill="#171e22"/>'+
-  '<circle cx="'+(x-1.4)+'" cy="'+(y-3)+'" r="1.15" fill="#fff"/>';
- const goggles=defender?eye(0,-22,9):eye(-7.2,-22,7.8)+eye(7.2,-22,7.8);
+ const limb=(x1,y1,x2,y2)=>'<path d="M'+x1+' '+y1+'Q'+((x1+x2)/2)+' '+((y1+y2)/2-3)+' '+x2+' '+y2+'" stroke="#e4b327" stroke-width="9" fill="none" stroke-linecap="round"/>'+
+  '<path d="M'+x1+' '+y1+'L'+x2+' '+y2+'" stroke="#ffe04a" stroke-width="6.5" stroke-linecap="round"/>'+
+  '<ellipse cx="'+x2+'" cy="'+y2+'" rx="5.5" ry="6" fill="#242933" stroke="#11151b" stroke-width="1.4"/>';
+ const boot=(x,y)=>'<ellipse cx="'+x+'" cy="'+y+'" rx="7" ry="9.5" fill="#242933" stroke="#111820" stroke-width="1.6"/>'+
+  '<path d="M'+(x-3)+' '+(y-4)+'q3 -2 6 0" fill="none" stroke="#74808a" stroke-width="1.6"/>';
+ const eye=(x,y,r)=>'<circle cx="'+x+'" cy="'+y+'" r="'+(r+1.6)+'" fill="#27313a" stroke="#151b20" stroke-width="1.3"/>'+
+  '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="url(#rugby-mascot-metal)" stroke="#56636a" stroke-width="1.1"/>'+
+  '<circle cx="'+x+'" cy="'+y+'" r="'+(r-3.5)+'" fill="#fffef7" stroke="#859da6" stroke-width=".8"/>'+
+  '<circle cx="'+x+'" cy="'+(y-1.2)+'" r="'+(r*.36)+'" fill="#79522e"/>'+
+  '<circle cx="'+x+'" cy="'+(y-1.2)+'" r="'+(r*.23)+'" fill="#161d22"/>'+
+  '<circle cx="'+(x-2.5)+'" cy="'+(y-3.4)+'" r="1.8" fill="#fff"/>';
+ const goggles=defender?eye(0,-29,12.6):eye(-11.5,-29,10.7)+eye(11.5,-29,10.7);
  const hair='<path d="M-8 -9l-3 -7M-2 -10l-1 -8M5 -10l3 -7" stroke="#483528" stroke-width="1.8" stroke-linecap="round" fill="none"/>';
  const head='<g class="minion-independent-head" data-head-angle="'+fmt(headTurn)+'" transform="rotate('+fmt(headTurn)+')">'+
-  '<path d="M-20 -19Q-27 -12 -24 0M20 -19Q27 -12 24 0" stroke="#292f36" stroke-width="3.6" fill="none"/>'+
-  '<ellipse cx="0" cy="-4" rx="22.5" ry="23.5" fill="#f9d72f" stroke="#7e6312" stroke-width="1.7"/>'+
-  '<path d="M-16 -17Q0 -27 16 -17" stroke="#fff2a0" stroke-width="2.1" fill="none" opacity=".9"/>'+
+  '<path d="M-23 -27Q-30 -15 -26 -3M23 -27Q30 -15 26 -3" stroke="#252b31" stroke-width="5.5" fill="none"/>'+
+  '<ellipse cx="0" cy="-10" rx="24" ry="24.5" fill="url(#rugby-mascot-yellow)" stroke="#6b5616" stroke-width="1.8"/>'+
+  '<path d="M-14 -29Q0 -37 14 -29" stroke="#fff59b" stroke-width="2.5" fill="none" opacity=".8"/>'+
   hair+goggles+'</g>';
+ const gradients='<defs><radialGradient id="rugby-mascot-yellow" cx="65%" cy="35%" r="75%"><stop stop-color="#fff36b"/><stop offset=".55" stop-color="#f9d62a"/><stop offset="1" stop-color="#c99713"/></radialGradient>'+
+  '<linearGradient id="rugby-mascot-metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#edf6f9"/><stop offset=".38" stop-color="#889aa3"/><stop offset=".68" stop-color="#eef5f7"/><stop offset="1" stop-color="#62737e"/></linearGradient></defs>';
  if(grounded){
   // Ground poses are LONG, not a standing circle tipped sideways.
   // The yellow head is at the front (north); boots and kit remain at the rear.
@@ -233,29 +239,30 @@ function overheadMinion(o,pose,objects,g,previous,frame,p){
    ?limb(-12,7,-17,27)+limb(12,7,17,27)
    :limb(-15,-2,-28,-9)+limb(15,-2,28,-9);
   return '<g class="cartoon-player minion-mode-player minion-overhead-player" data-stance="'+RIG_POSES[poseId].name+'" data-eye-count="'+(defender?1:2)+'" pointer-events="none">'+
-   '<svg x="-30" y="-30" width="60" height="60" viewBox="-40 -44 80 88" overflow="visible">'+
+   '<svg x="-30" y="-30" width="60" height="60" viewBox="-44 -46 88 94" overflow="visible">'+
    '<g transform="rotate('+(poseId===16?'-14':'0')+')">'+
-   boot(-10,29)+boot(10,29)+
+   gradients+boot(-12,33)+boot(12,33)+
    '<rect x="-18" y="0" width="36" height="29" rx="12" fill="'+kit+'" stroke="#18354e" stroke-width="1.8"/>'+
    '<path d="M-13 2V23M13 2V23" stroke="'+trim+'" stroke-width="2.5"/>'+
    arms+
-   '<ellipse cx="0" cy="-13" rx="19" ry="20" fill="#f8d535" stroke="#78621b" stroke-width="1.7"/>'+
+   '<ellipse cx="0" cy="-13" rx="19" ry="20" fill="url(#rugby-mascot-yellow)" stroke="#78621b" stroke-width="1.7"/>'+
    '<path d="M-13 -29Q0 -37 13 -29" stroke="#fff1a0" stroke-width="2" fill="none"/>'+
    (presentation?'<path d="M-7 17L-12 25M7 17L12 25" stroke="#242933" stroke-width="3" stroke-linecap="round"/>':'')+
    '</g></svg></g>';
  }
- const armY=crouch?-2:1;
- const leftArmX=reach?-24:-24, rightArmX=reach?24:24;
+ const armY=crouch?-5:3;
+ const leftArmX=reach?-29:-30, rightArmX=reach?29:30;
  const leftArmY=reach?-22:armY+armSwing;
  const rightArmY=reach?-22:armY-armSwing;
- const boots=boot(-9+leftStep,24-(crouch?5:0))+boot(9+rightStep,24-(crouch?5:0));
- const torso='<path d="M-18 4Q-20 1 -18 -2L18 -2Q21 2 18 5L18 23Q0 31 -18 23Z" fill="'+kit+'" stroke="#16374a" stroke-width="1.6"/>'+
-  '<path d="M-13 3L-11 16M13 3L11 16" stroke="'+trim+'" stroke-width="3" fill="none"/>'+
-  '<rect x="-8" y="14" width="16" height="9" rx="3" fill="'+kit+'" stroke="'+trim+'" stroke-width="1"/>';
- const body=boots+torso+limb(-16,0,leftArmX,leftArmY)+limb(16,0,rightArmX,rightArmY)+head;
+ const boots=boot(-12+leftStep,33-(crouch?5:0))+boot(12+rightStep,33-(crouch?5:0));
+ const torso='<path d="M-23 2Q-24 -3 -19 -5L19 -5Q24 -3 23 2L22 29Q0 39 -22 29Z" fill="'+kit+'" stroke="#16374a" stroke-width="2"/>'+
+  '<path d="M-17 6L-14 25M17 6L14 25" stroke="'+trim+'" stroke-width="3.5" fill="none"/>'+
+  '<rect x="-11" y="19" width="22" height="12" rx="3" fill="'+kit+'" stroke="'+trim+'" stroke-width="1.5"/>'+ 
+ '<path d="M-9 21h18" stroke="#fff" opacity=".25" stroke-width="1.3"/>';
+ const body=gradients+boots+torso+limb(-21,4,leftArmX,leftArmY)+limb(21,4,rightArmX,rightArmY)+head;
  const tilt=falling?'-20':running?fmt(cycle*2):'0';
  return '<g class="cartoon-player minion-mode-player minion-overhead-player" data-stance="'+RIG_POSES[poseId].name+'" data-eye-count="'+(defender?1:2)+'" pointer-events="none">'+
-  '<svg x="-28" y="-28" width="56" height="56" viewBox="-34 -34 68 68" overflow="visible">'+
+  '<svg x="-28" y="-28" width="56" height="56" viewBox="-44 -46 88 94" overflow="visible">'+
    '<g transform="rotate('+fmt(bodyTurn)+' 0 0) rotate('+tilt+' 0 0)">'+body+'</g></svg>'+
    '<g transform="rotate('+fmt(bodyTurn)+')">'+bodyEquipment(o)+'</g></g>';
 }
