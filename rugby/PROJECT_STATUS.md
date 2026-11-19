@@ -6,8 +6,16 @@ Updated 19 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.36** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.37** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.37 — Ruckus receiving animation faces incoming pass (19 November 2026)
+
+- User's mobile screenshot of an untitled U10 drill showed A1 receiving a left-to-right pass with the Ruckus visor/hands facing the wrong way. This is **not** a change to the Classic drill, player rotation or ball movement.
+- Root cause: semantic `receive` (pose 10, supplied 54-sprite atlas cells 46/47) used the receiver's old head-gaze/relative-facing value and applied the generic 180° sprite rotation. The receiver's gaze model does not automatically track a pass *towards* it; those two lateral source sprites need incoming-flight orientation.
+- Added `ruckusIncomingPassBearing(o, previous, frame, g)` in `js/cartoon-players.js`: detect real incoming ball ownership change, derive incoming direction from the actual authored ball route's final tangent (or sender position for degenerate flight), invert for the receiver's look direction, subtract the already-applied body/field rotation, and mirror the artwork when appropriate. Calibrated to the source art's diagonal (~45°) receive pose. Do not modify positions, timing, headMode, ball ownership or editor Classic rendering. Pickups, rips, turnovers, handovers, presentations and drops do not get false 'catch' orientation.
+- Added `tests/ruckus-catching-direction.test.mjs` covering left/right, above/below, diagonal, curved pass, rotated field, excluded transfer types and Classic non-regression. Shared scene import/caches refreshed for editor, read-only presentation, public library, print and video export (including the nested public-video/video-recorder imports).
+- QA: Playwright browser workflow still has a known pre-existing desktop smoke failure for stale `.minion-top-down` assertions; fresh targeted catch tests must be checked separately when Actions completes. Pages deployment is not evidence of the visual orientation on iOS Safari.
 
 ## 0.20.36 — Mobile touch controls and unclipped menus (19 November 2026)
 
