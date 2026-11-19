@@ -477,7 +477,7 @@
               "id": "h1",
               "type": "defender",
               "label": "H1",
-              "x": 192,
+              "x": 165,
               "y": 254,
               "rot": 270
             },
@@ -541,7 +541,7 @@
               "kind": "touch",
               "actorId": "h1",
               "targetId": "r1",
-              "at": 0.7,
+              "at": 0.95,
               "displaySeconds": 1.25,
               "label": "Light tag"
             }
@@ -1369,7 +1369,7 @@
               "id": "d1",
               "type": "defender",
               "label": "D1",
-              "x": 258,
+              "x": 218,
               "y": 260,
               "rot": 270
             },
@@ -1426,7 +1426,7 @@
               "kind": "touch",
               "actorId": "d1",
               "targetId": "a1",
-              "at": 0.7,
+              "at": 0.92,
               "displaySeconds": 1.25,
               "label": "Light touch"
             }
@@ -4239,8 +4239,7 @@
               "x": 686,
               "y": 104,
               "rot": 0,
-              "ownerId": "a2",
-              "transferKind": "pass"
+              "ownerId": "a2"
             },
             {
               "id": "b2",
@@ -7901,8 +7900,7 @@
               "x": 695,
               "y": 292,
               "rot": 0,
-              "ownerId": "a2",
-              "transferKind": "pass"
+              "ownerId": "a2"
             },
             {
               "id": "g1",
@@ -8731,8 +8729,7 @@
               "x": 637,
               "y": 320,
               "rot": 0,
-              "ownerId": "a2",
-              "transferKind": "pass"
+              "ownerId": "a2"
             },
             {
               "id": "st1",
@@ -9265,7 +9262,7 @@
               "kind": "touch",
               "actorId": "d1",
               "targetId": "a2",
-              "at": 0.77,
+              "at": 0.93,
               "displaySeconds": 1.25,
               "label": "TOUCH!"
             }
@@ -10049,7 +10046,7 @@
               "kind": "touch",
               "actorId": "d2",
               "targetId": "a2",
-              "at": 0.77,
+              "at": 0.88,
               "displaySeconds": 1.25,
               "label": "TOUCH!"
             }
@@ -10909,7 +10906,7 @@
               "kind": "touch",
               "actorId": "d1",
               "targetId": "a1",
-              "at": 0.77,
+              "at": 0.95,
               "displaySeconds": 1.25,
               "label": "TOUCH!"
             }
@@ -11316,7 +11313,7 @@
               "kind": "touch",
               "actorId": "o3",
               "targetId": "o0",
-              "at": 0.77,
+              "at": 0.95,
               "displaySeconds": 1.25,
               "label": "TOUCH!"
             }
@@ -12556,7 +12553,7 @@
               "kind": "touch",
               "actorId": "d1",
               "targetId": "a1",
-              "at": 0.76,
+              "at": 0.95,
               "displaySeconds": 1.25,
               "label": "TOUCH!"
             }
@@ -12942,17 +12939,7 @@
             }
           ],
           "timing": {},
-          "paths": {},
-          "interactions": [
-            {
-              "kind": "touch",
-              "actorId": "d1",
-              "targetId": "a1",
-              "at": 0.77,
-              "displaySeconds": 1.25,
-              "label": "TOUCH!"
-            }
-          ]
+          "paths": {}
         },
         {
           "name": "TOUCH! · keep balance",
@@ -13405,7 +13392,7 @@
               "kind": "touch",
               "actorId": "o3",
               "targetId": "o0",
-              "at": 0.77,
+              "at": 0.86,
               "displaySeconds": 1.25,
               "label": "TOUCH!"
             }
@@ -16154,7 +16141,7 @@
               "kind": "touch",
               "actorId": "d1",
               "targetId": "a1",
-              "at": 0.77,
+              "at": 0.95,
               "displaySeconds": 1.25,
               "label": "TOUCH!"
             }
@@ -16915,8 +16902,7 @@
               "x": 686,
               "y": 382,
               "rot": 0,
-              "ownerId": "a3",
-              "transferKind": "pass"
+              "ownerId": "a3"
             },
             {
               "id": "g1",
@@ -17567,8 +17553,7 @@
               "x": 521,
               "y": 267,
               "rot": 0,
-              "ownerId": "a2",
-              "transferKind": "pass"
+              "ownerId": "a2"
             },
             {
               "id": "tl",
@@ -18286,8 +18271,7 @@
               "x": 661,
               "y": 362,
               "rot": 0,
-              "ownerId": "a2",
-              "transferKind": "pass"
+              "ownerId": "a2"
             },
             {
               "id": "tl",
@@ -18375,8 +18359,7 @@
               "x": 661,
               "y": 362,
               "rot": 0,
-              "ownerId": "a2",
-              "transferKind": "pass"
+              "ownerId": "a2"
             },
             {
               "id": "tl",
@@ -61370,17 +61353,7 @@
               ],
               "follow": false
             }
-          },
-          "interactions": [
-            {
-              "kind": "touch",
-              "actorId": "mwl6tallzpoqql",
-              "targetId": "mwl6w26yzp8oka",
-              "at": 0.77,
-              "displaySeconds": 1.25,
-              "label": "TOUCH!"
-            }
-          ]
+          }
         },
         {
           "name": "A2 · Two-hand touch · stop and reset",
@@ -66473,7 +66446,7 @@
       "regression": "Start with slower calls and two small steps. Stop if any defender sprints ahead or loses spacing.",
       "progression": "Next: Hold the line · Carry or pass? (seed-133). The same defensive line and coach position now develop into two decision outcomes.",
       "questions": "Did all six move on the whistle together? Was there a gap after the first step? Can you say which teammate you must stay connected with?",
-      "notes": "This drill contains two real playable outcomes after a shared whistle and defensive advance. Playback stops at the diamond. Choose A or B and the animation continues with different ball possession and defender reactions. The standard video export plays A and B in labelled chapters; the coaching sheet shows both. The illustrations are coach-authored examples, not automatic tactical predictions or official RFU material.",
+      "notes": "This is the introductory, linear whistle-and-advance drill, not a branching decision. Play it before Hold the line · Carry or pass? to teach the same connected line and short first step. The whistle is a coaching cue; defenders must respect age-grade offside and restart rules in a real game.",
       "links": [
         {
           "label": "RFU Regulation 15 Appendix 4 · U10 Rules of Play (2026/27)",
