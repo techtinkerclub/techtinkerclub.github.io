@@ -38,6 +38,10 @@ test('retroactive publishing preserves two existing public URLs and current sour
  assert.equal(presented.ownerId,undefined);
  assert.ok(presented.y>release.objects.find(x=>x.id==='tackle_demo_a1').y,'Ball is presented towards supporting team (larger Y)');
  assert.ok(newPublic.frames.some(f=>f.objects.some(x=>x.type==='tackle'&&x.members?.some(m=>m.pose==='tackling'))),'Authentic editor tackle formation is used');
+ assert.ok(newPublic.frames.every(f=>f.objects.every(o=>o.posePinned!==true)),'No forced QA-only pinned poses');
+ assert.ok(newPublic.frames.some(f=>f.objects.some(o=>o.type==='tackle'&&o.breakdown?.phase==='release')),'Normal editor breakdown release marker');
+ assert.ok(newPublic.frames.some(f=>f.objects.some(o=>o.type==='tackle'&&o.breakdown?.phase==='support')),'Normal editor support phase');
+ assert.ok(newPublic.frames.some(f=>f.objects.some(o=>o.type==='ball'&&o.transferKind==='pickup'&&o.ownerId==='tackle_demo_a2')),'Support picks the separate rugby ball up');
 });
 test('unpublish removes the public listing but preserves its original ID for restoration',()=>{
  const next={...data,unpublishedIds:['seed-133']};
@@ -54,7 +58,8 @@ test('newly published separate version gets own public ID without altering origi
 
 test('old special-case tackling demos are removed from the public QA catalogue',()=>{
  const qa=read('test-drills').drills;
- assert.ok(!qa.some(d=>d.id==='seed-901'||d.id==='seed-903'),'Old QA tackle demonstrations should not reappear');
+ const retired=new Set(['seed-901','seed-902','seed-903','seed-904','seed-916','seed-917','seed-919']);
+ assert.ok(!qa.some(d=>retired.has(d.id)),'Retired tackle, grounded, presentation and target-follow QA fixtures must not appear publicly');
  assert.ok(qa.length>=10,'Retain the unrelated visual regression test drills');
  assert.ok(qa.some(d=>d.id==='seed-908'),'Unrelated passing QA demo is retained');
  assert.ok(qa.every(d=>d.category==='Test drills'));
