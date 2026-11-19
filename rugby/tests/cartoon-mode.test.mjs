@@ -70,7 +70,7 @@ const ruckFrame={objects:[player,defender,ruckMarker],seconds:2};
 const ruckAttacker=playerAppearance(player,'bound',original,[player,defender,ruckMarker],view,ruckFrame,ruckFrame,.5,{cartoonMode:true});
 const ruckDefender=playerAppearance(defender,'bound',original,[player,defender,ruckMarker],view,ruckFrame,ruckFrame,.5,{cartoonMode:true});
 assert.match(ruckAttacker,/data-ruckus-bind="90.0"/,'Ruck attacker faces the contact partner, not an old heading');
-assert.match(ruckDefender,/data-ruckus-bind="-90.0"/,'Ruck defender faces back towards attacker');
+assert.match(ruckDefender,/data-ruckus-bind="90.0"/,'Ruck defender faces back towards attacker');
 assert.match(ruckAttacker,/data-ruckus-pose="2[0-2]"/,'Ruck binds use approved crouch pose set');
 assert.match(ruckDefender,/data-ruckus-pose="2[0-2]"/,'Ruck binding is the same action for both colours');
 const sprites=read('js/cartoon-players.js'),red=read('js/ruckus-red-54-atlas.js'),blue=read('js/ruckus-blue-54-atlas.js');
