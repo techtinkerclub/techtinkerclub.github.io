@@ -176,7 +176,13 @@ function minionTravelHeading(o,g,previous,frame,p){
 // two identically indexed full-resolution 8x7 atlases. The app controls its ball
 // separately; there is never any ball painted into the player artwork.
 const RUCKUS_POSE=[5,8,12,24,11,17,2,12,43,45,46,21,35,27,31,33,35,36,37,12,20,30,24,24,24];
-const ruckusSequence=(start,count,p)=>start+Math.min(count-1,Math.floor(clamp(p,0,.99999)*count));
+// Hold each key pose for a readable part of the already-authored step.
+// We do NOT add time to the drill, alter the Classic timeline, or loop contact.
+const ruckusSequence=(start,count,p)=>{
+ const t=clamp(p,0,.99999);
+ const eased=t<.12?0:t>.88?.99999:(t-.12)/.76;
+ return start+Math.min(count-1,Math.floor(eased*count));
+};
 const ruckusLookBucket=angle=>4-Math.round((clamp(wrapMinionAngle(angle),-90,90)+90)/45);
 function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const semantic=cartoonPoseIndex(o,pose,objects,previous,frame,p);
@@ -202,6 +208,18 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const wasTackler=previous?.objects?.some(m=>m.type==='tackle'&&m.members?.some(v=>v.id===o.id&&v.pose==='tackling'));
  const leavingTackle=wasTackler&&!hasContact;
  const impactAt=impact?.time??0;
+ // The ruck/maul orientation is determined by where the player binds, not
+ // their old sprint heading. Only Ruckus artwork turns towards the formation.
+ const binding=frame?.objects?.find(m=>['ruck','maul','scrum'].includes(m.type)&&
+  m.members?.some(member=>member.id===o.id));
+ const bindingPeers=binding?.members?.map(m=>objects.find(q=>q.id===m.id)).filter(q=>q&&q.id!==o.id)||[];
+ const sameTeam=q=>['defender','bagplayer'].includes(q.type)===['defender','bagplayer'].includes(o.type);
+ const partner=bindingPeers.find(q=>!sameTeam(q))||bindingPeers[0];
+ const partnerView=partner&&g?.toView?g.toView(partner.x,partner.y):null;
+ const myView=partnerView?g.toView(o.x,o.y):null;
+ const bindBearing=partnerView&&myView?Math.atan2(partnerView.x-myView.x,myView.y-partnerView.y)*180/Math.PI:null;
+ const bindLocal=bindBearing===null?null:wrapMinionAngle(bindBearing-(Number(o.rot)||0)-(Number(g.rotation)||0));
+
  const earlierBall=previous?.objects?.filter(b=>b.type==='ball')||[];
  const presentation=frame?.objects?.some(b=>{
   if(b.type!=='ball'||(b.transferKind!=='presentation'&&b.groundState!=='presented'))return false;
@@ -251,14 +269,14 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  // north-facing zero angle. The enclosing scene already applies o.rot.
  // Direction is chosen using the authored five-way sprite before rotation,
  // so we never rotate the entire head independently of its arms/feet.
- const angle=180+(moving?forward:0);
+ const angle=180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
  // The source passing/receiving poses are lateral; mirror the whole illustration
  // for the opposite side without changing the existing ball ownership or flight.
  const mirror=([8,9,10].includes(semantic)&&relative<0)?-1:1;
  const pulse=moving?Math.sin(step*12*Math.PI)*.55:0;
  const atlasId=team==='red'?'rugby-ruckus-red-54':'rugby-ruckus-blue-54';
  const cell=tileUse(atlasId,(sprite%RUCKUS_COLS)*RUCKUS_TILE,Math.floor(sprite/RUCKUS_COLS)*RUCKUS_TILE,RUCKUS_TILE);
- return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+sprite+'" data-ruckus-look="'+fmt(gaze)+'" pointer-events="none">'+
+ return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+sprite+'" data-ruckus-look="'+fmt(gaze)+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
   '<svg x="-35" y="'+fmt(-35+pulse)+'" width="70" height="70" viewBox="0 0 128 128" overflow="visible">'+
     '<g transform="rotate('+fmt(angle)+' 64 64) translate('+fmt(mirror===-1?128:0)+' 0) scale('+mirror+' 1)">'+cell+'</g>'+
   '</svg><g>'+bodyEquipment(o)+'</g></g>';
