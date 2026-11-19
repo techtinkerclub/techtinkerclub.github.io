@@ -27,23 +27,23 @@ test('Ruckus tag strips stay on the illustrated hips and maintain ownership stat
  assert.match(both,/x="-12"/);
  assert.match(both,/x="7"/);
  assert.doesNotMatch(both,/x="-20"|x="14"/,'Old sprite-viewport positions were outside the visible body');
- assert.doesNotMatch(both,/translate\\(30 -25\\)/);
+ assert.ok(!both.includes('translate(30 -25)'));
  const after=cartoonTagIcon({...player,tags:{left:false,right:true},heldTags:1});
  assert.doesNotMatch(after,/class="ruckus-tag-left"/);
  assert.match(after,/class="ruckus-tag-right"/);
- assert.match(after,/translate\\(19 -17\\)/);
+ assert.ok(after.includes('translate(19 -17)'));
  assert.equal(cartoonTagIcon({...player,tagBelt:false}),'');
 });
 
 test('Mobile mode button is moved out of the pitch overlay without duplicating it',()=>{
  const js=read('js/mobile-editor.js'),css=read('assets/mobile-editor.css');
- assert.match(js,/const visualMode=document.getElementById\\('minionMode'\\)/);
- assert.match(js,/const target=mobile\\?modeHeading:modeHome/);
- assert.match(js,/target.appendChild\\(visualMode\\)/);
- assert.match(js,/modeHome.insertBefore\\(visualMode,modeHome.firstChild\\)/);
- assert.match(css,/stage-heading > \\.mobile-mode-toggle/);
- assert.match(css,/grid-column:2;grid-row:1\\/span 2;position:static/);
- assert.doesNotMatch(css,/field-wrap > \\.pitch-cartoon-toggle/);
+ assert.ok(js.includes("const visualMode=document.getElementById('minionMode')"));
+ assert.ok(js.includes('const target=mobile?modeHeading:modeHome'));
+ assert.ok(js.includes('target.appendChild(visualMode)'));
+ assert.ok(js.includes('modeHome.insertBefore(visualMode,modeHome.firstChild)'));
+ assert.ok(css.includes('.stage-heading > .mobile-mode-toggle'));
+ assert.ok(css.includes('grid-column:2;grid-row:1/span 2;position:static'));
+ assert.ok(!css.includes('.field-wrap > .pitch-cartoon-toggle'));
 });
 
 test('Classic player appearance remains independent of the Ruckus tag layout',()=>{
