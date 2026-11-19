@@ -5,7 +5,7 @@ import {canCarry} from './possession.js?v=0.19.1';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 import {playerHeadAngle} from './player-gaze.js?v=3';
 import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
-import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI} from './minion-rig-data.js?v=3';
+import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI,RIG_CLEAN_CATCH_URI} from './minion-rig-data.js?v=4';
 import {REAR_COACH_URI,REAR_COACH_TILE,REAR_COACH_COLS} from './coach-rear-data.js?v=2';
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
@@ -28,6 +28,7 @@ const minionHeadScale=poseId=>MINION_SOURCE_HEAD_WIDTHS[poseId]>0
 // especially when recording a 30 fps cartoon video on a mobile device.
 const CARTOON_SPRITE_DEFS='<defs><image id="rugby-minion-body-v9" href="'+RIG_BODY_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
   '<image id="rugby-minion-head-v9" href="'+RIG_HEAD_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
+  '<image id="rugby-minion-catch-clean-v1" href="'+RIG_CLEAN_CATCH_URI+'" width="'+RIG_TILE+'" height="'+(2*RIG_TILE)+'"/>'+
   '<image id="rugby-coach-rear-v11" href="'+REAR_COACH_URI+'" width="'+(REAR_COACH_COLS*REAR_COACH_TILE)+'" height="'+(2*REAR_COACH_TILE)+'"/></defs>';
 export function cartoonSpriteDefs(){return CARTOON_SPRITE_DEFS;}
 function movingInfo(o,previous,frame,p){
@@ -186,7 +187,11 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  // Minion poses have no synthetic drop or contact shadow.
  const floorTilt=prone?'rotate(-15 64 64)':'';
  // Clip the atlas cell before any pose-level rotation, or adjacent art leaks.
- const body=tileUse('rugby-minion-body-v9',x,y,tile);
+ // The catching atlas cells contained a grey backing oval. Use their
+ // individually cleaned art for both teams, with all other poses unchanged.
+ const body=artworkId===10
+  ?tileUse('rugby-minion-catch-clean-v1',0,team*tile,tile)
+  :tileUse('rugby-minion-body-v9',x,y,tile);
  const head=entry.grounded?'': 
   '<g class="minion-independent-head" data-head-angle="'+fmt(rotation)+'" data-head-scale="'+headScale+'" transform="translate('+fmt(pivot[0])+' '+fmt(pivot[1])+') rotate('+fmt(rotation)+') scale('+headScale+') translate('+fmt(-pivot[0])+' '+fmt(-pivot[1])+')">'+
     tileUse('rugby-minion-head-v9',x,y,tile)+'</g>';
