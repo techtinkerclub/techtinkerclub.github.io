@@ -133,3 +133,110 @@
  body.mobile-workspace .board-footer .note{display:none}
  body.mobile-workspace.mobile-view-steps:not(.presentation-mode) > .timeline{height:min(69dvh,290px)!important}
 }
+
+/* Touch-first toolbar / overlay layering (v0.20.36).
+   The only visible camera controls live outside the pitch. View options and
+   contextual object actions must never be trapped by scroll containers. */
+.mobile-quick-controls,.mobile-object-actions,.mobile-view-scrim{display:none}
+.mobile-view-scrim[hidden],.mobile-object-actions[hidden]{display:none!important}
+@media screen and (max-width:1100px){
+ body.mobile-workspace .stage .toolbar{
+  display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;
+  align-content:start;gap:5px;overflow:visible;position:relative;z-index:7
+ }
+ body.mobile-workspace .stage .stage-heading{grid-column:1;grid-row:1;margin:0}
+ body.mobile-workspace .stage .mobile-quick-controls{
+  grid-column:1;grid-row:2;display:flex;align-items:center;
+  gap:5px;width:100%;min-width:0
+ }
+ body.mobile-workspace .mobile-quick-controls .mobile-camera-controls{
+  position:static;display:grid;flex:1 1 auto;min-width:0;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:3px;padding:0;border:0;border-radius:0;
+  background:transparent;box-shadow:none
+ }
+ body.mobile-workspace .mobile-quick-controls .mobile-camera-controls button{
+  min-width:0;min-height:42px;padding:6px 2px;font-size:12px
+ }
+ body.mobile-workspace #mobileViewOptions{
+  flex:0 0 auto;min-width:67px;min-height:42px;
+  padding:6px;border:1px solid #5e7965;border-radius:8px;
+  background:var(--panel2);color:var(--text);font-size:12px;font-weight:650
+ }
+ body.mobile-workspace #mobileViewOptions[aria-expanded="true"]{
+  border-color:var(--accent);color:var(--accent)
+ }
+ /* Original desktop toolbar controls remain functional inside the Edit
+    sheet; users do not have to hunt through a horizontally clipped bar. */
+ body.mobile-workspace .inspector-body > .board-actions{
+  display:flex;width:100%;max-width:none;min-width:0;
+  flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:8px;
+  overflow:visible;margin:0 0 14px;padding:10px;
+  border:1px solid var(--line);border-radius:9px;background:var(--panel2)
+ }
+ body.mobile-workspace .inspector-body > .board-actions .command-group{
+  min-width:0;flex-wrap:wrap;gap:7px;border:0;padding:0
+ }
+ body.mobile-workspace .inspector-body > .board-actions .command-group[aria-label="Panels"],
+ body.mobile-workspace .inspector-body > .board-actions .zoom-tools{display:none!important}
+ body.mobile-workspace .inspector-body > .board-actions .command-group[aria-label="Editing"]{
+  flex:1 1 100%
+ }
+ body.mobile-workspace .inspector-body > .board-actions .insert-scope{
+  flex-wrap:wrap;white-space:normal
+ }
+ body.mobile-workspace .inspector-body > .board-actions #moveScope{
+  max-width:100%;width:auto;min-width:145px
+ }
+ /* View options is portalled to body, deliberately outside .board-actions'
+    overflow-x scroller and the pitch's overflow-hidden drawing area. */
+ body.mobile-workspace #viewMenu:not([open]){display:none!important}
+ body.mobile-workspace #viewMenu[open]{
+  display:block;position:fixed;top:auto!important;
+  left:max(8px,env(safe-area-inset-left))!important;
+  right:max(8px,env(safe-area-inset-right))!important;
+  bottom:calc(var(--mobile-nav-height,56px) + env(safe-area-inset-bottom) + 7px)!important;
+  z-index:81;width:auto;min-width:0;margin:0;
+  max-height:min(72dvh,620px);overflow-y:auto;overscroll-behavior:contain;
+  padding:8px 12px 14px;background:var(--panel);border:1px solid #647b65;
+  border-radius:14px;box-shadow:0 16px 50px #000c
+ }
+ body.mobile-workspace #viewMenu > summary{
+  display:block;position:sticky;top:-8px;z-index:1;
+  margin:0 0 7px;min-height:42px;padding:10px 3px;
+  background:var(--panel);border:0;border-bottom:1px solid var(--line);
+  border-radius:0;font-size:15px;font-weight:700
+ }
+ body.mobile-workspace #viewMenu > summary::after{content:'  · tap to close';font-size:11px;color:var(--muted);font-weight:400}
+ body.mobile-workspace #viewMenu .view-menu-panel{
+  position:static;inset:auto;display:grid;width:100%;max-width:none;
+  max-height:none;min-height:0;padding:4px 0;
+  overflow:visible;box-shadow:none;border:0;background:transparent
+ }
+ body.mobile-workspace #mobileViewScrim:not([hidden]){
+  display:block;position:fixed;inset:0;z-index:70;
+  width:100%;height:100%;border:0;border-radius:0;
+  background:#07100bb5;cursor:pointer
+ }
+ body.mobile-workspace .field-wrap .mobile-object-actions:not([hidden]){
+  display:inline-flex;align-items:center;justify-content:center;
+  position:absolute;left:9px;bottom:9px;z-index:6;
+  max-width:calc(100% - 18px);min-height:44px;padding:8px 12px;
+  border:1px solid #a8d07d;border-radius:999px;
+  background:#192d22ed;color:#e3ffbd;box-shadow:0 3px 15px #0009;
+  font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+ }
+ body.mobile-workspace #objectMenu:not([hidden]){
+  position:fixed;top:auto!important;
+  left:max(8px,env(safe-area-inset-left))!important;
+  right:max(8px,env(safe-area-inset-right))!important;
+  bottom:calc(var(--mobile-nav-height,56px) + env(safe-area-inset-bottom) + 8px)!important;
+  width:auto;min-width:0;max-width:none;max-height:min(64dvh,560px);
+  z-index:90;padding:12px;gap:4px;
+  border-radius:14px;overscroll-behavior:contain
+ }
+ body.mobile-workspace #objectMenu button{
+  min-height:44px;padding:10px 12px;font-size:14px
+ }
+ body.mobile-workspace #objectMenu .menu-label{font-size:14px}
+}
