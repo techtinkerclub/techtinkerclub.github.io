@@ -570,7 +570,9 @@
               "label": "Coach",
               "x": 205.0776470413472,
               "y": 339.995043573634,
-              "rot": 0
+              "rot": 0,
+              "headMode": "player",
+              "headTargetId": "mwl6w5ww333x3x"
             },
             {
               "id": "mwl6w5ww333x3x",
@@ -1313,7 +1315,17 @@
                   }
                 ],
                 "timing": {},
-                "paths": {}
+                "paths": {},
+                "interactions": [
+                  {
+                    "kind": "touch",
+                    "actorId": "mwl6tallzpoqql",
+                    "targetId": "mwl6w26yzp8oka",
+                    "at": 0.65,
+                    "displaySeconds": 1.4,
+                    "label": "TWO-HAND TOUCH · STOP"
+                  }
+                ]
               }
             ],
             "explanation": "The coach keeps the ball and carries into the inside channel. The nearest two defenders close the gap and finish with two-hand touch. Children must not tackle an adult coach.",
@@ -1358,7 +1370,9 @@
                     "label": "D4",
                     "x": 511.2,
                     "y": 150,
-                    "rot": 180
+                    "rot": 180,
+                    "headMode": "player",
+                    "headTargetId": "mwl6w5ww333x3x"
                   },
                   {
                     "id": "mwl6tbkosxh9wx",
