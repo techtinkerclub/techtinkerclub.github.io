@@ -1,48 +1,27 @@
-// Independent-head, image-based Minion Mode. Visual translation ONLY: the editor,
+// Harburling Ruckus Mode: approved 54-pose user artwork. Visual translation ONLY.
 // possession, coaching gaze, tackling, ball physics and timing use the same data
 // and shared engines as Classic mode. Every source pose is ball- and pad-free.
 import {canCarry} from './possession.js?v=0.19.1';
 import {routeSamples,sampleRoute} from './routes.js?v=0.4.3';
 import {playerHeadAngle} from './player-gaze.js?v=3';
 import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
-import {RIG_TILE,RIG_COLS,RIG_TEAM_STRIDE,RIG_ROWS,RIG_POSES,RIG_BODY_URI,RIG_HEAD_URI,RIG_CLEAN_CATCH_URI} from './minion-rig-data.js?v=4';
-import {REAR_COACH_URI,REAR_COACH_TILE,REAR_COACH_COLS} from './coach-rear-data.js?v=2';
+import {RUCKUS_RED_ATLAS_URI} from './ruckus-red-54-atlas.js?v=1';
+import {RUCKUS_BLUE_ATLAS_URI} from './ruckus-blue-54-atlas.js?v=1';
 import {COACH_OVERHEAD_URI} from './coach-user-overhead-data.js?v=1';
-import {RUCKUS_ATLAS_URI,RUCKUS_TILE,RUCKUS_COLS,RUCKUS_ROWS} from './harburling-ruckus-data.js?v=1';
+const RUCKUS_TILE=128,RUCKUS_COLS=8,RUCKUS_ROWS=7;
+const POSE_NAMES=['idle','jog','sprint','defensive_ready','sidestep','turn','look_scan','carry_ball','prepare_pass','pass_follow','receive','pickup','ground_try','approach_tackle','tackle_contact','being_tackled','grounded','present_ball','getting_up','support_runner','ruck_bind','ruck_clearout','maul_bound','shield_ready','bag_ready'];
+const RIG_POSES=POSE_NAMES.map((name,index)=>({name,grounded:[12,16,17].includes(index)}));
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(1):'0';
 const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0))>>>0;return h};
-// The original illustration sheet was not drawn on a uniform sprite scale.
-// At 128px source resolution, the upright head artwork ranges from 62px to
-// 85px wide. Normalise HEAD size (not arm reach / stance width) so jogging,
-// supporting, recovering and defending do not appear to grow or shrink.
-// Measured directly from the transparent alpha bounds of the approved atlas.
-// 12, 16 and 17 are grounded poses with the head already baked into the body.
-const MINION_SOURCE_HEAD_WIDTHS=[85,68,71,69,71,71,71,72,73,73,75,73,0,69,72,64,0,0,73,63,65,66,62,69,72];
-const MINION_HEAD_TARGET_PX=79;
-const minionHeadScale=poseId=>MINION_SOURCE_HEAD_WIDTHS[poseId]>0
- ?(MINION_HEAD_TARGET_PX/MINION_SOURCE_HEAD_WIDTHS[poseId]).toFixed(3):'1';
-
-
 /** Embedded assets also survive self-contained SVG, printed coaching sheets and video canvas exports. */
 // Construct the large, self-contained SVG image definitions ONCE per module.
 // Rebuilding base64 image strings per animation frame wastes time and memory,
 // especially when recording a 30 fps cartoon video on a mobile device.
-const CARTOON_SPRITE_DEFS='<defs><image id="rugby-minion-body-v9" href="'+RIG_BODY_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
-  '<image id="rugby-ruckus-red-v1" href="'+RUCKUS_ATLAS_URI+'" width="'+(RUCKUS_COLS*RUCKUS_TILE)+'" height="'+(RUCKUS_ROWS*RUCKUS_TILE)+'"/>'+
-  // Recolour only the RED fabric: blue visors, white rugby stripes, black
-  // outlines, gloves and boots are left unchanged. The same source atlas is
-  // reused for both teams without uploading or mirroring duplicate PNGs.
-  '<filter id="ruckus-team-blue-v2" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">'+
-    '<feColorMatrix in="SourceGraphic" type="hueRotate" values="225" result="blue-tint"/>'+
-    '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.8 -1.8 0 0 -0.28" result="red-only"/>'+
-    '<feComposite in="blue-tint" in2="red-only" operator="in" result="recoloured-fabric"/>'+
-    '<feComposite in="recoloured-fabric" in2="SourceGraphic" operator="over"/>'+
-  '</filter>'+ 
-  '<image id="rugby-minion-head-v9" href="'+RIG_HEAD_URI+'" width="'+(RIG_COLS*RIG_TILE)+'" height="'+(RIG_ROWS*RIG_TILE)+'"/>'+
-  '<image id="rugby-minion-catch-clean-v1" href="'+RIG_CLEAN_CATCH_URI+'" width="'+RIG_TILE+'" height="'+(2*RIG_TILE)+'"/>'+
-  '<image id="rugby-coach-rear-v11" href="'+REAR_COACH_URI+'" width="'+(REAR_COACH_COLS*REAR_COACH_TILE)+'" height="'+(2*REAR_COACH_TILE)+'"/>'+ 
-  '<image id="rugby-coach-user-overhead-v1" href="'+COACH_OVERHEAD_URI+'" width="112" height="69"/></defs>';
+const CARTOON_SPRITE_DEFS='<defs>'+
+ '<image id="rugby-ruckus-red-54" href="'+RUCKUS_RED_ATLAS_URI+'" width="1024" height="896"/>'+
+ '<image id="rugby-ruckus-blue-54" href="'+RUCKUS_BLUE_ATLAS_URI+'" width="1024" height="896"/>'+
+ '<image id="rugby-coach-user-overhead-v1" href="'+COACH_OVERHEAD_URI+'" width="112" height="69"/></defs>';
 export function cartoonSpriteDefs(){return CARTOON_SPRITE_DEFS;}
 function movingInfo(o,previous,frame,p){
  const before=previous?.objects?.find(q=>q.id===o.id),after=frame?.objects?.find(q=>q.id===o.id);
@@ -188,135 +167,70 @@ function minionTravelHeading(o,g,previous,frame,p){
 }
 // At a catch, hands should face the INCOMING ball, not an unrelated old body
 // heading. This is a visual orientation: possession and ball timing are untouched.
-function minionCatchHeading(o,g,previous,frame){
- if(!previous||!g?.toView)return null;
- const incoming=currentBall(o,previous,frame).received;
- const earlierBall=incoming&&previous.objects.find(q=>q.id===incoming.id);
- const passer=earlierBall?.ownerId&&previous.objects.find(q=>q.id===earlierBall.ownerId);
- if(!passer||passer.id===o.id)return null;
- const a=g.toView(o.x,o.y),b=g.toView(passer.x,passer.y);
- if(Math.hypot(a.x-b.x,a.y-b.y)<.1)return null;
- const angle=Math.atan2(b.x-a.x,a.y-b.y)*180/Math.PI;
- return wrapMinionAngle(angle-(Number(o.rot)||0)-(Number(g.rotation)||0));
-}
-// Only the authored tackle stance uses these extra limbs. The original
-// detailed atlas remains the body/head artwork for every character.
-// Atlas faces south at rest (goggle at lower edge), so hands extend toward +Y.
-// Draw underneath the articulated head to preserve the one-/two-eye artwork.
-function minionTackleArms(poseId){
- if(poseId!==13&&poseId!==14)return '';
- const contact=poseId===14;
- const left=contact?[37,103]:[23,98],right=contact?[91,103]:[105,98];
- const arm=(side,hand)=>{
-  const fromX=side<0?30:98,elbowX=side<0?19:109;
-  const midX=contact?(side<0?30:98):elbowX;
-  return '<path d="M'+fromX+' 68 Q'+midX+' 83 '+hand[0]+' '+hand[1]+'" fill="none" stroke="#1c292b" stroke-width="12" stroke-linecap="round"/>'+
-   '<path d="M'+fromX+' 68 Q'+midX+' 83 '+hand[0]+' '+hand[1]+'" fill="none" stroke="#ffdb31" stroke-width="8" stroke-linecap="round"/>'+
-   '<ellipse cx="'+hand[0]+'" cy="'+hand[1]+'" rx="7" ry="8" fill="#262b30" stroke="#121a1d" stroke-width="1.8"/>';
- };
- return '<g class="minion-tackle-arms" data-tackle-phase="'+(contact?'wrap':'ready')+'">'+arm(-1,left)+arm(1,right)+'</g>';
-}
-function cartoonMinion(o,pose,objects,g,previous,frame,p){
- const poseId=cartoonPoseIndex(o,pose,objects,previous,frame,p);
- const move=movingInfo(o,previous,frame,p);
- const incoming=poseId===10?minionCatchHeading(o,g,previous,frame):null;
- const team=o.type==='defender'||o.type==='bagplayer'?1:0;
- // The original "grounded" artwork (cell 16) is a side-on tumble: from our
- // strict overhead camera it reads like a standing player tipped sideways.
- // Keep its semantic pose ID, but draw the true prone, head-to-boots artwork
- // from cell 12. Cell 17 remains the separate, arms-back ball-presentation pose.
- // This is strictly a Minion visual translation, NOT a change to Classic,
- // contact state, possession, player coordinates, or published drill data.
- const prone=poseId===16;
- // The original catching cell holds its hands low, behind a north-facing
- // goggle. Use the forward, open-arm rig artwork for a true receiving shape.
- // The semantic catch pose is unchanged, and the ball remains separately drawn.
- const artworkId=prone?12:poseId===10?13:poseId;
- const atlasId=artworkId+team*RIG_TEAM_STRIDE;
- const tile=RIG_TILE,x=(atlasId%RIG_COLS)*tile,y=Math.floor(atlasId/RIG_COLS)*tile;
- const entry=RIG_POSES[poseId],pivot=RIG_POSES[artworkId].headPivot;
- // Original source goggles face south; articulated standing heads face north.
- // Ground poses include their heads baked into the overhead body artwork.
- // Only normal running/carrying stances inherit path heading. Contact,
- // side-step, turn and bound poses retain their deliberate authored body angle.
- const followTravel=[1,2,7,19].includes(poseId);
- const travel=entry.grounded||!followTravel?null:minionTravelHeading(o,g,previous,frame,p);
- const bodyTurn=entry.grounded?0:(travel??incoming??0);
- // Preserve the independent head bearing when the body turns, including when
- // it is watching a receiver or a tackle target instead of its running path.
- let gaze=smoothGaze(o,objects,g,previous,frame,p);
- if(incoming!==null&&travel===null&&(!o.headMode||o.headMode==='run'))gaze=incoming;
- else if(o.headMode==='forward')gaze=bodyTurn;
- const rotation=entry.grounded?0:180+gaze-bodyTurn;
- const headScale=minionHeadScale(artworkId);
- const animated=move.moving&&!entry.grounded;
- const gait=animated?Math.sin(p*12*Math.PI)*1.3:0;
- const wobble=animated?Math.sin(p*7*Math.PI)*1.1:0;
- const size=54;
- // Preserve a clear, shadow-free pitch beneath the character.
- // A modest rotation distinguishes an ordinary tackled player from the
- // straight-on try grounding (12) and ball presentation (17) illustrations.
- // Minion poses have no synthetic drop or contact shadow.
- const floorTilt=prone?'rotate(-15 64 64)':'';
- // Clip the atlas cell before any pose-level rotation, or adjacent art leaks.
- // The catching atlas cells contained a grey backing oval. Use their
- // individually cleaned art for both teams, with all other poses unchanged.
- const body=artworkId===10
-  ?tileUse('rugby-minion-catch-clean-v1',0,team*tile,tile)
-  :tileUse('rugby-minion-body-v9',x,y,tile);
- const head=entry.grounded?'': 
-  '<g class="minion-independent-head" data-head-angle="'+fmt(rotation)+'" data-head-scale="'+headScale+'" transform="translate('+fmt(pivot[0])+' '+fmt(pivot[1])+') rotate('+fmt(rotation)+') scale('+headScale+') translate('+fmt(-pivot[0])+' '+fmt(-pivot[1])+')">'+
-    tileUse('rugby-minion-head-v9',x,y,tile)+'</g>';
- return '<g class="cartoon-player minion-mode-player minion-rig-player" data-stance="'+entry.name+'" pointer-events="none">'+
-  '<g transform="translate(0 '+fmt(gait)+') rotate('+fmt(wobble)+')">'+
-   '<svg x="'+(-size/2)+'" y="'+(-size/2)+'" width="'+size+'" height="'+size+'" viewBox="0 0 '+tile+' '+tile+'" overflow="visible">'+
-    '<g transform="rotate('+fmt(bodyTurn)+' 64 64)'+(floorTilt?' '+floorTilt:'')+'">'+body+minionTackleArms(poseId)+head+'</g></svg>'+
-    '<g transform="rotate('+fmt(bodyTurn)+')">'+bodyEquipment(o)+'</g></g></g>';
-}
 // Harburling Ruckus is a purely visual translation of the Classic drill model.
 // The approved red mascot art is packed in a transparent 26-pose atlas. For
 // moving players the body follows the existing run-path heading; a separate
 // five-direction look selection follows the existing gaze engine. For static
 // players, the entire mascot faces the authored look target (no new actions).
-const RUCKUS_POSE=[0,3,3,6,23,24,25,16,17,17,18,14,15,8,9,10,11,15,12,3,7,9,7,7,7];
+// Index positions are from the EXACT 54 PNGs supplied by the user, packed into
+// two identically indexed full-resolution 8x7 atlases. The app controls its ball
+// separately; there is never any ball painted into the player artwork.
+const RUCKUS_POSE=[5,8,12,24,11,17,2,12,43,45,46,21,42,27,31,33,35,42,37,12,20,30,24,24,24];
+const ruckusSequence=(start,count,p)=>start+Math.min(count-1,Math.floor(clamp(p,0,.99999)*count));
+const ruckusLookBucket=angle=>4-Math.round((clamp(wrapMinionAngle(angle),-90,90)+90)/45);
 function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const semantic=cartoonPoseIndex(o,pose,objects,previous,frame,p);
  const entry=RIG_POSES[semantic],move=movingInfo(o,previous,frame,p);
- const isRunner=[1,2,19].includes(semantic);
- const followTravel=isRunner||semantic===7;
- const travel=followTravel?minionTravelHeading(o,g,previous,frame,p):null;
+ const travel=minionTravelHeading(o,g,previous,frame,p);
+ const moving=move.moving&&travel!==null;
+ const forward=travel??0;
  let gaze=smoothGaze(o,objects,g,previous,frame,p);
- if(o.headMode==='forward'&&travel!==null)gaze=travel;
- const heading=travel??0;
- let sprite=RUCKUS_POSE[semantic]??0;
- // The approved running set consists of five independent looking directions.
- // The entire body follows the authored run while the selected visor direction
- // follows the existing gaze engine. For stationary poses the body can rotate.
- if(isRunner&&move.moving){
-  const relative=wrapMinionAngle(gaze-heading);
-  const bucket=Math.max(0,Math.min(4,Math.round((relative+90)/45)));
-  sprite=5-bucket;
+ if(o.headMode==='forward'&&moving)gaze=forward;
+ const relative=moving?wrapMinionAngle(gaze-forward):gaze;
+ const look=ruckusLookBucket(relative);
+ const step=clamp(p,0,1);
+ const team=(o.type==='defender'||o.type==='bagplayer')?'red':'blue';
+ let sprite=RUCKUS_POSE[semantic]??5;
+ if(pose==='held')sprite=24; // upright contact, NOT a ball-carry pose
+ else if(pose==='crouched')sprite=21;
+ else if(pose==='ready')sprite=23+Math.min(3,Math.floor(step*4));
+ else if(pose==='kneeling')sprite=21;
+ else if(pose==='recovering')sprite=ruckusSequence(37,5,step);
+ else if(pose==='grounded'&&semantic!==17){
+  sprite=semantic===15?33:35;
  }
- // Show the different approved approach/contact art over the SAME authored
- // interval; do not change the contact model, timing or either player's path.
- if(semantic===13||semantic===14){
-  const phase=Math.max(0,Math.min(1,p));
-  sprite=phase<.27?8:phase<.55?9:10;
- }
- // Unlike a rotation of the pitch, this is a local character-only transform.
- // All selected sprites face south in source coordinates (visor at lower edge).
- const angle=entry.grounded?180:(isRunner&&move.moving?180+heading:180+gaze);
- const col=sprite%RUCKUS_COLS,row=Math.floor(sprite/RUCKUS_COLS);
- const pulse=move.moving&&!entry.grounded?Math.sin(p*12*Math.PI)*.7:0;
- // Defenders retain the source red shirt. Attackers get an exclusively
- // fabric-colour transformation; both share identical silhouettes and timing.
- const team=o.type==='defender'||o.type==='bagplayer'?'red':'blue';
- const paint=team==='blue'?' filter="url(#ruckus-team-blue-v2)"':'';
- const art=tileUse('rugby-ruckus-red-v1',col*RUCKUS_TILE,row*RUCKUS_TILE,RUCKUS_TILE);
+ else if(pose==='tackling'||[13,14].includes(semantic))sprite=ruckusSequence(27,6,step);
+ else if(semantic===17||semantic===12)sprite=42;
+ else if(semantic===8)sprite=ruckusSequence(43,2,step);
+ else if(semantic===9)sprite=ruckusSequence(44,2,step);
+ else if(semantic===10)sprite=ruckusSequence(46,2,step);
+ else if(semantic===11)sprite=ruckusSequence(20,3,step);
+ else if(semantic===20)sprite=ruckusSequence(20,3,step);
+ else if(semantic===21)sprite=ruckusSequence(29,3,step);
+ else if(semantic===22)sprite=ruckusSequence(23,2,step);
+ else if(semantic===15)sprite=ruckusSequence(33,4,step);
+ else if(semantic===5)sprite=15+look;
+ else if(semantic===6||(!moving&&semantic===0))sprite=look;
+ else if(moving){
+  if(semantic===1&&move.speed<14)sprite=6+Math.min(3,Math.round(look*3/4));
+  else sprite=10+look;
+ } else if([0,1,2,7,19].includes(semantic))sprite=look;
+ // The source artwork faces towards the bottom of the source image; a single
+ // 180 degree local rotation makes the *forward* character match Classic's
+ // north-facing zero angle. The enclosing scene already applies o.rot.
+ // Direction is chosen using the authored five-way sprite before rotation,
+ // so we never rotate the entire head independently of its arms/feet.
+ const angle=180+(moving?forward:0);
+ // The source passing/receiving poses are lateral; mirror the whole illustration
+ // for the opposite side without changing the existing ball ownership or flight.
+ const mirror=([8,9,10].includes(semantic)&&relative<0)?-1:1;
+ const pulse=moving?Math.sin(step*12*Math.PI)*.55:0;
+ const atlasId=team==='red'?'rugby-ruckus-red-54':'rugby-ruckus-blue-54';
+ const cell=tileUse(atlasId,(sprite%RUCKUS_COLS)*RUCKUS_TILE,Math.floor(sprite/RUCKUS_COLS)*RUCKUS_TILE,RUCKUS_TILE);
  return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+sprite+'" data-ruckus-look="'+fmt(gaze)+'" pointer-events="none">'+
-   '<svg x="-29" y="'+fmt(-29+pulse)+'" width="58" height="58" viewBox="0 0 72 72" overflow="visible">'+
-     '<g transform="rotate('+fmt(angle)+' 36 36)"'+paint+'>'+art+'</g></svg>'+
-   '<g>'+bodyEquipment(o)+'</g></g>';
+  '<svg x="-35" y="'+fmt(-35+pulse)+'" width="70" height="70" viewBox="0 0 128 128" overflow="visible">'+
+    '<g transform="rotate('+fmt(angle)+' 64 64) translate('+fmt(mirror===-1?128:0)+' 0) scale('+mirror+' 1)">'+cell+'</g>'+
+  '</svg><g>'+bodyEquipment(o)+'</g></g>';
 }
 
 const COACH_POSES={idle:0,walking:1,pointing_down:2,celebrate:3,pointing_out:4,arms_folded:5,hands_on_hips:6,shrug:7};
