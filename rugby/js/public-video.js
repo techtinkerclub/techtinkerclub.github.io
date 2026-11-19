@@ -9,7 +9,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
  const button=document.createElement('button');button.id='videoOpen';button.type='button';button.textContent='Create video';
  document.querySelector('.header-row').insertBefore(button,get('shareLibrary'));
  const dialog=document.createElement('dialog');dialog.id='videoBuilder';dialog.className='video-builder';
- dialog.innerHTML='<div class="video-heading"><div><h2>Create coaching video</h2><p>Combine up to eight published animated drills. Each keeps its own pitch, timings, notes and decision outcomes.</p></div><button type="button" id="videoClose">Close</button></div>'+
+ dialog.innerHTML='<div class="video-heading"><div><h2>Create coaching video</h2><p>Export one drill, or optionally combine several published drills.</p></div><button type="button" id="videoClose">Close</button></div>'+
  '<label class="video-field" id="videoTitleField">Video title<input id="videoTitle" maxlength="160" placeholder="Defensive line progression"></label>'+
  '<details id="videoMoreDrills" class="video-details"><summary>Combine with another drill (optional)</summary><div class="video-row" id="videoStageHeader"><h3>Stages in order</h3><button type="button" id="videoClear">Clear all</button></div>'+
  '<ol id="videoStages"></ol><p id="videoHint" role="status"></p>'+
@@ -28,10 +28,8 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
  const selected=()=>ids.map(id=>eligible().find(d=>d.id===id)).filter(Boolean);
  function render(){
   const stages=selected(),multi=stages.length>1;
-  settings.setContext({hasDecision:stages.some(d=>!!d.branching?.choices?.length),story:true});
+  settings.setContext({hasDecision:stages.some(d=>!!d.branching?.choices?.length),story:multi||stages.some(d=>!!d.branching?.choices?.length)});
   get('videoTitleField').hidden=!multi;
-  get('videoStageHeader').hidden=!multi;
-  get('videoStages').hidden=!multi;
   get('videoProgressionActions').hidden=!multi;
   get('videoStages').innerHTML=stages.map((d,i)=>'<li><b class="video-number">'+(i+1)+'</b><span class="video-stage-title"><strong>'+esc(d.title)+'</strong><small>'+esc(ageLabel(d))+' · '+d.frames.length+' steps</small></span><span class="video-stage-controls"><button data-video-move="up" data-index="'+i+'" aria-label="Move earlier" '+(!i?'disabled':'')+'>↑</button><button data-video-move="down" data-index="'+i+'" aria-label="Move later" '+(i===stages.length-1?'disabled':'')+'>↓</button><button data-video-move="remove" data-index="'+i+'" aria-label="Remove stage">×</button></span></li>').join('');
   get('videoHint').textContent=multi?stages.length+' stages selected · they will play in order.':
