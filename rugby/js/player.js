@@ -88,6 +88,8 @@ function stepTarget(direction){if(!d)return 0;const i=Math.max(0,shownStep),atEn
 function jumpStep(i,scroll=false){if(!d)return;stop();t=stepStartSeconds(d,Math.max(0,Math.min(i,d.frames.length-1)));if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render();if(scroll)$('board').scrollIntoView({block:'start',behavior:'auto'})}
 function render(){
  if(!d)return;
+ $('playerFollow').setAttribute('aria-pressed',String(opts.framing==='follow'));
+ $('playerFollow').classList.toggle('selected',opts.framing==='follow');
  const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
  board.innerHTML=s.svg;viewBase=s.camera;applyZoom();shownStep=s.index;
@@ -149,7 +151,7 @@ function open(data,options){stop();d=playbackData(data);opts=outputOptions(optio
  $('playerMinionMode').setAttribute('aria-pressed',String(!!opts.cartoonMode));
  $('playerMinionMode').textContent=opts.cartoonMode?'◉ Classic view':'◉ Harburling Ruckus';
  $('playerVideoStyle').value=opts.cartoonMode?'ruckus':'classic';
- getMovieSettings.setContext({hasDecision:hasOutcomes(d),story:hasOutcomes(d)});
+ getMovieSettings.setContext({hasDecision:hasOutcomes(d),story:hasOutcomes(d),framing:opts.framing});
  $('branchPlayer').hidden=!b;
  if(b){
   $('branchPrompt').textContent='◆ '+b.question;
@@ -182,6 +184,7 @@ $('play').onclick=()=>{
  raf=requestAnimationFrame(tick);
 };
 $('restart').onclick=()=>jumpStep(0);$('previousStep').onclick=()=>jumpStep(stepTarget(-1));$('nextStep').onclick=()=>jumpStep(stepTarget(1));$('seek').oninput=()=>{stop();t=Number($('seek').value);if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render()};
+$('playerFollow').onclick=()=>{opts.framing=opts.framing==='follow'?'field':'follow';$('framing').value=opts.framing;resetZoom();render()};
 for(const k of ['runs','passes','labels','decisions','markups','offside','teachingGuides','orientation','scaleMode','framing'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode','framing'].includes(k)?$(k).value:$(k).checked;if(['orientation','framing'].includes(k))resetZoom();render()};
 $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>3000000)throw Error('File is too large.');open(JSON.parse(await file.text()),opts)}catch(err){$('message').textContent=err.message}};
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();jumpStep(Number(b.dataset.jumpStep),true)};
