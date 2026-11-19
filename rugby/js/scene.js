@@ -23,7 +23,7 @@ import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.13.10';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {offsideOverlay} from './offside.js?v=0.12.23';
-import {actionViewport,actionViewportAt,wholeFieldView} from './action-camera.js?v=1';
+import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=2';
 import {contestResultOverlay} from './ruck-outcome.js?v=0.12.33';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
@@ -63,7 +63,7 @@ const svgObj=(o,g,poses,ink=false,objects=[],previous=null,frame=null,progress=1
 export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,teachingGuides=true,markups=true,scaleMode='realistic',framing='field',ghosts=false,ink=false,cartoonMode=false,prefix='scene'}={}){
  const g={...drillGeometry(d,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1];
  const objects=timedSkillObjects(old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),old,fr,p),poses=trainingPoses(objects,posesFor(objects));
- const focused=framing==='action',camera=focused?(time===null?actionViewport(d,g,i):actionViewportAt(d,g,i,p)):wholeFieldView(g);
+ const focused=framing==='action'||framing==='follow',camera=framing==='follow'?followActionViewport(d,g,i,time===null?1:p):focused?(time===null?actionViewport(d,g,i):actionViewportAt(d,g,i,p)):wholeFieldView(g);
  let field=(cartoonMode?cartoonSpriteDefs():'')+trainingField(g,false,.5,pitchSettings(d))+(cartoonMode&&!ink?cartoonPitchDecor(g):''),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
  if(old)for(const o of fr.objects){
