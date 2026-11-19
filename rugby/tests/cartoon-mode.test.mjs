@@ -119,7 +119,7 @@ assert.doesNotMatch(sprites,/minion-rig-data/,'No legacy Minion atlases are load
 assert.match(red,/RUCKUS_RED_ATLAS_URI/);
 assert.match(blue,/RUCKUS_BLUE_ATLAS_URI/);
 assert.equal(playerAppearance({id:'ball',type:'ball'},'standing',original,[],view,null,null,1,{cartoonMode:true}),original,'Non-player objects must not be restyled');
-assert.match(cartoonPitchDecor(view),/cartoon-pitch-decor/);
+assert.equal(cartoonPitchDecor(view),'','Ruckus must not add decorative corner flowers');
 const d=blank();d.frames[0].objects=[player,defender];
 const base=renderScene(playbackData(d),{index:0,cartoonMode:false});
 const fun=renderScene(playbackData(d),{index:0,cartoonMode:true});
@@ -127,7 +127,7 @@ assert.match(base.svg,/player-gaze-arrow/);
 assert.doesNotMatch(base.svg,/cartoon-pitch-decor/);
 assert.match(fun.svg,/ruckus-player/);
 assert.doesNotMatch(fun.svg,/player-gaze-arrow/);
-assert.match(fun.svg,/cartoon-pitch-decor/);
+assert.doesNotMatch(fun.svg,/cartoon-pitch-decor/,'Ruckus scene must not draw corner flowers');
 assert.equal(outputOptions({cartoonMode:true}).cartoonMode,true);
 assert.equal(outputOptions({}).cartoonMode,false);
 assert.deepEqual(playbackData(d),playbackData(d),'Visual theme must not modify source drill');
