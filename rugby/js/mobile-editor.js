@@ -164,6 +164,34 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
    button.classList.toggle('selected',on);
   }
  }
+ // Keep the original desktop sequence buttons available under one
+ // mobile disclosure; all buttons retain their existing handlers and IDs.
+ const timelineTop=timeline.querySelector?.('.timeline-top');
+ const playback=timelineTop?.querySelector?.('.playback-group');
+ const sequence=timelineTop?.querySelector?.('.sequence-group');
+ const advancedIds=['whistleSound','restart','present','gameNav','breakdownNav','deleteStep','toggleTracks'];
+ let more=null,moreContent=null;
+ const advancedHomes=[];
+ if(timelineTop&&playback&&sequence){
+  more=document.createElement('details');more.className='mobile-timeline-more';
+  const summary=document.createElement('summary');
+  summary.textContent='More options';
+  moreContent=document.createElement('div');moreContent.className='mobile-timeline-more-content';
+  more.appendChild(summary);more.appendChild(moreContent);timelineTop.appendChild(more);
+  for(const id of advancedIds){
+   const element=document.getElementById(id);
+   if(element?.parentElement)advancedHomes.push({element,home:element.parentElement,next:element.nextSibling});
+  }
+ }
+ function placeTimelineExtras(mobile){
+  if(!moreContent)return;
+  if(mobile){
+   for(const {element} of advancedHomes)if(element.parentElement!==moreContent)moreContent.appendChild(element);
+  }else{
+   more.open=false;
+   for(const {element,home,next} of advancedHomes)if(element.parentElement!==home)home.insertBefore(element,next?.parentElement===home?next:null);
+  }
+ }
  const viewButtons=[...nav.querySelectorAll('[data-mobile-view]')];
  let active='pitch';
  function paint(){
@@ -193,6 +221,7 @@ export function initMobileEditor({enabled=()=>false,sync=()=>{}}={}){
  function reset(mobile){
   placeVisualMode(mobile);
   placeMobileUi(mobile);
+  placeTimelineExtras(mobile);
   if(mobile){body.classList.add('mobile-workspace');show('pitch')}
   else{
    body.classList.remove('mobile-workspace','mobile-timing-view',...VIEWS.map(x=>'mobile-view-'+x));
