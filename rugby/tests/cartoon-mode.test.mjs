@@ -45,6 +45,25 @@ for(const [pose,expected] of [['held',24],['ready',26],['recovering',41],['groun
  const result=playerAppearance(defender,pose,original,[defender],view,null,null,1,{cartoonMode:true});
  assert.match(result,new RegExp('data-ruckus-pose="'+expected+'"'),'Ruckus pose '+pose+' maps to a real uploaded image');
 }
+
+const onGround=playerAppearance(defender,'grounded',original,[defender],view,null,null,1,{cartoonMode:true});
+assert.match(onGround,/data-ruckus-pose="35"/,'Grounded player uses user tackled3 sprite');
+assert.doesNotMatch(onGround,/data-ruckus-pose="42"/,'Do not use crouched present.png as lying down');
+const contact={id:'t1',type:'tackle',breakdown:{phase:'tackle'},members:[{id:'a1',pose:'grounded'},{id:'d1',pose:'tackling'}],x:130,y:120};
+const heldStep={objects:[player,defender,contact],seconds:2};
+const groundedCarrier=playerAppearance(player,'grounded',original,[player,defender,contact],view,heldStep,heldStep,1,{cartoonMode:true});
+const completingTackler=playerAppearance(defender,'tackling',original,[player,defender,contact],view,heldStep,heldStep,1,{cartoonMode:true});
+assert.match(groundedCarrier,/data-ruckus-pose="35"/,'Carrier stays on the floor after contact');
+assert.match(completingTackler,/data-ruckus-pose="32"/,'Tackler stays in final contact pose, not replaying approach');
+const presentedBall={id:'b1',type:'ball',x:105,y:125,transferKind:'presentation',groundState:'presented'};
+const presentingStep={objects:[player,defender,contact,presentedBall],seconds:2};
+const beforePresent={objects:[player,defender,contact,{...presentedBall,ownerId:player.id,transferKind:'pass',groundState:'grounded'}],seconds:2};
+const presenting=playerAppearance(player,'grounded',original,[player,defender,contact,presentedBall],view,beforePresent,presentingStep,1,{cartoonMode:true});
+assert.match(presenting,/data-ruckus-pose="36"/,'Present on the ground using tackled4, not crouched artwork');
+const released={objects:[player,defender],seconds:2};
+const releasing=playerAppearance(defender,'standing',original,[player,defender],view,heldStep,released,.15,{cartoonMode:true});
+assert.match(releasing,/data-ruckus-pose="24"/,'Tackler loosens contact before standing after release');
+assert.match(playerAppearance(defender,'standing',original,[player,defender],view,heldStep,released,.8,{cartoonMode:true}),/data-ruckus-pose="2"/,'Tackler returns to neutral after release');
 const sprites=read('js/cartoon-players.js'),red=read('js/ruckus-red-54-atlas.js'),blue=read('js/ruckus-blue-54-atlas.js');
 assert.match(sprites,/ruckus-red-54-atlas/);
 assert.match(sprites,/ruckus-blue-54-atlas/);
