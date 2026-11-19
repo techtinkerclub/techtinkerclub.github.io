@@ -1,4 +1,4 @@
-# Rugby Coaching Studio — v0.20.23 (Minion tackle and release visibility)
+# Rugby Coaching Studio — v0.20.24 (Harburling Ruckus prototype)
 
 Standalone web application for grassroots rugby coaches. See [current status and handover](PROJECT_STATUS.md) for verified releases, known limitations and next tasks. No build step or npm dependencies. Serve the repository root with an HTTP server and open **/rugby/**.
 
