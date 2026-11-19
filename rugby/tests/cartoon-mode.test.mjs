@@ -64,6 +64,15 @@ const released={objects:[player,defender],seconds:2};
 const releasing=playerAppearance(defender,'standing',original,[player,defender],view,heldStep,released,.15,{cartoonMode:true});
 assert.match(releasing,/data-ruckus-pose="24"/,'Tackler loosens contact before standing after release');
 assert.match(playerAppearance(defender,'standing',original,[player,defender],view,heldStep,released,.8,{cartoonMode:true}),/data-ruckus-pose="2"/,'Tackler returns to neutral after release');
+
+const ruckMarker={id:'r1',type:'ruck',x:130,y:120,members:[{id:'a1',pose:'bound'},{id:'d1',pose:'bound'}]};
+const ruckFrame={objects:[player,defender,ruckMarker],seconds:2};
+const ruckAttacker=playerAppearance(player,'bound',original,[player,defender,ruckMarker],view,ruckFrame,ruckFrame,.5,{cartoonMode:true});
+const ruckDefender=playerAppearance(defender,'bound',original,[player,defender,ruckMarker],view,ruckFrame,ruckFrame,.5,{cartoonMode:true});
+assert.match(ruckAttacker,/data-ruckus-bind="90.0"/,'Ruck attacker faces the contact partner, not an old heading');
+assert.match(ruckDefender,/data-ruckus-bind="-90.0"/,'Ruck defender faces back towards attacker');
+assert.match(ruckAttacker,/data-ruckus-pose="2[0-2]"/,'Ruck binds use approved crouch pose set');
+assert.match(ruckDefender,/data-ruckus-pose="2[0-2]"/,'Ruck binding is the same action for both colours');
 const sprites=read('js/cartoon-players.js'),red=read('js/ruckus-red-54-atlas.js'),blue=read('js/ruckus-blue-54-atlas.js');
 assert.match(sprites,/ruckus-red-54-atlas/);
 assert.match(sprites,/ruckus-blue-54-atlas/);
