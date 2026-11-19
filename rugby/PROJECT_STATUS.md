@@ -1,13 +1,23 @@
 # Rugby Coaching Studio — project status and handover
 
-Updated 18 November 2026. This document is the maintained handover between chats and development sessions.
+Updated 19 November 2026. This document is the maintained handover between chats and development sessions.
 
 ## Current release
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.19.7** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.34** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.34 — Mode-toggle and visual placement fixes (19 November 2026)
+
+- The active GitHub repository is **techtinkerclub/techtinkerclub.github.io** (master), rugby app under `/rugby/`. User expects changes directly in the repository, not a conceptual mock-up. **Classic Studio is the source of truth**; the Ruckus appearance is visual translation only.
+- **Scope correction from the user:** the **view-mode button overlapping the camera controls is mobile-specific**. The **floating coloured tag strips** and **coach label positioning** are cross-device problems; do not treat them as phone-only layout defects.
+- On mobile/tablet the *existing* Minion/Ruckus view-toggle button is reparented from the pitch overlay to the drill stage heading; desktop restores it to the pitch border. No duplicate button or duplicated click listener. Mobile heading remains available in short landscape.
+- In Ruckus, belt strips are anchored against the visible mascot hips (not the outer transparent atlas footprint). Both strips and the held-tag counter now sit nearer the sprite; underlying tag ownership and behaviour are unchanged. The Classic renderer was not changed.
+- Coach captions in **both Classic and Ruckus** are positioned from the actual object anchor, respecting the visible SVG viewport rather than clamping to the boundaries of an offset training pitch (which had displaced captions sideways).
+- Browser cache references refreshed in Studio, Coach Edition, library and read-only presentation; relevant shared imports and mobile CSS revisions updated. Added `tests/visual-placement.test.mjs`; retained Classic contract tests.
+- **Validation boundary:** JavaScript source syntax checked after publication, but complete Node test suite and device/browser visual QA have **not** been run in this session. Verify especially tag placement during turns/grounded poses, coach labels near cropped action-camera edges, and mobile landscape/portrait.
 
 ## Overhead Minion view (0.19.7)
 
