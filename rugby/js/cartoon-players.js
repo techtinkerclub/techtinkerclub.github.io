@@ -368,12 +368,13 @@ export function playerAppearance(o,pose,original,objects,g,previous,frame,progre
 export function cartoonTagIcon(o){
  if(!canCarry(o)||o.tagBelt!==true)return '';
  const c=tagColor(o.tagColor),left=o.tags?.left!==false,right=o.tags?.right!==false;
- // Place tag strips against the mascot hips, not outside the 70px sprite.
- const belt='<path d="M-16 10Q0 13 16 10" fill="none" stroke="#172932" stroke-width="3" stroke-linecap="round"/>';
- const tab=(x,side)=>'<g class="ruckus-tag-'+side+'"><rect x="'+x+'" y="7" width="6" height="12" rx="2" fill="'+c+'" stroke="#102e23" stroke-width="1.3"/><path d="M'+(x+1.5)+' 9v7" stroke="#fff" stroke-opacity=".65" stroke-width="1"/></g>';
+ // The artwork occupies the centre of its atlas viewport: attach both tabs
+ // to the visible hips rather than +/-20px outside the character.
+ const belt='<path d="M-10 7Q0 10 10 7" fill="none" stroke="#172932" stroke-width="2.5" stroke-linecap="round"/>';
+ const tab=(x,side)=>'<g class="ruckus-tag-'+side+'"><rect x="'+x+'" y="5" width="5" height="10" rx="1.7" fill="'+c+'" stroke="#102e23" stroke-width="1.1"/><path d="M'+(x+1.3)+' 7v6" stroke="#fff" stroke-opacity=".65" stroke-width=".8"/></g>';
  const taken=Math.max(0,Number(o.heldTags)||0);
- const counter=taken?'<g transform="translate(30 -25)"><circle r="9" fill="#f5e8a4" stroke="#173526" stroke-width="1.8"/><text y="3" text-anchor="middle" font-size="10" font-weight="700" fill="#172820">'+Math.min(12,taken)+'</text></g>':'';
- return '<g class="ruckus-tag-indicators" pointer-events="none">'+belt+(left?tab(-20,'left'):'')+(right?tab(14,'right'):'')+counter+'</g>';
+ const counter=taken?'<g transform="translate(19 -17)"><circle r="7" fill="#f5e8a4" stroke="#173526" stroke-width="1.5"/><text y="3" text-anchor="middle" font-size="9" font-weight="700" fill="#172820">'+Math.min(12,taken)+'</text></g>':'';
+ return '<g class="ruckus-tag-indicators" pointer-events="none">'+belt+(left?tab(-12,'left'):'')+(right?tab(7,'right'):'')+counter+'</g>';
 }
 export function cartoonObjectOrder(items,cartoonMode){
  if(!cartoonMode)return items;
