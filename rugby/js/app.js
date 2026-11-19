@@ -1,7 +1,7 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {HEAD_MODES,headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=27';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=28';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=8';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
@@ -47,7 +47,7 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.20.27';
+import {renderScene} from './scene.js?v=0.20.28';
 import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.16';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.18.4';
