@@ -1,7 +1,7 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {HEAD_MODES,headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder} from './cartoon-players.js?v=23';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder} from './cartoon-players.js?v=24';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=8';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
@@ -47,7 +47,7 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.20.22';
+import {renderScene} from './scene.js?v=0.20.24';
 import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.16';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.18.4';
@@ -113,8 +113,8 @@ function contactDragGrip(frame,marker,g){
 $('minionMode').onclick=()=>{
  cartoonMode=!cartoonMode;
  const b=$('minionMode');b.setAttribute('aria-pressed',String(cartoonMode));
- b.textContent=cartoonMode?'◉ Classic view':'◉ Minion Mode';
- b.title=cartoonMode?'Return to standard coaching players and direction arrows':'Switch to playful yellow goggle-eyed cartoon players';
+ b.textContent=cartoonMode?'◉ Classic view':'◉ Harburling Ruckus';
+ b.title=cartoonMode?'Return to standard coaching players and direction arrows':'Show the red rugby mascot animation skin';
  render();
 };
 function render(){
@@ -350,7 +350,7 @@ if(canCarry(o)){
   const chosen=Object.hasOwn(COACH_GESTURES,o.coachGesture)?o.coachGesture:'auto';
   coachPose.innerHTML='<label>Cartoon coach gesture<select id="coachGesture" '+(preview!==null?'disabled':'')+'>'+
    Object.entries(COACH_GESTURES).map(([k,v])=>'<option value="'+k+'" '+(chosen===k?'selected':'')+'>'+v+'</option>').join('')+
-   '</select></label><small>Minion Mode only. Automatic: standing, walking or signalling GO. The classic coach and drill timing stay unchanged.</small>';
+   '</select></label><small>Ruckus Mode only. Automatic: standing, walking or signalling GO. The classic coach and drill timing stay unchanged.</small>';
   $('objectPanel').insertBefore(coachPose,$('objectPanel').lastElementChild);
   $('coachGesture').onchange=e=>{
    if(!Object.hasOwn(COACH_GESTURES,e.target.value))return;
