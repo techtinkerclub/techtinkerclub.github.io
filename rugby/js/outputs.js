@@ -1,5 +1,5 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.15';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.16';
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {outcomeCardsMarkup} from './branching-visual.js?v=12';
 import {decisionList,decisionText} from './training.js?v=0.18.8';
