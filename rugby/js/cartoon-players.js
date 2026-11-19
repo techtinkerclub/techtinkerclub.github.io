@@ -9,7 +9,7 @@ import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
 import {RUCKUS_RED_ATLAS_URI} from './ruckus-red-54-atlas.js?v=1';
 import {RUCKUS_BLUE_ATLAS_URI} from './ruckus-blue-54-atlas.js?v=1';
 import {RUCKUS_PRESENT_URI} from './ruckus-presentation-data.js?v=1';
-import {COACH_OVERHEAD_URI} from './coach-user-overhead-data.js?v=1';
+import {RUCKUS_COACH_URI,RUCKUS_COACH_TILE,RUCKUS_COACH_COLUMNS} from './ruckus-coach-h8-data.js?v=1';
 const RUCKUS_TILE=128,RUCKUS_COLS=8,RUCKUS_ROWS=7;
 const POSE_NAMES=['idle','jog','sprint','defensive_ready','sidestep','turn','look_scan','carry_ball','prepare_pass','pass_follow','receive','pickup','ground_try','approach_tackle','tackle_contact','being_tackled','grounded','present_ball','getting_up','support_runner','ruck_bind','ruck_clearout','maul_bound','shield_ready','bag_ready'];
 const RIG_POSES=POSE_NAMES.map((name,index)=>({name,grounded:[12,16,17].includes(index)}));
@@ -24,7 +24,7 @@ const CARTOON_SPRITE_DEFS='<defs>'+
  '<image id="rugby-ruckus-red-54" href="'+RUCKUS_RED_ATLAS_URI+'" width="1024" height="896"/>'+
  '<image id="rugby-ruckus-blue-54" href="'+RUCKUS_BLUE_ATLAS_URI+'" width="1024" height="896"/>'+
  '<image id="rugby-ruckus-presentation-v1" href="'+RUCKUS_PRESENT_URI+'" width="208" height="208"/>'+
- '<image id="rugby-coach-user-overhead-v1" href="'+COACH_OVERHEAD_URI+'" width="112" height="69"/></defs>';
+ '<image id="rugby-ruckus-coach-h8" href="'+RUCKUS_COACH_URI+'" width="'+(RUCKUS_COACH_TILE*RUCKUS_COACH_COLUMNS)+'" height="'+(RUCKUS_COACH_TILE*2)+'"/></defs>';
 export function cartoonSpriteDefs(){return CARTOON_SPRITE_DEFS;}
 function movingInfo(o,previous,frame,p){
  const before=previous?.objects?.find(q=>q.id===o.id),after=frame?.objects?.find(q=>q.id===o.id);
@@ -338,17 +338,24 @@ function coachTravelAngle(o,g,previous,frame,p){
  if(!Number.isFinite(absolute))return null;
  return ((absolute-(Number(o.rot)||0)-(Number(g.rotation)||0)+180)%360+360)%360-180;
 }
+// Eight H-cap coach illustrations selected from the user's actual 54-pose
+// Harburling coach pack. The coach is a Ruckus-only visual replacement.
+const H_COACH_FRAMES=[1,3,5,7,6,4,4,6]; // idle,walk,point spot,celebrate,point out,folded,hips,shrug
 function cartoonCoach(o,objects,g,previous,frame,p){
- const k=coachIndex(o,previous,frame,p);
- // User's original overhead Gru reference is facing SOUTH (nose at bottom).
- // Rotate by 180 degrees in local coordinates so that "forward" is north,
- // matching the Classic arrow; the outer renderer already applies o.rot.
+ const gesture=coachIndex(o,previous,frame,p);
+ const poseId=H_COACH_FRAMES[gesture]??1;
  const turn=coachTravelAngle(o,g,previous,frame,p)??smoothGaze(o,objects,g,previous,frame,p);
+ // Original H-cap images look towards the bottom of their tile; the scene
+ // already applies o.rot and field rotation, just as it does for players.
  const angle=wrapMinionAngle(turn+180);
- return '<g class="cartoon-coach top-down-coach-image coach-user-overhead" data-coach-pose="'+k+'" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
-  '<svg x="-39" y="-25" width="78" height="50" viewBox="0 0 112 69" overflow="visible">'+
-    '<use href="#rugby-coach-user-overhead-v1"/></svg></g>';
+ const t=RUCKUS_COACH_TILE,x=(poseId%RUCKUS_COACH_COLUMNS)*t,y=Math.floor(poseId/RUCKUS_COACH_COLUMNS)*t;
+ const moving=movingInfo(o,previous,frame,p).moving;
+ const bounce=moving?Math.sin(clamp(p,0,1)*12*Math.PI)*.65:0;
+ return '<g class="cartoon-coach ruckus-h-coach" data-coach-pose="'+gesture+'" data-coach-frame="'+poseId+'" pointer-events="none" transform="rotate('+fmt(angle)+')">'+
+  '<svg x="-39" y="'+fmt(-39+bounce)+'" width="78" height="78" viewBox="0 0 '+t+' '+t+'" overflow="visible">'+
+   tileUse('rugby-ruckus-coach-h8',x,y,t)+'</svg></g>';
 }
+
 export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
  // Explicit output-mode boundary: cartoon changes must not alter Classic pose,
  // eye/arrow, scale, team colours or equipment.
