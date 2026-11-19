@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {blank} from '../js/model.js';
-import {playerAppearance,cartoonPitchDecor} from '../js/cartoon-players.js';
+import {playerAppearance,cartoonPitchDecor,cartoonTagIcon,cartoonObjectOrder} from '../js/cartoon-players.js';
 import {renderScene,playbackData} from '../js/scene.js';
 import {outputOptions} from '../js/outputs.js';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
@@ -73,6 +73,14 @@ assert.match(ruckAttacker,/data-ruckus-bind="90.0"/,'Ruck attacker faces the con
 assert.match(ruckDefender,/data-ruckus-bind="90.0"/,'Ruck defender faces back towards attacker');
 assert.match(ruckAttacker,/data-ruckus-pose="2[0-2]"/,'Ruck binds use approved crouch pose set');
 assert.match(ruckDefender,/data-ruckus-pose="2[0-2]"/,'Ruck binding is the same action for both colours');
+const tagged={...player,tagBelt:true,tags:{left:true,right:true},tagColor:'red'};
+const comicTags=cartoonTagIcon(tagged);
+assert.match(comicTags,/ruckus-tag-indicators/,'Ruckus uses separate tag indicators');
+assert.match(comicTags,/ruckus-tag-left/,'Left belt indicator remains visible');
+assert.doesNotMatch(comicTags,/tag-belt/,'Classic over-visor bars never appear on Ruckus');
+const frontBall={id:'ball1',type:'ball',x:101,y:121,ownerId:player.id};
+assert.equal(cartoonObjectOrder([frontBall,player,defender],true).at(-1).id,frontBall.id,'Ruckus draws attached ball after players');
+assert.equal(cartoonObjectOrder([frontBall,player,defender],false)[0].id,frontBall.id,'Classic draw order unchanged');
 const sprites=read('js/cartoon-players.js'),red=read('js/ruckus-red-54-atlas.js'),blue=read('js/ruckus-blue-54-atlas.js');
 assert.match(sprites,/ruckus-red-54-atlas/);
 assert.match(sprites,/ruckus-blue-54-atlas/);
