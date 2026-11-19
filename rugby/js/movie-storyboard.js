@@ -11,7 +11,8 @@ const seconds=(n,fallback,min=0,max=12)=>Number.isFinite(Number(n))?
 export function movieStoryboard(source,opts={}){
  const drills=Array.isArray(source)?source:[source];
  if(!drills.length||drills.length>8)throw Error('Choose between 1 and 8 drills for a coaching video.');
- const intro=opts.pauseCards===false?0:seconds(opts.introSeconds,3,0,12);
+ // The opening card is independent of decision-explanation pauses.
+ const intro=seconds(opts.introSeconds,3,0,12);
  const decisionPause=opts.pauseCards===false?0:seconds(opts.decisionSeconds,8,0,15);
  const choicePause=opts.pauseCards===false?0:seconds(opts.choiceSeconds,6,0,15);
  const replay=opts.mode!=='single',replaySpeed=[.25,.5,.75].includes(Number(opts.replaySpeed))?
