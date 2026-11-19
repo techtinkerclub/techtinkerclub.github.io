@@ -43,7 +43,10 @@ function currentBall(o,previous,frame){
  return {
   held:balls.find(q=>q.ownerId===o.id),
   received:balls.find(q=>q.ownerId===o.id&&previously(q.id)?.ownerId!==o.id),
-  passed:balls.find(q=>previously(q.id)?.ownerId===o.id&&q.ownerId!==o.id&&q.transferKind==='pass'),
+  // The standard pass created by the editor deliberately has NO transferKind.
+  // A named 'pass' is also allowed. Never animate releases/pickups as passes.
+  passed:balls.find(q=>previously(q.id)?.ownerId===o.id&&q.ownerId&&q.ownerId!==o.id
+   &&!NON_PASS_TRANSFERS.has(q.transferKind)),
   all:balls
  };
 }
@@ -190,17 +193,46 @@ export function ruckusIncomingPassBearing(o,previous,frame,g){
  // must look TOWARDS the source, regardless of existing authored rotation.
  return wrapMinionAngle(incoming+180-(Number(o.rot)||0)-(Number(g.rotation)||0));
 }
-/** Transform relative to the proven v0.20.36 right-hand reception.
- * A ball arriving from the opposite hip ONLY mirrors the source pose;
- * a diagonal arrival then adds the small deviation from that side.
- * Rotations are relative to the already-authored body/field orientation.
- */
+// The pass and receive artwork was drawn looking diagonally up and right.
+// Reflections across BOTH atlas axes produce the other three diagonal
+// directions. A final correction of at most 45° handles any in-between
+// direction, without turning the player around or changing drill coordinates.
+export function ruckusActionSpriteTransform(localBearing){
+ if(!Number.isFinite(localBearing))return null;
+ const target=wrapMinionAngle(localBearing);
+ // The original sprite points NE (+45). The existing global 180° turn
+ // points it SW (-135), so keep this stable baseline rather than replacing
+ // it with the incorrect v0.20.37 calibration.
+ let mirrorX=1,mirrorY=1,source=-135;
+ if(target>=0&&target<90){mirrorX=-1;mirrorY=-1;source=45}
+ else if(target>=90){mirrorX=-1;source=135}
+ else if(target>=-90){mirrorY=-1;source=-45}
+ return {mirrorX,mirrorY,angle:180+wrapMinionAngle(target-source)};
+}
+// Keep the old exported name for any existing tests or integrations.
 export function ruckusCatchPoseTransform(bearing,forward=0){
- const relative=wrapMinionAngle(bearing-forward);
- const mirror=relative<0?-1:1;
- const sourceSide=mirror<0?-90:90;
- const deviation=wrapMinionAngle(relative-sourceSide);
- return {mirror,angle:180+forward+deviation};
+ const transform=ruckusActionSpriteTransform(wrapMinionAngle(bearing-forward));
+ return {mirror:transform?.mirrorX??1,angle:(transform?.angle??180)+forward,
+  mirrorY:transform?.mirrorY??1};
+}
+export function ruckusOutgoingPassBearing(o,previous,frame,g){
+ if(!previous?.objects||!frame?.objects||typeof g?.toView!=='function')return null;
+ const ball=frame.objects.find(q=>q.type==='ball'&&q.ownerId&&q.ownerId!==o.id
+  &&!NON_PASS_TRANSFERS.has(q.transferKind)
+  &&previous.objects.some(prior=>prior.id===q.id&&prior.ownerId===o.id));
+ if(!ball)return null;
+ const prior=previous.objects.find(q=>q.id===ball.id),to=frame.objects.find(q=>q.id===ball.ownerId);
+ if(!prior)return null;
+ const from=g.toView(prior.x,prior.y),end=g.toView(ball.x,ball.y);
+ let outgoing=null;
+ if(Math.hypot(end.x-from.x,end.y-from.y)>3)
+  outgoing=sampleRoute(routeSamples(prior,ball,frame.paths?.[ball.id],g),.001).angle;
+ if(!Number.isFinite(outgoing)&&to){
+  const a=g.toView(o.x,o.y),b=g.toView(to.x,to.y);
+  if(Math.hypot(a.x-b.x,a.y-b.y)>3)outgoing=Math.atan2(b.x-a.x,a.y-b.y)*180/Math.PI;
+ }
+ if(!Number.isFinite(outgoing))return null;
+ return wrapMinionAngle(outgoing-(Number(o.rot)||0)-(Number(g.rotation)||0));
 }
 function minionTravelHeading(o,g,previous,frame,p){
  const start=previous?.objects?.find(q=>q.id===o.id),end=frame?.objects?.find(q=>q.id===o.id);
@@ -242,6 +274,8 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  if(o.headMode==='forward'&&moving)gaze=forward;
  const relative=moving?wrapMinionAngle(gaze-forward):gaze;
  const catchLocal=semantic===10?ruckusIncomingPassBearing(o,previous,frame,g):null;
+ const passLocal=[8,9].includes(semantic)?ruckusOutgoingPassBearing(o,previous,frame,g):null;
+ const actionBearing=catchLocal??passLocal;
  const look=ruckusLookBucket(relative);
  const step=clamp(p,0,1);
  const team=(o.type==='defender'||o.type==='bagplayer')?'red':'blue';
@@ -335,17 +369,13 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  // north-facing zero angle. The enclosing scene already applies o.rot.
  // Direction is chosen using the authored five-way sprite before rotation,
  // so we never rotate the entire head independently of its arms/feet.
- // For receive1/receive2, calibrate the diagonal source artwork directly
- // against the INCOMING ball. The original 180° default turned the catcher's
- // visor away even when the Classic player was correctly facing the pass.
- // The outer scene still applies the authored o.rot + pitch rotation.
- // Preserve the v0.20.36 RECEIVING-FROM-RIGHT pose exactly. The mirrored
- // receiving-from-left case should be the same pose facing the other way,
- // not a new 90–180° rotation of a diagonal source-art guess.
- const baseAngle=180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
- const catchTurn=catchLocal===null?null:ruckusCatchPoseTransform(catchLocal,moving?forward:0);
- const mirror=catchTurn?catchTurn.mirror:([8,9,10].includes(semantic)&&relative<0)?-1:1;
- const angle=catchTurn?catchTurn.angle:baseAngle;
+ // Both PASS and RECEIVE use the same four-directional sprite reflections.
+ // This avoids the old one-axis-only flip and keeps source art/timing intact.
+ const action=actionBearing===null?null:ruckusActionSpriteTransform(actionBearing);
+ const forwardAngle=180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
+ const mirrorX=action?.mirrorX??(([8,9,10].includes(semantic)&&relative<0)?-1:1);
+ const mirrorY=action?.mirrorY??1;
+ const angle=action?.angle??forwardAngle;
  // Our new image is a genuinely PRONE, ball-free pose, with both hands left.
  // A 90-degree offset aligns its hands with the existing presented ball.
  const proneAngle=90+presentationLocal;
@@ -363,9 +393,9 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
     '<use href="#rugby-ruckus-presentation-v1" x="0" y="'+(team==='red'?-104:0)+'"/>'+
    '</svg></g>':null;
  const spriteArt=showProne?presentArt:
-  '<g transform="rotate('+fmt(angle)+' 64 64) translate('+fmt(mirror===-1?128:0)+' 0) scale('+mirror+' 1)">'+cell+'</g>';
+  '<g transform="rotate('+fmt(angle)+' 64 64) translate('+fmt(mirrorX===-1?128:0)+' '+fmt(mirrorY===-1?128:0)+') scale('+mirrorX+' '+mirrorY+')">'+cell+'</g>';
 
- return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+(showProne?'present-prone':sprite)+'" data-ruckus-presentation-bearing="'+(showProne?fmt(presentationBearing):'none')+'" data-ruckus-look="'+fmt(gaze)+'" data-ruckus-catch="'+(catchLocal===null?'none':fmt(catchLocal))+'" data-ruckus-mirror="'+mirror+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
+ return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+(showProne?'present-prone':sprite)+'" data-ruckus-presentation-bearing="'+(showProne?fmt(presentationBearing):'none')+'" data-ruckus-look="'+fmt(gaze)+'" data-ruckus-catch="'+(catchLocal===null?'none':fmt(catchLocal))+'" data-ruckus-pass="'+(passLocal===null?'none':fmt(passLocal))+'" data-ruckus-mirror="'+mirrorX+','+mirrorY+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
   '<svg x="-35" y="'+fmt(-35+pulse)+'" width="70" height="70" viewBox="0 0 128 128" overflow="visible">'+
     spriteArt+
   '</svg><g>'+bodyEquipment(o)+'</g></g>';
