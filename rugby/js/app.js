@@ -1953,7 +1953,8 @@ pitch.addEventListener('pointerdown',e=>{
  const nearbyPlayer=e.pointerType==='touch'&&document.body.classList.contains('mobile-workspace')
   ?overlapAt(viewPoint(e)).find(canCarry):null;
  const path=nearbyPlayer?null:e.target.closest('[data-path-id]');
- if(path&&!groupMode&&!groupIds.size){const id=path.dataset.pathId,alreadySelected=selectedPathId===id&&selected===id;selected=id;selectedPathId=id;if(!alreadySelected){render();inspector();openInspector('Object',false);note('Running line selected. Press Delete to remove this movement and return the player to the start of this step.')}else{insertPathPoint(viewPoint(e),null,e)}e.preventDefault();return}
+ if(path&&!groupMode&&!groupIds.size){
+  if(e.pointerType==='touch'&&document.body.classList.contains('mobile-workspace')&&camera.panMode)camera.setPanMode(false);const id=path.dataset.pathId,alreadySelected=selectedPathId===id&&selected===id;selected=id;selectedPathId=id;if(!alreadySelected){render();inspector();openInspector('Object',false);note('Running line selected. Press Delete to remove this movement and return the player to the start of this step.')}else{insertPathPoint(viewPoint(e),null,e)}e.preventDefault();return}
  const g=e.target.closest('[data-id]')||(nearbyPlayer
   ?[...pitch.querySelectorAll('.obj[data-id]')].find(el=>el.dataset.id===nearbyPlayer.id):null);
  selectedPathId=null;
@@ -1961,7 +1962,10 @@ pitch.addEventListener('pointerdown',e=>{
   if(nearbyPlayer){selectObject(nearbyPlayer.id);camera.setPanMode(false);e.preventDefault();return}
   selected=null;groupIds.clear();render();inspector();return
  }
- if(nearbyPlayer&&camera.panMode)camera.setPanMode(false);
+ // Selecting any object (including coach/ball/equipment) exits mobile Pan.
+ // Previously only carrying players did, so the touch smoke test could leave
+ // Pan latched after selecting a coach even though selection succeeded.
+ if(e.pointerType==='touch'&&document.body.classList.contains('mobile-workspace')&&camera.panMode)camera.setPanMode(false);
  const hit=f().objects.find(o=>o.id===g.dataset.id),gp=groupTarget(hit);
  if((e.ctrlKey||e.metaKey)&&gp){if(!groupIds.size){const prior=groupTarget(activeObject());if(prior)groupIds.add(prior.id)}groupMode=true;toggleGroupPlayer(hit);e.preventDefault();return}
  if(gp&&groupIds.has(gp.id)){const items=groupSnapshot(f(),[...groupIds],geometry());drag={id:gp.id,kind:'group',items,pointerId:e.pointerId,origin:viewPoint(e),moved:false};pitch.setPointerCapture(e.pointerId);e.preventDefault();return}
