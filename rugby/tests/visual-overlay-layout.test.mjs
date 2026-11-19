@@ -29,11 +29,12 @@ test('Ruckus tag indicators are on hips and hide after a tag is removed',()=>{
  assert.doesNotMatch(after,/ruckus-tag-left/);
  assert.match(after,/ruckus-tag-right/);
 });
-test('mobile toggle moves into the stage heading, away from the in-pitch camera controls',()=>{
+test('mobile view toggle and single camera row stay outside the pitch',()=>{
  const css=readFileSync(new URL('../assets/mobile-editor.css',import.meta.url),'utf8');
  const js=readFileSync(new URL('../js/mobile-editor.js',import.meta.url),'utf8');
- assert.match(css,/stage-heading > \\.mobile-mode-toggle/);
- assert.match(css,/position:static/);
- assert.match(js,/const target=mobile\\?modeHeading:modeHome/);
- assert.match(css,/\\.mobile-camera-controls\\s*\\{[^}]*top:7px;right:7px/s);
+ assert.ok(css.includes('.stage-heading > .mobile-mode-toggle'));
+ assert.ok(css.includes('position:static'));
+ assert.ok(js.includes('const target=mobile?modeHeading:modeHome'));
+ assert.ok(css.includes('.mobile-quick-controls .mobile-camera-controls'));
+ assert.ok(css.includes('body.mobile-workspace .mobile-quick-controls .mobile-camera-controls'));
 });
