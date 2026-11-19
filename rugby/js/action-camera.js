@@ -1,3 +1,4 @@
+import {transitionObjects} from './possession.js?v=0.19.1';
 // View-only automatic framing: never edits drill dimensions, object positions or paths.
 // The full-field view remains the default for precise offside/distance teaching.
 const ACTIVE=new Set(['attacker','defender','neutral','coach','shield','bagplayer','ball','donut','sausage','bag','ruck','tackle','maul','scrum']);
@@ -62,4 +63,49 @@ export function actionViewportAt(d,g,index,progress=1){
  const u=clamp(progress/.32,0,1),q=u*u*(3-2*u);
  return {x:lerp(old.x,target.x,q),y:lerp(old.y,target.y,q),
   width:lerp(old.width,target.width,q),height:lerp(old.height,target.height,q)};
+}
+
+/**
+ * FOLLOW ACTION: continuous camera-only tracking of moving rugby actors.
+ * Stage framing sets zoom and keeps the whole meaningful action visible;
+ * live interpolated positions shift the centre as the play unfolds. Camera
+ * movement never alters saved drill coordinates, routes or player facing.
+ */
+export function followActionViewport(d,g,index,progress=1){
+ const frames=d?.frames||[];
+ if(index<=0||index>=frames.length)return actionViewport(d,g,Math.max(0,index));
+ const stage=actionViewportAt(d,g,index,progress),old=frames[index-1],next=frames[index];
+ const t=clamp(progress,0,1),current=transitionObjects(old,next,t,g);
+ const moving=new Set();
+ for(const end of next.objects||[]){
+  if(!PLAYER.has(end.type)&&end.type!=='ball'&&!['ruck','tackle','scrum','maul'].includes(end.type))continue;
+  const before=find(old,end.id);
+  if(!before)continue;
+  const a=g.toView(before.x,before.y),b=g.toView(end.x,end.y);
+  if(Math.hypot(b.x-a.x,b.y-a.y)>Math.max(3,.2*g.scale)||end.type==='ball'&&before.ownerId!==end.ownerId)
+   moving.add(end.id);
+ }
+ const positions=[];
+ for(const o of current){
+  if(!o||!moving.has(o.id)||!Number.isFinite(o.x)||!Number.isFinite(o.y))continue;
+  const p=g.toView(o.x,o.y);if(!Number.isFinite(p.x)||!Number.isFinite(p.y))continue;
+  positions.push({...p,weight:o.type==='ball'?1.5:1});
+ }
+ if(!positions.length)return stage;
+ const sum=positions.reduce((v,p)=>v+p.weight,0);
+ const tx=positions.reduce((v,p)=>v+p.x*p.weight,0)/sum;
+ const ty=positions.reduce((v,p)=>v+p.y*p.weight,0)/sum;
+ const stageX=stage.x+stage.width/2,stageY=stage.y+stage.height/2;
+ // Bias towards the running ball/players, but retain wider tactical context.
+ const cx=lerp(stageX,tx,.68),cy=lerp(stageY,ty,.68);
+ const view={x:clamp(cx-stage.width/2,0,Math.max(0,g.viewWidth-stage.width)),
+  y:clamp(cy-stage.height/2,0,Math.max(0,g.viewHeight-stage.height)),
+  width:stage.width,height:stage.height};
+ // A short ease at step boundaries avoids an abrupt camera jump.
+ if(index>1&&t<.22){
+  const prev=followActionViewport(d,g,index-1,1),u=t/.22,q=u*u*(3-2*u);
+  return {x:lerp(prev.x,view.x,q),y:lerp(prev.y,view.y,q),
+   width:lerp(prev.width,view.width,q),height:lerp(prev.height,view.height,q)};
+ }
+ return view;
 }
