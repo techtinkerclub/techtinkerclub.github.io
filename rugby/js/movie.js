@@ -28,12 +28,62 @@ export function movieRaster(g,width,height){
 export function rasterSVG(svg,w,h){
  return svg.replace(/(<svg\b[^>]*?)\swidth="[^"]*"\sheight="[^"]*"/,(_,prefix)=>prefix+' width="'+w+'" height="'+h+'"');
 }
+
 export function movieSettingsMarkup(prefix){
- return '<fieldset class="movie-settings"><legend>Video settings</legend><label>Decision outcomes<select id="'+prefix+'Branches"><option value="all">Both outcomes · A then B (recommended)</option><option value="selected">Currently selected outcome only</option></select></label><label>Sequence<select id="'+prefix+'Mode"><option value="dual">Normal + slow coaching replay</option><option value="single">Normal speed only</option></select></label><label>Replay speed<select id="'+prefix+'Speed"><option value="0.25">0.25× · quarter speed</option><option value="0.5" selected>0.5× · half speed</option><option value="0.75">0.75×</option></select></label><label>Video format<select id="'+prefix+'Format"><option value="landscape">Landscape · 16:9</option><option value="portrait">Shorts / Reels · 9:16</option></select></label><label>Resolution<select id="'+prefix+'Quality"><option value="720">HD · 1280 × 720</option><option value="1080" selected>Full HD · 1920 × 1080</option><option value="2160">4K · 3840 × 2160</option></select></label><label class="movie-check"><input id="'+prefix+'PauseCards" type="checkbox" checked> Pause on decision &amp; option explanations</label><label>Decision pause<select id="'+prefix+'DecisionSeconds"><option value="3">3 s</option><option value="5">5 s</option><option value="8" selected>8 s · recommended</option></select></label><label>Option explanation<select id="'+prefix+'ChoiceSeconds"><option value="3">3 s</option><option value="4">4 s</option><option value="6" selected>6 s · recommended</option></select></label><label>Drill introduction<select id="'+prefix+'IntroSeconds"><option value="0">None</option><option value="2">2 s</option><option value="3" selected>3 s</option><option value="5">5 s</option></select></label><label class="movie-check"><input id="'+prefix+'Notes" type="checkbox" checked> Show step coaching notes</label><label class="movie-check"><input id="'+prefix+'Card" type="checkbox"> Include full coaching card &amp; step notes at end</label><small>First viewing: no paths. Replay: runs and ball paths visible. Portrait uses the selected camera view (whole pitch or action focus). Full coaching card adds reading time.</small></fieldset>';
+ const id=s=>prefix+s;
+ const item=(condition,html)=>'<div class="movie-conditional" data-video-if="'+condition+'">'+html+'</div>';
+ return '<fieldset class="movie-settings"><legend>Video settings</legend>'+
+  item('decision','<label>Decision outcomes<select id="'+id('Branches')+'"><option value="all">Both outcomes · A then B</option><option value="selected">Currently selected outcome only</option></select></label>')+
+  '<label>Playback<select id="'+id('Mode')+'"><option value="dual">Normal + slow coaching replay</option><option value="single">Normal speed only</option></select></label>'+
+  item('replay','<label>Replay speed<select id="'+id('Speed')+'"><option value="0.25">0.25× · quarter speed</option><option value="0.5" selected>0.5× · half speed</option><option value="0.75">0.75×</option></select></label>')+
+  '<label>Video format<select id="'+id('Format')+'"><option value="landscape">Landscape · 16:9</option><option value="portrait">Shorts / Reels · 9:16</option></select></label>'+
+  '<label>Resolution<select id="'+id('Quality')+'"><option value="720">HD · 1280 × 720</option><option value="1080" selected>Full HD · 1920 × 1080</option><option value="2160">4K · 3840 × 2160</option></select></label>'+
+  item('decision','<label class="movie-check"><input id="'+id('PauseCards')+'" type="checkbox" checked> Explain decisions and outcomes with pause cards</label>')+
+  item('decision-pause','<label>Decision pause<select id="'+id('DecisionSeconds')+'"><option value="3">3 s</option><option value="5">5 s</option><option value="8" selected>8 s</option></select></label>')+
+  item('decision-pause','<label>Option explanation<select id="'+id('ChoiceSeconds')+'"><option value="3">3 s</option><option value="4">4 s</option><option value="6" selected>6 s</option></select></label>')+
+  item('story','<label>Drill introduction<select id="'+id('IntroSeconds')+'"><option value="0">None</option><option value="2">2 s</option><option value="3" selected>3 s</option><option value="5">5 s</option></select></label>')+
+  '<label class="movie-check"><input id="'+id('Notes')+'" type="checkbox" checked> Show step coaching notes</label>'+
+  '<label class="movie-check"><input id="'+id('Card')+'" type="checkbox"> Include full coaching card at end</label>'+
+  '<small>Video format and resolution apply to the downloaded file. Coaching replay shows movement and ball paths.</small></fieldset>';
+}
+export function videoSettingVisibility(context={},mode='dual',pauseCards=true){
+ const decision=context.hasDecision===true;
+ return {decision,'decision-pause':decision&&pauseCards===true,
+  replay:mode!=='single',story:context.story===true};
 }
 export function bindMovieSettings(root,prefix){
  root.innerHTML=movieSettingsMarkup(prefix);
- const get=s=>document.getElementById(prefix+s),sync=()=>{get('Speed').disabled=get('Mode').value==='single';for(const name of ['DecisionSeconds','ChoiceSeconds','IntroSeconds'])get(name).disabled=!get('PauseCards').checked;const p=get('Format').value==='portrait';for(const q of get('Quality').options){const quality=MOVIE_QUALITIES[q.value];q.textContent=(q.value==='720'?'HD':q.value==='1080'?'Full HD':'4K')+' · '+(p?quality.height+' × '+quality.width:quality.width+' × '+quality.height)}};
- get('Mode').onchange=sync;get('Format').onchange=sync;get('PauseCards').onchange=sync;sync();
- return ()=>movieOptions({mode:get('Mode').value,replaySpeed:get('Speed').value,quality:get('Quality').value,format:get('Format').value,notes:get('Notes').checked,card:get('Card').checked,branchMode:get('Branches').value,pauseCards:get('PauseCards').checked,decisionSeconds:Number(get('DecisionSeconds').value),choiceSeconds:Number(get('ChoiceSeconds').value),introSeconds:Number(get('IntroSeconds').value)});
+ const get=s=>document.getElementById(prefix+s);
+ let context={hasDecision:false,story:false};
+ const sync=()=>{
+  const visibility=videoSettingVisibility(context,get('Mode').value,get('PauseCards').checked);
+  for(const wrapper of root.querySelectorAll('[data-video-if]')){
+   const visible=visibility[wrapper.dataset.videoIf]===true;
+   wrapper.hidden=!visible;
+   for(const input of wrapper.querySelectorAll('input,select'))input.disabled=!visible;
+  }
+  const portrait=get('Format').value==='portrait';
+  for(const q of get('Quality').options){
+   const quality=MOVIE_QUALITIES[q.value];
+   q.textContent=(q.value==='720'?'HD':q.value==='1080'?'Full HD':'4K')+' · '+
+    (portrait?quality.height+' × '+quality.width:quality.width+' × '+quality.height);
+  }
+ };
+ for(const name of ['Mode','Format','PauseCards'])get(name).addEventListener('change',sync);
+ const read=()=>movieOptions({
+  mode:get('Mode').value,replaySpeed:get('Speed').value,
+  quality:get('Quality').value,format:get('Format').value,
+  notes:get('Notes').checked,card:get('Card').checked,
+  branchMode:context.hasDecision?get('Branches').value:'all',
+  pauseCards:context.hasDecision?get('PauseCards').checked:false,
+  decisionSeconds:Number(get('DecisionSeconds').value),
+  choiceSeconds:Number(get('ChoiceSeconds').value),
+  introSeconds:context.story?Number(get('IntroSeconds').value):0
+ });
+ read.setContext=next=>{
+  context={hasDecision:next?.hasDecision===true,story:next?.story===true};
+  sync();
+ };
+ read.setContext(context);
+ return read;
 }
