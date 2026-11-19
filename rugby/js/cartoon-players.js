@@ -8,6 +8,7 @@ import {playerHeadAngle} from './player-gaze.js?v=3';
 import {classicPlayerAppearance} from './classic-player-appearance.js?v=1';
 import {RUCKUS_RED_ATLAS_URI} from './ruckus-red-54-atlas.js?v=1';
 import {RUCKUS_BLUE_ATLAS_URI} from './ruckus-blue-54-atlas.js?v=1';
+import {RUCKUS_PRESENT_URI} from './ruckus-presentation-data.js?v=1';
 import {COACH_OVERHEAD_URI} from './coach-user-overhead-data.js?v=1';
 const RUCKUS_TILE=128,RUCKUS_COLS=8,RUCKUS_ROWS=7;
 const POSE_NAMES=['idle','jog','sprint','defensive_ready','sidestep','turn','look_scan','carry_ball','prepare_pass','pass_follow','receive','pickup','ground_try','approach_tackle','tackle_contact','being_tackled','grounded','present_ball','getting_up','support_runner','ruck_bind','ruck_clearout','maul_bound','shield_ready','bag_ready'];
@@ -22,6 +23,7 @@ const hash=str=>{let h=0;for(const c of String(str||''))h=((h*33)^c.charCodeAt(0
 const CARTOON_SPRITE_DEFS='<defs>'+
  '<image id="rugby-ruckus-red-54" href="'+RUCKUS_RED_ATLAS_URI+'" width="1024" height="896"/>'+
  '<image id="rugby-ruckus-blue-54" href="'+RUCKUS_BLUE_ATLAS_URI+'" width="1024" height="896"/>'+
+ '<image id="rugby-ruckus-presentation-v1" href="'+RUCKUS_PRESENT_URI+'" width="208" height="208"/>'+
  '<image id="rugby-coach-user-overhead-v1" href="'+COACH_OVERHEAD_URI+'" width="112" height="69"/></defs>';
 export function cartoonSpriteDefs(){return CARTOON_SPRITE_DEFS;}
 function movingInfo(o,previous,frame,p){
@@ -222,12 +224,29 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const bindLocal=bindBearing===null?null:wrapMinionAngle(bindBearing-(Number(o.rot)||0)-(Number(g.rotation)||0));
 
  const earlierBall=previous?.objects?.filter(b=>b.type==='ball')||[];
- const presentation=frame?.objects?.some(b=>{
+ // Reuse the real ball already placed by the shared breakdown engine.
+ // In an authored release, that ball is on the support-side of the player;
+ // we never infer 'backwards' from screen left/right or the player's visor.
+ const presentingBalls=(frame?.objects||[]).filter(b=>{
   if(b.type!=='ball'||(b.transferKind!=='presentation'&&b.groundState!=='presented'))return false;
   const old=earlierBall.find(a=>a.id===b.id);
   return old?.ownerId===o.id||b.ownerId===o.id||
-   (pose==='grounded'&&!old?.ownerId&&Math.hypot(b.x-o.x,b.y-o.y)<28);
+   ((pose==='grounded'||markerRole==='grounded')&&!old?.ownerId&&Math.hypot(b.x-o.x,b.y-o.y)<45);
  });
+ const presentBall=presentingBalls.find(b=>b.id===tackleMarker?.breakdown?.ballId)||presentingBalls[0]||null;
+ const presentation=!!presentBall;
+ const presentationVisible=(presentation||semantic===17)&&(pose==='grounded'||activeCarrier||semantic===17);
+ const ballAnchor=presentBall?g.toView(presentBall.x,presentBall.y):null;
+ const playerAnchor=ballAnchor?g.toView(o.x,o.y):null;
+ const vx=ballAnchor&&playerAnchor?ballAnchor.x-playerAnchor.x:0;
+ const vy=ballAnchor&&playerAnchor?ballAnchor.y-playerAnchor.y:0;
+ // Bearing is screen-up=0, clockwise-positive. Subtract the already-applied
+ // player+field rotation; the source sprite's hands point LEFT (-90 degrees).
+ const presentationBearing=Math.hypot(vx,vy)>2
+  ?Math.atan2(vx,-vy)*180/Math.PI
+  :Number(o.rot)||0;
+ const presentationLocal=wrapMinionAngle(presentationBearing-(Number(o.rot)||0)-(Number(g.rotation)||0));
+
  if(pose==='held')sprite=24;
  else if(pose==='crouched')sprite=21;
  else if(pose==='ready')sprite=23+Math.min(3,Math.floor(step*4));
@@ -271,15 +290,29 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  // Direction is chosen using the authored five-way sprite before rotation,
  // so we never rotate the entire head independently of its arms/feet.
  const angle=180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
+ // Our new image is a genuinely PRONE, ball-free pose, with both hands left.
+ // A 90-degree offset aligns its hands with the existing presented ball.
+ const proneAngle=90+presentationLocal;
  // The source passing/receiving poses are lateral; mirror the whole illustration
  // for the opposite side without changing the existing ball ownership or flight.
  const mirror=([8,9,10].includes(semantic)&&relative<0)?-1:1;
  const pulse=moving?Math.sin(step*12*Math.PI)*.55:0;
  const atlasId=team==='red'?'rugby-ruckus-red-54':'rugby-ruckus-blue-54';
  const cell=tileUse(atlasId,(sprite%RUCKUS_COLS)*RUCKUS_TILE,Math.floor(sprite/RUCKUS_COLS)*RUCKUS_TILE,RUCKUS_TILE);
- return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+sprite+'" data-ruckus-look="'+fmt(gaze)+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
+ // The first fifth of the release shows the regular grounded silhouette.
+ // The remainder shows a clearly held presentation pose without an extra ball.
+ const showProne=presentationVisible&&(!previous||step>=.2);
+ const presentArt=showProne?
+  '<g transform="rotate('+fmt(proneAngle)+' 64 64)">'+
+   '<svg x="0" y="33" width="128" height="62" viewBox="0 0 208 104" overflow="hidden">'+
+    '<use href="#rugby-ruckus-presentation-v1" x="0" y="'+(team==='red'?-104:0)+'"/>'+
+   '</svg></g>':null;
+ const spriteArt=showProne?presentArt:
+  '<g transform="rotate('+fmt(angle)+' 64 64) translate('+fmt(mirror===-1?128:0)+' 0) scale('+mirror+' 1)">'+cell+'</g>';
+
+ return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+(showProne?'present-prone':sprite)+'" data-ruckus-presentation-bearing="'+(showProne?fmt(presentationBearing):'none')+'" data-ruckus-look="'+fmt(gaze)+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
   '<svg x="-35" y="'+fmt(-35+pulse)+'" width="70" height="70" viewBox="0 0 128 128" overflow="visible">'+
-    '<g transform="rotate('+fmt(angle)+' 64 64) translate('+fmt(mirror===-1?128:0)+' 0) scale('+mirror+' 1)">'+cell+'</g>'+
+    spriteArt+
   '</svg><g>'+bodyEquipment(o)+'</g></g>';
 }
 
