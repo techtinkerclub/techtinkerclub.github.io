@@ -77,7 +77,24 @@ const geometry=()=>drillGeometry(drill,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
 function preferCoachingForFullField(){if(drill.pitchContext?.mode!=='field')return false;if(scaleMode==='coaching')return false;scaleMode='coaching';$('scaleMode').value='coaching';try{localStorage.setItem('rugby-symbol-scale','coaching')}catch{}return true}
 $('scaleMode').value=scaleMode;$('scaleMode').onchange=()=>{scaleMode=normalScaleMode($('scaleMode').value);try{localStorage.setItem('rugby-symbol-scale',scaleMode)}catch{}render();note(scaleMode==='realistic'?'Realistic scale · nominal dimensions in metres.':'Coaching view · enlarged symbols; positions unchanged.')};
-const camera=createCamera(pitch,{getGeometry:geometry,canNavigate:()=>!drag&&!routeDrawing&&!ballPicking&&!trainingPick,onChange:(z,pan)=>{$('zoomFit').textContent=Math.round(z*100)+'%';$('panMode').classList.toggle('selected',pan);$('panMode').setAttribute('aria-pressed',String(pan));$('zoomOut').disabled=z<=1.001;$('zoomIn').disabled=z>=15.999}});
+const camera=createCamera(pitch,{
+ getGeometry:geometry,
+ canNavigate:()=>!drag&&!routeDrawing&&!ballPicking&&!trainingPick,
+ // Pan-mode must never consume a tap on a player or editing handle on mobile.
+ // This also covers a finger landing near the sprite on a thin SVG path.
+ preferEdit:e=>preview===null&&!playing&&(
+  !!e.target.closest?.('[data-id],[data-path-id],[data-rotate],[data-waypoint],[data-insert-point],[data-contact-grip],[data-contact-route-waypoint],[data-contact-route-insert],[data-dp-point]')
+  ||document.body.classList.contains('mobile-workspace')&&e.pointerType==='touch'&&overlapAt(viewPoint(e)).some(canCarry)),
+ onChange:(z,pan)=>{
+  $('zoomFit').textContent=Math.round(z*100)+'%';
+  $('panMode').classList.toggle('selected',pan);
+  $('panMode').setAttribute('aria-pressed',String(pan));
+  const touchPan=document.querySelector('.mobile-camera-controls [data-mobile-camera="panMode"]');
+  touchPan?.setAttribute('aria-pressed',String(pan));
+  touchPan?.classList.toggle('selected',pan);
+  $('zoomOut').disabled=z<=1.001;$('zoomIn').disabled=z>=15.999;
+ }
+});
 $('zoomIn').onclick=()=>camera.changeZoom(1.25);$('zoomOut').onclick=()=>camera.changeZoom(.8);$('zoomFit').onclick=()=>camera.fit();$('zoomArea').onclick=()=>{const box=geometry().trainingRect;if(box)camera.focusView({x:box.x-20,y:box.y-20,width:box.width+40,height:box.height+40});else camera.fit();};$('zoomAction').onclick=()=>{const frameIndex=preview===null?idx:locate(preview).i;camera.focusView(actionViewport(drill,geometry(),frameIndex));note('Camera fitted to this action. Pitch measurements and saved positions are unchanged; use Fit pitch for the full field.');};$('panMode').onclick=()=>camera.setPanMode(!camera.panMode); $('moveScope').onchange=()=>{const explanation={
  'here':'Only this step will change; the next animation can still start from the previously saved position.',
  'until':'The adjustment carries forward until the next deliberately authored run.',
@@ -1930,11 +1947,21 @@ pitch.addEventListener('pointerdown',e=>{
   pitch.setPointerCapture(e.pointerId);
   e.preventDefault();return;
  }
- const path=e.target.closest('[data-path-id]');
+ // A thumb-sized tap can land on the SVG route drawn over a small player.
+ // Prefer the nearby player in mobile touch mode; retain path editing on desktop
+ // and whenever the touch is not near any player.
+ const nearbyPlayer=e.pointerType==='touch'&&document.body.classList.contains('mobile-workspace')
+  ?overlapAt(viewPoint(e)).find(canCarry):null;
+ const path=nearbyPlayer?null:e.target.closest('[data-path-id]');
  if(path&&!groupMode&&!groupIds.size){const id=path.dataset.pathId,alreadySelected=selectedPathId===id&&selected===id;selected=id;selectedPathId=id;if(!alreadySelected){render();inspector();openInspector('Object',false);note('Running line selected. Press Delete to remove this movement and return the player to the start of this step.')}else{insertPathPoint(viewPoint(e),null,e)}e.preventDefault();return}
- const g=e.target.closest('[data-id]');
+ const g=e.target.closest('[data-id]')||(nearbyPlayer
+  ?[...pitch.querySelectorAll('.obj[data-id]')].find(el=>el.dataset.id===nearbyPlayer.id):null);
  selectedPathId=null;
- if(!g){selected=null;groupIds.clear();render();inspector();return}
+ if(!g){
+  if(nearbyPlayer){selectObject(nearbyPlayer.id);camera.setPanMode(false);e.preventDefault();return}
+  selected=null;groupIds.clear();render();inspector();return
+ }
+ if(nearbyPlayer&&camera.panMode)camera.setPanMode(false);
  const hit=f().objects.find(o=>o.id===g.dataset.id),gp=groupTarget(hit);
  if((e.ctrlKey||e.metaKey)&&gp){if(!groupIds.size){const prior=groupTarget(activeObject());if(prior)groupIds.add(prior.id)}groupMode=true;toggleGroupPlayer(hit);e.preventDefault();return}
  if(gp&&groupIds.has(gp.id)){const items=groupSnapshot(f(),[...groupIds],geometry());drag={id:gp.id,kind:'group',items,pointerId:e.pointerId,origin:viewPoint(e),moved:false};pitch.setPointerCapture(e.pointerId);e.preventDefault();return}
@@ -2043,7 +2070,14 @@ $('whistleSound').onclick=()=>{whistleSoundOn=!whistleSoundOn;$('whistleSound').
 $('play').onclick=()=>{
  trainingPick=null;ballPicking=null;
  if(routeDrawing)finishRoute();
- if(playing){stop();return}
+ if(playing){
+  // A manual Pause is an editing decision, not a permanent preview lock.
+  const nearest=preview===null?idx:locate(preview).i;
+  choose(nearest);
+  camera.setPanMode(false);
+  note('Paused · editing step '+(idx+1)+'. Tap a player to make changes.');
+  return;
+ }
  if(duration()<=0){note('Add a second step to animate the drill.');return}
  if(preview===null&&idx===0)decisionResolved=false;
  // A branched drill must be watched from the shared run to understand the
@@ -2066,7 +2100,14 @@ $('play').onclick=()=>{
   }
   if(whistleSoundOn&&crossedWhistles(drill,from,preview).length)playWhistle();
   render();
-  if(preview>=duration()){stop();return}
+  if(preview>=duration()){
+   // Playback used to leave preview at its final timestamp, which disables
+   // every player tap. Finish in the LAST authored step's true edit state.
+   choose(drill.frames.length-1);
+   camera.setPanMode(false);
+   note('Playback finished · editing last step '+(idx+1)+'. Select or move a player.');
+   return;
+  }
   raf=requestAnimationFrame(tick);
  }
  raf=requestAnimationFrame(tick);
