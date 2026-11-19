@@ -187,6 +187,9 @@ function minionCatchHeading(o,g,previous,frame){
  return wrapMinionAngle(angle-(Number(o.rot)||0)-(Number(g.rotation)||0));
 }
 function cartoonMinion(o,pose,objects,g,previous,frame,p){
+ const poseId=cartoonPoseIndex(o,pose,objects,previous,frame,p);
+ const move=movingInfo(o,previous,frame,p);
+ const incoming=poseId===10?minionCatchHeading(o,g,previous,frame):null;
  const team=o.type==='defender'||o.type==='bagplayer'?1:0;
  // The original "grounded" artwork (cell 16) is a side-on tumble: from our
  // strict overhead camera it reads like a standing player tipped sideways.
