@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ruckusIncomingPassBearing,ruckusOutgoingPassBearing,ruckusActionSpriteTransform,playerAppearance,cartoonPoseIndex} from '../js/cartoon-players.js';
+import {ruckusIncomingPassBearing,ruckusOutgoingPassBearing,ruckusActionSpriteTransform,ruckusPassSpriteTransform,playerAppearance,cartoonPoseIndex} from '../js/cartoon-players.js';
 import {classicPlayerAppearance} from '../js/classic-player-appearance.js';
 
 const g={toView:(x,y)=>({x,y}),rotation:0,viewWidth:900,viewHeight:540};
@@ -68,9 +68,42 @@ test('sender faces the receiver during ordinary editor passes without a transfer
   const svg=playerAppearance(passer,'standing',artwork,after.objects,g,before,after,.5,{cartoonMode:true});
   assert.ok(svg.includes('data-ruckus-pass="'+heading.toFixed(1)+'"'));
   assert.match(svg,/data-ruckus-pose="4[345]"/);
-  const t=ruckusActionSpriteTransform(heading);
+  const t=ruckusPassSpriteTransform(heading);
   assert.ok(svg.includes('scale('+t.mirrorX+' '+t.mirrorY+')'));
+  assert.ok(svg.includes('rotate('+t.angle.toFixed(1)+' 64 64)'));
+  assert.equal(t.mirrorY,1,'A lateral pass must never vertically flip the actor');
+  assert.equal(t.angle,heading===90?45:-45,
+   'Right/left pass should be a small turn from the actual upright atlas pose');
+  assert.ok(Math.abs(t.angle)<=45,'Lateral pass must not spin the mascot upside down');
   equalAngle(renderedFacing(t),heading);
+ }
+});
+test('passing source orientation is independent of the working catching calibration',()=>{
+ const right=ruckusPassSpriteTransform(90),left=ruckusPassSpriteTransform(-90);
+ assert.deepEqual(right,{mirrorX:1,mirrorY:1,angle:45});
+ assert.deepEqual(left,{mirrorX:-1,mirrorY:1,angle:-45});
+ for(let target=-180;target<=180;target+=5){
+  const t=ruckusPassSpriteTransform(target);
+  assert.equal(t.mirrorY,1,'Do not reuse receiving Y reflection for passing');
+  equalAngle(renderedFacing(t),target);
+ }
+ for(const heading of [-90,90]){
+  const catchTransform=ruckusActionSpriteTransform(heading);
+  // Independent orientation and reflection rules, no accidental shared helper.
+  assert.notDeepEqual(ruckusPassSpriteTransform(heading),catchTransform);
+ }
+});
+test('rendered pass sprites do not include the former 180-degree pass turn',()=>{
+ for(const x of [100,300]){
+  const {before,after}=passFrom(x,120);
+  const passer={...before.objects[1],type:'attacker'};
+  before.objects[1]=passer;after.objects[1]=passer;
+  const actual=playerAppearance(passer,'standing',artwork,after.objects,g,before,after,.5,{cartoonMode:true});
+  const heading=x===100?90:-90,expected=ruckusPassSpriteTransform(heading);
+  assert.ok(actual.includes('rotate('+expected.angle.toFixed(1)+' 64 64)'),
+   'Pass sprite should only rotate 45° or -45°, not the v0.20.39 upside-down transform');
+  assert.ok(actual.includes('scale('+expected.mirrorX+' 1)'));
+  assert.ok(!actual.includes('rotate(180.0 64 64)'),'Pass artwork must not inherit the receiving baseline');
  }
 });
 test('diagonal and curved passes retain local directions even when field and body are rotated',()=>{
