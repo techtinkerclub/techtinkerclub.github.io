@@ -7780,7 +7780,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 680,
-              "y": 300,
+              "y": 340,
               "rot": 0
             },
             {
@@ -7812,7 +7812,7 @@
               "type": "ball",
               "label": "",
               "x": 695,
-              "y": 292,
+              "y": 332,
               "rot": 0,
               "ownerId": "a2",
               "transferKind": "pass"
@@ -15902,11 +15902,493 @@
       "review": "Draft · coach review",
       "frames": [
         {
-          "name": "Set up",
+          "name": "Set up · two teams in touch",
           "seconds": 0,
-          "notes": "Set-up: Coach gives possession to either team at intervals during touch rugby. New attackers find support and choose the best route to score. Call possession changes clearly. Reward a team that reorganises rather than simply the fastest individual runner.",
-          "objects": [],
-          "timing": {}
+          "notes": "Coach can award the ball to either side at a clear cue. Teams must switch between attack and touch defence; this is a non-contact practice.",
+          "objects": [
+            {
+              "id": "coach",
+              "type": "coach",
+              "label": "Coach",
+              "x": 450,
+              "y": 268,
+              "rot": 0
+            },
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 345,
+              "y": 190,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 190,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 470,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 650,
+              "y": 395,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 466,
+              "y": 260,
+              "rot": 0,
+              "ownerId": "coach"
+            },
+            {
+              "id": "g1",
+              "type": "cone",
+              "label": "",
+              "x": 180,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "g2",
+              "type": "cone",
+              "label": "",
+              "x": 760,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "x1",
+              "type": "cone",
+              "label": "",
+              "x": 200,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "x2",
+              "type": "cone",
+              "label": "",
+              "x": 700,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Coach awards possession to D1",
+          "seconds": 1.2,
+          "notes": "At the coach's call, D1 becomes the new attacking carrier. This is an organised possession switch in a touch game, not an uncontrolled steal.",
+          "objects": [
+            {
+              "id": "coach",
+              "type": "coach",
+              "label": "Coach",
+              "x": 450,
+              "y": 268,
+              "rot": 0
+            },
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 345,
+              "y": 190,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 190,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 455,
+              "y": 284,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 650,
+              "y": 395,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 471,
+              "y": 276,
+              "rot": 0,
+              "ownerId": "d1",
+              "transferKind": "handover"
+            },
+            {
+              "id": "g1",
+              "type": "cone",
+              "label": "",
+              "x": 180,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "g2",
+              "type": "cone",
+              "label": "",
+              "x": 760,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "x1",
+              "type": "cone",
+              "label": "",
+              "x": 200,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "x2",
+              "type": "cone",
+              "label": "",
+              "x": 700,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 62,
+              "end": 85
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Exploit the disorganised line",
+          "seconds": 1.8,
+          "notes": "D1 looks up and runs into the open channel. D2 supports behind; A1 and A2 now act as touch defenders and try to reconnect.",
+          "objects": [
+            {
+              "id": "coach",
+              "type": "coach",
+              "label": "Coach",
+              "x": 450,
+              "y": 268,
+              "rot": 0
+            },
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 345,
+              "y": 180,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 590,
+              "y": 183,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 390,
+              "y": 177,
+              "rot": 0,
+              "headMode": "player",
+              "headTargetId": "d2"
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 595,
+              "y": 305,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 471,
+              "y": 276,
+              "rot": 0,
+              "ownerId": "d1"
+            },
+            {
+              "id": "g1",
+              "type": "cone",
+              "label": "",
+              "x": 180,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "g2",
+              "type": "cone",
+              "label": "",
+              "x": 760,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "x1",
+              "type": "cone",
+              "label": "",
+              "x": 200,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "x2",
+              "type": "cone",
+              "label": "",
+              "x": 700,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Defender closes for a light touch",
+          "seconds": 1.25,
+          "notes": "A1 completes an agreed light touch to finish the phase. New attackers communicate who carries and who supports; no live tackle.",
+          "objects": [
+            {
+              "id": "coach",
+              "type": "coach",
+              "label": "Coach",
+              "x": 450,
+              "y": 268,
+              "rot": 0
+            },
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 355,
+              "y": 149,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 590,
+              "y": 183,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 374,
+              "y": 151,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 570,
+              "y": 247,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 471,
+              "y": 276,
+              "rot": 0,
+              "ownerId": "d1"
+            },
+            {
+              "id": "g1",
+              "type": "cone",
+              "label": "",
+              "x": 180,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "g2",
+              "type": "cone",
+              "label": "",
+              "x": 760,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "x1",
+              "type": "cone",
+              "label": "",
+              "x": 200,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "x2",
+              "type": "cone",
+              "label": "",
+              "x": 700,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "interactions": [
+            {
+              "kind": "touch",
+              "actorId": "a1",
+              "targetId": "d1",
+              "at": 0.75,
+              "displaySeconds": 1.25,
+              "label": "TOUCH! · new possession"
+            }
+          ]
+        },
+        {
+          "name": "Reset · switch the team called",
+          "seconds": 1.7,
+          "notes": "Reset and let the coach award the next possession to the other team. Reward quick reorganisation rather than one fast runner.",
+          "objects": [
+            {
+              "id": "coach",
+              "type": "coach",
+              "label": "Coach",
+              "x": 450,
+              "y": 268,
+              "rot": 0
+            },
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 345,
+              "y": 190,
+              "rot": 180
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 650,
+              "y": 190,
+              "rot": 180
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 470,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 650,
+              "y": 395,
+              "rot": 0
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 471,
+              "y": 276,
+              "rot": 0,
+              "ownerId": "coach",
+              "transferKind": "set"
+            },
+            {
+              "id": "g1",
+              "type": "cone",
+              "label": "",
+              "x": 180,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "g2",
+              "type": "cone",
+              "label": "",
+              "x": 760,
+              "y": 70,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "x1",
+              "type": "cone",
+              "label": "",
+              "x": 200,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "x2",
+              "type": "cone",
+              "label": "",
+              "x": 700,
+              "y": 470,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {}
         }
       ]
     },
@@ -17467,7 +17949,7 @@
               "type": "attacker",
               "label": "A2",
               "x": 505,
-              "y": 275,
+              "y": 360,
               "rot": 0
             },
             {
@@ -17475,7 +17957,7 @@
               "type": "ball",
               "label": "",
               "x": 521,
-              "y": 267,
+              "y": 352,
               "rot": 0,
               "ownerId": "a2",
               "transferKind": "pass"
@@ -17527,7 +18009,7 @@
         },
         {
           "name": "Turn the corner · switch direction",
-          "seconds": 1.7,
+          "seconds": 2.8,
           "notes": "Both players look where they are going before rounding the next corner. Maintain separation, then reset the other way.",
           "objects": [
             {
@@ -17630,11 +18112,428 @@
       "review": "Draft · coach review",
       "frames": [
         {
-          "name": "Set up",
+          "name": "Set up · end-zone target",
           "seconds": 0,
-          "notes": "Set-up: Teams pass to a teammate stationed in a marked end zone (no raised bench). Score and rotate target players. No contact. Use a ground-level end zone, never a bench or raised object. Rotate target players regularly. This is a modified handling game without a fixed match attack direction. For directional rugby practice, require sideways or backward passes.",
-          "objects": [],
-          "timing": {}
+          "notes": "Use the green cones as a ground-level scoring area; never put a child on a bench. This is a modified passing game without a fixed match direction.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 310,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "Target",
+              "x": 645,
+              "y": 345,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 480,
+              "y": 175,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 535,
+              "y": 400,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 326,
+              "y": 262,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "zone1",
+              "type": "cone",
+              "label": "",
+              "x": 695,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone2",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone3",
+              "type": "cone",
+              "label": "",
+              "x": 695,
+              "y": 420,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone4",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 420,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "st1",
+              "type": "cone",
+              "label": "",
+              "x": 160,
+              "y": 95,
+              "rot": 0,
+              "coneColor": "blue"
+            },
+            {
+              "id": "st2",
+              "type": "cone",
+              "label": "",
+              "x": 160,
+              "y": 495,
+              "rot": 0,
+              "coneColor": "blue"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Receiver finds the ground-level end zone",
+          "seconds": 1.5,
+          "notes": "A2 moves into the marked end zone to the right. A1 looks for a clear passing lane while defenders shadow without contact.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 350,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "Target",
+              "x": 730,
+              "y": 350,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 430,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 590,
+              "y": 352,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 326,
+              "y": 262,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "zone1",
+              "type": "cone",
+              "label": "",
+              "x": 695,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone2",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone3",
+              "type": "cone",
+              "label": "",
+              "x": 695,
+              "y": 420,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone4",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 420,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "st1",
+              "type": "cone",
+              "label": "",
+              "x": 160,
+              "y": 95,
+              "rot": 0,
+              "coneColor": "blue"
+            },
+            {
+              "id": "st2",
+              "type": "cone",
+              "label": "",
+              "x": 160,
+              "y": 495,
+              "rot": 0,
+              "coneColor": "blue"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Accurate pass scores in the zone",
+          "seconds": 1.6,
+          "notes": "A1 passes backwards or sideways to A2 inside the end zone. Catch securely to score; the target player never stands on a raised bench.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 350,
+              "y": 290,
+              "rot": 0,
+              "headMode": "player",
+              "headTargetId": "a2"
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "Target",
+              "x": 745,
+              "y": 358,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 430,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 645,
+              "y": 350,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 761,
+              "y": 350,
+              "rot": 0,
+              "ownerId": "a2",
+              "transferKind": "pass"
+            },
+            {
+              "id": "zone1",
+              "type": "cone",
+              "label": "",
+              "x": 695,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone2",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone3",
+              "type": "cone",
+              "label": "",
+              "x": 695,
+              "y": 420,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone4",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 420,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "st1",
+              "type": "cone",
+              "label": "",
+              "x": 160,
+              "y": 95,
+              "rot": 0,
+              "coneColor": "blue"
+            },
+            {
+              "id": "st2",
+              "type": "cone",
+              "label": "",
+              "x": 160,
+              "y": 495,
+              "rot": 0,
+              "coneColor": "blue"
+            }
+          ],
+          "timing": {
+            "b": {
+              "start": 27,
+              "end": 73
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Rotate the target · restart",
+          "seconds": 1.5,
+          "notes": "After the catch, pause and swap the target player. Mark a new ground-level zone and resume with no contact.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 350,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "Target",
+              "x": 690,
+              "y": 385,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 480,
+              "y": 175,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 535,
+              "y": 400,
+              "rot": 180
+            },
+            {
+              "id": "b",
+              "type": "ball",
+              "label": "",
+              "x": 761,
+              "y": 350,
+              "rot": 0,
+              "ownerId": "a2"
+            },
+            {
+              "id": "zone1",
+              "type": "cone",
+              "label": "",
+              "x": 695,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone2",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 140,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone3",
+              "type": "cone",
+              "label": "",
+              "x": 695,
+              "y": 420,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "zone4",
+              "type": "cone",
+              "label": "",
+              "x": 790,
+              "y": 420,
+              "rot": 0,
+              "coneColor": "green"
+            },
+            {
+              "id": "st1",
+              "type": "cone",
+              "label": "",
+              "x": 160,
+              "y": 95,
+              "rot": 0,
+              "coneColor": "blue"
+            },
+            {
+              "id": "st2",
+              "type": "cone",
+              "label": "",
+              "x": 160,
+              "y": 495,
+              "rot": 0,
+              "coneColor": "blue"
+            }
+          ],
+          "timing": {},
+          "paths": {}
         }
       ],
       "showAttack": false
