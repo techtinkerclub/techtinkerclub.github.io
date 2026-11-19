@@ -653,7 +653,7 @@ function updateSkillActionsPanel(){
    (ball.transferKind==='rip'?'<label>Label <input type="text" data-rip-label="'+esc(ball.id)+'" maxlength="100" value="'+esc(ball.ripLabel||'Rip ball')+'"></label>':'')+
    '<button type="button" data-ball-delete="'+esc(ball.id)+'" class="danger-action">Undo transfer</button></div>';
  }).join('');
- list.innerHTML=eventRows+ballRows+(events.length||balls.length?'':'<p class="muted">No authored actions in this step. Select a player and right-click → Actions… to add one.</p>');
+ list.innerHTML=eventRows+ballRows+(events.length||balls.length?'':'<p class="muted">No authored actions in this step. Select a player and tap the Actions button (or right-click on desktop) to add one.</p>');
  panel.hidden=false;
 }
 $('skillActionsList').addEventListener('change',event=>{
@@ -864,6 +864,13 @@ function updateSelectionTools(o){
  $('moveScope').disabled=preview!==null||!!routeDrawing||!!ballPicking||!!trainingPick||groupMode||!!groupIds.size;$('moveScope').title=groupMode||groupIds.size?'Group moves affect this step only. Individual move scope is unchanged.':'Position change scope for individual objects';
  $('groupToggle').disabled=preview!==null||!!routeDrawing||!!ballPicking||!!trainingPick;
  $('selectionLabel').textContent=groupIds.size?groupIds.size+' players selected':o?(o.label||types[o.type][0]):'No selection';
+ // Mobile's visible Actions button replaces desktop-only right-click.
+ const touchActions=$('mobileObjectActions');
+ if(touchActions){
+  const available=preview===null&&!playing&&!routeDrawing&&!ballPicking&&!trainingPick&&(!!o||groupIds.size>=2);
+  touchActions.hidden=!available;
+  if(available)touchActions.textContent=groupIds.size>=2?'⋯ '+groupIds.size+' player actions':'⋯ '+(o.label||types[o.type][0])+' actions';
+ }
  $('drawRouteSide').disabled=!o||['decision','donut'].includes(o.type)||isDiagramObject(o)||!!ballPicking||!!((o.type==='ball'||isShield(o))&&o.ownerId&&!selectedMovement());
  $('drawRouteSideLabel').textContent=routeDrawing?'Finish path':'Draw path';
  $('drawRouteSide').classList.toggle('selected',routeDrawing);$('drawRouteSide').setAttribute('aria-pressed',String(routeDrawing));
@@ -1255,6 +1262,16 @@ function openObjectMenu(e){
  menu.querySelector('button:not([hidden]):not([disabled])')?.focus({preventScroll:true});
 }
 pitch.addEventListener('contextmenu',openObjectMenu);
+// The same contextual menu is usable on touchscreens with a visible control.
+// Reuse the existing command validation, object selection and deletion logic.
+$('mobileObjectActions')?.addEventListener('click',()=>{
+ if(!document.body.classList.contains('mobile-workspace')||!canEditObjects())return;
+ const id=groupIds.size>=2?[...groupIds][0]:selected;
+ const node=[...pitch.querySelectorAll('.obj[data-id]')].find(el=>el.dataset.id===id);
+ if(!node)return;
+ const rect=node.getBoundingClientRect();
+ openObjectMenu({target:node,clientX:rect.left+rect.width/2,clientY:rect.top+rect.height/2,preventDefault(){}});
+});
 $('objectMenu').addEventListener('click',e=>{
  const stacked=e.target.closest('[data-stack-id]');if(stacked){selectObject(stacked.dataset.stackId);closeObjectMenu();return}
  const b=e.target.closest('[data-object-command]');if(!b)return;
@@ -2562,7 +2579,7 @@ $('shareMovie').onclick=async()=>{if(sharingBusy)return;shareBusy(true);$('share
  const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(sequence[0],settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{shareBusy(false)}};
 $('sharePrint').onclick=()=>{const opts=shareOptions();$('shareDialog').close();printDrill(drill,opts)};
 // Close board options when returning to the pitch or leaving with Escape.
-document.addEventListener('pointerdown',e=>{const menu=$('viewMenu');if(menu.open&&!menu.contains(e.target))menu.open=false});
+document.addEventListener('pointerdown',e=>{const menu=$('viewMenu');if(menu.open&&!menu.contains(e.target)&&!e.target.closest('#mobileViewOptions'))menu.open=false});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('viewMenu').open){$('viewMenu').open=false;$('viewMenu').querySelector('summary').focus()}});
 $('resetLayout').addEventListener('click',()=>{$('viewMenu').open=false});
 // Optional advanced checks: independent of drill content, undo history and sharing.
