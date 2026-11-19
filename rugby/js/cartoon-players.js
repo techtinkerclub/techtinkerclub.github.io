@@ -206,7 +206,10 @@ function cartoonMinion(o,pose,objects,g,previous,frame,p){
  const move=movingInfo(o,previous,frame,p);
  // Original source goggles face south; articulated standing heads face north.
  // Ground poses include their heads baked into the overhead body artwork.
- const travel=entry.grounded?null:minionTravelHeading(o,g,previous,frame,p);
+ // Only normal running/carrying stances inherit path heading. Contact,
+ // side-step, turn and bound poses retain their deliberate authored body angle.
+ const followTravel=[1,2,7,19].includes(poseId);
+ const travel=entry.grounded||!followTravel?null:minionTravelHeading(o,g,previous,frame,p);
  const incoming=poseId===10?minionCatchHeading(o,g,previous,frame):null;
  const bodyTurn=entry.grounded?0:(travel??incoming??0);
  // Preserve the independent head bearing when the body turns, including when
