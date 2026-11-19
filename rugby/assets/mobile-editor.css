@@ -240,3 +240,161 @@
  }
  body.mobile-workspace #objectMenu .menu-label{font-size:14px}
 }
+
+/* v0.20.38: Mobile sequence/timing are two distinct editing surfaces.
+   The previous five children of the timeline had only four CSS grid rows:
+   the implicit track row overlapped the step cards on iPhones. */
+.mobile-timeline-switch,.mobile-timeline-more{display:none}
+@media screen and (max-width:1100px){
+ body.mobile-workspace.mobile-view-steps:not(.presentation-mode) > .timeline{
+  display:flex!important;flex-direction:column;align-items:stretch;
+  height:min(76dvh,650px)!important;
+  max-height:calc(100dvh - var(--mobile-nav-height,56px) - env(safe-area-inset-bottom) - 8px);
+  min-height:0;padding:12px 12px 14px;gap:9px;overflow:hidden;
+  grid-template-rows:none
+ }
+ body.mobile-workspace.mobile-view-steps .timeline-top{
+  display:flex;flex:0 0 auto;flex-direction:column;
+  align-items:stretch;gap:7px;min-width:0
+ }
+ body.mobile-workspace.mobile-view-steps .timeline-top > div:first-child{
+  display:flex;flex:0 0 auto;justify-content:space-between;align-items:center;min-width:0
+ }
+ body.mobile-workspace.mobile-view-steps .timeline-top h2{font-size:16px;margin:0}
+ body.mobile-workspace.mobile-view-steps .timeline-top .playback-group{
+  display:grid;grid-template-columns:44px minmax(85px,1fr) 44px 80px;
+  gap:6px;width:100%;min-width:0
+ }
+ body.mobile-workspace.mobile-view-steps .timeline-top .playback-group > *{
+  min-width:0;min-height:44px;max-width:none;width:100%;margin:0;
+  padding:7px 5px;font-size:13px
+ }
+ body.mobile-workspace.mobile-view-steps .timeline-top .playback-group #back{grid-column:1}
+ body.mobile-workspace.mobile-view-steps .timeline-top .playback-group #play{grid-column:2}
+ body.mobile-workspace.mobile-view-steps .timeline-top .playback-group #forward{grid-column:3}
+ body.mobile-workspace.mobile-view-steps .timeline-top .playback-group #speed{grid-column:4}
+ body.mobile-workspace.mobile-view-steps .timeline-top .sequence-group{
+  display:flex;flex-wrap:wrap;gap:6px;min-width:0
+ }
+ body.mobile-workspace.mobile-view-steps .timeline-top .sequence-group #addStep{
+  min-height:44px;flex:1 1 92px;font-size:13px
+ }
+ body.mobile-workspace.mobile-view-steps .timeline-top .sequence-group #editCurrent:not([hidden]){
+  min-height:44px
+ }
+ body.mobile-workspace.mobile-view-steps .mobile-timeline-more{
+  display:block;flex:0 0 auto;min-width:0
+ }
+ body.mobile-workspace.mobile-view-steps .mobile-timeline-more > summary{
+  display:flex;align-items:center;justify-content:center;min-height:42px;
+  padding:7px 12px;border:1px solid var(--line);border-radius:9px;
+  background:var(--panel2);color:var(--text);font-size:13px;font-weight:650;
+  cursor:pointer;list-style:none
+ }
+ body.mobile-workspace.mobile-view-steps .mobile-timeline-more > summary::-webkit-details-marker{display:none}
+ body.mobile-workspace.mobile-view-steps .mobile-timeline-more[open]{
+  padding:0 0 8px;border-bottom:1px solid var(--line)
+ }
+ body.mobile-workspace.mobile-view-steps .mobile-timeline-more-content{
+  display:flex;gap:6px;flex-wrap:wrap;padding-top:8px;
+  max-height:135px;overflow-y:auto
+ }
+ body.mobile-workspace.mobile-view-steps .mobile-timeline-more-content button{
+  min-height:44px;flex:1 1 115px;white-space:normal;font-size:12px
+ }
+ body.mobile-workspace.mobile-view-steps #scrub{
+  display:block;flex:0 0 auto;min-height:34px;margin:0!important;
+  width:100%;touch-action:pan-x;accent-color:var(--accent)
+ }
+ body.mobile-workspace.mobile-view-steps #outcomeBar{
+  flex:0 0 auto;max-height:min(25dvh,160px);overflow:auto;
+ }
+ body.mobile-workspace.mobile-view-steps #outcomeBar:has(#outcomeControls[hidden]){display:none}
+ body.mobile-workspace .mobile-timeline-switch{
+  display:grid;grid-template-columns:1fr 1fr minmax(105px,1.2fr);
+  gap:5px;flex:0 0 auto;width:100%;min-width:0
+ }
+ body.mobile-workspace .mobile-timeline-switch button{
+  min-width:0;min-height:44px;padding:7px 6px;
+  font-size:13px;font-weight:650;
+  white-space:normal;border-radius:9px
+ }
+ body.mobile-workspace .mobile-timeline-switch button.selected{
+  color:var(--accent);border-color:var(--accent);background:var(--panel2)
+ }
+ body.mobile-workspace.mobile-view-steps:not(.mobile-timing-view) > .timeline > .track-area{
+  display:none!important
+ }
+ body.mobile-workspace.mobile-view-steps.mobile-timing-view > .timeline > .scenes{
+  display:none!important
+ }
+ body.mobile-workspace.mobile-view-steps > .timeline > .scenes{
+  display:flex;align-items:flex-start;gap:8px;flex:1 1 auto;
+  min-height:75px;max-height:none;padding:8px 1px 12px;
+  overflow-x:auto;overflow-y:auto;scroll-snap-type:x proximity;
+  border-top:1px solid var(--line)
+ }
+ body.mobile-workspace.mobile-view-steps .scene{
+  min-width:150px;max-width:180px;min-height:74px;
+  padding:10px;line-height:1.3;flex:0 0 auto;
+  white-space:normal;overflow-wrap:anywhere;text-align:left;
+  scroll-snap-align:center
+ }
+ body.mobile-workspace.mobile-view-steps .scene b{
+  font-size:13px;line-height:1.35;display:block;white-space:normal
+ }
+ body.mobile-workspace.mobile-view-steps .scene span{
+  display:block;margin-top:5px;font-size:12px
+ }
+ body.mobile-workspace.mobile-view-steps > .timeline > .track-area{
+  display:flex;flex:1 1 auto;flex-direction:column;gap:7px;
+  min-height:0;overflow:hidden;border-top:1px solid var(--line);padding-top:8px
+ }
+ body.mobile-workspace.mobile-view-steps .track-heading{flex:0 0 auto}
+ body.mobile-workspace.mobile-view-steps .track-heading h3{
+  font-size:12px;letter-spacing:0;text-transform:none
+ }
+ body.mobile-workspace.mobile-view-steps .tracks{
+  display:flex;flex:1 1 auto;flex-direction:column;gap:7px;
+  overflow-x:hidden;overflow-y:auto;min-height:0;padding:3px 1px 12px
+ }
+ body.mobile-workspace.mobile-view-steps .timing-row{
+  display:grid;grid-template-columns:minmax(90px,105px) minmax(140px,1fr);
+  gap:7px;min-width:0;min-height:53px;align-items:center;
+  border-bottom:1px solid var(--line);padding:2px 0 6px
+ }
+ body.mobile-workspace.mobile-view-steps .track-name{
+  white-space:normal;overflow-wrap:anywhere;font-size:12px;
+  min-height:44px;min-width:0;text-align:left;padding:5px
+ }
+ body.mobile-workspace.mobile-view-steps .timing-bar{
+  position:relative;min-width:0;height:42px;overflow:visible
+ }
+ body.mobile-workspace.mobile-view-steps .timing-span{
+  top:8px!important;height:26px;min-height:26px;border-radius:6px;
+ }
+ body.mobile-workspace.mobile-view-steps .timing-span-text{font-size:12px}
+ body.mobile-workspace.mobile-view-steps .timing-handle{
+  top:0;min-width:30px;width:30px;height:42px;min-height:42px
+ }
+ body.mobile-workspace.mobile-view-steps .timing-handle:before{
+  width:7px;height:24px;background:#f6f5de
+ }
+}
+@media screen and (max-width:430px){
+ body.mobile-workspace.mobile-view-steps .timeline-top .playback-group{
+  grid-template-columns:40px minmax(72px,1fr) 40px 72px
+ }
+ body.mobile-workspace.mobile-view-steps .mobile-timeline-switch{
+  grid-template-columns:1fr 1fr minmax(100px,1.2fr)
+ }
+ body.mobile-workspace.mobile-view-steps .timeline-top .sequence-group #addStep{
+  flex:1 1 100%
+ }
+}
+@media screen and (max-width:1100px) and (max-height:490px){
+ body.mobile-workspace.mobile-view-steps:not(.presentation-mode) > .timeline{
+  height:calc(100dvh - var(--mobile-nav-height,56px) - env(safe-area-inset-bottom) - 8px)!important;
+  max-height:none
+ }
+}
