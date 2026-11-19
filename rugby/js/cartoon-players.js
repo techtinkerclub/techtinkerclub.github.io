@@ -157,6 +157,40 @@ const tileUse=(id,x,y,t)=>'<svg width="'+t+'" height="'+t+'" viewBox="'+x+' '+y+
 // follows curved run paths. Apply the SAME route tangent to the cartoon torso;
 // otherwise the eyes turn correctly but the feet and arms run backwards.
 const wrapMinionAngle=n=>((n+180)%360+360)%360-180;
+// The supplied receive1/receive2 atlas frames (46/47) face about 45° to
+// screen-right from north before any SVG transformation. They are NOT generic
+// forward-facing sprites like the five standing frames.
+const RUCKUS_RECEIVE_SOURCE_BEARING=45;
+const NON_PASS_TRANSFERS=new Set(['pickup','turnover','rip','handover','set','presentation','drop']);
+/** Local bearing towards the ball as it ARRIVES, using the authored ball
+ * route (or straight flight), never the receiver's previous body heading.
+ * A null result means that no genuine pass flight is authored in this step.
+ * This is artwork-only: no drill positions, facing or ball ownership change. */
+export function ruckusIncomingPassBearing(o,previous,frame,g){
+ if(!previous?.objects||!frame?.objects||typeof g?.toView!=='function')return null;
+ const ball=frame.objects.find(q=>q.type==='ball'&&q.ownerId===o.id&&!NON_PASS_TRANSFERS.has(q.transferKind)
+  &&previous.objects.some(prior=>prior.id===q.id&&prior.ownerId!==o.id));
+ if(!ball)return null;
+ const prior=previous.objects.find(q=>q.id===ball.id);
+ if(!prior)return null;
+ const start=g.toView(prior.x,prior.y),end=g.toView(ball.x,ball.y);
+ let incoming=null;
+ if(Number.isFinite(start.x)&&Number.isFinite(start.y)&&Number.isFinite(end.x)&&Number.isFinite(end.y)
+    &&Math.hypot(end.x-start.x,end.y-start.y)>3){
+  // Follow the actual arrival tangent of a curved pass, not just the sender.
+  incoming=sampleRoute(routeSamples(prior,ball,frame.paths?.[ball.id],g),.999).angle;
+ }
+ if(!Number.isFinite(incoming)){
+  const sender=previous.objects.find(q=>q.id===prior.ownerId);
+  const source=sender?g.toView(sender.x,sender.y):start;
+  const target=g.toView(o.x,o.y),dx=target.x-source.x,dy=target.y-source.y;
+  if(!Number.isFinite(dx)||!Number.isFinite(dy)||Math.hypot(dx,dy)<=3)return null;
+  incoming=Math.atan2(dx,-dy)*180/Math.PI;
+ }
+ // Invert the direction of travel: the player's visor and catching hands
+ // must look TOWARDS the source, regardless of existing authored rotation.
+ return wrapMinionAngle(incoming+180-(Number(o.rot)||0)-(Number(g.rotation)||0));
+}
 function minionTravelHeading(o,g,previous,frame,p){
  const start=previous?.objects?.find(q=>q.id===o.id),end=frame?.objects?.find(q=>q.id===o.id);
  if(!start||!end||!g?.toView||!movingInfo(o,previous,frame,p).moving)return null;
@@ -196,6 +230,7 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  let gaze=smoothGaze(o,objects,g,previous,frame,p);
  if(o.headMode==='forward'&&moving)gaze=forward;
  const relative=moving?wrapMinionAngle(gaze-forward):gaze;
+ const catchLocal=semantic===10?ruckusIncomingPassBearing(o,previous,frame,g):null;
  const look=ruckusLookBucket(relative);
  const step=clamp(p,0,1);
  const team=(o.type==='defender'||o.type==='bagplayer')?'red':'blue';
@@ -289,13 +324,20 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  // north-facing zero angle. The enclosing scene already applies o.rot.
  // Direction is chosen using the authored five-way sprite before rotation,
  // so we never rotate the entire head independently of its arms/feet.
- const angle=180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
+ // For receive1/receive2, calibrate the diagonal source artwork directly
+ // against the INCOMING ball. The original 180° default turned the catcher's
+ // visor away even when the Classic player was correctly facing the pass.
+ // The outer scene still applies the authored o.rot + pitch rotation.
+ const catchMirror=catchLocal!==null&&catchLocal<0?-1:1;
+ const mirror=catchLocal!==null?catchMirror:([8,9,10].includes(semantic)&&relative<0)?-1:1;
+ const angle=catchLocal!==null
+  ?catchLocal-(mirror===-1?-RUCKUS_RECEIVE_SOURCE_BEARING:RUCKUS_RECEIVE_SOURCE_BEARING)
+  :180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
  // Our new image is a genuinely PRONE, ball-free pose, with both hands left.
  // A 90-degree offset aligns its hands with the existing presented ball.
  const proneAngle=90+presentationLocal;
  // The source passing/receiving poses are lateral; mirror the whole illustration
  // for the opposite side without changing the existing ball ownership or flight.
- const mirror=([8,9,10].includes(semantic)&&relative<0)?-1:1;
  const pulse=moving?Math.sin(step*12*Math.PI)*.55:0;
  const atlasId=team==='red'?'rugby-ruckus-red-54':'rugby-ruckus-blue-54';
  const cell=tileUse(atlasId,(sprite%RUCKUS_COLS)*RUCKUS_TILE,Math.floor(sprite/RUCKUS_COLS)*RUCKUS_TILE,RUCKUS_TILE);
@@ -310,7 +352,7 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const spriteArt=showProne?presentArt:
   '<g transform="rotate('+fmt(angle)+' 64 64) translate('+fmt(mirror===-1?128:0)+' 0) scale('+mirror+' 1)">'+cell+'</g>';
 
- return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+(showProne?'present-prone':sprite)+'" data-ruckus-presentation-bearing="'+(showProne?fmt(presentationBearing):'none')+'" data-ruckus-look="'+fmt(gaze)+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
+ return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+(showProne?'present-prone':sprite)+'" data-ruckus-presentation-bearing="'+(showProne?fmt(presentationBearing):'none')+'" data-ruckus-look="'+fmt(gaze)+'" data-ruckus-catch="'+(catchLocal===null?'none':fmt(catchLocal))+'" data-ruckus-mirror="'+mirror+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
   '<svg x="-35" y="'+fmt(-35+pulse)+'" width="70" height="70" viewBox="0 0 128 128" overflow="visible">'+
     spriteArt+
   '</svg><g>'+bodyEquipment(o)+'</g></g>';
