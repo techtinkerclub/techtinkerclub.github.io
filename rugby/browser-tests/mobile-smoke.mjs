@@ -39,7 +39,12 @@ async function check(path,viewport){
   });
   assert(view.body&&view.visible&&view.scrim,'View options must be a visible sheet above the pitch, with backdrop');
   assert(view.top>=-2&&view.bottom<=measured.navTop+2,'view sheet must fit above bottom navigation');
-  assert(await page.locator('#scaleMode').isVisible(),'View options content cannot be clipped behind the pitch');
+  assert(await page.locator('#followAction').isVisible(),'Important camera control stays above the pitch');
+  assert.equal(await page.locator('#scaleMode').isVisible(),false,
+   'Rare display settings are collapsed until the coach requests them');
+  await page.locator('#viewAdvanced > summary').click();
+  assert(await page.locator('#scaleMode').isVisible(),
+   'Object scale remains accessible after expanding advanced View options');
   await page.keyboard.press('Escape');
   await page.waitForFunction(()=>!document.querySelector('#viewMenu')?.open);
 
