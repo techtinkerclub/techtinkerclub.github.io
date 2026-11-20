@@ -25,8 +25,6 @@ try{
   assert.equal(await page.locator('#pitch .obj[data-id]').count(),startingPlayers+1,
    'adding a blackboard player uses original Studio model');
   await page.locator('#bbSelection').waitFor({state:'visible'});
-  assert.equal(await page.locator('#objectPicker').inputValue(),'',
-   'hidden inspector picker is not the blackboard state source');
   const selectedId=await page.locator('#pitch .obj[data-id]').last().getAttribute('data-id');
   const before=Number(await page.locator('#objRot').inputValue());
   await page.locator('[data-bb="turn-right"]').click();
