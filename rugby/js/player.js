@@ -11,7 +11,7 @@ import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} fr
 import {createExportProgress} from './export-progress.js?v=0.18.3';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
-import {teachingOverlay} from './blackboard-coaching.js?v=2';
+import {teachingOverlay,keyMoments,loopStepBounds,loopProgress} from './blackboard-coaching.js?v=2';
 import {stepLocation} from './step-timeline.js?v=1';
 import {transitionObjects} from './possession.js?v=0.19.1';
 const $=id=>document.getElementById(id);
@@ -48,6 +48,7 @@ function applyZoom(){
  const svg=$('board').querySelector('svg');if(!svg)return;
  const v=zoomWindow(viewBase,viewZoom,viewPan);
  svg.setAttribute('viewBox',[v.x,v.y,v.width,v.height].join(' '));
+ publicBoard?.syncView();
  $('playerZoomLevel').textContent=Math.round(viewZoom*100)+'%';
  $('playerZoomIn').disabled=viewZoom>=11.999;
  $('playerZoomOut').disabled=viewZoom<=1.001;
@@ -157,7 +158,8 @@ $('branchDecisionCards').onclick=e=>{
  const target=e.target.closest('[data-branch-choice]');
  if(target)setPlayerOutcome(target.dataset.branchChoice,{atFork:true,resume:true});
 };
-function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);if(d.pitchContext?.mode==='field'&&options?.framing===undefined)opts.framing='action';choiceResolved=false;$('branchDecisionPanel').hidden=true;
+function open(data,options){stop();d=playbackData(data);opts=outputOptions(options);if(d.pitchContext?.mode==='field'&&options?.framing===undefined)opts.framing='action';
+ publicBoard?.opened();choiceResolved=false;$('branchDecisionPanel').hidden=true;
  const b=hasOutcomes(d)?branchInfo(d):null;
  $('playerMinionMode').setAttribute('aria-pressed',String(!!opts.cartoonMode));
  $('playerMinionMode').textContent=opts.cartoonMode?'◉ Classic view':'◉ Harburling Ruckus';
@@ -185,6 +187,7 @@ $('play').onclick=()=>{
   if(!playing)return;
   const from=t,delta=(now-last)/1000*Number($('speed').value);
   t=Math.min(total,from+delta);last=now;
+  if(publicBoard?.loopEnabled()){const bounds=publicBoard.loopBounds();if(bounds&&from>=bounds.start-.001)t=loopProgress(from,delta,bounds)}
   if(hasOutcomes(d)&&!choiceResolved&&from<=decisionTime(d)+1e-6&&t>=decisionTime(d)-1e-6){
    t=decisionTime(d);showOutcomeDecision({jump:false});return;
   }
@@ -361,6 +364,11 @@ function initPublicBoard(){
   modeButton.title=active?'Use the standard page layout':'Return to full-screen Blackboard';
   if(!active){setInk(false);sidebar.dataset.open='false'}
  });
+ const restore=document.createElement('button');restore.type='button';
+ restore.className='public-board-restore';restore.textContent='▣ Open public Blackboard';
+ restore.title='Return to full-screen read-only Blackboard';
+ restore.addEventListener('click',()=>modeButton.click());
+ document.querySelector('.player-heading .player-nav')?.append(restore);
  const closeButton=sidebar.querySelector('.presentation-sidebar-close');
  const backdrop=document.createElement('button');backdrop.type='button';
  backdrop.className='public-board-backdrop';backdrop.setAttribute('aria-label','Close coaching drawer');
@@ -387,7 +395,7 @@ function initPublicBoard(){
  ink.setAttribute('aria-label','Temporary coaching ink');ink.classList.add('public-board-ink');
  ink.setAttribute('preserveAspectRatio','xMidYMid meet');
  board.append(ink);
- let inkEnabled=false,activePath=null,paths=[],previousScene=null;
+ let inkEnabled=false,activePath=null,paths=[],previousScene=null,stepLoop=false;
  const colour=inkTools.querySelector('#publicInkColour'),width=inkTools.querySelector('#publicInkWidth');
  function setInk(enabled){
   inkEnabled=!!enabled;inkTools.hidden=!inkEnabled;inkButton.setAttribute('aria-pressed',String(inkEnabled));
@@ -431,6 +439,12 @@ function initPublicBoard(){
  });
  inkTools.querySelector('#publicInkUndo').addEventListener('click',()=>paths.pop()?.remove());
  inkTools.querySelector('#publicInkClear').addEventListener('click',()=>{for(const path of paths)path.remove();paths=[]});
+ function opened(){
+  stepLoop=false;refreshPlaybackTools();
+ }
+ function refreshPlaybackTools(){
+  const toggle=$('publicLoopStep');if(toggle){toggle.setAttribute('aria-pressed',String(stepLoop));toggle.textContent=stepLoop?'⟲ Loop: on':'⟲ Loop current step'}
+ }
  function refresh(scene){
   previousScene=scene;
   // Player choice is derived from the saved read-only frame, never from editing.
@@ -444,6 +458,19 @@ function initPublicBoard(){
    local.spot=select.value;
   }
   const g=drillGeometry(d,opts.orientation),loc=stepLocation(d,t);
+  const moments=$('publicKeyMoments');
+  if(moments&&moments.dataset.drill!==d.id+':'+(d.branching?.active||'')){
+   moments.dataset.drill=d.id+':'+(d.branching?.active||'');
+   moments.replaceChildren();
+   for(const m of keyMoments(d,14)){
+    const button=document.createElement('button');button.type='button';
+    button.textContent=m.label;button.title=m.title;
+    button.dataset.step=String(m.index);
+    button.addEventListener('click',()=>jumpStep(m.index));
+    moments.append(button);
+   }
+  }
+  if(moments)for(const b of moments.children)b.setAttribute('aria-current',Number(b.dataset.step)===scene.index?'step':'false');
   const before=d.frames[Math.max(0,scene.index-1)],next=d.frames[Math.min(d.frames.length-1,scene.index+1)];
   const actors=scene.index>0?transitionObjects(before,scene.frame,loc.p,g):scene.frame.objects;
   if(local.spot||local.ghost!=='off'){
@@ -465,7 +492,21 @@ function initPublicBoard(){
   if(inkEnabled){setInk(false);return}
   if(sidebar.dataset.open==='true'){sidebar.dataset.open='false';return}
  });
- return {refresh,syncView};
+ const controls=document.createElement('section');controls.className='public-board-play-tools';
+ controls.innerHTML='<h2>Playback tools</h2><div class="public-board-play-buttons">'+
+  '<button type="button" id="publicReplayStep">↺ Replay current step</button>'+
+  '<button type="button" id="publicLoopStep" aria-pressed="false">⟲ Loop current step</button></div>'+
+  '<h2>Key moments</h2><div id="publicKeyMoments" class="public-board-moments"></div>';
+ document.getElementById('presentation-panel-step')?.append(controls);
+ controls.querySelector('#publicReplayStep').addEventListener('click',()=>{
+  if(!d)return;const i=Math.max(1,shownStep);jumpStep(i);$('play').click();
+ });
+ controls.querySelector('#publicLoopStep').addEventListener('click',()=>{
+  if(!d)return;stepLoop=!stepLoop;
+  if(stepLoop&&shownStep===0)jumpStep(1);
+  refreshPlaybackTools();
+ });
+ return {refresh,syncView,opened,loopEnabled:()=>stepLoop,loopBounds:()=>d?loopStepBounds(d,Math.max(1,shownStep)):null};
 }
 
 publicBoard=initPublicBoard();
@@ -480,10 +521,10 @@ if(catalogueId!==null){
   if(!/^seed-[0-9]{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');
   const list=await loadCatalogue(),entry=list.find(x=>x.id===catalogueId);if(!entry)throw Error('This drill is not in the published catalogue.');
   const compose=new URL('./library.html',location.href);compose.searchParams.set('video',entry.id);$('addPlayerToVideo').href=compose.href;$('addPlayerToVideo').hidden=false;syncLibraryVideoStyle();
-  open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082',teachingGuides:params.get('guides')!=='0',scaleMode:params.get('scale')==='coaching'?'coaching':'realistic',framing:params.get('framing')==='action'?'action':'field',cartoonMode:params.get('minion')==='1'});document.title=entry.title+' · Rugby Coaching Library';
+  open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082',teachingGuides:params.get('guides')!=='0',scaleMode:params.get('scale')==='realistic'?'realistic':'coaching',framing:params.get('framing')==='action'?'action':'field',orientation:params.get('orientation')==='up'?'up':'right',cartoonMode:params.get('minion')==='1'});document.title=entry.title+' · Rugby Coaching Library';
   if(entry.publishedAt){const stamp=document.createElement('small');stamp.className='published-stamp';stamp.textContent='Public copy updated '+new Date(entry.publishedAt).toLocaleDateString('en-GB')+' · '+(Number.isInteger(entry.publishedRevision)?'Revision '+entry.publishedRevision:'Legacy revision');$('objective').before(stamp)}
   $('catalogueReview').hidden=false;
-  const shareLink=()=>{const link=new URL(drillHref(entry.id),location.href);link.searchParams.set('offside',opts.offside?'1':'0');link.searchParams.set('guides',opts.teachingGuides?'1':'0');link.searchParams.set('scale',opts.scaleMode);link.searchParams.set('framing',opts.framing);if(opts.cartoonMode)link.searchParams.set('minion','1');return link.href};
+  const shareLink=()=>{const link=new URL(drillHref(entry.id),location.href);link.searchParams.set('offside',opts.offside?'1':'0');link.searchParams.set('guides',opts.teachingGuides?'1':'0');link.searchParams.set('scale',opts.scaleMode);link.searchParams.set('framing',opts.framing);link.searchParams.set('orientation',opts.orientation);if(opts.cartoonMode)link.searchParams.set('minion','1');return link.href};
   $('copyDrillLink').onclick=()=>reviewCopy(shareLink(),'Drill link copied.');
   $('copyReview').onclick=()=>reviewCopy(feedbackText(entry,shareLink()),'Review questions copied.');
   if(!isAnimated(entry)){
