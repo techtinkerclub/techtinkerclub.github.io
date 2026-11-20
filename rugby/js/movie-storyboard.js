@@ -3,7 +3,7 @@
 // no movement or rugby judgement is inferred by this planner.
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {decisionTime} from './branching-visual.js?v=12';
-import {drillDuration} from './scene.js?v=0.20.62';
+import {drillDuration} from './scene.js?v=0.20.63';
 import {drillGeometry} from './pitch.js?v=0.16.1';
 import {tryVisualDuration} from './try-scoring.js?v=2';
 
