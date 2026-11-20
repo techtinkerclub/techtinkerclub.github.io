@@ -1,4 +1,4 @@
-import {compactActionBubbleSVG} from './comic-callouts.js?v=2';
+import {compactActionBubbleSVG} from './comic-callouts.js?v=6';
 // Display a coach-authored contest result without pretending that the ball
 // lying separately for a safety exercise has come out of the ruck.
 export const ruckSide=o=>['attacker','shield'].includes(o?.type)?'attack':['defender','bagplayer'].includes(o?.type)?'defence':null;
