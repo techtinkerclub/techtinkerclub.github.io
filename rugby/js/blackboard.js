@@ -94,7 +94,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="grid" aria-pressed="false" title="Toggle grid">▦ Grid</button>'+
   '<button type="button" data-bb="paths" aria-pressed="false" title="Show running and passing routes">↝ Paths</button>'+
   '<button type="button" data-bb="markings" aria-pressed="false" title="Show pitch markings">▤ Marks</button>'+
-  '<button type="button" data-bb="follow" aria-pressed="false" title="Automatically follow moving players and the ball during playback">◎ Follow</button>'+
+  '<button type="button" data-bb="follow" aria-pressed="false" title="Follow action during playback. Manual zoom, fit or pan turns it off.">◎ Follow action</button>'+
   '</div><button type="button" data-bb="reset-panels" class="bb-reset-panels">Reset panel positions</button>'+
  '</section>'+
  '<section id="bbTimelinePanel" class="bb-timeline-panel bb-movable" data-bb-panel="timeline" hidden aria-label="Steps and timing">'+
