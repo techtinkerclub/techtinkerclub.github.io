@@ -1,0 +1,157 @@
+/* Rugby Blackboard — a quiet, pitch-first live editing workspace.
+   Based on the 99 Club manipulatives whiteboard interaction pattern.
+   No copied player or drill state; original Studio pitch remains editable. */
+#blackboardUI[hidden],#blackboardInk:not(.is-drawing){pointer-events:none}
+.blackboard-ui [hidden]{display:none!important}
+.blackboard-ui{position:fixed;inset:0;z-index:100;pointer-events:none;color:#f2f8ef;
+ font:13px/1.35 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.blackboard-ui *{box-sizing:border-box}
+.blackboard-ui button,.blackboard-ui input{font:inherit}
+.blackboard-ui button{display:flex;align-items:center;justify-content:center;gap:5px;
+ min-height:42px;min-width:42px;border:1px solid #ffffff29;border-radius:12px;
+ padding:8px 11px;color:#f0f6ee;background:#16291fca;backdrop-filter:blur(16px);
+ -webkit-backdrop-filter:blur(16px);cursor:pointer;touch-action:manipulation}
+.blackboard-ui button:hover:not(:disabled){background:#294633ea;border-color:#dcf4b576}
+.blackboard-ui button:focus-visible{outline:2px solid #dafa9d;outline-offset:2px}
+.blackboard-ui button:disabled{opacity:.32;cursor:not-allowed}
+.blackboard-ui button.is-active{background:#a7cb6f;color:#172b20;border-color:#dbfca1}
+.blackboard-ui strong{font-weight:750}
+.blackboard-ui small{color:#b9cebd;font-size:11px}
+.blackboard-ui .bb-title,.blackboard-ui .bb-rail,.blackboard-ui .bb-top-actions,
+.blackboard-ui .bb-steps,.blackboard-ui .bb-selection,.blackboard-ui .bb-add-menu,
+.blackboard-ui .bb-notice,.blackboard-ui .bb-ink-controls,.blackboard-ui #bbCloseDetails{pointer-events:auto}
+.blackboard-ui .bb-title{position:absolute;top:max(16px,env(safe-area-inset-top));
+ left:106px;display:grid;gap:3px;max-width:min(46vw,520px);padding:7px 13px;
+ background:#11281dbb;border:1px solid #ffffff20;border-radius:12px;
+ box-shadow:0 8px 24px #0003;backdrop-filter:blur(14px)}
+.blackboard-ui .bb-title strong{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blackboard-ui .bb-title small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blackboard-ui .bb-rail{position:absolute;left:max(14px,env(safe-area-inset-left));
+ top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:5px;
+ padding:7px;background:#0c2018b5;backdrop-filter:blur(18px);
+ border:1px solid #ffffff25;border-radius:18px;box-shadow:0 16px 45px #0006}
+.blackboard-ui .bb-rail button{min-height:62px;min-width:65px;flex-direction:column;
+ font-size:25px;line-height:1;padding:7px 5px;background:transparent;border:0;border-radius:11px}
+.blackboard-ui .bb-rail button span{font-size:10px;font-weight:650}
+.blackboard-ui .bb-rail button.is-active{background:#bedf86;color:#183025}
+.blackboard-ui .bb-top-actions{position:absolute;top:max(16px,env(safe-area-inset-top));
+ right:max(16px,env(safe-area-inset-right));display:flex;gap:5px;
+ padding:6px;border:1px solid #ffffff2b;border-radius:15px;background:#0b1b14b5;
+ box-shadow:0 10px 35px #0004;backdrop-filter:blur(18px)}
+.blackboard-ui .bb-top-actions button{min-height:39px;padding:8px;font-size:13px;background:transparent;border:0}
+.blackboard-ui .bb-top-actions button span{font-size:11px}
+.blackboard-ui .bb-top-actions .bb-close{background:#33473bcc;color:#ffefdc}
+.blackboard-ui .bb-steps{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));
+ left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;
+ padding:7px 9px;border-radius:17px;background:#0b1b14c8;border:1px solid #ffffff2b;
+ backdrop-filter:blur(20px);box-shadow:0 12px 36px #0007;max-width:calc(100vw - 170px)}
+.blackboard-ui .bb-steps button{min-height:40px;padding:7px 12px}
+.blackboard-ui .bb-steps .bb-play{background:#c8ec88;color:#183024;font-weight:750;min-width:95px}
+.blackboard-ui #bbStepCount{min-width:92px;text-align:center;white-space:nowrap;font-weight:700;font-variant-numeric:tabular-nums}
+.blackboard-ui .bb-selection,.blackboard-ui .bb-add-menu,.blackboard-ui .bb-ink-controls{
+ position:absolute;top:50%;right:max(18px,env(safe-area-inset-right));
+ transform:translateY(-50%);width:220px;max-height:calc(100dvh - 190px);
+ padding:12px;background:#12291ee0;backdrop-filter:blur(18px);
+ border:1px solid #ffffff33;border-radius:16px;box-shadow:0 14px 48px #0007;overflow:auto}
+.blackboard-ui .bb-selection strong,.blackboard-ui .bb-add-menu strong,
+.blackboard-ui .bb-ink-controls strong{display:block;margin:0 0 10px;max-width:100%;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blackboard-ui .bb-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.blackboard-ui .bb-actions button{min-height:44px;padding:8px;font-size:12px}
+.blackboard-ui .bb-actions button:last-child{grid-column:1/-1}
+.blackboard-ui .bb-add-menu{top:50%;left:96px;right:auto;transform:translateY(-50%);width:220px}
+.blackboard-ui .bb-add-menu>div{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.blackboard-ui .bb-add-menu button{min-height:48px;padding:7px;font-size:12px}
+.blackboard-ui .bb-add-menu small,.blackboard-ui .bb-ink-controls small{display:block;margin-top:10px}
+.blackboard-ui .bb-ink-controls{top:auto;bottom:98px;transform:none;width:250px;max-height:180px}
+.blackboard-ui .bb-ink-controls label{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.blackboard-ui .bb-ink-controls input{width:56px;height:35px;border:0;background:transparent}
+.blackboard-ui .bb-ink-controls button{display:inline-flex;margin:3px;padding:7px;font-size:12px}
+.blackboard-ui .bb-notice{position:absolute;bottom:max(92px,calc(env(safe-area-inset-bottom) + 77px));
+ left:50%;transform:translateX(-50%);max-width:min(600px,65vw);
+ padding:7px 11px;border-radius:10px;background:#11281dbd;color:#e3f3df;
+ font-size:12px;text-align:center;pointer-events:none}
+.blackboard-ui .bb-notice:empty{display:none}
+.blackboard-ui #bbCloseDetails{position:absolute;top:14px;right:370px;
+ background:#afcf83;color:#152d20;font-weight:700}
+.blackboard-ink{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+.blackboard-ink.is-drawing{pointer-events:auto;cursor:crosshair;touch-action:none}
+body.blackboard-mode{grid-template-rows:minmax(0,1fr)!important;overflow:hidden!important;background:#10271c}
+body.blackboard-mode>header,body.blackboard-mode>.timeline,
+body.blackboard-mode>.mobile-workspace-nav,body.blackboard-mode>.mobile-workspace-scrim,
+body.blackboard-mode>.mobile-editor-nav{display:none!important}
+body.blackboard-mode>.main{position:fixed!important;inset:0!important;z-index:30;
+ display:block!important;grid-template-columns:none!important;
+ width:100vw!important;height:100dvh!important;min-height:100dvh!important;
+ margin:0!important;padding:0!important;max-width:none!important}
+body.blackboard-mode .main>.sidebar,body.blackboard-mode .main>.panel-splitter,
+body.blackboard-mode .main>#splitInspector{display:none!important}
+body.blackboard-mode .main>.stage{position:absolute!important;inset:0!important;
+ grid-column:auto!important;display:block!important;width:100%!important;
+ height:100%!important;min-height:0!important;margin:0!important;padding:0!important;
+ overflow:hidden!important}
+body.blackboard-mode .stage>.toolbar,body.blackboard-mode .stage>.board-footer{display:none!important}
+body.blackboard-mode .stage>.field-wrap{position:absolute!important;inset:0!important;
+ display:block!important;height:100%!important;min-height:0!important;
+ width:100%!important;max-height:none!important;border:0!important;border-radius:0!important;
+ margin:0!important;padding:0!important;background:#173723!important}
+body.blackboard-mode .field-wrap>#pitch{position:absolute;inset:0;width:100%;height:100%;
+ border:0!important;border-radius:0!important;display:block}
+body.blackboard-mode #minionMode,body.blackboard-mode #mobileObjectActions,
+body.blackboard-mode .mobile-camera-controls{display:none!important}
+body.blackboard-mode .main>.inspector{display:none!important}
+body.blackboard-mode.blackboard-details-open .main>.inspector{
+ display:flex!important;position:fixed!important;z-index:105!important;
+ top:0!important;right:0!important;left:auto!important;bottom:0!important;
+ width:min(345px,83vw)!important;max-height:100dvh!important;
+ padding-top:56px!important;background:#1a3023ef!important;
+ border-left:1px solid #ffffff39!important;box-shadow:-14px 0 44px #0008!important}
+body.blackboard-mode #objectMenu:not([hidden]){z-index:120!important}
+body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-selection,
+body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-add-menu,
+body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-ink-controls{display:none!important}
+body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-top-actions{right:370px}
+@media(max-width:950px){
+ .blackboard-ui .bb-top-actions{max-width:calc(100vw - 102px);flex-wrap:wrap;justify-content:flex-end}
+ .blackboard-ui .bb-top-actions button span{display:none}
+ .blackboard-ui .bb-title{top:76px;left:96px;max-width:calc(100vw - 210px)}
+ .blackboard-ui .bb-selection{right:12px;top:auto;bottom:96px;transform:none;width:185px}
+ .blackboard-ui .bb-add-menu{left:88px;width:205px}
+ .blackboard-ui .bb-steps{bottom:max(12px,env(safe-area-inset-bottom));max-width:calc(100vw - 18px)}
+ .blackboard-ui .bb-notice{bottom:87px}
+ .blackboard-ui #bbCloseDetails{right:min(calc(83vw + 8px),345px)}
+ body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-top-actions{right:min(calc(83vw + 8px),345px)}
+}
+@media(max-width:600px){
+ .blackboard-ui .bb-title{top:max(7px,env(safe-area-inset-top));left:12px;max-width:calc(100vw - 95px);
+ padding:5px 9px}
+ .blackboard-ui .bb-title strong{font-size:13px}
+ .blackboard-ui .bb-title small{font-size:10px}
+ .blackboard-ui .bb-top-actions{right:7px;top:max(52px,calc(env(safe-area-inset-top) + 44px));
+ max-width:calc(100vw - 14px);gap:2px;padding:3px;border-radius:12px}
+ .blackboard-ui .bb-top-actions button{min-width:38px;min-height:40px;padding:4px}
+ .blackboard-ui .bb-rail{left:5px;top:50%;padding:3px;gap:1px;border-radius:12px}
+ .blackboard-ui .bb-rail button{min-height:48px;min-width:49px;padding:4px 2px;font-size:21px}
+ .blackboard-ui .bb-rail button span{font-size:9px}
+ .blackboard-ui .bb-selection{left:auto;right:6px;bottom:104px;width:175px;max-height:185px;
+ padding:7px;border-radius:12px}
+ .blackboard-ui .bb-selection strong{margin-bottom:5px}
+ .blackboard-ui .bb-actions button{min-height:36px;font-size:11px;padding:5px}
+ .blackboard-ui .bb-add-menu{left:60px;top:50%;width:min(220px,calc(100vw - 72px));padding:9px}
+ .blackboard-ui .bb-ink-controls{right:6px;bottom:99px;top:auto;width:195px;padding:8px}
+ .blackboard-ui .bb-steps{gap:3px;padding:5px;left:50%;width:max-content;max-width:calc(100vw - 12px)}
+ .blackboard-ui .bb-steps button{min-width:35px;min-height:41px;padding:5px 7px;font-size:12px}
+ .blackboard-ui .bb-steps .bb-play{min-width:60px}
+ .blackboard-ui #bbStepCount{min-width:75px;font-size:11px}
+ .blackboard-ui .bb-notice{bottom:74px;max-width:calc(100vw - 120px);font-size:10px}
+ body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-top-actions{right:5px;max-width:calc(100vw - 14px)}
+}
+@media(max-height:490px){
+ .blackboard-ui .bb-rail{top:51%;gap:0}
+ .blackboard-ui .bb-rail button{min-height:39px;font-size:18px}
+ .blackboard-ui .bb-rail button span{font-size:9px}
+ .blackboard-ui .bb-title{top:6px}
+ .blackboard-ui .bb-top-actions{top:6px}
+ .blackboard-ui .bb-selection{top:50%;bottom:auto;transform:translateY(-50%)}
+ .blackboard-ui .bb-notice{display:none}
+}
