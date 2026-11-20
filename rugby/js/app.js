@@ -20,7 +20,8 @@ import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.20.39';
-import {initBlackboard} from './blackboard.js?v=7';
+import {initBlackboard} from './blackboard.js?v=8';
+import {loopStepBounds,loopProgress,targetViewport,teachingOverlay} from './blackboard-coaching.js?v=1';
 import { pitchGeometry,drillGeometry,trainingField } from './pitch.js?v=0.16.1';
 import {fieldContext,fieldPreset,fieldAnchor,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.19';
@@ -74,6 +75,8 @@ pubUI.innerHTML='<button id="pubPublish" type="button" title="Explicitly publish
 document.querySelector('.head-actions .save-control')?.insertAdjacentElement('afterend',pubUI);
 
 let cartoonMode=false,autoFollow=false;
+// Ephemeral Blackboard teaching controls; these never enter drill frames or exports.
+let bbLoop=false,bbLoopStep=1,bbFollowTarget='action',bbTargetPlayer=null,bbSpotlightIds=[],bbGhostMode='off';
 let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,selectedPathId=null,showPaths=true,showMarkups=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drillSeconds(drill),at=i=>i===0?0:stepEndSeconds(drill,i);function note(s){$('status').textContent=s;$('status').title=s}function changed(record=true){validationHighlight.clear();validationResult=null;drill.frames.forEach(fr=>{cleanGuide(fr);cleanTraining(fr)});cleanContacts(drill.frames);cleanBreakdowns(drill.frames);for(const fr of drill.frames){fr.objects.forEach(sanitizeSkills);sanitizeInteractions(fr);cleanCallouts(fr)}if(record)normaliseRecoveryPoses(drill.frames);syncPossession(drill.frames,geometry());syncActiveOutcome(drill);dirty=true;saveFeedback='';syncSaveState();if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){return stepLocation(drill,t)}function tween(t,g=geometry()){if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?trainingTransition(transitionObjects(drill.frames[i-1],drill.frames[i],p,g),drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
 const geometry=()=>drillGeometry(drill,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
@@ -146,7 +149,8 @@ function render(){
  const lineIndex=preview===null?idx:preview<=0?0:locate(preview).i;
  if(autoFollow&&!(drag||routeDrawing||ballPicking||trainingPick)){
   const p=preview===null?1:locate(preview).p;
-  camera.focusView(followActionViewport(drill,g,lineIndex,p));
+  const target=bbFollowTarget==='ball'?objects.find(o=>o.type==='ball')?.id:bbFollowTarget==='selected'?bbTargetPlayer:null;
+  camera.focusView((document.body.classList.contains('blackboard-mode')&&target?targetViewport(objects,g,target):null)||followActionViewport(drill,g,lineIndex,p));
  }
  if(preview!==null&&lineIndex>0)objects=timedSkillObjects(objects,drill.frames[lineIndex-1],drill.frames[lineIndex],locate(preview).p);
  if(lineIndex>0){
@@ -174,7 +178,7 @@ function render(){
   const sel=(selected===o.id||groupIds.has(o.id))&&preview===null,p=g.toView(o.x,o.y),pose=poses.get(o.id),radius=symbolRadius(o,g,pose);
   const graphic=isDiagramObject(o)?`<g transform="rotate(${o.rot+g.rotation})">${diagramSVG(o,g)}</g>`:o.type==='label'?textLabelSVG(o,{baseline:labelOffset(o,g)}):`<g transform="rotate(${o.rot+g.rotation}) ${symbolTransform(o,g,cartoonMode&&canCarry(o)?'standing':pose)}">${playerAppearance(o,pose,posedShape(o,pose,contactMarkerShape(o,donutShape(o,shape(o.type,o.coneColor))),types[o.type][1]),objects,g,drill.frames[lineIndex-1],drill.frames[lineIndex],preview===null?1:locate(preview).p,{cartoonMode})}${(cartoonMode&&canCarry(o)?cartoonTagIcon(o):skillIcon(o))}</g>${o.label&&!contactType(o.type)?`<text x="${(cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,pose):labelPosition(o,g,pose)).x}" y="${(cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,pose):labelPosition(o,g,pose)).y}" text-anchor="middle" fill="#fff" paint-order="stroke" stroke="#234f38" stroke-width="3" font-size="${symbolLabelSize(g)}" font-weight="600">${esc(o.label)}</text>`:''}`;
   return `<g class="obj" data-id="${esc(o.id)}" transform="translate(${p.x} ${p.y})"><circle r="${Math.max(o.type==='ball'?5:8,radius+2)}" fill="transparent"/>${sel?'<circle data-editor-only="true" r="'+Math.max(10,radius+5)+'" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 3" fill="none" pointer-events="none"/>':''}${graphic}</g>`;
- }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+contestResultOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!ballPicking&&!trainingPick&&!groupIds.size?formationTrajectorySVG(drill.frames[idx-1]?.objects.find(o=>o.id===active.id),f(),active,g,drag?.kind==='waypoint'&&drag.id===active.id?drag.contactTransform:null):'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&!contactType(active.type)&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+interactionOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,{frames:drill.frames,index:lineIndex,cartoonMode})+ripOverlay(drill.frames[lineIndex],drill.frames[lineIndex-1],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+calloutOverlay(drill.frames,lineIndex,objects,g,preview===null?1:locate(preview).p,{cartoonMode,editing:preview===null})+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[])])],cartoonMode):'');
+ }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+contestResultOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!ballPicking&&!trainingPick&&!groupIds.size?formationTrajectorySVG(drill.frames[idx-1]?.objects.find(o=>o.id===active.id),f(),active,g,drag?.kind==='waypoint'&&drag.id===active.id?drag.contactTransform:null):'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&!contactType(active.type)&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+interactionOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,{frames:drill.frames,index:lineIndex,cartoonMode})+ripOverlay(drill.frames[lineIndex],drill.frames[lineIndex-1],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+calloutOverlay(drill.frames,lineIndex,objects,g,preview===null?1:locate(preview).p,{cartoonMode,editing:preview===null})+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[]) ])],cartoonMode):'')+(document.body.classList.contains('blackboard-mode')?teachingOverlay({objects,previous:drill.frames[lineIndex-1],next:drill.frames[lineIndex+1],g,spotlightIds:bbSpotlightIds,ghostMode:bbGhostMode,ghostIds:[...groupIds,selected].filter(Boolean).length?[...groupIds,selected].filter(Boolean):objects.filter(o=>['attacker','defender','neutral','coach'].includes(o.type)).slice(0,8).map(o=>o.id)}):'');
  // Playback may change a player's pose without changing the selected step.
  // Keep the read-only inspector aligned with the frame actually on screen.
  if(preview!==null){const selector=$('playerPose');if(selector?.disabled&&selected)selector.value=poses.get(selected)||'standing'}
@@ -790,7 +794,7 @@ $('skillActionsList').addEventListener('click',event=>{
 
  changed();refresh();note('Action cue removed. Players and other steps retained. Undo restores it.');
 });
-function refresh(){closeObjectMenu();renderOutcomeBar();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTimeLabel').textContent=idx?'Seconds to reach this step':'Setup hold before action (seconds)';$('stepTime').value=fr.seconds||0;$('stepTime').disabled=false;$('stepTime').min=idx?'.5':'0';$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();updateSkillActionsPanel();inspector();tracks()}function choose(i){selectedPathId=null;validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){selectedPathId=null;const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','hurdle','hoop','slalomPole','markerDisc','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';if(type==='cone')n.coneColor='yellow';
+function refresh(){closeObjectMenu();renderOutcomeBar();const fr=f();$('stageTitle').textContent=drill.title+' · '+(drill.ageMin===drill.ageMax?'U'+drill.ageMin:'U'+drill.ageMin+'–U'+drill.ageMax);if(!setupPending)syncSetup();$('stepName').value=fr.name;$('stepTimeLabel').textContent=idx?'Seconds to reach this step':'Setup hold before action (seconds)';$('stepTime').value=fr.seconds||0;$('stepTime').disabled=false;$('stepTime').min=idx?'.5':'0';$('stepNotes').value=fr.notes;$('scenes').innerHTML=drill.frames.map((x,i)=>`<button class="scene ${i===idx?'selected':''}" data-step="${i}"><b>${String(i+1).padStart(2,'0')} · ${esc(x.name)}</b><span>${at(i).toFixed(1)} s · ${x.objects.length} objects</span></button>`).join('');$('deleteStep').disabled=drill.frames.length===1;$('back').disabled=idx===0;$('forward').disabled=idx===drill.frames.length-1;syncSaveState();render();updateSkillActionsPanel();inspector();tracks()}function choose(i){selectedPathId=null;bbLoopStep=Math.max(1,Math.min(drill.frames.length-1,i));validationHighlight.clear();trainingPick=null;pendingInsert=null;stop();ballPicking=null;routeDrawing=false;routeClickCount=0;preview=null;idx=clamp(i,0,drill.frames.length-1);groupIds=new Set([...groupIds].filter(id=>f().objects.some(o=>o.id===id)));if(!f().objects.some(o=>o.id===selected))selected=null;refresh();note(f().notes||'Edit positions on the pitch.')};function editMode(){if(preview!==null){stop();preview=null;refresh()}}function add(type){selectedPathId=null;const prior=activeObject();editMode();trainingPick=null;groupIds.clear();groupMode=false;pendingInsert=null;ballPicking=null;routeDrawing=false;const count=f().objects.filter(x=>x.type===type).length;let label=['attacker','defender','neutral'].includes(type)?({attacker:'A',defender:'D',neutral:'P'}[type]+(count+1)):['ball','shieldItem','cone','flag','bag','sausage','ladder','hurdle','hoop','slalomPole','markerDisc','donut'].includes(type)?'':types[type][0];let n=obj(uid(),type,label,450+((count%4)-1)*34,280+Math.floor(count/4)*28);Object.assign(n,placement(n));if(type==='decision'){const from=drill.frames[idx-1]?.objects.find(o=>o.id===prior?.id)||prior;if(canCarry(prior)&&from){n.x=from.x;n.y=from.y}n.label='Decision '+(count+1);n.decision=decisionData({playerId:canCarry(prior)?prior.id:'',options:[{label:'Demonstrated action',kind:'main'},{label:'Alternative',kind:'run'}]});showDecisions=true;$('decisionToggle').classList.add('selected');$('decisionToggle').setAttribute('aria-pressed','true')}if(type==='donut')n.donutState='ready';if(type==='cone')n.coneColor='yellow';
  // A pad-based ruck practice starts at the sausage; it has no tackle stage.
  // Selecting a particular sausage first determines which pad to use.
  if(type==='ruck'){
@@ -2144,10 +2148,11 @@ $('play').onclick=()=>{
  }
  if(duration()<=0){note('Add a second step to animate the drill.');return}
  if(preview===null&&idx===0)decisionResolved=false;
+ if(bbLoop&&document.body.classList.contains('blackboard-mode'))bbLoopStep=Math.max(1,Math.min(drill.frames.length-1,preview===null?idx:locate(preview).i));
  // A branched drill must be watched from the shared run to understand the
  // decision. Clicking Play after editing a step starts at the beginning;
  // continuing after selecting A/B is handled by the explicit preview time.
- let base=preview??(hasOutcomes(drill)?0:at(idx));
+ let base=preview??(bbLoop&&document.body.classList.contains('blackboard-mode')?at(Math.max(0,bbLoopStep-1)):(hasOutcomes(drill)?0:at(idx)));
  if(base>=duration()-.01){base=0;decisionResolved=false}
  preview=base;
  const fork=hasOutcomes(drill)?decisionTime(drill):null;
@@ -2158,13 +2163,15 @@ $('play').onclick=()=>{
  function tick(now){
   if(!playing)return;
   const from=preview;
-  preview=Math.min(duration(),from+(now-clock)/1000*Number($('speed').value));clock=now;
-  if(fork!==null&&!decisionResolved&&from<=fork+1e-6&&preview>=fork-1e-6){
+  const advance=(now-clock)/1000*Number($('speed').value);clock=now;
+  const loop=bbLoop&&document.body.classList.contains('blackboard-mode')?loopStepBounds(drill,bbLoopStep):null;
+  preview=loop?loopProgress(from,advance,loop):Math.min(duration(),from+advance);
+  if(!loop&&fork!==null&&!decisionResolved&&from<=fork+1e-6&&preview>=fork-1e-6){
    preview=fork;compareOutcomePaths({atFork:true});return;
   }
   if(whistleSoundOn&&crossedWhistles(drill,from,preview).length)playWhistle();
   render();
-  if(preview>=duration()){
+  if(!loop&&preview>=duration()){
    // Playback used to leave preview at its final timestamp, which disables
    // every player tap. Finish in the LAST authored step's true edit state.
    choose(drill.frames.length-1);
@@ -2721,13 +2728,52 @@ window.addEventListener('beforeunload',e=>{if(dirty||setupPending||githubSaving|
 const blackboard=initBlackboard({
  getState:()=>({
   title:drill.title,stepName:f().name||f().notes||'Edit positions and movement',
-  idx,total:drill.frames.length,stepSeconds:f().seconds,
+  idx,total:drill.frames.length,stepSeconds:f().seconds,frames:drill.frames,branching:hasOutcomes(drill)?branchInfo(drill):null,playhead:preview??at(idx),
+  loop:bbLoop,loopStep:bbLoopStep,speed:Number($('speed').value),followTarget:bbFollowTarget,ghostMode:bbGhostMode,spotlight:bbSpotlightIds.length>0,
   selection:selected?(()=>{const o=f().objects.find(item=>item.id===selected);return o?{id:o.id,label:o.label||types[o.type]?.[0]||o.type,type:o.type}:null})():null,
   canRun:!$('drawRouteSide').disabled,
   canPass:!$('passBallSide').disabled,
   routeDrawing,cartoonMode,preview,playing
  }),
  fit:()=>camera.fit(),
+ onCoachTool:(kind,value)=>{
+  const boardActive=document.body.classList.contains('blackboard-mode');
+  if(!boardActive)return false;
+  if(kind==='loop'){
+   if(value&&drill.frames.length<2){note('Add an action step before looping.');return false}
+   bbLoop=!!value;bbLoopStep=Math.max(1,Math.min(drill.frames.length-1,preview===null?idx:locate(preview).i));
+   note(bbLoop?'Looping step '+(bbLoopStep+1)+'. Press Replay to start.':'Step loop off.');return true;
+  }
+  if(kind==='replay'){
+   if(drill.frames.length<2)return false;
+   const step=Math.max(1,Math.min(drill.frames.length-1,preview===null?idx:locate(preview).i));
+   bbLoopStep=step;
+   stop();preview=at(step-1);render();$('play').click();return true;
+  }
+  if(kind==='follow-target'){
+   if(value==='selected'){
+    const o=f().objects.find(x=>x.id===selected);
+    if(!o||!['attacker','defender','neutral','coach','ball'].includes(o.type)){note('Select a player on the pitch first, then choose Follow selected player.');return false}
+    bbTargetPlayer=o.id;
+   }
+   bbFollowTarget=['action','selected','ball'].includes(value)?value:'action';
+   if(!$('followAction').checked){$('followAction').checked=true;$('followAction').dispatchEvent(new Event('change',{bubbles:true}));}
+   render();return true;
+  }
+  if(kind==='spotlight'){
+   if(value){
+    const ids=[...groupIds,selected].filter(Boolean).filter(id=>f().objects.some(o=>o.id===id));
+    if(!ids.length){note('Select a player or group to spotlight first.');return false}
+    bbSpotlightIds=ids.slice(0,10);
+   }else bbSpotlightIds=[];
+   render();return true;
+  }
+  if(kind==='ghost'){
+   bbGhostMode=['start','next','both'].includes(value)?value:'off';
+   render();return true;
+  }
+  return false;
+ },
  rotate:delta=>{
   if(!selected||preview!==null||playing)return;
   const control=$('objRot');if(!control||control.disabled)return;
