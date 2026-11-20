@@ -1,3 +1,4 @@
+import {cameraTextPlacement} from './annotation-camera.js?v=1';
 // Measured teaching guides for age-grade rule explanations.
 // Coordinates use the drill's 900 x 540 editor space; metres are always
 // computed from pitchGeometry, never hard-coded into the graphic.
@@ -27,9 +28,14 @@ export function teachingGuidesSVG(frame,g,{ink=false}={}){
  const labelAt=(x,y,value,col)=>{
   if(!value)return '';
   const size=Math.min(240,Math.max(50,value.length*6.6+18));
-  const safeX=Math.max(size/2+4,Math.min(g.viewWidth-size/2-4,x));
-  const safeY=Math.max(18,Math.min(g.viewHeight-10,y));
-  return '<g><rect x="'+(safeX-size/2)+'" y="'+(safeY-14)+'" width="'+size+'" height="20" rx="6" fill="'+bg+'" stroke="'+col+'" stroke-width="1"/><text x="'+safeX+'" y="'+safeY+'" font-size="12" font-weight="700" text-anchor="middle" fill="'+fg+'">'+esc(value)+'</text></g>';
+  const camera=g.annotationViewport;
+  const safeX=camera?x:Math.max(size/2+4,Math.min(g.viewWidth-size/2-4,x));
+  const safeY=camera?y:Math.max(18,Math.min(g.viewHeight-10,y));
+  const placement=cameraTextPlacement(g,{x:safeX,y:safeY},size,20);
+  if(!placement.visible)return '';
+  const transform=placement.scale<.999?
+   ' transform="translate('+placement.dx+' '+placement.dy+') translate('+safeX+' '+safeY+') scale('+placement.scale+') translate('+(-safeX)+' '+(-safeY)+')"':'';
+  return '<g'+transform+'><rect x="'+(safeX-size/2)+'" y="'+(safeY-14)+'" width="'+size+'" height="20" rx="6" fill="'+bg+'" stroke="'+col+'" stroke-width="1"/><text x="'+safeX+'" y="'+safeY+'" font-size="12" font-weight="700" text-anchor="middle" fill="'+fg+'">'+esc(value)+'</text></g>';
  };
  const items=all.map(guide=>{
   const A=g.toView(guide.a.x,guide.a.y),B=guide.b?g.toView(guide.b.x,guide.b.y):null;
