@@ -8,7 +8,7 @@ const css=readFileSync(new URL('../assets/player-workspace.css',import.meta.url)
 
 test('public player loads the one-screen workspace styles',()=>{
  assert.match(html,/player-workspace\.css\?v=/);
- assert.match(html,/player\.js\?v=0\.20\.72/);
+ assert.match(html,/player\.js\?v=0\.20\.73/);
  assert.match(css,/height:100dvh/);
  assert.match(css,/overflow:hidden/);
  assert.match(css,/\.presentation-panel/);
@@ -51,7 +51,7 @@ test('blackboard mode displays the actual drill flow and coaching menu',()=>{
 
 test('published drills open as fullscreen read-only blackboards',()=>{
  const stylesheet=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
- assert.match(html,/public-blackboard\.css\?v=5/);
+ assert.match(html,/public-blackboard\.css\?v=6/);
  assert.match(js,/function initPublicBoard\(\)/);
  assert.match(js,/document\.body\.classList\.add\('public-blackboard'\)/);
  assert.match(stylesheet,/\.read-only-player\.public-blackboard>header\{display:none\}/);
@@ -123,7 +123,7 @@ test('tap-to-focus remains view-only and playback has safe keyboard shortcuts',(
 
 test('camera modes and options live in a single floating camera menu',()=>{
  const css=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
- assert.match(js,/public-board-camera-menu/);
+ assert.match(js,/public-board-camera-toggle/);
  assert.match(js,/selectCameraMode\(mode\)/);
  assert.match(js,/cameraContents\.append\(legacyFraming\)/);
  assert.match(js,/legacyFraming\.hidden=true/);
@@ -142,4 +142,20 @@ test('compact playback and genuinely variable transparency',()=>{
  assert.match(js,/panelOpacity\.value=String\(settings\.opacityVersion===2\?settings\.opacity:48\)/);
  assert.match(js,/public-board-dock-toggle/);
  assert.match(css,/public-board-dock\[data-open="true"\]/);
+});
+
+test('all five floating panel handles share one canonical gutter',()=>{
+ const styles=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
+ assert.match(styles,/--bb-handle-gutter:38px/);
+ assert.match(styles,/padding-left:var\(--bb-handle-gutter\)/);
+ assert.match(styles,/public-board-camera-settings\s*\}\s*>\s*\.public-board-grip/);
+ assert.match(js,/key:'cameraSettings'/);
+ assert.match(js,/layoutKey='rugby-public-blackboard-layout-v2'/);
+});
+test('camera settings are independent of the camera toolbar and can be moved',()=>{
+ assert.match(js,/stage\.append\(cameraContents\)/);
+ assert.match(js,/setCameraSettingsOpen\(open\)/);
+ assert.match(js,/positionPanel\(cameraContents/);
+ assert.match(js,/settings\.positions\?\.cameraSettings/);
+ assert.doesNotMatch(js,/cameraMenu\.append\(cameraSummary,cameraContents\)/);
 });
