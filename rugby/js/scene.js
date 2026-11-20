@@ -18,7 +18,7 @@ import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition
 import {pitchGeometry,drillGeometry,trainingField} from './pitch.js?v=0.16.1';
 import {fieldContext,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
-import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.19.1';
+import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.20.78';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
 import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts,PLAYER_POSES} from './contact.js?v=0.20.75';
 import {cleanBreakdowns} from './breakdown.js?v=0.12.34';
@@ -26,7 +26,7 @@ import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.13.10';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {offsideOverlay} from './offside.js?v=0.20.76';
-import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=2';
+import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=3';
 import {contestResultOverlay} from './ruck-outcome.js?v=0.20.76';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
