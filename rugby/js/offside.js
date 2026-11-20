@@ -37,7 +37,12 @@ export function offsideOverlay(objects,d,g,mode='auto',ink=false){
   const horizontal=Math.abs(b.v.y)>.5;
   return '<g data-offside-guide="true" pointer-events="none" aria-label="Approximate breakdown offside lines">'+[[b.blue,ink?'#155a91':'#9bd6ff','BLUE'],[b.orange,ink?'#a6520e':'#ffc28d','ORANGE']].map(([p,c,label])=>{
    const k=p/(horizontal?b.v.y:b.v.x),pos=horizontal?'x1="'+g.margin+'" x2="'+(g.margin+g.fw)+'" y1="'+k+'" y2="'+k+'"':'x1="'+k+'" x2="'+k+'" y1="'+g.margin+'" y2="'+(g.margin+g.fh)+'"';
-   return '<line '+pos+' stroke="'+c+'" stroke-width="2" stroke-dasharray="7 5"/><text x="'+(horizontal?g.margin+5:k+4)+'" y="'+(horizontal?k-5:g.margin+12)+'" font-size="10" fill="'+c+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="3">'+label+' · OFFSIDE GUIDE</text>';
+   const view=g.annotationViewport,scale=view?g.annotationScale||1:1;
+   const lineVisible=!view||horizontal?k>=view.y&&k<=view.y+view.height:k>=view.x&&k<=view.x+view.width;
+   const tx=horizontal?(view?Math.max(g.margin+5,view.x+9*scale):g.margin+5):k+4*scale;
+   const ty=horizontal?k-5*scale:(view?Math.max(g.margin+12,view.y+12*scale):g.margin+12);
+   const guideText=lineVisible?'<text x="'+tx+'" y="'+ty+'" font-size="'+(10*scale)+'" fill="'+c+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="'+(3*scale)+'">'+(view?'OFFSIDE · GUIDE':label+' · OFFSIDE GUIDE')+'</text>':'';
+   return '<line '+pos+' stroke="'+c+'" stroke-width="2" stroke-dasharray="7 5"/>'+guideText;
   }).join('')+'</g>'
  }).join('');
 }
