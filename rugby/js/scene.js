@@ -18,7 +18,7 @@ import {fieldContext,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.19.1';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
-import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts,PLAYER_POSES} from './contact.js?v=0.19.3';
+import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts,PLAYER_POSES} from './contact.js?v=0.20.49';
 import {cleanBreakdowns} from './breakdown.js?v=0.12.34';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.13.10';
@@ -80,7 +80,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  }
  const order=cartoonObjectOrder(orderObjects(objects),cartoonMode);
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
- const caption=labels?contactLabels(objects,focused?{...g,viewWidth:camera.width}:g,esc,[...new Set(changes)]):'';
+ const caption=labels?contactLabels(objects,focused?{...g,viewWidth:camera.width}:g,esc,[...new Set(changes)],cartoonMode):'';
  const placedCaption=focused&&caption?'<g transform="translate('+camera.x+' '+camera.y+')">'+caption+'</g>':caption;
  let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink,objects,old,fr,time===null?1:p,cartoonMode)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink,{frames:d.frames,index:i,cartoonMode})+ripOverlay(fr,old,objects,g,time===null?1:p,ink,cartoonMode)+calloutOverlay(d.frames,i,objects,g,time===null?1:p,{cartoonMode,ink,editing:time===null})+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null,cartoonMode})+contestResultOverlay(fr,objects,g,p,ink,cartoonMode)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
