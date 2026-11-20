@@ -71,6 +71,16 @@ try{
   await seconds.press('Tab');
   assert.equal(Number(await page.locator('#stepTime').inputValue()),2.5,
    'Blackboard step duration changes the actual Studio step');
+  await page.locator('#bbSpeed').selectOption('0.25');
+  assert.equal(await page.locator('#speed').inputValue(),'0.25','Slow motion uses Studio playback speed');
+  await page.locator('[data-bb="loop"]').click();
+  assert.equal(await page.locator('[data-bb="loop"]').getAttribute('aria-pressed'),'true');
+  await page.locator('[data-bb="loop"]').click();
+  assert.equal(await page.locator('[data-bb="loop"]').getAttribute('aria-pressed'),'false');
+  await page.locator('[data-bb="replay"]').click();
+  await page.waitForFunction(()=>document.getElementById('play').textContent.includes('Pause'),{timeout:5000});
+  await page.locator('[data-bb="play"]').click();
+  assert.equal(await page.locator('#play').textContent(),'▶ Play','Pause returns to native editor');
   const expanded=await page.locator('#toggleTracks').getAttribute('aria-expanded');
   await page.locator('[data-bb="tracks"]').click();
   assert.notEqual(await page.locator('#toggleTracks').getAttribute('aria-expanded'),expanded,
@@ -99,6 +109,24 @@ try{
   assert.equal(await follow.getAttribute('aria-pressed'),'false',
    'Blackboard reflects the disabled follower immediately');
   await page.locator('#bbCameraPanel [data-bb="fit"]').click();
+  // Focus tools are deliberately tucked away until requested.
+  assert.equal(await page.locator('#bbAdvancedView').evaluate(el=>el.open),false);
+  await page.locator('#bbAdvancedView > summary').click();
+  assert(await page.locator('#bbFollowTarget').isVisible(),'Follow target has a compact advanced control');
+  await page.locator('#pitch .obj[data-id="'+selectedId+'"]').click({force:true});
+  await page.locator('#bbFollowTarget').selectOption('selected');
+  assert.equal(await page.locator('#followAction').isChecked(),true,'Follow selected uses native camera follower');
+  await page.locator('#bbCameraPanel [data-bb="spotlight"]').click();
+  assert.equal(await page.locator('#pitch .bb-spotlight-mask').count(),0,
+   'No redundant second pitch or independent model is created');
+  assert.equal(await page.locator('#pitch .bb-teaching-overlay').count(),1,
+   'Spotlight is a temporary SVG view overlay');
+  await page.locator('#bbGhostMode').selectOption('start');
+  assert(await page.locator('#pitch .bb-teaching-overlay').isVisible(),
+   'Start ghost is visible in the current Blackboard preview');
+  await page.locator('#bbGhostMode').selectOption('off');
+  await page.locator('#bbCameraPanel [data-bb="spotlight"]').click();
+  await page.locator('#bbFollowTarget').selectOption('action');
   await page.locator('[data-bb="pan"]').click();
   assert.equal(await page.locator('#panMode').getAttribute('aria-pressed'),'true',
    'Pan is the native camera control');
@@ -114,7 +142,13 @@ try{
   const afterDrag=await title.boundingBox();
   assert(afterDrag.x>beforeDrag.x+10,'Grip moves an existing floating panel');
   await page.locator('[data-bb="camera"]').click();
-  await page.locator('[data-bb="reset-panels"]').click();
+  await page.locator('#bbAdvancedView [data-bb="save-layout"]').click();
+  assert(await page.evaluate(()=>!!localStorage.getItem('rugby-blackboard-layouts-v1')),
+   'User layout is stored on this device');
+  await page.locator('#bbLayoutPreset').selectOption('coaching');
+  assert.equal(await page.locator('#blackboardUI').evaluate(el=>el.classList.contains('bb-coaching-layout')),true);
+  await page.locator('#bbLayoutPreset').selectOption('editing');
+  await page.locator('#bbAdvancedView [data-bb="reset-panels"]').click();
   assert.equal(await title.evaluate(el=>el.classList.contains('is-moved')),false,
    'Reset returns the panel to its original layout');
   await page.locator('[data-bb="close-camera"]').click();
@@ -133,6 +167,20 @@ try{
   assert.equal(await page.locator('body > #timelinePanel').count(),1,'Native timeline returns to Studio after exit');
   assert.equal(await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count(),1,
    'added player persists after closing Blackboard');
+  if(!mobile&&viewport.width>1000){
+   await page.locator('#viewMenu > summary').click();
+   assert(await page.locator('#followAction').isVisible(),'Studio presents Follow action as a compact row');
+   const box=await page.locator('.camera-follow-choice').boundingBox();
+   const input=await page.locator('#followAction').boundingBox();
+   const text=await page.locator('.camera-follow-choice span').boundingBox();
+   assert(box&&input&&text&&input.x<text.x&&Math.abs(input.y-text.y)<12,
+    'Follow checkbox and label stay aligned on one row');
+   assert.equal(await page.locator('#viewAdvanced').evaluate(el=>el.open),false,
+    'Rarely-used options are collapsed by default');
+   await page.locator('#viewAdvanced > summary').click();
+   assert(await page.locator('#scaleMode').isVisible(),'Scale remains accessible');
+   assert(await page.locator('#gridStep').isVisible(),'Grid remains accessible');
+  }
   await page.close();
   console.log('BLACKBOARD PASS '+viewport.width+'x'+viewport.height+': fullscreen, add, edit, ink, step management, duration, timeline, zoom, drag and restore');
  }
