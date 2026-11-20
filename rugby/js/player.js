@@ -342,6 +342,7 @@ function initPublicBoard(){
   button.addEventListener('click',action);toolbar.append(button);return button;
  };
  const openPanel=key=>{
+  toolbar.dataset.mobileOpen='false';mobileMenu?.setAttribute('aria-expanded','false');
   document.getElementById('presentation-tab-'+key)?.click();
   sidebar.dataset.open='true';
   closeButton.focus({preventScroll:true});
@@ -470,6 +471,32 @@ function initPublicBoard(){
    if(Array.isArray(p)&&p.length===2&&p.every(Number.isFinite))positionPanel(item.node,p[0]*window.innerWidth,p[1]*window.innerHeight);
   }
  });
+ // Fold-away rails leave the pitch clear without removing useful functions.
+ const dock=document.createElement('nav');dock.className='public-board-dock';
+ dock.setAttribute('aria-label','Show or hide Blackboard panels');
+ for(const [key,label,node] of [
+  ['tools','Tools',toolbar],['title','Title',boardHeading],
+  ['camera','Camera',$('viewerCamera')],['playback','Playback',$('controls')]
+ ]){
+  const button=document.createElement('button');button.type='button';
+  button.textContent=label;button.title='Show or hide '+label.toLowerCase()+' panel';
+  button.setAttribute('aria-pressed','true');button.dataset.panel=key;
+  button.addEventListener('click',()=>{
+   const hide=node.dataset.collapsed!=='true';
+   node.dataset.collapsed=String(hide);button.setAttribute('aria-pressed',String(!hide));
+   // Keep the tools dock accessible even when all floating panels are hidden.
+  });
+  dock.append(button);
+ }
+ stage.append(dock);
+ const mobileMenu=document.createElement('button');mobileMenu.type='button';
+ mobileMenu.className='public-board-mobile-menu';mobileMenu.textContent='☰ Tools';
+ mobileMenu.setAttribute('aria-expanded','false');mobileMenu.setAttribute('aria-controls','publicBoardFloatingTools');
+ mobileMenu.addEventListener('click',()=>{
+  const open=toolbar.dataset.mobileOpen!=='true';
+  toolbar.dataset.mobileOpen=String(open);mobileMenu.setAttribute('aria-expanded',String(open));
+ });
+ toolbar.id='publicBoardFloatingTools';stage.append(mobileMenu);
  const shareTools=document.createElement('section');shareTools.className='public-board-share-tools';
  shareTools.innerHTML='<h2>Coaching snapshot</h2><p>Save the current frame for handouts or messages. The exported image can include your temporary chalk, without changing the drill.</p>'+
   '<label><input id="publicSnapshotInk" type="checkbox" checked> Include my chalk marks</label>'+
@@ -548,7 +575,7 @@ function initPublicBoard(){
  function setInk(enabled){
   inkEnabled=!!enabled;inkTools.hidden=!inkEnabled;inkButton.setAttribute('aria-pressed',String(inkEnabled));
   board.classList.toggle('public-inking',inkEnabled);
-  if(inkEnabled){stop();showNotice('Draw with your mouse, finger or pen. Marks stay local to this board.')}
+  if(inkEnabled){stop();toolbar.dataset.mobileOpen='false';mobileMenu.setAttribute('aria-expanded','false');showNotice('Draw with your mouse, finger or pen. Marks stay local to this board.')}
   else showNotice('');
  }
  function syncView(){
