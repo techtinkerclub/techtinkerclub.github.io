@@ -38,8 +38,9 @@ test('Ruckus-only visual tail grants enough time for the whole victory sequence'
  assert.equal(tryVisualDuration(d(false),g,true),total,'no score produces no outro');
  const events=tryLineEvents(x,g),t=events[0].time;
  assert.equal(tryCelebrationAt(events,t+.1,'a1').phase,'ground');
- assert.equal(tryCelebrationAt(events,t+.4,'a1').phase,'rise');
- assert.equal(tryCelebrationAt(events,t+.8,'a1').phase,'celebrate');
+ assert.equal(tryCelebrationAt(events,t+.4,'a1').phase,'ground');
+ assert.equal(tryCelebrationAt(events,t+1.05,'a1').phase,'rise');
+ assert.equal(tryCelebrationAt(events,t+1.55,'a1').phase,'celebrate');
  assert.equal(tryCelebrationAt(events,t+RUCKUS_TRY_CELEBRATION_SECONDS+.02,'a1'),null);
  assert.equal(tryCelebrationAt(events,t+.8,'d1'),null);
 });
@@ -47,7 +48,7 @@ test('celebration uses approved raised-arms artwork, never changes Classic mode'
  const x=d(),events=tryLineEvents(x,g);
  const o=x.frames[1].objects[0];
  const base='<circle r="15"/>';
- const celebrate=tryCelebrationAt(events,events[0].time+1.1,'a1');
+ const celebrate=tryCelebrationAt(events,events[0].time+1.8,'a1');
  const styled=playerAppearance(o,'standing',base,x.frames[1].objects,g,x.frames[0],x.frames[1],1,{cartoonMode:true,celebration:celebrate});
  assert.match(styled,/data-try-celebration="celebrate"/);
  assert.match(styled,/data-ruckus-pose="5[23]"/);
@@ -58,7 +59,7 @@ test('celebration uses approved raised-arms artwork, never changes Classic mode'
 test('common scene keeps the Ruckus try dance during visual outro',()=>{
  const parsed=playbackData(d()),events=tryLineEvents(parsed,drillGeometry(parsed,'up'));
  assert.equal(events.length,1,'playbackData must preserve tryGroundings');
- const time=events[0].time+1.1;
+ const time=events[0].time+1.8;
  const cartoon=renderScene(parsed,{time,cartoonMode:true});
  assert.match(cartoon.svg,/data-try-celebration="celebrate"/);
  assert.match(cartoon.svg,/try-score-feedback/);
