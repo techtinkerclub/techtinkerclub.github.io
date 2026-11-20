@@ -2003,9 +2003,9 @@
       "equipment": "Ball, cones, clearly indicated touch mark.",
       "objective": "Illustrate an England Touch-style rollball and defensive retreat, then a second attacking phase.",
       "safety": "Non-contact Touch training, NOT RFU U10 contact laws or RFU U7/U8 tag laws. Use the exact touch competition's rules; no tackling or forceful touches.",
-      "instructions": "1. Setup · Touch code — Explain: this is formal Touch practice, not RFU U10 match restart law.\n2. Attack · draw a touch — A1 runs into D1's channel; A2 remains behind as the prospective half.\n3. TOUCH · freeze the mark — Light touch by D1; ball carrier stops. Do not pass after a completed touch.\n4. Retreat · defenders get onside — Defenders move back the prescribed 5 m before involving themselves. A1 prepares the rollball.\n5. ROLLBALL · at the mark — A1 plays the ball back through the legs at the mark; A2 becomes the half.\n6. Half passes · next phase — A2, acting as half, passes backwards to A3. Avoid claiming an automatic right for the half to score.\n7. Continue · attack space — A3 accelerates into open space while defenders advance from their onside positions.",
-      "coaching": "On a valid touch, the touched attacker returns to the mark and executes a rollball. Defenders retreat the required distance (commonly 5 m for a rollball in this code); a teammate plays half. The half has special restrictions under formal Touch rules.",
-      "questions": "Where is the touch mark? Are the defenders back 5 m? Is the half allowed to score? Which competition rule set are we playing?",
+      "instructions": "1. Setup · Touch code — Explain: this is formal Touch practice, not RFU U10 match restart law.\n2. Attack · draw a touch — A1 runs into D1's channel; A2 remains behind as the prospective half.\n3. TOUCH · freeze the mark — Light touch by D1; ball carrier stops. Do not pass after a completed touch.\n4. Retreat · defenders get onside — Defenders move back the required 7 m before involving themselves. A1 prepares the rollball.\n5. ROLLBALL · at the mark — A1 plays the ball back through the legs at the mark; A2 becomes the half.\n6. Half passes · next phase — A2, acting as half, passes backwards to A3. Avoid claiming an automatic right for the half to score.\n7. Continue · attack space — A3 accelerates into open space while defenders advance from their onside positions.",
+      "coaching": "On a valid touch, the touched attacker returns to the mark and executes a rollball. Defenders retreat the required distance (7 m at a rollball under the England Touch introductory rules); a teammate plays half. The half has special restrictions under formal Touch rules.",
+      "questions": "Where is the touch mark? Are the defenders back 7 m? Is the half allowed to score? Which competition rule set are we playing?",
       "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
       "links": [
         {
@@ -2202,7 +2202,7 @@
         {
           "name": "Retreat · defenders get onside",
           "seconds": 2.1,
-          "notes": "Defenders move back the prescribed 5 m before involving themselves. A1 prepares the rollball.",
+          "notes": "Defenders move back the required 7 m before involving themselves. A1 prepares the rollball.",
           "objects": [
             {
               "id": "a1",
