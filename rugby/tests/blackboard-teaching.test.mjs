@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {loopStepBounds,loopProgress,keyMoments,targetViewport,teachingOverlay} from '../js/blackboard-coaching.js';
+import {loopStepBounds,loopProgress,keyMoments,targetViewport,teachingOverlay,followFramingViewport,FOLLOW_FRAMING} from '../js/blackboard-coaching.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const player={id:'a1',type:'attacker',label:'A1',x:260,y:290,rot:0};
 const defender={id:'d1',type:'defender',label:'D1',x:460,y:290,rot:0};
@@ -93,4 +93,39 @@ test('Blackboard Editing/Coaching use separate remembered layouts; Ruckus stays 
  assert.match(css,/\.bb-top-actions \[data-bb="ruckus"\]\{\s*color:#f3edcc;\s*background:#314939e8/);
  assert.match(css,/\.bb-top-actions \[data-bb="ruckus"\]\.is-active/);
  assert.match(css,/\.blackboard-ui\.bb-coaching-layout \.bb-top-actions\.bb-movable/);
+});
+
+test('Follow framing smoothly widens the same target without changing rugby geometry',()=>{
+ const g={viewWidth:900,viewHeight:540};
+ const rect={x:320,y:200,width:120,height:100};
+ const orig=JSON.stringify(rect),geo=JSON.stringify(g);
+ const close=followFramingViewport(rect,g,'close');
+ const standard=followFramingViewport(rect,g,'standard');
+ const wide=followFramingViewport(rect,g,'wide');
+ const veryWide=followFramingViewport(rect,g,'veryWide');
+ const full=followFramingViewport(rect,g,'full');
+ assert.equal(standard.width,120);
+ assert(close.width<standard.width&&standard.width<wide.width&&wide.width<veryWide.width);
+ assert(veryWide.height<=g.viewHeight);
+ assert.deepEqual(full,{x:0,y:0,width:900,height:540});
+ assert.deepEqual(followFramingViewport({x:-20,y:-30,width:100,height:100},g,'wide'),
+  {x:0,y:0,width:160,height:160},'framing clamps to pitch boundary');
+ assert.deepEqual(followFramingViewport(rect,g,'not-a-preset'),rect,'invalid setting uses default framing');
+ assert.equal(JSON.stringify(rect),orig);assert.equal(JSON.stringify(g),geo);
+ assert.deepEqual(Object.keys(FOLLOW_FRAMING),['close','standard','wide','veryWide','full']);
+});
+test('Blackboard framing applies to player, ball and action but not exports',()=>{
+ const app=read('js/app.js'),board=read('js/blackboard.js'),html=read('index.html');
+ assert.match(board,/id="bbFollowFraming"/);
+ for(const v of ['close','standard','wide','veryWide','full'])
+  assert.ok(board.includes('<option value="'+v+'">'));
+ assert.match(board,/onCoachTool\('follow-framing',event\.target\.value\)/);
+ assert.match(board,/framing\.value=state\.followFraming\|\|'standard'/);
+ assert.match(app,/followFramingViewport\(targetView\|\|defaultView,g,bbFollowFraming\):defaultView/);
+ assert.match(app,/bbFollowTarget==='ball'/);
+ assert.match(app,/bbFollowTarget==='selected'/);
+ assert.match(app,/localStorage\.setItem\('rugby-blackboard-follow-framing-v1',value\)/);
+ assert.match(app,/if\(!\$\('followAction'\)\.checked\)/);
+ assert.match(app,/bbFollowFraming,\s*ghostMode:/);
+ assert.match(html,/ANIMATED LIBRARY v0\.20\.59/);
 });
