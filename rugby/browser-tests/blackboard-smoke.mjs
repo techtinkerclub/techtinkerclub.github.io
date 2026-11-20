@@ -122,6 +122,25 @@ try{
    await page.locator('#bbAdvancedView > summary').click();
   await page.locator('#bbFollowTarget').selectOption('selected');
   assert.equal(await page.locator('#followAction').isChecked(),true,'Follow selected uses native camera follower');
+  const followFraming=page.locator('#bbFollowFraming');
+  await followFraming.selectOption('close');
+  const closeView=await page.locator('#pitch').getAttribute('viewBox');
+  const closeWidth=Number(closeView.split(' ')[2]);
+  await followFraming.selectOption('wide');
+  const wideWidth=Number((await page.locator('#pitch').getAttribute('viewBox')).split(' ')[2]);
+  assert(wideWidth>closeWidth+20,'Wide framing reveals more pitch around selected player');
+  await followFraming.selectOption('full');
+  const fullWidth=Number((await page.locator('#pitch').getAttribute('viewBox')).split(' ')[2]);
+  assert(fullWidth>=wideWidth,'Full pitch follow shows the widest field of view');
+  assert.equal(await page.locator('#followAction').isChecked(),true,'Framing selection retains Follow action');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('rugby-blackboard-follow-framing-v1')),'full',
+   'Framing preference persists on this device');
+  await followFraming.selectOption('standard');
+  await page.locator('#bbFollowTarget').selectOption('ball');
+  assert.equal(await followFraming.inputValue(),'standard','Ball and player modes share framing selection');
+  await followFraming.selectOption('wide');
+  assert.equal(await page.locator('#followAction').isChecked(),true,'Ball follow remains enabled when widening view');
+  await page.locator('#bbFollowTarget').selectOption('selected');
   await page.locator('#bbCameraPanel [data-bb="spotlight"]').click();
   assert.equal(await page.locator('#pitch #bb-spotlight-mask').count(),1,
    'Spotlight uses one view-only SVG mask');
