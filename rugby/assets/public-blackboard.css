@@ -154,3 +154,21 @@
 .read-only-player.public-blackboard{height:auto!important;min-height:0!important;overflow:visible!important}
 .read-only-player .public-board-toolbar,.read-only-player .public-board-ink-tools,.read-only-player .public-board-notice,.read-only-player .public-board-backdrop{display:none!important}
 }
+
+@media screen{
+.read-only-player .public-board-restore{border:1px solid #b2ca8f;background:#294a35;color:#ebf8ce;font-size:12px;min-height:30px;padding:4px 8px;border-radius:7px}
+.read-only-player.public-blackboard .public-board-restore{display:none!important}
+.read-only-player .public-board-play-tools{margin-top:15px;padding-top:14px;border-top:1px dashed #5e775e}
+.read-only-player .public-board-play-tools h2{font-size:12px!important;margin:3px 0 9px}
+.read-only-player .public-board-play-buttons{display:flex;flex-wrap:wrap;gap:7px}
+.read-only-player .public-board-play-buttons button{flex:1 1 135px;min-height:38px;font-size:12px}
+.read-only-player .public-board-play-buttons button[aria-pressed="true"]{background:#425c33;color:#f4ffcd;border:1px solid #d4e89d}
+.read-only-player .public-board-moments{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 0}
+.read-only-player .public-board-moments button{
+ min-height:34px;background:#203729;border:1px dashed #6c906f;
+ border-radius:7px;color:#d9e9c1;padding:6px 9px;font-size:11px
+}
+.read-only-player .public-board-moments button[aria-current="step"]{
+ background:#3e5a36;border:1px solid #bfd991;color:#efffd0
+}
+}
