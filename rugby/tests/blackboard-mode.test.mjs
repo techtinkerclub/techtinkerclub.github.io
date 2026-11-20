@@ -43,10 +43,10 @@ test('Both Studio editions load Blackboard and the same live JS module',()=>{
  for(const path of ['index.html','coach/index.html']){
   const s=read(path);
   assert.match(s,/assets\/blackboard\.css\?v=2/);
-  assert.match(s,path==='index.html'?/js\/app\.js\?v=0\.20\.52/:/js\/app\.js\?v=0\.20\.48/);
+  assert.match(s,path==='index.html'?/js\/app\.js\?v=0\.20\.53/:/js\/app\.js\?v=0\.20\.48/);
  }
  const app=read('js/app.js');
- assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=4'/);
+ assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=5'/);
  assert.match(app,/const blackboard=initBlackboard\(/);
  assert.match(app,/rotate:delta=>/);
 });
@@ -77,4 +77,15 @@ test('Blackboard move grips remain compact, keyboard accessible and restore pane
  assert.match(css,/\.bb-movable:hover/,'Interaction restores opacity');
  assert.match(css,/\.bb-movable\.is-moved\{transform:none!important/);
  assert.match(css,/\.bb-native-timeline #timelinePanel/,'Timeline stays compact in its movable panel');
+});
+
+test('Blackboard Follow action uses the original Studio camera setting',()=>{
+ const src=read('js/blackboard.js'),html=read('index.html');
+ assert.match(html,/id="followAction" type="checkbox"/);
+ assert.match(src,/data-bb="follow" aria-pressed="false"/);
+ assert.match(src,/case 'follow':if\(!click\('followAction'\)\)/,
+  'Follow must call native camera toggle, not create its own camera model');
+ assert.match(src,/const enabled=originalFollow\.checked===true/);
+ assert.match(src,/follow\.setAttribute\('aria-pressed',String\(enabled\)\)/);
+ assert.match(src,/follow\.classList\.toggle\('is-active',enabled\)/);
 });
