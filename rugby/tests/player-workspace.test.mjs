@@ -146,8 +146,8 @@ test('compact playback and genuinely variable transparency',()=>{
 
 test('all five floating panel handles share one canonical gutter',()=>{
  const styles=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
- assert.match(styles,/--bb-handle-gutter:38px/);
- assert.match(styles,/padding-left:var\(--bb-handle-gutter\)/);
+ assert.match(styles,/--bb-gutter:38px/);
+ assert.match(styles,/padding-left:var\(--bb-gutter\)/);
  assert.match(styles,/\)\s*>\s*\.public-board-grip/);
  assert.match(js,/key:'cameraSettings'/);
  assert.match(js,/layoutKey='rugby-public-blackboard-layout-v2'/);
@@ -158,4 +158,29 @@ test('camera settings are independent of the camera toolbar and can be moved',()
  assert.match(js,/positionPanel\(cameraContents/);
  assert.match(js,/settings\.positions\?\.cameraSettings/);
  assert.doesNotMatch(js,/cameraMenu\.append\(cameraSummary,cameraContents\)/);
+});
+
+test('mobile camera sheet is independently fixed and bounded inside viewport',()=>{
+ const css=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
+ assert.match(css,/\.public-board-camera-settings\{[\s\S]*?position:fixed!important/);
+ assert.match(css,/left:8px!important;right:8px!important/);
+ assert.match(css,/max-height:min\(50dvh,420px\)/);
+ assert.match(css,/bottom:calc\(104px \+ env\(safe-area-inset-bottom\)\)!important/);
+ assert.match(js,/cameraClose\.addEventListener\('click'/);
+ assert.match(js,/setCameraSettingsOpen\(false\)/);
+ assert.match(js,/stage\.append\(cameraContents\)/);
+});
+test('mobile pitch uses portrait layout unless a link explicitly chooses orientation',()=>{
+ assert.match(js,/max-width:700px\) and \(orientation:portrait\)/);
+ assert.match(js,/params\.get\('orientation'\)==='right'/);
+});
+test('camera controls and handles are no longer duplicated across floating panels',()=>{
+ const css=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
+ assert.match(js,/key:'cameraSettings'/);
+ assert.match(js,/layoutKey='rugby-public-blackboard-layout-v2'/);
+ assert.match(js,/cameraContents\.insertAdjacentHTML/);
+ assert.doesNotMatch(js,/cameraMenu\.append\(cameraSummary,cameraContents\)/);
+ assert.match(css,/--bb-gutter:38px/);
+ assert.match(css,/padding-left:var\(--bb-gutter\)/);
+ assert.match(css,/> \.public-board-grip/);
 });
