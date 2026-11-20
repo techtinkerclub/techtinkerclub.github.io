@@ -395,7 +395,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 48
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -404,7 +409,8 @@
               "text": "EYES UP",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -589,7 +595,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 51
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -598,7 +609,8 @@
               "text": "RUN STRAIGHT",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -964,16 +976,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-4",
-              "actorId": "d3",
-              "text": "TACKLE",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.3104
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Release · clear the tackle",
@@ -1166,16 +1169,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-5",
-              "actorId": "d3",
-              "text": "RELEASE",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.25
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Present ball towards support",
@@ -1375,7 +1369,8 @@
               "text": "PRESENT BACK",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.25
+              "displaySeconds": 1.5831999999999995,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -1635,13 +1630,14 @@
               "text": "ON FEET",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 2.16,
+          "seconds": 1.45,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -1870,16 +1866,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-8",
-              "actorId": "a1",
-              "text": "PLAY AWAY",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.5552000000000001
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "A1 collects available ball at the back",
@@ -2064,7 +2051,8 @@
             }
           ],
           "timing": {},
-          "paths": {}
+          "paths": {},
+          "callouts": []
         },
         {
           "name": "Pass from the breakdown to A5",
@@ -2229,7 +2217,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 59
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -2238,7 +2231,8 @@
               "text": "GO FORWARD",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.1523999999999996,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -2275,8 +2269,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 508,
+              "y": 329,
               "rot": 0
             },
             {
@@ -2405,7 +2399,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 53
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -2414,7 +2413,8 @@
               "text": "SUPPORT LINE",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -2451,8 +2451,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 543,
+              "y": 303,
               "rot": 0
             },
             {
@@ -2780,16 +2780,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-13",
-              "actorId": "d6",
-              "text": "TACKLE",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.25
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Release and present · phase two",
@@ -2982,16 +2973,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-14",
-              "actorId": "a6",
-              "text": "PRESENT",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.2671999999999999
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Ruck again · back-feet offside",
@@ -3249,13 +3231,14 @@
               "text": "BACK FEET",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 1.62,
+          "seconds": 1.45,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -3669,16 +3652,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-17",
-              "actorId": "a1",
-              "text": "EYES UP",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.25
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Pass A1 to A7 · attack the edge",
@@ -3843,7 +3817,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 53
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -3852,7 +3831,8 @@
               "text": "DRAW AND PASS",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -4019,7 +3999,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 51
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -4028,7 +4013,8 @@
               "text": "USE THE WIDTH",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -4218,7 +4204,7 @@
         },
         {
           "name": "Cross, ground and score",
-          "seconds": 2.84,
+          "seconds": 2.5,
           "notes": "A8 crosses the attacking goal line while carrying the ball, then deliberately grounds it in the in-goal area. Crossing alone is not a try.",
           "objects": [
             {
@@ -4387,8 +4373,9 @@
               "actorId": "a8",
               "text": "TRY!",
               "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.65
+              "at": 0.9,
+              "displaySeconds": 2.6,
+              "anchorMode": "fixed"
             }
           ],
           "tryGroundings": [
@@ -4401,7 +4388,7 @@
         },
         {
           "name": "Hold in-goal · celebrate and review",
-          "seconds": 4.05,
+          "seconds": 3,
           "notes": "A8 stays at the exact grounding position. The scoring celebration never reverses through the goal line. Review how two legal breakdowns created the wide opportunity.",
           "objects": [
             {
@@ -4975,7 +4962,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 48
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -4984,7 +4976,8 @@
               "text": "EYES UP",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -5169,7 +5162,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 50
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -5178,7 +5176,8 @@
               "text": "RUN STRAIGHT",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -5544,16 +5543,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-4",
-              "actorId": "d3",
-              "text": "TACKLE",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.3607999999999998
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Release · clear the tackle",
@@ -5746,16 +5736,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-5",
-              "actorId": "d3",
-              "text": "RELEASE",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.25
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Present ball towards support",
@@ -5955,7 +5936,8 @@
               "text": "PRESENT BACK",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.26
+              "displaySeconds": 1.6455999999999997,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -6215,13 +6197,14 @@
               "text": "ON FEET",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 2.24,
+          "seconds": 1.45,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -6450,16 +6433,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-8",
-              "actorId": "a1",
-              "text": "PLAY AWAY",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.6128
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "A1 collects available ball at the back",
@@ -6644,7 +6618,18 @@
             }
           ],
           "timing": {},
-          "paths": {}
+          "paths": {},
+          "callouts": [
+            {
+              "id": "pickup-cue-seed-971-A1collectsavai",
+              "actorId": "a1",
+              "text": "PLAY AWAY",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
+            }
+          ]
         },
         {
           "name": "Pass behind the ruck · A5 receives",
@@ -6679,8 +6664,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 483,
+              "y": 331,
               "rot": 0
             },
             {
@@ -6809,7 +6794,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 59
+            }
+          },
           "paths": {}
         },
         {
@@ -6845,8 +6835,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 507,
+              "y": 302,
               "rot": 0
             },
             {
@@ -7029,8 +7019,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 524,
+              "y": 278,
               "rot": 0
             },
             {
@@ -7213,8 +7203,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 524,
+              "y": 278,
               "rot": 0
             },
             {
@@ -7352,7 +7342,8 @@
               "text": "SPACE WIDE",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.2167999999999988,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -7389,8 +7380,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 524,
+              "y": 278,
               "rot": 0
             },
             {
@@ -7519,7 +7510,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 51
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -7528,7 +7524,8 @@
               "text": "HANDS",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.340000000000003,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -7565,8 +7562,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 524,
+              "y": 278,
               "rot": 0
             },
             {
@@ -7695,7 +7692,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 55
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -7704,7 +7706,8 @@
               "text": "DRAW AND PASS",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.340000000000003,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -7741,8 +7744,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 524,
+              "y": 278,
               "rot": 0
             },
             {
@@ -7889,7 +7892,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 52
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -7898,7 +7906,8 @@
               "text": "GO WIDE",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -7935,8 +7944,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 524,
+              "y": 278,
               "rot": 0
             },
             {
@@ -8070,7 +8079,7 @@
         },
         {
           "name": "A · wide try · real grounding",
-          "seconds": 3.08,
+          "seconds": 2.5,
           "notes": "A8 crosses and grounds in the scoring in-goal area. Crossing the line alone does not register a try.",
           "objects": [
             {
@@ -8101,8 +8110,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 524,
+              "y": 278,
               "rot": 0
             },
             {
@@ -8239,8 +8248,9 @@
               "actorId": "a8",
               "text": "TRY!",
               "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.65
+              "at": 0.9,
+              "displaySeconds": 2.6,
+              "anchorMode": "fixed"
             }
           ],
           "tryGroundings": [
@@ -8253,7 +8263,7 @@
         },
         {
           "name": "A · hold and review",
-          "seconds": 3.92,
+          "seconds": 3,
           "notes": "The winger stays in-goal after scoring. Discuss what D6 did to create the overlap.",
           "objects": [
             {
@@ -8284,8 +8294,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 460,
-              "y": 356,
+              "x": 524,
+              "y": 278,
               "rot": 0
             },
             {
@@ -8483,8 +8493,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -8622,7 +8632,8 @@
                     "text": "SPACE WIDE",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 1.65
+                    "displaySeconds": 2.35,
+                    "anchorMode": "fixed"
                   }
                 ]
               },
@@ -8659,8 +8670,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -8789,7 +8800,12 @@
                     }
                   }
                 ],
-                "timing": {},
+                "timing": {
+                  "ball": {
+                    "start": 26,
+                    "end": 51
+                  }
+                },
                 "paths": {},
                 "callouts": [
                   {
@@ -8798,7 +8814,8 @@
                     "text": "HANDS",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 1.65
+                    "displaySeconds": 2.35,
+                    "anchorMode": "fixed"
                   }
                 ]
               },
@@ -8835,8 +8852,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -8965,7 +8982,12 @@
                     }
                   }
                 ],
-                "timing": {},
+                "timing": {
+                  "ball": {
+                    "start": 26,
+                    "end": 55
+                  }
+                },
                 "paths": {},
                 "callouts": [
                   {
@@ -8974,7 +8996,8 @@
                     "text": "DRAW AND PASS",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 1.65
+                    "displaySeconds": 2.35,
+                    "anchorMode": "fixed"
                   }
                 ]
               },
@@ -9011,8 +9034,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -9159,7 +9182,12 @@
                     }
                   }
                 ],
-                "timing": {},
+                "timing": {
+                  "ball": {
+                    "start": 26,
+                    "end": 52
+                  }
+                },
                 "paths": {},
                 "callouts": [
                   {
@@ -9168,7 +9196,8 @@
                     "text": "GO WIDE",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 1.65
+                    "displaySeconds": 2.35,
+                    "anchorMode": "fixed"
                   }
                 ]
               },
@@ -9205,8 +9234,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -9340,7 +9369,7 @@
               },
               {
                 "name": "A · wide try · real grounding",
-                "seconds": 3.08,
+                "seconds": 2.5,
                 "notes": "A8 crosses and grounds in the scoring in-goal area. Crossing the line alone does not register a try.",
                 "objects": [
                   {
@@ -9371,8 +9400,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -9509,8 +9538,9 @@
                     "actorId": "a8",
                     "text": "TRY!",
                     "kind": "speech",
-                    "at": 0.12,
-                    "displaySeconds": 1.65
+                    "at": 0.9,
+                    "displaySeconds": 2.6,
+                    "anchorMode": "fixed"
                   }
                 ],
                 "tryGroundings": [
@@ -9523,7 +9553,7 @@
               },
               {
                 "name": "A · hold and review",
-                "seconds": 3.92,
+                "seconds": 3,
                 "notes": "The winger stays in-goal after scoring. Discuss what D6 did to create the overlap.",
                 "objects": [
                   {
@@ -9554,8 +9584,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -9746,8 +9776,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 526,
+                    "y": 252,
                     "rot": 0
                   },
                   {
@@ -9885,7 +9915,8 @@
                     "text": "GAP INSIDE",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 1.65
+                    "displaySeconds": 2.3063999999999996,
+                    "anchorMode": "fixed"
                   }
                 ]
               },
@@ -9922,8 +9953,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 460,
-                    "y": 356,
+                    "x": 521,
+                    "y": 235,
                     "rot": 0
                   },
                   {
@@ -10061,7 +10092,8 @@
                     "text": "STRAIGHTEN",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 1.6128
+                    "displaySeconds": 2.060000000000002,
+                    "anchorMode": "fixed"
                   }
                 ]
               },
@@ -10228,7 +10260,12 @@
                     }
                   }
                 ],
-                "timing": {},
+                "timing": {
+                  "ball": {
+                    "start": 26,
+                    "end": 51
+                  }
+                },
                 "paths": {},
                 "callouts": [
                   {
@@ -10237,7 +10274,8 @@
                     "text": "INSIDE SUPPORT",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 1.6128
+                    "displaySeconds": 2.35,
+                    "anchorMode": "fixed"
                   }
                 ]
               },
@@ -10274,8 +10312,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 478,
-                    "y": 85,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -10427,7 +10465,7 @@
               },
               {
                 "name": "B · central try · deliberate grounding",
-                "seconds": 3.22,
+                "seconds": 2.5,
                 "notes": "A4 crosses the designated attacking goal line and grounds inside the in-goal area, with the ball still in possession.",
                 "objects": [
                   {
@@ -10458,8 +10496,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 477,
-                    "y": 11,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -10596,8 +10634,9 @@
                     "actorId": "a4",
                     "text": "TRY!",
                     "kind": "speech",
-                    "at": 0.12,
-                    "displaySeconds": 1.65
+                    "at": 0.9,
+                    "displaySeconds": 2.6,
+                    "anchorMode": "fixed"
                   }
                 ],
                 "tryGroundings": [
@@ -10610,7 +10649,7 @@
               },
               {
                 "name": "B · hold and review",
-                "seconds": 3.92,
+                "seconds": 3,
                 "notes": "A4 stays in-goal and celebrates. Discuss why the drifting defender left the inside gap.",
                 "objects": [
                   {
@@ -10641,8 +10680,8 @@
                     "id": "a4",
                     "type": "attacker",
                     "label": "A4",
-                    "x": 477,
-                    "y": 11,
+                    "x": 524,
+                    "y": 278,
                     "rot": 0
                   },
                   {
@@ -11187,7 +11226,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 50
+            }
+          },
           "paths": {}
         },
         {
@@ -11353,7 +11397,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 53
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -11362,7 +11411,8 @@
               "text": "GO FORWARD",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -11746,16 +11796,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-4",
-              "actorId": "d3",
-              "text": "TACKLE",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.25
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Release · ball back to your team",
@@ -11948,16 +11989,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-5",
-              "actorId": "a3",
-              "text": "PRESENT",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.296
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "U10 ruck · one arrives on each side",
@@ -12197,13 +12229,14 @@
               "text": "ON FEET",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 1.95,
+          "seconds": 1.45,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -12636,8 +12669,9 @@
               "actorId": "a1",
               "text": "PLAY AWAY",
               "kind": "speech",
-              "at": 0.13,
-              "displaySeconds": 1.1
+              "at": 0.12,
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -12823,7 +12857,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 54
+            }
+          },
           "paths": {}
         },
         {
@@ -12947,16 +12986,16 @@
               "id": "d7",
               "type": "defender",
               "label": "D7",
-              "x": 707,
-              "y": 306,
+              "x": 728,
+              "y": 242,
               "rot": 180
             },
             {
               "id": "d8",
               "type": "defender",
               "label": "D8",
-              "x": 778,
-              "y": 308,
+              "x": 794,
+              "y": 244,
               "rot": 180
             },
             {
@@ -12998,7 +13037,8 @@
               "text": "RUN STRAIGHT",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -13126,16 +13166,16 @@
               "id": "d7",
               "type": "defender",
               "label": "D7",
-              "x": 707,
-              "y": 306,
+              "x": 734,
+              "y": 217,
               "rot": 180
             },
             {
               "id": "d8",
               "type": "defender",
               "label": "D8",
-              "x": 778,
-              "y": 308,
+              "x": 798,
+              "y": 219,
               "rot": 180
             },
             {
@@ -13198,16 +13238,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-10",
-              "actorId": "d5",
-              "text": "TACKLE",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.25
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Release and present towards A6",
@@ -13332,16 +13363,16 @@
               "id": "d7",
               "type": "defender",
               "label": "D7",
-              "x": 707,
-              "y": 306,
+              "x": 740,
+              "y": 191,
               "rot": 180
             },
             {
               "id": "d8",
               "type": "defender",
               "label": "D8",
-              "x": 778,
-              "y": 308,
+              "x": 801,
+              "y": 190,
               "rot": 180
             },
             {
@@ -13400,16 +13431,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-11",
-              "actorId": "a5",
-              "text": "RELEASE · PRESENT",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.296
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Short ruck · guard the ball",
@@ -13534,16 +13556,16 @@
               "id": "d7",
               "type": "defender",
               "label": "D7",
-              "x": 707,
-              "y": 306,
+              "x": 747,
+              "y": 169,
               "rot": 180
             },
             {
               "id": "d8",
               "type": "defender",
               "label": "D8",
-              "x": 778,
-              "y": 308,
+              "x": 803,
+              "y": 160,
               "rot": 180
             },
             {
@@ -13660,20 +13682,11 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "cue-12",
-              "actorId": "a6",
-              "text": "RUCK",
-              "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.65
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 1.8,
+          "seconds": 1.45,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -14100,16 +14113,7 @@
           ],
           "timing": {},
           "paths": {},
-          "callouts": [
-            {
-              "id": "pick-up-15",
-              "actorId": "a1",
-              "text": "PLAY AWAY",
-              "kind": "speech",
-              "at": 0.13,
-              "displaySeconds": 1.1
-            }
-          ]
+          "callouts": []
         },
         {
           "name": "A1 collects · passes short to A7",
@@ -14292,7 +14296,12 @@
               }
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 59
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -14301,7 +14310,8 @@
               "text": "SHORT PASS",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.6199999999999999
+              "displaySeconds": 2.3039999999999945,
+              "anchorMode": "fixed"
             }
           ]
         },
@@ -14477,13 +14487,14 @@
               "text": "GO NOW",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 1.65
+              "displaySeconds": 2.35,
+              "anchorMode": "fixed"
             }
           ]
         },
         {
           "name": "A7 crosses and grounds centrally",
-          "seconds": 3.3,
+          "seconds": 2.5,
           "notes": "A7 carries across the opposition goal line and grounds the ball inside in-goal. The ball is deliberately placed down to score.",
           "objects": [
             {
@@ -14652,8 +14663,9 @@
               "actorId": "a7",
               "text": "TRY!",
               "kind": "speech",
-              "at": 0.12,
-              "displaySeconds": 1.65
+              "at": 0.9,
+              "displaySeconds": 2.6,
+              "anchorMode": "fixed"
             }
           ],
           "tryGroundings": [
@@ -14666,7 +14678,7 @@
         },
         {
           "name": "Hold the score · review pressure",
-          "seconds": 4.5,
+          "seconds": 3,
           "notes": "A7 remains inside in-goal after grounding. Review how support, legal recycling and one good pass created the close-range finish.",
           "objects": [
             {
