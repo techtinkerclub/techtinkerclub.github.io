@@ -70,7 +70,7 @@ test('coaching literature is complete and linked to current, primary rugby guida
  }
  for(const f of editor.frames)assert(f.notes?.length>=65,'Step needs useful coaching narration: '+f.name);
  assert(editor.instructions.includes('A1')&&editor.instructions.includes('A2')&&editor.instructions.includes('A3'));
- assert.match(editor.safety,/no.contact/i);
+ assert.match(editor.safety,/non-contact/i);
  assert.match(editor.coaching,/ground/i);
  assert.match(editor.questions,/cross/i);
  assert.match(editor.provenance,/seed-020/);
