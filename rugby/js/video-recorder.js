@@ -25,7 +25,6 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
  check();progress(0,'Preparing the coaching video…');
  const source=Array.isArray(raw)?raw:[raw],drills=source.map(playbackData);
  const settings=movieOptions(opts),story=movieStoryboard(drills,opts);
- if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Chrome or Edge.');
  const quality=settings.quality==='720'?{width:1280,height:720,bitrate:6000000,fps:30}:
   settings.quality==='2160'?{width:3840,height:2160,bitrate:36000000,fps:30}:
   {width:1920,height:1080,bitrate:14000000,fps:30};
@@ -163,6 +162,7 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
    progress(fraction,t>=story.total?'Rendering · Coaching notes':'Rendering · '+(current.heading||current.title));
   }});
  if(precise)return {...precise,chapters:story.clips.length};
+ if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Chrome or Edge.');
  if(!canvas.captureStream)throw Error('Canvas video recording is unavailable.');
  const stream=canvas.captureStream(quality.fps),types=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
  let recorder,recorded;
