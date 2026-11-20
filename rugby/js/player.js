@@ -342,6 +342,7 @@ function initPublicBoard(){
   button.addEventListener('click',action);toolbar.append(button);return button;
  };
  const openPanel=key=>{
+  setCameraSettingsOpen(false);
   toolbar.dataset.mobileOpen='false';mobileMenu?.setAttribute('aria-expanded','false');
   document.getElementById('presentation-tab-'+key)?.click();
   sidebar.dataset.open='true';
