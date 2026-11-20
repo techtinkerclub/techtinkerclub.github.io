@@ -49,4 +49,8 @@
 
 .camera-follow-choice{display:flex;gap:8px;align-items:center;margin:7px 0;font-size:13px}
 .camera-follow-choice input{min-width:18px;min-height:18px;accent-color:#c9f07c}
+/* Shared Studio/mobile View menu: show Follow action as a visibly active camera mode, without enlarging the menu. */
+.camera-follow-choice{cursor:pointer;border-radius:7px}
+.camera-follow-choice:has(input:checked){background:#28462d;color:#d8f6a8;box-shadow:inset 0 0 0 1px #a7c97270}
+.camera-follow-choice input:focus-visible{outline:2px solid #c9f07c;outline-offset:2px}
 .read-only-player #playerFollow[aria-pressed="true"]{border-color:#c9f07c;color:#c9f07c;background:#28462d}
