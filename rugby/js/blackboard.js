@@ -64,6 +64,7 @@ export function initBlackboard({getState,fit,rotate,openDetails}){
   '<button type="button" data-bb="fit" title="Fit all of the pitch">⊞ <span>Fit</span></button>'+
   '<button type="button" data-bb="fullscreen" title="Use display fullscreen if available">⛶ <span>Fullscreen</span></button>'+
   '<button type="button" data-bb="ruckus" id="bbRuckus" title="Switch Classic/Ruckus appearance">◉ <span>Ruckus</span></button>'+
+  '<button type="button" data-bb="save" title="Save the current drill through Studio">⬇ <span>Save</span></button>'+
   '<button type="button" data-bb="exit" class="bb-close" title="Return to Studio">× <span>Exit</span></button>'+
  '</nav>'+
  '<nav class="bb-steps" aria-label="Drill steps">'+
@@ -160,6 +161,7 @@ export function initBlackboard({getState,fit,rotate,openDetails}){
    case 'fit':fit?.();break;
    case 'ruckus':click('minionMode');break;
    case 'fullscreen':fullscreen();break;
+   case 'save':if(!click('save'))hint('Saving requires a connected GitHub account. Exit to Studio to connect or export a drill file.');break;
    case 'ink-undo':{const last=marks.pop();last?.remove();hint(marks.length+' temporary marks remain.');break}
    case 'ink-clear':marks.splice(0).forEach(p=>p.remove());hint('Temporary ink cleared.');break;
   }
