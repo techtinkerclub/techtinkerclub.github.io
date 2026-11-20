@@ -60,6 +60,7 @@ export function cartoonPoseIndex(o,pose,objects,previous,frame,p=1){
  const markers=(frame?.objects||[]).filter(m=>['tackle','ruck','maul','scrum'].includes(m.type)&&m.members?.some(v=>v.id===o.id));
  const tackle=markers.find(m=>m.type==='tackle'),ruck=markers.find(m=>m.type==='ruck'),maul=markers.find(m=>m.type==='maul');
  const ball=currentBall(o,previous,frame),move=movingInfo(o,previous,frame,p);
+ if(o.type==='attacker'&&ball.held&&(frame?.tryGroundings||[]).some(v=>v.actorId===o.id&&p>=Number(v.at)))return 12;
  if(pose==='grounded'){
   if(ball.all.some(b=>(b.ownerId===o.id||(!b.ownerId&&Math.hypot(b.x-o.x,b.y-o.y)<35))&&
     (b.groundState==='presented'||b.transferKind==='presentation')) )return 17;
@@ -314,16 +315,17 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
   return old?.ownerId===o.id||b.ownerId===o.id||
    ((pose==='grounded'||markerRole==='grounded')&&!old?.ownerId&&Math.hypot(b.x-o.x,b.y-o.y)<45);
  });
- const presentBall=presentingBalls.find(b=>b.id===tackleMarker?.breakdown?.ballId)||presentingBalls[0]||null;
+ const tryGroundingActive=o.type==='attacker'&&ball.held&&(frame?.tryGroundings||[]).some(v=>v.actorId===o.id&&p>=Number(v.at));
+ const presentBall=presentingBalls.find(b=>b.id===tackleMarker?.breakdown?.ballId)||presentingBalls[0]||(tryGroundingActive?ball.held:null);
  const presentation=!!presentBall;
- const presentationVisible=(presentation||semantic===17)&&(pose==='grounded'||activeCarrier||semantic===17);
+ const presentationVisible=(presentation||semantic===17)&&(pose==='grounded'||activeCarrier||semantic===17||tryGroundingActive);
  const ballAnchor=presentBall?g.toView(presentBall.x,presentBall.y):null;
  const playerAnchor=ballAnchor?g.toView(o.x,o.y):null;
  const vx=ballAnchor&&playerAnchor?ballAnchor.x-playerAnchor.x:0;
  const vy=ballAnchor&&playerAnchor?ballAnchor.y-playerAnchor.y:0;
  // Bearing is screen-up=0, clockwise-positive. Subtract the already-applied
  // player+field rotation; the source sprite's hands point LEFT (-90 degrees).
- const presentationBearing=Math.hypot(vx,vy)>2
+ const presentationBearing=tryGroundingActive?(Number(o.rot)||0):Math.hypot(vx,vy)>2
   ?Math.atan2(vx,-vy)*180/Math.PI
   :Number(o.rot)||0;
  const presentationLocal=wrapMinionAngle(presentationBearing-(Number(o.rot)||0)-(Number(g.rotation)||0));
