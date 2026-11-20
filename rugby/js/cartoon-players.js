@@ -268,7 +268,7 @@ const ruckusSequence=(start,count,p)=>{
  return start+Math.min(count-1,Math.floor(eased*count));
 };
 const ruckusLookBucket=angle=>4-Math.round((clamp(wrapMinionAngle(angle),-90,90)+90)/45);
-function cartoonRuckus(o,pose,objects,g,previous,frame,p){
+function cartoonRuckus(o,pose,objects,g,previous,frame,p,celebration=null){
  const semantic=cartoonPoseIndex(o,pose,objects,previous,frame,p);
  const entry=RIG_POSES[semantic],move=movingInfo(o,previous,frame,p);
  const travel=minionTravelHeading(o,g,previous,frame,p);
@@ -365,22 +365,29 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
   if(semantic===1&&move.speed<14)sprite=6+Math.min(3,Math.round(look*3/4));
   else sprite=10+look;
  } else if([0,1,2,7,19].includes(semantic))sprite=look;
+ // The approved red/blue 54-pose atlases already contain genuine raised-arms
+ // celebration sprites (52 front, 53 back). Use them only for a VALID scored
+ // try event; release/grounding without crossing never produces a celebration.
+ if(celebration?.phase==='rise')sprite=37+Math.max(0,Math.min(4,celebration.index||0));
+ if(celebration?.phase==='celebrate')sprite=(celebration.index||0)>=3?53:52;
  // Keep the same natural standing/running/carrying body orientation that
  // users already recognise. The five-way gaze sprite supplies the teammate
  // look; no pass/catch-specific mirroring, Y-flip or dramatic body turn.
  const mirrorX=1,mirrorY=1;
- const angle=180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
+ const angle=celebration?.phase==='celebrate'?180+(celebration.index%2?-4:4):
+  180+(bindLocal!==null&&[20,21,22].includes(semantic)?bindLocal:(moving?forward:0));
  // Our new image is a genuinely PRONE, ball-free pose, with both hands left.
  // A 90-degree offset aligns its hands with the existing presented ball.
  const proneAngle=90+presentationLocal;
  // The source passing/receiving poses are lateral; mirror the whole illustration
  // for the opposite side without changing the existing ball ownership or flight.
- const pulse=moving?Math.sin(step*12*Math.PI)*.55:0;
+ const pulse=celebration?.phase==='celebrate'?-Math.abs(Math.sin((celebration.elapsed||0)*15))*3:
+  moving?Math.sin(step*12*Math.PI)*.55:0;
  const atlasId=team==='red'?'rugby-ruckus-red-54':'rugby-ruckus-blue-54';
  const cell=tileUse(atlasId,(sprite%RUCKUS_COLS)*RUCKUS_TILE,Math.floor(sprite/RUCKUS_COLS)*RUCKUS_TILE,RUCKUS_TILE);
  // The first fifth of the release shows the regular grounded silhouette.
  // The remainder shows a clearly held presentation pose without an extra ball.
- const showProne=presentationVisible&&(!previous||step>=.2);
+ const showProne=celebration?.phase==='ground'||(!celebration&&presentationVisible&&(!previous||step>=.2));
  const presentArt=showProne?
   '<g transform="rotate('+fmt(proneAngle)+' 64 64)">'+
    '<svg x="0" y="33" width="128" height="62" viewBox="0 0 208 104" overflow="hidden">'+
@@ -389,7 +396,7 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
  const spriteArt=showProne?presentArt:
   '<g transform="rotate('+fmt(angle)+' 64 64) translate('+fmt(mirrorX===-1?128:0)+' '+fmt(mirrorY===-1?128:0)+') scale('+mirrorX+' '+mirrorY+')">'+cell+'</g>';
 
- return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+(showProne?'present-prone':sprite)+'" data-ruckus-presentation-bearing="'+(showProne?fmt(presentationBearing):'none')+'" data-ruckus-look="'+fmt(naturalLook)+'" data-ruckus-mirror="'+mirrorX+','+mirrorY+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
+ return '<g class="cartoon-player ruckus-player" data-ruckus-team="'+team+'" data-stance="'+entry.name+'" data-ruckus-pose="'+(showProne?'present-prone':sprite)+'" data-try-celebration="'+(celebration?.phase||'none')+'" data-try-celebration-beat="'+(celebration?.index??-1)+'" data-ruckus-presentation-bearing="'+(showProne?fmt(presentationBearing):'none')+'" data-ruckus-look="'+fmt(naturalLook)+'" data-ruckus-mirror="'+mirrorX+','+mirrorY+'" data-ruckus-bind="'+(bindLocal===null?'none':fmt(bindLocal))+'" pointer-events="none">'+
   '<svg x="-35" y="'+fmt(-35+pulse)+'" width="70" height="70" viewBox="0 0 128 128" overflow="visible">'+
     spriteArt+
   '</svg><g>'+bodyEquipment(o)+'</g></g>';
@@ -435,12 +442,12 @@ function cartoonCoach(o,objects,g,previous,frame,p){
    tileUse('rugby-ruckus-coach-h8',x,y,t)+'</svg></g>';
 }
 
-export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false}={}){
+export function playerAppearance(o,pose,original,objects,g,previous,frame,progress=1,{cartoonMode=false,ink=false,celebration=null}={}){
  // Explicit output-mode boundary: cartoon changes must not alter Classic pose,
  // eye/arrow, scale, team colours or equipment.
  if(!cartoonMode)return classicPlayerAppearance(o,pose,original,objects,g,previous,frame,progress,{ink});
  if(!canCarry(o))return o.type==='shieldItem'?cartoonStandalonePad():original;
- return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonRuckus(o,pose,objects,g,previous,frame,progress);
+ return o.type==='coach'?cartoonCoach(o,objects,g,previous,frame,progress):cartoonRuckus(o,pose,objects,g,previous,frame,progress,celebration);
 }
 // The Classic belt tag overlay covers the Ruckus visor at pitch scale.
 // In Ruckus only, attach small coloured strips directly to the hips.
