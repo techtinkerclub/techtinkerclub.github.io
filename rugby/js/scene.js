@@ -1,8 +1,8 @@
 import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
-import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=4';
+import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=5';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=2';
-import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=2';
+import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=3';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.20.35';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
