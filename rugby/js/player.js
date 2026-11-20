@@ -361,17 +361,6 @@ function initPublicBoard(){
   try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}
   catch{showNotice('Fullscreen is unavailable in this browser.')}
  });
- const modeButton=make('▣ Page view','Switch to the classic public presentation layout',()=>{
-  const active=document.body.classList.toggle('public-blackboard');
-  modeButton.textContent=active?'▣ Page view':'▣ Blackboard';
-  modeButton.title=active?'Use the standard page layout':'Return to full-screen Blackboard';
-  if(!active){setInk(false);sidebar.dataset.open='false'}
- });
- const restore=document.createElement('button');restore.type='button';
- restore.className='public-board-restore';restore.textContent='▣ Open public Blackboard';
- restore.title='Return to full-screen read-only Blackboard';
- restore.addEventListener('click',()=>modeButton.click());
- document.querySelector('.player-heading .player-nav')?.append(restore);
  const closeButton=sidebar.querySelector('.presentation-sidebar-close');
  const backdrop=document.createElement('button');backdrop.type='button';
  backdrop.className='public-board-backdrop';backdrop.setAttribute('aria-label','Close coaching drawer');
@@ -420,18 +409,18 @@ function initPublicBoard(){
   savePanelPositions();
  }
  function setOpacity(value){
-  const v=Math.max(35,Math.min(97,Number(value)||80));
+  const v=Math.max(12,Math.min(88,Number(value)||48));
   document.body.style.setProperty('--public-panel-alpha',(v/100).toFixed(2));
-  document.body.style.setProperty('--public-panel-blur',(v<60?5:9)+'px');
+  document.body.style.setProperty('--public-panel-blur',(v<60?0:2)+'px');
  }
  const panelPrefs=document.createElement('section');panelPrefs.className='public-board-panel-prefs';
  panelPrefs.innerHTML='<h2>Blackboard appearance</h2>'+
-  '<label>Floating panel opacity <input type="range" id="publicPanelOpacity" min="35" max="97" step="1" value="80"><output id="publicPanelOpacityValue">80%</output></label>'+
+  '<label>Floating panel opacity <input type="range" id="publicPanelOpacity" min="12" max="88" step="1" value="48"><output id="publicPanelOpacityValue">48%</output></label>'+
   '<button type="button" id="publicPanelReset">Reset floating panels</button>'+
   '<small>Drag a panel by its grip. These preferences stay on this device only.</small>';
  document.getElementById('presentation-panel-view')?.append(panelPrefs);
  const panelOpacity=panelPrefs.querySelector('#publicPanelOpacity');
- panelOpacity.value=String(settings.opacity||80);setOpacity(panelOpacity.value);
+ panelOpacity.value=String(settings.opacity??48);setOpacity(panelOpacity.value);
  panelPrefs.querySelector('#publicPanelOpacityValue').textContent=panelOpacity.value+'%';
  panelOpacity.addEventListener('input',()=>{
   setOpacity(panelOpacity.value);
@@ -486,18 +475,30 @@ function initPublicBoard(){
  window.addEventListener('resize',reflowPanels);
  // Fold-away rails leave the pitch clear without removing useful functions.
  const dock=document.createElement('nav');dock.className='public-board-dock';
- dock.setAttribute('aria-label','Show or hide Blackboard panels');
+ dock.setAttribute('aria-label','Show and hide floating panels');
+ dock.dataset.open='false';
+ const dockToggle=document.createElement('button');dockToggle.type='button';
+ dockToggle.className='public-board-dock-toggle';dockToggle.textContent='☷';
+ dockToggle.title='Show panel controls';dockToggle.setAttribute('aria-label','Show panel controls');
+ dockToggle.setAttribute('aria-expanded','false');
+ dockToggle.addEventListener('click',()=>{
+  const opened=dock.dataset.open!=='true';
+  dock.dataset.open=String(opened);
+  dockToggle.setAttribute('aria-expanded',String(opened));
+  dockToggle.setAttribute('aria-label',opened?'Hide panel controls':'Show panel controls');
+ });
+ dock.append(dockToggle);
  for(const [key,label,node] of [
   ['tools','Tools',toolbar],['title','Title',boardHeading],
   ['camera','Camera',$('viewerCamera')],['playback','Playback',$('controls')]
  ]){
   const button=document.createElement('button');button.type='button';
-  button.textContent=label;button.title='Show or hide '+label.toLowerCase()+' panel';
+  button.textContent=label;button.title='Show or hide '+label.toLowerCase();
   button.setAttribute('aria-pressed','true');button.dataset.panel=key;
   button.addEventListener('click',()=>{
    const hide=node.dataset.collapsed!=='true';
-   node.dataset.collapsed=String(hide);button.setAttribute('aria-pressed',String(!hide));
-   // Keep the tools dock accessible even when all floating panels are hidden.
+   node.dataset.collapsed=String(hide);
+   button.setAttribute('aria-pressed',String(!hide));
   });
   dock.append(button);
  }
@@ -575,23 +576,33 @@ function initPublicBoard(){
  function showNotice(value){notice.textContent=value;}
  const focus=document.createElement('section');focus.className='public-board-focus';
  focus.innerHTML='<label>Spotlight <select id="publicSpotlight" aria-label="Spotlight player"><option value="">Off</option></select></label>'+
-  '<label>Camera follows <select id="publicCameraTarget" aria-label="Coaching camera focus"><option value="action">Whole action</option><option value="ball">Ball</option><option value="player">Chosen player</option></select></label>'+ 
-  '<label id="publicCameraPlayerLabel" hidden>Follow player <select id="publicCameraPlayer" aria-label="Player to follow"></select></label>'+ 
-  '<label>Framing <select id="publicCameraFraming" aria-label="Camera distance"><option value="close">Close</option><option value="standard" selected>Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>'+ 
-  '<label><input id="publicBoardGrid" type="checkbox"> Show visual guide grid</label>'+ 
+  '<label><input id="publicBoardGrid" type="checkbox"> Show visual guide grid</label>'+
   '<label>Ghost <select id="publicGhost" aria-label="Show past or next positions"><option value="off">Off</option><option value="start">Previous</option><option value="next">Next</option><option value="both">Both</option></select></label>';
- // Teaching-only settings belong in the existing View drawer, not the canvas.
  document.getElementById('presentation-panel-view')?.prepend(focus);
- const local={spot:'',ghost:'off',camera:'action',cameraPlayer:'',cameraFraming:'standard',grid:false};
- const cameraTarget=focus.querySelector('#publicCameraTarget');
- const cameraPlayer=focus.querySelector('#publicCameraPlayer');
+ // Single home for all camera controls, alongside Zoom/Fit/Pan/Follow.
+ // Existing select elements move rather than being cloned so their handlers work.
+ const cameraMenu=document.createElement('details');cameraMenu.className='public-board-camera-menu';
+ const cameraSummary=document.createElement('summary');cameraSummary.textContent='⚙ Camera';
+ const cameraContents=document.createElement('div');cameraContents.className='public-board-camera-settings';
+ cameraContents.innerHTML='<label>Track <select id="publicCameraTarget" aria-label="Coaching camera focus"><option value="action">Whole action</option><option value="ball">Ball</option><option value="player">Chosen player</option></select></label>'+
+  '<label id="publicCameraPlayerLabel" hidden>Player <select id="publicCameraPlayer" aria-label="Player to follow"></select></label>'+
+  '<label>Camera distance <select id="publicCameraFraming" aria-label="Camera distance"><option value="close">Close</option><option value="standard" selected>Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>';
+ for(const id of ['framing','orientation']){
+  const element=$(id),container=element?.closest('label')||element;
+  if(container)cameraContents.append(container);
+ }
+ cameraMenu.append(cameraSummary,cameraContents);
+ $('viewerCamera').append(cameraMenu);
+const local={spot:'',ghost:'off',camera:'action',cameraPlayer:'',cameraFraming:'standard',grid:false};
+ const cameraTarget=cameraContents.querySelector('#publicCameraTarget');
+ const cameraPlayer=cameraContents.querySelector('#publicCameraPlayer');
  cameraTarget.addEventListener('change',()=>{
   local.camera=cameraTarget.value;
-  focus.querySelector('#publicCameraPlayerLabel').hidden=local.camera!=='player';
+  cameraContents.querySelector('#publicCameraPlayerLabel').hidden=local.camera!=='player';
   resetZoom();render();
  });
  cameraPlayer.addEventListener('change',()=>{local.cameraPlayer=cameraPlayer.value;resetZoom();render()});
- focus.querySelector('#publicCameraFraming').addEventListener('change',e=>{local.cameraFraming=e.target.value;resetZoom();render()});
+ cameraContents.querySelector('#publicCameraFraming').addEventListener('change',e=>{local.cameraFraming=e.target.value;resetZoom();render()});
  focus.querySelector('#publicSpotlight').addEventListener('change',e=>{local.spot=e.target.value;render()});
  focus.querySelector('#publicGhost').addEventListener('change',e=>{local.ghost=e.target.value;render()});
  focus.querySelector('#publicBoardGrid').addEventListener('change',e=>{local.grid=e.target.checked;render()});
