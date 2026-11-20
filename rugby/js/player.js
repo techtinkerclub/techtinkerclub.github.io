@@ -197,6 +197,94 @@ $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};
 $('print').onclick=()=>{if(d){stop();printDrill(d,opts)}};
 $('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings(),cartoonMode:$('playerVideoStyle').value==='ruckus'};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{$('video').disabled=false}};
+// One-screen public presentation layout. Move the EXISTING functional controls
+// rather than duplicating them; all playback, camera, branch and export handlers
+// above keep their original element identities and event listeners.
+function initPresentationWorkspace(){
+ const main=document.querySelector('.read-only-player main');
+ if(!main||document.querySelector('.presentation-workspace'))return;
+ const workspace=document.createElement('div');
+ workspace.className='presentation-workspace';
+ const stage=document.createElement('section');
+ stage.className='presentation-stage';
+ stage.setAttribute('aria-label','Pitch and playback controls');
+ const sidebar=document.createElement('aside');
+ sidebar.className='presentation-sidebar';
+ sidebar.setAttribute('aria-label','Coaching information and settings');
+ const top=document.createElement('div');top.className='presentation-sidebar-top';
+ const tabs=document.createElement('div');tabs.className='presentation-tabs';
+ tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Presentation information');
+ const close=document.createElement('button');close.type='button';close.className='presentation-sidebar-close';close.textContent='Close';close.setAttribute('aria-label','Close coaching panel');
+ top.append(tabs,close);sidebar.append(top);
+ const panels={};
+ const entries=[['step','Step'],['coach','Coaching'],['steps','All steps'],['view','View'],['share','Share']];
+ for(const [key,label] of entries){
+  const button=document.createElement('button');
+  button.type='button';button.id='presentation-tab-'+key;button.textContent=label;
+  button.setAttribute('role','tab');button.setAttribute('aria-controls','presentation-panel-'+key);
+  button.setAttribute('aria-selected',String(key==='step'));button.tabIndex=key==='step'?0:-1;
+  const panel=document.createElement('section');panel.className='presentation-panel';panel.id='presentation-panel-'+key;
+  panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',button.id);
+  panel.hidden=key!=='step';panels[key]=panel;
+  tabs.append(button);sidebar.append(panel);
+  button.addEventListener('click',()=>activate(key));
+ }
+ function activate(key){
+  for(const [name] of entries){
+   const active=name===key,tab=document.getElementById('presentation-tab-'+name);
+   tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;
+   panels[name].hidden=!active;
+  }
+  if(window.matchMedia('(max-width:850px)').matches)sidebar.dataset.open='true';
+ }
+ tabs.addEventListener('keydown',event=>{
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+  event.preventDefault();
+  const names=entries.map(e=>e[0]),current=names.findIndex(name=>document.getElementById('presentation-tab-'+name).getAttribute('aria-selected')==='true');
+  const index=event.key==='Home'?0:event.key==='End'?names.length-1:(current+(event.key==='ArrowRight'?1:-1)+names.length)%names.length;
+  activate(names[index]);document.getElementById('presentation-tab-'+names[index]).focus();
+ });
+ close.addEventListener('click',()=>{sidebar.dataset.open='false';toggle.focus()});
+ const stageHead=document.createElement('div');stageHead.className='presentation-stage-head';
+ const toggle=document.createElement('button');toggle.type='button';toggle.className='presentation-sidebar-toggle';toggle.textContent='☰ Coaching & options';
+ toggle.setAttribute('aria-label','Open coaching notes and settings');
+ toggle.addEventListener('click',()=>{sidebar.dataset.open='true';const current=tabs.querySelector('[aria-selected="true"]');current?.focus()});
+ stageHead.append(toggle);stage.append(stageHead);
+ for(const id of ['empty','branchDecisionPanel']){const item=$(id);if(item)stage.append(item)}
+ const branch=$('branchPlayer');if(branch)panels.step.append(branch);
+ const summary=document.createElement('p');summary.className='presentation-step-summary';
+ summary.textContent='Follow the animation. Read the current step here, or open the full coaching card.';
+ panels.step.append(summary);
+ panels.step.append($('stepReading'));
+ const coach=$('coachResources'),allSteps=$('coachSequenceContent').closest('.coach-resource');
+ allSteps.open=true;
+ panels.steps.append(allSteps);
+ const heading=document.createElement('h2');heading.textContent='Coaching card';panels.coach.append(heading);
+ coach.querySelector('.coach-resource').open=true;
+ panels.coach.append(coach);
+ const control=$('controls');
+ const view=control.querySelector('.player-options');
+ const share=control.querySelectorAll('.player-options')[1];
+ if(view){view.open=true;panels.view.append(view)}
+ const guides=control.querySelector('.step-reading');
+ if(guides)panels.view.prepend(guides);
+ if(share){share.open=true;panels.share.append(share)}
+ panels.share.append($('catalogueReview'));
+ const download=$('downloadDrill');if(download)panels.share.append(download);
+ for(const [key,label] of [['steps','Step-by-step technical notes'],['view','Pitch display & camera'],['share','Share, export & review']]){
+  const h=document.createElement('h2');h.textContent=label;panels[key].prepend(h);
+ }
+ const pitch=document.querySelector('.presentation-pitch-shell');
+ stage.append(pitch,$('viewerCamera'),control,$('message'));
+ workspace.append(stage,sidebar);
+ main.prepend(workspace);
+ document.body.classList.add('player-workspace-ready');
+ window.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&sidebar.dataset.open==='true'){sidebar.dataset.open='false';toggle.focus()}
+ });
+}
+initPresentationWorkspace();
+
 const params=new URLSearchParams(location.search),catalogueId=params.get('drill');
 async function reviewCopy(value,message){if(await copyText(value)){$('reviewStatus').textContent=message;return}$('reviewCopyValue').value=value;$('reviewCopyDialog').showModal();$('reviewCopyValue').select()}
 if(catalogueId!==null){
