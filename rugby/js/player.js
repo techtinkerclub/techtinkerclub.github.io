@@ -387,10 +387,17 @@ function initPublicBoard(){
  function setCameraSettingsOpen(open){
   cameraContents.hidden=!open;
   cameraMenu.setAttribute('aria-expanded',String(open));
-  if(open&&!cameraContents.dataset.floating){
-   const bar=$('viewerCamera').getBoundingClientRect();
-   const panel=cameraContents.getBoundingClientRect();
-   positionPanel(cameraContents,Math.min(bar.right-30,window.innerWidth-panel.width-12),Math.min(bar.bottom+8,window.innerHeight-panel.height-10));
+  if(open&&!cameraContents.dataset.floating&&window.innerWidth>700){
+   const saved=settings.positions?.cameraSettings;
+   if(Array.isArray(saved)&&saved.length===2&&saved.every(Number.isFinite)){
+    positionPanel(cameraContents,saved[0]*window.innerWidth,saved[1]*window.innerHeight);
+   }else{
+    const bar=$('viewerCamera').getBoundingClientRect();
+    const panel=cameraContents.getBoundingClientRect();
+    const preferredLeft=Math.max(12,Math.min(window.innerWidth-panel.width-12,bar.left));
+    const preferredTop=bar.bottom+9;
+    positionPanel(cameraContents,preferredLeft,preferredTop);
+   }
   }
  }
  cameraMenu.addEventListener('click',()=>setCameraSettingsOpen(cameraContents.hidden));
@@ -410,6 +417,7 @@ function initPublicBoard(){
  function savePanelPositions(){
   const positions={};
   for(const item of movablePanels){
+   if(item.node.hidden)continue;
    const box=item.node.getBoundingClientRect();
    if(item.node.dataset.floating==='true')positions[item.key]=[
     Math.round(box.left/window.innerWidth*1000)/1000,
@@ -616,7 +624,7 @@ function initPublicBoard(){
  document.getElementById('presentation-panel-view')?.prepend(focus);
  // Single home for all camera controls, alongside Zoom/Fit/Pan/Follow.
  // Existing select elements move rather than being cloned so their handlers work.
- cameraContents.insertAdjacentHTML('beforeend','<label>Camera mode <select id="publicCameraTarget" aria-label="Choose how the camera follows the drill"><option value="field">Whole pitch</option><option value="action">Frame this step</option><option value="follow">Follow action</option><option value="ball">Follow ball</option><option value="player">Follow player</option></select></label>'+
+ cameraContents.insertAdjacentHTML('beforeend','<strong class="public-board-camera-heading">CAMERA SETTINGS</strong><label>Camera mode <select id="publicCameraTarget" aria-label="Choose how the camera follows the drill"><option value="field">Whole pitch</option><option value="action">Frame this step</option><option value="follow">Follow action</option><option value="ball">Follow ball</option><option value="player">Follow player</option></select></label>'+
   '<label id="publicCameraPlayerLabel" hidden>Player <select id="publicCameraPlayer" aria-label="Player to follow"></select></label>'+
   '<label>Camera distance <select id="publicCameraFraming" aria-label="Camera distance"><option value="close">Close</option><option value="standard" selected>Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>');
  const legacyFraming=$('framing')?.closest('label');
