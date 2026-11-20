@@ -11,10 +11,14 @@ import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} fr
 import {createExportProgress} from './export-progress.js?v=0.18.3';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
+import {teachingOverlay} from './blackboard-coaching.js?v=2';
+import {stepLocation} from './step-timeline.js?v=1';
+import {transitionObjects} from './possession.js?v=0.19.1';
 const $=id=>document.getElementById(id);
 const visualDuration=()=>d?tryVisualDuration(d,drillGeometry(d,'up'),opts.cartoonMode):0;const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
 let viewZoom=1,viewPan={x:0,y:0},viewBase=null,panEnabled=false,dragStart=null,pinchStart=null;
 let decisionRewind=0;
+let publicBoard=null;
 $('playerMovieCamera').closest('label').classList.add('video-camera-choice');
 $('playerVideoStyle').closest('label').after($('playerMovieCamera').closest('label'));
 const touches=new Map();
@@ -99,6 +103,7 @@ function render(){
  const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
  board.innerHTML=s.svg;viewBase=s.camera;applyZoom();shownStep=s.index;
+ publicBoard?.refresh(s);
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
  if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';renderStepRoute(s.index);$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
  $('time').textContent=t.toFixed(1)+' / '+visualDuration().toFixed(1)+' s';$('seek').value=t;
@@ -310,6 +315,8 @@ function initPresentationWorkspace(){
  });
 }
 initPresentationWorkspace();
+
+publicBoard=initPublicBoard();
 
 const params=new URLSearchParams(location.search),catalogueId=params.get('drill');
 async function reviewCopy(value,message){if(await copyText(value)){$('reviewStatus').textContent=message;return}$('reviewCopyValue').value=value;$('reviewCopyDialog').showModal();$('reviewCopyValue').select()}
