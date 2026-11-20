@@ -2681,6 +2681,13 @@ const blackboard=initBlackboard({
   control.value=String(Math.max(-360,Math.min(360,(Number(control.value)||0)+delta)));
   control.dispatchEvent(new Event('change',{bubbles:true}));
  },
- openDetails:()=>{$('tabObject').click();}
+ openDetails:()=>{$('tabObject').click();},
+ openObjectActions:()=>{
+  if(!selected||preview!==null)return;
+  const node=[...pitch.querySelectorAll('.obj[data-id]')].find(el=>el.dataset.id===selected);
+  if(!node)return;
+  const r=node.getBoundingClientRect();
+  openObjectMenu({target:node,clientX:r.left+r.width/2,clientY:r.top+r.height/2,preventDefault(){}});
+ }
 });
 
