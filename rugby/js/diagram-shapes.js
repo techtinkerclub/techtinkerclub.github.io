@@ -26,9 +26,15 @@ export function diagramSettings(type,raw={},pitchWidth=15){
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n.toFixed(2)).toString();
 // The parent position/rotation is supplied by the shared editor/output rendering.
-export function diagramSVG(o,g,{ink=false}={}){
+export function diagramSVG(o,g,{ink=false,anchor=null}={}){
  if(!isDiagramObject(o))return '';
  const s=diagramSettings(o.type,o.diagram,g.width),a=s.length*g.scale,b=s.width*g.scale,st=ink?'#244c42':s.color;
+ const camera=g.annotationViewport,anno=Number(g.annotationScale)||1;
+ const compact=!!camera&&anno<.999;
+ const labelScale=compact?anno:1;
+ const offsideTextX=compact&&anchor
+  ?Math.max(-a/2+10*anno,Math.min(a/2-14*anno,camera.x-anchor.x+10*anno)):0;
+ 
  const attrs=' fill="none" stroke="'+st+'" stroke-opacity="'+s.opacity/100+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"'+(s.dashed?' stroke-dasharray="8 5"':'');
  let visible='',hit='',measurement='';
  const label=o.type==='offsideLine'?'OFFSIDE · COACH GUIDE':o.type==='measureLine'?fmt(s.length)+' m':String(o.label||'');
@@ -42,7 +48,7 @@ export function diagramSVG(o,g,{ink=false}={}){
    visible+='<path d="M'+(-a/2)+' -8v16M'+(a/2)+' -8v16"'+attrs+'/>';
    // One tick per whole metre measured from the starting cap.
    for(let mark=1;mark<s.length;mark++)visible+='<path d="M'+(-a/2+mark*g.scale)+' -4v8"'+attrs.replace('stroke-width="2.5"','stroke-width="1.4"')+'/>';
-   measurement='<text x="0" y="-10" text-anchor="middle" font-size="12" font-weight="650" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#ffffff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(label)+'</text>';
+   measurement='<text x="0" y="-10" text-anchor="middle" font-size="'+(12*labelScale)+'" font-weight="650" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#ffffff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(label)+'</text>';
   }
   hit='<path d="M'+(-a/2)+' 0H'+(a/2)+'" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"/>';
  }else if(o.type==='directionArrow'){
@@ -59,7 +65,7 @@ export function diagramSVG(o,g,{ink=false}={}){
   visible='<rect x="'+(-a/2)+'" y="'+(-b/2)+'" width="'+a+'" height="'+b+'" rx="2" fill="'+(s.fill?st:'none')+'" fill-opacity="'+(s.fill?s.fillOpacity/100:0)+'"'+attrs.replace(' fill="none"','')+'/>';
   hit='<rect x="'+(-a/2)+'" y="'+(-b/2)+'" width="'+a+'" height="'+b+'" fill="transparent" stroke="transparent" stroke-width="14" pointer-events="all"/>';
  }
- const description=o.type==='offsideLine'?'<text x="0" y="-9" text-anchor="middle" font-size="10" font-weight="650" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(label)+'</text>':o.type!=='measureLine'&&o.label?'<text x="0" y="'+(o.type==='fieldLine'?-10:o.type==='zoneRect'?-b/2-8:o.type==='zoneCircle'?-a/2-8:-a/2-9)+'" text-anchor="middle" font-size="11" font-weight="600" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(o.label)+'</text>':'';
+ const description=o.type==='offsideLine'?'<text x="'+offsideTextX+'" y="'+(-9*labelScale)+'" text-anchor="'+(compact?'start':'middle')+'" font-size="'+(10*labelScale)+'" font-weight="650" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="'+(3*labelScale)+'" pointer-events="none">'+escape(compact?'OFFSIDE · GUIDE':label)+'</text>':o.type!=='measureLine'&&o.label?'<text x="0" y="'+(o.type==='fieldLine'?-10:o.type==='zoneRect'?-b/2-8:o.type==='zoneCircle'?-a/2-8:-a/2-9)+'" text-anchor="middle" font-size="'+(11*labelScale)+'" font-weight="600" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(o.label)+'</text>':'';
  let positionedLabel='';
  if(['fieldLine','tryLine'].includes(o.type)){
   const title=String(o.label|| (o.type==='tryLine'?'TRY LINE':'')).slice(0,64);
@@ -70,7 +76,7 @@ export function diagramSVG(o,g,{ink=false}={}){
    const offset=title.length*6.8+8;
    const left=textAnchor==='start'?x-3:textAnchor==='end'?x-offset+3:x-offset/2;
    if(s.labelSide==='inside')positionedLabel+='<rect x="'+left+'" y="-10" width="'+offset+'" height="16" rx="4" fill="'+(ink?'#fff':'#173a28')+'" opacity=".94" pointer-events="none"/>';
-   positionedLabel+='<text x="'+x+'" y="'+y+'" text-anchor="'+textAnchor+'" font-size="11" font-weight="750" fill="'+(s.labelSide==='inside'?(ink?'#263a2a':'#f0ffd9'):st)+'" paint-order="stroke" stroke="'+(s.labelSide==='inside'?'none':ink?'#fff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(title)+'</text>';
+   positionedLabel+='<text x="'+x+'" y="'+y+'" text-anchor="'+textAnchor+'" font-size="'+(11*labelScale)+'" font-weight="750" fill="'+(s.labelSide==='inside'?(ink?'#263a2a':'#f0ffd9'):st)+'" paint-order="stroke" stroke="'+(s.labelSide==='inside'?'none':ink?'#fff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(title)+'</text>';
   }
  }
  return '<g class="diagram-markup" data-markup="true" data-line-kind="'+(o.type==='tryLine'?'try-line':o.type==='fieldLine'?'field-reference':o.type==='offsideLine'?'offside-guide':'other')+'" aria-label="Coach-drawn annotation">'+visible+hit+measurement+(o.type==='fieldLine'||o.type==='tryLine'?positionedLabel:description)+'</g>';
