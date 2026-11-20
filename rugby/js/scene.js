@@ -1,4 +1,5 @@
 import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
+import {withAnnotationCamera,isVisibleAnnotation,cameraTextPlacement} from './annotation-camera.js?v=1';
 import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=5';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=2';
@@ -64,13 +65,15 @@ export function playbackData(d){
 }
 export function drillDuration(d){return drillSeconds(d)}
 export function timeLocation(d,t){return stepLocation(d,t)}
-const svgObj=(o,g,poses,ink=false,objects=[],previous=null,frame=null,progress=1,cartoonMode=false,celebration=null)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];if(isDiagramObject(o))return '<g transform="translate('+q.x+' '+q.y+') rotate('+(o.rot+g.rotation)+')">'+diagramSVG(o,g,{ink})+'</g>';if(o.type==='label')return '<g transform="translate('+q.x+' '+q.y+')">'+textLabelSVG(o,{baseline:labelOffset(o,g),ink})+'</g>';return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+') '+symbolTransform(o,g,cartoonMode&&canCarry(o)?'standing':poses.get(o.id))+'">'+playerAppearance(o,poses.get(o.id),posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type,o.coneColor))),color),objects,g,previous,frame,progress,{cartoonMode,ink,celebration})+(cartoonMode&&canCarry(o)?cartoonTagIcon(o):skillIcon(o))+'</g>'+(o.label&&!contactType(o.type)?'<text x="'+(cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,poses.get(o.id)):labelPosition(o,g,poses.get(o.id))).x+'" y="'+(cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,poses.get(o.id)):labelPosition(o,g,poses.get(o.id))).y+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+symbolLabelSize(g)+'" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="3">'+esc(o.label)+'</text>':'')+'</g>'};
+const svgObj=(o,g,poses,ink=false,objects=[],previous=null,frame=null,progress=1,cartoonMode=false,celebration=null)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];if(isDiagramObject(o))return '<g transform="translate('+q.x+' '+q.y+') rotate('+(o.rot+g.rotation)+')">'+diagramSVG(o,g,{ink,anchor:q})+'</g>';if(o.type==='label')return '<g transform="translate('+q.x+' '+q.y+')">'+textLabelSVG(o,{baseline:labelOffset(o,g),ink,g,anchor:q})+'</g>';return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+') '+symbolTransform(o,g,cartoonMode&&canCarry(o)?'standing':poses.get(o.id))+'">'+playerAppearance(o,poses.get(o.id),posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type,o.coneColor))),color),objects,g,previous,frame,progress,{cartoonMode,ink,celebration})+(cartoonMode&&canCarry(o)?cartoonTagIcon(o):skillIcon(o))+'</g>'+(o.label&&!contactType(o.type)&&isVisibleAnnotation(g,q.x,q.y,10*(g.annotationScale||1))?(()=>{const size=symbolLabelSize(g)*(g.annotationScale||1),off=cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,poses.get(o.id)):labelPosition(o,g,poses.get(o.id)),v=g.annotationViewport,xx=v?clamp(q.x+off.x,v.x+5,v.x+v.width-5)-q.x:off.x,yy=v?clamp(q.y+off.y,v.y+size+3,v.y+v.height-3)-q.y:off.y;return '<text x="'+xx+'" y="'+yy+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+size+'" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="'+(3*(g.annotationScale||1))+'">'+esc(o.label)+'</text>'})():'')+'</g>'};
 export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,teachingGuides=true,markups=true,scaleMode='realistic',framing='field',ghosts=false,ink=false,cartoonMode=false,prefix='scene'}={}){
  const g={...drillGeometry(d,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1];
  const objects=timedSkillObjects(old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),old,fr,p),poses=trainingPoses(objects,posesFor(objects));
  const scoreTime=time===null?d.frames.slice(0,i+1).reduce((sum,step)=>sum+Math.max(0,Number(step.seconds)||0),0):time;
  const scoredTries=tryLineEvents(d,g);
  const focused=framing==='action'||framing==='follow',camera=framing==='follow'?followActionViewport(d,g,i,time===null?1:p):focused?(time===null?actionViewport(d,g,i):actionViewportAt(d,g,i,p)):wholeFieldView(g);
+ const annotations=withAnnotationCamera(g,camera);
+ Object.assign(g,{annotationViewport:annotations.annotationViewport,annotationScale:annotations.annotationScale});
  let field=(cartoonMode?cartoonSpriteDefs():'')+trainingField(g,false,.5,pitchSettings(d))+(cartoonMode&&!ink?cartoonPitchDecor(g):''),arrows='',starts='',changes=[];
  if(ink)field=field.replaceAll('#203b2b','#fff').replaceAll('#326844','#eff4ed').replaceAll('#d4e6c9','#355744').replaceAll('#f9f4d9','#34473b');
  if(old)for(const o of fr.objects){
@@ -86,11 +89,11 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  }
  const order=cartoonObjectOrder(orderObjects(objects),cartoonMode);
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
- const caption=labels?contactLabels(objects,focused?{...g,viewWidth:camera.width}:g,esc,[...new Set(changes)],cartoonMode):'';
- const placedCaption=focused&&caption?'<g transform="translate('+camera.x+' '+camera.y+')">'+caption+'</g>':caption;
+ const caption=labels?contactLabels(objects,g,esc,[...new Set(changes)],cartoonMode):'';
+ const placedCaption=caption;
  let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink,objects,old,fr,time===null?1:p,cartoonMode,cartoonMode?tryCelebrationAt(scoredTries,scoreTime,o.id):null)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink,{frames:d.frames,index:i,cartoonMode})+ripOverlay(fr,old,objects,g,time===null?1:p,ink,cartoonMode)+calloutOverlay(d.frames,i,objects,g,time===null?1:p,{cartoonMode,ink,editing:time===null})+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null,cartoonMode})+contestResultOverlay(fr,objects,g,p,ink,cartoonMode)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
- const tryMark=tryFeedbackSVG(scoredTries,scoreTime,{...g,viewWidth:camera.width,viewHeight:camera.height},{cartoonMode,ink});
- if(tryMark)body+='<g transform="translate('+camera.x+' '+camera.y+')">'+tryMark+'</g>';
+ const tryMark=tryFeedbackSVG(scoredTries,scoreTime,g,{cartoonMode,ink});
+ if(tryMark)body+=tryMark;
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+camera.x+' '+camera.y+' '+camera.width+' '+camera.height+'" width="'+camera.width+'" height="'+camera.height+'" font-family="Arial,sans-serif">'+body+'</svg>',g:{...g,viewWidth:camera.width,viewHeight:camera.height},camera,index:i,frame:fr};
 }
