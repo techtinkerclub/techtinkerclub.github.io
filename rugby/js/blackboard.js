@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const escapeText=text=>String(text??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STROKE_NS='http://www.w3.org/2000/svg';
 
-export function initBlackboard({getState,fit,rotate,openDetails}){
+export function initBlackboard({getState,fit,rotate,openDetails,openObjectActions}){
  const host=document.querySelector('.field-wrap'),pitch=$('pitch');
  if(!host||!pitch)return {open:()=>{},close:()=>{},sync:()=>{}};
  const launch=document.createElement('button');
@@ -49,6 +49,7 @@ export function initBlackboard({getState,fit,rotate,openDetails}){
   '<button type="button" data-bb="pass">⇢ Pass</button>'+
   '<button type="button" data-bb="turn-left" title="Turn 15° left">↶ Turn</button>'+
   '<button type="button" data-bb="turn-right" title="Turn 15° right">↷ Turn</button>'+
+  '<button type="button" data-bb="actions" title="Open existing contact, ball and movement commands">⋯ Actions</button>'+
   '<button type="button" data-bb="details">Edit details</button>'+
   '</div></section>'+
  '<section class="bb-ink-controls" id="bbInkControls" hidden>'+
@@ -148,6 +149,7 @@ export function initBlackboard({getState,fit,rotate,openDetails}){
    case 'pass':setPen(false);
     if(!click('passBallSide'))hint('Select the player carrying the ball first.');else hint('Now tap the teammate who should receive the ball.');break;
    case 'add':setPen(false);adding=!adding;$('bbAddMenu').hidden=!adding;break;
+   case 'actions':setPen(false);openObjectActions?.();break;
    case 'details':showDetails(!drawer);break;
    case 'close-details':showDetails(false);break;
    case 'turn-left':rotate(-15);break;
