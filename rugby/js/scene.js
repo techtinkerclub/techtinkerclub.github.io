@@ -1,10 +1,10 @@
 import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
 import {withAnnotationCamera,isVisibleAnnotation,cameraTextPlacement} from './annotation-camera.js?v=1';
-import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=5';
-import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
-import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=2';
-import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=4';
-import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
+import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=6';
+import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=2';
+import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=3';
+import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=5';
+import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.20.75';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.20.35';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.20.60';
@@ -13,21 +13,21 @@ import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=12';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
-import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.20.51';
+import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.20.75';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import {pitchGeometry,drillGeometry,trainingField} from './pitch.js?v=0.16.1';
 import {fieldContext,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,copyLayoutMarker} from './drill-edit.js?v=0.12.10';
 import {frameObjects,transitionObjects,movementFor,isShield,canCarry,syncPossession,normaliseRecoveryPoses} from './possession.js?v=0.19.1';
 import {routeSamples,routeSVG,sanitizeRoutes} from './routes.js?v=0.4.3';
-import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts,PLAYER_POSES} from './contact.js?v=0.20.49';
+import {contactType,contactLabels,posesFor,posedShape,contactMarkerShape,cleanContacts,PLAYER_POSES} from './contact.js?v=0.20.75';
 import {cleanBreakdowns} from './breakdown.js?v=0.12.34';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.13.10';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
-import {offsideOverlay} from './offside.js?v=0.12.23';
+import {offsideOverlay} from './offside.js?v=0.20.75';
 import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=2';
-import {contestResultOverlay} from './ruck-outcome.js?v=0.20.51';
+import {contestResultOverlay} from './ruck-outcome.js?v=0.20.75';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
