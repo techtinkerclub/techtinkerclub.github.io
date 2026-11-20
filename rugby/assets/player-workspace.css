@@ -93,6 +93,122 @@
  .read-only-player.player-workspace-ready .presentation-stage #controls{padding:4px}
  .read-only-player.player-workspace-ready .presentation-stage .viewer-camera button{min-height:26px}
 }
+
+/* Blackboard refinement · the navigation is a slate menu, not website tabs.
+   Retain the user's green studio palette and familiar readable typeface. */
+@media screen {
+.read-only-player .presentation-sidebar{
+ background:linear-gradient(155deg,#1b3026 0%,#192b22 65%,#17281f 100%);
+ border:1px solid #49664e;
+ box-shadow:inset 0 0 0 3px rgba(9,22,14,.26),0 10px 25px #07140b28;
+}
+.read-only-player .presentation-sidebar-top{
+ position:relative;display:block;padding:12px 12px 10px;
+ background:linear-gradient(180deg,#20382a,#1b3026);
+ border-bottom:1px solid #668169;
+}
+.read-only-player .presentation-sidebar-top::before{
+ content:"COACH'S BOARD";display:block;margin:0 0 11px;
+ color:#d9eab5;font-size:10px;letter-spacing:.16em;font-weight:850;
+}
+.read-only-player .presentation-tabs{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;
+}
+.read-only-player .presentation-tabs button{
+ position:relative;min-width:0;min-height:38px;padding:7px 5px;
+ background:transparent;color:#bad0ba;
+ border:1px solid transparent;border-radius:5px;
+ font-size:11.5px;font-weight:650;line-height:1.2;
+ box-shadow:none;white-space:normal;
+ transition:color .14s,background .14s,border-color .14s;
+}
+.read-only-player .presentation-tabs button:hover{
+ background:#294532;color:#f1f8da;border-color:#506b50;
+}
+.read-only-player .presentation-tabs button[aria-selected="true"]{
+ background:#2f4d35;color:#e7f4bc;border:1px solid #78955f;
+ box-shadow:inset 3px 0 0 #d1e6a1;
+}
+.read-only-player .presentation-tabs button:focus-visible{
+ outline:2px solid #d8eea3;outline-offset:2px;
+}
+.read-only-player .presentation-sidebar .presentation-panel{
+ padding:15px 14px 20px;
+ scrollbar-color:#66816a #17281f;
+}
+.read-only-player .presentation-panel h2{
+ font-size:13px;letter-spacing:.01em;color:#d7eab2;
+ padding-bottom:7px;border-bottom:1px dashed #526d54;
+}
+.read-only-player .presentation-step-summary{
+ display:block;margin:0 0 9px;
+ color:#b9cbab;font-size:10px;font-weight:800;letter-spacing:.15em;
+ line-height:1.4;
+}
+.read-only-player .presentation-panel #stepReading{
+ border:1px solid #506a51!important;border-radius:7px;
+ padding:14px 12px!important;margin:0 0 13px;
+ background:#243c2c!important;
+ box-shadow:inset 3px 0 0 #a8c785;
+}
+.read-only-player .presentation-panel #stepReading h2{
+ color:#e5f3c4;margin:0 0 8px;font-size:13px;
+ border:0;padding:0;letter-spacing:0;
+}
+.read-only-player .presentation-panel #stepReading p{
+ color:#e1ebdc;line-height:1.6;font-size:13px;
+}
+.read-only-player .chalk-route{
+ display:grid;gap:5px;margin:15px 0 0;padding-top:13px;
+ border-top:1px dashed #5e775e;
+}
+.read-only-player .chalk-route-head{
+ display:flex;justify-content:space-between;align-items:center;
+ margin-bottom:5px;gap:8px;font-size:10px;
+ letter-spacing:.12em;color:#cfe1ad;
+}
+.read-only-player .chalk-route-head span{color:#aabd9e;font-variant-numeric:tabular-nums}
+.read-only-player .chalk-route-step{
+ display:grid;grid-template-columns:29px minmax(0,1fr) 15px;align-items:center;
+ gap:7px;text-align:left;width:100%;
+ padding:10px 8px;min-height:48px;
+ border:1px solid #425b46;border-radius:6px;
+ background:#1e3327;color:#c8d9c8;box-shadow:none;
+ font-size:12px;
+}
+.read-only-player .chalk-route-step:hover{
+ border-color:#94b27a;background:#294632;
+}
+.read-only-player .chalk-route-step[aria-current="step"]{
+ background:#304d36;border-color:#99ba7c;color:#f0f9dd;
+ box-shadow:inset 3px 0 0 #d6eea6;
+}
+.read-only-player .chalk-route-number{
+ font-weight:800;color:#d2e5a6;font-size:11px;
+ font-variant-numeric:tabular-nums;
+}
+.read-only-player .chalk-route-name{line-height:1.3;overflow-wrap:anywhere}
+.read-only-player .chalk-route-state{text-align:center;color:#d4e8ad}
+.read-only-player .presentation-panel .coach-field,
+.read-only-player .presentation-panel .coach-sequence-row{
+ background:#203629;border-color:#4f6a52;
+ box-shadow:inset 2px 0 0 #72936b55;
+}
+.read-only-player .presentation-panel .coach-field h3{color:#e4f0c8}
+.read-only-player .presentation-panel .coach-field p{color:#d0e1d0}
+.read-only-player .presentation-panel .step-reading#catalogueReview{
+ padding:9px 0!important;background:transparent!important;
+ box-shadow:none;border:0!important;
+}
+.read-only-player .presentation-sidebar-top .presentation-sidebar-close{
+ position:absolute;top:7px;right:7px;font-size:11px;min-height:30px;
+}
+}
+@media screen and (max-width:850px){
+ .read-only-player .presentation-sidebar-top{padding-top:11px}
+ .read-only-player .presentation-sidebar-top::before{margin-right:65px}
+}
+
 @media print{
  .read-only-player.player-workspace-ready{height:auto!important;overflow:visible!important}
  .read-only-player .presentation-workspace{display:none!important}
