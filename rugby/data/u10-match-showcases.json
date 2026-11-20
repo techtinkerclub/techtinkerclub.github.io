@@ -1317,7 +1317,7 @@
               "type": "ball",
               "label": "",
               "x": 462,
-              "y": 372,
+              "y": 354,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -1388,8 +1388,8 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 393,
-              "y": 384,
+              "x": 421,
+              "y": 370,
               "rot": 0
             },
             {
@@ -1415,7 +1415,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 460,
-              "y": 356,
+              "y": 348,
               "rot": 0
             },
             {
@@ -1479,7 +1479,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 330,
+              "y": 340,
               "rot": 180
             },
             {
@@ -1519,7 +1519,7 @@
               "type": "ball",
               "label": "",
               "x": 462,
-              "y": 372,
+              "y": 354,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -1546,7 +1546,7 @@
             {
               "id": "contact1",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck · one arrival each team",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -1640,16 +1640,16 @@
           ]
         },
         {
-          "name": "Secure ball · play it away",
+          "name": "Contest · attacking ball secured",
           "seconds": 2.16,
-          "notes": "The attacking side secures the ball. The link waits on the attacking side and plays it away promptly once available. The ruck is not a place for extra players to join.",
+          "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 409,
-              "y": 387,
+              "x": 442,
+              "y": 359,
               "rot": 0
             },
             {
@@ -1675,7 +1675,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 460,
-              "y": 356,
+              "y": 348,
               "rot": 0
             },
             {
@@ -1739,7 +1739,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 330,
+              "y": 340,
               "rot": 180
             },
             {
@@ -1779,7 +1779,7 @@
               "type": "ball",
               "label": "",
               "x": 462,
-              "y": 372,
+              "y": 354,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -1806,7 +1806,7 @@
             {
               "id": "contact1",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck contest · attack secures",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -1825,7 +1825,7 @@
                 }
               ],
               "breakdown": {
-                "phase": "ruck",
+                "phase": "contest",
                 "carrierId": "a3",
                 "tacklerId": "d3",
                 "tacklerIds": [
@@ -1890,8 +1890,8 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 430,
-              "y": 374,
+              "x": 450,
+              "y": 357,
               "rot": 0
             },
             {
@@ -2075,8 +2075,8 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 433,
-              "y": 367,
+              "x": 450,
+              "y": 350,
               "rot": 0
             },
             {
@@ -2931,7 +2931,7 @@
               "type": "ball",
               "label": "",
               "x": 614,
-              "y": 278,
+              "y": 266,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -3026,8 +3026,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 611,
-              "y": 272,
+              "x": 612,
+              "y": 260,
               "rot": 0
             },
             {
@@ -3100,8 +3100,8 @@
               "id": "d5",
               "type": "defender",
               "label": "D5",
-              "x": 611,
-              "y": 246,
+              "x": 612,
+              "y": 252,
               "rot": 180
             },
             {
@@ -3133,7 +3133,7 @@
               "type": "ball",
               "label": "",
               "x": 614,
-              "y": 278,
+              "y": 266,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -3160,7 +3160,7 @@
             {
               "id": "contact2",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck · one arrival each team",
               "x": 614,
               "y": 256,
               "rot": 0,
@@ -3254,16 +3254,16 @@
           ]
         },
         {
-          "name": "Use it · ready to switch play",
+          "name": "Contest · attacking ball secured",
           "seconds": 1.62,
-          "notes": "The ball is available behind the ruck. A1 takes the linking role. No extra attacker joins the ruck.",
+          "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 585,
-              "y": 285,
+              "x": 592,
+              "y": 275,
               "rot": 0
             },
             {
@@ -3286,8 +3286,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 611,
-              "y": 272,
+              "x": 612,
+              "y": 260,
               "rot": 0
             },
             {
@@ -3360,8 +3360,8 @@
               "id": "d5",
               "type": "defender",
               "label": "D5",
-              "x": 611,
-              "y": 246,
+              "x": 612,
+              "y": 252,
               "rot": 180
             },
             {
@@ -3393,7 +3393,7 @@
               "type": "ball",
               "label": "",
               "x": 614,
-              "y": 278,
+              "y": 266,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -3420,7 +3420,7 @@
             {
               "id": "contact2",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck contest · attack secures",
               "x": 614,
               "y": 256,
               "rot": 0,
@@ -3439,7 +3439,7 @@
                 }
               ],
               "breakdown": {
-                "phase": "ruck",
+                "phase": "contest",
                 "carrierId": "a6",
                 "tacklerId": "d6",
                 "tacklerIds": [
@@ -3494,8 +3494,8 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 589,
-              "y": 272,
+              "x": 604,
+              "y": 269,
               "rot": 0
             },
             {
@@ -5897,7 +5897,7 @@
               "type": "ball",
               "label": "",
               "x": 462,
-              "y": 372,
+              "y": 354,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -5968,8 +5968,8 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 393,
-              "y": 384,
+              "x": 421,
+              "y": 370,
               "rot": 0
             },
             {
@@ -5995,7 +5995,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 460,
-              "y": 356,
+              "y": 348,
               "rot": 0
             },
             {
@@ -6059,7 +6059,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 330,
+              "y": 340,
               "rot": 180
             },
             {
@@ -6099,7 +6099,7 @@
               "type": "ball",
               "label": "",
               "x": 462,
-              "y": 372,
+              "y": 354,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -6126,7 +6126,7 @@
             {
               "id": "contact1",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck · one arrival each team",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -6220,16 +6220,16 @@
           ]
         },
         {
-          "name": "Secure ball · play it away",
+          "name": "Contest · attacking ball secured",
           "seconds": 2.24,
-          "notes": "The attacking side secures the ball. The link waits on the attacking side and plays it away promptly once available. The ruck is not a place for extra players to join.",
+          "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 409,
-              "y": 387,
+              "x": 442,
+              "y": 359,
               "rot": 0
             },
             {
@@ -6255,7 +6255,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 460,
-              "y": 356,
+              "y": 348,
               "rot": 0
             },
             {
@@ -6319,7 +6319,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 330,
+              "y": 340,
               "rot": 180
             },
             {
@@ -6359,7 +6359,7 @@
               "type": "ball",
               "label": "",
               "x": 462,
-              "y": 372,
+              "y": 354,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -6386,7 +6386,7 @@
             {
               "id": "contact1",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck contest · attack secures",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -6405,7 +6405,7 @@
                 }
               ],
               "breakdown": {
-                "phase": "ruck",
+                "phase": "contest",
                 "carrierId": "a3",
                 "tacklerId": "d3",
                 "tacklerIds": [
@@ -6470,8 +6470,8 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 430,
-              "y": 374,
+              "x": 450,
+              "y": 357,
               "rot": 0
             },
             {
@@ -6655,8 +6655,8 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 430,
-              "y": 369,
+              "x": 450,
+              "y": 350,
               "rot": 0
             },
             {
@@ -10820,7 +10820,7 @@
       "players": "16 children: 8 attackers (A1–A8) and 8 defenders (D1–D8), plus a qualified coach/referee supervising off the field. Attack towards the upper goal line. All roles rotate between repetitions.",
       "equipment": "One size-4 rugby ball, correctly marked 60 × 35 m U10 field with 5 m in-goal at each end; cones if marking a temporary field. Safe surface and adequate run-offs.",
       "objective": "Recycle patiently after two tackles and rucks; spot an inside support lane and finish with a grounded central try.",
-      "instructions": "01. U10 field · play from a near-line phase — Eight attackers and eight defenders use a marked U10 pitch. The first contact occurs in the attacking half; this is a progression demonstration, not a full match restart.\n02. Link pass to first receiver — A1 passes backwards to A2. Support runners follow behind the ball.\n03. First short carry to A3 — A2 moves up and passes behind to A3 for a straight midfield carry.\n04. Carry into the first tackle — A3 advances with a balanced body position, no hand-off. D3 closes on the carrier.\n05. Controlled tackle · hold safely — D3 brings A3 to the ground in the schematic. Contact technique requires qualified coaching, not this animation.\n06. Release · ball back to your team — D3 promptly releases and leaves the tackle. A3 makes a clear presentation back towards support.\n07. U10 ruck · one arrives on each side — Only A4 and D4 join the upright contest. Other players stay out and remain onside behind the hindmost feet.\n08. Quick ball · A1 ready behind — The ball is secured and ready to be played away promptly. A1 positions to link the next phase.\n09. A1 picks up and passes to A5 — A1 collects and passes to A5 behind the ball, avoiding a pick-and-go into a crowded breakdown.\n10. A5 makes a straight short carry — A5 attacks the gap between D5 and D6; the defence closes and A6 stays behind as support.\n11. Second tackle · controlled contact — D5 completes the tackle and must release. The attacking team does not pile extra players onto the contest.\n12. Release and present towards A6 — A5 presents back as D5 clears. A6 stays on feet and prepares to support from the attacking side.\n13. Short ruck · guard the ball — A6 and D6 form the upright one-on-one arriving contest; no additional ruck entrants. The defensive guard stays behind the last feet.\n14. Use it · look at the fringe — A1 waits until the ball is available. D7 drifts towards width, leaving space next to the ruck.\n15. A1 collects · passes short to A7 — Rather than diving over bodies, A1 passes a short backward ball to A7, who takes a support line into space.\n16. A7 breaks outside the ruck — A7 runs directly through the unguarded channel with A8 available outside. Cover defenders turn to chase.\n17. A7 crosses and grounds centrally — A7 carries across the opposition goal line and grounds the ball inside in-goal. The ball is deliberately placed down to score.\n18. Hold the score · review pressure — A7 remains inside in-goal after grounding. Review how support, legal recycling and one good pass created the close-range finish.",
+      "instructions": "01. U10 field · play from a near-line phase — Eight attackers and eight defenders use a marked U10 pitch. The first contact occurs in the attacking half; this is a progression demonstration, not a full match restart.\n02. Link pass to first receiver — A1 passes backwards to A2. Support runners follow behind the ball.\n03. First short carry to A3 — A2 moves up and passes behind to A3 for a straight midfield carry.\n04. Carry into the first tackle — A3 advances with a balanced body position, no hand-off. D3 closes on the carrier.\n05. Controlled tackle · hold safely — D3 brings A3 to the ground in the schematic. Contact technique requires qualified coaching, not this animation.\n06. Release · ball back to your team — D3 promptly releases and leaves the tackle. A3 makes a clear presentation back towards support.\n07. U10 ruck · one arrives on each side — Only A4 and D4 join the upright contest. Other players stay out and remain onside behind the hindmost feet.\n08. Contest · attacking ball secured — One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.\n09. A1 collects at the back of the ruck — A1 stays behind the attacking team's hindmost feet and picks up the ball only after it is available. No third player enters the formed ruck.\n10. A1 picks up and passes to A5 — A1 collects and passes to A5 behind the ball, avoiding a pick-and-go into a crowded breakdown.\n11. A5 makes a straight short carry — A5 attacks the gap between D5 and D6; the defence closes and A6 stays behind as support.\n12. Second tackle · controlled contact — D5 completes the tackle and must release. The attacking team does not pile extra players onto the contest.\n13. Release and present towards A6 — A5 presents back as D5 clears. A6 stays on feet and prepares to support from the attacking side.\n14. Short ruck · guard the ball — A6 and D6 form the upright one-on-one arriving contest; no additional ruck entrants. The defensive guard stays behind the last feet.\n15. Contest · attacking ball secured — One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.\n16. A1 picks up secured ball — A1 stays behind the attacking team's hindmost feet and picks up the ball only after it is available. No third player enters the formed ruck.\n17. A1 collects · passes short to A7 — Rather than diving over bodies, A1 passes a short backward ball to A7, who takes a support line into space.\n18. A7 breaks outside the ruck — A7 runs directly through the unguarded channel with A8 available outside. Cover defenders turn to chase.\n19. A7 crosses and grounds centrally — A7 carries across the opposition goal line and grounds the ball inside in-goal. The ball is deliberately placed down to score.\n20. Hold the score · review pressure — A7 remains inside in-goal after grounding. Review how support, legal recycling and one good pass created the close-range finish.",
       "coaching": "Straighten before passing; keep receivers behind the ball; support close enough to secure a tackle without crowding; release and present after contact; one on-foot support contest per team at a U10 ruck; keep non-participants behind the hindmost feet; move the secured ball away quickly; ground deliberately in-goal.",
       "safety": "Educational phase-play animation only. RFU U10 2026–27: maximum eight players per side, maximum 60 × 35 m field plus 5 m in-goal, size-4 ball, modified contact, rucks with a strictly limited contest. Rucks use a maximum of one arriving support player from each team (two players per side including the tackled carrier or tackler in the illustrative contact picture). Tacklers release promptly; all other players stay behind their own hindmost feet. No hand-offs, kicking, head-first contact or jumping over rucks. This diagram is NOT a technique lesson or a substitute for RFU TackleSafe and qualified age-grade coaching. Coaches should review the current official age-grade appendix, supervise physical contact and assess readiness. Current U10 guidance requires tackles at sternum/belly height or below, prohibits hand-offs/fending, and forbids a carrier deliberately dipping the head into the tackle. When the referee calls 'use it' after the ball is secured, the team must play it away within five seconds. Never coach children to drive through or over grounded players.",
       "regression": "Start with walking-speed, conditioned touch defence and a single tackle-present-recycle. Pause to identify who may join the contest and where the offside lines lie.",
@@ -11897,7 +11897,7 @@
               "type": "ball",
               "label": "",
               "x": 463,
-              "y": 334,
+              "y": 318,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -11968,8 +11968,8 @@
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 418,
-              "y": 355,
+              "x": 435,
+              "y": 332,
               "rot": 0
             },
             {
@@ -11995,7 +11995,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 461,
-              "y": 323,
+              "y": 312,
               "rot": 0
             },
             {
@@ -12059,7 +12059,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 294,
+              "y": 304,
               "rot": 180
             },
             {
@@ -12099,7 +12099,7 @@
               "type": "ball",
               "label": "",
               "x": 463,
-              "y": 334,
+              "y": 318,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -12126,7 +12126,7 @@
             {
               "id": "redContact1",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck · one arrival each team",
               "x": 463,
               "y": 308,
               "rot": 0,
@@ -12202,16 +12202,16 @@
           ]
         },
         {
-          "name": "Quick ball · A1 ready behind",
+          "name": "Contest · attacking ball secured",
           "seconds": 1.95,
-          "notes": "The ball is secured and ready to be played away promptly. A1 positions to link the next phase.",
+          "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
               "id": "a1",
               "type": "attacker",
               "label": "A1",
-              "x": 433,
-              "y": 349,
+              "x": 448,
+              "y": 324,
               "rot": 0
             },
             {
@@ -12237,7 +12237,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 461,
-              "y": 323,
+              "y": 312,
               "rot": 0
             },
             {
@@ -12301,7 +12301,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 294,
+              "y": 304,
               "rot": 180
             },
             {
@@ -12341,7 +12341,7 @@
               "type": "ball",
               "label": "",
               "x": 463,
-              "y": 334,
+              "y": 318,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -12368,7 +12368,7 @@
             {
               "id": "redContact1",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck contest · attack secures",
               "x": 463,
               "y": 308,
               "rot": 0,
@@ -12387,7 +12387,7 @@
                 }
               ],
               "breakdown": {
-                "phase": "ruck",
+                "phase": "contest",
                 "carrierId": "a3",
                 "tacklerId": "d3",
                 "tacklerIds": [
@@ -12432,6 +12432,214 @@
           ],
           "timing": {},
           "paths": {}
+        },
+        {
+          "name": "A1 collects at the back of the ruck",
+          "seconds": 1.45,
+          "notes": "A1 stays behind the attacking team's hindmost feet and picks up the ball only after it is available. No third player enters the formed ruck.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 452,
+              "y": 330,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 413,
+              "y": 376,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 463,
+              "y": 308,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 461,
+              "y": 312,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 547,
+              "y": 347,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 625,
+              "y": 361,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 714,
+              "y": 371,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 786,
+              "y": 385,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 205,
+              "y": 337,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 310,
+              "y": 331,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 431,
+              "y": 281,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 460,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 572,
+              "y": 315,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 615,
+              "y": 320,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 707,
+              "y": 306,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 778,
+              "y": 308,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 462,
+              "y": 320,
+              "rot": 0,
+              "transferKind": "pickup",
+              "ownerId": "a1"
+            },
+            {
+              "id": "goal",
+              "type": "tryLine",
+              "label": " ",
+              "x": 650,
+              "y": 37,
+              "rot": 0,
+              "diagram": {
+                "length": 35,
+                "width": 2,
+                "color": "#d7f7ac",
+                "opacity": 0,
+                "fill": false,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            },
+            {
+              "id": "onsideAttack",
+              "type": "offsideLine",
+              "label": "ATTACK BACK FOOT · schematic",
+              "x": 450,
+              "y": 351,
+              "rot": 0,
+              "diagram": {
+                "length": 35,
+                "width": 2,
+                "color": "#70cafa",
+                "opacity": 78,
+                "dashed": true
+              }
+            },
+            {
+              "id": "onsideDefence",
+              "type": "offsideLine",
+              "label": "DEFENCE BACK FOOT · schematic",
+              "x": 450,
+              "y": 274,
+              "rot": 0,
+              "diagram": {
+                "length": 35,
+                "width": 2,
+                "color": "#f2ba74",
+                "opacity": 78,
+                "dashed": true
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "pick-up-8",
+              "actorId": "a1",
+              "text": "PLAY AWAY",
+              "kind": "speech",
+              "at": 0.13,
+              "displaySeconds": 1.1
+            }
+          ]
         },
         {
           "name": "A1 picks up and passes to A5",
@@ -13141,7 +13349,7 @@
               "type": "ball",
               "label": "",
               "x": 559,
-              "y": 249,
+              "y": 234,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -13254,8 +13462,8 @@
               "id": "a6",
               "type": "attacker",
               "label": "A6",
-              "x": 562,
-              "y": 240,
+              "x": 559,
+              "y": 228,
               "rot": 0
             },
             {
@@ -13318,8 +13526,8 @@
               "id": "d6",
               "type": "defender",
               "label": "D6",
-              "x": 560,
-              "y": 216,
+              "x": 557,
+              "y": 220,
               "rot": 180
             },
             {
@@ -13343,7 +13551,7 @@
               "type": "ball",
               "label": "",
               "x": 559,
-              "y": 249,
+              "y": 234,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -13370,7 +13578,7 @@
             {
               "id": "redContact2",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck · one arrival each team",
               "x": 556,
               "y": 224,
               "rot": 0,
@@ -13464,9 +13672,9 @@
           ]
         },
         {
-          "name": "Use it · look at the fringe",
+          "name": "Contest · attacking ball secured",
           "seconds": 1.8,
-          "notes": "A1 waits until the ball is available. D7 drifts towards width, leaving space next to the ruck.",
+          "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
               "id": "a1",
@@ -13514,8 +13722,8 @@
               "id": "a6",
               "type": "attacker",
               "label": "A6",
-              "x": 562,
-              "y": 240,
+              "x": 559,
+              "y": 228,
               "rot": 0
             },
             {
@@ -13578,8 +13786,8 @@
               "id": "d6",
               "type": "defender",
               "label": "D6",
-              "x": 560,
-              "y": 216,
+              "x": 557,
+              "y": 220,
               "rot": 180
             },
             {
@@ -13603,7 +13811,7 @@
               "type": "ball",
               "label": "",
               "x": 559,
-              "y": 249,
+              "y": 234,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -13630,7 +13838,7 @@
             {
               "id": "redContact2",
               "type": "ruck",
-              "label": "U10 ruck · one support player per side",
+              "label": "U10 ruck contest · attack secures",
               "x": 556,
               "y": 224,
               "rot": 0,
@@ -13649,7 +13857,7 @@
                 }
               ],
               "breakdown": {
-                "phase": "ruck",
+                "phase": "contest",
                 "carrierId": "a5",
                 "tacklerId": "d5",
                 "tacklerIds": [
@@ -13694,6 +13902,214 @@
           ],
           "timing": {},
           "paths": {}
+        },
+        {
+          "name": "A1 picks up secured ball",
+          "seconds": 1.45,
+          "notes": "A1 stays behind the attacking team's hindmost feet and picks up the ball only after it is available. No third player enters the formed ruck.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 547,
+              "y": 240,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 413,
+              "y": 376,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 463,
+              "y": 308,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 461,
+              "y": 323,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 556,
+              "y": 224,
+              "rot": 0,
+              "playerPose": "grounded",
+              "posePinned": true
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 559,
+              "y": 228,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 685,
+              "y": 245,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 784,
+              "y": 288,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 205,
+              "y": 337,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 310,
+              "y": 331,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 431,
+              "y": 281,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 460,
+              "y": 294,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 520,
+              "y": 194,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 557,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 753,
+              "y": 146,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 805,
+              "y": 135,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 557,
+              "y": 230,
+              "rot": 0,
+              "transferKind": "pickup",
+              "ownerId": "a1"
+            },
+            {
+              "id": "goal",
+              "type": "tryLine",
+              "label": " ",
+              "x": 650,
+              "y": 37,
+              "rot": 0,
+              "diagram": {
+                "length": 35,
+                "width": 2,
+                "color": "#d7f7ac",
+                "opacity": 0,
+                "fill": false,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            },
+            {
+              "id": "onsideAttack",
+              "type": "offsideLine",
+              "label": "ATTACK BACK FOOT · schematic",
+              "x": 450,
+              "y": 271,
+              "rot": 0,
+              "diagram": {
+                "length": 35,
+                "width": 2,
+                "color": "#70cafa",
+                "opacity": 78,
+                "dashed": true
+              }
+            },
+            {
+              "id": "onsideDefence",
+              "type": "offsideLine",
+              "label": "DEFENCE BACK FOOT · schematic",
+              "x": 450,
+              "y": 189,
+              "rot": 0,
+              "diagram": {
+                "length": 35,
+                "width": 2,
+                "color": "#f2ba74",
+                "opacity": 78,
+                "dashed": true
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "pick-up-15",
+              "actorId": "a1",
+              "text": "PLAY AWAY",
+              "kind": "speech",
+              "at": 0.13,
+              "displaySeconds": 1.1
+            }
+          ]
         },
         {
           "name": "A1 collects · passes short to A7",
