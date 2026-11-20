@@ -416,3 +416,30 @@
  .read-only-player.public-blackboard .presentation-sidebar,
  .read-only-player.public-blackboard .public-board-toolbar{transition:none}
 }
+
+@media screen{
+ .read-only-player.public-blackboard #board.public-picking-focus{cursor:crosshair}
+ .read-only-player .public-board-shortcuts{
+  margin-top:12px;padding:9px;border:1px solid #58745e;border-radius:8px;
+  color:#d7e6ce;font-size:12px;background:#20382b;
+ }
+ .read-only-player .public-board-shortcuts summary{cursor:pointer;color:#d4e9b5;font-weight:650}
+ .read-only-player .public-board-shortcuts div{line-height:2;margin-top:8px}
+ .read-only-player .public-board-shortcuts b{
+  display:inline-block;border:1px solid #65866b;border-radius:4px;
+  padding:0 5px;margin:0 3px;background:#2d4735;color:#f1f7d9;
+  font-size:11px;font-weight:750
+ }
+ .read-only-player.public-blackboard .public-board-toolbar button,
+ .read-only-player.public-blackboard .public-board-dock button{
+  transition:background .14s ease,border-color .14s ease,transform .14s ease
+ }
+ @media (hover:hover){
+  .read-only-player.public-blackboard .public-board-toolbar button:not(.public-board-grip):hover{
+   transform:translateY(-1px)
+  }
+ }
+}
+@media screen and (max-width:700px){
+ .read-only-player.public-blackboard .public-board-shortcuts{font-size:11px}
+}
