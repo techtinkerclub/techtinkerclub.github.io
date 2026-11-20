@@ -42,10 +42,10 @@ test('Both Studio editions load Blackboard and the same live JS module',()=>{
  for(const path of ['index.html','coach/index.html']){
   const s=read(path);
   assert.match(s,/assets\/blackboard\.css\?v=1/);
-  assert.match(s,/js\/app\.js\?v=0\.20\.46/);
+  assert.match(s,/js\/app\.js\?v=0\.20\.47/);
  }
  const app=read('js/app.js');
- assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=1'/);
+ assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=2'/);
  assert.match(app,/const blackboard=initBlackboard\(/);
  assert.match(app,/rotate:delta=>/);
 });
