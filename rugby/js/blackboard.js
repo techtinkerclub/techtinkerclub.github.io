@@ -198,9 +198,6 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   delete savedLayouts[layoutPreset];
   clearPanelPositions();
   storeLayouts();
-   panel.classList.remove('is-moved','is-dragging');
-   for(const prop of ['left','top','right','bottom','transform'])panel.style[prop]='';
-  }
   hint('Panel positions reset for this layout.');
  }
  function clampMovedPanels(){
