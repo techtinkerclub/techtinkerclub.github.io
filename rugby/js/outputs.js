@@ -113,7 +113,7 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
    await delay(Math.max(0,1000/fps-(performance.now()-begin)));
   }
   checkAbort();progress(1,'Finalising video…');await delay(120);checkAbort();recorder.stop();const blob=await recorded;checkAbort();if(!blob.size)throw Error('No video data was produced.');
-  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total};
+  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total,encoder:'compatibility-live'};
  }catch(e){if(recorder?.state==='recording')recorder.stop();throw e}finally{for(const track of stream.getTracks())track.stop()}
 }
 export function printMarkup(raw,opts={}){
