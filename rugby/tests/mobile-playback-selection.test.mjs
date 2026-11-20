@@ -19,7 +19,7 @@ test('Pan consumes empty-pitch touches but leaves editable player taps for the S
 });
 test('Playback completion and Pause return to editable authored steps, never a stuck preview',()=>{
  const app=text('js/app.js');
- assert.match(app,/if\(!loop&&preview>=duration\(\)\)\{\s*\/\/ Playback used to leave preview/,
+ assert.match(app,/if\(!loop&&preview>=playTotal\)\{\s*\/\/ Playback used to leave preview/,
   'non-loop playback must finish in an editable authored step');
  assert.ok(app.includes('choose(drill.frames.length-1);'),
   'the final authored step is the default editing destination');
