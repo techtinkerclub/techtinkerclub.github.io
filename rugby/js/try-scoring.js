@@ -58,7 +58,7 @@ export function tryLineEvents(drill,g){
     const p={x:number(old.x)+(number(actor.x)-number(old.x))*at,y:number(old.y)+(number(actor.y)-number(old.y))*at};
     const within=Math.abs((p.x-line.x)*line.ux+(p.y-line.y)*line.uy)<=line.length/2+3;
     if(signed(p,line)<-.25||!within)continue;
-    result.push({lineId:line.id,actorId:id,step:i,time:stamp,kind:'try'});
+    result.push({lineId:line.id,actorId:id,step:i,stepStart:startTime,time:stamp,kind:'try'});
     seenGroundings.add(i+':'+id+':'+line.id);
     pending.delete(key); // one crossing gives at most one try
    }
@@ -70,6 +70,7 @@ export function tryLineEvents(drill,g){
 export const RUCKUS_TRY_CELEBRATION_SECONDS=2.8;
 // A deliberate hold makes it clear that the ball has been grounded before
 // the player stands and celebrates, especially during teaching playback.
+export const RUCKUS_TRY_SLIDE_SECONDS=1.2;
 export const TRY_GROUND_HOLD_SECONDS=.92;
 export const TRY_RISE_END_SECONDS=1.3;
 // Score animations are visual epilogues. They do not change authored step
@@ -81,9 +82,18 @@ export function tryVisualDuration(drill,g,cartoonMode=false){
  return tries.length?Math.max(base,tries[tries.length-1].time+RUCKUS_TRY_CELEBRATION_SECONDS):base;
 }
 export function tryCelebrationAt(events,time,actorId){
- const eligible=(events||[]).filter(e=>e.actorId===actorId&&time>=e.time-1e-6&&time<e.time+RUCKUS_TRY_CELEBRATION_SECONDS);
+ // The dive is part of the IN-GOAL run, not an extra slow run added after
+ // crossing. Start the grounded sliding pose before the actual touchdown,
+ // then keep it prone, rise and use the supplied raised-arms atlas sprites.
+ const eligible=(events||[]).filter(e=>e.actorId===actorId&&
+  time>=Math.max(Number.isFinite(e.stepStart)?e.stepStart:e.time-RUCKUS_TRY_SLIDE_SECONDS,
+   e.time-RUCKUS_TRY_SLIDE_SECONDS)-1e-6&&time<e.time+RUCKUS_TRY_CELEBRATION_SECONDS);
  if(!eligible.length)return null;
- const elapsed=Math.max(0,time-eligible[eligible.length-1].time);
+ const latest=eligible[eligible.length-1];
+ if(time<latest.time)return {phase:'slide',elapsed:time-latest.time,
+  progress:Math.max(0,Math.min(1,(time-Math.max(Number.isFinite(latest.stepStart)?latest.stepStart:latest.time-RUCKUS_TRY_SLIDE_SECONDS,
+   latest.time-RUCKUS_TRY_SLIDE_SECONDS))/RUCKUS_TRY_SLIDE_SECONDS))};
+ const elapsed=Math.max(0,time-latest.time);
  if(elapsed<TRY_GROUND_HOLD_SECONDS)return {phase:'ground',elapsed};
  if(elapsed<TRY_RISE_END_SECONDS)return {phase:'rise',index:Math.min(4,Math.floor((elapsed-TRY_GROUND_HOLD_SECONDS)/(TRY_RISE_END_SECONDS-TRY_GROUND_HOLD_SECONDS)*5)),elapsed};
  // Atlas 52/53 contains the approved raised-arms celebratory poses.
