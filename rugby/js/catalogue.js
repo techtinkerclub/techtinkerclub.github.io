@@ -67,7 +67,7 @@ export async function loadCatalogue(fetcher=fetch){
   if(pack?.version!==1||pack.kind!=='rugby-showcase'||!Array.isArray(pack.drills))throw Error('Invalid showcase pack');
   const known=new Set([...curated,...qa].map(d=>d.id));
   for(const d of pack.drills){
-   if(!/^seed-\\d{3,}$/.test(d?.id)||known.has(d.id)||!CATEGORIES.includes(d.category)||
+   if(!/^seed-\d{3,}$/.test(d?.id)||known.has(d.id)||!CATEGORIES.includes(d.category)||
      !Array.isArray(d.frames)||d.frames.length<4)throw Error('Invalid or duplicate showcase drill '+d?.id);
    known.add(d.id);
   }
