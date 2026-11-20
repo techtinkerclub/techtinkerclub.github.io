@@ -465,28 +465,14 @@ export function cartoonObjectOrder(items,cartoonMode){
  return others.concat(attached,balls);
 }
 
-// A separate, deliberately subtle comic-book field skin. Never edits pitch
-// dimensions, existing field lines, grid, object positions, or Classic artwork.
-// No flowers: clean inked edges, a lively green wash and small painted grass tufts.
+// Clean graphic-novel pitch skin. Purely decorative: do not add grass glyphs,
+// faux rugby markings or decorative squiggles on/around the playing surface.
 export function cartoonPitchDecor(g){
  if(!g||!Number.isFinite(g.fw)||!Number.isFinite(g.fh))return '';
  const m=g.margin,fw=g.fw,fh=g.fh;
- const grass=[];
- for(let i=0;i<9;i++){
-  const x=m+fw*(.08+i*.105);
-  for(const y of [m+Math.min(18,fh*.055),m+fh-Math.min(18,fh*.055)]){
-   grass.push('<path d="M'+(x-6).toFixed(1)+' '+(y+3).toFixed(1)+'q3 -7 6 -9q2 4 4 9q3 -5 6 -6" stroke="#d7ffc8" stroke-width="1.9" fill="none" opacity=".24" stroke-linecap="round"/>');
-  }
- }
- for(let i=0;i<7;i++){
-  const y=m+fh*(.13+i*.12);
-  for(const x of [m+Math.min(13,fw*.04),m+fw-Math.min(13,fw*.04)]){
-   grass.push('<path d="M'+(x-4).toFixed(1)+' '+(y+3).toFixed(1)+'l3 -7 3 5 5 -8" stroke="#dbffbe" stroke-width="2" fill="none" opacity=".20" stroke-linecap="round"/>');
-  }
- }
  return '<g class="ruckus-comic-pitch" pointer-events="none">'+
-  '<rect x="'+m+'" y="'+m+'" width="'+fw+'" height="'+fh+'" fill="#7bdc74" fill-opacity=".085"/>'+
-  '<rect x="'+(m-5)+'" y="'+(m-5)+'" width="'+(fw+10)+'" height="'+(fh+10)+'" rx="8" fill="none" stroke="#112f25" stroke-width="5" opacity=".72"/>'+
-  '<rect x="'+(m-2)+'" y="'+(m-2)+'" width="'+(fw+4)+'" height="'+(fh+4)+'" rx="6" fill="none" stroke="#eaffd3" stroke-width="1.6" stroke-dasharray="44 4 70 3" opacity=".52"/>'+
-  grass.join('')+'</g>';
+  '<rect x="'+m+'" y="'+m+'" width="'+fw+'" height="'+fh+'" fill="#7bdc74" fill-opacity=".07"/>'+
+  '<rect x="'+(m-4)+'" y="'+(m-4)+'" width="'+(fw+8)+'" height="'+(fh+8)+'" rx="5" fill="none" stroke="#142c24" stroke-width="3.5" opacity=".67"/>'+
+  '<rect x="'+(m-1)+'" y="'+(m-1)+'" width="'+(fw+2)+'" height="'+(fh+2)+'" rx="2" fill="none" stroke="#ecffdb" stroke-width="1.5" opacity=".5"/>'+
+  '</g>';
 }
