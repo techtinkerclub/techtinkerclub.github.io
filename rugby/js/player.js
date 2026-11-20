@@ -375,6 +375,45 @@ function initPublicBoard(){
  backdrop.addEventListener('click',()=>{sidebar.dataset.open='false'});
  document.body.append(backdrop);
  stage.append(toolbar);
+ const shareTools=document.createElement('section');shareTools.className='public-board-share-tools';
+ shareTools.innerHTML='<h2>Coaching snapshot</h2><p>Save the current frame for handouts or messages. The exported image can include your temporary chalk, without changing the drill.</p>'+
+  '<label><input id="publicSnapshotInk" type="checkbox" checked> Include my chalk marks</label>'+
+  '<button type="button" id="publicSnapshotPng">Save current board (PNG)</button><p id="publicSnapshotStatus" role="status"></p>';
+ document.getElementById('presentation-panel-share')?.prepend(shareTools);
+ shareTools.querySelector('#publicSnapshotPng').addEventListener('click',async()=>{
+  if(!d)return;
+  const button=shareTools.querySelector('#publicSnapshotPng'),status=shareTools.querySelector('#publicSnapshotStatus');
+  button.disabled=true;status.textContent='Preparing image…';
+  try{
+   const source=board.querySelector('svg:not(.public-board-ink)');
+   if(!source)throw Error('There is no pitch image to save.');
+   const copy=source.cloneNode(true);
+   // Preserve the currently visible camera crop and optional ink. Do not
+   // include floating controls, notes, toolbars or editor-only data.
+   if(shareTools.querySelector('#publicSnapshotInk').checked){
+    const group=document.createElementNS('http://www.w3.org/2000/svg','g');
+    group.setAttribute('aria-label','Coach chalk annotations');
+    for(const path of paths)group.append(path.cloneNode(true));
+    copy.append(group);
+   }
+   copy.setAttribute('xmlns','http://www.w3.org/2000/svg');
+   const serialized=new XMLSerializer().serializeToString(copy);
+   const blob=new Blob([serialized],{type:'image/svg+xml;charset=utf-8'});
+   const url=URL.createObjectURL(blob);
+   try{
+    const picture=new Image();
+    await new Promise((resolve,reject)=>{picture.onload=resolve;picture.onerror=()=>reject(Error('The board image could not be rendered.'));picture.src=url});
+    const view=source.viewBox.baseVal,ratio=view.width>0?view.height/view.width:9/16;
+    const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=Math.max(550,Math.round(1600*ratio));
+    const context=canvas.getContext('2d');if(!context)throw Error('PNG export is not supported in this browser.');
+    context.drawImage(picture,0,0,canvas.width,canvas.height);
+    const png=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(Error('Could not encode PNG.')),'image/png'));
+    saveBlob(png,outputName(d)+'-coaching-board.png');
+    status.textContent='PNG saved to your device.';
+   }finally{URL.revokeObjectURL(url)}
+  }catch(err){status.textContent='Snapshot unavailable: '+err.message}
+  finally{button.disabled=false}
+ });
  const inkTools=document.createElement('section');inkTools.className='public-board-ink-tools';inkTools.hidden=true;
  inkTools.innerHTML='<strong>Coaching chalk</strong><label>Colour <input id="publicInkColour" type="color" value="#ffe68c"></label>'+
   '<label>Width <select id="publicInkWidth" aria-label="Chalk stroke width"><option value="2.5">Fine</option><option value="4" selected>Normal</option><option value="7">Broad</option></select></label>'+
