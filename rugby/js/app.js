@@ -57,7 +57,7 @@ import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,print
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
-import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.26';
+import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.20.77';
 initWorkspace();
 const SEEDS=await loadCatalogue().catch(err=>{
  const msg=document.createElement('p');msg.setAttribute('role','alert');msg.textContent='Could not load the published library: '+err.message;msg.style.padding='16px';document.body.prepend(msg);throw err;
