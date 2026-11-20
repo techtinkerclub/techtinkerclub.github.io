@@ -5,7 +5,7 @@ export const MOVIE_QUALITIES={
  '2160':{width:3840,height:2160,bitrate:36000000,fps:30}
 };
 export function movieOptions(o={}){
- return {mode:o.mode==='single'?'single':'dual',quality:Object.hasOwn(MOVIE_QUALITIES,o.quality)?String(o.quality):'1080',replaySpeed:[.25,.5,.75].includes(Number(o.replaySpeed))?Number(o.replaySpeed):.5,format:o.format==='portrait'?'portrait':'landscape',notes:o.notes!==false,card:o.card===true,branchMode:o.branchMode==='selected'?'selected':'all',pauseCards:o.pauseCards!==false,introSeconds:[0,2,3,5].includes(Number(o.introSeconds))?Number(o.introSeconds):3,decisionSeconds:[3,5,8].includes(Number(o.decisionSeconds))?Number(o.decisionSeconds):8,choiceSeconds:[3,4,6].includes(Number(o.choiceSeconds))?Number(o.choiceSeconds):6};
+ return {mode:o.mode==='single'?'single':'dual',framing:['field','action','follow'].includes(o.framing)?o.framing:'action',quality:Object.hasOwn(MOVIE_QUALITIES,o.quality)?String(o.quality):'1080',replaySpeed:[.25,.5,.75].includes(Number(o.replaySpeed))?Number(o.replaySpeed):.5,format:o.format==='portrait'?'portrait':'landscape',notes:o.notes!==false,card:o.card===true,branchMode:o.branchMode==='selected'?'selected':'all',pauseCards:o.pauseCards!==false,introSeconds:[0,2,3,5].includes(Number(o.introSeconds))?Number(o.introSeconds):3,decisionSeconds:[3,5,8].includes(Number(o.decisionSeconds))?Number(o.decisionSeconds):8,choiceSeconds:[3,4,6].includes(Number(o.choiceSeconds))?Number(o.choiceSeconds):6};
 }
 export function moviePlan(seconds,options={}){
  if(!Number.isFinite(seconds)||seconds<=0)throw Error('Add at least one movement step before exporting a video.');
