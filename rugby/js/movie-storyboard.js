@@ -32,7 +32,7 @@ export function movieStoryboard(source,opts={}){
    if(to-from<=.00001)return;
    const rate=pass==='replay'?replaySpeed:1;
    add({...base,kind:'motion',drill:view,from,to,speed:rate,pass,
-    heading:optionLabel?(optionLabel+' · '+(pass==='replay'?'Coaching replay':'Normal speed')):(pass==='replay'?'Coaching replay':'Normal speed')},
+    heading:optionLabel?(optionLabel+' · '+(pass==='replay'?'Coaching replay':'Drill timing · 1×')):(pass==='replay'?'Coaching replay':'Drill timing · 1×')},
     (to-from)/rate);
   };
   // Do not teleport a player from the end of an option to the fork (or
