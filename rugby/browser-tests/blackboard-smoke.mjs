@@ -50,15 +50,65 @@ try{
   await page.locator('[data-bb="new-step"]').click();
   assert.equal(await page.locator('#scenes .scene').count(),previousStepCount+1,
    'blackboard adds real editable step');
+
+  await page.locator('[data-bb="delete-step"]').click();
+  assert.equal(await page.locator('#scenes .scene').count(),previousStepCount,
+   'Blackboard Delete step uses the original Studio delete action');
+  await page.locator('[data-bb="new-step"]').click();
+  assert.equal(await page.locator('#scenes .scene').count(),previousStepCount+1,
+   'A new step remains editable after deletion');
+  await page.locator('[data-bb="timeline"]').click();
+  assert(await page.locator('#bbTimelinePanel').isVisible(),'Floating timeline can be opened');
+  assert.equal(await page.locator('#bbNativeTimeline > #timelinePanel').count(),1,
+   'The original live Studio timeline is reparented, not cloned');
+  const seconds=page.locator('#bbStepSeconds');
+  await seconds.fill('2.5');
+  await seconds.press('Tab');
+  assert.equal(Number(await page.locator('#stepTime').inputValue()),2.5,
+   'Blackboard step duration changes the actual Studio step');
+  const expanded=await page.locator('#toggleTracks').getAttribute('aria-expanded');
+  await page.locator('[data-bb="tracks"]').click();
+  assert.notEqual(await page.locator('#toggleTracks').getAttribute('aria-expanded'),expanded,
+   'The actual movement timing tracks can be toggled');
+  await page.locator('[data-bb="close-timeline"]').click();
+  assert.equal(await page.locator('#bbTimelinePanel').isVisible(),false);
+  await page.locator('[data-bb="camera"]').click();
+  assert(await page.locator('#bbCameraPanel').isVisible(),'Camera controls are accessible');
+  const beforeZoom=await page.locator('#pitch').getAttribute('viewBox');
+  await page.locator('[data-bb="zoom-in"]').click();
+  const afterZoom=await page.locator('#pitch').getAttribute('viewBox');
+  assert.notEqual(beforeZoom,afterZoom,'Zoom works inside Blackboard');
+  await page.locator('#bbCameraPanel [data-bb="fit"]').click();
+  await page.locator('[data-bb="pan"]').click();
+  assert.equal(await page.locator('#panMode').getAttribute('aria-pressed'),'true',
+   'Pan is the native camera control');
+  await page.locator('[data-bb="pan"]').click();
+  await page.locator('[data-bb="close-camera"]').click();
+  // The grip is deliberately tiny and should move a panel without changing its size.
+  const title=page.locator('.bb-title'),grip=title.locator('.bb-grip');
+  const beforeDrag=await title.boundingBox(),gripBounds=await grip.boundingBox();
+  await page.mouse.move(gripBounds.x+gripBounds.width/2,gripBounds.y+gripBounds.height/2);
+  await page.mouse.down();
+  await page.mouse.move(gripBounds.x+gripBounds.width/2+38,gripBounds.y+gripBounds.height/2+18,{steps:5});
+  await page.mouse.up();
+  const afterDrag=await title.boundingBox();
+  assert(afterDrag.x>beforeDrag.x+10,'Grip moves an existing floating panel');
+  await page.locator('[data-bb="camera"]').click();
+  await page.locator('[data-bb="reset-panels"]').click();
+  assert.equal(await title.evaluate(el=>el.classList.contains('is-moved')),false,
+   'Reset returns the panel to its original layout');
+  await page.locator('[data-bb="close-camera"]').click();
+
   await page.locator('[data-bb="exit"]').click();
   assert.equal(await page.locator('body.blackboard-mode').count(),0,'exit restores the editor');
   assert(await page.locator('body > header').isVisible(),'normal Studio chrome returns');
   assert.equal(await page.locator('#scenes .scene').count(),previousStepCount+1,
    'new step persists after closing Blackboard');
+  assert.equal(await page.locator('body > #timelinePanel').count(),1,'Native timeline returns to Studio after exit');
   assert.equal(await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count(),1,
    'added player persists after closing Blackboard');
   await page.close();
-  console.log('BLACKBOARD PASS '+viewport.width+'x'+viewport.height+': fullscreen, add, edit, ink, real step, close');
+  console.log('BLACKBOARD PASS '+viewport.width+'x'+viewport.height+': fullscreen, add, edit, ink, step management, duration, timeline, zoom, drag and restore');
  }
  if(errors.length)throw new Error('Blackboard JavaScript error(s): '+errors.join(' | '));
 }finally{await browser.close()}
