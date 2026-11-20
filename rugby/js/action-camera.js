@@ -86,7 +86,15 @@ function followSafeView(g,view,extraPoints=[]){
    (Math.max(...ys)-Math.min(...ys)+2*pad)*ratio);
  }
  width=Math.min(g.viewWidth,width);
- const height=width/ratio,cx=view.x+view.width/2,cy=view.y+view.height/2;
+ const height=width/ratio;
+ let cx=view.x+view.width/2,cy=view.y+view.height/2;
+ if(extraPoints.length){
+  const xs=extraPoints.map(p=>p.x),ys=extraPoints.map(p=>p.y),pad=Math.max(18,g.scale*1.2);
+  // Centre may lead the ball, but never leave the nearby supporting group
+  // outside the frame just because its spread is asymmetric.
+  cx=clamp(cx,Math.max(...xs)+pad-width/2,Math.min(...xs)-pad+width/2);
+  cy=clamp(cy,Math.max(...ys)+pad-height/2,Math.min(...ys)-pad+height/2);
+ }
  return {x:clamp(cx-width/2,0,g.viewWidth-width),y:clamp(cy-height/2,0,g.viewHeight-height),
   width,height};
 }
