@@ -109,6 +109,89 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
  ink.setAttribute('aria-label','Temporary freehand annotations');ink.setAttribute('aria-hidden','true');
  ink.setAttribute('preserveAspectRatio','xMidYMid meet');host.appendChild(ink);
  let active=false,pen=false,drawer=false,adding=false,drag=null;
+ let cameraOpen=false,timelineOpen=false,panelDrag=null;
+ const nativeTimeline=$('timelinePanel'),timelineHome=nativeTimeline?.parentElement,timelineNext=nativeTimeline?.nextSibling;
+ function mountTimeline(){
+  const slot=$('bbNativeTimeline');
+  if(nativeTimeline&&slot&&nativeTimeline.parentElement!==slot)slot.appendChild(nativeTimeline);
+ }
+ function restoreTimeline(){
+  if(!nativeTimeline||!timelineHome||nativeTimeline.parentElement===timelineHome)return;
+  if(timelineNext?.parentElement===timelineHome)timelineHome.insertBefore(nativeTimeline,timelineNext);
+  else timelineHome.appendChild(nativeTimeline);
+ }
+ function openTimeline(show){
+  timelineOpen=!!show;
+  $('bbTimelinePanel').hidden=!timelineOpen;
+  const button=btn('timeline');
+  button?.setAttribute('aria-expanded',String(timelineOpen));
+  button?.classList.toggle('is-active',timelineOpen);
+  if(timelineOpen)mountTimeline();
+ }
+ function openCamera(show){
+  cameraOpen=!!show;
+  $('bbCameraPanel').hidden=!cameraOpen;
+  const button=btn('camera');
+  button?.setAttribute('aria-expanded',String(cameraOpen));
+  button?.classList.toggle('is-active',cameraOpen);
+ }
+ const bounds=(panel,x,y)=>{
+  const width=panel.getBoundingClientRect().width||panel.offsetWidth||200;
+  const height=panel.getBoundingClientRect().height||panel.offsetHeight||80;
+  return {left:Math.max(6,Math.min(x,Math.max(6,window.innerWidth-width-6))),
+   top:Math.max(6,Math.min(y,Math.max(6,window.innerHeight-height-6)))};
+ };
+ function placePanel(panel,x,y){
+  const pos=bounds(panel,x,y);
+  panel.classList.add('is-moved');
+  panel.style.left=pos.left+'px';panel.style.top=pos.top+'px';
+  panel.style.right='auto';panel.style.bottom='auto';panel.style.transform='none';
+ }
+ function resetPanels(){
+  for(const panel of ui.querySelectorAll('[data-bb-panel]')){
+   panel.classList.remove('is-moved','is-dragging');
+   for(const prop of ['left','top','right','bottom','transform'])panel.style[prop]='';
+  }
+  hint('Panel positions reset to their original layout.');
+ }
+ function clampMovedPanels(){
+  for(const panel of ui.querySelectorAll('[data-bb-panel].is-moved')){
+   if(panel.hidden)continue;
+   placePanel(panel,Number.parseFloat(panel.style.left)||6,Number.parseFloat(panel.style.top)||6);
+  }
+ }
+ window.addEventListener('resize',()=>{if(active)clampMovedPanels()});
+ ui.addEventListener('pointerdown',event=>{
+  const grip=event.target.closest('.bb-grip'),panel=grip?.closest('[data-bb-panel]');
+  if(!active||!panel||event.button!==0)return;
+  const rect=panel.getBoundingClientRect();
+  panelDrag={id:event.pointerId,grip,panel,fromX:event.clientX,fromY:event.clientY,
+   left:rect.left,top:rect.top};
+  placePanel(panel,rect.left,rect.top);
+  panel.classList.add('is-dragging');
+  grip.setPointerCapture(event.pointerId);
+  event.preventDefault();
+ });
+ ui.addEventListener('pointermove',event=>{
+  if(!panelDrag||panelDrag.id!==event.pointerId)return;
+  const state=panelDrag;
+  placePanel(state.panel,state.left+event.clientX-state.fromX,state.top+event.clientY-state.fromY);
+  event.preventDefault();
+ });
+ function finishPanelDrag(event){
+  if(!panelDrag||panelDrag.id!==event.pointerId)return;
+  panelDrag.panel.classList.remove('is-dragging');panelDrag=null;
+ }
+ for(const type of ['pointerup','pointercancel','lostpointercapture'])ui.addEventListener(type,finishPanelDrag);
+ ui.addEventListener('keydown',event=>{
+  const grip=event.target.closest('.bb-grip');
+  if(!grip||!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key))return;
+  const panel=grip.closest('[data-bb-panel]'),rect=panel.getBoundingClientRect(),n=event.shiftKey?32:12;
+  const dx=event.key==='ArrowLeft'?-n:event.key==='ArrowRight'?n:0;
+  const dy=event.key==='ArrowUp'?-n:event.key==='ArrowDown'?n:0;
+  placePanel(panel,rect.left+dx,rect.top+dy);event.preventDefault();
+ });
+
  const marks=[];
  const hint=message=>{const el=$('bbNotice');if(el)el.textContent=message};
  const btn=name=>ui.querySelector('[data-bb="'+name+'"]');
@@ -132,6 +215,22 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   $('bbName').textContent=state.title||'Rugby blackboard';
   $('bbStep').textContent=state.stepName||'Click a player, then choose an action';
   $('bbStepCount').textContent='Step '+(state.idx+1)+' / '+state.total;
+  const seconds=$('bbStepSeconds');
+  if(seconds&&document.activeElement!==seconds){
+   seconds.value=String(Number(state.stepSeconds)||0);
+   seconds.min=state.idx===0?'0':'0.5';
+   seconds.disabled=!!state.playing||state.preview!==null;
+  }
+  const label=ui.querySelector('label[for="bbStepSeconds"]');
+  if(label)label.textContent=state.idx===0?'Setup hold (s)':'Travel time into step (s)';
+  const deletion=btn('delete-step');
+  if(deletion)deletion.disabled=state.total<=1||$('deleteStep')?.disabled===true;
+  for(const [action,id] of [['pan','panMode'],['grid','grid'],['paths','trails'],['markings','markups']]){
+   const control=ui.querySelector('[data-bb="'+action+'"]'),original=$(id);
+   if(control&&original){const pressed=original.getAttribute('aria-pressed')==='true'||original.classList.contains('selected');
+    control.setAttribute('aria-pressed',String(pressed));control.classList.toggle('is-active',pressed)}
+  }
+  const tracks=btn('tracks');if(tracks)tracks.setAttribute('aria-expanded',String($('toggleTracks')?.getAttribute('aria-expanded')==='true'));
   $('bbSelected').textContent=state.selection?.label||'Selected object';
   const showSelection=!!state.selection&&!state.playing&&state.preview===null&&!pen;
   $('bbSelection').hidden=!showSelection;
@@ -149,12 +248,16 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   const routeButton=btn('run');
   if(routeButton)routeButton.title=state.routeDrawing?'Finish drawing this route':'Draw the selected player’s route';
  }
- function showDetails(open){
+ function showDetails(open,tab='object'){
   drawer=!!open;document.body.classList.toggle('blackboard-details-open',drawer);
   $('bbCloseDetails').hidden=!drawer;
   btn('details')?.classList.toggle('is-active',drawer);
-  if(drawer){openDetails();hint('Edit the selected object or step in the original inspector.');}
-  else fit?.();
+  if(drawer){
+   if(tab==='step')openStepDetails?.();
+   else openDetails();
+   hint('The original Studio inspector is open; edits stay in the same drill.');
+  }
+  // Closing the inspector must not unexpectedly reset the user's camera.
  }
  async function fullscreen(){
   try{
@@ -184,10 +287,27 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    case 'prev':click('back');break;
    case 'next':click('forward');break;
    case 'new-step':click('addStep');break;
+   case 'delete-step':if(!click('deleteStep'))hint('This step cannot be deleted.');break;
+   case 'timeline':openTimeline(!timelineOpen);break;
+   case 'close-timeline':openTimeline(false);break;
+   case 'tracks':click('toggleTracks');break;
+   case 'edit-step':showDetails(true,'step');break;
    case 'play':setPen(false);click('play');break;
    case 'undo':click('undoEdit');break;
    case 'redo':click('redoEdit');break;
-   case 'fit':fit?.();break;
+   case 'fit':click('zoomFit');break;
+   case 'fit-drill':click('zoomArea');break;
+   case 'fit-action':click('zoomAction');break;
+   case 'zoom-in':click('zoomIn');break;
+   case 'zoom-out':click('zoomOut');break;
+   case 'pan':setPen(false);click('panMode');break;
+   case 'grid':click('grid');break;
+   case 'paths':click('trails');break;
+   case 'markings':click('markups');break;
+   case 'rotate-view':click('orientation');break;
+   case 'camera':openCamera(!cameraOpen);break;
+   case 'close-camera':openCamera(false);break;
+   case 'reset-panels':resetPanels();break;
    case 'ruckus':click('minionMode');break;
    case 'fullscreen':fullscreen();break;
    case 'save':if(!click('save'))hint('Saving requires a connected GitHub account. Exit to Studio to connect or export a drill file.');break;
@@ -196,6 +316,20 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   }
   requestAnimationFrame(sync);
  }
+ $('bbStepSeconds').addEventListener('change',()=>{
+  const edit=$('stepTime'),value=Number($('bbStepSeconds').value);
+  const current=getState();
+  if(!edit||!Number.isFinite(value)||(current.idx>0&&value<.5)||value<0||value>30){
+   hint('Enter '+(current.idx?'0.5–30':'0–30')+' seconds for this step.');sync();return;
+  }
+  if(current.preview!==null||current.playing){
+   hint('Choose a step to return to editing before changing its duration.');sync();return;
+  }
+  edit.value=String(value);
+  edit.dispatchEvent(new Event('change',{bubbles:true}));
+  hint('Step '+(current.idx+1)+' timing changed to '+value.toFixed(1)+' seconds. The original timeline has updated.');
+  requestAnimationFrame(sync);
+ });
  ui.addEventListener('click',event=>{
   const addButton=event.target.closest('[data-bb-add]');
   if(addButton){
@@ -244,6 +378,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(active)return;
   active=true;document.body.classList.add('blackboard-mode');
   ui.hidden=false;setPen(false);showDetails(false);
+  openTimeline(false);openCamera(false);
   fit?.();sync();
   hint('Tap and drag a player. Draw a run or pass using the left toolbar. B or Esc returns to Studio.');
   launch.setAttribute('aria-pressed','true');
@@ -251,7 +386,9 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
  function close(){
   if(!active)return;
   if(drag)drag=null;
-  setPen(false);showDetails(false);
+  if(panelDrag){panelDrag.panel.classList.remove('is-dragging');panelDrag=null}
+  setPen(false);showDetails(false);openTimeline(false);openCamera(false);
+  restoreTimeline();
   active=false;ui.hidden=true;document.body.classList.remove('blackboard-mode');
   launch.setAttribute('aria-pressed','false');
   if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});
