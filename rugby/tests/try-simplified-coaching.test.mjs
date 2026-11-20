@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {calloutOverlay,cleanCallouts} from '../js/comic-callouts.js';
-import {tryLineEvents,tryCelebrationAt,RUCKUS_TRY_CELEBRATION_SECONDS,TRY_GROUND_HOLD_SECONDS} from '../js/try-scoring.js';
+import {tryLineEvents,tryCelebrationAt,RUCKUS_TRY_CELEBRATION_SECONDS,RUCKUS_TRY_SLIDE_SECONDS,TRY_GROUND_HOLD_SECONDS} from '../js/try-scoring.js';
 import {playbackData,renderScene} from '../js/scene.js';
 import {drillGeometry} from '../js/pitch.js';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
@@ -56,4 +56,29 @@ test('ready tackle donut has inspector nudges that ripple into later stationary 
  assert.match(src,/data-donut-nudge=/);
  assert.match(src,/propagatePosition\(drill\.frames,idx,o\.id,old,'onward'\)/);
  assert.match(src,/Math\.hypot\(target\.x-o\.x,target\.y-o\.y\)/);
+});
+
+test('try dive starts before grounding, replacing the awkward slow upright run',()=>{
+ const d=playbackData(published),g=drillGeometry(d,'up');
+ const events=tryLineEvents(d,g),e=events[0],t=e.time;
+ assert.equal(events.length,1,'only a valid directed grounding triggers slide and celebration');
+ assert(RUCKUS_TRY_SLIDE_SECONDS>=1.4,'the belly slide should be visible for longer than a quick flash');
+ assert.equal(tryCelebrationAt(events,e.stepStart+.03,e.actorId),null,'the approach starts normally');
+ assert.equal(tryCelebrationAt(events,t-.85,e.actorId).phase,'slide','prone slide happens before touchdown');
+ const slide=renderScene(d,{time:t-.85,cartoonMode:true}).svg;
+ assert.match(slide,/data-try-celebration="slide"/);
+ assert.match(slide,/data-ruckus-pose="present-prone"/);
+ assert.doesNotMatch(slide,/try-score-feedback/,'no try may appear before the ball has been grounded');
+ const valid=renderScene(d,{time:t+.45,cartoonMode:true}).svg;
+ assert.match(valid,/data-try-celebration="ground"/,'the grounded hold remains visible after touchdown');
+ assert.match(valid,/try-score-feedback/,'the try is registered at the real touchdown');
+});
+test('after natural finish Play repeats from the beginning unless a step was deliberately selected',()=>{
+ const app=read('js/app.js');
+ assert.match(app,/let replayAfterCompletion=false/);
+ assert.match(app,/function choose\(i\)\{replayAfterCompletion=false;/,
+  'choosing an authored step overrides automatic replay from the beginning');
+ assert.match(app,/let base=preview\?\?\(replayAfterCompletion\?0:/);
+ assert.match(app,/choose\(drill\.frames\.length-1\);\s*replayAfterCompletion=true;/,
+  'finish returns to editable last step and remembers full replay');
 });
