@@ -107,9 +107,10 @@ export function posedShape(o,pose,normal,color){
  return '<ellipse rx="16" ry="12" fill="'+color+'" stroke="#102e23" stroke-width="2.4"/><path d="M-12 0H-20M12 0H20" stroke="'+color+'" stroke-width="5" stroke-linecap="round"/><path d="M-5 -7L0 -14L5 -7Z" fill="#fff"/>';
 }
 // Keep action captions in a narrow band outside the playing area.
-export function contactLabels(objects,g,escape,extra=[]){
+export function contactLabels(objects,g,escape,extra=[],cartoonMode=false){
  const labels=[...objects.filter(o=>contactType(o.type)).map(o=>({text:String(o.label||'').replace(/ marker$/i,'').trim()||CONTACTS[o.type].title,color:CONTACTS[o.type].color})),...extra.map(text=>({text,color:'#ffe994'}))];
  if(!labels.length)return '';
  const max=Math.max(7,Math.floor((g.viewWidth-24)/8.8)),full=labels.map(x=>x.text).join(' · '),text=full.length>max?full.slice(0,max-1)+'…':full,w=Math.min(g.viewWidth-10,Math.max(84,text.length*8.8+26));
+ if(cartoonMode)return '<g pointer-events="none" class="contact-caption ruckus-comic-caption"><rect x="'+((g.viewWidth-w)/2+3)+'" y="6" width="'+w+'" height="29" rx="8" fill="#102d20" opacity=".5"/><rect x="'+((g.viewWidth-w)/2)+'" y="3" width="'+w+'" height="29" rx="7" fill="#fff4c7" stroke="#142c24" stroke-width="3"/><text x="'+(g.viewWidth/2)+'" y="23" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="900" fill="#182a1f">'+escape(text)+'</text></g>';
  return '<g pointer-events="none" class="contact-caption"><rect x="'+((g.viewWidth-w)/2)+'" y="3" width="'+w+'" height="24" rx="5" fill="#172820" stroke="'+labels[0].color+'" stroke-width=".9"/><text x="'+(g.viewWidth/2)+'" y="20" text-anchor="middle" font-size="15" font-weight="700" fill="'+labels[0].color+'">'+escape(text)+'</text></g>';
 }
