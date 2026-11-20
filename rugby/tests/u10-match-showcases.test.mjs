@@ -117,3 +117,46 @@ test('the close-range showcase collects ball before each pass away from the ruck
   assert.ok(!frame.objects.some(o=>o.type==='ruck'),'no ruck marker persists after collection');
  }
 });
+
+test('showcase running never teleports at contact and ball passes take a normal flight interval',()=>{
+ const metres=(a,b)=>Math.hypot((a.x-b.x)*35/816,(a.y-b.y)*60/466);
+ let normalPasses=0;
+ for(const d of pack.drills)for(const route of options(d)){
+  for(let i=1;i<route.frames.length;i++){
+   const previous=route.frames[i-1],frame=route.frames[i];
+   for(const player of frame.objects.filter(o=>o.type==='attacker'||o.type==='defender')){
+    const old=obj(previous,player.id);
+    if(!old)continue;
+    const speed=metres(player,old)/frame.seconds;
+    assert.ok(speed<=6.3,d.id+' '+route.name+' '+frame.name+' has unrealistic '+player.id+' '+speed.toFixed(1)+'m/s movement');
+   }
+   const oldBall=ball(previous),newBall=ball(frame);
+   if(!oldBall.ownerId||!newBall.ownerId||oldBall.ownerId===newBall.ownerId||
+      ['pickup','handover','set','drop','turnover','throw'].includes(newBall.transferKind))continue;
+   const timing=frame.timing?.ball;
+   assert.ok(timing&&timing.end>timing.start,'pass is timed separately from the whole step');
+   assert.ok(frame.seconds*(timing.end-timing.start)/100<=1.5,'ball flight is not in slow motion');
+   normalPasses++;
+  }
+ }
+ assert.ok(normalPasses>=4,'showcase includes multiple timed passes');
+});
+
+test('coaching callouts do not duplicate contact captions or flash for a fraction of a second',()=>{
+ const redundant=new Set(['TACKLE','RELEASE','PRESENT','RELEASE · PRESENT','RUCK']);
+ for(const d of pack.drills)for(const route of options(d)){
+  let elapsed=0,events=[];
+  for(const f of route.frames){
+   const contact=f.objects.find(o=>o.type==='ruck'||o.type==='tackle');
+   for(const c of f.callouts||[]){
+    assert.ok(c.displaySeconds>=1.5,'callout too short: '+d.id+' '+c.text);
+    assert.ok(c.displaySeconds<=3,'callout unnecessarily long');
+    if(contact)assert.ok(!redundant.has(c.text.toUpperCase()),'duplicate phase and bubble');
+    if(f.tryGroundings?.length)assert.ok(c.at>=.88,'try bubble must not appear before grounding');
+    events.push({start:elapsed+c.at*f.seconds,end:elapsed+c.at*f.seconds+c.displaySeconds});
+   }
+   elapsed+=f.seconds;
+  }
+  for(let i=1;i<events.length;i++)assert.ok(events[i].start>=events[i-1].end-.01,'overlapping coaching cues');
+ }
+});
