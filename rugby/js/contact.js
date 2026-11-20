@@ -110,7 +110,12 @@ export function posedShape(o,pose,normal,color){
 export function contactLabels(objects,g,escape,extra=[],cartoonMode=false){
  const labels=[...objects.filter(o=>contactType(o.type)).map(o=>({text:String(o.label||'').replace(/ marker$/i,'').trim()||CONTACTS[o.type].title,color:CONTACTS[o.type].color})),...extra.map(text=>({text,color:'#ffe994'}))];
  if(!labels.length)return '';
- const max=Math.max(7,Math.floor((g.viewWidth-24)/8.8)),full=labels.map(x=>x.text).join(' · '),text=full.length>max?full.slice(0,max-1)+'…':full,w=Math.min(g.viewWidth-10,Math.max(84,text.length*8.8+26));
- if(cartoonMode)return '<g pointer-events="none" class="contact-caption ruckus-comic-caption"><rect x="'+((g.viewWidth-w)/2+3)+'" y="6" width="'+w+'" height="29" rx="8" fill="#102d20" opacity=".5"/><rect x="'+((g.viewWidth-w)/2)+'" y="3" width="'+w+'" height="29" rx="7" fill="#fff4c7" stroke="#142c24" stroke-width="3"/><text x="'+(g.viewWidth/2)+'" y="23" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="900" fill="#182a1f">'+escape(text)+'</text></g>';
- return '<g pointer-events="none" class="contact-caption"><rect x="'+((g.viewWidth-w)/2)+'" y="3" width="'+w+'" height="24" rx="5" fill="#172820" stroke="'+labels[0].color+'" stroke-width=".9"/><text x="'+(g.viewWidth/2)+'" y="20" text-anchor="middle" font-size="15" font-weight="700" fill="'+labels[0].color+'">'+escape(text)+'</text></g>';
+ // A contact caption is a camera HUD, not a pitch object. Keep its apparent
+ // size fixed while a follow camera moves, and fit it inside the visible crop.
+ const view=g.annotationViewport,scale=view?g.annotationScale||1:1;
+ const vw=view?view.width/scale:g.viewWidth;
+ const prefix=view?'<g transform="translate('+view.x+' '+view.y+') scale('+scale+')">':'';
+ const max=Math.max(7,Math.floor((vw-24)/8.8)),full=labels.map(x=>x.text).join(' · '),text=full.length>max?full.slice(0,max-1)+'…':full,w=Math.min(vw-10,Math.max(84,text.length*8.8+26));
+ if(cartoonMode)return prefix+'<g pointer-events="none" class="contact-caption ruckus-comic-caption"><rect x="'+((vw-w)/2+3)+'" y="6" width="'+w+'" height="29" rx="8" fill="#102d20" opacity=".5"/><rect x="'+((vw-w)/2)+'" y="3" width="'+w+'" height="29" rx="7" fill="#fff4c7" stroke="#142c24" stroke-width="3"/><text x="'+(vw/2)+'" y="23" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="900" fill="#182a1f">'+escape(text)+'</text></g>'+(view?'</g>':'');
+ return prefix+'<g pointer-events="none" class="contact-caption"><rect x="'+((vw-w)/2)+'" y="3" width="'+w+'" height="24" rx="5" fill="#172820" stroke="'+labels[0].color+'" stroke-width=".9"/><text x="'+(vw/2)+'" y="20" text-anchor="middle" font-size="15" font-weight="700" fill="'+labels[0].color+'">'+escape(text)+'</text></g>';
 }
