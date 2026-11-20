@@ -1,4 +1,4 @@
-import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.19.1';
+import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.19.2';
 import {stepEndSeconds,stepStartSeconds} from './step-timeline.js?v=1';
 import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.78';
 import {drillGeometry} from './pitch.js?v=0.16.1';
