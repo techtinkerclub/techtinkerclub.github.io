@@ -6875,6 +6875,349 @@
       ],
       "savedAt": "2026-11-19T18:36:00.000Z",
       "revision": 1
+    },
+    {
+      "version": 1,
+      "id": "u10-try-line-ground-and-score-demo",
+      "title": "U10 | Try line · Cross, ground and celebrate",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Attack",
+      "length": 16,
+      "width": 12,
+      "minutes": 8,
+      "players": "Two players: one attacker A1 carrying the ball; one passive defender D1 observing the run. Rotate roles.",
+      "objective": "Understand the difference between entering in-goal and actually scoring a try, using a directional try-line marker.",
+      "safety": "A no-contact coaching animation. Do not instruct children to dive or slide onto a hard surface or through another player. Use controlled ground-touch technique only on an appropriate safe surface under a qualified coach. The illustrated TRY feedback is a coaching aid, not an automatic referee decision.",
+      "instructions": "A1 starts on the field side of the designated try line. The scoring arrow on the line points UP into the defending in-goal. A1 advances through a short channel while D1 remains passive. Only after A1 crosses the line in the correct direction, retains the ball and explicitly grounds it does the board display TRY!. Have D1 carry the ball through in either direction and explain why this does not award attacking points. Reset and switch roles.",
+      "coaching": "Ask: Which side are we attacking? What counts as in-goal? Why is merely crossing the line not a try? What does a defender grounding the ball in their own in-goal mean? Show a run then slow down before the grounding. Explain that the scoreboard is a schematic teaching aid.",
+      "equipment": "1 rugby ball, 2 cones and a clearly marked try line. No contact equipment.",
+      "regression": "Remove D1 and walk A1 across the arrow-facing line, pausing before grounding to ask whether a try has been scored.",
+      "progression": "Reverse the line scoring arrow and move A1 to the opposite side; observe that crossing the wrong direction does not register. Practice defending carrying and grounding without a score.",
+      "questions": "Is a try scored when A1 just crosses? Who can score on this particular attack line? Why does carrying the ball back over your own line not automatically score?",
+      "notes": "Purpose-built editable try-line demonstration. Blue A1 is the only eligible scoring team. The try line is an ordinary editor marking with direction and line-label controls; the grounding is authored in the third step at 75%. TRY! appears only after both conditions. The Ruckus grounding pose reuses the existing prone sprite. Not an authoritative refereeing engine.",
+      "review": "Coach review required · schematic U10 demonstration, not an RFU-certified rules simulation.",
+      "links": [
+        {
+          "label": "World Rugby Law 8 · Scoring",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/8-scoring",
+          "kind": "Rules · primary authority"
+        },
+        {
+          "label": "World Rugby Law 21 · In-goal",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/21-in-goal/",
+          "kind": "Rules · primary authority"
+        }
+      ],
+      "provenance": "Original demo authored in Rugby Coaching Studio schema for U10 try-line detection and Ruckus animation.",
+      "pitchContext": {
+        "mode": "training",
+        "age": "U10"
+      },
+      "savedAt": "2026-11-20T11:31:00.000Z",
+      "revision": 1,
+      "frames": [
+        {
+          "name": "Set up · arrow points into in-goal",
+          "seconds": 0,
+          "notes": "The scoring arrow points UP. A1 starts below the line with the ball; D1 stands clear.",
+          "objects": [
+            {
+              "id": "tryDemoLine",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 215,
+              "rot": 0,
+              "diagram": {
+                "length": 12,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            },
+            {
+              "id": "tryDemoA1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 350,
+              "rot": 0
+            },
+            {
+              "id": "tryDemoD1",
+              "type": "defender",
+              "label": "D1",
+              "x": 570,
+              "y": 285,
+              "rot": 0
+            },
+            {
+              "id": "tryDemoBall",
+              "type": "ball",
+              "label": "",
+              "x": 462,
+              "y": 342,
+              "rot": 0,
+              "ownerId": "tryDemoA1",
+              "carrySide": "left"
+            },
+            {
+              "id": "tryDemoC1",
+              "type": "cone",
+              "label": "",
+              "x": 355,
+              "y": 240,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tryDemoC2",
+              "type": "cone",
+              "label": "",
+              "x": 545,
+              "y": 240,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Approach the try line",
+          "seconds": 2.2,
+          "notes": "A1 approaches the line at a controlled running speed. Nothing has been scored yet.",
+          "objects": [
+            {
+              "id": "tryDemoLine",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 215,
+              "rot": 0,
+              "diagram": {
+                "length": 12,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            },
+            {
+              "id": "tryDemoA1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "tryDemoD1",
+              "type": "defender",
+              "label": "D1",
+              "x": 570,
+              "y": 285,
+              "rot": 0
+            },
+            {
+              "id": "tryDemoBall",
+              "type": "ball",
+              "label": "",
+              "x": 462,
+              "y": 262,
+              "rot": 0,
+              "ownerId": "tryDemoA1",
+              "carrySide": "left"
+            },
+            {
+              "id": "tryDemoC1",
+              "type": "cone",
+              "label": "",
+              "x": 355,
+              "y": 240,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tryDemoC2",
+              "type": "cone",
+              "label": "",
+              "x": 545,
+              "y": 240,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Cross · then deliberately ground",
+          "seconds": 2.2,
+          "notes": "A1 crosses towards the arrow side, still holding the ball. Grounding happens at 75% of this step, triggering one TRY.",
+          "objects": [
+            {
+              "id": "tryDemoLine",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 215,
+              "rot": 0,
+              "diagram": {
+                "length": 12,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            },
+            {
+              "id": "tryDemoA1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 180,
+              "rot": 0
+            },
+            {
+              "id": "tryDemoD1",
+              "type": "defender",
+              "label": "D1",
+              "x": 570,
+              "y": 285,
+              "rot": 0
+            },
+            {
+              "id": "tryDemoBall",
+              "type": "ball",
+              "label": "",
+              "x": 462,
+              "y": 172,
+              "rot": 0,
+              "ownerId": "tryDemoA1",
+              "carrySide": "left"
+            },
+            {
+              "id": "tryDemoC1",
+              "type": "cone",
+              "label": "",
+              "x": 355,
+              "y": 240,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tryDemoC2",
+              "type": "cone",
+              "label": "",
+              "x": 545,
+              "y": 240,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "tryGroundings": [
+            {
+              "id": "tryDemoGround1",
+              "actorId": "tryDemoA1",
+              "at": 0.75
+            }
+          ]
+        },
+        {
+          "name": "TRY! · discuss and reset",
+          "seconds": 1.2,
+          "notes": "The score remains one try. Replay in slow motion, change the direction, or replace A1 with D1 to test the rules.",
+          "objects": [
+            {
+              "id": "tryDemoLine",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 215,
+              "rot": 0,
+              "diagram": {
+                "length": 12,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            },
+            {
+              "id": "tryDemoA1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450,
+              "y": 180,
+              "rot": 0
+            },
+            {
+              "id": "tryDemoD1",
+              "type": "defender",
+              "label": "D1",
+              "x": 570,
+              "y": 285,
+              "rot": 0
+            },
+            {
+              "id": "tryDemoBall",
+              "type": "ball",
+              "label": "",
+              "x": 462,
+              "y": 172,
+              "rot": 0,
+              "ownerId": "tryDemoA1",
+              "carrySide": "left"
+            },
+            {
+              "id": "tryDemoC1",
+              "type": "cone",
+              "label": "",
+              "x": 355,
+              "y": 240,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "tryDemoC2",
+              "type": "cone",
+              "label": "",
+              "x": 545,
+              "y": 240,
+              "rot": 0,
+              "coneColor": "yellow"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
     }
   ]
 }
