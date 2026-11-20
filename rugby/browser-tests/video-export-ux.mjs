@@ -79,10 +79,10 @@ try{
  });
  await editor.waitForFunction(()=>document.querySelector('#stageTitle')?.textContent?.includes('Whistle'),null,{timeout:12000});
  await editor.locator('#minionMode').click();
- await editor.locator('#viewMenu summary').click();
+ await editor.locator('#viewMenu > summary').click();
  await editor.locator('#followAction').check();
  assert.equal(await editor.locator('#followAction').isChecked(),true);
- await editor.locator('#viewMenu summary').click();
+ await editor.locator('#viewMenu > summary').click();
  await editor.locator('#share').click();
  await editor.locator('#shareDialog').waitFor({state:'visible'});
  assert.equal(await editor.locator('#shareVideoStyle').inputValue(),'ruckus');
