@@ -4970,8 +4970,7 @@
               "text": "EYES UP",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 2.35,
-              "anchorMode": "fixed"
+              "displaySeconds": 2.35
             }
           ]
         },
@@ -5170,8 +5169,7 @@
               "text": "RUN STRAIGHT",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 2.35,
-              "anchorMode": "fixed"
+              "displaySeconds": 2.35
             }
           ]
         },
@@ -6191,8 +6189,7 @@
               "text": "ON FEET",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 2.35,
-              "anchorMode": "fixed"
+              "displaySeconds": 2.35
             }
           ]
         },
@@ -7698,8 +7695,7 @@
               "text": "DRAW AND PASS",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 2.340000000000003,
-              "anchorMode": "fixed"
+              "displaySeconds": 2.340000000000003
             }
           ]
         },
@@ -8623,8 +8619,7 @@
                     "text": "SPACE WIDE",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 2.35,
-                    "anchorMode": "fixed"
+                    "displaySeconds": 2.35
                   }
                 ]
               },
@@ -8805,8 +8800,7 @@
                     "text": "HANDS",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 2.35,
-                    "anchorMode": "fixed"
+                    "displaySeconds": 2.35
                   }
                 ]
               },
@@ -8987,8 +8981,7 @@
                     "text": "DRAW AND PASS",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 2.35,
-                    "anchorMode": "fixed"
+                    "displaySeconds": 2.35
                   }
                 ]
               },
@@ -9187,8 +9180,7 @@
                     "text": "GO WIDE",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 2.35,
-                    "anchorMode": "fixed"
+                    "displaySeconds": 2.35
                   }
                 ]
               },
@@ -9906,8 +9898,7 @@
                     "text": "GAP INSIDE",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 2.3063999999999996,
-                    "anchorMode": "fixed"
+                    "displaySeconds": 2.3063999999999996
                   }
                 ]
               },
@@ -10083,8 +10074,7 @@
                     "text": "STRAIGHTEN",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 2.060000000000002,
-                    "anchorMode": "fixed"
+                    "displaySeconds": 2.060000000000002
                   }
                 ]
               },
@@ -10265,8 +10255,7 @@
                     "text": "INSIDE SUPPORT",
                     "kind": "speech",
                     "at": 0.12,
-                    "displaySeconds": 2.35,
-                    "anchorMode": "fixed"
+                    "displaySeconds": 2.35
                   }
                 ]
               },
@@ -11402,8 +11391,7 @@
               "text": "GO FORWARD",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 2.35,
-              "anchorMode": "fixed"
+              "displaySeconds": 2.35
             }
           ]
         },
@@ -12220,8 +12208,7 @@
               "text": "ON FEET",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 2.35,
-              "anchorMode": "fixed"
+              "displaySeconds": 2.35
             }
           ]
         },
@@ -14300,8 +14287,7 @@
               "text": "SHORT PASS",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 2.3039999999999945,
-              "anchorMode": "fixed"
+              "displaySeconds": 2.3039999999999945
             }
           ]
         },
@@ -14477,8 +14463,7 @@
               "text": "GO NOW",
               "kind": "speech",
               "at": 0.12,
-              "displaySeconds": 2.35,
-              "anchorMode": "fixed"
+              "displaySeconds": 2.35
             }
           ]
         },
