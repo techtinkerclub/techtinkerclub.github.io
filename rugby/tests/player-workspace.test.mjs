@@ -8,7 +8,7 @@ const css=readFileSync(new URL('../assets/player-workspace.css',import.meta.url)
 
 test('public player loads the one-screen workspace styles',()=>{
  assert.match(html,/player-workspace\.css\?v=/);
- assert.match(html,/player\.js\?v=0\.20\.73/);
+ assert.match(html,/player\.js\?v=0\.20\.76/);
  assert.match(css,/height:100dvh/);
  assert.match(css,/overflow:hidden/);
  assert.match(css,/\.presentation-panel/);
@@ -76,7 +76,7 @@ test('the public board offers coaching tools without editor mutations',()=>{
 });
 
 test('fullscreen board leaves standard share and published frames alone',()=>{
- assert.match(js,/publicBoard\?\.cameraView\(s\)\|\|s\.camera/);
+ assert.match(js,/cameraOverride=publicBoard\?\.cameraView/);
  assert.match(js,/publicBoard\?\.refresh\(s\)/);
  assert.match(js,/saveBlob\(png/);
  assert.match(js,/document\.body\.classList\.contains\('public-blackboard'\)/);
