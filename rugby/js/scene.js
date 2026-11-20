@@ -8,7 +8,7 @@ import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPo
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.20.60';
 import {headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=38';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=39';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=10';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
