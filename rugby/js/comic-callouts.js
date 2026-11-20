@@ -127,7 +127,7 @@ export function bubbleSVG({x,y,text,kind='speech',g,comic=true,ink=false,accent=
    '<circle cx="'+plan.tip.x.toFixed(1)+'" cy="'+plan.tip.y.toFixed(1)+'" r="2.3" fill="'+fill+'" stroke="'+border+'" stroke-width="1.3"/>'
   :tailSVG(plan,{fill,stroke:border,width:comic?2.4:1.8});
  return '<g class="'+(comic?'graphic-novel-bubble':'standard-speech-bubble')+'" data-callout-side="'+plan.side+'" pointer-events="none"><title>'+
-  esc(text)+'</title>'+tail+shape+thought+bubbleText(rows,plan,{step,size,fontWeight:comic?850:700,colour:font,spacing:comic?.1:0})+'</g>';
+  esc(text)+'</title>'+thought+shape+bubbleText(rows,plan,{step,size,fontWeight:comic?850:700,colour:font,spacing:comic?.1:0})+'</g>';
 }
 // Auto-action captions now use the same palette, collision planner and centred
 // text as authored bubbles. The smaller label avoids obscuring contact poses.
