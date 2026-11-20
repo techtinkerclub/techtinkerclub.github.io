@@ -301,7 +301,7 @@
               "type": "attacker",
               "label": "A3",
               "x": 720,
-              "y": 263,
+              "y": 300,
               "rot": 0
             },
             {
@@ -1230,7 +1230,7 @@
               "x": 480,
               "y": 316,
               "rot": 0,
-              "ownerId": "a2"
+              "ownerId": "a1"
             },
             {
               "id": "pad",
@@ -1282,7 +1282,7 @@
               "x": 475,
               "y": 298,
               "rot": 0,
-              "ownerId": "a2"
+              "ownerId": "a1"
             },
             {
               "id": "pad",
@@ -1933,7 +1933,7 @@
               "type": "attacker",
               "label": "A3",
               "x": 729,
-              "y": 213,
+              "y": 242,
               "rot": 0,
               "tagBelt": true,
               "tagColor": "yellow",
@@ -2004,7 +2004,7 @@
       "objective": "Illustrate an England Touch-style rollball and defensive retreat, then a second attacking phase.",
       "safety": "Non-contact Touch training, NOT RFU U10 contact laws or RFU U7/U8 tag laws. Use the exact touch competition's rules; no tackling or forceful touches.",
       "instructions": "1. Setup · Touch code — Explain: this is formal Touch practice, not RFU U10 match restart law.\n2. Attack · draw a touch — A1 runs into D1's channel; A2 remains behind as the prospective half.\n3. TOUCH · freeze the mark — Light touch by D1; ball carrier stops. Do not pass after a completed touch.\n4. Retreat · defenders get onside — Defenders move back the required 7 m before involving themselves. A1 prepares the rollball.\n5. ROLLBALL · at the mark — A1 plays the ball back through the legs at the mark; A2 becomes the half.\n6. Half passes · next phase — A2, acting as half, passes backwards to A3. Avoid claiming an automatic right for the half to score.\n7. Continue · attack space — A3 accelerates into open space while defenders advance from their onside positions.",
-      "coaching": "On a valid touch, the touched attacker returns to the mark and executes a rollball. Defenders retreat the required distance (7 m at a rollball under the England Touch introductory rules); a teammate plays half. The half has special restrictions under formal Touch rules.",
+      "coaching": "On a valid touch, the touched attacker returns to the mark and executes a rollball. Defenders retreat at least 7 m under England Touch introductory rules and wait until the half touches the ball before moving forward. The half cannot score and loses possession if touched.",
       "questions": "Where is the touch mark? Are the defenders back 7 m? Is the half allowed to score? Which competition rule set are we playing?",
       "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
       "links": [
@@ -2202,7 +2202,7 @@
         {
           "name": "Retreat · defenders get onside",
           "seconds": 2.1,
-          "notes": "Defenders move back the required 7 m before involving themselves. A1 prepares the rollball.",
+          "notes": "Defenders retreat at least 7 m from the rollball mark and stay out of play. A1 prepares the rollball.",
           "objects": [
             {
               "id": "a1",
@@ -2233,7 +2233,7 @@
               "type": "defender",
               "label": "D1",
               "x": 375,
-              "y": 180,
+              "y": 115,
               "rot": 180
             },
             {
@@ -2241,7 +2241,7 @@
               "type": "defender",
               "label": "D2",
               "x": 655,
-              "y": 185,
+              "y": 80,
               "rot": 180
             },
             {
@@ -2291,7 +2291,7 @@
               "type": "defender",
               "label": "D1",
               "x": 375,
-              "y": 180,
+              "y": 115,
               "rot": 180
             },
             {
@@ -2299,7 +2299,7 @@
               "type": "defender",
               "label": "D2",
               "x": 655,
-              "y": 185,
+              "y": 80,
               "rot": 180
             },
             {
@@ -2318,7 +2318,7 @@
         {
           "name": "Half passes · next phase",
           "seconds": 1.9,
-          "notes": "A2, acting as half, passes backwards to A3. Avoid claiming an automatic right for the half to score.",
+          "notes": "A2, acting as half, touches the ball to restart and passes backwards to A3. The half cannot score under this code.",
           "objects": [
             {
               "id": "a1",
@@ -2348,8 +2348,8 @@
               "id": "d1",
               "type": "defender",
               "label": "D1",
-              "x": 383,
-              "y": 205,
+              "x": 375,
+              "y": 115,
               "rot": 180
             },
             {
@@ -2357,7 +2357,7 @@
               "type": "defender",
               "label": "D2",
               "x": 655,
-              "y": 220,
+              "y": 80,
               "rot": 180
             },
             {
@@ -3520,7 +3520,7 @@
                     "type": "attacker",
                     "label": "A3",
                     "x": 731,
-                    "y": 291,
+                    "y": 330,
                     "rot": 0
                   },
                   {
