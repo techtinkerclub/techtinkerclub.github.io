@@ -43,7 +43,6 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  const chapters=views.map(v=>{const plan=moviePlan(drillDuration(v.drill),opts),start=videoDuration;videoDuration+=plan.total;return {...v,plan,start,end:videoDuration,headline:v.id?'OPTION '+v.id.toUpperCase()+' · '+v.label:''}});
  const plan=chapters[0].plan;
  if(videoDuration>360)throw Error('The complete video exceeds six minutes. Choose normal speed only, a faster replay, or export only the selected outcome.');
- if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Edge or Chrome.');
  const {width:W,height:H,bitrate,fps}=plan.quality,frame=createMovieFrame(W,H),{canvas,ctx}=frame;
  // Short-form video uses a distinct layout, not a cropped landscape video.
  const portrait=plan.options.format==='portrait',unit=W/(portrait?1080:1920),pad=Math.round((portrait?72:42)*unit),right=portrait?Math.round(120*unit):pad,content=W-pad-right;
@@ -90,6 +89,7 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
    progress(fraction,t>=videoDuration&&cardPages.length?'Rendering · Coaching card':'Rendering · '+(ch.headline?ch.headline+' · ':'')+m.segment.title);
   }});
  if(precise)return precise;
+ if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Edge or Chrome.');
  if(!canvas.captureStream)throw Error('Canvas video recording is unavailable in this browser.');
  const stream=canvas.captureStream(fps);
  let recorder,recorded;
