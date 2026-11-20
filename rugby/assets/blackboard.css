@@ -400,3 +400,22 @@ body.blackboard-mode .bb-save-complete[open],.bb-save-complete[open]{
  body.blackboard-mode #libraryDialog.bb-library-style .libgrid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 }
 
+
+/* Shared Add palette: real Studio SVG icon tiles, not a second registry. */
+.blackboard-ui .bb-add-menu:has(.bb-palette){box-sizing:border-box;width:min(340px,calc(100vw - 80px));
+ max-height:min(70dvh,520px);overflow:auto;scrollbar-width:thin}
+.blackboard-ui .bb-add-menu .bb-palette{display:grid;gap:9px;padding-top:4px}
+.blackboard-ui .bb-native-palette-group{min-width:0}
+.blackboard-ui .bb-native-palette-group h4{font-size:10px;text-transform:uppercase;letter-spacing:.7px;
+ color:#c6dfb8;margin:7px 0 6px}
+.blackboard-ui .bb-palette-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.blackboard-ui .bb-palette-grid button{display:flex;flex-direction:column;align-items:center;justify-content:center;
+ width:100%;min-width:0;min-height:66px;max-width:none;padding:5px 4px;gap:4px;
+ line-height:1.25;text-align:center;font-size:10px;white-space:normal}
+.blackboard-ui .bb-palette-grid button svg{display:block;width:33px;height:33px;min-height:33px;max-height:33px;flex:none}
+.blackboard-ui .bb-palette-grid button:focus-visible{outline:2px solid #c9f07c;outline-offset:1px}
+@media(max-width:520px){
+ .blackboard-ui .bb-add-menu:has(.bb-palette){width:min(310px,calc(100vw - 66px));max-height:65dvh}
+ .blackboard-ui .bb-palette-grid button{min-height:63px}
+}
+
