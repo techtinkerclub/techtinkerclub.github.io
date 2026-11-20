@@ -54,7 +54,7 @@ function applyZoom(){
  $('playerZoomOut').disabled=viewZoom<=1.001;
 }
 function resetZoom(){viewZoom=1;viewPan={x:0,y:0};dragStart=null;pinchStart=null;applyZoom()}
-function changeZoom(factor){viewZoom=viewerZoomLevel(viewZoom*factor);applyZoom()}
+function changeZoom(factor){viewZoom=viewerZoomLevel(viewZoom*factor);if(d)render();else applyZoom()}
 $('playerZoomIn').onclick=()=>changeZoom(1.5);
 $('playerZoomOut').onclick=()=>changeZoom(1/1.5);
 $('playerZoomFit').onclick=()=>resetZoom();
@@ -84,7 +84,7 @@ boardEl.addEventListener('pointermove',event=>{
 });
 for(const kind of ['pointerup','pointercancel','lostpointercapture'])boardEl.addEventListener(kind,event=>{
  touches.delete(event.pointerId);
- if(dragStart?.id===event.pointerId)dragStart=null;
+ if(dragStart?.id===event.pointerId){dragStart=null;if(d)render()}
  if(touches.size<2)pinchStart=null;
  if(boardEl.hasPointerCapture?.(event.pointerId))boardEl.releasePointerCapture(event.pointerId);
 });
@@ -103,9 +103,16 @@ function render(){
  $('playerFollow').classList.toggle('selected',opts.framing==='follow');
  const stepIndex=stepLocation(d,t).i;
  const cameraOverride=publicBoard?.cameraView({index:stepIndex,frame:d.frames[stepIndex]});
- const s=renderScene(d,{...opts,time:t,cameraOverride}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
+ const initialScene=renderScene(d,{...opts,time:t,cameraOverride});
+ const visibleCamera=zoomWindow(initialScene.camera,viewZoom,viewPan);
+ const cropped=Math.abs(visibleCamera.x-initialScene.camera.x)>1e-4||
+  Math.abs(visibleCamera.y-initialScene.camera.y)>1e-4||
+  Math.abs(visibleCamera.width-initialScene.camera.width)>1e-4||
+  Math.abs(visibleCamera.height-initialScene.camera.height)>1e-4;
+ const s=cropped?renderScene(d,{...opts,time:t,cameraOverride:visibleCamera}):initialScene;
+ const ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
- board.innerHTML=s.svg;viewBase=s.camera;applyZoom();shownStep=s.index;
+ board.innerHTML=s.svg;viewBase=initialScene.camera;applyZoom();shownStep=s.index;
  publicBoard?.refresh(s);
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
  if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';renderStepRoute(s.index);$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
