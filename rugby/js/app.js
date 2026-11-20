@@ -2767,6 +2767,7 @@ const blackboard=initBlackboard({
   title:drill.title,stepName:f().name||f().notes||'Edit positions and movement',
   idx,total:drill.frames.length,stepSeconds:f().seconds,frames:drill.frames,branching:hasOutcomes(drill)?branchInfo(drill):null,playhead:preview??at(idx),
   loop:bbLoop,loopStep:bbLoopStep,speed:Number($('speed').value),followTarget:bbFollowTarget,followFraming:bbFollowFraming,ghostMode:bbGhostMode,spotlight:bbSpotlightIds.length>0,
+  saving:githubSaving,saveStatus:$('saveState')?.textContent||'',canPublish:!githubSaving&&!publicationLoading&&!dirty&&!setupPending&&githubDrills.some(item=>item.id===drill.id),
   selection:selected?(()=>{const o=f().objects.find(item=>item.id===selected);return o?{id:o.id,label:o.label||types[o.type]?.[0]||o.type,type:o.type}:null})():null,
   canRun:!$('drawRouteSide').disabled,
   canPass:!$('passBallSide').disabled,
