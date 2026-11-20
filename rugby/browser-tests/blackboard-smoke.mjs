@@ -25,6 +25,11 @@ try{
   assert.equal(await page.locator('#pitch .obj[data-id]').count(),startingPlayers+1,
    'adding a blackboard player uses original Studio model');
   await page.locator('#bbSelection').waitFor({state:'visible'});
+  await page.locator('[data-bb="actions"]').click();
+  assert(await page.locator('#objectMenu').isVisible(),'Blackboard exposes original object menu');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(()=>document.getElementById('objectMenu')?.hidden===true);
+
   const selectedId=await page.locator('#pitch .obj[data-id]').last().getAttribute('data-id');
   const before=Number(await page.locator('#objRot').inputValue());
   await page.locator('[data-bb="turn-right"]').click();
