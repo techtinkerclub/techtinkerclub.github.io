@@ -30,7 +30,8 @@ try{
   await page.keyboard.press('Escape');
   await page.waitForFunction(()=>document.getElementById('objectMenu')?.hidden===true);
 
-  const selectedId=await page.locator('#pitch .obj[data-id]').last().getAttribute('data-id');
+  const selectedId=await page.locator('#objectPicker').inputValue();
+  assert(selectedId,'Newly added player should be the selected editor object');
   const before=Number(await page.locator('#objRot').inputValue());
   await page.locator('[data-bb="turn-right"]').click();
   const after=Number(await page.locator('#objRot').inputValue());
