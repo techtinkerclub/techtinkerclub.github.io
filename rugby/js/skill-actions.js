@@ -1,5 +1,6 @@
 // Shared, editable non-contact action model. No inferred collision or tackle.
 import {canCarry} from './possession.js?v=0.18.0';
+import {bubbleSVG} from './comic-callouts.js?v=1';
 export const CONE_COLORS=Object.freeze({orange:'#ff9b46',yellow:'#ffda78',red:'#f06c68',blue:'#65b8f8',green:'#91d78e',white:'#f5f5ed',purple:'#bf9af5'});
 export const coneColor=name=>CONE_COLORS[name]||CONE_COLORS.yellow;
 export const TAG_SIDES=['left','right'];
@@ -127,6 +128,7 @@ export function interactionOverlay(frame,objects,g,progress=1,ink=false,context=
   const mid=taking?{x:p.x,y:p.y-84}:returning?{x:(p.x+q.x)/2,y:(p.y+q.y)/2-35}:{x:(p.x+q.x)/2,y:(p.y+q.y)/2-32};
   const raised=taking?'<circle cx="'+p.x+'" cy="'+p.y+'" r="29" fill="none" stroke="'+highlight+'" stroke-width="2" stroke-dasharray="4 4"/>':'';
   const flash=tag?raised:'<circle cx="'+q.x+'" cy="'+q.y+'" r="'+(equipment?17:23)+'" fill="none" stroke="'+highlight+'" stroke-width="2.5" stroke-dasharray="'+(equipment?'3 4':'5 3')+'"/>';
+  if(context?.cartoonMode&&!ink)return '<g class="ruckus-action-cue" pointer-events="none">'+flash+bubbleSVG({x:p.x,y:p.y,text:label,kind:tag?'shout':'speech',g,comic:true,accent:highlight})+'</g>';
   const note=taking&&a.label&&!/^tag( removed)?/i.test(a.label)?'<text x="'+mid.x+'" y="'+(mid.y+20)+'" font-size="10" fill="'+(ink?'#333':'#f3dcb3')+'" text-anchor="middle">'+safe(a.label)+'</text>':'';
   return '<path d="M'+p.x+' '+p.y+'L'+q.x+' '+q.y+'" stroke="'+highlight+'" stroke-width="2" stroke-dasharray="'+(tag?'3 5':'5 3')+'" fill="none"/>'+
    flash+
@@ -134,7 +136,7 @@ export function interactionOverlay(frame,objects,g,progress=1,ink=false,context=
    '<text x="'+mid.x+'" y="'+(mid.y+4)+'" fill="'+(ink?'#222':'#f7ffed')+'" text-anchor="middle" font-size="11" font-weight="700">'+safe(label)+'</text>'+note;
  }).join('')+'</g>';
 }
-export function ripOverlay(frame,previous,objects,g,progress=1,ink=false){
+export function ripOverlay(frame,previous,objects,g,progress=1,ink=false,cartoonMode=false){
  if(!previous||!frame?.objects)return '';
  const current=new Map(frame.objects.map(o=>[o.id,o]));
  const positions=new Map(objects.map(o=>[o.id,o]));
@@ -146,6 +148,7 @@ export function ripOverlay(frame,previous,objects,g,progress=1,ink=false){
   const w=Math.max(85,Math.min(210,text.length*7+18));
   const x=v.x,y=v.y-43;
   const colour=ink?'#444':'#efc989';
+  if(cartoonMode&&!ink)return '<g class="ball-rip-cue" pointer-events="none">'+bubbleSVG({x:v.x,y:v.y,text,kind:'shout',g,comic:true,accent:colour})+'</g>';
   return '<g class="ball-rip-cue" pointer-events="none">'+
    (oldHolder?'<circle cx="'+v.x+'" cy="'+v.y+'" r="27" stroke="'+colour+'" stroke-width="2" stroke-dasharray="2 5" fill="none"/>':'')+
    '<rect x="'+(x-w/2)+'" y="'+(y-12)+'" width="'+w+'" height="25" rx="6" fill="'+(ink?'#fff':'#44341f')+'" stroke="'+colour+'"/>'+
