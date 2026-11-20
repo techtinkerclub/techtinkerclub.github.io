@@ -7,11 +7,11 @@ import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPo
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.18.8';
 import {headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=36';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=37';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
-import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=8';
+import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=9';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
-import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.18.0';
+import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.20.49';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import {pitchGeometry,drillGeometry,trainingField} from './pitch.js?v=0.16.1';
 import {fieldContext,validateFieldContext} from './field-context.js?v=0.16.1';
@@ -25,7 +25,7 @@ import {cardLinks} from './coaching-output.js?v=0.13.10';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {offsideOverlay} from './offside.js?v=0.12.23';
 import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=2';
-import {contestResultOverlay} from './ruck-outcome.js?v=0.12.33';
+import {contestResultOverlay} from './ruck-outcome.js?v=0.20.49';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
  const str=(s,n=4000)=>String(s??'').slice(0,n),num=(x,min,max,def)=>Number.isFinite(Number(x))?clamp(Number(x),min,max):def;
