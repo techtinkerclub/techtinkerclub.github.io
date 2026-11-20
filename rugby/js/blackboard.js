@@ -285,10 +285,19 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    follow.classList.toggle('is-active',enabled);
   }
   const target=$('bbFollowTarget');
-  if(target&&document.activeElement!==target)target.value=state.followTarget||'action';
+  if(target){
+   if(document.activeElement!==target)target.value=state.followTarget||'action';
+   const selectedOption=target.querySelector('option[value="selected"]');
+   if(selectedOption)selectedOption.disabled=!state.selection||!['attacker','defender','neutral','coach','ball'].includes(state.selection.type);
+   const ballOption=target.querySelector('option[value="ball"]');
+   if(ballOption)ballOption.disabled=!(state.frames||[]).some(fr=>(fr.objects||[]).some(o=>o.type==='ball'));
+  }
   const ghost=$('bbGhostMode');
   if(ghost&&document.activeElement!==ghost)ghost.value=state.ghostMode||'off';
-  const spot=btn('spotlight');if(spot){spot.setAttribute('aria-pressed',String(!!state.spotlight));spot.classList.toggle('is-active',!!state.spotlight)}
+  const spot=btn('spotlight');if(spot){
+   spot.setAttribute('aria-pressed',String(!!state.spotlight));spot.classList.toggle('is-active',!!state.spotlight);
+   spot.disabled=!state.spotlight&&!state.selection;
+  }
   const loop=btn('loop');if(loop){loop.disabled=state.total<2;loop.setAttribute('aria-pressed',String(!!state.loop));loop.classList.toggle('is-active',!!state.loop)}
   const replay=btn('replay');if(replay)replay.disabled=state.total<2;
   const speed=$('bbSpeed');if(speed&&document.activeElement!==speed)speed.value=String(state.speed||1);
@@ -509,6 +518,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(drag)drag=null;
   if(panelDrag){panelDrag.panel.classList.remove('is-dragging');panelDrag=null}
   saveLayout();
+  onCoachTool('reset-ephemeral',true);
   setPen(false);showDetails(false);openTimeline(false);openCamera(false);
   restoreTimeline();
   active=false;ui.hidden=true;document.body.classList.remove('blackboard-mode');
