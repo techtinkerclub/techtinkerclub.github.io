@@ -4,8 +4,9 @@
 const $=id=>document.getElementById(id);
 const escapeText=text=>String(text??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STROKE_NS='http://www.w3.org/2000/svg';
+import {keyMoments} from './blackboard-coaching.js?v=1';
 
-export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,openObjectActions}){
+export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,openObjectActions,onCoachTool=()=>false}){
  const host=document.querySelector('.field-wrap'),pitch=$('pitch');
  if(!host||!pitch)return {open:()=>{},close:()=>{},sync:()=>{}};
  const launch=document.createElement('button');
@@ -81,7 +82,8 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="next" title="Next step">▶</button>'+
   '<button type="button" data-bb="new-step" title="Copy this step to create a movement">＋ Step</button>'+
   '<button type="button" data-bb="delete-step" title="Delete the selected step (Undo restores it)">− Step</button>'+
-  '<button type="button" data-bb="timeline" title="Edit step durations, timeline and object timing" aria-controls="bbTimelinePanel" aria-expanded="false">≡ <span>Timeline</span></button>'+
+  '<button type="button" data-bb="timeline" title="Edit step durations, timeline and object timing" aria-controls="bbTimelinePanel" aria-expanded="false">≡ <span>Timeline</span></button>'+ 
+  '<button type="button" data-bb="decision" id="bbDecisionShortcut" title="View the actual A/B consequences" hidden>◆ Decision</button>'+
   '<button type="button" data-bb="play" class="bb-play" title="Play or pause this drill">▶ Play</button>'+
  '</nav>'+
  '<section id="bbCameraPanel" class="bb-camera-panel bb-movable" data-bb-panel="camera" hidden aria-label="Camera and view options">'+
@@ -94,12 +96,22 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="grid" aria-pressed="false" title="Toggle grid">▦ Grid</button>'+
   '<button type="button" data-bb="paths" aria-pressed="false" title="Show running and passing routes">↝ Paths</button>'+
   '<button type="button" data-bb="markings" aria-pressed="false" title="Show pitch markings">▤ Marks</button>'+
-  '<button type="button" data-bb="follow" aria-pressed="false" title="Follow action during playback. Manual zoom, fit or pan turns it off.">◎ Follow action</button>'+
+  '<button type="button" data-bb="follow" aria-pressed="false" title="Follow action during playback. Manual zoom, fit or pan turns it off.">◎ Follow action</button>'+ 
+  '</div><div class="bb-teaching-settings">'+
+  '<label class="bb-setting">Follow <select id="bbFollowTarget" aria-label="Camera follows"><option value="action">Whole action</option><option value="selected">Selected player</option><option value="ball">Ball</option></select></label>'+ 
+  '<button type="button" data-bb="spotlight" aria-pressed="false" title="Dim everyone except selected player or group">◉ Spotlight</button>'+ 
+  '<label class="bb-setting">Ghost positions <select id="bbGhostMode" aria-label="Show ghost positions"><option value="off">Off</option><option value="start">Start</option><option value="next">Next</option><option value="both">Start + next</option></select></label>'+ 
+  '</div><div class="bb-layout-settings">'+
+  '<label class="bb-setting">Layout <select id="bbLayoutPreset" aria-label="Blackboard layout"><option value="editing">Editing</option><option value="coaching">Coaching</option></select></label>'+ 
+  '<button type="button" data-bb="save-layout" title="Remember where you placed these panels on this device">Save layout</button>'+
   '</div><button type="button" data-bb="reset-panels" class="bb-reset-panels">Reset panel positions</button>'+
  '</section>'+
  '<section id="bbTimelinePanel" class="bb-timeline-panel bb-movable" data-bb-panel="timeline" hidden aria-label="Steps and timing">'+
   '<div class="bb-panel-heading"><button type="button" class="bb-grip" aria-label="Move timeline panel" title="Drag panel">⠿</button><strong>Steps & timing</strong><button type="button" data-bb="tracks" title="Show or hide player movement tracks">Tracks ▾</button><button type="button" class="bb-panel-close" data-bb="close-timeline" aria-label="Close timeline">×</button></div>'+
-  '<div class="bb-duration-row"><label for="bbStepSeconds">Step travel time (s)</label><input type="number" id="bbStepSeconds" min="0" max="30" step="0.1" value="2"><button type="button" data-bb="edit-step" title="Open full step editing inspector">Step details</button></div>'+
+  '<div class="bb-duration-row"><label for="bbStepSeconds">Step travel time (s)</label><input type="number" id="bbStepSeconds" min="0" max="30" step="0.1" value="2"><button type="button" data-bb="edit-step" title="Open full step editing inspector">Step details</button></div>'+ 
+  '<div class="bb-playback-row"><button type="button" data-bb="replay" title="Play only the current movement again">↺ Replay step</button><button type="button" data-bb="loop" aria-pressed="false" title="Repeat this movement until you stop">⟲ Loop step</button><label>Speed <select id="bbSpeed" aria-label="Blackboard playback speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option></select></label></div>'+ 
+  '<details id="bbKeyMoments" class="bb-key-moments" hidden><summary>◆ Key moments <small id="bbMomentCount"></small></summary><div id="bbMomentChips" class="bb-moment-chips"></div></details>'+ 
+  '<div id="bbDecisionBar" class="bb-decision-bar" hidden><strong id="bbDecisionQuestion"></strong><div class="bb-decision-actions"><button type="button" data-bb-choice="a">A</button><button type="button" data-bb-choice="b">B</button><button type="button" data-bb="compare-decision">Compare A / B</button><button type="button" data-bb="edit-decision">Edit</button></div></div>'+
   '<small>Pick a step below to edit it. Drag the playhead to preview; select a step to return to editing.</small>'+
   '<div id="bbNativeTimeline" class="bb-native-timeline"></div>'+
  '</section>'+
