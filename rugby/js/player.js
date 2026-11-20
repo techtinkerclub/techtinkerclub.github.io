@@ -91,7 +91,7 @@ boardEl.addEventListener('wheel',event=>{
 function stop(){playing=false;cancelAnimationFrame(raf);cancelAnimationFrame(decisionRewind);decisionRewind=0;$('play').textContent='Play'}
 function stepEnd(i){return stepEndSeconds(d,i)}
 function stepTarget(direction){if(!d)return 0;const i=Math.max(0,shownStep),atEnd=Math.abs(t-stepEnd(i))<1e-7;return Math.max(0,Math.min(d.frames.length-1,direction<0?i-1:atEnd?i+1:i))}
-function jumpStep(i,scroll=false){if(!d)return;stop();t=stepStartSeconds(d,Math.max(0,Math.min(i,d.frames.length-1)));if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render();if(scroll)$('board').scrollIntoView({block:'start',behavior:'auto'})}
+function jumpStep(i,scroll=false){if(!d)return;stop();t=stepStartSeconds(d,Math.max(0,Math.min(i,d.frames.length-1)));if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render();if(scroll)document.getElementById('presentation-tab-step')?.click()}
 function render(){
  if(!d)return;
  $('playerFollow').setAttribute('aria-pressed',String(opts.framing==='follow'));
