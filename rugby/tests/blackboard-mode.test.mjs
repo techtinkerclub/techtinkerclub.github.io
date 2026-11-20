@@ -42,11 +42,11 @@ test('Ink is explicitly ephemeral and separate from real routes and passes',()=>
 test('Both Studio editions load Blackboard and the same live JS module',()=>{
  for(const path of ['index.html','coach/index.html']){
   const s=read(path);
-  assert.match(s,/assets\/blackboard\.css\?v=2/);
-  assert.match(s,path==='index.html'?/js\/app\.js\?v=0\.20\.55/:/js\/app\.js\?v=0\.20\.48/);
+  assert.match(s,path==='index.html'?/assets\/blackboard\.css\?v=4/:/assets\/blackboard\.css\?v=2/);
+  assert.match(s,path==='index.html'?/js\/app\.js\?v=0\.20\.57/:/js\/app\.js\?v=0\.20\.48/);
  }
  const app=read('js/app.js');
- assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=7'/);
+ assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=9'/);
  assert.match(app,/const blackboard=initBlackboard\(/);
  assert.match(app,/rotate:delta=>/);
 });
@@ -93,7 +93,7 @@ test('Blackboard Follow action uses the original Studio camera setting',()=>{
 test('Follow action is presented consistently across studio, mobile, blackboard and video',()=>{
  const studio=read('index.html'),blackboard=read('js/blackboard.js'),css=read('assets/output.css');
  const presentation=read('play.html'),movie=read('js/movie.js');
- assert.match(studio,/<label class="camera-follow-choice"><input id="followAction" type="checkbox"> ◎ Follow action<\/label>/);
+ assert.match(studio,/<label class="camera-follow-choice"><input id="followAction" type="checkbox"><span>◎ Follow action<\/span><\/label>/);
  assert.match(blackboard,/data-bb="follow" aria-pressed="false"[^>]*>◎ Follow action<\/button>/);
  assert.match(presentation,/id="playerFollow"[^>]*>Follow action<\/button>/);
  assert.match(presentation,/<option value="follow">Follow action · moving camera<\/option>/);
