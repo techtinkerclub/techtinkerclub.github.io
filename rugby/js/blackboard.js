@@ -186,9 +186,12 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   layoutPreset=name;
   ui.classList.toggle('bb-coaching-layout',name==='coaching');
   $('bbLayoutPreset').value=name;
-  const stored=savedLayouts[name]||{};
-  clearPanelPositions();openTimeline(stored.timeline??false);openCamera(stored.camera??false);
-  for(const [key,p] of Object.entries(stored.panels||{})){
+  const stored=savedLayouts[name];
+  clearPanelPositions();
+  // When first switching to a new layout, keep the current panel open:
+  // otherwise the selector itself disappears and cannot switch back.
+  if(stored){openTimeline(stored.timeline??false);openCamera(stored.camera??false)}
+  for(const [key,p] of Object.entries(stored?.panels||{})){
    if(!Array.isArray(p)||!Number.isFinite(p[0])||!Number.isFinite(p[1]))continue;
    const panel=ui.querySelector('[data-bb-panel="'+key+'"]');if(panel)placePanel(panel,p[0],p[1]);
   }
