@@ -1,7 +1,7 @@
-import {recordDrill,saveBlob,outputName,printProgression} from './outputs.js?v=0.20.76';
+import {recordDrill,saveBlob,outputName,printProgression} from './outputs.js?v=0.20.77';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {createExportProgress} from './export-progress.js?v=0.18.3';
-import {playbackData} from './scene.js?v=0.20.76';
+import {playbackData} from './scene.js?v=0.20.77';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // Uses only the published catalogue. No editable drill or GitHub write access.
 export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
