@@ -82,7 +82,7 @@ test('Blackboard uses two existing panels; decisions only appear for authored br
 
 test('Blackboard Editing/Coaching use separate remembered layouts; Ruckus stays legible when off',()=>{
  const blackboard=read('js/blackboard.js'),css=read('assets/blackboard.css'),index=read('index.html');
- assert.match(index,/blackboard\.css\?v=6/);
+ assert.match(index,/blackboard\.css\?v=7/);
  assert.match(blackboard,/savedLayouts\[layoutPreset\]=\{panels,camera:cameraOpen,timeline:timelineOpen\}/);
  assert.match(blackboard,/ui\.classList\.toggle\('bb-coaching-layout',name==='coaching'\)/);
  assert.match(blackboard,/id="bbLayoutHint"/);
@@ -127,5 +127,5 @@ test('Blackboard framing applies to player, ball and action but not exports',()=
  assert.match(app,/localStorage\.setItem\('rugby-blackboard-follow-framing-v1',value\)/);
  assert.match(app,/if\(!\$\('followAction'\)\.checked\)/);
  assert.match(app,/bbFollowFraming,\s*ghostMode:/);
- assert.match(html,/ANIMATED LIBRARY v0\.20\.60/);
+ assert.match(html,/ANIMATED LIBRARY v0\.20\.61/);
 });
