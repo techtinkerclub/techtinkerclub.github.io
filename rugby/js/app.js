@@ -2739,6 +2739,10 @@ const blackboard=initBlackboard({
  onCoachTool:(kind,value)=>{
   const boardActive=document.body.classList.contains('blackboard-mode');
   if(!boardActive)return false;
+  if(kind==='reset-ephemeral'){
+   bbLoop=false;bbFollowTarget='action';bbTargetPlayer=null;bbSpotlightIds=[];bbGhostMode='off';
+   return true;
+  }
   if(kind==='loop'){
    if(value&&drill.frames.length<2){note('Add an action step before looping.');return false}
    bbLoop=!!value;bbLoopStep=Math.max(1,Math.min(drill.frames.length-1,preview===null?idx:locate(preview).i));
