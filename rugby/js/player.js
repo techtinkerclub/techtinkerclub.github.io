@@ -316,6 +316,158 @@ function initPresentationWorkspace(){
 }
 initPresentationWorkspace();
 
+
+/**
+ * Public read-only Blackboard. Nothing here mutates a drill, creates routes,
+ * saves objects or modifies published data. Ink/focus are local view overlays.
+ * The existing Studio presentation renderer remains the only rugby engine.
+ */
+function initPublicBoard(){
+ if(!new URLSearchParams(location.search).has('drill'))return null;
+ const stage=document.querySelector('.presentation-stage');
+ const sidebar=document.querySelector('.presentation-sidebar');
+ const pitch=document.querySelector('.presentation-pitch-shell');
+ const board=$('board');
+ if(!stage||!sidebar||!pitch||!board)return null;
+ document.body.classList.add('public-blackboard');
+ const toolbar=document.createElement('nav');
+ toolbar.className='public-board-toolbar';
+ toolbar.setAttribute('aria-label','Public coaching blackboard tools');
+ const make=(label,title,action)=>{
+  const button=document.createElement('button');
+  button.type='button';button.textContent=label;button.title=title;
+  button.addEventListener('click',action);toolbar.append(button);return button;
+ };
+ const openPanel=key=>{
+  document.getElementById('presentation-tab-'+key)?.click();
+  sidebar.dataset.open='true';
+  closeButton.focus({preventScroll:true});
+ };
+ make('‹ Library','Back to the public coaching library',()=>$('backLibrary').click());
+ make('☷ Notes','Current step and coaching flow',()=>openPanel('step'));
+ make('▤ Coach','Full coaching card, safety and rules',()=>openPanel('coach'));
+ make('≡ Steps','Step-by-step coaching sequence',()=>openPanel('steps'));
+ make('◎ View','Camera, overlays and pitch options',()=>openPanel('view'));
+ make('↗ Share','Links, coaching sheets and videos',()=>openPanel('share'));
+ const inkButton=make('✎ Ink','Draw temporary marks on the pitch',()=>setInk(!inkEnabled));
+ inkButton.setAttribute('aria-pressed','false');
+ const fullButton=make('⛶ Fullscreen','Enter or exit fullscreen presentation',async()=>{
+  try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}
+  catch{showNotice('Fullscreen is unavailable in this browser.')}
+ });
+ const modeButton=make('▣ Page view','Switch to the classic public presentation layout',()=>{
+  const active=document.body.classList.toggle('public-blackboard');
+  modeButton.textContent=active?'▣ Page view':'▣ Blackboard';
+  modeButton.title=active?'Use the standard page layout':'Return to full-screen Blackboard';
+  if(!active){setInk(false);sidebar.dataset.open='false'}
+ });
+ const closeButton=sidebar.querySelector('.presentation-sidebar-close');
+ const backdrop=document.createElement('button');backdrop.type='button';
+ backdrop.className='public-board-backdrop';backdrop.setAttribute('aria-label','Close coaching drawer');
+ backdrop.addEventListener('click',()=>{sidebar.dataset.open='false'});
+ document.body.append(backdrop);
+ stage.append(toolbar);
+ const inkTools=document.createElement('section');inkTools.className='public-board-ink-tools';inkTools.hidden=true;
+ inkTools.innerHTML='<strong>Coaching chalk</strong><label>Colour <input id="publicInkColour" type="color" value="#ffe68c"></label>'+
+  '<label>Width <select id="publicInkWidth" aria-label="Chalk stroke width"><option value="2.5">Fine</option><option value="4" selected>Normal</option><option value="7">Broad</option></select></label>'+
+  '<button type="button" id="publicInkUndo">↶ Undo</button><button type="button" id="publicInkClear">Clear</button>'+
+  '<small>Temporary marks · not saved or included in exported videos</small>';
+ stage.append(inkTools);
+ const notice=document.createElement('p');notice.className='public-board-notice';notice.setAttribute('role','status');stage.append(notice);
+ function showNotice(value){notice.textContent=value;}
+ const focus=document.createElement('section');focus.className='public-board-focus';
+ focus.innerHTML='<label>Spotlight <select id="publicSpotlight" aria-label="Spotlight player"><option value="">Off</option></select></label>'+
+  '<label>Ghost <select id="publicGhost" aria-label="Show past or next positions"><option value="off">Off</option><option value="start">Previous</option><option value="next">Next</option><option value="both">Both</option></select></label>';
+ // Teaching-only settings belong in the existing View drawer, not the canvas.
+ document.getElementById('presentation-panel-view')?.prepend(focus);
+ const local={spot:'',ghost:'off'};
+ focus.querySelector('#publicSpotlight').addEventListener('change',e=>{local.spot=e.target.value;render()});
+ focus.querySelector('#publicGhost').addEventListener('change',e=>{local.ghost=e.target.value;render()});
+ const ink=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ ink.setAttribute('aria-label','Temporary coaching ink');ink.classList.add('public-board-ink');
+ ink.setAttribute('preserveAspectRatio','xMidYMid meet');
+ board.append(ink);
+ let inkEnabled=false,activePath=null,paths=[],previousScene=null;
+ const colour=inkTools.querySelector('#publicInkColour'),width=inkTools.querySelector('#publicInkWidth');
+ function setInk(enabled){
+  inkEnabled=!!enabled;inkTools.hidden=!inkEnabled;inkButton.setAttribute('aria-pressed',String(inkEnabled));
+  board.classList.toggle('public-inking',inkEnabled);
+  if(inkEnabled){stop();showNotice('Draw with your mouse, finger or pen. Marks stay local to this board.')}
+  else showNotice('');
+ }
+ function syncView(){
+  const svg=board.querySelector('svg:not(.public-board-ink)');
+  if(!svg)return;
+  // The ink is a sibling of the scene SVG. Both share the same world-space
+  // viewBox, including manual zoom, pan and automatic tracking.
+  ink.setAttribute('viewBox',svg.getAttribute('viewBox')||'0 0 900 540');
+ }
+ function point(event){
+  const ctm=ink.getScreenCTM();if(!ctm)return null;
+  const p=ink.createSVGPoint();p.x=event.clientX;p.y=event.clientY;
+  return p.matrixTransform(ctm.inverse());
+ }
+ const seg=(p)=>p.x.toFixed(2)+' '+p.y.toFixed(2);
+ ink.addEventListener('pointerdown',event=>{
+  if(!inkEnabled||event.button!==0)return;
+  const p=point(event);if(!p)return;
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d','M'+seg(p)+' L'+(p.x+.01).toFixed(2)+' '+p.y.toFixed(2));
+  path.setAttribute('fill','none');path.setAttribute('stroke',colour.value);
+  path.setAttribute('stroke-width',width.value);path.setAttribute('stroke-linecap','round');
+  path.setAttribute('stroke-linejoin','round');path.setAttribute('vector-effect','non-scaling-stroke');
+  ink.append(path);paths.push(path);activePath={id:event.pointerId,path};
+  ink.setPointerCapture(event.pointerId);event.preventDefault();
+ });
+ ink.addEventListener('pointermove',event=>{
+  if(!activePath||activePath.id!==event.pointerId)return;
+  const p=point(event);if(!p)return;
+  activePath.path.setAttribute('d',activePath.path.getAttribute('d')+' L'+seg(p));
+  event.preventDefault();
+ });
+ for(const kind of ['pointerup','pointercancel','lostpointercapture'])ink.addEventListener(kind,event=>{
+  if(activePath?.id===event.pointerId)activePath=null;
+  if(ink.hasPointerCapture?.(event.pointerId))ink.releasePointerCapture(event.pointerId);
+ });
+ inkTools.querySelector('#publicInkUndo').addEventListener('click',()=>paths.pop()?.remove());
+ inkTools.querySelector('#publicInkClear').addEventListener('click',()=>{for(const path of paths)path.remove();paths=[]});
+ function refresh(scene){
+  previousScene=scene;
+  // Player choice is derived from the saved read-only frame, never from editing.
+  const select=focus.querySelector('#publicSpotlight'),current=select.value;
+  const names=scene.frame.objects.filter(o=>['attacker','defender','neutral','coach','shield','bagplayer'].includes(o.type));
+  const signature=names.map(o=>o.id+':'+o.label).join('|');
+  if(select.dataset.signature!==signature){
+   select.dataset.signature=signature;select.innerHTML='<option value="">Off</option>';
+   for(const o of names){const opt=document.createElement('option');opt.value=o.id;opt.textContent=o.label||o.id;select.append(opt)}
+   select.value=names.some(o=>o.id===current)?current:'';
+   local.spot=select.value;
+  }
+  const g=drillGeometry(d,opts.orientation),loc=stepLocation(d,t);
+  const before=d.frames[Math.max(0,scene.index-1)],next=d.frames[Math.min(d.frames.length-1,scene.index+1)];
+  const actors=scene.index>0?transitionObjects(before,scene.frame,loc.p,g):scene.frame.objects;
+  if(local.spot||local.ghost!=='off'){
+   const svg=board.querySelector('svg:not(.public-board-ink)');
+   if(svg){
+    const overlay=teachingOverlay({objects:actors,previous:before,next,g,
+     spotlightIds:local.spot?[local.spot]:[],ghostIds:local.spot?[local.spot]:names.map(o=>o.id),
+     ghostMode:local.ghost});
+    if(overlay)svg.insertAdjacentHTML('beforeend',overlay);
+   }
+  }
+  // Rebuild only the transient presentation overlay. Ink paths survive frame
+  // changes and stay independent of exported or shared rugby drill data.
+  if(ink.parentNode!==board)board.append(ink);
+  syncView();
+ }
+ window.addEventListener('keydown',event=>{
+  if(event.key!=='Escape'||document.activeElement?.closest('dialog'))return;
+  if(inkEnabled){setInk(false);return}
+  if(sidebar.dataset.open==='true'){sidebar.dataset.open='false';return}
+ });
+ return {refresh,syncView};
+}
+
 publicBoard=initPublicBoard();
 
 const params=new URLSearchParams(location.search),catalogueId=params.get('drill');
