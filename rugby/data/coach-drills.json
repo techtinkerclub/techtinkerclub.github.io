@@ -7263,7 +7263,7 @@
         }
       ],
       "provenance": "Derivative of the existing 3 vs 2 Overload starter drill seed-020, retaining its five-player 3 v 2 sequence and adding an explicit legal try-scoring finish. Authored as a separate example, not a replacement for the original.",
-      "review": "Editorially developed from the existing starter drill with age-grade references. For practical delivery, the session coach must review field space, player readiness and the current RFU Under-10 Rules of Play; this does not constitute an independent RFU safety approval.",
+      "review": "Editorially developed from the existing starter drill with age-grade references. For practical delivery, the session coach must review field space, player readiness and the current RFU Under-10 Rules of Play; this does not constitute an independent RFU safety approval. Refined single stable grounding cue and longer Ruckus celebration (20 November 2026).",
       "frames": [
         {
           "name": "Set up · 3 attackers against 2 defenders",
@@ -7832,22 +7832,12 @@
             }
           ],
           "timing": {},
-          "paths": {},
-          "callouts": [
-            {
-              "id": "try923-notyet",
-              "actorId": "o2",
-              "text": "NOT A TRY YET!",
-              "kind": "speech",
-              "at": 0.88,
-              "displaySeconds": 0.9
-            }
-          ]
+          "paths": {}
         },
         {
-          "name": "Ground the ball · NOW it is a try",
-          "seconds": 1.2,
-          "notes": "A3 slows safely inside the attacking in-goal and deliberately grounds the ball at 65% of this step. The automatic TRY! appears only now, because A3 crossed in the scoring direction with possession and then authored a legal grounding.",
+          "name": "Ground the ball · one clear coaching cue",
+          "seconds": 2.1,
+          "notes": "A3 has crossed in the correct direction but has not scored yet. One calm, fixed-position 'GROUND IT!' cue appears early in this longer step; it disappears before the attacker deliberately grounds the ball at 78% of the step. Only then does the automatic TRY! appear. The Ruckus player stays prone long enough to show grounding, rises, and uses the approved raised-arms celebration poses.",
           "objects": [
             {
               "id": "o0",
@@ -7959,23 +7949,24 @@
               "id": "try923-ground",
               "actorId": "o2",
               "text": "GROUND IT!",
-              "kind": "shout",
-              "at": 0.12,
-              "displaySeconds": 0.65
+              "kind": "speech",
+              "anchorMode": "fixed",
+              "at": 0.06,
+              "displaySeconds": 1.3
             }
           ],
           "tryGroundings": [
             {
               "id": "try923-grounding",
               "actorId": "o2",
-              "at": 0.65
+              "at": 0.78
             }
           ]
         },
         {
-          "name": "Celebrate, review the decision, rotate",
+          "name": "TRY! · watch the celebration and review",
           "seconds": 1.5,
-          "notes": "One TRY is now recorded. A1 and A2 recognise the space they created. Review the two moments where a defender was fixed; ask why the crossing alone did not score. Rotate the ball carrier and both defenders. Keep celebrations and grounding controlled.",
+          "notes": "One TRY is registered after genuine grounding, never just after crossing. Hold the prone ball presentation, rise and celebrate clearly; then discuss A1/A2 fixing defenders, the final pass and the direction of attack. Review and rotate. The extra Ruckus celebration time is a view-only outro; Classic and the authored rugby steps remain unchanged.",
           "objects": [
             {
               "id": "o0",
