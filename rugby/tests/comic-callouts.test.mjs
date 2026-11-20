@@ -57,5 +57,5 @@ test('editor, public player and movie share the same feature, no separate action
  assert.match(app,/calloutOverlay\(drill\.frames,lineIndex/);
  assert.match(scene,/calloutOverlay\(d\.frames,i/);
  assert.match(scene,/result\.callouts=f\.callouts;cleanCallouts\(result\)/);
- assert.match(read('js/video-recorder.js'),/from '\.\/scene\.js\?v=0\.20\.52'/);
+ assert.match(read('js/video-recorder.js'),/from '\.\/scene\.js\?v=0\.20\.\d+'/);
 });
