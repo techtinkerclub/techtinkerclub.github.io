@@ -79,7 +79,7 @@ export async function loadCatalogue(fetcher=fetch){
  // public viewing and the Studio's in-app library load this same catalogue.
  let matchShowcases=[];
  try{
-  const response=await fetcher(new URL('../data/u10-match-showcases.json?v=1',import.meta.url),{cache:'no-cache'});
+  const response=await fetcher(new URL('../data/u10-match-showcases.json?v=2',import.meta.url),{cache:'no-cache'});
   if(!response.ok)throw Error('Match showcase pack HTTP '+response.status);
   const pack=await response.json();
   if(pack?.version!==1||pack.kind!=='rugby-match-showcases'||pack.category!=='U10 Match Showcases'||
