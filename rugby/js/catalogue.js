@@ -1,6 +1,6 @@
 import {loadPublicationData,applyPublications} from './publication.js?v=1';
 // The read-only library and player share the same curated catalogue, not browser storage.
-export const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game','Test drills'];
+export const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game','U10 Match Showcases','Test drills'];
 export const FORMATS=['animated','card','rules'];
 export const isAnimated=d=>Array.isArray(d.frames)&&d.frames.length>1;
 export const isRules=d=>String(d.title).startsWith('Understand the game ·');
@@ -75,7 +75,28 @@ export async function loadCatalogue(fetcher=fetch){
  }catch(err){
   console.warn('Rugby showcase pack unavailable:',err);
  }
- return curated.concat(showcase,qa);
+ // Long-form match sequences are kept in their own curated category. Both
+ // public viewing and the Studio's in-app library load this same catalogue.
+ let matchShowcases=[];
+ try{
+  const response=await fetcher(new URL('../data/u10-match-showcases.json?v=1',import.meta.url),{cache:'no-cache'});
+  if(!response.ok)throw Error('Match showcase pack HTTP '+response.status);
+  const pack=await response.json();
+  if(pack?.version!==1||pack.kind!=='rugby-match-showcases'||pack.category!=='U10 Match Showcases'||
+     !Array.isArray(pack.drills)||pack.drills.length!==3)throw Error('Invalid U10 match showcase pack');
+  const known=new Set([...curated,...showcase,...qa].map(d=>d.id));
+  for(const d of pack.drills){
+   if(!/^seed-\d{3,}$/.test(d?.id)||known.has(d.id)||d.category!=='U10 Match Showcases'||
+     d.ageMin!==10||d.ageMax!==10||d.length!==60||d.width!==35||
+     d.pitchContext?.mode!=='field'||!Array.isArray(d.frames)||d.frames.length<12||
+     d.frames[0].objects.filter(o=>o.type==='attacker').length!==8||
+     d.frames[0].objects.filter(o=>o.type==='defender').length!==8)
+    throw Error('Invalid or duplicate U10 match drill '+d?.id);
+   known.add(d.id);
+  }
+  matchShowcases=pack.drills;
+ }catch(err){console.warn('U10 match showcases unavailable:',err)}
+ return curated.concat(matchShowcases,showcase,qa);
 }
 export async function copyText(s){
  try{await navigator.clipboard.writeText(s);return true}catch{return false}
