@@ -1,0 +1,99 @@
+/* Public drill presentation workspace: no full-document scrolling.
+   Overrides the legacy stacked player only when the JS workspace exists. */
+@media screen {
+.read-only-player.player-workspace-ready{height:100dvh;min-height:0;overflow:hidden}
+.read-only-player.player-workspace-ready header{flex:0 0 auto;padding:7px 17px;gap:10px;min-height:62px}
+.read-only-player.player-workspace-ready .player-heading{min-width:0;width:100%}
+.read-only-player.player-workspace-ready .player-heading .player-nav{display:inline-flex;gap:14px;margin:0 10px 0 0;vertical-align:middle}
+.read-only-player.player-workspace-ready .player-heading .player-nav .library-back{font-size:12px;min-height:23px}
+.read-only-player.player-workspace-ready .player-heading>small{display:inline-block;font-size:9px;letter-spacing:.5px;margin:0;color:#aac58e}
+.read-only-player.player-workspace-ready h1{font-size:clamp(15px,1.3vw,20px);line-height:1.2;margin:3px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.read-only-player.player-workspace-ready header #objective{font-size:12px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:1px 0}
+.read-only-player.player-workspace-ready .published-stamp{font-size:10px}
+.read-only-player.player-workspace-ready main{flex:1 1 0;width:100%;max-width:none;padding:9px 12px 12px;overflow:hidden;min-height:0;gap:0}
+.read-only-player .presentation-workspace{flex:1 1 0;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,340px);gap:12px;overflow:hidden}
+.read-only-player .presentation-stage{min-height:0;min-width:0;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+.read-only-player .presentation-stage .presentation-pitch-shell{flex:1 1 0;min-height:0;min-width:0;display:flex;align-items:stretch;justify-content:center;overflow:hidden;border:1px solid #425b4a;border-radius:10px;background:#172c20}
+.read-only-player.player-workspace-ready .presentation-stage #board{flex:1 1 0;width:100%;height:100%;min-height:0;max-width:none;max-height:none;align-self:stretch;aspect-ratio:auto}
+.read-only-player.player-workspace-ready .presentation-stage #board svg{width:100%;height:100%;max-height:100%;display:block}
+.read-only-player.player-workspace-ready .presentation-stage .viewer-camera{flex:0 0 auto;padding:0;gap:5px;justify-content:flex-start}
+.read-only-player.player-workspace-ready .presentation-stage .viewer-camera button{min-width:36px;min-height:33px;padding:4px 9px;font-size:12px}
+.read-only-player.player-workspace-ready .presentation-stage .viewer-camera output{font-size:11px}
+.read-only-player.player-workspace-ready .presentation-stage #controls{flex:0 0 auto;padding:8px 10px;display:grid;gap:4px}
+.read-only-player.player-workspace-ready .presentation-stage #controls[hidden]{display:none}
+.read-only-player.player-workspace-ready .presentation-stage .player-status{min-height:21px}
+.read-only-player.player-workspace-ready .presentation-stage #phase{font-size:12px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.read-only-player.player-workspace-ready .presentation-stage #seek{min-height:18px;margin:0}
+.read-only-player.player-workspace-ready .presentation-stage .player-transport{grid-template-columns:40px 40px minmax(82px,1fr) 126px 40px 82px;gap:5px}
+.read-only-player.player-workspace-ready .presentation-stage .player-transport button,.read-only-player.player-workspace-ready .presentation-stage .player-transport select{min-height:34px;padding:4px 5px;font-size:12px}
+.read-only-player.player-workspace-ready .presentation-stage .player-transport #play{grid-column:3}
+.read-only-player.player-workspace-ready .presentation-stage #message{min-height:0;margin:0;font-size:12px}
+.read-only-player .presentation-sidebar{min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:#1e3026;border:1px solid #425b4a;border-radius:10px}
+.read-only-player .presentation-sidebar-top{display:flex;align-items:center;gap:4px;flex:0 0 auto;padding:8px;border-bottom:1px solid #425b4a}
+.read-only-player .presentation-tabs{display:flex;flex-wrap:wrap;gap:3px;flex:1;min-width:0}
+.read-only-player .presentation-tabs button{border:0;background:transparent;color:#b8cdbc;font-size:12px;font-weight:650;padding:8px 7px;min-height:35px;white-space:nowrap}
+.read-only-player .presentation-tabs button[aria-selected="true"]{background:#355840;color:#e1ffaf;box-shadow:inset 0 -2px 0 #c9f07c}
+.read-only-player .presentation-sidebar .presentation-panel{flex:1 1 0;min-height:0;min-width:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:11px 12px 18px}
+.read-only-player .presentation-sidebar .presentation-panel[hidden]{display:none!important}
+.read-only-player .presentation-panel h2{font-size:14px;color:#c9f07c;margin:0 0 9px}
+.read-only-player .presentation-panel p{font-size:13px;line-height:1.5}
+.read-only-player.player-workspace-ready .presentation-panel .step-reading{padding:8px;background:transparent;border:0}
+.read-only-player .presentation-panel .coach-resource{margin:0;padding:0;border:0;background:transparent}
+.read-only-player .presentation-panel .coach-resource>summary{display:none}
+.read-only-player .presentation-panel .coach-fields{grid-template-columns:minmax(0,1fr);gap:8px}
+.read-only-player .presentation-panel .coach-field{padding:9px 10px}
+.read-only-player .presentation-panel .coach-field h3{font-size:12px;color:#eaf5d7}
+.read-only-player .presentation-panel .coach-field p{font-size:12.5px;line-height:1.5;margin:0}
+.read-only-player .presentation-panel .coach-sequence-row{padding:9px}
+.read-only-player .presentation-panel .coach-sequence-row p{font-size:12.5px}
+.read-only-player .presentation-panel #catalogueReview{background:transparent;border:0;padding:4px 0 10px}
+.read-only-player .presentation-panel .player-options{padding:0 0 13px;border:0}
+.read-only-player .presentation-panel .player-options>summary{display:none}
+.read-only-player .presentation-panel .view-options{grid-template-columns:minmax(0,1fr);gap:8px}
+.read-only-player .presentation-panel .view-options label{font-size:13px;min-height:36px}
+.read-only-player .presentation-panel .view-options label:has(select){display:grid;gap:4px}
+.read-only-player .presentation-panel .video-character-choice{margin:8px 0}
+.read-only-player .presentation-panel #downloadDrill{width:100%;margin-top:10px}
+.read-only-player .presentation-sidebar-toggle,.read-only-player .presentation-sidebar-close{display:none}
+.read-only-player .presentation-step-summary{font-size:12px;color:#aec9b3;line-height:1.4;margin:0 0 9px}
+.read-only-player .presentation-sidebar #branchPlayer{margin:0 0 12px}
+.read-only-player .presentation-sidebar .step-reading#stepReading{display:block}
+.read-only-player .presentation-sidebar .step-reading#stepReading[hidden]{display:none}
+.read-only-player .presentation-panel .step-reading p{white-space:pre-wrap}
+.read-only-player .presentation-panel .coach-links{margin-top:10px}
+.read-only-player .presentation-panel .coach-links h3{font-size:12px}
+.read-only-player .presentation-panel .coach-links a{font-size:12px}
+}
+@media screen and (max-width:850px){
+ .read-only-player .presentation-workspace{grid-template-columns:minmax(0,1fr)}
+ .read-only-player .presentation-sidebar{position:fixed;z-index:850;right:0;top:0;bottom:0;width:min(420px,95vw);border-radius:12px 0 0 12px;box-shadow:-12px 0 40px #000a;transform:translateX(102%);visibility:hidden;transition:transform .2s,visibility .2s}
+ .read-only-player .presentation-sidebar[data-open="true"]{transform:translateX(0);visibility:visible}
+ .read-only-player .presentation-sidebar-toggle,.read-only-player .presentation-sidebar-close{display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+ .read-only-player .presentation-sidebar-close{flex:0 0 auto;min-height:35px}
+ .read-only-player .presentation-stage .presentation-stage-head{display:flex;justify-content:flex-end}
+ .read-only-player.player-workspace-ready header #objective{display:none}
+ .read-only-player.player-workspace-ready .presentation-stage .player-transport{grid-template-columns:36px 36px minmax(70px,1fr) 95px 36px 65px}
+}
+@media screen and (max-width:530px){
+ .read-only-player.player-workspace-ready header{padding:7px 9px;min-height:60px}
+ .read-only-player.player-workspace-ready .player-heading>small{display:none}
+ .read-only-player.player-workspace-ready .player-heading .player-nav{display:flex;margin:0;gap:8px}
+ .read-only-player.player-workspace-ready .player-heading .player-nav .library-back{font-size:11px;min-height:22px}
+ .read-only-player.player-workspace-ready h1{font-size:14px}
+ .read-only-player.player-workspace-ready main{padding:5px 6px 7px}
+ .read-only-player.player-workspace-ready .presentation-stage .player-transport{grid-template-columns:34px 34px minmax(65px,1fr) 76px 34px 52px;gap:3px}
+ .read-only-player.player-workspace-ready .presentation-stage .player-transport button,.read-only-player.player-workspace-ready .presentation-stage .player-transport select{padding:3px;font-size:11px;min-height:32px}
+ .read-only-player.player-workspace-ready .presentation-stage .viewer-camera button{min-height:30px;min-width:32px;padding:3px 5px}
+ .read-only-player .presentation-tabs button{font-size:11px;padding:7px 5px}
+}
+@media screen and (max-height:540px){
+ .read-only-player.player-workspace-ready header{min-height:42px;padding:3px 10px}
+ .read-only-player.player-workspace-ready header #objective,.read-only-player.player-workspace-ready .player-heading>small{display:none}
+ .read-only-player.player-workspace-ready main{padding:4px 8px}
+ .read-only-player.player-workspace-ready .presentation-stage #controls{padding:4px}
+ .read-only-player.player-workspace-ready .presentation-stage .viewer-camera button{min-height:26px}
+}
+@media print{
+ .read-only-player.player-workspace-ready{height:auto!important;overflow:visible!important}
+ .read-only-player .presentation-workspace{display:none!important}
+}
