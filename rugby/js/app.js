@@ -20,7 +20,7 @@ import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.20.39';
-import {initBlackboard} from './blackboard.js?v=3';
+import {initBlackboard} from './blackboard.js?v=4';
 import { pitchGeometry,drillGeometry,trainingField } from './pitch.js?v=0.16.1';
 import {fieldContext,fieldPreset,fieldAnchor,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.19';
@@ -2721,7 +2721,7 @@ window.addEventListener('beforeunload',e=>{if(dirty||setupPending||githubSaving|
 const blackboard=initBlackboard({
  getState:()=>({
   title:drill.title,stepName:f().name||f().notes||'Edit positions and movement',
-  idx,total:drill.frames.length,
+  idx,total:drill.frames.length,stepSeconds:f().seconds,
   selection:selected?(()=>{const o=f().objects.find(item=>item.id===selected);return o?{id:o.id,label:o.label||types[o.type]?.[0]||o.type,type:o.type}:null})():null,
   canRun:!$('drawRouteSide').disabled,
   canPass:!$('passBallSide').disabled,
@@ -2735,6 +2735,7 @@ const blackboard=initBlackboard({
   control.dispatchEvent(new Event('change',{bubbles:true}));
  },
  openDetails:()=>{$('tabObject').click();},
+ openStepDetails:()=>{$('tabStep').click();},
  openObjectActions:()=>{
   if(!selected||preview!==null)return;
   const node=[...pitch.querySelectorAll('.obj[data-id]')].find(el=>el.dataset.id===selected);
