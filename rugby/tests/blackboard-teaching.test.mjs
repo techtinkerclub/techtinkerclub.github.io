@@ -127,5 +127,5 @@ test('Blackboard framing applies to player, ball and action but not exports',()=
  assert.match(app,/localStorage\.setItem\('rugby-blackboard-follow-framing-v1',value\)/);
  assert.match(app,/if\(!\$\('followAction'\)\.checked\)/);
  assert.match(app,/bbFollowFraming,\s*ghostMode:/);
- assert.match(html,/ANIMATED LIBRARY v0\.20\.63/);
+ assert.match(html,/ANIMATED LIBRARY v0\.20\.65/);
 });
