@@ -72,9 +72,15 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="camera" title="Open camera and view controls" aria-controls="bbCameraPanel" aria-expanded="false">◎ <span>View</span></button>'+
   '<button type="button" data-bb="fullscreen" title="Use display fullscreen if available">⛶ <span>Fullscreen</span></button>'+
   '<button type="button" data-bb="ruckus" id="bbRuckus" title="Switch to Ruckus cartoon view" aria-pressed="false">◉ <span>Ruckus</span></button>'+
-  '<button type="button" data-bb="save" title="Save the current drill through Studio">⬇ <span>Save</span></button>'+
+  '<button type="button" data-bb="drills" title="Open, create, save or publish drills" aria-controls="bbDrillsMenu" aria-expanded="false">▤ <span>Drills</span></button>'+
   '<button type="button" data-bb="exit" class="bb-close" title="Return to Studio">× <span>Exit</span></button>'+
  '</nav>'+
+ '<section id="bbDrillsMenu" class="bb-drills-menu bb-movable" data-bb-panel="drills" hidden aria-label="Drill library and saving">'+
+  '<div class="bb-panel-heading"><button type="button" class="bb-grip" aria-label="Move Drills menu" title="Drag panel">⠿</button><strong>My coaching boards</strong><button type="button" class="bb-panel-close" data-bb="close-drills" aria-label="Close Drills menu">×</button></div>'+
+  '<p class="bb-menu-hint">Open and save without leaving Blackboard.</p>'+
+  '<div class="bb-drill-menu-actions"><button type="button" data-bb="open-library">▤ Open library</button><button type="button" data-bb="new-board">＋ New blank board</button><button type="button" data-bb="save-library">⬇ Save to my drills</button><button type="button" data-bb="publish-saved" title="Publish the latest saved revision to the public library">◎ Publish saved drill</button></div>'+
+  '<small id="bbDrillStatus" role="status">Saving and publishing are separate actions.</small>'+
+ '</section>'+
  '<nav class="bb-steps bb-movable" data-bb-panel="steps" aria-label="Drill steps">'+
   '<button type="button" class="bb-grip" aria-label="Move step controls" title="Drag or use arrow keys to move panel">⠿</button>'+
   '<button type="button" data-bb="prev" title="Previous step">◀</button>'+
@@ -123,7 +129,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
  ink.setAttribute('aria-label','Temporary freehand annotations');ink.setAttribute('aria-hidden','true');
  ink.setAttribute('preserveAspectRatio','xMidYMid meet');host.appendChild(ink);
  let active=false,pen=false,drawer=false,adding=false,drag=null;
- let cameraOpen=false,timelineOpen=false,panelDrag=null;
+ let cameraOpen=false,timelineOpen=false,drillsOpen=false,panelDrag=null;
  const layoutKey='rugby-blackboard-layouts-v1';
  const savedLayouts=(()=>{try{const raw=JSON.parse(localStorage.getItem(layoutKey)||'{}');return raw&&typeof raw==='object'?raw:{}}catch{return {}}})();
  let layoutPreset=savedLayouts.active==='coaching'?'coaching':'editing',momentSignature='';
@@ -144,6 +150,12 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   button?.setAttribute('aria-expanded',String(timelineOpen));
   button?.classList.toggle('is-active',timelineOpen);
   if(timelineOpen)mountTimeline();
+ }
+ function openDrills(show){
+  drillsOpen=!!show;
+  $('bbDrillsMenu').hidden=!drillsOpen;
+  const button=btn('drills');button?.setAttribute('aria-expanded',String(drillsOpen));
+  button?.classList.toggle('is-active',drillsOpen);
  }
  function openCamera(show){
   cameraOpen=!!show;
@@ -276,6 +288,9 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   }
   const label=ui.querySelector('label[for="bbStepSeconds"]');
   if(label)label.textContent=state.idx===0?'Setup hold (s)':'Travel time into step (s)';
+  const pub=btn('publish-saved');if(pub)pub.disabled=!state.canPublish;
+  const save=btn('save-library');if(save)save.disabled=!!state.saving;
+  const text=$('bbDrillStatus');if(text)text.textContent=state.saveStatus||'Save to my drills, then decide separately whether to publish.';
   const deletion=btn('delete-step');
   if(deletion)deletion.disabled=state.total<=1||$('deleteStep')?.disabled===true;
   for(const [action,id] of [['pan','panMode'],['grid','grid'],['paths','trails'],['markings','markups']]){
@@ -402,6 +417,12 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    case 'decision':case 'compare-decision':click('compareOutcomes');break;
    case 'edit-decision':click('editOutcomes');break;
    case 'save-layout':saveLayout();hint('Saved '+layoutPreset+' panel layout on this device.');break;
+   case 'drills':openDrills(!drillsOpen);break;
+   case 'close-drills':openDrills(false);break;
+   case 'open-library':openDrills(false);onCoachTool('open-library',true);break;
+   case 'new-board':openDrills(false);onCoachTool('new-board',true);requestAnimationFrame(sync);break;
+   case 'save-library':openDrills(false);onCoachTool('save-library',true);break;
+   case 'publish-saved':openDrills(false);onCoachTool('publish-saved',true);break;
    case 'edit-step':showDetails(true,'step');break;
    case 'play':setPen(false);click('play');break;
    case 'undo':click('undoEdit');break;
@@ -524,7 +545,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(active)return;
   active=true;document.body.classList.add('blackboard-mode');
   ui.hidden=false;setPen(false);showDetails(false);
-  openTimeline(false);openCamera(false);
+  openTimeline(false);openCamera(false);openDrills(false);
   useLayout(layoutPreset);
   fit?.();sync();
   hint('Tap and drag a player. Draw a run or pass using the left toolbar. B or Esc returns to Studio.');
@@ -536,7 +557,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(panelDrag){panelDrag.panel.classList.remove('is-dragging');panelDrag=null}
   saveLayout();
   onCoachTool('reset-ephemeral',true);
-  setPen(false);showDetails(false);openTimeline(false);openCamera(false);
+  setPen(false);showDetails(false);openTimeline(false);openCamera(false);openDrills(false);
   restoreTimeline();
   active=false;ui.hidden=true;document.body.classList.remove('blackboard-mode');
   launch.setAttribute('aria-pressed','false');
@@ -554,6 +575,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(active&&event.key==='Escape'){
    if(!$('objectMenu')?.hidden)return;
    if(getState().routeDrawing){click('drawRouteSide');event.preventDefault();event.stopImmediatePropagation();return}
+   if(drillsOpen){openDrills(false);event.preventDefault();event.stopImmediatePropagation();return}
    if(drawer){showDetails(false);event.preventDefault();event.stopImmediatePropagation();return}
    event.preventDefault();event.stopImmediatePropagation();close();
   }
