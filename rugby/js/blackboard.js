@@ -98,7 +98,8 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="markings" aria-pressed="false" title="Show pitch markings">▤ Marks</button>'+
   '<button type="button" data-bb="follow" aria-pressed="false" title="Follow action during playback. Manual zoom, fit or pan turns it off.">◎ Follow action</button>'+ 
   '</div><details id="bbAdvancedView" class="bb-advanced-view"><summary>Focus &amp; panel layouts</summary><div class="bb-teaching-settings">'+
-  '<label class="bb-setting">Follow <select id="bbFollowTarget" aria-label="Camera follows"><option value="action">Whole action</option><option value="selected">Selected player</option><option value="ball">Ball</option></select></label>'+ 
+  '<label class="bb-setting">Follow <select id="bbFollowTarget" aria-label="Camera follows"><option value="action">Whole action</option><option value="selected">Selected player</option><option value="ball">Ball</option></select></label>'+
+  '<label class="bb-setting">Framing <select id="bbFollowFraming" aria-label="How much pitch to show while following" title="Close shows the player; wider shows more surrounding pitch"><option value="close">Close</option><option value="standard">Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>'+ 
   '<button type="button" data-bb="spotlight" aria-pressed="false" title="Dim everyone except selected player or group">◉ Spotlight</button>'+ 
   '<label class="bb-setting">Ghost positions <select id="bbGhostMode" aria-label="Show ghost positions"><option value="off">Off</option><option value="start">Start</option><option value="next">Next</option><option value="both">Start + next</option></select></label>'+ 
   '</div><div class="bb-layout-settings">'+
@@ -298,6 +299,8 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    const ballOption=target.querySelector('option[value="ball"]');
    if(ballOption)ballOption.disabled=!(state.frames||[]).some(fr=>(fr.objects||[]).some(o=>o.type==='ball'));
   }
+  const framing=$('bbFollowFraming');
+  if(framing&&document.activeElement!==framing)framing.value=state.followFraming||'standard';
   const ghost=$('bbGhostMode');
   if(ghost&&document.activeElement!==ghost)ghost.value=state.ghostMode||'off';
   const spot=btn('spotlight');if(spot){
@@ -433,6 +436,11 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
  $('bbLayoutPreset').addEventListener('change',event=>{saveLayout();useLayout(event.target.value);hint('Switched to '+layoutPreset+' layout.');});
  $('bbFollowTarget').addEventListener('change',event=>{
   if(!onCoachTool('follow-target',event.target.value))event.target.value=getState().followTarget||'action';
+  requestAnimationFrame(sync);
+ });
+ $('bbFollowFraming').addEventListener('change',event=>{
+  if(!onCoachTool('follow-framing',event.target.value))
+   event.target.value=getState().followFraming||'standard';
   requestAnimationFrame(sync);
  });
  $('bbGhostMode').addEventListener('change',event=>{
