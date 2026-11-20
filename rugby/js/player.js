@@ -395,7 +395,7 @@ function initPublicBoard(){
  ink.setAttribute('aria-label','Temporary coaching ink');ink.classList.add('public-board-ink');
  ink.setAttribute('preserveAspectRatio','xMidYMid meet');
  board.append(ink);
- let inkEnabled=false,activePath=null,paths=[],previousScene=null,stepLoop=false;
+ let inkEnabled=false,activePath=null,paths=[],previousScene=null,stepLoop=false,loopIndex=1;
  const colour=inkTools.querySelector('#publicInkColour'),width=inkTools.querySelector('#publicInkWidth');
  function setInk(enabled){
   inkEnabled=!!enabled;inkTools.hidden=!inkEnabled;inkButton.setAttribute('aria-pressed',String(inkEnabled));
@@ -440,7 +440,7 @@ function initPublicBoard(){
  inkTools.querySelector('#publicInkUndo').addEventListener('click',()=>paths.pop()?.remove());
  inkTools.querySelector('#publicInkClear').addEventListener('click',()=>{for(const path of paths)path.remove();paths=[]});
  function opened(){
-  stepLoop=false;refreshPlaybackTools();
+  stepLoop=false;loopIndex=1;refreshPlaybackTools();
  }
  function refreshPlaybackTools(){
   const toggle=$('publicLoopStep');if(toggle){toggle.setAttribute('aria-pressed',String(stepLoop));toggle.textContent=stepLoop?'⟲ Loop: on':'⟲ Loop current step'}
@@ -503,10 +503,10 @@ function initPublicBoard(){
  });
  controls.querySelector('#publicLoopStep').addEventListener('click',()=>{
   if(!d)return;stepLoop=!stepLoop;
-  if(stepLoop&&shownStep===0)jumpStep(1);
+  if(stepLoop){loopIndex=Math.max(1,shownStep);if(shownStep===0)jumpStep(1);}
   refreshPlaybackTools();
  });
- return {refresh,syncView,opened,loopEnabled:()=>stepLoop,loopBounds:()=>d?loopStepBounds(d,Math.max(1,shownStep)):null};
+ return {refresh,syncView,opened,loopEnabled:()=>stepLoop,loopBounds:()=>d?loopStepBounds(d,loopIndex):null};
 }
 
 publicBoard=initPublicBoard();
