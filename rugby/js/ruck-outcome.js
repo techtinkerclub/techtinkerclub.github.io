@@ -1,4 +1,4 @@
-import {bubbleSVG} from './comic-callouts.js?v=1';
+import {compactActionBubbleSVG} from './comic-callouts.js?v=2';
 // Display a coach-authored contest result without pretending that the ball
 // lying separately for a safety exercise has come out of the ruck.
 export const ruckSide=o=>['attacker','shield'].includes(o?.type)?'attack':['defender','bagplayer'].includes(o?.type)?'defence':null;
@@ -62,7 +62,7 @@ export function nextPlayCue(frame,objects,marker,g,ink=false,cartoonMode=false){
  const text=safe+' NEXT',width=Math.max(92,Math.min(165,66+safe.length*8));
  const x=Math.max(g.margin+7,Math.min(g.margin+g.fw-width-7,p.x+31));
  const y=Math.max(g.margin+7,Math.min(g.margin+g.fh-25,p.y+21));
- if(cartoonMode&&!ink)return '<g data-next-play-cue="'+winner+'" pointer-events="none">'+bubbleSVG({x:p.x,y:p.y,text,kind:'speech',g,comic:true,accent})+'</g>';
+ if(cartoonMode&&!ink)return '<g data-next-play-cue="'+winner+'" pointer-events="none">'+compactActionBubbleSVG({x:p.x,y:p.y,text,kind:'speech',g,comic:true,accent})+'</g>';
  return '<g data-next-play-cue="'+winner+'" pointer-events="none">'+
   '<circle cx="'+p.x+'" cy="'+p.y+'" r="22" stroke="'+accent+'" stroke-width="2.3" fill="none" stroke-dasharray="4 4"/>'+
   '<path d="M'+(p.x+13)+' '+(p.y+12)+'L'+(x+8)+' '+(y+12)+'" stroke="'+accent+'" stroke-dasharray="3 3" stroke-width="1.5"/>'+
@@ -87,7 +87,7 @@ export function contestResultOverlay(frame,objects,g,progress=1,ink=false,cartoo
     const badgeX=safe(p.x+40,g.margin+7,g.margin+g.fw-bw-7);
     const badgeY=safe(p.y-50,g.margin+7,g.margin+g.fh-bh-7);
     const accent=ink?'#2d6136':winner==='attack'?'#b9ed83':'#ffbf7c';
-    if(cartoonMode&&!ink)svg='<g data-contest-result="'+winner+'" pointer-events="none">'+bubbleSVG({x:p.x,y:p.y,text:line,kind:'shout',g,comic:true,accent})+'</g>';
+    if(cartoonMode&&!ink)svg='<g data-contest-result="'+winner+'" pointer-events="none">'+compactActionBubbleSVG({x:p.x,y:p.y,text:line,kind:'shout',g,comic:true,accent})+'</g>';
     else svg='<g data-contest-result="'+winner+'" pointer-events="none">'+
      '<circle cx="'+p.x+'" cy="'+p.y+'" r="26" stroke="'+accent+'" stroke-width="3" fill="none" stroke-dasharray="4 3"/>'+
      '<path d="M'+(p.x+16)+' '+(p.y-17)+'L'+(badgeX+6)+' '+(badgeY+bh/2)+'" stroke="'+accent+'" stroke-width="2" stroke-dasharray="3 3" fill="none"/>'+
