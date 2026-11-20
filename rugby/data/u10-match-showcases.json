@@ -34,7 +34,7 @@
       "regression": "Start with walking-speed, conditioned touch defence and a single tackle-present-recycle. Pause to identify who may join the contest and where the offside lines lie.",
       "progression": "Increase defensive realism within U10 rules; freeze at each breakdown to explain release, the permitted one-on-one support contest and onside positioning; challenge players to recognise the space before the final pass.",
       "questions": "Who is behind the ball at each pass? Does the tackler release? Which player may join the U10 ruck? Where is each team's back-foot offside line? What changed in the defence? What makes the final grounding a try?",
-      "notes": "SHOWCASE · A scripted, schematic full-pitch U10 sequence for public viewing, studying and optional promo-video export. Long steps are visual story beats, not prescribed timings for a training session. Camera: full field for setup, follow action for the phase, wider at the finish. Captions appear only at teaching moments; one short callout per cue. Blue/orange breakdown lines are schematic and not a substitute for the precise hindmost-feet law. This resource is not officially endorsed by the RFU.",
+      "notes": "SHOWCASE · A scripted, schematic full-pitch U10 sequence for public viewing, studying and optional promo-video export. The video-length animation uses deliberate, readable teaching pauses. Steps are visual story beats, not prescribed timings for a training session. Camera: full field for setup, follow action for the phase, wider at the finish. Captions appear only at teaching moments; one short callout per cue. Blue/orange breakdown lines are schematic and not a substitute for the precise hindmost-feet law. This resource is not officially endorsed by the RFU.",
       "links": [
         {
           "label": "RFU 2026–27 U10 Rules of Play",
@@ -234,7 +234,7 @@
         },
         {
           "name": "Pass from link · A1 to A2",
-          "seconds": 2.1,
+          "seconds": 2.84,
           "notes": "A1 releases backwards to A2. The receiver stays behind the passer at release, then straightens upfield.",
           "objects": [
             {
@@ -403,14 +403,14 @@
               "actorId": "a2",
               "text": "EYES UP",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.218
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Short pass to a straight runner",
-          "seconds": 1.8,
+          "seconds": 2.43,
           "notes": "A2 squares up, draws a defender and passes backwards to A3. A4 tracks on the support side.",
           "objects": [
             {
@@ -597,14 +597,14 @@
               "actorId": "a3",
               "text": "RUN STRAIGHT",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.044
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Carry · engage the defensive line",
-          "seconds": 2.5,
+          "seconds": 3.38,
           "notes": "A3 carries directly towards D3. Defenders advance within their channels; support stays behind the ball.",
           "objects": [
             {
@@ -770,7 +770,7 @@
         },
         {
           "name": "Controlled tackle · both go to ground",
-          "seconds": 1.35,
+          "seconds": 1.82,
           "notes": "D3 completes an age-grade appropriate controlled tackle. A3 goes to ground and must make the ball available. This is a phase-play schematic, not a tackle-technique demonstration.",
           "objects": [
             {
@@ -970,14 +970,14 @@
               "actorId": "d3",
               "text": "TACKLE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.783
+              "at": 0.12,
+              "displaySeconds": 1.3104
             }
           ]
         },
         {
           "name": "Release · clear the tackle",
-          "seconds": 1.2,
+          "seconds": 1.62,
           "notes": "D3 releases the ball carrier and moves away. A3 remains grounded and prepares to present back towards their own team.",
           "objects": [
             {
@@ -1172,14 +1172,14 @@
               "actorId": "d3",
               "text": "RELEASE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.696
+              "at": 0.12,
+              "displaySeconds": 1.25
             }
           ]
         },
         {
           "name": "Present ball towards support",
-          "seconds": 1.25,
+          "seconds": 1.69,
           "notes": "A3 places the ball back on the attacking side without throwing or squeezing it. A4 arrives from behind and stays on their feet.",
           "objects": [
             {
@@ -1374,14 +1374,14 @@
               "actorId": "a3",
               "text": "PRESENT BACK",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.725
+              "at": 0.12,
+              "displaySeconds": 1.25
             }
           ]
         },
         {
           "name": "U10 ruck · one support player per side",
-          "seconds": 1.7,
+          "seconds": 2.3,
           "notes": "A4 and D4 meet upright over the grounded ball, one arriving player per side. Other players stay behind their team's hindmost feet. Dashed guide lines are schematic, not a substitute for judging real feet.",
           "objects": [
             {
@@ -1634,14 +1634,14 @@
               "actorId": "a4",
               "text": "ON FEET",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9859999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Secure ball · play it away",
-          "seconds": 1.6,
+          "seconds": 2.16,
           "notes": "The attacking side secures the ball. The link waits on the attacking side and plays it away promptly once available. The ruck is not a place for extra players to join.",
           "objects": [
             {
@@ -1876,14 +1876,14 @@
               "actorId": "a1",
               "text": "PLAY AWAY",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9279999999999999
+              "at": 0.12,
+              "displaySeconds": 1.5552000000000001
             }
           ]
         },
         {
           "name": "A1 collects available ball at the back",
-          "seconds": 1.2,
+          "seconds": 1.62,
           "notes": "A1 takes the available ball on the attacking side after the contest and prepares to pass. Supporting receivers stay behind the ball at release.",
           "objects": [
             {
@@ -2068,7 +2068,7 @@
         },
         {
           "name": "Pass from the breakdown to A5",
-          "seconds": 1.7,
+          "seconds": 2.3,
           "notes": "A1 passes backwards to A5. A5 runs square before committing the second line of defence.",
           "objects": [
             {
@@ -2237,14 +2237,14 @@
               "actorId": "a5",
               "text": "GO FORWARD",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9859999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "A5 commits · passes to A6",
-          "seconds": 1.9,
+          "seconds": 2.57,
           "notes": "A5 carries forward, fixes D5 and releases a short backward pass to A6, who follows on a straight support line.",
           "objects": [
             {
@@ -2413,14 +2413,14 @@
               "actorId": "a6",
               "text": "SUPPORT LINE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.1019999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Second carry · A6 takes contact",
-          "seconds": 2.2,
+          "seconds": 2.97,
           "notes": "A6 carries into the next channel while A7 and A8 stay wider. D6 approaches for a controlled contact phase.",
           "objects": [
             {
@@ -2586,7 +2586,7 @@
         },
         {
           "name": "Second controlled tackle",
-          "seconds": 1.1,
+          "seconds": 1.49,
           "notes": "D6 completes the second controlled tackle. A6 goes to ground and protects against dangerous handling or extra players entering the contest.",
           "objects": [
             {
@@ -2786,14 +2786,14 @@
               "actorId": "d6",
               "text": "TACKLE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.638
+              "at": 0.12,
+              "displaySeconds": 1.25
             }
           ]
         },
         {
           "name": "Release and present · phase two",
-          "seconds": 1.3,
+          "seconds": 1.76,
           "notes": "D6 releases and clears. A6 presents back towards their own support. A5 tracks the ball but does not enter illegally.",
           "objects": [
             {
@@ -2988,14 +2988,14 @@
               "actorId": "a6",
               "text": "PRESENT",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.754
+              "at": 0.12,
+              "displaySeconds": 1.2671999999999999
             }
           ]
         },
         {
           "name": "Ruck again · back-feet offside",
-          "seconds": 1.7,
+          "seconds": 2.3,
           "notes": "A4 and D5 are the one-on-one arriving contest over the ball; D6 is clear. Both supporting lines stay onside while the ball is secured.",
           "objects": [
             {
@@ -3248,14 +3248,14 @@
               "actorId": "a4",
               "text": "BACK FEET",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9859999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Use it · ready to switch play",
-          "seconds": 1.2,
+          "seconds": 1.62,
           "notes": "The ball is available behind the ruck. A1 takes the linking role. No extra attacker joins the ruck.",
           "objects": [
             {
@@ -3487,7 +3487,7 @@
         },
         {
           "name": "A1 takes possession · scan wide",
-          "seconds": 1.1,
+          "seconds": 1.49,
           "notes": "A1 collects the secured ball behind the contest. Outside supporters hold width and depth; the defence remains narrow around the ruck.",
           "objects": [
             {
@@ -3675,14 +3675,14 @@
               "actorId": "a1",
               "text": "EYES UP",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.638
+              "at": 0.12,
+              "displaySeconds": 1.25
             }
           ]
         },
         {
           "name": "Pass A1 to A7 · attack the edge",
-          "seconds": 2,
+          "seconds": 2.7,
           "notes": "A1 releases a backward pass to A7. D7 is drawn towards the receiver; A8 stays behind ready for the next pass.",
           "objects": [
             {
@@ -3851,14 +3851,14 @@
               "actorId": "a7",
               "text": "DRAW AND PASS",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.16
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "A7 draws D7 · release to A8",
-          "seconds": 2,
+          "seconds": 2.7,
           "notes": "A7 straightens towards D7, then passes backwards to A8. The receiver takes the ball behind A7, before accelerating into the outside lane.",
           "objects": [
             {
@@ -4027,14 +4027,14 @@
               "actorId": "a8",
               "text": "USE THE WIDTH",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.16
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "A8 breaks into open space",
-          "seconds": 2.6,
+          "seconds": 3.51,
           "notes": "A8 runs up the outside channel, staying inside touch. Defensive cover chases from behind, but cannot reach the carrier.",
           "objects": [
             {
@@ -4218,7 +4218,7 @@
         },
         {
           "name": "Cross, ground and score",
-          "seconds": 2.1,
+          "seconds": 2.84,
           "notes": "A8 crosses the attacking goal line while carrying the ball, then deliberately grounds it in the in-goal area. Crossing alone is not a try.",
           "objects": [
             {
@@ -4387,8 +4387,8 @@
               "actorId": "a8",
               "text": "TRY!",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.218
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ],
           "tryGroundings": [
@@ -4401,7 +4401,7 @@
         },
         {
           "name": "Hold in-goal · celebrate and review",
-          "seconds": 3,
+          "seconds": 4.05,
           "notes": "A8 stays at the exact grounding position. The scoring celebration never reverses through the goal line. Review how two legal breakdowns created the wide opportunity.",
           "objects": [
             {
@@ -4614,7 +4614,7 @@
       "regression": "Start with walking-speed, conditioned touch defence and a single tackle-present-recycle. Pause to identify who may join the contest and where the offside lines lie.",
       "progression": "Increase defensive realism within U10 rules; freeze at each breakdown to explain release, the permitted one-on-one support contest and onside positioning; challenge players to recognise the space before the final pass.",
       "questions": "Who is behind the ball at each pass? Does the tackler release? Which player may join the U10 ruck? Where is each team's back-foot offside line? What changed in the defence? What makes the final grounding a try?",
-      "notes": "SHOWCASE · A scripted, schematic full-pitch U10 sequence for public viewing, studying and optional promo-video export. Long steps are visual story beats, not prescribed timings for a training session. Camera: full field for setup, follow action for the phase, wider at the finish. Captions appear only at teaching moments; one short callout per cue. Blue/orange breakdown lines are schematic and not a substitute for the precise hindmost-feet law. This resource is not officially endorsed by the RFU.",
+      "notes": "SHOWCASE · A scripted, schematic full-pitch U10 sequence for public viewing, studying and optional promo-video export. The video-length animation uses deliberate, readable teaching pauses. Steps are visual story beats, not prescribed timings for a training session. Camera: full field for setup, follow action for the phase, wider at the finish. Captions appear only at teaching moments; one short callout per cue. Blue/orange breakdown lines are schematic and not a substitute for the precise hindmost-feet law. This resource is not officially endorsed by the RFU.",
       "links": [
         {
           "label": "RFU 2026–27 U10 Rules of Play",
@@ -4814,7 +4814,7 @@
         },
         {
           "name": "Pass from link · A1 to A2",
-          "seconds": 2.1,
+          "seconds": 2.94,
           "notes": "A1 releases backwards to A2. The receiver stays behind the passer at release, then straightens upfield.",
           "objects": [
             {
@@ -4983,14 +4983,14 @@
               "actorId": "a2",
               "text": "EYES UP",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.218
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Short pass to a straight runner",
-          "seconds": 1.8,
+          "seconds": 2.52,
           "notes": "A2 squares up, draws a defender and passes backwards to A3. A4 tracks on the support side.",
           "objects": [
             {
@@ -5177,14 +5177,14 @@
               "actorId": "a3",
               "text": "RUN STRAIGHT",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.044
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Carry · engage the defensive line",
-          "seconds": 2.5,
+          "seconds": 3.5,
           "notes": "A3 carries directly towards D3. Defenders advance within their channels; support stays behind the ball.",
           "objects": [
             {
@@ -5350,7 +5350,7 @@
         },
         {
           "name": "Controlled tackle · both go to ground",
-          "seconds": 1.35,
+          "seconds": 1.89,
           "notes": "D3 completes an age-grade appropriate controlled tackle. A3 goes to ground and must make the ball available. This is a phase-play schematic, not a tackle-technique demonstration.",
           "objects": [
             {
@@ -5550,14 +5550,14 @@
               "actorId": "d3",
               "text": "TACKLE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.783
+              "at": 0.12,
+              "displaySeconds": 1.3607999999999998
             }
           ]
         },
         {
           "name": "Release · clear the tackle",
-          "seconds": 1.2,
+          "seconds": 1.68,
           "notes": "D3 releases the ball carrier and moves away. A3 remains grounded and prepares to present back towards their own team.",
           "objects": [
             {
@@ -5752,14 +5752,14 @@
               "actorId": "d3",
               "text": "RELEASE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.696
+              "at": 0.12,
+              "displaySeconds": 1.25
             }
           ]
         },
         {
           "name": "Present ball towards support",
-          "seconds": 1.25,
+          "seconds": 1.75,
           "notes": "A3 places the ball back on the attacking side without throwing or squeezing it. A4 arrives from behind and stays on their feet.",
           "objects": [
             {
@@ -5954,14 +5954,14 @@
               "actorId": "a3",
               "text": "PRESENT BACK",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.725
+              "at": 0.12,
+              "displaySeconds": 1.26
             }
           ]
         },
         {
           "name": "U10 ruck · one support player per side",
-          "seconds": 1.7,
+          "seconds": 2.38,
           "notes": "A4 and D4 meet upright over the grounded ball, one arriving player per side. Other players stay behind their team's hindmost feet. Dashed guide lines are schematic, not a substitute for judging real feet.",
           "objects": [
             {
@@ -6214,14 +6214,14 @@
               "actorId": "a4",
               "text": "ON FEET",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9859999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Secure ball · play it away",
-          "seconds": 1.6,
+          "seconds": 2.24,
           "notes": "The attacking side secures the ball. The link waits on the attacking side and plays it away promptly once available. The ruck is not a place for extra players to join.",
           "objects": [
             {
@@ -6456,14 +6456,14 @@
               "actorId": "a1",
               "text": "PLAY AWAY",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9279999999999999
+              "at": 0.12,
+              "displaySeconds": 1.6128
             }
           ]
         },
         {
           "name": "A1 collects available ball at the back",
-          "seconds": 1.2,
+          "seconds": 1.68,
           "notes": "A1 takes the available ball on the attacking side after the contest and prepares to pass. Supporting receivers stay behind the ball at release.",
           "objects": [
             {
@@ -6648,7 +6648,7 @@
         },
         {
           "name": "Pass behind the ruck · A5 receives",
-          "seconds": 1.7,
+          "seconds": 2.38,
           "notes": "A1 passes away to A5. Both outcomes will start from the same next attacking picture.",
           "objects": [
             {
@@ -6814,7 +6814,7 @@
         },
         {
           "name": "A5 straightens · look at D6",
-          "seconds": 2.1,
+          "seconds": 2.94,
           "notes": "A5 takes the ball forward and fixes the central defender. A6 and the wider players support with depth.",
           "objects": [
             {
@@ -6998,7 +6998,7 @@
         },
         {
           "name": "DECISION · defend wide or close inside?",
-          "seconds": 1.8,
+          "seconds": 2.52,
           "notes": "Freeze on the same ball, same players and same defensive picture. If D6 bites inward, space opens outside. If D6 drifts towards A7, the inside runner can attack the gap.",
           "objects": [
             {
@@ -7182,7 +7182,7 @@
         },
         {
           "name": "A · D6 compresses towards the carrier",
-          "seconds": 1.7,
+          "seconds": 2.38,
           "notes": "D6 steps towards A5 and the inside channel; attackers spot the space being left outside.",
           "objects": [
             {
@@ -7351,14 +7351,14 @@
               "actorId": "a5",
               "text": "SPACE WIDE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9859999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "A · pass backwards to A6",
-          "seconds": 1.8,
+          "seconds": 2.52,
           "notes": "A5 passes behind to A6, drawing another defender towards the ball.",
           "objects": [
             {
@@ -7527,14 +7527,14 @@
               "actorId": "a6",
               "text": "HANDS",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.044
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "A · A6 releases to A7",
-          "seconds": 1.8,
+          "seconds": 2.52,
           "notes": "A6 faces forward then passes backwards to A7; the edge defenders are now under pressure.",
           "objects": [
             {
@@ -7703,14 +7703,14 @@
               "actorId": "a7",
               "text": "DRAW AND PASS",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.044
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "A · final backward pass to A8",
-          "seconds": 1.8,
+          "seconds": 2.52,
           "notes": "A7 fixes the remaining defender and releases A8 behind the ball. A8 accelerates after catching.",
           "objects": [
             {
@@ -7897,14 +7897,14 @@
               "actorId": "a8",
               "text": "GO WIDE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.044
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "A · winger runs clear",
-          "seconds": 2.3,
+          "seconds": 3.22,
           "notes": "A8 holds the outside channel and stays in from touch as cover defenders chase.",
           "objects": [
             {
@@ -8070,7 +8070,7 @@
         },
         {
           "name": "A · wide try · real grounding",
-          "seconds": 2.2,
+          "seconds": 3.08,
           "notes": "A8 crosses and grounds in the scoring in-goal area. Crossing the line alone does not register a try.",
           "objects": [
             {
@@ -8239,8 +8239,8 @@
               "actorId": "a8",
               "text": "TRY!",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.25
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ],
           "tryGroundings": [
@@ -8253,7 +8253,7 @@
         },
         {
           "name": "A · hold and review",
-          "seconds": 2.8,
+          "seconds": 3.92,
           "notes": "The winger stays in-goal after scoring. Discuss what D6 did to create the overlap.",
           "objects": [
             {
@@ -8452,7 +8452,7 @@
             "frames": [
               {
                 "name": "A · D6 compresses towards the carrier",
-                "seconds": 1.7,
+                "seconds": 2.38,
                 "notes": "D6 steps towards A5 and the inside channel; attackers spot the space being left outside.",
                 "objects": [
                   {
@@ -8621,14 +8621,14 @@
                     "actorId": "a5",
                     "text": "SPACE WIDE",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 0.9859999999999999
+                    "at": 0.12,
+                    "displaySeconds": 1.65
                   }
                 ]
               },
               {
                 "name": "A · pass backwards to A6",
-                "seconds": 1.8,
+                "seconds": 2.52,
                 "notes": "A5 passes behind to A6, drawing another defender towards the ball.",
                 "objects": [
                   {
@@ -8797,14 +8797,14 @@
                     "actorId": "a6",
                     "text": "HANDS",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 1.044
+                    "at": 0.12,
+                    "displaySeconds": 1.65
                   }
                 ]
               },
               {
                 "name": "A · A6 releases to A7",
-                "seconds": 1.8,
+                "seconds": 2.52,
                 "notes": "A6 faces forward then passes backwards to A7; the edge defenders are now under pressure.",
                 "objects": [
                   {
@@ -8973,14 +8973,14 @@
                     "actorId": "a7",
                     "text": "DRAW AND PASS",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 1.044
+                    "at": 0.12,
+                    "displaySeconds": 1.65
                   }
                 ]
               },
               {
                 "name": "A · final backward pass to A8",
-                "seconds": 1.8,
+                "seconds": 2.52,
                 "notes": "A7 fixes the remaining defender and releases A8 behind the ball. A8 accelerates after catching.",
                 "objects": [
                   {
@@ -9167,14 +9167,14 @@
                     "actorId": "a8",
                     "text": "GO WIDE",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 1.044
+                    "at": 0.12,
+                    "displaySeconds": 1.65
                   }
                 ]
               },
               {
                 "name": "A · winger runs clear",
-                "seconds": 2.3,
+                "seconds": 3.22,
                 "notes": "A8 holds the outside channel and stays in from touch as cover defenders chase.",
                 "objects": [
                   {
@@ -9340,7 +9340,7 @@
               },
               {
                 "name": "A · wide try · real grounding",
-                "seconds": 2.2,
+                "seconds": 3.08,
                 "notes": "A8 crosses and grounds in the scoring in-goal area. Crossing the line alone does not register a try.",
                 "objects": [
                   {
@@ -9509,8 +9509,8 @@
                     "actorId": "a8",
                     "text": "TRY!",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 1.25
+                    "at": 0.12,
+                    "displaySeconds": 1.65
                   }
                 ],
                 "tryGroundings": [
@@ -9523,7 +9523,7 @@
               },
               {
                 "name": "A · hold and review",
-                "seconds": 2.8,
+                "seconds": 3.92,
                 "notes": "The winger stays in-goal after scoring. Discuss what D6 did to create the overlap.",
                 "objects": [
                   {
@@ -9715,7 +9715,7 @@
             "frames": [
               {
                 "name": "B · D6 drifts early to the outside",
-                "seconds": 1.8,
+                "seconds": 2.52,
                 "notes": "D6 slides wide towards A6 and A7, leaving the inside shoulder for a support runner.",
                 "objects": [
                   {
@@ -9884,14 +9884,14 @@
                     "actorId": "a5",
                     "text": "GAP INSIDE",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 1.044
+                    "at": 0.12,
+                    "displaySeconds": 1.65
                   }
                 ]
               },
               {
                 "name": "B · A5 shapes wide, then holds square",
-                "seconds": 1.6,
+                "seconds": 2.24,
                 "notes": "A5 keeps the defender committed to the drift, without throwing a forward or obstructive pass.",
                 "objects": [
                   {
@@ -10060,14 +10060,14 @@
                     "actorId": "a5",
                     "text": "STRAIGHTEN",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 0.9279999999999999
+                    "at": 0.12,
+                    "displaySeconds": 1.6128
                   }
                 ]
               },
               {
                 "name": "B · short inside support pass",
-                "seconds": 1.6,
+                "seconds": 2.24,
                 "notes": "A5 gives a backwards short pass to A4 running an inside support line from behind the ball.",
                 "objects": [
                   {
@@ -10236,14 +10236,14 @@
                     "actorId": "a4",
                     "text": "INSIDE SUPPORT",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 0.9279999999999999
+                    "at": 0.12,
+                    "displaySeconds": 1.6128
                   }
                 ]
               },
               {
                 "name": "B · support runner breaks centrally",
-                "seconds": 3,
+                "seconds": 4.2,
                 "notes": "A4 cuts into the uncovered central gap, accelerates past the drifting defenders and carries towards the line.",
                 "objects": [
                   {
@@ -10427,7 +10427,7 @@
               },
               {
                 "name": "B · central try · deliberate grounding",
-                "seconds": 2.3,
+                "seconds": 3.22,
                 "notes": "A4 crosses the designated attacking goal line and grounds inside the in-goal area, with the ball still in possession.",
                 "objects": [
                   {
@@ -10596,8 +10596,8 @@
                     "actorId": "a4",
                     "text": "TRY!",
                     "kind": "speech",
-                    "at": 0.3,
-                    "displaySeconds": 1.25
+                    "at": 0.12,
+                    "displaySeconds": 1.65
                   }
                 ],
                 "tryGroundings": [
@@ -10610,7 +10610,7 @@
               },
               {
                 "name": "B · hold and review",
-                "seconds": 2.8,
+                "seconds": 3.92,
                 "notes": "A4 stays in-goal and celebrates. Discuss why the drifting defender left the inside gap.",
                 "objects": [
                   {
@@ -10826,7 +10826,7 @@
       "regression": "Start with walking-speed, conditioned touch defence and a single tackle-present-recycle. Pause to identify who may join the contest and where the offside lines lie.",
       "progression": "Increase defensive realism within U10 rules; freeze at each breakdown to explain release, the permitted one-on-one support contest and onside positioning; challenge players to recognise the space before the final pass.",
       "questions": "Who is behind the ball at each pass? Does the tackler release? Which player may join the U10 ruck? Where is each team's back-foot offside line? What changed in the defence? What makes the final grounding a try?",
-      "notes": "SHOWCASE · A scripted, schematic full-pitch U10 sequence for public viewing, studying and optional promo-video export. Long steps are visual story beats, not prescribed timings for a training session. Camera: full field for setup, follow action for the phase, wider at the finish. Captions appear only at teaching moments; one short callout per cue. Blue/orange breakdown lines are schematic and not a substitute for the precise hindmost-feet law. This resource is not officially endorsed by the RFU.",
+      "notes": "SHOWCASE · A scripted, schematic full-pitch U10 sequence for public viewing, studying and optional promo-video export. The video-length animation uses deliberate, readable teaching pauses. Steps are visual story beats, not prescribed timings for a training session. Camera: full field for setup, follow action for the phase, wider at the finish. Captions appear only at teaching moments; one short callout per cue. Blue/orange breakdown lines are schematic and not a substitute for the precise hindmost-feet law. This resource is not officially endorsed by the RFU.",
       "links": [
         {
           "label": "RFU 2026–27 U10 Rules of Play",
@@ -11026,7 +11026,7 @@
         },
         {
           "name": "Link pass to first receiver",
-          "seconds": 1.8,
+          "seconds": 2.7,
           "notes": "A1 passes backwards to A2. Support runners follow behind the ball.",
           "objects": [
             {
@@ -11192,7 +11192,7 @@
         },
         {
           "name": "First short carry to A3",
-          "seconds": 1.7,
+          "seconds": 2.55,
           "notes": "A2 moves up and passes behind to A3 for a straight midfield carry.",
           "objects": [
             {
@@ -11361,14 +11361,14 @@
               "actorId": "a3",
               "text": "GO FORWARD",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9859999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Carry into the first tackle",
-          "seconds": 2.3,
+          "seconds": 3.45,
           "notes": "A3 advances with a balanced body position, no hand-off. D3 closes on the carrier.",
           "objects": [
             {
@@ -11552,7 +11552,7 @@
         },
         {
           "name": "Controlled tackle · hold safely",
-          "seconds": 1.1,
+          "seconds": 1.65,
           "notes": "D3 brings A3 to the ground in the schematic. Contact technique requires qualified coaching, not this animation.",
           "objects": [
             {
@@ -11752,14 +11752,14 @@
               "actorId": "d3",
               "text": "TACKLE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.638
+              "at": 0.12,
+              "displaySeconds": 1.25
             }
           ]
         },
         {
           "name": "Release · ball back to your team",
-          "seconds": 1.2,
+          "seconds": 1.8,
           "notes": "D3 promptly releases and leaves the tackle. A3 makes a clear presentation back towards support.",
           "objects": [
             {
@@ -11954,14 +11954,14 @@
               "actorId": "a3",
               "text": "PRESENT",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.696
+              "at": 0.12,
+              "displaySeconds": 1.296
             }
           ]
         },
         {
           "name": "U10 ruck · one arrives on each side",
-          "seconds": 1.6,
+          "seconds": 2.4,
           "notes": "Only A4 and D4 join the upright contest. Other players stay out and remain onside behind the hindmost feet.",
           "objects": [
             {
@@ -12196,14 +12196,14 @@
               "actorId": "a4",
               "text": "ON FEET",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9279999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Quick ball · A1 ready behind",
-          "seconds": 1.3,
+          "seconds": 1.95,
           "notes": "The ball is secured and ready to be played away promptly. A1 positions to link the next phase.",
           "objects": [
             {
@@ -12435,7 +12435,7 @@
         },
         {
           "name": "A1 picks up and passes to A5",
-          "seconds": 1.7,
+          "seconds": 2.55,
           "notes": "A1 collects and passes to A5 behind the ball, avoiding a pick-and-go into a crowded breakdown.",
           "objects": [
             {
@@ -12620,7 +12620,7 @@
         },
         {
           "name": "A5 makes a straight short carry",
-          "seconds": 2.1,
+          "seconds": 3.15,
           "notes": "A5 attacks the gap between D5 and D6; the defence closes and A6 stays behind as support.",
           "objects": [
             {
@@ -12789,14 +12789,14 @@
               "actorId": "a5",
               "text": "RUN STRAIGHT",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.218
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Second tackle · controlled contact",
-          "seconds": 1,
+          "seconds": 1.5,
           "notes": "D5 completes the tackle and must release. The attacking team does not pile extra players onto the contest.",
           "objects": [
             {
@@ -12996,14 +12996,14 @@
               "actorId": "d5",
               "text": "TACKLE",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.58
+              "at": 0.12,
+              "displaySeconds": 1.25
             }
           ]
         },
         {
           "name": "Release and present towards A6",
-          "seconds": 1.2,
+          "seconds": 1.8,
           "notes": "A5 presents back as D5 clears. A6 stays on feet and prepares to support from the attacking side.",
           "objects": [
             {
@@ -13198,14 +13198,14 @@
               "actorId": "a5",
               "text": "RELEASE · PRESENT",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.696
+              "at": 0.12,
+              "displaySeconds": 1.296
             }
           ]
         },
         {
           "name": "Short ruck · guard the ball",
-          "seconds": 1.7,
+          "seconds": 2.55,
           "notes": "A6 and D6 form the upright one-on-one arriving contest; no additional ruck entrants. The defensive guard stays behind the last feet.",
           "objects": [
             {
@@ -13458,14 +13458,14 @@
               "actorId": "a6",
               "text": "RUCK",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.9859999999999999
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "Use it · look at the fringe",
-          "seconds": 1.2,
+          "seconds": 1.8,
           "notes": "A1 waits until the ball is available. D7 drifts towards width, leaving space next to the ruck.",
           "objects": [
             {
@@ -13697,7 +13697,7 @@
         },
         {
           "name": "A1 collects · passes short to A7",
-          "seconds": 1.5,
+          "seconds": 2.25,
           "notes": "Rather than diving over bodies, A1 passes a short backward ball to A7, who takes a support line into space.",
           "objects": [
             {
@@ -13884,14 +13884,14 @@
               "actorId": "a7",
               "text": "SHORT PASS",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 0.8699999999999999
+              "at": 0.12,
+              "displaySeconds": 1.6199999999999999
             }
           ]
         },
         {
           "name": "A7 breaks outside the ruck",
-          "seconds": 2.8,
+          "seconds": 4.2,
           "notes": "A7 runs directly through the unguarded channel with A8 available outside. Cover defenders turn to chase.",
           "objects": [
             {
@@ -14060,14 +14060,14 @@
               "actorId": "a7",
               "text": "GO NOW",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.25
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ]
         },
         {
           "name": "A7 crosses and grounds centrally",
-          "seconds": 2.2,
+          "seconds": 3.3,
           "notes": "A7 carries across the opposition goal line and grounds the ball inside in-goal. The ball is deliberately placed down to score.",
           "objects": [
             {
@@ -14236,8 +14236,8 @@
               "actorId": "a7",
               "text": "TRY!",
               "kind": "speech",
-              "at": 0.3,
-              "displaySeconds": 1.25
+              "at": 0.12,
+              "displaySeconds": 1.65
             }
           ],
           "tryGroundings": [
@@ -14250,7 +14250,7 @@
         },
         {
           "name": "Hold the score · review pressure",
-          "seconds": 3,
+          "seconds": 4.5,
           "notes": "A7 remains inside in-goal after grounding. Review how support, legal recycling and one good pass created the close-range finish.",
           "objects": [
             {
