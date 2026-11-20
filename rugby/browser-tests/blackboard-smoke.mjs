@@ -105,8 +105,14 @@ try{
   assert.equal(await page.locator('#scenes .scene').count(),previousStepCount+1,
    'new step persists after closing Blackboard');
   assert.equal(await page.locator('body > #timelinePanel').count(),1,'Native timeline returns to Studio after exit');
-  assert.equal(await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count(),1,
-   'added player persists after closing Blackboard');
+  const currentPlayerCount=await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count();
+  const currentIndex=await page.locator('#scenes .scene.selected').getAttribute('data-step');
+  await page.locator('#back').click();
+  const setupPlayerCount=await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count();
+  console.log('BLACKBOARD player continuity '+viewport.width+'px: selected='+selectedId+
+   ' currentStep='+currentIndex+' current='+currentPlayerCount+' previous='+setupPlayerCount);
+  assert.equal(setupPlayerCount,1,'original added player must survive changes and Blackboard exit');
+  assert.equal(currentPlayerCount,1,'new step copied from setup must retain its player');
   await page.close();
   console.log('BLACKBOARD PASS '+viewport.width+'x'+viewport.height+': fullscreen, add, edit, ink, step management, duration, timeline, zoom, drag and restore');
  }
