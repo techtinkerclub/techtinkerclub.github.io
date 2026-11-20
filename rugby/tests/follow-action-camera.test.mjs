@@ -60,9 +60,9 @@ test('follow camera is reachable in Studio, both library players and video expor
  for(const html of [editor,coach])assert.match(html,/id="followAction"/);
  assert.match(app,/followActionViewport\(drill,g,lineIndex,p\)/);
  assert.match(play,/id="playerFollow"/);
- assert.match(play,/<option value="follow">Follow moving players and ball/);
+ assert.match(play,/<option value="follow">Follow action · moving camera/);
  assert.match(player,/opts\.framing==='follow'/);
- assert.match(movie,/<option value="follow">Follow the action/);
+ assert.match(movie,/<option value="follow">Follow action · smooth moving camera/);
  assert.match(publicVideo,/const options=\{\.\.\.settings\(\)/);
  const exportOptions=publicVideo.slice(publicVideo.indexOf('const options={...settings()'),
   publicVideo.indexOf('const file=await',publicVideo.indexOf('const options={...settings()')));
