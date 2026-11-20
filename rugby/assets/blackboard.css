@@ -274,9 +274,9 @@ body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-timeline-panel{d
 .blackboard-ui .bb-decision-actions button{flex:1 1 auto;min-height:31px;min-width:0;padding:5px 8px;font-size:11px}
 .blackboard-ui .bb-decision-actions button.is-active{background:#badc80;color:#213025}
 .blackboard-ui .bb-steps #bbDecisionShortcut{border-color:#e0bb6c;color:#ffdfa0}
-.blackboard-ui .bb-coaching-layout .bb-top-actions [data-bb="undo"],
-.blackboard-ui .bb-coaching-layout .bb-top-actions [data-bb="redo"],
-.blackboard-ui .bb-coaching-layout .bb-top-actions [data-bb="save"]{display:none}
+.blackboard-ui.bb-coaching-layout .bb-top-actions [data-bb="undo"],
+.blackboard-ui.bb-coaching-layout .bb-top-actions [data-bb="redo"],
+.blackboard-ui.bb-coaching-layout .bb-top-actions [data-bb="save"]{display:none}
 .blackboard-ui.bb-coaching-layout .bb-movable:not(:hover):not(:focus-within){opacity:.69}
 .blackboard-ui.bb-coaching-layout .bb-movable.is-dragging{opacity:1}
 body.blackboard-mode #outcomeMapDialog[open]{box-sizing:border-box;width:min(910px,96vw);max-height:min(82dvh,760px);
@@ -298,4 +298,27 @@ body.blackboard-mode #outcomeMapCards .branch-preview-summary{font-size:11px}
 @media(max-height:510px){
  body.blackboard-mode #outcomeMapDialog[open]{max-height:94dvh}
  .blackboard-ui .bb-camera-panel .bb-advanced-view[open]{max-height:30dvh;overflow-y:auto}
+}
+
+/* v6: one clear decision control, not native A/B controls repeated underneath. */
+body.blackboard-mode .bb-native-timeline #outcomeBar{display:none!important}
+.blackboard-ui .bb-timeline-panel .bb-decision-bar{flex:none}
+.blackboard-ui .bb-camera-panel .bb-reset-panels{margin-top:6px}
+.blackboard-ui .bb-camera-panel .bb-advanced-view summary{font-size:11px;letter-spacing:.1px}
+.blackboard-ui .bb-camera-panel .bb-teaching-settings button:disabled{opacity:.38}
+.blackboard-ui .bb-camera-panel .bb-teaching-settings select:disabled{opacity:.4}
+.blackboard-ui .bb-camera-panel .bb-advanced-view[open]{max-height:min(48dvh,390px);overflow-y:auto;scrollbar-width:thin}
+.blackboard-ui .bb-decision-bar .bb-decision-actions button[data-bb-choice]{flex:1 1 38%;max-width:none}
+.blackboard-ui .bb-decision-bar .bb-decision-actions [data-bb="compare-decision"]{flex:2 1 50%}
+.blackboard-ui .bb-decision-bar .bb-decision-actions [data-bb="edit-decision"]{flex:1 1 auto}
+.blackboard-ui .bb-movable.is-moved{box-shadow:0 10px 30px #0007}
+.blackboard-ui .bb-camera-panel .bb-setting select:focus-visible,
+.blackboard-ui .bb-timeline-panel #bbSpeed:focus-visible{outline:2px solid #c9f07c;outline-offset:1px}
+@media(max-width:650px){
+ .blackboard-ui .bb-steps #bbDecisionShortcut{font-size:0!important;min-width:32px!important;padding:5px 7px!important}
+ .blackboard-ui .bb-steps #bbDecisionShortcut::after{content:'◆';font-size:17px}
+ .blackboard-ui .bb-camera-panel{width:min(268px,calc(100vw - 16px))}
+ .blackboard-ui .bb-camera-panel .bb-advanced-view[open]{max-height:38dvh}
+ .blackboard-ui .bb-timeline-panel .bb-decision-actions{gap:4px}
+ .blackboard-ui .bb-timeline-panel .bb-decision-actions button{min-height:32px;font-size:11px}
 }
