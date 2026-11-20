@@ -29,7 +29,7 @@ function route(a,b,frame,id){
 function carrier(frame,id){return(frame.objects||[]).some(o=>o.type==='ball'&&o.ownerId===id)}
 export function tryLineEvents(drill,g){
  if(!Array.isArray(drill?.frames)||drill.frames.length<2||!g?.scale)return [];
- const result=[],pending=new Map(),seenGroundings=new Set();let startTime=0;
+ const result=[],pending=new Map(),seenGroundings=new Set();let startTime=Math.max(0,number(drill.frames[0]?.seconds));
  for(let i=1;i<drill.frames.length;i++){
   const before=drill.frames[i-1],frame=drill.frames[i],sec=Math.max(0,number(frame.seconds));
   const lines=(frame.objects||[]).filter(o=>o.type==='tryLine').map(o=>markLine(o,g));
@@ -71,7 +71,7 @@ export const RUCKUS_TRY_CELEBRATION_SECONDS=1.9;
 // Score animations are visual epilogues. They do not change authored step
 // timing, Classic mode, ball transfers, score eligibility or saved drill data.
 export function tryVisualDuration(drill,g,cartoonMode=false){
- const base=(drill?.frames||[]).slice(1).reduce((sum,f)=>sum+Math.max(0,number(f.seconds)),0);
+ const base=(drill?.frames||[]).reduce((sum,f)=>sum+Math.max(0,number(f.seconds)),0);
  if(!cartoonMode)return base;
  const tries=tryLineEvents(drill,g);
  return tries.length?Math.max(base,tries[tries.length-1].time+RUCKUS_TRY_CELEBRATION_SECONDS):base;
