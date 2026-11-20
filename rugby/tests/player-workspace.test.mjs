@@ -8,7 +8,7 @@ const css=readFileSync(new URL('../assets/player-workspace.css',import.meta.url)
 
 test('public player loads the one-screen workspace styles',()=>{
  assert.match(html,/player-workspace\.css\?v=/);
- assert.match(html,/player\.js\?v=0\.20\.71/);
+ assert.match(html,/player\.js\?v=0\.20\.72/);
  assert.match(css,/height:100dvh/);
  assert.match(css,/overflow:hidden/);
  assert.match(css,/\.presentation-panel/);
@@ -51,7 +51,7 @@ test('blackboard mode displays the actual drill flow and coaching menu',()=>{
 
 test('published drills open as fullscreen read-only blackboards',()=>{
  const stylesheet=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
- assert.match(html,/public-blackboard\.css\?v=4/);
+ assert.match(html,/public-blackboard\.css\?v=5/);
  assert.match(js,/function initPublicBoard\(\)/);
  assert.match(js,/document\.body\.classList\.add\('public-blackboard'\)/);
  assert.match(stylesheet,/\.read-only-player\.public-blackboard>header\{display:none\}/);
@@ -119,4 +119,27 @@ test('tap-to-focus remains view-only and playback has safe keyboard shortcuts',(
  assert.match(js,/public-board-shortcuts/);
  assert.match(js,/event\.code==='Space'/);
  assert.match(js,/event\.key==='ArrowLeft'/);
+});
+
+test('camera modes and options live in a single floating camera menu',()=>{
+ const css=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
+ assert.match(js,/public-board-camera-menu/);
+ assert.match(js,/selectCameraMode\(mode\)/);
+ assert.match(js,/cameraContents\.append\(legacyFraming\)/);
+ assert.match(js,/legacyFraming\.hidden=true/);
+ assert.match(js,/cameraContents\.append\(wrapper\)/);
+ assert.match(js,/mode==='follow'\?'follow'/);
+ assert.match(js,/publicBoard\.selectCameraMode\(next\)/);
+ assert.match(css,/public-board-camera-settings/);
+ assert.doesNotMatch(js,/make\('▣ Page view'/);
+});
+test('compact playback and genuinely variable transparency',()=>{
+ const css=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
+ assert.match(css,/width:min\(560px,calc\(100vw - 24px\)\)/);
+ assert.match(css,/--public-panel-alpha:\.48/);
+ assert.match(js,/min="12" max="88"/);
+ assert.match(js,/opacityVersion=2/);
+ assert.match(js,/panelOpacity\.value=String\(settings\.opacityVersion===2\?settings\.opacity:48\)/);
+ assert.match(js,/public-board-dock-toggle/);
+ assert.match(css,/public-board-dock\[data-open="true"\]/);
 });
