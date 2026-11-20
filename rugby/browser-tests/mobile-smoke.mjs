@@ -131,6 +131,14 @@ async function check(path,viewport){
   assert.equal(returned.selectedStep,returned.total-1,'after playback the last authored step is selected');
   assert.equal(returned.pickerDisabled,false,'after playback player selector is editable');
   assert.equal(returned.previewEdit,false,'playback preview lock is cleared');
+  // Finishing returns us to the editable last step, BUT the next Play must
+  // start the complete drill again. Clicking a step deliberately overrides it.
+  await play.click();
+  await page.waitForTimeout(140);
+  const replayAt=Number(await page.locator('#scrub').inputValue());
+  assert(replayAt<1,'Play after natural finish must restart from 0, not repeat the final step (time '+replayAt+')');
+  await play.click();
+  assert.match(await page.locator('#play').innerText(),/Play/i,'manual Pause still returns to edit state');
 
   // A selected Pan mode may move the view over empty grass but must not block
   // picking a visible rugby player for editing on a touch device.
