@@ -106,9 +106,14 @@ export function tryFeedbackSVG(events,time,g,{cartoonMode=false,ink=false}={}){
  if(!eligible.length)return '';
  const recent=eligible[eligible.length-1];
  const label=recent&&time-recent.time<=2.5?'TRY!':'TRIES: '+eligible.length;
- const x=Math.max(66,(g.viewWidth||900)-85),y=22,w=145,h=37;
+ const view=g.annotationViewport,scale=view?g.annotationScale||1:1;
+ const width=view?view.width/scale:g.viewWidth||900;
+ // Place the score in the upper-right safe area, independent of the scorer.
+ // Keep dimensions screen-consistent when the camera zooms to a try.
+ const x=Math.max(63,width-65),y=9,w=Math.min(119,width-12),h=30;
+ const prefix=view?'<g transform="translate('+view.x+' '+view.y+') scale('+scale+')">':'';
  const fill=ink?'#fff':cartoonMode?'#fff0aa':'#18482c',stroke=ink?'#222':'#172f24',colour=ink?'#222':cartoonMode?'#203623':'#f1fbdc';
- return '<g class="try-score-feedback" data-score="'+eligible.length+'" pointer-events="none">'+
+ return prefix+'<g class="try-score-feedback" data-score="'+eligible.length+'" pointer-events="none">'+
   '<rect x="'+(x-w/2)+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(cartoonMode?12:7)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(cartoonMode?3:1.8)+'"/>'+
-  '<text x="'+x+'" y="'+(y+25)+'" text-anchor="middle" font-weight="900" font-size="21" fill="'+colour+'">'+label+'</text></g>';
+  '<text x="'+x+'" y="'+(y+21)+'" text-anchor="middle" font-weight="900" font-size="18" fill="'+colour+'">'+label+'</text></g>'+(view?'</g>':'');
 }
