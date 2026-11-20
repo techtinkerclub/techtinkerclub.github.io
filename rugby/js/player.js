@@ -1,6 +1,8 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.18.7';
 import {stepEndSeconds,stepStartSeconds} from './step-timeline.js?v=1';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.60';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.61';
+import {drillGeometry} from './pitch.js?v=0.16.1';
+import {tryVisualDuration} from './try-scoring.js?v=2';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
 import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=0.20.51';
@@ -9,7 +11,8 @@ import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} fr
 import {createExportProgress} from './export-progress.js?v=0.18.3';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
-const $=id=>document.getElementById(id);const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
+const $=id=>document.getElementById(id);
+const visualDuration=()=>d?tryVisualDuration(d,drillGeometry(d,'up'),opts.cartoonMode):0;const movieProgress=createExportProgress();const getMovieSettings=bindMovieSettings($('playerMovieOptions'),'playerMovie');let d=null,opts=outputOptions(),t=0,raf=0,playing=false,last=0,shownStep=-1,notesKey='',pitchRatio=0,choiceResolved=false;
 let viewZoom=1,viewPan={x:0,y:0},viewBase=null,panEnabled=false,dragStart=null,pinchStart=null;
 let decisionRewind=0;
 $('playerMovieCamera').closest('label').classList.add('video-camera-choice');
@@ -31,6 +34,7 @@ $('playerMinionMode').onclick=()=>{
  b.setAttribute('aria-pressed',String(!!opts.cartoonMode));
  $('playerVideoStyle').value=opts.cartoonMode?'ruckus':'classic';
  syncLibraryVideoStyle();
+ if(d)$('seek').max=visualDuration();
  b.title=opts.cartoonMode?'Return to classic coaching view':'Show the red rugby mascot animation skin';
  render();
 };
@@ -97,8 +101,8 @@ function render(){
  board.innerHTML=s.svg;viewBase=s.camera;applyZoom();shownStep=s.index;
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
  if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
- $('time').textContent=t.toFixed(1)+' / '+drillDuration(d).toFixed(1)+' s';$('seek').value=t;
- $('previousStep').disabled=t<=0;$('nextStep').disabled=t>=drillDuration(d);$('play').disabled=d.frames.length<2;
+ $('time').textContent=t.toFixed(1)+' / '+visualDuration().toFixed(1)+' s';$('seek').value=t;
+ $('previousStep').disabled=t<=0;$('nextStep').disabled=t>=visualDuration();$('play').disabled=d.frames.length<2;
 }
 function showOutcomeDecision({jump=true}={}){
  if(!d||!hasOutcomes(d))return;
@@ -135,7 +139,7 @@ function setPlayerOutcome(id,{atFork=false,resume=false}={}){
  t=atFork?decisionTime(d):0;
  choiceResolved=true;
  shownStep=-1;notesKey='';
- $('branchChoice').value=id;$('seek').max=drillDuration(d);
+ $('branchChoice').value=id;$('seek').max=visualDuration();
  $('branchDecisionPanel').hidden=true;
  $('coachCardContent').innerHTML=coachingMarkup(d);
  $('coachSequenceContent').innerHTML=sequenceMarkup(d);render();
@@ -160,13 +164,13 @@ function open(data,options){stop();d=playbackData(data);opts=outputOptions(optio
   $('branchChoice').replaceChildren(...b.choices.map(c=>new Option(c.id.toUpperCase()+' · '+c.label,c.id)));
   $('branchChoice').value=b.active;
  }
-t=0;shownStep=-1;notesKey='';resetZoom();$('viewerCamera').hidden=false;$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=drillDuration(d);$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('teachingGuides').checked=opts.teachingGuides;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('framing').value=opts.framing;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
+t=0;shownStep=-1;notesKey='';resetZoom();$('viewerCamera').hidden=false;$('title').textContent=d.title;$('objective').textContent=d.objective;$('seek').max=visualDuration();$('runs').checked=opts.runs;$('passes').checked=opts.passes;$('labels').checked=opts.labels;$('decisions').checked=opts.decisions;$('markups').checked=opts.markups;$('offside').checked=opts.offside;$('teachingGuides').checked=opts.teachingGuides;$('orientation').value=opts.orientation;$('scaleMode').value=opts.scaleMode;$('framing').value=opts.framing;$('controls').hidden=false;$('empty').hidden=true;$('coachResources').hidden=false;$('coachCardContent').innerHTML=coachingMarkup(d);$('coachSequenceContent').innerHTML=sequenceMarkup(d);$('message').textContent='';render()}
 let soundOn=true;
 $('whistleSound').onclick=()=>{soundOn=!soundOn;$('whistleSound').setAttribute('aria-pressed',String(soundOn));$('whistleSound').textContent=soundOn?'Whistle sound: on':'Whistle sound: off'};
 $('play').onclick=()=>{
  if(!d)return;
  if(playing){stop();return}
- const total=drillDuration(d);
+ const total=visualDuration();
  if(t>=total){t=0;choiceResolved=false}
  if(hasOutcomes(d)&&!choiceResolved&&t>=decisionTime(d)-1e-6){showOutcomeDecision();return}
  playing=true;$('play').textContent='Pause';
