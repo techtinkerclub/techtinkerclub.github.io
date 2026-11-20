@@ -14,6 +14,7 @@ export function cleanCallouts(frame){
   const unique=seen.has(id)?id+'-'+i:id;seen.add(unique);
   return {id:unique,actorId:c.actorId,text:c.text.trim().slice(0,120),
    kind:CALLOUT_KINDS.includes(c.kind)?c.kind:'speech',
+   ...(c.anchorMode==='fixed'?{anchorMode:'fixed'}:{}),
    at:bounded(c.at,0,1,.5),displaySeconds:bounded(c.displaySeconds,.2,8,2)};
  });
  if(result.length)frame.callouts=result;
@@ -173,15 +174,21 @@ export function calloutOverlay(frames,index,objects,g,progress=1,{cartoonMode=fa
    if(!a||!positions.has(a.actorId)||typeof a.text!=='string'||!a.text.trim())continue;
    const eventTime=start+bounded(a.at,0,1,.5)*(Number(f.seconds)||0);
    const age=now-eventTime,duration=bounded(a.displaySeconds,.2,8,2);
-   if((editing&&i===index)||(age>=-1e-6&&age<duration-1e-6))entries.push(a);
+   if((editing&&i===index)||(age>=-1e-6&&age<duration-1e-6))entries.push({...a,sourceIndex:i});
   }
  }
  const reserved=[],avoid=[...positions.values()].filter(o=>players.has(o.type)).map(o=>({...g.toView(o.x,o.y),id:o.id}));
  return '<g class="authored-speech-callouts" pointer-events="none">'+entries.slice(-8).map(a=>{
-  const actor=positions.get(a.actorId),pos=g.toView(actor.x,actor.y);
+  const actor=positions.get(a.actorId);
+  // A fixed coaching cue is anchored to the authored step, not the moving
+  // character. It cannot hop left/right on each animation frame.
+  const source=frames[a.sourceIndex];
+  const stableActor=a.anchorMode==='fixed'?source?.objects?.find(o=>o.id===a.actorId):null;
+  const pos=g.toView((stableActor||actor).x,(stableActor||actor).y);
+  const staticAvoid=a.anchorMode==='fixed'?(source?.objects||[]).filter(o=>players.has(o.type)).map(o=>({...g.toView(o.x,o.y),id:o.id})):avoid;
   const accent=actor.type==='defender'?'#e4af82':'#a5d9f3';
   return bubbleSVG({x:pos.x,y:pos.y,text:String(a.text).slice(0,120),
    kind:CALLOUT_KINDS.includes(a.kind)?a.kind:'speech',g,comic:cartoonMode&&!ink,ink,accent,
-   avoid,reserved,onPlace:rect=>reserved.push(rect)});
+   avoid:staticAvoid,reserved,onPlace:rect=>reserved.push(rect)});
  }).join('')+'</g>';
 }
