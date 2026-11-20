@@ -1,0 +1,24 @@
+/* Timed speech authoring: compact enough for the existing Step inspector. */
+.speech-control {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 8px;padding:12px;border:1px solid #638c75;border-radius:12px;background:rgba(67,111,75,.14)}
+.speech-control>div {display:grid;gap:4px;min-width:0}
+.speech-control strong {font-size:.92rem}
+.speech-control small {opacity:.82;line-height:1.4}
+.speech-control button {white-space:nowrap;min-height:38px}
+#speechCalloutRows {display:grid;gap:7px}
+#speechCalloutRows .speech-row {display:grid;gap:6px;overflow-wrap:anywhere}
+#speechCalloutRows .speech-row strong {font-size:.92rem}
+#speechCalloutRows .speech-row .flex {display:flex;flex-wrap:wrap;gap:7px}
+#speechCalloutRows .speech-row button {min-height:34px}
+.speech-dialog {box-sizing:border-box;width:min(94vw,475px);max-width:475px;padding:22px;border-radius:16px}
+.speech-dialog h2 {margin:0 0 8px}
+.speech-dialog .field {display:grid;gap:5px;margin:12px 0}
+.speech-dialog :is(input,select,textarea) {box-sizing:border-box;width:100%;max-width:100%;font:inherit;min-height:38px}
+.speech-dialog textarea {min-height:82px;resize:vertical}
+.speech-pair {display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.speech-buttons {display:flex;justify-content:flex-end;gap:9px;margin-top:14px}
+#speechError:not(:empty) {color:#f4ae9a;font-weight:650}
+@media(max-width:620px) {
+ .speech-control {flex-wrap:wrap}
+ .speech-control button {width:100%}
+ .speech-dialog {padding:16px}
+}
