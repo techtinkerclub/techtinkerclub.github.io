@@ -68,5 +68,5 @@ test('follow camera is reachable in Studio, both library players and video expor
   publicVideo.indexOf('const file=await',publicVideo.indexOf('const options={...settings()')));
  assert.doesNotMatch(exportOptions,/framing:'action'/,
   'public library video options must not override the chosen camera; printing may still use action framing');
- assert.match(video,/framing:opts\.framing\|\|'field'/);
+ assert.match(video,/framing:settings\.framing/);
 });
