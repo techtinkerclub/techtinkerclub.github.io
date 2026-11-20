@@ -1,0 +1,4209 @@
+{
+  "version": 1,
+  "kind": "rugby-showcase",
+  "generatedAt": "2026-11-20",
+  "drills": [
+    {
+      "version": 1,
+      "id": "seed-950",
+      "title": "SHOWCASE · U10 Passing waves | Fix, pass, support",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Handling",
+      "length": 24,
+      "width": 18,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 12,
+      "players": "3 attackers, 2 passive defenders; rotate after each run.",
+      "equipment": "1 size-4 ball; 4 boundary cones.",
+      "objective": "Show two consecutive backward passes, realistic support depth, straightening and a support finish.",
+      "safety": "Non-contact demonstration. Defenders may make an agreed light touch only. No tackles in this practice.",
+      "instructions": "1. Setup · attack upfield — Three attackers are staggered behind the ball; defenders are passive.\n2. First wave · draw D1 — A1 carries straight at D1; A2 holds support depth.\n3. PASS · release backwards — A1 releases to A2 behind the ball, not forwards.\n4. Second wave · fix D2 — A2 straightens towards D2; A3 stays deeper and wide.\n5. PASS · attack the outside — A2 passes backwards to the supporting A3.\n6. Finish · run straight — A3 accelerates into the channel; both passers support.\n7. Reset · rotate roles — Freeze the finish; ask where both passes travelled. Return to setup between repetitions.",
+      "coaching": "Run straight to engage the defender, keep the receiver behind the ball, pass backwards and follow in support. Avoid drifting across the pitch.",
+      "questions": "Who fixes each defender? Are both receivers behind the passer? Why does the first passer continue supporting?",
+      "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
+      "links": [
+        {
+          "label": "RFU Age Grade Rugby regulations",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-",
+          "kind": "Rule"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Setup · attack upfield",
+          "seconds": 0,
+          "notes": "Three attackers are staggered behind the ball; defenders are passive.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 250,
+              "y": 435,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 465,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 675,
+              "y": 480,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 300,
+              "y": 215,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 555,
+              "y": 175,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 260,
+              "y": 423,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "First wave · draw D1",
+          "seconds": 2.6,
+          "notes": "A1 carries straight at D1; A2 holds support depth.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 290,
+              "y": 318,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 468,
+              "y": 375,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 695,
+              "y": 394,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 303,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 555,
+              "y": 210,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 300,
+              "y": 306,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "PASS · release backwards",
+          "seconds": 1.8,
+          "notes": "A1 releases to A2 behind the ball, not forwards.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 300,
+              "y": 293,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 480,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 705,
+              "y": 357,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 320,
+              "y": 260,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 555,
+              "y": 235,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 490,
+              "y": 316,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-2",
+              "actorId": "a2",
+              "text": "Pass back!",
+              "kind": "speech",
+              "at": 0.34,
+              "displaySeconds": 1.4
+            }
+          ]
+        },
+        {
+          "name": "Second wave · fix D2",
+          "seconds": 2.3,
+          "notes": "A2 straightens towards D2; A3 stays deeper and wide.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 345,
+              "y": 325,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 533,
+              "y": 265,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 714,
+              "y": 305,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 363,
+              "y": 269,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 557,
+              "y": 244,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 543,
+              "y": 253,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "PASS · attack the outside",
+          "seconds": 1.9,
+          "notes": "A2 passes backwards to the supporting A3.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 400,
+              "y": 298,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 563,
+              "y": 242,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 720,
+              "y": 263,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 405,
+              "y": 275,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 575,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 730,
+              "y": 251,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-4",
+              "actorId": "a3",
+              "text": "Keep depth!",
+              "kind": "speech",
+              "at": 0.34,
+              "displaySeconds": 1.4
+            }
+          ]
+        },
+        {
+          "name": "Finish · run straight",
+          "seconds": 2.6,
+          "notes": "A3 accelerates into the channel; both passers support.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 480,
+              "y": 240,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 615,
+              "y": 202,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 760,
+              "y": 125,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 430,
+              "y": 260,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 590,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 770,
+              "y": 113,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Reset · rotate roles",
+          "seconds": 1.5,
+          "notes": "Freeze the finish; ask where both passes travelled. Return to setup between repetitions.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 500,
+              "y": 220,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 640,
+              "y": 185,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 760,
+              "y": 105,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 440,
+              "y": 255,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 598,
+              "y": 215,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 770,
+              "y": 93,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-951",
+      "title": "SHOWCASE · U10 Contact | Tackle, release, present, play",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Contact",
+      "length": 13,
+      "width": 10,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 15,
+      "players": "Carrier, defender, two supporting attackers, qualified coach.",
+      "equipment": "1 ball; boundary cones; safe contact area.",
+      "objective": "Demonstrate controlled tackle sequence, prompt release, backward ball presentation and a legal support arrival.",
+      "safety": "Qualified coach-led controlled demonstration only, following current RFU U10 laws and tackle safety guidance. Animation is not a physical tackling tutorial. No high tackles, diving or dangerous clear-outs. Rehearse without contact first.",
+      "instructions": "1. Setup · controlled pairing — Carrier and defender face each other. Two teammates wait behind the carrier.\n2. Track safely · shorten steps — Both approach at walking pace under coach supervision.\n3. Contact demonstration · controlled ground — Coach demonstrates the approved low, controlled tackle. Never use this animation as technique instruction.\n4. RELEASE · tackler clear — D1 releases promptly and gets clear. A1 stays grounded.\n5. PRESENT · back to own team — A1 places the ball close to the body on the support side; no throw or forward transfer.\n6. Support · on feet, from own side — A2 arrives from the attacking side, stays on feet and collects the available ball. No ruck has formed in this illustration.\n7. Play away · continuity — A2 carries away, A3 tracks in support, the tackled player remains down until safe to recover.\n8. Recover and reset — The coach resets all roles and checks everyone is ready before the next repetition.",
+      "coaching": "Tackler releases and moves clear. Grounded carrier makes the ball available to their own side. Support approaches on feet from their side. Do not pick up a ball once a ruck has formed.",
+      "questions": "Who releases? Which way should the tackled player present? When must supporters stay on their feet?",
+      "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
+      "links": [
+        {
+          "label": "RFU Age Grade Rugby regulations",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-",
+          "kind": "Rule"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Setup · controlled pairing",
+          "seconds": 0,
+          "notes": "Carrier and defender face each other. Two teammates wait behind the carrier.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 430,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 545,
+              "y": 466,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 660,
+              "y": 487,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 412,
+              "y": 178,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 420,
+              "y": 418,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Track safely · shorten steps",
+          "seconds": 2.7,
+          "notes": "Both approach at walking pace under coach supervision.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 321,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 540,
+              "y": 416,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 640,
+              "y": 438,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 412,
+              "y": 273,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 420,
+              "y": 309,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Contact demonstration · controlled ground",
+          "seconds": 1.4,
+          "notes": "Coach demonstrates the approved low, controlled tackle. Never use this animation as technique instruction.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 315,
+              "rot": 0,
+              "playerPose": "grounded"
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 530,
+              "y": 397,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 630,
+              "y": 418,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 407,
+              "y": 309,
+              "rot": 180,
+              "playerPose": "tackling"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 420,
+              "y": 303,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "RELEASE · tackler clear",
+          "seconds": 1.5,
+          "notes": "D1 releases promptly and gets clear. A1 stays grounded.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 315,
+              "rot": 0,
+              "playerPose": "grounded"
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 520,
+              "y": 382,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 619,
+              "y": 407,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 370,
+              "y": 278,
+              "rot": 180,
+              "playerPose": "recovering"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 410,
+              "y": 351,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "PRESENT · back to own team",
+          "seconds": 2,
+          "notes": "A1 places the ball close to the body on the support side; no throw or forward transfer.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 315,
+              "rot": 0,
+              "playerPose": "grounded"
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 475,
+              "y": 358,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 570,
+              "y": 393,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 365,
+              "y": 264,
+              "rot": 180,
+              "playerPose": "recovering"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 410,
+              "y": 351,
+              "rot": 0,
+              "groundState": "presented",
+              "transferKind": "presentation"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Support · on feet, from own side",
+          "seconds": 2.2,
+          "notes": "A2 arrives from the attacking side, stays on feet and collects the available ball. No ruck has formed in this illustration.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 315,
+              "rot": 0,
+              "playerPose": "grounded"
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 440,
+              "y": 345,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 525,
+              "y": 381,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 365,
+              "y": 260,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 450,
+              "y": 333,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Play away · continuity",
+          "seconds": 2.4,
+          "notes": "A2 carries away, A3 tracks in support, the tackled player remains down until safe to recover.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 315,
+              "rot": 0,
+              "playerPose": "grounded"
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 550,
+              "y": 244,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 630,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 365,
+              "y": 260,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 560,
+              "y": 232,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Recover and reset",
+          "seconds": 1.7,
+          "notes": "The coach resets all roles and checks everyone is ready before the next repetition.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 415,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 578,
+              "y": 195,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 652,
+              "y": 250,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 370,
+              "y": 251,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 588,
+              "y": 183,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-952",
+      "title": "SHOWCASE · U10 Contact pads | Approach, hit, recover",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Contact",
+      "length": 12,
+      "width": 10,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 12,
+      "players": "Two attackers and a qualified coach holding a shield; others wait outside lane.",
+      "equipment": "1 approved contact shield, 1 ball, 4 cones.",
+      "objective": "Show a safe supervised progression from tracking to controlled contact against a shield and recovery into support.",
+      "safety": "Coach-led pad practice only; use a properly held shield and current club/RFU contact coaching standards. Do not coach head placement or tackle mechanics from an overhead animation. Avoid uncontrolled impact and collisions.",
+      "instructions": "1. Setup · pad holder ready — Coach holds the shield; only one attacker enters the lane.\n2. Approach · walk then jog — A1 moves at coach-approved pace and checks the holder is set.\n3. Controlled pad contact — Demonstrate position and control against the shield, not a full-speed collision.\n4. Hold balance · release pressure — A1 regains balance; coach holds the shield stationary.\n5. Exit to the side — A1 clears the lane; A2 waits for the coach signal.\n6. Second player · approach on signal — A2 starts only when the pad holder is reset and lane is empty.\n7. Reset and rotate — Pause before second contact, return to start, repeat under supervision.",
+      "coaching": "Controlled approach, balanced footwork, eyes up, coach-directed shield contact, recover balance and reset. One participant at a time.",
+      "questions": "Is the holder ready? Is the lane clear? Can the player stop and recover under control?",
+      "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
+      "links": [
+        {
+          "label": "RFU Age Grade Rugby regulations",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-",
+          "kind": "Rule"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Setup · pad holder ready",
+          "seconds": 0,
+          "notes": "Coach holds the shield; only one attacker enters the lane.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 415,
+              "y": 445,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 670,
+              "y": 465,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "coach",
+              "label": "C1",
+              "x": 415,
+              "y": 210,
+              "rot": 0,
+              "coachGesture": "auto"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 425,
+              "y": 433,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "pad",
+              "type": "shieldItem",
+              "label": "",
+              "x": 420,
+              "y": 235,
+              "rot": 0,
+              "ownerId": "c1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Approach · walk then jog",
+          "seconds": 2.4,
+          "notes": "A1 moves at coach-approved pace and checks the holder is set.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 415,
+              "y": 353,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 670,
+              "y": 465,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "coach",
+              "label": "C1",
+              "x": 415,
+              "y": 210,
+              "rot": 0,
+              "coachGesture": "auto"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 425,
+              "y": 341,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "pad",
+              "type": "shieldItem",
+              "label": "",
+              "x": 420,
+              "y": 235,
+              "rot": 0,
+              "ownerId": "c1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Controlled pad contact",
+          "seconds": 1.7,
+          "notes": "Demonstrate position and control against the shield, not a full-speed collision.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 415,
+              "y": 254,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 670,
+              "y": 465,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "coach",
+              "label": "C1",
+              "x": 415,
+              "y": 208,
+              "rot": 0,
+              "coachGesture": "auto"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 425,
+              "y": 242,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "pad",
+              "type": "shieldItem",
+              "label": "",
+              "x": 420,
+              "y": 235,
+              "rot": 0,
+              "ownerId": "c1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Hold balance · release pressure",
+          "seconds": 1.6,
+          "notes": "A1 regains balance; coach holds the shield stationary.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 415,
+              "y": 266,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 670,
+              "y": 452,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "coach",
+              "label": "C1",
+              "x": 415,
+              "y": 208,
+              "rot": 0,
+              "coachGesture": "auto"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 425,
+              "y": 254,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "pad",
+              "type": "shieldItem",
+              "label": "",
+              "x": 420,
+              "y": 235,
+              "rot": 0,
+              "ownerId": "c1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Exit to the side",
+          "seconds": 2.1,
+          "notes": "A1 clears the lane; A2 waits for the coach signal.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 300,
+              "y": 295,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 670,
+              "y": 452,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "coach",
+              "label": "C1",
+              "x": 415,
+              "y": 208,
+              "rot": 0,
+              "coachGesture": "auto"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 310,
+              "y": 283,
+              "rot": 0,
+              "ownerId": "a1"
+            },
+            {
+              "id": "pad",
+              "type": "shieldItem",
+              "label": "",
+              "x": 420,
+              "y": 235,
+              "rot": 0,
+              "ownerId": "c1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Second player · approach on signal",
+          "seconds": 2.5,
+          "notes": "A2 starts only when the pad holder is reset and lane is empty.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 275,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 470,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "coach",
+              "label": "C1",
+              "x": 415,
+              "y": 208,
+              "rot": 0,
+              "coachGesture": "auto"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 480,
+              "y": 316,
+              "rot": 0,
+              "ownerId": "a2"
+            },
+            {
+              "id": "pad",
+              "type": "shieldItem",
+              "label": "",
+              "x": 420,
+              "y": 235,
+              "rot": 0,
+              "ownerId": "c1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Reset and rotate",
+          "seconds": 1.5,
+          "notes": "Pause before second contact, return to start, repeat under supervision.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 270,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 465,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "coach",
+              "label": "C1",
+              "x": 415,
+              "y": 208,
+              "rot": 0,
+              "coachGesture": "auto"
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 475,
+              "y": 298,
+              "rot": 0,
+              "ownerId": "a2"
+            },
+            {
+              "id": "pad",
+              "type": "shieldItem",
+              "label": "",
+              "x": 420,
+              "y": 235,
+              "rot": 0,
+              "ownerId": "c1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-953",
+      "title": "SHOWCASE · U8 Tag | TAG, pass, return, play",
+      "age": "U7–U8",
+      "ageMin": 7,
+      "ageMax": 8,
+      "category": "Game",
+      "length": 20,
+      "width": 14,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 12,
+      "players": "Three attacking tag-belt wearers and two tag defenders.",
+      "equipment": "Tag belts with two strips per player, rugby ball, cones.",
+      "objective": "Explain the tag, immediate pass and returning the strip before either player rejoins.",
+      "safety": "U7/U8 RFU tag-rule teaching example, not tackle rugby. No contact, pushing or blocking; the tagged player must pass within the applicable rule and replace the tag before rejoining.",
+      "instructions": "1. Setup · tag belts checked — A1 carries; all players wear correctly fitted tag belts.\n2. Run and track — A1 advances; D1 tracks safely for a tag, not a tackle.\n3. TAG! · stop and call — D1 removes one strip from A1 and shouts TAG; A1 stops.\n4. PASS · tagged carrier releases — A1 passes backwards to A2; D1 holds the removed strip up.\n5. RETURN · restore the strip — D1 returns the strip to A1; both restore belts before rejoining.\n6. Keep playing · second channel — A2 attacks the next space. A1 only rejoins after replacing the strip.\n7. Pass to support and finish — A2 passes backwards to A3 who continues into the wide channel.",
+      "coaching": "Tagger calls TAG and holds the strip aloft. The tagged player stops and passes, and the tagger returns the removed strip. Both respect the return-to-play requirement.",
+      "questions": "What must the tagger shout? Who returns the strip? Can either player rejoin without the tag properly restored?",
+      "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
+      "links": [
+        {
+          "label": "RFU age-grade Rules of Play",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Rule"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Setup · tag belts checked",
+          "seconds": 0,
+          "notes": "A1 carries; all players wear correctly fitted tag belts.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 280,
+              "y": 420,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 520,
+              "y": 453,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 675,
+              "y": 456,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 345,
+              "y": 220,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 640,
+              "y": 210,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 290,
+              "y": 408,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Run and track",
+          "seconds": 2.6,
+          "notes": "A1 advances; D1 tracks safely for a tag, not a tackle.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 335,
+              "y": 330,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 515,
+              "y": 383,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 673,
+              "y": 390,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 353,
+              "y": 288,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 633,
+              "y": 268,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 345,
+              "y": 318,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "TAG! · stop and call",
+          "seconds": 1.4,
+          "notes": "D1 removes one strip from A1 and shouts TAG; A1 stops.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 345,
+              "y": 305,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": false,
+                "right": true
+              }
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 518,
+              "y": 360,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 680,
+              "y": 367,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 365,
+              "y": 303,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "heldTagItems": [
+                {
+                  "targetId": "a1",
+                  "side": "left",
+                  "color": "yellow"
+                }
+              ],
+              "heldTags": 1
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 632,
+              "y": 264,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 355,
+              "y": 293,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "interactions": [
+            {
+              "kind": "tag",
+              "actorId": "d1",
+              "targetId": "a1",
+              "side": "left",
+              "at": 0.6,
+              "displaySeconds": 1.3,
+              "label": "TAG!"
+            }
+          ]
+        },
+        {
+          "name": "PASS · tagged carrier releases",
+          "seconds": 1.6,
+          "notes": "A1 passes backwards to A2; D1 holds the removed strip up.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 345,
+              "y": 305,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": false,
+                "right": true
+              }
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 525,
+              "y": 345,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 686,
+              "y": 350,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 365,
+              "y": 303,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              },
+              "heldTagItems": [
+                {
+                  "targetId": "a1",
+                  "side": "left",
+                  "color": "yellow"
+                }
+              ],
+              "heldTags": 1
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 630,
+              "y": 265,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 535,
+              "y": 333,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "RETURN · restore the strip",
+          "seconds": 1.6,
+          "notes": "D1 returns the strip to A1; both restore belts before rejoining.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 345,
+              "y": 305,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 545,
+              "y": 299,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 696,
+              "y": 321,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 375,
+              "y": 306,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 630,
+              "y": 267,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 555,
+              "y": 287,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "interactions": [
+            {
+              "kind": "tag-return",
+              "actorId": "d1",
+              "targetId": "a1",
+              "side": "left",
+              "at": 0.4,
+              "displaySeconds": 1.2,
+              "label": "RETURN"
+            }
+          ]
+        },
+        {
+          "name": "Keep playing · second channel",
+          "seconds": 2.7,
+          "notes": "A2 attacks the next space. A1 only rejoins after replacing the strip.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 402,
+              "y": 285,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 580,
+              "y": 215,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 707,
+              "y": 261,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 408,
+              "y": 300,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 630,
+              "y": 225,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 590,
+              "y": 203,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Pass to support and finish",
+          "seconds": 2,
+          "notes": "A2 passes backwards to A3 who continues into the wide channel.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 447,
+              "y": 267,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 611,
+              "y": 204,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 729,
+              "y": 213,
+              "rot": 0,
+              "tagBelt": true,
+              "tagColor": "yellow",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 433,
+              "y": 296,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 649,
+              "y": 222,
+              "rot": 180,
+              "tagBelt": true,
+              "tagColor": "blue",
+              "tags": {
+                "left": true,
+                "right": true
+              }
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 739,
+              "y": 201,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-954",
+      "title": "SHOWCASE · Touch rugby | Touch, rollball, retreat",
+      "age": "U10–U16",
+      "ageMin": 10,
+      "ageMax": 16,
+      "category": "Game",
+      "length": 22,
+      "width": 16,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 12,
+      "players": "Three attackers and two defenders, with an instructor/referee.",
+      "equipment": "Ball, cones, clearly indicated touch mark.",
+      "objective": "Illustrate an England Touch-style rollball and defensive retreat, then a second attacking phase.",
+      "safety": "Non-contact Touch training, NOT RFU U10 contact laws or RFU U7/U8 tag laws. Use the exact touch competition's rules; no tackling or forceful touches.",
+      "instructions": "1. Setup · Touch code — Explain: this is formal Touch practice, not RFU U10 match restart law.\n2. Attack · draw a touch — A1 runs into D1's channel; A2 remains behind as the prospective half.\n3. TOUCH · freeze the mark — Light touch by D1; ball carrier stops. Do not pass after a completed touch.\n4. Retreat · defenders get onside — Defenders move back the prescribed 5 m before involving themselves. A1 prepares the rollball.\n5. ROLLBALL · at the mark — A1 plays the ball back through the legs at the mark; A2 becomes the half.\n6. Half passes · next phase — A2, acting as half, passes backwards to A3. Avoid claiming an automatic right for the half to score.\n7. Continue · attack space — A3 accelerates into open space while defenders advance from their onside positions.",
+      "coaching": "On a valid touch, the touched attacker returns to the mark and executes a rollball. Defenders retreat the required distance (commonly 5 m for a rollball in this code); a teammate plays half. The half has special restrictions under formal Touch rules.",
+      "questions": "Where is the touch mark? Are the defenders back 5 m? Is the half allowed to score? Which competition rule set are we playing?",
+      "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
+      "links": [
+        {
+          "label": "England Touch: Rules",
+          "url": "https://www.englandtouch.org.uk/develop/coaching/the-rules/",
+          "kind": "Rule"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Setup · Touch code",
+          "seconds": 0,
+          "notes": "Explain: this is formal Touch practice, not RFU U10 match restart law.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 340,
+              "y": 430,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 510,
+              "y": 470,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 685,
+              "y": 477,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 360,
+              "y": 200,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 660,
+              "y": 190,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 350,
+              "y": 418,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Attack · draw a touch",
+          "seconds": 2.6,
+          "notes": "A1 runs into D1's channel; A2 remains behind as the prospective half.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 370,
+              "y": 320,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 510,
+              "y": 398,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 680,
+              "y": 400,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 372,
+              "y": 295,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 655,
+              "y": 262,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 380,
+              "y": 308,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "TOUCH · freeze the mark",
+          "seconds": 1.2,
+          "notes": "Light touch by D1; ball carrier stops. Do not pass after a completed touch.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 372,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 500,
+              "y": 373,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 670,
+              "y": 382,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 373,
+              "y": 310,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 654,
+              "y": 267,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 382,
+              "y": 298,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "interactions": [
+            {
+              "kind": "touch",
+              "actorId": "d1",
+              "targetId": "a1",
+              "at": 0.7,
+              "displaySeconds": 1.3,
+              "label": "TOUCH"
+            }
+          ]
+        },
+        {
+          "name": "Retreat · defenders get onside",
+          "seconds": 2.1,
+          "notes": "Defenders move back the prescribed 5 m before involving themselves. A1 prepares the rollball.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 372,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 485,
+              "y": 345,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 655,
+              "y": 361,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 375,
+              "y": 180,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 655,
+              "y": 185,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 380,
+              "y": 337,
+              "rot": 0,
+              "groundState": "presented"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "ROLLBALL · at the mark",
+          "seconds": 1.7,
+          "notes": "A1 plays the ball back through the legs at the mark; A2 becomes the half.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 372,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 420,
+              "y": 339,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 645,
+              "y": 348,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 375,
+              "y": 180,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 655,
+              "y": 185,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 380,
+              "y": 337,
+              "rot": 0,
+              "groundState": "presented"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Half passes · next phase",
+          "seconds": 1.9,
+          "notes": "A2, acting as half, passes backwards to A3. Avoid claiming an automatic right for the half to score.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 383,
+              "y": 319,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 430,
+              "y": 308,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 657,
+              "y": 320,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 383,
+              "y": 205,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 655,
+              "y": 220,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 667,
+              "y": 308,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Continue · attack space",
+          "seconds": 2.8,
+          "notes": "A3 accelerates into open space while defenders advance from their onside positions.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 435,
+              "y": 320,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 520,
+              "y": 282,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 722,
+              "y": 190,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 427,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 663,
+              "y": 246,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 732,
+              "y": 178,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-955",
+      "title": "SHOWCASE · U10 Offside | Free pass and 7 m retreat",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Defence",
+      "length": 22,
+      "width": 14,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 12,
+      "players": "3 attackers, 3 defenders, one coach as referee.",
+      "equipment": "Ball, line markers, 4 cones.",
+      "objective": "Teach that defenders must stay back the U10 free-pass retreat distance and wait for the pass before advancing.",
+      "safety": "Walking-speed, non-contact rehearsal. Use current RFU U10 rules and an accurately measured 7 m retreat. The animated diagram is schematic; verify actual distances on the pitch.",
+      "instructions": "1. Free pass · set the mark — Attacking team at mark. Defenders begin behind their retreat line; coach checks real spacing.\n2. HOLD · defenders wait — Before release the defensive line is static and onside. Ask when they may move.\n3. FREE PASS · ball travels backwards — A1 passes to supporting A2; defensive advance starts after the ball leaves the hands.\n4. Advance together · stay connected — D1, D2, D3 advance in a connected line without running early.\n5. Decision · carrier fixes middle — A2 carries straight; defenders keep connection and communicate.\n6. Backward pass · release outside — A2 draws D2 and gives A3 a backward pass into the outside channel.\n7. Freeze · review the rule — Pause on the connected line; compare actual free-pass retreat distances on the pitch.",
+      "coaching": "Identify the mark, measure 7 m, wait behind the retreat line and advance only when the ball is passed. Do not confuse this with Touch rollball retreat or ruck offside.",
+      "questions": "Where is the mark? How far must defenders retreat? Can they rush before the free pass? Which passing direction is permitted?",
+      "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
+      "links": [
+        {
+          "label": "RFU Age Grade Rugby regulations",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-",
+          "kind": "Rule"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Free pass · set the mark",
+          "seconds": 0,
+          "notes": "Attacking team at mark. Defenders begin behind their retreat line; coach checks real spacing.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 375,
+              "y": 395,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 540,
+              "y": 430,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 670,
+              "y": 446,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 280,
+              "y": 100,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 445,
+              "y": 100,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 625,
+              "y": 100,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 385,
+              "y": 383,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "HOLD · defenders wait",
+          "seconds": 2,
+          "notes": "Before release the defensive line is static and onside. Ask when they may move.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 375,
+              "y": 395,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 540,
+              "y": 430,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 670,
+              "y": 446,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 280,
+              "y": 100,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 445,
+              "y": 100,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 625,
+              "y": 100,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 385,
+              "y": 383,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "FREE PASS · ball travels backwards",
+          "seconds": 1.7,
+          "notes": "A1 passes to supporting A2; defensive advance starts after the ball leaves the hands.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 380,
+              "y": 392,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 545,
+              "y": 415,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 680,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 280,
+              "y": 120,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 445,
+              "y": 120,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 625,
+              "y": 120,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 555,
+              "y": 403,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-2",
+              "actorId": "a2",
+              "text": "Pass back!",
+              "kind": "speech",
+              "at": 0.34,
+              "displaySeconds": 1.4
+            }
+          ]
+        },
+        {
+          "name": "Advance together · stay connected",
+          "seconds": 2.4,
+          "notes": "D1, D2, D3 advance in a connected line without running early.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 352,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 555,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 690,
+              "y": 370,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 295,
+              "y": 205,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 470,
+              "y": 205,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 642,
+              "y": 205,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 565,
+              "y": 316,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Decision · carrier fixes middle",
+          "seconds": 2,
+          "notes": "A2 carries straight; defenders keep connection and communicate.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 460,
+              "y": 334,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 555,
+              "y": 275,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 706,
+              "y": 315,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 335,
+              "y": 229,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 495,
+              "y": 239,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 662,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 565,
+              "y": 263,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-4",
+              "actorId": "a2",
+              "text": "Keep depth!",
+              "kind": "speech",
+              "at": 0.34,
+              "displaySeconds": 1.4
+            }
+          ]
+        },
+        {
+          "name": "Backward pass · release outside",
+          "seconds": 1.8,
+          "notes": "A2 draws D2 and gives A3 a backward pass into the outside channel.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 488,
+              "y": 321,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 578,
+              "y": 255,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 724,
+              "y": 280,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 360,
+              "y": 247,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 517,
+              "y": 248,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 675,
+              "y": 248,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 734,
+              "y": 268,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Freeze · review the rule",
+          "seconds": 1.5,
+          "notes": "Pause on the connected line; compare actual free-pass retreat distances on the pitch.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 507,
+              "y": 307,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 600,
+              "y": 247,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 765,
+              "y": 220,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 368,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 525,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 700,
+              "y": 243,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 775,
+              "y": 208,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "id": "seed-956",
+      "title": "SHOWCASE · U10 Decisions | Carry or give the overlap?",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Attack",
+      "length": 24,
+      "width": 18,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 15,
+      "players": "Three attackers versus two passive touch defenders.",
+      "equipment": "Ball, cones, clear run-off.",
+      "objective": "Compare two sound decisions at the same freeze-frame: carry if space remains, or pass backwards if the defender commits.",
+      "safety": "Non-contact 3v2 coaching demonstration; touch only, no tackle. The options are coached choices, not automatic AI decisions.",
+      "instructions": "1. Setup · 3 v 2 — A1 carries and A2/A3 hold width and depth.\n2. Commit D1 · straighten — A1 fixes D1 while supporting runners track inside.\n3. Pass behind · A2 receives — A1 passes backwards; A2 attacks the space between defenders.\n4. DECISION · what does D2 do? — Freeze. Two alternatives start from this identical moment.\n5. A · D2 holds wide: carry — D2 marks A3, leaving A2 an inside channel. A2 carries straight.\n6. A · finish with support — A2 breaks through, A1 stays available behind.",
+      "coaching": "Look at defender hips, straighten first, keep support behind; release only if the defender has committed.",
+      "questions": "What is D2 doing? When is carrying best? Where must the support runner stand?",
+      "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
+      "links": [
+        {
+          "label": "RFU Age Grade Rugby regulations",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-",
+          "kind": "Rule"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Setup · 3 v 2",
+          "seconds": 0,
+          "notes": "A1 carries and A2/A3 hold width and depth.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 250,
+              "y": 450,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 474,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 680,
+              "y": 485,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 315,
+              "y": 225,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 595,
+              "y": 215,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 260,
+              "y": 438,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Commit D1 · straighten",
+          "seconds": 2.2,
+          "notes": "A1 fixes D1 while supporting runners track inside.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 315,
+              "y": 335,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 465,
+              "y": 394,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 690,
+              "y": 405,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 335,
+              "y": 290,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 600,
+              "y": 260,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 325,
+              "y": 323,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Pass behind · A2 receives",
+          "seconds": 1.7,
+          "notes": "A1 passes backwards; A2 attacks the space between defenders.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 328,
+              "y": 318,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 492,
+              "y": 341,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 705,
+              "y": 353,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 350,
+              "y": 303,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 600,
+              "y": 265,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 502,
+              "y": 329,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-2",
+              "actorId": "a2",
+              "text": "Pass back!",
+              "kind": "speech",
+              "at": 0.34,
+              "displaySeconds": 1.4
+            }
+          ]
+        },
+        {
+          "name": "DECISION · what does D2 do?",
+          "seconds": 1.5,
+          "notes": "Freeze. Two alternatives start from this identical moment.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 365,
+              "y": 305,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 545,
+              "y": 300,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 710,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 380,
+              "y": 295,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 610,
+              "y": 268,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 555,
+              "y": 288,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "A · D2 holds wide: carry",
+          "seconds": 2.4,
+          "notes": "D2 marks A3, leaving A2 an inside channel. A2 carries straight.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 410,
+              "y": 275,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 540,
+              "y": 205,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 720,
+              "y": 265,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 425,
+              "y": 291,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 676,
+              "y": 264,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 550,
+              "y": 193,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-4",
+              "actorId": "a2",
+              "text": "Keep depth!",
+              "kind": "speech",
+              "at": 0.34,
+              "displaySeconds": 1.4
+            }
+          ]
+        },
+        {
+          "name": "A · finish with support",
+          "seconds": 2.1,
+          "notes": "A2 breaks through, A1 stays available behind.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 465,
+              "y": 215,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 535,
+              "y": 125,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 730,
+              "y": 196,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 450,
+              "y": 270,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 685,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 545,
+              "y": 113,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "branching": {
+        "version": 1,
+        "fork": 3,
+        "question": "Does D2 commit to the ball carrier or stay wide?",
+        "active": "a",
+        "context": "After the first pass, A2 has the ball and a supporting runner outside. Watch D2's choice before deciding.",
+        "watchFor": "Notice whether the space directly ahead of A2 stays open, or D2 closes it.",
+        "choices": [
+          {
+            "id": "a",
+            "label": "Defender stays wide · carry into space",
+            "explanation": "D2 holds out towards A3, leaving an inside gap. A2 keeps the ball and carries through it.",
+            "watchFor": "A2 straightens through the gap; A1 trails in support.",
+            "frames": [
+              {
+                "name": "A · D2 holds wide: carry",
+                "seconds": 2.4,
+                "notes": "D2 marks A3, leaving A2 an inside channel. A2 carries straight.",
+                "objects": [
+                  {
+                    "id": "a1",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 410,
+                    "y": 275,
+                    "rot": 0
+                  },
+                  {
+                    "id": "a2",
+                    "type": "attacker",
+                    "label": "A2",
+                    "x": 540,
+                    "y": 205,
+                    "rot": 0
+                  },
+                  {
+                    "id": "a3",
+                    "type": "attacker",
+                    "label": "A3",
+                    "x": 720,
+                    "y": 265,
+                    "rot": 0
+                  },
+                  {
+                    "id": "d1",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 425,
+                    "y": 291,
+                    "rot": 180
+                  },
+                  {
+                    "id": "d2",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 676,
+                    "y": 264,
+                    "rot": 180
+                  },
+                  {
+                    "id": "ball",
+                    "type": "ball",
+                    "label": "",
+                    "x": 550,
+                    "y": 193,
+                    "rot": 0,
+                    "ownerId": "a2"
+                  }
+                ],
+                "timing": {},
+                "paths": {},
+                "callouts": [
+                  {
+                    "id": "cue-4",
+                    "actorId": "a2",
+                    "text": "Keep depth!",
+                    "kind": "speech",
+                    "at": 0.34,
+                    "displaySeconds": 1.4
+                  }
+                ]
+              },
+              {
+                "name": "A · finish with support",
+                "seconds": 2.1,
+                "notes": "A2 breaks through, A1 stays available behind.",
+                "objects": [
+                  {
+                    "id": "a1",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 465,
+                    "y": 215,
+                    "rot": 0
+                  },
+                  {
+                    "id": "a2",
+                    "type": "attacker",
+                    "label": "A2",
+                    "x": 535,
+                    "y": 125,
+                    "rot": 0
+                  },
+                  {
+                    "id": "a3",
+                    "type": "attacker",
+                    "label": "A3",
+                    "x": 730,
+                    "y": 196,
+                    "rot": 0
+                  },
+                  {
+                    "id": "d1",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 450,
+                    "y": 270,
+                    "rot": 180
+                  },
+                  {
+                    "id": "d2",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 685,
+                    "y": 230,
+                    "rot": 180
+                  },
+                  {
+                    "id": "ball",
+                    "type": "ball",
+                    "label": "",
+                    "x": 545,
+                    "y": 113,
+                    "rot": 0,
+                    "ownerId": "a2"
+                  }
+                ],
+                "timing": {},
+                "paths": {}
+              }
+            ]
+          },
+          {
+            "id": "b",
+            "label": "Defender commits · pass to the overlap",
+            "explanation": "D2 closes down A2. A2 releases a backward pass to A3, who attacks the outside space.",
+            "watchFor": "The receiver is behind the passer at release; A3 then runs forward into space.",
+            "frames": [
+              {
+                "name": "B · D2 commits: pass",
+                "seconds": 2.3,
+                "notes": "D2 steps in to stop A2; A2 gives A3 a backward pass.",
+                "objects": [
+                  {
+                    "id": "a1",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 405,
+                    "y": 285,
+                    "rot": 0
+                  },
+                  {
+                    "id": "a2",
+                    "type": "attacker",
+                    "label": "A2",
+                    "x": 570,
+                    "y": 268,
+                    "rot": 0
+                  },
+                  {
+                    "id": "a3",
+                    "type": "attacker",
+                    "label": "A3",
+                    "x": 731,
+                    "y": 291,
+                    "rot": 0
+                  },
+                  {
+                    "id": "d1",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 420,
+                    "y": 293,
+                    "rot": 180
+                  },
+                  {
+                    "id": "d2",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 590,
+                    "y": 272,
+                    "rot": 180
+                  },
+                  {
+                    "id": "ball",
+                    "type": "ball",
+                    "label": "",
+                    "x": 741,
+                    "y": 279,
+                    "rot": 0,
+                    "ownerId": "a3"
+                  }
+                ],
+                "timing": {},
+                "paths": {},
+                "callouts": [
+                  {
+                    "id": "cue-4",
+                    "actorId": "a3",
+                    "text": "Keep depth!",
+                    "kind": "speech",
+                    "at": 0.34,
+                    "displaySeconds": 1.4
+                  }
+                ]
+              },
+              {
+                "name": "B · A3 takes outside gap",
+                "seconds": 2.6,
+                "notes": "A3 straightens through the outside channel while the passers support.",
+                "objects": [
+                  {
+                    "id": "a1",
+                    "type": "attacker",
+                    "label": "A1",
+                    "x": 455,
+                    "y": 233,
+                    "rot": 0
+                  },
+                  {
+                    "id": "a2",
+                    "type": "attacker",
+                    "label": "A2",
+                    "x": 622,
+                    "y": 223,
+                    "rot": 0
+                  },
+                  {
+                    "id": "a3",
+                    "type": "attacker",
+                    "label": "A3",
+                    "x": 781,
+                    "y": 132,
+                    "rot": 0
+                  },
+                  {
+                    "id": "d1",
+                    "type": "defender",
+                    "label": "D1",
+                    "x": 458,
+                    "y": 280,
+                    "rot": 180
+                  },
+                  {
+                    "id": "d2",
+                    "type": "defender",
+                    "label": "D2",
+                    "x": 635,
+                    "y": 256,
+                    "rot": 180
+                  },
+                  {
+                    "id": "ball",
+                    "type": "ball",
+                    "label": "",
+                    "x": 791,
+                    "y": 120,
+                    "rot": 0,
+                    "ownerId": "a3"
+                  }
+                ],
+                "timing": {},
+                "paths": {}
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "version": 1,
+      "id": "seed-957",
+      "title": "SHOWCASE · U10 Continuity | Three phases, one team",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Attack",
+      "length": 26,
+      "width": 18,
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "flags",
+      "minutes": 15,
+      "players": "Four attackers and two passive touch defenders.",
+      "equipment": "Ball, cones, open channel.",
+      "objective": "Show three successive phases of attack with backward passing, depth, support and a clean finish.",
+      "safety": "Non-contact progression with light-touch defence only; no breakdown, tackle, or physical clear-out is implied.",
+      "instructions": "1. Setup · start the first phase — A1 carries with A2, A3, A4 in supporting lanes.\n2. Phase 1 · A1 commits — A1 engages D1 and A2 holds back for a legal pass.\n3. Release to A2 — A1 passes backward to A2, then reloads into support.\n4. Phase 2 · A2 straightens — A2 engages D2; A3 remains deeper.\n5. Release to A3 — Second backward pass enters the wider channel.\n6. Phase 3 · A3 runs at shoulder — A3 straightens; A4 stays in depth, never ahead of the passer.\n7. Outside pass to A4 — A3 releases a third backward pass; A4 takes the ball behind A3.\n8. Final break · support behind — A4 reaches space with A3 tracking in support.",
+      "coaching": "Keep the ball alive, straighten before passing, stay behind the carrier and reload on each new phase.",
+      "questions": "How do we recycle support without crowding? What changes when defence drifts?",
+      "notes": "Showcase teaching animation: coaches must check current competition/age-grade law and run a safety assessment. Stage text describes the actual saved movement; use normal-speed and follow-action camera for promos.",
+      "links": [
+        {
+          "label": "RFU Age Grade Rugby regulations",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000064141-what-are-the-regulations-for-the-age-grade-game-",
+          "kind": "Rule"
+        }
+      ],
+      "frames": [
+        {
+          "name": "Setup · start the first phase",
+          "seconds": 0,
+          "notes": "A1 carries with A2, A3, A4 in supporting lanes.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 240,
+              "y": 460,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 410,
+              "y": 481,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 590,
+              "y": 487,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 750,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 330,
+              "y": 205,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 610,
+              "y": 190,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 250,
+              "y": 448,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Phase 1 · A1 commits",
+          "seconds": 2.4,
+          "notes": "A1 engages D1 and A2 holds back for a legal pass.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 308,
+              "y": 353,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 437,
+              "y": 415,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 600,
+              "y": 426,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 752,
+              "y": 435,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 342,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 610,
+              "y": 248,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 318,
+              "y": 341,
+              "rot": 0,
+              "ownerId": "a1"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Release to A2",
+          "seconds": 1.6,
+          "notes": "A1 passes backward to A2, then reloads into support.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 332,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 454,
+              "y": 355,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 612,
+              "y": 382,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 760,
+              "y": 389,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 360,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 617,
+              "y": 255,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 464,
+              "y": 343,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-2",
+              "actorId": "a2",
+              "text": "Pass back!",
+              "kind": "speech",
+              "at": 0.34,
+              "displaySeconds": 1.4
+            }
+          ]
+        },
+        {
+          "name": "Phase 2 · A2 straightens",
+          "seconds": 2.6,
+          "notes": "A2 engages D2; A3 remains deeper.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 380,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 555,
+              "y": 285,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 640,
+              "y": 324,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 770,
+              "y": 338,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 399,
+              "y": 289,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 594,
+              "y": 257,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 565,
+              "y": 273,
+              "rot": 0,
+              "ownerId": "a2"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Release to A3",
+          "seconds": 1.7,
+          "notes": "Second backward pass enters the wider channel.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 414,
+              "y": 303,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 576,
+              "y": 266,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 663,
+              "y": 295,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 786,
+              "y": 302,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 430,
+              "y": 288,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 605,
+              "y": 255,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 673,
+              "y": 283,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-4",
+              "actorId": "a3",
+              "text": "Keep depth!",
+              "kind": "speech",
+              "at": 0.34,
+              "displaySeconds": 1.4
+            }
+          ]
+        },
+        {
+          "name": "Phase 3 · A3 runs at shoulder",
+          "seconds": 2.5,
+          "notes": "A3 straightens; A4 stays in depth, never ahead of the passer.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 465,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 611,
+              "y": 257,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 725,
+              "y": 223,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 802,
+              "y": 255,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 451,
+              "y": 290,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 647,
+              "y": 256,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 735,
+              "y": 211,
+              "rot": 0,
+              "ownerId": "a3"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Outside pass to A4",
+          "seconds": 1.6,
+          "notes": "A3 releases a third backward pass; A4 takes the ball behind A3.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 495,
+              "y": 277,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 633,
+              "y": 245,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 743,
+              "y": 207,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 813,
+              "y": 226,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 473,
+              "y": 289,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 670,
+              "y": 245,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 823,
+              "y": 214,
+              "rot": 0,
+              "ownerId": "a4"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Final break · support behind",
+          "seconds": 2.6,
+          "notes": "A4 reaches space with A3 tracking in support.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 545,
+              "y": 250,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 670,
+              "y": 226,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 768,
+              "y": 178,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 842,
+              "y": 118,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 498,
+              "y": 282,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 691,
+              "y": 239,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 852,
+              "y": 106,
+              "rot": 0,
+              "ownerId": "a4"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
+    }
+  ]
+}
