@@ -77,3 +77,54 @@ body.presentation-mode .sequence-group{display:none}
 .sequence-group{border-left:0;padding-left:0}
 .timeline-top .flex{flex-wrap:wrap}
 }
+
+/* View menu refinement (v0.20.56): important controls first; no paragraphs
+   squeezing the Follow checkbox or pushing the visibility toggles off screen. */
+.board-view-menu .view-menu-panel{
+ width:min(264px,calc(100vw - 20px));max-height:min(62dvh,465px);
+ gap:8px;padding:10px 11px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;
+ scrollbar-width:thin;scrollbar-color:#688274 transparent
+}
+.view-menu-panel .view-menu-section{display:grid;gap:6px;min-width:0}
+.view-menu-panel .view-menu-section+.view-menu-section{border-top:1px solid #ffffff1c;padding-top:9px}
+.view-menu-panel .view-menu-section h3{margin:0 0 2px;color:#c2d5c4;font-size:10px;letter-spacing:.8px;text-transform:uppercase}
+.view-menu-panel .camera-follow-choice{
+ display:flex;align-items:center;justify-content:flex-start;
+ gap:9px;margin:0;min-width:0;width:100%;min-height:38px;padding:7px 9px;
+ border:1px solid #6e8b705b;border-radius:9px;white-space:normal;
+ color:#e6f1de;font-size:12px;font-weight:700;line-height:1.25
+}
+.view-menu-panel .camera-follow-choice input[type=checkbox]{
+ width:18px!important;height:18px!important;min-width:18px;min-height:18px;
+ flex:0 0 18px;padding:0;margin:0
+}
+.view-menu-panel .camera-follow-choice>span{display:block;flex:1 1 auto;min-width:0;white-space:normal}
+.view-menu-panel .camera-follow-choice:has(input:checked){
+ background:#294b31;color:#e4ffa9;border-color:#a7cf8b
+}
+.view-menu-panel .view-menu-hint{display:block;color:#b7c9b8;font-size:11px;line-height:1.4;
+ margin:0;max-width:100%;overflow-wrap:normal;white-space:normal}
+.view-menu-panel .view-toggle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.view-menu-panel .view-toggle-grid button{min-width:0;min-height:34px;max-width:100%;padding:6px 5px;font-size:11px}
+.view-menu-panel .view-menu-advanced{
+ display:block;min-width:0;border-top:1px solid #ffffff22;padding-top:4px
+}
+.view-menu-panel .view-menu-advanced>summary{
+ display:list-item;list-style-position:inside;cursor:pointer;
+ color:#cde4c7;font-size:12px;font-weight:700;line-height:1.35;
+ padding:7px 2px;border-radius:6px
+}
+.view-menu-panel .view-menu-advanced>summary:hover{color:#e4ffa9}
+.view-menu-panel .view-menu-advanced>summary:focus-visible{outline:2px solid #c9f07c;outline-offset:2px}
+.view-menu-panel .view-menu-advanced-body{display:grid;gap:10px;padding:8px 0 2px}
+.view-menu-panel .view-menu-advanced-body .view-menu-section+.view-menu-section{border-top:1px solid #ffffff1a;padding-top:9px}
+.view-menu-panel .view-scale-label{padding:0;margin:0;display:block;color:#d4e2d2;white-space:normal;font-size:11px;font-weight:650}
+.view-menu-panel #scaleMode{width:100%;min-width:0;margin:0;min-height:35px}
+.view-menu-panel .grid-controls{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:4px;
+ padding:4px;width:100%;min-width:0;align-items:center}
+.view-menu-panel .grid-controls button{min-width:0;min-height:32px;padding:5px 8px;font-size:11px}
+.view-menu-panel .grid-controls select{width:100%;min-width:0;padding:5px 2px;font-size:11px}
+.view-menu-panel #resetLayout{min-height:34px;width:100%;font-size:11px;padding:6px 10px;text-align:center}
+@media(max-width:620px){
+ .board-view-menu .view-menu-panel{width:min(264px,calc(100vw - 12px));max-height:min(64dvh,470px)}
+}
