@@ -67,7 +67,11 @@ export function tryLineEvents(drill,g){
  }
  return result;
 }
-export const RUCKUS_TRY_CELEBRATION_SECONDS=1.9;
+export const RUCKUS_TRY_CELEBRATION_SECONDS=2.8;
+// A deliberate hold makes it clear that the ball has been grounded before
+// the player stands and celebrates, especially during teaching playback.
+export const TRY_GROUND_HOLD_SECONDS=.92;
+export const TRY_RISE_END_SECONDS=1.3;
 // Score animations are visual epilogues. They do not change authored step
 // timing, Classic mode, ball transfers, score eligibility or saved drill data.
 export function tryVisualDuration(drill,g,cartoonMode=false){
@@ -80,11 +84,10 @@ export function tryCelebrationAt(events,time,actorId){
  const eligible=(events||[]).filter(e=>e.actorId===actorId&&time>=e.time-1e-6&&time<e.time+RUCKUS_TRY_CELEBRATION_SECONDS);
  if(!eligible.length)return null;
  const elapsed=Math.max(0,time-eligible[eligible.length-1].time);
- if(elapsed<.34)return {phase:'ground',elapsed};
- if(elapsed<.65)return {phase:'rise',index:Math.min(4,Math.floor((elapsed-.34)/.31*5)),elapsed};
- // The atlas already includes the supplied raised-arms front and back poses.
- // Five clear beats give the crowd a genuine celebratory sequence at 60fps.
- const beat=Math.min(4,Math.floor((elapsed-.65)/(RUCKUS_TRY_CELEBRATION_SECONDS-.65)*5));
+ if(elapsed<TRY_GROUND_HOLD_SECONDS)return {phase:'ground',elapsed};
+ if(elapsed<TRY_RISE_END_SECONDS)return {phase:'rise',index:Math.min(4,Math.floor((elapsed-TRY_GROUND_HOLD_SECONDS)/(TRY_RISE_END_SECONDS-TRY_GROUND_HOLD_SECONDS)*5)),elapsed};
+ // Atlas 52/53 contains the approved raised-arms celebratory poses.
+ const beat=Math.min(4,Math.floor((elapsed-TRY_RISE_END_SECONDS)/(RUCKUS_TRY_CELEBRATION_SECONDS-TRY_RISE_END_SECONDS)*5));
  return {phase:'celebrate',index:beat,elapsed};
 }
 export function tryFeedbackSVG(events,time,g,{cartoonMode=false,ink=false}={}){
