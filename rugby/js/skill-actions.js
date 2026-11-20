@@ -1,6 +1,6 @@
 // Shared, editable non-contact action model. No inferred collision or tackle.
 import {canCarry} from './possession.js?v=0.18.0';
-import {compactActionBubbleSVG} from './comic-callouts.js?v=3';
+import {compactActionBubbleSVG} from './comic-callouts.js?v=4';
 export const CONE_COLORS=Object.freeze({orange:'#ff9b46',yellow:'#ffda78',red:'#f06c68',blue:'#65b8f8',green:'#91d78e',white:'#f5f5ed',purple:'#bf9af5'});
 export const coneColor=name=>CONE_COLORS[name]||CONE_COLORS.yellow;
 export const TAG_SIDES=['left','right'];
