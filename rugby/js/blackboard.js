@@ -37,14 +37,8 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
  '</nav>'+
  '<section id="bbAddMenu" class="bb-add-menu bb-movable" data-bb-panel="add" aria-label="Add pitch object" hidden>'+
   '<button type="button" class="bb-grip" aria-label="Move add-objects panel" title="Drag panel">⠿</button>'+
-  '<strong>Add to drill</strong><div>'+
-  '<button type="button" data-bb-add="attacker">Blue player</button>'+
-  '<button type="button" data-bb-add="defender">Red player</button>'+
-  '<button type="button" data-bb-add="ball">Rugby ball</button>'+
-  '<button type="button" data-bb-add="cone">Cone</button>'+
-  '<button type="button" data-bb-add="markerDisc">Marker</button>'+
-  '<button type="button" data-bb-add="fieldLine">Line marking</button>'+
- '</div><small>Added to the same editable drill</small></section>'+
+  '<strong>Add to drill</strong><div id="bbAddPalette" class="bb-palette"></div>'+
+  '<small>Same icons and objects as Studio. All additions remain editable.</small></section>'+
  '<section id="bbSelection" class="bb-selection bb-movable" data-bb-panel="selection" aria-label="Selected player actions" hidden>'+
   '<button type="button" class="bb-grip" aria-label="Move selected-player panel" title="Drag panel">⠿</button>'+
   '<strong id="bbSelected">Player</strong>'+
@@ -156,6 +150,29 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   $('bbDrillsMenu').hidden=!drillsOpen;
   const button=btn('drills');button?.setAttribute('aria-expanded',String(drillsOpen));
   button?.classList.toggle('is-active',drillsOpen);
+ }
+ function syncAddPalette(){
+  // Don't maintain a parallel list. The SAME native palette buttons provide
+  // labels, SVG icons and object types. Their click handlers stay authoritative.
+  const target=$('bbAddPalette');
+  if(!target)return;
+  target.replaceChildren();
+  for(const [source,label] of [['palette','Players, equipment & markings'],['rugbyPalette','Contact formations'],['legacyPalette','Other diagrams']]){
+   const root=$(source);if(!root)continue;
+   const native=[...root.querySelectorAll('button[data-type]')];
+   if(!native.length)continue;
+   const group=document.createElement('div');group.className='bb-native-palette-group';
+   const heading=document.createElement('h4');heading.textContent=label;group.appendChild(heading);
+   const cells=document.createElement('div');cells.className='bb-palette-grid';
+   for(const button of native){
+    const clone=button.cloneNode(true);
+    clone.removeAttribute('data-type');
+    clone.dataset.bbAdd=button.dataset.type;
+    clone.id='';
+    cells.appendChild(clone);
+   }
+   group.appendChild(cells);target.appendChild(group);
+  }
  }
  function openCamera(show){
   cameraOpen=!!show;
@@ -399,7 +416,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
     if(!click('drawRouteSide'))hint('Select a player first, then choose Run.');else hint('Click points on the pitch for the run. Tap Run again to finish.');break;
    case 'pass':setPen(false);
     if(!click('passBallSide'))hint('Select the player carrying the ball first.');else hint('Now tap the teammate who should receive the ball.');break;
-   case 'add':setPen(false);adding=!adding;$('bbAddMenu').hidden=!adding;break;
+   case 'add':setPen(false);adding=!adding;if(adding)syncAddPalette();$('bbAddMenu').hidden=!adding;break;
    case 'actions':setPen(false);openObjectActions?.();break;
    case 'details':showDetails(!drawer);break;
    case 'close-details':showDetails(false);break;
